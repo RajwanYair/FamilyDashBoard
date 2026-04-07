@@ -37,7 +37,7 @@
             color: var(--text-primary);
             overflow: hidden;
             height: 100vh;
-            font-size: 22px;
+            font-size: 21px;
             position: relative;
         }
         body::before {
@@ -157,7 +157,7 @@
 
         /* ── Calendar ── */
         .cal-wrapper { flex: 1; overflow: hidden; position: relative; }
-        .cal-wrapper iframe { width: 200%; height: 200%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); transform: scale(0.5); transform-origin: top right; }
+        .cal-wrapper iframe { width: 250%; height: 250%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); transform: scale(0.4); transform-origin: top right; }
 
         /* ── Stocks ── */
         .stocks-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 4px; min-height: 0; }
@@ -227,7 +227,7 @@
 
         /* ── Responsive ── */
         @media (max-width: 1200px) {
-            body { font-size: 18px; }
+            body { font-size: 17px; }
             .main-grid { grid-template-columns: 1fr 1fr; }
             .main-grid .card:nth-child(3) { grid-column: span 2; }
             .bottom-grid { grid-template-columns: 1fr 1fr; }
@@ -237,7 +237,7 @@
             .ticker-item { font-size: 0.65em; padding: 0 14px; }
         }
         @media (max-width: 768px) {
-            body { font-size: 15px; }
+            body { font-size: 14px; }
             .main-grid, .bottom-grid { grid-template-columns: 1fr; }
             .main-grid .card:nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
             .stocks-body { grid-template-columns: repeat(3, 1fr); }
@@ -252,7 +252,7 @@
             .stk-price { font-size: 1.2em; }
         }
         @media (max-width: 480px) {
-            body { font-size: 13px; }
+            body { font-size: 12px; }
             .container { padding: 4px; gap: 4px; }
             .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
             .header-left, .header-right { align-items: center; flex: 1 1 100%; }
