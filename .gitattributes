@@ -1,0 +1,30 @@
+# Auto detect text files and normalize line endings
+* text=auto eol=lf
+
+# HTML
+*.html text eol=lf
+
+# Web assets
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+
+# Markdown
+*.md text eol=lf
+
+# YAML
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Config
+.editorconfig text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary

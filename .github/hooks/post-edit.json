@@ -1,0 +1,12 @@
+[
+    {
+        "event": "PostToolUse",
+        "tools": ["replace_string_in_file", "create_file", "multi_replace_string_in_file"],
+        "steps": [
+            {
+                "type": "command",
+                "command": "echo 'Reminder: verify RTL layout, CSS variables, and font readability'"
+            }
+        ]
+    }
+]

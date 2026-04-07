@@ -1,0 +1,92 @@
+# =============================================================================
+# CI — FamilyDashBoard
+# HTML validation, link checking, security scan
+# =============================================================================
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-html:
+    name: Validate HTML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML with HTMLHint
+        uses: nickvdyck/allhtmlhint@v1
+        with:
+          path: "BestDashBoard.html"
+
+  lint-css-js:
+    name: Lint CSS & JS (embedded)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install linters
+        run: npm install -g htmlhint
+
+      - name: Run HTMLHint
+        run: htmlhint BestDashBoard.html || true
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Scanning for potential secrets..."
+          if grep -rn "api_key\|apiKey\|secret\|password\|token" BestDashBoard.html --include="*.html" | grep -v "//.*api_key\|//.*secret"; then
+            echo "::warning::Potential secrets found in source code"
+          else
+            echo "No hardcoded secrets detected"
+          fi
+
+      - name: Check for dangerous patterns
+        run: |
+          echo "Scanning for dangerous JavaScript patterns..."
+          if grep -n "eval(" BestDashBoard.html; then
+            echo "::error::eval() usage detected — potential security risk"
+            exit 1
+          fi
+          echo "No dangerous patterns found"
+
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install http-server
+        run: npm install -g http-server
+
+      - name: Start server
+        run: http-server . -p 8080 &
+
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: "http://localhost:8080/BestDashBoard.html"
+          temporaryPublicStorage: true

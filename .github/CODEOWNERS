@@ -1,0 +1,16 @@
+# CODEOWNERS — FamilyDashBoard
+# =============================================================================
+# Defines code owners for review when pull requests change matching files
+# =============================================================================
+
+# Default: all files
+* @RajwanYair
+
+# GitHub configs
+/.github/ @RajwanYair
+
+# Dashboard source
+/BestDashBoard.html @RajwanYair
+
+# Documentation
+/README.md @RajwanYair

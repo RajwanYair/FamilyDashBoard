@@ -1,0 +1,49 @@
+{
+    "version": "1.0.0",
+    "project": "FamilyDashBoard",
+    "copilot": {
+        "enabled": true,
+        "features": {
+            "chat_modes": true,
+            "inline_suggestions": true,
+            "documentation_generation": true
+        }
+    },
+    "modes": {
+        "ui-mode": {
+            "enabled": true,
+            "aliases": ["design", "css", "layout", "theme"],
+            "priority": "high",
+            "context_files": ["BestDashBoard.html"],
+            "description": "UI/UX design and CSS styling specialist for the dashboard"
+        },
+        "api-mode": {
+            "enabled": true,
+            "aliases": ["fetch", "data", "weather", "stocks"],
+            "priority": "high",
+            "context_files": ["BestDashBoard.html"],
+            "description": "API integration, data fetching, and caching specialist"
+        },
+        "fix-mode": {
+            "enabled": true,
+            "aliases": ["debug", "troubleshoot", "error"],
+            "priority": "high",
+            "context_files": ["BestDashBoard.html"],
+            "description": "Debugging and error resolution specialist"
+        },
+        "docs-mode": {
+            "enabled": true,
+            "aliases": ["documentation", "readme"],
+            "priority": "medium",
+            "context_files": ["README.md", ".github/copilot-instructions.md"],
+            "description": "Documentation and README expert"
+        },
+        "security-mode": {
+            "enabled": true,
+            "aliases": ["security", "audit", "xss"],
+            "priority": "critical",
+            "context_files": ["BestDashBoard.html", ".github/SECURITY.md"],
+            "description": "Security audit for XSS, CSP, and API safety"
+        }
+    }
+}
