@@ -79,16 +79,20 @@
         .rss-container::-webkit-scrollbar-track { background: transparent; }
         .rss-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
         .rss-item {
-            background: rgba(30, 41, 59, 0.5); padding: 12px 14px; margin: 6px 0;
+            background: rgba(30, 41, 59, 0.5); padding: 10px 12px; margin: 5px 0;
             border-radius: 8px; border-right: 4px solid var(--accent);
-            font-size: 1em; cursor: pointer; transition: all .25s ease;
+            font-size: 0.88em; cursor: pointer; transition: all .25s ease;
         }
         .rss-item:hover { background: var(--bg-card-hover); transform: translateX(-3px); }
-        .rss-title { font-weight: 600; margin-bottom: 4px; color: var(--text-primary); line-height: 1.4; }
-        .rss-time { font-size: 0.8em; color: var(--text-secondary); }
+        .rss-title { font-weight: 600; margin-bottom: 3px; color: var(--text-primary); line-height: 1.35; }
+        .rss-meta { display: flex; justify-content: space-between; align-items: center; }
+        .rss-time { font-size: 0.78em; color: var(--text-secondary); }
+        .rss-source { font-size: 0.72em; color: var(--accent); opacity: 0.7; }
 
         /* ── Calendar ── */
-        .calendar-section iframe { width: 100%; height: 100%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); }
+        .calendar-section { position: relative; }
+        .calendar-section .calendar-wrapper { flex: 1; overflow: hidden; position: relative; }
+        .calendar-section iframe { width: 142%; height: 142%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); transform: scale(0.705); transform-origin: top right; }
 
         /* ── Stocks ── */
         .financial-section { padding: 0; flex: 1; display: flex; flex-direction: column; min-height: 0; }
@@ -124,19 +128,21 @@
         .forecast-temp { font-size: 1.05em; font-weight: 700; }
         .forecast-desc { font-size: 0.8em; color: var(--text-secondary); margin-top: 4px; }
 
-        /* ── Facts ── */
+        /* ── Motivation ── */
         .service-content { padding: 14px; flex: 1; overflow-y: auto; }
         .service-content::-webkit-scrollbar { width: 5px; }
         .service-content::-webkit-scrollbar-track { background: transparent; }
         .service-content::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-        .fact-item {
+        .motivation-item {
             background: rgba(30, 41, 59, 0.5); padding: 22px; border-radius: 10px;
-            text-align: center; font-style: italic;
+            text-align: center;
             border-right: 4px solid var(--accent);
             height: 100%; display: flex; flex-direction: column; justify-content: center;
+            transition: opacity 0.6s ease;
         }
-        .fact-content { font-size: 1.4em; line-height: 1.6; margin-bottom: 14px; }
-        .fact-source { font-size: 0.85em; color: var(--text-secondary); }
+        .motivation-content { font-size: 1.4em; line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+        .motivation-author { font-size: 0.9em; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+        .motivation-source { font-size: 0.75em; color: var(--text-secondary); }
 
         /* ── Status Bar ── */
         .status-bar {
@@ -202,7 +208,9 @@
                     <div class="sync-indicator" id="calendar-sync"></div>
                     📅 לוח שנה משפחתי
                 </div>
-                <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
+                <div class="calendar-wrapper">
+                    <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
+                </div>
             </div>
 
             <div class="section financial-section">
@@ -285,13 +293,14 @@
 
             <div class="section">
                 <div class="section-header">
-                    <div class="sync-indicator" id="facts-sync"></div>
-                    💡 עובדה מעניינת היום
+                    <div class="sync-indicator" id="motivation-sync"></div>
+                    💪 מוטיבציה יומית
                 </div>
                 <div class="service-content">
-                    <div class="fact-item">
-                        <div class="fact-content" id="daily-fact">טוען עובדה מעניינת...</div>
-                        <div class="fact-source" id="fact-source">מקור: טוען...</div>
+                    <div class="motivation-item">
+                        <div class="motivation-content" id="motivation-text">טוען השראה...</div>
+                        <div class="motivation-author" id="motivation-author"></div>
+                        <div class="motivation-source" id="motivation-source"></div>
                     </div>
                 </div>
             </div>
@@ -317,8 +326,9 @@
             wind: document.getElementById('wind'),
             sunrise: document.getElementById('sunrise'),
             sunset: document.getElementById('sunset'),
-            dailyFact: document.getElementById('daily-fact'),
-            factSource: document.getElementById('fact-source'),
+            motivationText: document.getElementById('motivation-text'),
+            motivationAuthor: document.getElementById('motivation-author'),
+            motivationSource: document.getElementById('motivation-source'),
             rssContainer: document.getElementById('rss-container'),
             forecastGrid: document.getElementById('forecast-grid'),
             lastRefresh: document.getElementById('last-refresh')
@@ -328,7 +338,7 @@
             calendar: document.getElementById('calendar-sync'),
             stocks: document.getElementById('stocks-sync'),
             weather: document.getElementById('weather-sync'),
-            facts: document.getElementById('facts-sync')
+            motivation: document.getElementById('motivation-sync')
         };
         const proxies = [ 'https://api.allorigins.win/get?url=', 'https://api.codetabs.com/v1/proxy?quest=' ];
         const weatherCodes = { 0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים' };
@@ -343,21 +353,23 @@
         async function updateWeather(){ setSyncStatus('weather','syncing'); const key='weather-data'; const c=getCachedData(key); if(c){ displayWeatherData(c); setSyncStatus('weather','success'); return;} try{ const url='https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5'; const r=await fetch(url); const d=await r.json(); if(d.current_weather&&d.daily){ setCachedData(key,d); displayWeatherData(d); setSyncStatus('weather','success'); } }catch(e){ console.error('Weather update failed:',e); setSyncStatus('weather','error'); } }
         function displayWeatherData(data){ if(elements.topTemp) elements.topTemp.textContent=Math.round(data.current_weather.temperature)+'°C'; if(elements.weatherDesc) elements.weatherDesc.textContent=weatherCodes[data.current_weather.weathercode]||'לא ידוע'; if(elements.weatherIcon) elements.weatherIcon.textContent=weatherEmojis[data.current_weather.weathercode]||'🌡️'; if(elements.wind) elements.wind.textContent=Math.round(data.current_weather.windspeed)+' קמ"ש'; if(data.daily){ const sr=new Date(data.daily.sunrise[0]); const ss=new Date(data.daily.sunset[0]); if(elements.sunrise) elements.sunrise.textContent=sr.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}); if(elements.sunset) elements.sunset.textContent=ss.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}); const days=document.querySelectorAll('#forecast-grid .forecast-day'); for(let i=1;i<=4;i++){ if(days[i-1]&&data.daily.time[i]){ const date=new Date(data.daily.time[i]); const dayName=date.toLocaleDateString('he-IL',{weekday:'short'}); const maxT=Math.round(data.daily.temperature_2m_max[i]); const minT=Math.round(data.daily.temperature_2m_min[i]); const wcode=data.daily.weathercode[i]; const emoji=weatherEmojis[wcode]||'🌡️'; const desc=weatherCodes[wcode]||'לא ידוע'; days[i-1].innerHTML=`<div class="forecast-date">${dayName}</div><div style="font-size:1.4em">${emoji}</div><div class="forecast-temp">${maxT}°/${minT}°</div><div class="forecast-desc">${desc}</div>`; } } }
             if(elements.humidity) elements.humidity.textContent=Math.floor(Math.random()*30+40)+'%'; }
-        async function updateRSSFeed(){ if(!elements.rssContainer) return; setSyncStatus('news','syncing'); const key='rss-feed'; const c=getCachedData(key); if(c){ displayRSSFeed(c); setSyncStatus('news','success'); return;} const rss=[
-                'https://rotter.net/rss/rotternews.xml',
-                'https://www.rotter.net/scoopscache.xml',
-                'https://rotter.net/scoopscache.xml',
-                'https://www.rotter.net/rss.xml'
+        async function updateRSSFeed(){ if(!elements.rssContainer) return; setSyncStatus('news','syncing'); const key='rss-feed'; const c=cache.get(key); if(c&&Date.now()-c.timestamp<60000){ displayRSSFeed(c.data); setSyncStatus('news','success'); return;} const rssFeeds=[
+                {url:'https://rotter.net/rss/rotternews.xml', source:'רוטר'},
+                {url:'https://www.rotter.net/scoopscache.xml', source:'רוטר סקופים'},
+                {url:'https://rotter.net/scoopscache.xml', source:'רוטר'},
+                {url:'https://www.rotter.net/rss.xml', source:'רוטר'}
             ];
             try{
-                for(const url of rss){
+                for(const feed of rssFeeds){
                     try{
-                        const r=await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+                        const r=await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
                         if(r.ok){
                             const res=await r.json();
                             if(res.status==='ok'&&res.items&&res.items.length>0){
-                                setCachedData(key,res.items);
-                                displayRSSFeed(res.items);
+                                const items=res.items.map(it=>({...it,source:feed.source}));
+                                items.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0));
+                                cache.set(key,{data:items,timestamp:Date.now()});
+                                displayRSSFeed(items);
                                 setSyncStatus('news','success');
                                 return;
                             }
@@ -365,62 +377,123 @@
                     }catch(e){}
                     for(const p of proxies){
                         try{
-                            const pr=await fetch(p+encodeURIComponent(url));
+                            const pr=await fetch(p+encodeURIComponent(feed.url));
                             if(!pr.ok) continue;
                             if(p.includes('allorigins')){
                                 const wrapped=await pr.json();
                                 const text=wrapped.contents;
                                 const parser=new DOMParser();
                                 const xml=parser.parseFromString(text,'text/xml');
-                                const items=parseRSSXML(xml);
-                                if(items.length>0){ setCachedData(key,items); displayRSSFeed(items); setSyncStatus('news','success'); return; }
+                                const items=parseRSSXML(xml,feed.source);
+                                if(items.length>0){ items.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0)); cache.set(key,{data:items,timestamp:Date.now()}); displayRSSFeed(items); setSyncStatus('news','success'); return; }
                             } else {
                                 const text=await pr.text();
                                 const parser=new DOMParser();
                                 const xml=parser.parseFromString(text,'text/xml');
-                                const items=parseRSSXML(xml);
-                                if(items.length>0){ setCachedData(key,items); displayRSSFeed(items); setSyncStatus('news','success'); return; }
+                                const items=parseRSSXML(xml,feed.source);
+                                if(items.length>0){ items.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0)); cache.set(key,{data:items,timestamp:Date.now()}); displayRSSFeed(items); setSyncStatus('news','success'); return; }
                             }
                         }catch(e){ continue; }
                     }
                 }
-                // If all failed
-                elements.rssContainer.innerHTML = `<div class="rss-item"><div class="rss-title">לא ניתן לטעון חדשות כרגע</div><div class="rss-time">נסה שוב מאוחר יותר</div></div>`;
+                elements.rssContainer.innerHTML = `<div class="rss-item"><div class="rss-title">לא ניתן לטעון חדשות כרגע</div><div class="rss-meta"><span class="rss-time">נסה שוב מאוחר יותר</span></div></div>`;
                 setSyncStatus('news','error');
             }catch(e){
                 console.error('RSS feed update failed:',e);
-                elements.rssContainer.innerHTML=`<div class="rss-item"><div class="rss-title">שגיאה בטעינת חדשות</div><div class="rss-time">בדוק חיבור לאינטרנט</div></div>`;
+                elements.rssContainer.innerHTML=`<div class="rss-item"><div class="rss-title">שגיאה בטעינת חדשות</div><div class="rss-meta"><span class="rss-time">בדוק חיבור לאינטרנט</span></div></div>`;
                 setSyncStatus('news','error');
             }
         }
-        function parseRSSXML(xml){ const items=[]; xml.querySelectorAll('item').forEach(item=>{ const title=item.querySelector('title')?.textContent||''; const pubDate=item.querySelector('pubDate')?.textContent||''; const link=item.querySelector('link')?.textContent||''; if(title) items.push({title:title.trim(),pubDate,link}); }); return items.slice(0,12); }
-        function displayRSSFeed(items){ elements.rssContainer.innerHTML=''; items.slice(0,12).forEach(it=>{ const el=document.createElement('div'); el.className='rss-item'; const t=it.pubDate?new Date(it.pubDate).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}):'--:--'; el.innerHTML=`<div class=\"rss-title\">${it.title}</div><div class=\"rss-time\">${t}</div>`; if(it.link){ el.style.cursor='pointer'; el.addEventListener('click',()=>window.open(it.link,'_blank')); } elements.rssContainer.appendChild(el); }); }
+        function parseRSSXML(xml,source){ const items=[]; xml.querySelectorAll('item').forEach(item=>{ const title=item.querySelector('title')?.textContent||''; const pubDate=item.querySelector('pubDate')?.textContent||''; const link=item.querySelector('link')?.textContent||''; if(title) items.push({title:title.trim(),pubDate,link,source:source||'RSS'}); }); return items.slice(0,15); }
+        function displayRSSFeed(items){ elements.rssContainer.innerHTML=''; items.slice(0,15).forEach(it=>{ const el=document.createElement('div'); el.className='rss-item'; const t=it.pubDate?new Date(it.pubDate).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}):'--:--'; const src=it.source||'RSS'; const titleDiv=document.createElement('div'); titleDiv.className='rss-title'; titleDiv.textContent=it.title; el.appendChild(titleDiv); const metaDiv=document.createElement('div'); metaDiv.className='rss-meta'; const timeSpan=document.createElement('span'); timeSpan.className='rss-time'; timeSpan.textContent=t; metaDiv.appendChild(timeSpan); const srcSpan=document.createElement('span'); srcSpan.className='rss-source'; srcSpan.textContent=src; metaDiv.appendChild(srcSpan); el.appendChild(metaDiv); if(it.link){ el.style.cursor='pointer'; el.addEventListener('click',()=>window.open(it.link,'_blank')); } elements.rssContainer.appendChild(el); }); }
         async function fetchJSON(url){ try{ const res=await fetch(url); if(res.ok) return await res.json(); }catch(_){} for(const p of proxies){ try{ const res=await fetch(p+encodeURIComponent(url)); if(!res.ok) continue; if(p.includes('allorigins')){ const wrapped=await res.json(); return JSON.parse(wrapped.contents); } else { const text=await res.text(); try{ return JSON.parse(text);}catch{ return {text}; } } }catch(_){ } } throw new Error('All fetch attempts failed for '+url); }
         async function translateToHebrew(text){ const base='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=he&dt=t&q='+encodeURIComponent(text); try{ let res=await fetch(base); if(!res.ok) throw new Error('direct failed'); let data=await res.json(); return data[0].map(p=>p[0]).join(''); }catch(_){ for(const p of proxies){ try{ const res=await fetch(p+encodeURIComponent(base)); if(!res.ok) continue; const data=p.includes('allorigins')?JSON.parse((await res.json()).contents):JSON.parse(await res.text()); return data[0].map(q=>q[0]).join(''); }catch(_){ continue; } } } return text; }
-        async function getOnlineFact(){ const sources=[ async()=>{ const d=await fetchJSON('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en'); return {text:d.text||d.fact||'',source:'Useless Facts'}; }, async()=>{ const d=await fetchJSON('https://catfact.ninja/fact'); return {text:d.fact||'',source:'Cat Facts'}; }, async()=>{ const d=await fetchJSON('https://numbersapi.com/random/trivia?json'); return {text:d.text||'',source:'Numbers API'}; }, async()=>{ const d=await fetchJSON('https://api.quotable.io/random?maxLength=140'); const t=(d.content||'')+(d.author?` — ${d.author}`:''); return {text:t,source:'Quotable'}; } ]; for(const s of sources){ try{ const f=await s(); if(f.text) return f; }catch(e){ continue; } } throw new Error('No fact sources available'); }
-        async function updateDailyFact(){ setSyncStatus('facts','syncing'); try{ const key='daily-fact-'+new Date().toDateString(); const c=getCachedData(key); if(c){ elements.dailyFact.textContent=c.text; elements.factSource.textContent='מקור: '+c.source; setSyncStatus('facts','success'); return; } const fact=await getOnlineFact(); const translated=await translateToHebrew(fact.text); const payload={text:translated,source:fact.source}; setCachedData(key,payload); elements.dailyFact.textContent=translated; elements.factSource.textContent='מקור: '+fact.source; setSyncStatus('facts','success'); }catch(e){ console.error('Daily fact fetch failed:',e); elements.dailyFact.textContent='לא ניתן לטעון עובדה כעת.'; elements.factSource.textContent=''; setSyncStatus('facts','error'); } }
+        async function getOnlineMotivation(){ const sources=[ async()=>{ const d=await fetchJSON('https://api.quotable.io/random?tags=inspirational|motivational|wisdom&maxLength=200'); return {text:d.content||'',author:d.author||'',source:'Quotable'}; }, async()=>{ const d=await fetchJSON('https://zenquotes.io/api/random'); const q=Array.isArray(d)?d[0]:d; return {text:q.q||'',author:q.a||'',source:'ZenQuotes'}; }, async()=>{ const d=await fetchJSON('https://api.quotable.io/random?maxLength=200'); return {text:d.content||'',author:d.author||'',source:'Quotable'}; } ]; for(const s of sources){ try{ const f=await s(); if(f.text) return f; }catch(e){ continue; } } return null; }
+        const hebrewMotivations = [
+            {text:'הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.',author:'אברהם לינקולן'},
+            {text:'אל תפחד להיכשל. פחד שלא תנסה.',author:'רוי ט. בנט'},
+            {text:'כל יום הוא הזדמנות חדשה לשנות את חייך.',author:''},
+            {text:'הצלחה היא לא סופית, כישלון הוא לא קטלני: האומץ להמשיך הוא מה שחשוב.',author:'וינסטון צ\'רצ\'יל'},
+            {text:'תאמין שאתה יכול ואתה כבר באמצע הדרך.',author:'תיאודור רוזוולט'},
+            {text:'החיים הם 10% מה שקורה לך ו-90% איך אתה מגיב.',author:'צ\'ארלס סווינדול'},
+            {text:'הדרך של אלף מיל מתחילה בצעד אחד.',author:'לאו דזה'},
+            {text:'המחר שייך לאלה שמתכוננים אליו היום.',author:'מלקולם איקס'},
+            {text:'אל תמדוד את עצמך במה שהשגת, אלא במה שהיית צריך להשיג עם היכולות שלך.',author:'ג\'ון וודן'},
+            {text:'כשאתה חושב שאתה לא יכול, תזכור למה התחלת.',author:''},
+            {text:'גם מסע של אלף קילומטרים מתחיל בצעד הראשון.',author:''},
+            {text:'אין מעלית להצלחה. אתה צריך לקחת את המדרגות.',author:'זיג זיגלר'},
+            {text:'הזמן הטוב ביותר לשתול עץ היה לפני 20 שנה. הזמן הטוב ביותר השני הוא עכשיו.',author:'פתגם סיני'},
+            {text:'החוזק לא בא ממה שאתה יכול לעשות. הוא בא מהתגברות על מה שחשבת שלא תוכל.',author:'ריקי רוג\'רס'},
+            {text:'השינוי הוא חוק החיים. ואלה שמסתכלים רק על העבר או ההווה בטוח יפסידו את העתיד.',author:'ג\'ון פ. קנדי'},
+            {text:'לא משנה כמה לאט אתה הולך, כל עוד אתה לא עוצר.',author:'קונפוציוס'},
+            {text:'תעשה היום את מה שאחרים לא רוצים, ומחר תעשה את מה שאחרים לא יכולים.',author:'ג\'רי רייס'},
+            {text:'אופטימיות היא האמונה שמובילה להישגים. שום דבר לא יכול להיעשות בלי תקווה ואמונה.',author:'הלן קלר'},
+            {text:'המשפחה היא לא דבר חשוב. המשפחה היא הכל.',author:'מייקל ג\'יי פוקס'},
+            {text:'הבית הוא המקום שבו המשפחה נמצאת.',author:''},
+        ];
+        let motivationIndex = Math.floor(Math.random() * hebrewMotivations.length);
+        async function updateMotivation(){ setSyncStatus('motivation','syncing'); try{
+            // Try online quote first
+            const online = await getOnlineMotivation();
+            if(online && online.text){
+                const translated = await translateToHebrew(online.text);
+                const authorHeb = online.author ? await translateToHebrew(online.author) : '';
+                if(elements.motivationText) elements.motivationText.textContent = translated;
+                if(elements.motivationAuthor) elements.motivationAuthor.textContent = authorHeb ? `— ${authorHeb}` : '';
+                if(elements.motivationSource) elements.motivationSource.textContent = `מקור: ${online.source}`;
+                setSyncStatus('motivation','success');
+                return;
+            }
+        }catch(e){ /* fall through to offline */ }
+            // Fallback: rotate through Hebrew motivations
+            const m = hebrewMotivations[motivationIndex % hebrewMotivations.length];
+            motivationIndex++;
+            if(elements.motivationText) elements.motivationText.textContent = m.text;
+            if(elements.motivationAuthor) elements.motivationAuthor.textContent = m.author ? `— ${m.author}` : '';
+            if(elements.motivationSource) elements.motivationSource.textContent = '';
+            setSyncStatus('motivation','success');
+        }
         function formatPrice(price,symbol){ const num=parseFloat(price); if(symbol==='BTC-USD') return '$'+num.toLocaleString('en-US',{maximumFractionDigits:0}); else if(num>=1000) return '$'+num.toLocaleString('en-US',{maximumFractionDigits:0}); else if(num>=100) return '$'+num.toFixed(1); else return '$'+num.toFixed(2); }
         function generateTrendChart(prices,isPositive){ if(!prices||prices.length<2) return ''; const width=200,height=30,padding=2; const min=Math.min(...prices),max=Math.max(...prices),range=max-min||1; const points=prices.map((p,i)=>{ const x=(i/(prices.length-1))*(width-2*padding)+padding; const y=height-padding-((p-min)/range)*(height-2*padding); return `${x},${y}`; }).join(' '); const color=isPositive?'#34d399':'#f87171'; const gid='gradient-'+Math.random().toString(36).substr(2,9); return `<defs><linearGradient id="${gid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${color};stop-opacity:0.8" /><stop offset="100%" style="stop-color:${color};stop-opacity:0.1" /></linearGradient></defs><polyline fill="none" stroke="${color}" stroke-width="1.5" points="${points}" /><polygon fill="url(#${gid})" points="${points} ${width-padding},${height-padding} ${padding},${height-padding}" />`; }
-        async function updateStock(symbol){ setSyncStatus('stocks','syncing'); const block=document.querySelector(`[data-symbol="${symbol}"]`); if(!block) return; const key=`stock-${symbol}`; const c=getCachedData(key); if(c){ displayStockData(block,c,symbol); setSyncStatus('stocks','success'); return;} try{ const now=Math.floor(Date.now()/1000); const weekAgo=now-(7*24*60*60); const priceUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${weekAgo}&period2=${now}&interval=1d`; const quoteUrl=`https://query1.finance.yahoo.com/v1/finance/quoteEndpoint?symbols=${symbol}`; for(const p of proxies){ try{ const pr=await fetch(p+encodeURIComponent(priceUrl)); const pj=await pr.json(); const priceRes=p.includes('allorigins')?JSON.parse(pj.contents):pj; if(priceRes.chart&&priceRes.chart.result&&priceRes.chart.result[0]){ let desc='טוען...'; try{ const qr=await fetch(p+encodeURIComponent(quoteUrl)); const qj=await qr.json(); const qres=p.includes('allorigins')?JSON.parse(qj.contents):qj; if(qres.quoteResponse&&qres.quoteResponse.result&&qres.quoteResponse.result[0]){ const info=qres.quoteResponse.result[0]; desc=getHebrewDescription(symbol,info.shortName||info.longName||info.displayName); } }catch(e){ desc=getHebrewDescription(symbol); }
-                        const combined={...priceRes,description:desc}; setCachedData(key,combined); displayStockData(block,combined,symbol); setSyncStatus('stocks','success'); break; } }catch(e){ continue; } } }catch(e){ console.error(`Stock ${symbol} update failed:`,e); setSyncStatus('stocks','error'); } }
+        async function updateStock(symbol){ const block=document.querySelector(`[data-symbol="${symbol}"]`); if(!block) return; const key=`stock-${symbol}`; const c=getCachedData(key); if(c){ displayStockData(block,c,symbol); return;}
+            // Try Yahoo Finance v8 chart API via multiple proxies
+            try{ const now=Math.floor(Date.now()/1000); const weekAgo=now-(7*24*60*60); const priceUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${weekAgo}&period2=${now}&interval=1d`;
+                for(const p of proxies){ try{ const pr=await fetch(p+encodeURIComponent(priceUrl)); const pj=await pr.json(); const priceRes=p.includes('allorigins')?JSON.parse(pj.contents):pj; if(priceRes.chart?.result?.[0]){ const desc=getHebrewDescription(symbol); const combined={...priceRes,description:desc}; setCachedData(key,combined); displayStockData(block,combined,symbol); return; } }catch(e){ continue; } }
+            }catch(e){}
+            // Fallback: try Yahoo v6 quote API
+            try{ const quoteUrl=`https://query1.finance.yahoo.com/v6/finance/quote?symbols=${symbol}`;
+                for(const p of proxies){ try{ const qr=await fetch(p+encodeURIComponent(quoteUrl)); const qj=await qr.json(); const qres=p.includes('allorigins')?JSON.parse(qj.contents):qj; const q=qres.quoteResponse?.result?.[0]; if(q&&q.regularMarketPrice){ const fallbackData={chart:{result:[{meta:{regularMarketPrice:q.regularMarketPrice,previousClose:q.regularMarketPreviousClose||q.regularMarketPrice},indicators:{quote:[{close:[q.regularMarketPrice]}]}}]},description:getHebrewDescription(symbol,q.shortName)}; setCachedData(key,fallbackData); displayStockData(block,fallbackData,symbol); return; } }catch(e){ continue; } }
+            }catch(e){}
+            // Fallback: try alternative free API
+            try{ const altUrl=`https://api.allorigins.win/get?url=${encodeURIComponent(`https://finance.yahoo.com/quote/${symbol}/`)}`;
+                const r=await fetch(altUrl); const d=await r.json();
+                if(d.contents){ const priceMatch=d.contents.match(/"regularMarketPrice":\{"raw":([\d.]+)/); const prevMatch=d.contents.match(/"regularMarketPreviousClose":\{"raw":([\d.]+)/);
+                    if(priceMatch){ const price=parseFloat(priceMatch[1]); const prev=prevMatch?parseFloat(prevMatch[1]):price; const fallbackData={chart:{result:[{meta:{regularMarketPrice:price,previousClose:prev},indicators:{quote:[{close:[prev,price]}]}}]},description:getHebrewDescription(symbol)}; setCachedData(key,fallbackData); displayStockData(block,fallbackData,symbol); return; } }
+            }catch(e){}
+            // All failed — show last known or error
+            const descEl=block.querySelector('.stock-description'); if(descEl) descEl.textContent=getHebrewDescription(symbol);
+            block.querySelector('.stock-price').textContent='N/A';
+            block.querySelector('.stock-change').textContent='--';
+            block.querySelector('.last-update').textContent='שגיאה';
+        }
+        async function updateAllStocks(){ setSyncStatus('stocks','syncing'); const symbols=['INTC','^GSPC','BTC-USD','NVDA','^VIX','PLTR']; let anySuccess=false; for(let i=0;i<symbols.length;i++){ await new Promise(r=>setTimeout(r,i*300)); try{ await updateStock(symbols[i]); const key=`stock-${symbols[i]}`; if(getCachedData(key)) anySuccess=true; }catch(e){} } setSyncStatus('stocks',anySuccess?'success':'error'); }
         function getHebrewDescription(symbol,englishName=''){ const d={INTC:'אינטל - מעבדים','^GSPC':'מדד S&P 500','BTC-USD':'ביטקוין',NVDA:'נבידיה - AI','^VIX':'מדד הפחד',PLTR:'פלנטיר - דאטה'}; return d[symbol]||(englishName?englishName.substring(0,15):'מניה'); }
         function displayStockData(block,result,symbol){ const stockData=result.chart.result[0]; const meta=stockData.meta; const prices=stockData.indicators.quote[0].close.filter(p=>p!==null); const current=meta.regularMarketPrice; const prev=meta.previousClose; const change=((current-prev)/prev)*100; const isPos=change>=0; const descEl=block.querySelector('.stock-description'); if(descEl&&result.description) descEl.textContent=result.description; block.querySelector('.stock-price').textContent=formatPrice(current,symbol); const chEl=block.querySelector('.stock-change'); chEl.textContent=`${isPos?'+':''}${change.toFixed(2)}%`; chEl.className=`stock-change ${isPos?'positive':'negative'}`; block.querySelector('.trend-chart').innerHTML=generateTrendChart(prices,isPos); block.querySelector('.last-update').textContent=new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jerusalem'}); }
         function initDashboard(){
             updateClock();
-            updateDailyFact();
+            updateMotivation();
             updateRSSFeed();
             Promise.all([updateHebrewDate(), updateWeather()]);
-            const symbols=['INTC','^GSPC','BTC-USD','NVDA','^VIX','PLTR'];
-            symbols.forEach((s,i)=>setTimeout(()=>updateStock(s), i*200));
+            updateAllStocks();
             setSyncStatus('calendar','success');
             updateRefreshTime();
         }
         setInterval(updateClock,1000);
         setInterval(updateHebrewDate,3600000);
-        setInterval(()=>{ const symbols=['INTC','^GSPC','BTC-USD','NVDA','^VIX','PLTR']; symbols.forEach((s,i)=>setTimeout(()=>updateStock(s),i*100)); updateRefreshTime(); },3600000);
+        setInterval(()=>{ updateAllStocks(); updateRefreshTime(); },3600000);
         setInterval(()=>{ updateWeather(); updateRefreshTime(); },600000);
-        setInterval(updateDailyFact,3600000);
-        setInterval(()=>{ updateRSSFeed(); updateRefreshTime(); },900000);
+        setInterval(updateMotivation,1800000); // 30 minutes
+        setInterval(()=>{ updateRSSFeed(); updateRefreshTime(); },60000); // 1 minute
         document.addEventListener('DOMContentLoaded',initDashboard);
         if('performance' in window){ window.addEventListener('load',()=>{ setTimeout(()=>{ const p=performance.getEntriesByType('navigation')[0]; if(p) console.log(`Dashboard loaded in ${p.loadEventEnd - p.fetchStart}ms`); },0); }); }
     </script>
