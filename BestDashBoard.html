@@ -72,7 +72,7 @@
         .ticker-track { flex: 1; overflow: hidden; position: relative; height: 100%; }
         .ticker-content {
             display: flex; align-items: center; height: 100%; white-space: nowrap;
-            animation: tickerScroll 30s linear infinite;
+            animation: tickerScroll 30s linear infinite; will-change: transform;
         }
         .ticker-content:hover { animation-play-state: paused; }
         .ticker-item {
@@ -159,7 +159,7 @@
 
         /* ── News ── */
         .news-body { flex: 1; overflow: hidden; position: relative; }
-        .rss-scroll { display: flex; flex-direction: column; animation: newsScroll 60s linear infinite; }
+        .rss-scroll { display: flex; flex-direction: column; animation: newsScroll 60s linear infinite; will-change: transform; }
         .rss-scroll:hover { animation-play-state: paused; }
         .rss-item {
             background: var(--bg-card-inner); padding: 9px 11px; margin: 4px 8px;
@@ -240,7 +240,9 @@
         .cur-info { flex: 1; }
         .cur-pair { font-size: 0.72em; color: var(--text-muted); font-weight: 600; }
         .cur-rate { font-size: 1.3em; font-weight: 800; color: var(--text-primary); }
-        .cur-chg { font-size: 0.75em; font-weight: 600; }
+        .cur-chg { font-size: 0.75em; font-weight: 600; transition: color 0.3s; }
+        .cur-chg.positive { color: var(--positive); }
+        .cur-chg.negative { color: var(--negative); }
         .cur-chart { width: 100%; height: 26px; flex-shrink: 0; }
 
         /* ── Red Alerts (צבע אדום) ── */
@@ -516,7 +518,7 @@
             </div>
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.2 — משפחת רגואן</span>
+            <span>Dashboard v4.3 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -527,7 +529,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.2 — Per-Pane Refresh + Persistent Cache + Red Alerts
+       FAMILY DASHBOARD v4.3 — Performance Refactor + Smart Cache + Fetch Guards
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -573,7 +575,22 @@
     // ── Persistent Cache (localStorage + in-memory) ──
     // Data survives page loads — each pane refreshes independently, network failures show stale data
     const _mem = new Map();
-    const LS_PREFIX = 'dash_';
+    const LS_PREFIX = 'dash_v2_';
+    const LS_MAX_AGE = 7 * 86400000; // Evict entries older than 7 days
+
+    /** Evict old localStorage entries on startup */
+    function cEvict() {
+        try {
+            const now = Date.now();
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const k = localStorage.key(i);
+                if (!k?.startsWith('dash_')) continue;
+                // Remove old v1 entries (no version prefix)
+                if (k.startsWith('dash_') && !k.startsWith(LS_PREFIX)) { localStorage.removeItem(k); continue; }
+                try { const p = JSON.parse(localStorage.getItem(k)); if (now - p.ts > LS_MAX_AGE) localStorage.removeItem(k); } catch (_) { localStorage.removeItem(k); }
+            }
+        } catch (_) {}
+    }
 
     /** Get cached data if fresh (within TTL) */
     function cGet(key, ttl) {
@@ -604,6 +621,15 @@
         _mem.set(key, entry);
         try { localStorage.setItem(LS_PREFIX + key, JSON.stringify(entry)); } catch (_) {}
     }
+
+    // ── Fetch Lock (prevent duplicate concurrent requests per pane) ──
+    const _fetchLocks = new Set();
+    function acquireLock(name) { if (_fetchLocks.has(name)) return false; _fetchLocks.add(name); return true; }
+    function releaseLock(name) { _fetchLocks.delete(name); }
+
+    // ── Page Visibility (pause fetches when tab is hidden) ──
+    let _pageVisible = true;
+    document.addEventListener('visibilitychange', () => { _pageVisible = !document.hidden; });
 
     // ── DOM Refs ──
     const $ = id => document.getElementById(id);
@@ -748,15 +774,17 @@
 
     // ── Weather (with hourly graph, real humidity, UV) ──
     async function loadWeather() {
+        if (!_pageVisible || !acquireLock('wx')) return;
         setSync('wx', 'syncing');
         const key = 'wx';
         const fresh = cGet(key, 900000); // 15min TTL
-        if (fresh) { renderWeather(fresh); setSync('wx', 'success'); return; }
+        if (fresh) { renderWeather(fresh); setSync('wx', 'success'); releaseLock('wx'); return; }
         const stale = cGetStale(key); if (stale) renderWeather(stale);
         try {
             const d = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5').then(r => r.json());
             if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); }
         } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); }
+        releaseLock('wx');
     }
     function renderWeather(d) {
         const cw = d.current_weather;
@@ -859,10 +887,11 @@
 
     // ── News (2-min refresh, aggregates all sources, sorted newest first) ──
     async function loadNews() {
+        if (!_pageVisible || !acquireLock('news')) return;
         setSync('news', 'syncing');
         const key = 'news';
         const fresh = cGet(key, 120000); // 2min TTL
-        if (fresh) { renderNews(fresh); renderTicker(fresh); setSync('news', 'success'); return; }
+        if (fresh) { renderNews(fresh); renderTicker(fresh); setSync('news', 'success'); releaseLock('news'); return; }
         const stale = cGetStale(key); if (stale) { renderNews(stale); renderTicker(stale); }
         const allItems = [];
         const results = await Promise.allSettled(NEWS_FEEDS.map(f => fetchFeed(f)));
@@ -875,6 +904,7 @@
             cSet(key, top);
             renderNews(top); renderTicker(top); setSync('news', 'success');
         } else { setSync('news', stale ? 'success' : 'error'); }
+        releaseLock('news');
     }
     function renderNews(items) {
         el.rssScroll.innerHTML = '';
@@ -929,12 +959,17 @@
         return (d >= 1 && d <= 5 && t >= 570 && t <= 960) ? 300000 : 1800000; // 5min : 30min
     }
     async function loadAllStocks() {
+        if (!_pageVisible || !acquireLock('stocks')) return;
         setSync('stocks', 'syncing'); let ok = false;
-        for (let i = 0; i < STOCK_SYMBOLS.length; i++) {
-            await new Promise(r => setTimeout(r, i * 350));
-            if (await loadStock(STOCK_SYMBOLS[i])) ok = true;
+        // Load in parallel batches of 2 to reduce API rate limit risk
+        for (let i = 0; i < STOCK_SYMBOLS.length; i += 2) {
+            const batch = STOCK_SYMBOLS.slice(i, i + 2);
+            const results = await Promise.allSettled(batch.map(s => loadStock(s)));
+            if (results.some(r => r.status === 'fulfilled' && r.value)) ok = true;
+            if (i + 2 < STOCK_SYMBOLS.length) await new Promise(r => setTimeout(r, 200));
         }
         setSync('stocks', ok ? 'success' : 'error');
+        releaseLock('stocks');
     }
     async function loadStock(sym) {
         const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
@@ -979,6 +1014,7 @@
         blk.querySelector('.stk-time').textContent = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
     }
     function fmtPrice(p, s) { const n = parseFloat(p); if (s === 'BTC-USD') return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }); return n >= 1000 ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n >= 100 ? '$' + n.toFixed(1) : '$' + n.toFixed(2); }
+    let _svgIdCounter = 0;
     function bezierChart(prices, pos) {
         if (!prices || prices.length < 2) return '';
         const W = 200, H = 28, P = 2; const min = Math.min(...prices), max = Math.max(...prices), rng = max - min || 1;
@@ -990,16 +1026,18 @@
         }
         const area = path + ` L${pts[pts.length - 1].x},${H - P} L${pts[0].x},${H - P} Z`;
         const col = pos ? '#34d399' : '#f87171';
-        const gid = 'sg' + Math.random().toString(36).substr(2, 6);
-        return `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity="0.5"/><stop offset="100%" stop-color="${col}" stop-opacity="0.03"/></linearGradient></defs><path d="${area}" fill="url(#${gid})"/><path d="${path}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round"/>`;
+        const gid = 'sg' + (++_svgIdCounter);
+        const last = pts[pts.length - 1];
+        return `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity="0.5"/><stop offset="100%" stop-color="${col}" stop-opacity="0.03"/></linearGradient></defs><path d="${area}" fill="url(#${gid})"/><path d="${path}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round"/><circle cx="${last.x}" cy="${last.y}" r="2.5" fill="${col}" opacity="0.9"/><circle cx="${last.x}" cy="${last.y}" r="4" fill="${col}" opacity="0.2"/>`;
     }
 
     // ── Currency Rates (USD/ILS, EUR/ILS, GBP/ILS) ──
     async function loadCurrency() {
+        if (!_pageVisible || !acquireLock('cur')) return;
         setSync('cur', 'syncing');
         const key = 'cur';
         const fresh = cGet(key, 1800000); // 30min TTL
-        if (fresh) { renderCurrency(fresh); setSync('cur', 'success'); return; }
+        if (fresh) { renderCurrency(fresh); setSync('cur', 'success'); releaseLock('cur'); return; }
         const stale = cGetStale(key); if (stale) renderCurrency(stale);
         try {
             const d = await fetchJSON('https://open.er-api.com/v6/latest/ILS');
@@ -1009,15 +1047,32 @@
                 if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); }
             } catch (_) { setSync('cur', stale ? 'success' : 'error'); }
         }
+        releaseLock('cur');
     }
+    let _prevRates = null;
     function renderCurrency(rates) {
         // rates are ILS-based, so 1 ILS = X USD → we want 1 USD = 1/X ILS
-        const usd = rates.USD ? (1 / rates.USD).toFixed(3) : '--';
-        const eur = rates.EUR ? (1 / rates.EUR).toFixed(3) : '--';
-        const gbp = rates.GBP ? (1 / rates.GBP).toFixed(3) : '--';
-        el.curUsd.textContent = '₪' + usd; el.curUsd.classList.remove('skeleton');
-        el.curEur.textContent = '₪' + eur; el.curEur.classList.remove('skeleton');
-        el.curGbp.textContent = '₪' + gbp; el.curGbp.classList.remove('skeleton');
+        const pairs = [
+            { code: 'USD', el: el.curUsd },
+            { code: 'EUR', el: el.curEur },
+            { code: 'GBP', el: el.curGbp },
+        ];
+        for (const p of pairs) {
+            const val = rates[p.code] ? (1 / rates[p.code]) : null;
+            p.el.textContent = val ? '₪' + val.toFixed(3) : '--';
+            p.el.classList.remove('skeleton');
+            // Show change arrow vs previous fetch
+            const chgEl = p.el.parentElement?.querySelector('.cur-chg');
+            if (chgEl && _prevRates?.[p.code] && val) {
+                const prevVal = 1 / _prevRates[p.code];
+                const diff = val - prevVal;
+                if (Math.abs(diff) > 0.0005) {
+                    chgEl.textContent = (diff > 0 ? '▲' : '▼') + ' ' + Math.abs(diff).toFixed(3);
+                    chgEl.className = 'cur-chg ' + (diff > 0 ? 'positive' : 'negative');
+                } else { chgEl.textContent = '—'; chgEl.className = 'cur-chg'; }
+            }
+        }
+        _prevRates = { ...rates };
     }
 
     // ── Red Alerts — צבע אדום (dynamic adaptive polling via api.tzevaadom.co.il) ──
@@ -1029,6 +1084,7 @@
     const ALERT_INTERVAL_IDLE   = 60000;  // 60s when no recent alerts
 
     async function loadAlerts() {
+        if (!_pageVisible) { scheduleAlerts(); return; }
         setSync('alerts', 'syncing');
         const key = 'alerts';
         // No cache TTL gating — always fetch to detect new alerts quickly
@@ -1131,6 +1187,7 @@
 
     // ── Motivation (30-min rotation, online + offline, crossfade) ──
     async function loadMotivation() {
+        if (!_pageVisible) return;
         setSync('moti', 'syncing');
         const card = el.motiText?.closest('.moti-card');
         // Fade out
@@ -1198,6 +1255,7 @@
     }
 
     function init() {
+        cEvict();
         initScreenMode();
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
