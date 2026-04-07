@@ -159,6 +159,8 @@
         .cal-wrapper iframe { width: 250%; height: 250%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); transform: scale(0.4); transform-origin: top right; }
 
         /* ── Stocks ── */
+        .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+        .col-split > .card { flex: 1 1 0; min-height: 0; }
         .stocks-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 4px; min-height: 0; }
         .stk {
             background: var(--bg-card-inner); padding: 5px 6px; border-radius: 6px;
@@ -206,6 +208,23 @@
         .cur-chg { font-size: 0.75em; font-weight: 600; }
         .cur-chart { width: 100%; height: 26px; flex-shrink: 0; }
 
+        /* ── Red Alerts (צבע אדום) ── */
+        .alerts-body { flex: 1; overflow: hidden; position: relative; padding: 4px; }
+        .alerts-scroll { display: flex; flex-direction: column; gap: 3px; overflow-y: auto; max-height: 100%; }
+        .alert-item {
+            background: var(--bg-card-inner); padding: 6px 8px; border-radius: 6px;
+            border-right: 3px solid var(--negative); font-size: 0.72em;
+            display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;
+        }
+        .alert-item.active { border-right-color: var(--negative); background: rgba(248, 113, 113, 0.08); animation: alertPulse 2s ease-in-out infinite; }
+        .alert-item.past { border-right-color: var(--text-muted); opacity: 0.75; }
+        @keyframes alertPulse { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 8px var(--negative-glow); } }
+        .alert-cities { font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+        .alert-meta { display: flex; justify-content: space-between; align-items: center; }
+        .alert-time { font-size: 0.85em; color: var(--text-muted); }
+        .alert-threat { font-size: 0.85em; font-weight: 600; }
+        .alert-count { font-size: 0.85em; color: var(--negative); font-weight: 700; text-align: center; padding: 4px; }
+
         /* ── Motivation ── */
         .moti-body { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; }
         .moti-card {
@@ -251,7 +270,7 @@
         @media (max-width: 1200px) {
             body { font-size: 17px; }
             .main-grid { grid-template-columns: 1fr 1fr; }
-            .main-grid .card:nth-child(3) { grid-column: span 2; }
+            .main-grid > :nth-child(3) { grid-column: span 2; }
             .bottom-grid { grid-template-columns: 1fr 1fr; }
             .bottom-grid .card:nth-child(3) { grid-column: span 2; }
             .clock { font-size: 2.8em; }
@@ -261,7 +280,7 @@
         @media (max-width: 768px) {
             body { font-size: 14px; }
             .main-grid, .bottom-grid { grid-template-columns: 1fr; }
-            .main-grid .card:nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
+            .main-grid > :nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
             .stocks-body { grid-template-columns: repeat(3, 1fr); }
             .wx-details { grid-template-columns: repeat(2, 1fr); }
             .clock { font-size: 2.4em; }
@@ -337,15 +356,25 @@
                     <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-stocks"></div>📈 מניות <span class="market-badge" id="market-badge"></span></div>
-                <div class="stocks-body" id="stocks-body">
-                    <div class="stk" data-symbol="INTC"><div class="stk-sym"><span>INTC</span><span class="stk-desc">אינטל</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                    <div class="stk" data-symbol="^GSPC"><div class="stk-sym"><span>S&P 500</span><span class="stk-desc">מדד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                    <div class="stk" data-symbol="BTC-USD"><div class="stk-sym"><span>BTC</span><span class="stk-desc">ביטקוין</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                    <div class="stk" data-symbol="NVDA"><div class="stk-sym"><span>NVDA</span><span class="stk-desc">נבידיה</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                    <div class="stk" data-symbol="^VIX"><div class="stk-sym"><span>VIX</span><span class="stk-desc">פחד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                    <div class="stk" data-symbol="PLTR"><div class="stk-sym"><span>PLTR</span><span class="stk-desc">פלנטיר</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+            <div class="col-split">
+                <div class="card">
+                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div>📈 מניות <span class="market-badge" id="market-badge"></span></div>
+                    <div class="stocks-body" id="stocks-body">
+                        <div class="stk" data-symbol="INTC"><div class="stk-sym"><span>INTC</span><span class="stk-desc">אינטל</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="^GSPC"><div class="stk-sym"><span>S&P 500</span><span class="stk-desc">מדד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="BTC-USD"><div class="stk-sym"><span>BTC</span><span class="stk-desc">ביטקוין</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="NVDA"><div class="stk-sym"><span>NVDA</span><span class="stk-desc">נבידיה</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="^VIX"><div class="stk-sym"><span>VIX</span><span class="stk-desc">פחד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="PLTR"><div class="stk-sym"><span>PLTR</span><span class="stk-desc">פלנטיר</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div>🚨 צבע אדום</div>
+                    <div class="alerts-body">
+                        <div class="alerts-scroll" id="alerts-scroll">
+                            <div class="alert-count">טוען התרעות...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -397,7 +426,7 @@
             </div>
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.1 — משפחת רגואן</span>
+            <span>Dashboard v4.2 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -408,7 +437,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.1 — Per-Pane Refresh + Persistent Cache
+       FAMILY DASHBOARD v4.2 — Per-Pane Refresh + Persistent Cache + Red Alerts
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -498,11 +527,12 @@
         curUsd: $('cur-usd'), curEur: $('cur-eur'), curGbp: $('cur-gbp'),
         curUsdChg: $('cur-usd-chg'), curEurChg: $('cur-eur-chg'), curGbpChg: $('cur-gbp-chg'),
         motiText: $('moti-text'), motiAuthor: $('moti-author'), motiSrc: $('moti-src'),
+        alertsScroll: $('alerts-scroll'),
         refresh: $('last-refresh'), holiday: $('holiday-info'), marketBadge: $('market-badge'),
         dayProgress: $('day-progress'), yearProgress: $('year-progress'),
         dayPct: $('day-pct'), yearPct: $('year-pct'),
     };
-    const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti') };
+    const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
 
     // ── Fetch Helpers ──
@@ -893,6 +923,87 @@
         el.curGbp.textContent = '₪' + gbp; el.curGbp.classList.remove('skeleton');
     }
 
+    // ── Red Alerts — צבע אדום (30s refresh, via api.tzevaadom.co.il) ──
+    const THREAT_LABELS = { 0: '🚀 ירי רקטות', 1: '🚀 ירי רקטות', 5: '✈️ כלי טיס עוין' };
+    async function loadAlerts() {
+        setSync('alerts', 'syncing');
+        const key = 'alerts';
+        const fresh = cGet(key, 30000); // 30s TTL — critical data
+        if (fresh) { renderAlerts(fresh); setSync('alerts', 'success'); return; }
+        const stale = cGetStale(key); if (stale) renderAlerts(stale);
+        try {
+            const url = 'https://api.tzevaadom.co.il/alerts-history';
+            let data;
+            try { const r = await fetch(url); if (r.ok) data = await r.json(); } catch (_) {}
+            if (!data) {
+                for (const p of PROXIES) {
+                    try {
+                        const r = await fetch(p + encodeURIComponent(url));
+                        if (!r.ok) continue;
+                        data = p.includes('allorigins') ? JSON.parse((await r.json()).contents) : JSON.parse(await r.text());
+                        break;
+                    } catch (_) { continue; }
+                }
+            }
+            if (Array.isArray(data) && data.length) {
+                cSet(key, data);
+                renderAlerts(data);
+                setSync('alerts', 'success');
+            } else { setSync('alerts', stale ? 'success' : 'error'); }
+        } catch (e) { console.error('Alerts:', e); setSync('alerts', stale ? 'success' : 'error'); }
+    }
+    function renderAlerts(data) {
+        if (!el.alertsScroll || !Array.isArray(data)) return;
+        el.alertsScroll.innerHTML = '';
+        // Count total alerts in last 24h
+        const now = Date.now() / 1000;
+        let total24h = 0;
+        const recentEvents = data.slice(0, 15); // Show last 15 events
+        for (const ev of data) {
+            for (const a of ev.alerts) { if (now - a.time < 86400) total24h++; }
+        }
+        // Counter header
+        const counter = document.createElement('div');
+        counter.className = 'alert-count';
+        counter.textContent = `🚨 ${total24h} התרעות ב-24 שעות האחרונות`;
+        el.alertsScroll.appendChild(counter);
+        // Render recent events
+        for (const ev of recentEvents) {
+            if (!ev.alerts?.length) continue;
+            const firstAlert = ev.alerts[0];
+            const allCities = ev.alerts.flatMap(a => a.cities);
+            const threat = ev.alerts.reduce((mx, a) => Math.max(mx, a.threat ?? 0), 0);
+            const ageMin = Math.floor((now - firstAlert.time) / 60);
+            const isRecent = ageMin < 10;
+            const div = document.createElement('div');
+            div.className = 'alert-item' + (isRecent ? ' active' : ' past');
+            const cities = document.createElement('div');
+            cities.className = 'alert-cities';
+            const unique = [...new Set(allCities)];
+            cities.textContent = unique.length > 5 ? unique.slice(0, 5).join(', ') + ` (+${unique.length - 5})` : unique.join(', ');
+            div.appendChild(cities);
+            const meta = document.createElement('div');
+            meta.className = 'alert-meta';
+            const time = document.createElement('span');
+            time.className = 'alert-time';
+            const d = new Date(firstAlert.time * 1000);
+            time.textContent = relTime(d.toISOString()) + ' | ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+            meta.appendChild(time);
+            const thr = document.createElement('span');
+            thr.className = 'alert-threat';
+            thr.textContent = THREAT_LABELS[threat] || '⚠️ התרעה';
+            meta.appendChild(thr);
+            div.appendChild(meta);
+            el.alertsScroll.appendChild(div);
+        }
+        if (!recentEvents.length) {
+            const empty = document.createElement('div');
+            empty.className = 'alert-count';
+            empty.textContent = '✅ אין התרעות אחרונות';
+            el.alertsScroll.appendChild(empty);
+        }
+    }
+
     // ── Motivation (30-min rotation, online + offline, crossfade) ──
     async function loadMotivation() {
         setSync('moti', 'syncing');
@@ -927,6 +1038,7 @@
     //  ┌──────────────┬──────────┬─────────────────────────────────────┐
     //  │ Pane         │ Interval │ Reasoning                           │
     //  ├──────────────┼──────────┼─────────────────────────────────────┤
+    //  │ Alerts       │ 30s      │ Life-safety, must be near real-time  │
     //  │ Clock        │ 1s       │ Must be real-time                   │
     //  │ Market badge │ 1min     │ Local time check, cheap             │
     //  │ News+Ticker  │ 2min     │ Time-sensitive but chill on APIs    │
@@ -946,13 +1058,16 @@
     function init() {
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
-        loadNews(); loadAllStocks(); loadCurrency(); loadMotivation();
+        loadNews(); loadAllStocks(); loadCurrency(); loadAlerts(); loadMotivation();
         setSync('cal', 'success');
         stampRefresh();
     }
 
     // Real-time (1s)
     setInterval(tickClock, 1000);
+
+    // Critical (30s)
+    setInterval(loadAlerts, 30000);
 
     // Fast (1-2min)
     setInterval(updateMarketBadge, 60000);
