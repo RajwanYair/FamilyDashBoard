@@ -1,0 +1,79 @@
+{
+    // ── Editor ──
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.linkedEditing": true,
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "on",
+    "editor.suggestSelection": "first",
+    "editor.inlineSuggest.enabled": true,
+
+    // ── Files ──
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "files.associations": {
+        "*.html": "html"
+    },
+
+    // ── HTML ──
+    "html.format.wrapLineLength": 120,
+    "html.format.indentInnerHtml": true,
+    "html.autoClosingTags": true,
+
+    // ── Emmet ──
+    "emmet.includeLanguages": {
+        "html": "html"
+    },
+
+    // ── Live Server ──
+    "liveServer.settings.donotShowInfoMsg": true,
+    "liveServer.settings.port": 5501,
+    "liveServer.settings.root": "/",
+
+    // ── Git ──
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+
+    // ── GitHub Copilot ──
+    "github.copilot.enable": {
+        "*": true,
+        "html": true,
+        "javascript": true,
+        "css": true,
+        "markdown": true,
+        "yaml": true,
+        "json": true
+    },
+    "chat.agent.enabled": true,
+    "chat.instructionFilesLocations": {
+        ".github/instructions": true,
+        ".github/copilot-instructions.md": true
+    },
+    "chat.promptFilesLocations": {
+        ".github/prompts": true
+    },
+
+    // ── Spell Check ──
+    "cSpell.words": [
+        "rajwan",
+        "glassmorphism",
+        "hebcal",
+        "meteo",
+        "rotter",
+        "giphy",
+        "INTC",
+        "NVDA",
+        "PLTR",
+        "familydashboard"
+    ],
+
+    // ── Search ──
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/.git": true
+    }
+}

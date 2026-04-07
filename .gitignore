@@ -3,8 +3,7 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
-# IDE
-.vscode/
+# IDE (keep .vscode/ tracked for workspace config)
 *.swp
 *.swo
 *~
