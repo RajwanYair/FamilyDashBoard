@@ -201,7 +201,7 @@
         .stk-chg { font-size: 0.88em; font-weight: 600; }
         .stk-chart { width: 100%; height: 22px; margin: 1px 0; }
         .stk-time { font-size: 0.55em; color: var(--text-muted); }
-        .positive { color: var(--positive); } .negative { color: var(--negative); }
+        .positive { color: var(--positive); } .negative { color: var(--negative); } .neutral { color: var(--cyan); }
 
         /* ── Weather ── */
         .weather-body { flex: 1; display: flex; flex-direction: column; padding: 10px; min-height: 0; overflow: hidden; }
@@ -1003,19 +1003,28 @@
         const prev = meta.previousClose || meta.chartPreviousClose || cur;
         let chg = 0;
         if (prev && cur && isFinite(prev) && prev !== 0) chg = ((cur - prev) / prev) * 100;
-        const pos = chg >= 0;
+        // 3-state trend: green (up), red (down), cyan (flat ±0.1%)
+        const absChg = Math.abs(chg);
+        const trend = (!isFinite(chg) || absChg < 0.1) ? 'neutral' : (chg > 0 ? 'positive' : 'negative');
+        const trendColor = trend === 'positive' ? '#34d399' : trend === 'negative' ? '#f87171' : '#22d3ee';
         blk.querySelector('.stk-desc').textContent = STOCK_NAMES[sym] || 'מניה';
         const prEl = blk.querySelector('.stk-price'); prEl.textContent = cur ? fmtPrice(cur, sym) : 'N/A'; prEl.classList.remove('skeleton');
         const chEl = blk.querySelector('.stk-chg');
-        if (isFinite(chg) && chg !== 0) { chEl.textContent = `${pos ? '▲' : '▼'} ${pos ? '+' : ''}${chg.toFixed(2)}%`; chEl.className = `stk-chg ${pos ? 'positive' : 'negative'}`; }
-        else { chEl.textContent = '—'; chEl.className = 'stk-chg'; }
-        if (prices.length >= 2) { blk.querySelector('.stk-chart').innerHTML = bezierChart(prices, pos); }
-        else if (prices.length === 1 && cur) { blk.querySelector('.stk-chart').innerHTML = bezierChart([prices[0], prices[0] * 0.999, prices[0] * 1.001, cur], pos); }
+        if (isFinite(chg) && absChg >= 0.1) {
+            const arrow = chg > 0 ? '▲' : '▼';
+            chEl.textContent = `${arrow} ${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`;
+            chEl.className = `stk-chg ${trend}`;
+        } else if (isFinite(chg)) {
+            chEl.textContent = `● ${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`;
+            chEl.className = 'stk-chg neutral';
+        } else { chEl.textContent = '—'; chEl.className = 'stk-chg'; }
+        if (prices.length >= 2) { blk.querySelector('.stk-chart').innerHTML = bezierChart(prices, trendColor); }
+        else if (prices.length === 1 && cur) { blk.querySelector('.stk-chart').innerHTML = bezierChart([prices[0], prices[0] * 0.999, prices[0] * 1.001, cur], trendColor); }
         blk.querySelector('.stk-time').textContent = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
     }
     function fmtPrice(p, s) { const n = parseFloat(p); if (s === 'BTC-USD') return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }); return n >= 1000 ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n >= 100 ? '$' + n.toFixed(1) : '$' + n.toFixed(2); }
     let _svgIdCounter = 0;
-    function bezierChart(prices, pos) {
+    function bezierChart(prices, col) {
         if (!prices || prices.length < 2) return '';
         const W = 200, H = 28, P = 2; const min = Math.min(...prices), max = Math.max(...prices), rng = max - min || 1;
         const pts = prices.map((p, i) => ({ x: P + (i / (prices.length - 1)) * (W - 2 * P), y: P + (1 - (p - min) / rng) * (H - 2 * P) }));
@@ -1025,7 +1034,6 @@
             path += ` C${pts[i - 1].x + cp},${pts[i - 1].y} ${pts[i].x - cp},${pts[i].y} ${pts[i].x},${pts[i].y}`;
         }
         const area = path + ` L${pts[pts.length - 1].x},${H - P} L${pts[0].x},${H - P} Z`;
-        const col = pos ? '#34d399' : '#f87171';
         const gid = 'sg' + (++_svgIdCounter);
         const last = pts[pts.length - 1];
         return `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity="0.5"/><stop offset="100%" stop-color="${col}" stop-opacity="0.03"/></linearGradient></defs><path d="${area}" fill="url(#${gid})"/><path d="${path}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round"/><circle cx="${last.x}" cy="${last.y}" r="2.5" fill="${col}" opacity="0.9"/><circle cx="${last.x}" cy="${last.y}" r="4" fill="${col}" opacity="0.2"/>`;
