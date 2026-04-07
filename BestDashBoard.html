@@ -72,7 +72,7 @@
         .ticker-track { flex: 1; overflow: hidden; position: relative; height: 100%; }
         .ticker-content {
             display: flex; align-items: center; height: 100%; white-space: nowrap;
-            animation: tickerScroll 45s linear infinite;
+            animation: tickerScroll 30s linear infinite;
         }
         .ticker-content:hover { animation-play-state: paused; }
         .ticker-item {
@@ -306,6 +306,47 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
+        /* ── Screen Mode Selector ── */
+        .screen-mode {
+            position: fixed; top: 8px; left: 8px; z-index: 100;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .screen-mode select {
+            background: var(--bg-card-header); color: var(--accent); border: 1px solid var(--accent-border);
+            border-radius: 8px; padding: 4px 8px; font-size: 12px; font-family: inherit;
+            cursor: pointer; outline: none; direction: rtl; appearance: auto;
+            backdrop-filter: blur(12px);
+        }
+        .screen-mode select:hover { border-color: var(--accent); }
+        .screen-mode-label { font-size: 11px; color: var(--text-muted); }
+
+        /* ── Screen Mode Overrides ── */
+        body.mode-tv { font-size: 21px; }
+        body.mode-tablet { font-size: 15px; }
+        body.mode-tablet .clock { font-size: 2.6em; }
+        body.mode-tablet .hebrew-date { font-size: 1.05em; }
+        body.mode-tablet .top-temp { font-size: 1.2em; }
+        body.mode-tablet .header-gif { height: 40px; }
+        body.mode-tablet .card-header { font-size: 1em; padding: 8px 10px; }
+        body.mode-tablet .stk-price { font-size: 1.15em; }
+        body.mode-tablet .rss-item { font-size: 0.75em; padding: 7px 9px; }
+        body.mode-tablet .wx-temp-main { font-size: 1.5em; }
+        body.mode-tablet .moti-text { font-size: 1.05em; }
+        body.mode-tablet .ticker-bar { height: 30px; }
+        body.mode-tablet .ticker-item { font-size: 0.72em; }
+        body.mode-tablet .time-section { padding: 8px 14px; }
+        body.mode-tablet .container { padding: 6px; gap: 4px; }
+        body.mode-phone { font-size: 12px; }
+        body.mode-phone .clock { font-size: 2em; }
+        body.mode-phone .header-gif { height: 32px; }
+        body.mode-phone .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
+        body.mode-phone .header-left, body.mode-phone .header-right { align-items: center; flex: 1 1 100%; }
+        body.mode-phone .main-grid, body.mode-phone .bottom-grid { grid-template-columns: 1fr; }
+        body.mode-phone .main-grid > :nth-child(3), body.mode-phone .bottom-grid .card:nth-child(3) { grid-column: auto; }
+        body.mode-phone .card-header { font-size: 0.9em; }
+        body.mode-phone .ticker-bar { height: 26px; }
+        body.mode-phone .ticker-item { font-size: 0.62em; }
+
         /* ── Responsive ── */
         @media (max-width: 1200px) {
             body { font-size: 17px; }
@@ -357,6 +398,15 @@
 </head>
 <body>
     <div class="container">
+        <!-- ── Screen Mode Selector ── -->
+        <div class="screen-mode">
+            <select id="screen-mode-select">
+                <option value="tv">📺 טלוויזיה</option>
+                <option value="tablet">📱 טאבלט</option>
+                <option value="phone">📱 נייד</option>
+            </select>
+        </div>
+
         <!-- ── News Ticker ── -->
         <div class="ticker-bar">
             <div class="ticker-label">⚡ מבזקים</div>
@@ -1123,7 +1173,25 @@
         el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
     }
 
+    // ── Screen Mode Selector ──
+    const SCREEN_MODES = ['tv', 'tablet', 'phone'];
+    function applyScreenMode(mode) {
+        if (!SCREEN_MODES.includes(mode)) mode = 'tv';
+        document.body.classList.remove(...SCREEN_MODES.map(m => 'mode-' + m));
+        document.body.classList.add('mode-' + mode);
+        try { localStorage.setItem('dash_screenMode', mode); } catch (_) {}
+        const sel = document.getElementById('screen-mode-select');
+        if (sel && sel.value !== mode) sel.value = mode;
+    }
+    function initScreenMode() {
+        const saved = localStorage.getItem('dash_screenMode') || 'tv';
+        applyScreenMode(saved);
+        const sel = document.getElementById('screen-mode-select');
+        if (sel) sel.addEventListener('change', e => applyScreenMode(e.target.value));
+    }
+
     function init() {
+        initScreenMode();
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
         loadNews(); loadAllStocks(); loadCurrency(); loadAlerts(); loadMotivation();
