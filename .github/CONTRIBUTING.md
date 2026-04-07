@@ -35,15 +35,24 @@ Install via the workspace recommendations (`.vscode/extensions.json`):
 FamilyDashBoard/
 ├── 📄 BestDashBoard.html    # The entire dashboard (HTML + CSS + JS)
 ├── 📖 README.md             # Project documentation
+├── � CHANGELOG.md          # Version history
+├── 📋 SUPPORT.md            # Support channels
+├── 📋 CITATION.cff          # Software citation metadata
+├── 🐋 Dockerfile / nginx.conf  # Docker containerization
 ├── 📁 .github/
 │   ├── 🖼️ assets/           # SVG graphics for docs
 │   ├── 🤖 agents/           # Copilot custom agents
 │   ├── 📐 instructions/     # Copilot context files
 │   ├── 💬 prompts/          # Reusable Copilot prompts
 │   ├── ⚙️ copilot/          # Copilot modes config
-│   ├── 🔄 workflows/        # CI + GitHub Pages deploy
+│   ├── 🪝 hooks/            # Git hooks
+│   ├── 🔄 workflows/        # 11+ CI/CD + automation workflows
+│   ├── 📋 ISSUE_TEMPLATE/   # Bug, feature, API issue forms
+│   ├── 💬 DISCUSSION_TEMPLATE/ # Ideas, Q&A, show-and-tell
 │   ├── 🔒 SECURITY.md
-│   └── 🤝 CONTRIBUTING.md
+│   ├── 🤝 CONTRIBUTING.md
+│   ├── 🤝 CODE_OF_CONDUCT.md
+│   └── 📋 PULL_REQUEST_TEMPLATE.md
 └── 📁 .vscode/              # VS Code workspace settings
 ```
 

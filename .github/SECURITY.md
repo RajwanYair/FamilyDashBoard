@@ -16,7 +16,10 @@ FamilyDashBoard is a client-side HTML dashboard that fetches data from public AP
 
 | Version | Supported |
 |---------|-----------|
-| latest  | Yes       |
+| 4.2.x   | ✅ Yes    |
+| 4.1.x   | ✅ Yes    |
+| 4.0.x   | ⚠️ Security fixes only |
+| < 4.0   | ❌ No     |
 
 ## Reporting Vulnerabilities
 
@@ -41,6 +44,8 @@ Please report security vulnerabilities via GitHub Issues with the `security` lab
 - API responses are cached client-side only (no server-side storage)
 - No personal data is sent to APIs beyond location coordinates (Jerusalem lat/lon)
 - Calendar embed uses Google's sandboxed iframe
+- Red Alerts (tzevaadom.co.il) data is public Home Front Command information
+- CORS proxies (allorigins.win, codetabs.com) are trusted third-party services
 
 ## Security Checklist
 
