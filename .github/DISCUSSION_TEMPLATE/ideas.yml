@@ -1,0 +1,27 @@
+title: "💡 Ideas & Suggestions"
+labels: ["idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share your ideas for the family dashboard!
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What's your idea?
+      description: Describe what you'd like to see on the dashboard
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - New data source / widget
+        - Design / theme improvement
+        - Performance optimization
+        - Mobile / tablet support
+        - Accessibility
+        - Other

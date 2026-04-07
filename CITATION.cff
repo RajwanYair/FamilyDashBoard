@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "FamilyDashBoard"
+abstract: "Single-file Hebrew RTL family dashboard for always-on TV display. Zero dependencies, dark glassmorphism theme, real-time data from multiple APIs."
+authors:
+  - family-names: "Rajwan"
+    given-names: "Yair"
+    alias: "RajwanYair"
+repository-code: "https://github.com/RajwanYair/FamilyDashBoard"
+url: "https://rajwanyair.github.io/FamilyDashBoard/"
+license: MIT
+keywords:
+  - dashboard
+  - family
+  - hebrew
+  - rtl
+  - tv-display
+  - glassmorphism
+  - weather
+  - news
+  - stocks

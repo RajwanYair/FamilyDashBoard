@@ -1,0 +1,27 @@
+title: "❓ Q&A"
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask a question about setting up or using the dashboard.
+        Check [SUPPORT.md](https://github.com/RajwanYair/FamilyDashBoard/blob/main/SUPPORT.md) first!
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+    validations:
+      required: true
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - Setup / Installation
+        - Docker deployment
+        - API / Data sources
+        - Display / TV configuration
+        - Customization
+        - Other

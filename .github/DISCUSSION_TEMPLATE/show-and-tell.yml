@@ -1,0 +1,21 @@
+title: "📢 Show & Tell"
+labels: ["show-and-tell"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share your setup! Show us how you're using the dashboard.
+
+  - type: textarea
+    id: showcase
+    attributes:
+      label: Your Setup
+      description: Describe your setup — what TV/screen, where it's mounted, any customizations you made
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Photos / Screenshots
+      description: Drag & drop photos of your dashboard in action!
