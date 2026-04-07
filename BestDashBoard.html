@@ -23,6 +23,10 @@
             --negative: #f87171;
             --negative-glow: rgba(248, 113, 113, 0.2);
             --warning: #fbbf24;
+            --purple: #a78bfa;
+            --pink: #f472b6;
+            --orange: #fb923c;
+            --cyan: #22d3ee;
             --border-radius: 14px;
             --card-border: 1px solid rgba(96, 165, 250, 0.1);
             --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
@@ -60,7 +64,7 @@
             border: var(--card-border); display: flex; align-items: center;
         }
         .ticker-label {
-            background: var(--negative); color: #fff; font-weight: 800; font-size: 0.75em;
+            background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; font-weight: 800; font-size: 0.75em;
             padding: 0 12px; height: 100%; display: flex; align-items: center;
             white-space: nowrap; z-index: 2; letter-spacing: 1px;
             box-shadow: -4px 0 12px rgba(248,113,113,0.3);
@@ -78,7 +82,7 @@
         .ticker-item::after {
             content: '◆'; color: var(--accent); font-size: 0.5em; margin-right: 12px; opacity: 0.4;
         }
-        .ticker-src { color: var(--accent); font-weight: 600; font-size: 0.85em; }
+        .ticker-src { color: var(--accent); font-weight: 600; font-size: 0.85em; text-shadow: 0 0 6px var(--accent-glow); }
         @keyframes tickerScroll {
             0% { transform: translateX(-50%); }
             100% { transform: translateX(0); }
@@ -91,17 +95,20 @@
             padding: 12px 20px; border-radius: var(--border-radius);
             border: var(--card-border); box-shadow: var(--card-shadow);
             flex: 0 0 auto;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, var(--accent), var(--cyan), var(--purple), var(--pink), var(--orange), var(--warning)) 1;
         }
         .header-left, .header-right { display: flex; flex-direction: column; flex: 1; gap: 2px; }
         .header-left { align-items: flex-start; }
         .header-right { align-items: flex-end; }
         .header-center { flex: 1.5; text-align: center; }
-        .clock { font-size: 3.4em; font-weight: 800; color: var(--accent); letter-spacing: 3px; text-shadow: 0 0 30px var(--accent-glow); line-height: 1; }
-        .greeting { font-size: 0.95em; color: var(--text-secondary); margin-top: 4px; }
-        .hebrew-date { font-size: 1.25em; color: var(--accent-bright); font-weight: 600; }
+        .clock { font-size: 3.4em; font-weight: 800; color: var(--accent); letter-spacing: 3px; text-shadow: 0 0 30px var(--accent-glow); line-height: 1; background: linear-gradient(135deg, var(--accent) 0%, var(--cyan) 50%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 20px var(--accent-glow)); }
+        .greeting { font-size: 0.95em; color: var(--text-secondary); margin-top: 4px; background: linear-gradient(90deg, var(--text-secondary), var(--pink), var(--text-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 100%; animation: greetingShift 6s ease-in-out infinite; }
+        @keyframes greetingShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .hebrew-date { font-size: 1.25em; color: var(--accent-bright); font-weight: 600; text-shadow: 0 0 10px rgba(147,197,253,0.3); }
         .english-date { font-size: 1em; color: var(--text-secondary); }
-        .shabbat-info { font-size: 0.85em; color: var(--warning); font-weight: 600; margin-top: 2px; }
-        .top-temp { font-size: 1.5em; color: var(--accent); font-weight: 700; }
+        .shabbat-info { font-size: 0.85em; color: var(--warning); font-weight: 600; margin-top: 2px; text-shadow: 0 0 8px rgba(251,191,36,0.2); }
+        .top-temp { font-size: 1.5em; color: var(--accent); font-weight: 700; text-shadow: 0 0 12px var(--accent-glow); }
         .header-gif { height: 52px; width: auto; border-radius: 8px; flex: 0 0 auto; margin: 0 6px; }
 
         /* ── Layout ── */
@@ -129,6 +136,18 @@
             letter-spacing: 0.5px;
             border-bottom: 1px solid rgba(96, 165, 250, 0.06);
         }
+        .card-header .icon-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 1.6em; height: 1.6em; border-radius: 8px; margin-left: 4px;
+            font-size: 0.9em; vertical-align: middle;
+        }
+        .icon-badge.blue { background: rgba(96,165,250,0.18); }
+        .icon-badge.green { background: rgba(52,211,153,0.18); }
+        .icon-badge.purple { background: rgba(167,139,250,0.18); }
+        .icon-badge.orange { background: rgba(251,191,36,0.18); }
+        .icon-badge.red { background: rgba(248,113,113,0.18); }
+        .icon-badge.pink { background: rgba(244,114,182,0.18); }
+        .icon-badge.cyan { background: rgba(34,211,238,0.18); }
         .sync-dot { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--positive); box-shadow: 0 0 6px var(--positive); transition: all 0.3s; }
         .sync-dot.syncing { background: var(--warning); box-shadow: 0 0 8px rgba(251,191,36,0.5); animation: pulse 1s infinite; }
         .sync-dot.error { background: var(--negative); box-shadow: 0 0 8px var(--negative-glow); }
@@ -148,6 +167,8 @@
             font-size: 0.82em; cursor: pointer; transition: all .2s ease;
             flex-shrink: 0;
         }
+        .rss-item:nth-child(odd) { border-right-color: var(--cyan); }
+        .rss-item:nth-child(3n) { border-right-color: var(--purple); }
         .rss-item:hover { background: var(--bg-card-hover); transform: translateX(-3px); }
         .rss-title { font-weight: 600; margin-bottom: 2px; color: var(--text-primary); line-height: 1.3; }
         .rss-meta { display: flex; justify-content: space-between; align-items: center; }
@@ -168,6 +189,12 @@
             font-size: 0.72em; transition: background 0.2s;
         }
         .stk:hover { background: var(--bg-card-hover); }
+        .stk:nth-child(1) .stk-sym { color: var(--accent); }
+        .stk:nth-child(2) .stk-sym { color: var(--orange); }
+        .stk:nth-child(3) .stk-sym { color: var(--warning); }
+        .stk:nth-child(4) .stk-sym { color: var(--positive); }
+        .stk:nth-child(5) .stk-sym { color: var(--negative); }
+        .stk:nth-child(6) .stk-sym { color: var(--purple); }
         .stk-sym { font-weight: 700; color: var(--accent); display: flex; justify-content: space-between; align-items: center; font-size: 0.88em; }
         .stk-desc { font-size: 0.58em; color: var(--text-muted); font-weight: normal; }
         .stk-price { font-size: 1.25em; font-weight: 700; margin: 1px 0; }
@@ -181,10 +208,15 @@
         .wx-current { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
         .wx-icon { font-size: 2.8em; line-height: 1; }
         .wx-info { flex: 1; }
-        .wx-temp-main { font-size: 1.8em; font-weight: 800; color: var(--text-primary); }
+        .wx-temp-main { font-size: 1.8em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
         .wx-desc { font-size: 0.95em; color: var(--text-secondary); }
         .wx-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 0.78em; margin-bottom: 8px; }
-        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 6px; text-align: center; }
+        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 6px; text-align: center; transition: transform 0.2s; }
+        .wx-detail:hover { transform: scale(1.05); }
+        .wx-detail:nth-child(1) { border-bottom: 2px solid var(--accent); }
+        .wx-detail:nth-child(2) { border-bottom: 2px solid var(--cyan); }
+        .wx-detail:nth-child(3) { border-bottom: 2px solid var(--warning); }
+        .wx-detail:nth-child(4) { border-bottom: 2px solid var(--orange); }
         .wx-detail-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 2px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 1.05em; }
         .wx-hourly-chart { width: 100%; height: 60px; margin-bottom: 6px; flex-shrink: 0; }
@@ -201,7 +233,10 @@
             display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1;
             text-align: center;
         }
-        .cur-flag { font-size: 1.5em; }
+        .cur-flag { font-size: 1.5em; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        .cur-item:nth-child(1) { border-bottom: 2px solid var(--positive); }
+        .cur-item:nth-child(2) { border-bottom: 2px solid var(--accent); }
+        .cur-item:nth-child(3) { border-bottom: 2px solid var(--purple); }
         .cur-info { flex: 1; }
         .cur-pair { font-size: 0.72em; color: var(--text-muted); font-weight: 600; }
         .cur-rate { font-size: 1.3em; font-weight: 800; color: var(--text-primary); }
@@ -231,8 +266,9 @@
             background: var(--bg-card-inner); padding: 18px; border-radius: 12px;
             text-align: center; border-right: 4px solid var(--accent);
             width: 100%; transition: opacity 0.8s ease;
+            background: linear-gradient(135deg, var(--bg-card-inner) 0%, rgba(96,165,250,0.06) 50%, rgba(167,139,250,0.06) 100%);
         }
-        .moti-text { font-size: 1.25em; line-height: 1.65; font-style: italic; margin-bottom: 10px; }
+        .moti-text { font-size: 1.25em; line-height: 1.65; font-style: italic; margin-bottom: 10px; background: linear-gradient(90deg, var(--text-primary) 0%, var(--accent-bright) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .moti-author { font-size: 0.85em; color: var(--accent); font-weight: 600; }
         .moti-src { font-size: 0.68em; color: var(--text-muted); margin-top: 4px; }
 
@@ -245,8 +281,8 @@
         .progress-bar { display: inline-flex; align-items: center; gap: 4px; }
         .progress-track { width: 50px; height: 4px; background: var(--bg-card-inner); border-radius: 2px; overflow: hidden; display: inline-block; }
         .progress-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
-        .progress-fill.day { background: var(--accent); }
-        .progress-fill.year { background: var(--warning); }
+        .progress-fill.day { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
+        .progress-fill.year { background: linear-gradient(90deg, var(--warning), var(--orange)); }
 
         /* ── Holiday Countdown ── */
         .holiday-info { font-size: 0.78em; color: var(--accent-bright); font-weight: 500; margin-top: 2px; }
@@ -345,20 +381,20 @@
         <!-- ── Main Row ── -->
         <div class="main-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-news"></div>📰 חדשות</div>
+                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות</div>
                 <div class="news-body" id="news-body">
                     <div class="rss-scroll" id="rss-scroll"></div>
                 </div>
             </div>
             <div class="card" style="position:relative">
-                <div class="card-header"><div class="sync-dot" id="sync-cal"></div>📅 לוח שנה משפחתי</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי</div>
                 <div class="cal-wrapper">
                     <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
                 </div>
             </div>
             <div class="col-split">
                 <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div>📈 מניות <span class="market-badge" id="market-badge"></span></div>
+                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
                     <div class="stocks-body" id="stocks-body">
                         <div class="stk" data-symbol="INTC"><div class="stk-sym"><span>INTC</span><span class="stk-desc">אינטל</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
                         <div class="stk" data-symbol="^GSPC"><div class="stk-sym"><span>S&P 500</span><span class="stk-desc">מדד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
@@ -369,7 +405,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div>🚨 צבע אדום</div>
+                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
                     <div class="alerts-body">
                         <div class="alerts-scroll" id="alerts-scroll">
                             <div class="alert-count">טוען התרעות...</div>
@@ -382,7 +418,7 @@
         <!-- ── Bottom Row ── -->
         <div class="bottom-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-wx"></div>🌤️ מזג אויר — ירושלים</div>
+                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> מזג אויר — ירושלים</div>
                 <div class="weather-body">
                     <div class="wx-current">
                         <div class="wx-icon" id="wx-icon">🌤️</div>
@@ -407,7 +443,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-cur"></div>💱 שערי מטבע</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">💱</span> שערי מטבע</div>
                 <div class="currency-body" id="currency-body">
                     <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
                     <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
@@ -415,7 +451,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-moti"></div>💪 מוטיבציה</div>
+                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">💪</span> מוטיבציה</div>
                 <div class="moti-body">
                     <div class="moti-card">
                         <div class="moti-text" id="moti-text">טוען השראה...</div>
