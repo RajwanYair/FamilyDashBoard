@@ -227,25 +227,49 @@
 
         /* ── Responsive ── */
         @media (max-width: 1200px) {
-            body { font-size: 20px; }
+            body { font-size: 18px; }
             .main-grid { grid-template-columns: 1fr 1fr; }
             .main-grid .card:nth-child(3) { grid-column: span 2; }
             .bottom-grid { grid-template-columns: 1fr 1fr; }
             .bottom-grid .card:nth-child(3) { grid-column: span 2; }
+            .clock { font-size: 2.8em; }
+            .ticker-bar { height: 28px; }
+            .ticker-item { font-size: 0.65em; padding: 0 14px; }
         }
         @media (max-width: 768px) {
-            body { font-size: 17px; }
+            body { font-size: 15px; }
             .main-grid, .bottom-grid { grid-template-columns: 1fr; }
             .main-grid .card:nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
             .stocks-body { grid-template-columns: repeat(3, 1fr); }
             .wx-details { grid-template-columns: repeat(2, 1fr); }
+            .clock { font-size: 2.4em; }
+            .hebrew-date { font-size: 1.05em; }
+            .top-temp { font-size: 1.2em; }
+            .ticker-bar { height: 26px; }
+            .ticker-item { font-size: 0.6em; padding: 0 10px; }
+            .ticker-label { font-size: 0.55em; padding: 0 8px; }
+            .card-header { font-size: 1em; }
+            .stk-price { font-size: 1.2em; }
         }
         @media (max-width: 480px) {
-            body { font-size: 15px; }
-            .time-section { flex-wrap: wrap; gap: 6px; }
+            body { font-size: 13px; }
+            .container { padding: 4px; gap: 4px; }
+            .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
             .header-left, .header-right { align-items: center; flex: 1 1 100%; }
             .stocks-body { grid-template-columns: 1fr 1fr; }
-            .clock { font-size: 2.4em; }
+            .clock { font-size: 2em; }
+            .hebrew-date { font-size: 0.9em; }
+            .shabbat-info { font-size: 0.75em; }
+            .top-temp { font-size: 1em; }
+            .greeting { font-size: 0.8em; }
+            .ticker-bar { height: 22px; }
+            .ticker-item { font-size: 0.52em; padding: 0 8px; }
+            .ticker-label { font-size: 0.5em; padding: 0 6px; }
+            .card-header { font-size: 0.9em; }
+            .stk-price { font-size: 1em; }
+            .stk-sym { font-size: 0.8em; }
+            .rss-item { font-size: 0.72em; }
+            .wx-fday { padding: 4px; }
         }
     </style>
     <meta name="referrer" content="no-referrer">
