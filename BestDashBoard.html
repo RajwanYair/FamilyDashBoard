@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="300">
     <title>רגואן Family Dashboard</title>
     <style>
         :root {
@@ -398,7 +397,7 @@
             </div>
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.0 — משפחת רגואן</span>
+            <span>Dashboard v4.1 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -409,7 +408,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v3.0 — Refactored
+       FAMILY DASHBOARD v4.1 — Per-Pane Refresh + Persistent Cache
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -452,11 +451,40 @@
     ];
     let motiIdx = Math.floor(Math.random() * MOTIVATIONS.length);
 
-    // ── Cache ──
-    const _cache = new Map();
-    const cGet = (k) => { const c = _cache.get(k); return (c && Date.now() - c.ts < CACHE_TTL) ? c.d : null; };
-    const cSet = (k, d, ttl) => _cache.set(k, { d, ts: Date.now(), ttl: ttl || CACHE_TTL });
-    const cGetRaw = (k, ttl) => { const c = _cache.get(k); return (c && Date.now() - c.ts < (ttl || CACHE_TTL)) ? c.d : null; };
+    // ── Persistent Cache (localStorage + in-memory) ──
+    // Data survives page loads — each pane refreshes independently, network failures show stale data
+    const _mem = new Map();
+    const LS_PREFIX = 'dash_';
+
+    /** Get cached data if fresh (within TTL) */
+    function cGet(key, ttl) {
+        ttl = ttl || CACHE_TTL;
+        const m = _mem.get(key);
+        if (m && Date.now() - m.ts < ttl) return m.d;
+        try {
+            const s = localStorage.getItem(LS_PREFIX + key);
+            if (s) { const p = JSON.parse(s); if (Date.now() - p.ts < ttl) { _mem.set(key, p); return p.d; } }
+        } catch (_) {}
+        return null;
+    }
+
+    /** Get cached data even if expired — last-known-good fallback */
+    function cGetStale(key) {
+        const m = _mem.get(key);
+        if (m) return m.d;
+        try {
+            const s = localStorage.getItem(LS_PREFIX + key);
+            if (s) { const p = JSON.parse(s); _mem.set(key, p); return p.d; }
+        } catch (_) {}
+        return null;
+    }
+
+    /** Store data in both memory and localStorage */
+    function cSet(key, data) {
+        const entry = { d: data, ts: Date.now() };
+        _mem.set(key, entry);
+        try { localStorage.setItem(LS_PREFIX + key, JSON.stringify(entry)); } catch (_) {}
+    }
 
     // ── DOM Refs ──
     const $ = id => document.getElementById(id);
@@ -514,13 +542,17 @@
 
     // ── Hebrew Date + Shabbat ──
     async function loadHebrewDate() {
-        const key = 'heb-' + new Date().toDateString(); const c = cGet(key); if (c) { el.hebDate.textContent = c; return; }
+        const key = 'heb-' + new Date().toDateString();
+        const fresh = cGet(key, 3600000); if (fresh) { el.hebDate.textContent = fresh; return; }
+        const stale = cGetStale(key); if (stale) el.hebDate.textContent = stale;
         try { const now = new Date(); const d = await fetchJSON(`https://www.hebcal.com/converter?cfg=json&gy=${now.getFullYear()}&gm=${now.getMonth() + 1}&gd=${now.getDate()}&g2h=1`);
             if (d.hebrew) { el.hebDate.textContent = d.hebrew; cSet(key, d.hebrew); }
         } catch (e) { console.error('Hebrew date:', e); }
     }
     async function loadShabbat() {
-        const key = 'shabbat-' + new Date().toDateString(); const c = cGet(key); if (c) { el.shabbat.textContent = c; return; }
+        const key = 'shabbat-' + new Date().toDateString();
+        const fresh = cGet(key, 10800000); if (fresh) { el.shabbat.textContent = fresh; return; } // 3h TTL
+        const stale = cGetStale(key); if (stale) el.shabbat.textContent = stale;
         try { const d = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
             if (d.items) {
                 const candles = d.items.find(i => i.category === 'candles');
@@ -536,7 +568,9 @@
 
     // ── Next Jewish Holiday Countdown ──
     async function loadHolidays() {
-        const key = 'holidays-' + new Date().toDateString(); const c = cGet(key); if (c) { renderHoliday(c); return; }
+        const key = 'holidays-' + new Date().toDateString();
+        const fresh = cGet(key, 21600000); if (fresh) { renderHoliday(fresh); return; } // 6h TTL
+        const stale = cGetStale(key); if (stale) renderHoliday(stale);
         try {
             const now = new Date();
             const d = await fetchJSON(`https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x`);
@@ -595,11 +629,14 @@
     // ── Weather (with hourly graph, real humidity, UV) ──
     async function loadWeather() {
         setSync('wx', 'syncing');
-        const key = 'wx'; const c = cGet(key); if (c) { renderWeather(c); setSync('wx', 'success'); return; }
+        const key = 'wx';
+        const fresh = cGet(key, 900000); // 15min TTL
+        if (fresh) { renderWeather(fresh); setSync('wx', 'success'); return; }
+        const stale = cGetStale(key); if (stale) renderWeather(stale);
         try {
             const d = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5').then(r => r.json());
             if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); }
-        } catch (e) { console.error('Weather:', e); setSync('wx', 'error'); }
+        } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); }
     }
     function renderWeather(d) {
         const cw = d.current_weather;
@@ -700,23 +737,24 @@
         return [];
     }
 
-    // ── News (1-min refresh, aggregates all sources, sorted newest first) ──
+    // ── News (2-min refresh, aggregates all sources, sorted newest first) ──
     async function loadNews() {
         setSync('news', 'syncing');
-        const key = 'news'; const c = cGetRaw(key, 60000); if (c) { renderNews(c); renderTicker(c); setSync('news', 'success'); return; }
+        const key = 'news';
+        const fresh = cGet(key, 120000); // 2min TTL
+        if (fresh) { renderNews(fresh); renderTicker(fresh); setSync('news', 'success'); return; }
+        const stale = cGetStale(key); if (stale) { renderNews(stale); renderTicker(stale); }
         const allItems = [];
-        // Fetch all feeds concurrently
         const results = await Promise.allSettled(NEWS_FEEDS.map(f => fetchFeed(f)));
         for (const r of results) { if (r.status === 'fulfilled' && r.value.length) allItems.push(...r.value); }
         if (allItems.length) {
-            // Deduplicate by title similarity
             const seen = new Set(); const unique = [];
             for (const it of allItems) { const k = it.title.trim().substring(0, 40); if (!seen.has(k)) { seen.add(k); unique.push(it); } }
             unique.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
             const top = unique.slice(0, 30);
-            _cache.set(key, { d: top, ts: Date.now() });
+            cSet(key, top);
             renderNews(top); renderTicker(top); setSync('news', 'success');
-        } else { setSync('news', 'error'); }
+        } else { setSync('news', stale ? 'success' : 'error'); }
     }
     function renderNews(items) {
         el.rssScroll.innerHTML = '';
@@ -763,6 +801,13 @@
     }
 
     // ── Stocks (multi-fallback, bezier charts) ──
+    // Refresh faster during market hours (5min), slower when closed (30min)
+    function getStockTTL() {
+        const now = new Date();
+        const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const h = ny.getHours(), d = ny.getDay(), t = h * 60 + ny.getMinutes();
+        return (d >= 1 && d <= 5 && t >= 570 && t <= 960) ? 300000 : 1800000; // 5min : 30min
+    }
     async function loadAllStocks() {
         setSync('stocks', 'syncing'); let ok = false;
         for (let i = 0; i < STOCK_SYMBOLS.length; i++) {
@@ -773,7 +818,10 @@
     }
     async function loadStock(sym) {
         const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
-        const key = 'stk-' + sym; const c = cGet(key); if (c) { renderStock(blk, c, sym); return true; }
+        const key = 'stk-' + sym;
+        const ttl = getStockTTL();
+        const fresh = cGet(key, ttl); if (fresh) { renderStock(blk, fresh, sym); return true; }
+        const stale = cGetStale(key); if (stale) renderStock(blk, stale, sym);
         // Try v8 chart API
         try {
             const now = Math.floor(Date.now() / 1000); const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?period1=${now - 604800}&period2=${now}&interval=1d`;
@@ -784,11 +832,13 @@
             const url = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${sym}`;
             for (const p of PROXIES) { try { const r = await fetch(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; const q = d.quoteResponse?.result?.[0]; if (q?.regularMarketPrice) { const fb = { chart: { result: [{ meta: { regularMarketPrice: q.regularMarketPrice, previousClose: q.regularMarketPreviousClose || q.regularMarketPrice }, indicators: { quote: [{ close: [q.regularMarketPrice] }] } }] } }; cSet(key, fb); renderStock(blk, fb, sym); return true; } } catch (_) { continue; } }
         } catch (_) {}
-        // Show error state
-        blk.querySelector('.stk-price').textContent = 'N/A';
-        blk.querySelector('.stk-price').classList.remove('skeleton');
-        blk.querySelector('.stk-chg').textContent = '--';
-        return false;
+        // Show error state only if no cached data
+        if (!stale) {
+            blk.querySelector('.stk-price').textContent = 'N/A';
+            blk.querySelector('.stk-price').classList.remove('skeleton');
+            blk.querySelector('.stk-chg').textContent = '--';
+        }
+        return !!stale;
     }
     function renderStock(blk, data, sym) {
         const r = data.chart.result[0]; const meta = r.meta;
@@ -820,15 +870,17 @@
     // ── Currency Rates (USD/ILS, EUR/ILS, GBP/ILS) ──
     async function loadCurrency() {
         setSync('cur', 'syncing');
-        const key = 'cur'; const c = cGet(key); if (c) { renderCurrency(c); setSync('cur', 'success'); return; }
+        const key = 'cur';
+        const fresh = cGet(key, 1800000); // 30min TTL
+        if (fresh) { renderCurrency(fresh); setSync('cur', 'success'); return; }
+        const stale = cGetStale(key); if (stale) renderCurrency(stale);
         try {
             const d = await fetchJSON('https://open.er-api.com/v6/latest/ILS');
             if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); }
         } catch (e) {
-            // Fallback
             try { const d = await fetchJSON('https://api.exchangerate-api.com/v4/latest/ILS');
                 if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); }
-            } catch (_) { setSync('cur', 'error'); }
+            } catch (_) { setSync('cur', stale ? 'success' : 'error'); }
         }
     }
     function renderCurrency(rates) {
@@ -869,24 +921,56 @@
         setSync('moti', 'success');
     }
 
-    // ── Init & Intervals ──
+    // ── Per-Pane Refresh Scheduler ──
+    //  Each pane refreshes independently — no full-page reload.
+    //  Intervals are chosen by how fast each data source changes.
+    //  ┌──────────────┬──────────┬─────────────────────────────────────┐
+    //  │ Pane         │ Interval │ Reasoning                           │
+    //  ├──────────────┼──────────┼─────────────────────────────────────┤
+    //  │ Clock        │ 1s       │ Must be real-time                   │
+    //  │ Market badge │ 1min     │ Local time check, cheap             │
+    //  │ News+Ticker  │ 2min     │ Time-sensitive but chill on APIs    │
+    //  │ Stocks       │ 5min/30m │ 5min when NYSE open, 30min closed   │
+    //  │ Weather      │ 15min    │ Weather changes slowly              │
+    //  │ Currency     │ 30min    │ Exchange rates drift slowly         │
+    //  │ Motivation   │ 30min    │ Quote rotation                      │
+    //  │ Hebrew date  │ 1h       │ Changes once per day                │
+    //  │ Shabbat      │ 3h       │ Changes once per week               │
+    //  │ Holidays     │ 6h       │ Changes rarely                      │
+    //  └──────────────┴──────────┴─────────────────────────────────────┘
+
+    function stampRefresh() {
+        el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+    }
+
     function init() {
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
         loadNews(); loadAllStocks(); loadCurrency(); loadMotivation();
         setSync('cal', 'success');
-        el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+        stampRefresh();
     }
+
+    // Real-time (1s)
     setInterval(tickClock, 1000);
+
+    // Fast (1-2min)
     setInterval(updateMarketBadge, 60000);
-    setInterval(loadHebrewDate, 3600000);
-    setInterval(loadShabbat, 3600000);
-    setInterval(loadHolidays, 3600000);
-    setInterval(() => { loadWeather(); el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }); }, 600000);
-    setInterval(loadNews, 60000);
-    setInterval(() => { loadAllStocks(); el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }); }, 3600000);
-    setInterval(loadCurrency, 3600000);
+    setInterval(() => { loadNews(); stampRefresh(); }, 120000);
+
+    // Medium (5min — stocks adapt based on market hours internally)
+    setInterval(() => { loadAllStocks(); stampRefresh(); }, 300000);
+
+    // Slow (15-30min)
+    setInterval(() => { loadWeather(); stampRefresh(); }, 900000);
+    setInterval(loadCurrency, 1800000);
     setInterval(loadMotivation, 1800000);
+
+    // Very slow (1h+)
+    setInterval(loadHebrewDate, 3600000);
+    setInterval(loadShabbat, 10800000);
+    setInterval(loadHolidays, 21600000);
+
     document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
