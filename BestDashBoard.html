@@ -219,7 +219,29 @@
         .moti-src { font-size: 0.68em; color: var(--text-muted); margin-top: 4px; }
 
         /* ── Status Bar ── */
-        .status-bar { display: flex; justify-content: space-between; font-size: 0.55em; color: var(--text-muted); padding: 1px 12px; }
+        .status-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.55em; color: var(--text-muted); padding: 1px 12px;
+        }
+        .progress-group { display: flex; align-items: center; gap: 12px; }
+        .progress-bar { display: inline-flex; align-items: center; gap: 4px; }
+        .progress-track { width: 50px; height: 4px; background: var(--bg-card-inner); border-radius: 2px; overflow: hidden; display: inline-block; }
+        .progress-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+        .progress-fill.day { background: var(--accent); }
+        .progress-fill.year { background: var(--warning); }
+
+        /* ── Holiday Countdown ── */
+        .holiday-info { font-size: 0.78em; color: var(--accent-bright); font-weight: 500; margin-top: 2px; }
+        .holiday-days { color: var(--warning); font-weight: 700; }
+
+        /* ── Clock Blink ── */
+        .clock-colon { animation: colonBlink 1s step-end infinite; }
+        @keyframes colonBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* ── Market Badge ── */
+        .market-badge { display: inline-block; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; font-weight: 700; margin-right: 6px; vertical-align: middle; }
+        .market-open { background: var(--positive-glow); color: var(--positive); }
+        .market-closed { background: var(--negative-glow); color: var(--negative); }
 
         /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 4px; }
@@ -289,6 +311,7 @@
             <div class="header-left">
                 <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
                 <div class="shabbat-info" id="shabbat-info"></div>
+                <div class="holiday-info" id="holiday-info"></div>
             </div>
             <div class="header-center">
                 <div class="clock" id="clock">00:00:00</div>
@@ -316,7 +339,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-stocks"></div>📈 מניות</div>
+                <div class="card-header"><div class="sync-dot" id="sync-stocks"></div>📈 מניות <span class="market-badge" id="market-badge"></span></div>
                 <div class="stocks-body" id="stocks-body">
                     <div class="stk" data-symbol="INTC"><div class="stk-sym"><span>INTC</span><span class="stk-desc">אינטל</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
                     <div class="stk" data-symbol="^GSPC"><div class="stk-sym"><span>S&P 500</span><span class="stk-desc">מדד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
@@ -374,7 +397,14 @@
                 </div>
             </div>
         </div>
-        <div class="status-bar"><span>Dashboard v3.0 — משפחת רגואן</span><span id="last-refresh">רענון: --:--</span></div>
+        <div class="status-bar">
+            <span>Dashboard v4.0 — משפחת רגואן</span>
+            <div class="progress-group">
+                <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
+                <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
+            </div>
+            <span id="last-refresh">רענון: --:--</span>
+        </div>
     </div>
 
     <script>
@@ -410,6 +440,15 @@
         {t:'החוזק לא בא ממה שאתה יכול לעשות. הוא בא מהתגברות על מה שחשבת שלא תוכל.',a:'ריקי רוג\'רס'},
         {t:'הבית הוא המקום שבו המשפחה נמצאת.',a:''},
         {t:'כל מה שאתה יכול לדמיין הוא אמיתי.',a:'פבלו פיקאסו'},
+        {t:'ההבדל בין רגיל למיוחד הוא אותו דבר קטן נוסף.',a:'ג\'ימי ג\'ונסון'},
+        {t:'אל תחכה. העיתוי לעולם לא יהיה מושלם.',a:'נפוליאון היל'},
+        {t:'הסוד של ההתקדמות הוא להתחיל.',a:'מארק טוויין'},
+        {t:'מי שמעז לחלום ומאמין בחלומו — כל העולם הוא שלו.',a:''},
+        {t:'אתה לא צריך להיות מושלם כדי להיות מדהים.',a:''},
+        {t:'החיים קצרים מדי כדי לקום בבוקר עם צער.',a:''},
+        {t:'תן לחיוך שלך לשנות את העולם, אבל אל תתן לעולם לשנות את החיוך שלך.',a:''},
+        {t:'כשגשם יורד, חפש קשתות. כשחושך, חפש כוכבים.',a:'אוסקר ויילד'},
+        {t:'הדבר היחיד שעומד בינך לבין החלום שלך הוא הרצון לנסות.',a:'ג\'ואל בראון'},
     ];
     let motiIdx = Math.floor(Math.random() * MOTIVATIONS.length);
 
@@ -431,7 +470,9 @@
         curUsd: $('cur-usd'), curEur: $('cur-eur'), curGbp: $('cur-gbp'),
         curUsdChg: $('cur-usd-chg'), curEurChg: $('cur-eur-chg'), curGbpChg: $('cur-gbp-chg'),
         motiText: $('moti-text'), motiAuthor: $('moti-author'), motiSrc: $('moti-src'),
-        refresh: $('last-refresh'),
+        refresh: $('last-refresh'), holiday: $('holiday-info'), marketBadge: $('market-badge'),
+        dayProgress: $('day-progress'), yearProgress: $('year-progress'),
+        dayPct: $('day-pct'), yearPct: $('year-pct'),
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -462,11 +503,13 @@
     function getGreeting() { const h = new Date().getHours(); if (h >= 5 && h < 12) return '🌅 בוקר טוב למשפחת רגואן!'; if (h >= 12 && h < 17) return '☀️ צהריים טובים!'; if (h >= 17 && h < 21) return '🌇 ערב טוב למשפחה!'; return '🌙 לילה טוב!'; }
     function tickClock() {
         const now = new Date();
-        const t = now.toLocaleTimeString('he-IL', { hour12: false, timeZone: 'Asia/Jerusalem' });
-        if (el.clock.textContent !== t) el.clock.textContent = t;
+        const parts = now.toLocaleTimeString('he-IL', { hour12: false, timeZone: 'Asia/Jerusalem' }).split(':');
+        const t = `${parts[0]}<span class="clock-colon">:</span>${parts[1]}<span class="clock-colon">:</span>${parts[2]}`;
+        el.clock.innerHTML = t;
         const d = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jerusalem' });
         if (el.engDate.textContent !== d) el.engDate.textContent = d;
         const g = getGreeting(); if (el.greeting.textContent !== g) el.greeting.textContent = g;
+        updateProgress(now);
     }
 
     // ── Hebrew Date + Shabbat ──
@@ -491,12 +534,70 @@
         } catch (e) { console.error('Shabbat:', e); }
     }
 
+    // ── Next Jewish Holiday Countdown ──
+    async function loadHolidays() {
+        const key = 'holidays-' + new Date().toDateString(); const c = cGet(key); if (c) { renderHoliday(c); return; }
+        try {
+            const now = new Date();
+            const d = await fetchJSON(`https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x`);
+            if (d.items) {
+                const upcoming = d.items
+                    .filter(i => i.category === 'holiday' && new Date(i.date) >= now)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+                if (upcoming.length) { cSet(key, upcoming[0]); renderHoliday(upcoming[0]); }
+            }
+        } catch (e) { console.error('Holidays:', e); }
+    }
+    function renderHoliday(h) {
+        if (!el.holiday || !h) return;
+        const d = new Date(h.date); const now = new Date();
+        const days = Math.ceil((d - now) / 86400000);
+        const name = h.hebrew || h.title;
+        if (days <= 0) { el.holiday.textContent = `🎉 היום: ${name}`; }
+        else if (days === 1) { el.holiday.innerHTML = `🕎 מחר: <span class="holiday-days">${name}</span>`; }
+        else { el.holiday.innerHTML = `🕎 ${name} בעוד <span class="holiday-days">${days} ימים</span>`; }
+    }
+
+    // ── Day / Year Progress ──
+    function updateProgress(now) {
+        const dayPct = Math.round(((now.getHours() * 60 + now.getMinutes()) / 1440) * 100);
+        const start = new Date(now.getFullYear(), 0, 1);
+        const end = new Date(now.getFullYear() + 1, 0, 1);
+        const yearPct = Math.round(((now - start) / (end - start)) * 100);
+        if (el.dayProgress) el.dayProgress.style.width = dayPct + '%';
+        if (el.yearProgress) el.yearProgress.style.width = yearPct + '%';
+        if (el.dayPct) el.dayPct.textContent = dayPct + '%';
+        if (el.yearPct) el.yearPct.textContent = yearPct + '%';
+    }
+
+    // ── Market Open/Closed Badge ──
+    function updateMarketBadge() {
+        if (!el.marketBadge) return;
+        const now = new Date();
+        const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const h = ny.getHours(), m = ny.getMinutes(), d = ny.getDay();
+        const t = h * 60 + m;
+        const open = d >= 1 && d <= 5 && t >= 570 && t <= 960; // Mon-Fri e:30-16:00 ET
+        el.marketBadge.textContent = open ? '🟢 פתוח' : '🔴 סגור';
+        el.marketBadge.className = `market-badge ${open ? 'market-open' : 'market-closed'}`;
+    }
+
+    // ── Relative Time ──
+    function relTime(dateStr) {
+        if (!dateStr) return '';
+        const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+        if (diff < 1) return 'עכשיו';
+        if (diff < 60) return `לפני ${diff} דק׳`;
+        if (diff < 1440) return `לפני ${Math.floor(diff / 60)} שע׳`;
+        return `לפני ${Math.floor(diff / 1440)} ימים`;
+    }
+
     // ── Weather (with hourly graph, real humidity, UV) ──
     async function loadWeather() {
         setSync('wx', 'syncing');
         const key = 'wx'; const c = cGet(key); if (c) { renderWeather(c); setSync('wx', 'success'); return; }
         try {
-            const d = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5').then(r => r.json());
+            const d = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5').then(r => r.json());
             if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); }
         } catch (e) { console.error('Weather:', e); setSync('wx', 'error'); }
     }
@@ -507,11 +608,15 @@
         el.wxDesc.textContent = WX_CODES[cw.weathercode] || 'לא ידוע';
         el.wxIcon.textContent = WX_EMOJI[cw.weathercode] || '🌡️';
         el.wxWind.textContent = Math.round(cw.windspeed) + ' קמ"ש';
-        // Real humidity & UV from hourly data
+        // Real humidity, UV, and feels-like from hourly data
         if (d.hourly) {
             const nowH = new Date().getHours();
             if (d.hourly.relativehumidity_2m?.[nowH] != null) el.wxHum.textContent = d.hourly.relativehumidity_2m[nowH] + '%';
             if (d.hourly.uv_index?.[nowH] != null) el.wxUv.textContent = d.hourly.uv_index[nowH].toFixed(1);
+            if (d.hourly.apparent_temperature?.[nowH] != null) {
+                const feels = Math.round(d.hourly.apparent_temperature[nowH]);
+                el.wxDesc.textContent = (WX_CODES[cw.weathercode] || 'לא ידוע') + ` · מרגיש ${feels}°C`;
+            }
             // Hourly temperature graph (next 12h)
             renderHourlyChart(d.hourly.temperature_2m.slice(nowH, nowH + 12), nowH);
         }
@@ -622,7 +727,7 @@
             const div = document.createElement('div'); div.className = 'rss-item';
             const ttl = document.createElement('div'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
             const meta = document.createElement('div'); meta.className = 'rss-meta';
-            const tm = document.createElement('span'); tm.className = 'rss-time'; tm.textContent = it.pubDate ? new Date(it.pubDate).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '--:--'; meta.appendChild(tm);
+            const tm = document.createElement('span'); tm.className = 'rss-time'; tm.textContent = it.pubDate ? relTime(it.pubDate) : '--:--'; meta.appendChild(tm);
             const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; meta.appendChild(sr);
             div.appendChild(meta);
             if (it.link) div.addEventListener('click', () => window.open(it.link, '_blank'));
@@ -736,9 +841,12 @@
         el.curGbp.textContent = '₪' + gbp; el.curGbp.classList.remove('skeleton');
     }
 
-    // ── Motivation (30-min rotation, online + offline) ──
+    // ── Motivation (30-min rotation, online + offline, crossfade) ──
     async function loadMotivation() {
         setSync('moti', 'syncing');
+        const card = el.motiText?.closest('.moti-card');
+        // Fade out
+        if (card) { card.style.opacity = '0'; await new Promise(r => setTimeout(r, 400)); }
         // Try online
         try {
             const sources = [
@@ -749,6 +857,7 @@
                 try { const r = await fn(); if (r.t) {
                     const txt = await translateHe(r.t); const auth = r.a ? await translateHe(r.a) : '';
                     el.motiText.textContent = txt; el.motiAuthor.textContent = auth ? '— ' + auth : ''; el.motiSrc.textContent = 'מקור: ' + r.s;
+                    if (card) card.style.opacity = '1';
                     setSync('moti', 'success'); return;
                 }} catch (_) { continue; }
             }
@@ -756,20 +865,23 @@
         // Offline fallback
         const m = MOTIVATIONS[motiIdx++ % MOTIVATIONS.length];
         el.motiText.textContent = m.t; el.motiAuthor.textContent = m.a ? '— ' + m.a : ''; el.motiSrc.textContent = '';
+        if (card) card.style.opacity = '1';
         setSync('moti', 'success');
     }
 
     // ── Init & Intervals ──
     function init() {
-        tickClock();
-        loadHebrewDate(); loadShabbat(); loadWeather();
+        tickClock(); updateMarketBadge();
+        loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
         loadNews(); loadAllStocks(); loadCurrency(); loadMotivation();
         setSync('cal', 'success');
         el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
     }
     setInterval(tickClock, 1000);
+    setInterval(updateMarketBadge, 60000);
     setInterval(loadHebrewDate, 3600000);
     setInterval(loadShabbat, 3600000);
+    setInterval(loadHolidays, 3600000);
     setInterval(() => { loadWeather(); el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }); }, 600000);
     setInterval(loadNews, 60000);
     setInterval(() => { loadAllStocks(); el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }); }, 3600000);
