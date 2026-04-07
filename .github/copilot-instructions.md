@@ -1,16 +1,18 @@
 # GitHub Copilot Instructions — FamilyDashBoard
 
+> 📺 Single-file TV dashboard · 🇮🇱 Hebrew RTL · 🎨 Dark Glassmorphism · 🚫 Zero Dependencies
+
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Part of the RajwanYair MyScripts workspace.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room.
 
 ## Technical Stack
 
 - **Language**: HTML5, vanilla CSS3, vanilla JavaScript (ES2020+)
 - **No build tools**: Zero dependencies — open the HTML file directly in a browser
-- **APIs consumed**: Open-Meteo (weather), Hebcal (Hebrew dates), Yahoo Finance (stocks via proxy), RSS feeds (news), Google Translate, Google Calendar embed
+- **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat), Yahoo Finance (stocks via proxy), ER-API (currency), RSS feeds (news), Google Translate, Google Calendar embed
 - **CORS proxies**: allorigins.win, codetabs.com
-- **Design system**: Dark glassmorphism theme with CSS custom properties (`--accent`, `--bg-card`, etc.)
+- **Design system**: Dark glassmorphism theme with CSS custom properties, animated background, bézier SVG charts
 
 ## Architecture
 
@@ -24,9 +26,9 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 
 ### UI Layout
 
-- **Header**: Clock (Hebrew + English dates), greeting, temperature, GIFs
-- **Top row** (3 columns): News RSS | Google Calendar | Stocks
-- **Bottom row** (2 columns): Weather forecast | Daily fact
+- **Header**: Clock, Hebrew + English dates, greeting, temperature, Shabbat times, GIFs
+- **Top row** (3 columns): News RSS | Google Calendar | Stocks (6 symbols)
+- **Bottom row** (3 columns): Weather + hourly chart | Currency exchange | Motivation
 - **Status bar**: Version + last refresh time
 
 ### Key Patterns

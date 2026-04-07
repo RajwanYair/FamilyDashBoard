@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="260" viewBox="0 0 600 260">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060b14"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="260" rx="14" fill="url(#bg)"/>
+  <text x="300" y="30" font-family="Segoe UI" font-size="16" font-weight="700" fill="#60a5fa" text-anchor="middle">Data Refresh Intervals</text>
+
+  <!-- Table header -->
+  <rect x="30" y="48" width="540" height="28" rx="6" fill="#1e293b"/>
+  <text x="80" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Source</text>
+  <text x="220" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">API</text>
+  <text x="400" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Interval</text>
+  <text x="520" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Cache</text>
+
+  <!-- Rows -->
+  <text x="50" y="98" font-size="14">🌤️</text>
+  <text x="80" y="98" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Weather + UV</text>
+  <text x="220" y="98" font-family="Segoe UI" font-size="10" fill="#94a3b8">Open-Meteo</text>
+  <text x="400" y="98" font-family="Segoe UI" font-size="10" fill="#34d399">10 min</text>
+  <text x="520" y="98" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+
+  <line x1="30" y1="108" x2="570" y2="108" stroke="#1e293b" stroke-width="1"/>
+  <text x="50" y="128" font-size="14">📰</text>
+  <text x="80" y="128" font-family="Segoe UI" font-size="10" fill="#f1f5f9">News</text>
+  <text x="220" y="128" font-family="Segoe UI" font-size="10" fill="#94a3b8">Rotter RSS</text>
+  <text x="400" y="128" font-family="Segoe UI" font-size="10" fill="#fbbf24">1 min</text>
+  <text x="520" y="128" font-family="Segoe UI" font-size="10" fill="#94a3b8">1 min</text>
+
+  <line x1="30" y1="138" x2="570" y2="138" stroke="#1e293b" stroke-width="1"/>
+  <text x="50" y="158" font-size="14">📈</text>
+  <text x="80" y="158" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Stocks (×6)</text>
+  <text x="220" y="158" font-family="Segoe UI" font-size="10" fill="#94a3b8">Yahoo Finance</text>
+  <text x="400" y="158" font-family="Segoe UI" font-size="10" fill="#34d399">60 min</text>
+  <text x="520" y="158" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+
+  <line x1="30" y1="168" x2="570" y2="168" stroke="#1e293b" stroke-width="1"/>
+  <text x="50" y="188" font-size="14">💱</text>
+  <text x="80" y="188" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Currency Rates</text>
+  <text x="220" y="188" font-family="Segoe UI" font-size="10" fill="#94a3b8">ER-API</text>
+  <text x="400" y="188" font-family="Segoe UI" font-size="10" fill="#34d399">60 min</text>
+  <text x="520" y="188" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+
+  <line x1="30" y1="198" x2="570" y2="198" stroke="#1e293b" stroke-width="1"/>
+  <text x="50" y="218" font-size="14">✡️</text>
+  <text x="80" y="218" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Hebrew Date + Shabbat</text>
+  <text x="220" y="218" font-family="Segoe UI" font-size="10" fill="#94a3b8">Hebcal</text>
+  <text x="400" y="218" font-family="Segoe UI" font-size="10" fill="#34d399">60 min</text>
+  <text x="520" y="218" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+
+  <line x1="30" y1="228" x2="570" y2="228" stroke="#1e293b" stroke-width="1"/>
+  <text x="50" y="248" font-size="14">💪</text>
+  <text x="80" y="248" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Motivation</text>
+  <text x="220" y="248" font-family="Segoe UI" font-size="10" fill="#94a3b8">Quotable / ZenQuotes</text>
+  <text x="400" y="248" font-family="Segoe UI" font-size="10" fill="#34d399">30 min</text>
+  <text x="520" y="248" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+</svg>

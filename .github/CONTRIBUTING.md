@@ -1,4 +1,12 @@
-# Contributing to FamilyDashBoard
+<div align="center">
+
+# 🤝 Contributing to FamilyDashBoard
+
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-34d399?style=flat-square)
+![HTML Only](https://img.shields.io/badge/Single_File-HTML-E34F26?style=flat-square&logo=html5&logoColor=white)
+![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-60a5fa?style=flat-square)
+
+</div>
 
 ## Code of Conduct
 
@@ -25,16 +33,18 @@ Install via the workspace recommendations (`.vscode/extensions.json`):
 
 ```
 FamilyDashBoard/
-├── BestDashBoard.html    # The entire dashboard (HTML + CSS + JS)
-├── README.md             # Project documentation
-├── .github/              # GitHub configs, workflows, Copilot instructions
-│   ├── copilot-instructions.md
-│   ├── copilot/config.json
-│   ├── workflows/        # CI + GitHub Pages deploy
-│   ├── instructions/     # Copilot context files
-│   ├── prompts/          # Reusable Copilot prompts
-│   └── agents/           # Custom Copilot agents
-└── .vscode/              # VS Code workspace settings
+├── 📄 BestDashBoard.html    # The entire dashboard (HTML + CSS + JS)
+├── 📖 README.md             # Project documentation
+├── 📁 .github/
+│   ├── 🖼️ assets/           # SVG graphics for docs
+│   ├── 🤖 agents/           # Copilot custom agents
+│   ├── 📐 instructions/     # Copilot context files
+│   ├── 💬 prompts/          # Reusable Copilot prompts
+│   ├── ⚙️ copilot/          # Copilot modes config
+│   ├── 🔄 workflows/        # CI + GitHub Pages deploy
+│   ├── 🔒 SECURITY.md
+│   └── 🤝 CONTRIBUTING.md
+└── 📁 .vscode/              # VS Code workspace settings
 ```
 
 ## Coding Standards

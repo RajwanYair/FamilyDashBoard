@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="340" viewBox="0 0 800 340">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060b14"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="340" rx="14" fill="url(#bg)"/>
+
+  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture</text>
+
+  <!-- Browser box -->
+  <rect x="240" y="56" width="320" height="50" rx="10" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.25"/>
+  <text x="400" y="78" font-family="Segoe UI" font-size="12" fill="#f1f5f9" text-anchor="middle" font-weight="600">🌐 BestDashBoard.html</text>
+  <text x="400" y="96" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">HTML + CSS + JS  ·  Zero Dependencies</text>
+
+  <!-- Arrow down -->
+  <line x1="400" y1="106" x2="400" y2="130" stroke="#60a5fa" stroke-width="1.5" stroke-opacity="0.5"/>
+  <polygon points="394,128 406,128 400,136" fill="#60a5fa" opacity="0.5"/>
+
+  <!-- fetch() box -->
+  <rect x="330" y="136" width="140" height="30" rx="8" fill="#1e293b" stroke="#34d399" stroke-opacity="0.3"/>
+  <text x="400" y="156" font-family="monospace" font-size="11" fill="#34d399" text-anchor="middle">fetch() + cache</text>
+
+  <!-- Fan out arrows -->
+  <line x1="330" y1="166" x2="108" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="360" y1="166" x2="268" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="400" y1="166" x2="400" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="440" y1="166" x2="532" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="470" y1="166" x2="692" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+
+  <!-- API cards -->
+  <rect x="40" y="200" width="136" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
+  <text x="108" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">🌤️ Open-Meteo</text>
+  <text x="108" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Weather + UV + Hourly</text>
+
+  <rect x="200" y="200" width="136" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
+  <text x="268" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">✡️ Hebcal</text>
+  <text x="268" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Hebrew Date + Shabbat</text>
+
+  <rect x="360" y="200" width="136" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
+  <text x="428" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">📈 Yahoo Finance</text>
+  <text x="428" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Stocks via CORS proxy</text>
+
+  <rect x="520" y="200" width="136" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
+  <text x="588" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">📰 Rotter RSS</text>
+  <text x="588" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">News via rss2json</text>
+
+  <rect x="680" y="200" width="100" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
+  <text x="730" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">💱 ER-API</text>
+  <text x="730" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Currency Rates</text>
+
+  <!-- CORS proxy note -->
+  <rect x="240" y="274" width="320" height="44" rx="8" fill="#1e293b" stroke="#fbbf24" stroke-opacity="0.3"/>
+  <text x="400" y="293" font-family="Segoe UI" font-size="10" fill="#fbbf24" text-anchor="middle" font-weight="600">🔄 CORS Proxy Fallback</text>
+  <text x="400" y="308" font-family="monospace" font-size="8" fill="#94a3b8" text-anchor="middle">allorigins.win → codetabs.com → direct</text>
+</svg>

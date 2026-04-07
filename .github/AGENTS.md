@@ -1,4 +1,11 @@
-# Agents — FamilyDashBoard
+<div align="center">
+
+# 🤖 Agents — FamilyDashBoard
+
+![Copilot](https://img.shields.io/badge/GitHub_Copilot-Agents-8b5cf6?style=flat-square&logo=github&logoColor=white)
+![Modes](https://img.shields.io/badge/Copilot_Modes-5-60a5fa?style=flat-square)
+
+</div>
 
 ## Available Custom Agents
 
@@ -11,6 +18,16 @@ UI/UX specialist for the glassmorphism theme, CSS custom properties, RTL layout,
 API integration specialist for client-side data fetching with CORS proxy fallback, caching, and sync indicators.
 
 **Use when**: adding data sources, fixing API calls, debugging fetch errors, optimizing caching.
+
+## Available Copilot Modes
+
+| Mode | Focus | Description |
+|------|-------|-------------|
+| `ui` | 🎨 UI/UX | CSS, layout, responsiveness, glassmorphism |
+| `api` | 🌐 APIs | Fetch, caching, proxy fallback, data parsing |
+| `fix` | 🔧 Fixes | Bug fixes, error handling, edge cases |
+| `docs` | 📖 Docs | README, comments, markdown files |
+| `security` | 🔒 Security | XSS, sanitization, HTTPS enforcement |
 
 ## Available Prompts (type `/` in chat)
 

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="180" viewBox="0 0 800 180">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060b14"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="180" rx="14" fill="url(#bg)"/>
+  <text x="400" y="30" font-family="Segoe UI" font-size="16" font-weight="700" fill="#60a5fa" text-anchor="middle">Tech Stack</text>
+
+  <!-- HTML5 -->
+  <rect x="40" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#e34c26" stroke-opacity="0.3"/>
+  <text x="95" y="88" font-size="30" text-anchor="middle">🔶</text>
+  <text x="95" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">HTML5</text>
+  <text x="95" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Semantic markup</text>
+  <text x="95" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">RTL layout</text>
+
+  <!-- CSS3 -->
+  <rect x="170" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#264de4" stroke-opacity="0.3"/>
+  <text x="225" y="88" font-size="30" text-anchor="middle">🎨</text>
+  <text x="225" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">CSS3</text>
+  <text x="225" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Custom Properties</text>
+  <text x="225" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Glassmorphism</text>
+
+  <!-- JS -->
+  <rect x="300" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#f0db4f" stroke-opacity="0.3"/>
+  <text x="355" y="88" font-size="30" text-anchor="middle">⚡</text>
+  <text x="355" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">ES2020+</text>
+  <text x="355" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Async/Await</text>
+  <text x="355" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Optional chaining</text>
+
+  <!-- SVG -->
+  <rect x="430" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.3"/>
+  <text x="485" y="88" font-size="30" text-anchor="middle">📊</text>
+  <text x="485" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">SVG Charts</text>
+  <text x="485" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Bézier curves</text>
+  <text x="485" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Gradient fills</text>
+
+  <!-- APIs -->
+  <rect x="560" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#34d399" stroke-opacity="0.3"/>
+  <text x="615" y="88" font-size="30" text-anchor="middle">🌐</text>
+  <text x="615" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">6 Free APIs</text>
+  <text x="615" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Proxy fallback</text>
+  <text x="615" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">5-min cache</text>
+
+  <!-- Zero deps -->
+  <rect x="690" y="50" width="80" height="110" rx="12" fill="#1e293b" stroke="#fbbf24" stroke-opacity="0.3"/>
+  <text x="730" y="88" font-size="30" text-anchor="middle">🚫</text>
+  <text x="730" y="112" font-family="Segoe UI" font-size="12" fill="#f1f5f9" text-anchor="middle" font-weight="700">Zero</text>
+  <text x="730" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">No npm</text>
+  <text x="730" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">No build</text>
+</svg>

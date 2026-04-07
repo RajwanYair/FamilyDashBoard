@@ -1,8 +1,16 @@
-# Security Policy — FamilyDashBoard
+<div align="center">
+
+# 🔒 Security Policy — FamilyDashBoard
+
+![Security](https://img.shields.io/badge/XSS-Protected-34d399?style=flat-square)
+![HTTPS](https://img.shields.io/badge/APIs-HTTPS_Only-60a5fa?style=flat-square)
+![No Secrets](https://img.shields.io/badge/API_Keys-None_Required-fbbf24?style=flat-square)
+
+</div>
 
 ## Overview
 
-FamilyDashBoard is a client-side HTML dashboard that fetches data from public APIs. While it doesn't handle authentication or sensitive user data, it should follow secure coding practices.
+FamilyDashBoard is a client-side HTML dashboard that fetches data from public APIs. While it doesn't handle authentication or sensitive user data, it follows secure coding practices.
 
 ## Supported Versions
 
