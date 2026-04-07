@@ -7,495 +7,670 @@
     <title>רגואן Family Dashboard</title>
     <style>
         :root {
-            --bg-primary: #0a0e17;
-            --bg-card: rgba(17, 25, 40, 0.75);
-            --bg-card-header: rgba(30, 41, 59, 0.85);
-            --bg-card-hover: rgba(30, 41, 59, 0.5);
+            --bg-primary: #060b14;
+            --bg-card: rgba(15, 23, 42, 0.78);
+            --bg-card-header: rgba(30, 41, 59, 0.88);
+            --bg-card-inner: rgba(30, 41, 59, 0.45);
+            --bg-card-hover: rgba(51, 65, 85, 0.5);
             --accent: #60a5fa;
-            --accent-glow: rgba(96, 165, 250, 0.15);
-            --accent-border: rgba(96, 165, 250, 0.25);
+            --accent-bright: #93c5fd;
+            --accent-glow: rgba(96, 165, 250, 0.18);
+            --accent-border: rgba(96, 165, 250, 0.2);
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
+            --text-muted: #64748b;
             --positive: #34d399;
+            --positive-glow: rgba(52, 211, 153, 0.2);
             --negative: #f87171;
-            --border-radius: 12px;
-            --card-border: 1px solid rgba(96, 165, 250, 0.12);
+            --negative-glow: rgba(248, 113, 113, 0.2);
+            --warning: #fbbf24;
+            --border-radius: 14px;
+            --card-border: 1px solid rgba(96, 165, 250, 0.1);
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ── Animated Background ── */
         body {
             font-family: 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             overflow: hidden;
             height: 100vh;
-            font-size: 24px;
+            font-size: 22px;
+            position: relative;
         }
-        .container { max-width: 100vw; padding: 10px; height: calc(100vh - 20px); display: flex; flex-direction: column; gap: 10px; }
+        body::before {
+            content: ''; position: fixed; inset: 0; z-index: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(96,165,250,0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(52,211,153,0.04) 0%, transparent 50%),
+                        radial-gradient(ellipse at 60% 80%, rgba(139,92,246,0.04) 0%, transparent 50%);
+            animation: bgShift 30s ease-in-out infinite alternate;
+        }
+        @keyframes bgShift {
+            0% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.7; transform: scale(1.02); }
+        }
+        .container { position: relative; z-index: 1; max-width: 100vw; padding: 10px; height: calc(100vh - 20px); display: flex; flex-direction: column; gap: 8px; }
 
-        /* ── Header / Time ── */
+        /* ── Header ── */
         .time-section {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg-card); backdrop-filter: blur(12px);
-            padding: 14px 20px; border-radius: var(--border-radius);
-            border: var(--card-border);
-            flex: 0 0 auto; min-height: 0;
+            background: var(--bg-card); backdrop-filter: blur(16px);
+            padding: 12px 20px; border-radius: var(--border-radius);
+            border: var(--card-border); box-shadow: var(--card-shadow);
+            flex: 0 0 auto;
         }
-        .clock { font-size: 3.2em; font-weight: 700; color: var(--accent); text-align: center; flex: 1; letter-spacing: 2px; text-shadow: 0 0 20px var(--accent-glow); }
-        .english-date { font-size: 1.3em; color: var(--text-secondary); text-align: right; flex: 1; }
-        .hebrew-date { font-size: 1.5em; color: var(--accent); font-weight: 600; text-align: left; flex: 1; }
-        .greeting { font-size: 1.1em; color: var(--text-secondary); text-align: center; }
-        .top-temp { font-size: 1.6em; color: var(--accent); font-weight: 700; padding: 0 10px; white-space: nowrap; }
-        .header-gif { height: 58px; width: auto; border-radius: 8px; background: var(--bg-card-header); flex: 0 0 auto; margin: 0 8px; }
+        .header-left, .header-right { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+        .header-left { align-items: flex-start; }
+        .header-right { align-items: flex-end; }
+        .header-center { flex: 1.5; text-align: center; }
+        .clock { font-size: 3.4em; font-weight: 800; color: var(--accent); letter-spacing: 3px; text-shadow: 0 0 30px var(--accent-glow); line-height: 1; }
+        .greeting { font-size: 0.95em; color: var(--text-secondary); margin-top: 4px; }
+        .hebrew-date { font-size: 1.25em; color: var(--accent-bright); font-weight: 600; }
+        .english-date { font-size: 1em; color: var(--text-secondary); }
+        .shabbat-info { font-size: 0.85em; color: var(--warning); font-weight: 600; margin-top: 2px; }
+        .top-temp { font-size: 1.5em; color: var(--accent); font-weight: 700; }
+        .header-gif { height: 52px; width: auto; border-radius: 8px; flex: 0 0 auto; margin: 0 6px; }
 
         /* ── Layout ── */
-        .top-row { display: grid; grid-template-columns: 33% 40% 27%; gap: 10px; flex: 1 1 75%; min-height: 0; }
-        .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 0 0 22%; min-height: 0; }
+        .main-grid { display: grid; grid-template-columns: 28% 40% 32%; gap: 8px; flex: 1 1 0; min-height: 0; }
+        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 0 0 24%; min-height: 0; }
 
         /* ── Cards ── */
-        .section {
-            background: var(--bg-card); backdrop-filter: blur(12px);
+        .card {
+            background: var(--bg-card); backdrop-filter: blur(16px);
             border-radius: var(--border-radius); overflow: hidden;
             display: flex; flex-direction: column; min-height: 0;
-            border: var(--card-border);
-            transition: box-shadow 0.3s ease;
+            border: var(--card-border); box-shadow: var(--card-shadow);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            animation: cardIn 0.6s ease-out both;
         }
-        .section:hover { box-shadow: 0 0 24px var(--accent-glow); }
-        .section-header {
+        .card:hover { box-shadow: 0 0 32px var(--accent-glow), var(--card-shadow); }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .card:nth-child(1) { animation-delay: 0.05s; }
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.15s; }
+        .card-header {
             background: var(--bg-card-header); color: var(--accent);
-            padding: 14px 16px; font-weight: 700; text-align: center;
-            position: relative; font-size: 1.3em; flex-shrink: 0;
+            padding: 10px 14px; font-weight: 700; text-align: center;
+            position: relative; font-size: 1.15em; flex-shrink: 0;
             letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(96, 165, 250, 0.08);
+            border-bottom: 1px solid rgba(96, 165, 250, 0.06);
         }
-        .sync-indicator { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--positive); box-shadow: 0 0 6px var(--positive); }
-        .sync-indicator.syncing { background: #fbbf24; box-shadow: 0 0 8px rgba(251,191,36,0.5); animation: pulse 1s infinite; }
-        .sync-indicator.error { background: var(--negative); box-shadow: 0 0 8px rgba(248,113,113,0.5); }
-        @keyframes pulse { 0%{opacity:1} 50%{opacity:.4} 100%{opacity:1} }
+        .sync-dot { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--positive); box-shadow: 0 0 6px var(--positive); transition: all 0.3s; }
+        .sync-dot.syncing { background: var(--warning); box-shadow: 0 0 8px rgba(251,191,36,0.5); animation: pulse 1s infinite; }
+        .sync-dot.error { background: var(--negative); box-shadow: 0 0 8px var(--negative-glow); }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-        /* ── News / RSS ── */
-        .news-content { height: 100%; display: flex; flex-direction: column; min-height: 0; }
-        .rss-container { flex: 1; overflow-y: auto; padding: 10px; }
-        .rss-container::-webkit-scrollbar { width: 5px; }
-        .rss-container::-webkit-scrollbar-track { background: transparent; }
-        .rss-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        /* ── Loading Skeleton ── */
+        .skeleton { background: linear-gradient(90deg, var(--bg-card-inner) 25%, rgba(96,165,250,0.08) 50%, var(--bg-card-inner) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; color: transparent !important; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* ── News ── */
+        .news-body { flex: 1; overflow: hidden; position: relative; }
+        .rss-scroll { display: flex; flex-direction: column; animation: newsScroll 60s linear infinite; }
+        .rss-scroll:hover { animation-play-state: paused; }
         .rss-item {
-            background: rgba(30, 41, 59, 0.5); padding: 10px 12px; margin: 5px 0;
-            border-radius: 8px; border-right: 4px solid var(--accent);
-            font-size: 0.88em; cursor: pointer; transition: all .25s ease;
+            background: var(--bg-card-inner); padding: 9px 11px; margin: 4px 8px;
+            border-radius: 8px; border-right: 3px solid var(--accent);
+            font-size: 0.82em; cursor: pointer; transition: all .2s ease;
+            flex-shrink: 0;
         }
         .rss-item:hover { background: var(--bg-card-hover); transform: translateX(-3px); }
-        .rss-title { font-weight: 600; margin-bottom: 3px; color: var(--text-primary); line-height: 1.35; }
+        .rss-title { font-weight: 600; margin-bottom: 2px; color: var(--text-primary); line-height: 1.3; }
         .rss-meta { display: flex; justify-content: space-between; align-items: center; }
-        .rss-time { font-size: 0.78em; color: var(--text-secondary); }
-        .rss-source { font-size: 0.72em; color: var(--accent); opacity: 0.7; }
+        .rss-time { font-size: 0.76em; color: var(--text-muted); }
+        .rss-source { font-size: 0.7em; color: var(--accent); opacity: 0.6; }
 
         /* ── Calendar ── */
-        .calendar-section { position: relative; }
-        .calendar-section .calendar-wrapper { flex: 1; overflow: hidden; position: relative; }
-        .calendar-section iframe { width: 142%; height: 142%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); transform: scale(0.705); transform-origin: top right; }
+        .cal-wrapper { flex: 1; overflow: hidden; position: relative; }
+        .cal-wrapper iframe { width: 142%; height: 142%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); transform: scale(0.705); transform-origin: top right; }
 
         /* ── Stocks ── */
-        .financial-section { padding: 0; flex: 1; display: flex; flex-direction: column; min-height: 0; }
-        .stocks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; flex: 1; min-height: 0; padding: 6px; }
-        .stock-block {
-            background: rgba(30, 41, 59, 0.5); padding: 10px; border-radius: 8px;
+        .stocks-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 5px; min-height: 0; }
+        .stk {
+            background: var(--bg-card-inner); padding: 8px; border-radius: 8px;
             display: flex; flex-direction: column; justify-content: space-between;
-            font-size: 0.9em; transition: background 0.2s;
+            font-size: 0.82em; transition: background 0.2s;
         }
-        .stock-block:hover { background: var(--bg-card-hover); }
-        .stock-symbol { font-weight: 700; color: var(--accent); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 1.05em; }
-        .stock-description { font-size: 0.7em; color: var(--text-secondary); font-weight: normal; }
-        .stock-price { font-size: 1.5em; font-weight: 700; margin-bottom: 4px; }
-        .stock-change { margin-bottom: 4px; font-size: 1.1em; font-weight: 600; }
+        .stk:hover { background: var(--bg-card-hover); }
+        .stk-sym { font-weight: 700; color: var(--accent); display: flex; justify-content: space-between; align-items: center; font-size: 0.95em; }
+        .stk-desc { font-size: 0.65em; color: var(--text-muted); font-weight: normal; }
+        .stk-price { font-size: 1.45em; font-weight: 700; margin: 2px 0; }
+        .stk-chg { font-size: 1em; font-weight: 600; }
+        .stk-chart { width: 100%; height: 28px; margin: 2px 0; }
+        .stk-time { font-size: 0.62em; color: var(--text-muted); }
         .positive { color: var(--positive); } .negative { color: var(--negative); }
-        .trend-chart { width: 100%; height: 24px; margin-bottom: 4px; }
-        .last-update { font-size: 0.7em; color: var(--text-secondary); }
 
         /* ── Weather ── */
-        .weather-section { padding: 14px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-        .weather-current { text-align: center; margin-bottom: 14px; }
-        .weather-icon { font-size: 2.2em; margin-bottom: 6px; }
-        .weather-desc { font-size: 1.15em; margin-bottom: 10px; }
-        .weather-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.95em; margin-bottom: 14px; color: var(--text-secondary); }
-        .weather-details span { color: var(--text-primary); font-weight: 600; }
-        .weather-forecast { flex: 1; min-height: 0; }
-        .forecast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; height: 100%; }
-        .forecast-day {
-            background: rgba(30, 41, 59, 0.5); padding: 8px; border-radius: 8px;
-            text-align: center; display: flex; flex-direction: column; justify-content: space-between;
+        .weather-body { flex: 1; display: flex; flex-direction: column; padding: 10px; min-height: 0; overflow: hidden; }
+        .wx-current { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+        .wx-icon { font-size: 2.8em; line-height: 1; }
+        .wx-info { flex: 1; }
+        .wx-temp-main { font-size: 1.8em; font-weight: 800; color: var(--text-primary); }
+        .wx-desc { font-size: 0.95em; color: var(--text-secondary); }
+        .wx-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 0.78em; margin-bottom: 8px; }
+        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 6px; text-align: center; }
+        .wx-detail-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 2px; }
+        .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 1.05em; }
+        .wx-hourly-chart { width: 100%; height: 60px; margin-bottom: 6px; flex-shrink: 0; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 0 0 auto; }
+        .wx-fday { background: var(--bg-card-inner); padding: 6px; border-radius: 8px; text-align: center; }
+        .wx-fday-name { font-size: 0.78em; color: var(--accent); font-weight: 600; }
+        .wx-fday-icon { font-size: 1.2em; margin: 2px 0; }
+        .wx-fday-temp { font-size: 0.85em; font-weight: 700; }
+
+        /* ── Currency ── */
+        .currency-body { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 10px; }
+        .cur-item {
+            background: var(--bg-card-inner); border-radius: 10px; padding: 10px 12px;
+            display: flex; align-items: center; gap: 10px; flex: 1;
         }
-        .forecast-date { font-size: 0.9em; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
-        .forecast-temp { font-size: 1.05em; font-weight: 700; }
-        .forecast-desc { font-size: 0.8em; color: var(--text-secondary); margin-top: 4px; }
+        .cur-flag { font-size: 1.8em; }
+        .cur-info { flex: 1; }
+        .cur-pair { font-size: 0.85em; color: var(--text-muted); font-weight: 600; }
+        .cur-rate { font-size: 1.5em; font-weight: 800; color: var(--text-primary); }
+        .cur-chg { font-size: 0.85em; font-weight: 600; }
+        .cur-chart { width: 80px; height: 30px; flex-shrink: 0; }
 
         /* ── Motivation ── */
-        .service-content { padding: 14px; flex: 1; overflow-y: auto; }
-        .service-content::-webkit-scrollbar { width: 5px; }
-        .service-content::-webkit-scrollbar-track { background: transparent; }
-        .service-content::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-        .motivation-item {
-            background: rgba(30, 41, 59, 0.5); padding: 22px; border-radius: 10px;
-            text-align: center;
-            border-right: 4px solid var(--accent);
-            height: 100%; display: flex; flex-direction: column; justify-content: center;
-            transition: opacity 0.6s ease;
+        .moti-body { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .moti-card {
+            background: var(--bg-card-inner); padding: 18px; border-radius: 12px;
+            text-align: center; border-right: 4px solid var(--accent);
+            width: 100%; transition: opacity 0.8s ease;
         }
-        .motivation-content { font-size: 1.4em; line-height: 1.6; margin-bottom: 14px; font-style: italic; }
-        .motivation-author { font-size: 0.9em; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
-        .motivation-source { font-size: 0.75em; color: var(--text-secondary); }
+        .moti-text { font-size: 1.25em; line-height: 1.65; font-style: italic; margin-bottom: 10px; }
+        .moti-author { font-size: 0.85em; color: var(--accent); font-weight: 600; }
+        .moti-src { font-size: 0.68em; color: var(--text-muted); margin-top: 4px; }
 
         /* ── Status Bar ── */
-        .status-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.6em; color: var(--text-secondary); padding: 2px 12px;
-            opacity: 0.6;
-        }
+        .status-bar { display: flex; justify-content: space-between; font-size: 0.55em; color: var(--text-muted); padding: 1px 12px; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
         /* ── Responsive ── */
-        .trend-chart { will-change: contents; }
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
             body { font-size: 20px; }
-            .top-row { grid-template-columns: 1fr; }
-            .bottom-row { grid-template-columns: 1fr 1fr; }
-            .forecast-grid { grid-template-columns: repeat(2, 1fr); }
-            .clock { font-size: 2.6em; }
-            .section-header { font-size: 1.15em; }
+            .main-grid { grid-template-columns: 1fr 1fr; }
+            .main-grid .card:nth-child(3) { grid-column: span 2; }
+            .bottom-grid { grid-template-columns: 1fr 1fr; }
+            .bottom-grid .card:nth-child(3) { grid-column: span 2; }
         }
         @media (max-width: 768px) {
-            body { font-size: 18px; }
-            .bottom-row { grid-template-columns: 1fr; }
-            .stocks-grid { grid-template-columns: repeat(3, 1fr); }
-            .clock { font-size: 2.2em; }
-            .section-header { font-size: 1.05em; }
+            body { font-size: 17px; }
+            .main-grid, .bottom-grid { grid-template-columns: 1fr; }
+            .main-grid .card:nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
+            .stocks-body { grid-template-columns: repeat(3, 1fr); }
+            .wx-details { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 480px) {
-            body { font-size: 16px; }
-            .time-section { flex-wrap: wrap; gap: 8px; }
-            .time-section .hebrew-date, .time-section .english-date { flex: 1 1 100%; text-align: center; }
-            .stocks-grid { grid-template-columns: 1fr; }
-            .clock { font-size: 2.0em; }
-            .section-header { font-size: 1.0em; }
+            body { font-size: 15px; }
+            .time-section { flex-wrap: wrap; gap: 6px; }
+            .header-left, .header-right { align-items: center; flex: 1 1 100%; }
+            .stocks-body { grid-template-columns: 1fr 1fr; }
+            .clock { font-size: 2.4em; }
         }
     </style>
     <meta name="referrer" content="no-referrer">
 </head>
 <body>
     <div class="container">
+        <!-- ── Header ── -->
         <div class="time-section">
-            <img class="header-gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG9wZzNjdW1la3Y1MzB5YXo0c2huM2E1bHpncTNveG5hN2QweDVydSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HUE4sDmjViSkKqLY77/giphy.gif" alt="GIF ליד השעון" loading="lazy">
-            <div style="display:flex;flex-direction:column;align-items:start;flex:1">
+            <img class="header-gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG9wZzNjdW1la3Y1MzB5YXo0c2huM2E1bHpncTNveG5hN2QweDVydSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HUE4sDmjViSkKqLY77/giphy.gif" alt="GIF" loading="lazy">
+            <div class="header-left">
                 <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
+                <div class="shabbat-info" id="shabbat-info"></div>
+            </div>
+            <div class="header-center">
+                <div class="clock" id="clock">00:00:00</div>
                 <div class="greeting" id="greeting"></div>
             </div>
-            <div class="clock" id="clock">00:00:00</div>
-            <div class="english-date" id="english-date"></div>
-            <div class="top-temp" id="top-temp">--°C</div>
-            <img class="header-gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWh0djRldGtwNXlhMzdsbm51aWVjdGlteTVnejVkejhxMnVkYTY3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/c7sTwr4KI5lAKIE6p5/giphy.gif" alt="GIF ליד השעון" loading="lazy">
+            <div class="header-right">
+                <div class="english-date" id="english-date"></div>
+                <div class="top-temp" id="top-temp">--°C</div>
+            </div>
+            <img class="header-gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWh0djRldGtwNXlhMzdsbm51aWVjdGlteTVnejVkejhxMnVkYTY3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/c7sTwr4KI5lAKIE6p5/giphy.gif" alt="GIF" loading="lazy">
         </div>
 
-        <div class="top-row">
-            <div class="section news-section">
-                <div class="section-header">
-                    <div class="sync-indicator" id="news-sync"></div>
-                    📰 חדשות
-                </div>
-                <div class="news-content">
-                    <div class="rss-container" id="rss-container"></div>
+        <!-- ── Main Row ── -->
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header"><div class="sync-dot" id="sync-news"></div>📰 חדשות</div>
+                <div class="news-body" id="news-body">
+                    <div class="rss-scroll" id="rss-scroll"></div>
                 </div>
             </div>
-            <div class="section calendar-section">
-                <div class="section-header">
-                    <div class="sync-indicator" id="calendar-sync"></div>
-                    📅 לוח שנה משפחתי
-                </div>
-                <div class="calendar-wrapper">
+            <div class="card" style="position:relative">
+                <div class="card-header"><div class="sync-dot" id="sync-cal"></div>📅 לוח שנה משפחתי</div>
+                <div class="cal-wrapper">
                     <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
                 </div>
             </div>
-
-            <div class="section financial-section">
-                <div class="section-header">
-                    <div class="sync-indicator" id="stocks-sync"></div>
-                    📈 מניות
-                </div>
-                <div class="stocks-grid">
-                    <div class="stock-block" data-symbol="INTC">
-                        <div class="stock-symbol"><span>INTC</span><span class="stock-description">טוען...</span></div>
-                        <div class="stock-price">טוען...</div>
-                        <div class="stock-change">-</div>
-                        <svg class="trend-chart" viewBox="0 0 200 30"></svg>
-                        <div class="last-update">-</div>
-                    </div>
-                    <div class="stock-block" data-symbol="^GSPC">
-                        <div class="stock-symbol"><span>S&P 500</span><span class="stock-description">טוען...</span></div>
-                        <div class="stock-price">טוען...</div>
-                        <div class="stock-change">-</div>
-                        <svg class="trend-chart" viewBox="0 0 200 30"></svg>
-                        <div class="last-update">-</div>
-                    </div>
-                    <div class="stock-block" data-symbol="BTC-USD">
-                        <div class="stock-symbol"><span>Bitcoin</span><span class="stock-description">טוען...</span></div>
-                        <div class="stock-price">טוען...</div>
-                        <div class="stock-change">-</div>
-                        <svg class="trend-chart" viewBox="0 0 200 30"></svg>
-                        <div class="last-update">-</div>
-                    </div>
-                    <div class="stock-block" data-symbol="NVDA">
-                        <div class="stock-symbol"><span>NVDA</span><span class="stock-description">טוען...</span></div>
-                        <div class="stock-price">טוען...</div>
-                        <div class="stock-change">-</div>
-                        <svg class="trend-chart" viewBox="0 0 200 30"></svg>
-                        <div class="last-update">-</div>
-                    </div>
-                    <div class="stock-block" data-symbol="^VIX">
-                        <div class="stock-symbol"><span>VIX</span><span class="stock-description">טוען...</span></div>
-                        <div class="stock-price">טוען...</div>
-                        <div class="stock-change">-</div>
-                        <svg class="trend-chart" viewBox="0 0 200 30"></svg>
-                        <div class="last-update">-</div>
-                    </div>
-                    <div class="stock-block" data-symbol="PLTR">
-                        <div class="stock-symbol"><span>PLTR</span><span class="stock-description">טוען...</span></div>
-                        <div class="stock-price">טוען...</div>
-                        <div class="stock-change">-</div>
-                        <svg class="trend-chart" viewBox="0 0 200 30"></svg>
-                        <div class="last-update">-</div>
-                    </div>
+            <div class="card">
+                <div class="card-header"><div class="sync-dot" id="sync-stocks"></div>📈 מניות</div>
+                <div class="stocks-body" id="stocks-body">
+                    <div class="stk" data-symbol="INTC"><div class="stk-sym"><span>INTC</span><span class="stk-desc">אינטל</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                    <div class="stk" data-symbol="^GSPC"><div class="stk-sym"><span>S&P 500</span><span class="stk-desc">מדד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                    <div class="stk" data-symbol="BTC-USD"><div class="stk-sym"><span>BTC</span><span class="stk-desc">ביטקוין</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                    <div class="stk" data-symbol="NVDA"><div class="stk-sym"><span>NVDA</span><span class="stk-desc">נבידיה</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                    <div class="stk" data-symbol="^VIX"><div class="stk-sym"><span>VIX</span><span class="stk-desc">פחד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                    <div class="stk" data-symbol="PLTR"><div class="stk-sym"><span>PLTR</span><span class="stk-desc">פלנטיר</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
                 </div>
             </div>
         </div>
 
-        <div class="bottom-row">
-            <div class="section weather-section">
-                <div class="section-header">
-                    <div class="sync-indicator" id="weather-sync"></div>
-                    🌤️ מזג אויר — ירושלים
-                </div>
-                <div class="weather-current">
-                    <div class="weather-icon" id="weather-icon">🌤️</div>
-                    <div class="weather-desc" id="weather-desc">טוען מזג אויר...</div>
-                    <div class="weather-details">
-                        <div>💧 לחות: <span id="humidity">--%</span></div>
-                        <div>💨 רוח: <span id="wind">-- קמ"ש</span></div>
-                        <div>🌅 זריחה: <span id="sunrise">--:--</span></div>
-                        <div>🌇 שקיעה: <span id="sunset">--:--</span></div>
+        <!-- ── Bottom Row ── -->
+        <div class="bottom-grid">
+            <div class="card">
+                <div class="card-header"><div class="sync-dot" id="sync-wx"></div>🌤️ מזג אויר — ירושלים</div>
+                <div class="weather-body">
+                    <div class="wx-current">
+                        <div class="wx-icon" id="wx-icon">🌤️</div>
+                        <div class="wx-info">
+                            <div class="wx-temp-main" id="wx-temp">--°C</div>
+                            <div class="wx-desc" id="wx-desc">טוען...</div>
+                        </div>
                     </div>
-                </div>
-                <div class="weather-forecast">
-                    <div class="forecast-grid" id="forecast-grid">
-                        <div class="forecast-day"><div class="forecast-date">טוען...</div><div class="forecast-temp">--°</div><div class="forecast-desc">--</div></div>
-                        <div class="forecast-day"><div class="forecast-date">טוען...</div><div class="forecast-temp">--°</div><div class="forecast-desc">--</div></div>
-                        <div class="forecast-day"><div class="forecast-date">טוען...</div><div class="forecast-temp">--°</div><div class="forecast-desc">--</div></div>
-                        <div class="forecast-day"><div class="forecast-date">טוען...</div><div class="forecast-temp">--°</div><div class="forecast-desc">--</div></div>
+                    <div class="wx-details">
+                        <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
+                        <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
+                        <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
+                        <div class="wx-detail"><div class="wx-detail-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
+                    </div>
+                    <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
+                    <div class="wx-forecast" id="wx-forecast">
+                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
+                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
+                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
+                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
                     </div>
                 </div>
             </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <div class="sync-indicator" id="motivation-sync"></div>
-                    💪 מוטיבציה יומית
+            <div class="card">
+                <div class="card-header"><div class="sync-dot" id="sync-cur"></div>💱 שערי מטבע</div>
+                <div class="currency-body" id="currency-body">
+                    <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-info"><div class="cur-pair">GBP / ILS</div><div class="cur-rate skeleton" id="cur-gbp">--</div></div><div class="cur-chg" id="cur-gbp-chg">-</div></div>
                 </div>
-                <div class="service-content">
-                    <div class="motivation-item">
-                        <div class="motivation-content" id="motivation-text">טוען השראה...</div>
-                        <div class="motivation-author" id="motivation-author"></div>
-                        <div class="motivation-source" id="motivation-source"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="sync-dot" id="sync-moti"></div>💪 מוטיבציה</div>
+                <div class="moti-body">
+                    <div class="moti-card">
+                        <div class="moti-text" id="moti-text">טוען השראה...</div>
+                        <div class="moti-author" id="moti-author"></div>
+                        <div class="moti-src" id="moti-src"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="status-bar">
-            <span id="status-text">Dashboard v2.0 — משפחת רגואן</span>
-            <span id="last-refresh">רענון אחרון: --:--</span>
-        </div>
+        <div class="status-bar"><span>Dashboard v3.0 — משפחת רגואן</span><span id="last-refresh">רענון: --:--</span></div>
     </div>
 
     <script>
-        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-        const cache = new Map();
-        const elements = {
-            clock: document.getElementById('clock'),
-            englishDate: document.getElementById('english-date'),
-            hebrewDate: document.getElementById('hebrew-date'),
-            greeting: document.getElementById('greeting'),
-            topTemp: document.getElementById('top-temp'),
-            weatherIcon: document.getElementById('weather-icon'),
-            weatherDesc: document.getElementById('weather-desc'),
-            humidity: document.getElementById('humidity'),
-            wind: document.getElementById('wind'),
-            sunrise: document.getElementById('sunrise'),
-            sunset: document.getElementById('sunset'),
-            motivationText: document.getElementById('motivation-text'),
-            motivationAuthor: document.getElementById('motivation-author'),
-            motivationSource: document.getElementById('motivation-source'),
-            rssContainer: document.getElementById('rss-container'),
-            forecastGrid: document.getElementById('forecast-grid'),
-            lastRefresh: document.getElementById('last-refresh')
-        };
-        const syncIndicators = {
-            news: document.getElementById('news-sync'),
-            calendar: document.getElementById('calendar-sync'),
-            stocks: document.getElementById('stocks-sync'),
-            weather: document.getElementById('weather-sync'),
-            motivation: document.getElementById('motivation-sync')
-        };
-        const proxies = [ 'https://api.allorigins.win/get?url=', 'https://api.codetabs.com/v1/proxy?quest=' ];
-        const weatherCodes = { 0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים' };
-        const weatherEmojis = { 0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️' };
-        function getCachedData(key){ const c=cache.get(key); if(c&&Date.now()-c.timestamp<CACHE_DURATION) return c.data; return null; }
-        function setCachedData(key,data){ cache.set(key,{data,timestamp:Date.now()}); }
-        function setSyncStatus(service,status){ const i=syncIndicators[service]; if(!i) return; i.className='sync-indicator'; if(status==='syncing') i.classList.add('syncing'); else if(status==='error') i.classList.add('error'); }
-        function updateRefreshTime(){ if(elements.lastRefresh) elements.lastRefresh.textContent='רענון אחרון: '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jerusalem'}); }
-        function getGreeting(){ const h=new Date().getHours(); if(h>=5&&h<12) return '🌅 בוקר טוב למשפחת רגואן!'; if(h>=12&&h<17) return '☀️ צהריים טובים!'; if(h>=17&&h<21) return '🌇 ערב טוב למשפחה!'; return '🌙 לילה טוב!'; }
-        function updateClock(){ const now=new Date(); const t=now.toLocaleTimeString('he-IL',{hour12:false,timeZone:'Asia/Jerusalem'}); if(elements.clock.textContent!==t) elements.clock.textContent=t; const d=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:'Asia/Jerusalem'}); if(elements.englishDate.textContent!==d) elements.englishDate.textContent=d; const g=getGreeting(); if(elements.greeting&&elements.greeting.textContent!==g) elements.greeting.textContent=g; }
-        async function updateHebrewDate(){ const key='hebrew-date-'+new Date().toDateString(); const c=getCachedData(key); if(c){ elements.hebrewDate.textContent=c; return;} try{ const now=new Date(); const url=`https://www.hebcal.com/converter?cfg=json&gy=${now.getFullYear()}&gm=${now.getMonth()+1}&gd=${now.getDate()}&g2h=1`; for(const p of proxies){ try{ const r=await fetch(p+encodeURIComponent(url)); const dj=await r.json(); const res=p.includes('allorigins')?JSON.parse(dj.contents):dj; if(res.hebrew){ elements.hebrewDate.textContent=res.hebrew; setCachedData(key,res.hebrew); break; } }catch(e){ continue; } } }catch(e){ console.error('Hebrew date fetch failed:',e);} }
-        async function updateWeather(){ setSyncStatus('weather','syncing'); const key='weather-data'; const c=getCachedData(key); if(c){ displayWeatherData(c); setSyncStatus('weather','success'); return;} try{ const url='https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5'; const r=await fetch(url); const d=await r.json(); if(d.current_weather&&d.daily){ setCachedData(key,d); displayWeatherData(d); setSyncStatus('weather','success'); } }catch(e){ console.error('Weather update failed:',e); setSyncStatus('weather','error'); } }
-        function displayWeatherData(data){ if(elements.topTemp) elements.topTemp.textContent=Math.round(data.current_weather.temperature)+'°C'; if(elements.weatherDesc) elements.weatherDesc.textContent=weatherCodes[data.current_weather.weathercode]||'לא ידוע'; if(elements.weatherIcon) elements.weatherIcon.textContent=weatherEmojis[data.current_weather.weathercode]||'🌡️'; if(elements.wind) elements.wind.textContent=Math.round(data.current_weather.windspeed)+' קמ"ש'; if(data.daily){ const sr=new Date(data.daily.sunrise[0]); const ss=new Date(data.daily.sunset[0]); if(elements.sunrise) elements.sunrise.textContent=sr.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}); if(elements.sunset) elements.sunset.textContent=ss.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}); const days=document.querySelectorAll('#forecast-grid .forecast-day'); for(let i=1;i<=4;i++){ if(days[i-1]&&data.daily.time[i]){ const date=new Date(data.daily.time[i]); const dayName=date.toLocaleDateString('he-IL',{weekday:'short'}); const maxT=Math.round(data.daily.temperature_2m_max[i]); const minT=Math.round(data.daily.temperature_2m_min[i]); const wcode=data.daily.weathercode[i]; const emoji=weatherEmojis[wcode]||'🌡️'; const desc=weatherCodes[wcode]||'לא ידוע'; days[i-1].innerHTML=`<div class="forecast-date">${dayName}</div><div style="font-size:1.4em">${emoji}</div><div class="forecast-temp">${maxT}°/${minT}°</div><div class="forecast-desc">${desc}</div>`; } } }
-            if(elements.humidity) elements.humidity.textContent=Math.floor(Math.random()*30+40)+'%'; }
-        async function updateRSSFeed(){ if(!elements.rssContainer) return; setSyncStatus('news','syncing'); const key='rss-feed'; const c=cache.get(key); if(c&&Date.now()-c.timestamp<60000){ displayRSSFeed(c.data); setSyncStatus('news','success'); return;} const rssFeeds=[
-                {url:'https://rotter.net/rss/rotternews.xml', source:'רוטר'},
-                {url:'https://www.rotter.net/scoopscache.xml', source:'רוטר סקופים'},
-                {url:'https://rotter.net/scoopscache.xml', source:'רוטר'},
-                {url:'https://www.rotter.net/rss.xml', source:'רוטר'}
-            ];
-            try{
-                for(const feed of rssFeeds){
-                    try{
-                        const r=await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
-                        if(r.ok){
-                            const res=await r.json();
-                            if(res.status==='ok'&&res.items&&res.items.length>0){
-                                const items=res.items.map(it=>({...it,source:feed.source}));
-                                items.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0));
-                                cache.set(key,{data:items,timestamp:Date.now()});
-                                displayRSSFeed(items);
-                                setSyncStatus('news','success');
-                                return;
-                            }
-                        }
-                    }catch(e){}
-                    for(const p of proxies){
-                        try{
-                            const pr=await fetch(p+encodeURIComponent(feed.url));
-                            if(!pr.ok) continue;
-                            if(p.includes('allorigins')){
-                                const wrapped=await pr.json();
-                                const text=wrapped.contents;
-                                const parser=new DOMParser();
-                                const xml=parser.parseFromString(text,'text/xml');
-                                const items=parseRSSXML(xml,feed.source);
-                                if(items.length>0){ items.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0)); cache.set(key,{data:items,timestamp:Date.now()}); displayRSSFeed(items); setSyncStatus('news','success'); return; }
-                            } else {
-                                const text=await pr.text();
-                                const parser=new DOMParser();
-                                const xml=parser.parseFromString(text,'text/xml');
-                                const items=parseRSSXML(xml,feed.source);
-                                if(items.length>0){ items.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0)); cache.set(key,{data:items,timestamp:Date.now()}); displayRSSFeed(items); setSyncStatus('news','success'); return; }
-                            }
-                        }catch(e){ continue; }
-                    }
+    /* ═══════════════════════════════════════════════════════════════
+       FAMILY DASHBOARD v3.0 — Refactored
+       ═══════════════════════════════════════════════════════════════ */
+
+    // ── Config ──
+    const CACHE_TTL = 5 * 60000;
+    const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
+    const STOCK_SYMBOLS = ['INTC','^GSPC','BTC-USD','NVDA','^VIX','PLTR'];
+    const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
+    const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
+    const STOCK_NAMES = {INTC:'אינטל — מעבדים','^GSPC':'S&P 500','BTC-USD':'ביטקוין',NVDA:'נבידיה — AI','^VIX':'מדד הפחד',PLTR:'פלנטיר — דאטה'};
+    const MOTIVATIONS = [
+        {t:'הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.',a:'אברהם לינקולן'},
+        {t:'אל תפחד להיכשל. פחד שלא תנסה.',a:'רוי ט. בנט'},
+        {t:'כל יום הוא הזדמנות חדשה לשנות את חייך.',a:''},
+        {t:'הצלחה היא לא סופית, כישלון הוא לא קטלני: האומץ להמשיך הוא מה שחשוב.',a:'וינסטון צ\'רצ\'יל'},
+        {t:'תאמין שאתה יכול ואתה כבר באמצע הדרך.',a:'תיאודור רוזוולט'},
+        {t:'החיים הם 10% מה שקורה לך ו-90% איך אתה מגיב.',a:'צ\'ארלס סווינדול'},
+        {t:'הדרך של אלף מיל מתחילה בצעד אחד.',a:'לאו דזה'},
+        {t:'המחר שייך לאלה שמתכוננים אליו היום.',a:'מלקולם איקס'},
+        {t:'אל תמדוד את עצמך במה שהשגת, אלא במה שהיית צריך להשיג עם היכולות שלך.',a:'ג\'ון וודן'},
+        {t:'כשאתה חושב שאתה לא יכול, תזכור למה התחלת.',a:''},
+        {t:'אין מעלית להצלחה. אתה צריך לקחת את המדרגות.',a:'זיג זיגלר'},
+        {t:'הזמן הטוב ביותר לשתול עץ היה לפני 20 שנה. הזמן הטוב ביותר השני הוא עכשיו.',a:'פתגם סיני'},
+        {t:'לא משנה כמה לאט אתה הולך, כל עוד אתה לא עוצר.',a:'קונפוציוס'},
+        {t:'תעשה היום את מה שאחרים לא רוצים, ומחר תעשה את מה שאחרים לא יכולים.',a:'ג\'רי רייס'},
+        {t:'אופטימיות היא האמונה שמובילה להישגים. שום דבר לא יכול להיעשות בלי תקווה ואמונה.',a:'הלן קלר'},
+        {t:'המשפחה היא לא דבר חשוב. המשפחה היא הכל.',a:'מייקל ג\'יי פוקס'},
+        {t:'השינוי הוא חוק החיים. ואלה שמסתכלים רק על העבר או ההווה בטוח יפסידו את העתיד.',a:'ג\'ון פ. קנדי'},
+        {t:'החוזק לא בא ממה שאתה יכול לעשות. הוא בא מהתגברות על מה שחשבת שלא תוכל.',a:'ריקי רוג\'רס'},
+        {t:'הבית הוא המקום שבו המשפחה נמצאת.',a:''},
+        {t:'כל מה שאתה יכול לדמיין הוא אמיתי.',a:'פבלו פיקאסו'},
+    ];
+    let motiIdx = Math.floor(Math.random() * MOTIVATIONS.length);
+
+    // ── Cache ──
+    const _cache = new Map();
+    const cGet = (k) => { const c = _cache.get(k); return (c && Date.now() - c.ts < CACHE_TTL) ? c.d : null; };
+    const cSet = (k, d, ttl) => _cache.set(k, { d, ts: Date.now(), ttl: ttl || CACHE_TTL });
+    const cGetRaw = (k, ttl) => { const c = _cache.get(k); return (c && Date.now() - c.ts < (ttl || CACHE_TTL)) ? c.d : null; };
+
+    // ── DOM Refs ──
+    const $ = id => document.getElementById(id);
+    const el = {
+        clock: $('clock'), engDate: $('english-date'), hebDate: $('hebrew-date'),
+        greeting: $('greeting'), shabbat: $('shabbat-info'), topTemp: $('top-temp'),
+        wxIcon: $('wx-icon'), wxTemp: $('wx-temp'), wxDesc: $('wx-desc'),
+        wxHum: $('wx-hum'), wxWind: $('wx-wind'), wxUv: $('wx-uv'),
+        wxRise: $('wx-rise'), wxHourly: $('wx-hourly'), wxForecast: $('wx-forecast'),
+        newsBody: $('news-body'), rssScroll: $('rss-scroll'),
+        curUsd: $('cur-usd'), curEur: $('cur-eur'), curGbp: $('cur-gbp'),
+        curUsdChg: $('cur-usd-chg'), curEurChg: $('cur-eur-chg'), curGbpChg: $('cur-gbp-chg'),
+        motiText: $('moti-text'), motiAuthor: $('moti-author'), motiSrc: $('moti-src'),
+        refresh: $('last-refresh'),
+    };
+    const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti') };
+    const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
+
+    // ── Fetch Helpers ──
+    async function fetchJSON(url) {
+        try { const r = await fetch(url); if (r.ok) return await r.json(); } catch (_) {}
+        for (const p of PROXIES) {
+            try {
+                const r = await fetch(p + encodeURIComponent(url));
+                if (!r.ok) continue;
+                if (p.includes('allorigins')) { const w = await r.json(); return JSON.parse(w.contents); }
+                else { const t = await r.text(); try { return JSON.parse(t); } catch { return { text: t }; } }
+            } catch (_) { continue; }
+        }
+        throw new Error('Fetch failed: ' + url);
+    }
+    async function translateHe(text) {
+        const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=he&dt=t&q=' + encodeURIComponent(text);
+        try { const r = await fetch(url); if (r.ok) { const d = await r.json(); return d[0].map(p => p[0]).join(''); } } catch (_) {}
+        for (const p of PROXIES) {
+            try { const r = await fetch(p + encodeURIComponent(url)); if (!r.ok) continue; const d = p.includes('allorigins') ? JSON.parse((await r.json()).contents) : JSON.parse(await r.text()); return d[0].map(q => q[0]).join(''); } catch (_) { continue; }
+        }
+        return text;
+    }
+
+    // ── Clock & Greeting ──
+    function getGreeting() { const h = new Date().getHours(); if (h >= 5 && h < 12) return '🌅 בוקר טוב למשפחת רגואן!'; if (h >= 12 && h < 17) return '☀️ צהריים טובים!'; if (h >= 17 && h < 21) return '🌇 ערב טוב למשפחה!'; return '🌙 לילה טוב!'; }
+    function tickClock() {
+        const now = new Date();
+        const t = now.toLocaleTimeString('he-IL', { hour12: false, timeZone: 'Asia/Jerusalem' });
+        if (el.clock.textContent !== t) el.clock.textContent = t;
+        const d = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jerusalem' });
+        if (el.engDate.textContent !== d) el.engDate.textContent = d;
+        const g = getGreeting(); if (el.greeting.textContent !== g) el.greeting.textContent = g;
+    }
+
+    // ── Hebrew Date + Shabbat ──
+    async function loadHebrewDate() {
+        const key = 'heb-' + new Date().toDateString(); const c = cGet(key); if (c) { el.hebDate.textContent = c; return; }
+        try { const now = new Date(); const d = await fetchJSON(`https://www.hebcal.com/converter?cfg=json&gy=${now.getFullYear()}&gm=${now.getMonth() + 1}&gd=${now.getDate()}&g2h=1`);
+            if (d.hebrew) { el.hebDate.textContent = d.hebrew; cSet(key, d.hebrew); }
+        } catch (e) { console.error('Hebrew date:', e); }
+    }
+    async function loadShabbat() {
+        const key = 'shabbat-' + new Date().toDateString(); const c = cGet(key); if (c) { el.shabbat.textContent = c; return; }
+        try { const d = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+            if (d.items) {
+                const candles = d.items.find(i => i.category === 'candles');
+                const havdalah = d.items.find(i => i.category === 'havdalah');
+                const parts = [];
+                if (candles) parts.push('🕯️ הדלקת נרות: ' + new Date(candles.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }));
+                if (havdalah) parts.push('✨ הבדלה: ' + new Date(havdalah.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }));
+                const txt = parts.join('  |  ');
+                el.shabbat.textContent = txt; cSet(key, txt);
+            }
+        } catch (e) { console.error('Shabbat:', e); }
+    }
+
+    // ── Weather (with hourly graph, real humidity, UV) ──
+    async function loadWeather() {
+        setSync('wx', 'syncing');
+        const key = 'wx'; const c = cGet(key); if (c) { renderWeather(c); setSync('wx', 'success'); return; }
+        try {
+            const d = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5').then(r => r.json());
+            if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); }
+        } catch (e) { console.error('Weather:', e); setSync('wx', 'error'); }
+    }
+    function renderWeather(d) {
+        const cw = d.current_weather;
+        el.topTemp.textContent = Math.round(cw.temperature) + '°C';
+        el.wxTemp.textContent = Math.round(cw.temperature) + '°C';
+        el.wxDesc.textContent = WX_CODES[cw.weathercode] || 'לא ידוע';
+        el.wxIcon.textContent = WX_EMOJI[cw.weathercode] || '🌡️';
+        el.wxWind.textContent = Math.round(cw.windspeed) + ' קמ"ש';
+        // Real humidity & UV from hourly data
+        if (d.hourly) {
+            const nowH = new Date().getHours();
+            if (d.hourly.relativehumidity_2m?.[nowH] != null) el.wxHum.textContent = d.hourly.relativehumidity_2m[nowH] + '%';
+            if (d.hourly.uv_index?.[nowH] != null) el.wxUv.textContent = d.hourly.uv_index[nowH].toFixed(1);
+            // Hourly temperature graph (next 12h)
+            renderHourlyChart(d.hourly.temperature_2m.slice(nowH, nowH + 12), nowH);
+        }
+        if (d.daily) {
+            const sr = new Date(d.daily.sunrise[0]);
+            el.wxRise.textContent = sr.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+            // Forecast
+            const fDays = el.wxForecast.querySelectorAll('.wx-fday');
+            for (let i = 1; i <= 4; i++) {
+                if (fDays[i - 1] && d.daily.time[i]) {
+                    const dn = new Date(d.daily.time[i]).toLocaleDateString('he-IL', { weekday: 'short' });
+                    const mx = Math.round(d.daily.temperature_2m_max[i]);
+                    const mn = Math.round(d.daily.temperature_2m_min[i]);
+                    const wc = d.daily.weathercode[i];
+                    fDays[i - 1].innerHTML = `<div class="wx-fday-name">${dn}</div><div class="wx-fday-icon">${WX_EMOJI[wc] || '🌡️'}</div><div class="wx-fday-temp">${mx}°/${mn}°</div>`;
                 }
-                elements.rssContainer.innerHTML = `<div class="rss-item"><div class="rss-title">לא ניתן לטעון חדשות כרגע</div><div class="rss-meta"><span class="rss-time">נסה שוב מאוחר יותר</span></div></div>`;
-                setSyncStatus('news','error');
-            }catch(e){
-                console.error('RSS feed update failed:',e);
-                elements.rssContainer.innerHTML=`<div class="rss-item"><div class="rss-title">שגיאה בטעינת חדשות</div><div class="rss-meta"><span class="rss-time">בדוק חיבור לאינטרנט</span></div></div>`;
-                setSyncStatus('news','error');
             }
         }
-        function parseRSSXML(xml,source){ const items=[]; xml.querySelectorAll('item').forEach(item=>{ const title=item.querySelector('title')?.textContent||''; const pubDate=item.querySelector('pubDate')?.textContent||''; const link=item.querySelector('link')?.textContent||''; if(title) items.push({title:title.trim(),pubDate,link,source:source||'RSS'}); }); return items.slice(0,15); }
-        function displayRSSFeed(items){ elements.rssContainer.innerHTML=''; items.slice(0,15).forEach(it=>{ const el=document.createElement('div'); el.className='rss-item'; const t=it.pubDate?new Date(it.pubDate).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}):'--:--'; const src=it.source||'RSS'; const titleDiv=document.createElement('div'); titleDiv.className='rss-title'; titleDiv.textContent=it.title; el.appendChild(titleDiv); const metaDiv=document.createElement('div'); metaDiv.className='rss-meta'; const timeSpan=document.createElement('span'); timeSpan.className='rss-time'; timeSpan.textContent=t; metaDiv.appendChild(timeSpan); const srcSpan=document.createElement('span'); srcSpan.className='rss-source'; srcSpan.textContent=src; metaDiv.appendChild(srcSpan); el.appendChild(metaDiv); if(it.link){ el.style.cursor='pointer'; el.addEventListener('click',()=>window.open(it.link,'_blank')); } elements.rssContainer.appendChild(el); }); }
-        async function fetchJSON(url){ try{ const res=await fetch(url); if(res.ok) return await res.json(); }catch(_){} for(const p of proxies){ try{ const res=await fetch(p+encodeURIComponent(url)); if(!res.ok) continue; if(p.includes('allorigins')){ const wrapped=await res.json(); return JSON.parse(wrapped.contents); } else { const text=await res.text(); try{ return JSON.parse(text);}catch{ return {text}; } } }catch(_){ } } throw new Error('All fetch attempts failed for '+url); }
-        async function translateToHebrew(text){ const base='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=he&dt=t&q='+encodeURIComponent(text); try{ let res=await fetch(base); if(!res.ok) throw new Error('direct failed'); let data=await res.json(); return data[0].map(p=>p[0]).join(''); }catch(_){ for(const p of proxies){ try{ const res=await fetch(p+encodeURIComponent(base)); if(!res.ok) continue; const data=p.includes('allorigins')?JSON.parse((await res.json()).contents):JSON.parse(await res.text()); return data[0].map(q=>q[0]).join(''); }catch(_){ continue; } } } return text; }
-        async function getOnlineMotivation(){ const sources=[ async()=>{ const d=await fetchJSON('https://api.quotable.io/random?tags=inspirational|motivational|wisdom&maxLength=200'); return {text:d.content||'',author:d.author||'',source:'Quotable'}; }, async()=>{ const d=await fetchJSON('https://zenquotes.io/api/random'); const q=Array.isArray(d)?d[0]:d; return {text:q.q||'',author:q.a||'',source:'ZenQuotes'}; }, async()=>{ const d=await fetchJSON('https://api.quotable.io/random?maxLength=200'); return {text:d.content||'',author:d.author||'',source:'Quotable'}; } ]; for(const s of sources){ try{ const f=await s(); if(f.text) return f; }catch(e){ continue; } } return null; }
-        const hebrewMotivations = [
-            {text:'הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.',author:'אברהם לינקולן'},
-            {text:'אל תפחד להיכשל. פחד שלא תנסה.',author:'רוי ט. בנט'},
-            {text:'כל יום הוא הזדמנות חדשה לשנות את חייך.',author:''},
-            {text:'הצלחה היא לא סופית, כישלון הוא לא קטלני: האומץ להמשיך הוא מה שחשוב.',author:'וינסטון צ\'רצ\'יל'},
-            {text:'תאמין שאתה יכול ואתה כבר באמצע הדרך.',author:'תיאודור רוזוולט'},
-            {text:'החיים הם 10% מה שקורה לך ו-90% איך אתה מגיב.',author:'צ\'ארלס סווינדול'},
-            {text:'הדרך של אלף מיל מתחילה בצעד אחד.',author:'לאו דזה'},
-            {text:'המחר שייך לאלה שמתכוננים אליו היום.',author:'מלקולם איקס'},
-            {text:'אל תמדוד את עצמך במה שהשגת, אלא במה שהיית צריך להשיג עם היכולות שלך.',author:'ג\'ון וודן'},
-            {text:'כשאתה חושב שאתה לא יכול, תזכור למה התחלת.',author:''},
-            {text:'גם מסע של אלף קילומטרים מתחיל בצעד הראשון.',author:''},
-            {text:'אין מעלית להצלחה. אתה צריך לקחת את המדרגות.',author:'זיג זיגלר'},
-            {text:'הזמן הטוב ביותר לשתול עץ היה לפני 20 שנה. הזמן הטוב ביותר השני הוא עכשיו.',author:'פתגם סיני'},
-            {text:'החוזק לא בא ממה שאתה יכול לעשות. הוא בא מהתגברות על מה שחשבת שלא תוכל.',author:'ריקי רוג\'רס'},
-            {text:'השינוי הוא חוק החיים. ואלה שמסתכלים רק על העבר או ההווה בטוח יפסידו את העתיד.',author:'ג\'ון פ. קנדי'},
-            {text:'לא משנה כמה לאט אתה הולך, כל עוד אתה לא עוצר.',author:'קונפוציוס'},
-            {text:'תעשה היום את מה שאחרים לא רוצים, ומחר תעשה את מה שאחרים לא יכולים.',author:'ג\'רי רייס'},
-            {text:'אופטימיות היא האמונה שמובילה להישגים. שום דבר לא יכול להיעשות בלי תקווה ואמונה.',author:'הלן קלר'},
-            {text:'המשפחה היא לא דבר חשוב. המשפחה היא הכל.',author:'מייקל ג\'יי פוקס'},
-            {text:'הבית הוא המקום שבו המשפחה נמצאת.',author:''},
+    }
+    function renderHourlyChart(temps, startH) {
+        if (!temps || temps.length < 2) return;
+        const W = 500, H = 60, P = 8;
+        const min = Math.min(...temps), max = Math.max(...temps), range = max - min || 1;
+        const pts = temps.map((t, i) => ({ x: P + (i / (temps.length - 1)) * (W - 2 * P), y: P + (1 - (t - min) / range) * (H - 2 * P - 14) }));
+        // Smooth bezier path
+        let path = `M${pts[0].x},${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) {
+            const cp = (pts[i].x - pts[i - 1].x) / 2;
+            path += ` C${pts[i - 1].x + cp},${pts[i - 1].y} ${pts[i].x - cp},${pts[i].y} ${pts[i].x},${pts[i].y}`;
+        }
+        const areaPath = path + ` L${pts[pts.length - 1].x},${H - P} L${pts[0].x},${H - P} Z`;
+        // Hour labels
+        let labels = '';
+        for (let i = 0; i < temps.length; i += 2) {
+            const h = (startH + i) % 24;
+            labels += `<text x="${pts[i].x}" y="${H - 1}" fill="#64748b" font-size="8" text-anchor="middle">${String(h).padStart(2, '0')}</text>`;
+        }
+        // Temp labels at peaks
+        const maxI = temps.indexOf(Math.max(...temps));
+        const minI = temps.indexOf(Math.min(...temps));
+        labels += `<text x="${pts[maxI].x}" y="${pts[maxI].y - 4}" fill="#f87171" font-size="8" text-anchor="middle" font-weight="bold">${Math.round(temps[maxI])}°</text>`;
+        labels += `<text x="${pts[minI].x}" y="${pts[minI].y - 4}" fill="#60a5fa" font-size="8" text-anchor="middle" font-weight="bold">${Math.round(temps[minI])}°</text>`;
+        el.wxHourly.innerHTML = `
+            <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0.02"/></linearGradient></defs>
+            <path d="${areaPath}" fill="url(#hg)" /><path d="${path}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
+            ${pts.map((p, i) => i % 2 === 0 ? `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#60a5fa"/>` : '').join('')}
+            ${labels}`;
+    }
+
+    // ── News (1-min refresh, auto-scroll, sorted newest first, with source) ──
+    async function loadNews() {
+        setSync('news', 'syncing');
+        const key = 'news'; const c = cGetRaw(key, 60000); if (c) { renderNews(c); setSync('news', 'success'); return; }
+        const feeds = [
+            { url: 'https://rotter.net/rss/rotternews.xml', src: 'רוטר' },
+            { url: 'https://www.rotter.net/scoopscache.xml', src: 'רוטר סקופים' },
+            { url: 'https://www.rotter.net/rss.xml', src: 'רוטר' }
         ];
-        let motivationIndex = Math.floor(Math.random() * hebrewMotivations.length);
-        async function updateMotivation(){ setSyncStatus('motivation','syncing'); try{
-            // Try online quote first
-            const online = await getOnlineMotivation();
-            if(online && online.text){
-                const translated = await translateToHebrew(online.text);
-                const authorHeb = online.author ? await translateToHebrew(online.author) : '';
-                if(elements.motivationText) elements.motivationText.textContent = translated;
-                if(elements.motivationAuthor) elements.motivationAuthor.textContent = authorHeb ? `— ${authorHeb}` : '';
-                if(elements.motivationSource) elements.motivationSource.textContent = `מקור: ${online.source}`;
-                setSyncStatus('motivation','success');
-                return;
+        for (const feed of feeds) {
+            // Try rss2json
+            try {
+                const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url));
+                if (r.ok) { const j = await r.json(); if (j.status === 'ok' && j.items?.length) { const items = j.items.map(x => ({ ...x, source: feed.src })).sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0)); _cache.set(key, { d: items, ts: Date.now() }); renderNews(items); setSync('news', 'success'); return; } }
+            } catch (_) {}
+            // Try proxies
+            for (const p of PROXIES) {
+                try {
+                    const r = await fetch(p + encodeURIComponent(feed.url)); if (!r.ok) continue;
+                    const txt = p.includes('allorigins') ? (await r.json()).contents : await r.text();
+                    const xml = new DOMParser().parseFromString(txt, 'text/xml');
+                    const items = []; xml.querySelectorAll('item').forEach(it => { const t = it.querySelector('title')?.textContent?.trim(); if (t) items.push({ title: t, pubDate: it.querySelector('pubDate')?.textContent || '', link: it.querySelector('link')?.textContent || '', source: feed.src }); });
+                    if (items.length) { items.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0)); _cache.set(key, { d: items.slice(0, 18), ts: Date.now() }); renderNews(items.slice(0, 18)); setSync('news', 'success'); return; }
+                } catch (_) { continue; }
             }
-        }catch(e){ /* fall through to offline */ }
-            // Fallback: rotate through Hebrew motivations
-            const m = hebrewMotivations[motivationIndex % hebrewMotivations.length];
-            motivationIndex++;
-            if(elements.motivationText) elements.motivationText.textContent = m.text;
-            if(elements.motivationAuthor) elements.motivationAuthor.textContent = m.author ? `— ${m.author}` : '';
-            if(elements.motivationSource) elements.motivationSource.textContent = '';
-            setSyncStatus('motivation','success');
         }
-        function formatPrice(price,symbol){ const num=parseFloat(price); if(symbol==='BTC-USD') return '$'+num.toLocaleString('en-US',{maximumFractionDigits:0}); else if(num>=1000) return '$'+num.toLocaleString('en-US',{maximumFractionDigits:0}); else if(num>=100) return '$'+num.toFixed(1); else return '$'+num.toFixed(2); }
-        function generateTrendChart(prices,isPositive){ if(!prices||prices.length<2) return ''; const width=200,height=30,padding=2; const min=Math.min(...prices),max=Math.max(...prices),range=max-min||1; const points=prices.map((p,i)=>{ const x=(i/(prices.length-1))*(width-2*padding)+padding; const y=height-padding-((p-min)/range)*(height-2*padding); return `${x},${y}`; }).join(' '); const color=isPositive?'#34d399':'#f87171'; const gid='gradient-'+Math.random().toString(36).substr(2,9); return `<defs><linearGradient id="${gid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${color};stop-opacity:0.8" /><stop offset="100%" style="stop-color:${color};stop-opacity:0.1" /></linearGradient></defs><polyline fill="none" stroke="${color}" stroke-width="1.5" points="${points}" /><polygon fill="url(#${gid})" points="${points} ${width-padding},${height-padding} ${padding},${height-padding}" />`; }
-        async function updateStock(symbol){ const block=document.querySelector(`[data-symbol="${symbol}"]`); if(!block) return; const key=`stock-${symbol}`; const c=getCachedData(key); if(c){ displayStockData(block,c,symbol); return;}
-            // Try Yahoo Finance v8 chart API via multiple proxies
-            try{ const now=Math.floor(Date.now()/1000); const weekAgo=now-(7*24*60*60); const priceUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${weekAgo}&period2=${now}&interval=1d`;
-                for(const p of proxies){ try{ const pr=await fetch(p+encodeURIComponent(priceUrl)); const pj=await pr.json(); const priceRes=p.includes('allorigins')?JSON.parse(pj.contents):pj; if(priceRes.chart?.result?.[0]){ const desc=getHebrewDescription(symbol); const combined={...priceRes,description:desc}; setCachedData(key,combined); displayStockData(block,combined,symbol); return; } }catch(e){ continue; } }
-            }catch(e){}
-            // Fallback: try Yahoo v6 quote API
-            try{ const quoteUrl=`https://query1.finance.yahoo.com/v6/finance/quote?symbols=${symbol}`;
-                for(const p of proxies){ try{ const qr=await fetch(p+encodeURIComponent(quoteUrl)); const qj=await qr.json(); const qres=p.includes('allorigins')?JSON.parse(qj.contents):qj; const q=qres.quoteResponse?.result?.[0]; if(q&&q.regularMarketPrice){ const fallbackData={chart:{result:[{meta:{regularMarketPrice:q.regularMarketPrice,previousClose:q.regularMarketPreviousClose||q.regularMarketPrice},indicators:{quote:[{close:[q.regularMarketPrice]}]}}]},description:getHebrewDescription(symbol,q.shortName)}; setCachedData(key,fallbackData); displayStockData(block,fallbackData,symbol); return; } }catch(e){ continue; } }
-            }catch(e){}
-            // Fallback: try alternative free API
-            try{ const altUrl=`https://api.allorigins.win/get?url=${encodeURIComponent(`https://finance.yahoo.com/quote/${symbol}/`)}`;
-                const r=await fetch(altUrl); const d=await r.json();
-                if(d.contents){ const priceMatch=d.contents.match(/"regularMarketPrice":\{"raw":([\d.]+)/); const prevMatch=d.contents.match(/"regularMarketPreviousClose":\{"raw":([\d.]+)/);
-                    if(priceMatch){ const price=parseFloat(priceMatch[1]); const prev=prevMatch?parseFloat(prevMatch[1]):price; const fallbackData={chart:{result:[{meta:{regularMarketPrice:price,previousClose:prev},indicators:{quote:[{close:[prev,price]}]}}]},description:getHebrewDescription(symbol)}; setCachedData(key,fallbackData); displayStockData(block,fallbackData,symbol); return; } }
-            }catch(e){}
-            // All failed — show last known or error
-            const descEl=block.querySelector('.stock-description'); if(descEl) descEl.textContent=getHebrewDescription(symbol);
-            block.querySelector('.stock-price').textContent='N/A';
-            block.querySelector('.stock-change').textContent='--';
-            block.querySelector('.last-update').textContent='שגיאה';
+        setSync('news', 'error');
+    }
+    function renderNews(items) {
+        el.rssScroll.innerHTML = '';
+        const list = items.slice(0, 18);
+        // Duplicate for seamless scroll loop
+        const all = [...list, ...list];
+        all.forEach(it => {
+            const div = document.createElement('div'); div.className = 'rss-item';
+            const ttl = document.createElement('div'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
+            const meta = document.createElement('div'); meta.className = 'rss-meta';
+            const tm = document.createElement('span'); tm.className = 'rss-time'; tm.textContent = it.pubDate ? new Date(it.pubDate).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '--:--'; meta.appendChild(tm);
+            const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; meta.appendChild(sr);
+            div.appendChild(meta);
+            if (it.link) div.addEventListener('click', () => window.open(it.link, '_blank'));
+            el.rssScroll.appendChild(div);
+        });
+        // Set scroll animation duration based on item count
+        const h = el.rssScroll.scrollHeight / 2;
+        el.rssScroll.style.animation = `newsScroll ${Math.max(40, list.length * 4)}s linear infinite`;
+        // Inject keyframes dynamically
+        const styleId = 'news-scroll-style';
+        let sEl = document.getElementById(styleId);
+        if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
+        sEl.textContent = `@keyframes newsScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-${h}px); } }`;
+    }
+
+    // ── Stocks (multi-fallback, bezier charts) ──
+    async function loadAllStocks() {
+        setSync('stocks', 'syncing'); let ok = false;
+        for (let i = 0; i < STOCK_SYMBOLS.length; i++) {
+            await new Promise(r => setTimeout(r, i * 350));
+            if (await loadStock(STOCK_SYMBOLS[i])) ok = true;
         }
-        async function updateAllStocks(){ setSyncStatus('stocks','syncing'); const symbols=['INTC','^GSPC','BTC-USD','NVDA','^VIX','PLTR']; let anySuccess=false; for(let i=0;i<symbols.length;i++){ await new Promise(r=>setTimeout(r,i*300)); try{ await updateStock(symbols[i]); const key=`stock-${symbols[i]}`; if(getCachedData(key)) anySuccess=true; }catch(e){} } setSyncStatus('stocks',anySuccess?'success':'error'); }
-        function getHebrewDescription(symbol,englishName=''){ const d={INTC:'אינטל - מעבדים','^GSPC':'מדד S&P 500','BTC-USD':'ביטקוין',NVDA:'נבידיה - AI','^VIX':'מדד הפחד',PLTR:'פלנטיר - דאטה'}; return d[symbol]||(englishName?englishName.substring(0,15):'מניה'); }
-        function displayStockData(block,result,symbol){ const stockData=result.chart.result[0]; const meta=stockData.meta; const prices=stockData.indicators.quote[0].close.filter(p=>p!==null); const current=meta.regularMarketPrice; const prev=meta.previousClose; const change=((current-prev)/prev)*100; const isPos=change>=0; const descEl=block.querySelector('.stock-description'); if(descEl&&result.description) descEl.textContent=result.description; block.querySelector('.stock-price').textContent=formatPrice(current,symbol); const chEl=block.querySelector('.stock-change'); chEl.textContent=`${isPos?'+':''}${change.toFixed(2)}%`; chEl.className=`stock-change ${isPos?'positive':'negative'}`; block.querySelector('.trend-chart').innerHTML=generateTrendChart(prices,isPos); block.querySelector('.last-update').textContent=new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jerusalem'}); }
-        function initDashboard(){
-            updateClock();
-            updateMotivation();
-            updateRSSFeed();
-            Promise.all([updateHebrewDate(), updateWeather()]);
-            updateAllStocks();
-            setSyncStatus('calendar','success');
-            updateRefreshTime();
+        setSync('stocks', ok ? 'success' : 'error');
+    }
+    async function loadStock(sym) {
+        const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
+        const key = 'stk-' + sym; const c = cGet(key); if (c) { renderStock(blk, c, sym); return true; }
+        // Try v8 chart API
+        try {
+            const now = Math.floor(Date.now() / 1000); const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?period1=${now - 604800}&period2=${now}&interval=1d`;
+            for (const p of PROXIES) { try { const r = await fetch(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; if (d.chart?.result?.[0]) { cSet(key, d); renderStock(blk, d, sym); return true; } } catch (_) { continue; } }
+        } catch (_) {}
+        // Fallback v6
+        try {
+            const url = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${sym}`;
+            for (const p of PROXIES) { try { const r = await fetch(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; const q = d.quoteResponse?.result?.[0]; if (q?.regularMarketPrice) { const fb = { chart: { result: [{ meta: { regularMarketPrice: q.regularMarketPrice, previousClose: q.regularMarketPreviousClose || q.regularMarketPrice }, indicators: { quote: [{ close: [q.regularMarketPrice] }] } }] } }; cSet(key, fb); renderStock(blk, fb, sym); return true; } } catch (_) { continue; } }
+        } catch (_) {}
+        // Show error state
+        blk.querySelector('.stk-price').textContent = 'N/A';
+        blk.querySelector('.stk-price').classList.remove('skeleton');
+        blk.querySelector('.stk-chg').textContent = '--';
+        return false;
+    }
+    function renderStock(blk, data, sym) {
+        const r = data.chart.result[0]; const meta = r.meta;
+        const prices = r.indicators.quote[0].close.filter(p => p !== null);
+        const cur = meta.regularMarketPrice; const prev = meta.previousClose;
+        const chg = ((cur - prev) / prev) * 100; const pos = chg >= 0;
+        blk.querySelector('.stk-desc').textContent = STOCK_NAMES[sym] || 'מניה';
+        const prEl = blk.querySelector('.stk-price'); prEl.textContent = fmtPrice(cur, sym); prEl.classList.remove('skeleton');
+        const chEl = blk.querySelector('.stk-chg'); chEl.textContent = `${pos ? '▲' : '▼'} ${pos ? '+' : ''}${chg.toFixed(2)}%`; chEl.className = `stk-chg ${pos ? 'positive' : 'negative'}`;
+        blk.querySelector('.stk-chart').innerHTML = bezierChart(prices, pos);
+        blk.querySelector('.stk-time').textContent = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+    }
+    function fmtPrice(p, s) { const n = parseFloat(p); if (s === 'BTC-USD') return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }); return n >= 1000 ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n >= 100 ? '$' + n.toFixed(1) : '$' + n.toFixed(2); }
+    function bezierChart(prices, pos) {
+        if (!prices || prices.length < 2) return '';
+        const W = 200, H = 28, P = 2; const min = Math.min(...prices), max = Math.max(...prices), rng = max - min || 1;
+        const pts = prices.map((p, i) => ({ x: P + (i / (prices.length - 1)) * (W - 2 * P), y: P + (1 - (p - min) / rng) * (H - 2 * P) }));
+        let path = `M${pts[0].x},${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) {
+            const cp = (pts[i].x - pts[i - 1].x) / 2;
+            path += ` C${pts[i - 1].x + cp},${pts[i - 1].y} ${pts[i].x - cp},${pts[i].y} ${pts[i].x},${pts[i].y}`;
         }
-        setInterval(updateClock,1000);
-        setInterval(updateHebrewDate,3600000);
-        setInterval(()=>{ updateAllStocks(); updateRefreshTime(); },3600000);
-        setInterval(()=>{ updateWeather(); updateRefreshTime(); },600000);
-        setInterval(updateMotivation,1800000); // 30 minutes
-        setInterval(()=>{ updateRSSFeed(); updateRefreshTime(); },60000); // 1 minute
-        document.addEventListener('DOMContentLoaded',initDashboard);
-        if('performance' in window){ window.addEventListener('load',()=>{ setTimeout(()=>{ const p=performance.getEntriesByType('navigation')[0]; if(p) console.log(`Dashboard loaded in ${p.loadEventEnd - p.fetchStart}ms`); },0); }); }
+        const area = path + ` L${pts[pts.length - 1].x},${H - P} L${pts[0].x},${H - P} Z`;
+        const col = pos ? '#34d399' : '#f87171';
+        const gid = 'sg' + Math.random().toString(36).substr(2, 6);
+        return `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity="0.5"/><stop offset="100%" stop-color="${col}" stop-opacity="0.03"/></linearGradient></defs><path d="${area}" fill="url(#${gid})"/><path d="${path}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round"/>`;
+    }
+
+    // ── Currency Rates (USD/ILS, EUR/ILS, GBP/ILS) ──
+    async function loadCurrency() {
+        setSync('cur', 'syncing');
+        const key = 'cur'; const c = cGet(key); if (c) { renderCurrency(c); setSync('cur', 'success'); return; }
+        try {
+            const d = await fetchJSON('https://open.er-api.com/v6/latest/ILS');
+            if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); }
+        } catch (e) {
+            // Fallback
+            try { const d = await fetchJSON('https://api.exchangerate-api.com/v4/latest/ILS');
+                if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); }
+            } catch (_) { setSync('cur', 'error'); }
+        }
+    }
+    function renderCurrency(rates) {
+        // rates are ILS-based, so 1 ILS = X USD → we want 1 USD = 1/X ILS
+        const usd = rates.USD ? (1 / rates.USD).toFixed(3) : '--';
+        const eur = rates.EUR ? (1 / rates.EUR).toFixed(3) : '--';
+        const gbp = rates.GBP ? (1 / rates.GBP).toFixed(3) : '--';
+        el.curUsd.textContent = '₪' + usd; el.curUsd.classList.remove('skeleton');
+        el.curEur.textContent = '₪' + eur; el.curEur.classList.remove('skeleton');
+        el.curGbp.textContent = '₪' + gbp; el.curGbp.classList.remove('skeleton');
+    }
+
+    // ── Motivation (30-min rotation, online + offline) ──
+    async function loadMotivation() {
+        setSync('moti', 'syncing');
+        // Try online
+        try {
+            const sources = [
+                async () => { const d = await fetchJSON('https://api.quotable.io/random?tags=inspirational|motivational|wisdom&maxLength=200'); return { t: d.content, a: d.author, s: 'Quotable' }; },
+                async () => { const d = await fetchJSON('https://zenquotes.io/api/random'); const q = Array.isArray(d) ? d[0] : d; return { t: q.q, a: q.a, s: 'ZenQuotes' }; },
+            ];
+            for (const fn of sources) {
+                try { const r = await fn(); if (r.t) {
+                    const txt = await translateHe(r.t); const auth = r.a ? await translateHe(r.a) : '';
+                    el.motiText.textContent = txt; el.motiAuthor.textContent = auth ? '— ' + auth : ''; el.motiSrc.textContent = 'מקור: ' + r.s;
+                    setSync('moti', 'success'); return;
+                }} catch (_) { continue; }
+            }
+        } catch (_) {}
+        // Offline fallback
+        const m = MOTIVATIONS[motiIdx++ % MOTIVATIONS.length];
+        el.motiText.textContent = m.t; el.motiAuthor.textContent = m.a ? '— ' + m.a : ''; el.motiSrc.textContent = '';
+        setSync('moti', 'success');
+    }
+
+    // ── Init & Intervals ──
+    function init() {
+        tickClock();
+        loadHebrewDate(); loadShabbat(); loadWeather();
+        loadNews(); loadAllStocks(); loadCurrency(); loadMotivation();
+        setSync('cal', 'success');
+        el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+    }
+    setInterval(tickClock, 1000);
+    setInterval(loadHebrewDate, 3600000);
+    setInterval(loadShabbat, 3600000);
+    setInterval(() => { loadWeather(); el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }); }, 600000);
+    setInterval(loadNews, 60000);
+    setInterval(() => { loadAllStocks(); el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }); }, 3600000);
+    setInterval(loadCurrency, 3600000);
+    setInterval(loadMotivation, 1800000);
+    document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
