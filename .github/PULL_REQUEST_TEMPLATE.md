@@ -1,18 +1,19 @@
 ## Description
 
-<!-- What does this PR do and why? Reference any issue numbers. -->
+<!-- What does this PR do and why? Reference any issue numbers with "Closes #123" to auto-close. -->
 
-Fixes #
+Closes #
 
 ## Type of Change
 
-- [ ] Bug fix (non-breaking change fixing an issue)
-- [ ] New feature (non-breaking change adding functionality)
-- [ ] Breaking change (change that would break existing functionality)
-- [ ] UI/Design change (layout, colors, fonts, responsiveness)
-- [ ] API integration (new data source, proxy, or feed)
-- [ ] Documentation update
-- [ ] CI/CD change
+- [ ] 🐛 Bug fix (non-breaking change fixing an issue)
+- [ ] ✨ New feature (non-breaking change adding functionality)
+- [ ] 💥 Breaking change (change that would break existing functionality)
+- [ ] 🎨 UI/Design change (layout, colors, fonts, responsiveness)
+- [ ] 🔌 API integration (new data source, proxy, or feed)
+- [ ] 📖 Documentation update
+- [ ] ⚙️ CI/CD change
+- [ ] 📦 Docker / packaging change
 
 ## Changes Made
 
@@ -27,8 +28,9 @@ Fixes #
 - [ ] Tested in full-screen / TV mode
 - [ ] RTL layout verified
 - [ ] Responsive layout verified (desktop, tablet, mobile)
-- [ ] All API sections load correctly (news, weather, stocks, calendar, facts)
+- [ ] All API sections load correctly (news ticker, news card, weather, stocks, calendar, currency, motivation)
 - [ ] No console errors
+- [ ] Docker build tested (if applicable): `docker build -t dashboard . && docker run -p 8080:80 dashboard`
 
 ## Quality Checklist
 

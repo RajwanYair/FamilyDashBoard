@@ -1,0 +1,50 @@
+# =============================================================================
+# Auto-generated release notes configuration
+# Categorizes PRs into sections in release notes
+# See: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+# =============================================================================
+changelog:
+  exclude:
+    labels:
+      - skip-changelog
+      - stale
+    authors:
+      - dependabot
+  categories:
+    - title: "🚀 New Features"
+      labels:
+        - enhancement
+        - feature
+    - title: "🐛 Bug Fixes"
+      labels:
+        - bug
+        - fix
+    - title: "🔌 API Changes"
+      labels:
+        - api
+    - title: "🎨 Design & UI"
+      labels:
+        - ui
+        - design
+        - dashboard
+    - title: "📦 Docker & Packages"
+      labels:
+        - docker
+        - packages
+    - title: "🔐 Security"
+      labels:
+        - security
+    - title: "📖 Documentation"
+      labels:
+        - documentation
+        - docs
+    - title: "⚙️ CI/CD & Infrastructure"
+      labels:
+        - ci
+        - github-config
+        - copilot-config
+        - dependencies
+    - title: "🧹 Maintenance"
+      labels:
+        - chore
+        - maintenance

@@ -1,0 +1,11 @@
+# Docker build context
+node_modules
+.git
+.github
+.vscode
+.editorconfig
+.gitattributes
+.gitignore
+README.md
+LICENSE
+*.md

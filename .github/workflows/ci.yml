@@ -1,6 +1,6 @@
 # =============================================================================
 # CI — FamilyDashBoard
-# HTML validation, link checking, security scan
+# HTML validation, security scan, Lighthouse audit, link check
 # =============================================================================
 name: CI
 
@@ -21,27 +21,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate HTML with HTMLHint
-        uses: nickvdyck/allhtmlhint@v1
-        with:
-          path: "BestDashBoard.html"
-
-  lint-css-js:
-    name: Lint CSS & JS (embedded)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Install linters
+      - name: Install HTMLHint
         run: npm install -g htmlhint
 
       - name: Run HTMLHint
-        run: htmlhint BestDashBoard.html || true
+        run: htmlhint BestDashBoard.html
 
   security-scan:
     name: Security Scan
@@ -51,21 +40,47 @@ jobs:
 
       - name: Check for hardcoded secrets
         run: |
-          echo "Scanning for potential secrets..."
+          echo "🔍 Scanning for potential secrets..."
           if grep -rn "api_key\|apiKey\|secret\|password\|token" BestDashBoard.html --include="*.html" | grep -v "//.*api_key\|//.*secret"; then
             echo "::warning::Potential secrets found in source code"
           else
-            echo "No hardcoded secrets detected"
+            echo "✅ No hardcoded secrets detected"
           fi
 
       - name: Check for dangerous patterns
         run: |
-          echo "Scanning for dangerous JavaScript patterns..."
+          echo "🔍 Scanning for dangerous JavaScript patterns..."
+          FAILED=0
           if grep -n "eval(" BestDashBoard.html; then
             echo "::error::eval() usage detected — potential security risk"
-            exit 1
+            FAILED=1
           fi
-          echo "No dangerous patterns found"
+          if grep -n "document\.write(" BestDashBoard.html; then
+            echo "::error::document.write() detected — potential security risk"
+            FAILED=1
+          fi
+          if grep -Pn "\.innerHTML\s*=" BestDashBoard.html | grep -v "//"; then
+            echo "::warning::innerHTML assignment detected — verify sanitization"
+          fi
+          if [ "$FAILED" -eq 1 ]; then exit 1; fi
+          echo "✅ No dangerous patterns found"
+
+  link-check:
+    name: Check External Links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract and validate URLs
+        run: |
+          echo "🔍 Checking external URLs..."
+          grep -oP 'https?://[^\s"'"'"'<>]+' BestDashBoard.html | sort -u | while read -r url; do
+            CODE=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$url" 2>/dev/null || echo "000")
+            if [ "$CODE" -ge 400 ] || [ "$CODE" = "000" ]; then
+              echo "::warning::Broken link ($CODE): $url"
+            fi
+          done
+          echo "✅ Link check complete"
 
   lighthouse:
     name: Lighthouse Audit
@@ -90,3 +105,18 @@ jobs:
         with:
           urls: "http://localhost:8080/BestDashBoard.html"
           temporaryPublicStorage: true
+
+  size-check:
+    name: File Size Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check dashboard file size
+        run: |
+          SIZE=$(stat -c%s BestDashBoard.html)
+          SIZE_KB=$((SIZE / 1024))
+          echo "📦 BestDashBoard.html: ${SIZE_KB}KB"
+          if [ "$SIZE_KB" -gt 200 ]; then
+            echo "::warning::Dashboard file is ${SIZE_KB}KB — consider if it's growing too large"
+          fi
