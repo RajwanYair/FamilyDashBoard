@@ -56,11 +56,11 @@
         /* ── News Ticker ── */
         .ticker-bar {
             background: var(--bg-card-header); border-radius: 8px; overflow: hidden;
-            position: relative; flex: 0 0 auto; height: 32px;
+            position: relative; flex: 0 0 auto; height: 36px;
             border: var(--card-border); display: flex; align-items: center;
         }
         .ticker-label {
-            background: var(--negative); color: #fff; font-weight: 800; font-size: 0.65em;
+            background: var(--negative); color: #fff; font-weight: 800; font-size: 0.75em;
             padding: 0 12px; height: 100%; display: flex; align-items: center;
             white-space: nowrap; z-index: 2; letter-spacing: 1px;
             box-shadow: -4px 0 12px rgba(248,113,113,0.3);
@@ -73,7 +73,7 @@
         .ticker-content:hover { animation-play-state: paused; }
         .ticker-item {
             display: inline-flex; align-items: center; gap: 6px;
-            padding: 0 18px; font-size: 0.72em; color: var(--text-primary); flex-shrink: 0;
+            padding: 0 18px; font-size: 0.82em; color: var(--text-primary); flex-shrink: 0;
         }
         .ticker-item::after {
             content: '◆'; color: var(--accent); font-size: 0.5em; margin-right: 12px; opacity: 0.4;
@@ -274,8 +274,8 @@
             .bottom-grid { grid-template-columns: 1fr 1fr; }
             .bottom-grid .card:nth-child(3) { grid-column: span 2; }
             .clock { font-size: 2.8em; }
-            .ticker-bar { height: 28px; }
-            .ticker-item { font-size: 0.65em; padding: 0 14px; }
+            .ticker-bar { height: 32px; }
+            .ticker-item { font-size: 0.75em; padding: 0 14px; }
         }
         @media (max-width: 768px) {
             body { font-size: 14px; }
@@ -286,9 +286,9 @@
             .clock { font-size: 2.4em; }
             .hebrew-date { font-size: 1.05em; }
             .top-temp { font-size: 1.2em; }
-            .ticker-bar { height: 26px; }
-            .ticker-item { font-size: 0.6em; padding: 0 10px; }
-            .ticker-label { font-size: 0.55em; padding: 0 8px; }
+            .ticker-bar { height: 30px; }
+            .ticker-item { font-size: 0.7em; padding: 0 10px; }
+            .ticker-label { font-size: 0.65em; padding: 0 8px; }
             .card-header { font-size: 1em; }
             .stk-price { font-size: 1.2em; }
         }
@@ -303,9 +303,9 @@
             .shabbat-info { font-size: 0.75em; }
             .top-temp { font-size: 1em; }
             .greeting { font-size: 0.8em; }
-            .ticker-bar { height: 22px; }
-            .ticker-item { font-size: 0.52em; padding: 0 8px; }
-            .ticker-label { font-size: 0.5em; padding: 0 6px; }
+            .ticker-bar { height: 26px; }
+            .ticker-item { font-size: 0.62em; padding: 0 8px; }
+            .ticker-label { font-size: 0.6em; padding: 0 6px; }
             .card-header { font-size: 0.9em; }
             .stk-price { font-size: 1em; }
             .stk-sym { font-size: 0.8em; }
