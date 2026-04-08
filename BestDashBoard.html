@@ -113,7 +113,7 @@
 
         /* ── Layout ── */
         .main-grid { display: grid; grid-template-columns: 45% 30% 25%; gap: 8px; flex: 1 1 0; min-height: 0; }
-        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 0 0 24%; min-height: 0; }
+        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 0 0 28%; min-height: 0; }
 
         /* ── Cards ── */
         .card {
@@ -182,11 +182,11 @@
         /* ── Stocks ── */
         .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
         .col-split > .card { flex: 1 1 0; min-height: 0; }
-        .stocks-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 4px; min-height: 0; }
+        .stocks-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px; min-height: 0; }
         .stk {
-            background: var(--bg-card-inner); padding: 5px 6px; border-radius: 6px;
+            background: var(--bg-card-inner); padding: 3px 5px; border-radius: 6px;
             display: flex; flex-direction: column; justify-content: space-between;
-            font-size: 0.72em; transition: background 0.2s;
+            font-size: 0.68em; transition: background 0.2s;
         }
         .stk:hover { background: var(--bg-card-hover); }
         .stk:nth-child(1) .stk-sym { color: var(--accent); }
@@ -197,21 +197,21 @@
         .stk:nth-child(6) .stk-sym { color: var(--purple); }
         .stk-sym { font-weight: 700; color: var(--accent); display: flex; justify-content: space-between; align-items: center; font-size: 0.88em; }
         .stk-desc { font-size: 0.58em; color: var(--text-muted); font-weight: normal; }
-        .stk-price { font-size: 1.25em; font-weight: 700; margin: 1px 0; }
-        .stk-chg { font-size: 0.88em; font-weight: 600; }
-        .stk-chart { width: 100%; height: 22px; margin: 1px 0; }
+        .stk-price { font-size: 1.1em; font-weight: 700; margin: 1px 0; }
+        .stk-chg { font-size: 0.85em; font-weight: 600; }
+        .stk-chart { width: 100%; height: 16px; margin: 1px 0; }
         .stk-time { font-size: 0.55em; color: var(--text-muted); }
         .positive { color: var(--positive); } .negative { color: var(--negative); } .neutral { color: var(--cyan); }
 
         /* ── Weather ── */
-        .weather-body { flex: 1; display: flex; flex-direction: column; padding: 10px; min-height: 0; overflow: hidden; }
-        .wx-current { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+        .weather-body { flex: 1; display: flex; flex-direction: column; padding: 6px; min-height: 0; overflow: hidden; }
+        .wx-current { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
         .wx-icon { font-size: 2.8em; line-height: 1; }
         .wx-info { flex: 1; }
         .wx-temp-main { font-size: 1.8em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
         .wx-desc { font-size: 0.95em; color: var(--text-secondary); }
-        .wx-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 0.78em; margin-bottom: 8px; }
-        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 6px; text-align: center; transition: transform 0.2s; }
+        .wx-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font-size: 0.75em; margin-bottom: 4px; }
+        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 4px; text-align: center; transition: transform 0.2s; }
         .wx-detail:hover { transform: scale(1.05); }
         .wx-detail:nth-child(1) { border-bottom: 2px solid var(--accent); }
         .wx-detail:nth-child(2) { border-bottom: 2px solid var(--cyan); }
@@ -219,9 +219,9 @@
         .wx-detail:nth-child(4) { border-bottom: 2px solid var(--orange); }
         .wx-detail-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 2px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 1.05em; }
-        .wx-hourly-chart { width: 100%; height: 60px; margin-bottom: 6px; flex-shrink: 0; }
-        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 0 0 auto; }
-        .wx-fday { background: var(--bg-card-inner); padding: 6px; border-radius: 8px; text-align: center; }
+        .wx-hourly-chart { width: 100%; height: 50px; margin-bottom: 4px; flex-shrink: 1; min-height: 32px; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; flex: 0 0 auto; }
+        .wx-fday { background: var(--bg-card-inner); padding: 4px 3px; border-radius: 8px; text-align: center; }
         .wx-fday-name { font-size: 0.78em; color: var(--accent); font-weight: 600; }
         .wx-fday-icon { font-size: 1.2em; margin: 2px 0; }
         .wx-fday-temp { font-size: 0.85em; font-weight: 700; }
@@ -249,8 +249,8 @@
         .alerts-body { flex: 1; overflow: hidden; position: relative; padding: 4px; }
         .alerts-scroll { display: flex; flex-direction: column; gap: 3px; overflow-y: auto; max-height: 100%; }
         .alert-item {
-            background: var(--bg-card-inner); padding: 6px 8px; border-radius: 6px;
-            border-right: 3px solid var(--negative); font-size: 0.72em;
+            background: var(--bg-card-inner); padding: 4px 6px; border-radius: 6px;
+            border-right: 3px solid var(--negative); font-size: 0.60em;
             display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;
         }
         .alert-item.active { border-right-color: var(--negative); background: rgba(248, 113, 113, 0.08); animation: alertPulse 2s ease-in-out infinite; }
@@ -260,7 +260,7 @@
         .alert-meta { display: flex; justify-content: space-between; align-items: center; }
         .alert-time { font-size: 0.85em; color: var(--text-muted); }
         .alert-threat { font-size: 0.85em; font-weight: 600; }
-        .alert-count { font-size: 0.85em; color: var(--negative); font-weight: 700; text-align: center; padding: 4px; }
+        .alert-count { font-size: 0.78em; color: var(--negative); font-weight: 700; text-align: center; padding: 3px; }
         .alert-item.new-alert { animation: alertFlash 1s ease-out; }
         @keyframes alertFlash { 0% { background: rgba(248,113,113,0.35); transform: scale(1.03); } 100% { background: rgba(248,113,113,0.08); transform: scale(1); } }
         .alert-live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--negative); margin-left: 6px; animation: liveBlink 1.2s ease-in-out infinite; }
@@ -888,12 +888,7 @@
 
     // ── Fetch a single RSS feed (returns array of items) ──
     async function fetchFeed(feed) {
-        // Try rss2json
-        try {
-            const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url));
-            if (r.ok) { const j = await r.json(); if (j.status === 'ok' && j.items?.length) return j.items.map(x => ({ ...x, source: feed.src })); }
-        } catch (_) {}
-        // Try proxies
+        // Try CORS proxies first (direct XML parsing — no rate-limited third-party service)
         for (const p of PROXIES) {
             try {
                 const r = await fetch(p + encodeURIComponent(feed.url)); if (!r.ok) continue;
@@ -903,15 +898,20 @@
                 if (items.length) return items;
             } catch (_) { continue; }
         }
+        // Fallback: rss2json (rate-limited free tier — avoid as primary)
+        try {
+            const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url));
+            if (r.ok) { const j = await r.json(); if (j.status === 'ok' && j.items?.length) return j.items.map(x => ({ ...x, source: feed.src })); }
+        } catch (_) {}
         return [];
     }
 
-    // ── News (2-min refresh, aggregates all sources, sorted newest first) ──
+    // ── News (5-min refresh, aggregates all sources, sorted newest first) ──
     async function loadNews() {
         if (!_pageVisible || !acquireLock('news')) return;
         setSync('news', 'syncing');
         const key = 'news';
-        const fresh = cGet(key, 120000); // 2min TTL
+        const fresh = cGet(key, 300000); // 5min TTL
         if (fresh) { renderNews(fresh); renderTicker(fresh); setSync('news', 'success'); releaseLock('news'); return; }
         const stale = cGetStale(key); if (stale) { renderNews(stale); renderTicker(stale); }
         const allItems = [];
@@ -1109,8 +1109,8 @@
     let _lastAlertId = null;
     let _alertsHaveActive = false;
     let _alertTimer = null;
-    const ALERT_INTERVAL_ACTIVE = 15000;  // 15s when active alerts
-    const ALERT_INTERVAL_IDLE   = 60000;  // 60s when no recent alerts
+    const ALERT_INTERVAL_ACTIVE = 30000;  // 30s when active alerts
+    const ALERT_INTERVAL_IDLE   = 120000; // 2min when no recent alerts
 
     async function loadAlerts() {
         if (!_pageVisible) { scheduleAlerts(); return; }
@@ -1245,7 +1245,7 @@
     //  │ Alerts       │ 15s/60s  │ 15s when active alerts, 60s idle      │
     //  │ Clock        │ 1s       │ Must be real-time                   │
     //  │ Market badge │ 1min     │ Local time check, cheap             │
-    //  │ News+Ticker  │ 2min     │ Time-sensitive but chill on APIs    │
+    //  │ News+Ticker  │ 5min     │ Aggregates 10 RSS feeds              │
     //  │ Stocks       │ 5min/30m │ 5min when NYSE open, 30min closed   │
     //  │ Weather      │ 15min    │ Weather changes slowly              │
     //  │ Currency     │ 30min    │ Exchange rates drift slowly         │
@@ -1294,7 +1294,7 @@
 
     // Fast (1-2min)
     setInterval(updateMarketBadge, 60000);
-    setInterval(() => { loadNews(); stampRefresh(); }, 120000);
+    setInterval(() => { loadNews(); stampRefresh(); }, 300000); // 5min
 
     // Medium (5min — stocks adapt based on market hours internally)
     setInterval(() => { loadAllStocks(); stampRefresh(); }, 300000);
