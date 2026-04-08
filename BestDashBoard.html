@@ -816,7 +816,7 @@
         {t:'עשה זאת בפחד אם צריך, אבל עשה זאת.',a:''},
         {t:'אתה חזק יותר ממה שאתה חושב, ועמיד יותר ממה שאתה יודע.',a:''},
         {t:'עתידך נוצר על ידי מה שאתה עושה היום, לא מחר.',a:'רוברט קיוסאקי'},
-        {t:'כשאתה עייף, למד לנוח — לא לוותר.',a:''),
+        {t:'כשאתה עייף, למד לנוח — לא לוותר.',a:''},
         {t:'הצלחה היא סכום של מאמצים קטנים שחוזרים על עצמם יום אחרי יום.',a:'רוברט קוליר'},
         {t:'תתחיל מאיפה שאתה, תשתמש במה שיש לך, תעשה מה שאתה יכול.',a:'ארתור אש'},
         {t:'אדם לא נשפט לפי כמה פעמים נפל, אלא לפי כמה פעמים קם.',a:''},
@@ -1743,12 +1743,16 @@
         if (overlay) overlay.classList.toggle('visible');
     }
 
-    // ── Global Error Catchers ──
+    // ── Global Error Catchers (auto-show diag on errors) ──
     window.addEventListener('unhandledrejection', e => {
         diagLog('UNHANDLED REJECTION: ' + (e.reason?.message || e.reason || 'unknown'));
+        const overlay = document.getElementById('diag-overlay');
+        if (overlay && !overlay.classList.contains('visible')) toggleDiag();
     });
     window.addEventListener('error', e => {
         diagLog('JS ERROR: ' + e.message + ' @ ' + (e.filename || '').split('/').pop() + ':' + e.lineno);
+        const overlay = document.getElementById('diag-overlay');
+        if (overlay && !overlay.classList.contains('visible')) toggleDiag();
     });
 
     /** Safe loader — catches errors so one failing pane doesn't break others (async-aware) */
@@ -1766,6 +1770,23 @@
 
     function init() {
         diagLog('init() starting — origin: ' + location.protocol + '//' + location.host);
+        // ── Startup Self-Check ──
+        let issues = 0;
+        // Validate motivations array integrity
+        for (let i = 0; i < MOTIVATIONS.length; i++) {
+            const m = MOTIVATIONS[i];
+            if (!m || typeof m.t !== 'string') { diagLog(`SELFCHECK: MOTIVATIONS[${i}] malformed`); issues++; }
+        }
+        // Validate DOM refs
+        const missingEls = Object.entries(el).filter(([k, v]) => v === null).map(([k]) => k);
+        if (missingEls.length) { diagLog('SELFCHECK: Missing DOM refs: ' + missingEls.join(', ')); issues++; }
+        // Validate proxies
+        if (!PROXIES.length) { diagLog('SELFCHECK: PROXIES array is empty — all API calls will fail'); issues++; }
+        // Validate stock symbols
+        if (!STOCK_SYMBOLS.length) { diagLog('SELFCHECK: STOCK_SYMBOLS is empty'); issues++; }
+        if (issues) { diagLog(`SELFCHECK: ${issues} issue(s) found — opening diagnostics`); toggleDiag(); }
+        else { diagLog('SELFCHECK: All pre-flight checks passed'); }
+
         cEvict();
         initScreenMode();
         initTheme();
