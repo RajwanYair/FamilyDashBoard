@@ -198,7 +198,7 @@
         .english-date { font-size: 1em; color: var(--text-secondary); }
         .shabbat-info { font-size: 0.85em; color: var(--warning); font-weight: 600; margin-top: 2px; text-shadow: 0 0 8px rgba(251,191,36,0.2); }
         .top-temp { font-size: 1.5em; color: var(--accent); font-weight: 700; text-shadow: 0 0 12px var(--accent-glow); }
-        .header-gif { height: 52px; width: auto; border-radius: 8px; flex: 0 0 auto; margin: 0 6px; }
+        .header-gif { height: 60px; width: auto; border-radius: 8px; flex: 0 0 auto; margin: 0 6px; }
 
         /* ── Layout ── */
         .main-grid { display: grid; grid-template-columns: 45% 30% 25%; gap: 8px; flex: 1 1 0; min-height: 0; }
@@ -507,7 +507,7 @@
         body.mode-tablet .clock { font-size: 2.6em; }
         body.mode-tablet .hebrew-date { font-size: 1.05em; }
         body.mode-tablet .top-temp { font-size: 1.2em; }
-        body.mode-tablet .header-gif { height: 40px; }
+        body.mode-tablet .header-gif { height: 60px; }
         body.mode-tablet .card-header { font-size: 1em; padding: 8px 10px; }
         body.mode-tablet .stk-price { font-size: 1.15em; }
         body.mode-tablet .rss-item { font-size: 0.75em; padding: 7px 9px; }
@@ -1132,28 +1132,19 @@
 
     // ── News Sources ──
     const NEWS_FEEDS = [
-        // ── Major Hebrew news sites ──
-        { url: 'https://www.ynet.co.il/Integration/StoryRss2.xml', src: 'Ynet' },
         { url: 'https://www.ynet.co.il/Integration/StoryRss1854.xml', src: 'Ynet מבזקים' },
-        { url: 'https://www.ynet.co.il/Integration/StoryRss3.xml', src: 'Ynet כלכלה' },
         { url: 'https://rss.walla.co.il/feed/1', src: 'וואלה' },
-        { url: 'https://rss.walla.co.il/feed/22', src: 'וואלה טכנולוגיה' },
-        { url: 'https://rss.walla.co.il/feed/2', src: 'וואלה כלכלה' },
         { url: 'https://www.mako.co.il/AjaxPage?jspName=HPFloatingRSS.jsp', src: 'מאקו' },
         { url: 'https://www.kan.org.il/podcast/2578/', src: 'כאן חדשות' },
         { url: 'https://www.n12.co.il/cmlink/1.6017730', src: 'N12' },
-        { url: 'https://rotter.net/rss/rotternews.xml', src: 'רוטר' },
         { url: 'https://www.rotter.net/scoopscache.xml', src: 'רוטר סקופים' },
         { url: 'https://www.israelhayom.co.il/rss.xml', src: 'ישראל היום' },
-        // ── Additional Hebrew sources ──
         { url: 'https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=585', src: 'גלובס' },
         { url: 'https://www.calcalist.co.il/GeneralRSS/0,16335,L-8,00.xml', src: 'כלכליסט' },
-        { url: 'https://www.haaretz.co.il/cmlink/1.1617539', src: 'הארץ' },
         { url: 'https://www.makorrishon.co.il/feed/', src: 'מקור ראשון' },
         { url: 'https://www.kikar.co.il/rss', src: 'כיכר השבת' },
         { url: 'https://www.ice.co.il/rss/all', src: 'ICE' },
         { url: 'https://www.geektime.co.il/feed/', src: 'גיקטיים' },
-        { url: 'https://www.sport5.co.il/rss/RSS_1.xml', src: 'ספורט5' },
     ];
 
     // ── Fetch a single RSS feed (returns array of items) ──
@@ -1238,7 +1229,7 @@
         });
         // Adjust speed based on content width
         const w = el.ticker.scrollWidth / 2;
-        el.ticker.style.animationDuration = Math.max(30, w / 80) + 's';
+        el.ticker.style.animationDuration = Math.max(15, w / 140) + 's';
     }
 
     // ── Stocks (multi-fallback, bezier charts) ──
