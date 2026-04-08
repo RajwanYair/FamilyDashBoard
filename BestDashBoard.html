@@ -263,8 +263,35 @@
         .rss-source { font-size: 0.7em; color: var(--accent); opacity: 0.6; }
 
         /* ── Calendar ── */
-        .cal-wrapper { flex: 1; overflow: hidden; position: relative; }
-        .cal-wrapper iframe { width: 100%; height: 100%; border: none; filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); }
+        .cal-wrapper { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+        /* Iframe fallback: per-theme filter so colors match */
+        .cal-wrapper iframe { width: 100%; height: 100%; border: none; display: none;
+            filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.1); }
+        .cal-wrapper iframe.cal-fallback-active { display: block; }
+        body.theme-matrix .cal-wrapper iframe { filter: invert(1) hue-rotate(100deg) saturate(1.8) brightness(0.75); }
+        body.theme-amber  .cal-wrapper iframe { filter: invert(1) hue-rotate(215deg) brightness(0.85) sepia(0.25); }
+        body.theme-purple .cal-wrapper iframe { filter: invert(1) hue-rotate(130deg) brightness(0.82); }
+        body.theme-blue   .cal-wrapper iframe { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); }
+        body.theme-black  .cal-wrapper iframe { filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.15); }
+        /* Native agenda view */
+        .cal-agenda { flex: 1; overflow-y: auto; padding: 2px 6px; display: flex; flex-direction: column; gap: 2px; }
+        .cal-day-header {
+            font-size: 0.72em; font-weight: 700; color: var(--accent); padding: 5px 4px 2px;
+            border-bottom: 1px solid var(--accent-border); margin-top: 4px; letter-spacing: 0.3px;
+        }
+        .cal-day-header:first-child { margin-top: 0; }
+        .cal-event {
+            background: var(--bg-card-inner); border-radius: 7px; padding: 5px 8px;
+            border-right: 3px solid var(--accent); display: flex; align-items: baseline;
+            gap: 7px; flex-shrink: 0; transition: background 0.2s;
+        }
+        .cal-event:hover { background: var(--bg-card-hover); }
+        .cal-event:nth-child(odd) { border-right-color: var(--cyan); }
+        .cal-event:nth-child(3n) { border-right-color: var(--purple); }
+        .cal-event-time { font-size: 0.70em; color: var(--accent); font-weight: 700; white-space: nowrap; min-width: 3.2em; }
+        .cal-event-title { font-size: 0.80em; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+        .cal-event-loc { font-size: 0.65em; color: var(--text-muted); margin-top: 1px; }
+        .cal-empty { font-size: 0.78em; color: var(--text-muted); text-align: center; padding: 16px; }
 
         /* ── Stocks ── */
         .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
@@ -398,7 +425,7 @@
         /* ── Screen Mode Selector ── */
         .screen-mode {
             position: fixed; top: 8px; left: 8px; z-index: 100;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap; max-width: 600px;
         }
         .screen-mode select {
             background: var(--bg-card-header); color: var(--accent); border: 1px solid var(--accent-border);
@@ -410,6 +437,22 @@
         .screen-mode-label { font-size: 11px; color: var(--text-muted); }
         /* Theme selector swatch dot next to label */
         #theme-select option::before { content: '● '; }
+        /* Custom proxy input */
+        .proxy-input-wrap { display: flex; align-items: center; gap: 4px; }
+        .proxy-input-wrap input {
+            background: var(--bg-card-header); color: var(--accent); border: 1px solid var(--accent-border);
+            border-radius: 8px; padding: 4px 8px; font-size: 12px; font-family: inherit;
+            outline: none; direction: ltr; width: 220px; backdrop-filter: blur(12px);
+            transition: border-color 0.2s;
+        }
+        .proxy-input-wrap input::placeholder { color: var(--text-muted); font-size: 11px; }
+        .proxy-input-wrap input:focus { border-color: var(--accent); }
+        .proxy-input-wrap input.proxy-active { border-color: var(--positive); color: var(--positive); }
+        .proxy-save-btn {
+            background: var(--bg-card-inner); color: var(--accent); border: 1px solid var(--accent-border);
+            border-radius: 8px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;
+        }
+        .proxy-save-btn:hover { border-color: var(--accent); background: var(--bg-card-hover); }
 
         /* ── Screen Mode Overrides ── */
         body.mode-tv { font-size: 21px; }
@@ -489,7 +532,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- ── Screen Mode + Theme Selector ── -->
+        <!-- ── Screen Mode + Theme + Proxy Selector ── -->
         <div class="screen-mode">
             <select id="screen-mode-select">
                 <option value="tv">📺 טלוויזיה</option>
@@ -503,6 +546,10 @@
                 <option value="amber">🟧 ענבר</option>
                 <option value="purple">🟥 סגול</option>
             </select>
+            <div class="proxy-input-wrap" title="CORS proxy ניתן להגדיר כתובת פרוקסי מותאמית עבור רשת מוגבלת">
+                <input type="text" id="proxy-url-input" placeholder="⛓️ https://my-proxy/?url=" autocomplete="off" spellcheck="false" />
+                <button class="proxy-save-btn" id="proxy-save-btn">✔ שמור</button>
+            </div>
         </div>
 
         <!-- ── News Ticker ── -->
@@ -541,7 +588,8 @@
             <div class="card" style="position:relative">
                 <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי</div>
                 <div class="cal-wrapper">
-                    <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
+                    <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
+                    <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
                 </div>
             </div>
             <div class="col-split">
@@ -630,7 +678,60 @@
 
     // ── Config ──
     const CACHE_TTL = 5 * 60000;
-    const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
+    // ── CORS Proxy list (runtime-mutable — custom proxy prepended at init) ──
+    // NOTE: Browser/system-level HTTP proxies are used automatically by fetch().
+    // This list is for CORS bypass proxies only (needed for cross-origin API calls).
+    let PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
+
+    function _isValidProxyUrl(u) {
+        try { const p = new URL(u); return (p.protocol === 'https:' || p.protocol === 'http:') && u.trim().length > 10; }
+        catch (_) { return false; }
+    }
+    function applyCustomProxy(raw) {
+        const url = (raw || '').trim();
+        // Remove any previously injected custom proxy (first entry if it's not one of the builtins)
+        PROXIES = PROXIES.filter(p => p.includes('allorigins') || p.includes('codetabs'));
+        if (url && _isValidProxyUrl(url)) {
+            // Ensure the proxy URL ends with a query-string connector so we can append the target URL
+            const sep = url.includes('?') ? (url.endsWith('&') || url.endsWith('=') ? '' : '&url=') : '?url=';
+            const normalized = url.endsWith('=') ? url : url + sep;
+            PROXIES.unshift(normalized); // highest priority
+            return normalized;
+        }
+        return null;
+    }
+    function initCustomProxy() {
+        const saved = localStorage.getItem('dash_customProxy') || '';
+        const input = document.getElementById('proxy-url-input');
+        const btn = document.getElementById('proxy-save-btn');
+        if (input) {
+            input.value = saved;
+            if (saved) input.classList.add('proxy-active');
+        }
+        if (saved) applyCustomProxy(saved);
+        if (btn) {
+            btn.addEventListener('click', () => {
+                const val = input?.value?.trim() || '';
+                if (val && !_isValidProxyUrl(val)) {
+                    input.style.borderColor = 'var(--negative)';
+                    setTimeout(() => input.style.borderColor = '', 1500);
+                    return;
+                }
+                const normalized = applyCustomProxy(val);
+                try { localStorage.setItem('dash_customProxy', val); } catch (_) {}
+                if (input) {
+                    input.value = val;
+                    input.classList.toggle('proxy-active', !!val);
+                    input.style.borderColor = 'var(--positive)';
+                    setTimeout(() => input.style.borderColor = '', 1500);
+                }
+            });
+        }
+        // Also save on Enter key
+        if (input) {
+            input.addEventListener('keydown', e => { if (e.key === 'Enter') btn?.click(); });
+        }
+    }
     const STOCK_SYMBOLS = ['INTC','^GSPC','BTC-USD','NVDA','^VIX','TSLA'];
     const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
     const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
@@ -1392,6 +1493,7 @@
         cEvict();
         initScreenMode();
         initTheme();
+        initCustomProxy();
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
         loadNews(); loadAllStocks(); loadCurrency(); loadAlerts(); loadMotivation();
