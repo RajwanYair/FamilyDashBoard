@@ -436,22 +436,6 @@
         .screen-mode-label { font-size: 11px; color: var(--text-muted); }
         /* Theme selector swatch dot next to label */
         #theme-select option::before { content: '● '; }
-        /* Custom proxy input */
-        .proxy-input-wrap { display: flex; align-items: center; gap: 4px; }
-        .proxy-input-wrap input {
-            background: var(--bg-card-header); color: var(--accent); border: 1px solid var(--accent-border);
-            border-radius: 8px; padding: 4px 8px; font-size: 12px; font-family: inherit;
-            outline: none; direction: ltr; width: 220px; backdrop-filter: blur(12px);
-            transition: border-color 0.2s;
-        }
-        .proxy-input-wrap input::placeholder { color: var(--text-muted); font-size: 11px; }
-        .proxy-input-wrap input:focus { border-color: var(--accent); }
-        .proxy-input-wrap input.proxy-active { border-color: var(--positive); color: var(--positive); }
-        .proxy-save-btn {
-            background: var(--bg-card-inner); color: var(--accent); border: 1px solid var(--accent-border);
-            border-radius: 8px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;
-        }
-        .proxy-save-btn:hover { border-color: var(--accent); background: var(--bg-card-hover); }
 
         /* ── Screen Mode Overrides ── */
         body.mode-tv { font-size: 21px; }
@@ -545,10 +529,6 @@
                 <option value="amber">🟧 ענבר</option>
                 <option value="purple">🟥 סגול</option>
             </select>
-            <div class="proxy-input-wrap" title="CORS proxy ניתן להגדיר כתובת פרוקסי מותאמית עבור רשת מוגבלת">
-                <input type="text" id="proxy-url-input" placeholder="⛓️ https://my-proxy/?url=" autocomplete="off" spellcheck="false" />
-                <button class="proxy-save-btn" id="proxy-save-btn">✔ שמור</button>
-            </div>
         </div>
 
         <!-- ── News Ticker ── -->
@@ -680,57 +660,9 @@
     // ── CORS Proxy list (runtime-mutable — custom proxy prepended at init) ──
     // NOTE: Browser/system-level HTTP proxies are used automatically by fetch().
     // This list is for CORS bypass proxies only (needed for cross-origin API calls).
-    let PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
-
-    function _isValidProxyUrl(u) {
-        try { const p = new URL(u); return (p.protocol === 'https:' || p.protocol === 'http:') && u.trim().length > 10; }
-        catch (_) { return false; }
-    }
-    function applyCustomProxy(raw) {
-        const url = (raw || '').trim();
-        // Remove any previously injected custom proxy (first entry if it's not one of the builtins)
-        PROXIES = PROXIES.filter(p => p.includes('allorigins') || p.includes('codetabs'));
-        if (url && _isValidProxyUrl(url)) {
-            // Ensure the proxy URL ends with a query-string connector so we can append the target URL
-            const sep = url.includes('?') ? (url.endsWith('&') || url.endsWith('=') ? '' : '&url=') : '?url=';
-            const normalized = url.endsWith('=') ? url : url + sep;
-            PROXIES.unshift(normalized); // highest priority
-            return normalized;
-        }
-        return null;
-    }
-    function initCustomProxy() {
-        const saved = localStorage.getItem('dash_customProxy') || '';
-        const input = document.getElementById('proxy-url-input');
-        const btn = document.getElementById('proxy-save-btn');
-        if (input) {
-            input.value = saved;
-            if (saved) input.classList.add('proxy-active');
-        }
-        if (saved) applyCustomProxy(saved);
-        if (btn) {
-            btn.addEventListener('click', () => {
-                const val = input?.value?.trim() || '';
-                if (val && !_isValidProxyUrl(val)) {
-                    input.style.borderColor = 'var(--negative)';
-                    setTimeout(() => input.style.borderColor = '', 1500);
-                    return;
-                }
-                const normalized = applyCustomProxy(val);
-                try { localStorage.setItem('dash_customProxy', val); } catch (_) {}
-                if (input) {
-                    input.value = val;
-                    input.classList.toggle('proxy-active', !!val);
-                    input.style.borderColor = 'var(--positive)';
-                    setTimeout(() => input.style.borderColor = '', 1500);
-                }
-            });
-        }
-        // Also save on Enter key
-        if (input) {
-            input.addEventListener('keydown', e => { if (e.key === 'Enter') btn?.click(); });
-        }
-    }
+    // CORS bypass proxies — browser/system HTTP proxy is used automatically by fetch().
+    // These are for cross-origin API access only.
+    const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
     const STOCK_SYMBOLS = ['INTC','^GSPC','BTC-USD','NVDA','^VIX','TSLA'];
     const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
     const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
@@ -1620,7 +1552,6 @@
         cEvict();
         initScreenMode();
         initTheme();
-        initCustomProxy();
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
         loadNews(); loadAllStocks(); loadCurrency(); loadAlerts(); loadMotivation();
