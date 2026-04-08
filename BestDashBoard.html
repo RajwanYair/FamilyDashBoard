@@ -1653,6 +1653,10 @@
     setInterval(loadHolidays, 43200000);      // 12h
 
     document.addEventListener('DOMContentLoaded', init);
+    // Also call immediately in case DOMContentLoaded already fired
+    // (inline end-of-body scripts run after DOM is parsed —
+    //  readyState may already be 'interactive' before the listener fires)
+    if (document.readyState !== 'loading') init();
     </script>
 </body>
 </html>
