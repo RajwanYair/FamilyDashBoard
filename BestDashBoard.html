@@ -30,6 +30,93 @@
             --border-radius: 14px;
             --card-border: 1px solid rgba(96, 165, 250, 0.1);
             --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --bg-gradient-1: rgba(96,165,250,0.06);
+            --bg-gradient-2: rgba(52,211,153,0.04);
+            --bg-gradient-3: rgba(139,92,246,0.04);
+        }
+
+        /* ── Theme: True Black (OLED) ── */
+        body.theme-black {
+            --bg-primary: #000000;
+            --bg-card: rgba(10, 10, 10, 0.92);
+            --bg-card-header: rgba(18, 18, 18, 0.96);
+            --bg-card-inner: rgba(18, 18, 18, 0.70);
+            --bg-card-hover: rgba(30, 30, 30, 0.85);
+            --card-border: 1px solid rgba(96, 165, 250, 0.12);
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+            --bg-gradient-1: rgba(96,165,250,0.03);
+            --bg-gradient-2: rgba(52,211,153,0.02);
+            --bg-gradient-3: rgba(139,92,246,0.02);
+        }
+
+        /* ── Theme: Deep Blue (original) ── */
+        body.theme-blue {
+            --bg-primary: #060b14;
+            --bg-card: rgba(15, 23, 42, 0.78);
+            --bg-card-header: rgba(30, 41, 59, 0.88);
+            --bg-card-inner: rgba(30, 41, 59, 0.45);
+            --bg-card-hover: rgba(51, 65, 85, 0.5);
+            --bg-gradient-1: rgba(96,165,250,0.06);
+            --bg-gradient-2: rgba(52,211,153,0.04);
+            --bg-gradient-3: rgba(139,92,246,0.04);
+        }
+
+        /* ── Theme: Matrix Green ── */
+        body.theme-matrix {
+            --bg-primary: #000d00;
+            --bg-card: rgba(0, 20, 0, 0.88);
+            --bg-card-header: rgba(0, 30, 0, 0.95);
+            --bg-card-inner: rgba(0, 25, 0, 0.65);
+            --bg-card-hover: rgba(0, 40, 0, 0.75);
+            --accent: #00ff41;
+            --accent-bright: #69ff47;
+            --accent-glow: rgba(0,255,65,0.18);
+            --accent-border: rgba(0,255,65,0.2);
+            --card-border: 1px solid rgba(0,255,65,0.12);
+            --card-shadow: 0 4px 24px rgba(0,0,0,0.6);
+            --text-muted: #2d6a2d;
+            --bg-gradient-1: rgba(0,255,65,0.05);
+            --bg-gradient-2: rgba(0,200,50,0.03);
+            --bg-gradient-3: rgba(0,180,30,0.02);
+        }
+
+        /* ── Theme: Amber ── */
+        body.theme-amber {
+            --bg-primary: #0d0800;
+            --bg-card: rgba(25, 15, 0, 0.88);
+            --bg-card-header: rgba(40, 22, 0, 0.95);
+            --bg-card-inner: rgba(35, 18, 0, 0.65);
+            --bg-card-hover: rgba(55, 30, 0, 0.75);
+            --accent: #fbbf24;
+            --accent-bright: #fcd34d;
+            --accent-glow: rgba(251,191,36,0.18);
+            --accent-border: rgba(251,191,36,0.2);
+            --card-border: 1px solid rgba(251,191,36,0.12);
+            --card-shadow: 0 4px 24px rgba(0,0,0,0.6);
+            --cyan: #fdba74;
+            --purple: #f472b6;
+            --bg-gradient-1: rgba(251,191,36,0.05);
+            --bg-gradient-2: rgba(249,115,22,0.03);
+            --bg-gradient-3: rgba(245,158,11,0.02);
+        }
+
+        /* ── Theme: Purple Dusk ── */
+        body.theme-purple {
+            --bg-primary: #07001a;
+            --bg-card: rgba(20, 5, 45, 0.88);
+            --bg-card-header: rgba(35, 12, 70, 0.95);
+            --bg-card-inner: rgba(30, 8, 55, 0.65);
+            --bg-card-hover: rgba(50, 18, 80, 0.75);
+            --accent: #c084fc;
+            --accent-bright: #d8b4fe;
+            --accent-glow: rgba(192,132,252,0.18);
+            --accent-border: rgba(192,132,252,0.2);
+            --card-border: 1px solid rgba(192,132,252,0.12);
+            --card-shadow: 0 4px 24px rgba(0,0,0,0.6);
+            --cyan: #818cf8;
+            --bg-gradient-1: rgba(192,132,252,0.06);
+            --bg-gradient-2: rgba(139,92,246,0.04);
+            --bg-gradient-3: rgba(236,72,153,0.03);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -45,9 +132,9 @@
         }
         body::before {
             content: ''; position: fixed; inset: 0; z-index: 0;
-            background: radial-gradient(ellipse at 20% 50%, rgba(96,165,250,0.06) 0%, transparent 50%),
-                        radial-gradient(ellipse at 80% 20%, rgba(52,211,153,0.04) 0%, transparent 50%),
-                        radial-gradient(ellipse at 60% 80%, rgba(139,92,246,0.04) 0%, transparent 50%);
+            background: radial-gradient(ellipse at 20% 50%, var(--bg-gradient-1) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, var(--bg-gradient-2) 0%, transparent 50%),
+                        radial-gradient(ellipse at 60% 80%, var(--bg-gradient-3) 0%, transparent 50%);
             animation: bgShift 30s ease-in-out infinite alternate;
         }
         @keyframes bgShift {
@@ -321,6 +408,8 @@
         }
         .screen-mode select:hover { border-color: var(--accent); }
         .screen-mode-label { font-size: 11px; color: var(--text-muted); }
+        /* Theme selector swatch dot next to label */
+        #theme-select option::before { content: '● '; }
 
         /* ── Screen Mode Overrides ── */
         body.mode-tv { font-size: 21px; }
@@ -400,12 +489,19 @@
 </head>
 <body>
     <div class="container">
-        <!-- ── Screen Mode Selector ── -->
+        <!-- ── Screen Mode + Theme Selector ── -->
         <div class="screen-mode">
             <select id="screen-mode-select">
                 <option value="tv">📺 טלוויזיה</option>
                 <option value="tablet">📱 טאבלט</option>
                 <option value="phone">📱 נייד</option>
+            </select>
+            <select id="theme-select">
+                <option value="black">■ שחור OLED</option>
+                <option value="blue">🟦 כחול לילה</option>
+                <option value="matrix">🟩 מטריקס</option>
+                <option value="amber">🟧 ענבר</option>
+                <option value="purple">🟥 סגול</option>
             </select>
         </div>
 
@@ -1276,9 +1372,26 @@
         if (sel) sel.addEventListener('change', e => applyScreenMode(e.target.value));
     }
 
+    const THEMES = ['black', 'blue', 'matrix', 'amber', 'purple'];
+    function applyTheme(theme) {
+        if (!THEMES.includes(theme)) theme = 'black';
+        document.body.classList.remove(...THEMES.map(t => 'theme-' + t));
+        document.body.classList.add('theme-' + theme);
+        try { localStorage.setItem('dash_theme', theme); } catch (_) {}
+        const sel = document.getElementById('theme-select');
+        if (sel && sel.value !== theme) sel.value = theme;
+    }
+    function initTheme() {
+        const saved = localStorage.getItem('dash_theme') || 'black';
+        applyTheme(saved);
+        const sel = document.getElementById('theme-select');
+        if (sel) sel.addEventListener('change', e => applyTheme(e.target.value));
+    }
+
     function init() {
         cEvict();
         initScreenMode();
+        initTheme();
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
         loadNews(); loadAllStocks(); loadCurrency(); loadAlerts(); loadMotivation();
