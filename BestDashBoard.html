@@ -1132,16 +1132,28 @@
 
     // ── News Sources ──
     const NEWS_FEEDS = [
+        // ── Major Hebrew news sites ──
         { url: 'https://www.ynet.co.il/Integration/StoryRss2.xml', src: 'Ynet' },
         { url: 'https://www.ynet.co.il/Integration/StoryRss1854.xml', src: 'Ynet מבזקים' },
+        { url: 'https://www.ynet.co.il/Integration/StoryRss3.xml', src: 'Ynet כלכלה' },
         { url: 'https://rss.walla.co.il/feed/1', src: 'וואלה' },
         { url: 'https://rss.walla.co.il/feed/22', src: 'וואלה טכנולוגיה' },
+        { url: 'https://rss.walla.co.il/feed/2', src: 'וואלה כלכלה' },
         { url: 'https://www.mako.co.il/AjaxPage?jspName=HPFloatingRSS.jsp', src: 'מאקו' },
         { url: 'https://www.kan.org.il/podcast/2578/', src: 'כאן חדשות' },
         { url: 'https://www.n12.co.il/cmlink/1.6017730', src: 'N12' },
         { url: 'https://rotter.net/rss/rotternews.xml', src: 'רוטר' },
         { url: 'https://www.rotter.net/scoopscache.xml', src: 'רוטר סקופים' },
         { url: 'https://www.israelhayom.co.il/rss.xml', src: 'ישראל היום' },
+        // ── Additional Hebrew sources ──
+        { url: 'https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=585', src: 'גלובס' },
+        { url: 'https://www.calcalist.co.il/GeneralRSS/0,16335,L-8,00.xml', src: 'כלכליסט' },
+        { url: 'https://www.haaretz.co.il/cmlink/1.1617539', src: 'הארץ' },
+        { url: 'https://www.makorrishon.co.il/feed/', src: 'מקור ראשון' },
+        { url: 'https://www.kikar.co.il/rss', src: 'כיכר השבת' },
+        { url: 'https://www.ice.co.il/rss/all', src: 'ICE' },
+        { url: 'https://www.geektime.co.il/feed/', src: 'גיקטיים' },
+        { url: 'https://www.sport5.co.il/rss/RSS_1.xml', src: 'ספורט5' },
     ];
 
     // ── Fetch a single RSS feed (returns array of items) ──
@@ -1179,7 +1191,7 @@
             const seen = new Set(); const unique = [];
             for (const it of allItems) { const k = it.title.trim().substring(0, 40); if (!seen.has(k)) { seen.add(k); unique.push(it); } }
             unique.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
-            const top = unique.slice(0, 30);
+            const top = unique.slice(0, 50);
             cSet(key, top);
             renderNews(top); renderTicker(top); setSync('news', 'success');
         } else { setSync('news', stale ? 'success' : 'error'); }
@@ -1187,7 +1199,7 @@
     }
     function renderNews(items) {
         el.rssScroll.innerHTML = '';
-        const list = items.slice(0, 18);
+        const list = items.slice(0, 25);
         // Duplicate for seamless scroll loop
         const all = [...list, ...list];
         all.forEach((it, idx) => {
@@ -1214,7 +1226,7 @@
     function renderTicker(items) {
         if (!el.ticker) return;
         el.ticker.innerHTML = '';
-        const top = items.slice(0, 20);
+        const top = items.slice(0, 30);
         // Duplicate for seamless loop
         const all = [...top, ...top];
         all.forEach(it => {
