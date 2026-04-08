@@ -296,25 +296,37 @@
         /* ── Stocks ── */
         .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
         .col-split > .card { flex: 1 1 0; min-height: 0; }
-        .stocks-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px; min-height: 0; }
+        .stocks-body { flex: 1; overflow: hidden; position: relative; padding: 2px; }
+        .stocks-scroll { display: flex; flex-direction: column; gap: 2px; animation: stocksScroll 30s linear infinite; will-change: transform; }
+        .stocks-scroll:hover { animation-play-state: paused; }
+        @keyframes stocksScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .stk {
-            background: var(--bg-card-inner); padding: 3px 5px; border-radius: 6px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            font-size: 0.68em; transition: background 0.2s;
+            background: var(--bg-card-inner); padding: 4px 8px; border-radius: 6px;
+            display: flex; flex-direction: row; align-items: center; gap: 8px;
+            font-size: 0.72em; transition: background 0.2s; flex-shrink: 0;
+            border-right: 3px solid var(--accent-border);
         }
         .stk:hover { background: var(--bg-card-hover); }
+        .stk:nth-child(1) { border-right-color: var(--accent); }
+        .stk:nth-child(2) { border-right-color: var(--orange); }
+        .stk:nth-child(3) { border-right-color: var(--warning); }
+        .stk:nth-child(4) { border-right-color: var(--positive); }
+        .stk:nth-child(5) { border-right-color: var(--negative); }
+        .stk:nth-child(6) { border-right-color: var(--purple); }
         .stk:nth-child(1) .stk-sym { color: var(--accent); }
         .stk:nth-child(2) .stk-sym { color: var(--orange); }
         .stk:nth-child(3) .stk-sym { color: var(--warning); }
         .stk:nth-child(4) .stk-sym { color: var(--positive); }
         .stk:nth-child(5) .stk-sym { color: var(--negative); }
         .stk:nth-child(6) .stk-sym { color: var(--purple); }
-        .stk-sym { font-weight: 700; color: var(--accent); display: flex; justify-content: space-between; align-items: center; font-size: 0.88em; }
-        .stk-desc { font-size: 0.58em; color: var(--text-muted); font-weight: normal; }
-        .stk-price { font-size: 1.1em; font-weight: 700; margin: 1px 0; }
-        .stk-chg { font-size: 0.85em; font-weight: 600; }
-        .stk-chart { width: 100%; height: 16px; margin: 1px 0; }
-        .stk-time { font-size: 0.55em; color: var(--text-muted); }
+        .stk-info { display: flex; flex-direction: column; min-width: 3.8em; }
+        .stk-sym { font-weight: 700; color: var(--accent); font-size: 1em; }
+        .stk-desc { font-size: 0.72em; color: var(--text-muted); font-weight: normal; }
+        .stk-vals { display: flex; flex-direction: column; min-width: 3.5em; }
+        .stk-price { font-size: 1em; font-weight: 700; }
+        .stk-chg { font-size: 0.82em; font-weight: 600; }
+        .stk-chart { flex: 1; height: 22px; min-width: 0; }
+        .stk-time { font-size: 0.58em; color: var(--text-muted); white-space: nowrap; }
         .positive { color: var(--positive); } .negative { color: var(--negative); } .neutral { color: var(--cyan); }
 
         /* ── Weather ── */
@@ -361,7 +373,9 @@
 
         /* ── Red Alerts (צבע אדום) ── */
         .alerts-body { flex: 1; overflow: hidden; position: relative; padding: 4px; }
-        .alerts-scroll { display: flex; flex-direction: column; gap: 3px; overflow-y: auto; max-height: 100%; }
+        .alerts-scroll { display: flex; flex-direction: column; gap: 3px; animation: alertsScroll 40s linear infinite; will-change: transform; }
+        .alerts-scroll:hover { animation-play-state: paused; }
+        @keyframes alertsScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .alert-item {
             background: var(--bg-card-inner); padding: 4px 6px; border-radius: 6px;
             border-right: 3px solid var(--negative); font-size: 0.60em;
@@ -479,7 +493,6 @@
             body { font-size: 14px; }
             .main-grid, .bottom-grid { grid-template-columns: 1fr; }
             .main-grid > :nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
-            .stocks-body { grid-template-columns: repeat(3, 1fr); }
             .wx-details { grid-template-columns: repeat(2, 1fr); }
             .clock { font-size: 2.4em; }
             .hebrew-date { font-size: 1.05em; }
@@ -495,7 +508,6 @@
             .container { padding: 4px; gap: 4px; }
             .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
             .header-left, .header-right { align-items: center; flex: 1 1 100%; }
-            .stocks-body { grid-template-columns: 1fr 1fr; }
             .clock { font-size: 2em; }
             .hebrew-date { font-size: 0.9em; }
             .shabbat-info { font-size: 0.75em; }
@@ -574,13 +586,15 @@
             <div class="col-split">
                 <div class="card">
                     <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
-                    <div class="stocks-body" id="stocks-body">
-                        <div class="stk" data-symbol="INTC"><div class="stk-sym"><span>INTC</span><span class="stk-desc">אינטל</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="^GSPC"><div class="stk-sym"><span>S&P 500</span><span class="stk-desc">מדד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="BTC-USD"><div class="stk-sym"><span>BTC</span><span class="stk-desc">ביטקוין</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="NVDA"><div class="stk-sym"><span>NVDA</span><span class="stk-desc">נבידיה</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="^VIX"><div class="stk-sym"><span>VIX</span><span class="stk-desc">פחד</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="TSLA"><div class="stk-sym"><span>TSLA</span><span class="stk-desc">טסלה</span></div><div class="stk-price skeleton">---</div><div class="stk-chg">-</div><svg class="stk-chart" viewBox="0 0 200 28"></svg><div class="stk-time">-</div></div>
+                    <div class="stocks-body">
+                        <div class="stocks-scroll" id="stocks-body">
+                        <div class="stk" data-symbol="INTC"><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="^GSPC"><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="BTC-USD"><div class="stk-info"><div class="stk-sym">BTC</div><div class="stk-desc">ביטקוין</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="NVDA"><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="^VIX"><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="TSLA"><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        </div>
                     </div>
                 </div>
                 <div class="card">
@@ -1119,6 +1133,23 @@
         }
         setSync('stocks', ok ? 'success' : 'error');
         releaseLock('stocks');
+        // Duplicate tiles for seamless scroll loop
+        setupStocksLoop();
+    }
+    function setupStocksLoop() {
+        const cont = document.getElementById('stocks-body'); if (!cont) return;
+        // Remove any previous clones
+        cont.querySelectorAll('.stk-clone').forEach(c => c.remove());
+        const originals = cont.querySelectorAll('.stk:not(.stk-clone)');
+        originals.forEach(n => { const cl = n.cloneNode(true); cl.classList.add('stk-clone'); cont.appendChild(cl); });
+        // Dynamic keyframe: scroll top half away
+        const h = cont.scrollHeight / 2;
+        const dur = Math.max(20, originals.length * 5);
+        const styleId = 'stocks-scroll-style';
+        let sEl = document.getElementById(styleId);
+        if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
+        sEl.textContent = `@keyframes stocksScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-${h}px); } }`;
+        cont.style.animation = `stocksScroll ${dur}s linear infinite`;
     }
     async function loadStock(sym) {
         const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
@@ -1294,52 +1325,65 @@
         for (const ev of data) {
             for (const a of ev.alerts) { if (now - a.time < 86400) total24h++; }
         }
-        const counter = document.createElement('div');
-        counter.className = 'alert-count';
-        const hasActive = data.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
-        counter.innerHTML = '🚨 ' + total24h + ' התרעות ב-24 שעות האחרונות';
-        if (hasActive) {
-            const dot = document.createElement('span');
-            dot.className = 'alert-live-dot';
-            dot.title = 'התרעה פעילה';
-            counter.appendChild(dot);
+        function buildAlertItems(container, isClone) {
+            const counter = document.createElement('div');
+            counter.className = 'alert-count';
+            const hasActive = data.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
+            counter.textContent = '🚨 ' + total24h + ' התרעות ב-24 שעות האחרונות';
+            if (hasActive && !isClone) {
+                const dot = document.createElement('span');
+                dot.className = 'alert-live-dot';
+                dot.title = 'התרעה פעילה';
+                counter.appendChild(dot);
+            }
+            container.appendChild(counter);
+            for (let i = 0; i < recentEvents.length; i++) {
+                const ev = recentEvents[i];
+                if (!ev.alerts?.length) continue;
+                const firstAlert = ev.alerts[0];
+                const allCities = ev.alerts.flatMap(a => a.cities);
+                const threat = ev.alerts.reduce((mx, a) => Math.max(mx, a.threat ?? 0), 0);
+                const ageMin = Math.floor((now - firstAlert.time) / 60);
+                const isRecent = ageMin < 10;
+                const div = document.createElement('div');
+                div.className = 'alert-item' + (isRecent ? ' active' : ' past') + (highlightNew && i === 0 && !isClone ? ' new-alert' : '');
+                const cities = document.createElement('div');
+                cities.className = 'alert-cities';
+                const unique = [...new Set(allCities)];
+                cities.textContent = unique.length > 5 ? unique.slice(0, 5).join(', ') + ` (+${unique.length - 5})` : unique.join(', ');
+                div.appendChild(cities);
+                const meta = document.createElement('div');
+                meta.className = 'alert-meta';
+                const time = document.createElement('span');
+                time.className = 'alert-time';
+                const d = new Date(firstAlert.time * 1000);
+                time.textContent = relTime(d.toISOString()) + ' | ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+                meta.appendChild(time);
+                const thr = document.createElement('span');
+                thr.className = 'alert-threat';
+                thr.textContent = THREAT_LABELS[threat] || '⚠️ התרעה';
+                meta.appendChild(thr);
+                div.appendChild(meta);
+                container.appendChild(div);
+            }
+            if (!recentEvents.length) {
+                const empty = document.createElement('div');
+                empty.className = 'alert-count';
+                empty.textContent = '✅ אין התרעות אחרונות';
+                container.appendChild(empty);
+            }
         }
-        el.alertsScroll.appendChild(counter);
-        for (let i = 0; i < recentEvents.length; i++) {
-            const ev = recentEvents[i];
-            if (!ev.alerts?.length) continue;
-            const firstAlert = ev.alerts[0];
-            const allCities = ev.alerts.flatMap(a => a.cities);
-            const threat = ev.alerts.reduce((mx, a) => Math.max(mx, a.threat ?? 0), 0);
-            const ageMin = Math.floor((now - firstAlert.time) / 60);
-            const isRecent = ageMin < 10;
-            const div = document.createElement('div');
-            div.className = 'alert-item' + (isRecent ? ' active' : ' past') + (highlightNew && i === 0 ? ' new-alert' : '');
-            const cities = document.createElement('div');
-            cities.className = 'alert-cities';
-            const unique = [...new Set(allCities)];
-            cities.textContent = unique.length > 5 ? unique.slice(0, 5).join(', ') + ` (+${unique.length - 5})` : unique.join(', ');
-            div.appendChild(cities);
-            const meta = document.createElement('div');
-            meta.className = 'alert-meta';
-            const time = document.createElement('span');
-            time.className = 'alert-time';
-            const d = new Date(firstAlert.time * 1000);
-            time.textContent = relTime(d.toISOString()) + ' | ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
-            meta.appendChild(time);
-            const thr = document.createElement('span');
-            thr.className = 'alert-threat';
-            thr.textContent = THREAT_LABELS[threat] || '⚠️ התרעה';
-            meta.appendChild(thr);
-            div.appendChild(meta);
-            el.alertsScroll.appendChild(div);
-        }
-        if (!recentEvents.length) {
-            const empty = document.createElement('div');
-            empty.className = 'alert-count';
-            empty.textContent = '✅ אין התרעות אחרונות';
-            el.alertsScroll.appendChild(empty);
-        }
+        // Build items twice for seamless scroll loop
+        buildAlertItems(el.alertsScroll, false);
+        buildAlertItems(el.alertsScroll, true);
+        // Dynamic keyframe
+        const h = el.alertsScroll.scrollHeight / 2;
+        const dur = Math.max(25, recentEvents.length * 4);
+        const styleId = 'alerts-scroll-style';
+        let sEl = document.getElementById(styleId);
+        if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
+        sEl.textContent = `@keyframes alertsScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-${h}px); } }`;
+        el.alertsScroll.style.animation = `alertsScroll ${dur}s linear infinite`;
     }
 
     // ── Google Calendar (ICS native render) ──
