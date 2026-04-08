@@ -268,6 +268,24 @@
         }
         .offline-banner.visible { transform: translateY(0); }
 
+        /* ── Diagnostic Overlay (toggle with D key) ── */
+        .diag-overlay {
+            display: none; position: fixed; bottom: 10px; right: 10px; z-index: 300;
+            background: rgba(0,0,0,0.92); color: #e2e8f0; font-family: 'Consolas', monospace;
+            font-size: 11px; padding: 10px 14px; border-radius: 10px; max-width: 420px;
+            max-height: 60vh; overflow-y: auto; direction: ltr; text-align: left;
+            border: 1px solid rgba(96,165,250,0.3); backdrop-filter: blur(8px);
+        }
+        .diag-overlay.visible { display: block; }
+        .diag-overlay h3 { margin: 0 0 6px; color: var(--accent); font-size: 13px; }
+        .diag-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .diag-row .pane { color: #94a3b8; min-width: 80px; }
+        .diag-row .status { font-weight: 700; }
+        .diag-row .status.ok { color: #34d399; }
+        .diag-row .status.err { color: #f87171; }
+        .diag-row .status.pending { color: #fbbf24; }
+        .diag-log { margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: #94a3b8; max-height: 120px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+
         /* ── News ── */
         .news-body { flex: 1; overflow: hidden; position: relative; }
         .rss-scroll { display: flex; flex-direction: column; animation: newsScroll 60s linear infinite; will-change: transform; }
@@ -594,6 +612,11 @@
 </head>
 <body>
     <div class="offline-banner" id="offline-banner">⚠️ אין חיבור לאינטרנט — מציג נתונים מהמטמון</div>
+    <div class="diag-overlay" id="diag-overlay">
+        <h3>🛠 Dashboard Diagnostics (press D to close)</h3>
+        <div id="diag-panes"></div>
+        <div class="diag-log" id="diag-log"></div>
+    </div>
     <div class="container">
         <!-- ── Screen Mode + Theme + Proxy Selector ── -->
         <div class="screen-mode">
@@ -902,16 +925,18 @@
 
     // ── Fetch Helpers ──
     async function fetchJSON(url) {
-        try { const r = await fetch(url); if (r.ok) return await r.json(); } catch (_) {}
+        const short = url.split('?')[0].split('/').slice(-2).join('/');
+        try { const r = await fetch(url); if (r.ok) { diagLog(`fetchJSON direct OK: ${short}`); return await r.json(); } } catch (_) {}
         for (const p of PROXIES) {
+            const pName = p.includes('allorigins') ? 'allorigins' : 'codetabs';
             try {
                 const r = await fetch(p + encodeURIComponent(url));
-                if (!r.ok) continue;
-                if (p.includes('allorigins')) { const w = await r.json(); return JSON.parse(w.contents); }
-                else { const t = await r.text(); try { return JSON.parse(t); } catch { return { text: t }; } }
-            } catch (_) { continue; }
+                if (!r.ok) { diagLog(`fetchJSON ${pName} ${r.status}: ${short}`); continue; }
+                if (p.includes('allorigins')) { const w = await r.json(); diagLog(`fetchJSON ${pName} OK: ${short}`); return JSON.parse(w.contents); }
+                else { const t = await r.text(); diagLog(`fetchJSON ${pName} OK: ${short}`); try { return JSON.parse(t); } catch { return { text: t }; } }
+            } catch (e) { diagLog(`fetchJSON ${pName} ERR: ${short} — ${e.message}`); continue; }
         }
-        throw new Error('Fetch failed: ' + url);
+        throw new Error('All fetch attempts failed: ' + short);
     }
     async function translateHe(text) {
         const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=he&dt=t&q=' + encodeURIComponent(text);
@@ -1678,19 +1703,69 @@
         applyTheme(saved);
         const sel = document.getElementById('theme-select');
         if (sel) sel.addEventListener('change', e => applyTheme(e.target.value));
-        // Keyboard shortcut: press T to cycle themes
+        // Keyboard shortcut: press T to cycle themes, D for diagnostics
         document.addEventListener('keydown', e => {
             if (e.key === 't' || e.key === 'T') {
                 const cur = THEMES.findIndex(t => document.body.classList.contains('theme-' + t));
                 applyTheme(THEMES[(cur + 1) % THEMES.length]);
             }
+            if (e.key === 'd' || e.key === 'D') toggleDiag();
         });
     }
 
-    /** Safe loader — catches errors so one failing pane doesn't break others */
-    function safeLoad(fn) { try { fn(); } catch (e) { console.error('[Dashboard] Loader failed:', fn.name, e); } }
+    // ── Diagnostic Logger ──
+    const _diagLog = [];
+    const _diagStatus = {};
+    function diagLog(msg) {
+        const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+        const entry = `[${ts}] ${msg}`;
+        _diagLog.push(entry);
+        if (_diagLog.length > 80) _diagLog.shift();
+        console.log('[Dashboard]', msg);
+        refreshDiag();
+    }
+    function diagPane(name, status, detail) {
+        _diagStatus[name] = { status, detail, ts: Date.now() };
+        refreshDiag();
+    }
+    function refreshDiag() {
+        const el = document.getElementById('diag-panes');
+        const logEl = document.getElementById('diag-log');
+        if (!el) return;
+        el.innerHTML = Object.entries(_diagStatus).map(([k, v]) => {
+            const cls = v.status === 'ok' ? 'ok' : v.status === 'error' ? 'err' : 'pending';
+            return `<div class="diag-row"><span class="pane">${k}</span><span class="status ${cls}">${v.status}</span><span>${v.detail || ''}</span></div>`;
+        }).join('');
+        if (logEl) logEl.textContent = _diagLog.slice(-20).join('\n');
+    }
+    function toggleDiag() {
+        const overlay = document.getElementById('diag-overlay');
+        if (overlay) overlay.classList.toggle('visible');
+    }
+
+    // ── Global Error Catchers ──
+    window.addEventListener('unhandledrejection', e => {
+        diagLog('UNHANDLED REJECTION: ' + (e.reason?.message || e.reason || 'unknown'));
+    });
+    window.addEventListener('error', e => {
+        diagLog('JS ERROR: ' + e.message + ' @ ' + (e.filename || '').split('/').pop() + ':' + e.lineno);
+    });
+
+    /** Safe loader — catches errors so one failing pane doesn't break others (async-aware) */
+    async function safeLoad(fn) {
+        try {
+            diagPane(fn.name, 'loading', 'started');
+            await fn();
+            diagPane(fn.name, 'ok', 'done');
+        } catch (e) {
+            console.error('[Dashboard] Loader failed:', fn.name, e);
+            diagLog(`FAIL: ${fn.name} — ${e.message}`);
+            diagPane(fn.name, 'error', e.message?.substring(0, 60));
+        }
+    }
 
     function init() {
+        diagLog('init() starting — origin: ' + location.protocol + '//' + location.host);
         cEvict();
         initScreenMode();
         initTheme();
@@ -1698,8 +1773,10 @@
         tickClock(); updateMarketBadge();
         const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadWeather,
                          loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar];
-        loaders.forEach(safeLoad);
-        stampRefresh();
+        Promise.allSettled(loaders.map(safeLoad)).then(() => {
+            diagLog('All loaders settled');
+            stampRefresh();
+        });
     }
 
     // Real-time (1min) — clock has no seconds, minute tick is sufficient
