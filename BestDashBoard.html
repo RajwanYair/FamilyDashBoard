@@ -222,6 +222,12 @@
         .card:hover::after { opacity: 1; }
         .card:hover { box-shadow: 0 0 32px var(--accent-glow), var(--card-shadow); transform: translateY(-1px); }
         @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cardSlideLeft  { from { opacity: 0; transform: translateX(-40px) scale(0.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes cardSlideRight { from { opacity: 0; transform: translateX(40px) scale(0.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes cardSlideUp    { from { opacity: 0; transform: translateY(30px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes cardSlideDown  { from { opacity: 0; transform: translateY(-30px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes cardPopIn      { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }
+        @keyframes cardFlipIn     { from { opacity: 0; transform: perspective(600px) rotateY(12deg) scale(0.95); } to { opacity: 1; transform: perspective(600px) rotateY(0) scale(1); } }
         .card:nth-child(1) { animation-delay: 0.05s; }
         .card:nth-child(2) { animation-delay: 0.1s; }
         .card:nth-child(3) { animation-delay: 0.15s; }
@@ -1824,11 +1830,36 @@
     setInterval(loadShabbat, 21600000);       // 6h
     setInterval(loadHolidays, 43200000);      // 12h
 
-    document.addEventListener('DOMContentLoaded', init);
+    // ── Card Entrance Animations ──
+    const CARD_ANIMS = ['cardSlideLeft','cardSlideRight','cardSlideUp','cardSlideDown','cardPopIn','cardFlipIn'];
+    function randomAnim() { return CARD_ANIMS[Math.floor(Math.random() * CARD_ANIMS.length)]; }
+
+    /** Assign random entrance animation to each card on startup */
+    function initCardAnimations() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, i) => {
+            card.style.animation = `${randomAnim()} 0.65s cubic-bezier(0.22, 1, 0.36, 1) ${i * 0.08}s both`;
+        });
+    }
+
+    /** Every 5min, pick a random card and re-animate it for attention */
+    function cardAttentionLoop() {
+        const cards = document.querySelectorAll('.card');
+        if (!cards.length) return;
+        const card = cards[Math.floor(Math.random() * cards.length)];
+        const anim = randomAnim();
+        // Remove current animation, force reflow, apply new one
+        card.style.animation = 'none';
+        void card.offsetWidth; // force reflow
+        card.style.animation = `${anim} 0.7s cubic-bezier(0.22, 1, 0.36, 1) both`;
+    }
+    setInterval(cardAttentionLoop, 300000); // 5min
+
+    document.addEventListener('DOMContentLoaded', () => { init(); initCardAnimations(); });
     // Also call immediately in case DOMContentLoaded already fired
     // (inline end-of-body scripts run after DOM is parsed —
     //  readyState may already be 'interactive' before the listener fires)
-    if (document.readyState !== 'loading') init();
+    if (document.readyState !== 'loading') { init(); initCardAnimations(); }
     </script>
 </body>
 </html>
