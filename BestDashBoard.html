@@ -864,6 +864,7 @@
         refresh: $('last-refresh'), holiday: $('holiday-info'), marketBadge: $('market-badge'),
         dayProgress: $('day-progress'), yearProgress: $('year-progress'),
         dayPct: $('day-pct'), yearPct: $('year-pct'),
+        calAgenda: $('cal-agenda'), calIframe: $('cal-iframe'),
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -1409,6 +1410,133 @@
         }
     }
 
+    // ── Google Calendar (ICS native render) ──
+    const CAL_ICS = 'https://calendar.google.com/calendar/ical/rajwan.family%40gmail.com/public/basic.ics';
+    const CAL_DAYS_AHEAD = 21; // show 3 weeks of upcoming events
+
+    function parseICS(text) {
+        const events = [];
+        const blocks = text.split('BEGIN:VEVENT');
+        for (let i = 1; i < blocks.length; i++) {
+            const b = blocks[i];
+            // unfold long lines (CRLF + space/tab = continuation)
+            const unfolded = b.replace(/\r?\n[ \t]/g, '');
+            const get = key => {
+                const m = unfolded.match(new RegExp('(?:^|\n)' + key + '(?:;[^:]*)?:([^\r\n]+)', 'i'));
+                return m ? m[1].trim() : null;
+            };
+            const dtRaw = get('DTSTART') || '';
+            const dtEndRaw = get('DTEND') || '';
+            const summary = (get('SUMMARY') || '').replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
+            const location = (get('LOCATION') || '').replace(/\\,/g, ',').replace(/\\n/g, ', ').replace(/\\;/g, ';');
+            if (!dtRaw || !summary) continue;
+            // parse DTSTART: VALUE=DATE (YYYYMMDD) or datetime (YYYYMMDDTHHmmSSZ)
+            let start, allDay = false;
+            if (dtRaw.length === 8) {
+                // all-day: YYYYMMDD
+                start = new Date(dtRaw.slice(0,4) + '-' + dtRaw.slice(4,6) + '-' + dtRaw.slice(6,8) + 'T00:00:00');
+                allDay = true;
+            } else {
+                // datetime — convert to local Jerusalem time via ISO
+                const s = dtRaw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, '$1-$2-$3T$4:$5:$6' + (dtRaw.endsWith('Z') ? 'Z' : ''));
+                start = new Date(s);
+            }
+            if (isNaN(start.getTime())) continue;
+            events.push({ start, allDay, summary, location });
+        }
+        return events;
+    }
+
+    function renderCalendar(events) {
+        const now = new Date();
+        const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * 86400000);
+        // filter to window: from start of today
+        const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const upcoming = events
+            .filter(e => e.start >= todayMidnight && e.start <= cutoff)
+            .sort((a, b) => a.start - b.start);
+
+        const frag = document.createDocumentFragment();
+        if (!upcoming.length) {
+            const empty = document.createElement('div');
+            empty.className = 'cal-empty';
+            empty.textContent = 'אין אירועים ב-21 הימים הקרובים';
+            frag.appendChild(empty);
+        } else {
+            let lastDateKey = null;
+            for (const ev of upcoming) {
+                const dateKey = ev.start.toDateString();
+                if (dateKey !== lastDateKey) {
+                    lastDateKey = dateKey;
+                    const hdr = document.createElement('div');
+                    hdr.className = 'cal-day-header';
+                    // e.g. "יום שלישי · 08 אפריל"
+                    const dayHe = ev.start.toLocaleDateString('he-IL', { weekday: 'long', timeZone: 'Asia/Jerusalem' });
+                    const dateFmt = ev.start.toLocaleDateString('he-IL', { day: '2-digit', month: 'long', timeZone: 'Asia/Jerusalem' });
+                    hdr.textContent = dayHe + ' · ' + dateFmt;
+                    frag.appendChild(hdr);
+                }
+                const row = document.createElement('div');
+                row.className = 'cal-event';
+                const timeEl = document.createElement('div');
+                timeEl.className = 'cal-event-time';
+                timeEl.textContent = ev.allDay
+                    ? 'כל היום'
+                    : ev.start.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                const titleEl = document.createElement('div');
+                titleEl.style.flex = '1';
+                const titleLine = document.createElement('div');
+                titleLine.className = 'cal-event-title';
+                titleLine.textContent = ev.summary;
+                titleEl.appendChild(titleLine);
+                if (ev.location) {
+                    const locEl = document.createElement('div');
+                    locEl.className = 'cal-event-loc';
+                    locEl.textContent = '📍 ' + ev.location;
+                    titleEl.appendChild(locEl);
+                }
+                row.appendChild(timeEl);
+                row.appendChild(titleEl);
+                frag.appendChild(row);
+            }
+        }
+        if (el.calAgenda) {
+            el.calAgenda.innerHTML = '';
+            el.calAgenda.appendChild(frag);
+        }
+    }
+
+    async function loadCalendar() {
+        const key = 'cal-ics';
+        const fresh = cGet(key, 900000); // 15min TTL
+        if (fresh) { renderCalendar(parseICS(fresh)); setSync('cal', 'success'); return; }
+        const staleText = cGetStale(key);
+        if (staleText) { renderCalendar(parseICS(staleText)); }
+        setSync('cal', 'syncing');
+        for (const proxy of PROXIES) {
+            try {
+                const r = await fetch(proxy + encodeURIComponent(CAL_ICS));
+                if (!r.ok) continue;
+                let icsText;
+                if (proxy.includes('allorigins')) {
+                    const j = await r.json();
+                    icsText = j.contents;
+                } else {
+                    icsText = await r.text();
+                }
+                if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) continue;
+                cSet(key, icsText);
+                renderCalendar(parseICS(icsText));
+                setSync('cal', 'success');
+                return;
+            } catch (_) { continue; }
+        }
+        // all proxies failed — show iframe fallback
+        setSync('cal', 'error');
+        if (el.calAgenda) el.calAgenda.style.display = 'none';
+        if (el.calIframe) el.calIframe.classList.add('cal-fallback-active');
+    }
+
     // ── Motivation (30-min rotation, online + offline, crossfade) ──
     function loadMotivation() {
         const card = el.motiText?.closest('.moti-card');
@@ -1444,6 +1572,7 @@
     //  │ Stocks       │ 10min/30m│ 10min when NYSE open, 30min closed  │
     //  │ Weather      │ 30min    │ Weather changes slowly              │
     //  │ Currency     │ 1h       │ Exchange rates drift slowly         │
+    //  │ Calendar     │ 15min    │ ICS fetch, 21-day window            │
     //  │ Motivation   │ 4h       │ Static rotation, no external API    │
     //  │ Hebrew date  │ 3h       │ Changes once per day                │
     //  │ Shabbat      │ 6h       │ Changes once per week               │
@@ -1495,7 +1624,7 @@
         tickClock(); updateMarketBadge();
         loadHebrewDate(); loadShabbat(); loadHolidays(); loadWeather();
         loadNews(); loadAllStocks(); loadCurrency(); loadAlerts(); loadMotivation();
-        setSync('cal', 'success');
+        loadCalendar();
         stampRefresh();
     }
 
@@ -1516,6 +1645,7 @@
     // Slow (1h+)
     setInterval(loadCurrency, 3600000);       // 1h
     setInterval(loadMotivation, 14400000);    // 4h — static, no network
+    setInterval(loadCalendar, 900000);        // 15min
 
     // Very slow (3h+)
     setInterval(loadHebrewDate, 10800000);    // 3h
