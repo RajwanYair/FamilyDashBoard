@@ -19,7 +19,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.2-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.4-a78bfa?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -28,7 +28,7 @@
 [![Repo Size](https://img.shields.io/github/repo-size/RajwanYair/FamilyDashBoard?style=flat-square&color=34d399)](https://github.com/RajwanYair/FamilyDashBoard)
 
 **A single-file, zero-dependency family dashboard for always-on TV display.**<br/>
-Dark glassmorphism · Hebrew RTL · Real-time data from 8 free APIs · Per-pane smart refresh
+Dark glassmorphism · 5 themes · Hebrew RTL · 20 Hebrew news feeds · Per-pane smart refresh · Diagnostic overlay
 
 [Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#-architecture) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
 
@@ -53,22 +53,22 @@ Dark glassmorphism · Hebrew RTL · Real-time data from 8 free APIs · Per-pane 
 <td width="50%">
 
 ### 📰 Live News
-Auto-scrolling Hebrew news from **10 RSS sources** (Rotter, Ynet, Walla, Maariv, Calcalist, Globes, Kan, Israel Hayom, Channel 13, Geektime), sorted newest-first with source labels and relative timestamps. Refreshes every **2 minutes**.
+Auto-scrolling Hebrew news from **20 RSS sources** (Rotter, Ynet, Walla, Maariv, Calcalist, Globes, Kan, Israel Hayom, Channel 13, Geektime, Ynet Economy, Walla Economy, Haaretz, Makor Rishon, Kikar HaShabbat, ICE, Sport5), sorted newest-first with source labels and relative timestamps. Refreshes every **15 minutes**.
 
 ### 📅 Family Calendar
-Embedded Google Calendar in agenda view with inverted dark theme to match the dashboard.
+Native **ICS parser** fetches Google Calendar data, renders events in a dark-themed agenda view. Falls back to iframe embed if ICS parsing fails. Refreshes every **15 minutes**.
 
 ### 📈 Stock Tracker
-6 live symbols (INTC, S&P 500, BTC, NVDA, VIX, PLTR) with **smooth bézier SVG charts**, colored per-symbol accents, 3-tier API fallback, and a **market open/closed badge** with smart refresh (5 min during market hours, 30 min off-hours).
+6 live symbols (INTC, S&P 500, BTC, NVDA, VIX, TSLA) with **smooth bézier SVG charts**, colored per-symbol accents, Yahoo Finance v8/v6 API with proxy fallback, **8-second fetch timeout** (AbortController) to prevent hanging, and a **market open/closed badge** with smart refresh (10 min during market hours, 30 min off-hours). Loaded in parallel batches of 3.
 
 ### 🚨 Red Alerts (צבע אדום)
-Live rocket/UAV alerts from the Home Front Command via [tzevaadom.co.il](https://www.tzevaadom.co.il/). Shows 24h count, last 15 events with city names, threat type, and relative time. Active alerts pulse red. Refreshes every **30 seconds**.
+Live rocket/UAV alerts from the Home Front Command via [tzevaadom.co.il](https://www.tzevaadom.co.il/). Shows 24h count, last 15 events with city names, threat type, and relative time. Active alerts pulse red. Refreshes every **60 seconds** (5 min when idle).
 
 </td>
 <td width="50%">
 
 ### 🌤️ Weather + UV
-Current conditions with feels-like temperature, 4-day forecast, humidity, UV index, wind, sunrise, and a **12-hour temperature curve** for Jerusalem.
+Split-panel layout: **right half** shows current conditions (icon + temperature + description), **left half** shows a 2×2 grid of humidity, wind, UV index, and sunrise. Below: a **12-hour temperature curve** and an enlarged **4-day forecast** with bigger icons. Data from Open-Meteo for Jerusalem.
 
 ### 💱 Currency Exchange
 Live USD/ILS, EUR/ILS, GBP/ILS rates from open exchange rate APIs with colored trend indicators.
@@ -77,12 +77,18 @@ Live USD/ILS, EUR/ILS, GBP/ILS rates from open exchange rate APIs with colored t
 Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** with days-remaining in the header.
 
 ### 💪 Motivation
-Online quotes (Quotable/ZenQuotes) auto-translated to Hebrew with **smooth crossfade animation**, plus 30 curated offline fallbacks.
+**50 curated Hebrew quotes** with smooth crossfade animation. No network needed — purely static. Refreshes every **4 hours**.
 
 ### ⏱️ Smart Dashboard
 - **Per-pane independent refresh** — no full-page reloads
-- **Persistent localStorage cache** — survives browser restart
+- **Dual-layer cache** (in-memory Map + localStorage) — survives browser restart, 7-day eviction
 - **Stale-while-revalidate** — shows cached data instantly, fetches in background
+- **5 themes** (OLED black, blue, matrix, amber, purple) — press `T` to cycle
+- **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
+- **6 card entrance animations** — random direction per card, attention loop every 5min
+- **Diagnostic overlay** — press `D` for per-pane status + fetch log, auto-opens on errors
+- **Offline banner** — slides down when internet is lost, serves stale cache
+- **Startup self-check** — validates MOTIVATIONS, DOM refs, PROXIES, STOCK_SYMBOLS
 - **Day & year progress bars** in the status bar
 - **Blinking clock** with gradient text effect
 
@@ -112,7 +118,7 @@ start BestDashBoard.html       # Windows
 xdg-open BestDashBoard.html   # Linux
 ```
 
-> **Tip:** Press **F11** for full-screen TV mode. For hot-reload during development, use VS Code + Live Server extension.
+> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics. For hot-reload during development, use VS Code + Live Server extension.
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
@@ -155,6 +161,13 @@ if (stale) render(stale); // show old data while fetching
 
 // ✅ Multi-proxy fallback for CORS
 for (const proxy of PROXIES) { /* try each */ }
+
+// ✅ Fetch timeout (prevents hanging on slow proxies)
+function fetchWithTimeout(url, ms = 8000) {
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), ms);
+    return fetch(url, { signal: c.signal }).finally(() => clearTimeout(t));
+}
 
 // ✅ Smooth bézier SVG charts
 path += ` C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
@@ -248,6 +261,8 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 |---------|-----------|
+| **v4.4** | ✨ 5 CSS themes, 3 screen modes, diagnostic overlay (D key), offline banner, card spotlight glow, async-safe loaders, startup self-check, 6 card entrance animations, 20 news feeds, faster ticker |
+| **v4.3** | ⚡ Performance refactor, cache versioning (dash_v2_), ICS calendar renderer, DOMContentLoaded fix, seamless scroll loops |
 | **v4.2** | 🚨 Red Alerts panel (tzevaadom.co.il), colorful icon badges, gradient accents |
 | **v4.1** | ⏱️ Per-pane independent refresh, persistent localStorage cache |
 | **v4.0** | 🎉 Holiday countdown, progress bars, market badge, feels-like temp, crossfade quotes |

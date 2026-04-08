@@ -10,14 +10,20 @@
 ## Available Custom Agents
 
 ### `@dashboard-designer`
-UI/UX specialist for the glassmorphism theme, CSS custom properties, RTL layout, TV-optimized readability, and responsive grid design.
+UI/UX specialist for the glassmorphism theme, CSS custom properties, RTL layout, TV-optimized readability, responsive grid design, 5 theme variants, 3 screen modes, card entrance animations, and phone mode scroll.
 
-**Use when**: redesigning sections, changing theme, adjusting layout, improving responsiveness.
+**Use when**: redesigning sections, changing themes, adjusting layout, improving responsiveness, card animations, phone mode.
 
 ### `@api-integrator`
-API integration specialist for client-side data fetching with CORS proxy fallback, caching, and sync indicators.
+API integration specialist for client-side data fetching with CORS proxy fallback, dual-layer caching (`cGet`/`cSet`/`cGetStale`), sync indicators, fetch locks, and diagnostic logging.
 
-**Use when**: adding data sources, fixing API calls, debugging fetch errors, optimizing caching.
+**Use when**: adding data sources, fixing API calls, debugging fetch errors, optimizing caching, diagnosing with `diagLog()`.
+
+### Keyboard Shortcuts
+| Key | Action |
+|-----|--------|
+| `T` | Cycle through 5 themes |
+| `D` | Toggle diagnostic overlay (per-pane status + fetch log) |
 
 ## Available Copilot Modes
 

@@ -379,13 +379,14 @@
 
         /* ── Weather ── */
         .weather-body { flex: 1; display: flex; flex-direction: column; padding: 6px; min-height: 0; overflow: hidden; }
-        .wx-current { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-        .wx-icon { font-size: 2.8em; line-height: 1; }
-        .wx-info { flex: 1; }
+        .wx-top-row { display: flex; flex-direction: row; gap: 8px; margin-bottom: 4px; flex: 1 1 auto; min-height: 0; }
+        .wx-current { flex: 1 1 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .wx-icon { font-size: 3em; line-height: 1; }
+        .wx-info { text-align: center; }
         .wx-temp-main { font-size: 1.8em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
         .wx-desc { font-size: 0.95em; color: var(--text-secondary); }
-        .wx-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font-size: 0.75em; margin-bottom: 4px; }
-        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 4px; text-align: center; transition: transform 0.2s; }
+        .wx-details { flex: 1 1 50%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; font-size: 0.75em; }
+        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 6px 4px; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wx-detail:hover { transform: scale(1.05); }
         .wx-detail:nth-child(1) { border-bottom: 2px solid var(--accent); }
         .wx-detail:nth-child(2) { border-bottom: 2px solid var(--cyan); }
@@ -393,12 +394,12 @@
         .wx-detail:nth-child(4) { border-bottom: 2px solid var(--orange); }
         .wx-detail-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 2px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 1.05em; }
-        .wx-hourly-chart { width: 100%; height: 50px; margin-bottom: 4px; flex-shrink: 1; min-height: 32px; }
-        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; flex: 0 0 auto; }
-        .wx-fday { background: var(--bg-card-inner); padding: 4px 3px; border-radius: 8px; text-align: center; }
-        .wx-fday-name { font-size: 0.78em; color: var(--accent); font-weight: 600; }
-        .wx-fday-icon { font-size: 1.2em; margin: 2px 0; }
-        .wx-fday-temp { font-size: 0.85em; font-weight: 700; }
+        .wx-hourly-chart { width: 100%; height: 42px; margin-bottom: 4px; flex-shrink: 0; min-height: 32px; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 0 0 auto; padding: 2px 0; }
+        .wx-fday { background: var(--bg-card-inner); padding: 6px 4px; border-radius: 8px; text-align: center; }
+        .wx-fday-name { font-size: 0.82em; color: var(--accent); font-weight: 600; }
+        .wx-fday-icon { font-size: 1.4em; margin: 3px 0; }
+        .wx-fday-temp { font-size: 0.9em; font-weight: 700; }
 
         /* ── Currency ── */
         .currency-body { flex: 1; display: flex; flex-direction: row; gap: 6px; padding: 10px; }
@@ -572,6 +573,7 @@
             body { font-size: 14px; }
             .main-grid, .bottom-grid { grid-template-columns: 1fr; }
             .main-grid > :nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
+            .wx-top-row { flex-direction: column; }
             .wx-details { grid-template-columns: repeat(2, 1fr); }
             .clock { font-size: 2.4em; }
             .hebrew-date { font-size: 1.05em; }
@@ -710,18 +712,20 @@
             <div class="card">
                 <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> מזג אויר — ירושלים</div>
                 <div class="weather-body">
-                    <div class="wx-current">
-                        <div class="wx-icon" id="wx-icon">🌤️</div>
-                        <div class="wx-info">
-                            <div class="wx-temp-main" id="wx-temp">--°C</div>
-                            <div class="wx-desc" id="wx-desc">טוען...</div>
+                    <div class="wx-top-row">
+                        <div class="wx-current">
+                            <div class="wx-icon" id="wx-icon">🌤️</div>
+                            <div class="wx-info">
+                                <div class="wx-temp-main" id="wx-temp">--°C</div>
+                                <div class="wx-desc" id="wx-desc">טוען...</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="wx-details">
-                        <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
-                        <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
-                        <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
-                        <div class="wx-detail"><div class="wx-detail-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
+                        <div class="wx-details">
+                            <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
+                            <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
+                            <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
+                            <div class="wx-detail"><div class="wx-detail-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
+                        </div>
                     </div>
                     <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                     <div class="wx-forecast" id="wx-forecast">
@@ -825,7 +829,7 @@
         {t:'כשאתה עייף, למד לנוח — לא לוותר.',a:''},
         {t:'הצלחה היא סכום של מאמצים קטנים שחוזרים על עצמם יום אחרי יום.',a:'רוברט קוליר'},
         {t:'תתחיל מאיפה שאתה, תשתמש במה שיש לך, תעשה מה שאתה יכול.',a:'ארתור אש'},
-        {t:'אדם לא נשפט לפי כמה פעמים נפל, אלא לפי כמה פעמים קם.',a:''},
+        {t:'לא הנסיבות מעצבות אותנו, אלא ההחלטות שאנחנו מקבלים.',a:'טוני רובינס'},
         {t:'החיים לא מחכים — אתה זה שצריך להתחיל.',a:''},
         {t:'מה שאתה שם בראשך כשהדברים קשים — זה מה שקובע.',a:''},
         {t:'יש לך בדיוק את הכוח שדרוש לך כדי ליצור את החיים שאתה רוצה.',a:''},
@@ -1229,7 +1233,7 @@
         });
         // Adjust speed based on content width
         const w = el.ticker.scrollWidth / 2;
-        el.ticker.style.animationDuration = Math.max(15, w / 140) + 's';
+        el.ticker.style.animationDuration = Math.max(15, w / 300) + 's';
     }
 
     // ── Stocks (multi-fallback, bezier charts) ──
@@ -1243,12 +1247,12 @@
     async function loadAllStocks() {
         if (!_pageVisible || !acquireLock('stocks')) return;
         setSync('stocks', 'syncing'); let ok = false;
-        // Load in parallel batches of 2 to reduce API rate limit risk
-        for (let i = 0; i < STOCK_SYMBOLS.length; i += 2) {
-            const batch = STOCK_SYMBOLS.slice(i, i + 2);
+        // Load in parallel batches of 3 to reduce API rate limit risk
+        for (let i = 0; i < STOCK_SYMBOLS.length; i += 3) {
+            const batch = STOCK_SYMBOLS.slice(i, i + 3);
             const results = await Promise.allSettled(batch.map(s => loadStock(s)));
             if (results.some(r => r.status === 'fulfilled' && r.value)) ok = true;
-            if (i + 2 < STOCK_SYMBOLS.length) await new Promise(r => setTimeout(r, 200));
+            if (i + 3 < STOCK_SYMBOLS.length) await new Promise(r => setTimeout(r, 150));
         }
         setSync('stocks', ok ? 'success' : 'error');
         releaseLock('stocks');
@@ -1270,22 +1274,28 @@
         sEl.textContent = `@keyframes stocksScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-${h}px); } }`;
         cont.style.animation = `stocksScroll ${dur}s linear infinite`;
     }
+    function fetchWithTimeout(url, ms = 8000) {
+        const c = new AbortController();
+        const t = setTimeout(() => c.abort(), ms);
+        return fetch(url, { signal: c.signal }).finally(() => clearTimeout(t));
+    }
     async function loadStock(sym) {
         const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
         const key = 'stk-' + sym;
         const ttl = getStockTTL();
         const fresh = cGet(key, ttl); if (fresh) { renderStock(blk, fresh, sym); return true; }
         const stale = cGetStale(key); if (stale) renderStock(blk, stale, sym);
-        // Try v8 chart API
+        // Try v8 chart API (skip direct — Yahoo always CORS-blocks)
         try {
             const now = Math.floor(Date.now() / 1000); const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?period1=${now - 604800}&period2=${now}&interval=1d`;
-            for (const p of PROXIES) { try { const r = await fetch(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; if (d.chart?.result?.[0]) { cSet(key, d); renderStock(blk, d, sym); return true; } } catch (_) { continue; } }
+            for (const p of PROXIES) { try { const r = await fetchWithTimeout(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; if (d.chart?.result?.[0]) { diagLog(`stock ${sym} v8 OK via ${p.includes('allorigins')?'allorigins':'codetabs'}`); cSet(key, d); renderStock(blk, d, sym); return true; } } catch (_) { continue; } }
         } catch (_) {}
         // Fallback v6
         try {
             const url = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${sym}`;
-            for (const p of PROXIES) { try { const r = await fetch(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; const q = d.quoteResponse?.result?.[0]; if (q?.regularMarketPrice) { const fb = { chart: { result: [{ meta: { regularMarketPrice: q.regularMarketPrice, previousClose: q.regularMarketPreviousClose || q.regularMarketPrice }, indicators: { quote: [{ close: [q.regularMarketPrice] }] } }] } }; cSet(key, fb); renderStock(blk, fb, sym); return true; } } catch (_) { continue; } }
+            for (const p of PROXIES) { try { const r = await fetchWithTimeout(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; const q = d.quoteResponse?.result?.[0]; if (q?.regularMarketPrice) { diagLog(`stock ${sym} v6 OK via ${p.includes('allorigins')?'allorigins':'codetabs'}`); const fb = { chart: { result: [{ meta: { regularMarketPrice: q.regularMarketPrice, previousClose: q.regularMarketPreviousClose || q.regularMarketPrice }, indicators: { quote: [{ close: [q.regularMarketPrice] }] } }] } }; cSet(key, fb); renderStock(blk, fb, sym); return true; } } catch (_) { continue; } }
         } catch (_) {}
+        diagLog(`stock ${sym} FAILED all attempts`);
         // Show error state only if no cached data
         if (!stale) {
             blk.querySelector('.stk-price').textContent = 'N/A';
