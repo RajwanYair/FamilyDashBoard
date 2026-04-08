@@ -409,8 +409,7 @@
         .holiday-days { color: var(--warning); font-weight: 700; }
 
         /* ── Clock Blink ── */
-        .clock-colon { animation: colonBlink 1s step-end infinite; -webkit-text-fill-color: var(--accent); }
-        @keyframes colonBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        /* .clock-colon removed — clock no longer shows seconds */
 
         /* ── Market Badge ── */
         .market-badge { display: inline-block; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; font-weight: 700; margin-right: 6px; vertical-align: middle; }
@@ -567,7 +566,7 @@
                 <div class="holiday-info" id="holiday-info"></div>
             </div>
             <div class="header-center">
-                <div class="clock" id="clock">00:00:00</div>
+                <div class="clock" id="clock">00:00</div>
                 <div class="greeting" id="greeting"></div>
             </div>
             <div class="header-right">
@@ -895,9 +894,8 @@
     function getGreeting() { const h = new Date().getHours(); if (h >= 5 && h < 12) return '🌅 בוקר טוב למשפחת רגואן!'; if (h >= 12 && h < 17) return '☀️ צהריים טובים!'; if (h >= 17 && h < 21) return '🌇 ערב טוב למשפחה!'; return '🌙 לילה טוב!'; }
     function tickClock() {
         const now = new Date();
-        const parts = now.toLocaleTimeString('he-IL', { hour12: false, timeZone: 'Asia/Jerusalem' }).split(':');
-        const t = `${parts[0]}<span class="clock-colon">:</span>${parts[1]}<span class="clock-colon">:</span>${parts[2]}`;
-        el.clock.innerHTML = t;
+        const t = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem' });
+        if (el.clock.textContent !== t) el.clock.textContent = t;
         const d = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jerusalem' });
         if (el.engDate.textContent !== d) el.engDate.textContent = d;
         const g = getGreeting(); if (el.greeting.textContent !== g) el.greeting.textContent = g;
@@ -1174,7 +1172,7 @@
         const now = new Date();
         const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
         const h = ny.getHours(), d = ny.getDay(), t = h * 60 + ny.getMinutes();
-        return (d >= 1 && d <= 5 && t >= 570 && t <= 960) ? 300000 : 1800000; // 5min : 30min
+        return (d >= 1 && d <= 5 && t >= 570 && t <= 960) ? 600000 : 1800000; // 10min : 30min
     }
     async function loadAllStocks() {
         if (!_pageVisible || !acquireLock('stocks')) return;
@@ -1306,8 +1304,8 @@
     let _lastAlertId = null;
     let _alertsHaveActive = false;
     let _alertTimer = null;
-    const ALERT_INTERVAL_ACTIVE = 30000;  // 30s when active alerts
-    const ALERT_INTERVAL_IDLE   = 120000; // 2min when no recent alerts
+    const ALERT_INTERVAL_ACTIVE = 60000;  // 60s when active alerts
+    const ALERT_INTERVAL_IDLE   = 300000; // 5min when no recent alerts
 
     async function loadAlerts() {
         if (!_pageVisible) { scheduleAlerts(); return; }
@@ -1439,17 +1437,17 @@
     //  ┌──────────────┬──────────┬─────────────────────────────────────┐
     //  │ Pane         │ Interval │ Reasoning                           │
     //  ├──────────────┼──────────┼─────────────────────────────────────┤
-    //  │ Alerts       │ 15s/60s  │ 15s when active alerts, 60s idle      │
-    //  │ Clock        │ 1s       │ Must be real-time                   │
-    //  │ Market badge │ 1min     │ Local time check, cheap             │
-    //  │ News+Ticker  │ 5min     │ Aggregates 10 RSS feeds              │
-    //  │ Stocks       │ 5min/30m │ 5min when NYSE open, 30min closed   │
-    //  │ Weather      │ 15min    │ Weather changes slowly              │
-    //  │ Currency     │ 30min    │ Exchange rates drift slowly         │
+    //  │ Alerts       │ 60s/5min │ 60s when active alerts, 5min idle   │
+    //  │ Clock        │ 1min     │ No seconds — minute granularity     │
+    //  │ Market badge │ 5min     │ Local time check, cheap             │
+    //  │ News+Ticker  │ 15min    │ RSS feeds, low-cadence              │
+    //  │ Stocks       │ 10min/30m│ 10min when NYSE open, 30min closed  │
+    //  │ Weather      │ 30min    │ Weather changes slowly              │
+    //  │ Currency     │ 1h       │ Exchange rates drift slowly         │
     //  │ Motivation   │ 4h       │ Static rotation, no external API    │
-    //  │ Hebrew date  │ 1h       │ Changes once per day                │
-    //  │ Shabbat      │ 3h       │ Changes once per week               │
-    //  │ Holidays     │ 6h       │ Changes rarely                      │
+    //  │ Hebrew date  │ 3h       │ Changes once per day                │
+    //  │ Shabbat      │ 6h       │ Changes once per week               │
+    //  │ Holidays     │ 12h      │ Changes rarely                      │
     //  └──────────────┴──────────┴─────────────────────────────────────┘
 
     function stampRefresh() {
@@ -1501,28 +1499,28 @@
         stampRefresh();
     }
 
-    // Real-time (1s)
-    setInterval(tickClock, 1000);
+    // Real-time (1min) — clock has no seconds, minute tick is sufficient
+    setInterval(tickClock, 60000);
 
     // Critical — adaptive (alerts schedule themselves via setTimeout)
-    // loadAlerts() called in init(), then self-schedules 15s/60s
+    // loadAlerts() called in init(), then self-schedules 60s/5min
 
-    // Fast (1-2min)
-    setInterval(updateMarketBadge, 60000);
-    setInterval(() => { loadNews(); stampRefresh(); }, 300000); // 5min
+    // Medium (5-15min)
+    setInterval(updateMarketBadge, 300000);  // 5min
+    setInterval(() => { loadNews(); stampRefresh(); }, 900000); // 15min
 
-    // Medium (5min — stocks adapt based on market hours internally)
-    setInterval(() => { loadAllStocks(); stampRefresh(); }, 300000);
+    // Medium-slow (10min stocks / 30min weather)
+    setInterval(() => { loadAllStocks(); stampRefresh(); }, 600000); // 10min
+    setInterval(() => { loadWeather(); stampRefresh(); }, 1800000);  // 30min
 
-    // Slow (15-30min)
-    setInterval(() => { loadWeather(); stampRefresh(); }, 900000);
-    setInterval(loadCurrency, 1800000);
-    setInterval(loadMotivation, 14400000); // 4h — static rotation, no network
+    // Slow (1h+)
+    setInterval(loadCurrency, 3600000);       // 1h
+    setInterval(loadMotivation, 14400000);    // 4h — static, no network
 
-    // Very slow (1h+)
-    setInterval(loadHebrewDate, 3600000);
-    setInterval(loadShabbat, 10800000);
-    setInterval(loadHolidays, 21600000);
+    // Very slow (3h+)
+    setInterval(loadHebrewDate, 10800000);    // 3h
+    setInterval(loadShabbat, 21600000);       // 6h
+    setInterval(loadHolidays, 43200000);      // 12h
 
     document.addEventListener('DOMContentLoaded', init);
     </script>
