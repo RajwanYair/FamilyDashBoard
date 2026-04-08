@@ -504,6 +504,35 @@
         body.mode-phone .ticker-bar { height: 26px; }
         body.mode-phone .ticker-item { font-size: 0.62em; }
 
+        /* Phone: allow full-page scroll and show all card content */
+        body.mode-phone { overflow-y: auto; height: auto; min-height: 100vh; }
+        body.mode-phone .container { height: auto; overflow: visible; }
+        body.mode-phone .card { overflow: visible; height: auto; flex: none; min-height: unset; }
+
+        /* Phone: pane bodies — stop clipping, show all content */
+        body.mode-phone .news-body,
+        body.mode-phone .stocks-body,
+        body.mode-phone .alerts-body,
+        body.mode-phone .weather-body,
+        body.mode-phone .currency-body,
+        body.mode-phone .moti-body { overflow: visible; height: auto; flex: none; min-height: unset; }
+
+        /* Phone: calendar — show native agenda, hide iframe */
+        body.mode-phone .cal-wrapper { overflow: visible; height: auto; flex: none; }
+        body.mode-phone .cal-agenda { overflow: visible; height: auto; flex: none; }
+        body.mode-phone .cal-wrapper iframe { display: none !important; }
+
+        /* Phone: stop scroll loop animations; show all items statically */
+        body.mode-phone .rss-scroll,
+        body.mode-phone .stocks-scroll,
+        body.mode-phone .alerts-scroll { animation: none; transform: none; }
+
+        /* Phone: hide cloned duplicate items (used only for the loop) */
+        body.mode-phone .rss-item.clone,
+        body.mode-phone .stk.stk-clone,
+        body.mode-phone .alert-item.clone,
+        body.mode-phone .alert-count.clone { display: none; }
+
         /* ── Responsive ── */
         @media (max-width: 1200px) {
             body { font-size: 17px; }
@@ -1130,8 +1159,8 @@
         const list = items.slice(0, 18);
         // Duplicate for seamless scroll loop
         const all = [...list, ...list];
-        all.forEach(it => {
-            const div = document.createElement('div'); div.className = 'rss-item';
+        all.forEach((it, idx) => {
+            const div = document.createElement('div'); div.className = 'rss-item' + (idx >= list.length ? ' clone' : '');
             const ttl = document.createElement('div'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
             const meta = document.createElement('div'); meta.className = 'rss-meta';
             const tm = document.createElement('span'); tm.className = 'rss-time'; tm.textContent = it.pubDate ? relTime(it.pubDate) : '--:--'; meta.appendChild(tm);
@@ -1386,7 +1415,7 @@
         }
         function buildAlertItems(container, isClone) {
             const counter = document.createElement('div');
-            counter.className = 'alert-count';
+            counter.className = 'alert-count' + (isClone ? ' clone' : '');
             const hasActive = data.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
             counter.textContent = '🚨 ' + total24h + ' התרעות ב-24 שעות האחרונות';
             if (hasActive && !isClone) {
@@ -1405,7 +1434,7 @@
                 const ageMin = Math.floor((now - firstAlert.time) / 60);
                 const isRecent = ageMin < 10;
                 const div = document.createElement('div');
-                div.className = 'alert-item' + (isRecent ? ' active' : ' past') + (highlightNew && i === 0 && !isClone ? ' new-alert' : '');
+                div.className = 'alert-item' + (isRecent ? ' active' : ' past') + (highlightNew && i === 0 && !isClone ? ' new-alert' : '') + (isClone ? ' clone' : '');
                 const cities = document.createElement('div');
                 cities.className = 'alert-cities';
                 const unique = [...new Set(allCities)];
