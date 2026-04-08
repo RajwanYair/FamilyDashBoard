@@ -569,6 +569,27 @@
         {t:'תן לחיוך שלך לשנות את העולם, אבל אל תתן לעולם לשנות את החיוך שלך.',a:''},
         {t:'כשגשם יורד, חפש קשתות. כשחושך, חפש כוכבים.',a:'אוסקר ויילד'},
         {t:'הדבר היחיד שעומד בינך לבין החלום שלך הוא הרצון לנסות.',a:'ג\'ואל בראון'},
+        {t:'ברגע שתאמין שכל דבר אפשרי, תגלה שכל דבר אפשרי.',a:''},
+        {t:'כל בוקר שאתה קם הוא ניצחון קטן. תחגוג אותו.',a:''},
+        {t:'אל תשווה את הפרק שלך לאמצע של הפרק של מישהו אחר.',a:''},
+        {t:'האנשים שמשגשגים לא חיכו לתנאים מושלמים — הם יצרו אותם.',a:''},
+        {t:'כוחך לא נמדד בכמה פעמים נפלת, אלא בכמה פעמים קמת.',a:''},
+        {t:'מה שמרגיש בלתי אפשרי היום יהיה הסיפור שתספר מחר.',a:''},
+        {t:'הצמיחה מתחילה בגבול אזור הנוחות שלך.',a:''},
+        {t:'לא כל הימים יהיו טובים, אבל יש טוב בכל יום.',a:''},
+        {t:'אל תוותר על חלום רק בגלל שהזמן שייקח להגשמתו.',a:''},
+        {t:'כל מומחה פעם היה מתחיל שלא ידע דבר.',a:'הלן הייז'},
+        {t:'המחסום הגדול ביותר להצלחה הוא הפחד מהכישלון.',a:'סוון גוואן'},
+        {t:'עשה זאת בפחד אם צריך, אבל עשה זאת.',a:''},
+        {t:'אתה חזק יותר ממה שאתה חושב, ועמיד יותר ממה שאתה יודע.',a:''},
+        {t:'עתידך נוצר על ידי מה שאתה עושה היום, לא מחר.',a:'רוברט קיוסאקי'},
+        {t:'כשאתה עייף, למד לנוח — לא לוותר.',a:''),
+        {t:'הצלחה היא סכום של מאמצים קטנים שחוזרים על עצמם יום אחרי יום.',a:'רוברט קוליר'},
+        {t:'תתחיל מאיפה שאתה, תשתמש במה שיש לך, תעשה מה שאתה יכול.',a:'ארתור אש'},
+        {t:'אדם לא נשפט לפי כמה פעמים נפל, אלא לפי כמה פעמים קם.',a:''},
+        {t:'החיים לא מחכים — אתה זה שצריך להתחיל.',a:''},
+        {t:'מה שאתה שם בראשך כשהדברים קשים — זה מה שקובע.',a:''},
+        {t:'יש לך בדיוק את הכוח שדרוש לך כדי ליצור את החיים שאתה רוצה.',a:''},
     ];
     let motiIdx = Math.floor(Math.random() * MOTIVATIONS.length);
 
@@ -1194,31 +1215,24 @@
     }
 
     // ── Motivation (30-min rotation, online + offline, crossfade) ──
-    async function loadMotivation() {
-        if (!_pageVisible) return;
-        setSync('moti', 'syncing');
+    function loadMotivation() {
         const card = el.motiText?.closest('.moti-card');
-        // Fade out
-        if (card) { card.style.opacity = '0'; await new Promise(r => setTimeout(r, 400)); }
-        // Try online
-        try {
-            const sources = [
-                async () => { const d = await fetchJSON('https://api.quotable.io/random?tags=inspirational|motivational|wisdom&maxLength=200'); return { t: d.content, a: d.author, s: 'Quotable' }; },
-                async () => { const d = await fetchJSON('https://zenquotes.io/api/random'); const q = Array.isArray(d) ? d[0] : d; return { t: q.q, a: q.a, s: 'ZenQuotes' }; },
-            ];
-            for (const fn of sources) {
-                try { const r = await fn(); if (r.t) {
-                    const txt = await translateHe(r.t); const auth = r.a ? await translateHe(r.a) : '';
-                    el.motiText.textContent = txt; el.motiAuthor.textContent = auth ? '— ' + auth : ''; el.motiSrc.textContent = 'מקור: ' + r.s;
-                    if (card) card.style.opacity = '1';
-                    setSync('moti', 'success'); return;
-                }} catch (_) { continue; }
-            }
-        } catch (_) {}
-        // Offline fallback
         const m = MOTIVATIONS[motiIdx++ % MOTIVATIONS.length];
-        el.motiText.textContent = m.t; el.motiAuthor.textContent = m.a ? '— ' + m.a : ''; el.motiSrc.textContent = '';
-        if (card) card.style.opacity = '1';
+        // Crossfade
+        if (card) {
+            card.style.transition = 'opacity 0.5s ease';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                el.motiText.textContent = m.t;
+                el.motiAuthor.textContent = m.a ? '— ' + m.a : '';
+                el.motiSrc.textContent = '';
+                card.style.opacity = '1';
+            }, 500);
+        } else {
+            el.motiText.textContent = m.t;
+            el.motiAuthor.textContent = m.a ? '— ' + m.a : '';
+            el.motiSrc.textContent = '';
+        }
         setSync('moti', 'success');
     }
 
@@ -1235,7 +1249,7 @@
     //  │ Stocks       │ 5min/30m │ 5min when NYSE open, 30min closed   │
     //  │ Weather      │ 15min    │ Weather changes slowly              │
     //  │ Currency     │ 30min    │ Exchange rates drift slowly         │
-    //  │ Motivation   │ 30min    │ Quote rotation                      │
+    //  │ Motivation   │ 4h       │ Static rotation, no external API    │
     //  │ Hebrew date  │ 1h       │ Changes once per day                │
     //  │ Shabbat      │ 3h       │ Changes once per week               │
     //  │ Holidays     │ 6h       │ Changes rarely                      │
@@ -1288,7 +1302,7 @@
     // Slow (15-30min)
     setInterval(() => { loadWeather(); stampRefresh(); }, 900000);
     setInterval(loadCurrency, 1800000);
-    setInterval(loadMotivation, 1800000);
+    setInterval(loadMotivation, 14400000); // 4h — static rotation, no network
 
     // Very slow (1h+)
     setInterval(loadHebrewDate, 3600000);
