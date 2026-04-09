@@ -851,7 +851,7 @@
             </select>
             <select id="alerts-toggle">
                 <option value="on">🚨 התרעות פעיל</option>
-                <option value="off">🚨 התרעות כבוי</option>
+                <option value="off" selected>🚨 התרעות כבוי</option>
             </select>
         </div>
 
@@ -2243,7 +2243,7 @@
         setupStocksLoop();
     }
     function initAlerts() {
-        const saved = localStorage.getItem('dash_alerts') || 'on';
+        const saved = localStorage.getItem('dash_alerts') || 'off';
         applyAlerts(saved);
         const sel = document.getElementById('alerts-toggle');
         if (sel) sel.addEventListener('change', e => applyAlerts(e.target.value));
