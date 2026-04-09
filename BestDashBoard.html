@@ -167,7 +167,7 @@
         }
         .container { position: relative; z-index: 1; max-width: 100vw; padding: 10px; height: calc(100vh - 20px); display: flex; flex-direction: column; gap: 6px; }
 
-        /* ── News Ticker ── */
+        /* ── Halacha Ticker ── */
         .ticker-bar {
             background: var(--bg-card-header); border-radius: 8px; overflow: hidden;
             position: relative; flex: 0 0 auto; height: 36px;
@@ -222,8 +222,8 @@
         .header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
 
         /* ── Layout ── */
-        .main-grid { display: grid; grid-template-columns: 45% 30% 25%; gap: 8px; flex: 1 1 0; min-height: 0; }
-        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 0 0 28%; min-height: 0; }
+        .main-grid { display: grid; grid-template-columns: 42% 30% 28%; gap: 8px; flex: 6 1 0; min-height: 0; }
+        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 4 1 0; min-height: 0; }
 
         /* ── Cards ── */
         .card {
@@ -317,18 +317,17 @@
         .rss-scroll { display: flex; flex-direction: column; animation: newsScroll 60s linear infinite; will-change: transform; }
         .rss-scroll:hover { animation-play-state: paused; }
         .rss-item {
-            background: var(--bg-card-inner); padding: 9px 11px; margin: 4px 8px;
+            background: var(--bg-card-inner); padding: 5px 10px; margin: 3px 8px;
             border-radius: 8px; border-right: 3px solid var(--accent);
             font-size: 0.82em; cursor: pointer; transition: all .2s ease;
-            flex-shrink: 0;
+            flex-shrink: 0; display: flex; align-items: baseline; gap: 6px;
         }
         .rss-item:nth-child(odd) { border-right-color: var(--cyan); }
         .rss-item:nth-child(3n) { border-right-color: var(--purple); }
         .rss-item:hover { background: var(--bg-card-hover); transform: translateX(-3px); }
-        .rss-title { font-weight: 600; margin-bottom: 2px; color: var(--text-primary); line-height: 1.3; }
-        .rss-meta { display: flex; justify-content: space-between; align-items: center; }
-        .rss-time { font-size: 0.76em; color: var(--text-muted); }
-        .rss-source { font-size: 0.7em; color: var(--accent); opacity: 0.6; }
+        .rss-time { font-size: 0.72em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+        .rss-title { font-weight: 600; color: var(--text-primary); line-height: 1.3; flex: 1; min-width: 0; }
+        .rss-source { font-size: 0.65em; color: var(--accent); opacity: 0.6; white-space: nowrap; flex-shrink: 0; }
 
         /* ── Calendar ── */
         .cal-wrapper { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
@@ -364,6 +363,10 @@
         /* ── Stocks ── */
         .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
         .col-split > .card { flex: 1 1 0; min-height: 0; }
+
+        /* ── Alerts Toggle: when off, hide alerts card and let stocks take full height ── */
+        body.alerts-off .col-split > .card:last-child { display: none; }
+        body.alerts-off .col-split > .card:first-child { flex: 1 1 100%; }
         .stocks-body { flex: 1; overflow: hidden; position: relative; padding: 2px; }
         .stocks-scroll { display: flex; flex-direction: column; gap: 2px; animation: stocksScroll 30s linear infinite; will-change: transform; }
         .stocks-scroll:hover { animation-play-state: paused; }
@@ -554,6 +557,43 @@
         body.mode-phone .container { height: auto; overflow: visible; }
         body.mode-phone .card { overflow: visible; height: auto; flex: none; min-height: unset; }
 
+        /* Phone: grids — disable flex shrinking, allow natural flow */
+        body.mode-phone .main-grid,
+        body.mode-phone .bottom-grid { flex: none; min-height: unset; gap: 10px; }
+
+        /* Phone: col-split (stocks+alerts wrapper) — stack naturally */
+        body.mode-phone .col-split { height: auto; min-height: unset; gap: 10px; }
+        body.mode-phone .col-split > .card { flex: none; height: auto; min-height: unset; }
+
+        /* Phone: disable paint containment (prevents clipping in scroll mode) */
+        body.mode-phone .card { contain: none; }
+        body.mode-phone .news-body,
+        body.mode-phone .stocks-body,
+        body.mode-phone .alerts-body,
+        body.mode-phone .weather-body,
+        body.mode-phone .currency-body,
+        body.mode-phone .moti-body { contain: none; }
+
+        /* Phone: disable content-visibility auto (causes invisible cards when scrolling) */
+        body.mode-phone .bottom-grid .card:nth-child(n+2) { content-visibility: visible; contain-intrinsic-size: auto; }
+
+        /* Phone: disable scroll fade masks (not needed when showing all content) */
+        body.mode-phone .news-body,
+        body.mode-phone .stocks-body,
+        body.mode-phone .alerts-body {
+            -webkit-mask-image: none;
+            mask-image: none;
+        }
+
+        /* Phone: disable GPU layer hints on scroll containers (no animation) */
+        body.mode-phone .rss-scroll,
+        body.mode-phone .stocks-scroll,
+        body.mode-phone .alerts-scroll {
+            will-change: auto;
+            transform: none;
+            backface-visibility: visible;
+        }
+
         /* Phone: pane bodies — stop clipping, show all content */
         body.mode-phone .news-body,
         body.mode-phone .stocks-body,
@@ -570,7 +610,7 @@
         /* Phone: stop scroll loop animations; show all items statically */
         body.mode-phone .rss-scroll,
         body.mode-phone .stocks-scroll,
-        body.mode-phone .alerts-scroll { animation: none; transform: none; }
+        body.mode-phone .alerts-scroll { animation: none !important; transform: none !important; }
 
         /* Phone: hide cloned duplicate items (used only for the loop) */
         body.mode-phone .rss-item.clone,
@@ -591,8 +631,10 @@
         }
         @media (max-width: 768px) {
             body { font-size: 14px; }
-            .main-grid, .bottom-grid { grid-template-columns: 1fr; }
+            .main-grid, .bottom-grid { grid-template-columns: 1fr; flex: none; min-height: unset; }
             .main-grid > :nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
+            .col-split { min-height: unset; }
+            .col-split > .card { flex: none; min-height: unset; }
             .wx-top-row { flex-direction: column; }
             .wx-details { grid-template-columns: repeat(2, 1fr); }
             .clock { font-size: 2.4em; }
@@ -661,6 +703,20 @@
         /* ── Performance: Paint Containment ── */
         .card { contain: layout style; }
         .news-body, .stocks-body, .alerts-body, .weather-body, .currency-body, .moti-body { contain: content; }
+
+        /* ── Performance: GPU-Accelerated Layers ── */
+        /* Promote continuously-animating scroll containers to GPU-composited layers */
+        .rss-scroll, .stocks-scroll, .alerts-scroll, .ticker-inner {
+            will-change: transform;
+            transform: translateZ(0);         /* force GPU layer */
+            backface-visibility: hidden;      /* skip back-face rasterization */
+        }
+        .stk-chart svg { will-change: contents; }
+        .wx-hourly-chart { will-change: contents; }
+        /* Card maximize FLIP animation — promote during transition */
+        .card.maximized { will-change: transform, top, left, width, height; }
+        /* Animated gradient border — GPU composite */
+        .card::before { will-change: transform; backface-visibility: hidden; }
 
         /* ── Scroll Fade Masks (top/bottom gradient edges on scrolling containers) ── */
         .news-body, .stocks-body, .alerts-body {
@@ -779,12 +835,16 @@
                 <option value="amber">🟧 ענבר</option>
                 <option value="purple">🟥 סגול</option>
             </select>
+            <select id="alerts-toggle">
+                <option value="on">🚨 התרעות פעיל</option>
+                <option value="off">🚨 התרעות כבוי</option>
+            </select>
         </div>
 
-        <!-- ── News Ticker ── -->
+        <!-- ── Daily Halacha Ticker ── -->
         <div class="ticker-bar">
-            <div class="ticker-label">⚡ מבזקים</div>
-            <div class="ticker-track"><div class="ticker-content" id="ticker-content">טוען חדשות...</div></div>
+            <div class="ticker-label">📖 הלכה יומית</div>
+            <div class="ticker-track"><div class="ticker-content" id="ticker-content">טוען הלכה יומית...</div></div>
         </div>
 
         <!-- ── Header ── -->
@@ -1031,6 +1091,45 @@
     function acquireLock(name) { if (_fetchLocks.has(name)) return false; _fetchLocks.add(name); return true; }
     function releaseLock(name) { _fetchLocks.delete(name); }
 
+    // ── CPU Concurrency Control ──
+    // Use 60% of available logical cores (min 2, max 8) for parallel work
+    const CPU_CORES = navigator.hardwareConcurrency || 4;
+    const MAX_CONCURRENT = Math.max(2, Math.min(8, Math.floor(CPU_CORES * 0.6)));
+
+    /** Run async tasks with concurrency limit (CPU-aware throttle) */
+    async function runConcurrent(tasks, limit = MAX_CONCURRENT) {
+        const results = [];
+        const executing = new Set();
+        for (const task of tasks) {
+            const p = Promise.resolve().then(task);
+            results.push(p);
+            executing.add(p);
+            const cleanup = () => executing.delete(p);
+            p.then(cleanup, cleanup);
+            if (executing.size >= limit) await Promise.race(executing);
+        }
+        return Promise.allSettled(results);
+    }
+
+    /** Defer non-critical work to idle periods (CPU-friendly scheduling) */
+    const scheduleIdle = window.requestIdleCallback
+        ? (fn, timeout = 2000) => requestIdleCallback(fn, { timeout })
+        : (fn) => setTimeout(fn, 50);
+
+    // ── GPU Detection & Renderer Info (diagnostic) ──
+    function detectGPU() {
+        try {
+            const c = document.createElement('canvas');
+            const gl = c.getContext('webgl2') || c.getContext('webgl');
+            if (!gl) return { gpu: 'unknown', renderer: 'no WebGL' };
+            const ext = gl.getExtension('WEBGL_debug_renderer_info');
+            const renderer = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+            const vendor = ext ? gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR);
+            gl.getExtension('WEBGL_lose_context')?.loseContext();
+            return { gpu: vendor, renderer };
+        } catch (_) { return { gpu: 'unknown', renderer: 'detection failed' }; }
+    }
+
     // ── Page Visibility (pause fetches when tab is hidden) ──
     let _pageVisible = true;
     document.addEventListener('visibilitychange', () => { _pageVisible = !document.hidden; });
@@ -1084,12 +1183,19 @@
         dot.classList.add('just-synced');
     }
 
-    // ── Card Spotlight (mouse-follow glow) — throttled with rAF ──
+    // ── Card Spotlight (mouse-follow glow) — throttled with rAF, cached card list ──
     let _rafSpotlight = 0;
+    let _spotlightCards = null;
+    function _getSpotlightCards() {
+        if (!_spotlightCards) _spotlightCards = document.querySelectorAll('.card');
+        return _spotlightCards;
+    }
+    // Invalidate cache when DOM changes (card additions are rare)
+    function invalidateSpotlightCache() { _spotlightCards = null; }
     document.addEventListener('mousemove', e => {
         if (_rafSpotlight) return;
         _rafSpotlight = requestAnimationFrame(() => {
-            const cards = document.querySelectorAll('.card');
+            const cards = _getSpotlightCards();
             for (let i = 0; i < cards.length; i++) {
                 const card = cards[i];
                 const rect = card.getBoundingClientRect();
@@ -1296,7 +1402,7 @@
         if (!temps || temps.length < 2) return;
         const W = 500, H = 60, P = 8;
         const min = Math.min(...temps), max = Math.max(...temps), range = max - min || 1;
-        const pts = temps.map((t, i) => ({ x: P + (i / (temps.length - 1)) * (W - 2 * P), y: P + (1 - (t - min) / range) * (H - 2 * P - 14) }));
+        const pts = temps.map((t, i) => ({ x: W - P - (i / (temps.length - 1)) * (W - 2 * P), y: P + (1 - (t - min) / range) * (H - 2 * P - 14) }));
         // Smooth bezier path
         let path = `M${pts[0].x},${pts[0].y}`;
         for (let i = 1; i < pts.length; i++) {
@@ -1337,6 +1443,10 @@
         { url: 'https://www.kikar.co.il/rss', src: 'כיכר השבת' },
         { url: 'https://www.ice.co.il/rss/all', src: 'ICE' },
         { url: 'https://www.geektime.co.il/feed/', src: 'גיקטיים' },
+        { url: 'https://www.now14.co.il/feed/', src: 'ערוץ 14' },
+        { url: 'https://www.inn.co.il/Rss.aspx', src: 'ערוץ 7' },
+        { url: 'https://www.srugim.co.il/feed', src: 'סרוגים' },
+        { url: 'https://www.bhol.co.il/rss', src: 'בחדרי חרדים' },
     ];
 
     // ── Fetch a single RSS feed (returns array of items) ──
@@ -1365,10 +1475,10 @@
         setSync('news', 'syncing');
         const key = 'news';
         const fresh = cGet(key, 300000); // 5min TTL
-        if (fresh) { renderNews(fresh); renderTicker(fresh); setSync('news', 'success'); releaseLock('news'); return; }
-        const stale = cGetStale(key); if (stale) { renderNews(stale); renderTicker(stale); }
+        if (fresh) { renderNews(fresh); setSync('news', 'success'); releaseLock('news'); return; }
+        const stale = cGetStale(key); if (stale) { renderNews(stale); }
         const allItems = [];
-        const results = await Promise.allSettled(NEWS_FEEDS.map(f => fetchFeed(f)));
+        const results = await runConcurrent(NEWS_FEEDS.map(f => () => fetchFeed(f)));
         for (const r of results) { if (r.status === 'fulfilled' && r.value.length) allItems.push(...r.value); }
         if (allItems.length) {
             const seen = new Set(); const unique = [];
@@ -1376,12 +1486,12 @@
             unique.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
             const top = unique.slice(0, 50);
             cSet(key, top);
-            renderNews(top); renderTicker(top); setSync('news', 'success'); syncBurst('news'); recordSuccess('news');
+            renderNews(top); setSync('news', 'success'); syncBurst('news'); recordSuccess('news');
         } else { setSync('news', stale ? 'success' : 'error'); recordFailure('news'); }
         releaseLock('news');
     }
     function renderNews(items) {
-        el.rssScroll.innerHTML = '';
+        const frag = document.createDocumentFragment();
         const list = items.slice(0, 25);
         // Duplicate for seamless scroll loop
         const all = [...list, ...list];
@@ -1393,19 +1503,19 @@
                 const age = now - new Date(it.pubDate).getTime();
                 if (age < 1800000) div.dataset.age = 'fresh';
             }
-            const ttl = document.createElement('div'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
-            const meta = document.createElement('div'); meta.className = 'rss-meta';
             const tm = document.createElement('span'); tm.className = 'rss-time';
             if (it.pubDate) {
                 const d = new Date(it.pubDate);
-                tm.textContent = relTime(it.pubDate) + ' | ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                tm.textContent = d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
             } else { tm.textContent = '--:--'; }
-            meta.appendChild(tm);
-            const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; meta.appendChild(sr);
-            div.appendChild(meta);
+            div.appendChild(tm);
+            const ttl = document.createElement('span'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
+            const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; div.appendChild(sr);
             if (it.link) div.addEventListener('click', () => window.open(it.link, '_blank'));
-            el.rssScroll.appendChild(div);
+            frag.appendChild(div);
         });
+        el.rssScroll.innerHTML = '';
+        el.rssScroll.appendChild(frag); // single DOM write via DocumentFragment
         // Set scroll animation duration based on item count
         const h = el.rssScroll.scrollHeight / 2;
         el.rssScroll.style.animation = `newsScroll ${Math.max(40, list.length * 4)}s linear infinite`;
@@ -1417,22 +1527,78 @@
     }
 
     // ── Ticker (horizontal scroll at the top) ──
-    function renderTicker(items) {
-        if (!el.ticker) return;
-        el.ticker.innerHTML = '';
-        const top = items.slice(0, 30);
-        // Duplicate for seamless loop
-        const all = [...top, ...top];
-        all.forEach(it => {
+    // ── Daily Halacha (Sefaria API) ──
+    const SEFARIA_CALENDAR = 'https://www.sefaria.org/api/calendars';
+    async function loadHalacha() {
+        if (!_pageVisible) return;
+        const key = 'halacha';
+        const fresh = cGet(key, 43200000); // 12h TTL — changes daily
+        if (fresh) { renderHalacha(fresh); return; }
+        const stale = cGetStale(key); if (stale) renderHalacha(stale);
+        try {
+            let calData;
+            try { const r = await fetch(SEFARIA_CALENDAR); if (r.ok) calData = await r.json(); } catch (_) {}
+            if (!calData) {
+                for (const p of PROXIES) {
+                    try {
+                        const r = await fetch(p + encodeURIComponent(SEFARIA_CALENDAR));
+                        if (!r.ok) continue;
+                        calData = p.includes('allorigins') ? JSON.parse((await r.json()).contents) : JSON.parse(await r.text());
+                        break;
+                    } catch (_) { continue; }
+                }
+            }
+            if (!calData?.calendar_items) return;
+            const halachaItem = calData.calendar_items.find(it => it.title?.en === 'Halakhah Yomit');
+            if (!halachaItem?.url) return;
+            const textUrl = 'https://www.sefaria.org/api/v3/texts/' + encodeURIComponent(halachaItem.url);
+            let textData;
+            try { const r = await fetch(textUrl); if (r.ok) textData = await r.json(); } catch (_) {}
+            if (!textData) {
+                for (const p of PROXIES) {
+                    try {
+                        const r = await fetch(p + encodeURIComponent(textUrl));
+                        if (!r.ok) continue;
+                        textData = p.includes('allorigins') ? JSON.parse((await r.json()).contents) : JSON.parse(await r.text());
+                        break;
+                    } catch (_) { continue; }
+                }
+            }
+            if (!textData?.versions?.length) return;
+            const heVer = textData.versions.find(v => v.language === 'he');
+            const texts = heVer?.text;
+            if (!texts) return;
+            const halacha = {
+                ref: textData.heRef || halachaItem.displayValue?.he || '',
+                texts: Array.isArray(texts) ? texts.map(t => t.replace(/<[^>]+>/g, '').trim()).filter(Boolean) : [String(texts).replace(/<[^>]+>/g, '').trim()]
+            };
+            cSet(key, halacha);
+            renderHalacha(halacha);
+            diagLog('Halacha loaded: ' + halacha.ref);
+        } catch (e) { console.error('Halacha:', e); }
+    }
+
+    function renderHalacha(data) {
+        if (!el.ticker || !data?.texts?.length) return;
+        const frag = document.createDocumentFragment();
+        // Reference badge
+        const refSpan = document.createElement('span'); refSpan.className = 'ticker-item';
+        const src = document.createElement('span'); src.className = 'ticker-src'; src.textContent = '📖 ' + data.ref;
+        refSpan.appendChild(src);
+        frag.appendChild(refSpan);
+        // Halacha text segments — duplicate for seamless loop
+        const segments = data.texts;
+        const all = [...segments, ...segments];
+        all.forEach((text, i) => {
             const span = document.createElement('span'); span.className = 'ticker-item';
-            const src = document.createElement('span'); src.className = 'ticker-src'; src.textContent = it.source || '';
-            span.appendChild(src);
-            span.appendChild(document.createTextNode(it.title));
-            el.ticker.appendChild(span);
+            span.textContent = (i < segments.length ? '(' + (i + 1) + ') ' : '(' + ((i % segments.length) + 1) + ') ') + text;
+            frag.appendChild(span);
         });
-        // Adjust speed based on content width
+        el.ticker.innerHTML = '';
+        el.ticker.appendChild(frag);
+        // Adjust speed — halacha text is longer, scroll slower
         const w = el.ticker.scrollWidth / 2;
-        el.ticker.style.animationDuration = Math.max(15, w / 300) + 's';
+        el.ticker.style.animationDuration = Math.max(30, w / 140) + 's';
     }
 
     // ── Stocks (multi-fallback, bezier charts) ──
@@ -1443,21 +1609,117 @@
         const h = ny.getHours(), d = ny.getDay(), t = h * 60 + ny.getMinutes();
         return (d >= 1 && d <= 5 && t >= 570 && t <= 960) ? 600000 : 1800000; // 10min : 30min
     }
+
+    /** Race all proxies for a URL — first successful response wins */
+    async function raceProxies(url, timeout = 5000) {
+        const attempts = PROXIES.map(p => {
+            const c = new AbortController();
+            const t = setTimeout(() => c.abort(), timeout);
+            return fetch(p + encodeURIComponent(url), { signal: c.signal })
+                .then(async r => {
+                    const j = await r.json();
+                    clearTimeout(t);
+                    return { proxy: p, data: p.includes('allorigins') ? JSON.parse(j.contents) : j };
+                })
+                .catch(e => { clearTimeout(t); throw e; });
+        });
+        return Promise.any(attempts);
+    }
+
+    /** Batch-fetch all stock quotes via Yahoo v6 (single request for all symbols) */
+    async function loadStocksBatch() {
+        const syms = STOCK_SYMBOLS.join(',');
+        const url = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${syms}`;
+        try {
+            const { data } = await raceProxies(url, 6000);
+            const quotes = data.quoteResponse?.result;
+            if (!quotes?.length) return {};
+            const map = {};
+            for (const q of quotes) {
+                if (!q?.regularMarketPrice || !q?.symbol) continue;
+                map[q.symbol] = {
+                    chart: { result: [{ meta: { regularMarketPrice: q.regularMarketPrice, previousClose: q.regularMarketPreviousClose || q.regularMarketPrice },
+                        indicators: { quote: [{ close: [q.regularMarketPrice] }] } }] }
+                };
+            }
+            diagLog(`stocks batch v6 OK: ${Object.keys(map).length}/${STOCK_SYMBOLS.length} symbols`);
+            return map;
+        } catch (_) {
+            diagLog('stocks batch v6 failed — falling back to individual');
+            return {};
+        }
+    }
+
     async function loadAllStocks() {
         if (!_pageVisible || !acquireLock('stocks')) return;
         setSync('stocks', 'syncing'); let ok = false;
-        // Load in parallel batches of 3 to reduce API rate limit risk
-        for (let i = 0; i < STOCK_SYMBOLS.length; i += 3) {
-            const batch = STOCK_SYMBOLS.slice(i, i + 3);
-            const results = await Promise.allSettled(batch.map(s => loadStock(s)));
-            if (results.some(r => r.status === 'fulfilled' && r.value)) ok = true;
-            if (i + 3 < STOCK_SYMBOLS.length) await new Promise(r => setTimeout(r, 150));
+        const ttl = getStockTTL();
+
+        // Phase 1: Serve any cached data immediately (stale or fresh)
+        const uncached = [];
+        for (const sym of STOCK_SYMBOLS) {
+            const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) continue;
+            const key = 'stk-' + sym;
+            const fresh = cGet(key, ttl);
+            if (fresh) { renderStock(blk, fresh, sym); ok = true; }
+            else {
+                const stale = cGetStale(key);
+                if (stale) renderStock(blk, stale, sym);
+                uncached.push(sym);
+            }
         }
+
+        // Phase 2: If all symbols are fresh-cached, we're done
+        if (!uncached.length) {
+            setSync('stocks', 'success');
+            syncBurst('stocks'); recordSuccess('stocks');
+            releaseLock('stocks');
+            setupStocksLoop();
+            return;
+        }
+
+        // Phase 3: Try batch v6 for all uncached symbols at once
+        const batchResults = await loadStocksBatch();
+        const stillMissing = [];
+        for (const sym of uncached) {
+            if (batchResults[sym]) {
+                const blk = document.querySelector(`[data-symbol="${sym}"]`);
+                if (blk) { cSet('stk-' + sym, batchResults[sym]); renderStock(blk, batchResults[sym], sym); ok = true; }
+            } else { stillMissing.push(sym); }
+        }
+
+        // Phase 4: Individual v8 chart fetch (with proxy racing) only for symbols that batch missed
+        if (stillMissing.length) {
+            const results = await Promise.allSettled(stillMissing.map(sym => loadStockSingle(sym)));
+            if (results.some(r => r.status === 'fulfilled' && r.value)) ok = true;
+        }
+
         setSync('stocks', ok ? 'success' : 'error');
         if (ok) { syncBurst('stocks'); recordSuccess('stocks'); } else { recordFailure('stocks'); }
         releaseLock('stocks');
-        // Duplicate tiles for seamless scroll loop
         setupStocksLoop();
+    }
+
+    /** Load a single stock via v8 chart API (proxy-race, no sequential fallback) */
+    async function loadStockSingle(sym) {
+        const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
+        const key = 'stk-' + sym;
+        try {
+            const now = Math.floor(Date.now() / 1000);
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?period1=${now - 604800}&period2=${now}&interval=1d`;
+            const { data, proxy } = await raceProxies(url, 6000);
+            if (data.chart?.result?.[0]) {
+                diagLog(`stock ${sym} v8 OK via ${proxy.includes('allorigins') ? 'allorigins' : 'codetabs'}`);
+                cSet(key, data); renderStock(blk, data, sym); return true;
+            }
+        } catch (_) {}
+        diagLog(`stock ${sym} FAILED all attempts`);
+        if (!cGetStale(key)) {
+            blk.querySelector('.stk-price').textContent = 'N/A';
+            blk.querySelector('.stk-price').classList.remove('skeleton');
+            blk.querySelector('.stk-chg').textContent = '--';
+        }
+        return false;
     }
     function setupStocksLoop() {
         const cont = document.getElementById('stocks-body'); if (!cont) return;
@@ -1478,31 +1740,6 @@
         const c = new AbortController();
         const t = setTimeout(() => c.abort(), ms);
         return fetch(url, { signal: c.signal }).finally(() => clearTimeout(t));
-    }
-    async function loadStock(sym) {
-        const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
-        const key = 'stk-' + sym;
-        const ttl = getStockTTL();
-        const fresh = cGet(key, ttl); if (fresh) { renderStock(blk, fresh, sym); return true; }
-        const stale = cGetStale(key); if (stale) renderStock(blk, stale, sym);
-        // Try v8 chart API (skip direct — Yahoo always CORS-blocks)
-        try {
-            const now = Math.floor(Date.now() / 1000); const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?period1=${now - 604800}&period2=${now}&interval=1d`;
-            for (const p of PROXIES) { try { const r = await fetchWithTimeout(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; if (d.chart?.result?.[0]) { diagLog(`stock ${sym} v8 OK via ${p.includes('allorigins')?'allorigins':'codetabs'}`); cSet(key, d); renderStock(blk, d, sym); return true; } } catch (_) { continue; } }
-        } catch (_) {}
-        // Fallback v6
-        try {
-            const url = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${sym}`;
-            for (const p of PROXIES) { try { const r = await fetchWithTimeout(p + encodeURIComponent(url)); const j = await r.json(); const d = p.includes('allorigins') ? JSON.parse(j.contents) : j; const q = d.quoteResponse?.result?.[0]; if (q?.regularMarketPrice) { diagLog(`stock ${sym} v6 OK via ${p.includes('allorigins')?'allorigins':'codetabs'}`); const fb = { chart: { result: [{ meta: { regularMarketPrice: q.regularMarketPrice, previousClose: q.regularMarketPreviousClose || q.regularMarketPrice }, indicators: { quote: [{ close: [q.regularMarketPrice] }] } }] } }; cSet(key, fb); renderStock(blk, fb, sym); return true; } } catch (_) { continue; } }
-        } catch (_) {}
-        diagLog(`stock ${sym} FAILED all attempts`);
-        // Show error state only if no cached data
-        if (!stale) {
-            blk.querySelector('.stk-price').textContent = 'N/A';
-            blk.querySelector('.stk-price').classList.remove('skeleton');
-            blk.querySelector('.stk-chg').textContent = '--';
-        }
-        return !!stale;
     }
     function renderStock(blk, data, sym) {
         const r = data.chart?.result?.[0]; if (!r) return;
@@ -1611,6 +1848,7 @@
     const ALERT_INTERVAL_IDLE   = 300000; // 5min when no recent alerts
 
     async function loadAlerts() {
+        if (!_alertsOn) return;
         if (!_pageVisible) { scheduleAlerts(); return; }
         setSync('alerts', 'syncing');
         const key = 'alerts';
@@ -1657,7 +1895,6 @@
 
     function renderAlerts(data, highlightNew) {
         if (!el.alertsScroll || !Array.isArray(data)) return;
-        el.alertsScroll.innerHTML = '';
         const now = Date.now() / 1000;
         let total24h = 0;
         const recentEvents = data.slice(0, 25);
@@ -1713,8 +1950,11 @@
             }
         }
         // Build items twice for seamless scroll loop
-        buildAlertItems(el.alertsScroll, false);
-        buildAlertItems(el.alertsScroll, true);
+        const frag = document.createDocumentFragment();
+        buildAlertItems(frag, false);
+        buildAlertItems(frag, true);
+        el.alertsScroll.innerHTML = '';
+        el.alertsScroll.appendChild(frag); // single DOM write
         // Dynamic keyframe
         const h = el.alertsScroll.scrollHeight / 2;
         const dur = Math.max(25, recentEvents.length * 4);
@@ -1957,6 +2197,27 @@
         if (sel) sel.addEventListener('change', e => applyScreenMode(e.target.value));
     }
 
+    // ── Alerts Toggle (show/hide red alerts pane) ──
+    let _alertsOn = true;
+    function applyAlerts(state) {
+        _alertsOn = state === 'on';
+        document.body.classList.toggle('alerts-off', !_alertsOn);
+        try { localStorage.setItem('dash_alerts', state); } catch (_) {}
+        const sel = document.getElementById('alerts-toggle');
+        if (sel && sel.value !== state) sel.value = state;
+        // Stop/start alert fetching
+        if (!_alertsOn && _alertTimer) { clearTimeout(_alertTimer); _alertTimer = null; }
+        if (_alertsOn && !_alertTimer) loadAlerts();
+        // Re-setup stocks scroll loop (height changed)
+        setupStocksLoop();
+    }
+    function initAlerts() {
+        const saved = localStorage.getItem('dash_alerts') || 'on';
+        applyAlerts(saved);
+        const sel = document.getElementById('alerts-toggle');
+        if (sel) sel.addEventListener('change', e => applyAlerts(e.target.value));
+    }
+
     const THEMES = ['black', 'blue', 'matrix', 'amber', 'purple'];
     function applyTheme(theme) {
         if (!THEMES.includes(theme)) theme = 'black';
@@ -1977,6 +2238,7 @@
                 const cur = THEMES.findIndex(t => document.body.classList.contains('theme-' + t));
                 applyTheme(THEMES[(cur + 1) % THEMES.length]);
             }
+            if (e.key === 'a' || e.key === 'A') applyAlerts(_alertsOn ? 'off' : 'on');
             if (e.key === 'd' || e.key === 'D') toggleDiag();
             if (e.key === 'Escape' && _maximizedCard) toggleCardMaximize(_maximizedCard);
         });
@@ -2056,14 +2318,21 @@
         if (issues) { diagLog(`SELFCHECK: ${issues} issue(s) found — opening diagnostics`); toggleDiag(); }
         else { diagLog('SELFCHECK: All pre-flight checks passed'); }
 
-        cEvict();
+        // Log hardware capabilities
+        const gpuInfo = detectGPU();
+        diagLog(`PERF: CPU cores=${CPU_CORES}, concurrency limit=${MAX_CONCURRENT} (60%)`);
+        diagLog(`PERF: GPU=${gpuInfo.gpu}, renderer=${gpuInfo.renderer}`);
+        diagLog(`PERF: requestIdleCallback=${!!window.requestIdleCallback}, WebGL=${gpuInfo.renderer !== 'no WebGL'}`);
+
+        scheduleIdle(() => cEvict()); // defer non-critical cache cleanup
         initScreenMode();
         initTheme();
+        initAlerts();
         updateNetworkBanner();
         tickClock(); updateMarketBadge();
         const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadWeather,
-                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar];
-        Promise.allSettled(loaders.map(safeLoad)).then(() => {
+                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha];
+        runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
             diagLog('All loaders settled');
             stampRefresh();
         });
@@ -2079,8 +2348,12 @@
     setInterval(updateMarketBadge, 300000);  // 5min
     setInterval(() => { loadNews(); stampRefresh(); }, 900000); // 15min
 
-    // Medium-slow (10min stocks / 30min weather)
-    setInterval(() => { loadAllStocks(); stampRefresh(); }, 600000); // 10min
+    // Medium-slow (stocks: adaptive 5min open / 30min closed, weather: 30min)
+    function scheduleStockRefresh() {
+        const interval = getStockTTL() === 600000 ? 300000 : 1800000; // 5min market open, 30min closed
+        setTimeout(() => { loadAllStocks().then(stampRefresh); scheduleStockRefresh(); }, interval);
+    }
+    scheduleStockRefresh();
     setInterval(() => { loadWeather(); stampRefresh(); }, 1800000);  // 30min
 
     // Slow (1h+)
@@ -2092,6 +2365,7 @@
     setInterval(loadHebrewDate, 10800000);    // 3h
     setInterval(loadShabbat, 21600000);       // 6h
     setInterval(loadHolidays, 43200000);      // 12h
+    setInterval(loadHalacha, 43200000);       // 12h — daily halacha
 
     // ── Card Entrance Animations ──
     const CARD_ANIMS = ['cardSlideLeft','cardSlideRight','cardSlideUp','cardSlideDown','cardPopIn','cardFlipIn'];
@@ -2266,11 +2540,19 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () => { init(); initCardAnimations(); initCardMaximize(); });
+    document.addEventListener('DOMContentLoaded', () => {
+        init();
+        scheduleIdle(() => initCardAnimations());
+        initCardMaximize();
+    });
     // Also call immediately in case DOMContentLoaded already fired
     // (inline end-of-body scripts run after DOM is parsed —
     //  readyState may already be 'interactive' before the listener fires)
-    if (document.readyState !== 'loading') { init(); initCardAnimations(); initCardMaximize(); }
+    if (document.readyState !== 'loading') {
+        init();
+        scheduleIdle(() => initCardAnimations());
+        initCardMaximize();
+    }
     </script>
 </body>
 </html>

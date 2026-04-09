@@ -33,7 +33,7 @@ FamilyDashBoard/
 ├── .gitignore / .gitattributes
 ├── .markdownlint.json
 ├── tests/
-│   └── dashboard.test.mjs  # 342 tests, 44 suites (node --test)
+│   └── dashboard.test.mjs  # 361 tests, 44 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
@@ -59,8 +59,9 @@ FamilyDashBoard/
 | **Diagnostics** | Press `D` for overlay: per-pane status + fetch log. Auto-opens on errors |
 | **Offline** | Banner slides down when `navigator.onLine` is false, serves stale cache |
 | **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
-| **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `Escape` = close maximized card |
-| **Tests** | 342 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
+| **Performance** | GPU-accelerated scroll layers, CPU-aware concurrency pool (`runConcurrent`), `scheduleIdle()`, DocumentFragment batch writes |
+| **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `A` = toggle alerts, `Escape` = close maximized card |
+| **Tests** | 361 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
 
 ## What NOT To Do
 

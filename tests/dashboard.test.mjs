@@ -469,10 +469,10 @@ describe("Data Loader Functions", () => {
     );
   });
 
-  it("should have renderTicker function", () => {
+  it("should have renderHalacha function", () => {
     assert.ok(
-      scriptContent.includes("function renderTicker("),
-      "Missing renderTicker",
+      scriptContent.includes("function renderHalacha("),
+      "Missing renderHalacha",
     );
   });
 
@@ -587,12 +587,13 @@ describe("Security", () => {
 // 9. NEWS ITEM TIME FORMAT
 // ═══════════════════════════════════════════════════════════════════
 describe("News Time Format", () => {
-  it("should render news with relative time + actual time", () => {
-    // Verify renderNews includes both relTime and toLocaleTimeString
+  it("should render news with time inline before title", () => {
+    // Verify renderNews includes time via toLocaleTimeString inline with title
     assert.ok(
-      scriptContent.includes("relTime(it.pubDate)") &&
-        scriptContent.includes("toLocaleTimeString('he-IL'"),
-      "News items should display relative time AND actual clock time",
+      scriptContent.includes("toLocaleTimeString('he-IL'") &&
+        scriptContent.includes("rss-time") &&
+        scriptContent.includes("rss-title"),
+      "News items should display clock time inline before the title",
     );
   });
 
@@ -618,8 +619,8 @@ describe("Seamless Scroll Loop Pattern", () => {
 
   it("alerts should build items twice (original + clone)", () => {
     assert.ok(
-      scriptContent.includes("buildAlertItems(el.alertsScroll, false)") &&
-        scriptContent.includes("buildAlertItems(el.alertsScroll, true)"),
+      scriptContent.includes("buildAlertItems(frag, false)") &&
+        scriptContent.includes("buildAlertItems(frag, true)"),
       "Alerts should call buildAlertItems twice",
     );
   });
@@ -1227,22 +1228,34 @@ describe("Stocks Card", () => {
     );
   });
 
-  it("should batch stock fetches in groups of 3", () => {
+  it("should use batch v6 fetch for all symbols", () => {
     assert.ok(
-      scriptContent.includes("i += 3") ||
-        scriptContent.includes("batch"),
-      "Stocks should be fetched in batches of 3",
+      scriptContent.includes("loadStocksBatch") &&
+        scriptContent.includes("/v6/finance/quote"),
+      "Stocks should use batch v6 for all symbols at once",
     );
   });
 
-  it("should try v8 chart API then fallback to v6", () => {
+  it("should race proxies instead of sequential fallback", () => {
     assert.ok(
-      scriptContent.includes("/v8/finance/chart/"),
-      "Missing Yahoo v8 chart API",
+      scriptContent.includes("raceProxies") &&
+        scriptContent.includes("Promise.any"),
+      "Stock fetches should race all proxies in parallel",
     );
+  });
+
+  it("should fall back to individual v8 chart for missed symbols", () => {
     assert.ok(
-      scriptContent.includes("/v6/finance/quote"),
-      "Missing Yahoo v6 quote API fallback",
+      scriptContent.includes("loadStockSingle") &&
+        scriptContent.includes("/v8/finance/chart/"),
+      "Should have individual v8 fallback for symbols missed by batch",
+    );
+  });
+
+  it("should serve cached data immediately before fetching", () => {
+    assert.ok(
+      scriptContent.includes("Phase 1") || scriptContent.includes("uncached"),
+      "Should render cached stocks immediately then fetch missing ones",
     );
   });
 
@@ -1435,11 +1448,11 @@ describe("News Card", () => {
     );
   });
 
-  it("should have ticker bar for horizontal scrolling headlines", () => {
+  it("should have ticker bar for daily halacha", () => {
     assert.ok(html.includes('id="ticker-content"'), "Missing ticker content");
     assert.ok(
-      scriptContent.includes("function renderTicker("),
-      "Missing renderTicker function",
+      scriptContent.includes("function renderHalacha("),
+      "Missing renderHalacha function",
     );
   });
 
@@ -1746,8 +1759,13 @@ describe("Ticker Bar", () => {
     assert.ok(html.includes('id="ticker-content"'), "Missing ticker-content");
   });
 
-  it("should have renderTicker function", () => {
-    assert.ok(scriptContent.includes("function renderTicker("), "Missing renderTicker");
+  it("should have renderHalacha function", () => {
+    assert.ok(scriptContent.includes("function renderHalacha("), "Missing renderHalacha");
+  });
+
+  it("should have loadHalacha function with Sefaria API", () => {
+    assert.ok(scriptContent.includes("function loadHalacha("), "Missing loadHalacha");
+    assert.ok(scriptContent.includes("sefaria.org/api/calendars"), "Should use Sefaria calendar API");
   });
 
   it("ticker should have horizontal fade mask", () => {
@@ -2035,6 +2053,45 @@ describe("Screen Mode System", () => {
     assert.ok(
       html.includes("mode-phone") && html.includes(".clone"),
       "Phone mode should hide .clone items",
+    );
+  });
+
+  it("phone mode should disable paint containment on cards", () => {
+    assert.ok(
+      html.includes("body.mode-phone .card { contain: none; }"),
+      "Phone mode should disable contain on cards to prevent clipping",
+    );
+  });
+
+  it("phone mode should disable content-visibility auto", () => {
+    assert.ok(
+      html.includes("mode-phone") &&
+        html.includes("content-visibility: visible"),
+      "Phone mode should set content-visibility: visible to prevent invisible cards",
+    );
+  });
+
+  it("phone mode should disable scroll fade masks", () => {
+    assert.ok(
+      html.includes("mode-phone") && html.includes("mask-image: none"),
+      "Phone mode should remove scroll fade masks",
+    );
+  });
+
+  it("phone mode should reset col-split for natural stacking", () => {
+    assert.ok(
+      html.includes("body.mode-phone .col-split") &&
+        html.includes("body.mode-phone .col-split > .card"),
+      "Phone mode should override col-split flex so stocks/alerts cards stack naturally",
+    );
+  });
+
+  it("phone mode should set grids to flex: none", () => {
+    assert.ok(
+      html.includes("mode-phone") &&
+        (html.includes(".main-grid") || html.includes(".bottom-grid")) &&
+        html.includes("flex: none"),
+      "Phone mode should prevent grid flex shrinking",
     );
   });
 
@@ -2596,11 +2653,92 @@ describe("Performance Optimizations", () => {
     );
   });
 
-  it("should batch stock API calls (groups of 3)", () => {
+  it("should use batch stock API with proxy racing", () => {
     assert.ok(
-      scriptContent.includes("batch") || scriptContent.includes("slice(0, 3)") ||
-        scriptContent.includes("slice(3)"),
-      "Stock fetches should be batched",
+      scriptContent.includes("loadStocksBatch") && scriptContent.includes("raceProxies"),
+      "Stock fetches should use batch API with proxy racing",
+    );
+  });
+
+  it("should detect CPU cores via navigator.hardwareConcurrency", () => {
+    assert.ok(
+      scriptContent.includes("navigator.hardwareConcurrency"),
+      "Should detect CPU core count",
+    );
+  });
+
+  it("should limit concurrency to 60% of cores", () => {
+    assert.ok(
+      scriptContent.includes("0.6") && scriptContent.includes("MAX_CONCURRENT"),
+      "Should use 60% of CPU cores for concurrency limit",
+    );
+  });
+
+  it("should have runConcurrent for CPU-aware parallel tasks", () => {
+    assert.ok(
+      scriptContent.includes("async function runConcurrent"),
+      "Should have runConcurrent utility",
+    );
+  });
+
+  it("should use requestIdleCallback for non-critical work", () => {
+    assert.ok(
+      scriptContent.includes("requestIdleCallback") &&
+        scriptContent.includes("scheduleIdle"),
+      "Should use requestIdleCallback with scheduleIdle wrapper",
+    );
+  });
+
+  it("should detect GPU via WebGL", () => {
+    assert.ok(
+      scriptContent.includes("function detectGPU") &&
+        scriptContent.includes("WEBGL_debug_renderer_info"),
+      "Should detect GPU renderer info via WebGL",
+    );
+  });
+
+  it("should log hardware capabilities at startup", () => {
+    assert.ok(
+      scriptContent.includes("PERF: CPU cores=") &&
+        scriptContent.includes("PERF: GPU="),
+      "Should log CPU and GPU info via diagLog",
+    );
+  });
+
+  it("should use DocumentFragment for batch DOM writes", () => {
+    assert.ok(
+      scriptContent.includes("document.createDocumentFragment"),
+      "Should use DocumentFragment for efficient DOM operations",
+    );
+  });
+
+  it("should have GPU-accelerated layer hints on scroll containers", () => {
+    assert.ok(
+      html.includes("translateZ(0)") &&
+        html.includes("backface-visibility: hidden"),
+      "Should promote scroll containers to GPU layers",
+    );
+  });
+
+  it("should cache spotlight card references", () => {
+    assert.ok(
+      scriptContent.includes("_spotlightCards") &&
+        scriptContent.includes("_getSpotlightCards"),
+      "Spotlight should cache card NodeList to avoid repeated querySelectorAll",
+    );
+  });
+
+  it("should use runConcurrent for news feed loading", () => {
+    assert.ok(
+      scriptContent.includes("runConcurrent(NEWS_FEEDS.map"),
+      "News loader should use CPU-aware concurrency",
+    );
+  });
+
+  it("should use runConcurrent for startup loaders", () => {
+    assert.ok(
+      scriptContent.includes("runConcurrent(loaders.map"),
+      "Init should use CPU-aware concurrency for startup loaders",
     );
   });
 });

@@ -99,12 +99,12 @@ async function fetchJSON(url) {
 
 - `tv` (default): fixed viewport, scroll loops active
 - `tablet`: smaller fonts, tighter spacing
-- `phone`: `overflow-y: auto`, all cards expand, scroll loops disabled, clones hidden
+- `phone`: `overflow-y: auto`, all cards expand, scroll loops disabled, clones hidden, comprehensive CSS overrides for grids/containment/scroll-masks to prevent card overlap
 
 ## Weather Layout
 
 - **Top row** (`wx-top-row`): horizontal flex — right half = current weather (icon + temp side-by-side in a row + desc), left half = 2×2 grid (humidity, wind, UV, sunrise)
-- **Middle**: hourly temperature SVG chart (max-height 48px)
+- **Middle**: RTL hourly temperature SVG chart (max-height 48px, x-axis right-to-left)
 - **Bottom**: 4-day forecast grid with compact icons/fonts
 
 ## Font Size Guidelines (TV-first)
@@ -124,3 +124,39 @@ async function fetchJSON(url) {
 - Global `unhandledrejection` + `error` catchers → `diagLog()` + auto-show overlay
 - Diagnostic overlay (press `D`): per-pane status + rolling fetch log
 - Offline banner: slides down when `navigator.onLine` is false, auto-hides on reconnect
+
+## Alerts Toggle
+
+- `#alerts-toggle` dropdown in Stocks/Alerts card header: show/hide red alerts pane
+- Keyboard shortcut `A`: toggles alerts on/off
+- `_alertsOn` boolean + `dash_alerts` localStorage for persistence
+- `applyAlerts(on)`: toggles `.alerts-hidden` CSS class on alerts container
+- `initAlerts()`: reads localStorage, binds dropdown + keyboard handler
+
+## Daily Halacha Ticker
+
+- Replaced news ticker with Sefaria.org daily halacha content
+- `loadHalacha()`: two-step API — fetch today's calendar → fetch halacha text from Sefaria
+- `renderHalacha(data)`: reference badge + numbered segments, seamless scroll loop
+- 12-hour cache (`cSet`/`cGet` with 12h TTL)
+
+## Stock Batch & Race Pattern
+
+- `loadStocksBatch()`: fetches all 6 symbols in a single batch API call
+- `raceProxies(url)`: `Promise.any()` across all CORS proxies for fastest response
+- Adaptive refresh: 5 min during market hours, 30 min off-hours
+- Market open detection: checks NYSE/NASDAQ hours in US Eastern time
+
+## Performance Optimizations
+
+- GPU-accelerated scroll layers: `translateZ(0)`, `backface-visibility: hidden` on scroll containers
+- CPU-aware concurrency: `runConcurrent(tasks, poolSize)` with pool sized at `navigator.hardwareConcurrency * 0.6`
+- `scheduleIdle(fn)`: defers non-critical work via `requestIdleCallback` (setTimeout fallback)
+- DocumentFragment batch DOM writes for alerts and news items
+- GPU detection via WebGL renderer string
+- `will-change` CSS hint on SVG charts and scroll containers
+
+## News Layout
+
+- 17 RSS feeds, inline flex layout: `HH:MM כותרת מקור` (single row per item)
+- Grid: 42% first column, 60/40 height split (flex 6:4 for news/weather)

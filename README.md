@@ -19,7 +19,7 @@
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-4.5-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-342_passing-34d399?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-361_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -28,7 +28,7 @@
 [![Repo Size](https://img.shields.io/github/repo-size/RajwanYair/FamilyDashBoard?style=flat-square&color=34d399)](https://github.com/RajwanYair/FamilyDashBoard)
 
 **A single-file, zero-dependency family dashboard for always-on TV display.**<br/>
-Dark glassmorphism · 5 themes · Hebrew RTL · 20 Hebrew news feeds · Per-pane smart refresh · Diagnostic overlay
+Dark glassmorphism · 5 themes · Hebrew RTL · 17 Hebrew news feeds · Per-pane smart refresh · Diagnostic overlay
 
 [Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#-architecture) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
 
@@ -54,7 +54,7 @@ Dark glassmorphism · 5 themes · Hebrew RTL · 20 Hebrew news feeds · Per-pane
 
 ### 📰 Live News
 
-Auto-scrolling Hebrew news from **20 RSS sources** (Rotter, Ynet, Walla, Maariv, Calcalist, Globes, Kan, Israel Hayom, Channel 13, Geektime, Ynet Economy, Walla Economy, Haaretz, Makor Rishon, Kikar HaShabbat, ICE, Sport5), sorted newest-first with source labels and relative timestamps. Refreshes every **15 minutes**.
+Auto-scrolling Hebrew news from **17 RSS sources** (Ynet, Walla, Mako, Kan, N12, Rotter, Israel Hayom, Globes, Calcalist, Makor Rishon, Kikar HaShabbat, ICE, Geektime, Channel 14, Arutz 7, Srugim, Behadrei Haredim), sorted newest-first with source labels and relative timestamps. Refreshes every **15 minutes**.
 
 ### 📅 Family Calendar
 
@@ -62,7 +62,7 @@ Native **ICS parser** fetches Google Calendar data via direct → 3 CORS proxy f
 
 ### 📈 Stock Tracker
 
-6 live symbols (INTC, S&P 500, BTC, NVDA, VIX, TSLA) with **smooth bézier SVG charts**, colored per-symbol accents, Yahoo Finance v8/v6 API with proxy fallback, **8-second fetch timeout** (AbortController) to prevent hanging, and a **market open/closed badge** with smart refresh (10 min during market hours, 30 min off-hours). Loaded in parallel batches of 3.
+6 live symbols (INTC, S&P 500, BTC, NVDA, VIX, TSLA) with **smooth bézier SVG charts**, colored per-symbol accents, Yahoo Finance v8/v6 API with proxy fallback, **8-second fetch timeout** (AbortController) to prevent hanging, and a **market open/closed badge** with smart refresh (5 min during market hours, 30 min off-hours). Loaded via `raceProxies()` batch for fastest response.
 
 ### 🚨 Red Alerts (צבע אדום)
 
@@ -96,8 +96,11 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 - **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
 - **6 card entrance animations** — random direction per card, attention loop every 5min
 - **Card maximize** — click any card header to expand it full-screen (FLIP animation), click again or press `Escape` to restore
+- **Alerts toggle** — press `A` or use dropdown to show/hide red alerts pane; persisted in localStorage
+- **Daily Halacha ticker** — daily halacha from Sefaria.org with reference badge and numbered segments
 - **Animated number transitions** — smooth counting effect on temperature, stock prices, and currency values
 - **Exponential backoff** — failed API fetches retry with increasing delays
+- **GPU/CPU performance** — GPU-accelerated scroll layers, CPU-aware concurrency pool, `scheduleIdle()`, DocumentFragment batch writes
 - **Diagnostic overlay** — press `D` for per-pane status + fetch log, auto-opens on errors
 - **Offline banner** — slides down when internet is lost, serves stale cache
 - **Startup self-check** — validates MOTIVATIONS, DOM refs, PROXIES, STOCK_SYMBOLS
@@ -130,11 +133,11 @@ start BestDashBoard.html       # Windows
 xdg-open BestDashBoard.html   # Linux
 ```
 
-> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics, **Escape** to close a maximized card. Click any card header to expand it full-screen. For hot-reload during development, use VS Code + Live Server extension.
+> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics, **A** to toggle alerts on/off, **Escape** to close a maximized card. Click any card header to expand it full-screen. For hot-reload during development, use VS Code + Live Server extension.
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
-> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (342 tests, 44 suites, zero dependencies).
+> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (361 tests, 44 suites, zero dependencies).
 
 ---
 
@@ -265,7 +268,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
-| **v4.5** | 🚀 Card maximize (click header to expand), animated number transitions, exponential backoff, syncBurst, corsproxy.io fallback, calendar resilience, 342 tests/44 suites, uptime tracker, RAF-throttled mousemove, scroll fade masks, animated gradient borders, GitHub Pages index.html |
+| **v4.5** | 🚀 Card maximize (click header to expand), animated number transitions, exponential backoff, syncBurst, corsproxy.io fallback, calendar resilience, 361 tests/44 suites, uptime tracker, RAF-throttled mousemove, scroll fade masks, animated gradient borders, GitHub Pages index.html, GPU/CPU performance optimization, alerts toggle (A key), daily halacha ticker (Sefaria.org), 17 RSS news feeds, RTL hourly weather chart, phone mode card fix, stock raceProxies batch |
 | **v4.4** | ✨ 5 CSS themes, 3 screen modes, diagnostic overlay (D key), offline banner, card spotlight glow, async-safe loaders, startup self-check, 6 card entrance animations, 20 news feeds, faster ticker |
 | **v4.3** | ⚡ Performance refactor, cache versioning (dash_v2_), ICS calendar renderer, DOMContentLoaded fix, seamless scroll loops |
 | **v4.2** | 🚨 Red Alerts panel (tzevaadom.co.il), colorful icon badges, gradient accents |

@@ -10,10 +10,10 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 
 - **Language**: HTML5, vanilla CSS3, vanilla JavaScript (ES2020+)
 - **No build tools**: Zero dependencies — open the HTML file directly in a browser
-- **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance (stocks via proxy), ER-API + exchangerate-api (currency), 20 Hebrew RSS feeds (news), Google Translate, Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
+- **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance (stocks via proxy), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 342 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 361 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -30,14 +30,14 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **5 themes**: `black` (OLED default), `blue`, `matrix`, `amber`, `purple` — stored in `localStorage` as `dash_theme`
 - **3 screen modes**: `tv` (default), `tablet`, `phone` — stored as `dash_screenMode`
 - **Phone mode**: full-page scroll, all card content visible, scroll-loop animations disabled, clone items hidden
-- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay, `Escape` = close maximized card
+- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay, `A` = toggle alerts on/off, `Escape` = close maximized card
 
 ### UI Layout
 
 - **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge, emoji
-- **Ticker bar**: Horizontal scrolling news headlines (140px/s)
-- **Top row** (3 columns — 45/30/25%): News RSS | Google Calendar (native ICS) | Stocks (6 symbols) + Red Alerts
-- **Bottom row** (3 columns — 42/28/30%): Weather (split-panel: current + 2×2 details + hourly chart + 4-day forecast) | Currency exchange | Motivation (50 static Hebrew quotes)
+- **Ticker bar**: Daily halacha from Sefaria.org (reference badge + numbered segments, seamless loop)
+- **Top row** (3 columns — 42/30/28%): News RSS (17 feeds) | Google Calendar (native ICS) | Stocks (6 symbols) + Red Alerts (toggleable via `A` key)
+- **Bottom row** (3 columns — 42/28/30%): Weather (split-panel: current + 2×2 details + RTL hourly chart + 4-day forecast) | Currency exchange | Motivation (50 static Hebrew quotes)
 - **Status bar**: Version, day/year progress bars, last refresh time
 
 ### Cache Architecture
@@ -119,8 +119,9 @@ function fetchWithTimeout(url, ms = 8000) {
 | Clock | 1 min | HH:MM only, no seconds |
 | Alerts | 60s / 5min | 60s when active, 5min idle |
 | Market badge | 5 min | |
-| News | 15 min | 20 RSS feeds via CORS proxy |
-| Stocks | 10 min | 30min off-hours, batch of 3, 8s timeout |
+| Halacha | 12 hours | Sefaria.org daily halacha |
+| News | 15 min | 17 RSS feeds via CORS proxy |
+| Stocks | 5 min / 30 min | 5min market open, 30min closed, raceProxies batch |
 | Calendar | 15 min | ICS parse, iframe fallback |
 | Weather | 30 min | Open-Meteo |
 | Currency | 1 hour | ER-API + fallback |
@@ -132,9 +133,13 @@ function fetchWithTimeout(url, ms = 8000) {
 ### Performance
 
 - Lazy-load images (`loading="lazy"`)
-- Stagger stock API calls in batches of 3 to avoid rate limits
+- `raceProxies()` via `Promise.any()` for fastest stock data
 - `fetchWithTimeout()` with 8s AbortController prevents hanging on dead proxies
-- `will-change` CSS hint for SVG charts
+- CPU-aware concurrency: `runConcurrent()` pool sized at `navigator.hardwareConcurrency * 0.6`
+- `scheduleIdle()` defers non-critical work via `requestIdleCallback`
+- DocumentFragment batch DOM writes (alerts, news items)
+- GPU-accelerated scroll layers: `translateZ(0)`, `backface-visibility: hidden`
+- `will-change` CSS hint for SVG charts and scroll containers
 - CSS `contain` for paint optimization
 - `prefers-reduced-motion` disables all animations
 - Fetch locks prevent duplicate concurrent requests per pane

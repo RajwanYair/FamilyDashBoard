@@ -14,12 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Maximized card wheel scroll** — mouse wheel controls scroll-loop content (news, stocks, alerts) when card is maximized
 - **GitHub repo metadata** — 20 topics, rich description, homepage URL, Open Graph/Twitter meta tags
 - **SEO metadata** — `index.html` and `BestDashBoard.html` now include keywords, OG tags, canonical URL, and theme-color
+- **GPU/CPU performance** — CSS GPU-layer hints (`translateZ(0)`, `backface-visibility: hidden`), JS CPU-aware concurrency (`navigator.hardwareConcurrency`), `runConcurrent()` worker pool, `scheduleIdle()`, DocumentFragment batch DOM writes, GPU detection via WebGL
+- **Alerts toggle** — `#alerts-toggle` dropdown (on/off) next to theme selector, keyboard shortcut `A`, persisted in `dash_alerts` localStorage; hides red alerts pane and gives stocks full height
+- **Daily Halacha ticker** — replaced news headlines ticker with daily halacha from Sefaria.org API (`/api/calendars` → `/api/v3/texts/{ref}`), reference badge + numbered segments, seamless loop, 12h cache/refresh
+- **4 new RSS feeds** — ערוץ 14 (C14/Now14), ערוץ 7 (INN), סרוגים (Srugim), בחדרי חרדים (BHOL) — total 17 Hebrew news sources
 
 ### Changed
 - Weather card CSS: reduced all component sizes to prevent overlap (icon 3em→2em, temp 1.8em→1.3em, current layout column→row)
 - Weather hourly chart capped at `max-height: 48px` to leave room for forecast
+- Weather hourly chart now renders right-to-left (matching page RTL direction)
 - Currency flags changed from emoji (invisible on Windows) to inline SVG (US, EU, UK flags)
 - Hover background opacity reduced across all 5 themes for subtler hover effect
+- News layout: single inline flex row (`HH:MM כותרת מקור`) instead of stacked title + meta
+- Grid layout: news/weather share 42% first column, 60/40 height split (`flex: 6 1 0` / `flex: 4 1 0`)
+- Stock fetch: `raceProxies()` via `Promise.any()`, single batch API, adaptive refresh (5min market open / 30min closed)
+- Init loaders now use `runConcurrent()` pool instead of `Promise.allSettled()`
 - CI `lint` job replaces `validate-html` — now runs HTMLHint + Stylelint + ESLint
 - SECURITY.md now directs to GitHub Security Advisories for private vulnerability reporting
 - CONTRIBUTING.md: added linting/testing sections, linked Code of Conduct and Discussions
@@ -27,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - VS Code extensions: added Stylelint extension recommendation
 
 ### Fixed
+- Phone mode: cards no longer overlap — comprehensive CSS overrides for grids, col-split, containment, scroll fade masks, and GPU layer hints
 - Card maximize: clock/time-section header now stays visible above maximized cards (`e6b436c`)
 - SVG documentation assets updated to match v4.5 project state — intervals, API counts, CORS proxy chain, stock symbols, version (`3268ff5`)
 - Duplicate `background` property in `.moti-card` CSS (caught by Stylelint)
