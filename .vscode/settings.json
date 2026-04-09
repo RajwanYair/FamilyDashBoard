@@ -80,8 +80,8 @@
 // ── Terminal Performance ──
 "terminal.integrated.gpuAcceleration": "on",
 "terminal.integrated.smoothScrolling": false,
-"terminal.integrated.persistentSessionScrollback": 100,
-"terminal.integrated.scrollback": 1000,
+"terminal.integrated.persistentSessionScrollback": 500,
+"terminal.integrated.scrollback": 5000,
 "terminal.integrated.shellIntegration.enabled": true,
 "terminal.integrated.shellIntegration.decorationsEnabled": "never",
 "terminal.integrated.enableImages": false,
@@ -118,7 +118,13 @@
                 "cjs",
                 "js"
             ],
-            "parameters": []
+            // --test-timeout: per-test limit (ms) prevents individual tests hanging forever
+            // --test-concurrency=1: serialize test execution — avoids pipe back-pressure
+            //   that causes VS Code test explorer to hang with large test suites
+            "parameters": [
+                "--test-timeout=30000",
+                "--test-concurrency=4"
+            ]
         }
     ]
 }

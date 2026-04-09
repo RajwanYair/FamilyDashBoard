@@ -1,0 +1,14 @@
+{
+    "name": "familydashboard",
+    "version": "4.5.0",
+    "description": "Family TV Dashboard — Hebrew RTL, zero dependencies",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "test": "node --test tests/dashboard.test.mjs",
+        "test:watch": "node --test --watch tests/dashboard.test.mjs"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
