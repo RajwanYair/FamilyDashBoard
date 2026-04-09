@@ -2107,15 +2107,14 @@
 
     // ── Card Maximize (click card header to expand/collapse) ──
     let _maximizedCard = null;
-    /** Compute the target rect for a maximized card (fills area below header/ticker, above footer) */
+    /** Compute the target rect for a maximized card (fills area below clock header, above footer) */
     function _maxTargetRect() {
         const container = document.querySelector('.container');
-        const ticker = document.querySelector('.ticker-bar');
+        const timeSection = document.querySelector('.time-section');
         const footer = document.querySelector('.status-bar');
         const cRect = container.getBoundingClientRect();
-        // Top edge: just below ticker (or header if no ticker)
-        const topEl = ticker || document.querySelector('.time-section');
-        const top = topEl ? topEl.getBoundingClientRect().bottom + 6 : cRect.top;
+        // Top edge: just below the clock/header section so it stays visible
+        const top = timeSection ? timeSection.getBoundingClientRect().bottom + 6 : cRect.top;
         // Bottom edge: just above footer (or container bottom)
         const bottom = footer ? footer.getBoundingClientRect().top - 6 : cRect.bottom;
         return { top, left: cRect.left, width: cRect.width, height: bottom - top };
