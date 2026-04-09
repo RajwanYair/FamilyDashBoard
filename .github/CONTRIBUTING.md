@@ -68,9 +68,9 @@ FamilyDashBoard/
 ### JavaScript
 
 - Modern ES2020+ (async/await, optional chaining, nullish coalescing)
-- Cache DOM references in the `elements` object
+- Cache DOM references in the `el` object
 - Wrap API calls in try/catch with proxy fallback
-- Use `setCachedData` / `getCachedData` for every API response
+- Use `cSet()` / `cGet()` / `cGetStale()` for every API response
 - Use `textContent` not `innerHTML` for external data (XSS prevention)
 
 ### Commit Messages

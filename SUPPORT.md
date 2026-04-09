@@ -32,15 +32,6 @@
 - Use Chrome or Edge in full-screen mode (F11)
 - Disable browser zoom (Ctrl+0 to reset)
 
-### Running via Docker?
-
-```bash
-docker pull ghcr.io/rajwanyair/familydashboard:latest
-docker run -p 8080:80 ghcr.io/rajwanyair/familydashboard:latest
-```
-
-Then open `http://localhost:8080` in your browser.
-
 ### Live Demo
 
 Visit the [GitHub Pages deployment](https://rajwanyair.github.io/FamilyDashBoard/) to try the dashboard without installing.

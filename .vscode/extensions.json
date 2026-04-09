@@ -1,5 +1,6 @@
 {
     "recommendations": [
+        "connor4312.nodejs-testing",
         "ritwickdey.LiveServer",
         "esbenp.prettier-vscode",
         "HTMLHint.vscode-htmlhint",

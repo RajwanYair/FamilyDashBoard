@@ -28,20 +28,25 @@ FamilyDashBoard/
 ├── index.html            # GitHub Pages redirect
 ├── README.md
 ├── CHANGELOG.md
-├── .gitignore
+├── LICENSE / SUPPORT.md
 ├── .editorconfig
+├── .gitignore / .gitattributes
 ├── .markdownlint.json
 ├── tests/
-│   └── dashboard.test.mjs  # 164 tests, 23 suites (node --test)
+│   └── dashboard.test.mjs  # 342 tests, 44 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
-│   ├── workflows/ci.yml
-│   ├── workflows/deploy.yml
+│   ├── workflows/          # ci, deploy, release, auto-label
 │   ├── instructions/
 │   ├── prompts/
-│   └── agents/
-└── .vscode/settings.json
+│   ├── agents/
+│   ├── assets/             # SVG docs graphics
+│   ├── ISSUE_TEMPLATE/ / DISCUSSION_TEMPLATE/
+│   └── CONTRIBUTING.md / SECURITY.md / CODEOWNERS
+└── .vscode/
+    ├── settings.json
+    └── extensions.json
 ```
 
 ## Key Systems
@@ -55,7 +60,7 @@ FamilyDashBoard/
 | **Offline** | Banner slides down when `navigator.onLine` is false, serves stale cache |
 | **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
 | **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `Escape` = close maximized card |
-| **Tests** | 164 tests / 23 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
+| **Tests** | 342 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
 
 ## What NOT To Do
 

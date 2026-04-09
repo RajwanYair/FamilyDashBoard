@@ -403,12 +403,12 @@
         .wx-detail:nth-child(4) { border-bottom: 2px solid var(--orange); }
         .wx-detail-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 2px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 1.05em; }
-        .wx-hourly-chart { width: 100%; height: 42px; margin-bottom: 4px; flex: 0 0 42px; min-height: 32px; }
-        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 1 1 0; padding: 2px 0; align-content: center; min-height: 0; }
-        .wx-fday { background: var(--bg-card-inner); padding: 6px 4px; border-radius: 8px; text-align: center; }
-        .wx-fday-name { font-size: 0.82em; color: var(--accent); font-weight: 600; }
-        .wx-fday-icon { font-size: 1.4em; margin: 3px 0; }
-        .wx-fday-temp { font-size: 0.9em; font-weight: 700; }
+        .wx-hourly-chart { width: 100%; flex: 1 1 0; min-height: 32px; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 0 0 auto; padding: 2px 0; }
+        .wx-fday { background: var(--bg-card-inner); padding: 3px 6px; border-radius: 8px; display: flex; align-items: center; gap: 4px; }
+        .wx-fday-icon { font-size: 1.1em; flex-shrink: 0; line-height: 1; }
+        .wx-fday-name { font-size: 0.78em; color: var(--accent); font-weight: 600; white-space: nowrap; }
+        .wx-fday-temp { font-size: 0.82em; font-weight: 700; margin-inline-start: auto; white-space: nowrap; }
 
         /* ── Currency ── */
         .currency-body { flex: 1; display: flex; flex-direction: row; gap: 6px; padding: 10px; }
@@ -858,10 +858,10 @@
                     </div>
                     <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                     <div class="wx-forecast" id="wx-forecast">
-                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
-                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
-                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
-                        <div class="wx-fday"><div class="wx-fday-name">--</div><div class="wx-fday-icon">-</div><div class="wx-fday-temp">--°</div></div>
+                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                     </div>
                 </div>
             </div>
@@ -1277,7 +1277,7 @@
                     const mx = Math.round(d.daily.temperature_2m_max[i]);
                     const mn = Math.round(d.daily.temperature_2m_min[i]);
                     const wc = d.daily.weathercode[i];
-                    fDays[i - 1].innerHTML = `<div class="wx-fday-name">${dn}</div><div class="wx-fday-icon">${WX_EMOJI[wc] || '🌡️'}</div><div class="wx-fday-temp">${mx}°/${mn}°</div>`;
+                    fDays[i - 1].innerHTML = `<div class="wx-fday-icon">${WX_EMOJI[wc] || '🌡️'}</div><div class="wx-fday-name">${dn}</div><div class="wx-fday-temp">${mx}°/${mn}°</div>`;
                 }
             }
         }

@@ -75,5 +75,22 @@
     "search.exclude": {
         "**/node_modules": true,
         "**/.git": true
-    }
+    },
+    // ── Node.js Testing (connor4312.nodejs-testing) ──
+    "nodejs-testing.include": [
+        "tests"
+    ],
+    "nodejs-testing.exclude": [
+        "**/node_modules/**"
+    ],
+    "nodejs-testing.extensions": [
+        {
+            "extensions": [
+                "mjs",
+                "cjs",
+                "js"
+            ],
+            "parameters": []
+        }
+    ]
 }

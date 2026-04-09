@@ -30,12 +30,9 @@ copilot-config:
           - ".github/hooks/**"
           - ".github/instructions/**"
 
-docker:
+tests:
   - changed-files:
-      - any-glob-to-any-file:
-          - "Dockerfile"
-          - "nginx.conf"
-          - ".dockerignore"
+      - any-glob-to-any-file: "tests/**"
 
 github-config:
   - changed-files:

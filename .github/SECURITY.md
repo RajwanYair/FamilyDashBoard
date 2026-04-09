@@ -16,10 +16,9 @@ FamilyDashBoard is a client-side HTML dashboard that fetches data from public AP
 
 | Version | Supported |
 |---------|-----------|
-| 4.2.x   | ✅ Yes    |
-| 4.1.x   | ✅ Yes    |
-| 4.0.x   | ⚠️ Security fixes only |
-| < 4.0   | ❌ No     |
+| 4.5.x   | ✅ Yes    |
+| 4.4.x   | ✅ Yes    |
+| < 4.4   | ❌ No     |
 
 ## Reporting Vulnerabilities
 
@@ -35,7 +34,7 @@ Please report security vulnerabilities via GitHub Issues with the `security` lab
 - **No `eval()`** — Never use eval() with external data
 - **Sanitize external data** — Use `textContent` instead of `innerHTML` for API content
 - **No inline event handlers** — Use `addEventListener` in JavaScript
-- **CORS proxies** — Only use trusted proxy services (allorigins.win, codetabs.com)
+- **CORS proxies** — Only use trusted proxy services (allorigins.win, codetabs.com, corsproxy.io)
 - **CSP-safe patterns** — Avoid patterns that would break Content Security Policy
 
 ### External API Safety

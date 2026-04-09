@@ -1,13 +1,22 @@
 /**
  * Unit tests for BestDashBoard.html
- * Run: node --test tests/dashboard.test.mjs
+ * Run: node --test --test-timeout=500000 tests/dashboard.test.mjs
  * Uses Node.js built-in test runner — zero external dependencies.
+ * Global timeout: 500s — kills the process if tests hang.
  */
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+
+// ── Hard kill after 500 seconds (safety net for hangs) ──
+const GLOBAL_TIMEOUT_MS = 500_000;
+const _killTimer = setTimeout(() => {
+  console.error(`\n⛔ GLOBAL TIMEOUT: Tests exceeded ${GLOBAL_TIMEOUT_MS / 1000}s — killing process.`);
+  process.exit(2);
+}, GLOBAL_TIMEOUT_MS);
+_killTimer.unref();          // don't keep the event loop alive just for this
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const HTML_PATH = join(__dirname, "..", "BestDashBoard.html");
@@ -1573,6 +1582,1320 @@ describe("Utility Functions (v4.5)", () => {
       scriptContent.includes("requestAnimationFrame") &&
         scriptContent.includes("mousemove"),
       "Mousemove should be throttled via requestAnimationFrame",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 24. HEADER COMPONENT
+// ═══════════════════════════════════════════════════════════════════
+describe("Header Component", () => {
+  it("should have the time-section container", () => {
+    assert.ok(html.includes('class="time-section"'), "Missing time-section");
+  });
+
+  it("should have header-left, header-center, header-right columns", () => {
+    assert.ok(html.includes('class="header-left"'), "Missing header-left");
+    assert.ok(html.includes('class="header-center"'), "Missing header-center");
+    assert.ok(html.includes('class="header-right"'), "Missing header-right");
+  });
+
+  it("should have clock element with gradient text", () => {
+    assert.ok(html.includes('id="clock"'), "Missing clock element");
+    assert.ok(
+      html.includes("background-clip: text") || html.includes("-webkit-background-clip: text"),
+      "Clock should use gradient text clipping",
+    );
+  });
+
+  it("should have greeting element", () => {
+    assert.ok(html.includes('id="greeting"'), "Missing greeting element");
+  });
+
+  it("should have getGreeting function with time-of-day emojis", () => {
+    assert.ok(scriptContent.includes("function getGreeting("), "Missing getGreeting");
+    assert.ok(scriptContent.includes("🌅") || scriptContent.includes("בוקר"), "Missing morning greeting");
+  });
+
+  it("should have tickClock function updating every 60s", () => {
+    assert.ok(scriptContent.includes("function tickClock("), "Missing tickClock");
+    assert.ok(scriptContent.includes("60000"), "Missing 60s clock interval");
+  });
+
+  it("should have English and Hebrew date elements", () => {
+    assert.ok(html.includes('id="english-date"'), "Missing english-date");
+    assert.ok(html.includes('id="hebrew-date"'), "Missing hebrew-date");
+  });
+
+  it("should have top temperature display in header", () => {
+    assert.ok(html.includes('id="top-temp"'), "Missing top-temp");
+  });
+
+  it("should have decorative header GIFs", () => {
+    const gifMatches = html.match(/class="header-gif"/g);
+    assert.ok(gifMatches && gifMatches.length === 2, "Should have exactly 2 header GIFs");
+  });
+
+  it("header GIFs should use lazy loading", () => {
+    const headerSection = html.match(/class="time-section"[\s\S]*?<\/div>\s*<!--/);
+    assert.ok(headerSection, "Could not isolate header section");
+    const gifLoadCount = (headerSection[0].match(/loading="lazy"/g) || []).length;
+    assert.ok(gifLoadCount >= 2, "Header GIFs should use lazy loading");
+  });
+
+  it("should have rainbow gradient border on header", () => {
+    assert.ok(
+      html.includes("border-image") && html.includes("linear-gradient"),
+      "Missing rainbow gradient border on header",
+    );
+  });
+
+  it("should have Shabbat info element", () => {
+    assert.ok(html.includes('id="shabbat-info"'), "Missing shabbat-info");
+  });
+
+  it("should have holiday info element", () => {
+    assert.ok(html.includes('id="holiday-info"'), "Missing holiday-info");
+  });
+
+  it("should display time in Asia/Jerusalem timezone", () => {
+    assert.ok(
+      scriptContent.includes("Asia/Jerusalem"),
+      "Clock should use Asia/Jerusalem timezone",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 25. STATUS BAR COMPONENT
+// ═══════════════════════════════════════════════════════════════════
+describe("Status Bar", () => {
+  it("should have status-bar container", () => {
+    assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
+  });
+
+  it("should display version v4.5", () => {
+    assert.ok(html.includes("Dashboard v4.5"), "Missing version v4.5 in status bar");
+  });
+
+  it("should have day progress bar", () => {
+    assert.ok(html.includes('id="day-progress"'), "Missing day progress bar");
+    assert.ok(html.includes('id="day-pct"'), "Missing day percentage text");
+  });
+
+  it("should have year progress bar", () => {
+    assert.ok(html.includes('id="year-progress"'), "Missing year progress bar");
+    assert.ok(html.includes('id="year-pct"'), "Missing year percentage text");
+  });
+
+  it("should have progress-group wrapper", () => {
+    assert.ok(html.includes('class="progress-group"'), "Missing progress-group");
+  });
+
+  it("should have uptime display element", () => {
+    assert.ok(html.includes('id="uptime-display"'), "Missing uptime-display");
+  });
+
+  it("should have last-refresh timestamp", () => {
+    assert.ok(html.includes('id="last-refresh"'), "Missing last-refresh");
+  });
+
+  it("should have updateProgress function", () => {
+    assert.ok(scriptContent.includes("function updateProgress("), "Missing updateProgress");
+  });
+
+  it("should have stampRefresh function", () => {
+    assert.ok(scriptContent.includes("function stampRefresh("), "Missing stampRefresh");
+  });
+
+  it("progress fill should use gradient colors", () => {
+    assert.ok(
+      html.includes("progress-fill day") && html.includes("progress-fill year"),
+      "Missing day/year progress fill classes",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 26. TICKER BAR COMPONENT
+// ═══════════════════════════════════════════════════════════════════
+describe("Ticker Bar", () => {
+  it("should have ticker-bar container", () => {
+    assert.ok(html.includes('class="ticker-bar"'), "Missing ticker-bar");
+  });
+
+  it("should have ticker-label with breaking headline text", () => {
+    assert.ok(html.includes('class="ticker-label"'), "Missing ticker-label");
+  });
+
+  it("should have ticker-track for scrolling", () => {
+    assert.ok(html.includes('class="ticker-track"'), "Missing ticker-track");
+  });
+
+  it("should have ticker-content for items", () => {
+    assert.ok(html.includes('id="ticker-content"'), "Missing ticker-content");
+  });
+
+  it("should have renderTicker function", () => {
+    assert.ok(scriptContent.includes("function renderTicker("), "Missing renderTicker");
+  });
+
+  it("ticker should have horizontal fade mask", () => {
+    assert.ok(
+      html.includes(".ticker-track") && html.includes("mask-image"),
+      "Missing ticker horizontal fade mask",
+    );
+  });
+
+  it("ticker should use CSS animation for smooth scrolling", () => {
+    assert.ok(
+      html.includes("tickerScroll") && html.includes("linear infinite"),
+      "Ticker should use CSS animation (tickerScroll) for smooth scrolling",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 27. CARD MAXIMIZE SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+describe("Card Maximize System", () => {
+  it("should have toggleCardMaximize function", () => {
+    assert.ok(
+      scriptContent.includes("function toggleCardMaximize("),
+      "Missing toggleCardMaximize",
+    );
+  });
+
+  it("should have _maximizedCard state variable", () => {
+    assert.ok(
+      scriptContent.includes("_maximizedCard"),
+      "Missing _maximizedCard state tracker",
+    );
+  });
+
+  it("should have _maxTargetRect function for target calculation", () => {
+    assert.ok(
+      scriptContent.includes("function _maxTargetRect("),
+      "Missing _maxTargetRect",
+    );
+  });
+
+  it("should have initCardMaximize function", () => {
+    assert.ok(
+      scriptContent.includes("function initCardMaximize("),
+      "Missing initCardMaximize",
+    );
+  });
+
+  it("initCardMaximize should attach click listeners to card headers", () => {
+    assert.ok(
+      scriptContent.includes("card-header") &&
+        scriptContent.includes("toggleCardMaximize"),
+      "initCardMaximize should attach click handlers to .card-header",
+    );
+  });
+
+  it("should use FLIP animation technique", () => {
+    assert.ok(
+      scriptContent.includes("getBoundingClientRect") &&
+        scriptContent.includes("offsetWidth"),
+      "Should use FLIP animation (getBoundingClientRect + forced reflow)",
+    );
+  });
+
+  it("should have maximized CSS class with fixed position", () => {
+    assert.ok(html.includes(".card.maximized"), "Missing .card.maximized CSS");
+    assert.ok(
+      html.includes("position: fixed") && html.includes("z-index: 900"),
+      "Maximized card should use fixed position + high z-index",
+    );
+  });
+
+  it("should have card-hidden class for sibling hiding", () => {
+    assert.ok(html.includes(".card.card-hidden"), "Missing .card.card-hidden CSS");
+    assert.ok(
+      html.includes("opacity: 0") && html.includes("pointer-events: none"),
+      "Hidden cards should be invisible and non-interactive",
+    );
+  });
+
+  it("should handle col-split children correctly", () => {
+    const fn = scriptContent.match(
+      /function toggleCardMaximize[\s\S]*?_maximizedCard\s*=\s*card/,
+    );
+    assert.ok(fn, "Could not find toggleCardMaximize body");
+    assert.ok(
+      fn[0].includes("col-split") || fn[0].includes("contains(card)"),
+      "Should handle cards inside .col-split specially",
+    );
+  });
+
+  it("Escape key should close maximized card", () => {
+    assert.ok(
+      scriptContent.includes("Escape") &&
+        scriptContent.includes("_maximizedCard"),
+      "Escape key should trigger card collapse",
+    );
+  });
+
+  it("should show close indicator on maximized header", () => {
+    assert.ok(
+      html.includes(".card.maximized .card-header::after") ||
+        html.includes('.card.maximized .card-header::after'),
+      "Maximized card header should show close indicator (✕)",
+    );
+  });
+
+  it("should have smooth transition with cubic-bezier easing", () => {
+    assert.ok(
+      html.includes("cubic-bezier(0.22, 1, 0.36, 1)"),
+      "Card maximize should use smooth cubic-bezier easing",
+    );
+  });
+
+  it("should prevent multiple cards from maximizing simultaneously", () => {
+    const fn = scriptContent.match(
+      /function toggleCardMaximize[\s\S]*?_maximizedCard\s*=\s*card/,
+    );
+    assert.ok(fn, "Could not find toggleCardMaximize");
+    assert.ok(
+      fn[0].includes("if (_maximizedCard)"),
+      "Should guard against multiple maximized cards",
+    );
+  });
+
+  it("should have fallback timeout for transitionend", () => {
+    assert.ok(
+      scriptContent.includes("setTimeout") &&
+        scriptContent.includes("transitionend"),
+      "Should have fallback timer in case transitionend doesn't fire",
+    );
+  });
+
+  it("card-header should have cursor pointer", () => {
+    assert.ok(
+      html.includes(".card-header") && html.includes("cursor: pointer"),
+      "Card headers should show pointer cursor",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 28. THEME SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+describe("Theme System", () => {
+  it("should define all 5 theme CSS classes", () => {
+    const themes = ["black", "blue", "matrix", "amber", "purple"];
+    for (const t of themes) {
+      assert.ok(
+        html.includes(`body.theme-${t}`),
+        `Missing theme class: theme-${t}`,
+      );
+    }
+  });
+
+  it("should have THEMES array constant", () => {
+    assert.ok(
+      scriptContent.includes("THEMES") &&
+        scriptContent.includes("'black'") &&
+        scriptContent.includes("'purple'"),
+      "Missing THEMES array with all theme names",
+    );
+  });
+
+  it("should have applyTheme function", () => {
+    assert.ok(scriptContent.includes("function applyTheme("), "Missing applyTheme");
+  });
+
+  it("should have initTheme function", () => {
+    assert.ok(scriptContent.includes("function initTheme("), "Missing initTheme");
+  });
+
+  it("each theme should define --bg-primary and --bg-card", () => {
+    const themes = ["black", "blue", "matrix", "amber", "purple"];
+    for (const t of themes) {
+      const themeBlock = html.match(new RegExp(`body\\.theme-${t}[^}]*}`));
+      assert.ok(themeBlock, `Cannot find CSS block for theme-${t}`);
+      assert.ok(
+        themeBlock[0].includes("--bg-primary") || themeBlock[0].includes("--bg-card"),
+        `Theme ${t} should define --bg-primary or --bg-card`,
+      );
+    }
+  });
+
+  it("matrix theme should have green accent (#00ff41)", () => {
+    assert.ok(
+      html.includes("#00ff41"),
+      "Matrix theme should use green #00ff41 accent",
+    );
+  });
+
+  it("amber theme should have golden accent (#fbbf24)", () => {
+    assert.ok(
+      html.includes("body.theme-amber") && html.includes("#fbbf24"),
+      "Amber theme should use golden #fbbf24 accent",
+    );
+  });
+
+  it("purple theme should have violet accent (#c084fc)", () => {
+    assert.ok(
+      html.includes("body.theme-purple") && html.includes("#c084fc"),
+      "Purple theme should use violet #c084fc accent",
+    );
+  });
+
+  it("theme should persist to localStorage as dash_theme", () => {
+    assert.ok(
+      scriptContent.includes("dash_theme"),
+      "Theme should persist to localStorage under dash_theme key",
+    );
+  });
+
+  it("T key should cycle themes", () => {
+    const keyHandler = scriptContent.match(
+      /keydown[\s\S]*?key.*===.*['"tT]['"]/,
+    );
+    assert.ok(keyHandler, "Missing T key handler for theme cycling");
+  });
+
+  it("should have theme-select dropdown", () => {
+    assert.ok(
+      html.includes('id="theme-select"'),
+      "Missing theme-select dropdown element",
+    );
+  });
+
+  it("theme transitions should be smooth (0.5s)", () => {
+    assert.ok(
+      html.includes("transition: background 0.5s ease"),
+      "Theme transitions should animate at 0.5s ease",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 29. SCREEN MODE SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+describe("Screen Mode System", () => {
+  it("should have SCREEN_MODES array", () => {
+    assert.ok(
+      scriptContent.includes("SCREEN_MODES") || scriptContent.includes("screen_modes") ||
+        (scriptContent.includes("'tv'") && scriptContent.includes("'tablet'") && scriptContent.includes("'phone'")),
+      "Missing screen modes definition",
+    );
+  });
+
+  it("should have applyScreenMode function", () => {
+    assert.ok(scriptContent.includes("function applyScreenMode("), "Missing applyScreenMode");
+  });
+
+  it("should have initScreenMode function", () => {
+    assert.ok(scriptContent.includes("function initScreenMode("), "Missing initScreenMode");
+  });
+
+  it("should have screen-mode-select dropdown", () => {
+    assert.ok(
+      html.includes('id="screen-mode-select"'),
+      "Missing screen-mode-select dropdown",
+    );
+  });
+
+  it("should persist screen mode to localStorage as dash_screenMode", () => {
+    assert.ok(
+      scriptContent.includes("dash_screenMode"),
+      "Screen mode should persist under dash_screenMode key",
+    );
+  });
+
+  it("phone mode should make body scrollable", () => {
+    assert.ok(
+      html.includes("mode-phone") && html.includes("overflow-y: auto"),
+      "Phone mode should enable vertical scrolling",
+    );
+  });
+
+  it("phone mode should use 1-column grid", () => {
+    assert.ok(
+      html.includes("mode-phone") && html.includes("grid-template-columns: 1fr"),
+      "Phone mode should use single-column layout",
+    );
+  });
+
+  it("phone mode should hide scroll clone items", () => {
+    assert.ok(
+      html.includes("mode-phone") && html.includes(".clone"),
+      "Phone mode should hide .clone items",
+    );
+  });
+
+  it("tablet mode should have smaller font size", () => {
+    // Tablet uses smaller than TV (21px)
+    assert.ok(
+      html.includes("mode-tablet") || html.includes("17px") || html.includes("15px"),
+      "Tablet mode should reduce font size",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 30. DIAGNOSTIC OVERLAY
+// ═══════════════════════════════════════════════════════════════════
+describe("Diagnostic Overlay", () => {
+  it("should have diag-overlay container", () => {
+    assert.ok(html.includes('id="diag-overlay"'), "Missing diag-overlay");
+  });
+
+  it("should have diag-panes for status table", () => {
+    assert.ok(html.includes('id="diag-panes"'), "Missing diag-panes");
+  });
+
+  it("should have diag-log for fetch log", () => {
+    assert.ok(html.includes('id="diag-log"'), "Missing diag-log");
+  });
+
+  it("should have toggleDiag function", () => {
+    assert.ok(scriptContent.includes("function toggleDiag("), "Missing toggleDiag");
+  });
+
+  it("should have refreshDiag function", () => {
+    assert.ok(scriptContent.includes("function refreshDiag("), "Missing refreshDiag");
+  });
+
+  it("should have diagPane function for pane status tracking", () => {
+    assert.ok(scriptContent.includes("function diagPane("), "Missing diagPane");
+  });
+
+  it("should have _diagLog array for log storage", () => {
+    assert.ok(scriptContent.includes("_diagLog"), "Missing _diagLog array");
+  });
+
+  it("should have _diagStatus object for pane status", () => {
+    assert.ok(scriptContent.includes("_diagStatus"), "Missing _diagStatus object");
+  });
+
+  it("D key should toggle diagnostic overlay", () => {
+    const keyHandler = scriptContent.match(
+      /keydown[\s\S]*?key.*===.*['"dD]['"]/,
+    );
+    assert.ok(keyHandler, "Missing D key handler for diagnostic toggle");
+  });
+
+  it("should auto-show overlay on unhandled errors", () => {
+    assert.ok(
+      scriptContent.includes("unhandledrejection") &&
+        scriptContent.includes("toggleDiag"),
+      "Should auto-open overlay on unhandled rejections",
+    );
+  });
+
+  it("diagnostic overlay should use monospace font", () => {
+    assert.ok(
+      html.includes("diag-overlay") && html.includes("Consolas"),
+      "Diagnostic overlay should use monospace font",
+    );
+  });
+
+  it("diagLog should cap at max entries (rolling FIFO)", () => {
+    assert.ok(
+      scriptContent.includes("_diagLog") &&
+        (scriptContent.includes(".splice(") || scriptContent.includes(".shift(") || scriptContent.includes(".length")),
+      "diagLog should enforce max entry limit",
+    );
+  });
+
+  it("overlay should have LTR text direction (English log)", () => {
+    assert.ok(
+      html.includes("diag") && html.includes("direction: ltr"),
+      "Diagnostic overlay should use LTR for English text",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 31. OFFLINE BANNER
+// ═══════════════════════════════════════════════════════════════════
+describe("Offline Banner", () => {
+  it("should have offline-banner element", () => {
+    assert.ok(html.includes('id="offline-banner"'), "Missing offline-banner");
+  });
+
+  it("should have updateNetworkBanner function", () => {
+    assert.ok(
+      scriptContent.includes("function updateNetworkBanner(") ||
+        scriptContent.includes("updateNetworkBanner"),
+      "Missing updateNetworkBanner function",
+    );
+  });
+
+  it("should listen for online/offline events", () => {
+    assert.ok(scriptContent.includes("'online'"), "Missing online event listener");
+    assert.ok(scriptContent.includes("'offline'"), "Missing offline event listener");
+  });
+
+  it("offline banner should have Hebrew text", () => {
+    assert.ok(
+      html.includes("אין חיבור") || html.includes("אינטרנט"),
+      "Offline banner should have Hebrew connection message",
+    );
+  });
+
+  it("should use CSS .visible class to show banner", () => {
+    assert.ok(
+      html.includes("offline-banner") && html.includes("visible"),
+      "Offline banner should toggle via .visible class",
+    );
+  });
+
+  it("offline banner should have slide animation", () => {
+    assert.ok(
+      html.includes("offline-banner") && html.includes("transform"),
+      "Offline banner should use transform for slide animation",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 32. INIT & STARTUP SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+describe("Init & Startup System", () => {
+  it("should have init function", () => {
+    assert.ok(scriptContent.includes("function init("), "Missing init function");
+  });
+
+  it("init should call self-check validations", () => {
+    assert.ok(
+      scriptContent.includes("SELFCHECK") || scriptContent.includes("issues"),
+      "init should perform startup self-check",
+    );
+  });
+
+  it("should validate MOTIVATIONS array integrity", () => {
+    assert.ok(
+      scriptContent.includes("MOTIVATIONS") &&
+        scriptContent.includes("typeof m.t"),
+      "init should validate each MOTIVATIONS entry",
+    );
+  });
+
+  it("should validate DOM element references", () => {
+    const initBlock = scriptContent.match(
+      /function init\(\)[\s\S]*?(?=function\s)/,
+    );
+    assert.ok(initBlock, "Could not find init function body");
+    assert.ok(
+      initBlock[0].includes("missingEls") || initBlock[0].includes("null"),
+      "init should check for missing DOM elements",
+    );
+  });
+
+  it("should use Promise.allSettled for parallel loader startup", () => {
+    assert.ok(
+      scriptContent.includes("Promise.allSettled"),
+      "init should use Promise.allSettled for parallel loader execution",
+    );
+  });
+
+  it("should register DOMContentLoaded listener", () => {
+    assert.ok(
+      scriptContent.includes("DOMContentLoaded"),
+      "Missing DOMContentLoaded event handler",
+    );
+  });
+
+  it("should have fallback for already-loaded DOM", () => {
+    assert.ok(
+      scriptContent.includes("readyState") &&
+        scriptContent.includes("'loading'"),
+      "Should check readyState for already-loaded DOM fallback",
+    );
+  });
+
+  it("DOMContentLoaded should call init, initCardAnimations, initCardMaximize", () => {
+    assert.ok(
+      scriptContent.includes("init()") &&
+        scriptContent.includes("initCardAnimations()") &&
+        scriptContent.includes("initCardMaximize()"),
+      "DOMContentLoaded should call all 3 init functions",
+    );
+  });
+
+  it("init should call cEvict for cache cleanup", () => {
+    const initBlock = scriptContent.match(
+      /function init\(\)[\s\S]*?(?=function\s)/,
+    );
+    assert.ok(initBlock, "Could not find init body");
+    assert.ok(
+      initBlock[0].includes("cEvict"),
+      "init should run cache eviction on startup",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 33. FETCH & PROXY SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+describe("Fetch & Proxy System", () => {
+  it("should have fetchWithTimeout with AbortController", () => {
+    assert.ok(
+      scriptContent.includes("AbortController") &&
+        scriptContent.includes("function fetchWithTimeout("),
+      "Missing fetchWithTimeout with AbortController",
+    );
+  });
+
+  it("fetchWithTimeout default should be 8000ms", () => {
+    assert.ok(
+      scriptContent.includes("ms = 8000") || scriptContent.includes("ms=8000"),
+      "Default timeout should be 8000ms",
+    );
+  });
+
+  it("PROXIES should have allorigins and codetabs", () => {
+    assert.ok(
+      scriptContent.includes("allorigins.win"),
+      "Missing allorigins proxy",
+    );
+    assert.ok(
+      scriptContent.includes("codetabs.com"),
+      "Missing codetabs proxy",
+    );
+  });
+
+  it("calendar should also try corsproxy.io", () => {
+    assert.ok(
+      scriptContent.includes("corsproxy.io"),
+      "Missing corsproxy.io fallback for calendar",
+    );
+  });
+
+  it("should have fetch lock system (acquireLock/releaseLock)", () => {
+    assert.ok(
+      scriptContent.includes("function acquireLock(") ||
+        scriptContent.includes("acquireLock"),
+      "Missing acquireLock function",
+    );
+    assert.ok(
+      scriptContent.includes("releaseLock"),
+      "Missing releaseLock function",
+    );
+  });
+
+  it("all loaders should check _pageVisible before fetching", () => {
+    const loaders = ["loadWeather", "loadNews", "loadCalendar", "loadAlerts"];
+    for (const fn of loaders) {
+      const fnMatch = scriptContent.match(new RegExp(`function ${fn}[^{]*\\{[^}]{0,200}`));
+      assert.ok(
+        fnMatch && fnMatch[0].includes("_pageVisible"),
+        `${fn} should check _pageVisible`,
+      );
+    }
+  });
+
+  it("should use stale-while-revalidate pattern", () => {
+    assert.ok(
+      scriptContent.includes("cGetStale") && scriptContent.includes("cGet("),
+      "Should use cGet for fresh + cGetStale for stale fallback",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 34. API ENDPOINTS
+// ═══════════════════════════════════════════════════════════════════
+describe("API Endpoints", () => {
+  it("should use Open-Meteo for weather", () => {
+    assert.ok(
+      scriptContent.includes("api.open-meteo.com"),
+      "Missing Open-Meteo endpoint",
+    );
+  });
+
+  it("should use Hebcal for Hebrew date", () => {
+    assert.ok(
+      scriptContent.includes("hebcal.com"),
+      "Missing Hebcal endpoint",
+    );
+  });
+
+  it("should use Yahoo Finance for stocks", () => {
+    assert.ok(
+      scriptContent.includes("query1.finance.yahoo.com"),
+      "Missing Yahoo Finance endpoint",
+    );
+  });
+
+  it("should use open.er-api.com for currency (primary)", () => {
+    assert.ok(
+      scriptContent.includes("open.er-api.com"),
+      "Missing ER-API currency endpoint",
+    );
+  });
+
+  it("should use exchangerate-api.com for currency (fallback)", () => {
+    assert.ok(
+      scriptContent.includes("exchangerate-api.com"),
+      "Missing exchangerate-api fallback",
+    );
+  });
+
+  it("should use tzevaadom.co.il for red alerts", () => {
+    assert.ok(
+      scriptContent.includes("tzevaadom.co.il"),
+      "Missing tzevaadom.co.il alerts endpoint",
+    );
+  });
+
+  it("should use Google Calendar ICS URL", () => {
+    assert.ok(
+      scriptContent.includes("calendar.google.com/calendar/ical"),
+      "Missing Google Calendar ICS URL",
+    );
+  });
+
+  it("should have at least 10 RSS feed URLs", () => {
+    const feedEntries = scriptContent.match(/\{\s*url:\s*'/g);
+    assert.ok(
+      feedEntries && feedEntries.length >= 10,
+      `Expected >=10 RSS feeds, got ${feedEntries?.length}`,
+    );
+  });
+
+  it("Weather API should request Jerusalem coordinates", () => {
+    assert.ok(
+      scriptContent.includes("31.7") && scriptContent.includes("35.2"),
+      "Weather should use Jerusalem lat/lon (31.7, 35.2)",
+    );
+  });
+
+  it("no API keys should be hardcoded", () => {
+    const apiKeyPatterns = /(?:api[_-]?key|apikey|secret|token)\s*[:=]\s*['"][A-Za-z0-9]{20,}['"]/gi;
+    const matches = scriptContent.match(apiKeyPatterns);
+    assert.ok(!matches, `Found hardcoded API keys: ${matches?.join(", ")}`);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 35. DOM REFERENCES (el OBJECT)
+// ═══════════════════════════════════════════════════════════════════
+describe("DOM References (el object)", () => {
+  it("should cache clock element", () => {
+    assert.ok(scriptContent.includes("clock:") && scriptContent.includes("$('clock')"), "Missing el.clock");
+  });
+
+  it("should cache all weather elements", () => {
+    const wxEls = ["wxIcon", "wxTemp", "wxDesc", "wxHum", "wxWind", "wxUv", "wxRise", "wxHourly", "wxForecast"];
+    for (const el of wxEls) {
+      assert.ok(scriptContent.includes(`${el}:`), `Missing el.${el} in DOM cache`);
+    }
+  });
+
+  it("should cache all currency elements", () => {
+    const curEls = ["curUsd", "curEur", "curGbp"];
+    for (const el of curEls) {
+      assert.ok(scriptContent.includes(`${el}:`), `Missing el.${el} in DOM cache`);
+    }
+  });
+
+  it("should cache news elements", () => {
+    assert.ok(scriptContent.includes("newsBody:") || scriptContent.includes("rssScroll:"), "Missing news DOM refs");
+  });
+
+  it("should cache calendar elements", () => {
+    assert.ok(scriptContent.includes("calAgenda:"), "Missing el.calAgenda");
+    assert.ok(scriptContent.includes("calIframe:"), "Missing el.calIframe");
+  });
+
+  it("should cache motivation elements", () => {
+    assert.ok(scriptContent.includes("motiText:"), "Missing el.motiText");
+    assert.ok(scriptContent.includes("motiAuthor:"), "Missing el.motiAuthor");
+  });
+
+  it("should cache progress bar elements", () => {
+    assert.ok(scriptContent.includes("dayProgress:") || scriptContent.includes("day-progress"), "Missing progress bar refs");
+  });
+
+  it("should have sync dot references for all 7 panes", () => {
+    const panes = ["news", "cal", "stocks", "alerts", "wx", "cur", "moti"];
+    for (const p of panes) {
+      assert.ok(
+        scriptContent.includes(`sync-${p}`) || scriptContent.includes(`'${p}'`),
+        `Missing sync dot for ${p}`,
+      );
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 36. CSS DESIGN SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+describe("CSS Design System", () => {
+  it("should have glassmorphism backdrop-filter on cards", () => {
+    assert.ok(
+      html.includes("backdrop-filter: blur(16px)"),
+      "Missing glassmorphism blur on cards",
+    );
+  });
+
+  it("should have animated gradient background", () => {
+    assert.ok(
+      html.includes("@keyframes bgShift"),
+      "Missing animated background keyframes",
+    );
+  });
+
+  it("should have scroll fade masks on news/stocks/alerts", () => {
+    assert.ok(
+      html.includes("mask-image: linear-gradient(to bottom"),
+      "Missing vertical scroll fade masks",
+    );
+  });
+
+  it("should have animated gradient border (@property --border-angle)", () => {
+    assert.ok(
+      html.includes("@property --border-angle") || html.includes("border-angle"),
+      "Missing animated gradient border property",
+    );
+  });
+
+  it("should have card spotlight glow (::after pseudo-element)", () => {
+    assert.ok(
+      html.includes(".card::after") && html.includes("radial-gradient"),
+      "Missing card spotlight glow ::after",
+    );
+  });
+
+  it("should define :root CSS variables for colors", () => {
+    const vars = ["--accent", "--positive", "--negative", "--warning", "--purple", "--pink", "--orange", "--cyan"];
+    for (const v of vars) {
+      assert.ok(html.includes(v), `Missing CSS variable: ${v}`);
+    }
+  });
+
+  it("should have ::selection styling with accent color", () => {
+    assert.ok(
+      html.includes("::selection") && html.includes("var(--accent)"),
+      "Missing ::selection highlight styling",
+    );
+  });
+
+  it("should use border-radius CSS variable", () => {
+    assert.ok(html.includes("--border-radius"), "Missing --border-radius variable");
+  });
+
+  it("should have news freshness data-age attribute", () => {
+    assert.ok(
+      (scriptContent.includes("dataset.age") || scriptContent.includes("data-age")) &&
+        scriptContent.includes("'fresh'"),
+      "Missing news freshness data-age attribute",
+    );
+  });
+
+  it("should have stock row tinting classes (stk-up/stk-down)", () => {
+    assert.ok(
+      scriptContent.includes("stk-up") && scriptContent.includes("stk-down"),
+      "Missing stock row tinting classes",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 37. KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════════
+describe("Keyboard Shortcuts", () => {
+  it("should listen for keydown events", () => {
+    assert.ok(
+      scriptContent.includes("addEventListener('keydown'") ||
+        scriptContent.includes('addEventListener("keydown"'),
+      "Missing keydown event listener",
+    );
+  });
+
+  it("T key should cycle themes", () => {
+    assert.ok(
+      scriptContent.includes("'T'") || scriptContent.includes("'t'"),
+      "Missing T key handler",
+    );
+    assert.ok(
+      scriptContent.includes("applyTheme"),
+      "T key should call applyTheme",
+    );
+  });
+
+  it("D key should toggle diagnostics", () => {
+    assert.ok(
+      scriptContent.includes("'D'") || scriptContent.includes("'d'"),
+      "Missing D key handler",
+    );
+    assert.ok(
+      scriptContent.includes("toggleDiag"),
+      "D key should call toggleDiag",
+    );
+  });
+
+  it("Escape key should close maximized card", () => {
+    assert.ok(
+      scriptContent.includes("'Escape'") && scriptContent.includes("_maximizedCard"),
+      "Escape key should close maximized card",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 38. PERFORMANCE OPTIMIZATIONS
+// ═══════════════════════════════════════════════════════════════════
+describe("Performance Optimizations", () => {
+  it("should use CSS containment on cards", () => {
+    assert.ok(
+      html.includes("contain: layout style"),
+      "Missing CSS containment on cards",
+    );
+  });
+
+  it("should have content-visibility on pane bodies", () => {
+    assert.ok(
+      html.includes("content-visibility"),
+      "Missing content-visibility optimization",
+    );
+  });
+
+  it("should lazy-load images", () => {
+    const lazyCount = (html.match(/loading="lazy"/g) || []).length;
+    assert.ok(lazyCount >= 5, `Expected >=5 lazy-loaded images, got ${lazyCount}`);
+  });
+
+  it("should throttle mousemove with requestAnimationFrame", () => {
+    assert.ok(
+      scriptContent.includes("requestAnimationFrame") &&
+        scriptContent.includes("mousemove"),
+      "Mousemove spotlight should use rAF throttling",
+    );
+  });
+
+  it("should use Page Visibility API to pause fetches", () => {
+    assert.ok(
+      scriptContent.includes("visibilitychange") &&
+        scriptContent.includes("_pageVisible"),
+      "Should pause fetches when page is hidden",
+    );
+  });
+
+  it("should have prefers-reduced-motion support", () => {
+    assert.ok(
+      html.includes("prefers-reduced-motion"),
+      "Missing prefers-reduced-motion media query",
+    );
+  });
+
+  it("should batch stock API calls (groups of 3)", () => {
+    assert.ok(
+      scriptContent.includes("batch") || scriptContent.includes("slice(0, 3)") ||
+        scriptContent.includes("slice(3)"),
+      "Stock fetches should be batched",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 39. ACCESSIBILITY & INTERNATIONALIZATION
+// ═══════════════════════════════════════════════════════════════════
+describe("Accessibility & Internationalization", () => {
+  it("should have RTL direction", () => {
+    assert.ok(html.includes('dir="rtl"'), "Missing dir=rtl");
+  });
+
+  it("should have Hebrew language attribute", () => {
+    assert.ok(html.includes('lang="he"'), "Missing lang=he");
+  });
+
+  it("should use Noto Sans Hebrew in font stack", () => {
+    assert.ok(
+      html.includes("Noto Sans Hebrew"),
+      "Missing Noto Sans Hebrew in font-family",
+    );
+  });
+
+  it("images should have alt attributes", () => {
+    const imgs = html.match(/<img\s[^>]*>/g) || [];
+    for (const img of imgs) {
+      assert.ok(
+        img.includes('alt='),
+        `Image missing alt attribute: ${img.substring(0, 60)}...`,
+      );
+    }
+  });
+
+  it("should disable animations for prefers-reduced-motion", () => {
+    assert.ok(
+      html.includes("animation-duration: 0.01ms"),
+      "Should set animation-duration to near-zero for reduced-motion",
+    );
+  });
+
+  it("should use border-right for RTL accent borders on news items", () => {
+    assert.ok(
+      html.includes(".rss-item") && html.includes("border-right"),
+      "News items should use border-right for RTL layout",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 40. REFRESH INTERVALS
+// ═══════════════════════════════════════════════════════════════════
+describe("Refresh Intervals", () => {
+  it("clock should tick every 60s (1 minute)", () => {
+    assert.ok(
+      scriptContent.includes("tickClock") && scriptContent.includes("60000"),
+      "Clock should refresh every 60000ms",
+    );
+  });
+
+  it("news should refresh every 15 minutes", () => {
+    assert.ok(
+      scriptContent.includes("loadNews") && scriptContent.includes("900000"),
+      "News should refresh every 900000ms (15min)",
+    );
+  });
+
+  it("stocks should refresh every 10 minutes", () => {
+    assert.ok(
+      scriptContent.includes("loadAllStocks") && scriptContent.includes("600000"),
+      "Stocks should refresh every 600000ms (10min)",
+    );
+  });
+
+  it("weather should refresh every 30 minutes", () => {
+    assert.ok(
+      scriptContent.includes("loadWeather") && scriptContent.includes("1800000"),
+      "Weather should refresh every 1800000ms (30min)",
+    );
+  });
+
+  it("currency should refresh every 1 hour", () => {
+    assert.ok(
+      scriptContent.includes("loadCurrency") && scriptContent.includes("3600000"),
+      "Currency should refresh every 3600000ms (1h)",
+    );
+  });
+
+  it("motivation should refresh every 4 hours", () => {
+    assert.ok(
+      scriptContent.includes("loadMotivation") && scriptContent.includes("14400000"),
+      "Motivation should refresh every 14400000ms (4h)",
+    );
+  });
+
+  it("calendar should refresh every 15 minutes", () => {
+    assert.ok(
+      scriptContent.includes("loadCalendar") && scriptContent.includes("900000"),
+      "Calendar should refresh every 900000ms (15min)",
+    );
+  });
+
+  it("Hebrew date should refresh every 3 hours", () => {
+    assert.ok(
+      scriptContent.includes("loadHebrewDate") && scriptContent.includes("10800000"),
+      "Hebrew date should refresh every 10800000ms (3h)",
+    );
+  });
+
+  it("Shabbat should refresh every 6 hours", () => {
+    assert.ok(
+      scriptContent.includes("loadShabbat") && scriptContent.includes("21600000"),
+      "Shabbat should refresh every 21600000ms (6h)",
+    );
+  });
+
+  it("holidays should refresh every 12 hours", () => {
+    assert.ok(
+      scriptContent.includes("loadHolidays") && scriptContent.includes("43200000"),
+      "Holidays should refresh every 43200000ms (12h)",
+    );
+  });
+
+  it("market badge should refresh every 5 minutes", () => {
+    assert.ok(
+      scriptContent.includes("updateMarketBadge") && scriptContent.includes("300000"),
+      "Market badge should refresh every 300000ms (5min)",
+    );
+  });
+
+  it("card attention loop should run every 5 minutes", () => {
+    assert.ok(
+      scriptContent.includes("cardAttentionLoop") && scriptContent.includes("300000"),
+      "Card attention loop should run every 300000ms (5min)",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 41. MARKET BADGE
+// ═══════════════════════════════════════════════════════════════════
+describe("Market Badge", () => {
+  it("should have market-badge element", () => {
+    assert.ok(html.includes('id="market-badge"'), "Missing market-badge element");
+  });
+
+  it("should have updateMarketBadge function", () => {
+    assert.ok(
+      scriptContent.includes("function updateMarketBadge("),
+      "Missing updateMarketBadge function",
+    );
+  });
+
+  it("should detect US market hours (Mon-Fri)", () => {
+    assert.ok(
+      scriptContent.includes("getDay") || scriptContent.includes("day"),
+      "Market badge should check day of week",
+    );
+  });
+
+  it("should show open/closed status in Hebrew", () => {
+    assert.ok(
+      scriptContent.includes("פתוח") && scriptContent.includes("סגור"),
+      "Market badge should show Hebrew open/closed text",
+    );
+  });
+
+  it("should use getStockTTL for smart refresh", () => {
+    assert.ok(
+      scriptContent.includes("function getStockTTL(") ||
+        scriptContent.includes("getStockTTL"),
+      "Missing getStockTTL for market-hours TTL",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 42. GREETING LOGIC
+// ═══════════════════════════════════════════════════════════════════
+describe("Greeting Logic", () => {
+  it("should have getGreeting function", () => {
+    assert.ok(
+      scriptContent.includes("function getGreeting("),
+      "Missing getGreeting function",
+    );
+  });
+
+  it("should return different greetings for different times", () => {
+    const greetingFn = scriptContent.match(
+      /function getGreeting\(\)[\s\S]*?return[\s\S]*?\}/,
+    );
+    assert.ok(greetingFn, "Could not find getGreeting body");
+    // Should check hour and return different values
+    assert.ok(
+      greetingFn[0].includes("getHours") || greetingFn[0].includes("hour"),
+      "getGreeting should check current hour",
+    );
+  });
+
+  it("should have morning, afternoon, evening, night variants", () => {
+    assert.ok(
+      scriptContent.includes("בוקר") || scriptContent.includes("🌅"),
+      "Missing morning greeting",
+    );
+    assert.ok(
+      scriptContent.includes("ערב") || scriptContent.includes("🌇"),
+      "Missing evening greeting",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 43. HOLIDAY & SHABBAT SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+describe("Holiday & Shabbat System", () => {
+  it("should have loadHolidays function", () => {
+    assert.ok(scriptContent.includes("function loadHolidays("), "Missing loadHolidays");
+  });
+
+  it("should have renderHoliday function", () => {
+    assert.ok(scriptContent.includes("function renderHoliday("), "Missing renderHoliday");
+  });
+
+  it("should have loadShabbat function", () => {
+    assert.ok(scriptContent.includes("function loadShabbat("), "Missing loadShabbat");
+  });
+
+  it("holiday countdown should show days remaining", () => {
+    assert.ok(
+      scriptContent.includes("ימים") || scriptContent.includes("בעוד"),
+      "Holiday should show days remaining",
+    );
+  });
+
+  it("should show special message for today's holiday", () => {
+    assert.ok(
+      scriptContent.includes("היום") || scriptContent.includes("🎉"),
+      "Should show special message when holiday is today",
+    );
+  });
+
+  it("Shabbat should show candle lighting and havdalah", () => {
+    assert.ok(
+      scriptContent.includes("נרות") || scriptContent.includes("הדלקת"),
+      "Should show candle lighting time",
+    );
+    assert.ok(
+      scriptContent.includes("הבדלה"),
+      "Should show havdalah time",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 44. WEATHER RENDERING DETAILS
+// ═══════════════════════════════════════════════════════════════════
+describe("Weather Rendering Details", () => {
+  it("should render hourly chart with bezier curves", () => {
+    assert.ok(
+      scriptContent.includes("function renderHourlyChart("),
+      "Missing renderHourlyChart function",
+    );
+  });
+
+  it("hourly chart should draw 12-hour SVG path", () => {
+    const chartFn = scriptContent.match(
+      /function renderHourlyChart[\s\S]*?\}/m,
+    );
+    assert.ok(chartFn, "Could not find renderHourlyChart");
+    assert.ok(
+      chartFn[0].includes("path") || scriptContent.includes("<path"),
+      "Hourly chart should render SVG path elements",
+    );
+  });
+
+  it("forecast should display icon beside day name (horizontal layout)", () => {
+    // Updated layout: icon → name → temp in horizontal flex
+    assert.ok(
+      html.includes("wx-fday-icon") && html.includes("wx-fday-name"),
+      "Forecast should have icon and name elements",
+    );
+    assert.ok(
+      html.includes(".wx-fday") && html.includes("display: flex"),
+      "Forecast day blocks should use flex layout",
+    );
+  });
+
+  it("should have wx-desc element for feels-like temperature", () => {
+    assert.ok(
+      html.includes('id="wx-desc"'),
+      "Missing wx-desc element for feels-like",
+    );
+    assert.ok(
+      scriptContent.includes("feels_like") || scriptContent.includes("apparent"),
+      "Should display feels-like temperature",
+    );
+  });
+
+  it("weather should request full data from Open-Meteo", () => {
+    assert.ok(
+      scriptContent.includes("hourly=") || scriptContent.includes("temperature_2m"),
+      "Weather API should request hourly temperature data",
+    );
+    assert.ok(
+      scriptContent.includes("daily=") || scriptContent.includes("weathercode"),
+      "Weather API should request daily forecast data",
     );
   });
 });

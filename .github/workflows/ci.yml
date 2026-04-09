@@ -33,7 +33,7 @@ jobs:
         run: htmlhint BestDashBoard.html
 
       - name: Run unit tests
-        run: node --test tests/dashboard.test.mjs
+        run: node --test --test-timeout=500000 tests/dashboard.test.mjs
 
   security-scan:
     name: Security Scan

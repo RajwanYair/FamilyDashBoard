@@ -11,7 +11,6 @@
 [![CI](https://github.com/RajwanYair/FamilyDashBoard/actions/workflows/ci.yml/badge.svg)](https://github.com/RajwanYair/FamilyDashBoard/actions/workflows/ci.yml)
 [![Deploy](https://github.com/RajwanYair/FamilyDashBoard/actions/workflows/deploy.yml/badge.svg)](https://github.com/RajwanYair/FamilyDashBoard/actions/workflows/deploy.yml)
 [![GitHub Pages](https://img.shields.io/badge/Live_Demo-GitHub_Pages-2ea44f?style=flat-square&logo=github)](https://rajwanyair.github.io/FamilyDashBoard/)
-[![Docker](https://img.shields.io/badge/Docker-ghcr.io-2496ED?style=flat-square&logo=docker&logoColor=white)](https://github.com/RajwanYair/FamilyDashBoard/pkgs/container/familydashboard)
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
@@ -20,7 +19,7 @@
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-4.5-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-164_passing-34d399?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-342_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -192,49 +191,36 @@ path += ` C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
 
 ```text
 FamilyDashBoard/
-├── 📄 BestDashBoard.html          # The entire dashboard (HTML + CSS + JS)
-├── � index.html                  # GitHub Pages redirect → BestDashBoard.html
-├── �📖 README.md                   # Project documentation
-├── 📋 CHANGELOG.md                # Version history
-├── 📋 SUPPORT.md                  # Support channels & troubleshooting
-├── 📋 CITATION.cff                # Software citation metadata
-├── 📋 LICENSE                     # MIT License
-├── 🐋 Dockerfile                  # Docker containerization
-├── 🐋 nginx.conf                  # Nginx serving config
-├── 📋 .editorconfig
-├── 🚫 .gitignore / .gitattributes / .dockerignore
-├── 📁 tests/
-│   └── dashboard.test.mjs        # 164 tests, 23 suites (Node.js built-in runner)
-├── 📁 .github/
-│   ├── 🖼️ assets/                  # SVG graphics for docs
-│   ├── 🤖 agents/                  # Copilot custom agents
-│   ├── 📐 instructions/            # Copilot context files
-│   ├── 💬 prompts/                 # Reusable Copilot prompts
-│   ├── ⚙️ copilot/config.json      # Copilot modes
-│   ├── 🪝 hooks/                   # Git hooks
-│   ├── 🔄 workflows/
-│   │   ├── ci.yml                 # Lint + security + Lighthouse
-│   │   ├── deploy.yml             # GitHub Pages deploy
-│   │   ├── docker-publish.yml     # GHCR Docker publish
-│   │   ├── release.yml            # Auto-release notes
-│   │   ├── auto-assign.yml        # PR/issue auto-assign
-│   │   ├── auto-label.yml         # PR auto-labeling
-│   │   ├── stale.yml              # Stale issue management
-│   │   ├── welcome.yml            # First-contributor greeting
-│   │   └── ...                    # + dependabot-auto-merge, auto-close, track-changes
-│   ├── 📋 ISSUE_TEMPLATE/          # Bug, feature, API issue forms
-│   ├── 💬 DISCUSSION_TEMPLATE/     # Ideas, Q&A, show-and-tell
-│   ├── 📋 PULL_REQUEST_TEMPLATE.md
-│   ├── 🤝 CONTRIBUTING.md
-│   ├── 🔒 SECURITY.md
-│   ├── 🤝 CODE_OF_CONDUCT.md
-│   ├── 📋 CODEOWNERS
-│   ├── 📋 AGENTS.md
-│   ├── 💰 FUNDING.yml
-│   ├── 📋 dependabot.yml / labeler.yml / release.yml
-│   └── 📋 copilot-instructions.md
-└── 📁 .vscode/
-    └── ⚙️ settings.json            # Editor + Copilot config
+├── BestDashBoard.html              # The entire dashboard (HTML + CSS + JS)
+├── index.html                      # GitHub Pages redirect
+├── README.md / CHANGELOG.md        # Documentation
+├── SUPPORT.md / LICENSE
+├── .editorconfig / .markdownlint.json
+├── .gitignore / .gitattributes
+├── tests/
+│   └── dashboard.test.mjs          # 342 tests, 44 suites (Node.js built-in runner)
+├── .github/
+│   ├── assets/                     # SVG graphics for docs
+│   ├── agents/                     # Copilot custom agents
+│   ├── instructions/               # Copilot context files
+│   ├── prompts/                    # Reusable Copilot prompts
+│   ├── copilot/config.json         # Copilot modes
+│   ├── hooks/                      # Git hooks
+│   ├── workflows/
+│   │   ├── ci.yml                  # Lint + unit tests + security + Lighthouse
+│   │   ├── deploy.yml              # GitHub Pages deploy
+│   │   ├── release.yml             # Auto-release notes
+│   │   ├── auto-label.yml          # PR auto-labeling
+│   │   └── dependabot-auto-merge.yml
+│   ├── ISSUE_TEMPLATE/             # Bug, feature, API issue forms
+│   ├── DISCUSSION_TEMPLATE/        # Ideas, Q&A, show-and-tell
+│   ├── CONTRIBUTING.md / SECURITY.md / CODE_OF_CONDUCT.md
+│   ├── CODEOWNERS / AGENTS.md
+│   ├── dependabot.yml / labeler.yml / release.yml
+│   └── copilot-instructions.md
+└── .vscode/
+    ├── settings.json               # Editor + Copilot + testing config
+    └── extensions.json             # Recommended extensions
 ```
 
 ---

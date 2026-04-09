@@ -24,6 +24,7 @@ API integration specialist for client-side data fetching with CORS proxy fallbac
 |-----|--------|
 | `T` | Cycle through 5 themes |
 | `D` | Toggle diagnostic overlay (per-pane status + fetch log) |
+| `Escape` | Close maximized card |
 
 ## Available Copilot Modes
 
