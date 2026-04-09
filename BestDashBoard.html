@@ -2364,6 +2364,13 @@
     setInterval(loadHolidays, 43200000);      // 12h
     setInterval(loadHalacha, 43200000);       // 12h — daily halacha
 
+    // ── Auto hard-reload every 1h to pick up HTML file changes ──
+    // Reload only when tab is visible to avoid interrupting the display
+    setTimeout(function autoReload() {
+        if (_pageVisible) { location.reload(); }
+        else { setTimeout(autoReload, 60000); } // retry every 1min while hidden
+    }, 3600000); // 1h
+
     // ── Card Entrance Animations ──
     const CARD_ANIMS = ['cardSlideLeft','cardSlideRight','cardSlideUp','cardSlideDown','cardPopIn','cardFlipIn'];
     function randomAnim() { return CARD_ANIMS[Math.floor(Math.random() * CARD_ANIMS.length)]; }
