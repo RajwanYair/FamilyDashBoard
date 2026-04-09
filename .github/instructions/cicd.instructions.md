@@ -7,9 +7,10 @@ description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML con
 
 ## Workflow Standards
 
-- Use `actions/checkout@v4` for all jobs
+- Use `actions/checkout@v4` and `actions/setup-node@v4` for all jobs
 - Set `permissions: contents: read` (least privilege)
 - Run validation: HTML lint, security scan, Lighthouse
+- Run unit tests: `node --test tests/dashboard.test.mjs` (164 tests, 23 suites, zero dependencies)
 - Deploy via GitHub Pages on push to `main`
 
 ## Commit Convention

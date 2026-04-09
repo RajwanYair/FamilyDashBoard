@@ -19,7 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.4-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.5-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-164_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -53,39 +54,51 @@ Dark glassmorphism · 5 themes · Hebrew RTL · 20 Hebrew news feeds · Per-pane
 <td width="50%">
 
 ### 📰 Live News
+
 Auto-scrolling Hebrew news from **20 RSS sources** (Rotter, Ynet, Walla, Maariv, Calcalist, Globes, Kan, Israel Hayom, Channel 13, Geektime, Ynet Economy, Walla Economy, Haaretz, Makor Rishon, Kikar HaShabbat, ICE, Sport5), sorted newest-first with source labels and relative timestamps. Refreshes every **15 minutes**.
 
 ### 📅 Family Calendar
-Native **ICS parser** fetches Google Calendar data, renders events in a dark-themed agenda view. Falls back to iframe embed if ICS parsing fails. Refreshes every **15 minutes**.
+
+Native **ICS parser** fetches Google Calendar data via direct → 3 CORS proxy fallback chain, renders events in a dark-themed agenda view. Falls back to iframe embed if all ICS fetches fail. Refreshes every **15 minutes**.
 
 ### 📈 Stock Tracker
+
 6 live symbols (INTC, S&P 500, BTC, NVDA, VIX, TSLA) with **smooth bézier SVG charts**, colored per-symbol accents, Yahoo Finance v8/v6 API with proxy fallback, **8-second fetch timeout** (AbortController) to prevent hanging, and a **market open/closed badge** with smart refresh (10 min during market hours, 30 min off-hours). Loaded in parallel batches of 3.
 
 ### 🚨 Red Alerts (צבע אדום)
-Live rocket/UAV alerts from the Home Front Command via [tzevaadom.co.il](https://www.tzevaadom.co.il/). Shows 24h count, last 15 events with city names, threat type, and relative time. Active alerts pulse red. Refreshes every **60 seconds** (5 min when idle).
+
+Live rocket/UAV alerts from the Home Front Command via [tzevaadom.co.il](https://www.tzevaadom.co.il/). Shows 24h count, last 25 events with city names, threat type, and relative time. Active alerts pulse red. Refreshes every **60 seconds** (5 min when idle).
 
 </td>
 <td width="50%">
 
 ### 🌤️ Weather + UV
+
 Split-panel layout: **right half** shows current conditions (icon + temperature + description), **left half** shows a 2×2 grid of humidity, wind, UV index, and sunrise. Below: a **12-hour temperature curve** and an enlarged **4-day forecast** with bigger icons. Data from Open-Meteo for Jerusalem.
 
 ### 💱 Currency Exchange
+
 Live USD/ILS, EUR/ILS, GBP/ILS rates from open exchange rate APIs with colored trend indicators.
 
 ### 🕯️ Shabbat & Holidays
+
 Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** with days-remaining in the header.
 
 ### 💪 Motivation
+
 **50 curated Hebrew quotes** with smooth crossfade animation. No network needed — purely static. Refreshes every **4 hours**.
 
 ### ⏱️ Smart Dashboard
+
 - **Per-pane independent refresh** — no full-page reloads
 - **Dual-layer cache** (in-memory Map + localStorage) — survives browser restart, 7-day eviction
 - **Stale-while-revalidate** — shows cached data instantly, fetches in background
 - **5 themes** (OLED black, blue, matrix, amber, purple) — press `T` to cycle
 - **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
 - **6 card entrance animations** — random direction per card, attention loop every 5min
+- **Card maximize** — click any card header to expand it full-screen (FLIP animation), click again or press `Escape` to restore
+- **Animated number transitions** — smooth counting effect on temperature, stock prices, and currency values
+- **Exponential backoff** — failed API fetches retry with increasing delays
 - **Diagnostic overlay** — press `D` for per-pane status + fetch log, auto-opens on errors
 - **Offline banner** — slides down when internet is lost, serves stale cache
 - **Startup self-check** — validates MOTIVATIONS, DOM refs, PROXIES, STOCK_SYMBOLS
@@ -118,7 +131,7 @@ start BestDashBoard.html       # Windows
 xdg-open BestDashBoard.html   # Linux
 ```
 
-> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics. For hot-reload during development, use VS Code + Live Server extension.
+> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics, **Escape** to close a maximized card. Click any card header to expand it full-screen. For hot-reload during development, use VS Code + Live Server extension.
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
@@ -130,7 +143,7 @@ No npm. No build step. No dependencies. Just **one HTML file**.
 <img src=".github/assets/data-sources.svg" alt="Data Sources" width="85%">
 </div>
 
-All APIs are free and require no API keys. CORS is handled via a proxy fallback chain (`allorigins.win → codetabs.com → direct`). Every response is cached in localStorage with stale-while-revalidate for instant display.
+All APIs are free and require no API keys. CORS is handled via a proxy fallback chain (`direct → allorigins.win → codetabs.com → corsproxy.io`). Every response is cached in localStorage with stale-while-revalidate for instant display.
 
 ---
 
@@ -145,7 +158,7 @@ All APIs are free and require no API keys. CORS is handled via a proxy fallback 
 Everything lives in one file — `BestDashBoard.html` — containing:
 
 | Layer | Description |
-|-------|-------------|
+| ------- | ------------- |
 | **HTML** | Semantic structure with RTL Hebrew layout |
 | **CSS** | Custom properties, glassmorphism cards, responsive grid, animations |
 | **JavaScript** | Async data fetching with proxy fallback, DOM caching, SVG chart generation |
@@ -177,10 +190,11 @@ path += ` C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
 
 ## 📂 Project Structure
 
-```
+```text
 FamilyDashBoard/
 ├── 📄 BestDashBoard.html          # The entire dashboard (HTML + CSS + JS)
-├── 📖 README.md                   # Project documentation
+├── � index.html                  # GitHub Pages redirect → BestDashBoard.html
+├── �📖 README.md                   # Project documentation
 ├── 📋 CHANGELOG.md                # Version history
 ├── 📋 SUPPORT.md                  # Support channels & troubleshooting
 ├── 📋 CITATION.cff                # Software citation metadata
@@ -189,6 +203,8 @@ FamilyDashBoard/
 ├── 🐋 nginx.conf                  # Nginx serving config
 ├── 📋 .editorconfig
 ├── 🚫 .gitignore / .gitattributes / .dockerignore
+├── 📁 tests/
+│   └── dashboard.test.mjs        # 164 tests, 23 suites (Node.js built-in runner)
 ├── 📁 .github/
 │   ├── 🖼️ assets/                  # SVG graphics for docs
 │   ├── 🤖 agents/                  # Copilot custom agents
@@ -226,7 +242,7 @@ FamilyDashBoard/
 ## 🎨 Design System
 
 | Token | Value | Usage |
-|-------|-------|-------|
+| ------- | ------- | ------- |
 | `--bg-primary` | `#060b14` | Page background |
 | `--bg-card` | `rgba(15,23,42,0.78)` | Card panels |
 | `--accent` | `#60a5fa` | Headers, borders, links |
@@ -260,7 +276,8 @@ Cards use `backdrop-filter: blur(16px)` for the glassmorphism effect. All animat
 See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
-|---------|-----------|
+| --------- | ----------- |
+| **v4.5** | 🚀 Card maximize (click header to expand), animated number transitions, exponential backoff, syncBurst, corsproxy.io fallback, calendar resilience, 164 tests/23 suites, uptime tracker, RAF-throttled mousemove, scroll fade masks, animated gradient borders, GitHub Pages index.html |
 | **v4.4** | ✨ 5 CSS themes, 3 screen modes, diagnostic overlay (D key), offline banner, card spotlight glow, async-safe loaders, startup self-check, 6 card entrance animations, 20 news feeds, faster ticker |
 | **v4.3** | ⚡ Performance refactor, cache versioning (dash_v2_), ICS calendar renderer, DOMContentLoaded fix, seamless scroll loops |
 | **v4.2** | 🚨 Red Alerts panel (tzevaadom.co.il), colorful icon badges, gradient accents |
@@ -275,7 +292,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 This project leverages extensive GitHub features:
 
 | Feature | Details |
-|---------|---------|
+| --------- | --------- |
 | **GitHub Pages** | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main` |
 | **GitHub Actions** | 11+ workflows — CI, deploy, Docker publish, auto-label, stale, welcome |
 | **Issue Templates** | YAML forms for bugs, features, API issues with auto-label & auto-assign |
@@ -293,6 +310,7 @@ This project leverages extensive GitHub features:
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for development setup and coding standards.
 
 **Quick rules:**
+
 - Use CSS custom properties — never hardcode colors
 - Use `textContent` — never `innerHTML` with external data
 - Keep it zero-dependency — no npm, no frameworks

@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="Family TV dashboard — weather, news, stocks, calendar, alerts">
+    <link rel="preconnect" href="https://api.open-meteo.com">
+    <link rel="preconnect" href="https://www.hebcal.com">
+    <link rel="preconnect" href="https://api.allorigins.win">
+    <link rel="preconnect" href="https://query1.finance.yahoo.com">
+    <link rel="preconnect" href="https://open.er-api.com">
+    <link rel="dns-prefetch" href="https://api.codetabs.com">
+    <link rel="dns-prefetch" href="https://translate.googleapis.com">
     <title>רגואן Family Dashboard</title>
     <style>
         :root {
@@ -242,8 +251,9 @@
         .card-header .icon-badge {
             display: inline-flex; align-items: center; justify-content: center;
             width: 1.6em; height: 1.6em; border-radius: 8px; margin-left: 4px;
-            font-size: 0.9em; vertical-align: middle;
+            font-size: 0.9em; vertical-align: middle; overflow: hidden;
         }
+        .card-header .icon-badge img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
         .icon-badge.blue { background: rgba(96,165,250,0.18); }
         .icon-badge.green { background: rgba(52,211,153,0.18); }
         .icon-badge.purple { background: rgba(167,139,250,0.18); }
@@ -256,8 +266,7 @@
         .sync-dot.error { background: var(--negative); box-shadow: 0 0 8px var(--negative-glow); }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-        /* ── Loading Skeleton ── */
-        .skeleton { background: linear-gradient(90deg, var(--bg-card-inner) 25%, rgba(96,165,250,0.08) 50%, var(--bg-card-inner) 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; border-radius: 4px; color: transparent !important; }
+        /* ── Loading Skeleton (see enhanced version below) ── */
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* ── Data Refresh Pulse ── */
@@ -379,7 +388,7 @@
 
         /* ── Weather ── */
         .weather-body { flex: 1; display: flex; flex-direction: column; padding: 6px; min-height: 0; overflow: hidden; }
-        .wx-top-row { display: flex; flex-direction: row; gap: 8px; margin-bottom: 4px; flex: 1 1 auto; min-height: 0; }
+        .wx-top-row { display: flex; flex-direction: row; gap: 8px; margin-bottom: 4px; flex: 1 1 0; min-height: 0; overflow: hidden; }
         .wx-current { flex: 1 1 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
         .wx-icon { font-size: 3em; line-height: 1; }
         .wx-info { text-align: center; }
@@ -394,8 +403,8 @@
         .wx-detail:nth-child(4) { border-bottom: 2px solid var(--orange); }
         .wx-detail-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 2px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 1.05em; }
-        .wx-hourly-chart { width: 100%; height: 42px; margin-bottom: 4px; flex-shrink: 0; min-height: 32px; }
-        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 0 0 auto; padding: 2px 0; }
+        .wx-hourly-chart { width: 100%; height: 42px; margin-bottom: 4px; flex: 0 0 42px; min-height: 32px; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 1 1 0; padding: 2px 0; align-content: center; min-height: 0; }
         .wx-fday { background: var(--bg-card-inner); padding: 6px 4px; border-radius: 8px; text-align: center; }
         .wx-fday-name { font-size: 0.82em; color: var(--accent); font-weight: 600; }
         .wx-fday-icon { font-size: 1.4em; margin: 3px 0; }
@@ -408,7 +417,8 @@
             display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1;
             text-align: center;
         }
-        .cur-flag { font-size: 1.5em; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        .cur-flag { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); line-height: 0; }
+        .cur-flag svg { border-radius: 3px; display: block; }
         .cur-item:nth-child(1) { border-bottom: 2px solid var(--positive); }
         .cur-item:nth-child(2) { border-bottom: 2px solid var(--accent); }
         .cur-item:nth-child(3) { border-bottom: 2px solid var(--purple); }
@@ -604,6 +614,35 @@
             .wx-fday { padding: 4px; }
         }
 
+        /* ── Card Maximize (click header to expand) ── */
+        .card-header { cursor: pointer; user-select: none; }
+        .card.maximized {
+            position: fixed !important;
+            z-index: 900;
+            transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                        left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                        width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                        height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 0.3s;
+            contain: none !important;
+            overflow: auto;
+        }
+        .card.maximized .card-header::after {
+            content: '✕'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 0.8em; opacity: 0.5; pointer-events: none;
+        }
+        .card.card-hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 0.3s ease;
+        }
+        .col-split.card-hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 0.3s ease;
+        }
+        .card.maximized:hover { transform: none; }
+
         /* ── Accessibility: Reduced Motion ── */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
@@ -612,6 +651,96 @@
         /* ── Performance: Paint Containment ── */
         .card { contain: layout style; }
         .news-body, .stocks-body, .alerts-body, .weather-body, .currency-body, .moti-body { contain: content; }
+
+        /* ── Scroll Fade Masks (top/bottom gradient edges on scrolling containers) ── */
+        .news-body, .stocks-body, .alerts-body {
+            -webkit-mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+            mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+        }
+
+        /* ── Ticker Gradient Edges (horizontal fade at left/right) ── */
+        .ticker-track {
+            -webkit-mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
+            mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
+        }
+
+        /* ── Animated Gradient Border on Card Focus/Hover ── */
+        @property --border-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+        .card:hover {
+            border-color: transparent;
+            background-origin: border-box;
+        }
+        .card:hover::before {
+            content: ''; position: absolute; inset: -1px; border-radius: var(--border-radius); z-index: -1;
+            background: conic-gradient(from var(--border-angle), var(--accent), var(--cyan), var(--purple), var(--pink), var(--accent));
+            animation: rotateBorder 4s linear infinite;
+            opacity: 0.5;
+        }
+        @keyframes rotateBorder { to { --border-angle: 360deg; } }
+
+        /* ── News Item Freshness Indicator ── */
+        .rss-item[data-age="fresh"] {
+            border-right-width: 4px;
+            background: linear-gradient(90deg, var(--bg-card-inner), rgba(96,165,250,0.06));
+        }
+        .rss-item[data-age="fresh"]::before {
+            content: '●'; color: var(--accent); font-size: 0.5em; margin-left: 4px;
+            animation: freshDot 2s ease-in-out infinite;
+        }
+        @keyframes freshDot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* ── Smooth Number Transition ── */
+        .num-transition {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+        }
+        .num-transition.updating { transform: translateY(-4px); opacity: 0.3; }
+
+        /* ── Content Visibility for Off-screen Optimization ── */
+        /* Skip weather card (first in bottom-grid) — its flex layout needs full height computation */
+        .bottom-grid .card:nth-child(n+2) { content-visibility: auto; contain-intrinsic-size: auto 250px; }
+
+        /* ── Enhanced Loading Skeleton with Pulse ── */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-card-inner) 25%, rgba(96,165,250,0.10) 50%, var(--bg-card-inner) 75%);
+            background-size: 200% 100%; animation: shimmer 1.2s ease-in-out infinite;
+            border-radius: 6px; color: transparent !important; min-width: 3em;
+        }
+
+        /* ── Sync Dot Refresh Burst ── */
+        @keyframes syncBurst { 0% { box-shadow: 0 0 0 0 var(--positive); } 100% { box-shadow: 0 0 0 8px transparent; } }
+        .sync-dot.just-synced { animation: syncBurst 0.6s ease-out; }
+
+        /* ── Weather Forecast Day Improvements ── */
+        .wx-fday {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: default;
+        }
+        .wx-fday:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+        /* ── Uptime in Status Bar ── */
+        .status-uptime { color: var(--text-muted); font-size: 1em; }
+
+        /* ── Focus Visible for Accessibility ── */
+        .card:focus-visible, select:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* ── Calendar Today Highlight ── */
+        .cal-day-header.today {
+            color: var(--warning);
+            border-bottom-color: var(--warning);
+        }
+        .cal-day-header.today::before { content: '📌 '; }
+
+        /* ── Stock Positive/Negative Row Tint ── */
+        .stk.stk-up { background: linear-gradient(90deg, var(--bg-card-inner), rgba(52,211,153,0.04)); }
+        .stk.stk-down { background: linear-gradient(90deg, var(--bg-card-inner), rgba(248,113,113,0.04)); }
 
         /* ── Theme Transition ── */
         body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition: background 0.5s ease, color 0.3s ease, border-color 0.3s ease; }
@@ -670,13 +799,13 @@
         <!-- ── Main Row ── -->
         <div class="main-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות</div>
+                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue"><img src="https://media.giphy.com/media/l0HlNQ03J5JR3bGpG/giphy.gif" alt="news" loading="lazy"></span> חדשות</div>
                 <div class="news-body" id="news-body">
                     <div class="rss-scroll" id="rss-scroll"></div>
                 </div>
             </div>
             <div class="card" style="position:relative">
-                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green"><img src="https://media.giphy.com/media/l3fZK7BgnNHhKmi5O/giphy.gif" alt="calendar" loading="lazy"></span> לוח שנה משפחתי</div>
                 <div class="cal-wrapper">
                     <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
                     <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
@@ -684,7 +813,7 @@
             </div>
             <div class="col-split">
                 <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
+                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange"><img src="https://media.giphy.com/media/JtBZm3Getg3dqxK60a/giphy.gif" alt="stocks" loading="lazy"></span> מניות <span class="market-badge" id="market-badge"></span></div>
                     <div class="stocks-body">
                         <div class="stocks-scroll" id="stocks-body">
                         <div class="stk" data-symbol="INTC"><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
@@ -697,7 +826,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
+                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red"><img src="https://media.giphy.com/media/fAaBpMgGuyf96/giphy.gif" alt="alert" loading="lazy"></span> צבע אדום</div>
                     <div class="alerts-body">
                         <div class="alerts-scroll" id="alerts-scroll">
                             <div class="alert-count">טוען התרעות...</div>
@@ -710,7 +839,7 @@
         <!-- ── Bottom Row ── -->
         <div class="bottom-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> מזג אויר — ירושלים</div>
+                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan"><img src="https://media.giphy.com/media/xT1XGzAnABSXy8HQPK/giphy.gif" alt="weather" loading="lazy"></span> מזג אויר — ירושלים</div>
                 <div class="weather-body">
                     <div class="wx-top-row">
                         <div class="wx-current">
@@ -737,15 +866,15 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">💱</span> שערי מטבע</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green"><img src="https://media.giphy.com/media/lptjRBxFKCJmFoibP3/giphy.gif" alt="currency" loading="lazy"></span> שערי מטבע</div>
                 <div class="currency-body" id="currency-body">
-                    <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
-                    <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
-                    <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-info"><div class="cur-pair">GBP / ILS</div><div class="cur-rate skeleton" id="cur-gbp">--</div></div><div class="cur-chg" id="cur-gbp-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#fff"/><g fill="#b22234"><rect y="0" width="60" height="3.08"/><rect y="6.15" width="60" height="3.08"/><rect y="12.31" width="60" height="3.08"/><rect y="18.46" width="60" height="3.08"/><rect y="24.62" width="60" height="3.08"/><rect y="30.77" width="60" height="3.08"/><rect y="36.92" width="60" height="3.08"/></g><rect width="24" height="21.54" fill="#3c3b6e"/><text x="12" y="13" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">★</text></svg></div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#003399"/><g fill="#ffcc00"><polygon points="30,5 31.8,11 38,11 33,14.5 34.8,20.5 30,17 25.2,20.5 27,14.5 22,11 28.2,11"/><polygon points="30,35 31.8,29 38,29 33,25.5 34.8,19.5 30,23 25.2,19.5 27,25.5 22,29 28.2,29"/><polygon points="10,20 11.8,14 18,14 13,17.5 14.8,23.5 10,20 5.2,23.5 7,17.5 2,14 8.2,14" transform="rotate(-30 10 20)"/><polygon points="50,20 51.8,14 58,14 53,17.5 54.8,23.5 50,20 45.2,23.5 47,17.5 42,14 48.2,14" transform="rotate(30 50 20)"/></g></svg></div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#012169"/><g fill="#fff"><polygon points="0,0 24,16 0,16" /><polygon points="60,0 36,16 60,16"/><polygon points="0,40 24,24 0,24"/><polygon points="60,40 36,24 60,24"/><rect x="25" width="10" height="40"/><rect y="15" width="60" height="10"/></g><g fill="#C8102E"><rect x="27" width="6" height="40"/><rect y="17" width="60" height="6"/><polygon points="0,0 20,14 0,14"/><polygon points="60,0 40,14 60,14"/><polygon points="0,40 20,26 0,26"/><polygon points="60,40 40,26 60,26"/></g></svg></div><div class="cur-info"><div class="cur-pair">GBP / ILS</div><div class="cur-rate skeleton" id="cur-gbp">--</div></div><div class="cur-chg" id="cur-gbp-chg">-</div></div>
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">💪</span> מוטיבציה</div>
+                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink"><img src="https://media.giphy.com/media/yoNyBrs2HftYbEMXOQ/giphy.gif" alt="motivation" loading="lazy"></span> מוטיבציה</div>
                 <div class="moti-body">
                     <div class="moti-card">
                         <div class="moti-text" id="moti-text">טוען השראה...</div>
@@ -756,18 +885,19 @@
             </div>
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.4 — משפחת רגואן</span>
+            <span>Dashboard v4.5 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
             </div>
+            <span class="status-uptime" id="uptime-display"></span>
             <span id="last-refresh">רענון: --:--</span>
         </div>
     </div>
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.4 — Polish + Resilience + Paint Optimization
+       FAMILY DASHBOARD v4.5 — Polish + Resilience + Paint Optimization
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -903,13 +1033,61 @@
     window.addEventListener('online', updateNetworkBanner);
     window.addEventListener('offline', updateNetworkBanner);
 
-    // ── Card Spotlight (mouse-follow glow) ──
+    // ── Animated Number Update (smooth digit transition) ──
+    function animateNumber(el, newText) {
+        if (!el || el.textContent === newText) return;
+        el.classList.add('num-transition', 'updating');
+        setTimeout(() => {
+            el.textContent = newText;
+            el.classList.remove('updating');
+        }, 200);
+    }
+
+    // ── Exponential Backoff for Failed Fetches ──
+    const _backoff = {};
+    function getBackoff(key) {
+        const b = _backoff[key];
+        if (!b || Date.now() - b.ts > 600000) return 0; // reset after 10min success
+        return Math.min(b.count * 2000, 30000); // max 30s extra delay
+    }
+    function recordFailure(key) {
+        const b = _backoff[key] || { count: 0, ts: Date.now() };
+        b.count++; b.ts = Date.now();
+        _backoff[key] = b;
+    }
+    function recordSuccess(key) { delete _backoff[key]; }
+
+    // ── Uptime Tracker ──
+    const _startTime = Date.now();
+    function getUptime() {
+        const s = Math.floor((Date.now() - _startTime) / 1000);
+        const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60);
+        return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
+
+    // ── Sync Dot Burst (visual feedback on successful refresh) ──
+    function syncBurst(name) {
+        const dot = sync[name];
+        if (!dot) return;
+        dot.classList.remove('just-synced');
+        void dot.offsetWidth;
+        dot.classList.add('just-synced');
+    }
+
+    // ── Card Spotlight (mouse-follow glow) — throttled with rAF ──
+    let _rafSpotlight = 0;
     document.addEventListener('mousemove', e => {
-        for (const card of document.querySelectorAll('.card')) {
-            const rect = card.getBoundingClientRect();
-            card.style.setProperty('--mouse-x', ((e.clientX - rect.left) / rect.width * 100) + '%');
-            card.style.setProperty('--mouse-y', ((e.clientY - rect.top) / rect.height * 100) + '%');
-        }
+        if (_rafSpotlight) return;
+        _rafSpotlight = requestAnimationFrame(() => {
+            const cards = document.querySelectorAll('.card');
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--mouse-x', ((e.clientX - rect.left) / rect.width * 100) + '%');
+                card.style.setProperty('--mouse-y', ((e.clientY - rect.top) / rect.height * 100) + '%');
+            }
+            _rafSpotlight = 0;
+        });
     });
 
     // ── DOM Refs ──
@@ -1065,17 +1243,17 @@
         const stale = cGetStale(key); if (stale) renderWeather(stale);
         try {
             const d = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5').then(r => r.json());
-            if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); }
-        } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); }
+            if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); syncBurst('wx'); recordSuccess('wx'); }
+        } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); recordFailure('wx'); }
         releaseLock('wx');
     }
     function renderWeather(d) {
         const cw = d.current_weather;
-        el.topTemp.textContent = Math.round(cw.temperature) + '°C';
-        el.wxTemp.textContent = Math.round(cw.temperature) + '°C';
+        animateNumber(el.topTemp, Math.round(cw.temperature) + '°C');
+        animateNumber(el.wxTemp, Math.round(cw.temperature) + '°C');
         el.wxDesc.textContent = WX_CODES[cw.weathercode] || 'לא ידוע';
         el.wxIcon.textContent = WX_EMOJI[cw.weathercode] || '🌡️';
-        el.wxWind.textContent = Math.round(cw.windspeed) + ' קמ"ש';
+        animateNumber(el.wxWind, Math.round(cw.windspeed) + ' קמ"ש');
         // Real humidity, UV, and feels-like from hourly data
         if (d.hourly) {
             const nowH = new Date().getHours();
@@ -1188,8 +1366,8 @@
             unique.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
             const top = unique.slice(0, 50);
             cSet(key, top);
-            renderNews(top); renderTicker(top); setSync('news', 'success');
-        } else { setSync('news', stale ? 'success' : 'error'); }
+            renderNews(top); renderTicker(top); setSync('news', 'success'); syncBurst('news'); recordSuccess('news');
+        } else { setSync('news', stale ? 'success' : 'error'); recordFailure('news'); }
         releaseLock('news');
     }
     function renderNews(items) {
@@ -1197,11 +1375,22 @@
         const list = items.slice(0, 25);
         // Duplicate for seamless scroll loop
         const all = [...list, ...list];
+        const now = Date.now();
         all.forEach((it, idx) => {
             const div = document.createElement('div'); div.className = 'rss-item' + (idx >= list.length ? ' clone' : '');
+            // Freshness indicator: items < 30min old get highlighted
+            if (it.pubDate) {
+                const age = now - new Date(it.pubDate).getTime();
+                if (age < 1800000) div.dataset.age = 'fresh';
+            }
             const ttl = document.createElement('div'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
             const meta = document.createElement('div'); meta.className = 'rss-meta';
-            const tm = document.createElement('span'); tm.className = 'rss-time'; tm.textContent = it.pubDate ? relTime(it.pubDate) : '--:--'; meta.appendChild(tm);
+            const tm = document.createElement('span'); tm.className = 'rss-time';
+            if (it.pubDate) {
+                const d = new Date(it.pubDate);
+                tm.textContent = relTime(it.pubDate) + ' | ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+            } else { tm.textContent = '--:--'; }
+            meta.appendChild(tm);
             const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; meta.appendChild(sr);
             div.appendChild(meta);
             if (it.link) div.addEventListener('click', () => window.open(it.link, '_blank'));
@@ -1255,6 +1444,7 @@
             if (i + 3 < STOCK_SYMBOLS.length) await new Promise(r => setTimeout(r, 150));
         }
         setSync('stocks', ok ? 'success' : 'error');
+        if (ok) { syncBurst('stocks'); recordSuccess('stocks'); } else { recordFailure('stocks'); }
         releaseLock('stocks');
         // Duplicate tiles for seamless scroll loop
         setupStocksLoop();
@@ -1316,17 +1506,24 @@
         const absChg = Math.abs(chg);
         const trend = (!isFinite(chg) || absChg < 0.1) ? 'neutral' : (chg > 0 ? 'positive' : 'negative');
         const trendColor = trend === 'positive' ? '#34d399' : trend === 'negative' ? '#f87171' : '#22d3ee';
+        // Row tint based on trend
+        blk.classList.remove('stk-up', 'stk-down');
+        if (trend === 'positive') blk.classList.add('stk-up');
+        else if (trend === 'negative') blk.classList.add('stk-down');
         blk.querySelector('.stk-desc').textContent = STOCK_NAMES[sym] || 'מניה';
-        const prEl = blk.querySelector('.stk-price'); prEl.textContent = cur ? fmtPrice(cur, sym) : 'N/A'; prEl.classList.remove('skeleton');
+        const prEl = blk.querySelector('.stk-price');
+        const newPrice = cur ? fmtPrice(cur, sym) : 'N/A';
+        animateNumber(prEl, newPrice);
+        prEl.classList.remove('skeleton');
         const chEl = blk.querySelector('.stk-chg');
         if (isFinite(chg) && absChg >= 0.1) {
             const arrow = chg > 0 ? '▲' : '▼';
-            chEl.textContent = `${arrow} ${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`;
+            animateNumber(chEl, `${arrow} ${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`);
             chEl.className = `stk-chg ${trend}`;
         } else if (isFinite(chg)) {
-            chEl.textContent = `● ${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`;
+            animateNumber(chEl, `● ${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`);
             chEl.className = 'stk-chg neutral';
-        } else { chEl.textContent = '—'; chEl.className = 'stk-chg'; }
+        } else { animateNumber(chEl, '—'); chEl.className = 'stk-chg'; }
         if (prices.length >= 2) { blk.querySelector('.stk-chart').innerHTML = bezierChart(prices, trendColor); }
         else if (prices.length === 1 && cur) { blk.querySelector('.stk-chart').innerHTML = bezierChart([prices[0], prices[0] * 0.999, prices[0] * 1.001, cur], trendColor); }
         blk.querySelector('.stk-time').textContent = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
@@ -1358,11 +1555,11 @@
         const stale = cGetStale(key); if (stale) renderCurrency(stale);
         try {
             const d = await fetchJSON('https://open.er-api.com/v6/latest/ILS');
-            if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); }
+            if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); syncBurst('cur'); recordSuccess('cur'); }
         } catch (e) {
             try { const d = await fetchJSON('https://api.exchangerate-api.com/v4/latest/ILS');
-                if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); }
-            } catch (_) { setSync('cur', stale ? 'success' : 'error'); }
+                if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); syncBurst('cur'); recordSuccess('cur'); }
+            } catch (_) { setSync('cur', stale ? 'success' : 'error'); recordFailure('cur'); }
         }
         releaseLock('cur');
     }
@@ -1377,7 +1574,7 @@
         ];
         for (const p of pairs) {
             const val = rates[p.code] ? (1 / rates[p.code]) : null;
-            p.el.textContent = val ? '₪' + val.toFixed(3) : '--';
+            animateNumber(p.el, val ? '₪' + val.toFixed(3) : '--');
             p.el.classList.remove('skeleton');
             // Show change arrow vs previous fetch
             const chgEl = p.el.parentElement?.querySelector('.cur-chg');
@@ -1430,15 +1627,15 @@
                 _lastAlertId = newTopId;
                 cSet(key, data);
                 renderAlerts(data, isNew);
-                setSync('alerts', 'success');
+                setSync('alerts', 'success'); syncBurst('alerts'); recordSuccess('alerts');
                 // Check if any alert is active (<10 min)
                 const now = Date.now() / 1000;
                 _alertsHaveActive = data.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
             } else {
                 _alertsHaveActive = false;
-                setSync('alerts', stale ? 'success' : 'error');
+                setSync('alerts', stale ? 'success' : 'error'); recordFailure('alerts');
             }
-        } catch (e) { console.error('Alerts:', e); setSync('alerts', stale ? 'success' : 'error'); }
+        } catch (e) { console.error('Alerts:', e); setSync('alerts', stale ? 'success' : 'error'); recordFailure('alerts'); }
         scheduleAlerts();
     }
 
@@ -1453,7 +1650,7 @@
         el.alertsScroll.innerHTML = '';
         const now = Date.now() / 1000;
         let total24h = 0;
-        const recentEvents = data.slice(0, 15);
+        const recentEvents = data.slice(0, 25);
         for (const ev of data) {
             for (const a of ev.alerts) { if (now - a.time < 86400) total24h++; }
         }
@@ -1572,12 +1769,13 @@
             frag.appendChild(empty);
         } else {
             let lastDateKey = null;
+            const todayKey = new Date().toDateString();
             for (const ev of upcoming) {
                 const dateKey = ev.start.toDateString();
                 if (dateKey !== lastDateKey) {
                     lastDateKey = dateKey;
                     const hdr = document.createElement('div');
-                    hdr.className = 'cal-day-header';
+                    hdr.className = 'cal-day-header' + (dateKey === todayKey ? ' today' : '');
                     // e.g. "יום שלישי · 08 אפריל"
                     const dayHe = ev.start.toLocaleDateString('he-IL', { weekday: 'long', timeZone: 'Asia/Jerusalem' });
                     const dateFmt = ev.start.toLocaleDateString('he-IL', { day: '2-digit', month: 'long', timeZone: 'Asia/Jerusalem' });
@@ -1615,16 +1813,45 @@
     }
 
     async function loadCalendar() {
+        if (!_pageVisible || !acquireLock('cal')) return;
         const key = 'cal-ics';
         const fresh = cGet(key, 900000); // 15min TTL
-        if (fresh) { renderCalendar(parseICS(fresh)); setSync('cal', 'success'); return; }
+        if (fresh) { renderCalendar(parseICS(fresh)); setSync('cal', 'success'); releaseLock('cal'); return; }
         const staleText = cGetStale(key);
         if (staleText) { renderCalendar(parseICS(staleText)); }
         setSync('cal', 'syncing');
+        // Hide iframe fallback while retrying ICS fetch
+        if (el.calIframe) el.calIframe.classList.remove('cal-fallback-active');
+        if (el.calAgenda) el.calAgenda.style.display = '';
+
+        // Helper: validate and store ICS data
+        function acceptICS(icsText, source) {
+            if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) return false;
+            const events = parseICS(icsText);
+            diagLog(`calendar ${source} OK (${icsText.length} bytes, ${events.length} events)`);
+            cSet(key, icsText);
+            renderCalendar(events);
+            setSync('cal', 'success'); syncBurst('cal'); recordSuccess('cal');
+            return true;
+        }
+
+        // 1. Try direct fetch (works when no CORS / same-origin)
+        try {
+            diagLog('calendar: trying direct fetch...');
+            const r = await fetchWithTimeout(CAL_ICS, 10000);
+            if (r.ok) {
+                const t = await r.text();
+                if (acceptICS(t, 'direct')) { releaseLock('cal'); return; }
+            } else { diagLog(`calendar direct HTTP ${r.status}`); }
+        } catch (e) { diagLog(`calendar direct ERR: ${e.message}`); }
+
+        // 2. Try each CORS proxy (allorigins, codetabs)
         for (const proxy of PROXIES) {
+            const pName = proxy.includes('allorigins') ? 'allorigins' : 'codetabs';
             try {
-                const r = await fetch(proxy + encodeURIComponent(CAL_ICS));
-                if (!r.ok) continue;
+                diagLog(`calendar: trying ${pName}...`);
+                const r = await fetchWithTimeout(proxy + encodeURIComponent(CAL_ICS), 12000);
+                if (!r.ok) { diagLog(`calendar ${pName} HTTP ${r.status}`); continue; }
                 let icsText;
                 if (proxy.includes('allorigins')) {
                     const j = await r.json();
@@ -1632,17 +1859,27 @@
                 } else {
                     icsText = await r.text();
                 }
-                if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) continue;
-                cSet(key, icsText);
-                renderCalendar(parseICS(icsText));
-                setSync('cal', 'success');
-                return;
-            } catch (_) { continue; }
+                if (acceptICS(icsText, pName)) { releaseLock('cal'); return; }
+                diagLog(`calendar ${pName} no VCALENDAR (len=${(icsText||'').length})`);
+            } catch (e) { diagLog(`calendar ${pName} ERR: ${e.message}`); continue; }
         }
-        // all proxies failed — show iframe fallback
-        setSync('cal', 'error');
+
+        // 3. Try corsproxy.io as additional fallback (URL path pattern)
+        try {
+            diagLog('calendar: trying corsproxy.io...');
+            const r = await fetchWithTimeout('https://corsproxy.io/?' + encodeURIComponent(CAL_ICS), 12000);
+            if (r.ok) {
+                const t = await r.text();
+                if (acceptICS(t, 'corsproxy.io')) { releaseLock('cal'); return; }
+            }
+        } catch (e) { diagLog(`calendar corsproxy.io ERR: ${e.message}`); }
+
+        // All ICS fetches failed — show iframe fallback
+        diagLog('calendar ALL FAILED — falling back to iframe embed');
+        setSync('cal', 'error'); recordFailure('cal');
         if (el.calAgenda) el.calAgenda.style.display = 'none';
         if (el.calIframe) el.calIframe.classList.add('cal-fallback-active');
+        releaseLock('cal');
     }
 
     // ── Motivation (30-min rotation, online + offline, crossfade) ──
@@ -1689,6 +1926,8 @@
 
     function stampRefresh() {
         el.refresh.textContent = 'רענון: ' + new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+        const uptEl = document.getElementById('uptime-display');
+        if (uptEl) uptEl.textContent = '⏱ ' + getUptime();
     }
 
     // ── Screen Mode Selector ──
@@ -1729,6 +1968,7 @@
                 applyTheme(THEMES[(cur + 1) % THEMES.length]);
             }
             if (e.key === 'd' || e.key === 'D') toggleDiag();
+            if (e.key === 'Escape' && _maximizedCard) toggleCardMaximize(_maximizedCard);
         });
     }
 
@@ -1868,11 +2108,98 @@
     }
     setInterval(cardAttentionLoop, 300000); // 5min
 
-    document.addEventListener('DOMContentLoaded', () => { init(); initCardAnimations(); });
+    // ── Card Maximize (click card header to expand/collapse) ──
+    let _maximizedCard = null;
+    /** Compute the target rect for a maximized card (fills area below header/ticker, above footer) */
+    function _maxTargetRect() {
+        const container = document.querySelector('.container');
+        const ticker = document.querySelector('.ticker-bar');
+        const footer = document.querySelector('.status-bar');
+        const cRect = container.getBoundingClientRect();
+        // Top edge: just below ticker (or header if no ticker)
+        const topEl = ticker || document.querySelector('.time-section');
+        const top = topEl ? topEl.getBoundingClientRect().bottom + 6 : cRect.top;
+        // Bottom edge: just above footer (or container bottom)
+        const bottom = footer ? footer.getBoundingClientRect().top - 6 : cRect.bottom;
+        return { top, left: cRect.left, width: cRect.width, height: bottom - top };
+    }
+
+    function toggleCardMaximize(card) {
+        // ── COLLAPSE ──
+        if (card.classList.contains('maximized')) {
+            const orig = card._origRect;
+            if (orig) {
+                // Animate back to original position
+                card.style.top = orig.top + 'px';
+                card.style.left = orig.left + 'px';
+                card.style.width = orig.width + 'px';
+                card.style.height = orig.height + 'px';
+            }
+            // After transition, remove fixed positioning
+            const onEnd = () => {
+                card.removeEventListener('transitionend', onEnd);
+                card.classList.remove('maximized');
+                card.style.top = card.style.left = card.style.width = card.style.height = '';
+                card.style.position = '';
+                delete card._origRect;
+            };
+            card.addEventListener('transitionend', onEnd, { once: false });
+            // Fallback if transitionend doesn't fire (e.g. reduced-motion)
+            setTimeout(onEnd, 500);
+            // Show all hidden siblings
+            document.querySelectorAll('.card-hidden').forEach(c => c.classList.remove('card-hidden'));
+            _maximizedCard = null;
+            return;
+        }
+        // ── EXPAND ──
+        if (_maximizedCard) return; // already have one open
+        // Record original position via FLIP technique
+        const startRect = card.getBoundingClientRect();
+        card._origRect = { top: startRect.top, left: startRect.left, width: startRect.width, height: startRect.height };
+        // Hide sibling cards (other cards in both grids + col-split)
+        document.querySelectorAll('.main-grid > *, .bottom-grid > *').forEach(el => {
+            if (el === card) return;
+            if (el.contains(card)) {
+                // card is inside col-split — hide the other card in col-split, not the col-split itself
+                el.querySelectorAll('.card').forEach(c => { if (c !== card) c.classList.add('card-hidden'); });
+            } else {
+                el.classList.add('card-hidden');
+            }
+        });
+        // Set fixed position at current location first (FLIP: First)
+        card.style.position = 'fixed';
+        card.style.top = startRect.top + 'px';
+        card.style.left = startRect.left + 'px';
+        card.style.width = startRect.width + 'px';
+        card.style.height = startRect.height + 'px';
+        card.classList.add('maximized');
+        // Force reflow then animate to target (FLIP: Last → Invert → Play)
+        void card.offsetWidth;
+        const target = _maxTargetRect();
+        card.style.top = target.top + 'px';
+        card.style.left = target.left + 'px';
+        card.style.width = target.width + 'px';
+        card.style.height = target.height + 'px';
+        _maximizedCard = card;
+    }
+
+    /** Attach click listeners to all card headers */
+    function initCardMaximize() {
+        document.querySelectorAll('.card-header').forEach(hdr => {
+            hdr.addEventListener('click', e => {
+                const card = hdr.closest('.card');
+                if (!card) return;
+                e.stopPropagation();
+                toggleCardMaximize(card);
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { init(); initCardAnimations(); initCardMaximize(); });
     // Also call immediately in case DOMContentLoaded already fired
     // (inline end-of-body scripts run after DOM is parsed —
     //  readyState may already be 'interactive' before the listener fires)
-    if (document.readyState !== 'loading') { init(); initCardAnimations(); }
+    if (document.readyState !== 'loading') { init(); initCardAnimations(); initCardMaximize(); }
     </script>
 </body>
 </html>

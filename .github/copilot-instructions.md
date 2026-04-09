@@ -4,15 +4,16 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.4**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.5**.
 
 ## Technical Stack
 
 - **Language**: HTML5, vanilla CSS3, vanilla JavaScript (ES2020+)
 - **No build tools**: Zero dependencies — open the HTML file directly in a browser
 - **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance (stocks via proxy), ER-API + exchangerate-api (currency), 20 Hebrew RSS feeds (news), Google Translate, Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
-- **CORS proxies**: `allorigins.win`, `codetabs.com` (const array, direct fetch tried first)
-- **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations
+- **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
+- **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
+- **Tests**: 164 tests / 23 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -29,7 +30,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **5 themes**: `black` (OLED default), `blue`, `matrix`, `amber`, `purple` — stored in `localStorage` as `dash_theme`
 - **3 screen modes**: `tv` (default), `tablet`, `phone` — stored as `dash_screenMode`
 - **Phone mode**: full-page scroll, all card content visible, scroll-loop animations disabled, clone items hidden
-- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay
+- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay, `Escape` = close maximized card
 
 ### UI Layout
 
@@ -80,6 +81,15 @@ function fetchWithTimeout(url, ms = 8000) {
 - On startup: each card gets a random animation with staggered delays
 - Every 5 minutes: one random card re-animates for attention
 - Respects `prefers-reduced-motion`
+
+### Card Maximize
+
+- Click any card header to expand it `position: fixed` over the grid area (FLIP animation)
+- `toggleCardMaximize(card)`: records `getBoundingClientRect()`, sets fixed position at original rect, animates to target rect
+- `_maximizedCard`: tracks the single expanded card
+- Cards inside `.col-split` (stocks/alerts): only the sibling hides, not the container
+- Close: click header again or press `Escape`
+- CSS: `.card.maximized` (z-index 900, transitions), `.card.card-hidden` (opacity 0)
 
 ## Coding Standards
 

@@ -11,7 +11,7 @@ description: "Use when: working on any file in the FamilyDashBoard workspace. Pr
 |----------|-------|
 | **Name** | FamilyDashBoard |
 | **Type** | Single-page HTML dashboard |
-| **Version** | v4.4 |
+| **Version** | v4.5 |
 | **Owner** | @RajwanYair |
 | **Stack** | HTML5, CSS3, vanilla JS (ES2020+) |
 | **Dependencies** | Zero (no npm, no build) |
@@ -25,9 +25,14 @@ description: "Use when: working on any file in the FamilyDashBoard workspace. Pr
 ```
 FamilyDashBoard/
 ├── BestDashBoard.html    # Dashboard (HTML + CSS + JS)
+├── index.html            # GitHub Pages redirect
 ├── README.md
+├── CHANGELOG.md
 ├── .gitignore
 ├── .editorconfig
+├── .markdownlint.json
+├── tests/
+│   └── dashboard.test.mjs  # 164 tests, 23 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
@@ -44,12 +49,13 @@ FamilyDashBoard/
 | System | Details |
 |--------|---------|
 | **Cache** | Dual-layer: in-memory `Map` + `localStorage` (prefix `dash_v2_`, 7-day eviction) |
-| **Fetch** | Direct → CORS proxy fallback (`allorigins` → `codetabs`) with diagnostic logging |
+| **Fetch** | Direct → CORS proxy fallback (`allorigins` → `codetabs` → `corsproxy.io`) with diagnostic logging |
 | **Error handling** | `safeLoad()` async wrapper, startup self-check, global error catchers, auto-show diagnostic overlay |
 | **Diagnostics** | Press `D` for overlay: per-pane status + fetch log. Auto-opens on errors |
 | **Offline** | Banner slides down when `navigator.onLine` is false, serves stale cache |
-| **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop |
-| **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay |
+| **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
+| **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `Escape` = close maximized card |
+| **Tests** | 164 tests / 23 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
 
 ## What NOT To Do
 

@@ -7,10 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [4.2.0] — 2026-04-07
+## [4.5.0] — 2026-04-09
 
 ### Added
-- **🚨 Red Alerts panel** — live rocket/UAV alerts from the Home Front Command via [tzevaadom.co.il](https://www.tzevaadom.co.il/)
+- **🔍 Card maximize** — click any card header to expand it full-screen with smooth FLIP animation; click again or press `Escape` to collapse back
+- **📊 Animated number transitions** — `animateNumber()` smoothly counts up/down on temperature, stock prices, and currency values
+- **🔄 Exponential backoff** — `getBackoff()`/`recordFailure()`/`recordSuccess()` for smarter retry timing on failed API calls
+- **⚡ syncBurst** — visual burst animation on sync dots after successful data refresh
+- **⏱️ Uptime tracker** — displays dashboard uptime in the status bar
+- **🌐 corsproxy.io** — added as 3rd CORS proxy fallback for calendar ICS fetching
+- **📅 Calendar resilience** — `loadCalendar()` improved with per-step diagnostic logging, longer timeouts (10–12s), `_pageVisible` guard, and `acceptICS()` validator
+- **🧪 Comprehensive test suite** — 164 tests across 23 suites covering all 7 cards + utilities (Node.js built-in test runner, zero dependencies)
+  - Calendar (21 tests): ICS parsing, fetch order, VCALENDAR validation, renderCalendar
+  - Weather (9), Stocks (9), Currency (6), Alerts (9), News (7), Motivation (4)
+  - Hebrew Date & Shabbat (4), Utility Functions v4.5 (5)
+- **🏠 index.html** — GitHub Pages redirect to `BestDashBoard.html` for shorter URLs
+- **🎨 CSS enhancements** — scroll fade masks, animated gradient borders (`@property --border-angle`), news freshness indicators (`data-age="fresh"`), stock row tinting (`.stk-up`/`.stk-down`), calendar today highlight, skeleton loading improvements, `content-visibility: auto` on bottom-grid cards
+- **🖱️ RAF-throttled mousemove** — spotlight effect now uses `requestAnimationFrame` throttling for better performance
+- **📁 .markdownlint.json** — markdown lint configuration (161 errors → 0)
+
+### Changed
+- Alerts display increased from 15 → 25 visible items
+- News items show `relTime() + ' | ' + HH:MM` time format
+- Card headers use animated GIF icons from Giphy instead of emoji
+- Weather card layout: flex-based height distribution (`flex: 1 1 0`) instead of fixed `calc()` percentages
+- CORS proxy fallback order: direct → allorigins → codetabs → corsproxy.io
+- GitHub Actions workflows: `@v6` → `@v4` for `actions/checkout` and `actions/setup-node`
+
+### Fixed
+- Weather card layout — forecast/hourly chart no longer overlaps current conditions section
+- README.md — 161 markdown lint errors fixed
+- `content-visibility: auto` excluded from weather card (was interfering with flex height calculation)
+
+---
+
+## [4.4.0] — 2026-04-07
+
+### Added
+- **🎨 5 CSS themes** — black (OLED default), blue, matrix, amber, purple — press `T` to cycle
+- **📱 3 screen modes** — tv (default), tablet, phone — phone mode enables full-page scroll
+- **🔍 Diagnostic overlay** — press `D` for per-pane status + rolling fetch log; auto-opens on errors
+- **📶 Offline banner** — slides down when `navigator.onLine` is false, serves stale cache
+- **✨ Card spotlight glow** — mouse-follow radial gradient via `::after` pseudo-element
+- **🛡️ Async-safe loaders** — `safeLoad()` wrapper with `Promise.allSettled` — one failure doesn't break others
+- **🔍 Startup self-check** — validates MOTIVATIONS array, DOM refs, PROXIES, STOCK_SYMBOLS
+- **🎬 6 card entrance animations** — random direction per card with staggered delays + 5min attention loop
+- **📰 20 Hebrew news feeds** — expanded from 10 sources
+- **⚡ Faster ticker** — scroll speed increased from 80→140 px/s
+- Fetch locks (`acquireLock`/`releaseLock`) prevent duplicate concurrent requests
+- Page Visibility API pauses fetches when tab is hidden
+- Global `unhandledrejection` + `error` catchers → diagLog + auto-show overlay
+
+---
+
+## [4.2.0] — 2026-04-07
   - 24-hour alert count, last 15 events with city names, threat type, and relative time
   - Active alerts (< 10 min) pulse red; older alerts dimmed
   - 30-second refresh interval for life-safety data

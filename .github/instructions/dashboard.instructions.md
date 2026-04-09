@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.4**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.5**.
 
 ## CSS Rules
 
@@ -55,6 +55,14 @@ async function fetchJSON(url) {
 }
 ```
 
+## Calendar Fetch Pattern
+
+- `loadCalendar()`: direct (10s) → allorigins (12s) → codetabs (12s) → corsproxy.io (12s) → iframe fallback
+- `acceptICS(icsText, source)`: validates `BEGIN:VCALENDAR`, parses events, stores in cache
+- `parseICS(text)`: handles all-day (YYYYMMDD), UTC datetime, timezone params, folded lines, escaped chars
+- Iframe fallback: `.cal-fallback-active` class shows Google Calendar embed when all ICS fetches fail
+- Respects `_pageVisible` guard
+
 ## Scroll Loop Pattern
 
 - News, stocks, alerts use seamless vertical scroll loops
@@ -68,6 +76,24 @@ async function fetchJSON(url) {
 - `initCardAnimations()`: assigns random animation per card with staggered delays
 - `cardAttentionLoop()`: every 5min, one random card re-animates
 - Respects `prefers-reduced-motion`
+
+## Card Maximize
+
+- Click any `.card-header` to expand the card full-screen (covers entire grid area, header/ticker/footer remain visible)
+- Uses FLIP technique: `getBoundingClientRect()` → `position: fixed` → animate to target rect
+- `toggleCardMaximize(card)`: expand or collapse, hiding/showing sibling cards
+- `_maximizedCard`: tracks the currently maximized card (only one at a time)
+- Cards inside `.col-split` (stocks/alerts): only the sibling card hides, not the split container
+- Close via: click header again, or press `Escape`
+- CSS: `.card.maximized` (fixed + z-index 900 + transition), `.card.card-hidden` (opacity 0)
+
+## Utility Functions (v4.5)
+
+- `animateNumber(el, from, to, decimals, duration)`: smooth counting animation on numeric values
+- `getBackoff(name)` / `recordFailure(name)` / `recordSuccess(name)`: exponential backoff for failed API retries
+- `syncBurst(name)`: visual burst on sync dots after successful refresh
+- `_uptimeStart` / uptime display in status bar
+- RAF-throttled mousemove: spotlight effect uses `requestAnimationFrame` to avoid layout thrashing
 
 ## Screen Modes
 
