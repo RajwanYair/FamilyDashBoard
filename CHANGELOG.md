@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Weather card maximize layout** — forecast 4-day strip now pins to the bottom, hourly SVG chart fills all middle space, top info row stays fixed at top; `overflow: hidden` (not `auto`) on `.weather-body` when maximized so flex children position correctly (`b3956c8`)
+- **`.wx-forecast` bottom anchor** — added `margin-top: auto` so forecast is always gravity-pulled to the bottom of the flex column in normal (non-maximized) state too (`b3956c8`)
+
 ---
 
 ## [4.6.0] — 2026-04-09

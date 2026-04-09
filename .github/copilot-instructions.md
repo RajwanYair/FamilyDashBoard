@@ -91,6 +91,8 @@ function fetchWithTimeout(url, ms = 8000) {
 - Cards inside `.col-split` (stocks/alerts): only the sibling hides, not the container
 - Close: click header again or press `Escape`
 - CSS: `.card.maximized` (z-index 900, transitions), `.card.card-hidden` (opacity 0)
+- **Weather card exception**: `.card.maximized .weather-body` uses `overflow: hidden` (NOT `auto`) so its flex children pin correctly — `.wx-top-row` stays `flex: 0 0 auto` (top), `.wx-hourly-chart` grows with `flex: 1 1 0` (middle), `.wx-forecast` has `margin-top: auto` (bottom)
+- All other bodies (news, calendar, stocks, alerts, currency, motivation) use `overflow: auto` when maximized
 
 ## Coding Standards
 
