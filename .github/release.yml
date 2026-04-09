@@ -27,10 +27,9 @@ changelog:
         - ui
         - design
         - dashboard
-    - title: "📦 Docker & Packages"
+    - title: "🧪 Tests"
       labels:
-        - docker
-        - packages
+        - tests
     - title: "🔐 Security"
       labels:
         - security

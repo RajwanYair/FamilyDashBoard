@@ -44,7 +44,7 @@ Please report security vulnerabilities via GitHub Issues with the `security` lab
 - No personal data is sent to APIs beyond location coordinates (Jerusalem lat/lon)
 - Calendar embed uses Google's sandboxed iframe
 - Red Alerts (tzevaadom.co.il) data is public Home Front Command information
-- CORS proxies (allorigins.win, codetabs.com) are trusted third-party services
+- CORS proxies (allorigins.win, codetabs.com, corsproxy.io) are trusted third-party services
 
 ## Security Checklist
 

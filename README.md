@@ -134,6 +134,8 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
+> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (342 tests, 44 suites, zero dependencies).
+
 ---
 
 ## 📡 Data Sources
@@ -263,7 +265,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
-| **v4.5** | 🚀 Card maximize (click header to expand), animated number transitions, exponential backoff, syncBurst, corsproxy.io fallback, calendar resilience, 164 tests/23 suites, uptime tracker, RAF-throttled mousemove, scroll fade masks, animated gradient borders, GitHub Pages index.html |
+| **v4.5** | 🚀 Card maximize (click header to expand), animated number transitions, exponential backoff, syncBurst, corsproxy.io fallback, calendar resilience, 342 tests/44 suites, uptime tracker, RAF-throttled mousemove, scroll fade masks, animated gradient borders, GitHub Pages index.html |
 | **v4.4** | ✨ 5 CSS themes, 3 screen modes, diagnostic overlay (D key), offline banner, card spotlight glow, async-safe loaders, startup self-check, 6 card entrance animations, 20 news feeds, faster ticker |
 | **v4.3** | ⚡ Performance refactor, cache versioning (dash_v2_), ICS calendar renderer, DOMContentLoaded fix, seamless scroll loops |
 | **v4.2** | 🚨 Red Alerts panel (tzevaadom.co.il), colorful icon badges, gradient accents |
@@ -280,11 +282,10 @@ This project leverages extensive GitHub features:
 | Feature | Details |
 | --------- | --------- |
 | **GitHub Pages** | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main` |
-| **GitHub Actions** | 11+ workflows — CI, deploy, Docker publish, auto-label, stale, welcome |
-| **Issue Templates** | YAML forms for bugs, features, API issues with auto-label & auto-assign |
+| **GitHub Actions** | 5 workflows — CI, deploy, release, auto-label, dependabot-auto-merge |
+| **Issue Templates** | YAML forms for bugs, features, API issues with auto-labeling |
 | **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories |
-| **Dependabot** | Weekly updates for Actions & Docker dependencies |
-| **GHCR Docker** | Container published to `ghcr.io/rajwanyair/familydashboard` |
+| **Dependabot** | Weekly updates for GitHub Actions dependencies |
 | **Copilot Integration** | 2 custom agents, 5 modes, 3 prompts, 3 instruction files |
 | **Community Health** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS |
 | **Auto Release Notes** | 8-category changelog via `release.yml` |

@@ -19,8 +19,7 @@
         "EditorConfig.EditorConfig",
         "Gruntfuggly.todo-tree",
         "mhutchie.git-graph",
-        "christian-kohler.path-intellisense",
-        "ms-vscode.live-server"
+        "christian-kohler.path-intellisense"
     ],
     "unwantedRecommendations": []
 }

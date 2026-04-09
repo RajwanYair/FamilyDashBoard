@@ -43,3 +43,5 @@ github-config:
           - ".github/dependabot.yml"
           - ".github/labeler.yml"
           - ".github/release.yml"
+          - ".github/FUNDING.yml"
+          - ".github/assets/**"

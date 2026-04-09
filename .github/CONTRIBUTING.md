@@ -33,27 +33,25 @@ Install via the workspace recommendations (`.vscode/extensions.json`):
 
 ```
 FamilyDashBoard/
-├── 📄 BestDashBoard.html    # The entire dashboard (HTML + CSS + JS)
-├── 📖 README.md             # Project documentation
-├── � CHANGELOG.md          # Version history
-├── 📋 SUPPORT.md            # Support channels
-├── 📋 CITATION.cff          # Software citation metadata
-├── 🐋 Dockerfile / nginx.conf  # Docker containerization
-├── 📁 .github/
-│   ├── 🖼️ assets/           # SVG graphics for docs
-│   ├── 🤖 agents/           # Copilot custom agents
-│   ├── 📐 instructions/     # Copilot context files
-│   ├── 💬 prompts/          # Reusable Copilot prompts
-│   ├── ⚙️ copilot/          # Copilot modes config
-│   ├── 🪝 hooks/            # Git hooks
-│   ├── 🔄 workflows/        # 11+ CI/CD + automation workflows
-│   ├── 📋 ISSUE_TEMPLATE/   # Bug, feature, API issue forms
-│   ├── 💬 DISCUSSION_TEMPLATE/ # Ideas, Q&A, show-and-tell
-│   ├── 🔒 SECURITY.md
-│   ├── 🤝 CONTRIBUTING.md
-│   ├── 🤝 CODE_OF_CONDUCT.md
-│   └── 📋 PULL_REQUEST_TEMPLATE.md
-└── 📁 .vscode/              # VS Code workspace settings
+├── BestDashBoard.html        # The entire dashboard (HTML + CSS + JS)
+├── index.html                # GitHub Pages redirect
+├── README.md / CHANGELOG.md  # Documentation
+├── SUPPORT.md / LICENSE
+├── tests/
+│   └── dashboard.test.mjs    # 342 tests, 44 suites (Node.js built-in runner)
+├── .github/
+│   ├── assets/               # SVG graphics for docs
+│   ├── agents/               # Copilot custom agents
+│   ├── instructions/         # Copilot context files
+│   ├── prompts/              # Reusable Copilot prompts
+│   ├── copilot/              # Copilot modes config
+│   ├── hooks/                # Git hooks
+│   ├── workflows/            # CI, deploy, release, auto-label, dependabot-merge
+│   ├── ISSUE_TEMPLATE/       # Bug, feature, API issue forms
+│   ├── DISCUSSION_TEMPLATE/  # Ideas, Q&A, show-and-tell
+│   ├── SECURITY.md / CONTRIBUTING.md / CODE_OF_CONDUCT.md
+│   └── PULL_REQUEST_TEMPLATE.md
+└── .vscode/                  # VS Code workspace + testing config
 ```
 
 ## Coding Standards

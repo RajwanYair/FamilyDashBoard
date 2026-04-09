@@ -32,6 +32,25 @@
 - Use Chrome or Edge in full-screen mode (F11)
 - Disable browser zoom (Ctrl+0 to reset)
 
+### Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `T` | Cycle through 5 themes (OLED black, blue, matrix, amber, purple) |
+| `D` | Toggle diagnostic overlay (per-pane status + fetch log) |
+| `Escape` | Close maximized card |
+
+> **Tip:** Click any card header to expand it full-screen (FLIP animation). Click again or press `Escape` to restore.
+
+### Running Tests Locally
+
+```bash
+node --test tests/dashboard.test.mjs
+# 342 tests, 44 suites, zero dependencies
+```
+
+Requires **Node.js 18+**.
+
 ### Live Demo
 
 Visit the [GitHub Pages deployment](https://rajwanyair.github.io/FamilyDashBoard/) to try the dashboard without installing.

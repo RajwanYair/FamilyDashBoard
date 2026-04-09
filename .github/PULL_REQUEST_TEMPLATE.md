@@ -13,7 +13,7 @@ Closes #
 - [ ] 🔌 API integration (new data source, proxy, or feed)
 - [ ] 📖 Documentation update
 - [ ] ⚙️ CI/CD change
-- [ ] 📦 Docker / packaging change
+- [ ] 🧪 Test changes
 
 ## Changes Made
 
@@ -30,7 +30,7 @@ Closes #
 - [ ] Responsive layout verified (desktop, tablet, mobile)
 - [ ] All API sections load correctly (news ticker, news card, weather, stocks, calendar, currency, motivation)
 - [ ] No console errors
-- [ ] Docker build tested (if applicable): `docker build -t dashboard . && docker run -p 8080:80 dashboard`
+- [ ] Unit tests pass: `node --test tests/dashboard.test.mjs`
 
 ## Quality Checklist
 

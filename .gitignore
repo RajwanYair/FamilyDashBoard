@@ -8,6 +8,10 @@ Desktop.ini
 *.swo
 *~
 
+# Node (zero-dependency project, but future-proof)
+node_modules/
+coverage/
+
 # Misc
 *.log
 *.bak

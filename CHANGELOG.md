@@ -17,10 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **⏱️ Uptime tracker** — displays dashboard uptime in the status bar
 - **🌐 corsproxy.io** — added as 3rd CORS proxy fallback for calendar ICS fetching
 - **📅 Calendar resilience** — `loadCalendar()` improved with per-step diagnostic logging, longer timeouts (10–12s), `_pageVisible` guard, and `acceptICS()` validator
-- **🧪 Comprehensive test suite** — 164 tests across 23 suites covering all 7 cards + utilities (Node.js built-in test runner, zero dependencies)
-  - Calendar (21 tests): ICS parsing, fetch order, VCALENDAR validation, renderCalendar
-  - Weather (9), Stocks (9), Currency (6), Alerts (9), News (7), Motivation (4)
-  - Hebrew Date & Shabbat (4), Utility Functions v4.5 (5)
+- **🧪 Comprehensive test suite** — 342 tests across 44 suites covering all 7 cards + utilities (Node.js built-in test runner, zero dependencies)
+  - Calendar, Weather, Stocks, Currency, Alerts, News, Motivation
+  - Hebrew Date & Shabbat, Theme system, Screen modes, Cache, Diagnostics, Animations, Card maximize, and more
 - **🏠 index.html** — GitHub Pages redirect to `BestDashBoard.html` for shorter URLs
 - **🎨 CSS enhancements** — scroll fade masks, animated gradient borders (`@property --border-angle`), news freshness indicators (`data-age="fresh"`), stock row tinting (`.stk-up`/`.stk-down`), calendar today highlight, skeleton loading improvements, `content-visibility: auto` on bottom-grid cards
 - **🖱️ RAF-throttled mousemove** — spotlight effect now uses `requestAnimationFrame` throttling for better performance
