@@ -1265,15 +1265,17 @@ describe("Currency Card", () => {
     assert.ok(html.includes('id="cur-gbp"'), "Missing cur-gbp element");
   });
 
-  it("should have currency flag graphics (SVG)", () => {
-    // Flags are rendered as inline SVGs, not emoji
+  it("should have currency flag emoji", () => {
+    // Flags are rendered as emoji, not inline SVGs
     assert.ok(
       html.includes('class="cur-flag"'),
       "Missing cur-flag container for currency flags",
     );
-    // Should have 3 flag SVGs (USD, EUR, GBP)
+    // Should have 3 flag containers (USD, EUR, GBP)
     const flagCount = (html.match(/class="cur-flag"/g) || []).length;
     assert.equal(flagCount, 3, `Expected 3 currency flags, got ${flagCount}`);
+    // Should NOT contain inline SVGs in flag containers
+    assert.ok(!html.match(/cur-flag">\s*<svg/), "Currency flags should use emoji, not SVG");
   });
 
   it("renderCurrency should show ILS rate (inverted)", () => {

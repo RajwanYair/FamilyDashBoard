@@ -416,9 +416,7 @@
             display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1;
             text-align: center;
         }
-        .cur-flag { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); line-height: 0; }
-        .cur-flag svg { border-radius: 3px; display: block; }
-        .cur-item:nth-child(1) { border-bottom: 2px solid var(--positive); }
+        .cur-flag { font-size: 1.6em; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))var(--positive); }
         .cur-item:nth-child(2) { border-bottom: 2px solid var(--accent); }
         .cur-item:nth-child(3) { border-bottom: 2px solid var(--purple); }
         .cur-info { flex: 1; }
@@ -867,10 +865,10 @@
             <div class="card">
                 <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">💱</span> שערי מטבע</div>
                 <div class="currency-body" id="currency-body">
-                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#fff"/><g fill="#b22234"><rect y="0" width="60" height="3.08"/><rect y="6.15" width="60" height="3.08"/><rect y="12.31" width="60" height="3.08"/><rect y="18.46" width="60" height="3.08"/><rect y="24.62" width="60" height="3.08"/><rect y="30.77" width="60" height="3.08"/><rect y="36.92" width="60" height="3.08"/></g><rect width="24" height="21.54" fill="#3c3b6e"/><text x="12" y="13" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">★</text></svg></div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
-                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#003399"/><g fill="#ffcc00"><polygon points="30,5 31.8,11 38,11 33,14.5 34.8,20.5 30,17 25.2,20.5 27,14.5 22,11 28.2,11"/><polygon points="30,35 31.8,29 38,29 33,25.5 34.8,19.5 30,23 25.2,19.5 27,25.5 22,29 28.2,29"/><polygon points="10,20 11.8,14 18,14 13,17.5 14.8,23.5 10,20 5.2,23.5 7,17.5 2,14 8.2,14" transform="rotate(-30 10 20)"/><polygon points="50,20 51.8,14 58,14 53,17.5 54.8,23.5 50,20 45.2,23.5 47,17.5 42,14 48.2,14" transform="rotate(30 50 20)"/></g></svg></div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
-                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#012169"/><g fill="#fff"><polygon points="0,0 24,16 0,16" /><polygon points="60,0 36,16 60,16"/><polygon points="0,40 24,24 0,24"/><polygon points="60,40 36,24 60,24"/><rect x="25" width="10" height="40"/><rect y="15" width="60" height="10"/></g><g fill="#C8102E"><rect x="27" width="6" height="40"/><rect y="17" width="60" height="6"/><polygon points="0,0 20,14 0,14"/><polygon points="60,0 40,14 60,14"/><polygon points="0,40 20,26 0,26"/><polygon points="60,40 40,26 60,26"/></g></svg></div><div class="cur-info"><div class="cur-pair">GBP / ILS</div><div class="cur-rate skeleton" id="cur-gbp">--</div></div><div class="cur-chg" id="cur-gbp-chg">-</div></div>
-                </div>
+                    <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇬🇧
             </div>
             <div class="card">
                 <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">💪</span> מוטיבציה</div>
