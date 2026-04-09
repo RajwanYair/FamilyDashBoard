@@ -1648,11 +1648,11 @@ describe("Header Component", () => {
     assert.ok(html.includes('id="top-temp"'), "Missing top-temp");
   });
 
-  it("should have decorative header emojis", () => {
+  it("should not have decorative header emojis (removed by design)", () => {
     const emojiMatches = html.match(/class="header-emoji"/g);
     assert.ok(
-      emojiMatches && emojiMatches.length === 2,
-      "Should have exactly 2 header emojis",
+      !emojiMatches || emojiMatches.length === 0,
+      "Header emoji spans should be removed",
     );
   });
 
