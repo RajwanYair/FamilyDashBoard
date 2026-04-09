@@ -9,13 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- **Weather card maximize layout** — forecast 4-day strip now pins to the bottom, hourly SVG chart fills all middle space, top info row stays fixed at top; `overflow: hidden` (not `auto`) on `.weather-body` when maximized so flex children position correctly (`b3956c8`)
-- **`.wx-forecast` bottom anchor** — added `margin-top: auto` so forecast is always gravity-pulled to the bottom of the flex column in normal (non-maximized) state too (`b3956c8`)
-
 ---
 
-## [4.6.0] — 2026-04-09
+## [4.7.0] — 2026-04-09
+
+### Added
+- **🌾 ספירת העומר (Sefirat HaOmer)** — displays the Omer count in the header next to the Hebrew date; count automatically switches to the next day at sunset using cached weather sunset time or Jerusalem approximation (19:15 IST fallback); fetches from Hebcal API (`omer=on`) with 24h cache; shows nothing outside the Omer period
+- **📊 Top 10 S&P500 stocks** — expanded stock list to 14 unique symbols: INTC, ^GSPC, BTC-USD, NVDA, ^VIX, TSLA, AAPL, MSFT, AMZN, GOOGL, META, BRK-B, AVGO, JPM (no duplicates)
+- **🏷️ Company logos on stock tiles** — each stock row now shows the company logo using Clearbit logo API (`https://logo.clearbit.com/{domain}?`) with `onerror` fallback that hides the logo element if unavailable; BTC uses CoinGecko asset URL
+
+### Changed
+- **Layout — bottom row** — `.bottom-grid` columns changed from `42% 28% 30%` to `50% 25% 25%`; weather card gets more space, currency and motivation shrink to 25%
+- **Layout — main row** — `.main-grid` columns changed from `42% 30% 28%` to `38% 33% 29%`; calendar and stocks+alerts columns enlarged
+- **Card overlap prevention** — added `overflow: hidden` to `.main-grid` and `.bottom-grid` so cards cannot bleed visually into adjacent grid cells
+- **STOCK_NAMES** — extended with Hebrew descriptions for all 14 symbols: AAPL (אפל — צרכן), MSFT (מיקרוסופט — תוכנה), AMZN (אמזון — פלטפורמה), GOOGL (אלפבית — טכנולוגיה), META (מטא — רשתות), BRK-B (ברקשייר — בופט), AVGO (ברודקום — שבבים), JPM (ג.פ.מורגן — בנקאות)
+
+### Tests
+- All 398 tests passing (1 new test added: Sefirat HaOmer element; stock count updated 6→14; version assertion updated to v4.7)
+
+
 
 ### Added
 - **Auto hard-reload every 1h** — `setTimeout` self-rescheduling with visibility guard; defers in 1-min increments when tab is hidden, so the TV always picks up HTML file changes (`362ab9a`)

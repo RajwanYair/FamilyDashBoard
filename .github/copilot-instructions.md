@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.6**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.7**.
 
 ## Technical Stack
 
@@ -13,7 +13,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance (stocks via proxy), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 397 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 398 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -36,8 +36,8 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 
 - **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge (no decorative emoji)
 - **Ticker bar**: Daily halacha from Sefaria.org (reference badge + numbered segments, seamless loop)
-- **Top row** (3 columns — 42/30/28%, 65% height): News RSS (17 feeds) | Google Calendar (native ICS) | Stocks (6 symbols) + Red Alerts (toggleable via `A` key, **off by default**)
-- **Bottom row** (3 columns — 42/28/30%, 35% height): Weather (split-panel: current + closest sun event + RTL hourly chart + 4-day forecast) | Currency USD+EUR only (30vh cap) | Motivation (50 static Hebrew quotes, 30vh cap)
+- **Top row** (3 columns — 38/33/29%, 65% height): News RSS (17 feeds) | Google Calendar (native ICS) | Stocks (14 symbols, logos) + Red Alerts (toggleable via `A` key, **off by default**)
+- **Bottom row** (3 columns — 50/25/25%, 35% height): Weather (split-panel: current + closest sun event + RTL hourly chart + 4-day forecast) | Currency USD+EUR only (25% width) | Motivation (50 static Hebrew quotes, 25% width)
 - **Status bar**: Version, day/year progress bars, last refresh time
 
 ### Cache Architecture

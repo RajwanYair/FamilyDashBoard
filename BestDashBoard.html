@@ -222,8 +222,8 @@
         .header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
 
         /* ── Layout ── */
-        .main-grid { display: grid; grid-template-columns: 42% 30% 28%; gap: 8px; flex: 65 1 0; min-height: 0; }
-        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 35 1 0; min-height: 0; }
+        .main-grid { display: grid; grid-template-columns: 38% 33% 29%; gap: 8px; flex: 65 1 0; min-height: 0; overflow: hidden; }
+        .bottom-grid { display: grid; grid-template-columns: 50% 25% 25%; gap: 8px; flex: 35 1 0; min-height: 0; overflow: hidden; }
 
         /* ── Cards ── */
         .card {
@@ -398,6 +398,8 @@
         .stk-chg { font-size: 0.82em; font-weight: 600; }
         .stk-chart { flex: 1; height: 22px; min-width: 0; }
         .stk-time { font-size: 0.58em; color: var(--text-muted); white-space: nowrap; }
+        .stk-logo { width: 18px; height: 18px; flex-shrink: 0; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .stk-logo img { width: 18px; height: 18px; object-fit: contain; border-radius: 3px; display: block; }
         .positive { color: var(--positive); } .negative { color: var(--negative); } .neutral { color: var(--cyan); }
 
         /* ── Weather ── */
@@ -492,6 +494,9 @@
         /* ── Holiday Countdown ── */
         .holiday-info { font-size: 0.78em; color: var(--accent-bright); font-weight: 500; margin-top: 2px; }
         .holiday-days { color: var(--warning); font-weight: 700; }
+
+        /* ── Sefirat HaOmer ── */
+        .omer-count { font-size: 0.80em; color: var(--positive); font-weight: 600; margin-top: 2px; text-shadow: 0 0 8px rgba(52,211,153,0.25); letter-spacing: 0.02em; }
 
         /* ── Clock Blink ── */
         /* .clock-colon removed — clock no longer shows seconds */
@@ -868,6 +873,7 @@
                 <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
                 <div class="shabbat-info" id="shabbat-info"></div>
                 <div class="holiday-info" id="holiday-info"></div>
+                <div class="omer-count" id="omer-count"></div>
             </div>
             <div class="header-center">
                 <div class="clock" id="clock">00:00</div>
@@ -899,12 +905,20 @@
                     <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">�</span> מניות <span class="market-badge" id="market-badge"></span></div>
                     <div class="stocks-body">
                         <div class="stocks-scroll" id="stocks-body">
-                        <div class="stk" data-symbol="INTC"><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="^GSPC"><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="BTC-USD"><div class="stk-info"><div class="stk-sym">BTC</div><div class="stk-desc">ביטקוין</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="NVDA"><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="^VIX"><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="TSLA"><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="INTC"><div class="stk-logo"><img src="https://logo.clearbit.com/intel.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://logo.clearbit.com/spglobal.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="BTC-USD"><div class="stk-logo"><img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BTC</div><div class="stk-desc">ביטקוין</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="NVDA"><div class="stk-logo"><img src="https://logo.clearbit.com/nvidia.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://logo.clearbit.com/cboe.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="TSLA"><div class="stk-logo"><img src="https://logo.clearbit.com/tesla.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://logo.clearbit.com/apple.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="MSFT"><div class="stk-logo"><img src="https://logo.clearbit.com/microsoft.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">MSFT</div><div class="stk-desc">מיקרוסופט</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="AMZN"><div class="stk-logo"><img src="https://logo.clearbit.com/amazon.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AMZN</div><div class="stk-desc">אמזון</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="GOOGL"><div class="stk-logo"><img src="https://logo.clearbit.com/google.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">GOOGL</div><div class="stk-desc">אלפבית</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="META"><div class="stk-logo"><img src="https://logo.clearbit.com/meta.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">META</div><div class="stk-desc">מטא</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="BRK-B"><div class="stk-logo"><img src="https://logo.clearbit.com/berkshirehathaway.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BRK-B</div><div class="stk-desc">ברקשייר</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="AVGO"><div class="stk-logo"><img src="https://logo.clearbit.com/broadcom.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AVGO</div><div class="stk-desc">ברודקום</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                        <div class="stk" data-symbol="JPM"><div class="stk-logo"><img src="https://logo.clearbit.com/jpmorgan.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">JPM</div><div class="stk-desc">ג׳י.פי.מורגן</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                         </div>
                     </div>
                 </div>
@@ -967,7 +981,7 @@
             </div>
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.5 — משפחת רגואן</span>
+            <span>Dashboard v4.7 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -979,7 +993,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.5 — Polish + Resilience + Paint Optimization
+       FAMILY DASHBOARD v4.7 — Sefirat HaOmer · Top 10 S&P500 + Logos · Layout Refresh
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -990,10 +1004,10 @@
     // CORS bypass proxies — browser/system HTTP proxy is used automatically by fetch().
     // These are for cross-origin API access only.
     const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
-    const STOCK_SYMBOLS = ['INTC','^GSPC','BTC-USD','NVDA','^VIX','TSLA'];
+    const STOCK_SYMBOLS = ['INTC','^GSPC','BTC-USD','NVDA','^VIX','TSLA','AAPL','MSFT','AMZN','GOOGL','META','BRK-B','AVGO','JPM'];
     const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
     const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
-    const STOCK_NAMES = {INTC:'אינטל — שבבים','^GSPC':'S&P 500 — מדד','BTC-USD':'ביטקוין — קריפטו',NVDA:'נבידיה — AI/GPU','^VIX':'מדד הפחד — תנודתיות',TSLA:'טסלה — רכב חשמלי'};
+    const STOCK_NAMES = {INTC:'אינטל — שבבים','^GSPC':'S&P 500 — מדד','BTC-USD':'ביטקוין — קריפטו',NVDA:'נבידיה — AI/GPU','^VIX':'מדד הפחד — תנודתיות',TSLA:'טסלה — רכב חשמלי',AAPL:'אפל — צרכן',MSFT:'מיקרוסופט — תוכנה',AMZN:'אמזון — פלטפורמה',GOOGL:'אלפבית — טכנולוגיה',META:'מטא — רשתות','BRK-B':'ברקשייר — בופט',AVGO:'ברודקום — שבבים',JPM:'ג.פ.מורגן — בנקאות'};
     const MOTIVATIONS = [
         {t:'הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.',a:'אברהם לינקולן'},
         {t:'אל תפחד להיכשל. פחד שלא תנסה.',a:'רוי ט. בנט'},
@@ -1047,6 +1061,7 @@
         {t:'יש לך בדיוק את הכוח שדרוש לך כדי ליצור את החיים שאתה רוצה.',a:''},
     ];
     let motiIdx = Math.floor(Math.random() * MOTIVATIONS.length);
+    let _todaySunset = null; // stored from weather data; used by Omer counter
 
     // ── Persistent Cache (localStorage + in-memory) ──
     // Data survives page loads — each pane refreshes independently, network failures show stale data
@@ -1235,6 +1250,7 @@
         dayProgress: $('day-progress'), yearProgress: $('year-progress'),
         dayPct: $('day-pct'), yearPct: $('year-pct'),
         calAgenda: $('cal-agenda'), calIframe: $('cal-iframe'),
+        omerCount: $('omer-count'),
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -1327,6 +1343,48 @@
         else { el.holiday.innerHTML = `🕎 ${name} בעוד <span class="holiday-days">${days} ימים</span>`; }
     }
 
+    // ── Sefirat HaOmer (Omer Count) ──
+    // After sunset the count advances to the next day's omer.
+    // Uses _todaySunset from weather data; falls back to 19:15 Jerusalem time.
+    async function loadOmer() {
+        if (!el.omerCount) return;
+        const now = new Date();
+        // Determine if we're past sunset (i.e., Hebrew calendar already rolled to next day)
+        let afterSunset;
+        if (_todaySunset) {
+            afterSunset = now > _todaySunset;
+        } else {
+            // Fallback: approximate Jerusalem sunset as 19:15 Israel time during omer season
+            const ilTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
+            afterSunset = ilTime.getHours() > 19 || (ilTime.getHours() === 19 && ilTime.getMinutes() >= 15);
+        }
+        // Use tomorrow if after sunset
+        const omerDate = afterSunset ? new Date(now.getTime() + 86400000) : now;
+        const yr = omerDate.getFullYear();
+        const mo = omerDate.getMonth() + 1;
+        const dy = omerDate.getDate();
+        const key = `omer-${yr}-${mo}-${dy}`;
+        const cached = cGet(key, 86400000); // 24h TTL
+        if (cached !== null) { _renderOmer(cached); return; }
+        const stale = cGetStale(key); if (stale !== null) _renderOmer(stale);
+        try {
+            const url = `https://www.hebcal.com/hebcal?v=1&cfg=json&omer=on&maj=off&min=off&ss=off&mf=off&year=${yr}&month=${mo}&day=${dy}`;
+            const d = await fetchJSON(url);
+            const item = d.items?.find(i => i.category === 'omer');
+            if (item) { cSet(key, item); _renderOmer(item); }
+            else { cSet(key, null); el.omerCount.textContent = ''; } // not omer period
+        } catch (e) { console.error('Omer:', e); }
+    }
+    function _renderOmer(item) {
+        if (!el.omerCount) return;
+        if (!item) { el.omerCount.textContent = ''; return; }
+        // item.hebrew e.g. "ח׳ בָּעֹמֶר", item.title e.g. "Omer: day 8 of 49"
+        const heb = item.hebrew || '';
+        const day = heb || (item.title ? item.title.replace('Omer:', '').trim() : '');
+        el.omerCount.textContent = day ? `🌾 ${day}` : '';
+        if (item.title) el.omerCount.title = item.title;
+    }
+
     // ── Day / Year Progress ──
     function updateProgress(now) {
         const dayPct = Math.round(((now.getHours() * 60 + now.getMinutes()) / 1440) * 100);
@@ -1398,6 +1456,7 @@
             const now = new Date();
             const sr = new Date(d.daily.sunrise[0]);
             const ss = new Date(d.daily.sunset[0]);
+            _todaySunset = ss; // store for Omer counter sunset-based switching
             // Show whichever sun event is closest and still upcoming.
             // If sunset is in the future and closer than sunrise (or sunrise already passed) → show sunset.
             // Otherwise (before sunrise, or both passed) → show sunrise.
@@ -2362,7 +2421,7 @@
         initAlerts();
         updateNetworkBanner();
         tickClock(); updateMarketBadge();
-        const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadWeather,
+        const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadOmer, loadWeather,
                          loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha];
         runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
             diagLog('All loaders settled');
@@ -2398,6 +2457,7 @@
     setInterval(loadShabbat, 21600000);       // 6h
     setInterval(loadHolidays, 43200000);      // 12h
     setInterval(loadHalacha, 43200000);       // 12h — daily halacha
+    setInterval(loadOmer, 1800000);           // 30min — re-check omer (switches at sunset)
 
     // ── Auto hard-reload every 1h to pick up HTML file changes ──
     // Reload only when tab is visible to avoid interrupting the display

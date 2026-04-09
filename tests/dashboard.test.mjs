@@ -95,14 +95,37 @@ describe("HTML Structure", () => {
     assert.ok(html.includes('id="last-refresh"'), "Missing last refresh");
   });
 
-  it("should have all 6 stock tiles", () => {
-    const symbols = ["INTC", "^GSPC", "BTC-USD", "NVDA", "^VIX", "TSLA"];
+  it("should have all 14 stock tiles", () => {
+    const symbols = [
+      "INTC",
+      "^GSPC",
+      "BTC-USD",
+      "NVDA",
+      "^VIX",
+      "TSLA",
+      "AAPL",
+      "MSFT",
+      "AMZN",
+      "GOOGL",
+      "META",
+      "BRK-B",
+      "AVGO",
+      "JPM",
+    ];
     for (const sym of symbols) {
       assert.ok(
         html.includes(`data-symbol="${sym}"`),
         `Missing stock tile: ${sym}`,
       );
     }
+  });
+
+  it("should have Sefirat HaOmer element", () => {
+    assert.ok(html.includes('id="omer-count"'), "Missing omer-count element");
+    assert.ok(
+      html.includes('class="omer-count"'),
+      "Missing omer-count CSS class",
+    );
   });
 
   it("should have weather card elements", () => {
@@ -263,22 +286,43 @@ describe("JavaScript Constants", () => {
     );
   });
 
-  it("should have 6 STOCK_SYMBOLS", () => {
+  it("should have 14 STOCK_SYMBOLS", () => {
     const match = scriptContent.match(/const STOCK_SYMBOLS\s*=\s*\[(.*?)\]/);
     assert.ok(match, "Missing STOCK_SYMBOLS");
     const symbols = match[1].split(",").map((s) => s.trim().replace(/'/g, ""));
     assert.equal(
       symbols.length,
-      6,
-      `Expected 6 stock symbols, got ${symbols.length}`,
+      14,
+      `Expected 14 stock symbols, got ${symbols.length}`,
     );
     assert.ok(symbols.includes("INTC"), "Missing INTC");
     assert.ok(symbols.includes("NVDA"), "Missing NVDA");
     assert.ok(symbols.includes("TSLA"), "Missing TSLA");
+    assert.ok(symbols.includes("AAPL"), "Missing AAPL");
+    assert.ok(symbols.includes("MSFT"), "Missing MSFT");
+    assert.ok(symbols.includes("AMZN"), "Missing AMZN");
+    // No duplicate symbols
+    const unique = new Set(symbols);
+    assert.equal(unique.size, symbols.length, "Duplicate symbols found");
   });
 
   it("should have STOCK_NAMES for every STOCK_SYMBOL", () => {
-    const symbols = ["INTC", "^GSPC", "BTC-USD", "NVDA", "^VIX", "TSLA"];
+    const symbols = [
+      "INTC",
+      "^GSPC",
+      "BTC-USD",
+      "NVDA",
+      "^VIX",
+      "TSLA",
+      "AAPL",
+      "MSFT",
+      "AMZN",
+      "GOOGL",
+      "META",
+      "BRK-B",
+      "AVGO",
+      "JPM",
+    ];
     for (const sym of symbols) {
       assert.ok(
         scriptContent.includes(
@@ -1155,8 +1199,23 @@ describe("Weather Card", () => {
 // 17. STOCKS CARD
 // ═══════════════════════════════════════════════════════════════════
 describe("Stocks Card", () => {
-  it("should have 6 stock tile blocks with data-symbol", () => {
-    const symbols = ["INTC", "^GSPC", "BTC-USD", "NVDA", "^VIX", "TSLA"];
+  it("should have 14 stock tile blocks with data-symbol", () => {
+    const symbols = [
+      "INTC",
+      "^GSPC",
+      "BTC-USD",
+      "NVDA",
+      "^VIX",
+      "TSLA",
+      "AAPL",
+      "MSFT",
+      "AMZN",
+      "GOOGL",
+      "META",
+      "BRK-B",
+      "AVGO",
+      "JPM",
+    ];
     for (const sym of symbols) {
       assert.ok(
         html.includes(`data-symbol="${sym}"`),
@@ -1171,7 +1230,7 @@ describe("Stocks Card", () => {
       // Match class attribute containing the class name (may have additional classes like 'skeleton')
       const count = (html.match(new RegExp(`class="[^"]*\\b${cls}\\b[^"]*"`, "g")) || [])
         .length;
-      assert.ok(count >= 6, `Expected >=6 ${cls} elements, got ${count}`);
+      assert.ok(count >= 14, `Expected >=14 ${cls} elements, got ${count}`);
     }
   });
 
@@ -1699,8 +1758,8 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.5", () => {
-    assert.ok(html.includes("Dashboard v4.5"), "Missing version v4.5 in status bar");
+  it("should display version v4.7", () => {
+    assert.ok(html.includes("Dashboard v4.7"), "Missing version v4.7 in status bar");
   });
 
   it("should have day progress bar", () => {

@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.6**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.7**.
 
 ## CSS Rules
 

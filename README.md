@@ -18,8 +18,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.6-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-397_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.7-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-398_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -62,7 +62,7 @@ Native **ICS parser** fetches Google Calendar data via direct → 3 CORS proxy f
 
 ### 📈 Stock Tracker
 
-6 live symbols (INTC, S&P 500, BTC, NVDA, VIX, TSLA) with **smooth bézier SVG charts**, colored per-symbol accents, Yahoo Finance v8/v6 API with proxy fallback, **8-second fetch timeout** (AbortController) to prevent hanging, and a **market open/closed badge** with smart refresh (5 min during market hours, 30 min off-hours). Loaded via `raceProxies()` batch for fastest response.
+**14 live symbols** (INTC, ^GSPC, BTC, NVDA, VIX, TSLA + top-10 S&P500: AAPL, MSFT, AMZN, GOOGL, META, BRK-B, AVGO, JPM) with **company logos**, **smooth bézier SVG charts**, colored per-symbol accents, Yahoo Finance v8/v6 API with proxy fallback, **8-second fetch timeout** (AbortController) to prevent hanging, and a **market open/closed badge** with smart refresh (5 min during market hours, 30 min off-hours). Loaded via `raceProxies()` batch for fastest response.
 
 ### 🚨 Red Alerts (צבע אדום)
 
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
-> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (397 tests, 44 suites, zero dependencies).
+> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (398 tests, 44 suites, zero dependencies).
 
 ---
 

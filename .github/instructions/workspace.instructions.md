@@ -11,7 +11,7 @@ description: "Use when: working on any file in the FamilyDashBoard workspace. Pr
 |----------|-------|
 | **Name** | FamilyDashBoard |
 | **Type** | Single-page HTML dashboard |
-| **Version** | v4.6 |
+| **Version** | v4.7 |
 | **Owner** | @RajwanYair |
 | **Stack** | HTML5, CSS3, vanilla JS (ES2020+) |
 | **Dependencies** | Zero (no npm, no build) |
@@ -33,7 +33,7 @@ FamilyDashBoard/
 ├── .gitignore / .gitattributes
 ├── .markdownlint.json
 ├── tests/
-│   └── dashboard.test.mjs  # 397 tests, 44 suites (node --test)
+│   └── dashboard.test.mjs  # 398 tests, 44 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
@@ -61,7 +61,7 @@ FamilyDashBoard/
 | **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
 | **Performance** | GPU-accelerated scroll layers, CPU-aware concurrency pool (`runConcurrent`), `scheduleIdle()`, DocumentFragment batch writes |
 | **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `A` = toggle alerts, `Escape` = close maximized card |
-| **Tests** | 397 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
+| **Tests** | 398 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
 
 ## What NOT To Do
 
