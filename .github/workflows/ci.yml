@@ -15,8 +15,8 @@ permissions:
   contents: read
 
 jobs:
-  validate-html:
-    name: Validate HTML
+  lint:
+    name: Lint (HTML + CSS + JS)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -26,11 +26,25 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install HTMLHint
-        run: npm install -g htmlhint
+      - name: Install linters
+        run: npm install -g htmlhint stylelint eslint
 
-      - name: Run HTMLHint
+      - name: Lint HTML
         run: htmlhint BestDashBoard.html
+
+      - name: Extract and lint CSS
+        run: |
+          # Extract <style> content from the single-file dashboard
+          sed -n '/<style>/,/<\/style>/p' BestDashBoard.html | sed '1d;$d' > .extracted.css
+          stylelint --config .stylelintrc.json .extracted.css
+          rm .extracted.css
+
+      - name: Extract and lint JS
+        run: |
+          # Extract <script> content from the single-file dashboard
+          sed -n '/<script>/,/<\/script>/p' BestDashBoard.html | sed '1d;$d' > .extracted.js
+          eslint --config eslint.config.mjs .extracted.js
+          rm .extracted.js
 
   unit-tests:
     name: Unit Tests (Node ${{ matrix.node-version }})

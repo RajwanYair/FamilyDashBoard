@@ -34,7 +34,8 @@
     "liveServer.settings.root": "/",
 
     // ── Git ──
-    "git.autofetch": true,
+    "git.autofetch": "all",
+    "git.autofetchPeriod": 300,
     "git.enableSmartCommit": true,
     "git.confirmSync": false,
 
@@ -76,6 +77,33 @@
         "**/node_modules": true,
         "**/.git": true
     },
+// ── Terminal Performance ──
+"terminal.integrated.gpuAcceleration": "on",
+"terminal.integrated.smoothScrolling": false,
+"terminal.integrated.persistentSessionScrollback": 100,
+"terminal.integrated.scrollback": 1000,
+"terminal.integrated.shellIntegration.enabled": true,
+"terminal.integrated.shellIntegration.decorationsEnabled": "never",
+"terminal.integrated.enableImages": false,
+"terminal.integrated.defaultProfile.windows": "PowerShell Fast",
+"terminal.integrated.profiles.windows": {
+    "PowerShell Fast": {
+        "source": "PowerShell",
+        "args": [
+            "-NoLogo"
+        ],
+        "icon": "terminal-powershell"
+    },
+    "PowerShell NoProfile": {
+        "source": "PowerShell",
+        "args": [
+            "-NoLogo",
+            "-NoProfile"
+        ],
+        "icon": "terminal-powershell"
+    }
+},
+
     // ── Node.js Testing (connor4312.nodejs-testing) ──
     "nodejs-testing.include": [
         "tests"

@@ -16,3 +16,4 @@ coverage/
 *.log
 *.bak
 *.tmp
+.extracted.*

@@ -453,7 +453,7 @@
         /* ── Motivation ── */
         .moti-body { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; }
         .moti-card {
-            background: var(--bg-card-inner); padding: 18px; border-radius: 12px;
+            padding: 18px; border-radius: 12px;
             text-align: center; border-right: 4px solid var(--accent);
             width: 100%; transition: opacity 0.8s ease;
             background: linear-gradient(135deg, var(--bg-card-inner) 0%, rgba(96,165,250,0.06) 50%, rgba(167,139,250,0.06) 100%);
@@ -2107,6 +2107,60 @@
 
     // ── Card Maximize (click card header to expand/collapse) ──
     let _maximizedCard = null;
+    /** Track manual scroll state for maximized looping cards */
+    let _manualScroll = null; // { el, offset, halfH }
+
+    /** Find the scroll-loop container inside a card (news/stocks/alerts) */
+    function _findScrollLoop(card) {
+        return card.querySelector('.rss-scroll, .stocks-scroll, .alerts-scroll');
+    }
+
+    /** Get current translateY from a CSS-animated element's computed transform */
+    function _getCurrentTranslateY(el) {
+        const st = getComputedStyle(el);
+        const m = st.transform || st.webkitTransform;
+        if (!m || m === 'none') return 0;
+        // matrix(a,b,c,d,tx,ty)
+        const parts = m.match(/matrix.*\((.+)\)/);
+        if (!parts) return 0;
+        const vals = parts[1].split(',').map(Number);
+        return vals[5] || 0; // ty
+    }
+
+    /** Pause CSS animation and switch to manual translateY for wheel control */
+    function _enableManualScroll(card) {
+        const loop = _findScrollLoop(card);
+        if (!loop) return;
+        const offset = _getCurrentTranslateY(loop);
+        const halfH = loop.scrollHeight / 2;
+        // Pause animation and take over with manual transform
+        loop.style.animationPlayState = 'paused';
+        loop.style.transform = `translateY(${offset}px)`;
+        _manualScroll = { el: loop, offset, halfH };
+    }
+
+    /** Restore CSS animation when card is collapsed */
+    function _disableManualScroll() {
+        if (!_manualScroll) return;
+        const { el } = _manualScroll;
+        el.style.transform = '';
+        el.style.animationPlayState = '';
+        _manualScroll = null;
+    }
+
+    /** Handle wheel events on maximized cards with scroll loops */
+    function _onMaximizedWheel(e) {
+        if (!_manualScroll) return;
+        e.preventDefault();
+        const { el, halfH } = _manualScroll;
+        // Apply delta (negative = scroll down = content moves up)
+        _manualScroll.offset -= e.deltaY;
+        // Wrap around for seamless loop: keep offset in [-halfH, 0]
+        if (_manualScroll.offset < -halfH) _manualScroll.offset += halfH;
+        if (_manualScroll.offset > 0) _manualScroll.offset -= halfH;
+        el.style.transform = `translateY(${_manualScroll.offset}px)`;
+    }
+
     /** Compute the target rect for a maximized card (fills area below clock header, above footer) */
     function _maxTargetRect() {
         const container = document.querySelector('.container');
@@ -2123,6 +2177,9 @@
     function toggleCardMaximize(card) {
         // ── COLLAPSE ──
         if (card.classList.contains('maximized')) {
+            // Restore CSS animation for scroll loops
+            _disableManualScroll();
+            card.removeEventListener('wheel', _onMaximizedWheel);
             const orig = card._origRect;
             if (orig) {
                 // Animate back to original position
@@ -2177,6 +2234,11 @@
         card.style.width = target.width + 'px';
         card.style.height = target.height + 'px';
         _maximizedCard = card;
+        // Enable manual wheel scroll for looping cards
+        if (_findScrollLoop(card)) {
+            _enableManualScroll(card);
+            card.addEventListener('wheel', _onMaximizedWheel, { passive: false });
+        }
     }
 
     /** Attach click listeners to all card headers */
