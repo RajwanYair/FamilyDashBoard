@@ -1272,10 +1272,10 @@ describe("Stocks Card", () => {
 // 18. CURRENCY CARD
 // ═══════════════════════════════════════════════════════════════════
 describe("Currency Card", () => {
-  it("should have USD, EUR, GBP display elements", () => {
+  it("should have USD and EUR display elements", () => {
     assert.ok(html.includes('id="cur-usd"'), "Missing cur-usd element");
     assert.ok(html.includes('id="cur-eur"'), "Missing cur-eur element");
-    assert.ok(html.includes('id="cur-gbp"'), "Missing cur-gbp element");
+    assert.ok(!html.includes('id="cur-gbp"'), "GBP removed — cur-gbp should not exist");
   });
 
   it("should have currency flag emoji", () => {
@@ -1284,13 +1284,13 @@ describe("Currency Card", () => {
       html.includes('class="cur-flag"'),
       "Missing cur-flag container for currency flags",
     );
-    // Should have 3 flag containers (USD, EUR, GBP)
+    // Should have 2 flag containers (USD, EUR only — GBP removed)
     const flagCount = (html.match(/class="cur-flag"/g) || []).length;
-    assert.equal(flagCount, 3, `Expected 3 currency flags, got ${flagCount}`);
-    // Should contain flag emoji (🇺🇸 🇪🇺 🇬🇧) — not inline SVG
+    assert.equal(flagCount, 2, `Expected 2 currency flags, got ${flagCount}`);
+    // Should contain flag emoji (🇺🇸 🇪🇺) — not inline SVG
     assert.ok(html.includes("🇺🇸"), "Missing USD flag emoji 🇺🇸");
     assert.ok(html.includes("🇪🇺"), "Missing EUR flag emoji 🇪🇺");
-    assert.ok(html.includes("🇬🇧"), "Missing GBP flag emoji 🇬🇧");
+    assert.ok(!html.includes("🇬🇧"), "GBP removed — 🇬🇧 should not appear");
   });
 
   it("renderCurrency should show ILS rate (inverted)", () => {
@@ -2459,10 +2459,11 @@ describe("DOM References (el object)", () => {
   });
 
   it("should cache all currency elements", () => {
-    const curEls = ["curUsd", "curEur", "curGbp"];
+    const curEls = ["curUsd", "curEur"];
     for (const el of curEls) {
       assert.ok(scriptContent.includes(`${el}:`), `Missing el.${el} in DOM cache`);
     }
+    assert.ok(!scriptContent.includes("curGbp:"), "GBP removed — curGbp should not be in cache");
   });
 
   it("should cache news elements", () => {
