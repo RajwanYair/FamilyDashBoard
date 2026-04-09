@@ -79,7 +79,7 @@ async function fetchJSON(url) {
 
 ## Card Maximize
 
-- Click any `.card-header` to expand the card full-screen (covers entire grid area, header/ticker/footer remain visible)
+- Click any `.card-header` to expand the card full-screen (covers entire grid area, clock/time-section header remains visible above)
 - Uses FLIP technique: `getBoundingClientRect()` → `position: fixed` → animate to target rect
 - `toggleCardMaximize(card)`: expand or collapse, hiding/showing sibling cards
 - `_maximizedCard`: tracks the currently maximized card (only one at a time)
@@ -103,9 +103,9 @@ async function fetchJSON(url) {
 
 ## Weather Layout
 
-- **Top row** (`wx-top-row`): horizontal flex — right half = current weather (icon + temp + desc), left half = 2×2 grid (humidity, wind, UV, sunrise)
-- **Middle**: hourly temperature SVG chart
-- **Bottom**: 4-day forecast grid with larger icons/fonts
+- **Top row** (`wx-top-row`): horizontal flex — right half = current weather (icon + temp side-by-side in a row + desc), left half = 2×2 grid (humidity, wind, UV, sunrise)
+- **Middle**: hourly temperature SVG chart (max-height 48px)
+- **Bottom**: 4-day forecast grid with compact icons/fonts
 
 ## Font Size Guidelines (TV-first)
 
@@ -113,8 +113,9 @@ async function fetchJSON(url) {
 - Clock: 3.4em
 - Card headers: 1.15em, font-weight 700, padding 5px 14px
 - Stock prices: 1.2em
-- Weather icon: 3em, temp: 1.8em
-- Forecast day name: 0.82em, icon: 1.4em, temp: 0.9em
+- Weather icon: 2em, temp: 1.3em, desc: 0.78em
+- Weather details grid: 0.68em
+- Forecast day name: 0.7em, icon: 0.9em, temp: 0.72em
 
 ## Error Resilience
 

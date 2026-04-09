@@ -386,28 +386,28 @@
         .positive { color: var(--positive); } .negative { color: var(--negative); } .neutral { color: var(--cyan); }
 
         /* ── Weather ── */
-        .weather-body { flex: 1; display: flex; flex-direction: column; padding: 6px; min-height: 0; overflow: hidden; }
-        .wx-top-row { display: flex; flex-direction: row; gap: 8px; margin-bottom: 4px; flex: 1 1 0; min-height: 0; overflow: hidden; }
-        .wx-current { flex: 1 1 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-        .wx-icon { font-size: 3em; line-height: 1; }
+        .weather-body { flex: 1; display: flex; flex-direction: column; padding: 4px 6px; min-height: 0; overflow: hidden; }
+        .wx-top-row { display: flex; flex-direction: row; gap: 6px; margin-bottom: 2px; flex: 0 0 auto; min-height: 0; overflow: hidden; }
+        .wx-current { flex: 1 1 50%; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
+        .wx-icon { font-size: 2em; line-height: 1; }
         .wx-info { text-align: center; }
-        .wx-temp-main { font-size: 1.8em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
-        .wx-desc { font-size: 0.95em; color: var(--text-secondary); }
-        .wx-details { flex: 1 1 50%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; font-size: 0.75em; }
-        .wx-detail { background: var(--bg-card-inner); border-radius: 8px; padding: 6px 4px; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .wx-temp-main { font-size: 1.3em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
+        .wx-desc { font-size: 0.78em; color: var(--text-secondary); }
+        .wx-details { flex: 1 1 50%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; font-size: 0.68em; }
+        .wx-detail { background: var(--bg-card-inner); border-radius: 6px; padding: 3px 3px; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wx-detail:hover { transform: scale(1.05); }
         .wx-detail:nth-child(1) { border-bottom: 2px solid var(--accent); }
         .wx-detail:nth-child(2) { border-bottom: 2px solid var(--cyan); }
         .wx-detail:nth-child(3) { border-bottom: 2px solid var(--warning); }
         .wx-detail:nth-child(4) { border-bottom: 2px solid var(--orange); }
-        .wx-detail-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 2px; }
-        .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 1.05em; }
-        .wx-hourly-chart { width: 100%; flex: 1 1 0; min-height: 32px; }
-        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex: 0 0 auto; padding: 2px 0; }
-        .wx-fday { background: var(--bg-card-inner); padding: 3px 6px; border-radius: 8px; display: flex; align-items: center; gap: 4px; }
-        .wx-fday-icon { font-size: 1.1em; flex-shrink: 0; line-height: 1; }
-        .wx-fday-name { font-size: 0.78em; color: var(--accent); font-weight: 600; white-space: nowrap; }
-        .wx-fday-temp { font-size: 0.82em; font-weight: 700; margin-inline-start: auto; white-space: nowrap; }
+        .wx-detail-label { color: var(--text-muted); font-size: 0.8em; margin-bottom: 1px; }
+        .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 0.95em; }
+        .wx-hourly-chart { width: 100%; flex: 1 1 0; min-height: 24px; max-height: 48px; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; flex: 0 0 auto; padding: 2px 0; }
+        .wx-fday { background: var(--bg-card-inner); padding: 2px 4px; border-radius: 6px; display: flex; align-items: center; gap: 3px; }
+        .wx-fday-icon { font-size: 0.9em; flex-shrink: 0; line-height: 1; }
+        .wx-fday-name { font-size: 0.7em; color: var(--accent); font-weight: 600; white-space: nowrap; }
+        .wx-fday-temp { font-size: 0.72em; font-weight: 700; margin-inline-start: auto; white-space: nowrap; }
 
         /* ── Currency ── */
         .currency-body { flex: 1; display: flex; flex-direction: row; gap: 6px; padding: 10px; }

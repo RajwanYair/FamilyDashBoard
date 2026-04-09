@@ -34,7 +34,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 
 ### UI Layout
 
-- **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge, GIFs
+- **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge, emoji
 - **Ticker bar**: Horizontal scrolling news headlines (140px/s)
 - **Top row** (3 columns — 45/30/25%): News RSS | Google Calendar (native ICS) | Stocks (6 symbols) + Red Alerts
 - **Bottom row** (3 columns — 42/28/30%): Weather (split-panel: current + 2×2 details + hourly chart + 4-day forecast) | Currency exchange | Motivation (50 static Hebrew quotes)
@@ -86,6 +86,7 @@ function fetchWithTimeout(url, ms = 8000) {
 
 - Click any card header to expand it `position: fixed` over the grid area (FLIP animation)
 - `toggleCardMaximize(card)`: records `getBoundingClientRect()`, sets fixed position at original rect, animates to target rect
+- Maximized card top edge starts below the time-section header (clock stays visible)
 - `_maximizedCard`: tracks the single expanded card
 - Cards inside `.col-split` (stocks/alerts): only the sibling hides, not the container
 - Close: click header again or press `Escape`

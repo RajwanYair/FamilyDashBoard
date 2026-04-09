@@ -27,4 +27,4 @@ Use Conventional Commits:
 
 - Never log secrets or API keys in CI output
 - Use `${{ secrets.TOKEN }}` for any credentials
-- Pin action versions to specific tags (e.g., `@v4`)
+- Pin action versions to specific tags (e.g., `@v6`)

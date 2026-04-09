@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Changed
+- Weather card CSS: reduced all component sizes to prevent overlap (icon 3em→2em, temp 1.8em→1.3em, current layout column→row)
+- Weather hourly chart capped at `max-height: 48px` to leave room for forecast
+
+### Fixed
+- Card maximize: clock/time-section header now stays visible above maximized cards (`e6b436c`)
+- SVG documentation assets updated to match v4.5 project state — intervals, API counts, CORS proxy chain, stock symbols, version (`3268ff5`)
+
+---
+
 ## [4.5.0] — 2026-04-09
 
 ### Added
@@ -28,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Alerts display increased from 15 → 25 visible items
 - News items show `relTime() + ' | ' + HH:MM` time format
-- Card headers use animated GIF icons from Giphy instead of emoji
+- Card headers use colorful emoji icons instead of inline GIF images
 - Weather card layout: flex-based height distribution (`flex: 1 1 0`) instead of fixed `calc()` percentages
 - CORS proxy fallback order: direct → allorigins → codetabs → corsproxy.io
 - GitHub Actions workflows: `@v6` → `@v4` for `actions/checkout` and `actions/setup-node`
