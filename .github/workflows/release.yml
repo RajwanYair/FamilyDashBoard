@@ -41,13 +41,8 @@ jobs:
             ${{ steps.changelog.outputs.CHANGELOG }}
 
             ## 🚀 Quick Start
-            ```bash
-            # Open directly
+            ```
             Open BestDashBoard.html in your browser
-
-            # Or run via Docker
-            docker pull ghcr.io/rajwanyair/familydashboard:latest
-            docker run -p 8080:80 ghcr.io/rajwanyair/familydashboard:latest
             ```
           files: |
             BestDashBoard.html
