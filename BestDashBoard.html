@@ -418,7 +418,7 @@
         .wx-detail-label { color: var(--text-muted); font-size: 0.8em; margin-bottom: 1px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 0.95em; }
         .wx-hourly-chart { width: 100%; flex: 1 1 0; min-height: 24px; max-height: 48px; }
-        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; flex: 0 0 auto; padding: 2px 0; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; flex: 0 0 auto; padding: 2px 0; margin-top: auto; }
         .wx-fday { background: var(--bg-card-inner); padding: 2px 4px; border-radius: 6px; display: flex; align-items: center; gap: 3px; }
         .wx-fday-icon { font-size: 0.9em; flex-shrink: 0; line-height: 1; }
         .wx-fday-name { font-size: 0.7em; color: var(--accent); font-weight: 600; white-space: nowrap; }
@@ -698,12 +698,13 @@
         .card.maximized .cal-wrapper,
         .card.maximized .stocks-body,
         .card.maximized .alerts-body,
-        .card.maximized .weather-body,
         .card.maximized .currency-body,
         .card.maximized .moti-body { contain: none; flex: 1; min-height: 0; overflow: auto; }
-        /* Weather sub-sections expand to use full maximized height */
-        .card.maximized .wx-top-row { flex: 1 1 auto; }
-        .card.maximized .wx-hourly-chart { max-height: none; flex: 2 1 0; }
+        /* Weather body uses hidden overflow so its flex children pin top/mid/bottom correctly */
+        .card.maximized .weather-body { contain: none; flex: 1; min-height: 0; overflow: hidden; }
+        /* Weather layout when maximized: top info fixed top, chart fills middle, forecast pinned bottom */
+        .card.maximized .wx-top-row { flex: 0 0 auto; }
+        .card.maximized .wx-hourly-chart { max-height: none; flex: 1 1 0; }
         .card.maximized .wx-fday { padding: 8px 10px; }
 
         /* ── Accessibility: Reduced Motion ── */
