@@ -431,8 +431,7 @@
             display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1;
             text-align: center;
         }
-        .cur-flag { width: 2.4em; height: 1.6em; border-radius: 4px; overflow: hidden; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); flex-shrink: 0; }
-        .cur-flag svg { width: 100%; height: 100%; display: block; }
+        .cur-flag { font-size: 2em; flex-shrink: 0; display: flex; align-items: center; line-height: 1; }
         .cur-item:nth-child(2) { border-bottom: 2px solid var(--accent); }
         .cur-item:nth-child(3) { border-bottom: 2px solid var(--purple); }
         .cur-info { flex: 1; }
@@ -843,13 +842,13 @@
 
         <!-- ── Daily Halacha Ticker ── -->
         <div class="ticker-bar">
-            <div class="ticker-label">📖 הלכה יומית</div>
+            <div class="ticker-label">� הלכה יומית</div>
             <div class="ticker-track"><div class="ticker-content" id="ticker-content">טוען הלכה יומית...</div></div>
         </div>
 
         <!-- ── Header ── -->
         <div class="time-section">
-            <span class="header-emoji">🏠</span>
+            <span class="header-emoji">�</span>
             <div class="header-left">
                 <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
                 <div class="shabbat-info" id="shabbat-info"></div>
@@ -869,13 +868,13 @@
         <!-- ── Main Row ── -->
         <div class="main-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות</div>
+                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">�️</span> חדשות</div>
                 <div class="news-body" id="news-body">
                     <div class="rss-scroll" id="rss-scroll"></div>
                 </div>
             </div>
             <div class="card" style="position:relative">
-                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">�️</span> לוח שנה משפחתי</div>
                 <div class="cal-wrapper">
                     <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
                     <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
@@ -883,7 +882,7 @@
             </div>
             <div class="col-split">
                 <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
+                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">�</span> מניות <span class="market-badge" id="market-badge"></span></div>
                     <div class="stocks-body">
                         <div class="stocks-scroll" id="stocks-body">
                         <div class="stk" data-symbol="INTC"><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
@@ -909,7 +908,7 @@
         <!-- ── Bottom Row ── -->
         <div class="bottom-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> מזג אויר — ירושלים</div>
+                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">�️</span> מזג אויר — ירושלים</div>
                 <div class="weather-body">
                     <div class="wx-top-row">
                         <div class="wx-current">
@@ -936,15 +935,15 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">💱</span> שערי מטבע</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
                 <div class="currency-body" id="currency-body">
-                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#B22234"/><g fill="#fff"><rect y="3" width="60" height="3"/><rect y="9" width="60" height="3"/><rect y="15" width="60" height="3"/><rect y="21" width="60" height="3"/><rect y="27" width="60" height="3"/><rect y="33" width="60" height="3"/></g><rect width="24" height="22" fill="#3C3B6E"/></svg></div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
-                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#003399"/><g fill="#FC0" transform="translate(30,20)"><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(30) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(60) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(90) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(120) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(150) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(180) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(210) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(240) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(270) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(300) translate(0,-12)"/><polygon points="0,-2.5 0.6,-0.8 2.4,-0.8 0.9,0.3 1.5,2 0,0.9 -1.5,2 -0.9,0.3 -2.4,-0.8 -0.6,-0.8" transform="rotate(330) translate(0,-12)"/></g></svg></div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
-                    <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#012169"/><path d="M0,0L60,40M60,0L0,40" stroke="#fff" stroke-width="7"/><path d="M0,0L60,40M60,0L0,40" stroke="#C8102E" stroke-width="3.5"/><path d="M30,0V40M0,20H60" stroke="#fff" stroke-width="10"/><path d="M30,0V40M0,20H60" stroke="#C8102E" stroke-width="5"/></svg></div><div class="cur-info"><div class="cur-pair">GBP / ILS</div><div class="cur-rate skeleton" id="cur-gbp">--</div></div><div class="cur-chg" id="cur-gbp-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
+                    <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-info"><div class="cur-pair">GBP / ILS</div><div class="cur-rate skeleton" id="cur-gbp">--</div></div><div class="cur-chg" id="cur-gbp-chg">-</div></div>
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">💪</span> מוטיבציה</div>
+                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">✨</span> מוטיבציה</div>
                 <div class="moti-body">
                     <div class="moti-card">
                         <div class="moti-text" id="moti-text">טוען השראה...</div>
