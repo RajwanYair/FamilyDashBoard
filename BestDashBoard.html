@@ -937,7 +937,7 @@
                             <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
                             <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
                             <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
-                            <div class="wx-detail"><div class="wx-detail-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
+                            <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
                         </div>
                     </div>
                     <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
@@ -1396,8 +1396,27 @@
             renderHourlyChart(d.hourly.temperature_2m.slice(nowH, nowH + 12), nowH);
         }
         if (d.daily) {
+            const now = new Date();
             const sr = new Date(d.daily.sunrise[0]);
-            el.wxRise.textContent = sr.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+            const ss = new Date(d.daily.sunset[0]);
+            // Show whichever sun event is closest and still upcoming.
+            // If sunset is in the future and closer than sunrise (or sunrise already passed) → show sunset.
+            // Otherwise (before sunrise, or both passed) → show sunrise.
+            const srFuture = sr > now;
+            const ssFuture = ss > now;
+            let showSunset;
+            if (srFuture && ssFuture) {
+                // Both upcoming — show the sooner one
+                showSunset = ss < sr;
+            } else if (ssFuture) {
+                showSunset = true;   // only sunset still upcoming
+            } else {
+                showSunset = false;  // both passed (night) — show tomorrow's sunrise label
+            }
+            const sunTime = showSunset ? ss : sr;
+            const riseLabel = document.getElementById('wx-rise-label');
+            if (riseLabel) riseLabel.textContent = showSunset ? '🌇 שקיעה' : '🌅 זריחה';
+            el.wxRise.textContent = sunTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
             // Forecast
             const fDays = el.wxForecast.querySelectorAll('.wx-fday');
             for (let i = 1; i <= 4; i++) {
