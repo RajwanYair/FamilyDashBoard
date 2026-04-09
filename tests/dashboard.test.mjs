@@ -1631,16 +1631,24 @@ describe("Header Component", () => {
     assert.ok(html.includes('id="top-temp"'), "Missing top-temp");
   });
 
-  it("should have decorative header GIFs", () => {
-    const gifMatches = html.match(/class="header-gif"/g);
-    assert.ok(gifMatches && gifMatches.length === 2, "Should have exactly 2 header GIFs");
+  it("should have decorative header emojis", () => {
+    const emojiMatches = html.match(/class="header-emoji"/g);
+    assert.ok(
+      emojiMatches && emojiMatches.length === 2,
+      "Should have exactly 2 header emojis",
+    );
   });
 
-  it("header GIFs should use lazy loading", () => {
-    const headerSection = html.match(/class="time-section"[\s\S]*?<\/div>\s*<!--/);
-    assert.ok(headerSection, "Could not isolate header section");
-    const gifLoadCount = (headerSection[0].match(/loading="lazy"/g) || []).length;
-    assert.ok(gifLoadCount >= 2, "Header GIFs should use lazy loading");
+  it("card headers should use icon-badge with emoji (no external images)", () => {
+    const badgeMatches = html.match(/class="icon-badge \w+">./g);
+    assert.ok(
+      badgeMatches && badgeMatches.length >= 7,
+      "Should have icon-badge emoji for each card",
+    );
+    assert.ok(
+      !html.includes("icon-badge") || !html.match(/icon-badge[^"]*">\s*<img/),
+      "Icon badges should not contain img tags",
+    );
   });
 
   it("should have rainbow gradient border on header", () => {
@@ -2560,7 +2568,7 @@ describe("Performance Optimizations", () => {
 
   it("should lazy-load images", () => {
     const lazyCount = (html.match(/loading="lazy"/g) || []).length;
-    assert.ok(lazyCount >= 5, `Expected >=5 lazy-loaded images, got ${lazyCount}`);
+    assert.ok(lazyCount >= 1, `Expected >=1 lazy-loaded elements, got ${lazyCount}`);
   });
 
   it("should throttle mousemove with requestAnimationFrame", () => {

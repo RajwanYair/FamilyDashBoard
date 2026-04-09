@@ -207,7 +207,7 @@
         .english-date { font-size: 1em; color: var(--text-secondary); }
         .shabbat-info { font-size: 0.85em; color: var(--warning); font-weight: 600; margin-top: 2px; text-shadow: 0 0 8px rgba(251,191,36,0.2); }
         .top-temp { font-size: 1.5em; color: var(--accent); font-weight: 700; text-shadow: 0 0 12px var(--accent-glow); }
-        .header-gif { height: 60px; width: auto; border-radius: 8px; flex: 0 0 auto; margin: 0 6px; }
+        .header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
 
         /* ── Layout ── */
         .main-grid { display: grid; grid-template-columns: 45% 30% 25%; gap: 8px; flex: 1 1 0; min-height: 0; }
@@ -251,9 +251,8 @@
         .card-header .icon-badge {
             display: inline-flex; align-items: center; justify-content: center;
             width: 1.6em; height: 1.6em; border-radius: 8px; margin-left: 4px;
-            font-size: 0.9em; vertical-align: middle; overflow: hidden;
+            font-size: 1.1em; vertical-align: middle;
         }
-        .card-header .icon-badge img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
         .icon-badge.blue { background: rgba(96,165,250,0.18); }
         .icon-badge.green { background: rgba(52,211,153,0.18); }
         .icon-badge.purple { background: rgba(167,139,250,0.18); }
@@ -518,7 +517,7 @@
         body.mode-tablet .clock { font-size: 2.6em; }
         body.mode-tablet .hebrew-date { font-size: 1.05em; }
         body.mode-tablet .top-temp { font-size: 1.2em; }
-        body.mode-tablet .header-gif { height: 60px; }
+        body.mode-tablet .header-emoji { font-size: 2.4em; }
         body.mode-tablet .card-header { font-size: 1em; padding: 8px 10px; }
         body.mode-tablet .stk-price { font-size: 1.15em; }
         body.mode-tablet .rss-item { font-size: 0.75em; padding: 7px 9px; }
@@ -530,7 +529,7 @@
         body.mode-tablet .container { padding: 6px; gap: 4px; }
         body.mode-phone { font-size: 12px; }
         body.mode-phone .clock { font-size: 2em; }
-        body.mode-phone .header-gif { height: 32px; }
+        body.mode-phone .header-emoji { font-size: 1.8em; }
         body.mode-phone .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
         body.mode-phone .header-left, body.mode-phone .header-right { align-items: center; flex: 1 1 100%; }
         body.mode-phone .main-grid, body.mode-phone .bottom-grid { grid-template-columns: 1fr; }
@@ -779,7 +778,7 @@
 
         <!-- ── Header ── -->
         <div class="time-section">
-            <img class="header-gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG9wZzNjdW1la3Y1MzB5YXo0c2huM2E1bHpncTNveG5hN2QweDVydSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HUE4sDmjViSkKqLY77/giphy.gif" alt="GIF" loading="lazy">
+            <span class="header-emoji">🏠</span>
             <div class="header-left">
                 <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
                 <div class="shabbat-info" id="shabbat-info"></div>
@@ -793,19 +792,19 @@
                 <div class="english-date" id="english-date"></div>
                 <div class="top-temp" id="top-temp">--°C</div>
             </div>
-            <img class="header-gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWh0djRldGtwNXlhMzdsbm51aWVjdGlteTVnejVkejhxMnVkYTY3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/c7sTwr4KI5lAKIE6p5/giphy.gif" alt="GIF" loading="lazy">
+            <span class="header-emoji">👨‍👩‍👧‍👦</span>
         </div>
 
         <!-- ── Main Row ── -->
         <div class="main-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue"><img src="https://media.giphy.com/media/l0HlNQ03J5JR3bGpG/giphy.gif" alt="news" loading="lazy"></span> חדשות</div>
+                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות</div>
                 <div class="news-body" id="news-body">
                     <div class="rss-scroll" id="rss-scroll"></div>
                 </div>
             </div>
             <div class="card" style="position:relative">
-                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green"><img src="https://media.giphy.com/media/l3fZK7BgnNHhKmi5O/giphy.gif" alt="calendar" loading="lazy"></span> לוח שנה משפחתי</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי</div>
                 <div class="cal-wrapper">
                     <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
                     <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
@@ -813,7 +812,7 @@
             </div>
             <div class="col-split">
                 <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange"><img src="https://media.giphy.com/media/JtBZm3Getg3dqxK60a/giphy.gif" alt="stocks" loading="lazy"></span> מניות <span class="market-badge" id="market-badge"></span></div>
+                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
                     <div class="stocks-body">
                         <div class="stocks-scroll" id="stocks-body">
                         <div class="stk" data-symbol="INTC"><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
@@ -826,7 +825,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red"><img src="https://media.giphy.com/media/fAaBpMgGuyf96/giphy.gif" alt="alert" loading="lazy"></span> צבע אדום</div>
+                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
                     <div class="alerts-body">
                         <div class="alerts-scroll" id="alerts-scroll">
                             <div class="alert-count">טוען התרעות...</div>
@@ -839,7 +838,7 @@
         <!-- ── Bottom Row ── -->
         <div class="bottom-grid">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan"><img src="https://media.giphy.com/media/xT1XGzAnABSXy8HQPK/giphy.gif" alt="weather" loading="lazy"></span> מזג אויר — ירושלים</div>
+                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> מזג אויר — ירושלים</div>
                 <div class="weather-body">
                     <div class="wx-top-row">
                         <div class="wx-current">
@@ -866,7 +865,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green"><img src="https://media.giphy.com/media/lptjRBxFKCJmFoibP3/giphy.gif" alt="currency" loading="lazy"></span> שערי מטבע</div>
+                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">💱</span> שערי מטבע</div>
                 <div class="currency-body" id="currency-body">
                     <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#fff"/><g fill="#b22234"><rect y="0" width="60" height="3.08"/><rect y="6.15" width="60" height="3.08"/><rect y="12.31" width="60" height="3.08"/><rect y="18.46" width="60" height="3.08"/><rect y="24.62" width="60" height="3.08"/><rect y="30.77" width="60" height="3.08"/><rect y="36.92" width="60" height="3.08"/></g><rect width="24" height="21.54" fill="#3c3b6e"/><text x="12" y="13" text-anchor="middle" fill="#fff" font-size="7" font-weight="bold">★</text></svg></div><div class="cur-info"><div class="cur-pair">USD / ILS</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg">-</div></div>
                     <div class="cur-item"><div class="cur-flag"><svg viewBox="0 0 60 40" width="32" height="22"><rect width="60" height="40" fill="#003399"/><g fill="#ffcc00"><polygon points="30,5 31.8,11 38,11 33,14.5 34.8,20.5 30,17 25.2,20.5 27,14.5 22,11 28.2,11"/><polygon points="30,35 31.8,29 38,29 33,25.5 34.8,19.5 30,23 25.2,19.5 27,25.5 22,29 28.2,29"/><polygon points="10,20 11.8,14 18,14 13,17.5 14.8,23.5 10,20 5.2,23.5 7,17.5 2,14 8.2,14" transform="rotate(-30 10 20)"/><polygon points="50,20 51.8,14 58,14 53,17.5 54.8,23.5 50,20 45.2,23.5 47,17.5 42,14 48.2,14" transform="rotate(30 50 20)"/></g></svg></div><div class="cur-info"><div class="cur-pair">EUR / ILS</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg">-</div></div>
@@ -874,7 +873,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink"><img src="https://media.giphy.com/media/yoNyBrs2HftYbEMXOQ/giphy.gif" alt="motivation" loading="lazy"></span> מוטיבציה</div>
+                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">💪</span> מוטיבציה</div>
                 <div class="moti-body">
                     <div class="moti-card">
                         <div class="moti-text" id="moti-text">טוען השראה...</div>
