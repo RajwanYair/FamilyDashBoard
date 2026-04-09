@@ -222,8 +222,8 @@
         .header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
 
         /* ── Layout ── */
-        .main-grid { display: grid; grid-template-columns: 42% 30% 28%; gap: 8px; flex: 6 1 0; min-height: 0; }
-        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 4 1 0; min-height: 0; }
+        .main-grid { display: grid; grid-template-columns: 42% 30% 28%; gap: 8px; flex: 65 1 0; min-height: 0; }
+        .bottom-grid { display: grid; grid-template-columns: 42% 28% 30%; gap: 8px; flex: 35 1 0; min-height: 0; }
 
         /* ── Cards ── */
         .card {
@@ -693,6 +693,18 @@
             transition: opacity 0.3s ease;
         }
         .card.maximized:hover { transform: none; }
+        /* When maximized: lift containment & hidden overflow so body fills the full card */
+        .card.maximized .news-body,
+        .card.maximized .cal-wrapper,
+        .card.maximized .stocks-body,
+        .card.maximized .alerts-body,
+        .card.maximized .weather-body,
+        .card.maximized .currency-body,
+        .card.maximized .moti-body { contain: none; flex: 1; min-height: 0; overflow: auto; }
+        /* Weather sub-sections expand to use full maximized height */
+        .card.maximized .wx-top-row { flex: 1 1 auto; }
+        .card.maximized .wx-hourly-chart { max-height: none; flex: 2 1 0; }
+        .card.maximized .wx-fday { padding: 8px 10px; }
 
         /* ── Accessibility: Reduced Motion ── */
         @media (prefers-reduced-motion: reduce) {
@@ -701,6 +713,9 @@
 
         /* ── Performance: Paint Containment ── */
         .card { contain: layout style; }
+        /* Currency and motivation are compact cards — cap at 30% viewport height, centered in row */
+        .bottom-grid > .card:nth-child(2),
+        .bottom-grid > .card:nth-child(3) { max-height: 30vh; align-self: center; }
         .news-body, .stocks-body, .alerts-body, .weather-body, .currency-body, .moti-body { contain: content; }
 
         /* ── Performance: GPU-Accelerated Layers ── */
