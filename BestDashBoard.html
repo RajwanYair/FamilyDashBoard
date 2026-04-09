@@ -194,8 +194,8 @@
         }
         .ticker-src { color: var(--accent); font-weight: 600; font-size: 0.85em; text-shadow: 0 0 6px var(--accent-glow); }
         @keyframes tickerScroll {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
         /* ── Header ── */
@@ -1578,23 +1578,25 @@
 
     function renderHalacha(data) {
         if (!el.ticker || !data?.texts?.length) return;
+        // Build one full set (ref badge + all segments); call twice for seamless loop
+        function makeSet(isClone) {
+            const f = document.createDocumentFragment();
+            const refSpan = document.createElement('span'); refSpan.className = 'ticker-item' + (isClone ? ' clone' : '');
+            const src = document.createElement('span'); src.className = 'ticker-src'; src.textContent = '📜 ' + data.ref;
+            refSpan.appendChild(src); f.appendChild(refSpan);
+            data.texts.forEach((text, i) => {
+                const span = document.createElement('span'); span.className = 'ticker-item' + (isClone ? ' clone' : '');
+                span.textContent = '(' + (i + 1) + ') ' + text;
+                f.appendChild(span);
+            });
+            return f;
+        }
         const frag = document.createDocumentFragment();
-        // Reference badge
-        const refSpan = document.createElement('span'); refSpan.className = 'ticker-item';
-        const src = document.createElement('span'); src.className = 'ticker-src'; src.textContent = '📖 ' + data.ref;
-        refSpan.appendChild(src);
-        frag.appendChild(refSpan);
-        // Halacha text segments — duplicate for seamless loop
-        const segments = data.texts;
-        const all = [...segments, ...segments];
-        all.forEach((text, i) => {
-            const span = document.createElement('span'); span.className = 'ticker-item';
-            span.textContent = (i < segments.length ? '(' + (i + 1) + ') ' : '(' + ((i % segments.length) + 1) + ') ') + text;
-            frag.appendChild(span);
-        });
+        frag.appendChild(makeSet(false)); // original set
+        frag.appendChild(makeSet(true));  // identical clone — seamless wrap
         el.ticker.innerHTML = '';
         el.ticker.appendChild(frag);
-        // Adjust speed — halacha text is longer, scroll slower
+        // Speed based on HALF total scrollWidth (content is exactly doubled)
         const w = el.ticker.scrollWidth / 2;
         el.ticker.style.animationDuration = Math.max(30, w / 140) + 's';
     }
@@ -2355,7 +2357,7 @@
 
     // Slow (1h+)
     setInterval(loadCurrency, 3600000);       // 1h
-    setInterval(loadMotivation, 14400000);    // 4h — static, no network
+    setInterval(loadMotivation, 120000);     // 2min loop — cycles through 50 quotes on TV display
     setInterval(loadCalendar, 900000);        // 15min
 
     // Very slow (3h+)

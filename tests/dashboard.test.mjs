@@ -1501,11 +1501,11 @@ describe("Motivation Card", () => {
     );
   });
 
-  it("should have 4-hour refresh interval", () => {
+  it("should have 2-minute rotation interval", () => {
     assert.ok(
-      scriptContent.includes("14400000") ||
-        scriptContent.includes("4 * 3600"),
-      "Motivation should refresh every 4 hours",
+      scriptContent.includes("120000") ||
+        scriptContent.includes("2 * 60"),
+      "Motivation should cycle every 2 minutes for continuous TV loop",
     );
   });
 });
@@ -2829,10 +2829,10 @@ describe("Refresh Intervals", () => {
     );
   });
 
-  it("motivation should refresh every 4 hours", () => {
+  it("motivation should refresh every 2 minutes", () => {
     assert.ok(
-      scriptContent.includes("loadMotivation") && scriptContent.includes("14400000"),
-      "Motivation should refresh every 14400000ms (4h)",
+      scriptContent.includes("loadMotivation") && scriptContent.includes("120000"),
+      "Motivation should cycle every 120000ms (2min) for continuous TV loop",
     );
   });
 
