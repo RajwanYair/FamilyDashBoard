@@ -16,14 +16,15 @@ body:
       label: Affected API / Data Source
       multiple: true
       options:
-        - Open-Meteo (Weather)
-        - Hebcal (Hebrew Dates / Shabbat)
+        - Open-Meteo (Weather + UV + Hourly)
+        - Hebcal (Hebrew Dates / Shabbat / Holidays)
         - Yahoo Finance (Stocks)
-        - RSS Feeds (News)
-        - ER-API (Currency Exchange)
+        - RSS Feeds (News — 20 Hebrew sources)
+        - ER-API / exchangerate-api (Currency)
+        - Google Calendar (ICS)
         - Google Translate
-        - Quotable / ZenQuotes (Motivation)
-        - CORS Proxy (allorigins / codetabs)
+        - tzevaadom.co.il (Red Alerts)
+        - CORS Proxy (allorigins / codetabs / corsproxy.io)
     validations:
       required: true
 

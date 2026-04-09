@@ -1,5 +1,13 @@
 # Support
 
+<div align="center">
+
+[![Discussions](https://img.shields.io/badge/Ask_a_Question-Discussions-60a5fa?style=flat-square&logo=github)](https://github.com/RajwanYair/FamilyDashBoard/discussions)
+[![Issues](https://img.shields.io/badge/Report_a_Bug-Issues-f87171?style=flat-square&logo=github)](https://github.com/RajwanYair/FamilyDashBoard/issues/new/choose)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-34d399?style=flat-square&logo=github)](https://rajwanyair.github.io/FamilyDashBoard/)
+
+</div>
+
 ## Getting Help
 
 | Channel                                                                                      | Use For                                   |

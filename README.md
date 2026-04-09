@@ -250,12 +250,12 @@ Cards use `backdrop-filter: blur(16px)` for the glassmorphism effect. All animat
 
 ## 🏷️ Topics & Keywords
 
-> **Suggested GitHub repo topics** — add these via Settings → Topics for discoverability:
+`dashboard` `family-dashboard` `tv-display` `smart-home` `hebrew` `rtl` `israel`
+`glassmorphism` `single-file` `zero-dependencies` `vanilla-javascript` `html5` `css3`
+`weather` `stocks` `news-reader` `dark-theme` `real-time` `github-pages` `open-source`
 
-`dashboard` `family-dashboard` `tv-display` `hebrew` `rtl` `israel`
-`glassmorphism` `single-file` `zero-dependencies` `vanilla-javascript`
-`weather` `stocks` `news` `currency` `shabbat` `red-alerts` `smart-home`
-`open-meteo` `hebcal` `css-custom-properties` `dark-theme` `real-time`
+> These topics are set on the [GitHub repository](https://github.com/RajwanYair/FamilyDashBoard) for discoverability.
+> Search GitHub for [`topic:family-dashboard`](https://github.com/topics/family-dashboard) or [`topic:tv-display`](https://github.com/topics/tv-display) to find this project.
 
 ---
 

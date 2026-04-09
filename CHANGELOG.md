@@ -9,13 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **HTML/CSS/JS linting** — HTMLHint, Stylelint, ESLint configs with CI integration (`.htmlhintrc`, `.stylelintrc.json`, `eslint.config.mjs`)
+- **Maximized card wheel scroll** — mouse wheel controls scroll-loop content (news, stocks, alerts) when card is maximized
+- **GitHub repo metadata** — 20 topics, rich description, homepage URL, Open Graph/Twitter meta tags
+- **SEO metadata** — `index.html` and `BestDashBoard.html` now include keywords, OG tags, canonical URL, and theme-color
+
 ### Changed
 - Weather card CSS: reduced all component sizes to prevent overlap (icon 3em→2em, temp 1.8em→1.3em, current layout column→row)
 - Weather hourly chart capped at `max-height: 48px` to leave room for forecast
+- Currency flags changed from emoji (invisible on Windows) to inline SVG (US, EU, UK flags)
+- Hover background opacity reduced across all 5 themes for subtler hover effect
+- CI `lint` job replaces `validate-html` — now runs HTMLHint + Stylelint + ESLint
+- SECURITY.md now directs to GitHub Security Advisories for private vulnerability reporting
+- CONTRIBUTING.md: added linting/testing sections, linked Code of Conduct and Discussions
+- API issue template updated with current data sources (removed stale Quotable/ZenQuotes)
+- VS Code extensions: added Stylelint extension recommendation
 
 ### Fixed
 - Card maximize: clock/time-section header now stays visible above maximized cards (`e6b436c`)
 - SVG documentation assets updated to match v4.5 project state — intervals, API counts, CORS proxy chain, stock symbols, version (`3268ff5`)
+- Duplicate `background` property in `.moti-card` CSS (caught by Stylelint)
 
 ---
 

@@ -22,9 +22,11 @@ FamilyDashBoard is a client-side HTML dashboard that fetches data from public AP
 
 ## Reporting Vulnerabilities
 
-Please report security vulnerabilities via GitHub Issues with the `security` label, or email the maintainer directly.
+**Please report security vulnerabilities privately** via [GitHub Security Advisories](https://github.com/RajwanYair/FamilyDashBoard/security/advisories/new).
 
-**Do NOT** post exploit details publicly.
+Alternatively, email **yair.rajwan@gmail.com** with details.
+
+**Do NOT** open public issues for security vulnerabilities.
 
 ## Security Best Practices
 

@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
-    <meta name="description" content="Family TV dashboard — weather, news, stocks, calendar, alerts">
+    <meta name="description" content="Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, glassmorphism, live weather, news, stocks, calendar, currency, and red alerts.">
+    <meta name="keywords" content="dashboard, family dashboard, TV display, Hebrew, RTL, Israel, glassmorphism, weather, stocks, news, calendar, currency, red alerts, smart home, vanilla JavaScript">
+    <meta name="author" content="Yair Rajwan">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://rajwanyair.github.io/FamilyDashBoard/">
+    <meta property="og:title" content="רגואן Family Dashboard">
+    <meta property="og:description" content="Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, live weather/news/stocks/calendar.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rajwanyair.github.io/FamilyDashBoard/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="רגואן Family Dashboard">
+    <meta name="twitter:description" content="Single-file, zero-dependency family dashboard for always-on TV display.">
+    <meta name="theme-color" content="#060b14">
     <link rel="preconnect" href="https://api.open-meteo.com">
     <link rel="preconnect" href="https://www.hebcal.com">
     <link rel="preconnect" href="https://api.allorigins.win">
@@ -19,7 +31,7 @@
             --bg-card: rgba(15, 23, 42, 0.78);
             --bg-card-header: rgba(30, 41, 59, 0.88);
             --bg-card-inner: rgba(30, 41, 59, 0.45);
-            --bg-card-hover: rgba(51, 65, 85, 0.5);
+            --bg-card-hover: rgba(51, 65, 85, 0.25);
             --accent: #60a5fa;
             --accent-bright: #93c5fd;
             --accent-glow: rgba(96, 165, 250, 0.18);
@@ -50,7 +62,7 @@
             --bg-card: rgba(10, 10, 10, 0.92);
             --bg-card-header: rgba(18, 18, 18, 0.96);
             --bg-card-inner: rgba(18, 18, 18, 0.70);
-            --bg-card-hover: rgba(30, 30, 30, 0.85);
+            --bg-card-hover: rgba(30, 30, 30, 0.45);
             --card-border: 1px solid rgba(96, 165, 250, 0.12);
             --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
             --bg-gradient-1: rgba(96,165,250,0.03);
@@ -64,7 +76,7 @@
             --bg-card: rgba(15, 23, 42, 0.78);
             --bg-card-header: rgba(30, 41, 59, 0.88);
             --bg-card-inner: rgba(30, 41, 59, 0.45);
-            --bg-card-hover: rgba(51, 65, 85, 0.5);
+            --bg-card-hover: rgba(51, 65, 85, 0.25);
             --bg-gradient-1: rgba(96,165,250,0.06);
             --bg-gradient-2: rgba(52,211,153,0.04);
             --bg-gradient-3: rgba(139,92,246,0.04);
@@ -76,7 +88,7 @@
             --bg-card: rgba(0, 20, 0, 0.88);
             --bg-card-header: rgba(0, 30, 0, 0.95);
             --bg-card-inner: rgba(0, 25, 0, 0.65);
-            --bg-card-hover: rgba(0, 40, 0, 0.75);
+            --bg-card-hover: rgba(0, 40, 0, 0.35);
             --accent: #00ff41;
             --accent-bright: #69ff47;
             --accent-glow: rgba(0,255,65,0.18);
@@ -95,7 +107,7 @@
             --bg-card: rgba(25, 15, 0, 0.88);
             --bg-card-header: rgba(40, 22, 0, 0.95);
             --bg-card-inner: rgba(35, 18, 0, 0.65);
-            --bg-card-hover: rgba(55, 30, 0, 0.75);
+            --bg-card-hover: rgba(55, 30, 0, 0.35);
             --accent: #fbbf24;
             --accent-bright: #fcd34d;
             --accent-glow: rgba(251,191,36,0.18);
@@ -115,7 +127,7 @@
             --bg-card: rgba(20, 5, 45, 0.88);
             --bg-card-header: rgba(35, 12, 70, 0.95);
             --bg-card-inner: rgba(30, 8, 55, 0.65);
-            --bg-card-hover: rgba(50, 18, 80, 0.75);
+            --bg-card-hover: rgba(50, 18, 80, 0.35);
             --accent: #c084fc;
             --accent-bright: #d8b4fe;
             --accent-glow: rgba(192,132,252,0.18);

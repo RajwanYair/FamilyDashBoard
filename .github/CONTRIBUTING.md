@@ -10,7 +10,11 @@
 
 ## Code of Conduct
 
-Be respectful, inclusive, and constructive.
+This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Be respectful, inclusive, and constructive.
+
+## Questions?
+
+For questions, ideas, or help, please use [GitHub Discussions](https://github.com/RajwanYair/FamilyDashBoard/discussions) instead of opening issues.
 
 ## Getting Started
 
@@ -86,10 +90,36 @@ ci: add Lighthouse performance audit
 
 1. Create a feature branch from `main`
 2. Make changes following the coding standards
-3. Test in Chrome + Firefox, full-screen mode
-4. Verify RTL layout is intact
-5. Open a PR using the template
-6. Wait for CI to pass
+3. Run linters and tests (see below)
+4. Test in Chrome + Firefox, full-screen mode
+5. Verify RTL layout is intact
+6. Open a PR using the template
+7. Wait for CI to pass
+
+## Linting
+
+The project uses three linters (zero local install — all run via `npx`):
+
+```bash
+# HTML
+npx htmlhint BestDashBoard.html
+
+# CSS (extract from HTML first)
+# Runs automatically in CI
+
+# JS (extract from HTML first)
+# Runs automatically in CI
+```
+
+## Testing
+
+342 tests / 44 suites using the Node.js built-in test runner (zero dependencies):
+
+```bash
+node --test tests/dashboard.test.mjs
+```
+
+Requires **Node.js 18+**. All tests must pass before merging.
 
 ## What NOT To Do
 
