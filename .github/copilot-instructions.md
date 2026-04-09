@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.5**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.6**.
 
 ## Technical Stack
 
@@ -13,7 +13,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance (stocks via proxy), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 361 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 397 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -34,10 +34,10 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 
 ### UI Layout
 
-- **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge, emoji
+- **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge (no decorative emoji)
 - **Ticker bar**: Daily halacha from Sefaria.org (reference badge + numbered segments, seamless loop)
-- **Top row** (3 columns — 42/30/28%): News RSS (17 feeds) | Google Calendar (native ICS) | Stocks (6 symbols) + Red Alerts (toggleable via `A` key)
-- **Bottom row** (3 columns — 42/28/30%): Weather (split-panel: current + 2×2 details + RTL hourly chart + 4-day forecast) | Currency exchange | Motivation (50 static Hebrew quotes)
+- **Top row** (3 columns — 42/30/28%, 65% height): News RSS (17 feeds) | Google Calendar (native ICS) | Stocks (6 symbols) + Red Alerts (toggleable via `A` key, **off by default**)
+- **Bottom row** (3 columns — 42/28/30%, 35% height): Weather (split-panel: current + closest sun event + RTL hourly chart + 4-day forecast) | Currency USD+EUR only (30vh cap) | Motivation (50 static Hebrew quotes, 30vh cap)
 - **Status bar**: Version, day/year progress bars, last refresh time
 
 ### Cache Architecture
@@ -125,7 +125,7 @@ function fetchWithTimeout(url, ms = 8000) {
 | Calendar | 15 min | ICS parse, iframe fallback |
 | Weather | 30 min | Open-Meteo |
 | Currency | 1 hour | ER-API + fallback |
-| Motivation | 4 hours | Static quotes, no network |
+| Motivation | 2 min | Static quotes, no network, cycles through 50 quotes |
 | Hebrew date | 3 hours | Hebcal |
 | Shabbat | 6 hours | Hebcal |
 | Holidays | 12 hours | Hebcal |

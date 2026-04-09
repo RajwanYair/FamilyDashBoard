@@ -18,8 +18,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.5-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-361_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.6-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-397_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -77,7 +77,7 @@ Split-panel layout: **right half** shows current conditions (icon + temperature 
 
 ### 💱 Currency Exchange
 
-Live USD/ILS, EUR/ILS, GBP/ILS rates from open exchange rate APIs with colored trend indicators.
+Live USD/ILS and EUR/ILS rates from open exchange rate APIs with colored trend indicators. GBP removed; layout optimized for 2-item display.
 
 ### 🕯️ Shabbat & Holidays
 
@@ -85,7 +85,7 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 
 ### 💪 Motivation
 
-**50 curated Hebrew quotes** with smooth crossfade animation. No network needed — purely static. Refreshes every **4 hours**.
+**50 curated Hebrew quotes** with smooth crossfade animation. No network needed — purely static. Cycles every **2 minutes** for continuous TV display.
 
 ### ⏱️ Smart Dashboard
 
@@ -96,7 +96,9 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 - **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
 - **6 card entrance animations** — random direction per card, attention loop every 5min
 - **Card maximize** — click any card header to expand it full-screen (FLIP animation), click again or press `Escape` to restore
-- **Alerts toggle** — press `A` or use dropdown to show/hide red alerts pane; persisted in localStorage
+- **Alerts toggle** — press `A` or use dropdown to show/hide red alerts pane; **off by default**, persisted in localStorage
+- **Auto hard-reload every 1h** — picks up HTML file changes without manual browser refresh; defers when tab is hidden
+- **Closest sun event** — weather detail shows next upcoming sunrise or sunset based on current time
 - **Daily Halacha ticker** — daily halacha from Sefaria.org with reference badge and numbered segments
 - **Animated number transitions** — smooth counting effect on temperature, stock prices, and currency values
 - **Exponential backoff** — failed API fetches retry with increasing delays
@@ -137,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
-> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (361 tests, 44 suites, zero dependencies).
+> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (397 tests, 44 suites, zero dependencies).
 
 ---
 

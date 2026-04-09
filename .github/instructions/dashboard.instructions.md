@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.5**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.6**.
 
 ## CSS Rules
 
@@ -87,7 +87,7 @@ async function fetchJSON(url) {
 - Close via: click header again, or press `Escape`
 - CSS: `.card.maximized` (fixed + z-index 900 + transition), `.card.card-hidden` (opacity 0)
 
-## Utility Functions (v4.5)
+## Utility Functions (v4.6)
 
 - `animateNumber(el, from, to, decimals, duration)`: smooth counting animation on numeric values
 - `getBackoff(name)` / `recordFailure(name)` / `recordSuccess(name)`: exponential backoff for failed API retries
