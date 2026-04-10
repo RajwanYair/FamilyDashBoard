@@ -40,6 +40,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.8.1] — 2026-04-10
+
+### Changed
+- **Card headers slimmer** — `padding` reduced from `5px 14px` → `3px 14px`, `font-size` from `1.15em` → `0.95em`, `letter-spacing` from `0.5px` → `0.3px`; icon badge shrunk (`1.6em` → `1.4em`); tablet and phone mode overrides updated proportionally; frees visible height in every card
+- **Per-card font density tuned** — font sizes and padding tightened per-card to match allocated screen space:
+  - Currency (15% height): flag `2.8em→1.8em`, rate `1.7em→1.3em`, body/item padding halved
+  - Hebrew Calendar (20%): label `0.72em→0.68em`, values `0.80em→0.76em`, saying `0.72em/lh1.45→0.66em/lh1.3`
+  - Weather (35%): icon `2em→1.6em`, temp `1.3em→1.1em`, desc `0.78em→0.72em`
+  - Motivation (33%): quote `1.25em→1.0em`, padding `16px→6px`, line-height `1.65→1.5`
+  - News (scrolls): item font `0.96em→0.88em`, item margin/padding trimmed for tighter density
+
+### Fixed
+- **Sefirat HaOmer not visible in Hebrew Calendar card** — `hc-special-row` was always present but empty (wasting space and pushing content out when data arrived); it now starts with `display:none` and is revealed by `loadHebCal()` only when Hebcal API returns omer items
+- **Shabbat candles + havdalah on separate rows** — merged into one row: `🕯️ נרות [time] | ✨ הבדלה [time]`; candle time shortened to just `HH:MM` (removed day name + Hebrew parasha text that overflowed)
+- **`hc-holiday-row` hidden until data loads** — previously rendered as an empty visible row on page load; now starts `display:none`, revealed when holiday data is available
+
+### Developer
+- **README stale test-count fixed** — badge, structure, and Getting Started section updated `398→362` and `342→362`
+- **README Roadmap section added** — documents planned versions (v4.9–v5.1) and release convention (HTML artifact + GitHub Pages + auto-release)
+- **Roadmap persisted in `copilot-instructions.md`** — future agents know the planned roadmap
+
+---
+
 ## [Unreleased]
 
 ---

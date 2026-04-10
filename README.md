@@ -19,7 +19,7 @@
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-4.8-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-398_passing-34d399?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-362_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
-> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (398 tests, 44 suites, zero dependencies).
+>  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (362 tests, 44 suites, zero dependencies).
 
 ---
 
@@ -205,7 +205,7 @@ FamilyDashBoard/
 ├── .editorconfig / .markdownlint.json
 ├── .gitignore / .gitattributes
 ├── tests/
-│   └── dashboard.test.mjs          # 342 tests, 44 suites (Node.js built-in runner)
+|   └── dashboard.test.mjs          # 362 tests, 44 suites (Node.js built-in runner)
 ├── .github/
 │   ├── assets/                     # SVG graphics for docs
 │   ├── agents/                     # Copilot custom agents
@@ -291,9 +291,28 @@ This project leverages extensive GitHub features:
 | **Issue Templates** | YAML forms for bugs, features, API issues with auto-labeling |
 | **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories |
 | **Dependabot** | Weekly updates for GitHub Actions dependencies |
-| **Copilot Integration** | 2 custom agents, 5 modes, 3 prompts, 3 instruction files |
+| **Copilot Integration** | 2 custom agents, 4 skills, 3 prompts, 3 instruction files |
 | **Community Health** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS |
 | **Auto Release Notes** | 8-category changelog via `release.yml` |
+
+---
+
+## 🗺️ Roadmap
+
+> Each planned item ships as a numbered release with `BestDashBoard.html` attached to the GitHub Release and live on GitHub Pages. No build artifacts — the HTML file IS the deliverable.
+
+| Version | Target Feature | Status |
+|---------|---------------|--------|
+| **v4.8.x** | Card header UX polish, per-card font density, Omer display fix | ✅ Done |
+| **v4.9** | Parashat HaShavua (weekly Torah portion) in Hebrew Calendar card | 🔜 Planned |
+| **v4.9** | Bus/transit next departures for configurable stop (Egged/MoovIT) | 🔜 Planned |
+| **v4.10** | Parasha Aliyot summary (short) from Sefaria | 🔜 Planned |
+| **v4.10** | Temperature unit toggle (°C / °F) stored in `localStorage` | 🔜 Planned |
+| **v5.0** | PWA manifest + ServiceWorker → full offline support, installable on TV | 🔜 Planned |
+| **v5.1** | Push notifications for red alerts via Web Push API | 🔜 Planned |
+| **Future** | Multi-family config (family name, city, ICS URL) via `?config=` URL param | 💡 Idea |
+
+> **Release convention:** Every version bump commits `BestDashBoard.html`, updates `CHANGELOG.md`, bumps the badge in `README.md`, tags `vX.Y.Z`, and pushes. GitHub Actions `release.yml` automatically attaches `BestDashBoard.html` to the GitHub Release. `deploy.yml` publishes to GitHub Pages within ~30 seconds of the push.
 
 ---
 

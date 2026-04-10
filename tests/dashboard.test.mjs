@@ -31,7 +31,10 @@ const scriptContent = scriptMatch ? scriptMatch[1] : "";
 // ═══════════════════════════════════════════════════════════════════
 describe("HTML Structure", () => {
   it("should have DOCTYPE declaration", () => {
-    assert.ok(html.replace(/^\uFEFF/, "").startsWith("<!DOCTYPE html>"), "Missing DOCTYPE");
+    assert.ok(
+      html.replace(/^\uFEFF/, "").startsWith("<!DOCTYPE html>"),
+      "Missing DOCTYPE",
+    );
   });
 
   it("should have RTL direction and Hebrew lang", () => {
@@ -53,9 +56,9 @@ describe("HTML Structure", () => {
 
   it("should contain the main grid layout", () => {
     assert.ok(html.includes('class="grids-area"'), "Missing grids-area");
-    assert.ok(html.includes('grid-col-left'), "Missing grid-col-left");
-    assert.ok(html.includes('grid-col-mid'), "Missing grid-col-mid");
-    assert.ok(html.includes('grid-col-right'), "Missing grid-col-right");
+    assert.ok(html.includes("grid-col-left"), "Missing grid-col-left");
+    assert.ok(html.includes("grid-col-mid"), "Missing grid-col-mid");
+    assert.ok(html.includes("grid-col-right"), "Missing grid-col-right");
   });
 
   it("should have all 7 card panels", () => {
@@ -1761,8 +1764,11 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.8", () => {
-    assert.ok(html.includes("Dashboard v4.8"), "Missing version v4.8 in status bar");
+  it("should display version v4.8.1", () => {
+    assert.ok(
+      html.includes("Dashboard v4.8.1"),
+      "Missing version v4.8.1 in status bar",
+    );
   });
 
   it("should have day progress bar", () => {
@@ -2130,7 +2136,8 @@ describe("Screen Mode System", () => {
   it("phone mode should disable content-visibility auto", () => {
     assert.ok(
       html.includes("mode-phone") &&
-        (html.includes("content-visibility: visible") || html.includes("overflow: visible")),
+        (html.includes("content-visibility: visible") ||
+          html.includes("overflow: visible")),
       "Phone mode should set content-visibility: visible or overflow: visible to prevent invisible cards",
     );
   });

@@ -263,16 +263,16 @@
         .card:nth-child(3) { animation-delay: 0.15s; }
         .card-header {
             background: var(--bg-card-header); color: var(--accent);
-            padding: 5px 14px; font-weight: 700; text-align: center;
-            position: relative; font-size: 1.15em; flex-shrink: 0;
-            letter-spacing: 0.5px;
+            padding: 3px 14px; font-weight: 700; text-align: center;
+            position: relative; font-size: 0.95em; flex-shrink: 0;
+            letter-spacing: 0.3px;
             border-bottom: 1px solid rgba(96, 165, 250, 0.06);
             background-image: linear-gradient(90deg, transparent, rgba(96,165,250,0.03), transparent);
         }
         .card-header .icon-badge {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 1.6em; height: 1.6em; border-radius: 8px; margin-left: 4px;
-            font-size: 1.1em; vertical-align: middle;
+            width: 1.4em; height: 1.4em; border-radius: 6px; margin-left: 3px;
+            font-size: 1em; vertical-align: middle;
         }
         .icon-badge.blue { background: rgba(96,165,250,0.18); }
         .icon-badge.green { background: rgba(52,211,153,0.18); }
@@ -327,9 +327,9 @@
         .rss-scroll { display: flex; flex-direction: column; animation: newsScroll 60s linear infinite; will-change: transform; }
         .rss-scroll:hover { animation-play-state: paused; }
         .rss-item {
-            background: var(--bg-card-inner); padding: 5px 10px; margin: 3px 8px;
+            background: var(--bg-card-inner); padding: 4px 10px; margin: 2px 8px;
             border-radius: 8px; border-right: 3px solid var(--accent);
-            font-size: 0.96em; cursor: pointer; transition: all .2s ease;
+            font-size: 0.88em; cursor: pointer; transition: all .2s ease;
             flex-shrink: 0; display: flex; align-items: baseline; gap: 6px;
         }
         .rss-item:nth-child(odd) { border-right-color: var(--cyan); }
@@ -372,14 +372,16 @@
         .cal-empty { font-size: 0.78em; color: var(--text-muted); text-align: center; padding: 16px; }
 
         /* ── Hebrew Calendar Card ── */
-        .hebcal-body { flex: 1; overflow-y: auto; padding: 5px 8px; display: flex; flex-direction: column; gap: 3px; }
-        .hc-row { display: flex; align-items: baseline; gap: 6px; padding: 2px 0; }
-        .hc-label { font-size: 0.72em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; min-width: 4.5em; }
-        .hc-val { font-size: 0.80em; font-weight: 600; color: var(--text-primary); }
+        .hebcal-body { flex: 1; overflow-y: auto; padding: 3px 6px; display: flex; flex-direction: column; gap: 2px; }
+        .hc-row { display: flex; align-items: baseline; gap: 6px; padding: 1px 0; }
+        .hc-label { font-size: 0.68em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; min-width: 4.5em; }
+        .hc-val { font-size: 0.76em; font-weight: 600; color: var(--text-primary); }
+        .hc-shab-row .hc-label { min-width: 0; }
+        .hc-sep { font-size: 0.68em; color: var(--text-muted); flex-shrink: 0; padding: 0 3px; }
         .hc-special-row { justify-content: center; padding: 1px 0; }
-        .hc-special { font-size: 0.78em; font-weight: 700; color: var(--positive); text-align: center; }
-        .hc-divider { border-top: 1px solid var(--accent-border); margin: 3px 0; }
-        .hc-saying { font-size: 0.72em; color: var(--text-secondary); font-style: italic; line-height: 1.45; text-align: center; padding: 2px 4px; }
+        .hc-special { font-size: 0.74em; font-weight: 700; color: var(--positive); text-align: center; }
+        .hc-divider { border-top: 1px solid var(--accent-border); margin: 2px 0; }
+        .hc-saying { font-size: 0.66em; color: var(--text-secondary); font-style: italic; line-height: 1.3; text-align: center; padding: 1px 4px; }
 
         /* ── Stocks ── */
         .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
@@ -410,13 +412,13 @@
         .stk-logo-fb { width: 18px; height: 18px; border-radius: 4px; font-size: 0.52em; font-weight: 800; color: #fff; line-height: 18px; text-align: center; display: inline-block; background: var(--accent-border); flex-shrink: 0; letter-spacing: -0.5px; }
 
         /* ── Weather ── */
-        .weather-body { flex: 1; display: flex; flex-direction: column; padding: 4px 6px; min-height: 0; overflow: hidden; }
+        .weather-body { flex: 1; display: flex; flex-direction: column; padding: 3px 6px; min-height: 0; overflow: hidden; }
         .wx-top-row { display: flex; flex-direction: row; gap: 6px; margin-bottom: 2px; flex: 0 0 auto; min-height: 0; overflow: hidden; }
         .wx-current { flex: 1 1 50%; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
-        .wx-icon { font-size: 2em; line-height: 1; }
+        .wx-icon { font-size: 1.6em; line-height: 1; }
         .wx-info { text-align: center; }
-        .wx-temp-main { font-size: 1.3em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
-        .wx-desc { font-size: 0.78em; color: var(--text-secondary); }
+        .wx-temp-main { font-size: 1.1em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
+        .wx-desc { font-size: 0.72em; color: var(--text-secondary); }
         .wx-details { flex: 1 1 50%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; font-size: 0.68em; }
         .wx-detail { background: var(--bg-card-inner); border-radius: 6px; padding: 3px 3px; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wx-detail:hover { transform: scale(1.05); }
@@ -434,19 +436,19 @@
         .wx-fday-temp { font-size: 0.72em; font-weight: 700; margin-inline-start: auto; white-space: nowrap; }
 
         /* ── Currency ── */
-        .currency-body { flex: 1; display: flex; flex-direction: row; gap: 10px; padding: 12px; }
+        .currency-body { flex: 1; display: flex; flex-direction: row; gap: 8px; padding: 5px 8px; }
         .cur-item {
-            background: var(--bg-card-inner); border-radius: 12px; padding: 14px 10px;
-            display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;
+            background: var(--bg-card-inner); border-radius: 10px; padding: 5px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1;
             text-align: center;
         }
-        .cur-flag { font-size: 2.8em; flex-shrink: 0; display: flex; align-items: center; line-height: 1; }
+        .cur-flag { font-size: 1.8em; flex-shrink: 0; display: flex; align-items: center; line-height: 1; }
         .cur-item:nth-child(1) { border-bottom: 3px solid var(--accent); }
         .cur-item:nth-child(2) { border-bottom: 3px solid var(--purple); }
         .cur-info { flex: 1; }
-        .cur-pair { font-size: 0.8em; color: var(--text-muted); font-weight: 600; letter-spacing: 0.04em; }
-        .cur-rate { font-size: 1.7em; font-weight: 800; color: var(--text-primary); }
-        .cur-chg { font-size: 0.8em; font-weight: 600; transition: color 0.3s; min-height: 1em; }
+        .cur-pair { font-size: 0.72em; color: var(--text-muted); font-weight: 600; letter-spacing: 0.04em; }
+        .cur-rate { font-size: 1.3em; font-weight: 800; color: var(--text-primary); }
+        .cur-chg { font-size: 0.72em; font-weight: 600; transition: color 0.3s; min-height: 1em; }
         .cur-chg.positive { color: var(--positive); }
         .cur-chg.negative { color: var(--negative); }
         .cur-chart { width: 100%; height: 26px; flex-shrink: 0; }
@@ -475,16 +477,16 @@
         @keyframes liveBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         /* ── Motivation ── */
-        .moti-body { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .moti-body { flex: 1; display: flex; align-items: center; justify-content: center; padding: 6px; }
         .moti-card {
-            padding: 18px; border-radius: 12px;
+            padding: 10px 12px; border-radius: 12px;
             text-align: center; border-right: 4px solid var(--accent);
             width: 100%; transition: opacity 0.8s ease;
             background: linear-gradient(135deg, var(--bg-card-inner) 0%, rgba(96,165,250,0.06) 50%, rgba(167,139,250,0.06) 100%);
         }
-        .moti-text { font-size: 1.25em; line-height: 1.65; font-style: italic; margin-bottom: 10px; background: linear-gradient(90deg, var(--text-primary) 0%, var(--accent-bright) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .moti-author { font-size: 0.85em; color: var(--accent); font-weight: 600; }
-        .moti-src { font-size: 0.68em; color: var(--text-muted); margin-top: 4px; }
+        .moti-text { font-size: 1.0em; line-height: 1.5; font-style: italic; margin-bottom: 6px; background: linear-gradient(90deg, var(--text-primary) 0%, var(--accent-bright) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .moti-author { font-size: 0.80em; color: var(--accent); font-weight: 600; }
+        .moti-src { font-size: 0.65em; color: var(--text-muted); margin-top: 3px; }
 
         /* ── Status Bar ── */
         .status-bar {
@@ -543,11 +545,11 @@
         body.mode-tablet .hebrew-date { font-size: 1.05em; }
         body.mode-tablet .top-temp { font-size: 1.2em; }
         body.mode-tablet .header-emoji { font-size: 2.4em; }
-        body.mode-tablet .card-header { font-size: 1em; padding: 8px 10px; }
+        body.mode-tablet .card-header { font-size: 0.88em; padding: 4px 10px; }
         body.mode-tablet .stk-price { font-size: 1.15em; }
-        body.mode-tablet .rss-item { font-size: 0.86em; padding: 7px 9px; }
-        body.mode-tablet .wx-temp-main { font-size: 1.5em; }
-        body.mode-tablet .moti-text { font-size: 1.05em; }
+        body.mode-tablet .rss-item { font-size: 0.82em; padding: 4px 9px; }
+        body.mode-tablet .wx-temp-main { font-size: 1.15em; }
+        body.mode-tablet .moti-text { font-size: 0.92em; }
         body.mode-tablet .ticker-bar { height: 30px; }
         body.mode-tablet .ticker-item { font-size: 0.72em; }
         body.mode-tablet .time-section { padding: 8px 14px; }
@@ -557,7 +559,7 @@
         body.mode-phone .header-emoji { font-size: 1.8em; }
         body.mode-phone .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
         body.mode-phone .header-left, body.mode-phone .header-right { align-items: center; flex: 1 1 100%; }
-        body.mode-phone .card-header { font-size: 0.9em; }
+        body.mode-phone .card-header { font-size: 0.82em; padding: 3px 8px; }
         body.mode-phone .ticker-bar { height: 26px; }
         body.mode-phone .ticker-item { font-size: 0.62em; }
         /* Phone: single column layout */
@@ -650,8 +652,7 @@
             .ticker-bar { height: 30px; }
             .ticker-item { font-size: 0.7em; padding: 0 10px; }
             .ticker-label { font-size: 0.65em; padding: 0 8px; }
-            .card-header { font-size: 1em; }
-            .stk-price { font-size: 1.2em; }
+            .card-header { font-size: 0.88em; padding: 3px 10px; }
         }
         @media (max-width: 480px) {
             body { font-size: 12px; }
@@ -666,7 +667,7 @@
             .ticker-bar { height: 26px; }
             .ticker-item { font-size: 0.62em; padding: 0 8px; }
             .ticker-label { font-size: 0.6em; padding: 0 6px; }
-            .card-header { font-size: 0.9em; }
+            .card-header { font-size: 0.82em; padding: 2px 8px; }
             .stk-price { font-size: 1em; }
             .stk-sym { font-size: 0.8em; }
             .rss-item { font-size: 0.82em; }
@@ -932,10 +933,9 @@
             <div class="card">
               <div class="card-header"><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
-                <div class="hc-row" id="hc-shabbat"><span class="hc-label">🕯️ שבת</span><span class="hc-val skeleton" id="hc-candles">טוען...</span></div>
-                <div class="hc-row" id="hc-havdala-row"><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
-                <div class="hc-row" id="hc-holiday-row"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
-                <div class="hc-row hc-special-row" id="hc-special-row"><span class="hc-val hc-special" id="hc-special"></span></div>
+                <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
+                <div class="hc-row" id="hc-holiday-row" style="display:none"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
+                <div class="hc-row hc-special-row" id="hc-special-row" style="display:none"><span class="hc-val hc-special" id="hc-special"></span></div>
                 <div class="hc-divider"></div>
                 <div class="hc-saying" id="hc-saying">טוען...</div>
               </div>
@@ -1001,7 +1001,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.8 — משפחת רגואן</span>
+            <span>Dashboard v4.8.1 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1013,7 +1013,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.8 — 3-Column Layout · Hebrew Calendar Card · Brand-Color Stock Logos
+       FAMILY DASHBOARD v4.8.1 — 3-Column Layout · Hebrew Calendar Card · Brand-Color Stock Logos
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1362,9 +1362,7 @@
                     const hvdl = d2.items.find(i => i.category === 'havdalah');
                     if (cndl) {
                         const dt = new Date(cndl.date);
-                        const dayName = dt.toLocaleDateString('he-IL', { weekday: 'long', timeZone: 'Asia/Jerusalem' });
-                        candleStr = dayName + ' ' + dt.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
-                        if (cndl.hebrew) candleStr += ' — ' + cndl.hebrew;
+                        candleStr = dt.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
                     }
                     if (hvdl) havdalaStr = new Date(hvdl.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
                 }

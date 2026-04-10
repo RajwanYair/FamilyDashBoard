@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.8**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.8.1**.
 
 ## Technical Stack
 
@@ -13,7 +13,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance (stocks via proxy), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 398 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 362 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -148,6 +148,32 @@ function fetchWithTimeout(url, ms = 8000) {
 - `prefers-reduced-motion` disables all animations
 - Fetch locks prevent duplicate concurrent requests per pane
 - Page Visibility API pauses fetches when tab is hidden
+
+## Release Convention
+
+This project has **no build artifacts** — it is a single HTML file. The release artifact IS `BestDashBoard.html`.
+
+Every version bump must:
+1. Update version string in `BestDashBoard.html` (2 places: status bar span + comment block)
+2. Update `CHANGELOG.md` with a full entry
+3. Update `README.md` badge + test count + structure
+4. Update `package.json` version
+5. Update version in `tests/dashboard.test.mjs` assertion
+6. Run `node --test tests/dashboard.test.mjs` — must be 0 fail, 0 skip
+7. `git commit` all files + `git tag vX.Y.Z` + `git push origin main --tags`
+8. GitHub Actions `release.yml` attaches `BestDashBoard.html` to the GitHub Release automatically
+9. GitHub Actions `deploy.yml` publishes to GitHub Pages automatically
+
+## Roadmap
+
+| Version | Feature | Status |
+|---------|---------|--------|
+| v4.8.x | Card UX polish, font density, Omer fix | ✅ Done |
+| v4.9 | Parashat HaShavua in Hebrew Calendar card | 🔜 Planned |
+| v4.9 | Bus/transit next departures (Egged/MoovIT) | 🔜 Planned |
+| v4.10 | Temperature toggle °C/°F in localStorage | 🔜 Planned |
+| v5.0 | PWA manifest + ServiceWorker full offline | 🔜 Planned |
+| v5.1 | Web Push notifications for red alerts | 🔜 Planned |
 
 ## What NOT To Do
 
