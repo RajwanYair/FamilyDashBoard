@@ -4,13 +4,13 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.8.1**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.8.2**.
 
 ## Technical Stack
 
 - **Language**: HTML5, vanilla CSS3, vanilla JavaScript (ES2020+)
 - **No build tools**: Zero dependencies — open the HTML file directly in a browser
-- **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance (stocks via proxy), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
+- **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance v8/chart (stocks via proxy), CoinGecko (BTC-USD fallback), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
 - **Tests**: 362 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
@@ -34,10 +34,10 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 
 ### UI Layout
 
-- **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge (no decorative emoji)
+- **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, market badge (no Shabbat/holiday in header — those are in the Hebrew Calendar card)
 - **Ticker bar**: Daily halacha from Sefaria.org (reference badge + numbered segments, seamless loop)
 - **Left column** (38%): News RSS (17 feeds, 65% height) | Weather (split-panel: current + closest sun event + RTL hourly chart + 4-day forecast, 35% height)
-- **Middle column** (33%): Hebrew Calendar card / לוח עברי (candle lighting, havdalah, holidays, omer, rabbi saying, 20%) | Google Calendar/ICS (65%) | Currency USD+EUR (15%)
+- **Middle column** (33%): Hebrew Calendar card / לוח עברי (candle lighting, havdalah, holidays, omer, rabbi saying, 20%) | Google Calendar/ICS (65%) | Currency USD+EUR side-by-side (15%)
 - **Right column** (29%): Stocks (14 symbols, brand-color logos, 33%) | Red Alerts (toggleable via `A` key, off by default, 33%) | Motivation (50 static Hebrew quotes, 33%)
 - **Status bar**: Version, day/year progress bars, last refresh time
 
@@ -168,12 +168,18 @@ Every version bump must:
 
 | Version | Feature | Status |
 |---------|---------|--------|
-| v4.8.x | Card UX polish, font density, Omer fix | ✅ Done |
-| v4.9 | Parashat HaShavua in Hebrew Calendar card | 🔜 Planned |
-| v4.9 | Bus/transit next departures (Egged/MoovIT) | 🔜 Planned |
+| v4.8.x | Card UX polish, font density, Omer fix, stock fetch fix, currency layout | ✅ Done |
+| v4.9 | Parashat HaShavua in Hebrew Calendar card (Hebcal + Sefaria) | 🔜 Planned |
+| v4.9 | Zmanim (prayer times) — Alot, Netz, Sof Zman Shma, Shkia in hc-card | 🔜 Planned |
+| v4.10 | Air Quality Index card (OpenWeatherMap AQI free tier) | 🔜 Planned |
 | v4.10 | Temperature toggle °C/°F in localStorage | 🔜 Planned |
+| v4.10 | School holiday indicator (parse from Hebcal) | 🔜 Planned |
+| v4.11 | Parasha Aliyot summary from Sefaria | 🔜 Planned |
+| v4.11 | Gold + Silver prices in currency card | 🔜 Planned |
 | v5.0 | PWA manifest + ServiceWorker full offline | 🔜 Planned |
 | v5.1 | Web Push notifications for red alerts | 🔜 Planned |
+| v5.2 | Config panel (city, calendar, stocks, feeds) + multi-city support | 🔜 Planned |
+| v5.3 | Family photo slideshow + transit departures | 💡 Idea |
 
 ## What NOT To Do
 

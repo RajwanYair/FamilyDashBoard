@@ -40,6 +40,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.8.2] — 2026-04-10
+
+### Changed
+- **Clock header slimmed** — `.time-section` padding `12px 20px → 6px 16px`, clock `3.4em → 2.9em`, greeting `0.95em → 0.82em`, hebrew-date `1.25em → 1.05em`, english-date `1em → 0.85em`, temp `1.5em → 1.2em`; frees ~30px vertical space for cards
+- **Shabbat/holiday/omer removed from clock header** — `shabbat-info`, `holiday-info`, and `omer-count` divs removed from `.header-left`; only `hebrew-date` remains in header; Shabbat and holiday data lives exclusively in the Hebrew Calendar card now
+- **Stock fetch overhauled** — removed dead `loadStocksBatch()` (Yahoo v6/quote returns 404); switched to per-symbol v8/chart bare URL via `raceProxies`; added CoinGecko fallback for BTC-USD (Yahoo crypto fails through CORS proxies); stock fetches now use `runConcurrent(..., 4)` instead of `Promise.allSettled`; timeout increased from 6s to 8s
+- **Currency card redesigned** — changed from vertical stacking (1×2) to side-by-side (2×1) horizontal layout; each tile: flag → pair → rate → change% in a single row; flag `1.8em → 1.1em`, rate `1.3em → 0.88em`, pair `0.72em`, chg `0.62em`; used `₪` symbol; border moved from bottom to left-side accent
+- **Card maximize enhanced** — maximized cards now scale font and center content per body type: news `1.35em`, stocks `1.3em`, alerts `1.35em`, currency `1.5em` centered, motivation `1.4em` centered, heb-cal `1.3em` centered, calendar `1.2em`
+- **Roadmap expanded** — 6-phase roadmap (v4.9–v5.3+) with 20+ planned features; replaced flat table with phased sections in README and copilot-instructions
+
+### Fixed
+- **Page blink on load** — `init()` was called twice (both `DOMContentLoaded` listener AND `readyState` fallback fired simultaneously); changed to exclusive `if/else`
+- **Auto hard-reload removed** — `setTimeout(() => location.reload())` every 1h removed entirely; was causing unexpected page resets on always-on TV
+- **loadShabbat TypeError** — `el.shabbat` was `null` after `shabbat-info` removal; added `if (!el.shabbat) return;` guard
+- **`[object Object]` in heb-cal saying** — MOTIVATIONS entries use `.t`/`.a` properties, not `.text`/`.author`; fixed `hcSaying` render
+- **Omer sunset logic** — added sunset-aware date correction to special items fetch in `loadHebCal` (same logic as `loadOmer`)
+
+### Developer
+- **Tests updated** — 5 test assertions fixed for removed header elements (`omer-count`, `shabbat-info`, `holiday-info`) and stock fetch changes (v6 batch → v8 per-symbol + runConcurrent); 362 tests / 44 suites all passing
+- **Repo memory updated** — Yahoo v6 deprecation, CoinGecko fallback, Hebcal geonameid quirk, MOTIVATIONS property names documented
+
+---
+
 ## [4.8.1] — 2026-04-10
 
 ### Changed

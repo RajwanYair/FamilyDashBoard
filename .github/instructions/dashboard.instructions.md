@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.8.1**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.8.2**.
 
 ## CSS Rules
 
@@ -107,17 +107,20 @@ async function fetchJSON(url) {
 - **Middle**: RTL hourly temperature SVG chart (max-height 48px, x-axis right-to-left)
 - **Bottom**: 4-day forecast grid with compact icons/fonts
 
-## Font Size Guidelines (TV-first, v4.8.1)
+## Font Size Guidelines (TV-first, v4.8.2)
 
 - Base font: 21px (body)
-- Clock: 3.4em
+- Clock: **2.9em** (slimmed from 3.4em)
+- Greeting: **0.82em**
+- Hebrew date: **1.05em**, English date: **0.85em**
+- Top temperature: **1.2em**
 - Card headers: **0.95em**, font-weight 700, padding **3px 14px** (icon badge 1.4em)
 - Stock prices: 1.2em (`.stk-price`)
 - Weather icon: **1.6em**, temp: **1.1em**, desc: **0.72em**
 - Weather details grid: 0.68em
 - Forecast day name: 0.7em, icon: 0.9em, temp: 0.72em
 - News item: **0.88em**, margin 2px, padding 4px 10px
-- Currency flag: **1.8em**, rate: **1.3em**, change: 0.72em
+- Currency flag: **1.1em**, rate: **0.88em**, pair: **0.72em**, change: **0.62em** (side-by-side 2×1 layout)
 - Motivation quote: **1.0em**, line-height 1.5, padding 10px 12px
 - Hebrew Calendar: label 0.68em, value 0.76em, saying 0.66em
 
@@ -144,12 +147,15 @@ async function fetchJSON(url) {
 - `renderHalacha(data)`: reference badge + numbered segments, seamless scroll loop
 - 12-hour cache (`cSet`/`cGet` with 12h TTL)
 
-## Stock Batch & Race Pattern
+## Stock Per-Symbol Fetch & Race Pattern
 
-- `loadStocksBatch()`: fetches all 6 symbols in a single batch API call
+- `loadStockSingle(sym)`: fetches one symbol at a time via Yahoo v8/chart bare URL (no query params — adding params causes allorigins 522)
 - `raceProxies(url)`: `Promise.any()` across all CORS proxies for fastest response
+- `runConcurrent(tasks, 4)`: limits parallel fetches to 4 at a time to avoid rate limiting
+- BTC-USD: CoinGecko fallback (`api.coingecko.com/api/v3/simple/price`) — Yahoo crypto fails through CORS proxies
 - Adaptive refresh: 5 min during market hours, 30 min off-hours
 - Market open detection: checks NYSE/NASDAQ hours in US Eastern time
+- Timeout: 8000ms via `fetchWithTimeout`
 
 ## Performance Optimizations
 

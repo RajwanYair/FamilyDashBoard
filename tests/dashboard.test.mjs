@@ -126,11 +126,14 @@ describe("HTML Structure", () => {
     }
   });
 
-  it("should have Sefirat HaOmer element", () => {
-    assert.ok(html.includes('id="omer-count"'), "Missing omer-count element");
+  it("should have Sefirat HaOmer support", () => {
     assert.ok(
-      html.includes('class="omer-count"'),
-      "Missing omer-count CSS class",
+      html.includes('.omer-count'),
+      "Missing omer-count CSS rule",
+    );
+    assert.ok(
+      scriptContent.includes('loadOmer'),
+      "Missing loadOmer function",
     );
   });
 
@@ -1293,15 +1296,19 @@ describe("Stocks Card", () => {
     );
   });
 
-  it("should use batch v6 fetch for all symbols", () => {
+  it("should use per-symbol v8 fetch with runConcurrent", () => {
     assert.ok(
-      scriptContent.includes("loadStocksBatch") &&
-        scriptContent.includes("/v6/finance/quote"),
-      "Stocks should use batch v6 for all symbols at once",
+      scriptContent.includes("loadStockSingle") &&
+        scriptContent.includes("/v8/finance/chart/"),
+      "Stocks should use per-symbol v8 chart endpoint",
+    );
+    assert.ok(
+      scriptContent.includes("runConcurrent"),
+      "Stock fetches should use runConcurrent for rate limiting",
     );
   });
 
-  it("should race proxies instead of sequential fallback", () => {
+  it("should race proxies for stock fetches", () => {
     assert.ok(
       scriptContent.includes("raceProxies") &&
         scriptContent.includes("Promise.any"),
@@ -1740,12 +1747,13 @@ describe("Header Component", () => {
     );
   });
 
-  it("should have Shabbat info element", () => {
-    assert.ok(html.includes('id="shabbat-info"'), "Missing shabbat-info");
+  it("should have Shabbat info in Hebrew Calendar card", () => {
+    assert.ok(html.includes('id="hc-candles"'), "Missing hc-candles in hc-card");
+    assert.ok(html.includes('id="hc-havdala"'), "Missing hc-havdala in hc-card");
   });
 
-  it("should have holiday info element", () => {
-    assert.ok(html.includes('id="holiday-info"'), "Missing holiday-info");
+  it("should have holiday info in Hebrew Calendar card", () => {
+    assert.ok(html.includes('id="hc-holiday"'), "Missing hc-holiday in hc-card");
   });
 
   it("should display time in Asia/Jerusalem timezone", () => {
@@ -1764,10 +1772,10 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.8.1", () => {
+  it("should display version v4.8.2", () => {
     assert.ok(
-      html.includes("Dashboard v4.8.1"),
-      "Missing version v4.8.1 in status bar",
+      html.includes("Dashboard v4.8.2"),
+      "Missing version v4.8.2 in status bar",
     );
   });
 
@@ -2725,10 +2733,10 @@ describe("Performance Optimizations", () => {
     );
   });
 
-  it("should use batch stock API with proxy racing", () => {
+  it("should use per-symbol stock API with proxy racing", () => {
     assert.ok(
-      scriptContent.includes("loadStocksBatch") && scriptContent.includes("raceProxies"),
-      "Stock fetches should use batch API with proxy racing",
+      scriptContent.includes("loadStockSingle") && scriptContent.includes("raceProxies"),
+      "Stock fetches should use per-symbol v8 API with proxy racing",
     );
   });
 

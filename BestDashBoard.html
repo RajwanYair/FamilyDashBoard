@@ -194,31 +194,31 @@
         }
         .ticker-src { color: var(--accent); font-weight: 600; font-size: 0.85em; text-shadow: 0 0 6px var(--accent-glow); }
         @keyframes tickerScroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
         }
 
         /* ── Header ── */
         .time-section {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--bg-card); backdrop-filter: blur(16px);
-            padding: 12px 20px; border-radius: var(--border-radius);
+            padding: 6px 16px; border-radius: var(--border-radius);
             border: var(--card-border); box-shadow: var(--card-shadow);
             flex: 0 0 auto;
             border-bottom: 2px solid transparent;
             border-image: linear-gradient(90deg, var(--accent), var(--cyan), var(--purple), var(--pink), var(--orange), var(--warning)) 1;
         }
-        .header-left, .header-right { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+        .header-left, .header-right { display: flex; flex-direction: column; flex: 1; gap: 1px; }
         .header-left { align-items: flex-start; }
         .header-right { align-items: flex-end; }
-        .header-center { flex: 1.5; text-align: center; }
-        .clock { font-size: 3.4em; font-weight: 800; color: var(--accent); letter-spacing: 3px; text-shadow: 0 0 30px var(--accent-glow); line-height: 1; background: linear-gradient(135deg, var(--accent) 0%, var(--cyan) 50%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 20px var(--accent-glow)); }
-        .greeting { font-size: 0.95em; color: var(--text-secondary); margin-top: 4px; background: linear-gradient(90deg, var(--text-secondary), var(--pink), var(--text-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 100%; animation: greetingShift 6s ease-in-out infinite; }
+        .header-center { flex: 1.2; text-align: center; }
+        .clock { font-size: 2.9em; font-weight: 800; color: var(--accent); letter-spacing: 3px; text-shadow: 0 0 30px var(--accent-glow); line-height: 1; background: linear-gradient(135deg, var(--accent) 0%, var(--cyan) 50%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 20px var(--accent-glow)); }
+        .greeting { font-size: 0.82em; color: var(--text-secondary); margin-top: 1px; background: linear-gradient(90deg, var(--text-secondary), var(--pink), var(--text-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 100%; animation: greetingShift 6s ease-in-out infinite; }
         @keyframes greetingShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-        .hebrew-date { font-size: 1.25em; color: var(--accent-bright); font-weight: 600; text-shadow: 0 0 10px rgba(147,197,253,0.3); }
-        .english-date { font-size: 1em; color: var(--text-secondary); }
-        .shabbat-info { font-size: 0.85em; color: var(--warning); font-weight: 600; margin-top: 2px; text-shadow: 0 0 8px rgba(251,191,36,0.2); }
-        .top-temp { font-size: 1.5em; color: var(--accent); font-weight: 700; text-shadow: 0 0 12px var(--accent-glow); }
+        .hebrew-date { font-size: 1.05em; color: var(--accent-bright); font-weight: 600; text-shadow: 0 0 10px rgba(147,197,253,0.3); }
+        .english-date { font-size: 0.85em; color: var(--text-secondary); }
+        .shabbat-info { font-size: 0.75em; color: var(--warning); font-weight: 600; margin-top: 1px; text-shadow: 0 0 8px rgba(251,191,36,0.2); }
+        .top-temp { font-size: 1.2em; color: var(--accent); font-weight: 700; text-shadow: 0 0 12px var(--accent-glow); }
         .header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
 
         /* ── Layout ── */
@@ -436,22 +436,20 @@
         .wx-fday-temp { font-size: 0.72em; font-weight: 700; margin-inline-start: auto; white-space: nowrap; }
 
         /* ── Currency ── */
-        .currency-body { flex: 1; display: flex; flex-direction: row; gap: 8px; padding: 5px 8px; }
+        .currency-body { flex: 1; display: flex; flex-direction: row; gap: 6px; padding: 4px 8px; align-items: stretch; }
         .cur-item {
-            background: var(--bg-card-inner); border-radius: 10px; padding: 5px 8px;
-            display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1;
-            text-align: center;
+            flex: 1 1 0; background: var(--bg-card-inner); border-radius: 8px; padding: 4px 8px;
+            display: flex; flex-direction: row; align-items: center; gap: 6px;
         }
-        .cur-flag { font-size: 1.8em; flex-shrink: 0; display: flex; align-items: center; line-height: 1; }
-        .cur-item:nth-child(1) { border-bottom: 3px solid var(--accent); }
-        .cur-item:nth-child(2) { border-bottom: 3px solid var(--purple); }
-        .cur-info { flex: 1; }
-        .cur-pair { font-size: 0.72em; color: var(--text-muted); font-weight: 600; letter-spacing: 0.04em; }
-        .cur-rate { font-size: 1.3em; font-weight: 800; color: var(--text-primary); }
-        .cur-chg { font-size: 0.72em; font-weight: 600; transition: color 0.3s; min-height: 1em; }
+        .cur-flag { font-size: 1.1em; flex-shrink: 0; line-height: 1; }
+        .cur-item:nth-child(1) { border-left: 3px solid var(--accent); }
+        .cur-item:nth-child(2) { border-left: 3px solid var(--purple); }
+        .cur-pair { font-size: 0.72em; color: var(--text-muted); font-weight: 600; flex: 1; letter-spacing: 0.02em; }
+        .cur-rate { font-size: 0.88em; font-weight: 800; color: var(--text-primary); white-space: nowrap; }
+        .cur-chg { font-size: 0.62em; font-weight: 600; transition: color 0.3s; white-space: nowrap; min-width: 3em; text-align: end; }
         .cur-chg.positive { color: var(--positive); }
         .cur-chg.negative { color: var(--negative); }
-        .cur-chart { width: 100%; height: 26px; flex-shrink: 0; }
+        .cur-chart { display: none; }
 
         /* ── Red Alerts (צבע אדום) ── */
         .alerts-body { flex: 1; overflow: hidden; position: relative; padding: 4px; }
@@ -552,7 +550,7 @@
         body.mode-tablet .moti-text { font-size: 0.92em; }
         body.mode-tablet .ticker-bar { height: 30px; }
         body.mode-tablet .ticker-item { font-size: 0.72em; }
-        body.mode-tablet .time-section { padding: 8px 14px; }
+        body.mode-tablet .time-section { padding: 4px 10px; }
         body.mode-tablet .container { padding: 6px; gap: 4px; }
         body.mode-phone { font-size: 12px; }
         body.mode-phone .clock { font-size: 2em; }
@@ -715,6 +713,14 @@
         .card.maximized .wx-top-row { flex: 0 0 auto; }
         .card.maximized .wx-hourly-chart { max-height: none; flex: 1 1 0; }
         .card.maximized .wx-fday { padding: 8px 10px; }
+        /* Maximized: scale up font and center content for each body type */
+        .card.maximized .news-body { font-size: 1.35em; }
+        .card.maximized .stocks-body { font-size: 1.3em; }
+        .card.maximized .alerts-body { font-size: 1.35em; }
+        .card.maximized .currency-body { font-size: 1.5em; justify-content: center; }
+        .card.maximized .moti-body { font-size: 1.4em; display: flex; align-items: center; justify-content: center; }
+        .card.maximized .hc-body { font-size: 1.3em; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card.maximized .cal-wrapper { font-size: 1.2em; }
 
         /* ── Accessibility: Reduced Motion ── */
         @media (prefers-reduced-motion: reduce) {
@@ -875,9 +881,6 @@
         <div class="time-section">
             <div class="header-left">
                 <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
-                <div class="shabbat-info" id="shabbat-info"></div>
-                <div class="holiday-info" id="holiday-info"></div>
-                <div class="omer-count" id="omer-count"></div>
             </div>
             <div class="header-center">
                 <div class="clock" id="clock">00:00</div>
@@ -950,8 +953,8 @@
             <div class="card">
               <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
               <div class="currency-body" id="currency-body">
-                <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / שקל</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg"></div></div>
-                <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / שקל</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg"></div></div>
+                <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div></div>
+                <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="cur-eur">--</div><div class="cur-chg" id="cur-eur-chg"></div></div>
               </div>
             </div>
           </div>
@@ -1001,7 +1004,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.8.1 — משפחת רגואן</span>
+            <span>Dashboard v4.8.2 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1013,7 +1016,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.8.1 — 3-Column Layout · Hebrew Calendar Card · Brand-Color Stock Logos
+       FAMILY DASHBOARD v4.8.2 — 3-Column Layout · Hebrew Calendar Card · Brand-Color Stock Logos
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1390,7 +1393,16 @@
             // Special items (Omer, Hanukkah, etc.) from Hebcal today
             try {
                 const now = new Date();
-                const sd = await fetchJSON(`https://www.hebcal.com/hebcal?v=1&cfg=json&omer=on&maj=off&min=off&ss=off&mf=off&year=${now.getFullYear()}&month=${now.getMonth()+1}&day=${now.getDate()}`);
+                // Use the same sunset-aware date logic as loadOmer
+                let afterSunset;
+                if (_todaySunset) {
+                    afterSunset = now > _todaySunset;
+                } else {
+                    const ilTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
+                    afterSunset = ilTime.getHours() > 19 || (ilTime.getHours() === 19 && ilTime.getMinutes() >= 15);
+                }
+                const omerDate = afterSunset ? new Date(now.getTime() + 86400000) : now;
+                const sd = await fetchJSON(`https://www.hebcal.com/hebcal?v=1&cfg=json&omer=on&maj=off&min=off&ss=off&mf=off&year=${omerDate.getFullYear()}&month=${omerDate.getMonth()+1}&day=${omerDate.getDate()}`);
                 const specialItems = (sd.items || []).filter(i => ['omer','holiday'].includes(i.category));
                 if (specialItems.length && el.hcSpecial) {
                     const texts = specialItems.map(i => (i.category === 'omer' ? '🌾 ' : '✡️ ') + (i.hebrew || i.title));
@@ -1406,7 +1418,7 @@
                 const hr = now.getHours();
                 const idx = (doy * 24 + hr) % MOTIVATIONS.length;
                 const m = MOTIVATIONS[idx];
-                el.hcSaying.textContent = (m.text || m) + (m.author ? ' — ' + m.author : '');
+                el.hcSaying.textContent = (m.t || '') + (m.a ? ' — ' + m.a : '');
             }
 
             setSync('hebcal', 'success'); syncBurst('hebcal');
@@ -1416,6 +1428,7 @@
     }
 
     async function loadShabbat() {
+        if (!el.shabbat) return; // header element removed; heb-cal card handled by loadHebCal
         const key = 'shabbat-' + new Date().toDateString();
         const fresh = cGet(key, 10800000); if (fresh) { el.shabbat.textContent = fresh; return; } // 3h TTL
         const stale = cGetStale(key); if (stale) el.shabbat.textContent = stale;
@@ -1834,29 +1847,6 @@
     }
 
     /** Batch-fetch all stock quotes via Yahoo v6 (single request for all symbols) */
-    async function loadStocksBatch() {
-        const syms = STOCK_SYMBOLS.join(',');
-        const url = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${syms}`;
-        try {
-            const { data } = await raceProxies(url, 6000);
-            const quotes = data.quoteResponse?.result;
-            if (!quotes?.length) return {};
-            const map = {};
-            for (const q of quotes) {
-                if (!q?.regularMarketPrice || !q?.symbol) continue;
-                map[q.symbol] = {
-                    chart: { result: [{ meta: { regularMarketPrice: q.regularMarketPrice, previousClose: q.regularMarketPreviousClose || q.regularMarketPrice },
-                        indicators: { quote: [{ close: [q.regularMarketPrice] }] } }] }
-                };
-            }
-            diagLog(`stocks batch v6 OK: ${Object.keys(map).length}/${STOCK_SYMBOLS.length} symbols`);
-            return map;
-        } catch (_) {
-            diagLog('stocks batch v6 failed — falling back to individual');
-            return {};
-        }
-    }
-
     async function loadAllStocks() {
         if (!_pageVisible || !acquireLock('stocks')) return;
         setSync('stocks', 'syncing'); let ok = false;
@@ -1885,19 +1875,9 @@
             return;
         }
 
-        // Phase 3: Try batch v6 for all uncached symbols at once
-        const batchResults = await loadStocksBatch();
-        const stillMissing = [];
-        for (const sym of uncached) {
-            if (batchResults[sym]) {
-                const blk = document.querySelector(`[data-symbol="${sym}"]`);
-                if (blk) { cSet('stk-' + sym, batchResults[sym]); renderStock(blk, batchResults[sym], sym); ok = true; }
-            } else { stillMissing.push(sym); }
-        }
-
-        // Phase 4: Individual v8 chart fetch (with proxy racing) only for symbols that batch missed
-        if (stillMissing.length) {
-            const results = await Promise.allSettled(stillMissing.map(sym => loadStockSingle(sym)));
+        // Phase 3: Individual v8 chart fetch (proxy-race, concurrency-limited to avoid rate limits)
+        if (uncached.length) {
+            const results = await runConcurrent(uncached.map(sym => () => loadStockSingle(sym)), 4);
             if (results.some(r => r.status === 'fulfilled' && r.value)) ok = true;
         }
 
@@ -1907,14 +1887,31 @@
         startStocksScroll();
     }
 
-    /** Load a single stock via v8 chart API (proxy-race, no sequential fallback) */
+    /** Load a single stock via Yahoo Finance v8 chart API.
+     *  Uses bare URL (no period1/period2/interval params) — allorigins requires this.
+     *  BTC-USD falls back to CoinGecko which supports browser CORS.
+     */
     async function loadStockSingle(sym) {
         const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) return false;
         const key = 'stk-' + sym;
+        // BTC-USD: allorigins cannot reach Yahoo crypto tickers — use CoinGecko directly (CORS-enabled)
+        if (sym === 'BTC-USD') {
+            try {
+                const cg = await fetchJSON('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+                if (cg?.bitcoin?.usd) {
+                    const price = cg.bitcoin.usd;
+                    const chgPct = cg.bitcoin.usd_24h_change || 0;
+                    const prev = price / (1 + chgPct / 100);
+                    const d = { chart: { result: [{ meta: { regularMarketPrice: price, chartPreviousClose: prev, previousClose: prev }, indicators: { quote: [{ close: [prev, price] }] } }] } };
+                    diagLog(`stock BTC-USD OK via CoinGecko`);
+                    cSet(key, d); renderStock(blk, d, sym); return true;
+                }
+            } catch (_) {}
+        }
         try {
-            const now = Math.floor(Date.now() / 1000);
-            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?period1=${now - 604800}&period2=${now}&interval=1d`;
-            const { data, proxy } = await raceProxies(url, 6000);
+            // Bare URL (no query params) — avoids allorigins 522 timeouts caused by long URLs
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}`;
+            const { data, proxy } = await raceProxies(url, 8000);
             if (data.chart?.result?.[0]) {
                 diagLog(`stock ${sym} v8 OK via ${proxy.includes('allorigins') ? 'allorigins' : 'codetabs'}`);
                 cSet(key, data); renderStock(blk, data, sym); return true;
@@ -2605,13 +2602,6 @@
     setInterval(loadHalacha, 43200000);       // 12h — daily halacha
     setInterval(loadOmer, 1800000);           // 30min — re-check omer (switches at sunset)
 
-    // ── Auto hard-reload every 1h to pick up HTML file changes ──
-    // Reload only when tab is visible to avoid interrupting the display
-    setTimeout(function autoReload() {
-        if (_pageVisible) { location.reload(); }
-        else { setTimeout(autoReload, 60000); } // retry every 1min while hidden
-    }, 3600000); // 1h
-
     // ── Card Entrance Animations ──
     const CARD_ANIMS = ['cardSlideLeft','cardSlideRight','cardSlideUp','cardSlideDown','cardPopIn','cardFlipIn'];
     function randomAnim() { return CARD_ANIMS[Math.floor(Math.random() * CARD_ANIMS.length)]; }
@@ -2779,15 +2769,15 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        init();
-        scheduleIdle(() => initCardAnimations());
-        initCardMaximize();
-    });
-    // Also call immediately in case DOMContentLoaded already fired
-    // (inline end-of-body scripts run after DOM is parsed —
-    //  readyState may already be 'interactive' before the listener fires)
-    if (document.readyState !== 'loading') {
+    // Inline end-of-body: DOM is parsed but DOMContentLoaded may not have fired yet.
+    // Use exclusive if/else so init() is called exactly once.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            scheduleIdle(() => initCardAnimations());
+            initCardMaximize();
+        });
+    } else {
         init();
         scheduleIdle(() => initCardAnimations());
         initCardMaximize();

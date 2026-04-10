@@ -270,6 +270,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
+| **v4.8.2** | 🔧 Slim clock header, stock fetch overhaul (v8 per-symbol + CoinGecko BTC), currency side-by-side, card maximize centering, page blink fix, expanded 6-phase roadmap |
 | **v4.8.1** | 🔧 Slim card headers, per-card font density, Sefirat HaOmer visible in heb-cal, Shabbat+Havdalah on one line, README roadmap, stale test counts fixed |
 | **v4.8** | 🗓️ Hebrew Calendar card (לוח עברי), brand-color stock logos via Google Favicons, 3-column CSS grid layout, alphabetical stocks, no-clone stock scroll, 4 Copilot skills |
 | **v4.7** | 🌾 Sefirat HaOmer in header, 14 stock symbols, top-S&P500 added (AAPL MSFT AMZN GOOGL META BRK-B AVGO JPM), stock logos |
@@ -305,16 +306,68 @@ This project leverages extensive GitHub features:
 
 > Each planned item ships as a numbered release with `BestDashBoard.html` attached to the GitHub Release and live on GitHub Pages. No build artifacts — the HTML file IS the deliverable.
 
-| Version | Target Feature | Status |
-|---------|---------------|--------|
-| **v4.8.x** | Card header UX polish, per-card font density, Omer display fix | ✅ Done |
-| **v4.9** | Parashat HaShavua (weekly Torah portion) in Hebrew Calendar card | 🔜 Planned |
-| **v4.9** | Bus/transit next departures for configurable stop (Egged/MoovIT) | 🔜 Planned |
-| **v4.10** | Parasha Aliyot summary (short) from Sefaria | 🔜 Planned |
-| **v4.10** | Temperature unit toggle (°C / °F) stored in `localStorage` | 🔜 Planned |
-| **v5.0** | PWA manifest + ServiceWorker → full offline support, installable on TV | 🔜 Planned |
-| **v5.1** | Push notifications for red alerts via Web Push API | 🔜 Planned |
-| **Future** | Multi-family config (family name, city, ICS URL) via `?config=` URL param | 💡 Idea |
+### Phase 1 — Jewish Life Enrichment (v4.9)
+
+| Version | Feature | API / Source | Details | Status |
+|---------|---------|-------------|---------|--------|
+| **v4.8.x** | Card UX polish, font density, Omer fix, stock fetch fix, ticker direction, currency layout | — | ✅ Done | ✅ Done |
+| **v4.9** | **פרשת השבוע** — Parashat HaShavua in Hebrew Calendar card | Hebcal `?parsha=on` + Sefaria `/api/calendars` | Show weekly Torah portion name + short summary (Hebrew) in hc-card | 🔜 Planned |
+| **v4.9** | **זמני תפילה** — Zmanim (prayer times) in heb-cal card | Hebcal extended + Open-Meteo sunrise/sunset | Alot, Netz, Sof Zman Shma, Shkia — 4 key times per day | 🔜 Planned |
+
+### Phase 2 — Daily Life Utilities (v4.10)
+
+| Version | Feature | API / Source | Details | Status |
+|---------|---------|-------------|---------|--------|
+| **v4.10** | **איכות אוויר** — Air Quality Index card | OpenWeatherMap AQI (free tier, no key for basic) | PM2.5 + AQI number + color badge (green/yellow/red) + health recommendation in Hebrew | 🔜 Planned |
+| **v4.10** | **°C / °F toggle** — Temperature unit switch | `localStorage` key `dash_tempUnit` | Keyboard shortcut `U`, affects all weather displays | 🔜 Planned |
+| **v4.10** | **חופשות בי״ס** — School holiday indicator | Hebcal `?min=on&maj=on` (already fetched) | Parse known school holiday ranges, show "חופש [name]" badge in header when active | 🔜 Planned |
+
+### Phase 3 — Data Depth & Visual Polish (v4.11)
+
+| Version | Feature | API / Source | Details | Status |
+|---------|---------|-------------|---------|--------|
+| **v4.11** | **עליות השבוע** — Parasha Aliyot summary | Sefaria `/api/texts/[parasha]` | Short Hebrew digest of weekly reading, shown below parasha name in hc-card | 🔜 Planned |
+| **v4.11** | **Gold + Silver prices** — Precious metals in currency card | MetalsAPI or Yahoo Finance `GC=F`, `SI=F` | Two additional rows: gold oz/USD, silver oz/USD | 🔜 Planned |
+| **v4.11** | **Card drag-reorder** — Customizable card positions | `localStorage` key `dash_cardOrder` | Long-press header to enter reorder mode, persist layout preference per device | 💡 Idea |
+
+### Phase 4 — Offline & Installability (v5.0)
+
+| Version | Feature | API / Source | Details | Status |
+|---------|---------|-------------|---------|--------|
+| **v5.0** | **PWA manifest + ServiceWorker** | Local | `manifest.json` (name, icons, display: standalone), SW caches HTML + serves stale-while-revalidate | 🔜 Planned |
+| **v5.0** | **Install prompt** — "Add to Home Screen" for TV browser | PWA `beforeinstallprompt` | One-time prompt, then the dashboard launches like a native app | 🔜 Planned |
+| **v5.0** | **Background sync** — SW periodically fetches APIs while tab is hidden | ServiceWorker + `sync` event | Prevents stale data after TV screen wakes from standby | 🔜 Planned |
+
+### Phase 5 — Notifications & Real-Time (v5.1)
+
+| Version | Feature | API / Source | Details | Status |
+|---------|---------|-------------|---------|--------|
+| **v5.1** | **Push notifications** — Red alerts via Web Push API | `web-push` + own micro-server or Firebase FCM free tier | Browser push even when tab is background; critical for צבע אדום | 🔜 Planned |
+| **v5.1** | **SSE/WebSocket for real-time alerts** | Tzevaadom SSE endpoint (if available) or 10s polling | Replace 60s polling with streaming for near-instant alerts | 💡 Idea |
+
+### Phase 6 — Multi-Family & Configurability (v5.2+)
+
+| Version | Feature | API / Source | Details | Status |
+|---------|---------|-------------|---------|--------|
+| **v5.2** | **Config panel** — settings UI (gear icon or `S` shortcut) | `localStorage` | City, calendar URL, stock symbols, news feed selection, language pref — all in a slide-out panel | 🔜 Planned |
+| **v5.2** | **Multi-city** — weather + Shabbat times for any geonameid | Open-Meteo + Hebcal | URL param `?city=281184` or config panel dropdown | 🔜 Planned |
+| **v5.2** | **Multi-family config** — family name, ICS URL, alert zones | `?config=` URL param or `localStorage` | Each TV can show different family's calendar + alert zone | 💡 Idea |
+| **v5.3** | **Family photo slideshow** — background or dedicated card | GitHub-hosted images or Google Photos (OAuth) | Carousel card with crossfade, configurable image URLs array | 💡 Idea |
+| **v5.3** | **Transit departures** — next bus/train from home stop | GTFS-IL open data or Google Maps Embed | Configurable stop ID, show next 3 departures in real-time | 💡 Idea |
+
+### Future Ideas (Backlog)
+
+| Feature | Notes |
+|---------|-------|
+| **Electricity peak-hour warning** | Hardcode IEC seasonal tariff hours, show ⚡ badge during peak (16:00–22:00 summer) |
+| **שיר של יום** — Psalm of the day | Sefaria `/api/texts/Psalms.[day]`, rotate daily in ticker or hc-card |
+| **Daf Yomi tracker** | Sefaria `/api/calendars` → Today's Daf, show in ticker alongside halacha |
+| **Earthquake alerts** | Geological Survey of Israel RSS or USGS API (M3.0+ near Israel) |
+| **TA-35 index** | TASE (Tel Aviv Stock Exchange) — scrape or unofficial API for Israeli index |
+| **Package tracking** | Israel Post API `israelpost.co.il` — manual tracking number input |
+| **Birthdays & anniversaries** | Parse from ICS events with birthday category, show countdown badges |
+| **Mincha/Minyan finder** | GoMinyan or local synagogue API — nearest minyan times |
+| **Chore wheel / family tasks** | Shared Google Sheet → JSON → rotating task assignments per family member |
 
 > **Release convention:** Every version bump commits `BestDashBoard.html`, updates `CHANGELOG.md`, bumps the badge in `README.md`, tags `vX.Y.Z`, and pushes. GitHub Actions `release.yml` automatically attaches `BestDashBoard.html` to the GitHub Release. `deploy.yml` publishes to GitHub Pages within ~30 seconds of the push.
 
