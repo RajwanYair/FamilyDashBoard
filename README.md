@@ -270,12 +270,16 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
-| **v4.5** | 🚀 Card maximize (click header to expand), animated number transitions, exponential backoff, syncBurst, corsproxy.io fallback, calendar resilience, 361 tests/44 suites, uptime tracker, RAF-throttled mousemove, scroll fade masks, animated gradient borders, GitHub Pages index.html, GPU/CPU performance optimization, alerts toggle (A key), daily halacha ticker (Sefaria.org), 17 RSS news feeds, RTL hourly weather chart, phone mode card fix, stock raceProxies batch |
-| **v4.4** | ✨ 5 CSS themes, 3 screen modes, diagnostic overlay (D key), offline banner, card spotlight glow, async-safe loaders, startup self-check, 6 card entrance animations, 20 news feeds, faster ticker |
-| **v4.3** | ⚡ Performance refactor, cache versioning (dash_v2_), ICS calendar renderer, DOMContentLoaded fix, seamless scroll loops |
-| **v4.2** | 🚨 Red Alerts panel (tzevaadom.co.il), colorful icon badges, gradient accents |
+| **v4.8.1** | 🔧 Slim card headers, per-card font density, Sefirat HaOmer visible in heb-cal, Shabbat+Havdalah on one line, README roadmap, stale test counts fixed |
+| **v4.8** | 🗓️ Hebrew Calendar card (לוח עברי), brand-color stock logos via Google Favicons, 3-column CSS grid layout, alphabetical stocks, no-clone stock scroll, 4 Copilot skills |
+| **v4.7** | 🌾 Sefirat HaOmer in header, 14 stock symbols, top-S&P500 added (AAPL MSFT AMZN GOOGL META BRK-B AVGO JPM), stock logos |
+| **v4.6** | 🔁 Auto hard-reload every 1h, closest sun event (sunrise↔sunset), 65/35 row split, USD+EUR currency only, 2min motivation cycle |
+| **v4.5** | 🚀 Card maximize, animated numbers, exponential backoff, syncBurst, alerts toggle (A key), halacha ticker, 17 news feeds, RTL weather chart, raceProxies |
+| **v4.4** | ✨ 5 themes, 3 screen modes, diagnostic overlay (D key), offline banner, startup self-check |
+| **v4.3** | ⚡ Performance refactor, cache versioning, ICS calendar renderer |
+| **v4.2** | 🚨 Red Alerts panel (tzevaadom.co.il) |
 | **v4.1** | ⏱️ Per-pane independent refresh, persistent localStorage cache |
-| **v4.0** | 🎉 Holiday countdown, progress bars, market badge, feels-like temp, crossfade quotes |
+| **v4.0** | 🎉 Holiday countdown, progress bars, market badge |
 | **v3.0** | 🏗️ Complete UI/UX refactor, glassmorphism redesign |
 
 ---

@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.8**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.8.1**.
 
 ## CSS Rules
 
@@ -65,10 +65,10 @@ async function fetchJSON(url) {
 
 ## Scroll Loop Pattern
 
-- News, stocks, alerts use seamless vertical scroll loops
-- Items are duplicated (original + clone set) for seamless wrapping
-- Clone items get CSS class `clone` / `stk-clone` — hidden in phone mode
+- News and alerts use seamless vertical scroll loops with duplicate (original + clone) items
+- Clone items get CSS class `clone` — hidden in phone mode
 - Dynamic keyframes injected via `<style>` element per pane
+- **Stocks** use `startStocksScroll()` — **no-clone** approach: measures actual panel height, calculates real scroll distance, injects unique `@keyframes` per render without DOM cloning
 
 ## Card Animations
 
@@ -107,15 +107,19 @@ async function fetchJSON(url) {
 - **Middle**: RTL hourly temperature SVG chart (max-height 48px, x-axis right-to-left)
 - **Bottom**: 4-day forecast grid with compact icons/fonts
 
-## Font Size Guidelines (TV-first)
+## Font Size Guidelines (TV-first, v4.8.1)
 
 - Base font: 21px (body)
 - Clock: 3.4em
-- Card headers: 1.15em, font-weight 700, padding 5px 14px
-- Stock prices: 1.2em
-- Weather icon: 2em, temp: 1.3em, desc: 0.78em
+- Card headers: **0.95em**, font-weight 700, padding **3px 14px** (icon badge 1.4em)
+- Stock prices: 1.2em (`.stk-price`)
+- Weather icon: **1.6em**, temp: **1.1em**, desc: **0.72em**
 - Weather details grid: 0.68em
 - Forecast day name: 0.7em, icon: 0.9em, temp: 0.72em
+- News item: **0.88em**, margin 2px, padding 4px 10px
+- Currency flag: **1.8em**, rate: **1.3em**, change: 0.72em
+- Motivation quote: **1.0em**, line-height 1.5, padding 10px 12px
+- Hebrew Calendar: label 0.68em, value 0.76em, saying 0.66em
 
 ## Error Resilience
 
@@ -159,4 +163,4 @@ async function fetchJSON(url) {
 ## News Layout
 
 - 17 RSS feeds, inline flex layout: `HH:MM כותרת מקור` (single row per item)
-- Grid: 42% first column, 60/40 height split (flex 6:4 for news/weather)
+- Left column (38% of 3-col grid): News (65% height) + Weather (35% height)
