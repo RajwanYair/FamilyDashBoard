@@ -11,7 +11,7 @@ description: "Use when: working on any file in the FamilyDashBoard workspace. Pr
 |----------|-------|
 | **Name** | FamilyDashBoard |
 | **Type** | Single-page HTML dashboard |
-| **Version** | v4.7 |
+| **Version** | v4.8 |
 | **Owner** | @RajwanYair |
 | **Stack** | HTML5, CSS3, vanilla JS (ES2020+) |
 | **Dependencies** | Zero (no npm, no build) |
@@ -33,7 +33,7 @@ FamilyDashBoard/
 ├── .gitignore / .gitattributes
 ├── .markdownlint.json
 ├── tests/
-│   └── dashboard.test.mjs  # 398 tests, 44 suites (node --test)
+│   └── dashboard.test.mjs  # 362 tests, 44 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
@@ -41,12 +41,14 @@ FamilyDashBoard/
 │   ├── instructions/
 │   ├── prompts/
 │   ├── agents/
+│   ├── skills/             # add-api, release, debug-fetch, update-tests
 │   ├── assets/             # SVG docs graphics
 │   ├── ISSUE_TEMPLATE/ / DISCUSSION_TEMPLATE/
 │   └── CONTRIBUTING.md / SECURITY.md / CODEOWNERS
 └── .vscode/
     ├── settings.json
-    └── extensions.json
+    ├── extensions.json
+    └── mcp.json            # MCP servers (fetch, filesystem)
 ```
 
 ## Key Systems

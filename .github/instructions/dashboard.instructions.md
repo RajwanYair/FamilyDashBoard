@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.7**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.8**.
 
 ## CSS Rules
 
@@ -83,7 +83,7 @@ async function fetchJSON(url) {
 - Uses FLIP technique: `getBoundingClientRect()` → `position: fixed` → animate to target rect
 - `toggleCardMaximize(card)`: expand or collapse, hiding/showing sibling cards
 - `_maximizedCard`: tracks the currently maximized card (only one at a time)
-- Cards inside `.col-split` (stocks/alerts): only the sibling card hides, not the split container
+- Sibling cards hidden using `.grid-col > .card` selector (no `.col-split` wrapper)
 - Close via: click header again, or press `Escape`
 - CSS: `.card.maximized` (fixed + z-index 900 + transition), `.card.card-hidden` (opacity 0)
 

@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.7**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.8**.
 
 ## Technical Stack
 
@@ -36,8 +36,9 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 
 - **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, Shabbat times, holiday countdown, market badge (no decorative emoji)
 - **Ticker bar**: Daily halacha from Sefaria.org (reference badge + numbered segments, seamless loop)
-- **Top row** (3 columns — 38/33/29%, 65% height): News RSS (17 feeds) | Google Calendar (native ICS) | Stocks (14 symbols, logos) + Red Alerts (toggleable via `A` key, **off by default**)
-- **Bottom row** (3 columns — 50/25/25%, 35% height): Weather (split-panel: current + closest sun event + RTL hourly chart + 4-day forecast) | Currency USD+EUR only (25% width) | Motivation (50 static Hebrew quotes, 25% width)
+- **Left column** (38%): News RSS (17 feeds, 65% height) | Weather (split-panel: current + closest sun event + RTL hourly chart + 4-day forecast, 35% height)
+- **Middle column** (33%): Hebrew Calendar card / לוח עברי (candle lighting, havdalah, holidays, omer, rabbi saying, 20%) | Google Calendar/ICS (65%) | Currency USD+EUR (15%)
+- **Right column** (29%): Stocks (14 symbols, brand-color logos, 33%) | Red Alerts (toggleable via `A` key, off by default, 33%) | Motivation (50 static Hebrew quotes, 33%)
 - **Status bar**: Version, day/year progress bars, last refresh time
 
 ### Cache Architecture
@@ -88,7 +89,7 @@ function fetchWithTimeout(url, ms = 8000) {
 - `toggleCardMaximize(card)`: records `getBoundingClientRect()`, sets fixed position at original rect, animates to target rect
 - Maximized card top edge starts below the time-section header (clock stays visible)
 - `_maximizedCard`: tracks the single expanded card
-- Cards inside `.col-split` (stocks/alerts): only the sibling hides, not the container
+- Sibling cards hidden using `.grid-col > .card` selector (no `.col-split` wrapper anymore)
 - Close: click header again or press `Escape`
 - CSS: `.card.maximized` (z-index 900, transitions), `.card.card-hidden` (opacity 0)
 - **Weather card exception**: `.card.maximized .weather-body` uses `overflow: hidden` (NOT `auto`) so its flex children pin correctly — `.wx-top-row` stays `flex: 0 0 auto` (top), `.wx-hourly-chart` grows with `flex: 1 1 0` (middle), `.wx-forecast` has `margin-top: auto` (bottom)
@@ -130,6 +131,7 @@ function fetchWithTimeout(url, ms = 8000) {
 | Motivation | 2 min | Static quotes, no network, cycles through 50 quotes |
 | Hebrew date | 3 hours | Hebcal |
 | Shabbat | 6 hours | Hebcal |
+| Hebrew Calendar card | 6 hours | Hebcal — candle/havdalah/holiday/omer + MOTIVATIONS saying |
 | Holidays | 12 hours | Hebcal |
 
 ### Performance

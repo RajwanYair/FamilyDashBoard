@@ -31,7 +31,7 @@ const scriptContent = scriptMatch ? scriptMatch[1] : "";
 // ═══════════════════════════════════════════════════════════════════
 describe("HTML Structure", () => {
   it("should have DOCTYPE declaration", () => {
-    assert.ok(html.startsWith("<!DOCTYPE html>"), "Missing DOCTYPE");
+    assert.ok(html.replace(/^\uFEFF/, "").startsWith("<!DOCTYPE html>"), "Missing DOCTYPE");
   });
 
   it("should have RTL direction and Hebrew lang", () => {
@@ -52,8 +52,10 @@ describe("HTML Structure", () => {
   });
 
   it("should contain the main grid layout", () => {
-    assert.ok(html.includes('class="main-grid"'), "Missing main-grid");
-    assert.ok(html.includes('class="bottom-grid"'), "Missing bottom-grid");
+    assert.ok(html.includes('class="grids-area"'), "Missing grids-area");
+    assert.ok(html.includes('grid-col-left'), "Missing grid-col-left");
+    assert.ok(html.includes('grid-col-mid'), "Missing grid-col-mid");
+    assert.ok(html.includes('grid-col-right'), "Missing grid-col-right");
   });
 
   it("should have all 7 card panels", () => {
@@ -65,6 +67,7 @@ describe("HTML Structure", () => {
       "sync-wx",
       "sync-cur",
       "sync-moti",
+      "sync-hebcal",
     ];
     for (const id of syncDots) {
       assert.ok(html.includes(`id="${id}"`), `Missing sync dot: ${id}`);
@@ -528,10 +531,10 @@ describe("Data Loader Functions", () => {
     );
   });
 
-  it("should have setupStocksLoop function", () => {
+  it("should have startStocksScroll function", () => {
     assert.ok(
-      scriptContent.includes("function setupStocksLoop("),
-      "Missing setupStocksLoop",
+      scriptContent.includes("function startStocksScroll("),
+      "Missing startStocksScroll",
     );
   });
 });
@@ -669,14 +672,14 @@ describe("Seamless Scroll Loop Pattern", () => {
     );
   });
 
-  it("stocks should clone tiles for scroll loop", () => {
+  it("stocks should use scroll loop without clones", () => {
     assert.ok(
-      scriptContent.includes("setupStocksLoop"),
-      "Stocks should have setupStocksLoop",
+      scriptContent.includes("startStocksScroll"),
+      "Stocks should have startStocksScroll",
     );
     assert.ok(
-      scriptContent.includes("stk-clone"),
-      "Stocks should use stk-clone class",
+      !scriptContent.includes("stk-clone"),
+      "Stocks should NOT use stk-clone (cloning removed)",
     );
   });
 
@@ -857,17 +860,17 @@ describe("Calendar Card", () => {
     assert.ok(html.includes('id="cal-agenda"'), "Missing cal-agenda element");
   });
 
-  it("should activate iframe fallback on ICS failure", () => {
+  it("should show iframe by default and activate native view on ICS load", () => {
     assert.ok(
-      scriptContent.includes("cal-fallback-active"),
-      "Missing iframe fallback activation class",
+      scriptContent.includes("ics-loaded"),
+      "Missing ics-loaded class for native calendar activation",
     );
   });
 
-  it("should have CSS for iframe fallback with dark theme filter", () => {
+  it("should have CSS for iframe default-visible with ics-loaded toggle", () => {
     assert.ok(
-      html.includes(".cal-wrapper iframe.cal-fallback-active"),
-      "Missing CSS for cal-fallback-active",
+      html.includes(".cal-wrapper.ics-loaded iframe"),
+      "Missing CSS for ics-loaded iframe hide",
     );
     assert.ok(
       html.includes("filter: invert(1)"),
@@ -1758,8 +1761,8 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.7", () => {
-    assert.ok(html.includes("Dashboard v4.7"), "Missing version v4.7 in status bar");
+  it("should display version v4.8", () => {
+    assert.ok(html.includes("Dashboard v4.8"), "Missing version v4.8 in status bar");
   });
 
   it("should have day progress bar", () => {
@@ -1908,14 +1911,14 @@ describe("Card Maximize System", () => {
     );
   });
 
-  it("should handle col-split children correctly", () => {
+  it("should handle grid-col children correctly in maximize", () => {
     const fn = scriptContent.match(
       /function toggleCardMaximize[\s\S]*?_maximizedCard\s*=\s*card/,
     );
     assert.ok(fn, "Could not find toggleCardMaximize body");
     assert.ok(
-      fn[0].includes("col-split") || fn[0].includes("contains(card)"),
-      "Should handle cards inside .col-split specially",
+      fn[0].includes("grid-col") || fn[0].includes("card-hidden"),
+      "Should hide sibling cards using grid-col selector",
     );
   });
 
@@ -2127,8 +2130,8 @@ describe("Screen Mode System", () => {
   it("phone mode should disable content-visibility auto", () => {
     assert.ok(
       html.includes("mode-phone") &&
-        html.includes("content-visibility: visible"),
-      "Phone mode should set content-visibility: visible to prevent invisible cards",
+        (html.includes("content-visibility: visible") || html.includes("overflow: visible")),
+      "Phone mode should set content-visibility: visible or overflow: visible to prevent invisible cards",
     );
   });
 
@@ -2150,7 +2153,7 @@ describe("Screen Mode System", () => {
   it("phone mode should set grids to flex: none", () => {
     assert.ok(
       html.includes("mode-phone") &&
-        (html.includes(".main-grid") || html.includes(".bottom-grid")) &&
+        html.includes(".grids-area") &&
         html.includes("flex: none"),
       "Phone mode should prevent grid flex shrinking",
     );

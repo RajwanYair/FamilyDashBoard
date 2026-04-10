@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -222,8 +222,17 @@
         .header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
 
         /* ── Layout ── */
-        .main-grid { display: grid; grid-template-columns: 38% 33% 29%; gap: 8px; flex: 65 1 0; min-height: 0; overflow: hidden; }
-        .bottom-grid { display: grid; grid-template-columns: 50% 25% 25%; gap: 8px; flex: 35 1 0; min-height: 0; overflow: hidden; }
+        .grids-area { flex: 1 1 0; min-height: 0; overflow: hidden; display: grid; grid-template-columns: 38fr 33fr 29fr; gap: 8px; }
+        .grid-col { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: hidden; }
+        /* Left col: news 65% + weather 35% */
+        .grid-col-left > .card:nth-child(1) { flex: 65 1 0; }
+        .grid-col-left > .card:nth-child(2) { flex: 35 1 0; }
+        /* Mid col: heb-cal 20% + cal 65% + currency 15% */
+        .grid-col-mid > .card:nth-child(1) { flex: 20 1 0; }
+        .grid-col-mid > .card:nth-child(2) { flex: 65 1 0; }
+        .grid-col-mid > .card:nth-child(3) { flex: 15 1 0; }
+        /* Right col: stocks + alerts + motivation each 33% */
+        .grid-col-right > .card { flex: 1 1 0; }
 
         /* ── Cards ── */
         .card {
@@ -269,6 +278,7 @@
         .icon-badge.green { background: rgba(52,211,153,0.18); }
         .icon-badge.purple { background: rgba(167,139,250,0.18); }
         .icon-badge.orange { background: rgba(251,191,36,0.18); }
+        .icon-badge.yellow { background: rgba(253,224,71,0.18); }
         .icon-badge.red { background: rgba(248,113,113,0.18); }
         .icon-badge.pink { background: rgba(244,114,182,0.18); }
         .icon-badge.cyan { background: rgba(34,211,238,0.18); }
@@ -331,17 +341,18 @@
 
         /* ── Calendar ── */
         .cal-wrapper { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
-        /* Iframe fallback: per-theme filter so colors match */
-        .cal-wrapper iframe { width: 100%; height: 100%; border: none; display: none;
+        /* Iframe shown by default; hidden once native ICS data loads successfully */
+        .cal-wrapper iframe { width: 100%; height: 100%; border: none; display: block;
             filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.1); }
-        .cal-wrapper iframe.cal-fallback-active { display: block; }
+        .cal-wrapper.ics-loaded iframe { display: none; }
         body.theme-matrix .cal-wrapper iframe { filter: invert(1) hue-rotate(100deg) saturate(1.8) brightness(0.75); }
         body.theme-amber  .cal-wrapper iframe { filter: invert(1) hue-rotate(215deg) brightness(0.85) sepia(0.25); }
         body.theme-purple .cal-wrapper iframe { filter: invert(1) hue-rotate(130deg) brightness(0.82); }
         body.theme-blue   .cal-wrapper iframe { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.1); }
         body.theme-black  .cal-wrapper iframe { filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.15); }
         /* Native agenda view */
-        .cal-agenda { flex: 1; overflow-y: auto; padding: 2px 6px; display: flex; flex-direction: column; gap: 2px; }
+        .cal-agenda { flex: 1; overflow-y: auto; padding: 2px 6px; display: none; flex-direction: column; gap: 2px; }
+        .cal-wrapper.ics-loaded .cal-agenda { display: flex; }
         .cal-day-header {
             font-size: 0.72em; font-weight: 700; color: var(--accent); padding: 5px 4px 2px;
             border-bottom: 1px solid var(--accent-border); margin-top: 4px; letter-spacing: 0.3px;
@@ -360,17 +371,24 @@
         .cal-event-loc { font-size: 0.65em; color: var(--text-muted); margin-top: 1px; }
         .cal-empty { font-size: 0.78em; color: var(--text-muted); text-align: center; padding: 16px; }
 
+        /* ── Hebrew Calendar Card ── */
+        .hebcal-body { flex: 1; overflow-y: auto; padding: 5px 8px; display: flex; flex-direction: column; gap: 3px; }
+        .hc-row { display: flex; align-items: baseline; gap: 6px; padding: 2px 0; }
+        .hc-label { font-size: 0.72em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; min-width: 4.5em; }
+        .hc-val { font-size: 0.80em; font-weight: 600; color: var(--text-primary); }
+        .hc-special-row { justify-content: center; padding: 1px 0; }
+        .hc-special { font-size: 0.78em; font-weight: 700; color: var(--positive); text-align: center; }
+        .hc-divider { border-top: 1px solid var(--accent-border); margin: 3px 0; }
+        .hc-saying { font-size: 0.72em; color: var(--text-secondary); font-style: italic; line-height: 1.45; text-align: center; padding: 2px 4px; }
+
         /* ── Stocks ── */
         .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-        .col-split > .card { flex: 1 1 0; min-height: 0; }
-
-        /* ── Alerts Toggle: when off, hide alerts card and let stocks take full height ── */
-        body.alerts-off .col-split > .card:last-child { display: none; }
-        body.alerts-off .col-split > .card:first-child { flex: 1 1 100%; }
+        /* ── Alerts Toggle: when off, hide alerts card and expand stocks ── */
+        body.alerts-off .grid-col-right > .card:nth-child(2) { display: none; }
+        body.alerts-off .grid-col-right > .card:nth-child(1) { flex: 2 1 0; }
         .stocks-body { flex: 1; overflow: hidden; position: relative; padding: 2px; }
-        .stocks-scroll { display: flex; flex-direction: column; gap: 2px; animation: stocksScroll 30s linear infinite; will-change: transform; }
+        .stocks-scroll { display: flex; flex-direction: column; gap: 2px; will-change: transform; }
         .stocks-scroll:hover { animation-play-state: paused; }
-        @keyframes stocksScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .stk {
             background: var(--bg-card-inner); padding: 4px 8px; border-radius: 6px;
             display: flex; flex-direction: row; align-items: center; gap: 8px;
@@ -378,18 +396,6 @@
             border-right: 3px solid var(--accent-border);
         }
         .stk:hover { background: var(--bg-card-hover); }
-        .stk:nth-child(1) { border-right-color: var(--accent); }
-        .stk:nth-child(2) { border-right-color: var(--orange); }
-        .stk:nth-child(3) { border-right-color: var(--warning); }
-        .stk:nth-child(4) { border-right-color: var(--positive); }
-        .stk:nth-child(5) { border-right-color: var(--negative); }
-        .stk:nth-child(6) { border-right-color: var(--purple); }
-        .stk:nth-child(1) .stk-sym { color: var(--accent); }
-        .stk:nth-child(2) .stk-sym { color: var(--orange); }
-        .stk:nth-child(3) .stk-sym { color: var(--warning); }
-        .stk:nth-child(4) .stk-sym { color: var(--positive); }
-        .stk:nth-child(5) .stk-sym { color: var(--negative); }
-        .stk:nth-child(6) .stk-sym { color: var(--purple); }
         .stk-info { display: flex; flex-direction: column; min-width: 3.8em; }
         .stk-sym { font-weight: 700; color: var(--accent); font-size: 1em; }
         .stk-desc { font-size: 0.72em; color: var(--text-muted); font-weight: normal; }
@@ -400,7 +406,8 @@
         .stk-time { font-size: 0.58em; color: var(--text-muted); white-space: nowrap; }
         .stk-logo { width: 18px; height: 18px; flex-shrink: 0; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .stk-logo img { width: 18px; height: 18px; object-fit: contain; border-radius: 3px; display: block; }
-        .positive { color: var(--positive); } .negative { color: var(--negative); } .neutral { color: var(--cyan); }
+        .positive { color: var(--positive); } .negative { color: var(--negative); } .neutral { color: var(--text-secondary); }
+        .stk-logo-fb { width: 18px; height: 18px; border-radius: 4px; font-size: 0.52em; font-weight: 800; color: #fff; line-height: 18px; text-align: center; display: inline-block; background: var(--accent-border); flex-shrink: 0; letter-spacing: -0.5px; }
 
         /* ── Weather ── */
         .weather-body { flex: 1; display: flex; flex-direction: column; padding: 4px 6px; min-height: 0; overflow: hidden; }
@@ -550,22 +557,19 @@
         body.mode-phone .header-emoji { font-size: 1.8em; }
         body.mode-phone .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
         body.mode-phone .header-left, body.mode-phone .header-right { align-items: center; flex: 1 1 100%; }
-        body.mode-phone .main-grid, body.mode-phone .bottom-grid { grid-template-columns: 1fr; }
-        body.mode-phone .main-grid > :nth-child(3), body.mode-phone .bottom-grid .card:nth-child(3) { grid-column: auto; }
         body.mode-phone .card-header { font-size: 0.9em; }
         body.mode-phone .ticker-bar { height: 26px; }
         body.mode-phone .ticker-item { font-size: 0.62em; }
+        /* Phone: single column layout */
+        body.mode-phone .grids-area { grid-template-columns: 1fr; overflow: visible; height: auto; }
+        body.mode-phone .grid-col { overflow: visible; min-height: unset; }
 
         /* Phone: allow full-page scroll and show all card content */
         body.mode-phone { overflow-y: auto; height: auto; min-height: 100vh; }
         body.mode-phone .container { height: auto; overflow: visible; }
         body.mode-phone .card { overflow: visible; height: auto; flex: none; min-height: unset; }
 
-        /* Phone: grids — disable flex shrinking, allow natural flow */
-        body.mode-phone .main-grid,
-        body.mode-phone .bottom-grid { flex: none; min-height: unset; gap: 10px; }
-
-        /* Phone: col-split (stocks+alerts wrapper) — stack naturally */
+        /* Phone: col-split (legacy — stack naturally) */
         body.mode-phone .col-split { height: auto; min-height: unset; gap: 10px; }
         body.mode-phone .col-split > .card { flex: none; height: auto; min-height: unset; }
 
@@ -576,10 +580,8 @@
         body.mode-phone .alerts-body,
         body.mode-phone .weather-body,
         body.mode-phone .currency-body,
+        body.mode-phone .hebcal-body,
         body.mode-phone .moti-body { contain: none; }
-
-        /* Phone: disable content-visibility auto (causes invisible cards when scrolling) */
-        body.mode-phone .bottom-grid .card:nth-child(n+2) { content-visibility: visible; contain-intrinsic-size: auto; }
 
         /* Phone: disable scroll fade masks (not needed when showing all content) */
         body.mode-phone .news-body,
@@ -604,6 +606,7 @@
         body.mode-phone .alerts-body,
         body.mode-phone .weather-body,
         body.mode-phone .currency-body,
+        body.mode-phone .hebcal-body,
         body.mode-phone .moti-body { overflow: visible; height: auto; flex: none; min-height: unset; }
 
         /* Phone: calendar — show native agenda, hide iframe */
@@ -618,25 +621,25 @@
 
         /* Phone: hide cloned duplicate items (used only for the loop) */
         body.mode-phone .rss-item.clone,
-        body.mode-phone .stk.stk-clone,
         body.mode-phone .alert-item.clone,
         body.mode-phone .alert-count.clone { display: none; }
 
         /* ── Responsive ── */
         @media (max-width: 1200px) {
             body { font-size: 17px; }
-            .main-grid { grid-template-columns: 1fr 1fr; }
-            .main-grid > :nth-child(3) { grid-column: span 2; }
-            .bottom-grid { grid-template-columns: 1fr 1fr; }
-            .bottom-grid .card:nth-child(3) { grid-column: span 2; }
+            .grids-area { grid-template-columns: 1fr 1fr; }
+            .grid-col-left { grid-column: 1; }
+            .grid-col-mid { grid-column: 2; }
+            .grid-col-right { grid-column: 1 / span 2; flex-direction: row; }
+            .grid-col-right > .card { flex: 1 1 0; }
             .clock { font-size: 2.8em; }
             .ticker-bar { height: 32px; }
             .ticker-item { font-size: 0.75em; padding: 0 14px; }
         }
         @media (max-width: 768px) {
             body { font-size: 14px; }
-            .main-grid, .bottom-grid { grid-template-columns: 1fr; flex: none; min-height: unset; }
-            .main-grid > :nth-child(3), .bottom-grid .card:nth-child(3) { grid-column: auto; }
+            .grids-area { grid-template-columns: 1fr; height: auto; overflow: visible; }
+            .grid-col { min-height: unset; overflow: visible; }
             .col-split { min-height: unset; }
             .col-split > .card { flex: none; min-height: unset; }
             .wx-top-row { flex-direction: column; }
@@ -885,103 +888,120 @@
             </div>
         </div>
 
-        <!-- ── Main Row ── -->
-        <div class="main-grid">
+        <div class="grids-area">
+
+          <!-- ── Left Column: News + Weather ── -->
+          <div class="grid-col grid-col-left">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">�️</span> חדשות</div>
-                <div class="news-body" id="news-body">
-                    <div class="rss-scroll" id="rss-scroll"></div>
+              <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות</div>
+              <div class="news-body" id="news-body">
+                <div class="rss-scroll" id="rss-scroll"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> מזג אויר — ירושלים</div>
+              <div class="weather-body">
+                <div class="wx-top-row">
+                  <div class="wx-current">
+                    <div class="wx-icon" id="wx-icon">🌤️</div>
+                    <div class="wx-info">
+                      <div class="wx-temp-main" id="wx-temp">--°C</div>
+                      <div class="wx-desc" id="wx-desc">טוען...</div>
+                    </div>
+                  </div>
+                  <div class="wx-details">
+                    <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
+                    <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
+                    <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
+                    <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
+                  </div>
                 </div>
+                <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
+                <div class="wx-forecast" id="wx-forecast">
+                  <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                  <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                  <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                  <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
+          <div class="grid-col grid-col-mid">
+            <div class="card">
+              <div class="card-header"><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
+              <div class="hebcal-body" id="hebcal-body">
+                <div class="hc-row" id="hc-shabbat"><span class="hc-label">🕯️ שבת</span><span class="hc-val skeleton" id="hc-candles">טוען...</span></div>
+                <div class="hc-row" id="hc-havdala-row"><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
+                <div class="hc-row" id="hc-holiday-row"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
+                <div class="hc-row hc-special-row" id="hc-special-row"><span class="hc-val hc-special" id="hc-special"></span></div>
+                <div class="hc-divider"></div>
+                <div class="hc-saying" id="hc-saying">טוען...</div>
+              </div>
             </div>
             <div class="card" style="position:relative">
-                <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">�️</span> לוח שנה משפחתי</div>
-                <div class="cal-wrapper">
-                    <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
-                    <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5" loading="lazy"></iframe>
-                </div>
+              <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי</div>
+              <div class="cal-wrapper">
+                <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
+                <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
+              </div>
             </div>
-            <div class="col-split">
-                <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">�</span> מניות <span class="market-badge" id="market-badge"></span></div>
-                    <div class="stocks-body">
-                        <div class="stocks-scroll" id="stocks-body">
-                        <div class="stk" data-symbol="INTC"><div class="stk-logo"><img src="https://logo.clearbit.com/intel.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://logo.clearbit.com/spglobal.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="BTC-USD"><div class="stk-logo"><img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BTC</div><div class="stk-desc">ביטקוין</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="NVDA"><div class="stk-logo"><img src="https://logo.clearbit.com/nvidia.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://logo.clearbit.com/cboe.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="TSLA"><div class="stk-logo"><img src="https://logo.clearbit.com/tesla.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://logo.clearbit.com/apple.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="MSFT"><div class="stk-logo"><img src="https://logo.clearbit.com/microsoft.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">MSFT</div><div class="stk-desc">מיקרוסופט</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="AMZN"><div class="stk-logo"><img src="https://logo.clearbit.com/amazon.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AMZN</div><div class="stk-desc">אמזון</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="GOOGL"><div class="stk-logo"><img src="https://logo.clearbit.com/google.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">GOOGL</div><div class="stk-desc">אלפבית</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="META"><div class="stk-logo"><img src="https://logo.clearbit.com/meta.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">META</div><div class="stk-desc">מטא</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="BRK-B"><div class="stk-logo"><img src="https://logo.clearbit.com/berkshirehathaway.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BRK-B</div><div class="stk-desc">ברקשייר</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="AVGO"><div class="stk-logo"><img src="https://logo.clearbit.com/broadcom.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AVGO</div><div class="stk-desc">ברודקום</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        <div class="stk" data-symbol="JPM"><div class="stk-logo"><img src="https://logo.clearbit.com/jpmorgan.com" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div><div class="stk-info"><div class="stk-sym">JPM</div><div class="stk-desc">ג׳י.פי.מורגן</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
-                    <div class="alerts-body">
-                        <div class="alerts-scroll" id="alerts-scroll">
-                            <div class="alert-count">טוען התרעות...</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="card">
+              <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
+              <div class="currency-body" id="currency-body">
+                <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / שקל</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg"></div></div>
+                <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / שקל</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg"></div></div>
+              </div>
             </div>
-        </div>
+          </div>
 
-        <!-- ── Bottom Row ── -->
-        <div class="bottom-grid">
+          <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
+          <div class="grid-col grid-col-right">
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">�️</span> מזג אויר — ירושלים</div>
-                <div class="weather-body">
-                    <div class="wx-top-row">
-                        <div class="wx-current">
-                            <div class="wx-icon" id="wx-icon">🌤️</div>
-                            <div class="wx-info">
-                                <div class="wx-temp-main" id="wx-temp">--°C</div>
-                                <div class="wx-desc" id="wx-desc">טוען...</div>
-                            </div>
-                        </div>
-                        <div class="wx-details">
-                            <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
-                            <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
-                            <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
-                            <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
-                        </div>
-                    </div>
-                    <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
-                    <div class="wx-forecast" id="wx-forecast">
-                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-                        <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
-                    </div>
+              <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
+              <div class="stocks-body">
+                <div class="stocks-scroll" id="stocks-body">
+                  <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://logo.clearbit.com/spglobal.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://logo.clearbit.com/cboe.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://logo.clearbit.com/apple.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="AMZN"><div class="stk-logo"><img src="https://logo.clearbit.com/amazon.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AMZN</div><div class="stk-desc">אמזון</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="AVGO"><div class="stk-logo"><img src="https://logo.clearbit.com/broadcom.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AVGO</div><div class="stk-desc">ברודקום</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="BRK-B"><div class="stk-logo"><img src="https://logo.clearbit.com/berkshirehathaway.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BRK-B</div><div class="stk-desc">ברקשייר</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="BTC-USD"><div class="stk-logo"><img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BTC</div><div class="stk-desc">ביטקוין</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="GOOGL"><div class="stk-logo"><img src="https://logo.clearbit.com/google.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">GOOGL</div><div class="stk-desc">אלפבית</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="INTC"><div class="stk-logo"><img src="https://logo.clearbit.com/intel.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="JPM"><div class="stk-logo"><img src="https://logo.clearbit.com/jpmorgan.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">JPM</div><div class="stk-desc">ג׳י.פי.מורגן</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="META"><div class="stk-logo"><img src="https://logo.clearbit.com/meta.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">META</div><div class="stk-desc">מטא</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="MSFT"><div class="stk-logo"><img src="https://logo.clearbit.com/microsoft.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">MSFT</div><div class="stk-desc">מיקרוסופט</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="NVDA"><div class="stk-logo"><img src="https://logo.clearbit.com/nvidia.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="TSLA"><div class="stk-logo"><img src="https://logo.clearbit.com/tesla.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                 </div>
+              </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
-                <div class="currency-body" id="currency-body">
-                    <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-info"><div class="cur-pair">USD / שקל</div><div class="cur-rate skeleton" id="cur-usd">--</div></div><div class="cur-chg" id="cur-usd-chg"></div></div>
-                    <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-info"><div class="cur-pair">EUR / שקל</div><div class="cur-rate skeleton" id="cur-eur">--</div></div><div class="cur-chg" id="cur-eur-chg"></div></div>
+              <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
+              <div class="alerts-body">
+                <div class="alerts-scroll" id="alerts-scroll">
+                  <div class="alert-count">טוען התרעות...</div>
                 </div>
+              </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">✨</span> מוטיבציה</div>
-                <div class="moti-body">
-                    <div class="moti-card">
-                        <div class="moti-text" id="moti-text">טוען השראה...</div>
-                        <div class="moti-author" id="moti-author"></div>
-                        <div class="moti-src" id="moti-src"></div>
-                    </div>
+              <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">✨</span> מוטיבציה</div>
+              <div class="moti-body">
+                <div class="moti-card">
+                  <div class="moti-text" id="moti-text">טוען השראה...</div>
+                  <div class="moti-author" id="moti-author"></div>
+                  <div class="moti-src" id="moti-src"></div>
                 </div>
+              </div>
             </div>
+          </div>
+
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.7 — משפחת רגואן</span>
+            <span>Dashboard v4.8 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -993,7 +1013,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.7 — Sefirat HaOmer · Top 10 S&P500 + Logos · Layout Refresh
+       FAMILY DASHBOARD v4.8 — 3-Column Layout · Hebrew Calendar Card · Brand-Color Stock Logos
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1004,9 +1024,25 @@
     // CORS bypass proxies — browser/system HTTP proxy is used automatically by fetch().
     // These are for cross-origin API access only.
     const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
-    const STOCK_SYMBOLS = ['INTC','^GSPC','BTC-USD','NVDA','^VIX','TSLA','AAPL','MSFT','AMZN','GOOGL','META','BRK-B','AVGO','JPM'];
+    const STOCK_SYMBOLS = ['^GSPC','^VIX','AAPL','AMZN','AVGO','BRK-B','BTC-USD','GOOGL','INTC','JPM','META','MSFT','NVDA','TSLA'];
     const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
     const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
+    const STOCK_BRAND = {
+        '^GSPC': { color: '#1a56db', domain: 'spglobal.com' },
+        '^VIX':  { color: '#e85d04', domain: 'cboe.com' },
+        'AAPL':  { color: '#a3a3a3', domain: 'apple.com' },
+        'AMZN':  { color: '#ff9900', domain: 'amazon.com' },
+        'AVGO':  { color: '#cc0000', domain: 'broadcom.com' },
+        'BRK-B': { color: '#7b5ea7', domain: 'berkshirehathaway.com' },
+        'BTC-USD':{ color: '#f7931a', domain: 'bitcoin.org' },
+        'GOOGL': { color: '#4285f4', domain: 'google.com' },
+        'INTC':  { color: '#0071c5', domain: 'intel.com' },
+        'JPM':   { color: '#004b87', domain: 'jpmorgan.com' },
+        'META':  { color: '#0866ff', domain: 'meta.com' },
+        'MSFT':  { color: '#00a4ef', domain: 'microsoft.com' },
+        'NVDA':  { color: '#76b900', domain: 'nvidia.com' },
+        'TSLA':  { color: '#e82127', domain: 'tesla.com' },
+    };
     const STOCK_NAMES = {INTC:'אינטל — שבבים','^GSPC':'S&P 500 — מדד','BTC-USD':'ביטקוין — קריפטו',NVDA:'נבידיה — AI/GPU','^VIX':'מדד הפחד — תנודתיות',TSLA:'טסלה — רכב חשמלי',AAPL:'אפל — צרכן',MSFT:'מיקרוסופט — תוכנה',AMZN:'אמזון — פלטפורמה',GOOGL:'אלפבית — טכנולוגיה',META:'מטא — רשתות','BRK-B':'ברקשייר — בופט',AVGO:'ברודקום — שבבים',JPM:'ג.פ.מורגן — בנקאות'};
     const MOTIVATIONS = [
         {t:'הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.',a:'אברהם לינקולן'},
@@ -1251,8 +1287,12 @@
         dayPct: $('day-pct'), yearPct: $('year-pct'),
         calAgenda: $('cal-agenda'), calIframe: $('cal-iframe'),
         omerCount: $('omer-count'),
+        hcCandles: $('hc-candles'), hcHavdala: $('hc-havdala'),
+        hcHoliday: $('hc-holiday'), hcSpecial: $('hc-special'),
+        hcHolidayRow: $('hc-holiday-row'), hcSpecialRow: $('hc-special-row'),
+        hcSaying: $('hc-saying'),
     };
-    const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti') };
+    const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
 
     // ── Fetch Helpers ──
@@ -1300,6 +1340,83 @@
             if (d.hebrew) { el.hebDate.textContent = d.hebrew; cSet(key, d.hebrew); }
         } catch (e) { console.error('Hebrew date:', e); }
     }
+    // ── Hebrew Calendar Card ──
+    async function loadHebCal() {
+        setSync('hebcal', 'syncing');
+        try {
+            // Candles + Havdalah (reuse Shabbat API)
+            const shabKey = 'shabbat-' + new Date().toDateString();
+            let shabData = cGetStale(shabKey);
+            if (!shabData) {
+                const d = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+                if (d.items) { cSet(shabKey, d.items.map(i => i.category + '|' + i.date).join('§')); }
+                shabData = cGet(shabKey, 3600000);
+            }
+            // Parse candles/havdalah from raw or structured cache
+            let candleStr = '--', havdalaStr = '--';
+            // Fetch fresh structured data if cache is raw items
+            try {
+                const d2 = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+                if (d2.items) {
+                    const cndl = d2.items.find(i => i.category === 'candles');
+                    const hvdl = d2.items.find(i => i.category === 'havdalah');
+                    if (cndl) {
+                        const dt = new Date(cndl.date);
+                        const dayName = dt.toLocaleDateString('he-IL', { weekday: 'long', timeZone: 'Asia/Jerusalem' });
+                        candleStr = dayName + ' ' + dt.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                        if (cndl.hebrew) candleStr += ' — ' + cndl.hebrew;
+                    }
+                    if (hvdl) havdalaStr = new Date(hvdl.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                }
+            } catch (_) {}
+            if (el.hcCandles) { el.hcCandles.textContent = candleStr; el.hcCandles.classList.remove('skeleton'); }
+            if (el.hcHavdala) el.hcHavdala.textContent = havdalaStr;
+
+            // Next holiday
+            try {
+                const now = new Date();
+                const hd = await fetchJSON(`https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x`);
+                if (hd.items) {
+                    const upcoming = hd.items.filter(i => i.category === 'holiday' && new Date(i.date) >= now)
+                        .sort((a, b) => new Date(a.date) - new Date(b.date));
+                    if (upcoming.length && el.hcHoliday) {
+                        const h = upcoming[0];
+                        const days = Math.ceil((new Date(h.date) - now) / 86400000);
+                        const name = h.hebrew || h.title;
+                        el.hcHoliday.textContent = days <= 0 ? name : days === 1 ? 'מחר: ' + name : name + ' — בעוד ' + days + ' ימים';
+                        if (el.hcHolidayRow) el.hcHolidayRow.style.display = '';
+                    }
+                }
+            } catch (_) {}
+
+            // Special items (Omer, Hanukkah, etc.) from Hebcal today
+            try {
+                const now = new Date();
+                const sd = await fetchJSON(`https://www.hebcal.com/hebcal?v=1&cfg=json&omer=on&maj=off&min=off&ss=off&mf=off&year=${now.getFullYear()}&month=${now.getMonth()+1}&day=${now.getDate()}`);
+                const specialItems = (sd.items || []).filter(i => ['omer','holiday'].includes(i.category));
+                if (specialItems.length && el.hcSpecial) {
+                    const texts = specialItems.map(i => (i.category === 'omer' ? '🌾 ' : '✡️ ') + (i.hebrew || i.title));
+                    el.hcSpecial.textContent = texts.join('  ·  ');
+                    if (el.hcSpecialRow) el.hcSpecialRow.style.display = '';
+                }
+            } catch (_) {}
+
+            // Daily saying: rotate through MOTIVATIONS based on day of year
+            if (el.hcSaying && MOTIVATIONS?.length) {
+                const now = new Date();
+                const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+                const hr = now.getHours();
+                const idx = (doy * 24 + hr) % MOTIVATIONS.length;
+                const m = MOTIVATIONS[idx];
+                el.hcSaying.textContent = (m.text || m) + (m.author ? ' — ' + m.author : '');
+            }
+
+            setSync('hebcal', 'success'); syncBurst('hebcal');
+        } catch (e) {
+            setSync('hebcal', 'error'); diagLog('hebcal ERR: ' + e.message);
+        }
+    }
+
     async function loadShabbat() {
         const key = 'shabbat-' + new Date().toDateString();
         const fresh = cGet(key, 10800000); if (fresh) { el.shabbat.textContent = fresh; return; } // 3h TTL
@@ -1766,7 +1883,7 @@
             setSync('stocks', 'success');
             syncBurst('stocks'); recordSuccess('stocks');
             releaseLock('stocks');
-            setupStocksLoop();
+            startStocksScroll();
             return;
         }
 
@@ -1789,7 +1906,7 @@
         setSync('stocks', ok ? 'success' : 'error');
         if (ok) { syncBurst('stocks'); recordSuccess('stocks'); } else { recordFailure('stocks'); }
         releaseLock('stocks');
-        setupStocksLoop();
+        startStocksScroll();
     }
 
     /** Load a single stock via v8 chart API (proxy-race, no sequential fallback) */
@@ -1798,7 +1915,7 @@
         const key = 'stk-' + sym;
         try {
             const now = Math.floor(Date.now() / 1000);
-            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?period1=${now - 604800}&period2=${now}&interval=1d`;
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?period1=${now - 604800}&period2=${now}&interval=1d`;
             const { data, proxy } = await raceProxies(url, 6000);
             if (data.chart?.result?.[0]) {
                 diagLog(`stock ${sym} v8 OK via ${proxy.includes('allorigins') ? 'allorigins' : 'codetabs'}`);
@@ -1813,20 +1930,20 @@
         }
         return false;
     }
-    function setupStocksLoop() {
+    function startStocksScroll() {
         const cont = document.getElementById('stocks-body'); if (!cont) return;
-        // Remove any previous clones
-        cont.querySelectorAll('.stk-clone').forEach(c => c.remove());
-        const originals = cont.querySelectorAll('.stk:not(.stk-clone)');
-        originals.forEach(n => { const cl = n.cloneNode(true); cl.classList.add('stk-clone'); cont.appendChild(cl); });
-        // Dynamic keyframe: scroll top half away
-        const h = cont.scrollHeight / 2;
-        const dur = Math.max(20, originals.length * 5);
-        const styleId = 'stocks-scroll-style';
-        let sEl = document.getElementById(styleId);
-        if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
-        sEl.textContent = `@keyframes stocksScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-${h}px); } }`;
-        cont.style.animation = `stocksScroll ${dur}s linear infinite`;
+        cont.style.animation = 'none';
+        requestAnimationFrame(() => {
+            const panelH = cont.parentElement?.clientHeight || 200;
+            const dist = Math.max(0, cont.scrollHeight - panelH);
+            if (dist <= 0) return;
+            const dur = Math.max(30, STOCK_SYMBOLS.length * 4);
+            const styleId = 'stocks-scroll-style';
+            let sEl = document.getElementById(styleId);
+            if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
+            sEl.textContent = `@keyframes stocksScroll { from { transform: translateY(0); } to { transform: translateY(-${dist}px); } }`;
+            cont.style.animation = `stocksScroll ${dur}s linear infinite`;
+        });
     }
     function fetchWithTimeout(url, ms = 8000) {
         const c = new AbortController();
@@ -1844,7 +1961,13 @@
         // 3-state trend: green (up), red (down), cyan (flat ±0.1%)
         const absChg = Math.abs(chg);
         const trend = (!isFinite(chg) || absChg < 0.1) ? 'neutral' : (chg > 0 ? 'positive' : 'negative');
-        const trendColor = trend === 'positive' ? '#34d399' : trend === 'negative' ? '#f87171' : '#22d3ee';
+        const trendColor = trend === 'positive' ? '#34d399' : trend === 'negative' ? '#f87171' : '#94a3b8';
+        // Brand color for border + symbol label
+        const brand = STOCK_BRAND[sym] || {};
+        const brandColor = brand.color || '#94a3b8';
+        blk.style.borderRightColor = brandColor;
+        const symEl = blk.querySelector('.stk-sym');
+        if (symEl) symEl.style.color = brandColor;
         // Row tint based on trend
         blk.classList.remove('stk-up', 'stk-down');
         if (trend === 'positive') blk.classList.add('stk-up');
@@ -1866,6 +1989,27 @@
         if (prices.length >= 2) { blk.querySelector('.stk-chart').innerHTML = bezierChart(prices, trendColor); }
         else if (prices.length === 1 && cur) { blk.querySelector('.stk-chart').innerHTML = bezierChart([prices[0], prices[0] * 0.999, prices[0] * 1.001, cur], trendColor); }
         blk.querySelector('.stk-time').textContent = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+        // Logo: set src from STOCK_BRAND on first render (Google favicons are reliable)
+        const logoDiv = blk.querySelector('.stk-logo');
+        const img = logoDiv?.querySelector('img');
+        if (img && !img.dataset.logoInit) {
+            img.dataset.logoInit = '1';
+            img.removeAttribute('style');   // clear any display:none set by old onerror
+            img.removeAttribute('onerror'); // detach inline handler
+            if (brand.domain) {
+                img.src = `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=64`;
+            }
+            img.addEventListener('error', () => {
+                img.style.display = 'none';
+                if (!logoDiv.querySelector('.stk-logo-fb')) {
+                    const fb = document.createElement('span');
+                    fb.className = 'stk-logo-fb';
+                    fb.textContent = sym.replace('^', '').replace('-USD', '').slice(0, 2).toUpperCase();
+                    fb.style.background = brandColor;
+                    logoDiv.appendChild(fb);
+                }
+            });
+        }
     }
     function fmtPrice(p, s) { const n = parseFloat(p); if (s === 'BTC-USD') return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }); return n >= 1000 ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n >= 100 ? '$' + n.toFixed(1) : '$' + n.toFixed(2); }
     let _svgIdCounter = 0;
@@ -2157,13 +2301,17 @@
         if (!_pageVisible || !acquireLock('cal')) return;
         const key = 'cal-ics';
         const fresh = cGet(key, 900000); // 15min TTL
-        if (fresh) { renderCalendar(parseICS(fresh)); setSync('cal', 'success'); releaseLock('cal'); return; }
+        if (fresh) {
+            renderCalendar(parseICS(fresh));
+            el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
+            setSync('cal', 'success'); releaseLock('cal'); return;
+        }
         const staleText = cGetStale(key);
-        if (staleText) { renderCalendar(parseICS(staleText)); }
+        if (staleText) {
+            renderCalendar(parseICS(staleText));
+            // iframe stays visible until a fresh ICS fetch succeeds
+        }
         setSync('cal', 'syncing');
-        // Hide iframe fallback while retrying ICS fetch
-        if (el.calIframe) el.calIframe.classList.remove('cal-fallback-active');
-        if (el.calAgenda) el.calAgenda.style.display = '';
 
         // Helper: validate and store ICS data
         function acceptICS(icsText, source) {
@@ -2172,6 +2320,7 @@
             diagLog(`calendar ${source} OK (${icsText.length} bytes, ${events.length} events)`);
             cSet(key, icsText);
             renderCalendar(events);
+            el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
             setSync('cal', 'success'); syncBurst('cal'); recordSuccess('cal');
             return true;
         }
@@ -2215,11 +2364,9 @@
             }
         } catch (e) { diagLog(`calendar corsproxy.io ERR: ${e.message}`); }
 
-        // All ICS fetches failed — show iframe fallback
-        diagLog('calendar ALL FAILED — falling back to iframe embed');
+        // All ICS fetches failed — iframe is already visible by default
+        diagLog('calendar ALL FAILED — iframe embed remains visible');
         setSync('cal', 'error'); recordFailure('cal');
-        if (el.calAgenda) el.calAgenda.style.display = 'none';
-        if (el.calIframe) el.calIframe.classList.add('cal-fallback-active');
         releaseLock('cal');
     }
 
@@ -2300,7 +2447,7 @@
         if (!_alertsOn && _alertTimer) { clearTimeout(_alertTimer); _alertTimer = null; }
         if (_alertsOn && !_alertTimer) loadAlerts();
         // Re-setup stocks scroll loop (height changed)
-        setupStocksLoop();
+        startStocksScroll();
     }
     function initAlerts() {
         const saved = localStorage.getItem('dash_alerts') || 'off';
@@ -2422,7 +2569,7 @@
         updateNetworkBanner();
         tickClock(); updateMarketBadge();
         const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadOmer, loadWeather,
-                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha];
+                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha, loadHebCal];
         runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
             diagLog('All loaders settled');
             stampRefresh();
@@ -2455,6 +2602,7 @@
     // Very slow (3h+)
     setInterval(loadHebrewDate, 10800000);    // 3h
     setInterval(loadShabbat, 21600000);       // 6h
+    setInterval(loadHebCal, 21600000);        // 6h — refresh heb-cal card
     setInterval(loadHolidays, 43200000);      // 12h
     setInterval(loadHalacha, 43200000);       // 12h — daily halacha
     setInterval(loadOmer, 1800000);           // 30min — re-check omer (switches at sunset)
@@ -2595,15 +2743,9 @@
         // Record original position via FLIP technique
         const startRect = card.getBoundingClientRect();
         card._origRect = { top: startRect.top, left: startRect.left, width: startRect.width, height: startRect.height };
-        // Hide sibling cards (other cards in both grids + col-split)
-        document.querySelectorAll('.main-grid > *, .bottom-grid > *').forEach(el => {
-            if (el === card) return;
-            if (el.contains(card)) {
-                // card is inside col-split — hide the other card in col-split, not the col-split itself
-                el.querySelectorAll('.card').forEach(c => { if (c !== card) c.classList.add('card-hidden'); });
-            } else {
-                el.classList.add('card-hidden');
-            }
+        // Hide sibling cards (other cards in grid columns)
+        document.querySelectorAll('.grid-col > .card').forEach(el => {
+            if (el !== card) el.classList.add('card-hidden');
         });
         // Set fixed position at current location first (FLIP: First)
         card.style.position = 'fixed';

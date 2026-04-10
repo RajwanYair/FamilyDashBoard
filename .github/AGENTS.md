@@ -44,6 +44,15 @@ API integration specialist for client-side data fetching with CORS proxy fallbac
 | `/add-section` | Scaffold a new dashboard widget/card |
 | `/fix-quality` | Auto-fix linting, security, and a11y issues |
 
+## Available Skills (type `/` in chat — auto-loaded when relevant)
+
+| Skill | Trigger phrases | Purpose |
+|-------|----------------|---------|
+| `/add-api` | add API, new data source, new card with data | Full workflow: fetch + cache + sync + display + interval + tests |
+| `/release` | new release, bump version, publish, changelog, tag | Version bump → CHANGELOG → SVG assets → tests → git tag |
+| `/debug-fetch` | broken API, data not loading, proxy failing, error indicator | Diagnose fetch failures using diagnostic overlay + proxy chain testing |
+| `/update-tests` | add tests, fix failing tests, test coverage, test suite | Add/update regex-based tests for HTML/CSS/JS changes |
+
 ## Available Instructions (auto-loaded by file pattern)
 
 | Instruction | Applies To | Purpose |
@@ -51,3 +60,10 @@ API integration specialist for client-side data fetching with CORS proxy fallbac
 | `dashboard` | `*.html` | HTML/CSS/JS coding standards |
 | `cicd` | `*.yml, *.yaml, .github/**` | CI/CD workflow standards |
 | `workspace` | `**` | Project architecture overview |
+
+## MCP Servers (`.vscode/mcp.json`)
+
+| Server | Package | Purpose |
+|--------|---------|---------|
+| `fetch` | `@modelcontextprotocol/server-fetch` | Test API endpoints (weather, hebcal, stocks) directly in chat |
+| `filesystem` | `@modelcontextprotocol/server-filesystem` | Scoped read/write access to the project folder |

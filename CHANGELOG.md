@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.8.0] — 2026-04-10
+
+### Added
+- **🗓️ Hebrew Calendar card (`לוח עברי`)** — new dedicated card in the middle column showing: candle lighting time + day, havdalah time, next holiday with days remaining, special items (Sefirat HaOmer, Hanukkah candles etc.), hourly rotating rabbi saying from MOTIVATIONS; driven by `loadHebCal()` with its own `sync-hebcal` indicator, 6h refresh interval
+- **🎨 Brand-color stock rows** — each stock row now uses the company's primary brand color for its left border stripe and ticker symbol label; colors are defined in a new `STOCK_BRAND` constant (14 symbols including ^GSPC, ^VIX, BTC-USD, TSLA, NVDA, INTC, etc.)
+- **🖼️ Reliable stock logos via Google Favicons** — logos now fetch from `https://www.google.com/s2/favicons?domain=DOMAIN&sz=64` instead of the unreliable Clearbit API; logo domain registered in `STOCK_BRAND`; old `onerror`/`display:none` cleared on first render; colored letter-badge fallback (brand-colored background, white text) if favicon also fails
+- **Alphabetically sorted stocks** — `STOCK_SYMBOLS` array sorted A–Z with `^GSPC` and `^VIX` pinned first
+
+### Changed
+- **Layout restructured to 3-column full-height grid** — `.grids-area` changed from `flex-column` (main-row + bottom-row) to a single CSS `grid` with `grid-template-columns: 38fr 33fr 29fr`; `.grid-col-left` (news 65% + weather 35%), `.grid-col-mid` (heb-cal 20% + calendar 65% + currency 15%), `.grid-col-right` (stocks 33% + alerts 33% + motivation 33%)
+- **Stocks and alerts are now standalone cards** — removed `.col-split` wrapper; stocks, alerts, and motivation are direct `.grid-col-right > .card` children
+- **Alerts-off CSS target updated** — `body.alerts-off` now hides `.grid-col-right > .card:nth-child(2)` and expands `.card:nth-child(1)` instead of the removed `.col-split` rules
+- **Card maximize updated** — `toggleCardMaximize` sibling-hide selector changed from `.main-grid > *, .bottom-grid > *` to `.grid-col > .card`
+- **Phone/responsive CSS updated** — `.grids-area` collapses to single column in phone mode; `@media (max-width: 1200px)` wraps right column to full-width row; old `.main-grid`/`.bottom-grid` responsive rules removed
+- **Stock scroll changed to no-clone loop** — `setupStocksLoop()` replaced by `startStocksScroll()` which measures actual panel height, calculates real scroll distance, injects a unique `@keyframes` per render, no DOM cloning
+
+### Fixed
+- **`^GSPC`/`^VIX` not updating** — `encodeURIComponent(sym)` added to Yahoo Finance v8 URL path so `.` is escaped correctly
+- **Stock tiles appearing twice** — removed all clone-sync logic; `renderStock` only touches original `.stk` tiles
+- **Neutral stock color** — changed from cyan `#22d3ee` to `#94a3b8` (chart) / `var(--text-secondary)` (CSS class)
+
+### Removed
+- **`.col-split` layout wrapper** — no longer exists in HTML; CSS rules cleaned up
+- **Clearbit logo API** — replaced by Google favicons; no external rate-limited logo CDN dependency
+
+### Developer
+- **4 project skills added** — `.github/skills/add-api`, `release`, `debug-fetch`, `update-tests` (SKILL.md files)
+- **MCP servers configured** — `.vscode/mcp.json` with `@modelcontextprotocol/server-fetch` and `@modelcontextprotocol/server-filesystem`
+- **AGENTS.md updated** — skills and MCP server tables documented
+- **Tests updated** — test suite updated for new layout class names, `startStocksScroll`, `sync-hebcal`, column selector changes; 362 tests / 44 suites all passing
+
+---
+
 ## [Unreleased]
 
 ---

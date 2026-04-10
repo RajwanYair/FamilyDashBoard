@@ -1,0 +1,23 @@
+{
+  "servers": {
+    "fetch": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ],
+      "description": "Test API endpoints directly in chat. Use to verify Open-Meteo, Hebcal, Yahoo Finance, and other dashboard data sources without opening a browser."
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${workspaceFolder}"
+      ],
+      "description": "Scoped read/write access to the FamilyDashBoard workspace. Use for reading BestDashBoard.html, CHANGELOG.md, test files, and GitHub workflow configs."
+    }
+  }
+}
