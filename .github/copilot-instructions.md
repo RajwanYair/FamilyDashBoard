@@ -155,20 +155,19 @@ function fetchWithTimeout(url, ms = 8000) {
 
 ## Release Convention
 
-> **IMPORTANT — No binary artifacts:** This project has **no exe, dll, MSI, or build outputs of any kind**. It is a zero-dependency single HTML file. The release artifact IS `BestDashBoard.html`. GitHub Actions `release.yml` automatically attaches `BestDashBoard.html` to every GitHub Release on `git push --tags`. Do NOT attempt to add build tooling or binary packaging.
-
-This project has **no build artifacts** — it is a single HTML file. The release artifact IS `BestDashBoard.html`.
+> **IMPORTANT — No binary artifacts:** This project has **no exe, dll, MSI, or build outputs of any kind**. Release artifacts: `BestDashBoard.html`, `sw.js`, `manifest.json`, `icon.svg` — all four are auto-attached to every GitHub Release by `release.yml` on `git push --tags`. Do NOT attempt to add build tooling or binary packaging.
 
 Every version bump must:
-1. Update version string in `BestDashBoard.html` (2 places: status bar span + comment block)
+1. Update version string in `BestDashBoard.html` (2 places: status bar span + comment block) + `sw.js` CACHE_NAME
 2. Update `CHANGELOG.md` with a full entry
 3. Update `README.md` badge + test count + structure
 4. Update `package.json` version
 5. Update version in `tests/dashboard.test.mjs` assertion
 6. Run `node --test tests/dashboard.test.mjs` — must be 0 fail, 0 skip
-7. `git commit` all files + `git tag vX.Y.Z` + `git push origin main --tags`
-8. GitHub Actions `release.yml` attaches `BestDashBoard.html` to the GitHub Release automatically
-9. GitHub Actions `deploy.yml` publishes to GitHub Pages automatically
+7. Update SVG docs in `.github/assets/` (version, feature count, test count)
+8. `git commit` all files + `git tag vX.Y.Z` + `git push origin main --tags`
+9. GitHub Actions `release.yml` attaches all 4 artifacts automatically
+10. GitHub Actions `deploy.yml` publishes to GitHub Pages automatically
 
 ## Roadmap
 
@@ -189,7 +188,6 @@ Every version bump must:
 | v4.18 | Sprint 15 (F141–150): Dew point tile, wind gusts, news category badges, inline news expand, daily quote lock+next, news bookmarks, weekly weather summary, stock P&L row, help overlay upgrade | ✅ Done |
 | v4.19 | Sprint 16 (F151–160): HaOmer row, precip forecast mm, 5-currency sparklines, cal today-strip, stocks summary bar, bookmark filter (B key), halacha overlay, wx min/max, card collapse, news font slider | ✅ Done |
 | v5.0 | Sprint 17 (F161–170): Corp proxy config, SW v5.0.0 + expanded API cache, icon.svg, manifest icons, PWA install prompt, offline fallback, VERSION_ACTIVATED, periodic SW update, release assets | ✅ Done |
-| v5.1 | Web Push notifications for red alerts | 🔜 Planned |
 | v5.1 | Web Push notifications for red alerts | 🔜 Planned |
 | v5.2 | Config panel for multi-city + multi-family + ICS URL | 🔜 Planned |
 | v5.3 | Family photo slideshow + transit departures | 💡 Idea |
@@ -233,5 +231,3 @@ For any new header chip (like birthday chip, next-zman chip):
 - Confirmed all issues #1–#57 are CLOSED as of 2026-04-12
   - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
   - Issue #57 = Sprint 17 / v5.0.0, closed with commit 4f6eb9d
-  - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
-  - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment

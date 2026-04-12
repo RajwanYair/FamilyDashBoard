@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.14.0**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v5.0.0**.
 
 ## CSS Rules
 
@@ -115,7 +115,7 @@ async function fetchJSON(url) {
 - Hebrew date: **1.05em**, English date: **0.85em**
 - Top temperature: **1.2em**
 - Card headers: **0.95em**, font-weight 700, padding **3px 14px** (icon badge 1.4em)
-- Stock prices: 1.2em (`.stk-price`)
+- Stock prices: 1em (`.stk-price`)
 - Weather icon: **1.6em**, temp: **1.1em**, desc: **0.72em**
 - Weather details grid: 0.68em
 - Forecast day name: 0.7em, icon: 0.9em, temp: 0.72em
@@ -133,41 +133,6 @@ async function fetchJSON(url) {
 - Offline banner: slides down when `navigator.onLine` is false, auto-hides on reconnect
 
 ## Alerts Toggle
-
-## Sprint 11 Patterns (v4.14.0 — F101–F110)
-
-### Service Worker Update Banner (F101)
-- `#sw-update-banner` is `position:fixed`, `display:none`, shown by adding `.visible` class
-- SW registration checks `reg.waiting` on load and listens for `updatefound` → shows banner when new SW is waiting
-- `swUpdateReload()` posts `{ type: 'SKIP_WAITING' }` to SW, which calls `self.skipWaiting()` on receipt
-- **Never** call `self.skipWaiting()` in the install event — always wait for explicit user confirmation
-
-### Multi-ICS Calendar (F102)
-- `getICSUrls()` returns array of active ICS URLs from `dash_ics_url`, `dash_ics_url_2`, `dash_ics_url_3`
-- `loadCalendarExtra()` must guard with `if (!_pageVisible) return;`
-- Config panel has 3 ICS URL inputs; `saveConfig()` persists all three + calls `loadCalendarExtra()` if any secondary URL exists
-
-### News Search (F103)
-- `applyNewsSearch(kw)` toggles `.search-hidden` on each `.rss-item` (case-insensitive match against title text)
-- Updates `#news-search-count` with result count; pauses scroll animation (`animationPlayState`) during active search
-- 250ms debounce on input; Escape key clears; `_newsKeyword` tracks current keyword so `renderNews()` can re-apply after refresh
-
-### Reconnect Auto-Refresh (F105)
-- `_wasOffline = false` at top of script; set `true` when `updateNetworkBanner()` detects offline
-- On reconnect: reset `_wasOffline = false`, start 1500ms timeout, then `safeLoad()` for 5 panes (weather, news, stocks, currency, hebcal)
-
-### Hebrew Wind Direction (F108)
-- `deg2hebrewDir(deg)`: 8-item array `['צפון','צ-מ','מזרח','ד-מ','דרום','ד-מ','מערב','צ-מ']`; index = `Math.round(((deg%360)+360)%360/45)%8`
-- `#wx-wind-heb` span lives inside the wind detail row; set via `el.wxWindHeb.textContent`
-
-### Next Zman Header (F109)
-- `_zmanimParsed`: array of `{ label, time }` objects built by `_renderZmanim()` each time zmanim are fetched
-- `updateNextZman()`: `_zmanimParsed.find(z => z.time > Date.now())` → format `HH:MM` in Jerusalem timezone → set `#header-next-zman`
-- **Must** call `updateNextZman()` at end of `tickClock()` so the chip updates each minute
-
-### Visited News (F110)
-- `dash_news_visited` stores a JSON array of article URLs (max 200, oldest evicted)
-- `renderNews()` must: (1) read visited set and pre-apply `.visited` class to already-viewed items, (2) on click → `_addVisitedArticle(url)` then add `.visited` class, (3) re-apply `applyNewsSearch(_newsKeyword)` after render
 
 - `#alerts-toggle` dropdown in Stocks/Alerts card header: show/hide red alerts pane
 - Keyboard shortcut `A`: toggles alerts on/off

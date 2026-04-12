@@ -25,6 +25,9 @@ description: "Use when: working on any file in the FamilyDashBoard workspace. Pr
 ```
 FamilyDashBoard/
 ├── BestDashBoard.html    # Dashboard (HTML + CSS + JS)
+├── sw.js                 # ServiceWorker (offline + API cache, v5.0.0)
+├── manifest.json         # PWA manifest (icons, display)
+├── icon.svg              # 512×512 app icon (4-panel dashboard)
 ├── index.html            # GitHub Pages redirect
 ├── README.md
 ├── CHANGELOG.md
@@ -57,6 +60,7 @@ FamilyDashBoard/
 |--------|---------|
 | **Cache** | Dual-layer: in-memory `Map` + `localStorage` (prefix `dash_v2_`, 7-day eviction) |
 | **Fetch** | Direct → CORS proxy fallback (`allorigins` → `codetabs` → `corsproxy.io`) with diagnostic logging |
+| **SW / PWA** | `sw.js` v5.0.0 — APP_SHELL pre-cached, API responses cached (7 origins), offline HTML fallback, `VERSION_ACTIVATED` broadcast |
 | **Error handling** | `safeLoad()` async wrapper, startup self-check, global error catchers, auto-show diagnostic overlay |
 | **Diagnostics** | Press `D` for overlay: per-pane status + fetch log. Auto-opens on errors. `copyDiagLog()` copies log to clipboard |
 | **Offline** | Banner slides down when `navigator.onLine` is false, serves stale cache |

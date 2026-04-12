@@ -406,12 +406,12 @@
             border-right: 3px solid var(--accent-border);
         }
         .stk:hover { background: var(--bg-card-hover); }
-        .stk-info { display: flex; flex-direction: column; min-width: 3.8em; }
-        .stk-sym { font-weight: 700; color: var(--accent); font-size: 1em; }
-        .stk-desc { font-size: 0.72em; color: var(--text-muted); font-weight: normal; }
-        .stk-vals { display: flex; flex-direction: column; min-width: 3.5em; }
-        .stk-price { font-size: 1em; font-weight: 700; }
-        .stk-chg { font-size: 0.82em; font-weight: 600; }
+        .stk-info { display: flex; flex-direction: column; width: 5.5em; flex-shrink: 0; overflow: hidden; }
+        .stk-sym { font-weight: 700; color: var(--accent); font-size: 1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stk-desc { font-size: 0.72em; color: var(--text-muted); font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stk-vals { display: flex; flex-direction: column; width: 6em; flex-shrink: 0; overflow: hidden; }
+        .stk-price { font-size: 1em; font-weight: 700; white-space: nowrap; }
+        .stk-chg { font-size: 0.82em; font-weight: 600; white-space: nowrap; }
         .stk-chart { flex: 1; height: 22px; min-width: 0; }
         .stk-time { font-size: 0.58em; color: var(--text-muted); white-space: nowrap; }
         .stk-logo { width: 18px; height: 18px; flex-shrink: 0; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
