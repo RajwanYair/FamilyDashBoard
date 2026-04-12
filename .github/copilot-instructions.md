@@ -206,17 +206,39 @@ Every version bump must:
 - Do NOT call `self.skipWaiting()` in the SW install event — only via `SKIP_WAITING` message
 - Do NOT forget `if (!_pageVisible) return;` at the top of new async loaders
 - Do NOT set test slice lengths shorter than the actual function body (causes false-fail assertions)
+- Do NOT use `min-width` for stock row columns — use `width` + `flex-shrink: 0` for proper alignment
+- Do NOT introduce sprint code without running `node --check` + ESLint — duplicate declarations kill the entire script silently
+- Do NOT call `loadStocks()` — the function is `loadAllStocks()`; always verify function names before wiring
 
-## Lessons Learned (Sprints 8–11)
+## Lessons Learned (Sprints 8–17)
 
 ### Testing Pitfalls
 - `scriptContent.slice(offset, offset + N)` regex tests fail silently when N is too small — increase slice by 500–1000 chars when a test fails unexpectedly
 - After adding to an existing function (e.g. `updateNetworkBanner`), related tests that relied on a short slice will fail; always verify the actual function body length before writing slice-based tests
 - Version assertion test (`html.includes("Dashboard vX.Y.Z")`) must always be updated; the `tests/dashboard.test.mjs` assertion label must also change
+- F168 test: look for `reg.update()` NOT `registration.update()` — the local var is named `reg`
+
+### JS Integrity / Linting
+- **Always run `node --check` after any JS edit** — syntax errors kill the entire script silently (no browser error shown for single-file HTML)
+- **Always run ESLint after sprints** — catches undeclared vars and duplicate declarations that `node --check` misses
+- Sprint merges have produced duplicate function/const blocks multiple times — scan for duplicates before commit:
+  - `NEWS_BOOKMARKS_KEY` was declared twice (Sprint 14+15 merge artifact) → killed entire script
+  - `detectNewsCategory` was declared twice (Sprint 15 section duplicated)
+  - Stray extra `}` after `parseICS()` return — caused `Unexpected token` SyntaxError
+- Variable naming: temp unit is `_tempUnit` (values `'C'`/`'F'`), NOT `_useFahrenheit`
+- Stock refresh function is `loadAllStocks()` — not `loadStocks()` (which doesn't exist)
+- ESLint config (`eslint.config.mjs`) must include all browser globals; missing ones cause false `no-undef` errors — add `requestIdleCallback`, `Blob`, `alert`, `Notification`, `CSS`, `AbortSignal`, etc.
 
 ### SW / PWA
 - SW `message` event handler is the correct pattern to skip waiting (`SKIP_WAITING`) — NOT auto-skipWaiting in install
 - `navigator.serviceWorker.addEventListener('controllerchange', () => location.reload())` ensures the page refreshes after the new SW activates
+- SW NETWORK_BACK handler must call `loadAllStocks()` not `loadStocks()` — verify function names when wiring SW messages
+
+### CSS / Stock Alignment
+- Stock row columns don't align with `min-width` — use `width` + `flex-shrink: 0` for hard column sizing
+- `.stk-info` needs `width: 5.5em` (covers longest symbol "S&P500", "BRK-B", "ת\"א 35")
+- `.stk-vals` needs `width: 6em` (covers prices up to ~"$186,000")
+- `.stk-chart` uses `flex: 1` to fill remaining space — all charts start at same x-position
 
 ### Feature Wiring Checklist
 For any new header chip (like birthday chip, next-zman chip):
@@ -226,8 +248,18 @@ For any new header chip (like birthday chip, next-zman chip):
 4. Wire population in the relevant loader function
 5. If time-based: call update from `tickClock()`
 
+### Docs / Instructions Hygiene
+- Instruction files drift from reality — audit after every sprint: version numbers, test counts, file tree, key systems
+- `cicd.instructions.md` had test count frozen at `342 / 44 suites` (from v4.3!) — update with every sprint
+- Sprint-specific patterns sections in `dashboard.instructions.md` become stale — remove when superseded by higher-level principles
+- copilot-instructions `Roadmap` table: deduplicate rows before commit (v5.1 appeared twice)
+
 ### GH Issue Tracking
-- After every sprint push, create tracking issues manually: `gh issue create --label "enhancement" --title "feat: vX.Y.Z..." --body "Commit: HASH | Tag: vX.Y.Z | Tests: N/S/0"` then immediately `gh issue close N --comment "Resolved in commit HASH"`
-- Confirmed all issues #1–#57 are CLOSED as of 2026-04-12
-  - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
-  - Issue #57 = Sprint 17 / v5.0.0, closed with commit 4f6eb9d
+- After every sprint push: `gh issue create --label "enhancement" --title "feat: vX.Y.Z..." --body "Commit: HASH | Tag: vX.Y.Z | Tests: N/S/0"` then immediately `gh issue close N --comment "Resolved in commit HASH"`
+- For bug/fix commits (not sprints): use `--label "bug"` or `--label "documentation"` as appropriate
+- All issues #1–#64 are CLOSED as of 2026-04-12:
+  - #57 = Sprint 17 / v5.0.0, closed with commit 4f6eb9d
+  - #58/#59 = stock alignment CSS fix
+  - #60 = JS SyntaxError fix (NEWS_BOOKMARKS_KEY duplicate + stray brace), commit 6b258c2
+  - #63 = JS lint fix (_useFahrenheit→_tempUnit, loadStocks→loadAllStocks, detectNewsCategory dupe), commit 562f001
+  - #64 = docs dedup + sync to v5.0.0, commit db48698
