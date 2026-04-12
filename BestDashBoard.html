@@ -437,7 +437,7 @@
         .wx-detail-label { color: var(--text-muted); font-size: 0.8em; margin-bottom: 1px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 0.95em; }
         .wx-hourly-chart { width: 100%; flex: 1 1 0; min-height: 24px; max-height: 48px; }
-        .wx-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; flex: 0 0 auto; padding: 2px 0; margin-top: auto; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; flex: 0 0 auto; padding: 2px 0; margin-top: auto; }
         .wx-fday { background: var(--bg-card-inner); padding: 2px 4px; border-radius: 6px; display: flex; align-items: center; gap: 3px; }
         .wx-fday-icon { font-size: 0.9em; flex-shrink: 0; line-height: 1; }
         .wx-fday-name { font-size: 0.7em; color: var(--accent); font-weight: 600; white-space: nowrap; }
@@ -678,6 +678,7 @@
             .stk-sym { font-size: 0.8em; }
             .rss-item { font-size: 0.82em; }
             .wx-fday { padding: 4px; }
+            .wx-forecast { grid-template-columns: repeat(4, 1fr); }
         }
 
         /* ── Card Maximize (click header to expand) ── */
@@ -1140,6 +1141,17 @@
         .hc-parasha-progress-fill { height: 100%; background: var(--cyan); border-radius: 2px; transition: width 0.4s ease; }
         /* Feature 80: PWA install prompt button */
         #pwa-install-btn { display: none; position: fixed; bottom: 20px; left: 20px; z-index: 800; font-size: 0.75em; padding: 6px 14px; border-radius: 20px; background: var(--accent); color: #0f172a; border: none; cursor: pointer; font-weight: 700; box-shadow: 0 2px 12px rgba(96,165,250,0.4); }
+        /* ── SPRINT 9 FEATURES (Features 81–90) ── */
+        /* Feature 82: Halacha ticker category badge */
+        .ticker-halacha-cat { font-size: 0.68em; padding: 1px 6px; border-radius: 8px; background: rgba(96,165,250,0.14); color: var(--accent); margin-inline-end: 8px; white-space: nowrap; vertical-align: middle; }
+        /* Feature 84: Family name config — greeting uses it*/
+        /* Feature 85: Multi-photo slideshow fade */
+        @keyframes slideshow-fadein { from { opacity: 0; } to { opacity: 0.18; } }
+        body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwards; }
+        /* Feature 89: Clock seconds display */
+        #clock.with-seconds { letter-spacing: -0.02em; font-size: 2.5em; }
+        /* Feature 90: Offline banner details */
+        .offline-banner .offline-age { font-size: 0.82em; opacity: 0.75; margin-inline-start: 6px; }
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
@@ -1191,8 +1203,24 @@
           <input class="cfg-input" id="cfg-birthday" type="text" placeholder="שם,6,15" />
         </div>
         <div class="cfg-row">
+          <span class="cfg-label">👨‍👩‍👧‍👦 שם משפחה (לברכה)</span>
+          <input class="cfg-input" id="cfg-family-name" type="text" placeholder="רגואן" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">📅 קישור ICS (גוגל-קלנדר)</span>
+          <input class="cfg-input" id="cfg-ics-url" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+        </div>
+        <div class="cfg-row">
           <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
           <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🌑 החשיכה אוטומטית — שעת התחלה (H)</span>
+          <input class="cfg-input" id="cfg-dim-start" type="number" min="0" max="23" placeholder="23" style="direction:ltr;width:70px" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🌅 החשיכה אוטומטית — שעת סיום (H)</span>
+          <input class="cfg-input" id="cfg-dim-end" type="number" min="0" max="23" placeholder="6" style="direction:ltr;width:70px" />
         </div>
         <div class="cfg-row">
           <span class="cfg-label">🌡️ יחידת טמפרטורה</span>
@@ -1201,6 +1229,10 @@
         <div class="cfg-row">
           <span class="cfg-label">📢 הודעה מיוחדת בטיקר</span>
           <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🚨 סינון אזורי התראה (קידומת עיר)</span>
+          <input class="cfg-input" id="cfg-alert-zone" type="text" placeholder="תל אביב, רמת גן..." />
         </div>
         <div class="cfg-row">
           <span class="cfg-label">🔔 צליל להתראות אדומות</span>
@@ -1317,6 +1349,9 @@
                 <!-- Feature 32: Extreme weather alert banner -->
                 <div id="wx-alert-banner"></div>
                 <div class="wx-forecast" id="wx-forecast">
+                  <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                  <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
+                  <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
@@ -1448,7 +1483,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.11.0 — משפחת רגואן</span>
+            <span>Dashboard v4.12.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1464,7 +1499,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.11.0 — 3-Column Layout · Hebrew Calendar Card · 80 Sprint Features · 791 Tests
+       FAMILY DASHBOARD v4.12.0 — 3-Column Layout · Hebrew Calendar Card · 90 Sprint Features · 831 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1695,7 +1730,15 @@
     // ── Network Status Detection ──
     function updateNetworkBanner() {
         const banner = document.getElementById('offline-banner');
-        if (banner) banner.classList.toggle('visible', !navigator.onLine);
+        if (!banner) return;
+        if (navigator.onLine) {
+            _recordOnlineTime(); // F90: record last-online timestamp
+            banner.classList.remove('visible');
+        } else {
+            const ageStr = _getOfflineCacheAgeStr();
+            banner.innerHTML = `⚠️ אין חיבור לאינטרנט — מציג נתונים מהמטמון${ageStr ? ` <span class="offline-age">${ageStr}</span>` : ''}`;
+            banner.classList.add('visible');
+        }
     }
     window.addEventListener('online', updateNetworkBanner);
     window.addEventListener('offline', updateNetworkBanner);
@@ -1844,10 +1887,14 @@
     }
 
     // ── Clock & Greeting ──
-    function getGreeting() { const h = new Date().getHours(); if (h >= 5 && h < 12) return '🌅 בוקר טוב למשפחת רגואן!'; if (h >= 12 && h < 17) return '☀️ צהריים טובים!'; if (h >= 17 && h < 21) return '🌇 ערב טוב למשפחה!'; return '🌙 לילה טוב!'; }
+    function getGreeting() { const fn = localStorage.getItem('dash_family_name') || 'רגואן'; const h = new Date().getHours(); if (h >= 5 && h < 12) return '🌅 בוקר טוב למשפחת ' + fn + '!'; if (h >= 12 && h < 17) return '☀️️ צהריים טובים!'; if (h >= 17 && h < 21) return '🏗️ ערב טוב למשפחת ' + fn + '!'; return '🌙 לילה טוב!'; }
     function tickClock() {
         const now = new Date();
-        const t = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem' });
+        // F89: show seconds when _clockSec mode is active
+        const fmtOpts = _clockSec
+            ? { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem' }
+            : { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem' };
+        const t = now.toLocaleTimeString('he-IL', fmtOpts);
         if (el.clock.textContent !== t) el.clock.textContent = t;
         const d = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jerusalem' });
         if (el.engDate.textContent !== d) el.engDate.textContent = d;
@@ -2093,7 +2140,7 @@
         try {
             // Feature 45: use current city lat/lon
             const city = (typeof getCurrentWxCity === 'function') ? getCurrentWxCity() : { lat: 31.7683, lon: 35.2137 };
-            const d = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max&timezone=Asia%2FJerusalem&forecast_days=5`).then(r => r.json());
+            const d = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max&timezone=Asia%2FJerusalem&forecast_days=8`).then(r => r.json());
             if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); syncBurst('wx'); recordSuccess('wx'); }
         } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); recordFailure('wx'); }
         releaseLock('wx');
@@ -2158,7 +2205,7 @@
             el.wxRise.textContent = sunTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
             // Forecast
             const fDays = el.wxForecast.querySelectorAll('.wx-fday');
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 7; i++) {
                 if (fDays[i - 1] && d.daily.time[i]) {
                     const dn = new Date(d.daily.time[i]).toLocaleDateString('he-IL', { weekday: 'short' });
                     const mx = Math.round(d.daily.temperature_2m_max[i]);
@@ -2258,7 +2305,7 @@
                 const r = await fetch(p + encodeURIComponent(feed.url)); if (!r.ok) continue;
                 const txt = p.includes('allorigins') ? (await r.json()).contents : await r.text();
                 const xml = new DOMParser().parseFromString(txt, 'text/xml');
-                const items = []; xml.querySelectorAll('item').forEach(it => { const t = it.querySelector('title')?.textContent?.trim(); if (t) items.push({ title: t, pubDate: it.querySelector('pubDate')?.textContent || '', link: it.querySelector('link')?.textContent || '', source: feed.src }); });
+                const items = []; xml.querySelectorAll('item').forEach(it => { const t = it.querySelector('title')?.textContent?.trim(); if (t) items.push({ title: t, pubDate: it.querySelector('pubDate')?.textContent || '', link: it.querySelector('link')?.textContent || '', source: feed.src, desc: it.querySelector('description')?.textContent?.replace(/<[^>]+>/g, '').trim().slice(0, 140) || '' }); });
                 if (items.length) return items;
             } catch (_) { continue; }
         }
@@ -2322,7 +2369,7 @@
                     div.appendChild(ageEl);
                 }
             }
-            const ttl = document.createElement('span'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
+            const ttl = document.createElement('span'); ttl.className = 'rss-title'; ttl.textContent = it.title; if (it.desc) ttl.title = it.desc; div.appendChild(ttl);
             const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; div.appendChild(sr);
             // Feature 57: copy to clipboard button (only on original items, not clones)
             if (idx < list.length && navigator.clipboard) {
@@ -2414,6 +2461,7 @@
             if (!texts) return;
             const halacha = {
                 ref: textData.heRef || halachaItem.displayValue?.he || '',
+                category: halachaItem.category?.[1] || halachaItem.category?.[0] || '',
                 texts: Array.isArray(texts) ? texts.map(t => t.replace(/<[^>]+>/g, '').trim()).filter(Boolean) : [String(texts).replace(/<[^>]+>/g, '').trim()]
             };
             cSet(key, halacha);
@@ -2430,6 +2478,11 @@
             const f = document.createDocumentFragment();
             const refSpan = document.createElement('span'); refSpan.className = 'ticker-item' + (isClone ? ' clone' : '');
             const src = document.createElement('span'); src.className = 'ticker-src'; src.textContent = '📜 ' + data.ref;
+            // F82: halacha category badge
+            if (data.category && !isClone) {
+                const cat = document.createElement('span'); cat.className = 'ticker-halacha-cat'; cat.textContent = data.category;
+                refSpan.appendChild(cat);
+            }
             // Feature 48: prepend custom announcement
             if (customMsg && !isClone) {
                 const chip = document.createElement('span'); chip.className = 'ticker-custom'; chip.textContent = '📢 ' + customMsg;
@@ -2819,16 +2872,18 @@
 
     function renderAlerts(data, highlightNew) {
         if (!el.alertsScroll || !Array.isArray(data)) return;
+        // F86: zone filter
+        const filtered = filterAlertsByZone(data);
         const now = Date.now() / 1000;
         let total24h = 0;
-        const recentEvents = data.slice(0, 25);
-        for (const ev of data) {
+        const recentEvents = filtered.slice(0, 25);
+        for (const ev of filtered) {
             for (const a of ev.alerts) { if (now - a.time < 86400) total24h++; }
         }
         function buildAlertItems(container, isClone) {
             const counter = document.createElement('div');
             counter.className = 'alert-count' + (isClone ? ' clone' : '');
-            const hasActive = data.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
+            const hasActive = filtered.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
             counter.textContent = '🚨 ' + total24h + ' התרעות ב-24 שעות האחרונות';
             if (hasActive && !isClone) {
                 const dot = document.createElement('span');
@@ -3031,6 +3086,7 @@
 
     async function loadCalendar() {
         if (!_pageVisible || !acquireLock('cal')) return;
+        const CAL_ICS_ACTIVE = localStorage.getItem('dash_ics_url') || CAL_ICS;
         const key = 'cal-ics';
         const fresh = cGet(key, 900000); // 15min TTL
         if (fresh) {
@@ -3062,7 +3118,7 @@
         // 1. Try direct fetch (works when no CORS / same-origin)
         try {
             diagLog('calendar: trying direct fetch...');
-            const r = await fetchWithTimeout(CAL_ICS, 10000);
+            const r = await fetchWithTimeout(CAL_ICS_ACTIVE, 10000);
             if (r.ok) {
                 const t = await r.text();
                 if (acceptICS(t, 'direct')) { releaseLock('cal'); return; }
@@ -3074,7 +3130,7 @@
             const pName = proxy.includes('allorigins') ? 'allorigins' : 'codetabs';
             try {
                 diagLog(`calendar: trying ${pName}...`);
-                const r = await fetchWithTimeout(proxy + encodeURIComponent(CAL_ICS), 12000);
+                const r = await fetchWithTimeout(proxy + encodeURIComponent(CAL_ICS_ACTIVE), 12000);
                 if (!r.ok) { diagLog(`calendar ${pName} HTTP ${r.status}`); continue; }
                 let icsText;
                 if (proxy.includes('allorigins')) {
@@ -3278,9 +3334,13 @@
         styleEl.textContent = safe ? `body::after { background-image: url('${safe}'); opacity: 0.18; }` : '';
     }
     function startBgCycling() {
-        // Custom URL overrides the cycle
+        // Custom URL overrides the cycle; supports comma-separated for slideshow (F85)
         const customUrl = localStorage.getItem('dash_bgUrl');
-        if (customUrl) { setBgImage(customUrl); return; }
+        if (customUrl) {
+            const urls = customUrl.split(',').map(u => u.trim()).filter(u => /^https:\/\//.test(u));
+            if (urls.length > 1) { startPhotoSlideshow(urls); return; }
+            setBgImage(urls[0] || null); return;
+        }
         let bgIdx = parseInt(localStorage.getItem('dash_bgIdx') || '0', 10) % BG_IMAGES.length;
         setBgImage(BG_IMAGES[bgIdx]);
         setInterval(() => {
@@ -3706,7 +3766,6 @@
             const tempInput = document.getElementById('cfg-temp-unit');
             const tickerInput = document.getElementById('cfg-ticker-msg');
             const stockAlertsInput = document.getElementById('cfg-stock-alerts');
-            if (stockAlertsInput) stockAlertsInput.value = localStorage.getItem('dash_stock_alerts') || '';
             const soundInput = document.getElementById('cfg-alert-sound');
             if (bgInput) bgInput.value = localStorage.getItem('dash_bgUrl') || '';
             if (birthdayInput) birthdayInput.value = localStorage.getItem('dash_birthday') || '';
@@ -3714,8 +3773,18 @@
             if (tempInput) tempInput.value = _tempUnit;
             if (tickerInput) tickerInput.value = localStorage.getItem('dash_ticker_msg') || '';
             if (soundInput) soundInput.value = _alertSoundEnabled ? 'on' : 'off';
-            const stockAlertsInput = document.getElementById('cfg-stock-alerts');
             if (stockAlertsInput) stockAlertsInput.value = localStorage.getItem('dash_stock_alerts') || '';
+            // Sprint 9 new fields
+            const familyInput = document.getElementById('cfg-family-name');
+            const icsInput = document.getElementById('cfg-ics-url');
+            const alertZoneInput = document.getElementById('cfg-alert-zone');
+            const dimStartInput = document.getElementById('cfg-dim-start');
+            const dimEndInput = document.getElementById('cfg-dim-end');
+            if (familyInput) familyInput.value = localStorage.getItem('dash_family_name') || '';
+            if (icsInput) icsInput.value = localStorage.getItem('dash_ics_url') || '';
+            if (alertZoneInput) alertZoneInput.value = localStorage.getItem('dash_alert_zone') || '';
+            if (dimStartInput) dimStartInput.value = localStorage.getItem('dash_dim_start') ?? '23';
+            if (dimEndInput) dimEndInput.value = localStorage.getItem('dash_dim_end') ?? '6';
         }
     }
     function saveConfig() {
@@ -3724,11 +3793,14 @@
         const autoThemeInput = document.getElementById('cfg-auto-theme');
         const tempInput = document.getElementById('cfg-temp-unit');
         if (bgInput?.value.trim()) {
-            localStorage.setItem('dash_bgUrl', bgInput.value.trim());
-            setBgImage(bgInput.value.trim());
+            const raw = bgInput.value.trim();
+            localStorage.setItem('dash_bgUrl', raw);
+            const urls = raw.split(',').map(u => u.trim()).filter(u => /^https:\/\//.test(u));
+            if (urls.length > 1) { startPhotoSlideshow(urls); }
+            else { stopPhotoSlideshow(); setBgImage(urls[0] || null); }
         } else if (bgInput) {
             localStorage.removeItem('dash_bgUrl');
-            setBgImage(null);
+            stopPhotoSlideshow(); setBgImage(null);
         }
         if (birthdayInput?.value.trim()) {
             localStorage.setItem('dash_birthday', birthdayInput.value.trim());
@@ -3781,6 +3853,32 @@
             if (val) { try { JSON.parse(val); localStorage.setItem('dash_stock_alerts', val); } catch {} }
             else localStorage.removeItem('dash_stock_alerts');
         }
+        // Sprint 9: family name (F84)
+        const familyInput = document.getElementById('cfg-family-name');
+        if (familyInput !== null) {
+            const name = familyInput.value.trim();
+            if (name) localStorage.setItem('dash_family_name', name);
+            else localStorage.removeItem('dash_family_name');
+        }
+        // Sprint 9: ICS calendar URL (F83)
+        const icsInput = document.getElementById('cfg-ics-url');
+        if (icsInput !== null) {
+            const url = icsInput.value.trim();
+            if (url && /^https:\/\//.test(url)) { localStorage.setItem('dash_ics_url', url); safeLoad(loadCalendar); }
+            else if (!url) localStorage.removeItem('dash_ics_url');
+        }
+        // Sprint 9: alert zone filter (F86)
+        const alertZoneInput = document.getElementById('cfg-alert-zone');
+        if (alertZoneInput !== null) {
+            const zone = alertZoneInput.value.trim();
+            if (zone) localStorage.setItem('dash_alert_zone', zone);
+            else localStorage.removeItem('dash_alert_zone');
+        }
+        // Sprint 9: night dim schedule (F88)
+        const dimStartInput = document.getElementById('cfg-dim-start');
+        const dimEndInput = document.getElementById('cfg-dim-end');
+        if (dimStartInput) { const v = parseInt(dimStartInput.value, 10); if (!isNaN(v) && v >= 0 && v <= 23) localStorage.setItem('dash_dim_start', String(v)); }
+        if (dimEndInput)   { const v = parseInt(dimEndInput.value, 10);   if (!isNaN(v) && v >= 0 && v <= 23) localStorage.setItem('dash_dim_end', String(v)); }
         toggleConfig();
         diagLog('Config saved');
     }
@@ -4213,7 +4311,10 @@
         const h = parseInt(new Date().toLocaleTimeString('en-US', {
             hour: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem'
         }), 10);
-        const shouldDim = (h >= 23 || h < 6);
+        const dimStart = parseInt(localStorage.getItem('dash_dim_start') ?? '23', 10);
+        const dimEnd   = parseInt(localStorage.getItem('dash_dim_end')   ?? '6',  10);
+        // Handle wrap-around midnight: e.g. 23:00 → 06:00
+        const shouldDim = dimStart > dimEnd ? (h >= dimStart || h < dimEnd) : (h >= dimStart && h < dimEnd);
         const overlay = document.getElementById('night-dim');
         if (!overlay) return;
         if (shouldDim !== _nightDimOn) {
@@ -4511,6 +4612,90 @@
         });
     }
 
+    // ── SPRINT 9 FEATURES (F81–F90) ──
+
+    // Feature 85: Multi-photo background slideshow
+    // cfg-bg-url supports comma-separated URLs → auto-cycle every 30s with fade
+    let _slideshowTimer = null;
+    let _slideshowPhotos = [];
+    let _slideshowIdx = 0;
+    function startPhotoSlideshow(urls) {
+        stopPhotoSlideshow();
+        _slideshowPhotos = urls;
+        _slideshowIdx = 0;
+        _applySlide();
+        _slideshowTimer = setInterval(() => {
+            _slideshowIdx = (_slideshowIdx + 1) % _slideshowPhotos.length;
+            _applySlide();
+        }, 30000);
+    }
+    function stopPhotoSlideshow() {
+        if (_slideshowTimer) { clearInterval(_slideshowTimer); _slideshowTimer = null; }
+    }
+    function _applySlide() {
+        if (!_slideshowPhotos.length) return;
+        setBgImage(_slideshowPhotos[_slideshowIdx]);
+        // Brief fade-in animation
+        document.body.classList.remove('slideshow-fade');
+        void document.body.offsetWidth; // force reflow
+        document.body.classList.add('slideshow-fade');
+    }
+
+    // Feature 86: Alert zone filter — only show alerts for cities in the configured zone
+    function _getAlertZone() {
+        const z = localStorage.getItem('dash_alert_zone') || '';
+        return z ? z.split(',').map(s => s.trim().toLowerCase()).filter(Boolean) : [];
+    }
+    function filterAlertsByZone(data) {
+        const zones = _getAlertZone();
+        if (!zones.length) return data;
+        return data.map(ev => {
+            const filtered = ev.alerts.map(a => ({
+                ...a,
+                cities: (a.cities || []).filter(c => zones.some(z => c.toLowerCase().includes(z)))
+            })).filter(a => a.cities.length > 0);
+            return { ...ev, alerts: filtered };
+        }).filter(ev => ev.alerts.length > 0);
+    }
+
+    // Feature 87: News headline description tooltip — set on rss-title spans
+    // (Applied at render time in the news markup loop — see updated renderNews)
+
+    // Feature 89: Clock seconds toggle — click clock to show/hide seconds
+    let _clockSec = localStorage.getItem('dash_clockSec') === 'true';
+    let _secInterval = null;
+    function applyClockSec() {
+        const clkEl = document.getElementById('clock');
+        if (!clkEl) return;
+        clkEl.classList.toggle('with-seconds', _clockSec);
+        if (_clockSec) {
+            if (!_secInterval) _secInterval = setInterval(tickClock, 1000);
+        } else {
+            if (_secInterval) { clearInterval(_secInterval); _secInterval = null; }
+        }
+    }
+    function toggleClockSec() {
+        _clockSec = !_clockSec;
+        localStorage.setItem('dash_clockSec', _clockSec);
+        applyClockSec();
+        diagLog('Clock seconds: ' + (_clockSec ? 'on' : 'off'));
+    }
+
+    // Feature 90: Offline banner with cache age
+    function _recordOnlineTime() {
+        if (navigator.onLine) localStorage.setItem('dash_last_online', String(Date.now()));
+    }
+    function _getOfflineCacheAgeStr() {
+        const ts = parseInt(localStorage.getItem('dash_last_online') || '0', 10);
+        if (!ts) return '';
+        const diffMs = Date.now() - ts;
+        const diffMin = Math.round(diffMs / 60000);
+        const lastTime = new Date(ts).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+        if (diffMin < 60) return `(נתונים מ-${lastTime}, לפני ${diffMin}ד)`;
+        const diffH = Math.round(diffMin / 60);
+        return `(נתונים מ-${lastTime}, לפני ${diffH}ש)`;
+    }
+
     // ── Diagnostic Logger ──
     const _diagLog = [];
     const _diagStatus = {};
@@ -4612,6 +4797,9 @@
         renderCurrencySparklines(); // Feature 38: draw sparklines from history
         renderAqiSparkline();       // Feature 75: restore AQI sparkline from history
         renderParashaProgress();    // Feature 78: initial parasha progress (may be hidden until data loads)
+        applyClockSec();            // Feature 89: restore clock seconds preference
+        _recordOnlineTime();        // Feature 90: record initial online time
+        document.getElementById('clock')?.addEventListener('click', toggleClockSec);  // F89
         document.getElementById('pwa-install-btn')?.addEventListener('click', pwaInstall);
         initWxCityTabs();     // Feature 45: multi-city weather tabs
         applyFontScale();     // Feature 49: restore saved font scale

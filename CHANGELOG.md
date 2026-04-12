@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.12.0] — 2026-04-12
+
+> **Sprint 9 (Features 81–90)** — configurability, visual polish, family personalization
+> Tests: 831 / 53 suites / 0 failures (was 791 / 52 suites / 0)
+
+### Added
+
+- **F81 — 7-day weather forecast** — extended from 4 to 7 days; `forecast_days=8` Open-Meteo; 7-column CSS grid on TV, 4 columns on phone/tablet
+- **F82 — Halacha category badge** — `halachaItem.category` parsed and shown as `.ticker-halacha-cat` badge in ticker ref span
+- **F83 — ICS calendar URL in config** — `#cfg-ics-url` input; saves to `dash_ics_url`; `loadCalendar()` uses `localStorage.getItem('dash_ics_url') || CAL_ICS` — families can paste their own Google Calendar ICS
+- **F84 — Family name config** — `#cfg-family-name` input; `getGreeting()` reads `dash_family_name`; morning/evening greetings personalised ("בוקר טוב למשפחת X!")
+- **F85 — Multi-photo background slideshow** — comma-separated URLs in bg-url field start 30s crossfade rotation; `startPhotoSlideshow()` / `stopPhotoSlideshow()` + CSS `slideshow-fade` animation
+- **F86 — Alert zone filter** — `#cfg-alert-zone` config input; `filterAlertsByZone()` filters red alert cities to match comma-separated zone prefixes; `dash_alert_zone` localStorage
+- **F87 — News headline description tooltip** — RSS `<description>` parsed (HTML stripped, capped 140 chars) and set as native `title` attr on `.rss-title` span
+- **F88 — Night auto-dim schedule config** — `#cfg-dim-start` / `#cfg-dim-end` number inputs (0–23); `updateNightDimmer()` reads `dash_dim_start` / `dash_dim_end` with midnight wrap-around support (default 23–06)
+- **F89 — Clock seconds toggle** — click `#clock` → `toggleClockSec()` shows HH:MM:SS with 1s interval; preference persisted to `dash_clockSec`; `.with-seconds` CSS class; `applyClockSec()` called on init
+- **F90 — Offline banner with cache age** — `_recordOnlineTime()` stamps `dash_last_online` on every online event; `_getOfflineCacheAgeStr()` formats elapsed time; banner shows "מ-HH:MM (לפני Xד/ש)" inline
+
+### Fixed
+
+- `toggleConfig()` had duplicate `const stockAlertsInput` declaration — fixed (was a no-op in strict mode, swallowed silently)
+- `getGreeting()` evening message used generic "למשפחה" — now uses configured family name
+
+---
+
 ## [4.11.0] — 2025-07-12
 
 > **Sprint 8 (Features 71–80)** — 80-feature milestone: GBP pair, heat-map calendar, favicons, sector headers, AQI sparkline, Shabbat pill, Parasha progress, chart tooltips, PWA metas

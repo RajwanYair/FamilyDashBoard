@@ -1139,9 +1139,9 @@ describe("Weather Card", () => {
     }
   });
 
-  it("should have 4 forecast day slots", () => {
+  it("should have 7 forecast day slots (F81: extended 7-day forecast)", () => {
     const fdays = (html.match(/class="wx-fday"/g) || []).length;
-    assert.equal(fdays, 4, `Expected 4 forecast days, got ${fdays}`);
+    assert.equal(fdays, 7, `Expected 7 forecast days (F81), got ${fdays}`);
   });
 
   it("should have 6 detail boxes (humidity, wind, UV, sunrise, AQI, feels-like)", () => {
@@ -1776,10 +1776,10 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.11.0", () => {
+  it("should display version v4.12.0", () => {
     assert.ok(
-      html.includes("Dashboard v4.11.0"),
-      "Missing version v4.11.0 in status bar",
+      html.includes("Dashboard v4.12.0"),
+      "Missing version v4.12.0 in status bar",
     );
   });
 
@@ -5147,6 +5147,158 @@ describe("Sprint 8 Features", () => {
   });
   it("should listen for beforeinstallprompt event", () => {
     assert.ok(scriptContent.includes("beforeinstallprompt"), "Missing beforeinstallprompt listener (Feature 80)");
+  });
+
+});
+
+// ── Suite 53: Sprint 9 Features (F81–F90) ──
+describe("Sprint 9 Features (F81–F90)", () => {
+
+  // F81: 7-day weather forecast
+  it("F81: should have 7 wx-fday forecast slots", () => {
+    const count = (html.match(/class="wx-fday"/g) || []).length;
+    assert.equal(count, 7, `Expected 7 forecast slots, got ${count}`);
+  });
+  it("F81: wx-forecast CSS should use 7-column grid", () => {
+    assert.ok(html.includes("repeat(7, 1fr)"), "wx-forecast grid should have 7 columns");
+  });
+  it("F81: phone breakpoint should fall back to 4 forecast columns", () => {
+    assert.ok(html.includes("repeat(4, 1fr)"), "Phone breakpoint should restore 4 columns");
+  });
+  it("F81: Open-Meteo should request forecast_days=8", () => {
+    assert.ok(scriptContent.includes("forecast_days=8"), "API should request 8 forecast days");
+  });
+  it("F81: forecast loop should iterate to 7", () => {
+    assert.ok(scriptContent.includes("i <= 7"), "Forecast loop should run for 7 days");
+  });
+
+  // F82: Halacha category badge in ticker
+  it("F82: halacha object should include category field", () => {
+    assert.ok(scriptContent.includes("category: halachaItem.category"), "Halacha object needs category field");
+  });
+  it("F82: renderHalacha should create .ticker-halacha-cat badge", () => {
+    assert.ok(scriptContent.includes("ticker-halacha-cat"), "renderHalacha should render category badge");
+  });
+  it("F82: .ticker-halacha-cat CSS should be defined", () => {
+    assert.ok(html.includes(".ticker-halacha-cat"), "Missing .ticker-halacha-cat CSS");
+  });
+
+  // F83: ICS calendar URL in config
+  it("F83: should have cfg-ics-url input in config panel", () => {
+    assert.ok(html.includes('id="cfg-ics-url"'), "Missing #cfg-ics-url config input");
+  });
+  it("F83: loadCalendar should use dash_ics_url from localStorage", () => {
+    assert.ok(scriptContent.includes("dash_ics_url"), "loadCalendar should read dash_ics_url");
+  });
+  it("F83: saveConfig should validate ICS URL with https", () => {
+    assert.ok(scriptContent.includes("dash_ics_url") && scriptContent.includes("/^https:\\/\\//"), "saveConfig should validate https ICS URL");
+  });
+
+  // F84: Family name config
+  it("F84: should have cfg-family-name input in config panel", () => {
+    assert.ok(html.includes('id="cfg-family-name"'), "Missing #cfg-family-name config input");
+  });
+  it("F84: getGreeting should read dash_family_name from localStorage", () => {
+    assert.ok(scriptContent.includes("dash_family_name"), "getGreeting should use configurable family name");
+  });
+  it("F84: getGreeting should fall back to default name", () => {
+    const fnSection = scriptContent.slice(scriptContent.indexOf("function getGreeting()"), scriptContent.indexOf("function getGreeting()") + 250);
+    assert.ok(fnSection.includes("|| '"), "getGreeting should have a fallback family name");
+  });
+
+  // F85: Multi-photo slideshow
+  it("F85: should define startPhotoSlideshow function", () => {
+    assert.ok(scriptContent.includes("function startPhotoSlideshow("), "Missing startPhotoSlideshow");
+  });
+  it("F85: should define stopPhotoSlideshow function", () => {
+    assert.ok(scriptContent.includes("function stopPhotoSlideshow("), "Missing stopPhotoSlideshow");
+  });
+  it("F85: startBgCycling should detect comma-separated URLs", () => {
+    assert.ok(scriptContent.includes("startPhotoSlideshow(urls)"), "startBgCycling should call startPhotoSlideshow");
+  });
+  it("F85: slideshow-fade CSS animation should be defined", () => {
+    assert.ok(html.includes("slideshow-fade"), "Missing slideshow-fade CSS animation");
+  });
+
+  // F86: Alert zone filter
+  it("F86: should have cfg-alert-zone input in config panel", () => {
+    assert.ok(html.includes('id="cfg-alert-zone"'), "Missing #cfg-alert-zone config input");
+  });
+  it("F86: should define filterAlertsByZone function", () => {
+    assert.ok(scriptContent.includes("function filterAlertsByZone("), "Missing filterAlertsByZone");
+  });
+  it("F86: renderAlerts should call filterAlertsByZone", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderAlerts("), scriptContent.indexOf("function renderAlerts(") + 300);
+    assert.ok(fn.includes("filterAlertsByZone"), "renderAlerts should apply zone filter");
+  });
+  it("F86: saveConfig should persist dash_alert_zone", () => {
+    assert.ok(scriptContent.includes("dash_alert_zone"), "saveConfig should save alert zone");
+  });
+
+  // F87: News headline description tooltip
+  it("F87: fetchFeed should parse description field from RSS", () => {
+    assert.ok(scriptContent.includes("querySelector('description')"), "fetchFeed should parse description");
+  });
+  it("F87: rss-title span should receive title attribute from desc", () => {
+    assert.ok(scriptContent.includes("ttl.title = it.desc"), "rss-title should get title tooltip from desc");
+  });
+  it("F87: description should be stripped of HTML tags", () => {
+    assert.ok(scriptContent.includes("replace(/<[^>]+>/g"), "RSS description should strip HTML");
+  });
+
+  // F88: Night auto-dim schedule config
+  it("F88: should have cfg-dim-start input in config panel", () => {
+    assert.ok(html.includes('id="cfg-dim-start"'), "Missing #cfg-dim-start config input");
+  });
+  it("F88: should have cfg-dim-end input in config panel", () => {
+    assert.ok(html.includes('id="cfg-dim-end"'), "Missing #cfg-dim-end config input");
+  });
+  it("F88: updateNightDimmer should read dash_dim_start from localStorage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNightDimmer("), scriptContent.indexOf("function updateNightDimmer(") + 400);
+    assert.ok(fn.includes("dash_dim_start"), "updateNightDimmer should read dim schedule");
+  });
+  it("F88: updateNightDimmer should handle midnight wrap-around", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNightDimmer("), scriptContent.indexOf("function updateNightDimmer(") + 800);
+    assert.ok(fn.includes("dimStart > dimEnd"), "Should handle wrap-around midnight scheduling");
+  });
+
+  // F89: Clock seconds toggle
+  it("F89: should define toggleClockSec function", () => {
+    assert.ok(scriptContent.includes("function toggleClockSec("), "Missing toggleClockSec");
+  });
+  it("F89: should define applyClockSec function", () => {
+    assert.ok(scriptContent.includes("function applyClockSec("), "Missing applyClockSec");
+  });
+  it("F89: tickClock should conditionally include seconds", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function tickClock()"), scriptContent.indexOf("function tickClock()") + 400);
+    assert.ok(fn.includes("_clockSec"), "tickClock should check _clockSec flag");
+  });
+  it("F89: _clockSec should restore from localStorage", () => {
+    assert.ok(scriptContent.includes("dash_clockSec"), "Clock seconds preference stored in localStorage");
+  });
+  it("F89: .with-seconds CSS should be defined", () => {
+    assert.ok(html.includes(".with-seconds") || html.includes("with-seconds"), "Missing .with-seconds CSS class");
+  });
+  it("F89: clock click should toggle seconds mode", () => {
+    assert.ok(scriptContent.includes("toggleClockSec") && scriptContent.includes("getElementById('clock')"), "Clock should have toggleClockSec click listener");
+  });
+
+  // F90: Offline banner with cache age
+  it("F90: should define _recordOnlineTime function", () => {
+    assert.ok(scriptContent.includes("function _recordOnlineTime("), "Missing _recordOnlineTime");
+  });
+  it("F90: should define _getOfflineCacheAgeStr function", () => {
+    assert.ok(scriptContent.includes("function _getOfflineCacheAgeStr("), "Missing _getOfflineCacheAgeStr");
+  });
+  it("F90: updateNetworkBanner should show cache age when offline", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNetworkBanner("), scriptContent.indexOf("function updateNetworkBanner(") + 400);
+    assert.ok(fn.includes("_getOfflineCacheAgeStr"), "updateNetworkBanner should show cache age");
+  });
+  it("F90: dash_last_online key should be stored in localStorage", () => {
+    assert.ok(scriptContent.includes("dash_last_online"), "Should track last online time in localStorage");
+  });
+  it("F90: .offline-age CSS should be defined", () => {
+    assert.ok(html.includes("offline-age"), "Missing .offline-age CSS");
   });
 
 });

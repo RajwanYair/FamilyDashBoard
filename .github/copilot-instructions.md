@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.11.0**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.12.0**.
 
 ## Technical Stack
 
@@ -13,7 +13,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **APIs consumed**: Open-Meteo (weather + UV + hourly + precipitation probability), Hebcal (Hebrew dates + Shabbat + holidays + Zmanim + Parasha + Daf Yomi), Yahoo Finance v8/chart (stocks + gold/silver via proxy), CoinGecko (BTC-USD fallback), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha + Parasha + Psalm + Aliyot + Daf Yomi links), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts), OpenWeatherMap AQI (free tier, no key), USGS GeoJSON (earthquakes)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 791 tests / 52 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 831 tests / 53 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -180,6 +180,7 @@ Every version bump must:
 | v4.11 | Earthquake monitor, news filter, currency sparklines, multi-city, 52w range, portfolio total | ✅ Done |
 | v4.11 | TA-35, vol badge, cal week strip, AQI labels, per-stock sparklines, rain overlay, market countdown | ✅ Done |
 | v4.11 | Sprint 8 (F71–80): GBP tile, heat-map strip, favicons, sector headers, AQI spark, Shabbat pill, Parasha progress, chart tooltip, PWA | ✅ Done |
+| v4.12 | Sprint 9 (F81–90): 7-day forecast, halacha category, ICS URL config, family name, photo slideshow, alert zone filter, news tooltips, dim schedule, clock seconds, offline cache age | ✅ Done |
 | v5.0 | PWA manifest + ServiceWorker full offline | 🔜 Planned |
 | v5.1 | Web Push notifications for red alerts | 🔜 Planned |
 | v5.2 | Config panel for multi-city + multi-family + ICS URL | 🔜 Planned |
