@@ -18,7 +18,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.10-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.11-a78bfa?style=flat-square)
 ![Tests](https://img.shields.io/badge/Tests-746_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
->  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (746 tests, 51 suites, zero dependencies).
+>  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (791 tests, 52 suites, zero dependencies).
 
 ---
 
@@ -205,7 +205,7 @@ FamilyDashBoard/
 ├── .editorconfig / .markdownlint.json
 ├── .gitignore / .gitattributes
 ├── tests/
-|   └── dashboard.test.mjs          # 746 tests, 51 suites (Node.js built-in runner)
+|   └── dashboard.test.mjs          # 791 tests, 52 suites (Node.js built-in runner)
 ├── .github/
 │   ├── assets/                     # SVG graphics for docs
 │   ├── agents/                     # Copilot custom agents
@@ -270,6 +270,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
+| **v4.11.0** | 🎯 Sprint 8 (F71–80): GBP currency tile, calendar heat-map, news favicons, stock sector headers, AQI sparkline, Shabbat pill, Parasha progress bar, weather tooltip, PWA metas |
 | **v4.10.0** | 🏆 Sprints 6–7 (F51–70): Portfolio total, TA-35 index, rel-vol badge, 7-day cal strip, AQI labels+trend, per-stock sparklines, rain probability overlay, news age+share, market countdown, quake 24h count, diag copy-log |
 | **v4.9.0** | 🚀 Sprints 1–5 (F1–50): Parasha, Zmanim, Daf Yomi, Psalm, Moon phase, Shabbat countdown, AQI card, Gold/Silver, school holidays, config panel, chore wheel, portfolio P&L, earthquake monitor, news filter, currency sparklines, multi-city weather, pre/after-hours badge, 52-week range, font scale, print mode |
 | **v4.8.2** | 🔧 Slim clock header, stock fetch overhaul (v8 per-symbol + CoinGecko BTC), currency side-by-side, card maximize centering, page blink fix, expanded 6-phase roadmap |
@@ -337,7 +338,20 @@ This project leverages extensive GitHub features:
 | **v4.11** | **Gold + Silver prices** — Precious metals in currency card | Yahoo Finance `GC=F`, `SI=F` | Two additional rows: gold oz/USD, silver oz/USD | ✅ Done |
 | **v4.11** | **Port. P&L overlay** — Per-stock position profit/loss | `localStorage:dash_portfolio` | JSON cost+qty per symbol; real-time P&L % shown per tile | ✅ Done |
 | **v4.11** | **Currency sparklines** — 7-day rate history | `localStorage:dash_v2_cur_hist` | Bézier SVG sparkline in each currency tile | ✅ Done |
-| **v4.11** | **Card drag-reorder** — Customizable card positions | `localStorage` key `dash_cardOrder` | Long-press header to enter reorder mode, persist layout preference per device | 🔜 Planned |
+
+### Phase 3 Sprint 8 — UX Polish & Smart Tiles (v4.11) ✅
+
+| Version | Feature | Details | Status |
+|---------|---------|---------|--------|
+| **v4.11** | **F71 — GBP / ILS tile** | 5th currency tile for British Pound; uses existing ER-API rates call | ✅ Done |
+| **v4.11** | **F72 — Calendar heat-map** | `.heat-1/2/3` CSS on week strip cells (1 / 2–3 / 4+ events) | ✅ Done |
+| **v4.11** | **F73 — News source favicon** | Google S2 favicons in filter chips via `NEWS_SRC_DOMAIN` map | ✅ Done |
+| **v4.11** | **F74 — Stock sector headers** | מדדים / מניות separator rows in stocks scroll | ✅ Done |
+| **v4.11** | **F75 — AQI sparkline** | 8-reading history sparkline next to AQI label | ✅ Done |
+| **v4.11** | **F77 — Shabbat pill in header** | Candle-lighting countdown / Shabbat remaining time in header-right | ✅ Done |
+| **v4.11** | **F78 — Parasha progress bar** | Day-in-week 3px bar under parasha name | ✅ Done |
+| **v4.11** | **F79 — Weather chart tooltip** | SVG `<title>` on each hour circle (temp + rain%) | ✅ Done |
+| **v4.11** | **F80 — PWA meta tags + install** | `apple-mobile-web-app*` metas, `#pwa-install-btn`, `beforeinstallprompt` | ✅ Done |
 
 ### Phase 4 — Offline & Installability (v5.0)
 

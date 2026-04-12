@@ -7,9 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.11.0] — 2025-07-12
+
+> **Sprint 8 (Features 71–80)** — 80-feature milestone: GBP pair, heat-map calendar, favicons, sector headers, AQI sparkline, Shabbat pill, Parasha progress, chart tooltips, PWA metas
+> Tests: 791 / 52 suites / 0 failures (was 746 / 51 suites / 0)
+> SVG assets: all 5 updated with v4.10.0 accurate data (17 feeds, 15 stocks, 12+ APIs)
+
+### Added
+
+**Currency**
+- **F71 — GBP / ILS tile** — 5th currency tile `#cur-gbp` / `#cur-gbp-chg`; fetched from ER-API alongside USD/EUR; inverted display (1 GBP = X ₪); el cache `curGbp` / `curGbpChg`
+
+**Calendar**
+- **F72 — Week strip heat-map** — `renderCalWeekStrip()` now applies `.heat-1/.heat-2/.heat-3` CSS classes to day cells based on event count (1 / 2–3 / 4+); blue opacity gradient; today highlight unchanged
+
+**News**
+- **F73 — Source favicon in filter chips** — `NEWS_SRC_DOMAIN` map (17 entries) provides domain per news source name; `addNewsFilterChip()` prepends `<img class="news-chip-favicon">` using Google S2 favicon API
+
+**Stocks**
+- **F74 — Sector grouping headers** — Static `<div class="stk-sector-hdr">` injected before מדדים (indices) and מניות (company stocks) groups in `#stocks-body` scroll list; CSS letter-spacing uppercase label
+
+**Weather / AQI**
+- **F75 — AQI 8-reading sparkline** — `recordAqiHistory(val)` persists last 8 AQI readings in `localStorage:dash_aqi_hist`; `renderAqiSparkline()` draws 44×14 SVG polyline (green/yellow/red); called from `_renderAQI()`
+- **F79 — Weather chart hover tooltips** — Each visible data circle in `renderHourlyChart()` now includes an SVG `<title>` element showing temp°, hour, and rain% (when ≥10%); native browser tooltip on hover / touch
+
+**Hebrew Calendar**
+- **F77 — Shabbat time pill in header** — `#header-shabbat-pill` in `header-right` shows 🕯️ countdown (≤36h before candles) or ✨ remaining time (during Shabbat); `updateShabbatHeaderPill()` runs every 60s; uses `_candleDate` + `_shabbatEnd`
+- **F78 — Parasha weekly progress bar** — `renderParashaProgress()` calculates `(dayOfWeek+1)/7` percent and fills `.hc-parasha-progress-fill`; shown below `#hc-parasha-row` when parasha is visible
+
+**PWA**
+- **F80 — PWA meta tags + install button** — Added `theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-*` meta tags; `#pwa-install-btn` fixed button appears when `beforeinstallprompt` fires; `pwaInstall()` calls `e.prompt()`
+
+### Fixed
+- Updated all 5 SVG documentation assets in `.github/assets/` with accurate v4.10.0 data (17 feeds, 15 stocks, 12+ APIs, correct intervals; added Sefaria + OWM AQI + USGS + CoinGecko to architecture diagram)
+
+---
+
 ## [4.10.0] — 2026-04-12
 
-> **Sprint 6–7 (Features 51–70)** — 70-feature milestone: polish, tools, and visual enhancements  
+> **Sprint 6–7 (Features 51–70)** — 70-feature milestone: polish, tools, and visual enhancements
 > Tests: 746 / 51 suites / 0 failures (was 694 / 50 suites / 0)
 
 ### Added
@@ -60,7 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.9.0] — 2026-04-12
 
-> **Sprints 1–5 (Features 1–50)** — major feature batch implementing all roadmap phases v4.9–v4.11  
+> **Sprints 1–5 (Features 1–50)** — major feature batch implementing all roadmap phases v4.9–v4.11
 > Tests: 694 / 50 suites / 0 failures (was 362 / 44 suites / 0 at v4.8.2)
 
 ### Added

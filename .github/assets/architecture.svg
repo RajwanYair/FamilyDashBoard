@@ -1,37 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360">
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="430" viewBox="0 0 800 430">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#060b14"/>
       <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="360" rx="14" fill="url(#bg)"/>
+  <rect width="800" height="430" rx="14" fill="url(#bg)"/>
 
-  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture</text>
+  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture — v4.10.0</text>
 
   <!-- Browser box -->
   <rect x="240" y="56" width="320" height="50" rx="10" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.25"/>
   <text x="400" y="78" font-family="Segoe UI" font-size="12" fill="#f1f5f9" text-anchor="middle" font-weight="600">🌐 BestDashBoard.html</text>
-  <text x="400" y="96" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">HTML + CSS + JS  ·  Zero Dependencies</text>
+  <text x="400" y="96" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">HTML + CSS + JS  ·  Zero Dependencies  ·  70 Features</text>
 
   <!-- Arrow down -->
   <line x1="400" y1="106" x2="400" y2="130" stroke="#60a5fa" stroke-width="1.5" stroke-opacity="0.5"/>
   <polygon points="394,128 406,128 400,136" fill="#60a5fa" opacity="0.5"/>
 
   <!-- fetch() box -->
-  <rect x="330" y="136" width="140" height="30" rx="8" fill="#1e293b" stroke="#34d399" stroke-opacity="0.3"/>
-  <text x="400" y="156" font-family="monospace" font-size="11" fill="#34d399" text-anchor="middle">fetch() + cache</text>
+  <rect x="290" y="136" width="220" height="30" rx="8" fill="#1e293b" stroke="#34d399" stroke-opacity="0.3"/>
+  <text x="400" y="156" font-family="monospace" font-size="11" fill="#34d399" text-anchor="middle">fetch() + dual-layer cache (Map + localStorage)</text>
 
-  <!-- Fan out arrows -->
-  <line x1="300" y1="166" x2="68" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
-  <line x1="340" y1="166" x2="188" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <!-- Fan out arrows row 1 -->
+  <line x1="330" y1="166" x2="68" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="350" y1="166" x2="188" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
   <line x1="370" y1="166" x2="308" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
   <line x1="400" y1="166" x2="428" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
   <line x1="430" y1="166" x2="548" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
-  <line x1="460" y1="166" x2="668" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
-  <line x1="470" y1="166" x2="752" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="450" y1="166" x2="668" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
+  <line x1="460" y1="166" x2="742" y2="200" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3"/>
 
-  <!-- API cards -->
+  <!-- API row 1 -->
   <rect x="10" y="200" width="116" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
   <text x="68" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">🌤️ Open-Meteo</text>
   <text x="68" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Weather + UV + Hourly</text>
@@ -42,10 +42,10 @@
 
   <rect x="250" y="200" width="116" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
   <text x="308" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">📈 Yahoo Finance</text>
-  <text x="308" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Stocks via CORS proxy</text>
+  <text x="308" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">15 stocks + Gold/Silver</text>
 
   <rect x="370" y="200" width="116" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
-  <text x="428" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">📰 20 RSS Feeds</text>
+  <text x="428" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">📰 17 RSS Feeds</text>
   <text x="428" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Hebrew news sources</text>
 
   <rect x="490" y="200" width="116" height="48" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.15"/>
@@ -60,8 +60,36 @@
   <text x="760" y="220" font-family="Segoe UI" font-size="10" fill="#60a5fa" text-anchor="middle" font-weight="600">💱 ER-API</text>
   <text x="760" y="238" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Currency</text>
 
+  <!-- Fan out arrows row 2 -->
+  <line x1="370" y1="166" x2="128" y2="268" stroke="#34d399" stroke-width="1" stroke-opacity="0.25"/>
+  <line x1="390" y1="166" x2="308" y2="268" stroke="#34d399" stroke-width="1" stroke-opacity="0.25"/>
+  <line x1="410" y1="166" x2="488" y2="268" stroke="#34d399" stroke-width="1" stroke-opacity="0.25"/>
+  <line x1="420" y1="166" x2="648" y2="268" stroke="#34d399" stroke-width="1" stroke-opacity="0.25"/>
+
+  <!-- API row 2 -->
+  <rect x="70" y="268" width="116" height="48" rx="8" fill="#1e293b" stroke="#34d399" stroke-opacity="0.15"/>
+  <text x="128" y="288" font-family="Segoe UI" font-size="10" fill="#34d399" text-anchor="middle" font-weight="600">📚 Sefaria.org</text>
+  <text x="128" y="304" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Halacha + Daf Yomi</text>
+
+  <rect x="250" y="268" width="116" height="48" rx="8" fill="#1e293b" stroke="#34d399" stroke-opacity="0.15"/>
+  <text x="308" y="288" font-family="Segoe UI" font-size="10" fill="#34d399" text-anchor="middle" font-weight="600">😷 OWM AQI</text>
+  <text x="308" y="304" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Air Quality free tier</text>
+
+  <rect x="430" y="268" width="116" height="48" rx="8" fill="#1e293b" stroke="#34d399" stroke-opacity="0.15"/>
+  <text x="488" y="288" font-family="Segoe UI" font-size="10" fill="#34d399" text-anchor="middle" font-weight="600">🌍 USGS GeoJSON</text>
+  <text x="488" y="304" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Earthquake M3.5+</text>
+
+  <rect x="590" y="268" width="116" height="48" rx="8" fill="#1e293b" stroke="#34d399" stroke-opacity="0.15"/>
+  <text x="648" y="288" font-family="Segoe UI" font-size="10" fill="#34d399" text-anchor="middle" font-weight="600">🪙 CoinGecko</text>
+  <text x="648" y="304" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">BTC-USD fallback</text>
+
   <!-- CORS proxy note -->
-  <rect x="240" y="274" width="320" height="44" rx="8" fill="#1e293b" stroke="#fbbf24" stroke-opacity="0.3"/>
-  <text x="400" y="293" font-family="Segoe UI" font-size="10" fill="#fbbf24" text-anchor="middle" font-weight="600">🔄 CORS Proxy Fallback</text>
-  <text x="400" y="308" font-family="monospace" font-size="8" fill="#94a3b8" text-anchor="middle">direct → allorigins.win → codetabs.com → corsproxy.io</text>
+  <rect x="200" y="342" width="400" height="44" rx="8" fill="#1e293b" stroke="#fbbf24" stroke-opacity="0.3"/>
+  <text x="400" y="361" font-family="Segoe UI" font-size="10" fill="#fbbf24" text-anchor="middle" font-weight="600">🔄 CORS Proxy Fallback Chain</text>
+  <text x="400" y="376" font-family="monospace" font-size="8" fill="#94a3b8" text-anchor="middle">direct → allorigins.win → codetabs.com → corsproxy.io</text>
+
+  <!-- Stats footer -->
+  <text x="100" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">12+ APIs · 746 Tests</text>
+  <text x="400" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Single HTML File · Zero Dependencies · v4.10.0</text>
+  <text x="700" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">51 Test Suites</text>
 </svg>

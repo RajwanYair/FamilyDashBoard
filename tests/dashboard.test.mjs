@@ -1347,7 +1347,7 @@ describe("Currency Card", () => {
   it("should have USD and EUR display elements", () => {
     assert.ok(html.includes('id="cur-usd"'), "Missing cur-usd element");
     assert.ok(html.includes('id="cur-eur"'), "Missing cur-eur element");
-    assert.ok(!html.includes('id="cur-gbp"'), "GBP removed — cur-gbp should not exist");
+    assert.ok(html.includes('id="cur-gbp"'), "Feature 71 — GBP tile cur-gbp should exist");
   });
 
   it("should have currency flag emoji", () => {
@@ -1360,13 +1360,13 @@ describe("Currency Card", () => {
     const flagCount = (html.match(/class="cur-flag"/g) || []).length;
     assert.equal(
       flagCount,
-      4,
-      `Expected 4 currency flags (USD/EUR/Gold/Silver), got ${flagCount}`,
+      5,
+      `Expected 5 currency flags (USD/EUR/GBP/Gold/Silver), got ${flagCount}`,
     );
     // Should contain flag emoji (🇺🇸 🇪🇺) — not inline SVG
     assert.ok(html.includes("🇺🇸"), "Missing USD flag emoji 🇺🇸");
     assert.ok(html.includes("🇪🇺"), "Missing EUR flag emoji 🇪🇺");
-    assert.ok(!html.includes("🇬🇧"), "GBP removed — 🇬🇧 should not appear");
+    assert.ok(html.includes("🇬🇧"), "Feature 71 — GBP flag 🇬🇧 should appear");
   });
 
   it("renderCurrency should show ILS rate (inverted)", () => {
@@ -1776,10 +1776,10 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.10.0", () => {
+  it("should display version v4.11.0", () => {
     assert.ok(
-      html.includes("Dashboard v4.10.0"),
-      "Missing version v4.10.0 in status bar",
+      html.includes("Dashboard v4.11.0"),
+      "Missing version v4.11.0 in status bar",
     );
   });
 
@@ -2544,7 +2544,7 @@ describe("DOM References (el object)", () => {
     for (const el of curEls) {
       assert.ok(scriptContent.includes(`${el}:`), `Missing el.${el} in DOM cache`);
     }
-    assert.ok(!scriptContent.includes("curGbp:"), "GBP removed — curGbp should not be in cache");
+    assert.ok(scriptContent.includes("curGbp:"), "Feature 71 — curGbp should be in el cache");
   });
 
   it("should cache news elements", () => {
@@ -4971,6 +4971,182 @@ describe("Sprint 7 Features", () => {
   });
   it("should have #diag-copy-btn CSS styling", () => {
     assert.ok(html.includes("#diag-copy-btn"), "Missing #diag-copy-btn CSS");
+  });
+
+});
+
+// ═══════════════════════════════════════════════════════════════════
+describe("Sprint 8 Features", () => {
+
+  // Feature 71: GBP / ILS currency tile
+  it("should have #cur-gbp element", () => {
+    assert.ok(html.includes('id="cur-gbp"'), "Missing #cur-gbp element (Feature 71)");
+  });
+  it("should have #cur-gbp-chg element", () => {
+    assert.ok(html.includes('id="cur-gbp-chg"'), "Missing #cur-gbp-chg element (Feature 71)");
+  });
+  it("should have GBP flag emoji 🇬🇧", () => {
+    assert.ok(html.includes("🇬🇧"), "Missing GBP flag emoji (Feature 71)");
+  });
+  it("renderCurrency should handle GBP code", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderCurrency"));
+    assert.ok(fn.includes("'GBP'") || fn.includes('"GBP"'), "renderCurrency should handle GBP pair (Feature 71)");
+  });
+  it("el object should cache curGbp and curGbpChg", () => {
+    assert.ok(scriptContent.includes("curGbp:"), "Missing el.curGbp in DOM cache (Feature 71)");
+    assert.ok(scriptContent.includes("curGbpChg:"), "Missing el.curGbpChg in DOM cache (Feature 71)");
+  });
+
+  // Feature 72: Calendar week strip heat-map
+  it("should have .heat-1 CSS class", () => {
+    assert.ok(html.includes(".heat-1"), "Missing .heat-1 CSS class (Feature 72)");
+  });
+  it("should have .heat-2 and .heat-3 CSS classes", () => {
+    assert.ok(html.includes(".heat-2"), "Missing .heat-2 CSS class (Feature 72)");
+    assert.ok(html.includes(".heat-3"), "Missing .heat-3 CSS class (Feature 72)");
+  });
+  it("renderCalWeekStrip should apply heat classes", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderCalWeekStrip"));
+    assert.ok(fn.includes("heat-"), "renderCalWeekStrip should apply heat- classes (Feature 72)");
+  });
+  it("heat class should scale with event count", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderCalWeekStrip"));
+    assert.ok(fn.includes("heat-3") || fn.includes("heat-2") || fn.includes("heat-1"),
+      "renderCalWeekStrip should use tiered heat classes based on count (Feature 72)");
+  });
+
+  // Feature 73: News source favicon in filter chips
+  it("should have NEWS_SRC_DOMAIN constant", () => {
+    assert.ok(scriptContent.includes("NEWS_SRC_DOMAIN"), "Missing NEWS_SRC_DOMAIN map (Feature 73)");
+  });
+  it("NEWS_SRC_DOMAIN should map Ynet to ynet.co.il", () => {
+    assert.ok(scriptContent.includes("ynet.co.il"), "NEWS_SRC_DOMAIN should include ynet.co.il (Feature 73)");
+  });
+  it("addNewsFilterChip should use Google S2 favicon API", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function addNewsFilterChip"));
+    assert.ok(fn.includes("favicons"), "addNewsFilterChip should use Google S2 favicons (Feature 73)");
+  });
+  it("should have .news-chip-favicon CSS class", () => {
+    assert.ok(html.includes(".news-chip-favicon"), "Missing .news-chip-favicon CSS (Feature 73)");
+  });
+
+  // Feature 74: Stock sector grouping headers
+  it("should have .stk-sector-hdr CSS class", () => {
+    assert.ok(html.includes(".stk-sector-hdr"), "Missing .stk-sector-hdr CSS (Feature 74)");
+  });
+  it("should have מדדים sector header in HTML", () => {
+    assert.ok(html.includes("מדדים"), "Missing מדדים sector header in HTML (Feature 74)");
+  });
+  it("should have מניות sector header in HTML", () => {
+    assert.ok(html.includes("מניות"), "Missing מניות sector header in HTML (Feature 74)");
+  });
+
+  // Feature 75: AQI history sparkline
+  it("should have #aqi-spark SVG element", () => {
+    assert.ok(html.includes('id="aqi-spark"'), "Missing #aqi-spark SVG element (Feature 75)");
+  });
+  it("should have .aqi-spark CSS class", () => {
+    assert.ok(html.includes(".aqi-spark"), "Missing .aqi-spark CSS (Feature 75)");
+  });
+  it("should define recordAqiHistory function", () => {
+    assert.ok(scriptContent.includes("function recordAqiHistory"), "Missing recordAqiHistory function (Feature 75)");
+  });
+  it("should define renderAqiSparkline function", () => {
+    assert.ok(scriptContent.includes("function renderAqiSparkline"), "Missing renderAqiSparkline function (Feature 75)");
+  });
+  it("recordAqiHistory should use dash_aqi_hist localStorage key", () => {
+    assert.ok(scriptContent.includes("dash_aqi_hist"), "Missing dash_aqi_hist key (Feature 75)");
+  });
+  it("_renderAQI should call recordAqiHistory", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _renderAQI"));
+    assert.ok(fn.includes("recordAqiHistory("), "_renderAQI should call recordAqiHistory (Feature 75)");
+  });
+  it("_renderAQI should call renderAqiSparkline", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _renderAQI"));
+    assert.ok(fn.includes("renderAqiSparkline()"), "_renderAQI should call renderAqiSparkline (Feature 75)");
+  });
+
+  // Feature 77: Shabbat remaining time pill in header
+  it("should have #header-shabbat-pill element", () => {
+    assert.ok(html.includes('id="header-shabbat-pill"'), "Missing #header-shabbat-pill element (Feature 77)");
+  });
+  it("should have #header-shabbat-pill CSS", () => {
+    assert.ok(html.includes("#header-shabbat-pill"), "Missing #header-shabbat-pill CSS (Feature 77)");
+  });
+  it("should define updateShabbatHeaderPill function", () => {
+    assert.ok(scriptContent.includes("function updateShabbatHeaderPill"), "Missing updateShabbatHeaderPill function (Feature 77)");
+  });
+  it("updateShabbatHeaderPill should use _candleDate", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateShabbatHeaderPill"));
+    assert.ok(fn.includes("_candleDate"), "updateShabbatHeaderPill should use _candleDate (Feature 77)");
+  });
+  it("updateShabbatHeaderPill should have 60s interval", () => {
+    assert.ok(scriptContent.includes("setInterval(updateShabbatHeaderPill, 60000)"),
+      "updateShabbatHeaderPill should run every 60s (Feature 77)");
+  });
+
+  // Feature 78: Parasha weekly progress bar
+  it("should have #hc-parasha-progress-row element", () => {
+    assert.ok(html.includes('id="hc-parasha-progress-row"'), "Missing #hc-parasha-progress-row (Feature 78)");
+  });
+  it("should have #hc-parasha-progress-fill element", () => {
+    assert.ok(html.includes('id="hc-parasha-progress-fill"'), "Missing #hc-parasha-progress-fill (Feature 78)");
+  });
+  it("should have .hc-parasha-progress CSS class", () => {
+    assert.ok(html.includes(".hc-parasha-progress"), "Missing .hc-parasha-progress CSS (Feature 78)");
+  });
+  it("should have .hc-parasha-progress-fill CSS class", () => {
+    assert.ok(html.includes(".hc-parasha-progress-fill"), "Missing .hc-parasha-progress-fill CSS (Feature 78)");
+  });
+  it("should define renderParashaProgress function", () => {
+    assert.ok(scriptContent.includes("function renderParashaProgress"), "Missing renderParashaProgress function (Feature 78)");
+  });
+  it("renderParashaProgress should calculate day-of-week percentage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderParashaProgress"));
+    assert.ok(fn.includes("getDay()"), "renderParashaProgress should use getDay() (Feature 78)");
+  });
+  it("_renderParasha should call renderParashaProgress", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _renderParasha"));
+    assert.ok(fn.includes("renderParashaProgress()"), "_renderParasha should call renderParashaProgress (Feature 78)");
+  });
+
+  // Feature 79: Weather chart hover tooltips (SVG <title>)
+  it("renderHourlyChart should add title elements to data points", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHourlyChart"));
+    assert.ok(fn.includes("<title>"), "renderHourlyChart should add SVG <title> for hover tooltip (Feature 79)");
+  });
+  it("chart tooltip title should include temperature", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHourlyChart"));
+    assert.ok(fn.includes("Math.round(temps[i])"),
+      "Tooltip title should include temperature value (Feature 79)");
+  });
+  it("chart tooltip should include rain percentage when available", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHourlyChart"));
+    assert.ok(fn.includes("rainProbs[i]"),
+      "Tooltip should reference rain probability per hour (Feature 79)");
+  });
+
+  // Feature 80: PWA meta tags & install button
+  it("should have theme-color meta tag", () => {
+    assert.ok(html.includes('name="theme-color"'), "Missing theme-color meta tag (Feature 80)");
+  });
+  it("should have apple-mobile-web-app-capable meta tag", () => {
+    assert.ok(html.includes('name="apple-mobile-web-app-capable"'), "Missing apple-mobile-web-app-capable meta (Feature 80)");
+  });
+  it("should have apple-mobile-web-app-title meta tag", () => {
+    assert.ok(html.includes('name="apple-mobile-web-app-title"'), "Missing apple-mobile-web-app-title meta (Feature 80)");
+  });
+  it("should have #pwa-install-btn element", () => {
+    assert.ok(html.includes('id="pwa-install-btn"'), "Missing #pwa-install-btn element (Feature 80)");
+  });
+  it("should have #pwa-install-btn CSS styling", () => {
+    assert.ok(html.includes("#pwa-install-btn"), "Missing #pwa-install-btn CSS (Feature 80)");
+  });
+  it("should define pwaInstall function", () => {
+    assert.ok(scriptContent.includes("function pwaInstall"), "Missing pwaInstall function (Feature 80)");
+  });
+  it("should listen for beforeinstallprompt event", () => {
+    assert.ok(scriptContent.includes("beforeinstallprompt"), "Missing beforeinstallprompt listener (Feature 80)");
   });
 
 });

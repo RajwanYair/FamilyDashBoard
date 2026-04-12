@@ -30,5 +30,6 @@
   <!-- Title -->
   <text x="450" y="56" font-family="Segoe UI, Arial, sans-serif" font-size="36" font-weight="800" fill="url(#accent)" text-anchor="middle" letter-spacing="2">Family Dashboard</text>
   <!-- Subtitle -->
-  <text x="450" y="175" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Single-file TV dashboard · Hebrew RTL · Dark Glassmorphism · Zero Dependencies</text>
+  <text x="450" y="168" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">Single-file TV dashboard · Hebrew RTL · Dark Glassmorphism · Zero Dependencies</text>
+  <text x="450" y="185" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#60a5fa" text-anchor="middle" opacity="0.7">v4.10.0 · 70 Features · 746 Tests · 12+ APIs · 15 Stocks · 17 News Feeds</text>
 </svg>

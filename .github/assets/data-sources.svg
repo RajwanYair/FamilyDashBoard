@@ -1,73 +1,120 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="350" viewBox="0 0 600 350">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="470" viewBox="0 0 600 470">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#060b14"/>
       <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
   </defs>
-  <rect width="600" height="350" rx="14" fill="url(#bg)"/>
-  <text x="300" y="30" font-family="Segoe UI" font-size="16" font-weight="700" fill="#60a5fa" text-anchor="middle">Data Refresh Intervals</text>
+  <rect width="600" height="470" rx="14" fill="url(#bg)"/>
+  <text x="300" y="28" font-family="Segoe UI" font-size="15" font-weight="700" fill="#60a5fa" text-anchor="middle">Data Sources &amp; Refresh Intervals — v4.10.0</text>
 
   <!-- Table header -->
-  <rect x="30" y="48" width="540" height="28" rx="6" fill="#1e293b"/>
-  <text x="80" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Source</text>
-  <text x="220" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">API</text>
-  <text x="400" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Interval</text>
-  <text x="520" y="67" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Cache</text>
+  <rect x="24" y="40" width="552" height="26" rx="6" fill="#1e293b"/>
+  <text x="72" y="57" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Source</text>
+  <text x="220" y="57" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">API</text>
+  <text x="400" y="57" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Interval</text>
+  <text x="510" y="57" font-family="Segoe UI" font-size="10" fill="#60a5fa" font-weight="700">Cache TTL</text>
 
-  <!-- Rows -->
-  <text x="50" y="98" font-size="14">🌤️</text>
-  <text x="80" y="98" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Weather + UV</text>
-  <text x="220" y="98" font-family="Segoe UI" font-size="10" fill="#94a3b8">Open-Meteo</text>
-  <text x="400" y="158" font-family="Segoe UI" font-size="10" fill="#34d399">10/30 min</text>
-  <text x="520" y="98" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+  <!-- Row 1: Weather -->
+  <text x="44" y="85" font-size="13">🌤️</text>
+  <text x="68" y="86" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Weather + UV + Hourly + Precip</text>
+  <text x="220" y="86" font-family="Segoe UI" font-size="10" fill="#94a3b8">Open-Meteo</text>
+  <text x="400" y="86" font-family="Segoe UI" font-size="10" fill="#34d399">30 min</text>
+  <text x="510" y="86" font-family="Segoe UI" font-size="10" fill="#94a3b8">30 min</text>
+  <line x1="24" y1="94" x2="576" y2="94" stroke="#1e293b" stroke-width="1"/>
 
-  <line x1="30" y1="108" x2="570" y2="108" stroke="#1e293b" stroke-width="1"/>
-  <text x="50" y="128" font-size="14">📰</text>
-  <text x="80" y="128" font-family="Segoe UI" font-size="10" fill="#f1f5f9">News (20 feeds)</text>
-  <text x="220" y="128" font-family="Segoe UI" font-size="10" fill="#94a3b8">Hebrew RSS</text>
-  <text x="400" y="128" font-family="Segoe UI" font-size="10" fill="#34d399">15 min</text>
-  <text x="520" y="128" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+  <!-- Row 2: AQI -->
+  <text x="44" y="111" font-size="13">😷</text>
+  <text x="68" y="112" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Air Quality Index (PM2.5, O3)</text>
+  <text x="220" y="112" font-family="Segoe UI" font-size="10" fill="#94a3b8">OpenWeatherMap AQI</text>
+  <text x="400" y="112" font-family="Segoe UI" font-size="10" fill="#34d399">1 hour</text>
+  <text x="510" y="112" font-family="Segoe UI" font-size="10" fill="#94a3b8">1 hour</text>
+  <line x1="24" y1="120" x2="576" y2="120" stroke="#1e293b" stroke-width="1"/>
 
-  <line x1="30" y1="138" x2="570" y2="138" stroke="#1e293b" stroke-width="1"/>
-  <text x="50" y="158" font-size="14">📈</text>
-  <text x="80" y="158" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Stocks (×6)</text>
-  <text x="220" y="158" font-family="Segoe UI" font-size="10" fill="#94a3b8">Yahoo Finance</text>
-  <text x="400" y="158" font-family="Segoe UI" font-size="10" fill="#34d399">10/30 min</text>
-  <text x="520" y="158" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+  <!-- Row 3: News -->
+  <text x="44" y="137" font-size="13">📰</text>
+  <text x="68" y="138" font-family="Segoe UI" font-size="10" fill="#f1f5f9">News (17 Hebrew feeds)</text>
+  <text x="220" y="138" font-family="Segoe UI" font-size="10" fill="#94a3b8">RSS / XML via CORS proxy</text>
+  <text x="400" y="138" font-family="Segoe UI" font-size="10" fill="#34d399">15 min</text>
+  <text x="510" y="138" font-family="Segoe UI" font-size="10" fill="#94a3b8">15 min</text>
+  <line x1="24" y1="146" x2="576" y2="146" stroke="#1e293b" stroke-width="1"/>
 
-  <line x1="30" y1="168" x2="570" y2="168" stroke="#1e293b" stroke-width="1"/>
-  <text x="50" y="188" font-size="14">💱</text>
-  <text x="80" y="188" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Currency Rates</text>
-  <text x="220" y="188" font-family="Segoe UI" font-size="10" fill="#94a3b8">ER-API</text>
-  <text x="400" y="188" font-family="Segoe UI" font-size="10" fill="#34d399">1 hour</text>
-  <text x="520" y="188" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+  <!-- Row 4: Stocks -->
+  <text x="44" y="163" font-size="13">📈</text>
+  <text x="68" y="164" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Stocks (15 symbols incl. TA-35)</text>
+  <text x="220" y="164" font-family="Segoe UI" font-size="10" fill="#94a3b8">Yahoo Finance v8 / CoinGecko</text>
+  <text x="400" y="164" font-family="Segoe UI" font-size="10" fill="#fbbf24">5 min / 30 min</text>
+  <text x="510" y="164" font-family="Segoe UI" font-size="10" fill="#94a3b8">5/30 min</text>
+  <line x1="24" y1="172" x2="576" y2="172" stroke="#1e293b" stroke-width="1"/>
 
-  <line x1="30" y1="198" x2="570" y2="198" stroke="#1e293b" stroke-width="1"/>
-  <text x="50" y="218" font-size="14">✡️</text>
-  <text x="80" y="218" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Hebrew Date + Shabbat</text>
-  <text x="220" y="218" font-family="Segoe UI" font-size="10" fill="#94a3b8">Hebcal</text>
-  <text x="400" y="218" font-family="Segoe UI" font-size="10" fill="#34d399">3–12 hours</text>
-  <text x="520" y="218" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+  <!-- Row 5: Currency -->
+  <text x="44" y="189" font-size="13">💱</text>
+  <text x="68" y="190" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Currency (USD, EUR + Gold, Silver)</text>
+  <text x="220" y="190" font-family="Segoe UI" font-size="10" fill="#94a3b8">ER-API + Yahoo GC=F / SI=F</text>
+  <text x="400" y="190" font-family="Segoe UI" font-size="10" fill="#34d399">1 hour</text>
+  <text x="510" y="190" font-family="Segoe UI" font-size="10" fill="#94a3b8">1 hour</text>
+  <line x1="24" y1="198" x2="576" y2="198" stroke="#1e293b" stroke-width="1"/>
 
-  <line x1="30" y1="228" x2="570" y2="228" stroke="#1e293b" stroke-width="1"/>
-  <text x="50" y="248" font-size="14">�</text>
-  <text x="80" y="248" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Google Calendar</text>
-  <text x="220" y="248" font-family="Segoe UI" font-size="10" fill="#94a3b8">ICS Parser</text>
-  <text x="400" y="248" font-family="Segoe UI" font-size="10" fill="#34d399">15 min</text>
-  <text x="520" y="248" font-family="Segoe UI" font-size="10" fill="#94a3b8">5 min</text>
+  <!-- Row 6: Hebrew Calendar -->
+  <text x="44" y="215" font-size="13">✡️</text>
+  <text x="68" y="216" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Hebrew Cal + Shabbat + Zmanim</text>
+  <text x="220" y="216" font-family="Segoe UI" font-size="10" fill="#94a3b8">Hebcal API</text>
+  <text x="400" y="216" font-family="Segoe UI" font-size="10" fill="#34d399">3–12 hours</text>
+  <text x="510" y="216" font-family="Segoe UI" font-size="10" fill="#94a3b8">6 hours</text>
+  <line x1="24" y1="224" x2="576" y2="224" stroke="#1e293b" stroke-width="1"/>
 
-  <line x1="30" y1="258" x2="570" y2="258" stroke="#1e293b" stroke-width="1"/>
-  <text x="50" y="278" font-size="14">🚨</text>
-  <text x="80" y="278" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Red Alerts</text>
-  <text x="220" y="278" font-family="Segoe UI" font-size="10" fill="#94a3b8">tzevaadom.co.il</text>
-  <text x="400" y="278" font-family="Segoe UI" font-size="10" fill="#fbbf24">60s / 5 min</text>
-  <text x="520" y="278" font-family="Segoe UI" font-size="10" fill="#94a3b8">1 min</text>
+  <!-- Row 7: Sefaria -->
+  <text x="44" y="241" font-size="13">📚</text>
+  <text x="68" y="242" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Halacha + Parasha + Daf Yomi + Psalm</text>
+  <text x="220" y="242" font-family="Segoe UI" font-size="10" fill="#94a3b8">Sefaria.org API</text>
+  <text x="400" y="242" font-family="Segoe UI" font-size="10" fill="#34d399">12–24 hours</text>
+  <text x="510" y="242" font-family="Segoe UI" font-size="10" fill="#94a3b8">24 hours</text>
+  <line x1="24" y1="250" x2="576" y2="250" stroke="#1e293b" stroke-width="1"/>
 
-  <line x1="30" y1="288" x2="570" y2="288" stroke="#1e293b" stroke-width="1"/>
-  <text x="50" y="308" font-size="14">💪</text>
-  <text x="80" y="308" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Motivation</text>
-  <text x="220" y="308" font-family="Segoe UI" font-size="10" fill="#94a3b8">50 Static Quotes</text>
-  <text x="400" y="308" font-family="Segoe UI" font-size="10" fill="#34d399">4 hours</text>
-  <text x="520" y="308" font-family="Segoe UI" font-size="10" fill="#94a3b8">—</text>
+  <!-- Row 8: Google Calendar -->
+  <text x="44" y="267" font-size="13">📅</text>
+  <text x="68" y="268" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Family Calendar (ICS)</text>
+  <text x="220" y="268" font-family="Segoe UI" font-size="10" fill="#94a3b8">Google Calendar ICS parser</text>
+  <text x="400" y="268" font-family="Segoe UI" font-size="10" fill="#34d399">15 min</text>
+  <text x="510" y="268" font-family="Segoe UI" font-size="10" fill="#94a3b8">15 min</text>
+  <line x1="24" y1="276" x2="576" y2="276" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Row 9: Red Alerts -->
+  <text x="44" y="293" font-size="13">🚨</text>
+  <text x="68" y="294" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Red Alerts (צבע אדום)</text>
+  <text x="220" y="294" font-family="Segoe UI" font-size="10" fill="#94a3b8">tzevaadom.co.il</text>
+  <text x="400" y="294" font-family="Segoe UI" font-size="10" fill="#fbbf24">60s active / 5min idle</text>
+  <text x="510" y="294" font-family="Segoe UI" font-size="10" fill="#94a3b8">1 min</text>
+  <line x1="24" y1="302" x2="576" y2="302" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Row 10: Earthquakes -->
+  <text x="44" y="319" font-size="13">🌍</text>
+  <text x="68" y="320" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Earthquake Monitor (M3.5+)</text>
+  <text x="220" y="320" font-family="Segoe UI" font-size="10" fill="#94a3b8">USGS GeoJSON API</text>
+  <text x="400" y="320" font-family="Segoe UI" font-size="10" fill="#34d399">1 hour</text>
+  <text x="510" y="320" font-family="Segoe UI" font-size="10" fill="#94a3b8">1 hour</text>
+  <line x1="24" y1="328" x2="576" y2="328" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Row 11: Motivation -->
+  <text x="44" y="345" font-size="13">💪</text>
+  <text x="68" y="346" font-family="Segoe UI" font-size="10" fill="#f1f5f9">Motivation (50 Hebrew quotes)</text>
+  <text x="220" y="346" font-family="Segoe UI" font-size="10" fill="#94a3b8">Static — no network</text>
+  <text x="400" y="346" font-family="Segoe UI" font-size="10" fill="#34d399">2 min cycle</text>
+  <text x="510" y="346" font-family="Segoe UI" font-size="10" fill="#94a3b8">—</text>
+
+  <!-- Footer note -->
+  <rect x="24" y="366" width="552" height="36" rx="8" fill="#1e293b" opacity="0.6"/>
+  <text x="300" y="381" font-family="Segoe UI" font-size="9" fill="#fbbf24" text-anchor="middle" font-weight="600">🔄 CORS Proxy Fallback Chain</text>
+  <text x="300" y="396" font-family="monospace" font-size="8" fill="#94a3b8" text-anchor="middle">direct → allorigins.win → codetabs.com → corsproxy.io</text>
+
+  <!-- Stats row -->
+  <rect x="24" y="414" width="552" height="42" rx="8" fill="#1e293b" opacity="0.5"/>
+  <text x="100" y="430" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">11 APIs</text>
+  <text x="100" y="446" font-family="Segoe UI" font-size="11" fill="#60a5fa" text-anchor="middle" font-weight="700">12+</text>
+  <text x="220" y="430" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">Stock symbols</text>
+  <text x="220" y="446" font-family="Segoe UI" font-size="11" fill="#34d399" text-anchor="middle" font-weight="700">15</text>
+  <text x="340" y="430" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">News feeds</text>
+  <text x="340" y="446" font-family="Segoe UI" font-size="11" fill="#fbbf24" text-anchor="middle" font-weight="700">17</text>
+  <text x="450" y="430" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">Features</text>
+  <text x="450" y="446" font-family="Segoe UI" font-size="11" fill="#f472b6" text-anchor="middle" font-weight="700">70+</text>
 </svg>

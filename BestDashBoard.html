@@ -1121,10 +1121,37 @@
         .quake-cnt { font-size: 0.58em; background: rgba(248,113,113,0.14); color: var(--negative); border-radius: 3px; padding: 1px 4px; margin-right: 4px; }
         /* Feature 70: Diagnostic copy log button */
         #diag-copy-btn { font-size: 0.75em; padding: 2px 10px; border-radius: 4px; background: var(--bg-card-inner); border: 1px solid var(--accent-border); color: var(--text-primary); cursor: pointer; margin-bottom: 6px; }
+
+        /* ── SPRINT 8 FEATURES (Features 71–80) ── */
+        /* Feature 72: Cal week heat-map (event density → background intensity) */
+        .cal-week-day.heat-1 { background: rgba(96,165,250,0.08); border-radius: 4px; }
+        .cal-week-day.heat-2 { background: rgba(96,165,250,0.18); border-radius: 4px; }
+        .cal-week-day.heat-3 { background: rgba(96,165,250,0.32); border-radius: 4px; }
+        /* Feature 73: News source favicon in filter chips */
+        .news-chip-favicon { width: 10px; height: 10px; border-radius: 2px; margin-left: 3px; vertical-align: middle; opacity: 0.85; }
+        /* Feature 74: Stock sector grouping header */
+        .stk-sector-hdr { font-size: 0.52em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 8px 0; font-weight: 700; opacity: 0.65; flex-shrink: 0; }
+        /* Feature 75: AQI history sparkline */
+        .aqi-spark { width: 44px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 3px; overflow: visible; }
+        /* Feature 77: Header Shabbat time pill */
+        #header-shabbat-pill { font-size: 0.70em; background: rgba(251,191,36,0.12); color: var(--warning); border-radius: 8px; padding: 1px 8px; margin: 1px 0; display: none; white-space: nowrap; }
+        /* Feature 78: Parasha weekly reading progress bar */
+        .hc-parasha-progress { height: 3px; background: var(--bg-card-inner); border-radius: 2px; margin: 0 0 1px 4px; flex: 1; overflow: hidden; min-width: 40px; }
+        .hc-parasha-progress-fill { height: 100%; background: var(--cyan); border-radius: 2px; transition: width 0.4s ease; }
+        /* Feature 80: PWA install prompt button */
+        #pwa-install-btn { display: none; position: fixed; bottom: 20px; left: 20px; z-index: 800; font-size: 0.75em; padding: 6px 14px; border-radius: 20px; background: var(--accent); color: #0f172a; border: none; cursor: pointer; font-weight: 700; box-shadow: 0 2px 12px rgba(96,165,250,0.4); }
     </style>
     <meta name="referrer" content="no-referrer">
+    <!-- Feature 80: PWA meta tags -->
+    <meta name="theme-color" content="#060b14">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="לוח משפחה">
 </head>
 <body>
+    <!-- Feature 80: PWA install prompt button -->
+    <button id="pwa-install-btn" aria-label="התקן אפליקציה">📲 התקן</button>
     <!-- Feature 54: Night screen dimmer overlay -->
     <div id="night-dim"></div>
     <!-- Feature 59: Force refresh toast -->
@@ -1241,6 +1268,8 @@
                 <span id="elec-badge">⚡ שעת שיא</span>
                 <!-- Feature 37: Today event count badge -->
                 <span id="header-event-count"></span>
+                <!-- Feature 77: Shabbat time pill -->
+                <div id="header-shabbat-pill">🕯️ --</div>
             </div>
         </div>
 
@@ -1279,7 +1308,7 @@
                     <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
                     <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
                     <!-- Feature 64: AQI category label + trend -->
-                    <div class="wx-detail"><div class="wx-detail-label">😷 AQI</div><div class="wx-detail-val" id="wx-aqi">--</div><span class="aqi-label" id="aqi-label"></span><span class="aqi-trend" id="aqi-trend"></span></div>
+                    <div class="wx-detail"><div class="wx-detail-label">😷 AQI</div><div class="wx-detail-val" id="wx-aqi">--</div><span class="aqi-label" id="aqi-label"></span><span class="aqi-trend" id="aqi-trend"></span><svg class="aqi-spark" id="aqi-spark" viewBox="0 0 44 14" aria-hidden="true"></svg></div>
                     <!-- Feature 26: Feels-like temperature -->
                     <div class="wx-detail"><div class="wx-detail-label">🌡️ מרגיש</div><div class="wx-detail-val" id="wx-feels">--°</div></div>
                   </div>
@@ -1308,6 +1337,8 @@
                 <div class="hc-row hc-special-row" id="hc-special-row" style="display:none"><span class="hc-val hc-special" id="hc-special"></span></div>
                 <div class="hc-row" id="hc-school-row" style="display:none"><span class="hc-label">🎒 חופשה</span><span class="hc-val hc-school-val" id="hc-school">--</span></div>
                 <div class="hc-row" id="hc-parasha-row" style="display:none"><span class="hc-label">📖 פרשה</span><span class="hc-val hc-parasha-val" id="hc-parasha">--</span><span class="hc-parasha-ref" id="hc-parasha-ref"></span></div>
+                <!-- Feature 78: Parasha weekly progress bar -->
+                <div class="hc-row" id="hc-parasha-progress-row" style="display:none"><span class="hc-label" aria-hidden="true" style="visibility:hidden">.</span><div class="hc-parasha-progress"><div class="hc-parasha-progress-fill" id="hc-parasha-progress-fill" style="width:0%"></div></div></div>
                 <!-- Feature 21: Parasha Aliyot summary -->
                 <div class="hc-row" id="hc-aliyot-row" style="display:none"><span class="hc-label">📜 פתיחה</span><span class="hc-val hc-aliyot-val" id="hc-aliyot">--</span></div>
                 <div class="hc-row" id="hc-daf-row" style="display:none"><span class="hc-label">📚 דף יומי</span><span class="hc-val hc-daf-val" id="hc-daf">--</span></div>
@@ -1353,6 +1384,8 @@
                 <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="cur-eur">--</div><div class="cur-chg" id="cur-eur-chg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
                 <div class="cur-item"><div class="cur-flag">🥇</div><div class="cur-pair">זהב / oz</div><div class="cur-rate" id="cur-gold">--</div><div class="cur-chg" id="cur-gold-chg"></div></div>
                 <div class="cur-item"><div class="cur-flag">🥈</div><div class="cur-pair">כסף / oz</div><div class="cur-rate" id="cur-silver">--</div><div class="cur-chg" id="cur-silver-chg"></div></div>
+                <!-- Feature 71: GBP / ILS tile -->
+                <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-pair">GBP / ₪</div><div class="cur-rate" id="cur-gbp">--</div><div class="cur-chg" id="cur-gbp-chg"></div></div>
               </div>
             </div>
           </div>
@@ -1363,8 +1396,11 @@
             <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body">
+                  <!-- Feature 74: Stock sector headers -->
+                  <div class="stk-sector-hdr">📊 מדדים</div>
                   <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=spglobal.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                   <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=cboe.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk-sector-hdr">📈 מניות</div>
                   <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=apple.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                   <div class="stk" data-symbol="AMZN"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AMZN</div><div class="stk-desc">אמזון</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                   <div class="stk" data-symbol="AVGO"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=broadcom.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AVGO</div><div class="stk-desc">ברודקום</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
@@ -1412,7 +1448,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.10.0 — משפחת רגואן</span>
+            <span>Dashboard v4.11.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1428,7 +1464,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.10.0 — 3-Column Layout · Hebrew Calendar Card · 70 Sprint Features · 746 Tests
+       FAMILY DASHBOARD v4.11.0 — 3-Column Layout · Hebrew Calendar Card · 80 Sprint Features · 791 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1773,6 +1809,12 @@
         elecBadge: $('elec-badge'),
         hdrEventCount: $('header-event-count'),
         connIndicator: $('conn-indicator'),
+        // Sprint 8 additions
+        curGbp: $('cur-gbp'), curGbpChg: $('cur-gbp-chg'),
+        aqiSpark: $('aqi-spark'),
+        hcParashaProgressRow: $('hc-parasha-progress-row'),
+        hcParashaProgressFill: $('hc-parasha-progress-fill'),
+        hdrShabbatPill: $('header-shabbat-pill'),
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -1857,6 +1899,7 @@
             if (el.hcCandles) { el.hcCandles.textContent = candleStr; el.hcCandles.classList.remove('skeleton'); }
             if (el.hcHavdala) el.hcHavdala.textContent = havdalaStr;
             updateShabbatCountdown(); // show countdown immediately if candle time is within 24h
+            updateShabbatHeaderPill(); // Feature 77: sync header pill
 
             // Next holiday
             try {
@@ -2173,7 +2216,7 @@
             <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0.02"/></linearGradient></defs>
             ${rainBars}
             <path d="${areaPath}" fill="url(#hg)" /><path d="${path}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
-            ${pts.map((p, i) => i % 2 === 0 ? `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#60a5fa"/>` : '').join('')}
+            ${pts.map((p, i) => i % 2 === 0 ? `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#60a5fa"><title>${Math.round(temps[i])}°${_useFahrenheit ? 'F' : 'C'} | ${String((startH + i) % 24).padStart(2, '0')}:00${rainProbs && rainProbs[i] >= 10 ? ' | 🌧 ' + rainProbs[i] + '%' : ''}</title></circle>` : '').join('')}
             ${labels}`;
     }
 
@@ -2197,6 +2240,15 @@
         { url: 'https://www.srugim.co.il/feed', src: 'סרוגים' },
         { url: 'https://www.bhol.co.il/rss', src: 'בחדרי חרדים' },
     ];
+    // Feature 73: domain map for news source favicons
+    const NEWS_SRC_DOMAIN = {
+        'Ynet מבזקים': 'ynet.co.il', 'וואלה': 'walla.co.il', 'מאקו': 'mako.co.il',
+        'כאן חדשות': 'kan.org.il', 'N12': 'n12.co.il', 'רוטר סקופים': 'rotter.net',
+        'ישראל היום': 'israelhayom.co.il', 'גלובס': 'globes.co.il', 'כלכליסט': 'calcalist.co.il',
+        'מקור ראשון': 'makorrishon.co.il', 'כיכר השבת': 'kikar.co.il', 'ICE': 'ice.co.il',
+        'גיקטיים': 'geektime.co.il', 'ערוץ 14': 'now14.co.il', 'ערוץ 7': 'inn.co.il',
+        'סרוגים': 'srugim.co.il', 'בחדרי חרדים': 'bhol.co.il',
+    };
 
     // ── Fetch a single RSS feed (returns array of items) ──
     async function fetchFeed(feed) {
@@ -2662,6 +2714,8 @@
         const pairs = [
             { code: 'USD', el: el.curUsd, chgEl: el.curUsdChg },
             { code: 'EUR', el: el.curEur, chgEl: el.curEurChg },
+            // Feature 71: GBP / ILS tile
+            { code: 'GBP', el: el.curGbp, chgEl: el.curGbpChg },
         ];
         for (const p of pairs) {
             const val = rates[p.code] ? (1 / rates[p.code]) : null;
@@ -3300,6 +3354,8 @@
             : `${m}:${String(s).padStart(2, '0')}`;
         el.hcCountdown.className = `hc-val hc-countdown${diff < 3600 ? ' urgent' : ''}`;
         el.hcCountdownRow.style.display = '';
+        // Feature 77: update header shabbat pill
+        updateShabbatHeaderPill();
     }
 
     // ── Feature: Shabbat Mode (auto-dim during Shabbat) ──
@@ -3470,6 +3526,8 @@
         if (!name || !el.hcParasha || !el.hcParashaRow) return;
         el.hcParasha.textContent = name;
         el.hcParashaRow.style.display = '';
+        // Feature 78: show parasha weekly progress bar
+        renderParashaProgress();
         // Feature 44: show Sefaria link row
         const linkRow = document.getElementById('hc-parasha-link-row');
         const linkBtn = document.getElementById('hc-parasha-link');
@@ -3606,6 +3664,9 @@
             trendEl.className = 'aqi-trend ' + (diff < -2 ? 'aqi-good' : diff > 2 ? 'aqi-poor' : '');
         }
         _prevAqiVal = aqi;
+        // Feature 75: record AQI history and render sparkline
+        recordAqiHistory(aqi);
+        renderAqiSparkline();
     }
 
 
@@ -3907,8 +3968,13 @@
         if (!bar || bar.querySelector(`[data-src="${CSS.escape(srcName)}"]`)) return;
         const chip = document.createElement('button');
         chip.className = 'news-filter-chip';
-        chip.textContent = srcName;
         chip.dataset.src = srcName;
+        // Feature 73: show favicon for known domains
+        const domain = NEWS_SRC_DOMAIN[srcName];
+        const favicon = domain
+            ? `<img class="news-chip-favicon" src="https://www.google.com/s2/favicons?domain=${domain}&sz=16" alt="" loading="lazy" onerror="this.style.display='none'">`
+            : '';
+        chip.innerHTML = favicon + document.createTextNode(srcName).textContent;
         chip.addEventListener('click', () => {
             const bar = document.getElementById('news-filter-bar');
             if (!bar) return;
@@ -4231,7 +4297,9 @@
             const dots = [...Array(Math.min(count, 4))].map((_, j) =>
                 `<div class="cal-week-dot" style="background:${j === 0 ? 'var(--accent)' : j === 1 ? 'var(--positive)' : j === 2 ? 'var(--warning)' : '#94a3b8'}"></div>`
             ).join('');
-            rows.push(`<div class="cal-week-day${isToday ? ' cal-week-today' : ''}"><div class="cal-week-label">${CAL_WEEK_DAY_HE[day.getDay()]}</div><div class="cal-week-dots">${dots}</div></div>`);
+            // Feature 72: heat-map class based on event count
+            const heatClass = count >= 4 ? ' heat-3' : count >= 2 ? ' heat-2' : count >= 1 ? ' heat-1' : '';
+            rows.push(`<div class="cal-week-day${isToday ? ' cal-week-today' : ''}${heatClass}"><div class="cal-week-label">${CAL_WEEK_DAY_HE[day.getDay()]}</div><div class="cal-week-dots">${dots}</div></div>`);
         }
         strip.innerHTML = rows.join('');
     }
@@ -4344,6 +4412,105 @@
         });
     }
 
+    // ── SPRINT 8 FEATURES (F71–F80) ──
+
+    // Feature 71: GBP / ILS — handled in renderCurrency() extension (see below)
+
+    // Feature 75: AQI history sparkline (last 8 readings → localStorage)
+    const _AQI_HIST_KEY = 'dash_aqi_hist';
+    function recordAqiHistory(val) {
+        try {
+            const raw = localStorage.getItem(_AQI_HIST_KEY);
+            const arr = raw ? JSON.parse(raw) : [];
+            arr.push(Math.round(val));
+            if (arr.length > 8) arr.splice(0, arr.length - 8);
+            localStorage.setItem(_AQI_HIST_KEY, JSON.stringify(arr));
+        } catch (_) {}
+    }
+    function renderAqiSparkline() {
+        const svgEl = document.getElementById('aqi-spark');
+        if (!svgEl) return;
+        try {
+            const raw = localStorage.getItem(_AQI_HIST_KEY);
+            if (!raw) return;
+            const arr = JSON.parse(raw);
+            if (arr.length < 2) return;
+            const W = 44, H = 14, P = 1;
+            const mn = Math.min(...arr), mx = Math.max(...arr), rng = mx - mn || 1;
+            const pts = arr.map((v, i) => ({
+                x: (P + (i / (arr.length - 1)) * (W - 2 * P)).toFixed(1),
+                y: (H - P - ((v - mn) / rng) * (H - 2 * P)).toFixed(1)
+            }));
+            const path = 'M' + pts.map(p => `${p.x},${p.y}`).join(' L');
+            const aqiColor = arr[arr.length - 1] <= 40 ? '#34d399' : arr[arr.length - 1] <= 60 ? '#fbbf24' : '#f87171';
+            svgEl.innerHTML = `<polyline points="${pts.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="${aqiColor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+        } catch (_) {}
+    }
+
+    // Feature 77: Shabbat remaining time pill in header
+    function updateShabbatHeaderPill() {
+        const pill = document.getElementById('header-shabbat-pill');
+        if (!pill) return;
+        if (!_candleDate) { pill.style.display = 'none'; return; }
+        const now = Date.now();
+        const candleMs = _candleDate.getTime();
+        const havdalahMs = _shabbatEnd ? _shabbatEnd.getTime() : 0;
+        let show = false, txt = '';
+        if (now < candleMs) {
+            const diff = candleMs - now;
+            if (diff < 3600000 * 36) { // within 36h pre-Shabbat
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                txt = `\ud83d\udd6f\ufe0f ${h ? h + '\u05e9 ' : ''}${m}\u05d3`;
+                show = true;
+            }
+        } else if (havdalahMs && now < havdalahMs) { // Shabbat active
+            const diff = havdalahMs - now;
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            txt = `\u2728 ${h ? h + '\u05e9 ' : ''}${m}\u05d3`;
+            show = true;
+        }
+        pill.textContent = txt;
+        pill.style.display = show ? 'block' : 'none';
+    }
+
+    // Feature 78: Parasha weekly progress bar (Sun=0/7 → Sat=7/7)
+    function renderParashaProgress() {
+        const row = document.getElementById('hc-parasha-progress-row');
+        const fill = document.getElementById('hc-parasha-progress-fill');
+        if (!row || !fill) return;
+        const hcParashaRow = document.getElementById('hc-parasha-row');
+        if (!hcParashaRow || hcParashaRow.style.display === 'none') { row.style.display = 'none'; return; }
+        // Day of week: 0=Sun (start of week after Shabbat) → 6=Sat (Shabbat)
+        const dayOfWeek = new Date().getDay(); // 0=Sun, 6=Sat
+        // Reading cycle: Shabbat=end, so pct = (dayOfWeek+1)/7
+        const pct = Math.min(100, Math.max(5, Math.round(((dayOfWeek + 1) / 7) * 100)));
+        fill.style.width = pct + '%';
+        row.style.display = '';
+    }
+
+    // Feature 79: Weather chart hover tooltip (SVG <title> on each data point)
+    // Implemented inline in renderHourlyChart() — see updated function below
+
+    // Feature 80: PWA install prompt
+    let _pwaInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        _pwaInstallPrompt = e;
+        const btn = document.getElementById('pwa-install-btn');
+        if (btn) btn.style.display = 'block';
+    });
+    function pwaInstall() {
+        if (!_pwaInstallPrompt) return;
+        _pwaInstallPrompt.prompt();
+        _pwaInstallPrompt.userChoice.then(() => {
+            _pwaInstallPrompt = null;
+            const btn = document.getElementById('pwa-install-btn');
+            if (btn) btn.style.display = 'none';
+        });
+    }
+
     // ── Diagnostic Logger ──
     const _diagLog = [];
     const _diagStatus = {};
@@ -4443,6 +4610,9 @@
         initNewsFilter();     // Feature 39: news filter chips
         checkConnectivity();  // Feature 40: connectivity check
         renderCurrencySparklines(); // Feature 38: draw sparklines from history
+        renderAqiSparkline();       // Feature 75: restore AQI sparkline from history
+        renderParashaProgress();    // Feature 78: initial parasha progress (may be hidden until data loads)
+        document.getElementById('pwa-install-btn')?.addEventListener('click', pwaInstall);
         initWxCityTabs();     // Feature 45: multi-city weather tabs
         applyFontScale();     // Feature 49: restore saved font scale
         updateNightDimmer();  // Feature 54: check night dim on startup
@@ -4497,6 +4667,7 @@
     setInterval(loadZmanim, 43200000);        // 12h — zmanim change once per day
     setInterval(loadAQI, 3600000);            // 1h  — air quality index
     setInterval(updateShabbatCountdown, 60000); // 1min — live Shabbat countdown
+    setInterval(updateShabbatHeaderPill, 60000); // 1min — Feature 77: header shabbat pill
     setInterval(checkBirthdays, 3600000);     // 1h   — birthday re-check
     setInterval(applyAutoTheme, 900000);      // 15min — re-evaluate night/day theme
     setInterval(updateMoonPhase, 3600000);    // 1h   — moon phase update (Feature 24)
