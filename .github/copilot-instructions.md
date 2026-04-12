@@ -4,16 +4,16 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.8.2**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.10.0**.
 
 ## Technical Stack
 
 - **Language**: HTML5, vanilla CSS3, vanilla JavaScript (ES2020+)
 - **No build tools**: Zero dependencies — open the HTML file directly in a browser
-- **APIs consumed**: Open-Meteo (weather + UV + hourly), Hebcal (Hebrew dates + Shabbat + holidays), Yahoo Finance v8/chart (stocks via proxy), CoinGecko (BTC-USD fallback), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts)
+- **APIs consumed**: Open-Meteo (weather + UV + hourly + precipitation probability), Hebcal (Hebrew dates + Shabbat + holidays + Zmanim + Parasha + Daf Yomi), Yahoo Finance v8/chart (stocks + gold/silver via proxy), CoinGecko (BTC-USD fallback), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha + Parasha + Psalm + Aliyot + Daf Yomi links), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts), OpenWeatherMap AQI (free tier, no key), USGS GeoJSON (earthquakes)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 362 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 746 tests / 51 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -30,16 +30,16 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **5 themes**: `black` (OLED default), `blue`, `matrix`, `amber`, `purple` — stored in `localStorage` as `dash_theme`
 - **3 screen modes**: `tv` (default), `tablet`, `phone` — stored as `dash_screenMode`
 - **Phone mode**: full-page scroll, all card content visible, scroll-loop animations disabled, clone items hidden
-- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay, `A` = toggle alerts on/off, `Escape` = close maximized card
+- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay, `A` = toggle alerts on/off, `Escape` = close maximized card, `S` = toggle config panel, `N` = toggle night dimmer, `+`/`-` = font scale, `P` = print mode
 
 ### UI Layout
 
 - **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, market badge (no Shabbat/holiday in header — those are in the Hebrew Calendar card)
 - **Ticker bar**: Daily halacha from Sefaria.org (reference badge + numbered segments, seamless loop)
-- **Left column** (38%): News RSS (17 feeds, 65% height) | Weather (split-panel: current + closest sun event + RTL hourly chart + 4-day forecast, 35% height)
-- **Middle column** (33%): Hebrew Calendar card / לוח עברי (candle lighting, havdalah, holidays, omer, rabbi saying, 20%) | Google Calendar/ICS (65%) | Currency USD+EUR side-by-side (15%)
-- **Right column** (29%): Stocks (14 symbols, brand-color logos, 33%) | Red Alerts (toggleable via `A` key, off by default, 33%) | Motivation (50 static Hebrew quotes, 33%)
-- **Status bar**: Version, day/year progress bars, last refresh time
+- **Left column** (38%): News RSS (17 feeds, filter chips, age timestamps, copy+share buttons, 65% height) | Weather (split-panel: current + AQI + sky pill + wind arrow + extreme weather banner + RTL hourly chart with rain bars + 4-day forecast with precip bar, 35% height)
+- **Middle column** (33%): Hebrew Calendar card / לוח עברי (candle lighting, havdalah, holidays, omer, Parasha + Aliyot, Zmanim grid, Daf Yomi, Psalm, Moon phase, Shabbat countdown, chore wheel, 20%) | Google Calendar/ICS (week strip + agenda, 65%) | Currency USD+EUR+Gold+Silver (15%)
+- **Right column** (29%): Stocks (15 symbols incl. TA-35, brand-color logos, vol badge, sparklines, P&L overlay, 52w range, market countdown, 33%) | Red Alerts (toggleable via `A` key, off by default, 33%) | Motivation (50 static Hebrew quotes, 33%)
+- **Status bar**: Version, connectivity indicator, day/year progress bars, last refresh time
 
 ### Cache Architecture
 
@@ -121,18 +121,22 @@ function fetchWithTimeout(url, ms = 8000) {
 |------|----------|-------|
 | Clock | 1 min | HH:MM only, no seconds |
 | Alerts | 60s / 5min | 60s when active, 5min idle |
-| Market badge | 5 min | |
+| Market badge | 1 min | Pre/open/after/closed states |
+| Market countdown | 1 min | NYSE countdown chip below stocks |
 | Halacha | 12 hours | Sefaria.org daily halacha |
 | News | 15 min | 17 RSS feeds via CORS proxy |
 | Stocks | 5 min / 30 min | 5min market open, 30min closed, raceProxies batch |
 | Calendar | 15 min | ICS parse, iframe fallback |
-| Weather | 30 min | Open-Meteo |
-| Currency | 1 hour | ER-API + fallback |
+| Weather | 30 min | Open-Meteo (hourly + precipitation_probability) |
+| AQI | 1 hour | OpenWeatherMap free tier |
+| Currency | 1 hour | ER-API + fallback + Gold/Silver via Yahoo Finance |
 | Motivation | 2 min | Static quotes, no network, cycles through 50 quotes |
 | Hebrew date | 3 hours | Hebcal |
 | Shabbat | 6 hours | Hebcal |
-| Hebrew Calendar card | 6 hours | Hebcal — candle/havdalah/holiday/omer + MOTIVATIONS saying |
+| Hebrew Calendar card | 6 hours | Hebcal — candle/havdalah/holiday/omer/Parasha/Zmanim/DafYomi/Psalm |
 | Holidays | 12 hours | Hebcal |
+| Earthquakes | 1 hour | USGS GeoJSON, limit=20, count M3.5+ in 24h |
+| Birthdays | on load | Parses `dash_birthday` localStorage |
 
 ### Performance
 
@@ -169,17 +173,15 @@ Every version bump must:
 | Version | Feature | Status |
 |---------|---------|--------|
 | v4.8.x | Card UX polish, font density, Omer fix, stock fetch fix, currency layout | ✅ Done |
-| v4.9 | Parashat HaShavua in Hebrew Calendar card (Hebcal + Sefaria) | 🔜 Planned |
-| v4.9 | Zmanim (prayer times) — Alot, Netz, Sof Zman Shma, Shkia in hc-card | 🔜 Planned |
-| v4.10 | Air Quality Index card (OpenWeatherMap AQI free tier) | 🔜 Planned |
-| v4.10 | Temperature toggle °C/°F in localStorage | 🔜 Planned |
-| v4.10 | School holiday indicator (parse from Hebcal) | 🔜 Planned |
-| v4.11 | Parasha Aliyot summary from Sefaria | 🔜 Planned |
-| v4.11 | Gold + Silver prices in currency card | 🔜 Planned |
+| v4.9 | Parasha, Zmanim, Daf Yomi, Psalm of Day, Moon phase, Parasha Aliyot, Shabbat countdown | ✅ Done |
+| v4.10 | AQI card, °C/°F toggle, school holidays, Gold/Silver, config panel, chore wheel, portfolio P&L | ✅ Done |
+| v4.11 | Earthquake monitor, news filter, currency sparklines, multi-city, 52w range, portfolio total | ✅ Done |
+| v4.11 | TA-35, vol badge, cal week strip, AQI labels, per-stock sparklines, rain overlay, market countdown | ✅ Done |
 | v5.0 | PWA manifest + ServiceWorker full offline | 🔜 Planned |
 | v5.1 | Web Push notifications for red alerts | 🔜 Planned |
-| v5.2 | Config panel (city, calendar, stocks, feeds) + multi-city support | 🔜 Planned |
+| v5.2 | Config panel for multi-city + multi-family + ICS URL | 🔜 Planned |
 | v5.3 | Family photo slideshow + transit departures | 💡 Idea |
+| v5.4 | Card drag-reorder (long-press header) | 💡 Idea |
 
 ## What NOT To Do
 

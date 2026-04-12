@@ -286,23 +286,23 @@ describe("Scroll Animations", () => {
 // 4. JAVASCRIPT CONSTANTS
 // ═══════════════════════════════════════════════════════════════════
 describe("JavaScript Constants", () => {
-  it("should have PROXIES array with 2 CORS proxies", () => {
+  it("should have PROXIES array with 3 CORS proxies", () => {
     assert.ok(
       scriptContent.includes(
-        "const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest=']",
+        "const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest=','https://corsproxy.io/?']",
       ),
       "PROXIES definition incorrect",
     );
   });
 
-  it("should have 14 STOCK_SYMBOLS", () => {
+  it("should have 15 STOCK_SYMBOLS", () => {
     const match = scriptContent.match(/const STOCK_SYMBOLS\s*=\s*\[(.*?)\]/);
     assert.ok(match, "Missing STOCK_SYMBOLS");
     const symbols = match[1].split(",").map((s) => s.trim().replace(/'/g, ""));
     assert.equal(
       symbols.length,
-      14,
-      `Expected 14 stock symbols, got ${symbols.length}`,
+      15,
+      `Expected 15 stock symbols, got ${symbols.length}`,
     );
     assert.ok(symbols.includes("INTC"), "Missing INTC");
     assert.ok(symbols.includes("NVDA"), "Missing NVDA");
@@ -1144,9 +1144,9 @@ describe("Weather Card", () => {
     assert.equal(fdays, 4, `Expected 4 forecast days, got ${fdays}`);
   });
 
-  it("should have 4 detail boxes (humidity, wind, UV, sunrise)", () => {
+  it("should have 6 detail boxes (humidity, wind, UV, sunrise, AQI, feels-like)", () => {
     const details = (html.match(/class="wx-detail"/g) || []).length;
-    assert.equal(details, 4, `Expected 4 weather detail boxes, got ${details}`);
+    assert.equal(details, 6, `Expected 6 weather detail boxes, got ${details}`);
   });
 
   it("should have hourly chart SVG", () => {
@@ -1356,9 +1356,13 @@ describe("Currency Card", () => {
       html.includes('class="cur-flag"'),
       "Missing cur-flag container for currency flags",
     );
-    // Should have 2 flag containers (USD, EUR only — GBP removed)
+    // Should have 4 flag containers (USD, EUR + Gold, Silver)
     const flagCount = (html.match(/class="cur-flag"/g) || []).length;
-    assert.equal(flagCount, 2, `Expected 2 currency flags, got ${flagCount}`);
+    assert.equal(
+      flagCount,
+      4,
+      `Expected 4 currency flags (USD/EUR/Gold/Silver), got ${flagCount}`,
+    );
     // Should contain flag emoji (🇺🇸 🇪🇺) — not inline SVG
     assert.ok(html.includes("🇺🇸"), "Missing USD flag emoji 🇺🇸");
     assert.ok(html.includes("🇪🇺"), "Missing EUR flag emoji 🇪🇺");
@@ -1772,10 +1776,10 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.8.2", () => {
+  it("should display version v4.10.0", () => {
     assert.ok(
-      html.includes("Dashboard v4.8.2"),
-      "Missing version v4.8.2 in status bar",
+      html.includes("Dashboard v4.10.0"),
+      "Missing version v4.10.0 in status bar",
     );
   });
 
@@ -3126,4 +3130,1847 @@ describe("Weather Rendering Details", () => {
       "Weather API should request daily forecast data",
     );
   });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 45. NEW FEATURES — Burn-in, Fullscreen, °C/°F, Auto-Night,
+//     Birthdays, Shabbat Countdown, Parasha, Daf Yomi, Zmanim,
+//     Background Cycling
+// ═══════════════════════════════════════════════════════════════════
+describe("New Features (v4.9)", () => {
+
+  // ── Feature 1: Burn-in Protection ──
+  it("should have startBurnInProtection function", () => {
+    assert.ok(
+      scriptContent.includes("function startBurnInProtection("),
+      "Missing startBurnInProtection function",
+    );
+  });
+
+  it("burn-in protection should shift container every 5 min", () => {
+    const fn = scriptContent.match(/function startBurnInProtection[\s\S]*?^\s{4}\}/m);
+    assert.ok(fn, "Could not find startBurnInProtection body");
+    assert.ok(fn[0].includes("300000"), "Burn-in should shift every 300000ms (5min)");
+    assert.ok(fn[0].includes("translate"), "Burn-in should use CSS translate");
+  });
+
+  it("burn-in should be called from init", () => {
+    assert.ok(
+      scriptContent.includes("startBurnInProtection()"),
+      "init should call startBurnInProtection",
+    );
+  });
+
+  // ── Feature 2: Fullscreen F key ──
+  it("should have toggleFullscreen function", () => {
+    assert.ok(
+      scriptContent.includes("function toggleFullscreen("),
+      "Missing toggleFullscreen function",
+    );
+  });
+
+  it("toggleFullscreen should use requestFullscreen API", () => {
+    assert.ok(
+      scriptContent.includes("requestFullscreen"),
+      "toggleFullscreen should call requestFullscreen",
+    );
+    assert.ok(
+      scriptContent.includes("exitFullscreen"),
+      "toggleFullscreen should call exitFullscreen",
+    );
+  });
+
+  it("F key should trigger fullscreen", () => {
+    assert.ok(
+      scriptContent.includes("key === 'f'") || scriptContent.includes("key === 'F'"),
+      "F key listener missing for fullscreen",
+    );
+    assert.ok(
+      scriptContent.includes("toggleFullscreen"),
+      "F key should call toggleFullscreen",
+    );
+  });
+
+  // ── Feature 3: °C / °F temperature toggle ──
+  it("should have toDisplayTemp function", () => {
+    assert.ok(
+      scriptContent.includes("function toDisplayTemp("),
+      "Missing toDisplayTemp function",
+    );
+  });
+
+  it("toDisplayTemp should convert Fahrenheit when _tempUnit is F", () => {
+    assert.ok(
+      scriptContent.includes("9 / 5") || scriptContent.includes("9/5"),
+      "toDisplayTemp should use 9/5 for Celsius→Fahrenheit conversion",
+    );
+    assert.ok(
+      scriptContent.includes("°F"),
+      "toDisplayTemp should return °F string",
+    );
+  });
+
+  it("should have toggleTempUnit function", () => {
+    assert.ok(
+      scriptContent.includes("function toggleTempUnit("),
+      "Missing toggleTempUnit function",
+    );
+  });
+
+  it("temp toggle should persist to localStorage as dash_tempUnit", () => {
+    assert.ok(
+      scriptContent.includes("dash_tempUnit"),
+      "Temperature unit should persist to localStorage",
+    );
+  });
+
+  it("top-temp element should have temp-toggle class", () => {
+    assert.ok(
+      html.includes('class="top-temp temp-toggle"'),
+      "top-temp should have temp-toggle class for click styling",
+    );
+  });
+
+  it("wx-temp element should have temp-toggle class", () => {
+    assert.ok(
+      html.includes('class="wx-temp-main temp-toggle"'),
+      "wx-temp should have temp-toggle class for click styling",
+    );
+  });
+
+  it("renderWeather should call toDisplayTemp for temperature display", () => {
+    assert.ok(
+      scriptContent.includes("toDisplayTemp(tempC)"),
+      "renderWeather should call toDisplayTemp for main temperature",
+    );
+  });
+
+  // ── Feature 4: Auto Night Theme ──
+  it("should have applyAutoTheme function", () => {
+    assert.ok(
+      scriptContent.includes("function applyAutoTheme("),
+      "Missing applyAutoTheme function",
+    );
+  });
+
+  it("applyAutoTheme should use _todaySunrise and _todaySunset", () => {
+    assert.ok(
+      scriptContent.includes("_todaySunrise") && scriptContent.includes("_todaySunset"),
+      "applyAutoTheme should reference _todaySunrise/_todaySunset",
+    );
+  });
+
+  it("renderWeather should store _todaySunrise from weather data", () => {
+    assert.ok(
+      scriptContent.includes("_todaySunrise = sr"),
+      "renderWeather should store _todaySunrise",
+    );
+  });
+
+  it("auto-night theme should re-evaluate every 15 min", () => {
+    assert.ok(
+      scriptContent.includes("applyAutoTheme") && scriptContent.includes("900000"),
+      "applyAutoTheme should be called every 900000ms (15min)",
+    );
+  });
+
+  it("_autoTheme state should be persisted as dash_autoTheme", () => {
+    assert.ok(
+      scriptContent.includes("dash_autoTheme"),
+      "Auto-theme state should use dash_autoTheme localStorage key",
+    );
+  });
+
+  // ── Feature 5: Family Birthdays Countdown ──
+  it("should have BIRTHDAYS constant array", () => {
+    assert.ok(
+      scriptContent.includes("const BIRTHDAYS"),
+      "Missing BIRTHDAYS constant",
+    );
+  });
+
+  it("should have checkBirthdays function", () => {
+    assert.ok(
+      scriptContent.includes("function checkBirthdays("),
+      "Missing checkBirthdays function",
+    );
+  });
+
+  it("should have hc-birthday element in HTML", () => {
+    assert.ok(
+      html.includes('id="hc-birthday"'),
+      "Missing hc-birthday element in HTML",
+    );
+  });
+
+  it("checkBirthdays should be called from init", () => {
+    assert.ok(
+      scriptContent.includes("checkBirthdays()"),
+      "checkBirthdays should be called from init",
+    );
+  });
+
+  it("checkBirthdays should re-check every 1 hour", () => {
+    assert.ok(
+      scriptContent.includes("checkBirthdays") && scriptContent.includes("3600000"),
+      "checkBirthdays should be called every 3600000ms (1h)",
+    );
+  });
+
+  // ── Feature 6: Shabbat Countdown ──
+  it("should have updateShabbatCountdown function", () => {
+    assert.ok(
+      scriptContent.includes("function updateShabbatCountdown("),
+      "Missing updateShabbatCountdown function",
+    );
+  });
+
+  it("should have hc-countdown element in HTML", () => {
+    assert.ok(
+      html.includes('id="hc-countdown"'),
+      "Missing hc-countdown element in HTML",
+    );
+  });
+
+  it("should have hc-countdown-row element in HTML", () => {
+    assert.ok(
+      html.includes('id="hc-countdown-row"'),
+      "Missing hc-countdown-row element",
+    );
+  });
+
+  it("_candleDate should be stored in loadHebCal", () => {
+    assert.ok(
+      scriptContent.includes("_candleDate = dt"),
+      "_candleDate should be stored when candle time is parsed",
+    );
+  });
+
+  it("countdown should update every 1 minute", () => {
+    assert.ok(
+      scriptContent.includes("updateShabbatCountdown") && scriptContent.includes("60000"),
+      "Shabbat countdown should update every 60000ms (1min)",
+    );
+  });
+
+  it("hc-countdown should have urgent class when < 1 hour", () => {
+    assert.ok(
+      scriptContent.includes("urgent") &&
+        (scriptContent.includes("3600") || scriptContent.includes("< 3600")),
+      "Countdown should add urgent class when less than 1 hour away",
+    );
+  });
+
+  // ── Feature 7: Parashat HaShavua ──
+  it("should have loadParasha function", () => {
+    assert.ok(
+      scriptContent.includes("function loadParasha("),
+      "Missing loadParasha function",
+    );
+  });
+
+  it("should have hc-parasha element in HTML", () => {
+    assert.ok(
+      html.includes('id="hc-parasha"'),
+      "Missing hc-parasha element in HTML",
+    );
+  });
+
+  it("loadParasha should use Hebcal shabbat endpoint", () => {
+    assert.ok(
+      scriptContent.includes("hebcal.com/shabbat") &&
+        scriptContent.includes("parashat"),
+      "loadParasha should fetch from Hebcal shabbat endpoint",
+    );
+  });
+
+  it("parasha should be called from loadHebCal", () => {
+    assert.ok(
+      scriptContent.includes("loadParasha()"),
+      "loadParasha should be called inside loadHebCal",
+    );
+  });
+
+  it("parasha should cache for 24h", () => {
+    const fn = scriptContent.match(/function loadParasha[\s\S]*?^\s{4}\}/m);
+    assert.ok(fn, "Could not find loadParasha body");
+    assert.ok(fn[0].includes("86400000"), "Parasha should cache for 86400000ms (24h)");
+  });
+
+  // ── Feature 8: Daf Yomi ──
+  it("should have loadDafYomi function", () => {
+    assert.ok(
+      scriptContent.includes("function loadDafYomi("),
+      "Missing loadDafYomi function",
+    );
+  });
+
+  it("should have hc-daf element in HTML", () => {
+    assert.ok(
+      html.includes('id="hc-daf"'),
+      "Missing hc-daf element in HTML",
+    );
+  });
+
+  it("loadDafYomi should use Hebcal daf parameter", () => {
+    assert.ok(
+      scriptContent.includes("daf=on") || scriptContent.includes("dafyomi"),
+      "loadDafYomi should use Hebcal daf=on parameter",
+    );
+  });
+
+  it("daf yomi should be called from loadHebCal", () => {
+    assert.ok(
+      scriptContent.includes("loadDafYomi()"),
+      "loadDafYomi should be called inside loadHebCal",
+    );
+  });
+
+  // ── Feature 9: Zmanim (Prayer Times) ──
+  it("should have loadZmanim function", () => {
+    assert.ok(
+      scriptContent.includes("function loadZmanim("),
+      "Missing loadZmanim function",
+    );
+  });
+
+  it("should have zmanim-section element in HTML", () => {
+    assert.ok(
+      html.includes('id="zmanim-section"'),
+      "Missing zmanim-section element",
+    );
+  });
+
+  it("should have zmanim-grid element in HTML", () => {
+    assert.ok(
+      html.includes('id="zmanim-grid"'),
+      "Missing zmanim-grid element",
+    );
+  });
+
+  it("loadZmanim should use Hebcal zmanim endpoint", () => {
+    assert.ok(
+      scriptContent.includes("hebcal.com/zmanim"),
+      "loadZmanim should fetch from hebcal.com/zmanim",
+    );
+  });
+
+  it("zmanim should show key Jewish prayer times in Hebrew", () => {
+    assert.ok(
+      scriptContent.includes("זריחה") || scriptContent.includes("חצות"),
+      "Zmanim should show Hebrew prayer time labels",
+    );
+  });
+
+  it("zmanim should be included in startup loaders", () => {
+    assert.ok(
+      scriptContent.includes("loadZmanim") &&
+        scriptContent.includes("runConcurrent(loaders"),
+      "loadZmanim should be in startup loaders array",
+    );
+  });
+
+  it("zmanim should refresh every 12 hours", () => {
+    assert.ok(
+      scriptContent.includes("loadZmanim") && scriptContent.includes("43200000"),
+      "Zmanim should refresh every 43200000ms (12h)",
+    );
+  });
+
+  // ── Feature 10: Background Image Cycling ──
+  it("should have BG_IMAGES constant array", () => {
+    assert.ok(
+      scriptContent.includes("const BG_IMAGES"),
+      "Missing BG_IMAGES constant",
+    );
+  });
+
+  it("BG_IMAGES should have at least 6 Unsplash images", () => {
+    const count = (scriptContent.match(/unsplash\.com/g) || []).length;
+    assert.ok(count >= 6, `Expected >=6 Unsplash image URLs, got ${count}`);
+  });
+
+  it("should have startBgCycling function", () => {
+    assert.ok(
+      scriptContent.includes("function startBgCycling("),
+      "Missing startBgCycling function",
+    );
+  });
+
+  it("should have setBgImage function", () => {
+    assert.ok(
+      scriptContent.includes("function setBgImage("),
+      "Missing setBgImage function",
+    );
+  });
+
+  it("setBgImage should only allow HTTPS URLs", () => {
+    assert.ok(
+      scriptContent.includes("https://") && scriptContent.includes("/^https:\\/\\//"),
+      "setBgImage should validate HTTPS-only URLs",
+    );
+  });
+
+  it("background should cycle every 30 minutes", () => {
+    assert.ok(
+      scriptContent.includes("startBgCycling") && scriptContent.includes("1800000"),
+      "Background should cycle every 1800000ms (30min)",
+    );
+  });
+
+  it("background cycling should support custom URL via dash_bgUrl", () => {
+    assert.ok(
+      scriptContent.includes("dash_bgUrl"),
+      "Background cycling should check dash_bgUrl in localStorage",
+    );
+  });
+
+  it("body::after should have transition for crossfade", () => {
+    assert.ok(
+      html.includes("body::after") && html.includes("transition: opacity"),
+      "Background image should crossfade via CSS transition on body::after",
+    );
+  });
+
+  it("startBgCycling should be called from init", () => {
+    assert.ok(
+      scriptContent.includes("startBgCycling()"),
+      "init should call startBgCycling",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 46. SPRINT 2 FEATURES — UV colors, Precipitation, Gold/Silver,
+//     School Holiday, AQI, Parasha Aliyot, PWA Manifest,
+//     Shabbat Mode, Help Overlay, Smart Wake-Refresh
+// ═══════════════════════════════════════════════════════════════════
+describe("Sprint 2 Features (v4.10)", () => {
+
+  // ── Feature 11: UV Index color coding ──
+  it("should have UV color CSS classes", () => {
+    assert.ok(html.includes(".uv-low"), "Missing .uv-low CSS class");
+    assert.ok(html.includes(".uv-high"), "Missing .uv-high CSS class");
+    assert.ok(html.includes(".uv-extreme"), "Missing .uv-extreme CSS class");
+  });
+
+  it("renderWeather should apply UV color class to wx-uv element", () => {
+    assert.ok(
+      scriptContent.includes("uv-low") && scriptContent.includes("uv-high") && scriptContent.includes("uv-extreme"),
+      "renderWeather should assign UV level class",
+    );
+  });
+
+  it("UV thresholds should match WHO/WHO guidelines (3/6/8/11)", () => {
+    assert.ok(
+      scriptContent.includes("uv <= 2") || scriptContent.includes("uv <= 5"),
+      "UV low threshold should be ≤2 or ≤5",
+    );
+  });
+
+  // ── Feature 12: Precipitation probability in forecast ──
+  it("should request precipitation_probability_max from Open-Meteo", () => {
+    assert.ok(
+      scriptContent.includes("precipitation_probability_max"),
+      "Weather fetch should request precipitation_probability_max",
+    );
+  });
+
+  it("forecast should show rain percentage when >= 20%", () => {
+    assert.ok(
+      scriptContent.includes("rain") && scriptContent.includes(">= 20"),
+      "Forecast should conditionally show rain probability >= 20%",
+    );
+  });
+
+  it("should have wx-fday-rain CSS class for rain indicator", () => {
+    assert.ok(html.includes(".wx-fday-rain"), "Missing .wx-fday-rain CSS class");
+  });
+
+  // ── Feature 13: Gold & Silver in currency card ──
+  it("should have cur-gold element in HTML", () => {
+    assert.ok(html.includes('id="cur-gold"'), "Missing cur-gold element");
+  });
+
+  it("should have cur-silver element in HTML", () => {
+    assert.ok(html.includes('id="cur-silver"'), "Missing cur-silver element");
+  });
+
+  it("renderCurrency should handle XAU for gold price", () => {
+    assert.ok(
+      scriptContent.includes("XAU"),
+      "renderCurrency should include XAU (gold) handling",
+    );
+  });
+
+  it("renderCurrency should handle XAG for silver price", () => {
+    assert.ok(
+      scriptContent.includes("XAG"),
+      "renderCurrency should include XAG (silver) handling",
+    );
+  });
+
+  it("currency body should use CSS grid for 2x2 layout", () => {
+    assert.ok(
+      html.includes("currency-body") && html.includes("grid-template-columns: 1fr 1fr"),
+      "Currency body should use grid layout for 4 items",
+    );
+  });
+
+  // ── Feature 14: School holiday indicator ──
+  it("should have hc-school-row element", () => {
+    assert.ok(html.includes('id="hc-school-row"'), "Missing hc-school-row element");
+  });
+
+  it("should have hc-school element", () => {
+    assert.ok(html.includes('id="hc-school"'), "Missing hc-school element");
+  });
+
+  it("should have hc-school-val CSS class", () => {
+    assert.ok(html.includes(".hc-school-val"), "Missing .hc-school-val CSS class");
+  });
+
+  it("loadHebCal should parse school holiday items from Hebcal", () => {
+    assert.ok(
+      scriptContent.includes("hcSchool") && scriptContent.includes("hcSchoolRow"),
+      "loadHebCal should render school holiday items",
+    );
+  });
+
+  // ── Feature 15: AQI (Air Quality Index) ──
+  it("should have loadAQI function", () => {
+    assert.ok(scriptContent.includes("function loadAQI("), "Missing loadAQI function");
+  });
+
+  it("should have wx-aqi element", () => {
+    assert.ok(html.includes('id="wx-aqi"'), "Missing wx-aqi element");
+  });
+
+  it("loadAQI should use Open-Meteo air quality API", () => {
+    assert.ok(
+      scriptContent.includes("air-quality-api.open-meteo.com"),
+      "loadAQI should use Open-Meteo air quality endpoint",
+    );
+  });
+
+  it("loadAQI should be in startup loaders", () => {
+    assert.ok(
+      scriptContent.includes("loadAQI") && scriptContent.includes("runConcurrent(loaders"),
+      "loadAQI should be in startup loaders array",
+    );
+  });
+
+  it("loadAQI should refresh every 1 hour", () => {
+    assert.ok(
+      scriptContent.includes("loadAQI") && scriptContent.includes("3600000"),
+      "loadAQI should refresh every 3600000ms (1h)",
+    );
+  });
+
+  it("should have AQI color CSS classes", () => {
+    assert.ok(html.includes(".aqi-good"), "Missing .aqi-good CSS class");
+    assert.ok(html.includes(".aqi-poor"), "Missing .aqi-poor CSS class");
+  });
+
+  it("wx-details should use 3-column grid for 5 items", () => {
+    assert.ok(
+      html.includes("grid-template-columns: 1fr 1fr 1fr"),
+      "wx-details should use 3 columns for 5 detail items",
+    );
+  });
+
+  // ── Feature 16: Parasha reading reference from Sefaria ──
+  it("should have hc-parasha-ref element", () => {
+    assert.ok(html.includes('id="hc-parasha-ref"'), "Missing hc-parasha-ref element");
+  });
+
+  it("should have _loadParashaRef function", () => {
+    assert.ok(
+      scriptContent.includes("function _loadParashaRef("),
+      "Missing _loadParashaRef function",
+    );
+  });
+
+  it("parasha ref should fetch from Sefaria calendars API", () => {
+    assert.ok(
+      scriptContent.includes("sefaria.org/api/calendars"),
+      "_loadParashaRef should use Sefaria calendars endpoint",
+    );
+  });
+
+  it("parasha ref should look for Parashat Hashavua item", () => {
+    assert.ok(
+      scriptContent.includes("Parashat Hashavua"),
+      "_loadParashaRef should find Parashat Hashavua calendar item",
+    );
+  });
+
+  // ── Feature 17: PWA manifest ──
+  it("should have <link rel=manifest> in HTML head", () => {
+    assert.ok(
+      html.includes('rel="manifest"'),
+      "Missing PWA manifest link in <head>",
+    );
+  });
+
+  it("PWA manifest should use data: URI for inline embedding", () => {
+    assert.ok(
+      html.includes("data:application/manifest+json"),
+      "PWA manifest should be embedded as data: URI",
+    );
+  });
+
+  // ── Feature 18: Shabbat Mode ──
+  it("should have applyShabbatMode function", () => {
+    assert.ok(
+      scriptContent.includes("function applyShabbatMode("),
+      "Missing applyShabbatMode function",
+    );
+  });
+
+  it("should have shabbat-mode CSS on body", () => {
+    assert.ok(
+      html.includes("body.shabbat-mode"),
+      "Missing body.shabbat-mode CSS rule",
+    );
+  });
+
+  it("should have shabbat-mode-banner element", () => {
+    assert.ok(
+      html.includes('id="shabbat-mode-banner"'),
+      "Missing shabbat-mode-banner element",
+    );
+  });
+
+  it("_shabbatEnd should be stored from havdalah time", () => {
+    assert.ok(
+      scriptContent.includes("_shabbatEnd = new Date(hvdl.date)"),
+      "_shabbatEnd should be set from havdalah date in loadHebCal",
+    );
+  });
+
+  it("shabbat mode should toggle via body class", () => {
+    assert.ok(
+      scriptContent.includes("'shabbat-mode'"),
+      "applyShabbatMode should toggle body.shabbat-mode class",
+    );
+  });
+
+  // ── Feature 19: Help Overlay ──
+  it("should have help-overlay element", () => {
+    assert.ok(html.includes('id="help-overlay"'), "Missing help-overlay element");
+  });
+
+  it("should have toggleHelp function", () => {
+    assert.ok(
+      scriptContent.includes("function toggleHelp("),
+      "Missing toggleHelp function",
+    );
+  });
+
+  it("? key should trigger help overlay", () => {
+    assert.ok(
+      scriptContent.includes("key === '?'") && scriptContent.includes("toggleHelp"),
+      "? key should call toggleHelp",
+    );
+  });
+
+  it("Escape key should also close help overlay", () => {
+    assert.ok(
+      scriptContent.includes("helpOverlay") && scriptContent.includes("Escape"),
+      "Escape should close help overlay",
+    );
+  });
+
+  it("help overlay should show keyboard shortcut table", () => {
+    assert.ok(
+      html.includes("help-row") && html.includes("help-key"),
+      "Help overlay should contain shortcut rows and key badges",
+    );
+  });
+
+  it("clicking outside help panel should close it", () => {
+    assert.ok(
+      scriptContent.includes("helpOverlay") && scriptContent.includes("e.target === el.helpOverlay"),
+      "Clicking overlay background should close help panel",
+    );
+  });
+
+  // ── Feature 20: Smart Wake-Refresh ──
+  it("should have _lastHiddenAt state variable", () => {
+    assert.ok(
+      scriptContent.includes("_lastHiddenAt"),
+      "Missing _lastHiddenAt state variable",
+    );
+  });
+
+  it("visibilitychange handler should track when page was hidden", () => {
+    assert.ok(
+      scriptContent.includes("_lastHiddenAt = Date.now()"),
+      "visibilitychange should record time when page becomes hidden",
+    );
+  });
+
+  it("wake-refresh should trigger after 30 minutes hidden", () => {
+    assert.ok(
+      scriptContent.includes("1800000") && scriptContent.includes("Wake-refresh"),
+      "Smart wake-refresh should activate after 1800000ms (30min) hidden",
+    );
+  });
+
+  it("wake-refresh should reload weather, news, stocks, and calendar", () => {
+    const visHandler = scriptContent.match(/visibilitychange[\s\S]*?_lastHiddenAt = null;\s*\}/);
+    assert.ok(visHandler, "Could not find visibilitychange handler block");
+    assert.ok(
+      visHandler[0].includes("loadWeather") && visHandler[0].includes("loadNews"),
+      "Wake-refresh should reload weather and news",
+    );
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════
+// 47. SPRINT 3 FEATURES (v4.11)
+// ══════════════════════════════════════════════════════════════════
+describe("Sprint 3 Features (v4.11)", () => {
+
+  // Feature 21: Parasha Aliyot
+  it("should have hc-aliyot element", () => {
+    assert.ok(html.includes('id="hc-aliyot"'), "Missing hc-aliyot element");
+  });
+  it("should have hc-aliyot-row element", () => {
+    assert.ok(html.includes('id="hc-aliyot-row"'), "Missing hc-aliyot-row element");
+  });
+  it("should have _loadParashaAliyot function", () => {
+    assert.ok(scriptContent.includes("async function _loadParashaAliyot("), "Missing _loadParashaAliyot");
+  });
+  it("_loadParashaAliyot should use Sefaria calendars and track loaded state", () => {
+    assert.ok(
+      scriptContent.includes("sefaria.org/api/calendars") && scriptContent.includes("_aliyotLoaded"),
+      "_loadParashaAliyot should check _aliyotLoaded and use Sefaria",
+    );
+  });
+  it("should have hc-aliyot-val CSS class", () => {
+    assert.ok(html.includes(".hc-aliyot-val"), "Missing .hc-aliyot-val CSS class");
+  });
+  it("_loadParashaAliyot should be called non-blocking from loadParasha", () => {
+    assert.ok(scriptContent.includes("_loadParashaAliyot().catch"), "Missing non-blocking _loadParashaAliyot call");
+  });
+
+  // Feature 22: Electricity Peak Warning
+  it("should have elec-badge element", () => {
+    assert.ok(html.includes('id="elec-badge"'), "Missing elec-badge element");
+  });
+  it("should have checkElecPeak function", () => {
+    assert.ok(scriptContent.includes("function checkElecPeak("), "Missing checkElecPeak function");
+  });
+  it("checkElecPeak should check 17:00-22:00 peak window", () => {
+    assert.ok(
+      scriptContent.includes("17 * 60") && scriptContent.includes("22 * 60"),
+      "checkElecPeak should use 17:00-22:00 peak range",
+    );
+  });
+  it("checkElecPeak should add summer morning peak 08:00-10:00", () => {
+    assert.ok(
+      scriptContent.includes("8 * 60") && scriptContent.includes("10 * 60"),
+      "checkElecPeak should add summer 08:00-10:00 peak",
+    );
+  });
+  it("should have #elec-badge.peak-on CSS state", () => {
+    assert.ok(html.includes("elec-badge.peak-on"), "Missing .peak-on CSS state for elec-badge");
+  });
+  it("checkElecPeak should be called from tickClock", () => {
+    const tickFn = scriptContent.match(/function tickClock\(\)[\s\S]*?^\s*\}/m);
+    assert.ok(tickFn && tickFn[0].includes("checkElecPeak"), "checkElecPeak should be inside tickClock");
+  });
+
+  // Feature 23: Psalm of the Day
+  it("should have hc-psalm element", () => {
+    assert.ok(html.includes('id="hc-psalm"'), "Missing hc-psalm element");
+  });
+  it("should have hc-psalm-row element", () => {
+    assert.ok(html.includes('id="hc-psalm-row"'), "Missing hc-psalm-row element");
+  });
+  it("should have loadPsalm function", () => {
+    assert.ok(scriptContent.includes("async function loadPsalm("), "Missing loadPsalm function");
+  });
+  it("loadPsalm should define DOW_PSALMS day-of-week array", () => {
+    assert.ok(
+      scriptContent.includes("DOW_PSALMS") && scriptContent.includes("24") && scriptContent.includes("48"),
+      "loadPsalm should use DOW_PSALMS with traditional psalm numbers",
+    );
+  });
+  it("loadPsalm should fetch from Sefaria Psalms API", () => {
+    assert.ok(scriptContent.includes("sefaria.org/api/texts/Psalms."), "loadPsalm should use Sefaria Psalms endpoint");
+  });
+  it("loadPsalm should be included in startup loaders", () => {
+    assert.ok(
+      scriptContent.includes("loadPsalm") && scriptContent.includes("runConcurrent(loaders"),
+      "loadPsalm should be in startup loaders array",
+    );
+  });
+  it("should have hc-psalm-val CSS class", () => {
+    assert.ok(html.includes(".hc-psalm-val"), "Missing .hc-psalm-val CSS class");
+  });
+
+  // Feature 24: Moon Phase
+  it("should have hc-moon element", () => {
+    assert.ok(html.includes('id="hc-moon"'), "Missing hc-moon element");
+  });
+  it("should have getMoonPhase function", () => {
+    assert.ok(scriptContent.includes("function getMoonPhase("), "Missing getMoonPhase function");
+  });
+  it("getMoonPhase should use 29.53059 day synodic period", () => {
+    assert.ok(
+      scriptContent.includes("29.53059") && scriptContent.includes("SYNODIC_MS"),
+      "getMoonPhase should use SYNODIC_MS constant based on 29.53059 days",
+    );
+  });
+  it("getMoonPhase should return Hebrew phase names", () => {
+    assert.ok(
+      scriptContent.includes("ירח חדש") && scriptContent.includes("ירח מלא"),
+      "getMoonPhase should include Hebrew names for new and full moon phases",
+    );
+  });
+  it("should have updateMoonPhase function", () => {
+    assert.ok(scriptContent.includes("function updateMoonPhase("), "Missing updateMoonPhase");
+  });
+  it("updateMoonPhase should be called from init", () => {
+    assert.ok(scriptContent.includes("updateMoonPhase()"), "updateMoonPhase not called from init");
+  });
+  it("should have hc-moon-val CSS class", () => {
+    assert.ok(html.includes(".hc-moon-val"), "Missing .hc-moon-val CSS class");
+  });
+
+  // Feature 25: TA-35 Stock Index
+  it("should have TA35.TA in STOCK_SYMBOLS", () => {
+    assert.ok(scriptContent.includes("^TA35.TA"), "STOCK_SYMBOLS missing ^TA35.TA");
+  });
+  it("should have tase.co.il domain in STOCK_BRAND", () => {
+    assert.ok(scriptContent.includes("tase.co.il"), "STOCK_BRAND missing tase.co.il for TA35");
+  });
+  it("should have Hebrew TA-35 name in STOCK_NAMES", () => {
+    assert.ok(scriptContent.includes('ת"א 35'), "STOCK_NAMES missing Hebrew TA-35 name");
+  });
+
+  // Feature 26: Feels-Like Temperature
+  it("should have wx-feels element", () => {
+    assert.ok(html.includes('id="wx-feels"'), "Missing wx-feels element");
+  });
+  it("renderWeather should populate wx-feels from apparent_temperature", () => {
+    assert.ok(
+      scriptContent.includes("el.wxFeels") && scriptContent.includes("apparent_temperature"),
+      "renderWeather should set el.wxFeels from apparent_temperature",
+    );
+  });
+  it("wx-details should now have 6 detail boxes", () => {
+    const count = (html.match(/class="wx-detail"/g) || []).length;
+    assert.equal(count, 6, `Expected 6 wx-detail boxes, got ${count}`);
+  });
+  it("should have 6th wx-detail nth-child border CSS", () => {
+    assert.ok(html.includes(".wx-detail:nth-child(6)"), "Missing 6th wx-detail border CSS");
+  });
+
+  // Feature 27: Seasonal CSS Body Class
+  it("should have applySeasonClass function", () => {
+    assert.ok(scriptContent.includes("function applySeasonClass("), "Missing applySeasonClass");
+  });
+  it("should have all 4 season CSS body classes", () => {
+    ["season-spring","season-summer","season-autumn","season-winter"].forEach(cls => {
+      assert.ok(html.includes(cls), `Missing CSS for ${cls}`);
+    });
+  });
+  it("applySeasonClass should be called from init", () => {
+    assert.ok(scriptContent.includes("applySeasonClass()"), "applySeasonClass not called from init");
+  });
+  it("seasonal CSS should use --season-tint variable", () => {
+    assert.ok(html.includes("--season-tint"), "Seasonal CSS should define --season-tint variable");
+  });
+
+  // Feature 28: Calendar Event Countdown
+  it("should have cal-countdown element", () => {
+    assert.ok(html.includes('id="cal-countdown"'), "Missing cal-countdown element");
+  });
+  it("renderCalendar should show 7-day event countdown", () => {
+    assert.ok(
+      scriptContent.includes("cal-countdown") && scriptContent.includes("7 * 86400000"),
+      "renderCalendar should filter 7-day window for countdown",
+    );
+  });
+  it("countdown should show 'היום' for today's events", () => {
+    assert.ok(scriptContent.includes("'היום'"), "Countdown should use 'היום' for same-day events");
+  });
+  it("should have #cal-countdown CSS rule", () => {
+    assert.ok(html.includes("#cal-countdown"), "Missing #cal-countdown CSS rule");
+  });
+
+  // Feature 29: News Count Badge
+  it("should have news-count element", () => {
+    assert.ok(html.includes('id="news-count"'), "Missing news-count element");
+  });
+  it("renderNews should update news-count badge with Hebrew label", () => {
+    assert.ok(
+      scriptContent.includes("el.newsCount") && scriptContent.includes("חדשות"),
+      "renderNews should update el.newsCount with Hebrew count label",
+    );
+  });
+  it("should have news-count-badge CSS class", () => {
+    assert.ok(html.includes(".news-count-badge"), "Missing .news-count-badge CSS class");
+  });
+
+  // Feature 30: Halacha Excerpt in HC Card
+  it("should have hc-halacha element", () => {
+    assert.ok(html.includes('id="hc-halacha"'), "Missing hc-halacha element");
+  });
+  it("should have hc-halacha-row element", () => {
+    assert.ok(html.includes('id="hc-halacha-row"'), "Missing hc-halacha-row element");
+  });
+  it("renderHalacha should populate hc-halacha excerpt", () => {
+    assert.ok(
+      scriptContent.includes("el.hcHalacha") && scriptContent.includes("el.hcHalachaRow"),
+      "renderHalacha should update hc-halacha and hc-halachaRow",
+    );
+  });
+  it("should have hc-halacha-val CSS class", () => {
+    assert.ok(html.includes(".hc-halacha-val"), "Missing .hc-halacha-val CSS class");
+  });
+
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 48. SPRINT 4 FEATURES (v4.12)
+// ═══════════════════════════════════════════════════════════════════
+describe("Sprint 4 Features (v4.12)", () => {
+
+  // Feature 31: Wind Direction Arrow
+  it("should have deg2arrow function", () => {
+    assert.ok(scriptContent.includes("function deg2arrow"), "Missing deg2arrow function");
+  });
+  it("deg2arrow should return 8 compass arrows", () => {
+    assert.ok(
+      scriptContent.includes("'↑','↗','→','↘','↓','↙','←','↖'"),
+      "deg2arrow should include all 8 compass directions"
+    );
+  });
+  it("renderWeather should include wind direction arrow via deg2arrow", () => {
+    assert.ok(
+      scriptContent.includes("deg2arrow(cw.winddirection"),
+      "renderWeather should call deg2arrow for wind direction"
+    );
+  });
+  it("should have wx-wind-dir CSS class", () => {
+    assert.ok(html.includes(".wx-wind-dir"), "Missing .wx-wind-dir CSS class");
+  });
+
+  // Feature 32: Extreme Weather Alert
+  it("should have SEVERE_WX constant", () => {
+    assert.ok(scriptContent.includes("SEVERE_WX"), "Missing SEVERE_WX constant");
+  });
+  it("should have checkSevereWeather function", () => {
+    assert.ok(scriptContent.includes("function checkSevereWeather"), "Missing checkSevereWeather function");
+  });
+  it("should have wx-alert-banner element", () => {
+    assert.ok(html.includes('id="wx-alert-banner"'), "Missing wx-alert-banner element");
+  });
+  it("should have wx-alert-banner CSS", () => {
+    assert.ok(html.includes("#wx-alert-banner"), "Missing #wx-alert-banner CSS");
+  });
+  it("checkSevereWeather should show banner for code 95", () => {
+    assert.ok(
+      scriptContent.includes("SEVERE_WX[code]"),
+      "checkSevereWeather should look up code in SEVERE_WX"
+    );
+  });
+
+  // Feature 33: Config Panel
+  it("should have config-overlay element", () => {
+    assert.ok(html.includes('id="config-overlay"'), "Missing config-overlay element");
+  });
+  it("should have config-panel element", () => {
+    assert.ok(html.includes('id="config-panel"'), "Missing config-panel element");
+  });
+  it("should have cfg-gear-btn element", () => {
+    assert.ok(html.includes('id="cfg-gear-btn"'), "Missing cfg-gear-btn element");
+  });
+  it("should have toggleConfig function", () => {
+    assert.ok(scriptContent.includes("function toggleConfig"), "Missing toggleConfig function");
+  });
+  it("should have saveConfig function", () => {
+    assert.ok(scriptContent.includes("function saveConfig"), "Missing saveConfig function");
+  });
+  it("S key should trigger toggleConfig", () => {
+    assert.ok(
+      scriptContent.includes("toggleConfig()") && scriptContent.includes("'s' || e.key === 'S'"),
+      "S key should call toggleConfig"
+    );
+  });
+  it("should have cfg-row CSS class", () => {
+    assert.ok(html.includes(".cfg-row"), "Missing .cfg-row CSS");
+  });
+  it("config panel should have cfg-save-btn", () => {
+    assert.ok(html.includes('id="cfg-save-btn"'), "Missing cfg-save-btn");
+  });
+  it("config panel should have cfg-close-btn", () => {
+    assert.ok(html.includes('id="cfg-close-btn"'), "Missing cfg-close-btn");
+  });
+  it("Escape key should close config overlay", () => {
+    assert.ok(
+      scriptContent.includes("config-overlay") && scriptContent.includes("Escape"),
+      "Escape key should close config overlay"
+    );
+  });
+
+  // Feature 34: Chore Wheel
+  it("should have CHORES constant", () => {
+    assert.ok(scriptContent.includes("const CHORES = ["), "Missing CHORES constant");
+  });
+  it("should have updateChoreWheel function", () => {
+    assert.ok(scriptContent.includes("function updateChoreWheel"), "Missing updateChoreWheel function");
+  });
+  it("should have hc-chore element", () => {
+    assert.ok(html.includes('id="hc-chore"'), "Missing hc-chore element");
+  });
+  it("should have hc-chore-row element", () => {
+    assert.ok(html.includes('id="hc-chore-row"'), "Missing hc-chore-row element");
+  });
+  it("should have hc-chore-val CSS class", () => {
+    assert.ok(html.includes(".hc-chore-val"), "Missing .hc-chore-val CSS");
+  });
+  it("chore wheel should rotate by day-of-year", () => {
+    assert.ok(
+      scriptContent.includes("doy % CHORES.length"),
+      "Chore wheel should rotate by day-of-year modulo CHORES length"
+    );
+  });
+  it("should call updateChoreWheel in init", () => {
+    assert.ok(scriptContent.includes("updateChoreWheel()"), "updateChoreWheel should be called in init");
+  });
+
+  // Feature 35: Portfolio P&L
+  it("should have updatePortfolioPnL function", () => {
+    assert.ok(scriptContent.includes("function updatePortfolioPnL"), "Missing updatePortfolioPnL function");
+  });
+  it("should have stk-pnl CSS class", () => {
+    assert.ok(html.includes(".stk-pnl"), "Missing .stk-pnl CSS class");
+  });
+  it("should have stk-pnl.gain and .loss CSS classes", () => {
+    assert.ok(
+      html.includes(".stk-pnl.gain") && html.includes(".stk-pnl.loss"),
+      "Missing .stk-pnl.gain or .stk-pnl.loss CSS"
+    );
+  });
+  it("portfolio PnL should use localStorage dash_portfolio key", () => {
+    assert.ok(
+      scriptContent.includes("dash_portfolio"),
+      "Portfolio should use dash_portfolio localStorage key"
+    );
+  });
+  it("renderStock should call updatePortfolioPnL", () => {
+    assert.ok(
+      scriptContent.includes("updatePortfolioPnL(sym, cur)"),
+      "renderStock should call updatePortfolioPnL"
+    );
+  });
+
+  // Feature 36: Earthquake Alerts
+  it("should have loadEarthquakes function", () => {
+    assert.ok(scriptContent.includes("function loadEarthquakes"), "Missing loadEarthquakes function");
+  });
+  it("should have _renderEarthquake function", () => {
+    assert.ok(scriptContent.includes("function _renderEarthquake"), "Missing _renderEarthquake function");
+  });
+  it("should have quake-row element", () => {
+    assert.ok(html.includes('id="quake-row"'), "Missing quake-row element");
+  });
+  it("should have quake-badge element", () => {
+    assert.ok(html.includes('id="quake-badge"'), "Missing quake-badge element");
+  });
+  it("earthquake loader should use USGS GeoJSON API", () => {
+    assert.ok(
+      scriptContent.includes("earthquake.usgs.gov"),
+      "Earthquake loader should use USGS API"
+    );
+  });
+  it("should have quake-row CSS", () => {
+    assert.ok(html.includes("#quake-row"), "Missing #quake-row CSS");
+  });
+  it("earthquake should only show M3.5+ events", () => {
+    assert.ok(
+      scriptContent.includes("info.mag < 3.5"),
+      "Earthquake should filter out events below M3.5"
+    );
+  });
+  it("loadEarthquakes should be in init loaders", () => {
+    assert.ok(
+      scriptContent.includes("loadEarthquakes"),
+      "loadEarthquakes should appear in init loaders"
+    );
+  });
+
+  // Feature 37: Today Event Count in Header
+  it("should have header-event-count element", () => {
+    assert.ok(html.includes('id="header-event-count"'), "Missing header-event-count element");
+  });
+  it("should have updateTodayEventCount function", () => {
+    assert.ok(scriptContent.includes("function updateTodayEventCount"), "Missing updateTodayEventCount function");
+  });
+  it("today event count should use cal-ics cache key", () => {
+    assert.ok(
+      scriptContent.includes("cGetStale('cal-ics')"),
+      "updateTodayEventCount should read cal-ics cache"
+    );
+  });
+  it("should have header-event-count CSS", () => {
+    assert.ok(html.includes("#header-event-count"), "Missing #header-event-count CSS");
+  });
+
+  // Feature 38: Currency Sparkline
+  it("should have renderCurrencySparklines function", () => {
+    assert.ok(scriptContent.includes("function renderCurrencySparklines"), "Missing renderCurrencySparklines function");
+  });
+  it("should have _drawSparkline function", () => {
+    assert.ok(scriptContent.includes("function _drawSparkline"), "Missing _drawSparkline function");
+  });
+  it("should have cur-usd-spark SVG element", () => {
+    assert.ok(html.includes('id="cur-usd-spark"'), "Missing cur-usd-spark element");
+  });
+  it("should have cur-eur-spark SVG element", () => {
+    assert.ok(html.includes('id="cur-eur-spark"'), "Missing cur-eur-spark element");
+  });
+  it("should have cur-spark CSS class", () => {
+    assert.ok(html.includes(".cur-spark"), "Missing .cur-spark CSS");
+  });
+  it("currency sparkline history key should be dash_v2_cur_hist", () => {
+    assert.ok(
+      scriptContent.includes("dash_v2_cur_hist"),
+      "Currency sparkline should use dash_v2_cur_hist key"
+    );
+  });
+  it("renderCurrency should call recordCurrencyHistory", () => {
+    assert.ok(
+      scriptContent.includes("recordCurrencyHistory"),
+      "renderCurrency should call recordCurrencyHistory"
+    );
+  });
+
+  // Feature 39: News Source Filter
+  it("should have news-filter-bar element", () => {
+    assert.ok(html.includes('id="news-filter-bar"'), "Missing news-filter-bar element");
+  });
+  it("should have initNewsFilter function", () => {
+    assert.ok(scriptContent.includes("function initNewsFilter"), "Missing initNewsFilter function");
+  });
+  it("should have addNewsFilterChip function", () => {
+    assert.ok(scriptContent.includes("function addNewsFilterChip"), "Missing addNewsFilterChip function");
+  });
+  it("should have news-filter-bar CSS class", () => {
+    assert.ok(html.includes(".news-filter-bar"), "Missing .news-filter-bar CSS");
+  });
+  it("should have news-filter-chip CSS class", () => {
+    assert.ok(html.includes(".news-filter-chip"), "Missing .news-filter-chip CSS");
+  });
+  it("news items should get data-src attribute from source", () => {
+    assert.ok(
+      scriptContent.includes("div.dataset.src = it.source"),
+      "News items should have data-src set from feed source"
+    );
+  });
+  it("initNewsFilter should be called in init", () => {
+    assert.ok(scriptContent.includes("initNewsFilter()"), "initNewsFilter should be called in init");
+  });
+
+  // Feature 40: Connectivity Indicator
+  it("should have conn-indicator element", () => {
+    assert.ok(html.includes('id="conn-indicator"'), "Missing conn-indicator element");
+  });
+  it("should have checkConnectivity function", () => {
+    assert.ok(scriptContent.includes("function checkConnectivity"), "Missing checkConnectivity function");
+  });
+  it("should have conn-indicator CSS", () => {
+    assert.ok(html.includes("#conn-indicator"), "Missing #conn-indicator CSS");
+  });
+  it("should have conn-ok, conn-slow, conn-bad CSS classes", () => {
+    assert.ok(
+      html.includes(".conn-ok") && html.includes(".conn-slow") && html.includes(".conn-bad"),
+      "Missing .conn-ok / .conn-slow / .conn-bad CSS classes"
+    );
+  });
+  it("checkConnectivity should be called in init", () => {
+    assert.ok(scriptContent.includes("checkConnectivity()"), "checkConnectivity should be called in init");
+  });
+  it("connectivity interval should be 5 minutes", () => {
+    assert.ok(
+      scriptContent.includes("setInterval(checkConnectivity, 300000)"),
+      "Connectivity check should run every 5 minutes"
+    );
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 49. SPRINT 5 FEATURES (v4.9+)
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Sprint 5 Features", () => {
+
+  // Feature 41: Pre/After Hours Market Badge
+  it("should have market-premarket CSS class", () => {
+    assert.ok(html.includes("market-premarket"), "Missing .market-premarket CSS");
+  });
+  it("should have market-afterhours CSS class", () => {
+    assert.ok(html.includes("market-afterhours"), "Missing .market-afterhours CSS");
+  });
+  it("updateMarketBadge should handle 4 states", () => {
+    assert.ok(scriptContent.includes("market-premarket"), "updateMarketBadge should set market-premarket");
+    assert.ok(scriptContent.includes("market-afterhours"), "updateMarketBadge should set market-afterhours");
+    assert.ok(scriptContent.includes("market-open"), "updateMarketBadge should set market-open");
+    assert.ok(scriptContent.includes("market-closed"), "updateMarketBadge should set market-closed");
+  });
+  it("updateMarketBadge should check ET hours for pre-market (4:00)", () => {
+    assert.ok(scriptContent.includes("4 * 60") || scriptContent.includes("4*60") || scriptContent.includes("240"), "updateMarketBadge should check 4:00 ET for pre-market boundary");
+  });
+  it("updateMarketBadge should check ET hours for after-hours (20:00)", () => {
+    assert.ok(scriptContent.includes("20 * 60") || scriptContent.includes("20*60") || scriptContent.includes("1200"), "updateMarketBadge should check 20:00 ET for after-hours boundary");
+  });
+  it("updateMarketBadge should be called on 1-min interval", () => {
+    assert.ok(scriptContent.includes("setInterval(updateMarketBadge, 60000)"), "Market badge should refresh every 60s");
+  });
+
+  // Feature 42: Weather Sky Color Pill
+  it("should have #wx-sky-pill element", () => {
+    assert.ok(html.includes('id="wx-sky-pill"'), "Missing #wx-sky-pill element");
+  });
+  it("should have .wx-sky-pill CSS class", () => {
+    assert.ok(html.includes(".wx-sky-pill"), "Missing .wx-sky-pill CSS");
+  });
+  it("should define updateWeatherSkyPill function", () => {
+    assert.ok(scriptContent.includes("function updateWeatherSkyPill"), "Missing updateWeatherSkyPill function");
+  });
+  it("updateWeatherSkyPill should be called from renderWeather", () => {
+    assert.ok(scriptContent.includes("updateWeatherSkyPill("), "updateWeatherSkyPill should be called in renderWeather");
+  });
+  it("WX_SKY should map weather code 0 (clear)", () => {
+    assert.ok(scriptContent.includes("WX_SKY") && scriptContent.match(/WX_SKY\s*=/), "WX_SKY mapping constant should be defined");
+  });
+
+  // Feature 43: Red Alert Sound
+  it("should define playAlertBeep function", () => {
+    assert.ok(scriptContent.includes("function playAlertBeep"), "Missing playAlertBeep function");
+  });
+  it("should define toggleAlertSound function", () => {
+    assert.ok(scriptContent.includes("function toggleAlertSound"), "Missing toggleAlertSound function");
+  });
+  it("should define getAudioCtx function", () => {
+    assert.ok(scriptContent.includes("function getAudioCtx"), "Missing getAudioCtx function");
+  });
+  it("playAlertBeep should use Web Audio API oscillator", () => {
+    assert.ok(scriptContent.includes("createOscillator"), "playAlertBeep should use createOscillator");
+  });
+  it("alert sound state should be stored in localStorage", () => {
+    assert.ok(scriptContent.includes("dash_alertSound"), "Alert sound state should use dash_alertSound localStorage key");
+  });
+  it("M key should toggle alert sound", () => {
+    assert.ok(scriptContent.includes("toggleAlertSound()"), "M key should call toggleAlertSound");
+  });
+  it("playAlertBeep should be called on new alerts", () => {
+    assert.ok(scriptContent.includes("playAlertBeep(") && scriptContent.includes("isNew"), "playAlertBeep should be called when isNew=true");
+  });
+
+  // Feature 44: Parasha Sefaria Deep Link
+  it("should have #hc-parasha-link-row element", () => {
+    assert.ok(html.includes('id="hc-parasha-link-row"'), "Missing #hc-parasha-link-row element");
+  });
+  it("should have #hc-parasha-link button element", () => {
+    assert.ok(html.includes('id="hc-parasha-link"'), "Missing #hc-parasha-link element");
+  });
+  it("should have .hc-parasha-link CSS class", () => {
+    assert.ok(html.includes(".hc-parasha-link"), "Missing .hc-parasha-link CSS");
+  });
+  it("should define openParashaOnSefaria function", () => {
+    assert.ok(scriptContent.includes("function openParashaOnSefaria"), "Missing openParashaOnSefaria function");
+  });
+  it("openParashaOnSefaria should open sefaria.org", () => {
+    assert.ok(scriptContent.includes("sefaria.org"), "openParashaOnSefaria should link to sefaria.org");
+  });
+  it("_parashaSefariaUrl should be populated from Sefaria API", () => {
+    assert.ok(scriptContent.includes("_parashaSefariaUrl"), "Missing _parashaSefariaUrl variable");
+  });
+  it("_renderParasha should wire the Sefaria link button", () => {
+    const funcBody = scriptContent.slice(scriptContent.indexOf("function _renderParasha"));
+    assert.ok(funcBody.includes("hc-parasha-link"), "_renderParasha should wire #hc-parasha-link");
+  });
+
+  // Feature 45: Multi-City Weather Tabs
+  it("should have #wx-city-tabs element", () => {
+    assert.ok(html.includes('id="wx-city-tabs"'), "Missing #wx-city-tabs element");
+  });
+  it("should have .wx-city-tab CSS class", () => {
+    assert.ok(html.includes(".wx-city-tab"), "Missing .wx-city-tab CSS");
+  });
+  it("should have 3 city tab buttons (Jerusalem, Tel Aviv, Haifa)", () => {
+    assert.ok(
+      html.includes('data-city="jerusalem"') &&
+      html.includes('data-city="telaviv"') &&
+      html.includes('data-city="haifa"'),
+      "Missing city tab buttons for Jerusalem, Tel Aviv, and Haifa"
+    );
+  });
+  it("should define WX_CITIES constant", () => {
+    assert.ok(scriptContent.includes("WX_CITIES") && scriptContent.includes("jerusalem") && scriptContent.includes("telaviv") && scriptContent.includes("haifa"), "WX_CITIES should include all 3 cities");
+  });
+  it("should define switchWxCity function", () => {
+    assert.ok(scriptContent.includes("function switchWxCity"), "Missing switchWxCity function");
+  });
+  it("should define initWxCityTabs function", () => {
+    assert.ok(scriptContent.includes("function initWxCityTabs"), "Missing initWxCityTabs function");
+  });
+  it("should define getCurrentWxCity function", () => {
+    assert.ok(scriptContent.includes("function getCurrentWxCity"), "Missing getCurrentWxCity function");
+  });
+  it("loadWeather should use dynamic city lat/lon", () => {
+    assert.ok(scriptContent.includes("getCurrentWxCity"), "loadWeather should call getCurrentWxCity for coordinates");
+  });
+  it("city preference should persist in localStorage", () => {
+    assert.ok(scriptContent.includes("dash_wxCity"), "City preference should use dash_wxCity localStorage key");
+  });
+  it("initWxCityTabs should be called in init", () => {
+    assert.ok(scriptContent.includes("initWxCityTabs()"), "initWxCityTabs should be called in init");
+  });
+
+  // Feature 46: Stock 52-Week Range Bar
+  it("should have .stk-range CSS class", () => {
+    assert.ok(html.includes(".stk-range"), "Missing .stk-range CSS");
+  });
+  it("should have .stk-range-fill CSS class", () => {
+    assert.ok(html.includes(".stk-range-fill"), "Missing .stk-range-fill CSS");
+  });
+  it("should define updateStockRange function", () => {
+    assert.ok(scriptContent.includes("function updateStockRange"), "Missing updateStockRange function");
+  });
+  it("updateStockRange should be called from renderStock", () => {
+    assert.ok(scriptContent.includes("updateStockRange("), "updateStockRange should be called in renderStock");
+  });
+  it("updateStockRange should use fiftyTwoWeekLow and fiftyTwoWeekHigh", () => {
+    assert.ok(scriptContent.includes("fiftyTwoWeekLow") && scriptContent.includes("fiftyTwoWeekHigh"), "52-week range should use Yahoo Finance meta.fiftyTwoWeekLow / fiftyTwoWeekHigh");
+  });
+
+  // Feature 47: Calendar Event Duration
+  it("should have .cal-event-dur CSS class", () => {
+    assert.ok(html.includes(".cal-event-dur"), "Missing .cal-event-dur CSS");
+  });
+  it("parseICS should declare dtEndRaw variable", () => {
+    assert.ok(scriptContent.includes("dtEndRaw"), "parseICS should declare dtEndRaw");
+  });
+  it("parseICS should parse DTEND field", () => {
+    assert.ok(scriptContent.includes("DTEND"), "parseICS should parse DTEND");
+  });
+  it("event end time should be stored in event object", () => {
+    assert.ok(scriptContent.includes("end,") || scriptContent.includes("end }") || scriptContent.includes("end: "), "events.push should include end property");
+  });
+  it("renderCalendar should show end time for timed events", () => {
+    const calBody = scriptContent.slice(scriptContent.indexOf("function renderCalendar"));
+    assert.ok(calBody.includes("ev.end"), "renderCalendar should use ev.end for duration display");
+  });
+
+  // Feature 48: Custom Ticker Message
+  it("should have .ticker-custom CSS class", () => {
+    assert.ok(html.includes(".ticker-custom"), "Missing .ticker-custom CSS");
+  });
+  it("ticker-custom should have high-visibility styling", () => {
+    const tickerCss = html.slice(html.indexOf(".ticker-custom"), html.indexOf(".ticker-custom") + 200);
+    assert.ok(tickerCss.includes("font-weight") || tickerCss.includes("background"), ".ticker-custom should have prominent styling");
+  });
+  it("renderHalacha should check for custom ticker message", () => {
+    const halachaBody = scriptContent.slice(scriptContent.indexOf("function renderHalacha"));
+    assert.ok(halachaBody.includes("dash_ticker_msg"), "renderHalacha should read dash_ticker_msg from localStorage");
+  });
+  it("custom ticker chip should have ticker-custom class", () => {
+    assert.ok(scriptContent.includes("ticker-custom"), "Custom ticker chip should use .ticker-custom class");
+  });
+  it("config panel should have cfg-ticker-msg input", () => {
+    assert.ok(html.includes('id="cfg-ticker-msg"'), "Config panel should have #cfg-ticker-msg input");
+  });
+  it("saveConfig should persist ticker message", () => {
+    const saveFn = scriptContent.slice(scriptContent.indexOf("function saveConfig"));
+    assert.ok(saveFn.includes("cfg-ticker-msg"), "saveConfig should handle cfg-ticker-msg");
+  });
+
+  // Feature 49: Font Size Scaler
+  it("should have #font-scale-indicator element", () => {
+    assert.ok(html.includes('id="font-scale-indicator"'), "Missing #font-scale-indicator element");
+  });
+  it("should have CSS for font-scale-indicator", () => {
+    assert.ok(html.includes("#font-scale-indicator"), "Missing #font-scale-indicator CSS");
+  });
+  it("should define applyFontScale function", () => {
+    assert.ok(scriptContent.includes("function applyFontScale"), "Missing applyFontScale function");
+  });
+  it("should define adjustFontScale function", () => {
+    assert.ok(scriptContent.includes("function adjustFontScale"), "Missing adjustFontScale function");
+  });
+  it("font scale should persist in localStorage", () => {
+    assert.ok(scriptContent.includes("dash_fontScale"), "Font scale should use dash_fontScale localStorage key");
+  });
+  it("+ key should increase font scale", () => {
+    assert.ok(scriptContent.includes("adjustFontScale(0.05)") || scriptContent.includes("adjustFontScale(+0.05)"), "+ key should call adjustFontScale with positive delta");
+  });
+  it("- key should decrease font scale", () => {
+    assert.ok(scriptContent.includes("adjustFontScale(-0.05)"), "- key should call adjustFontScale with negative delta");
+  });
+  it("applyFontScale should be called in init", () => {
+    assert.ok(scriptContent.includes("applyFontScale()"), "applyFontScale should be called in init");
+  });
+  it("font scale should be clamped between 0.7 and 1.5", () => {
+    assert.ok(scriptContent.includes("0.7") && scriptContent.includes("1.5"), "Font scale should be clamped between 0.7 and 1.5");
+  });
+
+  // Feature 50: Print Mode
+  it("should have @media print CSS block", () => {
+    assert.ok(html.includes("@media print"), "Missing @media print CSS block");
+  });
+  it("print mode should hide diagnostic overlay", () => {
+    const printBlock = html.slice(html.indexOf("@media print"), html.indexOf("@media print") + 500);
+    assert.ok(printBlock.includes("diag-overlay") || printBlock.includes("#diag-overlay"), "Print mode should hide diagnostic overlay");
+  });
+  it("print mode should hide config overlay", () => {
+    const printBlock = html.slice(html.indexOf("@media print"), html.indexOf("@media print") + 500);
+    assert.ok(printBlock.includes("config-overlay"), "Print mode should hide config overlay");
+  });
+  it("P key should trigger window.print", () => {
+    assert.ok(scriptContent.includes("window.print()"), "P key should call window.print()");
+  });
+  it("help overlay should document P key", () => {
+    const afterHelpBtn = html.indexOf('id="help-panel"');
+    const helpSection = html.slice(afterHelpBtn, afterHelpBtn + 2000);
+    assert.ok(helpSection.includes(">P<") || helpSection.includes("\"P\"") || helpSection.includes("הדפסה"), "Help overlay should document P key for printing");
+  });
+  it("help overlay should document M key for sound", () => {
+    const afterHelpBtn = html.indexOf('id="help-panel"');
+    const helpSection = html.slice(afterHelpBtn, afterHelpBtn + 2000);
+    assert.ok(helpSection.includes(">M<") || helpSection.includes("\"M\"") || helpSection.includes("\u05e6\u05dc\u05d9\u05dc"), "Help overlay should document M key for sound toggle");
+  });
+  it("help overlay should document + key for font scale", () => {
+    const afterHelpBtn = html.indexOf('id="help-panel"');
+    const helpSection = html.slice(afterHelpBtn, afterHelpBtn + 2000);
+    assert.ok(helpSection.includes("+") && (helpSection.includes("\u05d2\u05d5\u05e4\u05df") || helpSection.includes("font")), "Help overlay should document + key for font scale");
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 50. SPRINT 6 FEATURES (Features 51–60)
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Sprint 6 Features", () => {
+
+  // Feature 51: Portfolio Total Value Display
+  it("should have #stk-total-row element", () => {
+    assert.ok(html.includes('id="stk-total-row"'), "Missing #stk-total-row element");
+  });
+  it("should have .stk-total-row CSS class", () => {
+    assert.ok(html.includes(".stk-total-row"), "Missing .stk-total-row CSS");
+  });
+  it("should have #stk-total-val span", () => {
+    assert.ok(html.includes('id="stk-total-val"'), "Missing #stk-total-val element");
+  });
+  it("should have #stk-total-pnl span", () => {
+    assert.ok(html.includes('id="stk-total-pnl"'), "Missing #stk-total-pnl element");
+  });
+  it("should define updatePortfolioTotal function", () => {
+    assert.ok(scriptContent.includes("function updatePortfolioTotal"), "Missing updatePortfolioTotal function");
+  });
+  it("should define _stkPrices cache variable", () => {
+    assert.ok(scriptContent.includes("_stkPrices"), "Missing _stkPrices price cache");
+  });
+  it("updatePortfolioTotal should be called in renderStock", () => {
+    const renderFn = scriptContent.slice(scriptContent.indexOf("function renderStock"));
+    assert.ok(renderFn.includes("updatePortfolioTotal()"), "updatePortfolioTotal should be called in renderStock");
+  });
+
+  // Feature 52: Earthquake Magnitude Color Coding
+  it("should have .quake-M3 CSS class", () => {
+    assert.ok(html.includes(".quake-M3"), "Missing .quake-M3 CSS");
+  });
+  it("should have .quake-M4 CSS class", () => {
+    assert.ok(html.includes(".quake-M4"), "Missing .quake-M4 CSS");
+  });
+  it("should have .quake-M5 CSS class", () => {
+    assert.ok(html.includes(".quake-M5"), "Missing .quake-M5 CSS");
+  });
+  it("_renderEarthquake should apply magnitude class to badge", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _renderEarthquake"));
+    assert.ok(fn.includes("quake-M3") || fn.includes("quake-M4") || fn.includes("quake-M5"), "_renderEarthquake should apply quake-M* class");
+  });
+
+  // Feature 53: Daf Yomi Sefaria Link
+  it("should have #hc-daf-link-row element", () => {
+    assert.ok(html.includes('id="hc-daf-link-row"'), "Missing #hc-daf-link-row element");
+  });
+  it("should have #hc-daf-link button", () => {
+    assert.ok(html.includes('id="hc-daf-link"'), "Missing #hc-daf-link element");
+  });
+  it("should define openDafOnSefaria function", () => {
+    assert.ok(scriptContent.includes("function openDafOnSefaria"), "Missing openDafOnSefaria function");
+  });
+  it("openDafOnSefaria should link to sefaria.org", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function openDafOnSefaria"));
+    assert.ok(fn.includes("sefaria.org"), "openDafOnSefaria should open sefaria.org");
+  });
+  it("_dafSefariaRef should be a variable", () => {
+    assert.ok(scriptContent.includes("_dafSefariaRef"), "Missing _dafSefariaRef variable");
+  });
+  it("_renderDaf should wire the daf link button", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _renderDaf"));
+    assert.ok(fn.includes("hc-daf-link"), "_renderDaf should wire #hc-daf-link");
+  });
+
+  // Feature 54: Night Screen Auto-Dimmer
+  it("should have #night-dim element", () => {
+    assert.ok(html.includes('id="night-dim"'), "Missing #night-dim element");
+  });
+  it("should have #night-dim CSS (position fixed, opacity)", () => {
+    const cssMatch = html.indexOf("#night-dim");
+    const cssSection = html.slice(cssMatch, cssMatch + 200);
+    assert.ok(cssSection.includes("position") && cssSection.includes("opacity"), "#night-dim CSS should have position and opacity");
+  });
+  it("should define updateNightDimmer function", () => {
+    assert.ok(scriptContent.includes("function updateNightDimmer"), "Missing updateNightDimmer function");
+  });
+  it("should define toggleNightDim function", () => {
+    assert.ok(scriptContent.includes("function toggleNightDim"), "Missing toggleNightDim function");
+  });
+  it("updateNightDimmer should check Jerusalem time", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNightDimmer"));
+    assert.ok(fn.includes("Asia/Jerusalem"), "updateNightDimmer should use Asia/Jerusalem timezone");
+  });
+  it("N key should call toggleNightDim", () => {
+    assert.ok(scriptContent.includes("toggleNightDim()"), "N key should call toggleNightDim");
+  });
+  it("updateNightDimmer should be called in init", () => {
+    const initFn = scriptContent.slice(scriptContent.indexOf("function init("));
+    assert.ok(initFn.includes("updateNightDimmer()"), "updateNightDimmer should be called in init");
+  });
+  it("updateNightDimmer interval should be 1 minute", () => {
+    assert.ok(scriptContent.includes("setInterval(updateNightDimmer, 60000)"), "updateNightDimmer should run every 60s");
+  });
+
+  // Feature 55: Stock Price Threshold Alerts
+  it("should have .stk.alert-above CSS", () => {
+    assert.ok(html.includes(".stk.alert-above"), "Missing .stk.alert-above CSS");
+  });
+  it("should have .stk.alert-below CSS", () => {
+    assert.ok(html.includes(".stk.alert-below"), "Missing .stk.alert-below CSS");
+  });
+  it("should define _getStockAlerts function", () => {
+    assert.ok(scriptContent.includes("function _getStockAlerts"), "Missing _getStockAlerts function");
+  });
+  it("should define checkStockAlerts function", () => {
+    assert.ok(scriptContent.includes("function checkStockAlerts"), "Missing checkStockAlerts function");
+  });
+  it("stock alerts should use dash_stock_alerts localStorage key", () => {
+    assert.ok(scriptContent.includes("dash_stock_alerts"), "Stock alerts should use dash_stock_alerts key");
+  });
+  it("checkStockAlerts should be called in renderStock", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderStock"));
+    assert.ok(fn.includes("checkStockAlerts("), "checkStockAlerts should be called in renderStock");
+  });
+  it("config panel should have cfg-stock-alerts textarea", () => {
+    assert.ok(html.includes('id="cfg-stock-alerts"'), "Config panel should have #cfg-stock-alerts textarea");
+  });
+
+  // Feature 56: Precipitation Visual Bar
+  it("should have .wx-precip-bar CSS class", () => {
+    assert.ok(html.includes(".wx-precip-bar"), "Missing .wx-precip-bar CSS");
+  });
+  it("should have .wx-precip-fill CSS class", () => {
+    assert.ok(html.includes(".wx-precip-fill"), "Missing .wx-precip-fill CSS");
+  });
+  it("precipitation bar should be rendered in weather forecast cells", () => {
+    assert.ok(scriptContent.includes("wx-precip-bar"), "wx-precip-bar should be used in forecast rendering");
+  });
+
+  // Feature 57: News Copy to Clipboard
+  it("should have .news-copy CSS class", () => {
+    assert.ok(html.includes(".news-copy"), "Missing .news-copy CSS");
+  });
+  it("should have .news-copy.copied CSS class", () => {
+    assert.ok(html.includes(".news-copy.copied") || html.includes(".copied"), "Missing .copied CSS");
+  });
+  it("renderNews should add copy button for clipboard", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderNews"));
+    assert.ok(fn.includes("news-copy"), "renderNews should add .news-copy button");
+  });
+  it("copy button should use navigator.clipboard", () => {
+    assert.ok(scriptContent.includes("navigator.clipboard"), "Copy button should use navigator.clipboard");
+  });
+
+  // Feature 58: Calendar Event Category Dots
+  it("should have .cal-dot CSS class", () => {
+    assert.ok(html.includes(".cal-dot"), "Missing .cal-dot CSS");
+  });
+  it("should have .cal-dot-work CSS class", () => {
+    assert.ok(html.includes(".cal-dot-work"), "Missing .cal-dot-work CSS");
+  });
+  it("should have .cal-dot-family CSS class", () => {
+    assert.ok(html.includes(".cal-dot-family"), "Missing .cal-dot-family CSS");
+  });
+  it("should have .cal-dot-health CSS class", () => {
+    assert.ok(html.includes(".cal-dot-health"), "Missing .cal-dot-health CSS");
+  });
+  it("should have .cal-dot-holiday CSS class", () => {
+    assert.ok(html.includes(".cal-dot-holiday"), "Missing .cal-dot-holiday CSS");
+  });
+  it("should define detectCalCategory function", () => {
+    assert.ok(scriptContent.includes("function detectCalCategory"), "Missing detectCalCategory function");
+  });
+  it("detectCalCategory should be called in renderCalendar", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderCalendar"));
+    assert.ok(fn.includes("detectCalCategory("), "detectCalCategory should be called in renderCalendar");
+  });
+  it("detectCalCategory should detect work category", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function detectCalCategory"));
+    assert.ok(fn.includes("work") && fn.includes("\u05e2\u05d1\u05d5\u05d3\u05d4"), "detectCalCategory should match work/\u05e2\u05d1\u05d5\u05d3\u05d4");
+  });
+
+  // Feature 59: Force Refresh R Key
+  it("should have #refresh-toast element", () => {
+    assert.ok(html.includes('id="refresh-toast"'), "Missing #refresh-toast element");
+  });
+  it("should have #refresh-toast CSS", () => {
+    assert.ok(html.includes("#refresh-toast"), "Missing #refresh-toast CSS");
+  });
+  it("should define forceRefresh function", () => {
+    assert.ok(scriptContent.includes("function forceRefresh"), "Missing forceRefresh function");
+  });
+  it("R key should call forceRefresh", () => {
+    assert.ok(scriptContent.includes("forceRefresh()"), "R key should call forceRefresh");
+  });
+  it("forceRefresh should clear in-memory cache", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function forceRefresh"));
+    assert.ok(fn.includes("_mem.clear"), "forceRefresh should clear the _mem Map cache");
+  });
+  it("help overlay should document N key for night dimmer", () => {
+    const helpStart = html.indexOf('id="help-panel"');
+    const helpSection = html.slice(helpStart, helpStart + 2500);
+    assert.ok(helpSection.includes(">N<") || helpSection.includes('"N"') || helpSection.includes("\u05d3\u05d9\u05de\u05e8"), "Help overlay should document N key");
+  });
+  it("help overlay should document R key for refresh", () => {
+    const helpStart = html.indexOf('id="help-panel"');
+    const helpSection = html.slice(helpStart, helpStart + 2500);
+    assert.ok(helpSection.includes(">R<") || helpSection.includes('"R"') || helpSection.includes("\u05e8\u05e2\u05e0\u05d5\u05df"), "Help overlay should document R key");
+  });
+
+  // Feature 60: Tel Aviv 35 Index HTML Tile
+  it("should have TA-35 stock tile in HTML", () => {
+    assert.ok(html.includes('data-symbol="^TA35.TA"'), "Missing ^TA35.TA stock tile in HTML");
+  });
+  it("TA-35 should be in STOCK_SYMBOLS constant", () => {
+    assert.ok(scriptContent.includes("^TA35.TA"), "^TA35.TA should be in STOCK_SYMBOLS");
+  });
+  it("TA-35 should have a STOCK_NAMES entry", () => {
+    const namesConst = scriptContent.slice(scriptContent.indexOf("STOCK_NAMES"), scriptContent.indexOf("STOCK_NAMES") + 400);
+    assert.ok(namesConst.includes("TA35.TA"), "STOCK_NAMES should have TA35.TA entry");
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 51. SPRINT 7 FEATURES (Features 61–70)
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Sprint 7 Features", () => {
+
+  // Feature 61: Stock Relative Volume Badge
+  it("should define getRelVolBadge function", () => {
+    assert.ok(scriptContent.includes("function getRelVolBadge"), "Missing getRelVolBadge function");
+  });
+  it("getRelVolBadge should classify high volume (≥1.5x)", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function getRelVolBadge"));
+    assert.ok(fn.includes("1.5") || fn.includes("stk-vol-high"), "getRelVolBadge should handle ≥1.5x volume");
+  });
+  it("should have .stk-vol-badge CSS class", () => {
+    assert.ok(html.includes(".stk-vol-badge"), "Missing .stk-vol-badge CSS");
+  });
+  it("should have .stk-vol-high CSS class", () => {
+    assert.ok(html.includes(".stk-vol-high"), "Missing .stk-vol-high CSS");
+  });
+  it("renderStock should call getRelVolBadge", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderStock"));
+    assert.ok(fn.includes("getRelVolBadge("), "renderStock should call getRelVolBadge");
+  });
+  it("renderStock should read averageDailyVolume3Month", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderStock"));
+    assert.ok(fn.includes("averageDailyVolume3Month"), "renderStock should read averageDailyVolume3Month for relative volume");
+  });
+
+  // Feature 62: Web Share API for News
+  it("should define news-share CSS class", () => {
+    assert.ok(html.includes(".news-share"), "Missing .news-share CSS class");
+  });
+  it("renderNews should add share button using navigator.share", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderNews"));
+    assert.ok(fn.includes("navigator.share"), "renderNews should use navigator.share API");
+  });
+  it("news share button should use 'news-share' class", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderNews"));
+    assert.ok(fn.includes("news-share"), "Share button should have news-share class");
+  });
+
+  // Feature 63: Calendar 7-Day Event Density Strip
+  it("should have #cal-week-strip element", () => {
+    assert.ok(html.includes('id="cal-week-strip"'), "Missing #cal-week-strip element");
+  });
+  it("should have .cal-week-strip CSS", () => {
+    assert.ok(html.includes("#cal-week-strip") || html.includes(".cal-week-strip"), "Missing cal-week-strip CSS");
+  });
+  it("should define renderCalWeekStrip function", () => {
+    assert.ok(scriptContent.includes("function renderCalWeekStrip"), "Missing renderCalWeekStrip function");
+  });
+  it("renderCalendar should call renderCalWeekStrip", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderCalendar"));
+    assert.ok(fn.includes("renderCalWeekStrip("), "renderCalendar should call renderCalWeekStrip");
+  });
+  it("should have .cal-week-day CSS class", () => {
+    assert.ok(html.includes(".cal-week-day"), "Missing .cal-week-day CSS");
+  });
+
+  // Feature 64: AQI Hebrew Category Label + Trend Arrow
+  it("should have #aqi-label element", () => {
+    assert.ok(html.includes('id="aqi-label"'), "Missing #aqi-label element");
+  });
+  it("should have #aqi-trend element", () => {
+    assert.ok(html.includes('id="aqi-trend"'), "Missing #aqi-trend element");
+  });
+  it("should define getAqiCategory function", () => {
+    assert.ok(scriptContent.includes("function getAqiCategory"), "Missing getAqiCategory function");
+  });
+  it("getAqiCategory should return Hebrew category names", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function getAqiCategory"));
+    assert.ok(fn.includes("\u05d8\u05d5\u05d1") || fn.includes("\\u05d8\\u05d5\\u05d1"), "getAqiCategory should return '\u05d8\u05d5\u05d1' for good AQI");
+  });
+  it("_renderAQI should call getAqiCategory", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _renderAQI"));
+    assert.ok(fn.includes("getAqiCategory("), "_renderAQI should call getAqiCategory");
+  });
+  it("_renderAQI should update aqi-label element", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _renderAQI"));
+    assert.ok(fn.includes("aqi-label"), "_renderAQI should update #aqi-label");
+  });
+  it("should have .aqi-label CSS class", () => {
+    assert.ok(html.includes(".aqi-label"), "Missing .aqi-label CSS");
+  });
+
+  // Feature 65: Per-Stock Price History Sparkline
+  it("should define recordStkPrice function", () => {
+    assert.ok(scriptContent.includes("function recordStkPrice"), "Missing recordStkPrice function");
+  });
+  it("should define drawStkSpark function", () => {
+    assert.ok(scriptContent.includes("function drawStkSpark"), "Missing drawStkSpark function");
+  });
+  it("_STK_PH_PFX should use localStorage key prefix", () => {
+    assert.ok(scriptContent.includes("dash_sph_"), "Missing dash_sph_ localStorage key prefix");
+  });
+  it("renderStock should call recordStkPrice", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderStock"));
+    assert.ok(fn.includes("recordStkPrice("), "renderStock should call recordStkPrice");
+  });
+  it("renderStock should call drawStkSpark", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderStock"));
+    assert.ok(fn.includes("drawStkSpark("), "renderStock should call drawStkSpark");
+  });
+  it("drawStkSpark should create SVG polyline element", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function drawStkSpark"));
+    assert.ok(fn.includes("polyline"), "drawStkSpark should use SVG polyline");
+  });
+  it("should have .stk-ph-spark CSS class", () => {
+    assert.ok(html.includes(".stk-ph-spark"), "Missing .stk-ph-spark CSS");
+  });
+
+  // Feature 66: Hourly Rain Probability Overlay
+  it("Open-Meteo fetch should include precipitation_probability in hourly", () => {
+    assert.ok(scriptContent.includes("precipitation_probability"), "Open-Meteo URL should include precipitation_probability");
+  });
+  it("renderHourlyChart should accept rainProbs parameter", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHourlyChart"));
+    assert.ok(fn.includes("rainProbs") || fn.includes("rainProb"), "renderHourlyChart should use rain probability data");
+  });
+  it("renderHourlyChart should render rain bars as SVG rects", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHourlyChart"));
+    assert.ok(fn.includes("<rect") || fn.includes("rect x="), "renderHourlyChart should render SVG rect elements for rain bars");
+  });
+
+  // Feature 67: News Item Age Timestamp
+  it("should define newsRelAge function", () => {
+    assert.ok(scriptContent.includes("function newsRelAge"), "Missing newsRelAge function");
+  });
+  it("newsRelAge should return Hebrew relative time", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function newsRelAge"));
+    assert.ok(fn.includes("\u05dc\u05e4\u05e0\u05d9") || fn.includes("\\u05dc\\u05e4\\u05e0\\u05d9"), "newsRelAge should return '\u05dc\u05e4\u05e0\u05d9...' in Hebrew");
+  });
+  it("renderNews should call newsRelAge", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderNews"));
+    assert.ok(fn.includes("newsRelAge("), "renderNews should call newsRelAge");
+  });
+  it("should have .news-age CSS class", () => {
+    assert.ok(html.includes(".news-age"), "Missing .news-age CSS class");
+  });
+
+  // Feature 68: Market Open/Close Countdown
+  it("should have #stk-mkt-countdown element", () => {
+    assert.ok(html.includes('id="stk-mkt-countdown"'), "Missing #stk-mkt-countdown element");
+  });
+  it("should define updateMarketCountdown function", () => {
+    assert.ok(scriptContent.includes("function updateMarketCountdown"), "Missing updateMarketCountdown function");
+  });
+  it("updateMarketCountdown should use America/New_York timezone", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateMarketCountdown"));
+    assert.ok(fn.includes("America/New_York"), "updateMarketCountdown should use America/New_York timezone");
+  });
+  it("updateMarketCountdown should be called in init", () => {
+    const initFn = scriptContent.slice(scriptContent.lastIndexOf("function init("));
+    assert.ok(initFn.includes("updateMarketCountdown()"), "updateMarketCountdown should be called in init");
+  });
+  it("updateMarketCountdown interval should be 1 minute", () => {
+    assert.ok(scriptContent.includes("setInterval(updateMarketCountdown, 60000)"), "updateMarketCountdown should run every 60s");
+  });
+  it("should have .mkt-open CSS class on countdown", () => {
+    assert.ok(html.includes("mkt-open") || html.includes("mkt-soon"), "Missing market countdown CSS states");
+  });
+
+  // Feature 69: Earthquake 24h Count Badge
+  it("should have #quake-count-badge element", () => {
+    assert.ok(html.includes('id="quake-count-badge"'), "Missing #quake-count-badge element");
+  });
+  it("should define updateQuakeCountBadge function", () => {
+    assert.ok(scriptContent.includes("function updateQuakeCountBadge"), "Missing updateQuakeCountBadge function");
+  });
+  it("loadEarthquakes should fetch multiple events for 24h count", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function loadEarthquakes"), scriptContent.indexOf("function loadEarthquakes") + 600);
+    assert.ok(fn.includes("limit=20") || fn.includes("limit="), "loadEarthquakes should fetch multiple events for count");
+  });
+  it("loadEarthquakes should call updateQuakeCountBadge", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("async function loadEarthquakes"));
+    assert.ok(fn.includes("updateQuakeCountBadge()"), "loadEarthquakes should call updateQuakeCountBadge");
+  });
+  it("should have .quake-cnt CSS class", () => {
+    assert.ok(html.includes(".quake-cnt"), "Missing .quake-cnt CSS class");
+  });
+  it("_quake24hCount should be tracked as a let variable", () => {
+    assert.ok(scriptContent.includes("_quake24hCount"), "Missing _quake24hCount tracking variable");
+  });
+
+  // Feature 70: Diagnostic Copy Log Button
+  it("should have #diag-copy-btn element", () => {
+    assert.ok(html.includes('id="diag-copy-btn"'), "Missing #diag-copy-btn element");
+  });
+  it("should define copyDiagLog function", () => {
+    assert.ok(scriptContent.includes("function copyDiagLog"), "Missing copyDiagLog function");
+  });
+  it("copyDiagLog should use navigator.clipboard", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function copyDiagLog"));
+    assert.ok(fn.includes("navigator.clipboard"), "copyDiagLog should use navigator.clipboard");
+  });
+  it("diag-copy-btn should call copyDiagLog on click", () => {
+    assert.ok(html.includes("copyDiagLog()"), "diag-copy-btn onclick should call copyDiagLog");
+  });
+  it("should have #diag-copy-btn CSS styling", () => {
+    assert.ok(html.includes("#diag-copy-btn"), "Missing #diag-copy-btn CSS");
+  });
+
 });

@@ -11,7 +11,7 @@ description: "Use when: working on any file in the FamilyDashBoard workspace. Pr
 |----------|-------|
 | **Name** | FamilyDashBoard |
 | **Type** | Single-page HTML dashboard |
-| **Version** | v4.8.2 |
+| **Version** | v4.10.0 |
 | **Owner** | @RajwanYair |
 | **Stack** | HTML5, CSS3, vanilla JS (ES2020+) |
 | **Dependencies** | Zero (no npm, no build) |
@@ -33,7 +33,7 @@ FamilyDashBoard/
 ├── .gitignore / .gitattributes
 ├── .markdownlint.json
 ├── tests/
-│   └── dashboard.test.mjs  # 362 tests, 44 suites (node --test)
+│   └── dashboard.test.mjs  # 746 tests, 51 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
@@ -58,12 +58,12 @@ FamilyDashBoard/
 | **Cache** | Dual-layer: in-memory `Map` + `localStorage` (prefix `dash_v2_`, 7-day eviction) |
 | **Fetch** | Direct → CORS proxy fallback (`allorigins` → `codetabs` → `corsproxy.io`) with diagnostic logging |
 | **Error handling** | `safeLoad()` async wrapper, startup self-check, global error catchers, auto-show diagnostic overlay |
-| **Diagnostics** | Press `D` for overlay: per-pane status + fetch log. Auto-opens on errors |
+| **Diagnostics** | Press `D` for overlay: per-pane status + fetch log. Auto-opens on errors. `copyDiagLog()` copies log to clipboard |
 | **Offline** | Banner slides down when `navigator.onLine` is false, serves stale cache |
 | **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
 | **Performance** | GPU-accelerated scroll layers, CPU-aware concurrency pool (`runConcurrent`), `scheduleIdle()`, DocumentFragment batch writes |
-| **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `A` = toggle alerts, `Escape` = close maximized card |
-| **Tests** | 362 tests / 44 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
+| **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `A` = toggle alerts, `S` = config panel, `N` = night dimmer, `+/-` = font scale, `P` = print, `Escape` = close maximized card |
+| **Tests** | 746 tests / 51 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
 
 ## What NOT To Do
 

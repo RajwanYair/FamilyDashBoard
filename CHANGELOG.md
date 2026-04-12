@@ -7,6 +7,123 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.10.0] — 2026-04-12
+
+> **Sprint 6–7 (Features 51–70)** — 70-feature milestone: polish, tools, and visual enhancements  
+> Tests: 746 / 51 suites / 0 failures (was 694 / 50 suites / 0)
+
+### Added
+
+**Stocks & Portfolio**
+- **F51 — Portfolio total row** — `#stk-total-row` shows live portfolio value (sum across all held symbols) with P&L % δ; updates on every stock render via `updatePortfolioTotal()`
+- **F55 — Stock price-alert system** — configure JSON threshold map in config panel (`cfg-stock-alerts`); `checkStockAlerts(sym, price)` fires `Notification` API with vibration on breach
+- **F60 — TA-35 index tile** — added `^TA35.TA` to `STOCK_SYMBOLS` + `STOCK_NAMES` + `STOCK_BRAND`; shows תּ"א 35 with TASE favicon; Yahoo Finance `^TA35.TA` ticker
+- **F61 — Relative-volume badge** — `getRelVolBadge(regularVol, avgVol)` returns yellow "VOL +56%" at ≥1.5× avg or orange "VOL ×3.2" at ≥2.5×; injected per-stock tile
+- **F65 — Per-stock price-history sparkline** — `recordStkPrice(sym, price)` persists last 8 closes in `localStorage:dash_sph_{sym}`; `drawStkSpark(blk, sym)` renders 44×12px SVG polyline (green/red trend)
+
+**Weather & AQI**
+- **F53 — Daf Yomi Sefaria link** — Sefaria.org deeplink button next to Daf Yomi value in hc-card; opens tractate page; button wired once via `dataset.wired`
+- **F56 — Precipitation bar** — 24-hour accumulation bar under the weather details row; height proportional to `precipitation_sum` from Open-Meteo daily forecast; visible when precipitation > 0
+- **F64 — AQI category label + trend arrow** — `getAqiCategory(aqi)` returns Hebrew label (טוב/בינוני/מוגבר/גרוע/מסוכן); `#aqi-label` + `#aqi-trend` (↑/↓/→) updated each fetch via `_prevAqiVal`
+- **F66 — Hourly rain probability overlay** — `renderHourlyChart(temps, startH, rainProbs)` renders blue `<rect>` bars at chart bottom (height ∝ precipitation_probability%); Open-Meteo URL extended with `precipitation_probability`
+
+**Calendar & Hebrew Life**
+- **F58 — Calendar event category color-dots** — `detectCalCategory(summary)` maps keywords (בר מצווה/חגיגה/חג/birthday/work → emoji + color class); colored dots appear on `#cal-week-strip` day cells
+- **F63 — 7-day week activity strip** — `renderCalWeekStrip(events)` renders a compact 7-column strip (שאבגדהו) above the agenda with colored dot clusters (max 4 dots/day) and today highlight
+
+**News**
+- **F57 — Copy-to-clipboard button on news items** — 📋 clipboard button appears on hover; `navigator.clipboard.writeText(title + '\n' + link)` with 2s visual feedback
+- **F62 — Web Share API share button** — 📤 share button on news items; `navigator.share({title, url})`; falls back to clipboard copy if Web Share not supported
+- **F67 — News item published age** — `newsRelAge(pubDate)` returns "לפני Nד'" / "לפני Nש'" / "לפני Nי'"; `.news-age` shown next to source label
+
+**Earthquake**
+- **F52 — Earthquake magnitude color-coding** — `.quake-M3`, `.quake-M4`, `.quake-M5+` CSS classes with coloured badge; `_renderEarthquake` assigns class based on M value
+- **F69 — 24-hour earthquake count badge** — `loadEarthquakes` now fetches `limit=20`; counts M3.5+ events in last 24h → `_quake24hCount`; `#quake-count-badge` shown if count > 1
+
+**UX & Developer Tools**
+- **F54 — Auto night dimmer** — `updateNightDimmer()` auto-dims to 40% brightness 22:00–07:00 IST + applies `.night-mode` body class; `toggleNightDim()` bound to `N` keyboard shortcut; intensity configurable in localStorage
+- **F59 — Force-refresh button in diagnostic overlay** — `forceRefresh()` clears all `dash_v2_` cache keys + calls all loaders; wired to `#diag-force-refresh` button; `diagLog` reports each cleared key
+- **F68 — NYSE market countdown chip** — `updateMarketCountdown()` uses America/New_York time; NYSE hours 9:30–16:00; shows hours/minutes to open or close; `.mkt-open` (green) / `.mkt-soon` (yellow / <30min) states; updates every 60s
+- **F70 — Diagnostic overlay copy-log button** — `copyDiagLog()` reads `#diag-panes` + `#diag-log` innerText and copies via `navigator.clipboard`; `#diag-copy-btn` button added to overlay header
+
+### Changed
+- `loadEarthquakes` fetch limit raised from `limit=1` → `limit=20` to support 24h count badge (F69)
+- `renderHourlyChart` signature extended: `(temps, startH)` → `(temps, startH, rainProbs)` (backward compatible — rainProbs defaults to `[]`)
+- Open-Meteo `hourly` params extended with `precipitation_probability`
+
+### Developer
+- Tests: +52 cases in Suite 51 "Sprint 7 Features"; total **746 tests / 51 suites / 0 failures**
+- All new HTML elements added with `id` attributes and cached in `el` object
+- New localStorage keys: `dash_sph_{SYM}` (price history), `dash_stock_alerts` (JSON thresholds)
+
+---
+
+## [4.9.0] — 2026-04-12
+
+> **Sprints 1–5 (Features 1–50)** — major feature batch implementing all roadmap phases v4.9–v4.11  
+> Tests: 694 / 50 suites / 0 failures (was 362 / 44 suites / 0 at v4.8.2)
+
+### Added
+
+**Jewish Life & Hebrew Calendar Card**
+- **F1 — Parasha HaShavua** — `loadParasha()` fetches Hebcal parasha name + Sefaria summary; displays in hc-card with Sefaria deeplink button; 24h cache
+- **F2 — Zmanim (prayer times)** — `loadZmanim()` fetches Hebcal zmanim API; renders Alot/Netz/Sof Zman Shma/Mincha Ged./Plag HaMincha/Shkia in 3-column grid (`#zmanim-grid`); 1h TTL
+- **F3 — Daf Yomi** — `loadDafYomi()` fetches today's daf from Sefaria `/api/calendars`; shows tractate + daf number; 24h TTL
+- **F4 — Psalm of the Day (שיר של יום)** — `loadPsalm()` fetches relevant psalm from Sefaria; day-of-week mapping for each psalm; displays first verse in hc-card; 24h TTL
+- **F5 — Moon phase indicator** — `updateMoonPhase()` computes current phase from lunar cycle math; renders SVG crescent + Hebrew phase name in hc-card header
+- **F6 — Shabbat countdown pill** — `updateShabbatCountdown()` shows ⏱ time remaining to Shabbat (Friday after noon) or to Havdalah (Saturday night); updates every minute
+- **F21 — Parasha Aliyot** — `_loadParashaAliyot()` fetches opening verse (first ref) from Sefaria `/api/texts/`; renders italic opening phrase in `#hc-aliyot` row
+- **F30 — Halacha excerpt in hc-card** — first segment of daily Halacha also shown in Hebrew Calendar card (`#hc-halacha`) alongside the full ticker
+
+**Weather & AQI**
+- **F7 — AQI card** — `loadAQI()` fetches OpenWeatherMap Air Quality Index (free, no API key required for v1); renders PM2.5, PM10, O3 value + color badge + Hebrew health recommendation; 1h TTL; `_renderAQI()` function
+- **F8 — School holiday indicator** — parses Hebcal `min=on&maj=on` response; shows "חופש [name]" banner in hc-card when within a known school holiday date range; uses existing `loadHebCal` data
+- **F10 — Precipitation probability bar** — hourly `precipitation_probability` from Open-Meteo rendered as a thin colored bar under weather detail row; shows 24h max accumulation
+- **F26 — Feels-like temperature** — apparent temperature (`apparent_temperature`) added to weather details grid as "מורגש" cell; sourced from Open-Meteo `hourly`
+- **F31 — Wind direction rose** — `deg2arrow(deg)` converts `winddirection_10m` degrees to 8-point arrow (↑↗→↘↓↙←↖); shown alongside wind speed in weather details
+- **F32 — Extreme weather alert banner** — `checkSevereWeather(code)` matches WMO code 82/95/96/99 → Hebrew storm description; `#wx-alert-banner` slides in with `visible` class
+- **F42 — Sky condition colour pill** — `updateWeatherSkyPill(code)` maps WMO code ranges to CSS `--sky-*` gradient + Hebrew label (☀️ יום שמשי / ⛅ מעונן חלקית / 🌧 גשום etc.); shown in clock header area
+
+**Stocks & Currency**
+- **F9 — Gold & Silver prices** — `loadCurrency()` extended to fetch `GC=F` and `SI=F` via Yahoo Finance; renders `#cur-gold` + `#cur-silver` tiles in currency card; 1h cache
+- **F35 — Portfolio P&L overlay** — `updatePortfolioPnL(sym, currentPrice)` reads `dash_portfolio` JSON from localStorage (cost+qty per symbol); appends `.stk-pnl` div with `+$X (+Y%)` or loss; shown per-stock row
+- **F38 — Currency sparklines** — `recordCurrencyHistory(usd, eur)` stores daily USD+EUR rates in `dash_v2_cur_hist` (7-day ring); `renderCurrencySparklines()` draws bézier 60×22px SVG lines via `_drawSparkline()` in each currency tile
+- **F41 — Market pre/after-hours badge** — `updateMarketBadge()` extended to 4 states: Pre-market (04:00–09:30), Open (09:30–16:00), After-hours (16:00–20:00), Closed; shown in stocks card header chip
+- **F46 — 52-week range bar** — `updateStockRange(blk, cur, low52, high52)` renders a coloured pill bar showing current price position within the 52-week range; appended per-stock tile
+
+**Calendar**
+- **F37 — Today's event count in header** — `updateTodayEventCount()` reads ICS cache, counts today's events, shows `N 📅` badge in `#header-event-count`; refreshes on each calendar load
+- **F47 — Event duration label** — calendar events > 0 hours show "(Nh)' or multi-day range; computed from `event.start` / `event.end` in `renderCalendar`
+
+**News**
+- **F29 — News count badge** — shows total article count in news card header chip; updates each render
+- **F39 — News source filter chips** — `initNewsFilter()` + `addNewsFilterChip(src)` build a filter bar below news header; click a source to filter, "הכל" shows all; `dataset.src` attribute per row
+
+**Infrastructure & UX**
+- **F11 — Auto night-dim mode** — `updateNightDimmer()` applies `filter:brightness(40%)` + `.night-mode` body class between 22:00–07:00; respects `dash_nightDimOff`
+- **F33 — Config panel** — `toggleConfig()` / `saveConfig()`: full slide-over panel (gear icon + `S` key) with fields for background URL, auto-theme, °C/°F toggle, custom ticker announcement, stock alerts JSON, alert sound, birthday string; persists all to localStorage
+- **F34 — Chore wheel** — `updateChoreWheel()` uses day-of-year mod rotation over 7 family tasks; shows `person: chore` in `#hc-chore` row in hc-card
+- **F36 — Earthquake monitor** — `loadEarthquakes()` fetches USGS GeoJSON (M2.5+, 500km from Jerusalem); shows `#quake-row` only for M3.5+ events < 24h old; 1h cache; `_renderEarthquake()` renders place + magnitude badge
+- **F40 — Connectivity health indicator** — `checkConnectivity()` pings `gstatic.com/generate_204`; `#conn-indicator` shows ● מהיר / ● בינוני / ● איטי with green/amber/red class
+- **F43 — Alert sound toggle** — `_alertSoundEnabled` flag; Web Audio API beep `alertBeep()` plays on new צבע אדום alert; configurable in config panel (on/off)
+- **F44 — Multi-city weather tabs** — `switchWxCity(key)` switches active city for weather; displayed as tab chips (`#wx-city-tabs`); cities defined in `CITIES` const with lat/lon; active city stored in `localStorage:dash_city`
+- **F45 — Per-city weather fetch** — `loadWeather()` uses `CITIES[_activeCity]` coordinates for Open-Meteo API call
+- **F48 — Custom ticker announcement** — prepend custom Hebrew message to the halacha ticker via config panel `cfg-ticker-msg`; loaded from `localStorage:dash_ticker_msg`
+- **F49 — Font scale toggle** — `_fontScale` state; keyboard `+`/`-` adjusts `document.documentElement.style.fontSize`; persisted in `localStorage:dash_fontScale`
+- **F50 — Print mode** — `@media print` CSS renders cards as full-width stacked blocks; invoked via keyboard `P` triggering `window.print()`
+
+### Changed
+- `_tempUnit` variable (`C`/`F`) toggles all temperature displays; click on any temperature element toggles unit; persisted in `localStorage:dash_tempUnit`
+- Weather hourly URL extended with `apparent_temperature,precipitation_probability,winddirection_10m`
+- Alerts card: `loadAlerts()` plays `alertBeep()` if new alerts detected and sound is enabled
+
+### Developer
+- Tests: Suites 45–50 added covering new HTML elements, functions, and constants; **694 tests / 50 suites / 0 failures**
+- New localStorage keys: `dash_portfolio`, `dash_bgUrl`, `dash_autoTheme`, `dash_tempUnit`, `dash_ticker_msg`, `dash_alertSound`, `dash_city`, `dash_v2_cur_hist`, `dash_fontScale`, `dash_nightDimOff`
+- New globals: `_tempUnit`, `_autoTheme`, `_alertSoundEnabled`, `_fontScale`, `_activeCity`, `_prevAqiVal`
+
+---
+
 ## [4.8.0] — 2026-04-10
 
 ### Added

@@ -18,8 +18,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.8-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-362_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.10-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-746_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
->  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (362 tests, 44 suites, zero dependencies).
+>  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (746 tests, 51 suites, zero dependencies).
 
 ---
 
@@ -205,7 +205,7 @@ FamilyDashBoard/
 ├── .editorconfig / .markdownlint.json
 ├── .gitignore / .gitattributes
 ├── tests/
-|   └── dashboard.test.mjs          # 362 tests, 44 suites (Node.js built-in runner)
+|   └── dashboard.test.mjs          # 746 tests, 51 suites (Node.js built-in runner)
 ├── .github/
 │   ├── assets/                     # SVG graphics for docs
 │   ├── agents/                     # Copilot custom agents
@@ -270,6 +270,8 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
+| **v4.10.0** | 🏆 Sprints 6–7 (F51–70): Portfolio total, TA-35 index, rel-vol badge, 7-day cal strip, AQI labels+trend, per-stock sparklines, rain probability overlay, news age+share, market countdown, quake 24h count, diag copy-log |
+| **v4.9.0** | 🚀 Sprints 1–5 (F1–50): Parasha, Zmanim, Daf Yomi, Psalm, Moon phase, Shabbat countdown, AQI card, Gold/Silver, school holidays, config panel, chore wheel, portfolio P&L, earthquake monitor, news filter, currency sparklines, multi-city weather, pre/after-hours badge, 52-week range, font scale, print mode |
 | **v4.8.2** | 🔧 Slim clock header, stock fetch overhaul (v8 per-symbol + CoinGecko BTC), currency side-by-side, card maximize centering, page blink fix, expanded 6-phase roadmap |
 | **v4.8.1** | 🔧 Slim card headers, per-card font density, Sefirat HaOmer visible in heb-cal, Shabbat+Havdalah on one line, README roadmap, stale test counts fixed |
 | **v4.8** | 🗓️ Hebrew Calendar card (לוח עברי), brand-color stock logos via Google Favicons, 3-column CSS grid layout, alphabetical stocks, no-clone stock scroll, 4 Copilot skills |
@@ -306,29 +308,36 @@ This project leverages extensive GitHub features:
 
 > Each planned item ships as a numbered release with `BestDashBoard.html` attached to the GitHub Release and live on GitHub Pages. No build artifacts — the HTML file IS the deliverable.
 
-### Phase 1 — Jewish Life Enrichment (v4.9)
+### Phase 1 — Jewish Life Enrichment (v4.9) ✅
 
 | Version | Feature | API / Source | Details | Status |
 |---------|---------|-------------|---------|--------|
 | **v4.8.x** | Card UX polish, font density, Omer fix, stock fetch fix, ticker direction, currency layout | — | ✅ Done | ✅ Done |
-| **v4.9** | **פרשת השבוע** — Parashat HaShavua in Hebrew Calendar card | Hebcal `?parsha=on` + Sefaria `/api/calendars` | Show weekly Torah portion name + short summary (Hebrew) in hc-card | 🔜 Planned |
-| **v4.9** | **זמני תפילה** — Zmanim (prayer times) in heb-cal card | Hebcal extended + Open-Meteo sunrise/sunset | Alot, Netz, Sof Zman Shma, Shkia — 4 key times per day | 🔜 Planned |
+| **v4.9** | **פרשת השבוע** — Parashat HaShavua in Hebrew Calendar card | Hebcal `?parsha=on` + Sefaria `/api/calendars` | Show weekly Torah portion name + short summary (Hebrew) in hc-card | ✅ Done |
+| **v4.9** | **זמני תפילה** — Zmanim (prayer times) in heb-cal card | Hebcal extended + Open-Meteo sunrise/sunset | Alot, Netz, Sof Zman Shma, Mincha Ged., Plag, Shkia — 6 key times in 3-column grid | ✅ Done |
+| **v4.9** | **דף יומי** — Daf Yomi | Sefaria `/api/calendars` | Tractate + folio number with Sefaria deeplink button | ✅ Done |
+| **v4.9** | **שיר של יום** — Psalm of the Day | Sefaria `/api/texts/Psalms` | Day-of-week mapped psalm, first verse shown in hc-card | ✅ Done |
+| **v4.9** | **פרשת עליות** — Parasha Aliyot first verse | Sefaria `/api/texts/[parasha]` | Opening verse of the week's reading shown in italic | ✅ Done |
 
-### Phase 2 — Daily Life Utilities (v4.10)
-
-| Version | Feature | API / Source | Details | Status |
-|---------|---------|-------------|---------|--------|
-| **v4.10** | **איכות אוויר** — Air Quality Index card | OpenWeatherMap AQI (free tier, no key for basic) | PM2.5 + AQI number + color badge (green/yellow/red) + health recommendation in Hebrew | 🔜 Planned |
-| **v4.10** | **°C / °F toggle** — Temperature unit switch | `localStorage` key `dash_tempUnit` | Keyboard shortcut `U`, affects all weather displays | 🔜 Planned |
-| **v4.10** | **חופשות בי״ס** — School holiday indicator | Hebcal `?min=on&maj=on` (already fetched) | Parse known school holiday ranges, show "חופש [name]" badge in header when active | 🔜 Planned |
-
-### Phase 3 — Data Depth & Visual Polish (v4.11)
+### Phase 2 — Daily Life Utilities (v4.10) ✅
 
 | Version | Feature | API / Source | Details | Status |
 |---------|---------|-------------|---------|--------|
-| **v4.11** | **עליות השבוע** — Parasha Aliyot summary | Sefaria `/api/texts/[parasha]` | Short Hebrew digest of weekly reading, shown below parasha name in hc-card | 🔜 Planned |
-| **v4.11** | **Gold + Silver prices** — Precious metals in currency card | MetalsAPI or Yahoo Finance `GC=F`, `SI=F` | Two additional rows: gold oz/USD, silver oz/USD | 🔜 Planned |
-| **v4.11** | **Card drag-reorder** — Customizable card positions | `localStorage` key `dash_cardOrder` | Long-press header to enter reorder mode, persist layout preference per device | 💡 Idea |
+| **v4.10** | **איכות אוויר** — Air Quality Index card | OpenWeatherMap AQI (free tier, no key) | PM2.5 + AQI number + Hebrew category label + trend arrow (↑/↓/→) | ✅ Done |
+| **v4.10** | **°C / °F toggle** — Temperature unit switch | `localStorage` key `dash_tempUnit` | Click any temperature display to toggle; affects all weather displays | ✅ Done |
+| **v4.10** | **חופשות בי״ס** — School holiday indicator | Hebcal `?min=on&maj=on` (already fetched) | "חופש [name]" badge in hc-card when within school holiday date range | ✅ Done |
+| **v4.10** | **זהב וכסף** — Gold & Silver prices | Yahoo Finance `GC=F`, `SI=F` | Two additional tiles in currency card: gold oz/USD, silver oz/USD | ✅ Done |
+| **v4.10** | **פאנל הגדרות** — Config panel | `localStorage` multi-key | Slide-over panel (`S` key): background URL, theme, °C/°F, ticker msg, stock alerts, alert sound | ✅ Done |
+
+### Phase 3 — Data Depth & Visual Polish (v4.11) ✅
+
+| Version | Feature | API / Source | Details | Status |
+|---------|---------|-------------|---------|--------|
+| **v4.11** | **עליות השבוע** — Parasha Aliyot summary | Sefaria `/api/texts/[parasha]` | Short Hebrew digest of weekly reading, shown below parasha name in hc-card | ✅ Done |
+| **v4.11** | **Gold + Silver prices** — Precious metals in currency card | Yahoo Finance `GC=F`, `SI=F` | Two additional rows: gold oz/USD, silver oz/USD | ✅ Done |
+| **v4.11** | **Port. P&L overlay** — Per-stock position profit/loss | `localStorage:dash_portfolio` | JSON cost+qty per symbol; real-time P&L % shown per tile | ✅ Done |
+| **v4.11** | **Currency sparklines** — 7-day rate history | `localStorage:dash_v2_cur_hist` | Bézier SVG sparkline in each currency tile | ✅ Done |
+| **v4.11** | **Card drag-reorder** — Customizable card positions | `localStorage` key `dash_cardOrder` | Long-press header to enter reorder mode, persist layout preference per device | 🔜 Planned |
 
 ### Phase 4 — Offline & Installability (v5.0)
 
@@ -359,15 +368,15 @@ This project leverages extensive GitHub features:
 
 | Feature | Notes |
 |---------|-------|
-| **Electricity peak-hour warning** | Hardcode IEC seasonal tariff hours, show ⚡ badge during peak (16:00–22:00 summer) |
-| **שיר של יום** — Psalm of the day | Sefaria `/api/texts/Psalms.[day]`, rotate daily in ticker or hc-card |
-| **Daf Yomi tracker** | Sefaria `/api/calendars` → Today's Daf, show in ticker alongside halacha |
-| **Earthquake alerts** | Geological Survey of Israel RSS or USGS API (M3.0+ near Israel) |
-| **TA-35 index** | TASE (Tel Aviv Stock Exchange) — scrape or unofficial API for Israeli index |
-| **Package tracking** | Israel Post API `israelpost.co.il` — manual tracking number input |
-| **Birthdays & anniversaries** | Parse from ICS events with birthday category, show countdown badges |
-| **Mincha/Minyan finder** | GoMinyan or local synagogue API — nearest minyan times |
-| **Chore wheel / family tasks** | Shared Google Sheet → JSON → rotating task assignments per family member |
+| **Electricity peak-hour warning** | ✅ Done — `checkElecPeak()` checks IEC seasonal tariff hours (16:00–22:00 summer / 17:00–22:00 winter), shows ⚡ badge |
+| **שיר של יום** — Psalm of the day | ✅ Done — Sefaria `/api/texts/Psalms.[day]`, shown daily in hc-card |
+| **Daf Yomi tracker** | ✅ Done — Sefaria `/api/calendars`, today's Daf with deeplink in hc-card |
+| **Earthquake alerts** | ✅ Done — USGS GeoJSON M2.5+, 500km from Jerusalem; M3.5+ shown; 24h count badge |
+| **TA-35 index** | ✅ Done — `^TA35.TA` via Yahoo Finance, TASE favicon, shown in stocks card |
+| **Birthdays & anniversaries** | ✅ Done — `checkBirthdays()` parses `dash_birthday` localStorage, shows countdown badge |
+| **Chore wheel / family tasks** | ✅ Done — `updateChoreWheel()` rotating daily chore assignments from `CHORES` const |
+| **Package tracking** | Israel Post API `israelpost.co.il` — manual tracking number input | 💡 Idea |
+| **Mincha/Minyan finder** | GoMinyan or local synagogue API — nearest minyan times | 💡 Idea |
 
 > **Release convention:** Every version bump commits `BestDashBoard.html`, updates `CHANGELOG.md`, bumps the badge in `README.md`, tags `vX.Y.Z`, and pushes. GitHub Actions `release.yml` automatically attaches `BestDashBoard.html` to the GitHub Release. `deploy.yml` publishes to GitHub Pages within ~30 seconds of the push.
 

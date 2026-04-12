@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.8.2**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v4.10.0**.
 
 ## CSS Rules
 
@@ -107,7 +107,7 @@ async function fetchJSON(url) {
 - **Middle**: RTL hourly temperature SVG chart (max-height 48px, x-axis right-to-left)
 - **Bottom**: 4-day forecast grid with compact icons/fonts
 
-## Font Size Guidelines (TV-first, v4.8.2)
+## Font Size Guidelines (TV-first, v4.10.0)
 
 - Base font: 21px (body)
 - Clock: **2.9em** (slimmed from 3.4em)

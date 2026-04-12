@@ -24,6 +24,7 @@
     <link rel="preconnect" href="https://open.er-api.com">
     <link rel="dns-prefetch" href="https://api.codetabs.com">
     <link rel="dns-prefetch" href="https://translate.googleapis.com">
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D7%A8%D7%92%D7%95%D7%90%D7%9F%20Family%20Dashboard%22%2C%22short_name%22%3A%22Dashboard%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23060b14%22%2C%22theme_color%22%3A%22%23060b14%22%2C%22start_url%22%3A%22.%22%7D">
     <title>רגואן Family Dashboard</title>
     <style>
         :root {
@@ -152,6 +153,13 @@
             font-size: 21px;
             position: relative;
             transition: background 0.6s ease;
+        }
+        /* Full-screen background image (behind gradient overlay) */
+        body::after {
+            content: ''; position: fixed; inset: 0; z-index: 0;
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&q=80') center/cover no-repeat;
+            opacity: 0.18;
+            pointer-events: none;
         }
         body::before {
             content: ''; position: fixed; inset: 0; z-index: 0;
@@ -419,7 +427,7 @@
         .wx-info { text-align: center; }
         .wx-temp-main { font-size: 1.1em; font-weight: 800; color: var(--text-primary); text-shadow: 0 0 16px rgba(96,165,250,0.15); }
         .wx-desc { font-size: 0.72em; color: var(--text-secondary); }
-        .wx-details { flex: 1 1 50%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; font-size: 0.68em; }
+        .wx-details { flex: 1 1 50%; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; font-size: 0.68em; }
         .wx-detail { background: var(--bg-card-inner); border-radius: 6px; padding: 3px 3px; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wx-detail:hover { transform: scale(1.05); }
         .wx-detail:nth-child(1) { border-bottom: 2px solid var(--accent); }
@@ -436,7 +444,7 @@
         .wx-fday-temp { font-size: 0.72em; font-weight: 700; margin-inline-start: auto; white-space: nowrap; }
 
         /* ── Currency ── */
-        .currency-body { flex: 1; display: flex; flex-direction: row; gap: 6px; padding: 4px 8px; align-items: stretch; }
+        .currency-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px 8px; align-items: start; }
         .cur-item {
             flex: 1 1 0; background: var(--bg-card-inner); border-radius: 8px; padding: 4px 8px;
             display: flex; flex-direction: row; align-items: center; gap: 6px;
@@ -840,17 +848,357 @@
 
         /* ── Theme Transition ── */
         body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition: background 0.5s ease, color 0.3s ease, border-color 0.3s ease; }
+
+        /* ── Background Image Cycling ── */
+        body::after { transition: opacity 1.5s ease; }
+
+        /* ── Temperature Unit Toggle ── */
+        .temp-toggle { cursor: pointer; user-select: none; }
+        .temp-toggle:hover { opacity: 0.75; }
+
+        /* ── Shabbat Countdown ── */
+        .hc-countdown { font-size: 0.84em; font-weight: 700; color: var(--accent); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+        .hc-countdown.urgent { color: var(--warning); animation: pulse 1s infinite; }
+
+        /* ── Parasha & Daf Yomi ── */
+        .hc-parasha-val { font-size: 0.76em; font-weight: 700; color: var(--cyan); }
+        .hc-daf-val { font-size: 0.72em; font-weight: 600; color: var(--text-secondary); }
+
+        /* ── Zmanim (Prayer Times) Grid ── */
+        .zmanim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px 4px; padding: 2px 0; }
+        .zman-item { display: flex; flex-direction: column; align-items: center; gap: 1px; background: var(--bg-card-inner); border-radius: 5px; padding: 2px 3px; }
+        .zman-name { font-size: 0.53em; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .zman-time { font-size: 0.68em; font-weight: 700; color: var(--accent-bright); font-variant-numeric: tabular-nums; }
+
+        /* ── Birthday Notification ── */
+        .hc-birthday { font-size: 0.68em; color: var(--warning); text-align: center; padding: 2px 4px; font-weight: 600; }
+
+        /* ── UV Index Color Coding ── */
+        .uv-low   { color: var(--positive); }
+        .uv-mod   { color: #a3e635; }
+        .uv-high  { color: var(--orange); }
+        .uv-vhigh { color: var(--negative); }
+        .uv-extreme { color: var(--purple); font-weight: 800; }
+
+        /* ── Precipitation in Forecast ── */
+        .wx-fday-rain { font-size: 0.72em; color: var(--accent); margin-top: 1px; }
+
+        /* ── AQI (Air Quality) Color Coding ── */
+        .aqi-good   { color: var(--positive); }
+        .aqi-fair   { color: #a3e635; }
+        .aqi-mod    { color: var(--orange); }
+        .aqi-poor   { color: var(--negative); }
+        .aqi-verypoor { color: var(--purple); font-weight: 800; }
+
+        /* ── School Holiday ── */
+        .hc-school-val { font-size: 0.74em; color: var(--pink); font-weight: 600; }
+
+        /* ── Parasha Reading Reference ── */
+        .hc-parasha-ref { font-size: 0.68em; color: var(--text-secondary); }
+
+        /* ── Shabbat Mode ── */
+        body.shabbat-mode .container { filter: brightness(0.60); transition: filter 2s ease; }
+        body.shabbat-mode .card { animation: none !important; }
+        body.shabbat-mode .ticker-track * { animation-play-state: paused !important; }
+        #shabbat-mode-banner { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1100; background: rgba(30,41,59,0.95); border: 1px solid var(--accent-border); border-radius: 12px; padding: 12px 24px; font-size: 1.6em; color: var(--accent); text-align: center; pointer-events: none; }
+        body.shabbat-mode #shabbat-mode-banner { display: block; }
+
+        /* ── Help Overlay ── */
+        #help-overlay { display: none; position: fixed; inset: 0; z-index: 1200; background: rgba(6,11,20,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); align-items: center; justify-content: center; }
+        #help-overlay.visible { display: flex; }
+        #help-panel { background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 14px; padding: 20px 28px; max-width: 480px; width: 90%; color: var(--text-primary); }
+        #help-panel h2 { font-size: 1.1em; color: var(--accent); margin: 0 0 14px 0; text-align: center; }
+        .help-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.82em; }
+        .help-row:last-child { border-bottom: none; }
+        .help-key { background: var(--bg-card-inner); border-radius: 5px; padding: 2px 8px; font-family: monospace; font-size: 0.92em; color: var(--cyan); border: 1px solid var(--accent-border); }
+
+        /* ── Sprint 3 Features ── */
+
+        /* Feature 21: Parasha Aliyot */
+        .hc-aliyot-val { font-size: 0.68em; color: var(--text-secondary); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+
+        /* Feature 22: Electricity Peak Warning Badge */
+        #elec-badge { display: none; font-size: 0.62em; padding: 1px 5px; border-radius: 4px; font-weight: 700; background: var(--warning); color: #000; animation: elecPulse 2s ease-in-out infinite; margin-right: 4px; vertical-align: middle; }
+        #elec-badge.peak-on { display: inline; }
+        @keyframes elecPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+        /* Feature 23: Psalm of the Day */
+        .hc-psalm-val { font-size: 0.68em; color: var(--text-secondary); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+
+        /* Feature 24: Moon Phase (in hc-card) */
+        .hc-moon-val { font-size: 0.88em; color: var(--cyan); }
+
+        /* Feature 26: Feels-like temp — 6th detail cell border accent */
+        .wx-detail:nth-child(6) { border-bottom: 2px solid var(--pink); }
+
+        /* Feature 27: Seasonal CSS Tint (subtle body overlay color hint) */
+        body.season-spring  { --season-tint: rgba(134,239,172,0.03); }
+        body.season-summer  { --season-tint: rgba(253,224,71,0.04); }
+        body.season-autumn  { --season-tint: rgba(249,115,22,0.04); }
+        body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
+        body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--season-tint, transparent); }
+
+        /* Feature 28: Calendar Event Countdown Badge */
+        #cal-countdown { display: none; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; background: var(--accent); color: #000; font-weight: 700; margin-right: 6px; vertical-align: middle; }
+
+        /* Feature 29: News Count Badge */
+        .news-count-badge { font-size: 0.55em; padding: 1px 6px; border-radius: 4px; background: var(--bg-card-inner); color: var(--text-secondary); font-weight: 600; margin-right: 6px; vertical-align: middle; }
+
+        /* Feature 30: Halacha Excerpt in HC Card */
+        .hc-halacha-val { font-size: 0.67em; color: var(--text-muted); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+
+        /* ── Sprint 4 Features ── */
+
+        /* Feature 31: Wind Direction arrow */
+        .wx-wind-dir { font-size: 0.78em; color: var(--cyan); display: inline-block; transition: transform 0.6s ease; }
+
+        /* Feature 32: Weather Extreme Alert banner */
+        #wx-alert-banner { display: none; background: var(--negative); color: #fff; font-weight: 700; font-size: 0.74em; padding: 3px 10px; border-radius: 6px; text-align: center; margin: 2px 0; }
+        #wx-alert-banner.visible { display: block; }
+
+        /* Feature 33: Config Panel */
+        #config-overlay { display: none; position: fixed; inset: 0; z-index: 1300; background: rgba(6,11,20,0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); align-items: center; justify-content: center; }
+        #config-overlay.visible { display: flex; }
+        #config-panel { background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 14px; padding: 22px 28px; max-width: 420px; width: 92%; color: var(--text-primary); max-height: 80vh; overflow-y: auto; }
+        #config-panel h2 { font-size: 1.05em; color: var(--accent); margin: 0 0 16px; text-align: center; }
+        .cfg-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.83em; gap: 8px; }
+        .cfg-row:last-child { border-bottom: none; }
+        .cfg-label { color: var(--text-secondary); flex: 1; }
+        .cfg-input { background: var(--bg-card-inner); border: 1px solid var(--accent-border); border-radius: 6px; color: var(--text-primary); padding: 3px 8px; font-size: 0.9em; width: 140px; font-family: inherit; }
+        .cfg-btn { background: var(--accent); color: #000; border: none; border-radius: 6px; padding: 4px 12px; font-weight: 700; font-size: 0.85em; cursor: pointer; }
+        .cfg-btn:hover { opacity: 0.85; }
+        #cfg-gear-btn { position: fixed; bottom: 14px; left: 14px; z-index: 800; background: var(--bg-card-inner); border: 1px solid var(--accent-border); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
+        #cfg-gear-btn:hover { opacity: 1; }
+
+        /* Feature 34: Chore Wheel */
+        .hc-chore-val { font-size: 0.74em; color: var(--warning); font-weight: 600; }
+
+        /* Feature 35: Portfolio P&L */
+        .stk-pnl { font-size: 0.65em; color: var(--text-muted); font-weight: 500; }
+        .stk-pnl.gain { color: var(--positive); }
+        .stk-pnl.loss { color: var(--negative); }
+
+        /* Feature 36: Earthquake Alert */
+        #quake-row { display: none; background: rgba(220,38,38,0.12); border-radius: 6px; padding: 3px 6px; margin: 2px 0; }
+        #quake-badge { font-size: 0.62em; font-weight: 700; background: var(--negative); color: #fff; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
+
+        /* Feature 37: Today-event count badge in header */
+        #header-event-count { display: none; font-size: 0.6em; background: var(--accent); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; margin-right: 4px; }
+
+        /* Feature 38: Currency Sparkline */
+        .cur-spark { width: 60px; height: 22px; display: block; }
+
+        /* Feature 39: News Source Filter chips */
+        .news-filter-bar { display: flex; flex-wrap: wrap; gap: 3px; padding: 3px 6px 3px; }
+        .news-filter-chip { font-size: 0.58em; padding: 1px 6px; border-radius: 10px; background: var(--bg-card-inner); color: var(--text-muted); cursor: pointer; border: 1px solid transparent; transition: all 0.15s; user-select: none; }
+        .news-filter-chip.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+        /* Feature 40: Connectivity indicator in status bar */
+        #conn-indicator { font-size: 0.72em; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
+        #conn-indicator.conn-ok   { color: var(--positive); }
+        #conn-indicator.conn-slow { color: var(--warning); }
+        #conn-indicator.conn-bad  { color: var(--negative); }
+
+        /* ── Sprint 5 Features ── */
+
+        /* Feature 41: Market Pre/After Hours */
+        .market-premarket  { background: rgba(251,191,36,0.15); color: var(--warning); }
+        .market-afterhours { background: rgba(139,92,246,0.15); color: var(--purple); }
+        .market-open       { background: rgba(52,211,153,0.15); color: var(--positive); }
+        .market-closed     { background: rgba(248,113,113,0.15); color: var(--negative); }
+
+        /* Feature 42: Weather Sky Color Header */
+        .wx-sky-pill { display: inline-block; font-size: 0.6em; padding: 1px 6px; border-radius: 8px; margin-right: 4px; font-weight: 700; vertical-align: middle; }
+
+        /* Feature 43: Alert Sound toggle */
+        #sound-toggle { font-size: 0.65em; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; user-select: none; }
+        #sound-toggle:hover { opacity: 1; }
+
+        /* Feature 44: Parasha Sefaria link */
+        .hc-parasha-link { font-size: 0.62em; color: var(--accent); cursor: pointer; text-decoration: underline; margin-right: 4px; opacity: 0.8; }
+        .hc-parasha-link:hover { opacity: 1; }
+
+        /* Feature 45: Multi-city weather tabs */
+        .wx-city-tabs { display: flex; gap: 3px; padding: 2px 6px 0; flex-shrink: 0; }
+        .wx-city-tab  { font-size: 0.6em; padding: 1px 7px; border-radius: 8px; background: var(--bg-card-inner); color: var(--text-muted); cursor: pointer; border: 1px solid transparent; transition: all 0.15s; user-select: none; }
+        .wx-city-tab.active { background: var(--cyan); color: #000; font-weight: 700; border-color: var(--cyan); }
+
+        /* Feature 46: Stock 52-week range bar */
+        .stk-range { width: 100%; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; position: relative; margin-top: 1px; }
+        .stk-range-fill { height: 100%; border-radius: 2px; background: var(--accent); min-width: 3px; transition: width 0.4s ease; }
+
+        /* Feature 47: Calendar event duration */
+        .cal-event-dur { font-size: 0.68em; color: var(--text-muted); margin-top: 1px; }
+
+        /* Feature 48: Custom ticker prefix chip */
+        .ticker-custom { background: var(--warning); color: #000; font-weight: 800; padding: 0 6px; border-radius: 3px; font-size: 0.9em; margin-left: 8px; }
+
+        /* Feature 49: Font Size Scaler indicator */
+        #font-scale-indicator { font-size: 0.7em; color: var(--text-muted); transition: opacity 0.3s; opacity: 0; }
+        #font-scale-indicator.visible { opacity: 1; }
+
+        /* Feature 50: Print mode */
+        @media print {
+            .diag-overlay, #diag-overlay, .offline-banner, #help-overlay, #config-overlay,
+            .screen-mode, #cfg-gear-btn, .sync-dot, .card-header .news-count-badge,
+            .wx-city-tabs, .news-filter-bar { display: none !important; }
+            body { background: #fff !important; color: #000 !important; }
+            .card { border: 1px solid #ccc !important; background: #fff !important; box-shadow: none !important; }
+            .container { display: block !important; }
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           SPRINT 6 FEATURES (Features 51–60)
+           ═══════════════════════════════════════════════════════ */
+
+        /* Feature 51: Portfolio Total Value Row */
+        .stk-total-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 8px; font-size: 0.68em; border-top: 1px solid var(--accent-border); color: var(--text-secondary); flex-shrink: 0; background: var(--bg-card-inner); gap: 4px; }
+        .stk-total-label { color: var(--text-muted); white-space: nowrap; }
+
+        /* Feature 52: Earthquake Magnitude Color Coding */
+        .quake-M3 { background: var(--warning) !important; color: #000 !important; }
+        .quake-M4 { background: var(--orange) !important; color: #000 !important; }
+        .quake-M5 { background: var(--negative) !important; color: #fff !important; animation: alertFlash 0.8s ease-out; }
+
+        /* Feature 54: Night Screen Auto-Dimmer */
+        #night-dim { position: fixed; inset: 0; background: #000; pointer-events: none; opacity: 0; transition: opacity 3s ease; z-index: 2; }
+
+        /* Feature 55: Stock Price Threshold Alert Flash */
+        .stk.alert-above { border-left: 2px solid var(--positive) !important; box-shadow: 0 0 8px var(--positive) !important; }
+        .stk.alert-below { border-left: 2px solid var(--negative) !important; box-shadow: 0 0 8px var(--negative) !important; }
+
+        /* Feature 56: Precipitation Bar in Forecast */
+        .wx-precip-bar { width: 100%; height: 2px; background: rgba(96,165,250,0.12); border-radius: 1px; margin-top: 2px; }
+        .wx-precip-fill { height: 100%; border-radius: 1px; background: var(--cyan); min-width: 2px; transition: width 0.5s ease; }
+
+        /* Feature 57: News Copy-to-Clipboard Button */
+        .news-copy { font-size: 0.62em; color: var(--text-muted); cursor: pointer; padding: 1px 3px; border-radius: 3px; background: transparent; border: none; opacity: 0; flex-shrink: 0; margin-right: 3px; font-family: inherit; transition: opacity 0.15s; }
+        .rss-item:hover .news-copy { opacity: 0.7; }
+        .news-copy:hover { opacity: 1 !important; color: var(--accent); background: var(--bg-card-inner); }
+        .news-copy.copied { color: var(--positive) !important; opacity: 1; }
+
+        /* Feature 58: Calendar Event Category Color Dots */
+        .cal-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-right: 4px; margin-top: 3px; align-self: flex-start; }
+        .cal-dot-work    { background: var(--cyan); }
+        .cal-dot-family  { background: var(--positive); }
+        .cal-dot-health  { background: #f472b6; }
+        .cal-dot-holiday { background: var(--warning); }
+        .cal-dot-default { background: var(--accent); opacity: 0.5; }
+
+        /* Feature 59: Force Refresh Toast */
+        #refresh-toast { position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 20px; padding: 5px 16px; font-size: 0.75em; color: var(--text-primary); pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 600; white-space: nowrap; }
+        #refresh-toast.visible { opacity: 1; }
+
+        /* ── SPRINT 7 FEATURES (Features 61–70) ── */
+        /* Feature 61: Stock Relative Volume Badge */
+        .stk-vol-badge { font-size: 0.54em; padding: 1px 4px; border-radius: 3px; font-weight: 700; margin-right: 3px; letter-spacing: 0; }
+        .stk-vol-high  { background: rgba(251,191,36,0.16); color: var(--warning); }
+        .stk-vol-xhigh { background: rgba(249,115,22,0.16); color: #f97316; }
+        /* Feature 62: Web Share button */
+        .news-share { font-size: 0.62em; opacity: 0; transition: opacity 0.2s; cursor: pointer; background: none; border: none; color: var(--accent); padding: 0 2px; margin-right: 2px; line-height: 1; }
+        .rss-item:hover .news-share { opacity: 0.7; }
+        /* Feature 63: Calendar 7-day strip */
+        #cal-week-strip { display: flex; gap: 2px; padding: 4px 8px 2px; border-bottom: 1px solid var(--accent-border); flex-shrink: 0; }
+        .cal-week-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+        .cal-week-label { font-size: 0.54em; color: var(--text-muted); }
+        .cal-week-dots { display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 6px; }
+        .cal-week-dot { width: 4px; height: 4px; border-radius: 50%; opacity: 0.75; }
+        .cal-week-today .cal-week-label { color: var(--accent); font-weight: 700; }
+        /* Feature 64: AQI category label + trend arrow */
+        .aqi-label { font-size: 0.68em; font-weight: 600; display: block; line-height: 1.1; }
+        .aqi-trend  { font-size: 0.75em; }
+        /* Feature 65: Per-stock price history sparkline */
+        .stk-ph-spark { width: 44px; height: 12px; overflow: visible; display: block; margin-top: 1px; }
+        /* Feature 66: Hourly rain probability overlay — SVG rects at chart bottom */
+        /* (rendered inline in SVG, no extra CSS needed) */
+        /* Feature 67: News item published age */
+        .news-age { font-size: 0.55em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+        /* Feature 68: Market open/close countdown chip */
+        #stk-mkt-countdown { font-size: 0.62em; color: var(--text-muted); text-align: center; padding: 2px 8px; border-top: 1px solid var(--accent-border); background: var(--bg-card-inner); flex-shrink: 0; }
+        #stk-mkt-countdown.mkt-open { color: var(--positive); }
+        #stk-mkt-countdown.mkt-soon { color: var(--warning); }
+        /* Feature 69: Earthquake 24h count badge in HC row */
+        .quake-cnt { font-size: 0.58em; background: rgba(248,113,113,0.14); color: var(--negative); border-radius: 3px; padding: 1px 4px; margin-right: 4px; }
+        /* Feature 70: Diagnostic copy log button */
+        #diag-copy-btn { font-size: 0.75em; padding: 2px 10px; border-radius: 4px; background: var(--bg-card-inner); border: 1px solid var(--accent-border); color: var(--text-primary); cursor: pointer; margin-bottom: 6px; }
     </style>
     <meta name="referrer" content="no-referrer">
 </head>
 <body>
+    <!-- Feature 54: Night screen dimmer overlay -->
+    <div id="night-dim"></div>
+    <!-- Feature 59: Force refresh toast -->
+    <div id="refresh-toast">🔄 מרענן...</div>
     <div class="offline-banner" id="offline-banner">⚠️ אין חיבור לאינטרנט — מציג נתונים מהמטמון</div>
+    <div id="shabbat-mode-banner">🕯️ שבת שלום 🕯️</div>
+    <div id="help-overlay">
+      <div id="help-panel">
+        <h2>⌨️ קיצורי מקלדת</h2>
+        <div class="help-row"><span>מחזור ערכות נושא</span><span class="help-key">T</span></div>
+        <div class="help-row"><span>מעבר °C / °F</span><span class="help-key">לחץ על הטמפרטורה</span></div>
+        <div class="help-row"><span>מסך מלא</span><span class="help-key">F</span></div>
+        <div class="help-row"><span>הצגת התראות</span><span class="help-key">A</span></div>
+        <div class="help-row"><span>הגדרות</span><span class="help-key">S</span></div>
+        <div class="help-row"><span>אבחון</span><span class="help-key">D</span></div>
+        <div class="help-row"><span>השתק/הפעל צליל התראות</span><span class="help-key">M</span></div>
+        <div class="help-row"><span>הדפסה</span><span class="help-key">P</span></div>
+        <div class="help-row"><span>הגדלת גופן</span><span class="help-key">+</span></div>
+        <div class="help-row"><span>הקטנת גופן</span><span class="help-key">−</span></div>
+        <div class="help-row"><span>דימר לילה</span><span class="help-key">N</span></div>
+        <div class="help-row"><span>רענון כלל הנתונים</span><span class="help-key">R</span></div>
+        <div class="help-row"><span>סגירת כרטיס מוגדל</span><span class="help-key">Escape</span></div>
+        <div class="help-row"><span>עזרה</span><span class="help-key">?</span></div>
+        <div style="text-align:center;margin-top:12px;font-size:0.75em;color:var(--text-muted)">לחץ Escape או ? לסגירה</div>
+      </div>
+    </div>
+    <!-- Feature 33: Config overlay -->
+    <div id="config-overlay">
+      <div id="config-panel">
+        <h2>⚙️ הגדרות</h2>
+        <div class="cfg-row">
+          <span class="cfg-label">🖼️ תמונת רקע (URL)</span>
+          <input class="cfg-input" id="cfg-bg-url" type="text" placeholder="https://..." />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🎂 יום הולדת (שם, חודש, יום)</span>
+          <input class="cfg-input" id="cfg-birthday" type="text" placeholder="שם,6,15" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
+          <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🌡️ יחידת טמפרטורה</span>
+          <input class="cfg-input" id="cfg-temp-unit" type="text" placeholder="C / F" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">📢 הודעה מיוחדת בטיקר</span>
+          <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🔔 צליל להתראות אדומות</span>
+          <input class="cfg-input" id="cfg-alert-sound" type="text" placeholder="on / off" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">📊 התראות מחיר מניה</span>
+          <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder='{"AAPL":{"above":220},"NVDA":{"below":100}}' style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
+        </div>
+        <div class="cfg-row" style="justify-content:center;gap:10px">
+          <button class="cfg-btn" id="cfg-save-btn">שמור</button>
+          <button class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)" id="cfg-close-btn">סגור</button>
+        </div>
+        <div style="text-align:center;margin-top:10px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
+      </div>
+    </div>
     <div class="diag-overlay" id="diag-overlay">
         <h3>🛠 Dashboard Diagnostics (press D to close)</h3>
+        <!-- Feature 70: Copy diagnostics log to clipboard -->
+        <button id="diag-copy-btn" onclick="copyDiagLog()">📋 העתק לוג</button>
         <div id="diag-panes"></div>
         <div class="diag-log" id="diag-log"></div>
     </div>
-    <div class="container">
+    <!-- Feature 33: Gear button (bottom-left corner) -->
+    <button id="cfg-gear-btn" title="הגדרות (S)">⚙️</button>
         <!-- ── Screen Mode + Theme + Proxy Selector ── -->
         <div class="screen-mode">
             <select id="screen-mode-select">
@@ -888,7 +1236,11 @@
             </div>
             <div class="header-right">
                 <div class="english-date" id="english-date"></div>
-                <div class="top-temp" id="top-temp">--°C</div>
+                <div class="top-temp temp-toggle" id="top-temp" title="לחץ לחילוף °C/°F">--°C</div>
+                <!-- Feature 22: Electricity peak warning badge -->
+                <span id="elec-badge">⚡ שעת שיא</span>
+                <!-- Feature 37: Today event count badge -->
+                <span id="header-event-count"></span>
             </div>
         </div>
 
@@ -897,19 +1249,27 @@
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
             <div class="card">
-              <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות</div>
+              <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span></div>
               <div class="news-body" id="news-body">
+                <!-- Feature 39: News source filter chips -->
+                <div class="news-filter-bar" id="news-filter-bar"></div>
                 <div class="rss-scroll" id="rss-scroll"></div>
               </div>
             </div>
             <div class="card">
-              <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> מזג אויר — ירושלים</div>
+              <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
               <div class="weather-body">
+                <!-- Feature 45: Multi-city tabs -->
+                <div class="wx-city-tabs" id="wx-city-tabs">
+                  <button class="wx-city-tab active" data-city="jerusalem" data-lat="31.7683" data-lon="35.2137">ירושלים</button>
+                  <button class="wx-city-tab" data-city="telaviv" data-lat="32.0853" data-lon="34.7818">ת"א</button>
+                  <button class="wx-city-tab" data-city="haifa" data-lat="32.7940" data-lon="34.9896">חיפה</button>
+                </div>
                 <div class="wx-top-row">
                   <div class="wx-current">
                     <div class="wx-icon" id="wx-icon">🌤️</div>
                     <div class="wx-info">
-                      <div class="wx-temp-main" id="wx-temp">--°C</div>
+                      <div class="wx-temp-main temp-toggle" id="wx-temp" title="לחץ לחילוף °C/°F">--°C</div>
                       <div class="wx-desc" id="wx-desc">טוען...</div>
                     </div>
                   </div>
@@ -918,9 +1278,15 @@
                     <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
                     <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
                     <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
+                    <!-- Feature 64: AQI category label + trend -->
+                    <div class="wx-detail"><div class="wx-detail-label">😷 AQI</div><div class="wx-detail-val" id="wx-aqi">--</div><span class="aqi-label" id="aqi-label"></span><span class="aqi-trend" id="aqi-trend"></span></div>
+                    <!-- Feature 26: Feels-like temperature -->
+                    <div class="wx-detail"><div class="wx-detail-label">🌡️ מרגיש</div><div class="wx-detail-val" id="wx-feels">--°</div></div>
                   </div>
                 </div>
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
+                <!-- Feature 32: Extreme weather alert banner -->
+                <div id="wx-alert-banner"></div>
                 <div class="wx-forecast" id="wx-forecast">
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
@@ -937,15 +1303,45 @@
               <div class="card-header"><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
                 <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
+                <div class="hc-row" id="hc-countdown-row" style="display:none"><span class="hc-label">⏱ כניסה בעוד</span><span class="hc-val hc-countdown" id="hc-countdown">--:--:--</span></div>
                 <div class="hc-row" id="hc-holiday-row" style="display:none"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
                 <div class="hc-row hc-special-row" id="hc-special-row" style="display:none"><span class="hc-val hc-special" id="hc-special"></span></div>
+                <div class="hc-row" id="hc-school-row" style="display:none"><span class="hc-label">🎒 חופשה</span><span class="hc-val hc-school-val" id="hc-school">--</span></div>
+                <div class="hc-row" id="hc-parasha-row" style="display:none"><span class="hc-label">📖 פרשה</span><span class="hc-val hc-parasha-val" id="hc-parasha">--</span><span class="hc-parasha-ref" id="hc-parasha-ref"></span></div>
+                <!-- Feature 21: Parasha Aliyot summary -->
+                <div class="hc-row" id="hc-aliyot-row" style="display:none"><span class="hc-label">📜 פתיחה</span><span class="hc-val hc-aliyot-val" id="hc-aliyot">--</span></div>
+                <div class="hc-row" id="hc-daf-row" style="display:none"><span class="hc-label">📚 דף יומי</span><span class="hc-val hc-daf-val" id="hc-daf">--</span></div>
+                <!-- Feature 53: Daf Yomi Sefaria link -->
+                <div class="hc-row" id="hc-daf-link-row" style="display:none">
+                  <span class="hc-label" style="visibility:hidden">.</span>
+                  <button class="hc-parasha-link" id="hc-daf-link">📚 ספריה</button>
+                </div>
+                <!-- Feature 23: Psalm of the Day -->
+                <div class="hc-row" id="hc-psalm-row" style="display:none"><span class="hc-label">🎵 שיר</span><span class="hc-val hc-psalm-val" id="hc-psalm">--</span></div>
+                <!-- Feature 24: Moon Phase -->
+                <div class="hc-row" id="hc-moon-row"><span class="hc-label">🌙 ירח</span><span class="hc-val hc-moon-val" id="hc-moon">--</span></div>
+                <!-- Feature 28: Upcoming calendar event countdown -->
+                <div class="hc-row" id="hc-event-row" style="display:none"><span class="hc-label">📆 הבא</span><span class="hc-val" id="hc-event">--</span></div>
+                <!-- Feature 34: Chore Wheel -->
+                <div class="hc-row" id="hc-chore-row" style="display:none"><span class="hc-label">🧹 משימה</span><span class="hc-val hc-chore-val" id="hc-chore">--</span></div>
+                <!-- Feature 36: Earthquake alert -->
+                <!-- Feature 69: Earthquake 24h count badge -->
+                <div class="hc-row" id="quake-row"><span class="hc-label">🌍 רעש</span><span class="hc-val" id="quake-val">--</span><span id="quake-badge"></span><span class="quake-cnt" id="quake-count-badge" style="display:none"></span></div>
+                <!-- Feature 44: Parasha Sefaria link -->
+                <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button class="hc-parasha-link" id="hc-parasha-link">📖 ספרייה</button></div>
                 <div class="hc-divider"></div>
+                <div class="zmanim-section" id="zmanim-section" style="display:none"><div class="zmanim-grid" id="zmanim-grid"></div><div class="hc-divider"></div></div>
+                <!-- Feature 30: Halacha excerpt -->
+                <div class="hc-row" id="hc-halacha-row" style="display:none"><span class="hc-label">⚖️ הלכה</span><span class="hc-val hc-halacha-val" id="hc-halacha">--</span></div>
                 <div class="hc-saying" id="hc-saying">טוען...</div>
+                <div class="hc-birthday" id="hc-birthday" style="display:none"></div>
               </div>
             </div>
             <div class="card" style="position:relative">
-              <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי</div>
+              <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
+                <!-- Feature 63: 7-day event density strip -->
+                <div id="cal-week-strip" class="cal-week-strip"></div>
                 <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
                 <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
               </div>
@@ -953,8 +1349,10 @@
             <div class="card">
               <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
               <div class="currency-body" id="currency-body">
-                <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div></div>
-                <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="cur-eur">--</div><div class="cur-chg" id="cur-eur-chg"></div></div>
+                <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="cur-eur">--</div><div class="cur-chg" id="cur-eur-chg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🥇</div><div class="cur-pair">זהב / oz</div><div class="cur-rate" id="cur-gold">--</div><div class="cur-chg" id="cur-gold-chg"></div></div>
+                <div class="cur-item"><div class="cur-flag">🥈</div><div class="cur-pair">כסף / oz</div><div class="cur-rate" id="cur-silver">--</div><div class="cur-chg" id="cur-silver-chg"></div></div>
               </div>
             </div>
           </div>
@@ -962,25 +1360,35 @@
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
             <div class="card">
-              <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
+            <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body">
-                  <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://logo.clearbit.com/spglobal.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://logo.clearbit.com/cboe.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://logo.clearbit.com/apple.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="AMZN"><div class="stk-logo"><img src="https://logo.clearbit.com/amazon.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AMZN</div><div class="stk-desc">אמזון</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="AVGO"><div class="stk-logo"><img src="https://logo.clearbit.com/broadcom.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AVGO</div><div class="stk-desc">ברודקום</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="BRK-B"><div class="stk-logo"><img src="https://logo.clearbit.com/berkshirehathaway.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BRK-B</div><div class="stk-desc">ברקשייר</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=spglobal.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=cboe.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=apple.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="AMZN"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AMZN</div><div class="stk-desc">אמזון</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="AVGO"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=broadcom.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AVGO</div><div class="stk-desc">ברודקום</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="BRK-B"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=berkshirehathaway.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BRK-B</div><div class="stk-desc">ברקשייר</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                   <div class="stk" data-symbol="BTC-USD"><div class="stk-logo"><img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BTC</div><div class="stk-desc">ביטקוין</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="GOOGL"><div class="stk-logo"><img src="https://logo.clearbit.com/google.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">GOOGL</div><div class="stk-desc">אלפבית</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="INTC"><div class="stk-logo"><img src="https://logo.clearbit.com/intel.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="JPM"><div class="stk-logo"><img src="https://logo.clearbit.com/jpmorgan.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">JPM</div><div class="stk-desc">ג׳י.פי.מורגן</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="META"><div class="stk-logo"><img src="https://logo.clearbit.com/meta.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">META</div><div class="stk-desc">מטא</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="MSFT"><div class="stk-logo"><img src="https://logo.clearbit.com/microsoft.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">MSFT</div><div class="stk-desc">מיקרוסופט</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="NVDA"><div class="stk-logo"><img src="https://logo.clearbit.com/nvidia.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="TSLA"><div class="stk-logo"><img src="https://logo.clearbit.com/tesla.com" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="GOOGL"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=google.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">GOOGL</div><div class="stk-desc">אלפבית</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="INTC"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=intel.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="JPM"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=jpmorgan.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">JPM</div><div class="stk-desc">ג׳י.פי.מורגן</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="META"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=meta.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">META</div><div class="stk-desc">מטא</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="MSFT"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">MSFT</div><div class="stk-desc">מיקרוסופט</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="NVDA"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=nvidia.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="TSLA"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=tesla.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <!-- Feature 60: Tel Aviv 35 Index -->
+                  <div class="stk" data-symbol="^TA35.TA"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=tase.co.il&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">ת"א 35</div><div class="stk-desc">בורסה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                 </div>
               </div>
+              <!-- Feature 51: Portfolio Total Value Row -->
+              <div id="stk-total-row" class="stk-total-row" style="display:none">
+                <span class="stk-total-label">💼 תיק:</span>
+                <span id="stk-total-val">--</span>
+                <span id="stk-total-pnl"></span>
+              </div>
+              <!-- Feature 68: Market open/close countdown -->
+              <div id="stk-mkt-countdown"></div>
             </div>
             <div class="card">
               <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
@@ -1004,19 +1412,23 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.8.2 — משפחת רגואן</span>
+            <span>Dashboard v4.10.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
             </div>
             <span class="status-uptime" id="uptime-display"></span>
+            <!-- Feature 40: Connectivity indicator -->
+            <span id="conn-indicator"></span>
+            <!-- Feature 49: Font scale indicator -->
+            <span id="font-scale-indicator"></span>
             <span id="last-refresh">רענון: --:--</span>
         </div>
     </div>
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.8.2 — 3-Column Layout · Hebrew Calendar Card · Brand-Color Stock Logos
+       FAMILY DASHBOARD v4.10.0 — 3-Column Layout · Hebrew Calendar Card · 70 Sprint Features · 746 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1026,13 +1438,14 @@
     // This list is for CORS bypass proxies only (needed for cross-origin API calls).
     // CORS bypass proxies — browser/system HTTP proxy is used automatically by fetch().
     // These are for cross-origin API access only.
-    const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
-    const STOCK_SYMBOLS = ['^GSPC','^VIX','AAPL','AMZN','AVGO','BRK-B','BTC-USD','GOOGL','INTC','JPM','META','MSFT','NVDA','TSLA'];
+    const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest=','https://corsproxy.io/?'];
+    const STOCK_SYMBOLS = ['^GSPC','^VIX','^TA35.TA','AAPL','AMZN','AVGO','BRK-B','BTC-USD','GOOGL','INTC','JPM','META','MSFT','NVDA','TSLA'];
     const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
     const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
     const STOCK_BRAND = {
-        '^GSPC': { color: '#1a56db', domain: 'spglobal.com' },
-        '^VIX':  { color: '#e85d04', domain: 'cboe.com' },
+        '^GSPC':    { color: '#1a56db', domain: 'spglobal.com' },
+        '^VIX':     { color: '#e85d04', domain: 'cboe.com' },
+        '^TA35.TA': { color: '#003876', domain: 'tase.co.il' },
         'AAPL':  { color: '#a3a3a3', domain: 'apple.com' },
         'AMZN':  { color: '#ff9900', domain: 'amazon.com' },
         'AVGO':  { color: '#cc0000', domain: 'broadcom.com' },
@@ -1046,7 +1459,7 @@
         'NVDA':  { color: '#76b900', domain: 'nvidia.com' },
         'TSLA':  { color: '#e82127', domain: 'tesla.com' },
     };
-    const STOCK_NAMES = {INTC:'אינטל — שבבים','^GSPC':'S&P 500 — מדד','BTC-USD':'ביטקוין — קריפטו',NVDA:'נבידיה — AI/GPU','^VIX':'מדד הפחד — תנודתיות',TSLA:'טסלה — רכב חשמלי',AAPL:'אפל — צרכן',MSFT:'מיקרוסופט — תוכנה',AMZN:'אמזון — פלטפורמה',GOOGL:'אלפבית — טכנולוגיה',META:'מטא — רשתות','BRK-B':'ברקשייר — בופט',AVGO:'ברודקום — שבבים',JPM:'ג.פ.מורגן — בנקאות'};
+    const STOCK_NAMES = {INTC:'אינטל — שבבים','^GSPC':'S&P 500 — מדד','BTC-USD':'ביטקוין — קריפטו',NVDA:'נבידיה — AI/GPU','^VIX':'מדד הפחד — תנודתיות',TSLA:'טסלה — רכב חשמלי',AAPL:'אפל — צרכן',MSFT:'מיקרוסופט — תוכנה',AMZN:'אמזון — פלטפורמה',GOOGL:'אלפבית — טכנולוגיה',META:'מטא — רשתות','BRK-B':'ברקשייר — בופט',AVGO:'ברודקום — שבבים',JPM:'ג.פ.מורגן — בנקאות','^TA35.TA':'ת"א 35 — בורסה'};
     const MOTIVATIONS = [
         {t:'הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.',a:'אברהם לינקולן'},
         {t:'אל תפחד להיכשל. פחד שלא תנסה.',a:'רוי ט. בנט'},
@@ -1100,7 +1513,34 @@
         {t:'יש לך בדיוק את הכוח שדרוש לך כדי ליצור את החיים שאתה רוצה.',a:''},
     ];
     let motiIdx = Math.floor(Math.random() * MOTIVATIONS.length);
-    let _todaySunset = null; // stored from weather data; used by Omer counter
+    let _todaySunset = null;   // stored from weather data; used by Omer counter
+    let _todaySunrise = null;  // stored from weather data; used by auto-night theme
+    let _candleDate = null;    // next candle lighting Date; used by Shabbat countdown
+    let _tempUnit = localStorage.getItem('dash_tempUnit') || 'C'; // °C or °F
+    let _autoTheme = localStorage.getItem('dash_autoTheme') !== 'off'; // auto night theme (on by default)
+    let _themeBeforeDark = null; // saved theme before auto-switch to black
+    let _shabbatMode = false;     // true during Shabbat hours (candles → havdalah)
+    let _shabbatEnd = null;       // havdalah Date; used to exit shabbat mode
+    let _lastHiddenAt = null;     // timestamp when tab became hidden (for smart wake-refresh)
+    let _psalmLoaded = false;     // prevent re-fetching psalm of the day each minute
+    let _aliyotLoaded = false;    // prevent re-fetching parasha aliyot opener each refresh
+
+    /** Family birthdays — add entries as { name, month (1-12), day (1-31) } */
+    const BIRTHDAYS = [
+        // Example: { name: 'יאיר', month: 6, day: 15 },
+    ];
+
+    /** Curated landscape images — cycled every 30 min as background */
+    const BG_IMAGES = [
+        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&q=80', // Yosemite valley
+        'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&q=80', // Alpine meadow
+        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80', // Forest fog
+        'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80', // Snowy mountain night
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80', // Rainforest path
+        'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=1920&q=80', // Lavender fields
+        'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1920&q=80', // Desert dunes
+        'https://images.unsplash.com/photo-1434725039720-aeaee43d5901?w=1920&q=80', // Tropical beach
+    ];
 
     // ── Persistent Cache (localStorage + in-memory) ──
     // Data survives page loads — each pane refreshes independently, network failures show stale data
@@ -1196,9 +1636,25 @@
         } catch (_) { return { gpu: 'unknown', renderer: 'detection failed' }; }
     }
 
-    // ── Page Visibility (pause fetches when tab is hidden) ──
+    // ── Page Visibility (pause fetches when tab is hidden; smart wake-refresh after 30min) ──
     let _pageVisible = true;
-    document.addEventListener('visibilitychange', () => { _pageVisible = !document.hidden; });
+    document.addEventListener('visibilitychange', () => {
+        _pageVisible = !document.hidden;
+        if (document.hidden) {
+            _lastHiddenAt = Date.now();
+        } else if (_lastHiddenAt && (Date.now() - _lastHiddenAt) > 1800000) {
+            // Hidden for > 30 min — force full refresh on wake
+            diagLog('Wake-refresh triggered after ' + Math.round((Date.now() - _lastHiddenAt) / 60000) + 'min hidden');
+            _lastHiddenAt = null;
+            // Stagger loaders to avoid thundering herd
+            setTimeout(() => { safeLoad(loadWeather); safeLoad(loadAQI); }, 200);
+            setTimeout(() => { safeLoad(loadNews); }, 600);
+            setTimeout(() => { safeLoad(loadAllStocks); safeLoad(loadCurrency); }, 1000);
+            setTimeout(() => { safeLoad(loadCalendar); safeLoad(loadHebCal); stampRefresh(); }, 1400);
+        } else {
+            _lastHiddenAt = null;
+        }
+    });
 
     // ── Network Status Detection ──
     function updateNetworkBanner() {
@@ -1280,20 +1736,43 @@
         wxIcon: $('wx-icon'), wxTemp: $('wx-temp'), wxDesc: $('wx-desc'),
         wxHum: $('wx-hum'), wxWind: $('wx-wind'), wxUv: $('wx-uv'),
         wxRise: $('wx-rise'), wxHourly: $('wx-hourly'), wxForecast: $('wx-forecast'),
+        wxAqi: $('wx-aqi'),
+        wxFeels: $('wx-feels'),
         newsBody: $('news-body'), rssScroll: $('rss-scroll'), ticker: $('ticker-content'),
+        newsCount: $('news-count'),
         curUsd: $('cur-usd'), curEur: $('cur-eur'),
         curUsdChg: $('cur-usd-chg'), curEurChg: $('cur-eur-chg'),
+        curGold: $('cur-gold'), curSilver: $('cur-silver'),
+        curGoldChg: $('cur-gold-chg'), curSilverChg: $('cur-silver-chg'),
         motiText: $('moti-text'), motiAuthor: $('moti-author'), motiSrc: $('moti-src'),
         alertsScroll: $('alerts-scroll'),
         refresh: $('last-refresh'), holiday: $('holiday-info'), marketBadge: $('market-badge'),
         dayProgress: $('day-progress'), yearProgress: $('year-progress'),
         dayPct: $('day-pct'), yearPct: $('year-pct'),
         calAgenda: $('cal-agenda'), calIframe: $('cal-iframe'),
+        calCountdown: $('cal-countdown'),
         omerCount: $('omer-count'),
         hcCandles: $('hc-candles'), hcHavdala: $('hc-havdala'),
         hcHoliday: $('hc-holiday'), hcSpecial: $('hc-special'),
         hcHolidayRow: $('hc-holiday-row'), hcSpecialRow: $('hc-special-row'),
         hcSaying: $('hc-saying'),
+        hcCountdown: $('hc-countdown'), hcCountdownRow: $('hc-countdown-row'),
+        hcParasha: $('hc-parasha'), hcParashaRow: $('hc-parasha-row'),
+        hcParashaRef: $('hc-parasha-ref'),
+        hcAliyot: $('hc-aliyot'), hcAliyotRow: $('hc-aliyot-row'),
+        hcDaf: $('hc-daf'), hcDafRow: $('hc-daf-row'),
+        hcPsalm: $('hc-psalm'), hcPsalmRow: $('hc-psalm-row'),
+        hcMoon: $('hc-moon'),
+        hcEvent: $('hc-event'), hcEventRow: $('hc-event-row'),
+        hcHalacha: $('hc-halacha'), hcHalachaRow: $('hc-halacha-row'),
+        zmanimSection: $('zmanim-section'), zmanimGrid: $('zmanim-grid'),
+        hcBirthday: $('hc-birthday'),
+        hcSchool: $('hc-school'), hcSchoolRow: $('hc-school-row'),
+        hcChore: $('hc-chore'), hcChoreRow: $('hc-chore-row'),
+        helpOverlay: $('help-overlay'),
+        elecBadge: $('elec-badge'),
+        hdrEventCount: $('header-event-count'),
+        connIndicator: $('conn-indicator'),
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -1332,6 +1811,7 @@
         if (el.engDate.textContent !== d) el.engDate.textContent = d;
         const g = getGreeting(); if (el.greeting.textContent !== g) el.greeting.textContent = g;
         updateProgress(now);
+        checkElecPeak(); // Feature 22: check IEC peak tariff hours every minute
     }
 
     // ── Hebrew Date + Shabbat ──
@@ -1366,12 +1846,17 @@
                     if (cndl) {
                         const dt = new Date(cndl.date);
                         candleStr = dt.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                        _candleDate = dt; // store for Shabbat countdown
                     }
-                    if (hvdl) havdalaStr = new Date(hvdl.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                    if (hvdl) {
+                        havdalaStr = new Date(hvdl.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                        _shabbatEnd = new Date(hvdl.date); // store for Shabbat mode exit
+                    }
                 }
             } catch (_) {}
             if (el.hcCandles) { el.hcCandles.textContent = candleStr; el.hcCandles.classList.remove('skeleton'); }
             if (el.hcHavdala) el.hcHavdala.textContent = havdalaStr;
+            updateShabbatCountdown(); // show countdown immediately if candle time is within 24h
 
             // Next holiday
             try {
@@ -1386,6 +1871,19 @@
                         const name = h.hebrew || h.title;
                         el.hcHoliday.textContent = days <= 0 ? name : days === 1 ? 'מחר: ' + name : name + ' — בעוד ' + days + ' ימים';
                         if (el.hcHolidayRow) el.hcHolidayRow.style.display = '';
+                    }
+                    // School holidays (Israeli school break marker)
+                    const schoolItems = hd.items.filter(i =>
+                        (i.category === 'holiday' || i.category === 'minor') &&
+                        new Date(i.date) >= now &&
+                        /chol|vacation|break|school|pesach|sukkot|shavuot|chanukah|purim/i.test(i.title || '')
+                    ).sort((a, b) => new Date(a.date) - new Date(b.date));
+                    if (schoolItems.length && el.hcSchool && el.hcSchoolRow) {
+                        const sh = schoolItems[0];
+                        const daysS = Math.ceil((new Date(sh.date) - now) / 86400000);
+                        const nameS = sh.hebrew || sh.title;
+                        el.hcSchool.textContent = daysS <= 0 ? nameS : daysS === 1 ? 'מחר: ' + nameS : nameS + ' — בעוד ' + daysS + ' ימים';
+                        el.hcSchoolRow.style.display = '';
                     }
                 }
             } catch (_) {}
@@ -1420,6 +1918,9 @@
                 const m = MOTIVATIONS[idx];
                 el.hcSaying.textContent = (m.t || '') + (m.a ? ' — ' + m.a : '');
             }
+
+            // Parasha + Daf Yomi (may fail silently)
+            await Promise.all([loadParasha(), loadDafYomi()]);
 
             setSync('hebcal', 'success'); syncBurst('hebcal');
         } catch (e) {
@@ -1525,17 +2026,8 @@
         if (el.yearPct) el.yearPct.textContent = yearPct + '%';
     }
 
-    // ── Market Open/Closed Badge ──
-    function updateMarketBadge() {
-        if (!el.marketBadge) return;
-        const now = new Date();
-        const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-        const h = ny.getHours(), m = ny.getMinutes(), d = ny.getDay();
-        const t = h * 60 + m;
-        const open = d >= 1 && d <= 5 && t >= 570 && t <= 960; // Mon-Fri e:30-16:00 ET
-        el.marketBadge.textContent = open ? '🟢 פתוח' : '🔴 סגור';
-        el.marketBadge.className = `market-badge ${open ? 'market-open' : 'market-closed'}`;
-    }
+    // ── Market Open/Closed Badge (Sprint 5: extended to pre/after hours) ──
+    // updateMarketBadge is defined below in Sprint 5 features block
 
     // ── Relative Time ──
     function relTime(dateStr) {
@@ -1556,35 +2048,53 @@
         if (fresh) { renderWeather(fresh); setSync('wx', 'success'); releaseLock('wx'); return; }
         const stale = cGetStale(key); if (stale) renderWeather(stale);
         try {
-            const d = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.7683&longitude=35.2137&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset&timezone=Asia%2FJerusalem&forecast_days=5').then(r => r.json());
+            // Feature 45: use current city lat/lon
+            const city = (typeof getCurrentWxCity === 'function') ? getCurrentWxCity() : { lat: 31.7683, lon: 35.2137 };
+            const d = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max&timezone=Asia%2FJerusalem&forecast_days=5`).then(r => r.json());
             if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); syncBurst('wx'); recordSuccess('wx'); }
         } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); recordFailure('wx'); }
         releaseLock('wx');
     }
     function renderWeather(d) {
         const cw = d.current_weather;
-        animateNumber(el.topTemp, Math.round(cw.temperature) + '°C');
-        animateNumber(el.wxTemp, Math.round(cw.temperature) + '°C');
+        const tempC = Math.round(cw.temperature);
+        animateNumber(el.topTemp, toDisplayTemp(tempC));
+        animateNumber(el.wxTemp, toDisplayTemp(tempC));
         el.wxDesc.textContent = WX_CODES[cw.weathercode] || 'לא ידוע';
         el.wxIcon.textContent = WX_EMOJI[cw.weathercode] || '🌡️';
-        animateNumber(el.wxWind, Math.round(cw.windspeed) + ' קמ"ש');
+        animateNumber(el.wxWind, Math.round(cw.windspeed) + ' קמ"ש ' + deg2arrow(cw.winddirection ?? 0));
+        // Feature 32: check for severe weather
+        checkSevereWeather(cw.weathercode);
+        // Feature 42: update sky color pill
+        updateWeatherSkyPill(cw.weathercode);
+        // Feature 42: update sky color pill
+        updateWeatherSkyPill(cw.weathercode);
         // Real humidity, UV, and feels-like from hourly data
         if (d.hourly) {
             const nowH = new Date().getHours();
             if (d.hourly.relativehumidity_2m?.[nowH] != null) el.wxHum.textContent = d.hourly.relativehumidity_2m[nowH] + '%';
-            if (d.hourly.uv_index?.[nowH] != null) el.wxUv.textContent = d.hourly.uv_index[nowH].toFixed(1);
+            if (d.hourly.uv_index?.[nowH] != null) {
+                const uv = d.hourly.uv_index[nowH];
+                el.wxUv.textContent = uv.toFixed(1);
+                el.wxUv.className = 'wx-detail-val ' + (uv <= 2 ? 'uv-low' : uv <= 5 ? 'uv-mod' : uv <= 7 ? 'uv-high' : uv <= 10 ? 'uv-vhigh' : 'uv-extreme');
+            }
             if (d.hourly.apparent_temperature?.[nowH] != null) {
                 const feels = Math.round(d.hourly.apparent_temperature[nowH]);
-                el.wxDesc.textContent = (WX_CODES[cw.weathercode] || 'לא ידוע') + ` · מרגיש ${feels}°C`;
+                el.wxDesc.textContent = (WX_CODES[cw.weathercode] || 'לא ידוע') + ` · מרגיש ${toDisplayTemp(feels)}`;
+                // Feature 26: also populate feels-like wx-detail cell
+                if (el.wxFeels) el.wxFeels.textContent = toDisplayTemp(feels);
             }
-            // Hourly temperature graph (next 12h)
-            renderHourlyChart(d.hourly.temperature_2m.slice(nowH, nowH + 12), nowH);
+            // Hourly temperature graph (next 12h) — Feature 66: also pass precipitation_probability
+            const rainProbs = d.hourly.precipitation_probability?.slice(nowH, nowH + 12) || [];
+            renderHourlyChart(d.hourly.temperature_2m.slice(nowH, nowH + 12), nowH, rainProbs);
         }
         if (d.daily) {
             const now = new Date();
             const sr = new Date(d.daily.sunrise[0]);
             const ss = new Date(d.daily.sunset[0]);
-            _todaySunset = ss; // store for Omer counter sunset-based switching
+            _todaySunset = ss;  // store for Omer counter sunset-based switching
+            _todaySunrise = sr; // store for auto-night theme
+            applyAutoTheme();   // re-evaluate night mode now that we have sunrise/sunset
             // Show whichever sun event is closest and still upcoming.
             // If sunset is in the future and closer than sunrise (or sunrise already passed) → show sunset.
             // Otherwise (before sunrise, or both passed) → show sunrise.
@@ -1611,12 +2121,19 @@
                     const mx = Math.round(d.daily.temperature_2m_max[i]);
                     const mn = Math.round(d.daily.temperature_2m_min[i]);
                     const wc = d.daily.weathercode[i];
-                    fDays[i - 1].innerHTML = `<div class="wx-fday-icon">${WX_EMOJI[wc] || '🌡️'}</div><div class="wx-fday-name">${dn}</div><div class="wx-fday-temp">${mx}°/${mn}°</div>`;
+                    const rain = d.daily.precipitation_probability_max?.[i];
+                    // Feature 56: precipitation bar
+                    const rainTxt = rain != null && rain >= 20
+                        ? `<div class="wx-fday-rain">\ud83c\udf27\ufe0f ${rain}%<div class="wx-precip-bar"><div class="wx-precip-fill" style="width:${rain}%"></div></div></div>`
+                        : rain != null && rain > 0
+                        ? `<div class="wx-precip-bar"><div class="wx-precip-fill" style="width:${rain}%"></div></div>`
+                        : '';
+                    fDays[i - 1].innerHTML = `<div class="wx-fday-icon">${WX_EMOJI[wc] || '\ud83c\udf21\ufe0f'}</div><div class="wx-fday-name">${dn}</div><div class="wx-fday-temp">${toDisplayTemp(mx)}/${toDisplayTemp(mn)}</div>${rainTxt}`;
                 }
             }
         }
     }
-    function renderHourlyChart(temps, startH) {
+    function renderHourlyChart(temps, startH, rainProbs) {
         if (!temps || temps.length < 2) return;
         const W = 500, H = 60, P = 8;
         const min = Math.min(...temps), max = Math.max(...temps), range = max - min || 1;
@@ -1639,8 +2156,22 @@
         const minI = temps.indexOf(Math.min(...temps));
         labels += `<text x="${pts[maxI].x}" y="${pts[maxI].y - 4}" fill="#f87171" font-size="8" text-anchor="middle" font-weight="bold">${Math.round(temps[maxI])}°</text>`;
         labels += `<text x="${pts[minI].x}" y="${pts[minI].y - 4}" fill="#60a5fa" font-size="8" text-anchor="middle" font-weight="bold">${Math.round(temps[minI])}°</text>`;
+        // Feature 66: rain probability bars at chart bottom (each hour = a thin rect)
+        let rainBars = '';
+        if (rainProbs && rainProbs.length >= 2) {
+            const barW = (W - 2 * P) / (rainProbs.length - 1);
+            for (let i = 0; i < rainProbs.length; i++) {
+                const prob = rainProbs[i] || 0;
+                if (prob >= 10) {
+                    const barH = Math.max(1, (prob / 100) * 8);
+                    const bx = W - P - i * barW - barW / 2;
+                    rainBars += `<rect x="${bx.toFixed(1)}" y="${(H - P - barH).toFixed(1)}" width="${(barW * 0.7).toFixed(1)}" height="${barH.toFixed(1)}" fill="#60a5fa" opacity="${(0.15 + (prob / 100) * 0.45).toFixed(2)}" rx="1"/>`;
+                }
+            }
+        }
         el.wxHourly.innerHTML = `
             <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0.02"/></linearGradient></defs>
+            ${rainBars}
             <path d="${areaPath}" fill="url(#hg)" /><path d="${path}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
             ${pts.map((p, i) => i % 2 === 0 ? `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#60a5fa"/>` : '').join('')}
             ${labels}`;
@@ -1716,6 +2247,8 @@
         const now = Date.now();
         all.forEach((it, idx) => {
             const div = document.createElement('div'); div.className = 'rss-item' + (idx >= list.length ? ' clone' : '');
+            // Feature 39: data-src for source filter
+            if (it.source) { div.dataset.src = it.source; if (idx < list.length) addNewsFilterChip(it.source); }
             // Freshness indicator: items < 30min old get highlighted
             if (it.pubDate) {
                 const age = now - new Date(it.pubDate).getTime();
@@ -1727,13 +2260,54 @@
                 tm.textContent = d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
             } else { tm.textContent = '--:--'; }
             div.appendChild(tm);
+            // Feature 67: news item age timestamp
+            if (idx < list.length && it.pubDate) {
+                const ageStr = newsRelAge(it.pubDate);
+                if (ageStr) {
+                    const ageEl = document.createElement('span');
+                    ageEl.className = 'news-age';
+                    ageEl.textContent = ageStr;
+                    div.appendChild(ageEl);
+                }
+            }
             const ttl = document.createElement('span'); ttl.className = 'rss-title'; ttl.textContent = it.title; div.appendChild(ttl);
             const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; div.appendChild(sr);
+            // Feature 57: copy to clipboard button (only on original items, not clones)
+            if (idx < list.length && navigator.clipboard) {
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'news-copy';
+                copyBtn.textContent = '📋';
+                copyBtn.title = 'העתק כותרת';
+                copyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(it.title + (it.link ? '\n' + it.link : ''))
+                        .then(() => {
+                            copyBtn.textContent = '✓';
+                            copyBtn.classList.add('copied');
+                            setTimeout(() => { copyBtn.textContent = '📋'; copyBtn.classList.remove('copied'); }, 1500);
+                        }).catch(() => {});
+                });
+                div.appendChild(copyBtn);
+            }
+            // Feature 62: Web Share API button (only on original items, not clones)
+            if (idx < list.length && navigator.share && it.link) {
+                const shareBtn = document.createElement('button');
+                shareBtn.className = 'news-share';
+                shareBtn.textContent = '📤';
+                shareBtn.title = 'שתף';
+                shareBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navigator.share({ title: it.title, url: it.link }).catch(() => {});
+                });
+                div.appendChild(shareBtn);
+            }
             if (it.link) div.addEventListener('click', () => window.open(it.link, '_blank'));
             frag.appendChild(div);
         });
         el.rssScroll.innerHTML = '';
         el.rssScroll.appendChild(frag); // single DOM write via DocumentFragment
+        // Feature 29: update news count badge
+        if (el.newsCount) el.newsCount.textContent = list.length + ' חדשות';
         // Set scroll animation duration based on item count
         const h = el.rssScroll.scrollHeight / 2;
         el.rssScroll.style.animation = `newsScroll ${Math.max(40, list.length * 4)}s linear infinite`;
@@ -1798,11 +2372,17 @@
 
     function renderHalacha(data) {
         if (!el.ticker || !data?.texts?.length) return;
-        // Build one full set (ref badge + all segments); call twice for seamless loop
+        // Feature 48: prepend custom ticker announcement
+        const customMsg = localStorage.getItem('dash_ticker_msg');
         function makeSet(isClone) {
             const f = document.createDocumentFragment();
             const refSpan = document.createElement('span'); refSpan.className = 'ticker-item' + (isClone ? ' clone' : '');
             const src = document.createElement('span'); src.className = 'ticker-src'; src.textContent = '📜 ' + data.ref;
+            // Feature 48: prepend custom announcement
+            if (customMsg && !isClone) {
+                const chip = document.createElement('span'); chip.className = 'ticker-custom'; chip.textContent = '📢 ' + customMsg;
+                refSpan.appendChild(chip);
+            }
             refSpan.appendChild(src); f.appendChild(refSpan);
             data.texts.forEach((text, i) => {
                 const span = document.createElement('span'); span.className = 'ticker-item' + (isClone ? ' clone' : '');
@@ -1819,6 +2399,12 @@
         // Speed based on HALF total scrollWidth (content is exactly doubled)
         const w = el.ticker.scrollWidth / 2;
         el.ticker.style.animationDuration = Math.max(30, w / 140) + 's';
+        // Feature 30: show first halacha segment in hc-card
+        if (data.texts?.length && el.hcHalacha && el.hcHalachaRow) {
+            const excerpt = data.texts[0].substring(0, 90);
+            el.hcHalacha.textContent = excerpt + (data.texts[0].length > 90 ? '...' : '');
+            el.hcHalachaRow.style.display = '';
+        }
     }
 
     // ── Stocks (multi-fallback, bezier charts) ──
@@ -1984,6 +2570,34 @@
         if (prices.length >= 2) { blk.querySelector('.stk-chart').innerHTML = bezierChart(prices, trendColor); }
         else if (prices.length === 1 && cur) { blk.querySelector('.stk-chart').innerHTML = bezierChart([prices[0], prices[0] * 0.999, prices[0] * 1.001, cur], trendColor); }
         blk.querySelector('.stk-time').textContent = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+        // Feature 35: Portfolio P&L
+        if (cur) updatePortfolioPnL(sym, cur);
+        // Feature 46: 52-week range bar
+        const low52 = meta.fiftyTwoWeekLow;
+        const high52 = meta.fiftyTwoWeekHigh;
+        if (cur && low52 && high52) updateStockRange(blk, cur, low52, high52);
+        // Feature 51: cache price for portfolio total; Feature 55: check threshold alerts
+        if (cur) {
+            _stkPrices[sym] = cur;
+            checkStockAlerts(sym, cur);
+            updatePortfolioTotal();
+        }
+        // Feature 61: Relative volume badge
+        const regVol = meta.regularMarketVolume;
+        const avgVol = meta.averageDailyVolume3Month || meta.averageDailyVolume10Day;
+        const volBadge = getRelVolBadge(regVol, avgVol);
+        let volBadgeEl = blk.querySelector('.stk-vol-badge');
+        if (volBadge) {
+            if (!volBadgeEl) {
+                volBadgeEl = document.createElement('span');
+                blk.querySelector('.stk-chg')?.insertAdjacentElement('afterend', volBadgeEl);
+            }
+            volBadgeEl.className = `stk-vol-badge ${volBadge.cls}`;
+            volBadgeEl.textContent = volBadge.text;
+        } else if (volBadgeEl) { volBadgeEl.remove(); }
+        // Feature 65: Price history sparkline
+        if (cur) recordStkPrice(sym, cur);
+        drawStkSpark(blk, sym);
         // Logo: set src from STOCK_BRAND on first render (Google favicons are reliable)
         const logoDiv = blk.querySelector('.stk-logo');
         const img = logoDiv?.querySelector('img');
@@ -2046,15 +2660,15 @@
         // rates are ILS-based, so 1 ILS = X USD → we want 1 USD = 1/X ILS
         const container = document.getElementById('currency-body');
         const pairs = [
-            { code: 'USD', el: el.curUsd },
-            { code: 'EUR', el: el.curEur },
+            { code: 'USD', el: el.curUsd, chgEl: el.curUsdChg },
+            { code: 'EUR', el: el.curEur, chgEl: el.curEurChg },
         ];
         for (const p of pairs) {
             const val = rates[p.code] ? (1 / rates[p.code]) : null;
             animateNumber(p.el, val ? '₪' + val.toFixed(3) : '--');
             p.el.classList.remove('skeleton');
             // Show change arrow vs previous fetch
-            const chgEl = p.el.parentElement?.querySelector('.cur-chg');
+            const chgEl = p.chgEl;
             if (chgEl && _prevRates?.[p.code] && val) {
                 const prevVal = 1 / _prevRates[p.code];
                 const diff = val - prevVal;
@@ -2064,7 +2678,31 @@
                 } else { chgEl.textContent = ''; chgEl.className = 'cur-chg'; }
             } else if (chgEl) { chgEl.textContent = ''; }
         }
+        // Gold (XAU) and Silver (XAG) — 1 oz in ILS (if ER-API returns them)
+        const metals = [
+            { code: 'XAU', el: el.curGold, chgEl: el.curGoldChg, decimals: 0, sym: '₪' },
+            { code: 'XAG', el: el.curSilver, chgEl: el.curSilverChg, decimals: 1, sym: '₪' },
+        ];
+        for (const m of metals) {
+            if (!m.el) continue;
+            const val = rates[m.code] ? Math.round(1 / rates[m.code]) : null;
+            if (val) {
+                m.el.textContent = m.sym + val.toLocaleString('he-IL');
+                if (m.chgEl && _prevRates?.[m.code]) {
+                    const prevVal = Math.round(1 / _prevRates[m.code]);
+                    const diff = val - prevVal;
+                    if (Math.abs(diff) > 5) {
+                        m.chgEl.textContent = (diff > 0 ? '▲' : '▼') + ' ' + Math.abs(diff);
+                        m.chgEl.className = 'cur-chg ' + (diff > 0 ? 'positive' : 'negative');
+                    } else { m.chgEl.textContent = ''; m.chgEl.className = 'cur-chg'; }
+                }
+            }
+        }
         _prevRates = { ...rates };
+        // Feature 38: record history + draw sparklines
+        const usdRate = rates['USD'] ? (1 / rates['USD']) : 0;
+        const eurRate = rates['EUR'] ? (1 / rates['EUR']) : 0;
+        if (usdRate && eurRate) { recordCurrencyHistory(usdRate, eurRate); renderCurrencySparklines(); }
         // Pulse effect on fresh data
         if (container) { container.classList.remove('data-fresh'); void container.offsetWidth; container.classList.add('data-fresh'); }
     }
@@ -2103,6 +2741,8 @@
                 const newTopId = data[0]?.id ?? null;
                 const isNew = _lastAlertId !== null && newTopId !== _lastAlertId;
                 _lastAlertId = newTopId;
+                // Feature 43: play alert beep on new incoming alert
+                if (isNew) playAlertBeep(880, 0.18, 0.3);
                 cSet(key, data);
                 renderAlerts(data, isNew);
                 setSync('alerts', 'success'); syncBurst('alerts'); recordSuccess('alerts');
@@ -2216,23 +2856,30 @@
             const location = (get('LOCATION') || '').replace(/\\,/g, ',').replace(/\\n/g, ', ').replace(/\\;/g, ';');
             if (!dtRaw || !summary) continue;
             // parse DTSTART: VALUE=DATE (YYYYMMDD) or datetime (YYYYMMDDTHHmmSSZ)
-            let start, allDay = false;
+            let start, end = null, allDay = false;
             if (dtRaw.length === 8) {
-                // all-day: YYYYMMDD
                 start = new Date(dtRaw.slice(0,4) + '-' + dtRaw.slice(4,6) + '-' + dtRaw.slice(6,8) + 'T00:00:00');
                 allDay = true;
             } else {
-                // datetime — convert to local Jerusalem time via ISO
                 const s = dtRaw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, '$1-$2-$3T$4:$5:$6' + (dtRaw.endsWith('Z') ? 'Z' : ''));
                 start = new Date(s);
             }
+            // Feature 47: parse DTEND
+            if (dtEndRaw && !allDay) {
+                const e = dtEndRaw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, '$1-$2-$3T$4:$5:$6' + (dtEndRaw.endsWith('Z') ? 'Z' : ''));
+                const parsed = new Date(e);
+                if (!isNaN(parsed.getTime())) end = parsed;
+            }
             if (isNaN(start.getTime())) continue;
-            events.push({ start, allDay, summary, location });
+            events.push({ start, end, allDay, summary, location });
         }
         return events;
     }
+    }
 
     function renderCalendar(events) {
+        // Feature 63: 7-day event density strip
+        renderCalWeekStrip(events);
         const now = new Date();
         const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * 86400000);
         // filter to window: from start of today
@@ -2269,12 +2916,33 @@
                 timeEl.textContent = ev.allDay
                     ? 'כל היום'
                     : ev.start.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                // Feature 47: show end time + duration
+                if (!ev.allDay && ev.end && ev.end > ev.start) {
+                    const endStr = ev.end.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                    const durMin = Math.round((ev.end - ev.start) / 60000);
+                    const durStr = durMin >= 60 ? `${Math.floor(durMin/60)}:${String(durMin%60).padStart(2,'0')}h` : `${durMin}m`;
+                    timeEl.textContent += `–${endStr} (${durStr})`;
+                }
+                // Feature 47: show end time + duration
+                if (!ev.allDay && ev.end && ev.end > ev.start) {
+                    const endStr = ev.end.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+                    const durMin = Math.round((ev.end - ev.start) / 60000);
+                    const durStr = durMin >= 60 ? `${Math.floor(durMin/60)}:${String(durMin%60).padStart(2,'0')}h` : `${durMin}m`;
+                    timeEl.textContent += `–${endStr} (${durStr})`;
+                }
                 const titleEl = document.createElement('div');
                 titleEl.style.flex = '1';
+                // Feature 58: category color dot
+                const catRow = document.createElement('div');
+                catRow.style.cssText = 'display:flex;align-items:flex-start;gap:2px';
+                const dot = document.createElement('span');
+                dot.className = 'cal-dot cal-dot-' + detectCalCategory(ev.summary);
+                catRow.appendChild(dot);
                 const titleLine = document.createElement('div');
                 titleLine.className = 'cal-event-title';
                 titleLine.textContent = ev.summary;
-                titleEl.appendChild(titleLine);
+                catRow.appendChild(titleLine);
+                titleEl.appendChild(catRow);
                 if (ev.location) {
                     const locEl = document.createElement('div');
                     locEl.className = 'cal-event-loc';
@@ -2290,6 +2958,21 @@
             el.calAgenda.innerHTML = '';
             el.calAgenda.appendChild(frag);
         }
+        // Feature 28: show countdown badge for the next upcoming event within 7 days
+        if (el.calCountdown) {
+            const next7 = upcoming.filter(e => e.start > now && (e.start - now) < 7 * 86400000);
+            if (next7.length) {
+                const ev = next7[0];
+                const days = Math.ceil((ev.start - now) / 86400000);
+                const label = days === 0 ? 'היום' : days === 1 ? 'מחר' : `עוד ${days} ימים`;
+                const name = (ev.summary || '').substring(0, 20);
+                el.calCountdown.textContent = `${label}: ${name}`;
+                el.calCountdown.style.display = '';
+            } else {
+                el.calCountdown.style.display = 'none';
+            }
+        }
+        return upcoming.length;
     }
 
     async function loadCalendar() {
@@ -2297,8 +2980,9 @@
         const key = 'cal-ics';
         const fresh = cGet(key, 900000); // 15min TTL
         if (fresh) {
-            renderCalendar(parseICS(fresh));
-            el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
+            const count = renderCalendar(parseICS(fresh));
+            if (count > 0) el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
+            updateTodayEventCount(); // Feature 37
             setSync('cal', 'success'); releaseLock('cal'); return;
         }
         const staleText = cGetStale(key);
@@ -2314,8 +2998,9 @@
             const events = parseICS(icsText);
             diagLog(`calendar ${source} OK (${icsText.length} bytes, ${events.length} events)`);
             cSet(key, icsText);
-            renderCalendar(events);
-            el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
+            const count = renderCalendar(events);
+            if (count > 0) el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
+            updateTodayEventCount(); // Feature 37
             setSync('cal', 'success'); syncBurst('cal'); recordSuccess('cal');
             return true;
         }
@@ -2472,8 +3157,1190 @@
                 applyTheme(THEMES[(cur + 1) % THEMES.length]);
             }
             if (e.key === 'a' || e.key === 'A') applyAlerts(_alertsOn ? 'off' : 'on');
+            if (e.key === 's' || e.key === 'S') toggleConfig();
+            if (e.key === 'n' || e.key === 'N') toggleNightDim();  // Feature 54
+            if (e.key === 'r' || e.key === 'R') forceRefresh();    // Feature 59
             if (e.key === 'd' || e.key === 'D') toggleDiag();
+            if (e.key === 'm' || e.key === 'M') toggleAlertSound();
+            if (e.key === 'p' || e.key === 'P') window.print(); // Feature 50
+            if (e.key === '+' || e.key === '=') adjustFontScale(0.05);  // Feature 49
+            if (e.key === '-' || e.key === '_') adjustFontScale(-0.05); // Feature 49
+            if (e.key === 'n' || e.key === 'N') toggleNightDim();  // Feature 54
+            if (e.key === 'r' || e.key === 'R') forceRefresh();    // Feature 59
+            if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+            if (e.key === '?') toggleHelp();
             if (e.key === 'Escape' && _maximizedCard) toggleCardMaximize(_maximizedCard);
+            if (e.key === 'Escape' && el.helpOverlay?.classList.contains('visible')) toggleHelp();
+            if (e.key === 'Escape' && document.getElementById('config-overlay')?.classList.contains('visible')) toggleConfig();
+        });
+    }
+
+    // ── Feature: Fullscreen (F key) ──
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+            document.exitFullscreen().catch(() => {});
+        }
+    }
+
+    // ── Feature: Temperature Unit Toggle (°C / °F) ──
+    /** Convert Celsius to display string respecting current unit preference */
+    function toDisplayTemp(c) {
+        if (_tempUnit === 'F') return Math.round(c * 9 / 5 + 32) + '°F';
+        return c + '°C';
+    }
+    function toggleTempUnit() {
+        _tempUnit = _tempUnit === 'C' ? 'F' : 'C';
+        localStorage.setItem('dash_tempUnit', _tempUnit);
+        diagLog('tempUnit → ' + _tempUnit);
+        const wx = cGetStale('wx');
+        if (wx) renderWeather(wx);
+    }
+
+    // ── Feature: Burn-in Protection (OLED) ──
+    /** Subtle 1–3 px random translate on the container every 5 min to prevent pixel burn-in */
+    function startBurnInProtection() {
+        const container = document.querySelector('.container');
+        if (!container) return;
+        setInterval(() => {
+            const x = Math.round((Math.random() - 0.5) * 6);
+            const y = Math.round((Math.random() - 0.5) * 6);
+            container.style.transform = `translate(${x}px, ${y}px)`;
+        }, 300000); // every 5 min
+    }
+
+    // ── Feature: Background Image Cycling ──
+    /** Apply a CSS background image URL via an injected <style> tag */
+    function setBgImage(url) {
+        let styleEl = document.getElementById('bg-img-style');
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'bg-img-style';
+            document.head.appendChild(styleEl);
+        }
+        // Only allow HTTPS URLs to prevent injection
+        const safe = /^https:\/\//.test(url) ? url : '';
+        styleEl.textContent = safe ? `body::after { background-image: url('${safe}'); opacity: 0.18; }` : '';
+    }
+    function startBgCycling() {
+        // Custom URL overrides the cycle
+        const customUrl = localStorage.getItem('dash_bgUrl');
+        if (customUrl) { setBgImage(customUrl); return; }
+        let bgIdx = parseInt(localStorage.getItem('dash_bgIdx') || '0', 10) % BG_IMAGES.length;
+        setBgImage(BG_IMAGES[bgIdx]);
+        setInterval(() => {
+            bgIdx = (bgIdx + 1) % BG_IMAGES.length;
+            localStorage.setItem('dash_bgIdx', String(bgIdx));
+            setBgImage(BG_IMAGES[bgIdx]);
+            diagLog('bg cycling → image ' + bgIdx);
+        }, 1800000); // 30 min
+    }
+
+    // ── Feature: Auto Night Theme ──
+    /** Switch to OLED black after sunset; restore saved theme after sunrise */
+    function applyAutoTheme() {
+        if (!_autoTheme) return;
+        if (!_todaySunrise || !_todaySunset) return;
+        const now = new Date();
+        const isNight = now > _todaySunset || now < _todaySunrise;
+        const isBlack = document.body.classList.contains('theme-black');
+        if (isNight && !isBlack) {
+            _themeBeforeDark = localStorage.getItem('dash_theme') || 'black';
+            applyTheme('black');
+            diagLog('auto-theme: night → black');
+        } else if (!isNight && isBlack && _themeBeforeDark && _themeBeforeDark !== 'black') {
+            applyTheme(_themeBeforeDark);
+            _themeBeforeDark = null;
+            diagLog('auto-theme: day → ' + localStorage.getItem('dash_theme'));
+        }
+    }
+
+    // ── Feature: Birthdays Countdown ──
+    function checkBirthdays() {
+        if (!BIRTHDAYS.length) { if (el.hcBirthday) el.hcBirthday.style.display = 'none'; return; }
+        const now = new Date();
+        const upcoming = BIRTHDAYS.map(b => {
+            let bd = new Date(now.getFullYear(), b.month - 1, b.day);
+            if (bd < now) bd = new Date(now.getFullYear() + 1, b.month - 1, b.day);
+            const days = Math.ceil((bd - now) / 86400000);
+            return { ...b, days };
+        }).sort((a, b2) => a.days - b2.days);
+        const soon = upcoming.filter(b => b.days <= 7);
+        if (soon.length && el.hcBirthday) {
+            el.hcBirthday.textContent = soon.map(b =>
+                b.days === 0 ? `🎂 יום הולדת שמח ל${b.name}!` : `🎂 ${b.name} — עוד ${b.days} ימים`
+            ).join(' · ');
+            el.hcBirthday.style.display = '';
+        } else if (el.hcBirthday) {
+            el.hcBirthday.style.display = 'none';
+        }
+    }
+
+    // ── Feature: Shabbat Countdown ──
+    function updateShabbatCountdown() {
+        if (!_candleDate || !el.hcCountdown || !el.hcCountdownRow) return;
+        const now = Date.now();
+        const diff = Math.floor((_candleDate - now) / 1000);
+        if (diff <= 0 || diff > 86400) {
+            el.hcCountdownRow.style.display = 'none';
+            // Check if Shabbat is ongoing (past candles but before havdalah)
+            if (diff <= 0 && _shabbatEnd && now < _shabbatEnd.getTime()) {
+                applyShabbatMode(true);
+            } else if (_shabbatEnd && now >= _shabbatEnd.getTime()) {
+                applyShabbatMode(false);
+            }
+            return;
+        }
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
+        el.hcCountdown.textContent = h > 0
+            ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+            : `${m}:${String(s).padStart(2, '0')}`;
+        el.hcCountdown.className = `hc-val hc-countdown${diff < 3600 ? ' urgent' : ''}`;
+        el.hcCountdownRow.style.display = '';
+    }
+
+    // ── Feature: Shabbat Mode (auto-dim during Shabbat) ──
+    function applyShabbatMode(on) {
+        if (_shabbatMode === on) return;
+        _shabbatMode = on;
+        document.body.classList.toggle('shabbat-mode', on);
+        diagLog('Shabbat mode: ' + (on ? 'ON' : 'OFF'));
+    }
+
+    // ── Feature: Help Overlay (? key) ──
+    function toggleHelp() {
+        if (!el.helpOverlay) return;
+        el.helpOverlay.classList.toggle('visible');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SPRINT 3 FEATURES (v4.11)
+    // ═══════════════════════════════════════════════════════════════
+
+    // ── Feature 21: Parasha Aliyot — first verse of weekly reading ──
+    async function _loadParashaAliyot() {
+        if (_aliyotLoaded) return;
+        const dayKey = new Date().toDateString();
+        const cacheKey = 'dash_v2_aliyot_' + dayKey;
+        let verseText = cGet(cacheKey, 86400000); // 24h TTL
+        if (!verseText) {
+            try {
+                const cal = await fetch('https://www.sefaria.org/api/calendars').then(r => r.json());
+                const pw = (cal.calendar_items || []).find(i => i.title?.en === 'Parashat Hashavua');
+                if (!pw?.ref) return;
+                // Get only the very first verse (e.g. "Bereishit 1:1" from "Bereishit 1:1-6:8")
+                const firstRef = pw.ref.split('-')[0].trim();
+                const vd = await fetch(`https://www.sefaria.org/api/texts/${encodeURIComponent(firstRef)}?context=0&lang=he&stripItags=1`).then(r => r.json());
+                const rawHe = vd?.he;
+                const raw = Array.isArray(rawHe) ? rawHe[0] : rawHe;
+                verseText = (typeof raw === 'string' ? raw : (raw?.[0] || '')).replace(/<[^>]+>/g, '').trim().substring(0, 90);
+                if (verseText) cSet(cacheKey, verseText);
+            } catch (_) { return; }
+        }
+        if (verseText && el.hcAliyot && el.hcAliyotRow) {
+            el.hcAliyot.textContent = '"' + verseText + (verseText.length >= 90 ? '..."' : '"');
+            el.hcAliyotRow.style.display = '';
+            _aliyotLoaded = true;
+        }
+    }
+
+    // ── Feature 22: Electricity Peak-Hour Badge (IEC Israel tariffs) ──
+    function checkElecPeak() {
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        const month = now.getMonth(); // 0=Jan
+        // Both winter & summer: peak 17:00–22:00; summer (Apr–Oct) also adds 08:00–10:00
+        let peak = (totalMin >= 17 * 60 && totalMin < 22 * 60);
+        if (month >= 3 && month <= 9) peak = peak || (totalMin >= 8 * 60 && totalMin < 10 * 60);
+        if (el.elecBadge) el.elecBadge.classList.toggle('peak-on', peak);
+    }
+
+    // ── Feature 23: Psalm of the Day (שיר של יום) ──
+    // Traditional daily psalms: Sun=24, Mon=48, Tue=82, Wed=94, Thu=81, Fri=93, Sat=92
+    const DOW_PSALMS = [24, 48, 82, 94, 81, 93, 92];
+    async function loadPsalm() {
+        if (_psalmLoaded) return;
+        const psalmNum = DOW_PSALMS[new Date().getDay()];
+        const cacheKey = `dash_v2_psalm_${psalmNum}`;
+        let excerpt = cGet(cacheKey, 86400000); // 24h TTL
+        if (!excerpt) {
+            try {
+                const d = await fetch(`https://www.sefaria.org/api/texts/Psalms.${psalmNum}?context=0&lang=he&stripItags=1`).then(r => r.json());
+                const verses = d?.he;
+                const firstVerse = Array.isArray(verses) ? verses[0] : verses;
+                const raw = typeof firstVerse === 'string' ? firstVerse : (firstVerse?.[0] || '');
+                excerpt = raw.replace(/<[^>]+>/g, '').trim().substring(0, 80);
+                if (excerpt) cSet(cacheKey, excerpt);
+            } catch (_) { return; }
+        }
+        if (excerpt && el.hcPsalm && el.hcPsalmRow) {
+            el.hcPsalm.textContent = `תהילים ${psalmNum}: ${excerpt}...`;
+            el.hcPsalmRow.style.display = '';
+            _psalmLoaded = true;
+            diagLog(`Psalm ${psalmNum} loaded`);
+        }
+    }
+
+    // ── Feature 24: Moon Phase — pure JS synodic calculation ──
+    function getMoonPhase() {
+        // Known new moon: Jan 6, 2000 at 18:14 UTC
+        const KNOWN_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14, 0);
+        const SYNODIC_MS = 29.53059 * 86400000;
+        const elapsed = ((Date.now() - KNOWN_NEW_MOON) % SYNODIC_MS + SYNODIC_MS) % SYNODIC_MS;
+        const pct = elapsed / SYNODIC_MS;
+        const age = Math.round(elapsed / 86400000);
+        const PHASES = [
+            { max: 0.0625, emoji: '🌑', name: 'ירח חדש'    },
+            { max: 0.25,   emoji: '🌒', name: 'סהר גדל'    },
+            { max: 0.375,  emoji: '🌓', name: 'רבע ראשון'  },
+            { max: 0.5,    emoji: '🌔', name: 'מתמלא'      },
+            { max: 0.5625, emoji: '🌕', name: 'ירח מלא'    },
+            { max: 0.75,   emoji: '🌖', name: 'מתרוקן'     },
+            { max: 0.875,  emoji: '🌗', name: 'רבע אחרון'  },
+            { max: 1.0,    emoji: '🌘', name: 'סהר דועך'   },
+        ];
+        const phase = PHASES.find(p => pct <= p.max) || PHASES[7];
+        return { emoji: phase.emoji, name: phase.name, age };
+    }
+    function updateMoonPhase() {
+        if (!el.hcMoon) return;
+        const { emoji, name, age } = getMoonPhase();
+        el.hcMoon.textContent = `${emoji} ${name} · יום ${age}`;
+    }
+
+    // ── Feature 27: Seasonal CSS Body Class ──
+    function applySeasonClass() {
+        const m = new Date().getMonth(); // 0=Jan
+        const season = (m >= 2 && m <= 4) ? 'spring'
+                     : (m >= 5 && m <= 7) ? 'summer'
+                     : (m >= 8 && m <= 10) ? 'autumn'
+                     : 'winter';
+        ['spring', 'summer', 'autumn', 'winter'].forEach(s =>
+            document.body.classList.toggle('season-' + s, s === season)
+        );
+        diagLog('Season: ' + season);
+    }
+
+    // ── Feature: Parashat HaShavua + Sefaria Reading Reference ──
+    async function loadParasha() {
+        const key = 'parasha-' + new Date().toDateString();
+        const cached = cGet(key, 86400000); // 24h TTL
+        if (cached) { _renderParasha(cached); return; }
+        const stale = cGetStale(key); if (stale) _renderParasha(stale);
+        try {
+            const d = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+            const parasha = (d.items || []).find(i => i.category === 'parashat');
+            if (parasha) {
+                const name = parasha.hebrew || parasha.title;
+                cSet(key, name);
+                _renderParasha(name);
+                diagLog('parasha OK: ' + name);
+                // Fetch Sefaria reading reference asynchronously (non-blocking)
+                _loadParashaRef().catch(() => {});
+                // Feature 21: also load first-verse aliyot excerpt (non-blocking)
+                _loadParashaAliyot().catch(() => {});
+            } else {
+                cSet(key, null);
+            }
+        } catch (e) { diagLog('parasha ERR: ' + e.message); }
+    }
+    async function _loadParashaRef() {
+        if (!el.hcParashaRef) return;
+        const key = 'parasha-ref-' + new Date().toDateString();
+        const cached = cGet(key, 86400000);
+        if (cached) { el.hcParashaRef.textContent = ' · ' + cached; return; }
+        try {
+            const cal = await fetch('https://www.sefaria.org/api/calendars').then(r => r.json());
+            const pw = (cal.calendar_items || []).find(i => i.title?.en === 'Parashat Hashavua');
+            if (pw?.displayValue?.he) {
+                const ref = pw.displayValue.he;
+                cSet(key, ref);
+                el.hcParashaRef.textContent = ' · ' + ref;
+                // Feature 44: store Sefaria URL for deep link
+                if (pw.url) _parashaSefariaUrl = 'https://www.sefaria.org/' + pw.url;
+                // Feature 44: store Sefaria URL for deep link
+                if (pw.url) _parashaSefariaUrl = 'https://www.sefaria.org/' + pw.url;
+            }
+        } catch (_) {}
+    }
+    function _renderParasha(name) {
+        if (!name || !el.hcParasha || !el.hcParashaRow) return;
+        el.hcParasha.textContent = name;
+        el.hcParashaRow.style.display = '';
+        // Feature 44: show Sefaria link row
+        const linkRow = document.getElementById('hc-parasha-link-row');
+        const linkBtn = document.getElementById('hc-parasha-link');
+        if (linkRow) linkRow.style.display = '';
+        if (linkBtn && !linkBtn.dataset.wired) {
+            linkBtn.dataset.wired = '1';
+            linkBtn.addEventListener('click', openParashaOnSefaria);
+        }
+    }
+
+    // ── Feature: Daf Yomi ──
+    async function loadDafYomi() {
+        const now = new Date();
+        const key = `daf-${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+        const cached = cGet(key, 86400000); // 24h TTL
+        if (cached) { _renderDaf(cached); return; }
+        const stale = cGetStale(key); if (stale) _renderDaf(stale);
+        try {
+            const url = `https://www.hebcal.com/hebcal?v=1&cfg=json&daf=on&maj=off&min=off&ss=off&mf=off&year=${now.getFullYear()}&month=${now.getMonth() + 1}&day=${now.getDate()}`;
+            const d = await fetchJSON(url);
+            const daf = (d.items || []).find(i => i.category === 'dafyomi');
+            if (daf) {
+                const title = daf.hebrew || daf.title;
+                // Feature 53: store Sefaria ref from dafyomi URL
+                if (daf.url) _dafSefariaRef = daf.url;
+                cSet(key, title);
+                _renderDaf(title);
+                diagLog('dafyomi OK: ' + title);
+            } else {
+                cSet(key, null);
+            }
+        } catch (e) { diagLog('dafyomi ERR: ' + e.message); }
+    }
+    function _renderDaf(title) {
+        if (!title || !el.hcDaf || !el.hcDafRow) return;
+        el.hcDaf.textContent = title;
+        el.hcDafRow.style.display = '';
+        // Feature 53: show Sefaria link row
+        const linkRow = document.getElementById('hc-daf-link-row');
+        const linkBtn = document.getElementById('hc-daf-link');
+        if (linkRow) linkRow.style.display = '';
+        if (linkBtn && !linkBtn.dataset.wired) {
+            linkBtn.dataset.wired = '1';
+            linkBtn.addEventListener('click', openDafOnSefaria);
+        }
+    }
+
+    // ── Feature: Zmanim (Prayer Times) ──
+    async function loadZmanim() {
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        const key = 'zmanim-' + dateStr;
+        const cached = cGet(key, 43200000); // 12h TTL — same for the full day
+        if (cached) { _renderZmanim(cached); return; }
+        const stale = cGetStale(key); if (stale) _renderZmanim(stale);
+        try {
+            const d = await fetchJSON(`https://www.hebcal.com/zmanim?cfg=json&geonameid=281184&date=${dateStr}`);
+            if (d.times) {
+                cSet(key, d.times);
+                _renderZmanim(d.times);
+                diagLog('zmanim OK');
+            }
+        } catch (e) { diagLog('zmanim ERR: ' + e.message); }
+    }
+    function _renderZmanim(times) {
+        if (!times || !el.zmanimGrid || !el.zmanimSection) return;
+        // Show 6 key zmanim in 3-col grid
+        const SHOW = [
+            { key: 'alotHaShachar',    label: 'עלות השחר' },
+            { key: 'misheyakir',       label: 'משיכיר' },
+            { key: 'sunrise',          label: 'זריחה' },
+            { key: 'sofZmanShmaMGA',   label: 'סו"ז שמע מג"א' },
+            { key: 'sofZmanShmaGRA',   label: 'סו"ז שמע גר"א' },
+            { key: 'chatzot',          label: 'חצות' },
+            { key: 'minchaGedola',     label: 'מנחה גדולה' },
+            { key: 'sunset',           label: 'שקיעה' },
+            { key: 'tzait7083deg',     label: 'צאת הכוכבים' },
+        ];
+        const frag = document.createDocumentFragment();
+        let count = 0;
+        for (const z of SHOW) {
+            const raw = times[z.key];
+            if (!raw) continue;
+            const t = new Date(raw).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+            const item = document.createElement('div');
+            item.className = 'zman-item';
+            const nameEl = document.createElement('div');
+            nameEl.className = 'zman-name';
+            nameEl.textContent = z.label;
+            const timeEl = document.createElement('div');
+            timeEl.className = 'zman-time';
+            timeEl.textContent = t;
+            item.appendChild(nameEl);
+            item.appendChild(timeEl);
+            frag.appendChild(item);
+            count++;
+        }
+        if (count) {
+            el.zmanimGrid.innerHTML = '';
+            el.zmanimGrid.appendChild(frag);
+            el.zmanimSection.style.display = '';
+        }
+    }
+
+    // ── AQI (Air Quality Index) ── Open-Meteo air quality API, no key needed ──
+    async function loadAQI() {
+        if (!_pageVisible || !acquireLock('aqi')) return;
+        const key = 'aqi';
+        const TTL = 3600000; // 1h
+        const fresh = cGet(key, TTL);
+        if (fresh) { _renderAQI(fresh); releaseLock('aqi'); return; }
+        const stale = cGetStale(key); if (stale) _renderAQI(stale);
+        try {
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const d = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=31.7683&longitude=35.2137&hourly=european_aqi&timezone=Asia%2FJerusalem&forecast_days=1&start_date=${dateStr}&end_date=${dateStr}`).then(r => r.json());
+            const aqi = d.hourly?.european_aqi?.[now.getHours()];
+            if (aqi != null) { cSet(key, aqi); _renderAQI(aqi); diagLog('AQI OK: ' + aqi); }
+        } catch (e) { diagLog('AQI ERR: ' + e.message); }
+        releaseLock('aqi');
+    }
+    function _renderAQI(aqi) {
+        if (!el.wxAqi) return;
+        el.wxAqi.textContent = Math.round(aqi);
+        el.wxAqi.className = 'wx-detail-val ' + (aqi <= 20 ? 'aqi-good' : aqi <= 40 ? 'aqi-fair' : aqi <= 60 ? 'aqi-mod' : aqi <= 80 ? 'aqi-poor' : 'aqi-verypoor');
+        // Feature 64: Hebrew category label + trend arrow
+        const cat = getAqiCategory(aqi);
+        const labelEl = document.getElementById('aqi-label');
+        const trendEl = document.getElementById('aqi-trend');
+        if (labelEl) { labelEl.textContent = cat.text; labelEl.className = `aqi-label ${cat.cls}`; }
+        if (trendEl && _prevAqiVal !== null) {
+            const diff = aqi - _prevAqiVal;
+            trendEl.textContent = Math.abs(diff) < 2 ? '\u2192' : diff < 0 ? '\u2193' : '\u2191';
+            trendEl.className = 'aqi-trend ' + (diff < -2 ? 'aqi-good' : diff > 2 ? 'aqi-poor' : '');
+        }
+        _prevAqiVal = aqi;
+    }
+
+
+    // ── Sprint 4 Features ──
+
+    // Feature 31: Wind Direction Arrow  deg→16-point compass arrow
+    function deg2arrow(deg) {
+        const dirs = ['↑','↗','→','↘','↓','↙','←','↖'];
+        return dirs[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
+    }
+
+    // Feature 32: Extreme Weather Alert Banner
+    const SEVERE_WX = { 82: '⛈ גשם עז מאוד', 95: '⛈ סופת רעמים', 96: '⛈ סופה עם ברד', 99: '⛈ סופת רעמים קשה' };
+    function checkSevereWeather(code) {
+        const banner = document.getElementById('wx-alert-banner');
+        if (!banner) return;
+        const msg = SEVERE_WX[code];
+        if (msg) {
+            banner.textContent = msg;
+            banner.classList.add('visible');
+        } else {
+            banner.classList.remove('visible');
+        }
+    }
+
+    // Feature 33: Config Panel
+    function toggleConfig() {
+        const overlay = document.getElementById('config-overlay');
+        if (!overlay) return;
+        const opening = !overlay.classList.contains('visible');
+        overlay.classList.toggle('visible', opening);
+        if (opening) {
+            // Populate fields with current values
+            const bgInput = document.getElementById('cfg-bg-url');
+            const birthdayInput = document.getElementById('cfg-birthday');
+            const autoThemeInput = document.getElementById('cfg-auto-theme');
+            const tempInput = document.getElementById('cfg-temp-unit');
+            const tickerInput = document.getElementById('cfg-ticker-msg');
+            const stockAlertsInput = document.getElementById('cfg-stock-alerts');
+            if (stockAlertsInput) stockAlertsInput.value = localStorage.getItem('dash_stock_alerts') || '';
+            const soundInput = document.getElementById('cfg-alert-sound');
+            if (bgInput) bgInput.value = localStorage.getItem('dash_bgUrl') || '';
+            if (birthdayInput) birthdayInput.value = localStorage.getItem('dash_birthday') || '';
+            if (autoThemeInput) autoThemeInput.value = localStorage.getItem('dash_autoTheme') === 'off' ? 'off' : 'on';
+            if (tempInput) tempInput.value = _tempUnit;
+            if (tickerInput) tickerInput.value = localStorage.getItem('dash_ticker_msg') || '';
+            if (soundInput) soundInput.value = _alertSoundEnabled ? 'on' : 'off';
+            const stockAlertsInput = document.getElementById('cfg-stock-alerts');
+            if (stockAlertsInput) stockAlertsInput.value = localStorage.getItem('dash_stock_alerts') || '';
+        }
+    }
+    function saveConfig() {
+        const bgInput = document.getElementById('cfg-bg-url');
+        const birthdayInput = document.getElementById('cfg-birthday');
+        const autoThemeInput = document.getElementById('cfg-auto-theme');
+        const tempInput = document.getElementById('cfg-temp-unit');
+        if (bgInput?.value.trim()) {
+            localStorage.setItem('dash_bgUrl', bgInput.value.trim());
+            setBgImage(bgInput.value.trim());
+        } else if (bgInput) {
+            localStorage.removeItem('dash_bgUrl');
+            setBgImage(null);
+        }
+        if (birthdayInput?.value.trim()) {
+            localStorage.setItem('dash_birthday', birthdayInput.value.trim());
+        }
+        if (autoThemeInput) {
+            const val = autoThemeInput.value.trim().toLowerCase();
+            if (val === 'off') {
+                localStorage.setItem('dash_autoTheme', 'off');
+                _autoTheme = false;
+            } else {
+                localStorage.removeItem('dash_autoTheme');
+                _autoTheme = true;
+            }
+        }
+        if (tempInput) {
+            const unit = tempInput.value.trim().toUpperCase();
+            if (unit === 'F' || unit === 'C') {
+                _tempUnit = unit;
+                localStorage.setItem('dash_tempUnit', unit);
+                const wx = cGetStale('wx'); if (wx) renderWeather(wx);
+            }
+        }
+        // Feature 48: custom ticker message
+        const tickerInput = document.getElementById('cfg-ticker-msg');
+        if (tickerInput) {
+            const msg = tickerInput.value.trim();
+            if (msg) localStorage.setItem('dash_ticker_msg', msg);
+            else localStorage.removeItem('dash_ticker_msg');
+
+        // Feature 55: stock price alerts
+        const stockAlertsInput = document.getElementById('cfg-stock-alerts');
+        if (stockAlertsInput) {
+            const val = stockAlertsInput.value.trim();
+            if (val) { try { JSON.parse(val); localStorage.setItem('dash_stock_alerts', val); } catch {} }
+            else localStorage.removeItem('dash_stock_alerts');
+        }   // Force re-render halacha ticker with new message
+            const cached = cGetStale('halacha'); if (cached) renderHalacha(cached);
+        }
+        // Feature 43: alert sound
+        const soundInput = document.getElementById('cfg-alert-sound');
+        if (soundInput) {
+            const val = soundInput.value.trim().toLowerCase();
+            if (val === 'off') { _alertSoundEnabled = false; localStorage.setItem('dash_alertSound', 'off'); }
+            else if (val === 'on') { _alertSoundEnabled = true; localStorage.setItem('dash_alertSound', 'on'); }
+        }
+        // Feature 55: stock price alerts
+        const stockAlertsInput = document.getElementById('cfg-stock-alerts');
+        if (stockAlertsInput) {
+            const val = stockAlertsInput.value.trim();
+            if (val) { try { JSON.parse(val); localStorage.setItem('dash_stock_alerts', val); } catch {} }
+            else localStorage.removeItem('dash_stock_alerts');
+        }
+        toggleConfig();
+        diagLog('Config saved');
+    }
+
+    // Feature 34: Chore Wheel — daily rotating family chore assignments
+    const CHORES = [
+        { person: 'עמרי',  chore: '🧹 לנקות סלון' },
+        { person: 'בר',    chore: '🍽️ לשטוף כלים' },
+        { person: 'גל',    chore: '🗑️ לרוקן פחים' },
+        { person: 'נועה',  chore: '🧺 לסדר כביסה' },
+        { person: 'עמרי',  chore: '🧴 לנקות שירותים' },
+        { person: 'בר',    chore: '🧽 לנקות מטבח' },
+        { person: 'גל',    chore: '🪴 להשקות צמחים' },
+    ];
+    function updateChoreWheel() {
+        if (!el.hcChore || !el.hcChoreRow) return;
+        const doy = Math.floor((Date.now() - Date.UTC(new Date().getUTCFullYear(), 0, 1)) / 86400000);
+        const chore = CHORES[doy % CHORES.length];
+        el.hcChore.textContent = `${chore.person}: ${chore.chore}`;
+        el.hcChoreRow.style.display = '';
+    }
+
+    // Feature 35: Portfolio P&L Overlay on Stock Rows
+    // Store cost basis as: dash_portfolio = JSON: { 'AAPL': {cost:182.5, qty:10}, ... }
+    function _getPortfolio() {
+        try { return JSON.parse(localStorage.getItem('dash_portfolio') || '{}'); } catch { return {}; }
+    }
+    function updatePortfolioPnL(sym, currentPrice) {
+        const portfolio = _getPortfolio();
+        const pos = portfolio[sym];
+        if (!pos || !pos.cost || !pos.qty || !currentPrice) return;
+        const pnl = (currentPrice - pos.cost) * pos.qty;
+        const pct = ((currentPrice - pos.cost) / pos.cost) * 100;
+        const blk = document.querySelector(`.stk[data-symbol="${CSS.escape(sym)}"]`);
+        if (!blk) return;
+        let pnlEl = blk.querySelector('.stk-pnl');
+        if (!pnlEl) {
+            pnlEl = document.createElement('div');
+            pnlEl.className = 'stk-pnl';
+            const valsDiv = blk.querySelector('.stk-vals');
+            if (valsDiv) valsDiv.appendChild(pnlEl);
+        }
+        const sign = pnl >= 0 ? '+' : '';
+        pnlEl.textContent = `${sign}$${pnl.toFixed(0)} (${sign}${pct.toFixed(1)}%)`;
+        pnlEl.className = 'stk-pnl ' + (pnl >= 0 ? 'gain' : 'loss');
+    }
+
+    // Feature 36: Earthquake Alerts (USGS GeoJSON for Israel region)
+    async function loadEarthquakes() {
+        const key = 'quake';
+        const TTL = 3600000; // 1h
+        const fresh = cGet(key, TTL);
+        if (fresh) { _renderEarthquake(fresh); return; }
+        const stale = cGetStale(key); if (stale) _renderEarthquake(stale);
+        try {
+            // Feature 69: fetch last 20 quakes to count 24h events + show the strongest
+            const url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=2.5&latitude=31.5&longitude=35.0&maxradiuskm=500&limit=20&orderby=time';
+            const d = await fetchJSON(url);
+            const feats = d?.features || [];
+            const now24 = Date.now() - 86400000;
+            const recent = feats.filter(f => f.properties?.time >= now24 && (f.properties?.mag || 0) >= 3.5);
+            _quake24hCount = recent.length;
+            updateQuakeCountBadge();
+            const feat = feats[0]; // most recent overall
+            if (feat) {
+                const info = {
+                    mag: feat.properties?.mag,
+                    place: feat.properties?.place || '',
+                    time: feat.properties?.time,
+                };
+                cSet(key, info);
+                _renderEarthquake(info);
+                diagLog(`Quake: M${info.mag} ${info.place}`);
+            } else {
+                cSet(key, null);
+            }
+        } catch (e) { diagLog('Quake ERR: ' + e.message); }
+    }
+    function _renderEarthquake(info) {
+        const row = document.getElementById('quake-row');
+        const val = document.getElementById('quake-val');
+        const badge = document.getElementById('quake-badge');
+        if (!row || !val || !badge) return;
+        if (!info || info.mag == null) {
+            row.style.display = 'none';
+            return;
+        }
+        // Only show if within last 24 hours
+        const age = Date.now() - (info.time || 0);
+        if (age > 86400000) { row.style.display = 'none'; return; }
+        // Only show M3.5+
+        if (info.mag < 3.5) { row.style.display = 'none'; return; }
+        const hours = Math.floor(age / 3600000);
+        const ageStr = hours === 0 ? 'לפני פחות משעה' : `לפני ${hours} שע'`;
+        val.textContent = info.place.substring(0, 40) + ` (${ageStr})`;
+        badge.textContent = `M${info.mag.toFixed(1)}`;
+        // Feature 52: magnitude color coding
+        badge.className = (info.mag < 4) ? 'quake-M3' : (info.mag < 5) ? 'quake-M4' : 'quake-M5';
+        row.style.display = '';
+    }
+
+    // Feature 37: Today Event Count in Header (from ICS cache)
+    function updateTodayEventCount() {
+        const hdrEl = document.getElementById('header-event-count');
+        if (!hdrEl) return;
+        const raw = cGetStale('cal-ics');
+        if (!raw) return;
+        const events = parseICS(raw);
+        const todayMidnight = new Date(); todayMidnight.setHours(0, 0, 0, 0);
+        const todayEnd = new Date(todayMidnight.getTime() + 86400000);
+        const todayCount = events.filter(e => e.start >= todayMidnight && e.start < todayEnd).length;
+        if (todayCount > 0) {
+            hdrEl.textContent = todayCount + ' 📅';
+            hdrEl.style.display = '';
+        } else {
+            hdrEl.style.display = 'none';
+        }
+    }
+
+    // Feature 38: Currency Sparkline (7-day rate history in localStorage)
+    const _CUR_HIST_KEY = 'dash_v2_cur_hist';
+    const _CUR_HIST_MAX = 7;
+    function recordCurrencyHistory(usd, eur) {
+        try {
+            const hist = JSON.parse(localStorage.getItem(_CUR_HIST_KEY) || '[]');
+            const today = new Date().toDateString();
+            // Replace or add today's entry
+            const idx = hist.findIndex(h => h.d === today);
+            const entry = { d: today, usd, eur };
+            if (idx >= 0) hist[idx] = entry; else hist.push(entry);
+            // Keep last 7 days
+            while (hist.length > _CUR_HIST_MAX) hist.shift();
+            localStorage.setItem(_CUR_HIST_KEY, JSON.stringify(hist));
+        } catch (_) {}
+    }
+    function renderCurrencySparklines() {
+        try {
+            const hist = JSON.parse(localStorage.getItem(_CUR_HIST_KEY) || '[]');
+            if (hist.length < 2) return;
+            const usdVals = hist.map(h => h.usd).filter(v => v > 0);
+            const eurVals = hist.map(h => h.eur).filter(v => v > 0);
+            _drawSparkline('cur-usd-spark', usdVals);
+            _drawSparkline('cur-eur-spark', eurVals);
+        } catch (_) {}
+    }
+    function _drawSparkline(id, vals) {
+        const svg = document.getElementById(id);
+        if (!svg || vals.length < 2) return;
+        const W = 60, H = 22, P = 2;
+        const min = Math.min(...vals), max = Math.max(...vals), rng = max - min || 0.01;
+        const pts = vals.map((v, i) => ({
+            x: P + (i / (vals.length - 1)) * (W - 2 * P),
+            y: P + (1 - (v - min) / rng) * (H - 2 * P)
+        }));
+        let path = `M${pts[0].x},${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) {
+            const cp = (pts[i].x - pts[i - 1].x) / 2;
+            path += ` C${pts[i - 1].x + cp},${pts[i - 1].y} ${pts[i].x - cp},${pts[i].y} ${pts[i].x},${pts[i].y}`;
+        }
+        const trend = vals[vals.length - 1] >= vals[0] ? '#34d399' : '#f87171';
+        const last = pts[pts.length - 1];
+        svg.innerHTML = `<path d="${path}" fill="none" stroke="${trend}" stroke-width="1.5" stroke-linecap="round"/><circle cx="${last.x}" cy="${last.y}" r="2" fill="${trend}"/>`;
+    }
+
+    // Feature 39: News Source Filter chips
+    const _RSS_SOURCES = {};   // { feedId: true/false } — true = visible
+    let _newsFilterActive = false;
+    function initNewsFilter() {
+        const bar = document.getElementById('news-filter-bar');
+        if (!bar) return;
+        // "All" chip
+        const allChip = document.createElement('button');
+        allChip.className = 'news-filter-chip active';
+        allChip.textContent = 'הכל';
+        allChip.dataset.src = '__all__';
+        allChip.addEventListener('click', () => {
+            _newsFilterActive = false;
+            bar.querySelectorAll('.news-filter-chip').forEach(c => c.classList.toggle('active', c.dataset.src === '__all__'));
+            document.querySelectorAll('.rss-item[data-src]').forEach(row => row.style.display = '');
+        });
+        bar.appendChild(allChip);
+    }
+    function addNewsFilterChip(srcName) {
+        const bar = document.getElementById('news-filter-bar');
+        if (!bar || bar.querySelector(`[data-src="${CSS.escape(srcName)}"]`)) return;
+        const chip = document.createElement('button');
+        chip.className = 'news-filter-chip';
+        chip.textContent = srcName;
+        chip.dataset.src = srcName;
+        chip.addEventListener('click', () => {
+            const bar = document.getElementById('news-filter-bar');
+            if (!bar) return;
+            bar.querySelectorAll('.news-filter-chip').forEach(c => c.classList.toggle('active', c.dataset.src === srcName));
+            _newsFilterActive = true;
+            document.querySelectorAll('.rss-item[data-src]').forEach(row => {
+                row.style.display = (row.dataset.src === srcName) ? '' : 'none';
+            });
+        });
+        bar.appendChild(chip);
+    }
+
+    // Feature 40: Connectivity health indicator (ping test via small fetch)
+    let _connTimer = null;
+    async function checkConnectivity() {
+        const indicator = document.getElementById('conn-indicator');
+        if (!indicator) return;
+        const t0 = Date.now();
+        try {
+            await fetch('https://www.gstatic.com/generate_204', { method: 'HEAD', cache: 'no-store', signal: AbortSignal.timeout(5000) });
+            const ms = Date.now() - t0;
+            indicator.textContent = ms < 500 ? '● מהיר' : '● בינוני';
+            indicator.className = ms < 500 ? 'conn-ok' : 'conn-slow';
+        } catch {
+            indicator.textContent = '● איטי';
+            indicator.className = 'conn-bad';
+        }
+    }
+
+    // ── Sprint 5 Features ──
+
+    // Feature 41: Market Pre/After Hours (4-state badge)
+    // Overriding updateMarketBadge with extended states
+    function updateMarketBadge() {
+        if (!el.marketBadge) return;
+        const now = new Date();
+        const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const h = ny.getHours(), m = ny.getMinutes(), d = ny.getDay();
+        const t = h * 60 + m;
+        const isWeekday = d >= 1 && d <= 5;
+        let label, cls;
+        if (!isWeekday)                       { label = '🔴 סגור'; cls = 'market-closed'; }
+        else if (t >= 240 && t < 570)         { label = '🟡 טרום'; cls = 'market-premarket'; }    // 4:00–9:29 ET
+        else if (t >= 570 && t <= 960)        { label = '🟢 פתוח'; cls = 'market-open'; }          // 9:30–16:00 ET
+        else if (t > 960 && t <= 1200)        { label = '🟣 אחרי'; cls = 'market-afterhours'; }    // 16:01–20:00 ET
+        else                                  { label = '🔴 סגור'; cls = 'market-closed'; }
+        el.marketBadge.textContent = label;
+        el.marketBadge.className = `market-badge ${cls}`;
+    }
+
+    // Feature 42: Weather Sky Color Pill
+    const WX_SKY = {
+        0: { label: '☀️ בהיר', bg: 'rgba(251,191,36,0.2)', color: '#fbbf24' },
+        1: { label: '🌤 יפה', bg: 'rgba(251,191,36,0.15)', color: '#fcd34d' },
+        2: { label: '⛅ חלקית', bg: 'rgba(148,163,184,0.2)', color: '#94a3b8' },
+        3: { label: '☁️ מעונן', bg: 'rgba(100,116,139,0.2)', color: '#64748b' },
+        45: { label: '🌫 ערפל', bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
+        61: { label: '🌦 גשם', bg: 'rgba(96,165,250,0.2)', color: '#60a5fa' },
+        80: { label: '🌧 מטר', bg: 'rgba(59,130,246,0.2)', color: '#3b82f6' },
+        95: { label: '⛈ סופה', bg: 'rgba(248,113,113,0.25)', color: '#f87171' },
+    };
+    function updateWeatherSkyPill(code) {
+        const pill = document.getElementById('wx-sky-pill');
+        if (!pill) return;
+        const coarseCode = code <= 1 ? code : code <= 3 ? code : code <= 48 ? 45 : code <= 67 ? 61 : code <= 82 ? 80 : 95;
+        const info = WX_SKY[coarseCode] || WX_SKY[3];
+        pill.textContent = info.label;
+        pill.style.background = info.bg;
+        pill.style.color = info.color;
+    }
+
+    // Feature 43: Alert Sound (Web Audio API, zero dependencies)
+    let _audioCtx = null;
+    let _alertSoundEnabled = localStorage.getItem('dash_alertSound') !== 'off';
+    function getAudioCtx() {
+        if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return _audioCtx;
+    }
+    function playAlertBeep(freq = 880, duration = 0.18, vol = 0.25) {
+        if (!_alertSoundEnabled) return;
+        try {
+            const ctx = getAudioCtx();
+            if (ctx.state === 'suspended') ctx.resume();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(vol, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+        } catch (_) {}
+    }
+    function toggleAlertSound() {
+        _alertSoundEnabled = !_alertSoundEnabled;
+        localStorage.setItem('dash_alertSound', _alertSoundEnabled ? 'on' : 'off');
+        const btn = document.getElementById('sound-toggle');
+        if (btn) btn.textContent = _alertSoundEnabled ? '🔔' : '🔇';
+        diagLog('Alert sound: ' + (_alertSoundEnabled ? 'on' : 'off'));
+    }
+
+    // Feature 44: Parasha Sefaria Deep Link
+    let _parashaSefariaUrl = null;
+    function openParashaOnSefaria() {
+        const url = _parashaSefariaUrl || 'https://www.sefaria.org/texts/Torah';
+        window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    // Feature 45: Multi-City Weather
+    const WX_CITIES = {
+        jerusalem: { lat: 31.7683, lon: 35.2137, name: 'ירושלים' },
+        telaviv:   { lat: 32.0853, lon: 34.7818, name: 'תל אביב' },
+        haifa:     { lat: 32.7940, lon: 34.9896, name: 'חיפה' },
+    };
+    let _wxCityKey = localStorage.getItem('dash_wxCity') || 'jerusalem';
+    function getCurrentWxCity() { return WX_CITIES[_wxCityKey] || WX_CITIES.jerusalem; }
+    function switchWxCity(cityKey) {
+        if (_wxCityKey === cityKey) return;
+        _wxCityKey = cityKey;
+        localStorage.setItem('dash_wxCity', cityKey);
+        // Invalidate wx cache so next load fetches fresh
+        try { localStorage.removeItem('dash_v2_wx'); } catch (_) {}
+        // Update header label
+        const labelEl = document.getElementById('wx-city-label');
+        const city = WX_CITIES[cityKey];
+        if (labelEl && city) labelEl.textContent = `מזג אויר — ${city.name}`;
+        // Update tab active state
+        document.querySelectorAll('.wx-city-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.city === cityKey);
+        });
+        // Reload weather for new city
+        safeLoad(loadWeather);
+        diagLog('City switched: ' + (city?.name || cityKey));
+    }
+    function initWxCityTabs() {
+        document.querySelectorAll('.wx-city-tab').forEach(tab => {
+            tab.addEventListener('click', () => switchWxCity(tab.dataset.city));
+            tab.classList.toggle('active', tab.dataset.city === _wxCityKey);
+        });
+        // Apply saved city label
+        const city = getCurrentWxCity();
+        const labelEl = document.getElementById('wx-city-label');
+        if (labelEl && city) labelEl.textContent = `מזג אויר — ${city.name}`;
+    }
+
+    // Feature 46: Stock 52-Week Range Bar
+    function updateStockRange(blk, cur, low52, high52) {
+        if (!blk || !cur || !low52 || !high52 || high52 <= low52) return;
+        const pct = Math.max(0, Math.min(100, ((cur - low52) / (high52 - low52)) * 100));
+        let rangeDiv = blk.querySelector('.stk-range');
+        if (!rangeDiv) {
+            rangeDiv = document.createElement('div');
+            rangeDiv.className = 'stk-range';
+            const fill = document.createElement('div');
+            fill.className = 'stk-range-fill';
+            rangeDiv.appendChild(fill);
+            // Insert after .stk-chart
+            const chart = blk.querySelector('.stk-chart');
+            if (chart && chart.parentNode) chart.insertAdjacentElement('afterend', rangeDiv);
+            else blk.appendChild(rangeDiv);
+        }
+        const fill = rangeDiv.querySelector('.stk-range-fill');
+        if (fill) fill.style.width = pct.toFixed(1) + '%';
+        rangeDiv.title = `52w Low: $${low52?.toFixed(2)} | Current | High: $${high52?.toFixed(2)}`;
+    }
+
+    // Feature 49: Font Size Scaler (TV distance adjustment)
+    let _fontScale = parseFloat(localStorage.getItem('dash_fontScale') || '1.0');
+    let _fontScaleTimer = null;
+    function applyFontScale() {
+        const container = document.querySelector('.container');
+        if (container) container.style.fontSize = (_fontScale * 16) + 'px';
+        const indicator = document.getElementById('font-scale-indicator');
+        if (indicator) {
+            indicator.textContent = `Aa ${Math.round(_fontScale * 100)}%`;
+            indicator.classList.add('visible');
+            clearTimeout(_fontScaleTimer);
+            _fontScaleTimer = setTimeout(() => indicator.classList.remove('visible'), 2000);
+        }
+    }
+    function adjustFontScale(delta) {
+        _fontScale = Math.max(0.7, Math.min(1.5, parseFloat((_fontScale + delta).toFixed(2))));
+        localStorage.setItem('dash_fontScale', _fontScale);
+        applyFontScale();
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // SPRINT 6 FEATURES (51–60)
+    // ══════════════════════════════════════════════════════════
+
+    // Feature 51: Portfolio Total Value Display
+    let _stkPrices = {};  // { SYM: latestPrice } — cache for portfolio total
+    function updatePortfolioTotal() {
+        const portfolio = _getPortfolio();
+        const syms = Object.keys(portfolio);
+        if (!syms.length) return;
+        let totalValue = 0, totalCost = 0, hasAny = false;
+        for (const sym of syms) {
+            const pos = portfolio[sym];
+            const price = _stkPrices[sym];
+            if (!pos?.qty || !pos?.cost || !price) continue;
+            totalValue += price * pos.qty;
+            totalCost += pos.cost * pos.qty;
+            hasAny = true;
+        }
+        if (!hasAny) return;
+        const pnl = totalValue - totalCost;
+        const pct = totalCost > 0 ? (pnl / totalCost) * 100 : 0;
+        const row = document.getElementById('stk-total-row');
+        const valEl = document.getElementById('stk-total-val');
+        const pnlEl = document.getElementById('stk-total-pnl');
+        if (!row || !valEl || !pnlEl) return;
+        valEl.textContent = '$' + totalValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        const sign = pnl >= 0 ? '+' : '';
+        pnlEl.textContent = `${sign}$${Math.abs(pnl).toFixed(0)} (${sign}${pct.toFixed(1)}%)`;
+        pnlEl.className = pnl >= 0 ? 'gain' : 'loss';
+        row.style.display = '';
+    }
+
+    // Feature 53: Daf Yomi Sefaria Deep Link
+    let _dafSefariaRef = null;
+    function openDafOnSefaria() {
+        const url = _dafSefariaRef
+            ? 'https://www.sefaria.org/' + _dafSefariaRef
+            : 'https://www.sefaria.org/Daf_Yomi';
+        window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    // Feature 54: Night Screen Auto-Dimmer
+    let _nightDimOverride = false;
+    let _nightDimOn = false;
+    function updateNightDimmer() {
+        if (_nightDimOverride) return;
+        const h = parseInt(new Date().toLocaleTimeString('en-US', {
+            hour: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem'
+        }), 10);
+        const shouldDim = (h >= 23 || h < 6);
+        const overlay = document.getElementById('night-dim');
+        if (!overlay) return;
+        if (shouldDim !== _nightDimOn) {
+            _nightDimOn = shouldDim;
+            overlay.style.opacity = shouldDim ? '0.45' : '0';
+        }
+    }
+    function toggleNightDim() {
+        const overlay = document.getElementById('night-dim');
+        if (!overlay) return;
+        _nightDimOverride = true;
+        _nightDimOn = !_nightDimOn;
+        overlay.style.opacity = _nightDimOn ? '0.45' : '0';
+        // Auto-cancel override after 10 minutes so schedule resumes
+        setTimeout(() => { _nightDimOverride = false; updateNightDimmer(); }, 600000);
+    }
+
+    // Feature 55: Stock Price Threshold Alerts
+    function _getStockAlerts() {
+        try { return JSON.parse(localStorage.getItem('dash_stock_alerts') || '{}'); } catch { return {}; }
+    }
+    function checkStockAlerts(sym, price) {
+        const alerts = _getStockAlerts();
+        const rule = alerts[sym];
+        if (!rule || !price) return;
+        const blk = document.querySelector(`.stk[data-symbol="${CSS.escape(sym)}"]`);
+        if (!blk) return;
+        blk.classList.remove('alert-above', 'alert-below');
+        if (rule.above != null && price >= parseFloat(rule.above)) {
+            blk.classList.add('alert-above');
+            playAlertBeep(1046, 0.12, 0.2);  // C6 — price above target
+        } else if (rule.below != null && price <= parseFloat(rule.below)) {
+            blk.classList.add('alert-below');
+            playAlertBeep(330, 0.12, 0.2);   // E4 — price below target
+        }
+    }
+
+    // Feature 58: Calendar Event Category Detection
+    function detectCalCategory(summary) {
+        const s = (summary || '').toLowerCase();
+        if (/\b(work|עבודה|meeting|פגישה|office|משרד|zoom|ועדה|ישיבה|הרצאה|תכנון|פרויקט)\b/.test(s)) return 'work';
+        if (/\b(family|משפחה|ילדים|בית|הורים|dinner|ארוחה|אמא|אבא|סבא|סבתא|אחים|חתונה|ברית|בר.מצוה)\b/.test(s)) return 'family';
+        if (/\b(doctor|רופא|רופאה|קופת|medical|בריאות|hospital|clinic|ניתוח|טיפול|שיניים|תרופות|אמבולנס)\b/.test(s)) return 'health';
+        if (/\b(חג|holiday|shabbat|שבת|eid|omer|passover|pesach|sukk|chanuk|purim|rosh|yom.kip|שמחה|חנוכה|פורים|פסח|סוכות|שבועות)\b/i.test(s)) return 'holiday';
+        return 'default';
+    }
+
+    // Feature 59: Force Refresh (R key — clears in-memory cache, reloads all panes)
+    function forceRefresh() {
+        _mem.clear();  // clear in-memory cache layer
+        const toast = document.getElementById('refresh-toast');
+        if (toast) { toast.classList.add('visible'); setTimeout(() => toast.classList.remove('visible'), 2200); }
+        [loadHebrewDate, loadShabbat, loadWeather, loadAQI, loadNews, loadAllStocks,
+         loadCurrency, loadAlerts, loadCalendar, loadHalacha, loadHebCal, loadZmanim].forEach(fn => safeLoad(fn));
+        stampRefresh();
+    }
+
+    // ── SPRINT 7 FEATURES (F61–F70) ──
+
+    // Feature 61: Stock Relative Volume Badge
+    function getRelVolBadge(regularVol, avgVol) {
+        if (!regularVol || !avgVol || avgVol <= 0) return null;
+        const ratio = regularVol / avgVol;
+        if (ratio >= 2.5) return { cls: 'stk-vol-xhigh', text: `VOL \u00d7${ratio.toFixed(1)}` };
+        if (ratio >= 1.5) return { cls: 'stk-vol-high',  text: `VOL +${Math.round((ratio - 1) * 100)}%` };
+        return null;
+    }
+
+    // Feature 63: Calendar 7-day event density mini-strip
+    const CAL_WEEK_DAY_HE = ['\u05e9', '\u05d0', '\u05d1', '\u05d2', '\u05d3', '\u05d4', '\u05d5']; // Sat Sun Mon Tue Wed Thu Fri
+    function renderCalWeekStrip(events) {
+        const strip = document.getElementById('cal-week-strip');
+        if (!strip) return;
+        const now = new Date();
+        const rows = [];
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(now); day.setHours(0, 0, 0, 0); day.setDate(day.getDate() + i);
+            const key = day.toDateString();
+            const count = events.filter(ev => ev.start && ev.start.toDateString() === key).length;
+            const isToday = i === 0;
+            const dots = [...Array(Math.min(count, 4))].map((_, j) =>
+                `<div class="cal-week-dot" style="background:${j === 0 ? 'var(--accent)' : j === 1 ? 'var(--positive)' : j === 2 ? 'var(--warning)' : '#94a3b8'}"></div>`
+            ).join('');
+            rows.push(`<div class="cal-week-day${isToday ? ' cal-week-today' : ''}"><div class="cal-week-label">${CAL_WEEK_DAY_HE[day.getDay()]}</div><div class="cal-week-dots">${dots}</div></div>`);
+        }
+        strip.innerHTML = rows.join('');
+    }
+
+    // Feature 64: AQI Hebrew category label + trend arrow
+    let _prevAqiVal = null;
+    function getAqiCategory(aqi) {
+        if (aqi <= 20) return { text: '\u05d8\u05d5\u05d1', cls: 'aqi-good' };
+        if (aqi <= 40) return { text: '\u05d1\u05d9\u05e0\u05d5\u05e0\u05d9', cls: 'aqi-fair' };
+        if (aqi <= 60) return { text: '\u05de\u05d5\u05d2\u05d1\u05e8', cls: 'aqi-mod' };
+        if (aqi <= 80) return { text: '\u05d2\u05e8\u05d5\u05e2', cls: 'aqi-poor' };
+        return { text: '\u05de\u05e1\u05d5\u05db\u05df', cls: 'aqi-verypoor' };
+    }
+
+    // Feature 65: Per-stock price history sparkline (localStorage — last 8 closes)
+    const _STK_PH_PFX = 'dash_sph_';
+    const _STK_PH_MAX = 8;
+    function recordStkPrice(sym, price) {
+        if (!price || !isFinite(price)) return;
+        try {
+            const arr = JSON.parse(localStorage.getItem(_STK_PH_PFX + sym) || '[]');
+            arr.push(+price.toFixed(4));
+            if (arr.length > _STK_PH_MAX) arr.splice(0, arr.length - _STK_PH_MAX);
+            localStorage.setItem(_STK_PH_PFX + sym, JSON.stringify(arr));
+        } catch (_) {}
+    }
+    function drawStkSpark(blk, sym) {
+        try {
+            const arr = JSON.parse(localStorage.getItem(_STK_PH_PFX + sym) || '[]');
+            if (arr.length < 2) return;
+            let svgEl = blk.querySelector('.stk-ph-spark');
+            if (!svgEl) {
+                svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svgEl.setAttribute('class', 'stk-ph-spark');
+                svgEl.setAttribute('viewBox', '0 0 44 12');
+                svgEl.setAttribute('preserveAspectRatio', 'none');
+                const rangeEl = blk.querySelector('.stk-range');
+                if (rangeEl) rangeEl.insertAdjacentElement('afterend', svgEl);
+                else blk.appendChild(svgEl);
+            }
+            const W = 44, H = 12;
+            const mn = Math.min(...arr), mx = Math.max(...arr), rng = mx - mn || 1;
+            const pts = arr.map((v, i) =>
+                `${((i / (arr.length - 1)) * W).toFixed(1)},${(H - 1 - ((v - mn) / rng * (H - 2))).toFixed(1)}`
+            ).join(' ');
+            const color = arr[arr.length - 1] >= arr[0] ? '#34d399' : '#f87171';
+            svgEl.innerHTML = `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+        } catch (_) {}
+    }
+
+    // Feature 67: News item published age (relative)
+    function newsRelAge(pubDate) {
+        if (!pubDate) return '';
+        try {
+            const mins = Math.round((Date.now() - new Date(pubDate)) / 60000);
+            if (!isFinite(mins) || mins < 0) return '';
+            if (mins < 60) return `\u05dc\u05e4\u05e0\u05d9 ${mins}\u05d3'`;
+            const hrs = Math.round(mins / 60);
+            if (hrs < 24) return `\u05dc\u05e4\u05e0\u05d9 ${hrs}\u05e9'`;
+            return `\u05dc\u05e4\u05e0\u05d9 ${Math.round(hrs / 24)}\u05d9'`;
+        } catch (_) { return ''; }
+    }
+
+    // Feature 68: Market open/close countdown below stocks
+    function updateMarketCountdown() {
+        const cntEl = document.getElementById('stk-mkt-countdown');
+        if (!cntEl) return;
+        const nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const dow = nyNow.getDay(); // 0=Sun 6=Sat
+        const tot = nyNow.getHours() * 60 + nyNow.getMinutes();
+        const OPEN = 9 * 60 + 30, CLOSE = 16 * 60;
+        const fmt = m => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`;
+        if (dow === 0 || dow === 6) {
+            cntEl.textContent = '\u05e9\u05d5\u05e7 \u05e1\u05d2\u05d5\u05e8 (\u05e1\u05d5\u05e4\u05e9\u05d1\u05d5\u05e2)';
+            cntEl.className = '';
+        } else if (tot < OPEN) {
+            cntEl.textContent = `\u23f3 \u05e0\u05d9\u05d5 \u05d9\u05d5\u05e8\u05e7 \u05e0\u05e4\u05ea\u05d7 \u05d1\u05e2\u05d5\u05d3 ${fmt(OPEN - tot)}`;
+            cntEl.className = 'mkt-soon';
+        } else if (tot < CLOSE) {
+            cntEl.textContent = `\ud83d\udcc8 NYSE \u05e4\u05ea\u05d5\u05d7 \u2014 \u05e0\u05e1\u05d2\u05e8 \u05d1\u05e2\u05d5\u05d3 ${fmt(CLOSE - tot)}`;
+            cntEl.className = 'mkt-open';
+        } else {
+            cntEl.textContent = '\u05e9\u05d5\u05e7 \u05e0\u05d9\u05d5 \u05d9\u05d5\u05e8\u05e7 \u05e1\u05d2\u05d5\u05e8';
+            cntEl.className = '';
+        }
+    }
+
+    // Feature 69: Earthquake 24h count badge
+    let _quake24hCount = 0;
+    function updateQuakeCountBadge() {
+        const badge = document.getElementById('quake-count-badge');
+        if (!badge) return;
+        if (_quake24hCount > 1) {
+            badge.textContent = `${_quake24hCount} \u05e8\u05e2\u05d9\u05d3\u05d5\u05ea`;
+            badge.style.display = '';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    // Feature 70: Copy full diagnostics log to clipboard
+    function copyDiagLog() {
+        const logEl = document.getElementById('diag-log');
+        const panesEl = document.getElementById('diag-panes');
+        if (!logEl) return;
+        const text = (panesEl ? panesEl.innerText + '\n---\n' : '') + logEl.innerText;
+        navigator.clipboard?.writeText(text).then(() => {
+            const btn = document.getElementById('diag-copy-btn');
+            if (btn) { btn.textContent = '\u2713 \u05d4\u05d5\u05e2\u05ea\u05e7'; setTimeout(() => { btn.textContent = '\ud83d\udccb \u05d4\u05e2\u05ea\u05e7 \u05dc\u05d5\u05d2'; }, 2000); }
         });
     }
 
@@ -2561,10 +4428,36 @@
         initScreenMode();
         initTheme();
         initAlerts();
+        updateNightDimmer();  // Feature 54: check night dim on startup
         updateNetworkBanner();
         tickClock(); updateMarketBadge();
+
+        // ── New feature startup hooks ──
+        startBurnInProtection();
+        startBgCycling();
+        checkBirthdays();
+        applySeasonClass();   // Feature 27: apply spring/summer/autumn/winter body class
+        updateMoonPhase();    // Feature 24: initial moon phase display
+        checkElecPeak();      // Feature 22: initial electricity peak check
+        updateChoreWheel();   // Feature 34: initial chore wheel
+        initNewsFilter();     // Feature 39: news filter chips
+        checkConnectivity();  // Feature 40: connectivity check
+        renderCurrencySparklines(); // Feature 38: draw sparklines from history
+        initWxCityTabs();     // Feature 45: multi-city weather tabs
+        applyFontScale();     // Feature 49: restore saved font scale
+        updateNightDimmer();  // Feature 54: check night dim on startup
+        updateMarketCountdown(); // Feature 68: initial market countdown button wiring
+        document.getElementById('cfg-gear-btn')?.addEventListener('click', toggleConfig);
+        document.getElementById('cfg-save-btn')?.addEventListener('click', saveConfig);
+        document.getElementById('cfg-close-btn')?.addEventListener('click', toggleConfig);
+        document.getElementById('config-overlay')?.addEventListener('click', e => { if (e.target === document.getElementById('config-overlay')) toggleConfig(); });
+        // Wire °C/°F toggle to temperature elements
+        el.topTemp?.addEventListener('click', toggleTempUnit);
+        el.wxTemp?.addEventListener('click', toggleTempUnit);
+        el.helpOverlay?.addEventListener('click', e => { if (e.target === el.helpOverlay) toggleHelp(); });
+
         const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadOmer, loadWeather,
-                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha, loadHebCal];
+                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha, loadHebCal, loadZmanim, loadAQI, loadPsalm, loadEarthquakes];
         runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
             diagLog('All loaders settled');
             stampRefresh();
@@ -2601,6 +4494,20 @@
     setInterval(loadHolidays, 43200000);      // 12h
     setInterval(loadHalacha, 43200000);       // 12h — daily halacha
     setInterval(loadOmer, 1800000);           // 30min — re-check omer (switches at sunset)
+    setInterval(loadZmanim, 43200000);        // 12h — zmanim change once per day
+    setInterval(loadAQI, 3600000);            // 1h  — air quality index
+    setInterval(updateShabbatCountdown, 60000); // 1min — live Shabbat countdown
+    setInterval(checkBirthdays, 3600000);     // 1h   — birthday re-check
+    setInterval(applyAutoTheme, 900000);      // 15min — re-evaluate night/day theme
+    setInterval(updateMoonPhase, 3600000);    // 1h   — moon phase update (Feature 24)
+    setInterval(applySeasonClass, 43200000);  // 12h  — re-check season at midday/midnight (Feature 27)
+    setInterval(() => { _psalmLoaded = false; loadPsalm(); }, 86400000); // 24h — reload psalm at next day (Feature 23)
+    setInterval(updateChoreWheel, 3600000);   // 1h   — chore wheel (Feature 34)
+    setInterval(loadEarthquakes, 3600000);    // 1h   — earthquake check (Feature 36)
+    setInterval(checkConnectivity, 300000);   // 5min — connectivity check (Feature 40)
+    setInterval(updateMarketBadge, 60000);    // 1min — market badge (Sprint 5: pre/after now time-sensitive)
+    setInterval(updateNightDimmer, 60000);    // 1min — night screen dimmer re-check (Feature 54)
+    setInterval(updateMarketCountdown, 60000); // 1min — market open/close countdown (Feature 68)
 
     // ── Card Entrance Animations ──
     const CARD_ANIMS = ['cardSlideLeft','cardSlideRight','cardSlideUp','cardSlideDown','cardPopIn','cardFlipIn'];
