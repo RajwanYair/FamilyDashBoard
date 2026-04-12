@@ -2178,7 +2178,7 @@ describe("Screen Mode System", () => {
   });
 
   it("tablet mode should have smaller font size", () => {
-    // Tablet uses smaller than TV (21px)
+    // Tablet uses smaller than TV (28px)
     assert.ok(
       html.includes("mode-tablet") || html.includes("17px") || html.includes("15px"),
       "Tablet mode should reduce font size",

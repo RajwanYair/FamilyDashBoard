@@ -109,7 +109,7 @@ async function fetchJSON(url) {
 
 ## Font Size Guidelines (TV-first, v4.14.0)
 
-- Base font: 21px (body)
+- Base font: 28px (body, TV mode)
 - Clock: **2.9em** (slimmed from 3.4em)
 - Greeting: **0.82em**
 - Hebrew date: **1.05em**, English date: **0.85em**
