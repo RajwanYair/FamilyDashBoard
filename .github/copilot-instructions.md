@@ -199,3 +199,29 @@ Every version bump must:
 - Do NOT use `innerHTML` with unsanitized external data
 - Do NOT remove the diagnostic overlay or self-check system
 - Do NOT use synchronous try/catch around async loader functions (use `await`)
+- Do NOT call `self.skipWaiting()` in the SW install event — only via `SKIP_WAITING` message
+- Do NOT forget `if (!_pageVisible) return;` at the top of new async loaders
+- Do NOT set test slice lengths shorter than the actual function body (causes false-fail assertions)
+
+## Lessons Learned (Sprints 8–11)
+
+### Testing Pitfalls
+- `scriptContent.slice(offset, offset + N)` regex tests fail silently when N is too small — increase slice by 500–1000 chars when a test fails unexpectedly
+- After adding to an existing function (e.g. `updateNetworkBanner`), related tests that relied on a short slice will fail; always verify the actual function body length before writing slice-based tests
+- Version assertion test (`html.includes("Dashboard vX.Y.Z")`) must always be updated; the `tests/dashboard.test.mjs` assertion label must also change
+
+### SW / PWA
+- SW `message` event handler is the correct pattern to skip waiting (`SKIP_WAITING`) — NOT auto-skipWaiting in install
+- `navigator.serviceWorker.addEventListener('controllerchange', () => location.reload())` ensures the page refreshes after the new SW activates
+
+### Feature Wiring Checklist
+For any new header chip (like birthday chip, next-zman chip):
+1. Add HTML element in `header-right` section
+2. Add CSS rule (usually `display:none` initially, styled as pill)
+3. Add to `el` object at startup
+4. Wire population in the relevant loader function
+5. If time-based: call update from `tickClock()`
+
+### GH Issue Tracking
+- After every sprint push, create tracking issues manually: `gh issue create --label "enhancement" --title "feat: vX.Y.Z..." --body "Commit: HASH | Tag: vX.Y.Z | Tests: N/S/0"` then immediately `gh issue close N --comment "Resolved in commit HASH"`
+- Confirmed all issues #1–#51 are CLOSED as of 2026-04-12

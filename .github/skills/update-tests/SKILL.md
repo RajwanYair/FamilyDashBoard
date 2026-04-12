@@ -214,3 +214,34 @@ node --test tests/dashboard.test.mjs 2>&1 | grep -E "FAIL|Error"
 # Count passing tests
 node --test tests/dashboard.test.mjs 2>&1 | grep "# pass"
 ```
+
+---
+
+## Lessons Learned (Sprints 8–11)
+
+### Slice Length is the #1 Source of False Failures
+When writing `scriptContent.slice(idx, idx + N)` tests, the slice must cover the **entire function body**. If N is too small, the assertion finds nothing even though the code exists.
+
+**Rule of thumb**: measure the actual function in `BestDashBoard.html` before writing the constant, or start large (1500+) and trim if needed. When a test fails unexpectedly, increase the slice by 500–1000 before assuming the code is missing.
+
+```javascript
+// BAD — will fail if updateNetworkBanner grows beyond 400 chars
+const fn = scriptContent.slice(idx, idx + 400);
+
+// GOOD — safe upper bound
+const fn = scriptContent.slice(idx, idx + 1300);
+```
+
+### After Extending an Existing Function
+If you add lines to an existing function (e.g., `updateNetworkBanner`, `tickClock`, `checkBirthdays`), any existing test that asserts on a short slice of that function **may need its slice length increased**. Run the tests immediately and fix before committing.
+
+### Test Suite Current State (as of v4.14.0)
+- **942 tests / 55 suites / 0 failures**
+- Suite 55 = Sprint 11 (F101–F110)
+- Version assertion: `html.includes("Dashboard v4.14.0")`
+
+### Version Bump Checklist for Tests
+1. Update `it("should display version vX.Y.Z"` title in the suite
+2. Update `html.includes("Dashboard vX.Y.Z")` string match
+3. Update `"Missing version vX.Y.Z in status bar"` error message
+All three are in the same `it()` block — grep for `"should display version"` to find it.
