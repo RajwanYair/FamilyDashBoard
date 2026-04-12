@@ -232,6 +232,6 @@ For any new header chip (like birthday chip, next-zman chip):
 - After every sprint push, create tracking issues manually: `gh issue create --label "enhancement" --title "feat: vX.Y.Z..." --body "Commit: HASH | Tag: vX.Y.Z | Tests: N/S/0"` then immediately `gh issue close N --comment "Resolved in commit HASH"`
 - Confirmed all issues #1–#57 are CLOSED as of 2026-04-12
   - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
-  - Issue #57 = Sprint 17 / v5.0.0 (to be closed after push)
+  - Issue #57 = Sprint 17 / v5.0.0, closed with commit 4f6eb9d
   - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
   - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
