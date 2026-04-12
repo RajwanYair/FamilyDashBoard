@@ -7,7 +7,7 @@ description: "Use when: editing the dashboard HTML file. Provides coding standar
 
 ## Single-File Architecture
 
-Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v5.0.0**.
+Everything lives in `BestDashBoard.html` — HTML structure, CSS styles, and JavaScript logic. Current version: **v5.1.0**.
 
 ## CSS Rules
 
@@ -63,12 +63,16 @@ async function fetchJSON(url) {
 - Iframe fallback: `.cal-fallback-active` class shows Google Calendar embed when all ICS fetches fail
 - Respects `_pageVisible` guard
 
+## Shared Scroll Keyframes Helper
+
+- `injectScrollKeyframes(styleId, keyframeName, distance)` — shared helper that injects a `<style>` tag with a unique `@keyframes` for vertical scroll loops; used by news, stocks, and alerts to avoid duplicated inline keyframe injection logic
+- **Stocks** use `startStocksScroll()` — **no-clone** approach: measures actual panel height, calculates real scroll distance, calls `injectScrollKeyframes()` with unique name per render
+- News and alerts: seamless vertical scroll with original + clone DOM items; clones get CSS class `clone` — hidden in phone mode
+
 ## Scroll Loop Pattern
 
-- News and alerts use seamless vertical scroll loops with duplicate (original + clone) items
+- Dynamic keyframes injected via `injectScrollKeyframes(styleId, keyframeName, distance)` shared helper
 - Clone items get CSS class `clone` — hidden in phone mode
-- Dynamic keyframes injected via `<style>` element per pane
-- **Stocks** use `startStocksScroll()` — **no-clone** approach: measures actual panel height, calculates real scroll distance, injects unique `@keyframes` per render without DOM cloning
 
 ## Card Animations
 
@@ -123,6 +127,12 @@ async function fetchJSON(url) {
 - Currency flag: **1.1em**, rate: **0.88em**, pair: **0.72em**, change: **0.62em** (side-by-side 2×1 layout)
 - Motivation quote: **1.0em**, line-height 1.5, padding 10px 12px
 - Hebrew Calendar: label 0.68em, value 0.76em, saying 0.66em
+
+## Extracted JS Constants (v5.1.0)
+
+- `DIAG_BUFFER_SIZE = 80` — rolling diagnostic log buffer size (entries kept in memory)
+- `DIAG_DISPLAY_LIMIT = 20` — number of entries shown in diagnostic overlay at once
+- `WAKE_REFRESH_MS = 30 * 60 * 1000` — minimum time since last refresh before wake-triggered reload fires
 
 ## Error Resilience
 

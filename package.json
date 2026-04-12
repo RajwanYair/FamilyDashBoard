@@ -1,6 +1,6 @@
 {
     "name": "familydashboard",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "description": "Family TV Dashboard — Hebrew RTL, zero dependencies",
     "type": "module",
     "private": true,

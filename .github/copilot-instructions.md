@@ -188,10 +188,11 @@ Every version bump must:
 | v4.18 | Sprint 15 (F141–150): Dew point tile, wind gusts, news category badges, inline news expand, daily quote lock+next, news bookmarks, weekly weather summary, stock P&L row, help overlay upgrade | ✅ Done |
 | v4.19 | Sprint 16 (F151–160): HaOmer row, precip forecast mm, 5-currency sparklines, cal today-strip, stocks summary bar, bookmark filter (B key), halacha overlay, wx min/max, card collapse, news font slider | ✅ Done |
 | v5.0 | Sprint 17 (F161–170): Corp proxy config, SW v5.0.0 + expanded API cache, icon.svg, manifest icons, PWA install prompt, offline fallback, VERSION_ACTIVATED, periodic SW update, release assets | ✅ Done |
-| v5.1 | Web Push notifications for red alerts | 🔜 Planned |
-| v5.2 | Config panel for multi-city + multi-family + ICS URL | 🔜 Planned |
-| v5.3 | Family photo slideshow + transit departures | 💡 Idea |
+| v5.1 | Refactoring R1–R5 (partial): CSS design tokens, ARIA landmarks, JS constants (`DIAG_BUFFER_SIZE`, `WAKE_REFRESH_MS`), `cycleTheme()`, `injectScrollKeyframes()`, removed dead `loadShabbat`/`loadHolidays`, dropped AQI/Earthquake/Transit | ✅ Done |
+| v5.2 | Web Push notifications for red alerts | 🔜 Planned |
+| v5.3 | Refactoring R6–R8: Calendar/Alerts/Motivation, PWA polish, full test + lint pass | 🔜 Planned |
 | v5.4 | Card drag-reorder (long-press header) | 💡 Idea |
+| v5.5 | Family photo slideshow + transit departures | 💡 Idea |
 
 ## What NOT To Do
 
@@ -209,6 +210,7 @@ Every version bump must:
 - Do NOT use `min-width` for stock row columns — use `width` + `flex-shrink: 0` for proper alignment
 - Do NOT introduce sprint code without running `node --check` + ESLint — duplicate declarations kill the entire script silently
 - Do NOT call `loadStocks()` — the function is `loadAllStocks()`; always verify function names before wiring
+- Do NOT keep loader functions for HTML elements that no longer exist — always grep for `id="element-id"` in HTML to verify the target element exists before keeping its loader
 
 ## Lessons Learned (Sprints 8–17)
 
@@ -253,6 +255,12 @@ For any new header chip (like birthday chip, next-zman chip):
 - `cicd.instructions.md` had test count frozen at `342 / 44 suites` (from v4.3!) — update with every sprint
 - Sprint-specific patterns sections in `dashboard.instructions.md` become stale — remove when superseded by higher-level principles
 - copilot-instructions `Roadmap` table: deduplicate rows before commit (v5.1 appeared twice)
+
+### Dead Code Detection (Refactoring Sprints)
+- Before keeping any loader function, grep `id="X"` in HTML to verify the target element still exists — `loadShabbat()` and `loadHolidays()` survived 3+ sprints with zero effect because their target elements were removed
+- A loader that starts with `if (!el.someRef) return;` is a red flag — if `el.someRef` is always null, the function is dead
+- Test failures revealing `scriptContent.includes("...")` vs `html.includes("...")` mismatch show text moved from JS to HTML markup — fix by using `html` not `scriptContent`
+- After any dead code removal, run `grep` for all references (call sites, setInterval, startup loaders, config handlers) — there are typically 4–5 spots per loader
 
 ### GH Issue Tracking
 - After every sprint push: `gh issue create --label "enhancement" --title "feat: vX.Y.Z..." --body "Commit: HASH | Tag: vX.Y.Z | Tests: N/S/0"` then immediately `gh issue close N --comment "Resolved in commit HASH"`

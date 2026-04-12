@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.1.0] — 2026-04-12
+
+> **Refactoring Sprints R1–R5 (partial)** — CSS Design System, HTML Structure, Core JS Infrastructure, Hebrew Calendar verification + dead code removal, News/Stocks verification
+> Tests: 1084 / 61 suites / 0 failures (was 1134 / 61 at v5.0.0; delta: dead code + dropped feature tests removed)
+
+### Changed
+
+- **Refactoring R1 — CSS Design System**: Introduced warm living-room palette as semantic CSS design tokens (`--warm-*`); standardized 5 themes; fluid typography scale; consolidated animation tokens; unified print styles
+- **Refactoring R2 — HTML Structure**: Added ARIA landmarks (`role="banner"`, `role="main"`, `role="complementary"`) and `aria-label` to all 8 cards; added bilingual `title` attributes to all config inputs; updated version string v5.0.0 → v5.1.0
+- **Refactoring R3 — Core JS Infrastructure**: Extracted magic numbers to named constants (`DIAG_BUFFER_SIZE = 80`, `DIAG_DISPLAY_LIMIT = 20`, `WAKE_REFRESH_MS = 30 * 60 * 1000`); extracted `cycleTheme()` standalone function from inline keydown handler; extracted `injectScrollKeyframes(styleId, keyframeName, distance)` shared helper — refactored news, stocks, and alerts scrolls to use it; removed duplicate `stockAlertsInput` block in `saveConfig()` (Sprint 14/15 merge artifact); removed unused `sync-moti` HTML + JS ref (motivation is static, never fetches)
+- **Refactoring R4 — Hebrew Calendar**: Verified all 13 tasks (R4.1–R4.13) — `loadHebrewDate`, `loadHebCal`, `loadZmanim`, `updateShabbatCountdown`, `getMoonPhase`, `renderHourlyChart`, 7-day forecast, temp toggle, multi-city, weather codes, halacha ticker — all confirmed working
+- **Refactoring R5 partial (R5.1–R5.4)**: Verified `loadNews` (17 RSS feeds, concurrent fetch, dedup), `renderNews` (25 items + clone, 4 age tiers, 4 action buttons), news features (search, bookmarks, visited, filter chips), `loadAllStocks` (3-phase cache strategy, `raceProxies`, BTC fallback) — all confirmed working
+
+### Removed
+
+- **Dead code — `loadShabbat()`**: Function targeted `id="shabbat-info"` which was removed from HTML in a prior sprint; `loadHebCal()` fully handles all Shabbat data. Removed function, all 5 call sites, `el.shabbat` ref, and `setInterval` entry (−18 lines)
+- **Dead code — `loadHolidays()` + `renderHoliday()`**: Function targeted `id="holiday-info"` removed from HTML; `loadHebCal()` handles holiday countdown inline. Removed both functions and all 4 call sites (−26 lines)
+- **Dropped features** (completed in R2): AQI card, Earthquake monitor, Transit card — all CSS/HTML/JS removed; 51 test blocks removed/updated
+
+---
+
 ## [5.0.0] — 2026-04-12
 
 > **Sprint 17 (Features 161–170)** — Corporate network proxy config, SW v5.0.0, icon.svg, manifest icons, PWA install prompt, offline fallback, VERSION_ACTIVATED broadcast, periodic SW update, release assets expansion

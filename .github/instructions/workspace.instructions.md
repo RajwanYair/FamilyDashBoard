@@ -36,7 +36,7 @@ FamilyDashBoard/
 ├── .gitignore / .gitattributes
 ├── .markdownlint.json
 ├── tests/
-|   └── dashboard.test.mjs  # 1135 tests, 61 suites (node --test)
+|   └── dashboard.test.mjs  # 1084 tests, 61 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
@@ -67,7 +67,7 @@ FamilyDashBoard/
 | **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
 | **Performance** | GPU-accelerated scroll layers, CPU-aware concurrency pool (`runConcurrent`), `scheduleIdle()`, DocumentFragment batch writes |
 | **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `A` = toggle alerts, `S` = config panel, `N` = night dimmer, `+/-` = font scale, `P` = print, `Escape` = close maximized card, `B` = bookmark filter, `H`/`?` = help overlay |
-| **Tests** | 1135 tests, 61 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
+| **Tests** | 1084 tests, 61 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
 
 ## What NOT To Do
 

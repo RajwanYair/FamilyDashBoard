@@ -18,8 +18,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-5.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-1135_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-5.1-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-1084_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
->  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (1135 tests, 61 suites, zero dependencies).
+> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (1084 tests, 61 suites, zero dependencies).
 
 ---
 
@@ -204,8 +204,9 @@ FamilyDashBoard/
 ├── SUPPORT.md / LICENSE
 ├── .editorconfig / .markdownlint.json
 ├── .gitignore / .gitattributes
+├── roadmap.md                          # Refactoring roadmap (R1–R8 sprints)
 ├── tests/
-|   └── dashboard.test.mjs          # 1135 tests, 61 suites (Node.js built-in runner)
+|   └── dashboard.test.mjs          # 1084 tests, 61 suites (Node.js built-in runner)
 ├── .github/
 │   ├── assets/                     # SVG graphics for docs
 │   ├── agents/                     # Copilot custom agents
@@ -270,6 +271,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
+| **v5.1.0** | 🔧 Refactoring R1–R5 (partial): CSS design tokens, ARIA landmarks, JS constant extraction, `cycleTheme()`, `injectScrollKeyframes()`, removed dead `loadShabbat`/`loadHolidays`, dropped AQI/Earthquake/Transit |
 | **v4.19.0** | 🎯 Sprint 16 (F151–160): HaOmer row, precip forecast mm, 5-currency sparklines, cal today-strip, stocks summary bar, bookmark filter (B key), halacha overlay, wx min/max, card collapse, news font slider |
 | **v4.18.0** | 🎯 Sprint 15 (F141–150): Dew point tile, wind gusts, news category badges, news inline expand, daily quote lock+next, news bookmarks, weekly weather summary, stock P&L row, help overlay upgrade |
 | **v4.17.0** | 🎯 Sprint 14 (F131–140): Stock alert toast, portfolio P&L chip, ICS color borders, severe-weather toast, motivation share, news age tint, after-hours price, calendar conflict badge, countdown chip, print date |

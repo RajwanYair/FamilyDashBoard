@@ -4,149 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
-    <meta name="description" content="Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, glassmorphism, live weather, news, stocks, calendar, currency, and red alerts.">
-    <meta name="keywords" content="dashboard, family dashboard, TV display, Hebrew, RTL, Israel, glassmorphism, weather, stocks, news, calendar, currency, red alerts, smart home, vanilla JavaScript">
+    <meta name="description" content="Single-file, zero-dependency family dashboard for always-on TV display. Bilingual (English UI + Hebrew content), 5 warm themes, live weather, news, stocks, calendar, currency, and red alerts.">
+    <meta name="keywords" content="dashboard, family dashboard, TV display, Hebrew, RTL, Israel, warm themes, weather, stocks, news, calendar, currency, red alerts, smart home, vanilla JavaScript">
     <meta name="author" content="Yair Rajwan">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://rajwanyair.github.io/FamilyDashBoard/">
     <meta property="og:title" content="רגואן Family Dashboard">
-    <meta property="og:description" content="Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, live weather/news/stocks/calendar.">
+    <meta property="og:description" content="Single-file, zero-dependency family dashboard for always-on TV display. Bilingual, 5 warm themes, live weather/news/stocks/calendar.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rajwanyair.github.io/FamilyDashBoard/">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="רגואן Family Dashboard">
     <meta name="twitter:description" content="Single-file, zero-dependency family dashboard for always-on TV display.">
-    <meta name="theme-color" content="#060b14">
+    <meta name="theme-color" content="#1a1410">
     <link rel="preconnect" href="https://api.open-meteo.com">
     <link rel="preconnect" href="https://www.hebcal.com">
     <link rel="preconnect" href="https://api.allorigins.win">
     <link rel="preconnect" href="https://query1.finance.yahoo.com">
     <link rel="preconnect" href="https://open.er-api.com">
     <link rel="dns-prefetch" href="https://api.codetabs.com">
-    <link rel="dns-prefetch" href="https://translate.googleapis.com">
+
     <link rel="manifest" href="manifest.json">
     <title>רגואן Family Dashboard</title>
     <style>
+        /* ═══════════════════════════════════════════════════════
+           R1.1  CSS Reset & Base
+           R1.2  Design Tokens — Warm Living-Room Palette
+           R1.4  Fluid Typography Scale
+           ═══════════════════════════════════════════════════════ */
         :root {
-            --bg-primary: #060b14;
-            --bg-card: rgba(15, 23, 42, 0.20);
-            --bg-card-header: rgba(30, 41, 59, 0.30);
-            --bg-card-inner: rgba(30, 41, 59, 0.12);
-            --bg-card-hover: rgba(51, 65, 85, 0.10);
-            --accent: #60a5fa;
-            --accent-bright: #93c5fd;
-            --accent-glow: rgba(96, 165, 250, 0.18);
-            --accent-border: rgba(96, 165, 250, 0.2);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --positive: #34d399;
-            --positive-glow: rgba(52, 211, 153, 0.2);
-            --negative: #f87171;
-            --negative-glow: rgba(248, 113, 113, 0.2);
-            --warning: #fbbf24;
-            --purple: #a78bfa;
-            --pink: #f472b6;
-            --orange: #fb923c;
-            --cyan: #22d3ee;
+            /* ── Colors: Warm Dark (default) ── */
+            --bg-primary: #1a1410;
+            --bg-card: rgba(42, 34, 26, 0.82);
+            --bg-card-header: rgba(56, 46, 36, 0.88);
+            --bg-card-inner: rgba(48, 40, 30, 0.55);
+            --bg-card-hover: rgba(66, 54, 42, 0.65);
+            --accent: #d4a053;
+            --accent-bright: #e8c07a;
+            --accent-glow: rgba(212, 160, 83, 0.22);
+            --accent-border: rgba(212, 160, 83, 0.25);
+            --text-primary: #faf5ef;
+            --text-secondary: #c4b8a8;
+            --text-muted: #8a7e70;
+            --positive: #6abf7b;
+            --positive-glow: rgba(106, 191, 123, 0.22);
+            --negative: #e07070;
+            --negative-glow: rgba(224, 112, 112, 0.22);
+            --warning: #f0c040;
+            --purple: #b89adf;
+            --pink: #e89ab8;
+            --orange: #e8a060;
+            --cyan: #6abfcf;
             --border-radius: 14px;
-            --card-border: 1px solid rgba(96, 165, 250, 0.1);
-            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-            --bg-gradient-1: rgba(96,165,250,0.06);
-            --bg-gradient-2: rgba(52,211,153,0.04);
-            --bg-gradient-3: rgba(139,92,246,0.04);
+            --card-border: 1px solid rgba(212, 160, 83, 0.15);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            --bg-gradient-1: rgba(212,160,83,0.06);
+            --bg-gradient-2: rgba(106,191,123,0.04);
+            --bg-gradient-3: rgba(184,154,223,0.04);
             --news-font-scale: 1;
+
+            /* ── Spacing Scale ── */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 24px;
+            --space-6: 32px;
+            --space-7: 48px;
+            --space-8: 64px;
+
+            /* ── Radius Scale ── */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+
+            /* ── Shadow Scale ── */
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.18);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+
+            /* ── Fluid Typography (R1.4) ── */
+            --text-xs: clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);
+            --text-sm: clamp(0.75rem, 0.7rem + 0.3vw, 0.88rem);
+            --text-base: clamp(0.88rem, 0.8rem + 0.4vw, 1.05rem);
+            --text-lg: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+            --text-xl: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+            --text-2xl: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+            --text-3xl: clamp(1.8rem, 1.5rem + 1.5vw, 2.8rem);
+            --text-4xl: clamp(2.2rem, 1.8rem + 2vw, 3.6rem);
+            --font-body: 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', sans-serif;
+            --font-mono: 'Consolas', 'Courier New', monospace;
+
+            /* ── Grid Layout (R1.6) ── */
+            --grid-cols: 38fr 33fr 29fr;
+            --grid-gap: 8px;
+            --container-pad: 10px;
+
+            /* ── Animation Tokens (R1.9) ── */
+            --duration-fast: 0.15s;
+            --duration-normal: 0.3s;
+            --duration-slow: 0.6s;
+            --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        /* ═══════════════════════════════════════════════════════
+           R1.3  Theme Definitions — 5 Warm Themes
+           ═══════════════════════════════════════════════════════ */
 
         /* ── Theme: True Black (OLED) ── */
         body.theme-black {
             --bg-primary: #000000;
-            --bg-card: rgba(10, 10, 10, 0.20);
-            --bg-card-header: rgba(18, 18, 18, 0.30);
-            --bg-card-inner: rgba(18, 18, 18, 0.12);
-            --bg-card-hover: rgba(30, 30, 30, 0.10);
-            --card-border: 1px solid rgba(96, 165, 250, 0.12);
-            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
-            --bg-gradient-1: rgba(96,165,250,0.03);
-            --bg-gradient-2: rgba(52,211,153,0.02);
-            --bg-gradient-3: rgba(139,92,246,0.02);
+            --bg-card: rgba(12, 10, 8, 0.88);
+            --bg-card-header: rgba(22, 18, 14, 0.92);
+            --bg-card-inner: rgba(18, 14, 10, 0.6);
+            --bg-card-hover: rgba(32, 26, 20, 0.7);
+            --accent: #d4a053;
+            --accent-bright: #e8c07a;
+            --accent-glow: rgba(212,160,83,0.15);
+            --accent-border: rgba(212,160,83,0.18);
+            --card-border: 1px solid rgba(212,160,83,0.12);
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
+            --bg-gradient-1: rgba(212,160,83,0.03);
+            --bg-gradient-2: rgba(106,191,123,0.02);
+            --bg-gradient-3: rgba(184,154,223,0.02);
         }
 
-        /* ── Theme: Deep Blue (original) ── */
+        /* ── Theme: Ocean Blue ── */
         body.theme-blue {
-            --bg-primary: #060b14;
-            --bg-card: rgba(15, 23, 42, 0.20);
-            --bg-card-header: rgba(30, 41, 59, 0.30);
-            --bg-card-inner: rgba(30, 41, 59, 0.12);
-            --bg-card-hover: rgba(51, 65, 85, 0.10);
-            --bg-gradient-1: rgba(96,165,250,0.06);
-            --bg-gradient-2: rgba(52,211,153,0.04);
-            --bg-gradient-3: rgba(139,92,246,0.04);
+            --bg-primary: #0c1824;
+            --bg-card: rgba(16, 30, 50, 0.82);
+            --bg-card-header: rgba(22, 40, 65, 0.88);
+            --bg-card-inner: rgba(20, 36, 58, 0.55);
+            --bg-card-hover: rgba(30, 50, 75, 0.65);
+            --accent: #5ba8d4;
+            --accent-bright: #7ec4e8;
+            --accent-glow: rgba(91,168,212,0.22);
+            --accent-border: rgba(91,168,212,0.25);
+            --text-muted: #5e7d96;
+            --cyan: #4cc9e0;
+            --purple: #8898d8;
+            --bg-gradient-1: rgba(91,168,212,0.06);
+            --bg-gradient-2: rgba(76,201,224,0.04);
+            --bg-gradient-3: rgba(136,152,216,0.04);
+            --card-border: 1px solid rgba(91,168,212,0.15);
         }
 
-        /* ── Theme: Matrix Green ── */
+        /* ── Theme: Forest Green ── */
         body.theme-matrix {
-            --bg-primary: #000d00;
-            --bg-card: rgba(0, 20, 0, 0.20);
-            --bg-card-header: rgba(0, 30, 0, 0.30);
-            --bg-card-inner: rgba(0, 25, 0, 0.12);
-            --bg-card-hover: rgba(0, 40, 0, 0.10);
-            --accent: #00ff41;
-            --accent-bright: #69ff47;
-            --accent-glow: rgba(0,255,65,0.18);
-            --accent-border: rgba(0,255,65,0.2);
-            --card-border: 1px solid rgba(0,255,65,0.12);
-            --card-shadow: 0 4px 24px rgba(0,0,0,0.6);
-            --text-muted: #2d6a2d;
-            --bg-gradient-1: rgba(0,255,65,0.05);
-            --bg-gradient-2: rgba(0,200,50,0.03);
-            --bg-gradient-3: rgba(0,180,30,0.02);
+            --bg-primary: #0e1a10;
+            --bg-card: rgba(18, 34, 22, 0.82);
+            --bg-card-header: rgba(24, 46, 30, 0.88);
+            --bg-card-inner: rgba(22, 40, 26, 0.55);
+            --bg-card-hover: rgba(32, 55, 36, 0.65);
+            --accent: #6abf7b;
+            --accent-bright: #8ed89c;
+            --accent-glow: rgba(106,191,123,0.22);
+            --accent-border: rgba(106,191,123,0.25);
+            --text-muted: #5e8a66;
+            --cyan: #5cbfaf;
+            --purple: #98b8a0;
+            --card-border: 1px solid rgba(106,191,123,0.15);
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.45);
+            --bg-gradient-1: rgba(106,191,123,0.06);
+            --bg-gradient-2: rgba(92,191,175,0.04);
+            --bg-gradient-3: rgba(152,184,160,0.03);
         }
 
-        /* ── Theme: Amber ── */
+        /* ── Theme: Amber Glow ── */
         body.theme-amber {
-            --bg-primary: #0d0800;
-            --bg-card: rgba(25, 15, 0, 0.20);
-            --bg-card-header: rgba(40, 22, 0, 0.30);
-            --bg-card-inner: rgba(35, 18, 0, 0.12);
-            --bg-card-hover: rgba(55, 30, 0, 0.10);
-            --accent: #fbbf24;
-            --accent-bright: #fcd34d;
-            --accent-glow: rgba(251,191,36,0.18);
-            --accent-border: rgba(251,191,36,0.2);
-            --card-border: 1px solid rgba(251,191,36,0.12);
-            --card-shadow: 0 4px 24px rgba(0,0,0,0.6);
-            --cyan: #fdba74;
-            --purple: #f472b6;
-            --bg-gradient-1: rgba(251,191,36,0.05);
-            --bg-gradient-2: rgba(249,115,22,0.03);
-            --bg-gradient-3: rgba(245,158,11,0.02);
+            --bg-primary: #18120a;
+            --bg-card: rgba(36, 26, 14, 0.82);
+            --bg-card-header: rgba(50, 36, 18, 0.88);
+            --bg-card-inner: rgba(44, 32, 16, 0.55);
+            --bg-card-hover: rgba(60, 44, 24, 0.65);
+            --accent: #e8a040;
+            --accent-bright: #f0c060;
+            --accent-glow: rgba(232,160,64,0.22);
+            --accent-border: rgba(232,160,64,0.25);
+            --text-muted: #8a7050;
+            --cyan: #d4a060;
+            --purple: #d4a090;
+            --card-border: 1px solid rgba(232,160,64,0.15);
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.45);
+            --bg-gradient-1: rgba(232,160,64,0.06);
+            --bg-gradient-2: rgba(220,140,50,0.04);
+            --bg-gradient-3: rgba(200,160,80,0.03);
         }
 
         /* ── Theme: Purple Dusk ── */
         body.theme-purple {
-            --bg-primary: #07001a;
-            --bg-card: rgba(20, 5, 45, 0.20);
-            --bg-card-header: rgba(35, 12, 70, 0.30);
-            --bg-card-inner: rgba(30, 8, 55, 0.12);
-            --bg-card-hover: rgba(50, 18, 80, 0.10);
-            --accent: #c084fc;
-            --accent-bright: #d8b4fe;
-            --accent-glow: rgba(192,132,252,0.18);
-            --accent-border: rgba(192,132,252,0.2);
-            --card-border: 1px solid rgba(192,132,252,0.12);
-            --card-shadow: 0 4px 24px rgba(0,0,0,0.6);
-            --cyan: #818cf8;
-            --bg-gradient-1: rgba(192,132,252,0.06);
-            --bg-gradient-2: rgba(139,92,246,0.04);
-            --bg-gradient-3: rgba(236,72,153,0.03);
+            --bg-primary: #140e1e;
+            --bg-card: rgba(30, 22, 44, 0.82);
+            --bg-card-header: rgba(42, 30, 60, 0.88);
+            --bg-card-inner: rgba(36, 26, 52, 0.55);
+            --bg-card-hover: rgba(52, 38, 70, 0.65);
+            --accent: #b89adf;
+            --accent-bright: #d0b8f0;
+            --accent-glow: rgba(184,154,223,0.22);
+            --accent-border: rgba(184,154,223,0.25);
+            --text-muted: #7e6e96;
+            --cyan: #8e8ed0;
+            --purple: #c8a0e0;
+            --card-border: 1px solid rgba(184,154,223,0.15);
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.45);
+            --bg-gradient-1: rgba(184,154,223,0.06);
+            --bg-gradient-2: rgba(160,120,200,0.04);
+            --bg-gradient-3: rgba(200,100,160,0.03);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+
+        /* ═══════════════════════════════════════════════════════
+           R1.1  CSS Reset & Base
+           ═══════════════════════════════════════════════════════ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        * { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
         ::selection { background: var(--accent); color: var(--bg-primary); }
 
         /* ── Animated Background ── */
         body {
-            font-family: 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', sans-serif;
+            font-family: var(--font-body, 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', sans-serif);
             background: var(--bg-primary);
             color: var(--text-primary);
             overflow: hidden;
@@ -158,8 +235,8 @@
         /* Full-screen background image (behind gradient overlay) */
         body::after {
             content: ''; position: fixed; inset: 0; z-index: 0;
-            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&q=80') center/cover no-repeat;
-            opacity: 0.55;
+            background: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80') center/cover no-repeat;
+            opacity: 0.35;
             pointer-events: none;
         }
         body::before {
@@ -174,7 +251,7 @@
             50% { opacity: 1; transform: scale(1.05); }
             100% { opacity: 0.7; transform: scale(1.02); }
         }
-        .container { position: relative; z-index: 1; max-width: 100vw; padding: 10px; height: calc(100vh - 20px); display: flex; flex-direction: column; gap: 6px; }
+        .container { position: relative; z-index: 1; max-width: 100vw; padding: var(--container-pad, 10px); height: calc(100vh - calc(var(--container-pad, 10px) * 2)); display: flex; flex-direction: column; gap: 6px; }
 
         /* ── Halacha Ticker ── */
         .ticker-bar {
@@ -230,9 +307,9 @@
         .top-temp { font-size: 1.2em; color: var(--accent); font-weight: 700; text-shadow: 0 0 12px var(--accent-glow); }
         .header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
 
-        /* ── Layout ── */
-        .grids-area { flex: 1 1 0; min-height: 0; overflow: hidden; display: grid; grid-template-columns: 38fr 33fr 29fr; gap: 8px; }
-        .grid-col { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: hidden; }
+        /* ── Layout (R1.6) ── */
+        .grids-area { flex: 1 1 0; min-height: 0; overflow: hidden; display: grid; grid-template-columns: var(--grid-cols, 38fr 33fr 29fr); gap: var(--grid-gap, 8px); }
+        .grid-col { display: flex; flex-direction: column; gap: var(--grid-gap, 8px); min-height: 0; overflow: hidden; }
         /* Left col: news 65% + weather 35% */
         .grid-col-left > .card:nth-child(1) { flex: 65 1 0; }
         .grid-col-left > .card:nth-child(2) { flex: 35 1 0; }
@@ -243,23 +320,25 @@
         /* Right col: stocks + alerts + motivation each 33% */
         .grid-col-right > .card { flex: 1 1 0; }
 
-        /* ── Cards ── */
+        /* ═══════════════════════════════════════════════════════
+           R1.5  Card Component
+           ═══════════════════════════════════════════════════════ */
         .card {
-            background: var(--bg-card); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-            border-radius: var(--border-radius); overflow: hidden;
+            background: var(--bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg, var(--border-radius)); overflow: hidden;
             display: flex; flex-direction: column; min-height: 0;
-            border: var(--card-border); box-shadow: var(--card-shadow);
-            transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s;
-            animation: cardIn 0.6s ease-out both;
+            border: var(--card-border); box-shadow: var(--shadow-md, var(--card-shadow));
+            transition: box-shadow var(--duration-normal, 0.3s) ease, transform var(--duration-normal, 0.3s) ease, border-color var(--duration-normal, 0.3s);
+            animation: cardIn var(--duration-slow, 0.6s) ease-out both;
             position: relative;
         }
         .card::after {
-            content: ''; position: absolute; inset: 0; border-radius: var(--border-radius); pointer-events: none;
-            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(96,165,250,0.04), transparent 40%);
+            content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg, var(--border-radius)); pointer-events: none;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--accent-glow), transparent 40%);
             opacity: 0; transition: opacity 0.3s;
         }
         .card:hover::after { opacity: 1; }
-        .card:hover { box-shadow: 0 0 32px var(--accent-glow), var(--card-shadow); transform: translateY(-1px); }
+        .card:hover { box-shadow: 0 0 28px var(--accent-glow), var(--shadow-md, var(--card-shadow)); transform: translateY(-1px); }
         @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes cardSlideLeft  { from { opacity: 0; transform: translateX(-40px) scale(0.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
         @keyframes cardSlideRight { from { opacity: 0; transform: translateX(40px) scale(0.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
@@ -275,22 +354,22 @@
             padding: 3px 14px; font-weight: 700; text-align: center;
             position: relative; font-size: 0.95em; flex-shrink: 0;
             letter-spacing: 0.3px;
-            border-bottom: 1px solid rgba(96, 165, 250, 0.06);
-            background-image: linear-gradient(90deg, transparent, rgba(96,165,250,0.03), transparent);
+            border-bottom: 1px solid var(--accent-border);
+            background-image: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
         }
         .card-header .icon-badge {
             display: inline-flex; align-items: center; justify-content: center;
             width: 1.4em; height: 1.4em; border-radius: 6px; margin-left: 3px;
             font-size: 1em; vertical-align: middle;
         }
-        .icon-badge.blue { background: rgba(96,165,250,0.18); }
-        .icon-badge.green { background: rgba(52,211,153,0.18); }
-        .icon-badge.purple { background: rgba(167,139,250,0.18); }
-        .icon-badge.orange { background: rgba(251,191,36,0.18); }
-        .icon-badge.yellow { background: rgba(253,224,71,0.18); }
-        .icon-badge.red { background: rgba(248,113,113,0.18); }
-        .icon-badge.pink { background: rgba(244,114,182,0.18); }
-        .icon-badge.cyan { background: rgba(34,211,238,0.18); }
+        .icon-badge.blue { background: rgba(91,168,212,0.20); }
+        .icon-badge.green { background: rgba(106,191,123,0.20); }
+        .icon-badge.purple { background: rgba(184,154,223,0.20); }
+        .icon-badge.orange { background: rgba(232,160,64,0.20); }
+        .icon-badge.yellow { background: rgba(240,192,64,0.20); }
+        .icon-badge.red { background: rgba(224,112,112,0.20); }
+        .icon-badge.pink { background: rgba(232,154,184,0.20); }
+        .icon-badge.cyan { background: rgba(106,191,207,0.20); }
         .sync-dot { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--positive); box-shadow: 0 0 6px var(--positive); transition: all 0.3s; }
         .sync-dot.syncing { background: var(--warning); box-shadow: 0 0 8px rgba(251,191,36,0.5); animation: pulse 1s infinite; }
         .sync-dot.error { background: var(--negative); box-shadow: 0 0 8px var(--negative-glow); }
@@ -316,7 +395,7 @@
         /* ── Diagnostic Overlay (toggle with D key) ── */
         .diag-overlay {
             display: none; position: fixed; bottom: 10px; right: 10px; z-index: 300;
-            background: rgba(0,0,0,0.92); color: #e2e8f0; font-family: 'Consolas', monospace;
+            background: rgba(0,0,0,0.92); color: #e2e8f0; font-family: var(--font-mono, 'Consolas', monospace);
             font-size: 11px; padding: 10px 14px; border-radius: 10px; max-width: 420px;
             max-height: 60vh; overflow-y: auto; direction: ltr; text-align: left;
             border: 1px solid rgba(96,165,250,0.3); backdrop-filter: blur(8px);
@@ -530,9 +609,9 @@
         #theme-select option::before { content: '● '; }
         select.cfg-input { cursor: pointer; }
 
-        /* ── Screen Mode Overrides ── */
-        body.mode-tv { font-size: 28px; }
-        body.mode-tablet { font-size: 15px; }
+        /* ── Screen Mode Overrides (R1.8) ── */
+        body.mode-tv { font-size: 28px; --container-pad: 10px; --grid-gap: 8px; }
+        body.mode-tablet { font-size: 15px; --container-pad: 6px; --grid-gap: 6px; }
         body.mode-tablet .clock { font-size: 2.6em; }
         body.mode-tablet .hebrew-date { font-size: 1.05em; }
         body.mode-tablet .top-temp { font-size: 1.2em; }
@@ -545,8 +624,8 @@
         body.mode-tablet .ticker-bar { height: 30px; }
         body.mode-tablet .ticker-item { font-size: 0.72em; }
         body.mode-tablet .time-section { padding: 4px 10px; }
-        body.mode-tablet .container { padding: 6px; gap: 4px; }
-        body.mode-phone { font-size: 12px; }
+        body.mode-tablet .container { padding: var(--container-pad); gap: 4px; }
+        body.mode-phone { font-size: 12px; --container-pad: 4px; --grid-gap: 4px; }
         body.mode-phone .clock { font-size: 2em; }
         body.mode-phone .header-emoji { font-size: 1.8em; }
         body.mode-phone .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
@@ -618,10 +697,11 @@
         body.mode-phone .alert-item.clone,
         body.mode-phone .alert-count.clone { display: none; }
 
-        /* ── Responsive ── */
+        /* ── Responsive (R1.7) ── */
         @media (max-width: 1200px) {
+            :root { --grid-cols: 1fr 1fr; --grid-gap: 6px; --container-pad: 8px; }
             body { font-size: 17px; }
-            .grids-area { grid-template-columns: 1fr 1fr; }
+            .grids-area { grid-template-columns: var(--grid-cols); }
             .grid-col-left { grid-column: 1; }
             .grid-col-mid { grid-column: 2; }
             .grid-col-right { grid-column: 1 / span 2; flex-direction: row; }
@@ -631,6 +711,7 @@
             .ticker-item { font-size: 0.75em; padding: 0 14px; }
         }
         @media (max-width: 768px) {
+            :root { --grid-cols: 1fr; --grid-gap: 6px; --container-pad: 6px; }
             body { font-size: 14px; }
             .grids-area { grid-template-columns: 1fr; height: auto; overflow: visible; }
             .grid-col { min-height: unset; overflow: visible; }
@@ -647,8 +728,9 @@
             .card-header { font-size: 0.88em; padding: 3px 10px; }
         }
         @media (max-width: 480px) {
+            :root { --grid-cols: 1fr; --grid-gap: 4px; --container-pad: 4px; }
             body { font-size: 12px; }
-            .container { padding: 4px; gap: 4px; }
+            .container { padding: var(--container-pad); gap: 4px; }
             .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
             .header-left, .header-right { align-items: center; flex: 1 1 100%; }
             .clock { font-size: 2em; }
@@ -717,9 +799,19 @@
         .card.maximized .hc-body { font-size: 1.3em; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .card.maximized .cal-wrapper { font-size: 1.2em; }
 
-        /* ── Accessibility: Reduced Motion ── */
+        /* ── Accessibility: Reduced Motion (R1.9) ── */
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            :root {
+                --duration-fast: 0.01ms;
+                --duration-normal: 0.01ms;
+                --duration-slow: 0.01ms;
+            }
         }
 
         /* ── Performance: Paint Containment ── */
@@ -870,12 +962,7 @@
         /* ── Precipitation in Forecast ── */
         .wx-fday-rain { font-size: 0.72em; color: var(--accent); margin-top: 1px; }
 
-        /* ── AQI (Air Quality) Color Coding ── */
-        .aqi-good   { color: var(--positive); }
-        .aqi-fair   { color: #a3e635; }
-        .aqi-mod    { color: var(--orange); }
-        .aqi-poor   { color: var(--negative); }
-        .aqi-verypoor { color: var(--purple); font-weight: 800; }
+
 
         /* ── School Holiday ── */
         .hc-school-val { font-size: 0.74em; color: var(--pink); font-weight: 600; }
@@ -965,10 +1052,6 @@
         .stk-pnl.gain { color: var(--positive); }
         .stk-pnl.loss { color: var(--negative); }
 
-        /* Feature 36: Earthquake Alert */
-        #quake-row { display: none; background: rgba(220,38,38,0.12); border-radius: 6px; padding: 3px 6px; margin: 2px 0; }
-        #quake-badge { font-size: 0.62em; font-weight: 700; background: var(--negative); color: #fff; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
-
         /* Feature 37: Today-event count badge in header */
         #header-event-count { display: none; font-size: 0.6em; background: var(--accent); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; margin-right: 4px; }
 
@@ -1024,14 +1107,26 @@
         #font-scale-indicator { font-size: 0.7em; color: var(--text-muted); transition: opacity 0.3s; opacity: 0; }
         #font-scale-indicator.visible { opacity: 1; }
 
-        /* Feature 50: Print mode */
+        /* Feature 50: Print mode (R1.10 — enhanced) */
         @media print {
+            /* Hide non-essential UI */
             .diag-overlay, #diag-overlay, .offline-banner, #help-overlay, #config-overlay,
             #cfg-gear-btn, .sync-dot, .card-header .news-count-badge,
-            .wx-city-tabs, .news-filter-bar { display: none !important; }
-            body { background: #fff !important; color: #000 !important; }
-            .card { border: 1px solid #ccc !important; background: #fff !important; box-shadow: none !important; }
-            .container { display: block !important; }
+            .wx-city-tabs, .news-filter-bar, .clone, #toast, #night-dim, #pwa-install-btn,
+            #refresh-toast, #sw-update-banner, #news-search-wrap, .rss-translate-btn,
+            .news-share, #wx-chart-toggle, .cfg-gear-btn, .card-collapse-btn,
+            .news-bkm, #moti-next-btn, .ticker-bar { display: none !important; }
+            /* B&W safe colors */
+            body { background: #fff !important; color: #000 !important; overflow: visible !important; height: auto !important; font-size: 12pt !important; }
+            body::before, body::after { display: none !important; }
+            .card { border: 1px solid #ccc !important; background: #fff !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; break-inside: avoid; page-break-inside: avoid; }
+            .card-header { background: #f5f5f5 !important; color: #000 !important; border-bottom: 1px solid #ddd !important; }
+            .container { display: block !important; height: auto !important; padding: 0 !important; }
+            .grids-area { display: block !important; }
+            .grid-col { display: block !important; }
+            .time-section { background: #f5f5f5 !important; border: 1px solid #ccc !important; }
+            a { color: #000 !important; text-decoration: underline; }
+            #print-datetime { display: block !important; font-size: 0.75em; color: #666; padding: 2px 8px; }
         }
 
         /* ═══════════════════════════════════════════════════════
@@ -1041,11 +1136,6 @@
         /* Feature 51: Portfolio Total Value Row */
         .stk-total-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 8px; font-size: 0.68em; border-top: 1px solid var(--accent-border); color: var(--text-secondary); flex-shrink: 0; background: var(--bg-card-inner); gap: 4px; }
         .stk-total-label { color: var(--text-muted); white-space: nowrap; }
-
-        /* Feature 52: Earthquake Magnitude Color Coding */
-        .quake-M3 { background: var(--warning) !important; color: #000 !important; }
-        .quake-M4 { background: var(--orange) !important; color: #000 !important; }
-        .quake-M5 { background: var(--negative) !important; color: #fff !important; animation: alertFlash 0.8s ease-out; }
 
         /* Feature 54: Night Screen Auto-Dimmer */
         #night-dim { position: fixed; inset: 0; background: #000; pointer-events: none; opacity: 0; transition: opacity 3s ease; z-index: 2; }
@@ -1091,9 +1181,7 @@
         .cal-week-dots { display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 6px; }
         .cal-week-dot { width: 4px; height: 4px; border-radius: 50%; opacity: 0.75; }
         .cal-week-today .cal-week-label { color: var(--accent); font-weight: 700; }
-        /* Feature 64: AQI category label + trend arrow */
-        .aqi-label { font-size: 0.68em; font-weight: 600; display: block; line-height: 1.1; }
-        .aqi-trend  { font-size: 0.75em; }
+
         /* Feature 65: Per-stock price history sparkline */
         .stk-ph-spark { width: 44px; height: 12px; overflow: visible; display: block; margin-top: 1px; }
         /* Feature 66: Hourly rain probability overlay — SVG rects at chart bottom */
@@ -1104,8 +1192,6 @@
         #stk-mkt-countdown { font-size: 0.62em; color: var(--text-muted); text-align: center; padding: 2px 8px; border-top: 1px solid var(--accent-border); background: var(--bg-card-inner); flex-shrink: 0; }
         #stk-mkt-countdown.mkt-open { color: var(--positive); }
         #stk-mkt-countdown.mkt-soon { color: var(--warning); }
-        /* Feature 69: Earthquake 24h count badge in HC row */
-        .quake-cnt { font-size: 0.58em; background: rgba(248,113,113,0.14); color: var(--negative); border-radius: 3px; padding: 1px 4px; margin-right: 4px; }
         /* Feature 70: Diagnostic copy log button */
         #diag-copy-btn { font-size: 0.75em; padding: 2px 10px; border-radius: 4px; background: var(--bg-card-inner); border: 1px solid var(--accent-border); color: var(--text-primary); cursor: pointer; margin-bottom: 6px; }
 
@@ -1118,8 +1204,7 @@
         .news-chip-favicon { width: 10px; height: 10px; border-radius: 2px; margin-left: 3px; vertical-align: middle; opacity: 0.85; }
         /* Feature 74: Stock sector grouping header */
         .stk-sector-hdr { font-size: 0.52em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 8px 0; font-weight: 700; opacity: 0.65; flex-shrink: 0; }
-        /* Feature 75: AQI history sparkline */
-        .aqi-spark { width: 44px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 3px; overflow: visible; }
+
         /* Feature 77: Header Shabbat time pill */
         #header-shabbat-pill { font-size: 0.70em; background: rgba(251,191,36,0.12); color: var(--warning); border-radius: 8px; padding: 1px 8px; margin: 1px 0; display: none; white-space: nowrap; }
         /* Feature 78: Parasha weekly reading progress bar */
@@ -1139,14 +1224,6 @@
         /* Feature 90: Offline banner details */
         .offline-banner .offline-age { font-size: 0.82em; opacity: 0.75; margin-inline-start: 6px; }
         /* ── Sprint 10 CSS (F91-F100) ── */
-        /* F98 — Transit departures card */
-        body.transit-off .grid-col-right > .card:nth-child(4) { display: none; }
-        .transit-body { padding: 8px 10px; overflow-y: auto; }
-        .transit-item { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; background: var(--bg-card-inner); margin-bottom: 4px; font-size: 0.82em; }
-        .transit-line { font-weight: 700; color: var(--accent); min-width: 2.2em; text-align: center; background: var(--accent-glow); border-radius: 4px; padding: 2px 5px; font-size: 0.88em; }
-        .transit-dest { flex: 1; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .transit-eta { color: var(--warning); font-weight: 700; font-size: 0.9em; white-space: nowrap; }
-        .transit-placeholder { text-align: center; color: var(--text-muted); font-size: 0.82em; padding: 18px 8px; }
         /* F99 — Card drag-reorder */
         .card.dragging { opacity: 0.42; outline: 2px dashed var(--accent); }
         .card.drag-over { outline: 2px solid var(--accent); transform: scale(1.012); transition: transform 0.12s; }
@@ -1210,9 +1287,6 @@
         /* F125 — News translate button */
         .rss-translate-btn { font-size: 0.65em; padding: 1px 5px; border-radius: 4px; background: rgba(96,165,250,0.12); color: var(--accent); cursor: pointer; border: 1px solid var(--accent-border); flex-shrink: 0; opacity: 0.7; }
         .rss-translate-btn:hover { opacity: 1; background: rgba(96,165,250,0.22); }
-        /* F126 — Earthquake row clickable */
-        #quake-row { cursor: pointer; }
-        #quake-row:hover .hc-val { color: var(--accent); text-decoration: underline; }
         /* F127 — Halacha Sefaria deeplink */
         #hc-halacha-row { cursor: pointer; }
         #hc-halacha-row:hover .hc-halacha-val { color: var(--accent); }
@@ -1247,13 +1321,7 @@
         .cal-event.has-conflict .cal-event-title::before { content: '⚠ '; color: var(--warning); font-size: 0.8em; }
         /* F139 — Custom countdown chip */
         #header-countdown { font-size: 0.68em; background: rgba(192,132,252,0.14); color: var(--purple); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: default; font-weight: 600; }
-        /* F140 — Print mode improvements */
-        @media print {
-            .clone, #toast, #night-dim, #pwa-install-btn, #refresh-toast, .offline-banner,
-            #sw-update-banner, #news-search-wrap, .rss-translate-btn, .news-share,
-            #wx-chart-toggle, .cfg-gear-btn { display: none !important; }
-            #print-datetime { display: block !important; font-size: 0.75em; color: #666; padding: 2px 8px; }
-        }
+        /* F140 — Print mode improvements (merged into R1.10 print block above) */
 
         /* ── Sprint 15 (F141–F150) ── */
         /* F142 — Dew point tile in weather details */
@@ -1332,13 +1400,13 @@
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
-    <meta name="theme-color" content="#060b14">
+    <meta name="theme-color" content="#1a1410">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="לוח משפחה">
 </head>
-<body class="transit-off">
+<body>
     <!-- Feature 80: PWA install prompt button -->
     <button id="pwa-install-btn" aria-label="התקן אפליקציה">📲 התקן</button>
     <!-- Feature 54: Night screen dimmer overlay -->
@@ -1393,30 +1461,30 @@
         <h2>⚙️ הגדרות</h2>
         <!-- F119: Config panel section tabs -->
         <div class="cfg-tabs">
-          <button class="cfg-tab active" data-tab="display" onclick="switchCfgTab('display')">🖥️ תצוגה</button>
-          <button class="cfg-tab" data-tab="calendar" onclick="switchCfgTab('calendar')">📅 לוח</button>
-          <button class="cfg-tab" data-tab="feeds" onclick="switchCfgTab('feeds')">📰 עדכונים</button>
-          <button class="cfg-tab" data-tab="alerts-tab" onclick="switchCfgTab('alerts-tab')">🚨 התראות</button>
-          <button class="cfg-tab" data-tab="advanced" onclick="switchCfgTab('advanced')">⚙️ מתקדם</button>
+          <button class="cfg-tab active" data-tab="display" onclick="switchCfgTab('display')">🖥️ תצוגה Display</button>
+          <button class="cfg-tab" data-tab="calendar" onclick="switchCfgTab('calendar')">📅 לוח Calendar</button>
+          <button class="cfg-tab" data-tab="feeds" onclick="switchCfgTab('feeds')">📰 עדכונים Feeds</button>
+          <button class="cfg-tab" data-tab="alerts-tab" onclick="switchCfgTab('alerts-tab')">🚨 התראות Alerts</button>
+          <button class="cfg-tab" data-tab="advanced" onclick="switchCfgTab('advanced')">⚙️ מתקדם Advanced</button>
         </div>
         <!-- Tab: Display -->
         <div class="cfg-section active" data-tab="display">
           <div class="cfg-row">
             <span class="cfg-label">�️ מצב מסך</span>
             <select id="screen-mode-select" class="cfg-input">
-              <option value="tv">📺 טלוויזיה</option>
-              <option value="tablet">📱 טאבלט</option>
-              <option value="phone">📱 נייד</option>
+              <option value="tv">📺 טלוויזיה (TV)</option>
+              <option value="tablet">📱 טאבלט (Tablet)</option>
+              <option value="phone">📱 נייד (Phone)</option>
             </select>
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🎨 ערכת נושא</span>
             <select id="theme-select" class="cfg-input">
-              <option value="black">■ שחור OLED</option>
-              <option value="blue">🟦 כחול לילה</option>
-              <option value="matrix">🟩 מטריקס</option>
-              <option value="amber">🟧 ענבר</option>
-              <option value="purple">🟥 סגול</option>
+              <option value="black">■ שחור OLED (Black)</option>
+              <option value="blue">🟦 כחול לילה (Blue)</option>
+              <option value="matrix">🟩 מטריקס (Matrix)</option>
+              <option value="amber">🟧 ענבר (Amber)</option>
+              <option value="purple">🟥 סגול (Purple)</option>
             </select>
           </div>
           <div class="cfg-row">
@@ -1490,10 +1558,6 @@
           <div class="cfg-row">
             <span class="cfg-label">📉 הסתר מניות (סימול, פסיק)</span>
             <input class="cfg-input" id="cfg-stocks-hidden" type="text" placeholder="^VIX, BRK-B" dir="ltr" />
-          </div>
-          <div class="cfg-row">
-            <span class="cfg-label">🚌 תחנת תחבורה (GID)</span>
-            <input class="cfg-input" id="cfg-transit-stop" type="text" placeholder="IL:12345" dir="ltr" />
           </div>
           <!-- F117: Configurable weather city tabs -->
           <div class="cfg-row">
@@ -1596,13 +1660,13 @@
 
         <div class="container">
         <!-- ── Daily Halacha Ticker ── -->
-        <div class="ticker-bar">
+        <div class="ticker-bar" role="marquee" aria-label="Daily Halacha">
             <div class="ticker-label">� הלכה יומית</div>
             <div class="ticker-track"><div class="ticker-content" id="ticker-content">טוען הלכה יומית...</div></div>
         </div>
 
         <!-- ── Header ── -->
-        <div class="time-section">
+        <div class="time-section" role="banner">
             <div class="header-left">
                 <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
             </div>
@@ -1632,11 +1696,11 @@
             </div>
         </div>
 
-        <div class="grids-area">
+        <div class="grids-area" role="main">
 
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
-            <div class="card" data-card-id="news">
+            <div class="card" data-card-id="news" aria-label="News">
               <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד">🔖 מועדפים</span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
@@ -1650,7 +1714,7 @@
                 <div class="rss-scroll" id="rss-scroll"></div>
               </div>
             </div>
-            <div class="card" data-card-id="weather">
+            <div class="card" data-card-id="weather" aria-label="Weather">
               <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
               <div class="weather-body">
                 <!-- Feature 45: Multi-city tabs -->
@@ -1674,8 +1738,6 @@
                     <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div><span id="wx-wind-heb"></span><span id="wx-gust"></span></div>
                     <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
                     <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
-                    <!-- Feature 64: AQI category label + trend -->
-                    <div class="wx-detail"><div class="wx-detail-label">😷 AQI</div><div class="wx-detail-val" id="wx-aqi">--</div><span class="aqi-label" id="aqi-label"></span><span class="aqi-trend" id="aqi-trend"></span><svg class="aqi-spark" id="aqi-spark" viewBox="0 0 44 14" aria-hidden="true"></svg></div>
                     <!-- Feature 26: Feels-like temperature -->
                     <div class="wx-detail"><div class="wx-detail-label">🌡️ מרגיש</div><div class="wx-detail-val" id="wx-feels">--°</div></div>
                     <!-- F142: Dew point -->
@@ -1704,7 +1766,7 @@
 
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
-            <div class="card" data-card-id="hcal">
+            <div class="card" data-card-id="hcal" aria-label="Hebrew Calendar">
               <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
                 <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
@@ -1733,9 +1795,6 @@
                 <div class="hc-row" id="hc-chore-row" style="display:none"><span class="hc-label">🧹 משימה</span><span class="hc-val hc-chore-val" id="hc-chore">--</span></div>
                 <!-- F151: Sefirat HaOmer count -->
                 <div class="hc-row" id="hc-omer-row" style="display:none"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="omer-count"></span></div>
-                <!-- Feature 36: Earthquake alert -->
-                <!-- Feature 69: Earthquake 24h count badge -->
-                <div class="hc-row" id="quake-row"><span class="hc-label">🌍 רעש</span><span class="hc-val" id="quake-val">--</span><span id="quake-badge"></span><span class="quake-cnt" id="quake-count-badge" style="display:none"></span></div>
                 <!-- Feature 44: Parasha Sefaria link -->
                 <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button class="hc-parasha-link" id="hc-parasha-link">📖 ספרייה</button></div>
                 <div class="hc-divider"></div>
@@ -1746,7 +1805,7 @@
                 <div class="hc-birthday" id="hc-birthday" style="display:none"></div>
               </div>
             </div>
-            <div class="card" data-card-id="cal" style="position:relative">
+            <div class="card" data-card-id="cal" aria-label="Calendar" style="position:relative">
               <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
                 <!-- F154: Today's upcoming events strip -->
@@ -1757,7 +1816,7 @@
                 <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
               </div>
             </div>
-            <div class="card" data-card-id="currency">
+            <div class="card" data-card-id="currency" aria-label="Currency">
               <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
               <div class="currency-body" id="currency-body">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
@@ -1770,9 +1829,9 @@
             </div>
           </div>
 
-          <!-- ── Right Column: Stocks + Alerts + Motivation + Transit ── -->
+          <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
-            <div class="card" data-card-id="stocks">
+            <div class="card" data-card-id="stocks" aria-label="Stocks">
             <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body">
@@ -1808,7 +1867,7 @@
               <!-- Feature 68: Market open/close countdown -->
               <div id="stk-mkt-countdown"></div>
             </div>
-            <div class="card" data-card-id="alerts">
+            <div class="card" data-card-id="alerts" aria-label="Red Alerts">
               <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge-count" class="alerts-badge"></span>צבע אדום</div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll">
@@ -1816,8 +1875,8 @@
                 </div>
               </div>
             </div>
-            <div class="card" data-card-id="moti">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">✨</span> מוטיבציה</div>
+            <div class="card" data-card-id="moti" aria-label="Motivation">
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><span class="icon-badge pink">✨</span> מוטיבציה</div>
               <div class="moti-body">
                 <div class="moti-card">
                   <div class="moti-text" id="moti-text">טוען השראה...</div>
@@ -1828,18 +1887,11 @@
                 </div>
               </div>
             </div>
-            <!-- Feature 98: Transit departures card -->
-            <div class="card" data-card-id="transit">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-transit"></div><span class="icon-badge cyan">🚌</span> תחבורה ציבורית</div>
-              <div class="transit-body" id="transit-body">
-                <div class="transit-placeholder">הגדר מספר תחנה בהגדרות</div>
-              </div>
-            </div>
           </div>
 
         </div>
-        <div class="status-bar">
-            <span>Dashboard v5.0.0 — משפחת רגואן</span>
+        <div class="status-bar" role="contentinfo">
+            <span>Dashboard v5.1.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1857,7 +1909,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.19.0 — 3-Column Layout · Hebrew Calendar Card · 160 Sprint Features · 1069 Tests
+       FAMILY DASHBOARD v5.1.0 — 3-Column Layout · Hebrew Calendar Card · Warm Themes · Bilingual UI
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -2109,17 +2161,18 @@
     }
 
     // ── Page Visibility (pause fetches when tab is hidden; smart wake-refresh after 30min) ──
+    const WAKE_REFRESH_MS = 30 * 60 * 1000; // 30 minutes
     let _pageVisible = true;
     document.addEventListener('visibilitychange', () => {
         _pageVisible = !document.hidden;
         if (document.hidden) {
             _lastHiddenAt = Date.now();
-        } else if (_lastHiddenAt && (Date.now() - _lastHiddenAt) > 1800000) {
+        } else if (_lastHiddenAt && (Date.now() - _lastHiddenAt) > WAKE_REFRESH_MS) {
             // Hidden for > 30 min — force full refresh on wake
             diagLog('Wake-refresh triggered after ' + Math.round((Date.now() - _lastHiddenAt) / 60000) + 'min hidden');
             _lastHiddenAt = null;
             // Stagger loaders to avoid thundering herd
-            setTimeout(() => { safeLoad(loadWeather); safeLoad(loadAQI); }, 200);
+            setTimeout(() => { safeLoad(loadWeather); }, 200);
             setTimeout(() => { safeLoad(loadNews); }, 600);
             setTimeout(() => { safeLoad(loadAllStocks); safeLoad(loadCurrency); }, 1000);
             setTimeout(() => { safeLoad(loadCalendar); safeLoad(loadHebCal); stampRefresh(); }, 1400);
@@ -2219,11 +2272,10 @@
     const $ = id => document.getElementById(id);
     const el = {
         clock: $('clock'), engDate: $('english-date'), hebDate: $('hebrew-date'),
-        greeting: $('greeting'), shabbat: $('shabbat-info'), topTemp: $('top-temp'),
+        greeting: $('greeting'), topTemp: $('top-temp'),
         wxIcon: $('wx-icon'), wxTemp: $('wx-temp'), wxDesc: $('wx-desc'),
         wxHum: $('wx-hum'), wxWind: $('wx-wind'), wxUv: $('wx-uv'),
         wxRise: $('wx-rise'), wxHourly: $('wx-hourly'), wxForecast: $('wx-forecast'),
-        wxAqi: $('wx-aqi'),
         wxFeels: $('wx-feels'),
         newsBody: $('news-body'), rssScroll: $('rss-scroll'), ticker: $('ticker-content'),
         newsCount: $('news-count'),
@@ -2233,7 +2285,7 @@
         curGoldChg: $('cur-gold-chg'), curSilverChg: $('cur-silver-chg'),
         motiText: $('moti-text'), motiAuthor: $('moti-author'), motiSrc: $('moti-src'),
         alertsScroll: $('alerts-scroll'),
-        refresh: $('last-refresh'), holiday: $('holiday-info'), marketBadge: $('market-badge'),
+        refresh: $('last-refresh'), marketBadge: $('market-badge'),
         dayProgress: $('day-progress'), yearProgress: $('year-progress'),
         dayPct: $('day-pct'), yearPct: $('year-pct'),
         calAgenda: $('cal-agenda'), calIframe: $('cal-iframe'),
@@ -2262,7 +2314,6 @@
         connIndicator: $('conn-indicator'),
         // Sprint 8 additions
         curGbp: $('cur-gbp'), curGbpChg: $('cur-gbp-chg'),
-        aqiSpark: $('aqi-spark'),
         hcParashaProgressRow: $('hc-parasha-progress-row'),
         hcParashaProgressFill: $('hc-parasha-progress-fill'),
         hdrShabbatPill: $('header-shabbat-pill'),
@@ -2296,7 +2347,7 @@
         // Sprint 17 additions (F161-F170)
         btnInstall: $('btn-install'),                   // F165
     };
-    const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
+    const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
 
     // ── Fetch Helpers ──
@@ -2462,49 +2513,7 @@
         }
     }
 
-    async function loadShabbat() {
-        if (!el.shabbat) return; // header element removed; heb-cal card handled by loadHebCal
-        const key = 'shabbat-' + new Date().toDateString();
-        const fresh = cGet(key, 10800000); if (fresh) { el.shabbat.textContent = fresh; return; } // 3h TTL
-        const stale = cGetStale(key); if (stale) el.shabbat.textContent = stale;
-        try { const d = await fetchJSON(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${getGeonameid()}&M=on`);
-            if (d.items) {
-                const candles = d.items.find(i => i.category === 'candles');
-                const havdalah = d.items.find(i => i.category === 'havdalah');
-                const parts = [];
-                if (candles) parts.push('🕯️ הדלקת נרות: ' + new Date(candles.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }));
-                if (havdalah) parts.push('✨ הבדלה: ' + new Date(havdalah.date).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }));
-                const txt = parts.join('  |  ');
-                el.shabbat.textContent = txt; cSet(key, txt);
-            }
-        } catch (e) { console.error('Shabbat:', e); }
-    }
 
-    // ── Next Jewish Holiday Countdown ──
-    async function loadHolidays() {
-        const key = 'holidays-' + new Date().toDateString();
-        const fresh = cGet(key, 21600000); if (fresh) { renderHoliday(fresh); return; } // 6h TTL
-        const stale = cGetStale(key); if (stale) renderHoliday(stale);
-        try {
-            const now = new Date();
-            const d = await fetchJSON(`https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x`);
-            if (d.items) {
-                const upcoming = d.items
-                    .filter(i => i.category === 'holiday' && new Date(i.date) >= now)
-                    .sort((a, b) => new Date(a.date) - new Date(b.date));
-                if (upcoming.length) { cSet(key, upcoming[0]); renderHoliday(upcoming[0]); }
-            }
-        } catch (e) { console.error('Holidays:', e); }
-    }
-    function renderHoliday(h) {
-        if (!el.holiday || !h) return;
-        const d = new Date(h.date); const now = new Date();
-        const days = Math.ceil((d - now) / 86400000);
-        const name = h.hebrew || h.title;
-        if (days <= 0) { el.holiday.textContent = `🎉 היום: ${name}`; }
-        else if (days === 1) { el.holiday.innerHTML = `🕎 מחר: <span class="holiday-days">${name}</span>`; }
-        else { el.holiday.innerHTML = `🕎 ${name} בעוד <span class="holiday-days">${days} ימים</span>`; }
-    }
 
     // ── Sefirat HaOmer (Omer Count) ──
     // After sunset the count advances to the next day's omer.
@@ -3113,6 +3122,13 @@
         _toastTimer = setTimeout(() => { t.classList.remove('toast-show'); _toastTimer = null; }, durationMs);
     }
 
+    // ── Scroll Loop Helper (shared by news, stocks, alerts) ──
+    function injectScrollKeyframes(styleId, keyframeName, distance) {
+        let sEl = document.getElementById(styleId);
+        if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
+        sEl.textContent = `@keyframes ${keyframeName} { from { transform: translateY(0); } to { transform: translateY(-${distance}px); } }`;
+    }
+
     // F124: Calendar event reminder notifications (15min before upcoming events)
     const _CAL_REMINDER_KEY = 'dash_cal_reminded'; // comma-separated reminded event keys
     function _getRemindedKeys() {
@@ -3374,11 +3390,7 @@
         // Set scroll animation duration based on item count
         const h = el.rssScroll.scrollHeight / 2;
         el.rssScroll.style.animation = `newsScroll ${Math.max(40, list.length * 4)}s linear infinite`;
-        // Inject keyframes dynamically
-        const styleId = 'news-scroll-style';
-        let sEl = document.getElementById(styleId);
-        if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
-        sEl.textContent = `@keyframes newsScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-${h}px); } }`;
+        injectScrollKeyframes('news-scroll-style', 'newsScroll', h);
     }
 
     // ── Ticker (horizontal scroll at the top) ──
@@ -3609,10 +3621,7 @@
             const dist = Math.max(0, cont.scrollHeight - panelH);
             if (dist <= 0) return;
             const dur = Math.max(30, STOCK_SYMBOLS.length * 4);
-            const styleId = 'stocks-scroll-style';
-            let sEl = document.getElementById(styleId);
-            if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
-            sEl.textContent = `@keyframes stocksScroll { from { transform: translateY(0); } to { transform: translateY(-${dist}px); } }`;
+            injectScrollKeyframes('stocks-scroll-style', 'stocksScroll', dist);
             cont.style.animation = `stocksScroll ${dur}s linear infinite`;
         });
     }
@@ -3966,10 +3975,7 @@
         // Dynamic keyframe
         const h = el.alertsScroll.scrollHeight / 2;
         const dur = Math.max(25, recentEvents.length * 4);
-        const styleId = 'alerts-scroll-style';
-        let sEl = document.getElementById(styleId);
-        if (!sEl) { sEl = document.createElement('style'); sEl.id = styleId; document.head.appendChild(sEl); }
-        sEl.textContent = `@keyframes alertsScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-${h}px); } }`;
+        injectScrollKeyframes('alerts-scroll-style', 'alertsScroll', h);
         el.alertsScroll.style.animation = `alertsScroll ${dur}s linear infinite`;
     }
 
@@ -4332,6 +4338,10 @@
         const sel = document.getElementById('theme-select');
         if (sel && sel.value !== theme) sel.value = theme;
     }
+    function cycleTheme() {
+        const cur = THEMES.findIndex(t => document.body.classList.contains('theme-' + t));
+        applyTheme(THEMES[(cur + 1) % THEMES.length]);
+    }
     function initTheme() {
         const saved = localStorage.getItem('dash_theme') || 'black';
         applyTheme(saved);
@@ -4339,10 +4349,7 @@
         if (sel) sel.addEventListener('change', e => applyTheme(e.target.value));
         // Keyboard shortcut: press T to cycle themes, D for diagnostics
         document.addEventListener('keydown', e => {
-            if (e.key === 't' || e.key === 'T') {
-                const cur = THEMES.findIndex(t => document.body.classList.contains('theme-' + t));
-                applyTheme(THEMES[(cur + 1) % THEMES.length]);
-            }
+            if (e.key === 't' || e.key === 'T') cycleTheme();
             if (e.key === 'a' || e.key === 'A') applyAlerts(_alertsOn ? 'off' : 'on');
             if (e.key === 's' || e.key === 'S') toggleConfig();
             if (e.key === 'n' || e.key === 'N') toggleNightDim();  // Feature 54
@@ -4371,59 +4378,12 @@
         }
     }
 
-    // ── Feature 98: Transit departures (Hasadna open-bus API) ──
-    async function loadTransit() {
-        const stopGid = localStorage.getItem('dash_transit_stop');
-        const body = document.getElementById('transit-body');
-        const syncDot = document.getElementById('sync-transit');
-        if (!stopGid || !body) return;
-        if (syncDot) { syncDot.className = 'sync-dot syncing'; }
-        try {
-            const url = `https://open-bus-stride-api.hasadna.org.il/siri_arrivals/list?siri_stop_gid=${encodeURIComponent(stopGid)}&limit=5&order_by=scheduled_arrival_time`;
-            const data = await fetchJSON(url);
-            const items = Array.isArray(data) ? data : (data.results || []);
-            if (!items.length) { body.innerHTML = '<div class="transit-placeholder">אין נסיעות זמינות</div>'; return; }
-            const now = new Date();
-            const frag = document.createDocumentFragment();
-            for (const item of items.slice(0, 4)) {
-                const at = new Date(item.scheduled_arrival_time || item.arrival_time || item.aimed_arrival_time);
-                if (isNaN(at)) continue;
-                const diff = Math.round((at - now) / 60000);
-                if (diff < -1) continue;
-                const div = document.createElement('div');
-                div.className = 'transit-item';
-                const lineRef = item.line_short_name || item.published_line_name || item.svt_aimed_departure?.line_ref || '?';
-                const dest = item.destination_name_he || item.destination_description || '';
-                div.innerHTML = `<span class="transit-line">${lineRef}</span><span class="transit-dest">${dest}</span><span class="transit-eta">${diff <= 0 ? 'עכשיו' : diff + ' ד׳'}</span>`;
-                frag.appendChild(div);
-            }
-            body.innerHTML = '';
-            if (!frag.childNodes.length) body.innerHTML = '<div class="transit-placeholder">אין נסיעות קרובות</div>';
-            else body.appendChild(frag);
-            if (syncDot) syncDot.className = 'sync-dot';
-            diagLog('Transit loaded: ' + stopGid);
-        } catch (e) {
-            if (body) body.innerHTML = '<div class="transit-placeholder">שגיאת טעינה</div>';
-            if (syncDot) syncDot.className = 'sync-dot error';
-            diagLog('Transit ERR: ' + e.message);
-        }
-    }
-
-    function applyTransitState() {
-        const stop = localStorage.getItem('dash_transit_stop');
-        if (stop) {
-            document.body.classList.remove('transit-off');
-            safeLoad(loadTransit);
-        } else {
-            document.body.classList.add('transit-off');
-        }
-    }
 
     // ── Feature 99: Card drag-reorder within columns ──
     const _COL_FLEX = {
         left:  [65, 35],
         mid:   [20, 65, 15],
-        right: [1, 1, 1, 1]
+        right: [1, 1, 1]
     };
 
     function _reapplyColFlex(col) {
@@ -4941,42 +4901,6 @@
         el.headerNextZman.style.display = '';
     }
 
-    // ── AQI (Air Quality Index) ── Open-Meteo air quality API, no key needed ──
-    async function loadAQI() {
-        if (!_pageVisible || !acquireLock('aqi')) return;
-        const key = 'aqi';
-        const TTL = 3600000; // 1h
-        const fresh = cGet(key, TTL);
-        if (fresh) { _renderAQI(fresh); releaseLock('aqi'); return; }
-        const stale = cGetStale(key); if (stale) _renderAQI(stale);
-        try {
-            const now = new Date();
-            const dateStr = now.toISOString().split('T')[0];
-            const d = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=31.7683&longitude=35.2137&hourly=european_aqi&timezone=Asia%2FJerusalem&forecast_days=1&start_date=${dateStr}&end_date=${dateStr}`).then(r => r.json());
-            const aqi = d.hourly?.european_aqi?.[now.getHours()];
-            if (aqi != null) { cSet(key, aqi); _renderAQI(aqi); diagLog('AQI OK: ' + aqi); }
-        } catch (e) { diagLog('AQI ERR: ' + e.message); }
-        releaseLock('aqi');
-    }
-    function _renderAQI(aqi) {
-        if (!el.wxAqi) return;
-        el.wxAqi.textContent = Math.round(aqi);
-        el.wxAqi.className = 'wx-detail-val ' + (aqi <= 20 ? 'aqi-good' : aqi <= 40 ? 'aqi-fair' : aqi <= 60 ? 'aqi-mod' : aqi <= 80 ? 'aqi-poor' : 'aqi-verypoor');
-        // Feature 64: Hebrew category label + trend arrow
-        const cat = getAqiCategory(aqi);
-        const labelEl = document.getElementById('aqi-label');
-        const trendEl = document.getElementById('aqi-trend');
-        if (labelEl) { labelEl.textContent = cat.text; labelEl.className = `aqi-label ${cat.cls}`; }
-        if (trendEl && _prevAqiVal !== null) {
-            const diff = aqi - _prevAqiVal;
-            trendEl.textContent = Math.abs(diff) < 2 ? '\u2192' : diff < 0 ? '\u2193' : '\u2191';
-            trendEl.className = 'aqi-trend ' + (diff < -2 ? 'aqi-good' : diff > 2 ? 'aqi-poor' : '');
-        }
-        _prevAqiVal = aqi;
-        // Feature 75: record AQI history and render sparkline
-        recordAqiHistory(aqi);
-        renderAqiSparkline();
-    }
 
 
     // ── Sprint 4 Features ──
@@ -5058,7 +4982,6 @@
             const feedsDisInput = document.getElementById('cfg-feeds-disabled');
             const stocksHiddenInput = document.getElementById('cfg-stocks-hidden');
             const rtAlertsInput = document.getElementById('cfg-alert-realtime');
-            const transitStopInput = document.getElementById('cfg-transit-stop');
             const choresInput = document.getElementById('cfg-chores');
             if (homeLat) homeLat.value = localStorage.getItem('dash_home_lat') || '';
             if (homeLon) homeLon.value = localStorage.getItem('dash_home_lon') || '';
@@ -5067,7 +4990,6 @@
             if (feedsDisInput) feedsDisInput.value = localStorage.getItem('dash_feed_disabled') || '';
             if (stocksHiddenInput) stocksHiddenInput.value = localStorage.getItem('dash_stocks_hidden') || '';
             if (rtAlertsInput) rtAlertsInput.value = _alertRealtime ? 'on' : 'off';
-            if (transitStopInput) transitStopInput.value = localStorage.getItem('dash_transit_stop') || '';
             if (choresInput) choresInput.value = localStorage.getItem('dash_chores') || '';
             // F139: countdown chip config
             const ctDateInp = document.getElementById('cfg-countdown-date');
@@ -5152,13 +5074,6 @@
             if (val === 'off') { _alertSoundEnabled = false; localStorage.setItem('dash_alertSound', 'off'); }
             else if (val === 'on') { _alertSoundEnabled = true; localStorage.setItem('dash_alertSound', 'on'); }
         }
-        // Feature 55: stock price alerts
-        const stockAlertsInput = document.getElementById('cfg-stock-alerts');
-        if (stockAlertsInput) {
-            const val = stockAlertsInput.value.trim();
-            if (val) { try { JSON.parse(val); localStorage.setItem('dash_stock_alerts', val); } catch {} }
-            else localStorage.removeItem('dash_stock_alerts');
-        }
         // Sprint 9: family name (F84)
         const familyInput = document.getElementById('cfg-family-name');
         if (familyInput !== null) {
@@ -5205,7 +5120,7 @@
         const hebGeoInput = document.getElementById('cfg-heb-geonameid');
         if (hebGeoInput) {
             const geo = hebGeoInput.value.trim();
-            if (geo && /^\d+$/.test(geo)) { localStorage.setItem('dash_geonameid', geo); safeLoad(loadHebCal); safeLoad(loadShabbat); }
+            if (geo && /^\d+$/.test(geo)) { localStorage.setItem('dash_geonameid', geo); safeLoad(loadHebCal); }
             else if (!geo) localStorage.removeItem('dash_geonameid');
         }
         const feedsDisInput = document.getElementById('cfg-feeds-disabled');
@@ -5226,12 +5141,6 @@
             _alertRealtime = v === 'on';
             if (_alertRealtime) localStorage.setItem('dash_alert_rt', 'on');
             else localStorage.removeItem('dash_alert_rt');
-        }
-        const transitStopInput = document.getElementById('cfg-transit-stop');
-        if (transitStopInput) {
-            const stop = transitStopInput.value.trim();
-            if (stop) localStorage.setItem('dash_transit_stop', stop); else localStorage.removeItem('dash_transit_stop');
-            applyTransitState();
         }
         const choresInput = document.getElementById('cfg-chores');
         if (choresInput) {
@@ -5339,67 +5248,6 @@
         pnlEl.className = 'stk-pnl ' + (pnl >= 0 ? 'gain' : 'loss');
     }
 
-    // Feature 36: Earthquake Alerts (USGS GeoJSON for Israel region)
-    async function loadEarthquakes() {
-        const key = 'quake';
-        const TTL = 3600000; // 1h
-        const fresh = cGet(key, TTL);
-        if (fresh) { _renderEarthquake(fresh); return; }
-        const stale = cGetStale(key); if (stale) _renderEarthquake(stale);
-        try {
-            // Feature 69: fetch last 20 quakes to count 24h events + show the strongest
-            const url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=2.5&latitude=31.5&longitude=35.0&maxradiuskm=500&limit=20&orderby=time';
-            const d = await fetchJSON(url);
-            const feats = d?.features || [];
-            const now24 = Date.now() - 86400000;
-            const recent = feats.filter(f => f.properties?.time >= now24 && (f.properties?.mag || 0) >= 3.5);
-            _quake24hCount = recent.length;
-            updateQuakeCountBadge();
-            const feat = feats[0]; // most recent overall
-            if (feat) {
-                const info = {
-                    mag: feat.properties?.mag,
-                    place: feat.properties?.place || '',
-                    time: feat.properties?.time,
-                    url: feat.properties?.url || feat.id || '', // F126: USGS detail URL
-                };
-                cSet(key, info);
-                _renderEarthquake(info);
-                diagLog(`Quake: M${info.mag} ${info.place}`);
-            } else {
-                cSet(key, null);
-            }
-        } catch (e) { diagLog('Quake ERR: ' + e.message); }
-    }
-    function _renderEarthquake(info) {
-        const row = document.getElementById('quake-row');
-        const val = document.getElementById('quake-val');
-        const badge = document.getElementById('quake-badge');
-        if (!row || !val || !badge) return;
-        if (!info || info.mag == null) {
-            row.style.display = 'none';
-            return;
-        }
-        // Only show if within last 24 hours
-        const age = Date.now() - (info.time || 0);
-        if (age > 86400000) { row.style.display = 'none'; return; }
-        // Only show M3.5+
-        if (info.mag < 3.5) { row.style.display = 'none'; return; }
-        const hours = Math.floor(age / 3600000);
-        const ageStr = hours === 0 ? 'לפני פחות משעה' : `לפני ${hours} שע'`;
-        val.textContent = info.place.substring(0, 40) + ` (${ageStr})`;
-        badge.textContent = `M${info.mag.toFixed(1)}`;
-        // Feature 52: magnitude color coding
-        badge.className = (info.mag < 4) ? 'quake-M3' : (info.mag < 5) ? 'quake-M4' : 'quake-M5';
-        // F126: USGS map deeplink — click row opens USGS event detail in new tab
-        if (info.url) {
-            row.onclick = () => { try { window.open(info.url, '_blank', 'noopener,noreferrer'); } catch (_) {} };
-            row.title = 'לחץ לפרטים ב-USGS';
-        } else {
-            row.onclick = null;
-        }
-        row.style.display = '';
-    }
 
     // Feature 37: Today Event Count in Header (from ICS cache)
     function updateTodayEventCount() {
@@ -5823,7 +5671,7 @@
         _mem.clear();  // clear in-memory cache layer
         const toast = document.getElementById('refresh-toast');
         if (toast) { toast.classList.add('visible'); setTimeout(() => toast.classList.remove('visible'), 2200); }
-        [loadHebrewDate, loadShabbat, loadWeather, loadAQI, loadNews, loadAllStocks,
+        [loadHebrewDate, loadWeather, loadNews, loadAllStocks,
          loadCurrency, loadAlerts, loadCalendar, loadHalacha, loadHebCal, loadZmanim].forEach(fn => safeLoad(fn));
         stampRefresh();
     }
@@ -5861,15 +5709,6 @@
         strip.innerHTML = rows.join('');
     }
 
-    // Feature 64: AQI Hebrew category label + trend arrow
-    let _prevAqiVal = null;
-    function getAqiCategory(aqi) {
-        if (aqi <= 20) return { text: '\u05d8\u05d5\u05d1', cls: 'aqi-good' };
-        if (aqi <= 40) return { text: '\u05d1\u05d9\u05e0\u05d5\u05e0\u05d9', cls: 'aqi-fair' };
-        if (aqi <= 60) return { text: '\u05de\u05d5\u05d2\u05d1\u05e8', cls: 'aqi-mod' };
-        if (aqi <= 80) return { text: '\u05d2\u05e8\u05d5\u05e2', cls: 'aqi-poor' };
-        return { text: '\u05de\u05e1\u05d5\u05db\u05df', cls: 'aqi-verypoor' };
-    }
 
     // Feature 65: Per-stock price history sparkline (localStorage — last 8 closes)
     const _STK_PH_PFX = 'dash_sph_';
@@ -5944,18 +5783,6 @@
         }
     }
 
-    // Feature 69: Earthquake 24h count badge
-    let _quake24hCount = 0;
-    function updateQuakeCountBadge() {
-        const badge = document.getElementById('quake-count-badge');
-        if (!badge) return;
-        if (_quake24hCount > 1) {
-            badge.textContent = `${_quake24hCount} \u05e8\u05e2\u05d9\u05d3\u05d5\u05ea`;
-            badge.style.display = '';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
 
     // Feature 70: Copy full diagnostics log to clipboard
     function copyDiagLog() {
@@ -5973,36 +5800,6 @@
     // ── SPRINT 8 FEATURES (F71–F80) ──
 
     // Feature 71: GBP / ILS — handled in renderCurrency() extension (see below)
-
-    // Feature 75: AQI history sparkline (last 8 readings → localStorage)
-    const _AQI_HIST_KEY = 'dash_aqi_hist';
-    function recordAqiHistory(val) {
-        try {
-            const raw = localStorage.getItem(_AQI_HIST_KEY);
-            const arr = raw ? JSON.parse(raw) : [];
-            arr.push(Math.round(val));
-            if (arr.length > 8) arr.splice(0, arr.length - 8);
-            localStorage.setItem(_AQI_HIST_KEY, JSON.stringify(arr));
-        } catch (_) {}
-    }
-    function renderAqiSparkline() {
-        const svgEl = document.getElementById('aqi-spark');
-        if (!svgEl) return;
-        try {
-            const raw = localStorage.getItem(_AQI_HIST_KEY);
-            if (!raw) return;
-            const arr = JSON.parse(raw);
-            if (arr.length < 2) return;
-            const W = 44, H = 14, P = 1;
-            const mn = Math.min(...arr), mx = Math.max(...arr), rng = mx - mn || 1;
-            const pts = arr.map((v, i) => ({
-                x: (P + (i / (arr.length - 1)) * (W - 2 * P)).toFixed(1),
-                y: (H - P - ((v - mn) / rng) * (H - 2 * P)).toFixed(1)
-            }));
-            const aqiColor = arr[arr.length - 1] <= 40 ? '#34d399' : arr[arr.length - 1] <= 60 ? '#fbbf24' : '#f87171';
-            svgEl.innerHTML = `<polyline points="${pts.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="${aqiColor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
-        } catch (_) {}
-    }
 
     // Feature 77: Shabbat remaining time pill in header
     function updateShabbatHeaderPill() {
@@ -6153,13 +5950,15 @@
     }
 
     // ── Diagnostic Logger ──
+    const DIAG_BUFFER_SIZE = 80;
+    const DIAG_DISPLAY_LIMIT = 20;
     const _diagLog = [];
     const _diagStatus = {};
     function diagLog(msg) {
         const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
         const entry = `[${ts}] ${msg}`;
         _diagLog.push(entry);
-        if (_diagLog.length > 80) _diagLog.shift();
+        if (_diagLog.length > DIAG_BUFFER_SIZE) _diagLog.shift();
         console.log('[Dashboard]', msg);
         refreshDiag();
     }
@@ -6175,7 +5974,7 @@
             const cls = v.status === 'ok' ? 'ok' : v.status === 'error' ? 'err' : 'pending';
             return `<div class="diag-row"><span class="pane">${k}</span><span class="status ${cls}">${v.status}</span><span>${v.detail || ''}</span></div>`;
         }).join('');
-        if (logEl) logEl.textContent = _diagLog.slice(-20).join('\n');
+        if (logEl) logEl.textContent = _diagLog.slice(-DIAG_DISPLAY_LIMIT).join('\n');
     }
     function toggleDiag() {
         const overlay = document.getElementById('diag-overlay');
@@ -6251,7 +6050,6 @@
         initNewsFilter();     // Feature 39: news filter chips
         checkConnectivity();  // Feature 40: connectivity check
         renderCurrencySparklines(); // Feature 38: draw sparklines from history
-        renderAqiSparkline();       // Feature 75: restore AQI sparkline from history
         renderParashaProgress();    // Feature 78: initial parasha progress (may be hidden until data loads)
         applyClockSec();            // Feature 89: restore clock seconds preference
         _recordOnlineTime();        // Feature 90: record initial online time
@@ -6263,7 +6061,6 @@
         updateNightDimmer();  // Feature 54: check night dim on startup
         updateMarketCountdown(); // Feature 68: initial market countdown button wiring
         applyHiddenStocks();  // Feature 96: apply hidden stocks config
-        applyTransitState();  // Feature 98: show/hide transit card based on config
         // Sprint 12 init hooks
         initNotifBell();      // F114: show bell if notification permission not granted
         initWeatherCities();  // F117: load configured weather city names/coords
@@ -6286,8 +6083,8 @@
         el.wxTemp?.addEventListener('click', toggleTempUnit);
         el.helpOverlay?.addEventListener('click', e => { if (e.target === el.helpOverlay) toggleHelp(); });
 
-        const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadOmer, loadWeather,
-                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha, loadHebCal, loadZmanim, loadAQI, loadPsalm, loadEarthquakes];
+        const loaders = [loadHebrewDate, loadOmer, loadWeather,
+                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha, loadHebCal, loadZmanim, loadPsalm];
         runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
             diagLog('All loaders settled');
             stampRefresh();
@@ -6330,17 +6127,13 @@
     setInterval(loadCurrency, 3600000);       // 1h
     setInterval(loadMotivation, 120000);     // 2min loop — cycles through 50 quotes on TV display
     setInterval(loadCalendar, 900000);        // 15min
-    setInterval(() => { if (localStorage.getItem('dash_transit_stop')) safeLoad(loadTransit); }, 180000); // 3min — F98 transit
 
     // Very slow (3h+)
     setInterval(loadHebrewDate, 10800000);    // 3h
-    setInterval(loadShabbat, 21600000);       // 6h
     setInterval(loadHebCal, 21600000);        // 6h — refresh heb-cal card
-    setInterval(loadHolidays, 43200000);      // 12h
     setInterval(loadHalacha, 43200000);       // 12h — daily halacha
     setInterval(loadOmer, 1800000);           // 30min — re-check omer (switches at sunset)
     setInterval(loadZmanim, 43200000);        // 12h — zmanim change once per day
-    setInterval(loadAQI, 3600000);            // 1h  — air quality index
     setInterval(updateShabbatCountdown, 60000); // 1min — live Shabbat countdown
     setInterval(checkCalendarReminders, 60000); // 1min — F124: calendar event reminders
     setInterval(updateShabbatHeaderPill, 60000); // 1min — Feature 77: header shabbat pill
@@ -6350,7 +6143,6 @@
     setInterval(applySeasonClass, 43200000);  // 12h  — re-check season at midday/midnight (Feature 27)
     setInterval(() => { _psalmLoaded = false; loadPsalm(); }, 86400000); // 24h — reload psalm at next day (Feature 23)
     setInterval(updateChoreWheel, 3600000);   // 1h   — chore wheel (Feature 34)
-    setInterval(loadEarthquakes, 3600000);    // 1h   — earthquake check (Feature 36)
     setInterval(checkConnectivity, 300000);   // 5min — connectivity check (Feature 40)
     setInterval(updateMarketBadge, 60000);    // 1min — market badge (Sprint 5: pre/after now time-sensitive)
     setInterval(updateNightDimmer, 60000);    // 1min — night screen dimmer re-check (Feature 54)
