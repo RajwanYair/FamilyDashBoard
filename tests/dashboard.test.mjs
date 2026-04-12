@@ -1776,10 +1776,10 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.12.0", () => {
+  it("should display version v4.13.0", () => {
     assert.ok(
-      html.includes("Dashboard v4.12.0"),
-      "Missing version v4.12.0 in status bar",
+      html.includes("Dashboard v4.13.0"),
+      "Missing version v4.13.0 in status bar",
     );
   });
 
@@ -2814,7 +2814,7 @@ describe("Performance Optimizations", () => {
 
   it("should use runConcurrent for news feed loading", () => {
     assert.ok(
-      scriptContent.includes("runConcurrent(NEWS_FEEDS.map"),
+      scriptContent.includes("runConcurrent(getActiveFeeds().map"),
       "News loader should use CPU-aware concurrency",
     );
   });
@@ -3713,10 +3713,12 @@ describe("Sprint 2 Features (v4.10)", () => {
     );
   });
 
-  it("PWA manifest should use data: URI for inline embedding", () => {
+  it("PWA manifest should link to manifest.json", () => {
     assert.ok(
-      html.includes("data:application/manifest+json"),
-      "PWA manifest should be embedded as data: URI",
+      html.includes('href="manifest.json"') ||
+        html.includes("href='manifest.json'") ||
+        html.includes("data:application/manifest+json"),
+      "PWA manifest link should exist (manifest.json or data URI)",
     );
   });
 
@@ -4137,8 +4139,9 @@ describe("Sprint 4 Features (v4.12)", () => {
   });
   it("chore wheel should rotate by day-of-year", () => {
     assert.ok(
-      scriptContent.includes("doy % CHORES.length"),
-      "Chore wheel should rotate by day-of-year modulo CHORES length"
+      scriptContent.includes("doy % CHORES.length") ||
+        scriptContent.includes("doy % chores.length"),
+      "Chore wheel should rotate by day-of-year modulo chores length",
     );
   });
   it("should call updateChoreWheel in init", () => {
@@ -5301,4 +5304,181 @@ describe("Sprint 9 Features (F81–F90)", () => {
     assert.ok(html.includes("offline-age"), "Missing .offline-age CSS");
   });
 
+});
+
+// ── Suite 54: Sprint 10 Features (F91–F100) ──
+describe("Sprint 10 Features (F91–F100)", () => {
+  // F91: PWA manifest.json file
+  it("F91: manifest link should point to manifest.json", () => {
+    assert.ok(html.includes('href="manifest.json"'), "manifest.json link missing from <head>");
+  });
+  it("F91: manifest link should be a <link rel=manifest>", () => {
+    assert.ok(html.includes('rel="manifest"'), "Missing rel=manifest link");
+  });
+  it("F91: manifest.json should exist and have required fields", () => {
+    const manifest = JSON.parse(readFileSync(new URL("../manifest.json", import.meta.url), "utf8"));
+    assert.ok(manifest.name, "manifest.json missing name");
+    assert.ok(manifest.display === "standalone", "manifest.json display should be standalone");
+    assert.ok(manifest.start_url, "manifest.json missing start_url");
+    assert.ok(manifest.theme_color, "manifest.json missing theme_color");
+  });
+
+  // F92: ServiceWorker
+  it("F92: sw.js should exist and register in script", () => {
+    assert.ok(html.includes("serviceWorker.register"), "Missing ServiceWorker registration");
+    assert.ok(html.includes("sw.js"), "Missing sw.js reference");
+  });
+  it("F92: sw.js should contain stale-while-revalidate strategy", () => {
+    const sw = readFileSync(new URL("../sw.js", import.meta.url), "utf8");
+    assert.ok(sw.includes("stale"), "sw.js missing stale-while-revalidate comment");
+    assert.ok(sw.includes("caches.open"), "sw.js missing caches.open");
+    assert.ok(sw.includes("fetch"), "sw.js missing fetch event handler");
+  });
+  it("F92: sw.js should have install and activate event handlers", () => {
+    const sw = readFileSync(new URL("../sw.js", import.meta.url), "utf8");
+    assert.ok(sw.includes("addEventListener('install'") || sw.includes('addEventListener("install"'), "sw.js missing install handler");
+    assert.ok(sw.includes("addEventListener('activate'") || sw.includes('addEventListener("activate"'), "sw.js missing activate handler");
+  });
+
+  // F93: Home city config
+  it("F93: config panel should have cfg-home-lat input", () => {
+    assert.ok(html.includes('id="cfg-home-lat"'), "Missing cfg-home-lat input");
+  });
+  it("F93: config panel should have cfg-home-lon input", () => {
+    assert.ok(html.includes('id="cfg-home-lon"'), "Missing cfg-home-lon input");
+  });
+  it("F93: injectHomeCity function should exist", () => {
+    assert.ok(scriptContent.includes("function injectHomeCity"), "Missing injectHomeCity function");
+  });
+  it("F93: injectHomeCity should use dash_home_lat/lon localStorage keys", () => {
+    assert.ok(scriptContent.includes("dash_home_lat"), "Missing dash_home_lat localStorage key");
+    assert.ok(scriptContent.includes("dash_home_lon"), "Missing dash_home_lon localStorage key");
+  });
+
+  // F94: Hebcal geonameid config
+  it("F94: config panel should have cfg-heb-geonameid input", () => {
+    assert.ok(html.includes('id="cfg-heb-geonameid"'), "Missing cfg-heb-geonameid input");
+  });
+  it("F94: getGeonameid function should exist", () => {
+    assert.ok(scriptContent.includes("function getGeonameid"), "Missing getGeonameid function");
+  });
+  it("F94: getGeonameid should default to 281184", () => {
+    assert.ok(scriptContent.includes("'281184'") || scriptContent.includes('"281184"'), "getGeonameid should default to 281184 (Jerusalem)");
+  });
+  it("F94: all Hebcal shabbat calls should use getGeonameid()", () => {
+    const staticCount = (scriptContent.match(/geonameid=281184/g) || []).length;
+    assert.equal(staticCount, 0, `Found ${staticCount} hardcoded geonameid=281184; all should use getGeonameid()`);
+  });
+  it("F94: Hebcal API calls should use template literal with getGeonameid()", () => {
+    assert.ok(scriptContent.includes("geonameid=${getGeonameid()}"), "Hebcal API calls should use getGeonameid()");
+  });
+
+  // F95: News feed disable config
+  it("F95: config panel should have cfg-feeds-disabled input", () => {
+    assert.ok(html.includes('id="cfg-feeds-disabled"'), "Missing cfg-feeds-disabled input");
+  });
+  it("F95: getActiveFeeds function should exist", () => {
+    assert.ok(scriptContent.includes("function getActiveFeeds"), "Missing getActiveFeeds function");
+  });
+  it("F95: loadNews should use getActiveFeeds instead of NEWS_FEEDS.map directly", () => {
+    assert.ok(scriptContent.includes("getActiveFeeds().map"), "loadNews should call getActiveFeeds()");
+  });
+  it("F95: getActiveFeeds should filter by dash_feed_disabled", () => {
+    assert.ok(scriptContent.includes("dash_feed_disabled"), "getActiveFeeds should use dash_feed_disabled key");
+  });
+
+  // F96: Stock symbols hide config
+  it("F96: config panel should have cfg-stocks-hidden input", () => {
+    assert.ok(html.includes('id="cfg-stocks-hidden"'), "Missing cfg-stocks-hidden input");
+  });
+  it("F96: applyHiddenStocks function should exist", () => {
+    assert.ok(scriptContent.includes("function applyHiddenStocks"), "Missing applyHiddenStocks function");
+  });
+  it("F96: applyHiddenStocks should use dash_stocks_hidden localStorage key", () => {
+    assert.ok(scriptContent.includes("dash_stocks_hidden"), "applyHiddenStocks should use dash_stocks_hidden key");
+  });
+  it("F96: loadAllStocks should skip hidden symbols", () => {
+    assert.ok(scriptContent.includes("hiddenStocks.includes(sym)"), "loadAllStocks should skip hidden stocks");
+  });
+
+  // F97: Real-time alerts 10s
+  it("F97: config panel should have cfg-alert-realtime input", () => {
+    assert.ok(html.includes('id="cfg-alert-realtime"'), "Missing cfg-alert-realtime input");
+  });
+  it("F97: _alertRealtime variable should be declared from localStorage", () => {
+    assert.ok(scriptContent.includes("let _alertRealtime"), "Missing _alertRealtime variable");
+    assert.ok(scriptContent.includes("dash_alert_rt"), "Missing dash_alert_rt localStorage key");
+  });
+  it("F97: ALERT_INTERVAL_RT should be 10000ms", () => {
+    assert.ok(scriptContent.includes("ALERT_INTERVAL_RT") && scriptContent.includes("10000"), "ALERT_INTERVAL_RT = 10000 missing");
+  });
+  it("F97: interval calculation should use _alertRealtime conditional", () => {
+    assert.ok(scriptContent.includes("_alertRealtime ? ALERT_INTERVAL_RT"), "interval calc should check _alertRealtime for 10s mode");
+  });
+
+  // F98: Transit departures card
+  it("F98: transit card HTML should exist with id transit-body", () => {
+    assert.ok(html.includes('id="transit-body"'), "Missing transit-body element");
+  });
+  it("F98: transit card should have data-card-id=transit", () => {
+    assert.ok(html.includes('data-card-id="transit"'), "Transit card missing data-card-id");
+  });
+  it("F98: body.transit-off CSS should hide transit card", () => {
+    assert.ok(html.includes("body.transit-off"), "Missing body.transit-off CSS rule");
+  });
+  it("F98: loadTransit function should exist", () => {
+    assert.ok(scriptContent.includes("async function loadTransit"), "Missing loadTransit function");
+  });
+  it("F98: loadTransit should use hasadna open-bus API", () => {
+    assert.ok(scriptContent.includes("open-bus-stride-api.hasadna.org.il"), "loadTransit should use Hasadna API");
+  });
+  it("F98: applyTransitState function should exist", () => {
+    assert.ok(scriptContent.includes("function applyTransitState"), "Missing applyTransitState function");
+  });
+  it("F98: config panel should have cfg-transit-stop input", () => {
+    assert.ok(html.includes('id="cfg-transit-stop"'), "Missing cfg-transit-stop input");
+  });
+
+  // F99: Card drag-reorder
+  it("F99: initCardDrag function should exist", () => {
+    assert.ok(scriptContent.includes("function initCardDrag"), "Missing initCardDrag function");
+  });
+  it("F99: all cards should have data-card-id attributes", () => {
+    const cardIds = ["news", "weather", "hcal", "cal", "currency", "stocks", "alerts", "moti", "transit"];
+    cardIds.forEach(id => {
+      assert.ok(html.includes(`data-card-id="${id}"`), `Card missing data-card-id="${id}"`);
+    });
+  });
+  it("F99: drag-reorder should save to localStorage dash_card_order", () => {
+    assert.ok(scriptContent.includes("dash_card_order_"), "Missing dash_card_order_ localStorage key save");
+  });
+  it("F99: CSS for .card.dragging should exist", () => {
+    assert.ok(html.includes(".card.dragging"), "Missing .card.dragging CSS");
+  });
+  it("F99: CSS for .card.drag-over should exist", () => {
+    assert.ok(html.includes(".card.drag-over"), "Missing .card.drag-over CSS");
+  });
+  it("F99: _reapplyColFlex should reapply flex sizes after drag", () => {
+    assert.ok(scriptContent.includes("_reapplyColFlex"), "Missing _reapplyColFlex function");
+  });
+  it("F99: initCardDrag should be called from init()", () => {
+    assert.ok(scriptContent.includes("initCardDrag()"), "initCardDrag should be called on init");
+  });
+
+  // F100: Configurable chore wheel
+  it("F100: config panel should have cfg-chores textarea", () => {
+    assert.ok(html.includes('id="cfg-chores"'), "Missing cfg-chores config input");
+  });
+  it("F100: getChores function should exist", () => {
+    assert.ok(scriptContent.includes("function getChores"), "Missing getChores function");
+  });
+  it("F100: getChores should read dash_chores from localStorage", () => {
+    assert.ok(scriptContent.includes("dash_chores"), "getChores should use dash_chores localStorage key");
+  });
+  it("F100: updateChoreWheel should use getChores() instead of CHORES directly", () => {
+    assert.ok(scriptContent.includes("const chores = getChores()"), "updateChoreWheel should use getChores()");
+  });
+  it("F100: getChores should fall back to CHORES when no config", () => {
+    assert.ok(scriptContent.includes("return CHORES"), "getChores should fallback to CHORES constant");
+  });
 });

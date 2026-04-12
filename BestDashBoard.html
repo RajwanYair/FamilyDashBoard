@@ -24,7 +24,7 @@
     <link rel="preconnect" href="https://open.er-api.com">
     <link rel="dns-prefetch" href="https://api.codetabs.com">
     <link rel="dns-prefetch" href="https://translate.googleapis.com">
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D7%A8%D7%92%D7%95%D7%90%D7%9F%20Family%20Dashboard%22%2C%22short_name%22%3A%22Dashboard%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23060b14%22%2C%22theme_color%22%3A%22%23060b14%22%2C%22start_url%22%3A%22.%22%7D">
+    <link rel="manifest" href="manifest.json">
     <title>רגואן Family Dashboard</title>
     <style>
         :root {
@@ -1152,6 +1152,20 @@
         #clock.with-seconds { letter-spacing: -0.02em; font-size: 2.5em; }
         /* Feature 90: Offline banner details */
         .offline-banner .offline-age { font-size: 0.82em; opacity: 0.75; margin-inline-start: 6px; }
+        /* ── Sprint 10 CSS (F91-F100) ── */
+        /* F98 — Transit departures card */
+        body.transit-off .grid-col-right > .card:nth-child(4) { display: none; }
+        .transit-body { padding: 8px 10px; overflow-y: auto; }
+        .transit-item { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; background: var(--bg-card-inner); margin-bottom: 4px; font-size: 0.82em; }
+        .transit-line { font-weight: 700; color: var(--accent); min-width: 2.2em; text-align: center; background: var(--accent-glow); border-radius: 4px; padding: 2px 5px; font-size: 0.88em; }
+        .transit-dest { flex: 1; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .transit-eta { color: var(--warning); font-weight: 700; font-size: 0.9em; white-space: nowrap; }
+        .transit-placeholder { text-align: center; color: var(--text-muted); font-size: 0.82em; padding: 18px 8px; }
+        /* F99 — Card drag-reorder */
+        .card.dragging { opacity: 0.42; outline: 2px dashed var(--accent); }
+        .card.drag-over { outline: 2px solid var(--accent); transform: scale(1.012); transition: transform 0.12s; }
+        .card-header[draggable="true"] { cursor: grab; }
+        .card-header[draggable="true"]:active { cursor: grabbing; }
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
@@ -1161,7 +1175,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="לוח משפחה">
 </head>
-<body>
+<body class="transit-off">
     <!-- Feature 80: PWA install prompt button -->
     <button id="pwa-install-btn" aria-label="התקן אפליקציה">📲 התקן</button>
     <!-- Feature 54: Night screen dimmer overlay -->
@@ -1242,6 +1256,43 @@
           <span class="cfg-label">📊 התראות מחיר מניה</span>
           <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder='{"AAPL":{"above":220},"NVDA":{"below":100}}' style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
         </div>
+        <!-- Sprint 10 config rows (F93-F100) -->
+        <div class="cfg-row">
+          <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
+          <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🏠 קו אורך — עיר ביתי</span>
+          <input class="cfg-input" id="cfg-home-lon" type="number" step="0.0001" placeholder="35.2137" style="direction:ltr;width:90px" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🏠 שם העיר (ביתי)</span>
+          <input class="cfg-input" id="cfg-home-name" type="text" placeholder="ביתי" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🕍 geonameid (Hebcal / Zmanim)</span>
+          <input class="cfg-input" id="cfg-heb-geonameid" type="text" placeholder="281184 = ירושלים" dir="ltr" style="width:110px" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">📰 חדשות — נטרל ערוצים (שמות)</span>
+          <input class="cfg-input" id="cfg-feeds-disabled" type="text" placeholder="Ynet מבזקים, וואלה" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">📉 הסתר מניות (סימול, פסיק)</span>
+          <input class="cfg-input" id="cfg-stocks-hidden" type="text" placeholder="^VIX, BRK-B" dir="ltr" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">⚡ התראות מיידיות 10 שניות</span>
+          <input class="cfg-input" id="cfg-alert-realtime" type="text" placeholder="on / off" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🚌 תחנת תחבורה (GID)</span>
+          <input class="cfg-input" id="cfg-transit-stop" type="text" placeholder="IL:12345" dir="ltr" />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">🧹 משימות בית (JSON)</span>
+          <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder='[{"person":"עמרי","chore":"🧹 לנקות"}]' style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
+        </div>
         <div class="cfg-row" style="justify-content:center;gap:10px">
           <button class="cfg-btn" id="cfg-save-btn">שמור</button>
           <button class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)" id="cfg-close-btn">סגור</button>
@@ -1309,7 +1360,7 @@
 
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
-            <div class="card">
+            <div class="card" data-card-id="news">
               <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
@@ -1317,7 +1368,7 @@
                 <div class="rss-scroll" id="rss-scroll"></div>
               </div>
             </div>
-            <div class="card">
+            <div class="card" data-card-id="weather">
               <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
               <div class="weather-body">
                 <!-- Feature 45: Multi-city tabs -->
@@ -1363,7 +1414,7 @@
 
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
-            <div class="card">
+            <div class="card" data-card-id="hcal">
               <div class="card-header"><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
                 <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
@@ -1403,7 +1454,7 @@
                 <div class="hc-birthday" id="hc-birthday" style="display:none"></div>
               </div>
             </div>
-            <div class="card" style="position:relative">
+            <div class="card" data-card-id="cal" style="position:relative">
               <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
                 <!-- Feature 63: 7-day event density strip -->
@@ -1412,7 +1463,7 @@
                 <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
               </div>
             </div>
-            <div class="card">
+            <div class="card" data-card-id="currency">
               <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
               <div class="currency-body" id="currency-body">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
@@ -1425,9 +1476,9 @@
             </div>
           </div>
 
-          <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
+          <!-- ── Right Column: Stocks + Alerts + Motivation + Transit ── -->
           <div class="grid-col grid-col-right">
-            <div class="card">
+            <div class="card" data-card-id="stocks">
             <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body">
@@ -1461,7 +1512,7 @@
               <!-- Feature 68: Market open/close countdown -->
               <div id="stk-mkt-countdown"></div>
             </div>
-            <div class="card">
+            <div class="card" data-card-id="alerts">
               <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll">
@@ -1469,7 +1520,7 @@
                 </div>
               </div>
             </div>
-            <div class="card">
+            <div class="card" data-card-id="moti">
               <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">✨</span> מוטיבציה</div>
               <div class="moti-body">
                 <div class="moti-card">
@@ -1479,11 +1530,18 @@
                 </div>
               </div>
             </div>
+            <!-- Feature 98: Transit departures card -->
+            <div class="card" data-card-id="transit">
+              <div class="card-header"><div class="sync-dot" id="sync-transit"></div><span class="icon-badge cyan">🚌</span> תחבורה ציבורית</div>
+              <div class="transit-body" id="transit-body">
+                <div class="transit-placeholder">הגדר מספר תחנה בהגדרות</div>
+              </div>
+            </div>
           </div>
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.12.0 — משפחת רגואן</span>
+            <span>Dashboard v4.13.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1499,7 +1557,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.12.0 — 3-Column Layout · Hebrew Calendar Card · 90 Sprint Features · 831 Tests
+       FAMILY DASHBOARD v4.13.0 — 3-Column Layout · Hebrew Calendar Card · 100 Sprint Features · 877 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1511,6 +1569,48 @@
     // These are for cross-origin API access only.
     const PROXIES = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest=','https://corsproxy.io/?'];
     const STOCK_SYMBOLS = ['^GSPC','^VIX','^TA35.TA','AAPL','AMZN','AVGO','BRK-B','BTC-USD','GOOGL','INTC','JPM','META','MSFT','NVDA','TSLA'];
+
+    // F94: configurable Hebcal geonameid (default: 281184 = Jerusalem)
+    function getGeonameid() { return localStorage.getItem('dash_geonameid') || '281184'; }
+
+    // F93: inject configurable home city into WX_CITIES
+    function injectHomeCity() {
+        const lat = parseFloat(localStorage.getItem('dash_home_lat'));
+        const lon = parseFloat(localStorage.getItem('dash_home_lon'));
+        const name = localStorage.getItem('dash_home_name') || 'ביתי';
+        if (!isNaN(lat) && !isNaN(lon)) {
+            WX_CITIES.home = { lat, lon, name };
+            // Inject a tab into the weather city-tabs bar if not already present
+            const tabs = document.getElementById('wx-city-tabs');
+            if (tabs && !tabs.querySelector('[data-city="home"]')) {
+                const btn = document.createElement('button');
+                btn.className = 'wx-city-tab';
+                btn.dataset.city = 'home';
+                btn.dataset.lat = String(lat);
+                btn.dataset.lon = String(lon);
+                btn.textContent = name;
+                tabs.insertBefore(btn, tabs.firstChild);
+                btn.addEventListener('click', () => switchWxCity('home'));
+            }
+            // If home was last selected city, restore it
+            if (_wxCityKey === 'home') switchWxCity('home');
+        }
+    }
+
+    // F95: news feed disable filter
+    function getActiveFeeds() {
+        const dis = (localStorage.getItem('dash_feed_disabled') || '').split(',').map(s => s.trim()).filter(Boolean);
+        return dis.length ? NEWS_FEEDS.filter(f => !dis.includes(f.src)) : NEWS_FEEDS;
+    }
+
+    // F96: apply hidden stocks (hide .stk elements for configured symbols)
+    function applyHiddenStocks() {
+        const hidden = (localStorage.getItem('dash_stocks_hidden') || '').split(',').map(s => s.trim()).filter(Boolean);
+        STOCK_SYMBOLS.forEach(sym => {
+            const blk = document.querySelector(`[data-symbol="${sym}"]`);
+            if (blk) blk.style.display = hidden.includes(sym) ? 'none' : '';
+        });
+    }
     const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
     const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
     const STOCK_BRAND = {
@@ -1920,7 +2020,7 @@
             const shabKey = 'shabbat-' + new Date().toDateString();
             let shabData = cGetStale(shabKey);
             if (!shabData) {
-                const d = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+                const d = await fetchJSON(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${getGeonameid()}&M=on`);
                 if (d.items) { cSet(shabKey, d.items.map(i => i.category + '|' + i.date).join('§')); }
                 shabData = cGet(shabKey, 3600000);
             }
@@ -1928,7 +2028,7 @@
             let candleStr = '--', havdalaStr = '--';
             // Fetch fresh structured data if cache is raw items
             try {
-                const d2 = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+                const d2 = await fetchJSON(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${getGeonameid()}&M=on`);
                 if (d2.items) {
                     const cndl = d2.items.find(i => i.category === 'candles');
                     const hvdl = d2.items.find(i => i.category === 'havdalah');
@@ -2023,7 +2123,7 @@
         const key = 'shabbat-' + new Date().toDateString();
         const fresh = cGet(key, 10800000); if (fresh) { el.shabbat.textContent = fresh; return; } // 3h TTL
         const stale = cGetStale(key); if (stale) el.shabbat.textContent = stale;
-        try { const d = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+        try { const d = await fetchJSON(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${getGeonameid()}&M=on`);
             if (d.items) {
                 const candles = d.items.find(i => i.category === 'candles');
                 const havdalah = d.items.find(i => i.category === 'havdalah');
@@ -2326,7 +2426,7 @@
         if (fresh) { renderNews(fresh); setSync('news', 'success'); releaseLock('news'); return; }
         const stale = cGetStale(key); if (stale) { renderNews(stale); }
         const allItems = [];
-        const results = await runConcurrent(NEWS_FEEDS.map(f => () => fetchFeed(f)));
+            const results = await runConcurrent(getActiveFeeds().map(f => () => fetchFeed(f)));
         for (const r of results) { if (r.status === 'fulfilled' && r.value.length) allItems.push(...r.value); }
         if (allItems.length) {
             const seen = new Set(); const unique = [];
@@ -2542,11 +2642,14 @@
         if (!_pageVisible || !acquireLock('stocks')) return;
         setSync('stocks', 'syncing'); let ok = false;
         const ttl = getStockTTL();
+        const hiddenStocks = (localStorage.getItem('dash_stocks_hidden') || '').split(',').map(s => s.trim()).filter(Boolean);
 
         // Phase 1: Serve any cached data immediately (stale or fresh)
         const uncached = [];
         for (const sym of STOCK_SYMBOLS) {
             const blk = document.querySelector(`[data-symbol="${sym}"]`); if (!blk) continue;
+            if (hiddenStocks.includes(sym)) { blk.style.display = 'none'; continue; }
+            blk.style.display = '';
             const key = 'stk-' + sym;
             const fresh = cGet(key, ttl);
             if (fresh) { renderStock(blk, fresh, sym); ok = true; }
@@ -2819,7 +2922,9 @@
     let _lastAlertId = null;
     let _alertsHaveActive = false;
     let _alertTimer = null;
+    let _alertRealtime = localStorage.getItem('dash_alert_rt') === 'on';
     const ALERT_INTERVAL_ACTIVE = 60000;  // 60s when active alerts
+    const ALERT_INTERVAL_RT     = 10000;  // 10s real-time mode (F97)
     const ALERT_INTERVAL_IDLE   = 300000; // 5min when no recent alerts
 
     async function loadAlerts() {
@@ -2866,7 +2971,7 @@
 
     function scheduleAlerts() {
         if (_alertTimer) clearTimeout(_alertTimer);
-        const interval = _alertsHaveActive ? ALERT_INTERVAL_ACTIVE : ALERT_INTERVAL_IDLE;
+        const interval = _alertsHaveActive ? (_alertRealtime ? ALERT_INTERVAL_RT : ALERT_INTERVAL_ACTIVE) : ALERT_INTERVAL_IDLE;
         _alertTimer = setTimeout(loadAlerts, interval);
     }
 
@@ -3294,7 +3399,146 @@
         }
     }
 
-    // ── Feature: Temperature Unit Toggle (°C / °F) ──
+    // ── Feature 98: Transit departures (Hasadna open-bus API) ──
+    async function loadTransit() {
+        const stopGid = localStorage.getItem('dash_transit_stop');
+        const body = document.getElementById('transit-body');
+        const syncDot = document.getElementById('sync-transit');
+        if (!stopGid || !body) return;
+        if (syncDot) { syncDot.className = 'sync-dot syncing'; }
+        try {
+            const url = `https://open-bus-stride-api.hasadna.org.il/siri_arrivals/list?siri_stop_gid=${encodeURIComponent(stopGid)}&limit=5&order_by=scheduled_arrival_time`;
+            const data = await fetchJSON(url);
+            const items = Array.isArray(data) ? data : (data.results || []);
+            if (!items.length) { body.innerHTML = '<div class="transit-placeholder">אין נסיעות זמינות</div>'; return; }
+            const now = new Date();
+            const frag = document.createDocumentFragment();
+            for (const item of items.slice(0, 4)) {
+                const at = new Date(item.scheduled_arrival_time || item.arrival_time || item.aimed_arrival_time);
+                if (isNaN(at)) continue;
+                const diff = Math.round((at - now) / 60000);
+                if (diff < -1) continue;
+                const div = document.createElement('div');
+                div.className = 'transit-item';
+                const lineRef = item.line_short_name || item.published_line_name || item.svt_aimed_departure?.line_ref || '?';
+                const dest = item.destination_name_he || item.destination_description || '';
+                div.innerHTML = `<span class="transit-line">${lineRef}</span><span class="transit-dest">${dest}</span><span class="transit-eta">${diff <= 0 ? 'עכשיו' : diff + ' ד׳'}</span>`;
+                frag.appendChild(div);
+            }
+            body.innerHTML = '';
+            if (!frag.childNodes.length) body.innerHTML = '<div class="transit-placeholder">אין נסיעות קרובות</div>';
+            else body.appendChild(frag);
+            if (syncDot) syncDot.className = 'sync-dot';
+            diagLog('Transit loaded: ' + stopGid);
+        } catch (e) {
+            if (body) body.innerHTML = '<div class="transit-placeholder">שגיאת טעינה</div>';
+            if (syncDot) syncDot.className = 'sync-dot error';
+            diagLog('Transit ERR: ' + e.message);
+        }
+    }
+
+    function applyTransitState() {
+        const stop = localStorage.getItem('dash_transit_stop');
+        if (stop) {
+            document.body.classList.remove('transit-off');
+            safeLoad(loadTransit);
+        } else {
+            document.body.classList.add('transit-off');
+        }
+    }
+
+    // ── Feature 99: Card drag-reorder within columns ──
+    const _COL_FLEX = {
+        left:  [65, 35],
+        mid:   [20, 65, 15],
+        right: [1, 1, 1, 1]
+    };
+
+    function _reapplyColFlex(col) {
+        const colId = col.classList.contains('grid-col-left') ? 'left'
+                    : col.classList.contains('grid-col-mid') ? 'mid' : 'right';
+        const flex = _COL_FLEX[colId] || [];
+        [...col.querySelectorAll(':scope > .card')].forEach((card, i) => {
+            card.style.flex = `${flex[i] ?? 1} 1 0`;
+        });
+    }
+
+    function initCardDrag() {
+        document.querySelectorAll('.grid-col').forEach(col => {
+            const colId = col.classList.contains('grid-col-left') ? 'left'
+                        : col.classList.contains('grid-col-mid') ? 'mid' : 'right';
+            // Restore saved order
+            const saved = localStorage.getItem(`dash_card_order_${colId}`);
+            if (saved) {
+                const ids = saved.split(',');
+                const cards = [...col.querySelectorAll(':scope > .card')];
+                const ordered = ids.map(id => cards.find(c => c.dataset.cardId === id)).filter(Boolean);
+                const remaining = cards.filter(c => !ids.includes(c.dataset.cardId));
+                [...ordered, ...remaining].forEach(c => col.appendChild(c));
+            }
+            _reapplyColFlex(col);
+
+            // Wire drag events on headers
+            col.querySelectorAll(':scope > .card').forEach(card => {
+                const header = card.querySelector('.card-header');
+                if (!header) return;
+                header.setAttribute('draggable', 'true');
+                header.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', card.dataset.cardId || '');
+                    e.dataTransfer.effectAllowed = 'move';
+                    requestAnimationFrame(() => card.classList.add('dragging'));
+                });
+                header.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                    col.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'));
+                });
+            });
+
+            col.addEventListener('dragover', e => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                const target = e.target.closest('.card');
+                if (!target || target.classList.contains('dragging')) return;
+                col.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'));
+                target.classList.add('drag-over');
+            });
+
+            col.addEventListener('dragleave', e => {
+                if (!col.contains(e.relatedTarget)) {
+                    col.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'));
+                }
+            });
+
+            col.addEventListener('drop', e => {
+                e.preventDefault();
+                const srcId = e.dataTransfer.getData('text/plain');
+                const target = e.target.closest('.card');
+                const srcCard = col.querySelector(`[data-card-id="${srcId}"]`);
+                col.querySelectorAll('.drag-over, .dragging').forEach(c => c.classList.remove('drag-over', 'dragging'));
+                if (!srcCard || !target || srcCard === target) return;
+                const cards = [...col.querySelectorAll(':scope > .card')];
+                const tgtIdx = cards.indexOf(target);
+                const srcIdx = cards.indexOf(srcCard);
+                if (srcIdx < tgtIdx) target.after(srcCard);
+                else target.before(srcCard);
+                _reapplyColFlex(col);
+                const order = [...col.querySelectorAll(':scope > .card')].map(c => c.dataset.cardId).join(',');
+                localStorage.setItem(`dash_card_order_${colId}`, order);
+                diagLog(`Cards reordered in ${colId}: ${order}`);
+            });
+        });
+    }
+
+    // ── Feature 100: Configurable chore wheel ──
+    function getChores() {
+        try {
+            const raw = localStorage.getItem('dash_chores');
+            if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr) && arr.length) return arr; }
+        } catch (_) {}
+        return CHORES;
+    }
+
+
     /** Convert Celsius to display string respecting current unit preference */
     function toDisplayTemp(c) {
         if (_tempUnit === 'F') return Math.round(c * 9 / 5 + 32) + '°F';
@@ -3547,7 +3791,7 @@
         if (cached) { _renderParasha(cached); return; }
         const stale = cGetStale(key); if (stale) _renderParasha(stale);
         try {
-            const d = await fetchJSON('https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on');
+            const d = await fetchJSON(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${getGeonameid()}&M=on`);
             const parasha = (d.items || []).find(i => i.category === 'parashat');
             if (parasha) {
                 const name = parasha.hebrew || parasha.title;
@@ -3644,7 +3888,7 @@
         if (cached) { _renderZmanim(cached); return; }
         const stale = cGetStale(key); if (stale) _renderZmanim(stale);
         try {
-            const d = await fetchJSON(`https://www.hebcal.com/zmanim?cfg=json&geonameid=281184&date=${dateStr}`);
+            const d = await fetchJSON(`https://www.hebcal.com/zmanim?cfg=json&geonameid=${getGeonameid()}&date=${dateStr}`);
             if (d.times) {
                 cSet(key, d.times);
                 _renderZmanim(d.times);
@@ -3785,6 +4029,25 @@
             if (alertZoneInput) alertZoneInput.value = localStorage.getItem('dash_alert_zone') || '';
             if (dimStartInput) dimStartInput.value = localStorage.getItem('dash_dim_start') ?? '23';
             if (dimEndInput) dimEndInput.value = localStorage.getItem('dash_dim_end') ?? '6';
+            // Sprint 10 new fields (F93-F100)
+            const homeLat = document.getElementById('cfg-home-lat');
+            const homeLon = document.getElementById('cfg-home-lon');
+            const homeName = document.getElementById('cfg-home-name');
+            const hebGeoInput = document.getElementById('cfg-heb-geonameid');
+            const feedsDisInput = document.getElementById('cfg-feeds-disabled');
+            const stocksHiddenInput = document.getElementById('cfg-stocks-hidden');
+            const rtAlertsInput = document.getElementById('cfg-alert-realtime');
+            const transitStopInput = document.getElementById('cfg-transit-stop');
+            const choresInput = document.getElementById('cfg-chores');
+            if (homeLat) homeLat.value = localStorage.getItem('dash_home_lat') || '';
+            if (homeLon) homeLon.value = localStorage.getItem('dash_home_lon') || '';
+            if (homeName) homeName.value = localStorage.getItem('dash_home_name') || '';
+            if (hebGeoInput) hebGeoInput.value = localStorage.getItem('dash_geonameid') || '';
+            if (feedsDisInput) feedsDisInput.value = localStorage.getItem('dash_feed_disabled') || '';
+            if (stocksHiddenInput) stocksHiddenInput.value = localStorage.getItem('dash_stocks_hidden') || '';
+            if (rtAlertsInput) rtAlertsInput.value = _alertRealtime ? 'on' : 'off';
+            if (transitStopInput) transitStopInput.value = localStorage.getItem('dash_transit_stop') || '';
+            if (choresInput) choresInput.value = localStorage.getItem('dash_chores') || '';
         }
     }
     function saveConfig() {
@@ -3879,6 +4142,60 @@
         const dimEndInput = document.getElementById('cfg-dim-end');
         if (dimStartInput) { const v = parseInt(dimStartInput.value, 10); if (!isNaN(v) && v >= 0 && v <= 23) localStorage.setItem('dash_dim_start', String(v)); }
         if (dimEndInput)   { const v = parseInt(dimEndInput.value, 10);   if (!isNaN(v) && v >= 0 && v <= 23) localStorage.setItem('dash_dim_end', String(v)); }
+        // Sprint 10: F93-F100 config fields
+        const homeLat = document.getElementById('cfg-home-lat');
+        const homeLon = document.getElementById('cfg-home-lon');
+        const homeName = document.getElementById('cfg-home-name');
+        if (homeLat && homeLon) {
+            const lat = parseFloat(homeLat.value); const lon = parseFloat(homeLon.value);
+            const name = document.getElementById('cfg-home-name')?.value.trim() || 'ביתי';
+            if (!isNaN(lat) && !isNaN(lon)) {
+                localStorage.setItem('dash_home_lat', String(lat));
+                localStorage.setItem('dash_home_lon', String(lon));
+                localStorage.setItem('dash_home_name', name);
+                injectHomeCity(); switchWxCity('home');
+            } else if (!homeLat.value.trim()) {
+                localStorage.removeItem('dash_home_lat'); localStorage.removeItem('dash_home_lon'); localStorage.removeItem('dash_home_name');
+                delete WX_CITIES.home; if (_wxCityKey === 'home') switchWxCity('jerusalem');
+            }
+        }
+        const hebGeoInput = document.getElementById('cfg-heb-geonameid');
+        if (hebGeoInput) {
+            const geo = hebGeoInput.value.trim();
+            if (geo && /^\d+$/.test(geo)) { localStorage.setItem('dash_geonameid', geo); safeLoad(loadHebCal); safeLoad(loadShabbat); }
+            else if (!geo) localStorage.removeItem('dash_geonameid');
+        }
+        const feedsDisInput = document.getElementById('cfg-feeds-disabled');
+        if (feedsDisInput) {
+            const dis = feedsDisInput.value.trim();
+            if (dis) localStorage.setItem('dash_feed_disabled', dis); else localStorage.removeItem('dash_feed_disabled');
+            safeLoad(loadNews);
+        }
+        const stocksHiddenInput = document.getElementById('cfg-stocks-hidden');
+        if (stocksHiddenInput) {
+            const h = stocksHiddenInput.value.trim();
+            if (h) localStorage.setItem('dash_stocks_hidden', h); else localStorage.removeItem('dash_stocks_hidden');
+            applyHiddenStocks();
+        }
+        const rtAlertsInput = document.getElementById('cfg-alert-realtime');
+        if (rtAlertsInput) {
+            const v = rtAlertsInput.value.trim().toLowerCase();
+            _alertRealtime = v === 'on';
+            if (_alertRealtime) localStorage.setItem('dash_alert_rt', 'on');
+            else localStorage.removeItem('dash_alert_rt');
+        }
+        const transitStopInput = document.getElementById('cfg-transit-stop');
+        if (transitStopInput) {
+            const stop = transitStopInput.value.trim();
+            if (stop) localStorage.setItem('dash_transit_stop', stop); else localStorage.removeItem('dash_transit_stop');
+            applyTransitState();
+        }
+        const choresInput = document.getElementById('cfg-chores');
+        if (choresInput) {
+            const val = choresInput.value.trim();
+            if (val) { try { JSON.parse(val); localStorage.setItem('dash_chores', val); } catch {} }
+            else localStorage.removeItem('dash_chores');
+        }
         toggleConfig();
         diagLog('Config saved');
     }
@@ -3896,7 +4213,8 @@
     function updateChoreWheel() {
         if (!el.hcChore || !el.hcChoreRow) return;
         const doy = Math.floor((Date.now() - Date.UTC(new Date().getUTCFullYear(), 0, 1)) / 86400000);
-        const chore = CHORES[doy % CHORES.length];
+        const chores = getChores();
+        const chore = chores[doy % chores.length];
         el.hcChore.textContent = `${chore.person}: ${chore.chore}`;
         el.hcChoreRow.style.display = '';
     }
@@ -4802,9 +5120,13 @@
         document.getElementById('clock')?.addEventListener('click', toggleClockSec);  // F89
         document.getElementById('pwa-install-btn')?.addEventListener('click', pwaInstall);
         initWxCityTabs();     // Feature 45: multi-city weather tabs
+        injectHomeCity();     // Feature 93: home city config
         applyFontScale();     // Feature 49: restore saved font scale
         updateNightDimmer();  // Feature 54: check night dim on startup
         updateMarketCountdown(); // Feature 68: initial market countdown button wiring
+        applyHiddenStocks();  // Feature 96: apply hidden stocks config
+        applyTransitState();  // Feature 98: show/hide transit card based on config
+        initCardDrag();       // Feature 99: card drag-reorder
         document.getElementById('cfg-gear-btn')?.addEventListener('click', toggleConfig);
         document.getElementById('cfg-save-btn')?.addEventListener('click', saveConfig);
         document.getElementById('cfg-close-btn')?.addEventListener('click', toggleConfig);
@@ -4844,6 +5166,7 @@
     setInterval(loadCurrency, 3600000);       // 1h
     setInterval(loadMotivation, 120000);     // 2min loop — cycles through 50 quotes on TV display
     setInterval(loadCalendar, 900000);        // 15min
+    setInterval(() => { if (localStorage.getItem('dash_transit_stop')) safeLoad(loadTransit); }, 180000); // 3min — F98 transit
 
     // Very slow (3h+)
     setInterval(loadHebrewDate, 10800000);    // 3h
@@ -5047,6 +5370,15 @@
         init();
         scheduleIdle(() => initCardAnimations());
         initCardMaximize();
+    }
+
+    // Feature 92: ServiceWorker registration (offline stale-while-revalidate)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            diagLog('SW registered: ' + (reg.scope || ''));
+        }).catch(err => {
+            diagLog('SW registration failed: ' + err.message);
+        });
     }
     </script>
 </body>

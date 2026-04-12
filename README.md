@@ -18,7 +18,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.12-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.13-a78bfa?style=flat-square)
 ![Tests](https://img.shields.io/badge/Tests-746_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
->  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (831 tests, 53 suites, zero dependencies).
+>  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (877 tests, 54 suites, zero dependencies).
 
 ---
 
@@ -205,7 +205,7 @@ FamilyDashBoard/
 ├── .editorconfig / .markdownlint.json
 ├── .gitignore / .gitattributes
 ├── tests/
-|   └── dashboard.test.mjs          # 831 tests, 53 suites (Node.js built-in runner)
+|   └── dashboard.test.mjs          # 877 tests, 54 suites (Node.js built-in runner)
 ├── .github/
 │   ├── assets/                     # SVG graphics for docs
 │   ├── agents/                     # Copilot custom agents
@@ -270,6 +270,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
+| **v4.13.0** | 🎯 Sprint 10 (F91–100): PWA manifest.json, ServiceWorker offline, home city config, Hebcal geonameid, news feed toggle, stock hide, 10s alerts, transit card, card drag-reorder, chore config |
 | **v4.12.0** | 🎯 Sprint 9 (F81–90): 7-day forecast, halacha category, ICS URL config, family name config, photo slideshow, alert zone filter, news tooltips, dim schedule, clock seconds, offline cache age |
 | **v4.11.0** | 🎯 Sprint 8 (F71–80): GBP currency tile, calendar heat-map, news favicons, stock sector headers, AQI sparkline, Shabbat pill, Parasha progress bar, weather tooltip, PWA metas |
 | **v4.10.0** | 🏆 Sprints 6–7 (F51–70): Portfolio total, TA-35 index, rel-vol badge, 7-day cal strip, AQI labels+trend, per-stock sparklines, rain probability overlay, news age+share, market countdown, quake 24h count, diag copy-log |

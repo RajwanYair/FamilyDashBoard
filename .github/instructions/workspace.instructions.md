@@ -11,7 +11,7 @@ description: "Use when: working on any file in the FamilyDashBoard workspace. Pr
 |----------|-------|
 | **Name** | FamilyDashBoard |
 | **Type** | Single-page HTML dashboard |
-| **Version** | v4.12.0 |
+| **Version** | v4.13.0 |
 | **Owner** | @RajwanYair |
 | **Stack** | HTML5, CSS3, vanilla JS (ES2020+) |
 | **Dependencies** | Zero (no npm, no build) |
@@ -33,7 +33,7 @@ FamilyDashBoard/
 ├── .gitignore / .gitattributes
 ├── .markdownlint.json
 ├── tests/
-│   └── dashboard.test.mjs  # 831 tests, 53 suites (node --test)
+│   └── dashboard.test.mjs  # 877 tests, 54 suites (node --test)
 ├── .github/
 │   ├── copilot-instructions.md
 │   ├── copilot/config.json
@@ -63,7 +63,7 @@ FamilyDashBoard/
 | **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
 | **Performance** | GPU-accelerated scroll layers, CPU-aware concurrency pool (`runConcurrent`), `scheduleIdle()`, DocumentFragment batch writes |
 | **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `A` = toggle alerts, `S` = config panel, `N` = night dimmer, `+/-` = font scale, `P` = print, `Escape` = close maximized card |
-| **Tests** | 831 tests / 53 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
+| **Tests** | 877 tests / 54 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
 
 ## What NOT To Do
 

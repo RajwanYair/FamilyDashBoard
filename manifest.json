@@ -1,0 +1,22 @@
+{
+    "name": "רגואן Family Dashboard",
+    "short_name": "Dashboard",
+    "description": "Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, live weather/news/stocks/calendar.",
+    "display": "standalone",
+    "start_url": "./BestDashBoard.html",
+    "scope": "./",
+    "background_color": "#060b14",
+    "theme_color": "#060b14",
+    "orientation": "landscape",
+    "lang": "he",
+    "dir": "rtl",
+    "categories": ["lifestyle", "utilities"],
+    "icons": [],
+    "shortcuts": [
+        {
+            "name": "לוח משפחתי",
+            "url": "./BestDashBoard.html",
+            "description": "פתח לוח הבקרה המשפחתי"
+        }
+    ]
+}

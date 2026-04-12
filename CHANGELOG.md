@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.13.0] — 2026-04-12
+
+> **Sprint 10 (Features 91–100)** — PWA offline, configurability (city, Hebcal, feeds, stocks, chores), transit card, drag-reorder
+> Tests: 877 / 54 suites / 0 failures (was 831 / 53 suites / 0)
+
+### Added
+
+- **F91 — PWA `manifest.json`** — Replaced inline data-URI manifest with proper `manifest.json` file (name, short_name, display: standalone, theme_color, shortcuts)
+- **F92 — ServiceWorker `sw.js`** — Stale-while-revalidate caching for HTML + manifest; registered in BestDashBoard.html; auto-updates on version change
+- **F93 — Home city config** — `cfg-home-lat`/`cfg-home-lon`/`cfg-home-name` in config panel; `injectHomeCity()` adds dynamic “ביתי” weather city tab; saves to `dash_home_lat/lon/name`
+- **F94 — Hebcal geonameid config** — `cfg-heb-geonameid` in config; `getGeonameid()` function; all 5 Hebcal/Zmanim API calls now use configurable city (default: 281184 = Jerusalem)
+- **F95 — News feed per-source disable** — `cfg-feeds-disabled` comma-separated input; `getActiveFeeds()` filters `NEWS_FEEDS`; saves to `dash_feed_disabled`
+- **F96 — Stock symbols hide config** — `cfg-stocks-hidden` input; `applyHiddenStocks()` hides `.stk` elements; `loadAllStocks()` skips hidden symbols
+- **F97 — Real-time alerts (10s polling)** — `ALERT_INTERVAL_RT = 10000`; `_alertRealtime` flag saved to `dash_alert_rt`; `cfg-alert-realtime` toggle in config
+- **F98 — Transit departures card** — New right-column card using Hasadna open-bus-stride API; `cfg-transit-stop` GID config; `loadTransit()` + `applyTransitState()`; 3min refresh
+- **F99 — Card drag-reorder** — HTML5 drag API within each column; `data-card-id` on all 9 cards; `initCardDrag()`; order saved to `dash_card_order_{col}`; flex sizes reapplied after drag
+- **F100 — Configurable chore wheel** — `cfg-chores` JSON textarea in config; `getChores()` reads `dash_chores` with fallback to `CHORES`; `updateChoreWheel()` uses `getChores()`
+
+---
+
 ## [4.12.0] — 2026-04-12
 
 > **Sprint 9 (Features 81–90)** — configurability, visual polish, family personalization
