@@ -3026,17 +3026,6 @@
         return null;
     }
 
-    // F147: News bookmark helpers (max 15 saved articles)
-    const NEWS_BOOKMARKS_KEY = 'dash_news_bookmarks';
-    function _getNewsBookmarks() {
-        try { return new Set(JSON.parse(localStorage.getItem(NEWS_BOOKMARKS_KEY) || '[]')); } catch { return new Set(); }
-    }
-    function _toggleNewsBookmark(url) {
-        const set = _getNewsBookmarks();
-        if (set.has(url)) set.delete(url); else { set.add(url); if (set.size > 15) { const [first] = set; set.delete(first); } }
-        try { localStorage.setItem(NEWS_BOOKMARKS_KEY, JSON.stringify([...set])); } catch (_) {}
-    }
-
     // ── Sprint 16 Functions (F151–F160) ───────────────────────────────────────────
 
     // F154: Today's upcoming events strip in calendar card
@@ -4099,7 +4088,6 @@
             events.push({ start, end, allDay, summary, location, icsIdx }); // F133: tag source
         }
         return events;
-    }
     }
 
     function renderCalendar(events) {
