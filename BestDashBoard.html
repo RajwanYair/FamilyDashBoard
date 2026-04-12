@@ -1166,6 +1166,33 @@
         .card.drag-over { outline: 2px solid var(--accent); transform: scale(1.012); transition: transform 0.12s; }
         .card-header[draggable="true"] { cursor: grab; }
         .card-header[draggable="true"]:active { cursor: grabbing; }
+        /* ── Sprint 11 CSS (F101-F110) ── */
+        /* F101 — SW Update Banner */
+        #sw-update-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: #22c55e; color: #000; padding: 8px 16px; display: none; align-items: center; justify-content: center; gap: 10px; font-size: 0.88em; font-weight: 600; text-align: center; }
+        #sw-update-banner.visible { display: flex; }
+        #sw-update-reload-btn { background: rgba(0,0,0,0.18); color: inherit; border: 1px solid rgba(0,0,0,0.3); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 0.9em; font-weight: 700; }
+        /* F103 — News Keyword Search */
+        .news-search-wrap { display: flex; align-items: center; gap: 4px; padding: 4px 8px 2px; }
+        #news-search { flex: 1; background: var(--bg-card-inner); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 0.8em; padding: 3px 8px; outline: none; direction: rtl; min-width: 0; }
+        #news-search::placeholder { color: var(--text-muted); }
+        #news-search-clear { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95em; padding: 0 3px; line-height: 1; display: none; }
+        #news-search-count { font-size: 0.7em; color: var(--text-muted); white-space: nowrap; min-width: 3em; text-align: end; }
+        .rss-item.search-hidden { display: none !important; }
+        /* F104 — Birthday Header Chip */
+        #header-birthday-chip { font-size: 0.68em; background: rgba(251,191,36,0.16); color: var(--warning); border-radius: 10px; padding: 2px 7px; font-weight: 600; white-space: nowrap; display: none; cursor: default; }
+        /* F106 — Halacha Category Color Tags */
+        .hc-tag-shabbat { background: rgba(251,191,36,0.16) !important; color: var(--warning) !important; }
+        .hc-tag-tefila  { background: rgba(96,165,250,0.16) !important; color: var(--accent) !important; }
+        .hc-tag-kashrut { background: rgba(52,211,153,0.16) !important; color: var(--positive) !important; }
+        .hc-tag-family  { background: rgba(244,114,182,0.16) !important; color: #f472b6 !important; }
+        .hc-tag-moadim  { background: rgba(167,139,250,0.16) !important; color: #a78bfa !important; }
+        /* F108 — Hebrew Wind Direction Label */
+        #wx-wind-heb { font-size: 0.78em; color: var(--text-muted); display: block; line-height: 1.1; }
+        /* F109 — Next Zman Header Indicator */
+        #header-next-zman { font-size: 0.68em; color: var(--accent); background: var(--accent-glow); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; }
+        /* F110 — News Visited Articles Dimming */
+        .rss-item.visited { opacity: 0.45; }
+        .rss-item.visited .rss-title { text-decoration: line-through; text-decoration-color: var(--text-muted); }
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
@@ -1184,6 +1211,8 @@
     <div id="refresh-toast">🔄 מרענן...</div>
     <div class="offline-banner" id="offline-banner">⚠️ אין חיבור לאינטרנט — מציג נתונים מהמטמון</div>
     <div id="shabbat-mode-banner">🕯️ שבת שלום 🕯️</div>
+    <!-- Feature 101: SW Update notification banner -->
+    <div id="sw-update-banner">🆕 גרסה חדשה זמינה — <button id="sw-update-reload-btn" onclick="swUpdateReload()">↻ עדכן עכשיו</button></div>
     <div id="help-overlay">
       <div id="help-panel">
         <h2>⌨️ קיצורי מקלדת</h2>
@@ -1223,6 +1252,15 @@
         <div class="cfg-row">
           <span class="cfg-label">📅 קישור ICS (גוגל-קלנדר)</span>
           <input class="cfg-input" id="cfg-ics-url" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+        </div>
+        <!-- F102: Secondary ICS calendar URLs -->
+        <div class="cfg-row">
+          <span class="cfg-label">📅 קישור ICS שני (אופציונלי)</span>
+          <input class="cfg-input" id="cfg-ics-url-2" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+        </div>
+        <div class="cfg-row">
+          <span class="cfg-label">📅 קישור ICS שלישי (אופציונלי)</span>
+          <input class="cfg-input" id="cfg-ics-url-3" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
         </div>
         <div class="cfg-row">
           <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
@@ -1297,6 +1335,12 @@
           <button class="cfg-btn" id="cfg-save-btn">שמור</button>
           <button class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)" id="cfg-close-btn">סגור</button>
         </div>
+        <!-- F107: Settings export/import -->
+        <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
+          <button class="cfg-btn" onclick="exportSettings()" style="font-size:0.82em">📥 ייצוא הגדרות</button>
+          <button class="cfg-btn" onclick="importSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em">📤 ייבוא הגדרות</button>
+        </div>
+        <input type="file" id="cfg-import-file" accept=".json" style="display:none" />
         <div style="text-align:center;margin-top:10px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
       </div>
     </div>
@@ -1353,6 +1397,10 @@
                 <span id="header-event-count"></span>
                 <!-- Feature 77: Shabbat time pill -->
                 <div id="header-shabbat-pill">🕯️ --</div>
+                <!-- Feature 104: Birthday upcoming header chip -->
+                <span id="header-birthday-chip"></span>
+                <!-- Feature 109: Next Zman header indicator -->
+                <div id="header-next-zman"></div>
             </div>
         </div>
 
@@ -1365,6 +1413,12 @@
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
+                <!-- Feature 103: News keyword search filter -->
+                <div class="news-search-wrap" id="news-search-wrap">
+                  <input id="news-search" type="text" placeholder="🔍 חפש בחדשות..." autocomplete="off" />
+                  <button id="news-search-clear" title="נקה חיפוש">✕</button>
+                  <span id="news-search-count"></span>
+                </div>
                 <div class="rss-scroll" id="rss-scroll"></div>
               </div>
             </div>
@@ -1387,7 +1441,7 @@
                   </div>
                   <div class="wx-details">
                     <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
-                    <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div></div>
+                    <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div><span id="wx-wind-heb"></span></div>
                     <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
                     <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
                     <!-- Feature 64: AQI category label + trend -->
@@ -1541,7 +1595,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.13.0 — משפחת רגואן</span>
+            <span>Dashboard v4.14.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1557,7 +1611,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.13.0 — 3-Column Layout · Hebrew Calendar Card · 100 Sprint Features · 877 Tests
+       FAMILY DASHBOARD v4.14.0 — 3-Column Layout · Hebrew Calendar Card · 110 Sprint Features · 942 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1828,13 +1882,27 @@
     });
 
     // ── Network Status Detection ──
+    let _wasOffline = false; // F105: track offline→online transition for auto-refresh
     function updateNetworkBanner() {
         const banner = document.getElementById('offline-banner');
         if (!banner) return;
         if (navigator.onLine) {
             _recordOnlineTime(); // F90: record last-online timestamp
             banner.classList.remove('visible');
+            // F105: Auto-refresh all stale panes on network reconnect
+            if (_wasOffline) {
+                _wasOffline = false;
+                diagLog('Network reconnected — refreshing all panes');
+                setTimeout(() => {
+                    safeLoad(loadWeather);
+                    safeLoad(loadNews);
+                    safeLoad(loadAllStocks);
+                    safeLoad(loadCurrency);
+                    safeLoad(loadHebCal);
+                }, 1500);
+            }
         } else {
+            _wasOffline = true;
             const ageStr = _getOfflineCacheAgeStr();
             banner.innerHTML = `⚠️ אין חיבור לאינטרנט — מציג נתונים מהמטמון${ageStr ? ` <span class="offline-age">${ageStr}</span>` : ''}`;
             banner.classList.add('visible');
@@ -1958,6 +2026,13 @@
         hcParashaProgressRow: $('hc-parasha-progress-row'),
         hcParashaProgressFill: $('hc-parasha-progress-fill'),
         hdrShabbatPill: $('header-shabbat-pill'),
+        // Sprint 11 additions (F101-F110)
+        headerBirthdayChip: $('header-birthday-chip'),
+        headerNextZman: $('header-next-zman'),
+        newsSearch: $('news-search'),
+        newsSearchClear: $('news-search-clear'),
+        newsSearchCount: $('news-search-count'),
+        wxWindHeb: $('wx-wind-heb'),
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -2001,6 +2076,7 @@
         const g = getGreeting(); if (el.greeting.textContent !== g) el.greeting.textContent = g;
         updateProgress(now);
         checkElecPeak(); // Feature 22: check IEC peak tariff hours every minute
+        updateNextZman(); // F109: refresh next-zman header chip each minute
     }
 
     // ── Hebrew Date + Shabbat ──
@@ -2253,6 +2329,8 @@
         el.wxDesc.textContent = WX_CODES[cw.weathercode] || 'לא ידוע';
         el.wxIcon.textContent = WX_EMOJI[cw.weathercode] || '🌡️';
         animateNumber(el.wxWind, Math.round(cw.windspeed) + ' קמ"ש ' + deg2arrow(cw.winddirection ?? 0));
+        // F108: Hebrew wind direction label
+        if (el.wxWindHeb) el.wxWindHeb.textContent = deg2hebrewDir(cw.winddirection ?? 0);
         // Feature 32: check for severe weather
         checkSevereWeather(cw.weathercode);
         // Feature 42: update sky color pill
@@ -2438,6 +2516,91 @@
         } else { setSync('news', stale ? 'success' : 'error'); recordFailure('news'); }
         releaseLock('news');
     }
+
+    // F103: News keyword search filter
+    let _newsKeyword = '';
+    let _newsSearchDebounce = null;
+    function applyNewsSearch(kw) {
+        _newsKeyword = kw;
+        if (el.newsSearchClear) el.newsSearchClear.style.display = kw ? '' : 'none';
+        const allItems = el.rssScroll?.querySelectorAll('.rss-item');
+        if (!allItems) return;
+        const kwLower = kw.toLowerCase();
+        let visible = 0;
+        const matchedTitles = new Set();
+        allItems.forEach(item => {
+            if (item.classList.contains('clone')) return;
+            const title = item.querySelector('.rss-title')?.textContent.toLowerCase() || '';
+            const src = item.querySelector('.rss-source')?.textContent.toLowerCase() || '';
+            const match = !kw || title.includes(kwLower) || src.includes(kwLower);
+            item.classList.toggle('search-hidden', !match);
+            if (match) { visible++; matchedTitles.add(item.querySelector('.rss-title')?.textContent || ''); }
+        });
+        allItems.forEach(item => {
+            if (!item.classList.contains('clone')) return;
+            const title = item.querySelector('.rss-title')?.textContent || '';
+            item.classList.toggle('search-hidden', !matchedTitles.has(title));
+        });
+        if (el.rssScroll) el.rssScroll.style.animationPlayState = kw ? 'paused' : 'running';
+        if (el.newsSearchCount) el.newsSearchCount.textContent = kw ? String(visible) : '';
+    }
+
+    // F110: Track visited news articles
+    const _NEWS_VISITED_KEY = 'dash_news_visited';
+    const _NEWS_VISITED_MAX = 200;
+    function _getVisitedArticles() {
+        try { return new Set(JSON.parse(localStorage.getItem(_NEWS_VISITED_KEY) || '[]')); } catch (_) { return new Set(); }
+    }
+    function _addVisitedArticle(url) {
+        if (!url) return;
+        try {
+            const arr = JSON.parse(localStorage.getItem(_NEWS_VISITED_KEY) || '[]');
+            if (!arr.includes(url)) {
+                arr.unshift(url);
+                if (arr.length > _NEWS_VISITED_MAX) arr.length = _NEWS_VISITED_MAX;
+                localStorage.setItem(_NEWS_VISITED_KEY, JSON.stringify(arr));
+            }
+        } catch (_) {}
+    }
+
+    // F107: Settings export / import
+    function exportSettings() {
+        const settings = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith('dash_')) settings[k] = localStorage.getItem(k);
+        }
+        const json = JSON.stringify(settings, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'familydashboard-settings.json';
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+        diagLog('Settings exported: ' + Object.keys(settings).length + ' keys');
+    }
+    function importSettings() {
+        const input = document.getElementById('cfg-import-file');
+        if (!input) return;
+        input.onchange = async e => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            try {
+                const text = await file.text();
+                const settings = JSON.parse(text);
+                let count = 0;
+                for (const [k, v] of Object.entries(settings)) {
+                    if (k.startsWith('dash_') && typeof v === 'string') { localStorage.setItem(k, v); count++; }
+                }
+                diagLog(`Settings imported: ${count} keys`);
+                alert(`ייבוא הושלם — ${count} הגדרות ✓\nהדף יטען מחדש.`);
+                location.reload();
+            } catch (ex) { alert('שגיאה בייבוא: ' + ex.message); }
+            input.value = '';
+        };
+        input.click();
+    }
+
     function renderNews(items) {
         const frag = document.createDocumentFragment();
         const list = items.slice(0, 25);
@@ -2500,13 +2663,20 @@
                 });
                 div.appendChild(shareBtn);
             }
-            if (it.link) div.addEventListener('click', () => window.open(it.link, '_blank'));
+            if (it.link) {
+                // F110: mark visited articles (dim on click, restore on re-render)
+                const visited = _getVisitedArticles();
+                if (visited.has(it.link)) div.classList.add('visited');
+                div.addEventListener('click', () => { _addVisitedArticle(it.link); div.classList.add('visited'); window.open(it.link, '_blank'); });
+            }
             frag.appendChild(div);
         });
         el.rssScroll.innerHTML = '';
         el.rssScroll.appendChild(frag); // single DOM write via DocumentFragment
         // Feature 29: update news count badge
         if (el.newsCount) el.newsCount.textContent = list.length + ' חדשות';
+        // F103: re-apply active search filter after re-render
+        if (_newsKeyword) applyNewsSearch(_newsKeyword);
         // Set scroll animation duration based on item count
         const h = el.rssScroll.scrollHeight / 2;
         el.rssScroll.style.animation = `newsScroll ${Math.max(40, list.length * 4)}s linear infinite`;
@@ -2581,6 +2751,15 @@
             // F82: halacha category badge
             if (data.category && !isClone) {
                 const cat = document.createElement('span'); cat.className = 'ticker-halacha-cat'; cat.textContent = data.category;
+                // F106: color-code by topic type
+                const c = data.category;
+                if (/שב[תו]/.test(c)) cat.classList.add('hc-tag-shabbat');
+                else if (/תפיל|תפלה|ברכ/.test(c)) cat.classList.add('hc-tag-tefila');
+                else if (/כשר|אכיל|מאכל/.test(c)) cat.classList.add('hc-tag-kashrut');
+                else if (/משפח|נדה|טהר|אישות/.test(c)) cat.classList.add('hc-tag-family');
+                else if (/חג|מועד|פסח|סוכ|ראש השנה|יו"ט/.test(c)) cat.classList.add('hc-tag-moadim');
+                refSpan.appendChild(cat);
+            }
                 refSpan.appendChild(cat);
             }
             // Feature 48: prepend custom announcement
@@ -3052,6 +3231,42 @@
     // ── Google Calendar (ICS native render) ──
     const CAL_ICS = 'https://calendar.google.com/calendar/ical/rajwan.family%40gmail.com/public/basic.ics';
     const CAL_DAYS_AHEAD = 21; // show 3 weeks of upcoming events
+
+    // F102: Return all configured ICS URLs (primary + 2 optional secondary)
+    function getICSUrls() {
+        const urls = [localStorage.getItem('dash_ics_url') || CAL_ICS];
+        for (let i = 2; i <= 3; i++) {
+            const u = localStorage.getItem(`dash_ics_url_${i}`);
+            if (u) urls.push(u);
+        }
+        return urls;
+    }
+    // F102: Fetch secondary ICS sources and re-render merged calendar
+    async function loadCalendarExtra() {
+        if (!_pageVisible) return;
+        const extra = [];
+        for (let i = 2; i <= 3; i++) {
+            const url = localStorage.getItem(`dash_ics_url_${i}`);
+            if (!url) continue;
+            const key = `cal-ics-${i}`;
+            const fresh = cGet(key, 900000);
+            if (fresh) { extra.push(...parseICS(fresh)); continue; }
+            const stale = cGetStale(key); if (stale) extra.push(...parseICS(stale));
+            try {
+                const r = await fetchWithTimeout(url, 10000);
+                if (r.ok) {
+                    const t = await r.text();
+                    if (t.includes('BEGIN:VCALENDAR')) { cSet(key, t); extra.push(...parseICS(t)); diagLog(`cal-extra-${i} OK`); }
+                }
+            } catch (e) { diagLog(`cal-extra-${i} ERR: ` + e.message); }
+        }
+        if (!extra.length) return;
+        const primary = parseICS(cGetStale('cal-ics') || '');
+        const merged = [...primary, ...extra].sort((a, b) => a.start - b.start);
+        renderCalendar(merged);
+        updateTodayEventCount();
+        diagLog(`cal-extra merged: ${extra.length} extra events`);
+    }
 
     function parseICS(text) {
         const events = [];
@@ -3633,6 +3848,18 @@
         } else if (el.hcBirthday) {
             el.hcBirthday.style.display = 'none';
         }
+        // F104: header birthday chip — 14-day lookahead
+        if (el.headerBirthdayChip) {
+            const chipSoon = upcoming.filter(b => b.days <= 14);
+            if (chipSoon.length) {
+                const b = chipSoon[0];
+                el.headerBirthdayChip.textContent = b.days === 0 ? `🎂 ${b.name}!` : `🎂 ${b.name} — ${b.days}יום`;
+                el.headerBirthdayChip.title = chipSoon.map(x => x.days === 0 ? `יום הולדת: ${x.name}!` : `${x.name}: עוד ${x.days} ימים`).join(' · ');
+                el.headerBirthdayChip.style.display = '';
+            } else {
+                el.headerBirthdayChip.style.display = 'none';
+            }
+        }
     }
 
     // ── Feature: Shabbat Countdown ──
@@ -3880,6 +4107,7 @@
     }
 
     // ── Feature: Zmanim (Prayer Times) ──
+    let _zmanimParsed = []; // F109: sorted array of {label, time: Date} for next-zman indicator
     async function loadZmanim() {
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
@@ -3934,6 +4162,26 @@
             el.zmanimGrid.appendChild(frag);
             el.zmanimSection.style.display = '';
         }
+        // F109: populate _zmanimParsed for header indicator
+        _zmanimParsed = [];
+        for (const z of SHOW) {
+            const raw = times[z.key];
+            if (!raw) continue;
+            const t = new Date(raw);
+            if (!isNaN(t.getTime())) _zmanimParsed.push({ label: z.label, time: t });
+        }
+        _zmanimParsed.sort((a, b) => a.time - b.time);
+        updateNextZman();
+    }
+    // F109: Show the next upcoming Zman in the header
+    function updateNextZman() {
+        if (!el.headerNextZman) return;
+        const now = Date.now();
+        const next = _zmanimParsed.find(z => z.time > now);
+        if (!next) { el.headerNextZman.style.display = 'none'; return; }
+        const t = next.time.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+        el.headerNextZman.textContent = `⏰ ${next.label} ${t}`;
+        el.headerNextZman.style.display = '';
     }
 
     // ── AQI (Air Quality Index) ── Open-Meteo air quality API, no key needed ──
@@ -3979,6 +4227,11 @@
     // Feature 31: Wind Direction Arrow  deg→16-point compass arrow
     function deg2arrow(deg) {
         const dirs = ['↑','↗','→','↘','↓','↙','←','↖'];
+        return dirs[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
+    }
+    // F108: Hebrew compass direction label
+    function deg2hebrewDir(deg) {
+        const dirs = ['צפון', 'צ-מ', 'מזרח', 'ד-מ', 'דרום', 'ד-מ', 'מערב', 'צ-מ'];
         return dirs[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
     }
 
@@ -4048,6 +4301,11 @@
             if (rtAlertsInput) rtAlertsInput.value = _alertRealtime ? 'on' : 'off';
             if (transitStopInput) transitStopInput.value = localStorage.getItem('dash_transit_stop') || '';
             if (choresInput) choresInput.value = localStorage.getItem('dash_chores') || '';
+            // Sprint 11: secondary ICS URLs (F102)
+            const ics2Input2 = document.getElementById('cfg-ics-url-2');
+            const ics3Input2 = document.getElementById('cfg-ics-url-3');
+            if (ics2Input2) ics2Input2.value = localStorage.getItem('dash_ics_url_2') || '';
+            if (ics3Input2) ics3Input2.value = localStorage.getItem('dash_ics_url_3') || '';
         }
     }
     function saveConfig() {
@@ -4195,6 +4453,17 @@
             const val = choresInput.value.trim();
             if (val) { try { JSON.parse(val); localStorage.setItem('dash_chores', val); } catch {} }
             else localStorage.removeItem('dash_chores');
+        }
+        // Sprint 11: secondary ICS calendar URLs (F102)
+        for (let i = 2; i <= 3; i++) {
+            const inp = document.getElementById(`cfg-ics-url-${i}`);
+            if (inp === null) continue;
+            const url = inp.value.trim();
+            if (url && /^https:\/\//.test(url)) localStorage.setItem(`dash_ics_url_${i}`, url);
+            else localStorage.removeItem(`dash_ics_url_${i}`);
+        }
+        if (localStorage.getItem('dash_ics_url_2') || localStorage.getItem('dash_ics_url_3')) {
+            safeLoad(loadCalendarExtra);
         }
         toggleConfig();
         diagLog('Config saved');
@@ -5126,7 +5395,15 @@
         updateMarketCountdown(); // Feature 68: initial market countdown button wiring
         applyHiddenStocks();  // Feature 96: apply hidden stocks config
         applyTransitState();  // Feature 98: show/hide transit card based on config
-        initCardDrag();       // Feature 99: card drag-reorder
+        // F103: wire news search input
+        if (el.newsSearch) {
+            el.newsSearch.addEventListener('input', () => {
+                clearTimeout(_newsSearchDebounce);
+                _newsSearchDebounce = setTimeout(() => applyNewsSearch(el.newsSearch.value.trim()), 250);
+            });
+            el.newsSearch.addEventListener('keydown', e => { if (e.key === 'Escape') { el.newsSearch.value = ''; applyNewsSearch(''); } });
+        }
+        if (el.newsSearchClear) el.newsSearchClear.addEventListener('click', () => { if (el.newsSearch) el.newsSearch.value = ''; applyNewsSearch(''); });
         document.getElementById('cfg-gear-btn')?.addEventListener('click', toggleConfig);
         document.getElementById('cfg-save-btn')?.addEventListener('click', saveConfig);
         document.getElementById('cfg-close-btn')?.addEventListener('click', toggleConfig);
@@ -5141,6 +5418,24 @@
         runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
             diagLog('All loaders settled');
             stampRefresh();
+            // F102: load secondary calendar sources if configured
+            if (localStorage.getItem('dash_ics_url_2') || localStorage.getItem('dash_ics_url_3')) {
+                safeLoad(loadCalendarExtra);
+            }ById('config-overlay')?.addEventListener('click', e => { if (e.target === document.getElementById('config-overlay')) toggleConfig(); });
+        // Wire °C/°F toggle to temperature elements
+        el.topTemp?.addEventListener('click', toggleTempUnit);
+        el.wxTemp?.addEventListener('click', toggleTempUnit);
+        el.helpOverlay?.addEventListener('click', e => { if (e.target === el.helpOverlay) toggleHelp(); });
+
+        const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadOmer, loadWeather,
+                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha, loadHebCal, loadZmanim, loadAQI, loadPsalm, loadEarthquakes];
+        runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
+            diagLog('All loaders settled');
+            stampRefresh();
+            // F102: load secondary calendar sources if configured
+            if (localStorage.getItem('dash_ics_url_2') || localStorage.getItem('dash_ics_url_3')) {
+                safeLoad(loadCalendarExtra);
+            }
         });
     }
 
@@ -5372,13 +5667,40 @@
         initCardMaximize();
     }
 
-    // Feature 92: ServiceWorker registration (offline stale-while-revalidate)
+    // Feature 92/101: ServiceWorker registration + update notification banner
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').then(reg => {
             diagLog('SW registered: ' + (reg.scope || ''));
+            // F101: show update banner when a new SW is waiting
+            function showUpdateBanner() {
+                const banner = document.getElementById('sw-update-banner');
+                if (banner) { banner.classList.add('visible'); diagLog('SW update available — showing banner'); }
+            }
+            if (reg.waiting) showUpdateBanner();
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                if (!newWorker) return;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) showUpdateBanner();
+                });
+            });
+            // After SW activates (SKIP_WAITING sent), reload page
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) { refreshing = true; location.reload(); }
+            });
         }).catch(err => {
             diagLog('SW registration failed: ' + err.message);
         });
+    }
+    // F101: Tell the waiting SW to skip waiting, then page reloads via controllerchange
+    function swUpdateReload() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(reg => {
+                if (reg?.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                else location.reload();
+            });
+        } else { location.reload(); }
     }
     </script>
 </body>

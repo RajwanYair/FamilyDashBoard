@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.14.0] — 2026-04-27
+
+> **Sprint 11 (Features 101–110)** — SW update banner, multi-ICS calendar, news search, birthday header chip, reconnect auto-refresh, halacha category colors, settings export/import, Hebrew wind direction, next Zman header, visited news tracking
+> Tests: 942 / 55 suites / 0 failures (was 877 / 54 suites / 0)
+
+### Added
+
+- **F101 — SW Update Notification Banner** — `#sw-update-banner` (fixed, green) slides in when a new SW is waiting; `swUpdateReload()` posts `SKIP_WAITING` message; SW `message` handler calls `self.skipWaiting()` on demand instead of auto-activating
+- **F102 — Second + Third ICS Calendar URLs** — `cfg-ics-url-2` and `cfg-ics-url-3` inputs in config panel; `getICSUrls()` collects all three `dash_ics_url*` keys; `loadCalendarExtra()` merges secondary ICS events with primary calendar
+- **F103 — News Keyword Search Filter** — `#news-search` (RTL input with placeholder), `#news-search-clear` ✕ button, `#news-search-count` results badge; `applyNewsSearch()` toggles `search-hidden` on non-matching items; 250ms debounce; Escape clears; pauses scroll animation during search
+- **F104 — Birthday Header Chip** — `#header-birthday-chip` amber pill in header-right; `checkBirthdays()` extended to show nearest birthday within 14 days with day countdown
+- **F105 — Network Reconnect Auto-Refresh** — `_wasOffline` flag: when banner goes from offline→online, triggers `safeLoad()` for all five main panes after a 1.5s delay
+- **F106 — Halacha Category Color Tags** — CSS classes `.hc-tag-shabbat` (gold), `.hc-tag-tefila` (teal), `.hc-tag-kashrut` (green), `.hc-tag-family` (rose), `.hc-tag-moadim` (purple); `renderHalacha()` maps Sefaria category to class via regex
+- **F107 — Settings Export/Import** — `exportSettings()` collects all `dash_*` localStorage keys → JSON Blob download; `importSettings()` reads uploaded `.json`, restores keys, reloads; `#cfg-import-file` input + two buttons in config panel
+- **F108 — Hebrew Wind Direction Label** — `#wx-wind-heb` span inside wind detail; `deg2hebrewDir(deg)` maps bearing to 8 Hebrew compass points (צפון/מזרח/דרום/מערב + intermediates); `renderWeather()` sets the label
+- **F109 — Next Zman Header Indicator** — `#header-next-zman` accent-color pill in header-right; `_zmanimParsed[]` built by `_renderZmanim()`; `updateNextZman()` finds the next upcoming Zman; `tickClock()` updates it every minute
+- **F110 — News Visited Articles Dimming** — `_getVisitedArticles()` / `_addVisitedArticle()` persist URLs in `dash_news_visited` (max 200); `renderNews()` marks items `.visited` on click and on re-render; `.rss-item.visited` dims to 45% opacity with strikethrough title
+
+---
+
 ## [4.13.0] — 2026-04-12
 
 > **Sprint 10 (Features 91–100)** — PWA offline, configurability (city, Hebcal, feeds, stocks, chores), transit card, drag-reorder

@@ -1776,10 +1776,10 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.13.0", () => {
+  it("should display version v4.14.0", () => {
     assert.ok(
-      html.includes("Dashboard v4.13.0"),
-      "Missing version v4.13.0 in status bar",
+      html.includes("Dashboard v4.14.0"),
+      "Missing version v4.14.0 in status bar",
     );
   });
 
@@ -5294,7 +5294,7 @@ describe("Sprint 9 Features (F81–F90)", () => {
     assert.ok(scriptContent.includes("function _getOfflineCacheAgeStr("), "Missing _getOfflineCacheAgeStr");
   });
   it("F90: updateNetworkBanner should show cache age when offline", () => {
-    const fn = scriptContent.slice(scriptContent.indexOf("function updateNetworkBanner("), scriptContent.indexOf("function updateNetworkBanner(") + 400);
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNetworkBanner("), scriptContent.indexOf("function updateNetworkBanner(") + 1300);
     assert.ok(fn.includes("_getOfflineCacheAgeStr"), "updateNetworkBanner should show cache age");
   });
   it("F90: dash_last_online key should be stored in localStorage", () => {
@@ -5481,4 +5481,249 @@ describe("Sprint 10 Features (F91–F100)", () => {
   it("F100: getChores should fall back to CHORES when no config", () => {
     assert.ok(scriptContent.includes("return CHORES"), "getChores should fallback to CHORES constant");
   });
+});
+
+// ── Suite 55: Sprint 11 Features (F101–F110) ──
+describe("Sprint 11 Features (F101–F110)", () => {
+
+  // F101: SW Update Notification Banner
+  it("F101: should have #sw-update-banner element", () => {
+    assert.ok(html.includes('id="sw-update-banner"'), "Missing #sw-update-banner element");
+  });
+  it("F101: should have #sw-update-reload-btn button", () => {
+    assert.ok(html.includes('id="sw-update-reload-btn"'), "Missing #sw-update-reload-btn button");
+  });
+  it("F101: should define swUpdateReload function", () => {
+    assert.ok(scriptContent.includes("function swUpdateReload("), "Missing swUpdateReload function");
+  });
+  it("F101: swUpdateReload should post SKIP_WAITING message", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function swUpdateReload("));
+    assert.ok(fn.includes("SKIP_WAITING"), "swUpdateReload should post SKIP_WAITING to SW");
+  });
+  it("F101: SW registration should detect waiting SW", () => {
+    assert.ok(scriptContent.includes("reg.waiting"), "SW registration should check reg.waiting");
+  });
+  it("F101: SW registration should listen for updatefound", () => {
+    assert.ok(scriptContent.includes("updatefound"), "SW registration should listen for updatefound");
+  });
+  it("F101: #sw-update-banner CSS should be defined", () => {
+    assert.ok(html.includes("#sw-update-banner"), "Missing #sw-update-banner CSS");
+  });
+
+  // F102: Second + Third ICS Calendar URLs
+  it("F102: should have cfg-ics-url-2 input in config panel", () => {
+    assert.ok(html.includes('id="cfg-ics-url-2"'), "Missing #cfg-ics-url-2 config input");
+  });
+  it("F102: should have cfg-ics-url-3 input in config panel", () => {
+    assert.ok(html.includes('id="cfg-ics-url-3"'), "Missing #cfg-ics-url-3 config input");
+  });
+  it("F102: should define getICSUrls function", () => {
+    assert.ok(scriptContent.includes("function getICSUrls("), "Missing getICSUrls function");
+  });
+  it("F102: getICSUrls should read dash_ics_url_2 from localStorage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function getICSUrls("));
+    assert.ok(fn.includes("dash_ics_url_2"), "getICSUrls should read dash_ics_url_2");
+  });
+  it("F102: getICSUrls should read dash_ics_url_3 from localStorage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function getICSUrls("));
+    assert.ok(fn.includes("dash_ics_url_3"), "getICSUrls should read dash_ics_url_3");
+  });
+  it("F102: should define loadCalendarExtra function", () => {
+    assert.ok(scriptContent.includes("function loadCalendarExtra("), "Missing loadCalendarExtra function");
+  });
+  it("F102: loadCalendarExtra should check _pageVisible", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("async function loadCalendarExtra("), scriptContent.indexOf("async function loadCalendarExtra(") + 100);
+    assert.ok(fn.includes("_pageVisible"), "loadCalendarExtra should guard with _pageVisible");
+  });
+  it("F102: saveConfig should persist dash_ics_url_2", () => {
+    assert.ok(scriptContent.includes("dash_ics_url_2"), "saveConfig should save dash_ics_url_2");
+  });
+
+  // F103: News Keyword Search Filter
+  it("F103: should have #news-search input element", () => {
+    assert.ok(html.includes('id="news-search"'), "Missing #news-search input element");
+  });
+  it("F103: should have #news-search-clear button", () => {
+    assert.ok(html.includes('id="news-search-clear"'), "Missing #news-search-clear button");
+  });
+  it("F103: should have #news-search-count element", () => {
+    assert.ok(html.includes('id="news-search-count"'), "Missing #news-search-count element");
+  });
+  it("F103: should define applyNewsSearch function", () => {
+    assert.ok(scriptContent.includes("function applyNewsSearch("), "Missing applyNewsSearch function");
+  });
+  it("F103: applyNewsSearch should toggle search-hidden class", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function applyNewsSearch("));
+    assert.ok(fn.includes("search-hidden"), "applyNewsSearch should use search-hidden CSS class");
+  });
+  it("F103: .rss-item.search-hidden CSS should be defined", () => {
+    assert.ok(html.includes("search-hidden"), "Missing search-hidden CSS class");
+  });
+  it("F103: news search should debounce input with 250ms", () => {
+    assert.ok(scriptContent.includes("250"), "News search should use 250ms debounce");
+  });
+  it("F103: Escape key should clear news search", () => {
+    assert.ok(scriptContent.includes("e.key === 'Escape'"), "Escape key should clear news search");
+  });
+
+  // F104: Birthday Header Chip
+  it("F104: should have #header-birthday-chip element", () => {
+    assert.ok(html.includes('id="header-birthday-chip"'), "Missing #header-birthday-chip element");
+  });
+  it("F104: el object should cache headerBirthdayChip", () => {
+    assert.ok(scriptContent.includes("headerBirthdayChip:"), "Missing el.headerBirthdayChip in DOM cache");
+  });
+  it("F104: checkBirthdays should update #header-birthday-chip", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function checkBirthdays("));
+    assert.ok(fn.includes("headerBirthdayChip"), "checkBirthdays should update header chip");
+  });
+  it("F104: birthday chip should use 14-day window", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function checkBirthdays("));
+    assert.ok(fn.includes("14"), "Birthday header chip should use 14-day lookahead");
+  });
+  it("F104: #header-birthday-chip CSS should be defined", () => {
+    assert.ok(html.includes("#header-birthday-chip"), "Missing #header-birthday-chip CSS");
+  });
+
+  // F105: Network Reconnect Auto-Refresh
+  it("F105: should have _wasOffline variable", () => {
+    assert.ok(scriptContent.includes("_wasOffline"), "Missing _wasOffline variable");
+  });
+  it("F105: updateNetworkBanner should set _wasOffline true when offline", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNetworkBanner("), scriptContent.indexOf("function updateNetworkBanner(") + 1300);
+    assert.ok(fn.includes("_wasOffline = true"), "updateNetworkBanner should set _wasOffline=true when offline");
+  });
+  it("F105: updateNetworkBanner should reset _wasOffline and trigger refresh on reconnect", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNetworkBanner("), scriptContent.indexOf("function updateNetworkBanner(") + 1300);
+    assert.ok(fn.includes("_wasOffline = false"), "Should reset _wasOffline on reconnect");
+    assert.ok(fn.includes("safeLoad(loadWeather)"), "Should trigger loadWeather on reconnect");
+  });
+  it("F105: auto-refresh should use 1.5s delay after reconnect", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNetworkBanner("), scriptContent.indexOf("function updateNetworkBanner(") + 1300);
+    assert.ok(fn.includes("1500"), "Auto-refresh should use 1.5s setTimeout delay");
+  });
+
+  // F106: Halacha Category Color Tags
+  it("F106: hc-tag-shabbat CSS class should be defined", () => {
+    assert.ok(html.includes(".hc-tag-shabbat"), "Missing .hc-tag-shabbat CSS");
+  });
+  it("F106: hc-tag-tefila CSS class should be defined", () => {
+    assert.ok(html.includes(".hc-tag-tefila"), "Missing .hc-tag-tefila CSS");
+  });
+  it("F106: hc-tag-kashrut CSS class should be defined", () => {
+    assert.ok(html.includes(".hc-tag-kashrut"), "Missing .hc-tag-kashrut CSS");
+  });
+  it("F106: hc-tag-family CSS class should be defined", () => {
+    assert.ok(html.includes(".hc-tag-family"), "Missing .hc-tag-family CSS");
+  });
+  it("F106: hc-tag-moadim CSS class should be defined", () => {
+    assert.ok(html.includes(".hc-tag-moadim"), "Missing .hc-tag-moadim CSS");
+  });
+  it("F106: renderHalacha should check for שבת category", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHalacha("));
+    assert.ok(fn.includes("שב"), "renderHalacha should detect Shabbat category");
+  });
+  it("F106: renderHalacha should check for כשר category", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHalacha("));
+    assert.ok(fn.includes("כשר"), "renderHalacha should detect Kashrut category");
+  });
+
+  // F107: Settings Export/Import
+  it("F107: should define exportSettings function", () => {
+    assert.ok(scriptContent.includes("function exportSettings("), "Missing exportSettings function");
+  });
+  it("F107: should define importSettings function", () => {
+    assert.ok(scriptContent.includes("function importSettings("), "Missing importSettings function");
+  });
+  it("F107: should have cfg-import-file input in config panel", () => {
+    assert.ok(html.includes('id="cfg-import-file"'), "Missing #cfg-import-file input");
+  });
+  it("F107: exportSettings should collect dash_ prefixed keys", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function exportSettings("));
+    assert.ok(fn.includes("dash_"), "exportSettings should collect dash_ keys");
+  });
+  it("F107: exportSettings should create blob download", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function exportSettings("));
+    assert.ok(fn.includes("Blob"), "exportSettings should create Blob for download");
+  });
+  it("F107: importSettings should parse JSON and reload", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function importSettings("));
+    assert.ok(fn.includes("JSON.parse"), "importSettings should parse JSON");
+    assert.ok(fn.includes("location.reload"), "importSettings should reload after import");
+  });
+
+  // F108: Hebrew Wind Direction Label
+  it("F108: should have #wx-wind-heb element", () => {
+    assert.ok(html.includes('id="wx-wind-heb"'), "Missing #wx-wind-heb element");
+  });
+  it("F108: should define deg2hebrewDir function", () => {
+    assert.ok(scriptContent.includes("function deg2hebrewDir("), "Missing deg2hebrewDir function");
+  });
+  it("F108: deg2hebrewDir should return צפון for north", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function deg2hebrewDir("));
+    assert.ok(fn.includes("צפון"), "deg2hebrewDir should return צפון for north");
+  });
+  it("F108: deg2hebrewDir should return מזרח for east", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function deg2hebrewDir("));
+    assert.ok(fn.includes("מזרח"), "deg2hebrewDir should return מזרח for east");
+  });
+  it("F108: renderWeather should call deg2hebrewDir", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderWeather("));
+    assert.ok(fn.includes("deg2hebrewDir"), "renderWeather should call deg2hebrewDir");
+  });
+  it("F108: el object should cache wxWindHeb", () => {
+    assert.ok(scriptContent.includes("wxWindHeb:"), "Missing el.wxWindHeb in DOM cache");
+  });
+
+  // F109: Next Zman Header Indicator
+  it("F109: should have #header-next-zman element", () => {
+    assert.ok(html.includes('id="header-next-zman"'), "Missing #header-next-zman element");
+  });
+  it("F109: el object should cache headerNextZman", () => {
+    assert.ok(scriptContent.includes("headerNextZman:"), "Missing el.headerNextZman in DOM cache");
+  });
+  it("F109: should have _zmanimParsed variable", () => {
+    assert.ok(scriptContent.includes("_zmanimParsed"), "Missing _zmanimParsed global variable");
+  });
+  it("F109: should define updateNextZman function", () => {
+    assert.ok(scriptContent.includes("function updateNextZman("), "Missing updateNextZman function");
+  });
+  it("F109: updateNextZman should find next zman using Date.now()", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function updateNextZman("));
+    assert.ok(fn.includes("Date.now()"), "updateNextZman should compare with Date.now()");
+  });
+  it("F109: tickClock should call updateNextZman", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function tickClock()"), scriptContent.indexOf("function tickClock()") + 1100);
+    assert.ok(fn.includes("updateNextZman()"), "tickClock should call updateNextZman");
+  });
+  it("F109: #header-next-zman CSS should be defined", () => {
+    assert.ok(html.includes("#header-next-zman"), "Missing #header-next-zman CSS");
+  });
+
+  // F110: News Visited Articles Dimming
+  it("F110: should define _getVisitedArticles function", () => {
+    assert.ok(scriptContent.includes("function _getVisitedArticles("), "Missing _getVisitedArticles function");
+  });
+  it("F110: should define _addVisitedArticle function", () => {
+    assert.ok(scriptContent.includes("function _addVisitedArticle("), "Missing _addVisitedArticle function");
+  });
+  it("F110: visited articles should use dash_news_visited localStorage key", () => {
+    assert.ok(scriptContent.includes("dash_news_visited"), "Missing dash_news_visited localStorage key");
+  });
+  it("F110: _addVisitedArticle should cap entries at max 200", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function _addVisitedArticle("));
+    assert.ok(fn.includes("200"), "_addVisitedArticle should cap at 200 entries");
+  });
+  it("F110: .rss-item.visited CSS should be defined", () => {
+    assert.ok(html.includes(".rss-item.visited"), "Missing .rss-item.visited CSS");
+  });
+  it("F110: renderNews should apply visited class on click", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderNews("));
+    assert.ok(fn.includes("visited") && fn.includes("_addVisitedArticle"), "renderNews should track visited articles");
+  });
+  it("F110: visited articles should open link in new tab", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderNews("));
+    assert.ok(fn.includes("_blank"), "News article click should open in _blank tab");
+  });
+
 });

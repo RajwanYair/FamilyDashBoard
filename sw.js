@@ -1,9 +1,9 @@
-/* FamilyDashBoard ServiceWorker — v4.13.0
+/* FamilyDashBoard ServiceWorker — v4.14.0
  * Strategy: stale-while-revalidate for app shell (HTML).
  * API responses are NOT cached here — they use the in-page dual-layer cache
  * (in-memory Map + localStorage with dash_v2_ prefix). */
 
-const CACHE_NAME = "familydashboard-v4.13.0";
+const CACHE_NAME = "familydashboard-v4.14.0";
 const APP_SHELL = ["./BestDashBoard.html", "./manifest.json"];
 
 // ── Install: pre-cache the app shell ──────────────────────────────────────
@@ -11,9 +11,17 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting()),
+      .then((cache) => cache.addAll(APP_SHELL)),
+    // Note: skipWaiting() is triggered by the page via postMessage({type:'SKIP_WAITING'})
+    // so the user is notified before the SW activates (F101).
   );
+});
+
+// ── Message: skip waiting on request from page ────────────────────────────
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 // ── Activate: remove old cache versions ───────────────────────────────────
