@@ -528,21 +528,9 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-bright); }
         * { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
 
-        /* ── Screen Mode Selector ── */
-        .screen-mode {
-            position: fixed; top: 8px; left: 8px; z-index: 100;
-            display: flex; align-items: center; gap: 6px; flex-wrap: wrap; max-width: 600px;
-        }
-        .screen-mode select {
-            background: var(--bg-card-header); color: var(--accent); border: 1px solid var(--accent-border);
-            border-radius: 8px; padding: 4px 8px; font-size: 12px; font-family: inherit;
-            cursor: pointer; outline: none; direction: rtl; appearance: auto;
-            backdrop-filter: blur(12px);
-        }
-        .screen-mode select:hover { border-color: var(--accent); }
-        .screen-mode-label { font-size: 11px; color: var(--text-muted); }
-        /* Theme selector swatch dot next to label */
+/* Theme selector swatch dot */
         #theme-select option::before { content: '● '; }
+        select.cfg-input { cursor: pointer; }
 
         /* ── Screen Mode Overrides ── */
         body.mode-tv { font-size: 21px; }
@@ -1041,7 +1029,7 @@
         /* Feature 50: Print mode */
         @media print {
             .diag-overlay, #diag-overlay, .offline-banner, #help-overlay, #config-overlay,
-            .screen-mode, #cfg-gear-btn, .sync-dot, .card-header .news-count-badge,
+            #cfg-gear-btn, .sync-dot, .card-header .news-count-badge,
             .wx-city-tabs, .news-filter-bar { display: none !important; }
             body { background: #fff !important; color: #000 !important; }
             .card { border: 1px solid #ccc !important; background: #fff !important; box-shadow: none !important; }
@@ -1265,7 +1253,7 @@
         @media print {
             .clone, #toast, #night-dim, #pwa-install-btn, #refresh-toast, .offline-banner,
             #sw-update-banner, #news-search-wrap, .rss-translate-btn, .news-share,
-            #wx-chart-toggle, .cfg-gear-btn, .screen-mode { display: none !important; }
+            #wx-chart-toggle, .cfg-gear-btn { display: none !important; }
             #print-datetime { display: block !important; font-size: 0.75em; color: #666; padding: 2px 8px; }
         }
 
@@ -1419,7 +1407,25 @@
         <!-- Tab: Display -->
         <div class="cfg-section active" data-tab="display">
           <div class="cfg-row">
-            <span class="cfg-label">🖼️ תמונת רקע (URL)</span>
+            <span class="cfg-label">�️ מצב מסך</span>
+            <select id="screen-mode-select" class="cfg-input">
+              <option value="tv">📺 טלוויזיה</option>
+              <option value="tablet">📱 טאבלט</option>
+              <option value="phone">📱 נייד</option>
+            </select>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🎨 ערכת נושא</span>
+            <select id="theme-select" class="cfg-input">
+              <option value="black">■ שחור OLED</option>
+              <option value="blue">🟦 כחול לילה</option>
+              <option value="matrix">🟩 מטריקס</option>
+              <option value="amber">🟧 ענבר</option>
+              <option value="purple">🟥 סגול</option>
+            </select>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">�🖼️ תמונת רקע (URL)</span>
             <input class="cfg-input" id="cfg-bg-url" type="text" placeholder="https://..." />
           </div>
           <div class="cfg-row">
@@ -1511,6 +1517,13 @@
         <!-- Tab: Alerts -->
         <div class="cfg-section" data-tab="alerts-tab">
           <div class="cfg-row">
+            <span class="cfg-label">🚨 הצגת התראות אדום</span>
+            <select id="alerts-toggle" class="cfg-input">
+              <option value="on">פעיל</option>
+              <option value="off">כבוי</option>
+            </select>
+          </div>
+          <div class="cfg-row">
             <span class="cfg-label">🚨 סינון אזורי התראה (קידומת עיר)</span>
             <input class="cfg-input" id="cfg-alert-zone" type="text" placeholder="תל אביב, רמת גן..." />
           </div>
@@ -1585,25 +1598,6 @@
     </div>
     <!-- Feature 33: Gear button (bottom-left corner) -->
     <button id="cfg-gear-btn" title="הגדרות (S)">⚙️</button>
-        <!-- ── Screen Mode + Theme + Proxy Selector ── -->
-        <div class="screen-mode">
-            <select id="screen-mode-select">
-                <option value="tv">📺 טלוויזיה</option>
-                <option value="tablet">📱 טאבלט</option>
-                <option value="phone">📱 נייד</option>
-            </select>
-            <select id="theme-select">
-                <option value="black">■ שחור OLED</option>
-                <option value="blue">🟦 כחול לילה</option>
-                <option value="matrix">🟩 מטריקס</option>
-                <option value="amber">🟧 ענבר</option>
-                <option value="purple">🟥 סגול</option>
-            </select>
-            <select id="alerts-toggle">
-                <option value="on">🚨 התרעות פעיל</option>
-                <option value="off" selected>🚨 התרעות כבוי</option>
-            </select>
-        </div>
 
         <div class="container">
         <!-- ── Daily Halacha Ticker ── -->
