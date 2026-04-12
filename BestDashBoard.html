@@ -1292,7 +1292,7 @@
         </div>
         <div class="cfg-row">
           <span class="cfg-label">📊 התראות מחיר מניה</span>
-          <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder='{"AAPL":{"above":220},"NVDA":{"below":100}}' style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
+          <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
         </div>
         <!-- Sprint 10 config rows (F93-F100) -->
         <div class="cfg-row">
@@ -1329,7 +1329,7 @@
         </div>
         <div class="cfg-row">
           <span class="cfg-label">🧹 משימות בית (JSON)</span>
-          <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder='[{"person":"עמרי","chore":"🧹 לנקות"}]' style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
+          <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;}]" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
         </div>
         <div class="cfg-row" style="justify-content:center;gap:10px">
           <button class="cfg-btn" id="cfg-save-btn">שמור</button>
@@ -1373,6 +1373,7 @@
             </select>
         </div>
 
+        <div class="container">
         <!-- ── Daily Halacha Ticker ── -->
         <div class="ticker-bar">
             <div class="ticker-label">� הלכה יומית</div>
