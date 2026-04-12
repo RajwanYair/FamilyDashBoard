@@ -29,10 +29,10 @@
     <style>
         :root {
             --bg-primary: #060b14;
-            --bg-card: rgba(15, 23, 42, 0.78);
-            --bg-card-header: rgba(30, 41, 59, 0.88);
-            --bg-card-inner: rgba(30, 41, 59, 0.45);
-            --bg-card-hover: rgba(51, 65, 85, 0.25);
+            --bg-card: rgba(15, 23, 42, 0.20);
+            --bg-card-header: rgba(30, 41, 59, 0.30);
+            --bg-card-inner: rgba(30, 41, 59, 0.12);
+            --bg-card-hover: rgba(51, 65, 85, 0.10);
             --accent: #60a5fa;
             --accent-bright: #93c5fd;
             --accent-glow: rgba(96, 165, 250, 0.18);
@@ -60,10 +60,10 @@
         /* ── Theme: True Black (OLED) ── */
         body.theme-black {
             --bg-primary: #000000;
-            --bg-card: rgba(10, 10, 10, 0.92);
-            --bg-card-header: rgba(18, 18, 18, 0.96);
-            --bg-card-inner: rgba(18, 18, 18, 0.70);
-            --bg-card-hover: rgba(30, 30, 30, 0.45);
+            --bg-card: rgba(10, 10, 10, 0.20);
+            --bg-card-header: rgba(18, 18, 18, 0.30);
+            --bg-card-inner: rgba(18, 18, 18, 0.12);
+            --bg-card-hover: rgba(30, 30, 30, 0.10);
             --card-border: 1px solid rgba(96, 165, 250, 0.12);
             --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
             --bg-gradient-1: rgba(96,165,250,0.03);
@@ -74,10 +74,10 @@
         /* ── Theme: Deep Blue (original) ── */
         body.theme-blue {
             --bg-primary: #060b14;
-            --bg-card: rgba(15, 23, 42, 0.78);
-            --bg-card-header: rgba(30, 41, 59, 0.88);
-            --bg-card-inner: rgba(30, 41, 59, 0.45);
-            --bg-card-hover: rgba(51, 65, 85, 0.25);
+            --bg-card: rgba(15, 23, 42, 0.20);
+            --bg-card-header: rgba(30, 41, 59, 0.30);
+            --bg-card-inner: rgba(30, 41, 59, 0.12);
+            --bg-card-hover: rgba(51, 65, 85, 0.10);
             --bg-gradient-1: rgba(96,165,250,0.06);
             --bg-gradient-2: rgba(52,211,153,0.04);
             --bg-gradient-3: rgba(139,92,246,0.04);
@@ -86,10 +86,10 @@
         /* ── Theme: Matrix Green ── */
         body.theme-matrix {
             --bg-primary: #000d00;
-            --bg-card: rgba(0, 20, 0, 0.88);
-            --bg-card-header: rgba(0, 30, 0, 0.95);
-            --bg-card-inner: rgba(0, 25, 0, 0.65);
-            --bg-card-hover: rgba(0, 40, 0, 0.35);
+            --bg-card: rgba(0, 20, 0, 0.20);
+            --bg-card-header: rgba(0, 30, 0, 0.30);
+            --bg-card-inner: rgba(0, 25, 0, 0.12);
+            --bg-card-hover: rgba(0, 40, 0, 0.10);
             --accent: #00ff41;
             --accent-bright: #69ff47;
             --accent-glow: rgba(0,255,65,0.18);
@@ -105,10 +105,10 @@
         /* ── Theme: Amber ── */
         body.theme-amber {
             --bg-primary: #0d0800;
-            --bg-card: rgba(25, 15, 0, 0.88);
-            --bg-card-header: rgba(40, 22, 0, 0.95);
-            --bg-card-inner: rgba(35, 18, 0, 0.65);
-            --bg-card-hover: rgba(55, 30, 0, 0.35);
+            --bg-card: rgba(25, 15, 0, 0.20);
+            --bg-card-header: rgba(40, 22, 0, 0.30);
+            --bg-card-inner: rgba(35, 18, 0, 0.12);
+            --bg-card-hover: rgba(55, 30, 0, 0.10);
             --accent: #fbbf24;
             --accent-bright: #fcd34d;
             --accent-glow: rgba(251,191,36,0.18);
@@ -125,10 +125,10 @@
         /* ── Theme: Purple Dusk ── */
         body.theme-purple {
             --bg-primary: #07001a;
-            --bg-card: rgba(20, 5, 45, 0.88);
-            --bg-card-header: rgba(35, 12, 70, 0.95);
-            --bg-card-inner: rgba(30, 8, 55, 0.65);
-            --bg-card-hover: rgba(50, 18, 80, 0.35);
+            --bg-card: rgba(20, 5, 45, 0.20);
+            --bg-card-header: rgba(35, 12, 70, 0.30);
+            --bg-card-inner: rgba(30, 8, 55, 0.12);
+            --bg-card-hover: rgba(50, 18, 80, 0.10);
             --accent: #c084fc;
             --accent-bright: #d8b4fe;
             --accent-glow: rgba(192,132,252,0.18);
@@ -158,7 +158,7 @@
         body::after {
             content: ''; position: fixed; inset: 0; z-index: 0;
             background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&q=80') center/cover no-repeat;
-            opacity: 0.18;
+            opacity: 0.55;
             pointer-events: none;
         }
         body::before {
@@ -209,7 +209,7 @@
         /* ── Header ── */
         .time-section {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg-card); backdrop-filter: blur(16px);
+            background: var(--bg-card); backdrop-filter: blur(6px);
             padding: 6px 16px; border-radius: var(--border-radius);
             border: var(--card-border); box-shadow: var(--card-shadow);
             flex: 0 0 auto;
@@ -244,7 +244,7 @@
 
         /* ── Cards ── */
         .card {
-            background: var(--bg-card); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            background: var(--bg-card); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
             border-radius: var(--border-radius); overflow: hidden;
             display: flex; flex-direction: column; min-height: 0;
             border: var(--card-border); box-shadow: var(--card-shadow);

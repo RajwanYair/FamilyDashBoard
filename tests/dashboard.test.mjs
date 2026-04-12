@@ -2582,7 +2582,7 @@ describe("DOM References (el object)", () => {
 describe("CSS Design System", () => {
   it("should have glassmorphism backdrop-filter on cards", () => {
     assert.ok(
-      html.includes("backdrop-filter: blur(16px)"),
+      html.includes("backdrop-filter: blur(6px)"),
       "Missing glassmorphism blur on cards",
     );
   });
