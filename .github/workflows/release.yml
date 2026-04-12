@@ -46,3 +46,6 @@ jobs:
             ```
           files: |
             BestDashBoard.html
+            sw.js
+            manifest.json
+            icon.svg

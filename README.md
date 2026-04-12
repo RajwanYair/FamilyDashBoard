@@ -18,8 +18,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.19-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-1112_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-5.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-1135_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
->  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (1112 tests, 60 suites, zero dependencies).
+>  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (1135 tests, 61 suites, zero dependencies).
 
 ---
 
@@ -205,7 +205,7 @@ FamilyDashBoard/
 ├── .editorconfig / .markdownlint.json
 ├── .gitignore / .gitattributes
 ├── tests/
-|   └── dashboard.test.mjs          # 1112 tests, 60 suites (Node.js built-in runner)
+|   └── dashboard.test.mjs          # 1135 tests, 61 suites (Node.js built-in runner)
 ├── .github/
 │   ├── assets/                     # SVG graphics for docs
 │   ├── agents/                     # Copilot custom agents

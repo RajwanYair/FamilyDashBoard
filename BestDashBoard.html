@@ -1545,6 +1545,11 @@
             <span class="cfg-label">🧹 משימות בית (JSON)</span>
             <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;}]" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
           </div>
+          <!-- Custom CORS proxy for corporate/restricted networks -->
+          <div class="cfg-row">
+            <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
+            <input class="cfg-input" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" style="direction:ltr;font-size:0.8em" />
+          </div>
           <!-- F139: Custom countdown chip config -->
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — תאריך</span>
@@ -1845,7 +1850,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.19.0 — משפחת רגואן</span>
+            <span>Dashboard v5.0.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1855,6 +1860,8 @@
             <span id="conn-indicator"></span>
             <!-- Feature 49: Font scale indicator -->
             <span id="font-scale-indicator"></span>
+            <!-- F165: PWA install prompt button -->
+            <button id="btn-install" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.72em;cursor:pointer">📲 התקן</button>
             <span id="last-refresh">רענון: --:--</span>
         </div>
     </div>
@@ -2304,6 +2311,8 @@
         halachaOverlay: $('halacha-overlay'), // F157
         halachaOverlayRef: $('halacha-overlay-ref'), // F157
         halachaOverlayText: $('halacha-overlay-text'), // F157
+        // Sprint 17 additions (F161-F170)
+        btnInstall: $('btn-install'),                   // F165
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -2312,8 +2321,10 @@
     async function fetchJSON(url) {
         const short = url.split('?')[0].split('/').slice(-2).join('/');
         try { const r = await fetch(url); if (r.ok) { diagLog(`fetchJSON direct OK: ${short}`); return await r.json(); } } catch (_) {}
-        for (const p of PROXIES) {
-            const pName = p.includes('allorigins') ? 'allorigins' : 'codetabs';
+        const _customProxy = localStorage.getItem('dash_custom_proxy');
+        const _proxies = _customProxy ? [_customProxy, ...PROXIES] : PROXIES;
+        for (const p of _proxies) {
+            const pName = p.includes('allorigins') ? 'allorigins' : p.includes('codetabs') ? 'codetabs' : p.includes('corsproxy') ? 'corsproxy' : 'custom';
             try {
                 const r = await fetch(p + encodeURIComponent(url));
                 if (!r.ok) { diagLog(`fetchJSON ${pName} ${r.status}: ${short}`); continue; }
@@ -5136,6 +5147,9 @@
             }
             const membersInp = document.getElementById('cfg-members');
             if (membersInp) membersInp.value = localStorage.getItem('dash_members') || '';
+            // Custom proxy (corporate network)
+            const cpInp = document.getElementById('cfg-custom-proxy');
+            if (cpInp) cpInp.value = localStorage.getItem('dash_custom_proxy') || '';
             // F119: restore last active tab
             switchCfgTab(localStorage.getItem('dash_cfg_tab') || 'display');
         }
@@ -5330,6 +5344,13 @@
             const val = parseInt(newsFontInp.value, 10) || 100;
             localStorage.setItem('dash_news_fontsize', String(val));
             document.documentElement.style.setProperty('--news-font-scale', (val / 100).toFixed(2));
+        }
+        // Custom CORS proxy
+        const cpInp = document.getElementById('cfg-custom-proxy');
+        if (cpInp !== null) {
+            const v = cpInp.value.trim();
+            if (v && /^https:\/\//.test(v)) localStorage.setItem('dash_custom_proxy', v);
+            else localStorage.removeItem('dash_custom_proxy');
         }
         toggleConfig();
         diagLog('Config saved');
@@ -6607,14 +6628,24 @@
                 if (!refreshing) { refreshing = true; location.reload(); }
             });
             // F113: SW notifies page when network recovers — re-load stale panes
+            // F167: SW notifies page when a new version has activated
             navigator.serviceWorker.addEventListener('message', e => {
                 if (e.data?.type === 'NETWORK_BACK') {
                     diagLog('SW: network restored — refreshing stale panes');
                     safeLoad(loadWeather); safeLoad(loadHebCal); safeLoad(loadAlerts); safeLoad(loadStocks);
                 }
+                if (e.data?.type === 'VERSION_ACTIVATED') {
+                    diagLog('SW: version activated — ' + (e.data.version || ''));
+                }
             });
         }).catch(err => {
             diagLog('SW registration failed: ' + err.message);
+        });
+        // F168: Trigger periodic SW update check when the tab becomes active
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
+            }
         });
     }
     // F101: Tell the waiting SW to skip waiting, then page reloads via controllerchange
@@ -6626,6 +6657,22 @@
             });
         } else { location.reload(); }
     }
+    // F165: PWA install prompt
+    let _deferredInstall = null;
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        _deferredInstall = e;
+        if (el.btnInstall) el.btnInstall.style.display = '';
+    });
+    function triggerInstall() {
+        if (!_deferredInstall) return;
+        _deferredInstall.prompt();
+        _deferredInstall.userChoice.then(() => {
+            _deferredInstall = null;
+            if (el.btnInstall) el.btnInstall.style.display = 'none';
+        });
+    }
+    el.btnInstall?.addEventListener('click', triggerInstall);
     </script>
 </body>
 </html>

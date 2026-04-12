@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.19.0**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v5.0.0**.
 
 ## Technical Stack
 
@@ -13,7 +13,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **APIs consumed**: Open-Meteo (weather + UV + hourly + precipitation probability), Hebcal (Hebrew dates + Shabbat + holidays + Zmanim + Parasha + Daf Yomi), Yahoo Finance v8/chart (stocks + gold/silver via proxy), CoinGecko (BTC-USD fallback), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha + Parasha + Psalm + Aliyot + Daf Yomi links), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts), OpenWeatherMap AQI (free tier, no key), USGS GeoJSON (earthquakes)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 1112 tests / 60 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 1135 tests / 61 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -188,7 +188,8 @@ Every version bump must:
 | v4.17 | Sprint 14 (F131–140): Stock alert toast, portfolio P&L chip, ICS color borders, severe-weather toast, motivation share, news age tint, after-hours price, calendar conflict badge, countdown chip, print date | ✅ Done |
 | v4.18 | Sprint 15 (F141–150): Dew point tile, wind gusts, news category badges, inline news expand, daily quote lock+next, news bookmarks, weekly weather summary, stock P&L row, help overlay upgrade | ✅ Done |
 | v4.19 | Sprint 16 (F151–160): HaOmer row, precip forecast mm, 5-currency sparklines, cal today-strip, stocks summary bar, bookmark filter (B key), halacha overlay, wx min/max, card collapse, news font slider | ✅ Done |
-| v5.0 | PWA manifest + ServiceWorker full offline | 🔜 Planned |
+| v5.0 | Sprint 17 (F161–170): Corp proxy config, SW v5.0.0 + expanded API cache, icon.svg, manifest icons, PWA install prompt, offline fallback, VERSION_ACTIVATED, periodic SW update, release assets | ✅ Done |
+| v5.1 | Web Push notifications for red alerts | 🔜 Planned |
 | v5.1 | Web Push notifications for red alerts | 🔜 Planned |
 | v5.2 | Config panel for multi-city + multi-family + ICS URL | 🔜 Planned |
 | v5.3 | Family photo slideshow + transit departures | 💡 Idea |
@@ -229,6 +230,8 @@ For any new header chip (like birthday chip, next-zman chip):
 
 ### GH Issue Tracking
 - After every sprint push, create tracking issues manually: `gh issue create --label "enhancement" --title "feat: vX.Y.Z..." --body "Commit: HASH | Tag: vX.Y.Z | Tests: N/S/0"` then immediately `gh issue close N --comment "Resolved in commit HASH"`
-- Confirmed all issues #1–#56 are CLOSED as of 2026-04-12
+- Confirmed all issues #1–#57 are CLOSED as of 2026-04-12
+  - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
+  - Issue #57 = Sprint 17 / v5.0.0 (to be closed after push)
   - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
   - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.0.0] — 2026-04-12
+
+> **Sprint 17 (Features 161–170)** — Corporate network proxy config, SW v5.0.0, icon.svg, manifest icons, PWA install prompt, offline fallback, VERSION_ACTIVATED broadcast, periodic SW update, release assets expansion
+> Tests: 1135 / 61 suites / 0 failures (was 1112 / 60 suites / 0)
+
+### Added
+
+- **F161 — Custom CORS proxy for corporate/restricted networks** — `#cfg-custom-proxy` URL input in Advanced config tab; `saveConfig()` persists URL as `dash_custom_proxy`; `fetchJSON()` prepends it first in the proxy chain so corporate firewalls don’t block API calls
+- **F162 — ServiceWorker v5.0.0 bump + expanded API cache origins** — `CACHE_NAME` and `CACHE_NAME_API` bumped to `familydashboard-v5.0.0`; `API_CACHE_ORIGINS` expanded to include CORS proxy hosts (`allorigins.win`, `codetabs.com`, `corsproxy.io`), Yahoo Finance, CoinGecko, tzevaadom, and Sefaria for full offline coverage
+- **F163 — SVG app icon** — `icon.svg`: minimal 512×512 dashboard icon with 4-panel grid design (calendar, weather, stocks, news); included in APP_SHELL for offline pre-cache
+- **F164 — manifest.json icons + display_override** — icons array populated with `icon.svg` (`purpose: any`, `purpose: maskable`); `display_override: [\"window-controls-overlay\", \"standalone\"]` added for enhanced PWA titlebar
+- **F165 — PWA install prompt** — `#btn-install` button in status bar (hidden by default); `beforeinstallprompt` handler stores `_deferredInstall`; `triggerInstall()` calls `.prompt()` and cleans up on user choice; button auto-shows when browser signals installability
+- **F166 — SW offline fallback page** — `OFFLINE_HTML` constant in `sw.js` returns a minimal Hebrew RTL offline message for navigation requests when both network and cache miss; prevents browser default “Cannot connect” error page
+- **F167 — SW VERSION_ACTIVATED message** — On `activate`, SW posts `{type: \"VERSION_ACTIVATED\", version: CACHE_NAME}` to all clients; HTML logs activation to `diagLog` for debugging SW update cycles
+- **F168 — Periodic SW update check on tab focus** — `document.visibilitychange` handler calls `reg.update()` whenever the dashboard tab becomes active, ensuring stale SWs are detected promptly without a page reload
+- **F169 — Release workflow attaches all PWA assets** — `release.yml` now attaches `sw.js`, `manifest.json`, and `icon.svg` alongside `BestDashBoard.html` to every GitHub Release so users downloading a release get a fully working offline-capable PWA
+
+---
+
 ## [4.19.0] — 2026-05-12
 
 > **Sprint 16 (Features 151–160)** — Sefirat HaOmer row, precipitation forecast, Gold/Silver/GBP sparklines, calendar today-strip, stocks summary bar, bookmark filter, halacha overlay, weather min/max, card collapse, news font slider

@@ -1782,7 +1782,7 @@ describe("Status Bar", () => {
 
   it("should display current version in status bar", () => {
     assert.ok(
-      html.includes("Dashboard v4.19.0"),
+      html.includes("Dashboard v5.0.0"),
       "Missing current version in status bar",
     );
   });
@@ -6033,8 +6033,8 @@ describe("Sprint 13 Features (v4.16.0)", () => {
   });
 
   // Version
-  it("version should be v4.19.0", () => {
-    assert.ok(html.includes("Dashboard v4.19.0"), "Version should be v4.19.0");
+  it("version should be v5.0.0 (Sprint 13 suite)", () => {
+    assert.ok(html.includes("Dashboard v5.0.0"), "Version should be v5.0.0");
   });
 });
 
@@ -6262,8 +6262,8 @@ describe("Sprint 15 Features (v4.18.0)", () => {
   });
 
   // Version
-  it("version should be v4.19.0", () => {
-    assert.ok(html.includes("Dashboard v4.19.0"), "Version should be v4.19.0");
+  it("version should be v5.0.0 (Sprint 15 suite)", () => {
+    assert.ok(html.includes("Dashboard v5.0.0"), "Version should be v5.0.0");
   });
 });
 
@@ -6432,7 +6432,114 @@ describe("Sprint 16 Features (v4.19.0)", () => {
   });
 
   // Version
-  it("version should be v4.19.0", () => {
-    assert.ok(html.includes("Dashboard v4.19.0"), "Version should be v4.19.0");
+  it("version should be v5.0.0 (Sprint 16 suite)", () => {
+    assert.ok(html.includes("Dashboard v5.0.0"), "Version should be v5.0.0");
+  });
+});
+
+// Suite 61 — Sprint 17 Features (v5.0.0, F161–F170)
+// node --test --test-name-pattern="Sprint 17" tests/dashboard.test.mjs
+describe("Sprint 17 Features (v5.0.0)", () => {
+  // F161: Custom CORS proxy config
+  it("F161: #cfg-custom-proxy input exists in Advanced tab", () => {
+    assert.ok(html.includes('id="cfg-custom-proxy"'), "F161: #cfg-custom-proxy input missing");
+  });
+  it("F161: fetchJSON reads dash_custom_proxy from localStorage", () => {
+    assert.ok(scriptContent.includes("dash_custom_proxy"), "F161: dash_custom_proxy key not referenced");
+  });
+  it("F161: saveConfig handles cfg-custom-proxy", () => {
+    assert.ok(scriptContent.includes("cfg-custom-proxy"), "F161: cfg-custom-proxy not wired in saveConfig");
+  });
+
+  // F162: SW version bump + expanded API origins
+  it("F162: sw.js CACHE_NAME updated to v5.0.0", () => {
+    assert.ok(swContent.includes("familydashboard-v5.0.0"), "F162: SW CACHE_NAME not updated to v5.0.0");
+  });
+  it("F162: sw.js APP_SHELL includes icon.svg", () => {
+    assert.ok(swContent.includes("icon.svg"), "F162: icon.svg not in APP_SHELL");
+  });
+  it("F162: sw.js API_CACHE_ORIGINS includes CORS proxy origin", () => {
+    assert.ok(swContent.includes("api.allorigins.win"), "F162: allorigins not in API_CACHE_ORIGINS");
+  });
+
+  // F163: icon.svg
+  it("F163: icon.svg exists and is valid SVG", () => {
+    const iconPath = join(__dirname, "..", "icon.svg");
+    const iconContent = readFileSync(iconPath, "utf8");
+    assert.ok(iconContent.includes("<svg"), "F163: icon.svg is not valid SVG");
+  });
+  it("F163: icon.svg has viewBox attribute", () => {
+    const iconPath = join(__dirname, "..", "icon.svg");
+    const iconContent = readFileSync(iconPath, "utf8");
+    assert.ok(iconContent.includes("viewBox"), "F163: icon.svg missing viewBox attribute");
+  });
+
+  // F164: manifest.json icons + display_override
+  it("F164: manifest.json icons array is non-empty", () => {
+    const manifestPath = join(__dirname, "..", "manifest.json");
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    assert.ok(Array.isArray(manifest.icons) && manifest.icons.length > 0, "F164: manifest icons array is empty");
+  });
+  it("F164: manifest.json has display_override field", () => {
+    const manifestPath = join(__dirname, "..", "manifest.json");
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    assert.ok(Array.isArray(manifest.display_override) && manifest.display_override.length > 0, "F164: missing display_override");
+  });
+
+  // F165: PWA install prompt
+  it("F165: #btn-install element exists", () => {
+    assert.ok(html.includes('id="btn-install"'), "F165: #btn-install element missing");
+  });
+  it("F165: beforeinstallprompt event handler declared", () => {
+    assert.ok(scriptContent.includes("beforeinstallprompt"), "F165: beforeinstallprompt handler missing");
+  });
+  it("F165: _deferredInstall variable declared", () => {
+    assert.ok(scriptContent.includes("_deferredInstall"), "F165: _deferredInstall variable missing");
+  });
+  it("F165: triggerInstall function declared", () => {
+    assert.ok(scriptContent.includes("function triggerInstall("), "F165: triggerInstall function missing");
+  });
+
+  // F166: SW offline fallback
+  it("F166: sw.js defines OFFLINE_HTML fallback", () => {
+    assert.ok(swContent.includes("OFFLINE_HTML"), "F166: OFFLINE_HTML missing from sw.js");
+  });
+  it("F166: SW offline fallback has Content-Type header", () => {
+    assert.ok(swContent.includes("Content-Type"), "F166: SW offline response missing Content-Type");
+  });
+
+  // F167: VERSION_ACTIVATED broadcast
+  it("F167: sw.js broadcasts VERSION_ACTIVATED on activate", () => {
+    assert.ok(swContent.includes("VERSION_ACTIVATED"), "F167: VERSION_ACTIVATED not broadcast in sw.js");
+  });
+  it("F167: HTML handles VERSION_ACTIVATED SW message", () => {
+    assert.ok(scriptContent.includes("VERSION_ACTIVATED"), "F167: HTML does not handle VERSION_ACTIVATED");
+  });
+
+  // F168: Periodic SW update on visibility change
+  it("F168: visibilitychange triggers reg.update()", () => {
+    assert.ok(scriptContent.includes("reg.update()"), "F168: reg.update() not called on visibilitychange");
+  });
+
+  // F169: release.yml attaches all PWA assets
+  it("F169: release.yml attaches sw.js", () => {
+    const releasePath = join(__dirname, "..", ".github", "workflows", "release.yml");
+    const releaseContent = readFileSync(releasePath, "utf8");
+    assert.ok(releaseContent.includes("sw.js"), "F169: release.yml does not attach sw.js");
+  });
+  it("F169: release.yml attaches manifest.json", () => {
+    const releasePath = join(__dirname, "..", ".github", "workflows", "release.yml");
+    const releaseContent = readFileSync(releasePath, "utf8");
+    assert.ok(releaseContent.includes("manifest.json"), "F169: release.yml does not attach manifest.json");
+  });
+  it("F169: release.yml attaches icon.svg", () => {
+    const releasePath = join(__dirname, "..", ".github", "workflows", "release.yml");
+    const releaseContent = readFileSync(releasePath, "utf8");
+    assert.ok(releaseContent.includes("icon.svg"), "F169: release.yml does not attach icon.svg");
+  });
+
+  // Version
+  it("version should be v5.0.0", () => {
+    assert.ok(html.includes("Dashboard v5.0.0"), "Version should be v5.0.0");
   });
 });

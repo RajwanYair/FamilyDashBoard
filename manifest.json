@@ -3,6 +3,7 @@
     "short_name": "Dashboard",
     "description": "Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, live weather/news/stocks/calendar.",
     "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone"],
     "start_url": "./BestDashBoard.html",
     "scope": "./",
     "background_color": "#060b14",
@@ -11,7 +12,11 @@
     "lang": "he",
     "dir": "rtl",
     "categories": ["lifestyle", "utilities"],
-    "icons": [],
+    "icons": [
+        { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+        { "src": "./icon.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "maskable" },
+        { "src": "./icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
+    ],
     "shortcuts": [
         {
             "name": "לוח משפחתי",

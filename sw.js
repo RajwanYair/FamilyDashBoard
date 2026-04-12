@@ -1,23 +1,38 @@
-/* FamilyDashBoard ServiceWorker — v4.15.0
+/* FamilyDashBoard ServiceWorker — v5.0.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
- * F113: SW posts NETWORK_BACK message to clients on network recovery */
+ * F113: SW posts NETWORK_BACK message to clients on network recovery
+ * F162: CACHE_NAME bumped to v5.0.0; CORS proxy + stock origins added to API cache
+ * F163: icon.svg added to APP_SHELL
+ * F166: OFFLINE_RESPONSE fallback for navigation requests with no cache
+ * F167: VERSION_ACTIVATED broadcast to all clients on activate */
 
-const CACHE_NAME     = "familydashboard-v4.15.0";
-const CACHE_NAME_API = "familydashboard-api-v4.15.0";
+const CACHE_NAME     = "familydashboard-v5.0.0";
+const CACHE_NAME_API = "familydashboard-api-v5.0.0";
 // F111: include sw.js itself in app shell pre-cache
-const APP_SHELL = ["./BestDashBoard.html", "./manifest.json", "./sw.js"];
+const APP_SHELL = ["./BestDashBoard.html", "./manifest.json", "./sw.js", "./icon.svg"];
 
-// F112: API origins to cache for offline fallback
+// F162: API origins to cache for offline fallback (direct APIs + CORS proxies)
 const API_CACHE_ORIGINS = [
   "api.open-meteo.com",
   "www.hebcal.com",
   "open.er-api.com",
   "exchangerate-api.com",
+  // F162 additions — CORS proxies & data providers
+  "api.allorigins.win",
+  "api.codetabs.com",
+  "corsproxy.io",
+  "query1.finance.yahoo.com",
+  "api.coingecko.com",
+  "tzevaadom.co.il",
+  "sefaria.org",
 ];
 
 // F113: track network failure state to detect recovery
 let _networkWasDown = false;
+
+// F166: Minimal offline fallback page for navigation requests with no cache
+const OFFLINE_HTML = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>לוח משפחתי - מצב לא מקוון</title><style>body{background:#060b14;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui}</style></head><body><div style="text-align:center"><div style="font-size:4em">📺</div><h1>לוח משפחתי</h1><p>אין חיבור לאינטרנט. הנתונים יוצגו ברגע שהחיבור יחזור.</p></div></body></html>`;
 
 // ── Install: pre-cache the app shell ──────────────────────────────────────
 self.addEventListener("install", (event) => {
@@ -49,7 +64,13 @@ self.addEventListener("activate", (event) => {
             .map((k) => caches.delete(k)),
         ),
       )
-      .then(() => self.clients.claim()),
+      // F167: tell all clients this version has activated
+      .then(() => {
+        self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+          clients.forEach((c) => c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }));
+        });
+        return self.clients.claim();
+      }),
   );
 });
 
@@ -113,7 +134,7 @@ self.addEventListener("fetch", (event) => {
           })
           .catch(() => null);
         // Return cached immediately if available; update cache in background
-        return cached || fresh;
+        return cached || fresh || new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       }),
     ),
   );
