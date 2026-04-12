@@ -7,7 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [4.16.0] — 2026-05-03
+## [4.17.0] — 2026-05-04
+
+> **Sprint 14 (Features 131–140)** — Stock alert toasts, portfolio P&L header chip, calendar ICS source coloring, severe weather toast, motivation share button, news age tinting, after-hours prices, calendar conflict indicator, custom countdown chip, print mode improvements
+> Tests: 1048 / 58 suites / 0 failures (was 1014 / 57 suites / 0)
+
+### Added
+
+- **F131 — Stock alert toast + desktop Notification** — `checkStockAlerts()` now deduplicates via `_firedStockAlerts` Set (session-scoped); fires `showToast()` and `new Notification()` with Hebrew RTL body on first crossing of above/below thresholds; clears fired key when price returns inside safe zone
+- **F132 — Portfolio P&L header chip** — `<span id="header-portfolio-pl">` in header-right shows current portfolio total P&L percentage; `.pl-gain` (green) / `.pl-loss` (red) CSS classes; `updatePortfolioTotal()` now writes to chip after each stock refresh
+- **F133 — Calendar ICS source color border** — `parseICS(text, icsIdx=0)` stores source index on each event; `loadCalendarExtra()` passes icsIdx 2/3; `renderCalendar()` sets `row.dataset.ics` for CSS to apply `border-right: 3px solid` in blue/green/orange per source
+- **F134 — Severe weather toast on state change** — `checkSevereWeather()` tracks `_lastSevereMsg`; fires `showToast()` and desktop `Notification` only on first occurrence of a new severe weather code, not every refresh; clears state when conditions improve
+- **F135 — Motivation share button** — `<button id="moti-share-btn">📤 שתף</button>` added to motivation card; `loadMotivation()` wires `onclick` after each rotation; uses `navigator.share()` on supported devices, falls back to `navigator.clipboard.writeText()` with a copy toast
+- **F136 — News article age tinting** — `renderNews()` assigns `.stale-half` (>6h, opacity 0.80), `.stale-day` (>12h, opacity 0.60), `.stale-old` (>24h, opacity 0.35) CSS classes to original items (not clones) based on `pubDate` age
+- **F137 — After-hours / pre-market secondary price line** — `renderStock()` appends a `<div class="stk-after-price">` to `.stk-vals` showing `postMarketPrice` or `preMarketPrice` with labeled change percentage when market is not in REGULAR state; colored green/red by direction
+- **F138 — Calendar conflict indicator** — `renderCalendar()` builds a `conflictIdx` Set of overlapping timed events before the render loop; conflicting events receive `.cal-event.has-conflict` class which adds `⚠ ` before the title via CSS `::before` pseudo-element
+- **F139 — Custom countdown chip in header** — `<span id="header-countdown">` (purple pill) shows days remaining to a user-configured event; `updateCountdownChip(now)` called every minute from `tickClock()`; configured via new "⏳ ספירה לאחור" fields in the Advanced config tab (`dash_countdown_date` + `dash_countdown_label`)
+- **F140 — Print mode improvements** — `@media print` now hides `.clone`, `#toast`, `#night-dim`, `#print-datetime`, and `#config-overlay`; `<div id="print-datetime">` shows print timestamp; `initPrintDate()` wires the `beforeprint` event; called from `init()`
+
+### Fixed
+
+- **Corrupted duplicate block in `init()`** — A garbled duplicate of the event-listener and loader setup inside init was removed; `initPrintDate()` and `updateCountdownChip()` are now correctly called at the end of init
+
+
 
 > **Sprint 13 (Features 121–130)** — Toast system, UV pill, rain-% labels, calendar reminders, news translate, earthquake & halacha deeplinks, chart view toggle, search highlight, diag log toast feedback
 > Tests: 1014 / 57 suites / 0 failures (was 985 / 56 suites / 0)

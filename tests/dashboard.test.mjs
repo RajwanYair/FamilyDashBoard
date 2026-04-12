@@ -833,7 +833,7 @@ describe("Responsive Layout", () => {
 describe("Calendar Card", () => {
   // Extract parseICS from script for isolated testing
   const parseICSMatch = scriptContent.match(
-    /function parseICS\(text\)\s*\{([\s\S]*?)\n    \}/,
+    /function parseICS\(text[^)]*\)\s*\{([\s\S]*?)\n    \}/,
   );
 
   it("should have parseICS function", () => {
@@ -1780,10 +1780,10 @@ describe("Status Bar", () => {
     assert.ok(html.includes('class="status-bar"'), "Missing status-bar");
   });
 
-  it("should display version v4.14.0", () => {
+  it("should display current version in status bar", () => {
     assert.ok(
-      html.includes("Dashboard v4.16.0"),
-      "Missing version v4.14.0 in status bar",
+      html.includes("Dashboard v4.17.0"),
+      "Missing current version in status bar",
     );
   });
 
@@ -6033,7 +6033,130 @@ describe("Sprint 13 Features (v4.16.0)", () => {
   });
 
   // Version
-  it("version should be v4.16.0", () => {
-    assert.ok(html.includes("Dashboard v4.16.0"), "Version should be v4.16.0");
+  it("version should be v4.17.0", () => {
+    assert.ok(html.includes("Dashboard v4.17.0"), "Version should be v4.17.0");
+  });
+});
+
+// Suite 58 — Sprint 14 Features (v4.17.0, F131–F140)
+// node --test --test-name-pattern="Sprint 14" tests/dashboard.test.mjs
+describe("Sprint 14 Features (v4.17.0)", () => {
+  // F131: Stock alert toast + Notification (dedup set)
+  it("F131: _firedStockAlerts Set declared", () => {
+    assert.ok(html.includes("_firedStockAlerts"), "Missing _firedStockAlerts dedup set");
+  });
+  it("F131: checkStockAlerts fires showToast on alert-above", () => {
+    assert.match(html, /showToast.*F131|F131.*showToast/, "F131: showToast not wired in checkStockAlerts");
+  });
+  it("F131: checkStockAlerts fires desktop Notification", () => {
+    assert.ok(html.includes("Notification.permission === 'granted'"), "F131: desktop Notification check missing");
+  });
+
+  // F132: Portfolio P&L header chip
+  it("F132: #header-portfolio-pl element exists", () => {
+    assert.ok(html.includes('id="header-portfolio-pl"'), "Missing #header-portfolio-pl element");
+  });
+  it("F132: .pl-gain CSS rule exists", () => {
+    assert.match(html, /\.pl-gain\s*\{/, "Missing .pl-gain CSS rule (F132)");
+  });
+  it("F132: updatePortfolioTotal writes to headerPortfolioPl", () => {
+    assert.ok(html.includes("headerPortfolioPl"), "F132: headerPortfolioPl not referenced in JS");
+  });
+
+  // F133: Calendar ICS source bracket color
+  it("F133: cal-event[data-ics='1'] CSS rule exists", () => {
+    assert.match(html, /\.cal-event\[data-ics="1"\]/, "Missing ICS-1 CSS border rule (F133)");
+  });
+  it("F133: cal-event[data-ics='2'] CSS rule exists", () => {
+    assert.match(html, /\.cal-event\[data-ics="2"\]/, "Missing ICS-2 CSS border rule (F133)");
+  });
+  it("F133: row.dataset.ics is set in renderCalendar", () => {
+    assert.ok(html.includes("row.dataset.ics"), "F133: ICS source badge not set on event row");
+  });
+
+  // F134: Severe weather toast on state change
+  it("F134: _lastSevereMsg variable declared", () => {
+    assert.ok(html.includes("_lastSevereMsg"), "Missing _lastSevereMsg state variable (F134)");
+  });
+  it("F134: checkSevereWeather calls showToast on new event", () => {
+    const offset = html.indexOf("function checkSevereWeather");
+    const slice = html.slice(offset, offset + 700);
+    assert.ok(slice.includes("showToast"), "F134: severe weather toast not wired");
+  });
+
+  // F135: Motivation share button
+  it("F135: #moti-share-btn element exists", () => {
+    assert.ok(html.includes('id="moti-share-btn"'), "Missing #moti-share-btn element (F135)");
+  });
+  it("F135: navigator.share used in loadMotivation", () => {
+    assert.ok(html.includes("navigator.share"), "F135: navigator.share not used in share logic");
+  });
+
+  // F136: News age tinting CSS classes
+  it("F136: .stale-half CSS rule exists", () => {
+    assert.match(html, /\.rss-item\.stale-half\s*\{/, "Missing .rss-item.stale-half CSS (F136)");
+  });
+  it("F136: .stale-day CSS rule exists", () => {
+    assert.match(html, /\.rss-item\.stale-day\s*\{/, "Missing .rss-item.stale-day CSS (F136)");
+  });
+  it("F136: .stale-old CSS rule exists", () => {
+    assert.match(html, /\.rss-item\.stale-old\s*\{/, "Missing .rss-item.stale-old CSS (F136)");
+  });
+  it("F136: age tinting applied in renderNews", () => {
+    assert.ok(html.includes("stale-old"), "F136: stale-old class not assigned in renderNews");
+  });
+
+  // F137: After-hours / pre-market secondary price line
+  it("F137: .stk-after-price CSS rule exists", () => {
+    assert.match(html, /\.stk-after-price\s*\{/, "Missing .stk-after-price CSS (F137)");
+  });
+  it("F137: postMarketPrice referenced in renderStock", () => {
+    assert.ok(html.includes("postMarketPrice"), "F137: postMarketPrice not used in renderStock");
+  });
+
+  // F138: Calendar conflict indicator
+  it("F138: has-conflict CSS rule exists", () => {
+    assert.match(html, /\.cal-event\.has-conflict/, "Missing .cal-event.has-conflict CSS (F138)");
+  });
+  it("F138: conflictIdx Set built in renderCalendar", () => {
+    assert.ok(html.includes("conflictIdx"), "F138: conflictIdx Set not in renderCalendar");
+  });
+
+  // F139: Custom countdown header chip
+  it("F139: #header-countdown element exists", () => {
+    assert.ok(html.includes('id="header-countdown"'), "Missing #header-countdown element (F139)");
+  });
+  it("F139: updateCountdownChip function declared", () => {
+    assert.ok(html.includes("function updateCountdownChip"), "F139: updateCountdownChip function not found");
+  });
+  it("F139: dash_countdown_date localStorage key used", () => {
+    assert.ok(html.includes("dash_countdown_date"), "F139: countdown date localStorage key missing");
+  });
+  it("F139: cfg-countdown-date input in config panel", () => {
+    assert.ok(html.includes('id="cfg-countdown-date"'), "F139: countdown date config input missing");
+  });
+  it("F139: updateCountdownChip called from tickClock", () => {
+    const offset = html.indexOf("function tickClock");
+    const slice = html.slice(offset, offset + 1300);
+    assert.ok(slice.includes("updateCountdownChip"), "F139: updateCountdownChip not called in tickClock");
+  });
+
+  // F140: Print mode improvements
+  it("F140: #print-datetime element exists", () => {
+    assert.ok(html.includes('id="print-datetime"'), "Missing #print-datetime element (F140)");
+  });
+  it("F140: initPrintDate function declared", () => {
+    assert.ok(html.includes("function initPrintDate"), "F140: initPrintDate function not found");
+  });
+  it("F140: beforeprint event wired for datetime", () => {
+    assert.ok(html.includes("beforeprint"), "F140: beforeprint event listener not found");
+  });
+  it("F140: @media print hides .clone elements", () => {
+    assert.match(html, /@media print[^}]*\{[\s\S]{0,800}\.clone/, "F140: @media print does not hide .clone");
+  });
+
+  // Version
+  it("version should be v4.17.0", () => {
+    assert.ok(html.includes("Dashboard v4.17.0"), "Version should be v4.17.0");
   });
 });

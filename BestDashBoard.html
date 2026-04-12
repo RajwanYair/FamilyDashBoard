@@ -1234,6 +1234,41 @@
         #wx-chart-toggle { font-size: 0.62em; padding: 1px 6px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; float: left; margin: 2px 0; }
         /* F129 — Search keyword highlight */
         .rss-highlight { background: rgba(251,191,36,0.3); border-radius: 2px; padding: 0 1px; color: var(--text-primary); font-weight: 600; }
+
+        /* ── Sprint 14 CSS (F131–F140) ── */
+        /* F131 — Stock alert notification indicators */
+        .stk.alert-above { box-shadow: 0 0 0 1.5px #34d399 inset, 0 0 8px rgba(52,211,153,0.25); }
+        .stk.alert-below { box-shadow: 0 0 0 1.5px #f87171 inset, 0 0 8px rgba(248,113,113,0.25); }
+        /* F132 — Portfolio P&L header chip */
+        #header-portfolio-pl { font-size: 0.68em; border-radius: 10px; padding: 2px 7px; font-weight: 700; white-space: nowrap; display: none; cursor: default; }
+        #header-portfolio-pl.pl-gain { background: rgba(52,211,153,0.16); color: var(--positive); }
+        #header-portfolio-pl.pl-loss { background: rgba(248,113,113,0.16); color: var(--negative); }
+        /* F133 — Calendar ICS source color badges */
+        .cal-event[data-ics="1"] { border-right: 3px solid #60a5fa; }
+        .cal-event[data-ics="2"] { border-right: 3px solid #34d399; }
+        .cal-event[data-ics="3"] { border-right: 3px solid #f97316; }
+        /* F135 — Motivation share button */
+        #moti-share-btn { font-size: 0.62em; padding: 1px 7px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; margin-top: 6px; }
+        #moti-share-btn:hover { color: var(--accent); }
+        /* F136 — News article age tinting */
+        .rss-item.stale-half { opacity: 0.80; }
+        .rss-item.stale-day  { opacity: 0.60; }
+        .rss-item.stale-old  { opacity: 0.35; }
+        /* F137 — Stocks after/pre-market price line */
+        .stk-after-price { font-size: 0.62em; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
+        .stk-after-price .after-lbl { opacity: 0.7; margin-left: 2px; }
+        /* F138 — Calendar conflict indicator */
+        .cal-event.has-conflict .cal-event-title::before { content: '⚠ '; color: var(--warning); font-size: 0.8em; }
+        /* F139 — Custom countdown chip */
+        #header-countdown { font-size: 0.68em; background: rgba(192,132,252,0.14); color: var(--purple); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: default; font-weight: 600; }
+        /* F140 — Print mode improvements */
+        @media print {
+            .clone, #toast, #night-dim, #pwa-install-btn, #refresh-toast, .offline-banner,
+            #sw-update-banner, #news-search-wrap, .rss-translate-btn, .news-share,
+            #wx-chart-toggle, .cfg-gear-btn, .screen-mode { display: none !important; }
+            #print-datetime { display: block !important; font-size: 0.75em; color: #666; padding: 2px 8px; }
+        }
+        #print-datetime { display: none; }
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
@@ -1253,6 +1288,8 @@
     <div class="offline-banner" id="offline-banner">⚠️ אין חיבור לאינטרנט — מציג נתונים מהמטמון</div>
     <!-- F121: Toast notification element -->
     <div id="toast" role="status" aria-live="polite"></div>
+    <!-- F140: Print date/time (hidden until @media print) -->
+    <div id="print-datetime"></div>
     <div id="shabbat-mode-banner">🕯️ שבת שלום 🕯️</div>
     <!-- Feature 101: SW Update notification banner -->
     <div id="sw-update-banner">🆕 גרסה חדשה זמינה — <button id="sw-update-reload-btn" onclick="swUpdateReload()">↻ עדכן עכשיו</button></div>
@@ -1414,6 +1451,15 @@
             <span class="cfg-label">🧹 משימות בית (JSON)</span>
             <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;}]" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
           </div>
+          <!-- F139: Custom countdown chip config -->
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ אירוע ספירה לאחור — תאריך</span>
+            <input class="cfg-input" id="cfg-countdown-date" type="date" style="direction:ltr;width:140px" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ אירוע ספירה לאחור — שם</span>
+            <input class="cfg-input" id="cfg-countdown-label" type="text" placeholder="חופשה / בר מצווה / ..." />
+          </div>
           <!-- F107: Settings export/import -->
           <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
             <button class="cfg-btn" onclick="exportSettings()" style="font-size:0.82em">📥 ייצוא הגדרות</button>
@@ -1489,6 +1535,10 @@
                 <span id="header-birthday-chip"></span>
                 <!-- Feature 109: Next Zman header indicator -->
                 <div id="header-next-zman"></div>
+                <!-- F132: Portfolio total P&L header chip -->
+                <span id="header-portfolio-pl" title="סה״כ תיק - לחץ לפרט">--</span>
+                <!-- F139: Custom event countdown chip -->
+                <span id="header-countdown" title="ספירה אישית">--</span>
                 <!-- F114: Notification permission bell chip -->
                 <span id="notif-bell" title="הפעל התראות" onclick="requestNotifPermission()">🔔 הפעל התראות</span>
             </div>
@@ -1673,6 +1723,8 @@
                   <div class="moti-text" id="moti-text">טוען השראה...</div>
                   <div class="moti-author" id="moti-author"></div>
                   <div class="moti-src" id="moti-src"></div>
+                  <!-- F135: Quote share button -->
+                  <button id="moti-share-btn" title="שתף ציטוט">📤 שתף</button>
                 </div>
               </div>
             </div>
@@ -1687,7 +1739,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.16.0 — משפחת רגואן</span>
+            <span>Dashboard v4.17.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1703,7 +1755,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.16.0 — 3-Column Layout · Hebrew Calendar Card · 130 Sprint Features · 985 Tests
+       FAMILY DASHBOARD v4.17.0 — 3-Column Layout · Hebrew Calendar Card · 140 Sprint Features · 985 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -2128,6 +2180,10 @@
         notifBell: $('notif-bell'),           // F114
         alertsBadge: $('alerts-badge-count'), // F116
         wxChartToggle: $('wx-chart-toggle'),  // F128
+        headerPortfolioPl: $('header-portfolio-pl'), // F132
+        headerCountdown: $('header-countdown'),       // F139
+        motiShareBtn: $('moti-share-btn'),            // F135
+        printDatetime: $('print-datetime'),           // F140
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -2184,6 +2240,7 @@
         updateProgress(now);
         checkElecPeak(); // Feature 22: check IEC peak tariff hours every minute
         updateNextZman(); // F109: refresh next-zman header chip each minute
+        updateCountdownChip(now); // F139: custom event countdown
     }
 
     // ── Hebrew Date + Shabbat ──
@@ -2762,6 +2819,36 @@
 
     // ── Sprint 13 Functions (F121–F130) ───────────────────────────────────────────
 
+    // ── Sprint 14 Functions (F131–F140) ───────────────────────────────────────────
+
+    // F139: Custom event countdown header chip
+    function updateCountdownChip(now) {
+        if (!el.headerCountdown) return;
+        const dateStr = localStorage.getItem('dash_countdown_date');
+        const label = (localStorage.getItem('dash_countdown_label') || '').trim();
+        if (!dateStr || !label) { el.headerCountdown.style.display = 'none'; return; }
+        const target = new Date(dateStr + 'T00:00:00');
+        if (isNaN(target.getTime())) { el.headerCountdown.style.display = 'none'; return; }
+        const diffMs = target.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffMs / 86400000);
+        if (diffDays < -7) { el.headerCountdown.style.display = 'none'; return; } // hide a week after
+        const text = diffDays > 0 ? `⏳ ${diffDays} ${diffDays === 1 ? 'יום' : 'ימים'} ל${label}`
+                   : diffDays === 0 ? `🎉 היום: ${label}!`
+                   : `✅ ${label} (לפני ${Math.abs(diffDays)} ימים)`;
+        el.headerCountdown.textContent = text;
+        el.headerCountdown.style.display = '';
+    }
+
+    // F140: Populate print date element before window.print fires
+    function initPrintDate() {
+        window.addEventListener('beforeprint', () => {
+            if (el.printDatetime) {
+                const now = new Date();
+                el.printDatetime.textContent = 'הדפסה: ' + now.toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Jerusalem' });
+            }
+        });
+    }
+
     // F121: Toast notification system
     let _toastTimer = null;
     function showToast(msg, durationMs = 3000) {
@@ -2907,6 +2994,13 @@
             if (it.pubDate) {
                 const age = now - new Date(it.pubDate).getTime();
                 if (age < 1800000) div.dataset.age = 'fresh';
+                // F136: age-based opacity tinting for stale news
+                if (idx < list.length) {
+                    const ageH = age / 3600000;
+                    if (ageH >= 24) div.classList.add('stale-old');
+                    else if (ageH >= 12) div.classList.add('stale-day');
+                    else if (ageH >= 6)  div.classList.add('stale-half');
+                }
             }
             const tm = document.createElement('span'); tm.className = 'rss-time';
             if (it.pubDate) {
@@ -3280,6 +3374,21 @@
             checkStockAlerts(sym, cur);
             updatePortfolioTotal();
         }
+        // F137: after-hours / pre-market secondary price line
+        const postPrice = meta.postMarketPrice;
+        const postChg = meta.postMarketChangePercent;
+        const prePrice = meta.preMarketPrice;
+        const preChg = meta.preMarketChangePercent;
+        let afterEl = blk.querySelector('.stk-after-price');
+        const extPrice = postPrice || prePrice;
+        const extChg = postChg ?? preChg;
+        const extLbl = postPrice ? '(after)' : prePrice ? '(pre)' : null;
+        if (extPrice && extLbl) {
+            if (!afterEl) { afterEl = document.createElement('div'); afterEl.className = 'stk-after-price'; blk.querySelector('.stk-vals')?.appendChild(afterEl); }
+            const sign = (extChg ?? 0) >= 0 ? '+' : '';
+            afterEl.innerHTML = `${fmtPrice(extPrice, sym)} <span class="after-lbl">${extLbl} ${isFinite(extChg) ? sign + extChg.toFixed(2) + '%' : ''}</span>`;
+            afterEl.style.color = !isFinite(extChg) || Math.abs(extChg) < 0.1 ? '' : extChg > 0 ? '#34d399' : '#f87171';
+        } else if (afterEl) { afterEl.remove(); }
         // Feature 61: Relative volume badge
         const regVol = meta.regularMarketVolume;
         const avgVol = meta.averageDailyVolume3Month || meta.averageDailyVolume10Day;
@@ -3571,25 +3680,25 @@
             if (!url) continue;
             const key = `cal-ics-${i}`;
             const fresh = cGet(key, 900000);
-            if (fresh) { extra.push(...parseICS(fresh)); continue; }
-            const stale = cGetStale(key); if (stale) extra.push(...parseICS(stale));
+            if (fresh) { extra.push(...parseICS(fresh, i)); continue; } // F133: pass icsIdx
+            const stale = cGetStale(key); if (stale) extra.push(...parseICS(stale, i));
             try {
                 const r = await fetchWithTimeout(url, 10000);
                 if (r.ok) {
                     const t = await r.text();
-                    if (t.includes('BEGIN:VCALENDAR')) { cSet(key, t); extra.push(...parseICS(t)); diagLog(`cal-extra-${i} OK`); }
+                    if (t.includes('BEGIN:VCALENDAR')) { cSet(key, t); extra.push(...parseICS(t, i)); diagLog(`cal-extra-${i} OK`); }
                 }
             } catch (e) { diagLog(`cal-extra-${i} ERR: ` + e.message); }
         }
         if (!extra.length) return;
-        const primary = parseICS(cGetStale('cal-ics') || '');
+        const primary = parseICS(cGetStale('cal-ics') || '', 1); // F133: primary = icsIdx 1
         const merged = [...primary, ...extra].sort((a, b) => a.start - b.start);
         renderCalendar(merged);
         updateTodayEventCount();
         diagLog(`cal-extra merged: ${extra.length} extra events`);
     }
 
-    function parseICS(text) {
+    function parseICS(text, icsIdx = 0) {
         const events = [];
         const blocks = text.split('BEGIN:VEVENT');
         for (let i = 1; i < blocks.length; i++) {
@@ -3621,7 +3730,7 @@
                 if (!isNaN(parsed.getTime())) end = parsed;
             }
             if (isNaN(start.getTime())) continue;
-            events.push({ start, end, allDay, summary, location });
+            events.push({ start, end, allDay, summary, location, icsIdx }); // F133: tag source
         }
         return events;
     }
@@ -3637,6 +3746,16 @@
         const upcoming = events
             .filter(e => e.start >= todayMidnight && e.start <= cutoff)
             .sort((a, b) => a.start - b.start);
+
+        // F138: detect overlapping non-all-day events
+        const conflictIdx = new Set();
+        const timed = upcoming.filter(e => !e.allDay && e.end);
+        for (let i = 0; i < timed.length; i++) {
+            for (let j = i + 1; j < timed.length; j++) {
+                if (timed[j].start >= timed[i].end) break;
+                conflictIdx.add(timed[i]); conflictIdx.add(timed[j]);
+            }
+        }
 
         const frag = document.createDocumentFragment();
         if (!upcoming.length) {
@@ -3660,19 +3779,14 @@
                     frag.appendChild(hdr);
                 }
                 const row = document.createElement('div');
-                row.className = 'cal-event';
+                // F133: ICS source color border; F138: conflict warning
+                row.className = 'cal-event' + (conflictIdx.has(ev) ? ' has-conflict' : '');
+                if (ev.icsIdx) row.dataset.ics = String(ev.icsIdx);
                 const timeEl = document.createElement('div');
                 timeEl.className = 'cal-event-time';
                 timeEl.textContent = ev.allDay
                     ? 'כל היום'
                     : ev.start.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
-                // Feature 47: show end time + duration
-                if (!ev.allDay && ev.end && ev.end > ev.start) {
-                    const endStr = ev.end.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
-                    const durMin = Math.round((ev.end - ev.start) / 60000);
-                    const durStr = durMin >= 60 ? `${Math.floor(durMin/60)}:${String(durMin%60).padStart(2,'0')}h` : `${durMin}m`;
-                    timeEl.textContent += `–${endStr} (${durStr})`;
-                }
                 // Feature 47: show end time + duration
                 if (!ev.allDay && ev.end && ev.end > ev.start) {
                     const endStr = ev.end.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
@@ -3819,6 +3933,17 @@
             el.motiText.textContent = m.t;
             el.motiAuthor.textContent = m.a ? '— ' + m.a : '';
             el.motiSrc.textContent = '';
+        }
+        // F135: Wire share button to current quote
+        if (el.motiShareBtn) {
+            el.motiShareBtn.onclick = () => {
+                const text = m.t + (m.a ? ' — ' + m.a : '');
+                if (navigator.share) {
+                    navigator.share({ text }).catch(() => {});
+                } else {
+                    navigator.clipboard?.writeText(text).then(() => showToast('📋 הציטוט הועתק!')).catch(() => {});
+                }
+            };
         }
         setSync('moti', 'success');
     }
@@ -4558,6 +4683,7 @@
 
     // Feature 32: Extreme Weather Alert Banner
     const SEVERE_WX = { 82: '⛈ גשם עז מאוד', 95: '⛈ סופת רעמים', 96: '⛈ סופה עם ברד', 99: '⛈ סופת רעמים קשה' };
+    let _lastSevereMsg = null; // F134: track to avoid repeated toasts
     function checkSevereWeather(code) {
         const banner = document.getElementById('wx-alert-banner');
         if (!banner) return;
@@ -4565,8 +4691,18 @@
         if (msg) {
             banner.textContent = msg;
             banner.classList.add('visible');
+            // F134: toast + Notification only on new severe event (not every refresh)
+            if (msg !== _lastSevereMsg) {
+                _lastSevereMsg = msg;
+                showToast('⛈ ' + msg, 6000);
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    try { new Notification('⛈ מזג אוויר קיצוני', { body: msg, dir: 'rtl', lang: 'he', icon: './favicon.ico' }); } catch (_) {}
+                }
+                diagLog(`F134: severe weather notification: ${msg}`);
+            }
         } else {
             banner.classList.remove('visible');
+            _lastSevereMsg = null;
         }
     }
 
@@ -4622,6 +4758,11 @@
             if (rtAlertsInput) rtAlertsInput.value = _alertRealtime ? 'on' : 'off';
             if (transitStopInput) transitStopInput.value = localStorage.getItem('dash_transit_stop') || '';
             if (choresInput) choresInput.value = localStorage.getItem('dash_chores') || '';
+            // F139: countdown chip config
+            const ctDateInp = document.getElementById('cfg-countdown-date');
+            const ctLblInp  = document.getElementById('cfg-countdown-label');
+            if (ctDateInp) ctDateInp.value = localStorage.getItem('dash_countdown_date') || '';
+            if (ctLblInp)  ctLblInp.value  = localStorage.getItem('dash_countdown_label') || '';
             // Sprint 11: secondary ICS URLs (F102)
             const ics2Input2 = document.getElementById('cfg-ics-url-2');
             const ics3Input2 = document.getElementById('cfg-ics-url-3');
@@ -4784,6 +4925,18 @@
             if (val) { try { JSON.parse(val); localStorage.setItem('dash_chores', val); } catch {} }
             else localStorage.removeItem('dash_chores');
         }
+        // F139: Save countdown chip config
+        const ctDateInp = document.getElementById('cfg-countdown-date');
+        const ctLblInp  = document.getElementById('cfg-countdown-label');
+        if (ctDateInp) {
+            const v = ctDateInp.value;
+            if (v) localStorage.setItem('dash_countdown_date', v); else localStorage.removeItem('dash_countdown_date');
+        }
+        if (ctLblInp) {
+            const v = ctLblInp.value.trim();
+            if (v) localStorage.setItem('dash_countdown_label', v); else localStorage.removeItem('dash_countdown_label');
+        }
+        updateCountdownChip(new Date()); // refresh chip immediately
         // Sprint 11: secondary ICS calendar URLs (F102)
         for (let i = 2; i <= 3; i++) {
             const inp = document.getElementById(`cfg-ics-url-${i}`);
@@ -5232,6 +5385,13 @@
         pnlEl.textContent = `${sign}$${Math.abs(pnl).toFixed(0)} (${sign}${pct.toFixed(1)}%)`;
         pnlEl.className = pnl >= 0 ? 'gain' : 'loss';
         row.style.display = '';
+        // F132: update header portfolio P&L chip
+        if (el.headerPortfolioPl) {
+            const chipSign = pnl >= 0 ? '+' : '';
+            el.headerPortfolioPl.textContent = `💼 ${chipSign}${pct.toFixed(1)}%`;
+            el.headerPortfolioPl.className = pnl >= 0 ? 'pl-gain' : 'pl-loss';
+            el.headerPortfolioPl.style.display = '';
+        }
     }
 
     // Feature 53: Daf Yomi Sefaria Deep Link
@@ -5276,6 +5436,8 @@
     function _getStockAlerts() {
         try { return JSON.parse(localStorage.getItem('dash_stock_alerts') || '{}'); } catch { return {}; }
     }
+    // F131: Track fired alerts per session so we don't spam on every refresh
+    const _firedStockAlerts = new Set();
     function checkStockAlerts(sym, price) {
         const alerts = _getStockAlerts();
         const rule = alerts[sym];
@@ -5283,12 +5445,35 @@
         const blk = document.querySelector(`.stk[data-symbol="${CSS.escape(sym)}"]`);
         if (!blk) return;
         blk.classList.remove('alert-above', 'alert-below');
+        let fired = false;
         if (rule.above != null && price >= parseFloat(rule.above)) {
             blk.classList.add('alert-above');
             playAlertBeep(1046, 0.12, 0.2);  // C6 — price above target
+            const key = sym + ':above:' + Math.floor(price / 10);
+            if (!_firedStockAlerts.has(key)) {
+                _firedStockAlerts.add(key);
+                fired = true;
+                const msg = `📈 ${sym} עלה מעל ${fmtPrice(rule.above, sym)}`;
+                showToast(msg, 5000); // F131
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    try { new Notification('⬆️ ' + sym, { body: `המחיר ${fmtPrice(price, sym)} חצה יעד ${fmtPrice(rule.above, sym)}`, dir: 'rtl', lang: 'he' }); } catch (_) {}
+                }
+                diagLog(`F131: stock alert above fired ${sym}=${price}`);
+            }
         } else if (rule.below != null && price <= parseFloat(rule.below)) {
             blk.classList.add('alert-below');
             playAlertBeep(330, 0.12, 0.2);   // E4 — price below target
+            const key = sym + ':below:' + Math.floor(price / 10);
+            if (!_firedStockAlerts.has(key)) {
+                _firedStockAlerts.add(key);
+                fired = true;
+                const msg = `📉 ${sym} ירד מתחת ל-${fmtPrice(rule.below, sym)}`;
+                showToast(msg, 5000); // F131
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    try { new Notification('⬇️ ' + sym, { body: `המחיר ${fmtPrice(price, sym)} חצה יעד ${fmtPrice(rule.below, sym)}`, dir: 'rtl', lang: 'he' }); } catch (_) {}
+                }
+                diagLog(`F131: stock alert below fired ${sym}=${price}`);
+            }
         }
     }
 
@@ -5779,22 +5964,10 @@
             // F102: load secondary calendar sources if configured
             if (localStorage.getItem('dash_ics_url_2') || localStorage.getItem('dash_ics_url_3')) {
                 safeLoad(loadCalendarExtra);
-            }ById('config-overlay')?.addEventListener('click', e => { if (e.target === document.getElementById('config-overlay')) toggleConfig(); });
-        // Wire °C/°F toggle to temperature elements
-        el.topTemp?.addEventListener('click', toggleTempUnit);
-        el.wxTemp?.addEventListener('click', toggleTempUnit);
-        el.helpOverlay?.addEventListener('click', e => { if (e.target === el.helpOverlay) toggleHelp(); });
-
-        const loaders = [loadHebrewDate, loadShabbat, loadHolidays, loadOmer, loadWeather,
-                         loadNews, loadAllStocks, loadCurrency, loadAlerts, loadMotivation, loadCalendar, loadHalacha, loadHebCal, loadZmanim, loadAQI, loadPsalm, loadEarthquakes];
-        runConcurrent(loaders.map(fn => () => safeLoad(fn))).then(() => {
-            diagLog('All loaders settled');
-            stampRefresh();
-            // F102: load secondary calendar sources if configured
-            if (localStorage.getItem('dash_ics_url_2') || localStorage.getItem('dash_ics_url_3')) {
-                safeLoad(loadCalendarExtra);
             }
         });
+        initPrintDate();               // F140: wire beforeprint event for print datetime
+        updateCountdownChip(new Date()); // F139: initial render of countdown chip
     }
 
     // Real-time (1min) — clock has no seconds, minute tick is sufficient
