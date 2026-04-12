@@ -1268,6 +1268,39 @@
             #wx-chart-toggle, .cfg-gear-btn, .screen-mode { display: none !important; }
             #print-datetime { display: block !important; font-size: 0.75em; color: #666; padding: 2px 8px; }
         }
+
+        /* ── Sprint 15 (F141–F150) ── */
+        /* F142 — Dew point tile in weather details */
+        .wx-detail:nth-child(7) { border-bottom: 2px solid #22d3ee; }
+        /* F143 — Wind gust sub-label */
+        #wx-gust { font-size: 0.72em; color: var(--warning); line-height: 1.1; margin-top: 1px; display: none; }
+        /* F144 — News category badges */
+        .news-cat { font-size: 0.60em; border-radius: 8px; padding: 1px 5px; font-weight: 700; white-space: nowrap; margin-left: 3px; vertical-align: middle; display: inline-block; }
+        .news-cat.cat-security { background: rgba(248,113,113,0.18); color: #f87171; }
+        .news-cat.cat-politics { background: rgba(168,85,247,0.18); color: #a855f7; }
+        .news-cat.cat-economy  { background: rgba(52,211,153,0.18); color: #34d399; }
+        .news-cat.cat-sport    { background: rgba(59,130,246,0.18); color: #60a5fa; }
+        .news-cat.cat-tech     { background: rgba(192,132,252,0.18); color: #c084fc; }
+        /* F145 — News inline description expand */
+        .news-desc { display: none; font-size: 0.72em; color: var(--text-muted); padding: 3px 0 1px 0; line-height: 1.4; direction: rtl; }
+        .rss-item.expanded .news-desc { display: block; }
+        .rss-item .rss-title { cursor: pointer; }
+        /* F147 — News bookmarks */
+        .news-bkm { background: none; border: none; cursor: pointer; font-size: 0.82em; padding: 0 2px; opacity: 0.35; transition: opacity 0.2s; }
+        .news-bkm:hover { opacity: 0.9; }
+        .rss-item.bookmarked .news-bkm { opacity: 1; color: #60a5fa; }
+        .rss-item.bookmarked { background: rgba(96,165,250,0.07) !important; }
+        /* F148 — Weather weekly summary */
+        #wx-week-summary { font-size: 0.70em; color: var(--text-muted); text-align: center; padding: 2px 6px; border-radius: 6px; background: rgba(255,255,255,0.04); margin-top: 3px; }
+        /* F149 — Per-stock portfolio P&L position row */
+        .stk-pos-pnl { font-size: 0.59em; color: var(--text-muted); line-height: 1.1; margin-top: 1px; }
+        .stk-pos-pnl.gain { color: var(--positive); } .stk-pos-pnl.loss { color: var(--negative); }
+        /* F150 — Help overlay 2-column grid */
+        #help-panel .help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 6px; }
+        #help-panel .help-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        /* F146 — Moti next-quote button */
+        #moti-next-btn { font-size: 0.62em; padding: 1px 7px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; margin-top: 3px; margin-right: 4px; }
+        #moti-next-btn:hover { color: var(--accent); }
         #print-datetime { display: none; }
     </style>
     <meta name="referrer" content="no-referrer">
@@ -1296,24 +1329,27 @@
     <div id="help-overlay">
       <div id="help-panel">
         <h2>⌨️ קיצורי מקלדת</h2>
-        <div class="help-row"><span>מחזור ערכות נושא</span><span class="help-key">T</span></div>
-        <div class="help-row"><span>מעבר °C / °F</span><span class="help-key">לחץ על הטמפרטורה</span></div>
-        <div class="help-row"><span>מסך מלא</span><span class="help-key">F</span></div>
-        <div class="help-row"><span>הצגת התראות</span><span class="help-key">A</span></div>
-        <div class="help-row"><span>הגדרות</span><span class="help-key">S</span></div>
-        <div class="help-row"><span>אבחון</span><span class="help-key">D</span></div>
-        <div class="help-row"><span>השתק/הפעל צליל התראות</span><span class="help-key">M</span></div>
-        <div class="help-row"><span>הדפסה</span><span class="help-key">P</span></div>
-        <div class="help-row"><span>הגדלת גופן</span><span class="help-key">+</span></div>
-        <div class="help-row"><span>הקטנת גופן</span><span class="help-key">−</span></div>
-        <div class="help-row"><span>דימר לילה</span><span class="help-key">N</span></div>
-        <div class="help-row"><span>רענון כלל הנתונים</span><span class="help-key">R</span></div>
-        <div class="help-row"><span>סגירת כרטיס מוגדל</span><span class="help-key">Escape</span></div>
-        <div class="help-row"><span>עזרה</span><span class="help-key">?</span></div>
-        <div class="help-row"><span>הגדרת ערים (מזג אוויר)</span><span class="help-key">S → עדכונים</span></div>
-        <div class="help-row"><span>שיתוף שדשבורד</span><span class="help-key">S → מתקדם → 🔗</span></div>
-        <div class="help-row"><span>הפעל התראות דסקטאפ</span><span class="help-key">לחץ 🔔 בכותרת</span></div>
-        <div style="text-align:center;margin-top:12px;font-size:0.75em;color:var(--text-muted)">לחץ Escape או ? לסגירה</div>
+        <div class="help-grid">
+          <div class="help-row"><span>מחזור ערכות נושא</span><span class="help-key">T</span></div>
+          <div class="help-row"><span>מסך מלא</span><span class="help-key">F</span></div>
+          <div class="help-row"><span>הצגת / הסתרת התראות</span><span class="help-key">A</span></div>
+          <div class="help-row"><span>הגדרות</span><span class="help-key">S</span></div>
+          <div class="help-row"><span>אבחון</span><span class="help-key">D</span></div>
+          <div class="help-row"><span>השתק / הפעל צליל</span><span class="help-key">M</span></div>
+          <div class="help-row"><span>הדפסה</span><span class="help-key">P</span></div>
+          <div class="help-row"><span>דימר לילה</span><span class="help-key">N</span></div>
+          <div class="help-row"><span>רענון כלל הנתונים</span><span class="help-key">R</span></div>
+          <div class="help-row"><span>הגדלת גופן</span><span class="help-key">+</span></div>
+          <div class="help-row"><span>הקטנת גופן</span><span class="help-key">−</span></div>
+          <div class="help-row"><span>עזרה</span><span class="help-key">? / H</span></div>
+          <div class="help-row"><span>סגירת כרטיס מוגדל</span><span class="help-key">Escape</span></div>
+          <div class="help-row"><span>מעבר °C / °F</span><span class="help-key">לחץ על הטמפ׳</span></div>
+          <div class="help-row"><span>הגדרת ערים (מזג אוויר)</span><span class="help-key">S → עדכונים</span></div>
+          <div class="help-row"><span>שיתוף לוח</span><span class="help-key">S → מתקדם → 🔗</span></div>
+          <div class="help-row"><span>הפעל התראות דסקטאפ</span><span class="help-key">לחץ 🔔</span></div>
+          <div class="help-row"><span>ספירה לאחור מותאמת</span><span class="help-key">S → מתקדם</span></div>
+        </div>
+        <div style="text-align:center;margin-top:10px;font-size:0.75em;color:var(--text-muted)">לחץ Escape / ? / H לסגירה</div>
       </div>
     </div>
     <!-- Feature 33: Config overlay -->
@@ -1581,13 +1617,15 @@
                   </div>
                   <div class="wx-details">
                     <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
-                    <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div><span id="wx-wind-heb"></span></div>
+                    <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div><span id="wx-wind-heb"></span><span id="wx-gust"></span></div>
                     <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
                     <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
                     <!-- Feature 64: AQI category label + trend -->
                     <div class="wx-detail"><div class="wx-detail-label">😷 AQI</div><div class="wx-detail-val" id="wx-aqi">--</div><span class="aqi-label" id="aqi-label"></span><span class="aqi-trend" id="aqi-trend"></span><svg class="aqi-spark" id="aqi-spark" viewBox="0 0 44 14" aria-hidden="true"></svg></div>
                     <!-- Feature 26: Feels-like temperature -->
                     <div class="wx-detail"><div class="wx-detail-label">🌡️ מרגיש</div><div class="wx-detail-val" id="wx-feels">--°</div></div>
+                    <!-- F142: Dew point -->
+                    <div class="wx-detail"><div class="wx-detail-label">🌫️ נ.ר.</div><div class="wx-detail-val" id="wx-dew">--°</div></div>
                   </div>
                 </div>
                 <!-- F128: Hourly chart view toggle -->
@@ -1595,6 +1633,8 @@
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                 <!-- Feature 32: Extreme weather alert banner -->
                 <div id="wx-alert-banner"></div>
+                <!-- F148: Weekly weather summary -->
+                <div id="wx-week-summary"></div>
                 <div class="wx-forecast" id="wx-forecast">
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
@@ -1723,8 +1763,8 @@
                   <div class="moti-text" id="moti-text">טוען השראה...</div>
                   <div class="moti-author" id="moti-author"></div>
                   <div class="moti-src" id="moti-src"></div>
-                  <!-- F135: Quote share button -->
-                  <button id="moti-share-btn" title="שתף ציטוט">📤 שתף</button>
+                  <!-- F146: Next quote button; F135: share button -->
+                  <button id="moti-next-btn" title="ציטוט הבא">⏭ הבא</button><button id="moti-share-btn" title="שתף ציטוט">📤 שתף</button>
                 </div>
               </div>
             </div>
@@ -1739,7 +1779,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.17.0 — משפחת רגואן</span>
+            <span>Dashboard v4.18.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1755,7 +1795,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.17.0 — 3-Column Layout · Hebrew Calendar Card · 140 Sprint Features · 985 Tests
+       FAMILY DASHBOARD v4.18.0 — 3-Column Layout · Hebrew Calendar Card · 150 Sprint Features · 1045 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -1881,7 +1921,8 @@
         {t:'מה שאתה שם בראשך כשהדברים קשים — זה מה שקובע.',a:''},
         {t:'יש לך בדיוק את הכוח שדרוש לך כדי ליצור את החיים שאתה רוצה.',a:''},
     ];
-    let motiIdx = Math.floor(Math.random() * MOTIVATIONS.length);
+    // F146: Start at same quote each day (day-of-year offset), not random
+    let motiIdx = Math.floor(Date.now() / 86400000) % MOTIVATIONS.length;
     let _todaySunset = null;   // stored from weather data; used by Omer counter
     let _todaySunrise = null;  // stored from weather data; used by auto-night theme
     let _candleDate = null;    // next candle lighting Date; used by Shabbat countdown
@@ -2184,6 +2225,10 @@
         headerCountdown: $('header-countdown'),       // F139
         motiShareBtn: $('moti-share-btn'),            // F135
         printDatetime: $('print-datetime'),           // F140
+        wxDew: $('wx-dew'),             // F142
+        wxGust: $('wx-gust'),           // F143
+        wxWeekSummary: $('wx-week-summary'), // F148
+        motiNextBtn: $('moti-next-btn'), // F146
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -2480,7 +2525,7 @@
         try {
             // Feature 45: use current city lat/lon
             const city = (typeof getCurrentWxCity === 'function') ? getCurrentWxCity() : { lat: 31.7683, lon: 35.2137 };
-            const d = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max&timezone=Asia%2FJerusalem&forecast_days=8`).then(r => r.json());
+            const d = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature,precipitation_probability,dew_point_2m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max&timezone=Asia%2FJerusalem&forecast_days=8`).then(r => r.json());
             if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); syncBurst('wx'); recordSuccess('wx'); }
         } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); recordFailure('wx'); }
         releaseLock('wx');
@@ -2497,8 +2542,6 @@
         if (el.wxWindHeb) el.wxWindHeb.textContent = deg2hebrewDir(cw.winddirection ?? 0);
         // Feature 32: check for severe weather
         checkSevereWeather(cw.weathercode);
-        // Feature 42: update sky color pill
-        updateWeatherSkyPill(cw.weathercode);
         // Feature 42: update sky color pill
         updateWeatherSkyPill(cw.weathercode);
         // Real humidity, UV, and feels-like from hourly data
@@ -2518,6 +2561,16 @@
                 el.wxDesc.textContent = (WX_CODES[cw.weathercode] || 'לא ידוע') + ` · מרגיש ${toDisplayTemp(feels)}`;
                 // Feature 26: also populate feels-like wx-detail cell
                 if (el.wxFeels) el.wxFeels.textContent = toDisplayTemp(feels);
+            }
+            // F142: Dew point
+            if (d.hourly.dew_point_2m?.[nowH] != null && el.wxDew) el.wxDew.textContent = toDisplayTemp(Math.round(d.hourly.dew_point_2m[nowH]));
+            // F143: Wind gusts — show warning when gust significantly exceeds current wind speed
+            if (el.wxGust) {
+                const gust = d.hourly.wind_gusts_10m?.[nowH];
+                if (gust != null && gust > cw.windspeed * 1.4 && gust > 25) {
+                    el.wxGust.textContent = '💨 שרב עד ' + Math.round(gust) + ' קמ"ש';
+                    el.wxGust.style.display = '';
+                } else { el.wxGust.style.display = 'none'; }
             }
             // Hourly temperature graph (next 12h) — Feature 66: also pass precipitation_probability
             const rainProbs = d.hourly.precipitation_probability?.slice(nowH, nowH + 12) || [];
@@ -2565,6 +2618,23 @@
                         : '';
                     fDays[i - 1].innerHTML = `<div class="wx-fday-icon">${WX_EMOJI[wc] || '\ud83c\udf21\ufe0f'}</div><div class="wx-fday-name">${dn}</div><div class="wx-fday-temp">${toDisplayTemp(mx)}/${toDisplayTemp(mn)}</div>${rainTxt}`;
                 }
+            }
+            // F148: Weekly weather summary text (below 7-day forecast)
+            if (el.wxWeekSummary) {
+                const maxTemps = d.daily.temperature_2m_max?.slice(1, 8).filter(Boolean) || [];
+                const rainProbs7 = d.daily.precipitation_probability_max?.slice(1, 8).filter(v => v != null) || [];
+                const avgMax = maxTemps.length ? maxTemps.reduce((a, b) => a + b, 0) / maxTemps.length : null;
+                const maxRain7 = rainProbs7.length ? Math.max(...rainProbs7) : 0;
+                const avgRain7 = rainProbs7.length ? rainProbs7.reduce((a, b) => a + b, 0) / rainProbs7.length : 0;
+                const isHot = avgMax != null && avgMax > 30;
+                const isCold = avgMax != null && avgMax < 12;
+                let summary = '';
+                if (maxRain7 >= 60) summary = isHot ? '⛈ שבוע גשום וחם' : '🌧 שבוע גשום';
+                else if (avgRain7 >= 30) summary = '🌦 שבוע עם גשמים חלקיים';
+                else if (isHot) summary = avgRain7 < 10 ? '☀️ שבוע חם ויבש' : '🌤 שבוע חם';
+                else if (isCold) summary = '🧥 שבוע קר יחסית';
+                else summary = maxRain7 > 20 ? '🌤 שבוע נעים עם אפשרות גשם' : '☀️ שבוע נעים ויבש';
+                el.wxWeekSummary.textContent = summary;
             }
         }
     }
@@ -2821,6 +2891,54 @@
 
     // ── Sprint 14 Functions (F131–F140) ───────────────────────────────────────────
 
+    // ── Sprint 15 Functions (F141–F150) ───────────────────────────────────────────
+
+    // F144: News category detection — Hebrew keyword matching
+    function detectNewsCategory(title) {
+        const t = (title || '').toLowerCase();
+        if (/ביטחון|צבא|לחימה|טיל|רקטה|מלחמה|חמאס|טרור|נשק|כיבוש|חי"ר|חיל|אש|פגיעה|כוחות|ירי/.test(t)) return 'security';
+        if (/פוליטיקה|ממשלה|כנסת|קואליציה|אופוזיציה|בחירות|מפלגה|שר.*ה|ראש.*ממשלה|נשיא|וועדה|הצבעה/.test(t)) return 'politics';
+        if (/כלכלה|שוק.*מניה|שקל|בנק|ריבית|תקציב|גז|נפט|ייצוא|ייבוא|שביתה|הסתדרות|אינפלציה/.test(t)) return 'economy';
+        if (/ספורט|כדורגל|כדורסל|טניס|אצלתנות|אולימפיאד|ליגה|אלופות|מונדיאל|מרוץ|גביע|שחיה/.test(t)) return 'sport';
+        if (/טכנולוגיה|סטארטאפ|בינה מלאכותית|ai\b|cyber|קיברנטי|אפליקציה|סמארטפון|מחשב|רובוט/.test(t)) return 'tech';
+        return null;
+    }
+
+    // F147: News bookmark helpers (max 15 saved articles)
+    const NEWS_BOOKMARKS_KEY = 'dash_news_bookmarks';
+    function _getNewsBookmarks() {
+        try { return new Set(JSON.parse(localStorage.getItem(NEWS_BOOKMARKS_KEY) || '[]')); } catch { return new Set(); }
+    }
+    function _toggleNewsBookmark(url) {
+        const set = _getNewsBookmarks();
+        if (set.has(url)) set.delete(url); else { set.add(url); if (set.size > 15) { const [first] = set; set.delete(first); } }
+        try { localStorage.setItem(NEWS_BOOKMARKS_KEY, JSON.stringify([...set])); } catch (_) {}
+    }
+
+    // ── Sprint 15 Functions (F141–F150) ───────────────────────────────────────────
+
+    // F144: News category detection — Hebrew keyword matching
+    function detectNewsCategory(title) {
+        const t = (title || '').toLowerCase();
+        if (/ביטחון|צבא|לחימה|טיל|רקטה|מלחמה|חמאס|טרור|נשק|כיבוש|חי"ר|חיל|אש|פגיעה|כוחות|ירי/.test(t)) return 'security';
+        if (/פוליטיקה|ממשלה|כנסת|קואליציה|אופוזיציה|בחירות|מפלגה|שר.*ה|ראש.*ממשלה|נשיא|וועדה|הצבעה/.test(t)) return 'politics';
+        if (/כלכלה|שוק.*מניה|שקל|בנק|ריבית|תקציב|גז|נפט|ייצוא|ייבוא|שביתה|הסתדרות|אינפלציה/.test(t)) return 'economy';
+        if (/ספורט|כדורגל|כדורסל|טניס|אצלתנות|אולימפיאד|ליגה|אלופות|מונדיאל|מרוץ|גביע|שחיה/.test(t)) return 'sport';
+        if (/טכנולוגיה|סטארטאפ|בינה מלאכותית|ai\b|cyber|קיברנטי|אפליקציה|סמארטפון|מחשב|רובוט/.test(t)) return 'tech';
+        return null;
+    }
+
+    // F147: News bookmark helpers (max 15 saved articles)
+    const NEWS_BOOKMARKS_KEY = 'dash_news_bookmarks';
+    function _getNewsBookmarks() {
+        try { return new Set(JSON.parse(localStorage.getItem(NEWS_BOOKMARKS_KEY) || '[]')); } catch { return new Set(); }
+    }
+    function _toggleNewsBookmark(url) {
+        const set = _getNewsBookmarks();
+        if (set.has(url)) set.delete(url); else { set.add(url); if (set.size > 15) { const [first] = set; set.delete(first); } }
+        try { localStorage.setItem(NEWS_BOOKMARKS_KEY, JSON.stringify([...set])); } catch (_) {}
+    }
+
     // F139: Custom event countdown header chip
     function updateCountdownChip(now) {
         if (!el.headerCountdown) return;
@@ -2982,12 +3100,20 @@
 
     function renderNews(items) {
         const frag = document.createDocumentFragment();
-        const list = items.slice(0, 25);
+        // F147: sort bookmarked articles to the top of original list
+        const bookmarks = _getNewsBookmarks();
+        const list = [...items].slice(0, 25).sort((a, b) => {
+            const aB = a.link && bookmarks.has(a.link) ? 0 : 1;
+            const bB = b.link && bookmarks.has(b.link) ? 0 : 1;
+            return aB - bB;
+        });
         // Duplicate for seamless scroll loop
         const all = [...list, ...list];
         const now = Date.now();
         all.forEach((it, idx) => {
             const div = document.createElement('div'); div.className = 'rss-item' + (idx >= list.length ? ' clone' : '');
+            // F147: mark bookmarked items
+            if (it.link && bookmarks.has(it.link)) div.classList.add('bookmarked');
             // Feature 39: data-src for source filter
             if (it.source) { div.dataset.src = it.source; if (idx < list.length) addNewsFilterChip(it.source); }
             // Freshness indicator: items < 30min old get highlighted
@@ -3019,7 +3145,41 @@
                 }
             }
             const ttl = document.createElement('span'); ttl.className = 'rss-title'; ttl.textContent = it.title; if (it.desc) ttl.title = it.desc; div.appendChild(ttl);
+            // F144: Category badge (original items only, before source)
+            if (idx < list.length) {
+                const cat = detectNewsCategory(it.title);
+                if (cat) {
+                    const badge = document.createElement('span');
+                    badge.className = 'news-cat cat-' + cat;
+                    const catLabels = { security: '🔴 ביטחון', politics: '🟣 פוליטיקה', economy: '🟢 כלכלה', sport: '🔵 ספורט', tech: '🟡 טכנולוגיה' };
+                    badge.textContent = catLabels[cat] || cat;
+                    div.appendChild(badge);
+                }
+            }
+            // F145: Inline description expand (original items with desc only)
+            if (idx < list.length && it.desc && it.desc.length > 10) {
+                const descEl = document.createElement('div');
+                descEl.className = 'news-desc';
+                descEl.textContent = it.desc.substring(0, 220);
+                div.appendChild(descEl);
+                ttl.addEventListener('click', (e) => { e.stopPropagation(); div.classList.toggle('expanded'); });
+            }
             const sr = document.createElement('span'); sr.className = 'rss-source'; sr.textContent = it.source || ''; div.appendChild(sr);
+            // F147: Bookmark button (original items only)
+            if (idx < list.length && it.link) {
+                const bkmBtn = document.createElement('button');
+                bkmBtn.className = 'news-bkm';
+                bkmBtn.textContent = '🔖';
+                bkmBtn.title = 'שמור / בטל שמירה';
+                bkmBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    _toggleNewsBookmark(it.link, it.title);
+                    div.classList.toggle('bookmarked');
+                    bkmBtn.style.color = div.classList.contains('bookmarked') ? '#60a5fa' : '';
+                    showToast(div.classList.contains('bookmarked') ? '🔖 נשמר' : '🗑 הוסר');
+                });
+                div.appendChild(bkmBtn);
+            }
             // Feature 57: copy to clipboard button (only on original items, not clones)
             if (idx < list.length && navigator.clipboard) {
                 const copyBtn = document.createElement('button');
@@ -3389,6 +3549,17 @@
             afterEl.innerHTML = `${fmtPrice(extPrice, sym)} <span class="after-lbl">${extLbl} ${isFinite(extChg) ? sign + extChg.toFixed(2) + '%' : ''}</span>`;
             afterEl.style.color = !isFinite(extChg) || Math.abs(extChg) < 0.1 ? '' : extChg > 0 ? '#34d399' : '#f87171';
         } else if (afterEl) { afterEl.remove(); }
+        // F149: Per-stock portfolio position P&L row
+        const pos = _getPortfolio()[sym];
+        if (pos?.qty && pos?.cost && cur && isFinite(cur)) {
+            const posPnl = (cur - pos.cost) * pos.qty;
+            const posPct = pos.cost > 0 ? ((cur - pos.cost) / pos.cost) * 100 : 0;
+            let posEl = blk.querySelector('.stk-pos-pnl');
+            if (!posEl) { posEl = document.createElement('div'); posEl.className = 'stk-pos-pnl'; blk.querySelector('.stk-vals')?.appendChild(posEl); }
+            const posSign = posPnl >= 0 ? '+' : '';
+            posEl.textContent = `פוז׳: ${posSign}$${Math.abs(posPnl).toFixed(0)} (${posSign}${posPct.toFixed(1)}%)`;
+            posEl.className = 'stk-pos-pnl ' + (posPnl >= 0 ? 'gain' : 'loss');
+        }
         // Feature 61: Relative volume badge
         const regVol = meta.regularMarketVolume;
         const avgVol = meta.averageDailyVolume3Month || meta.averageDailyVolume10Day;
@@ -3945,6 +4116,10 @@
                 }
             };
         }
+        // F146: Wire "next" button to advance to next quote
+        if (el.motiNextBtn) {
+            el.motiNextBtn.onclick = () => loadMotivation();
+        }
         setSync('moti', 'success');
     }
 
@@ -4041,10 +4216,8 @@
             if (e.key === 'p' || e.key === 'P') window.print(); // Feature 50
             if (e.key === '+' || e.key === '=') adjustFontScale(0.05);  // Feature 49
             if (e.key === '-' || e.key === '_') adjustFontScale(-0.05); // Feature 49
-            if (e.key === 'n' || e.key === 'N') toggleNightDim();  // Feature 54
-            if (e.key === 'r' || e.key === 'R') forceRefresh();    // Feature 59
             if (e.key === 'f' || e.key === 'F') toggleFullscreen();
-            if (e.key === '?') toggleHelp();
+            if (e.key === '?' || e.key === 'h' || e.key === 'H') toggleHelp(); // F150: H as alt help
             if (e.key === 'Escape' && _maximizedCard) toggleCardMaximize(_maximizedCard);
             if (e.key === 'Escape' && el.helpOverlay?.classList.contains('visible')) toggleHelp();
             if (e.key === 'Escape' && document.getElementById('config-overlay')?.classList.contains('visible')) toggleConfig();
@@ -5977,7 +6150,6 @@
     // loadAlerts() called in init(), then self-schedules 60s/5min
 
     // Medium (5-15min)
-    setInterval(updateMarketBadge, 300000);  // 5min
     setInterval(() => { loadNews(); stampRefresh(); }, 900000); // 15min
 
     // Medium-slow (stocks: adaptive 5min open / 30min closed, weather: 30min)

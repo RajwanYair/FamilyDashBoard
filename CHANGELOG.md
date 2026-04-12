@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.18.0] — 2026-05-11
+
+> **Sprint 15 (Features 141–150)** — Bug fixes, dew point tile, wind gusts label, news category badges, news inline expand, daily quote lock + manual next, news bookmarks, weekly weather summary, per-stock portfolio P&L row, help overlay upgrade
+> Tests: 1069 / 59 suites / 0 failures (was 1045 / 58 suites / 0)
+
+### Added
+
+- **F142 — Dew point in weather detail** — 7th `.wx-detail` tile (`#wx-dew`) shows current dew point in the same °C/°F setting; `dew_point_2m` added to Open-Meteo hourly request; highlighted with cyan bottom border CSS
+- **F143 — Wind gusts label** — `#wx-gust` sub-span inside wind tile shown only when gust > wind × 1.4 AND > 25 km/h; `wind_gusts_10m` added to Open-Meteo hourly request; colored amber with warning icon
+- **F144 — News category keyword badges** — `detectNewsCategory(title)` classifies Hebrew headlines into 5 categories (security/politics/economy/sport/tech) via regex; badge `.news-cat.cat-{type}` appended inline after each title with category-specific color
+- **F145 — News inline description expand** — Each `.rss-item` now contains a `.news-desc` div with up to 220-char snippet; click on the title toggles `.expanded` class showing/hiding the description in place
+- **F146 — Daily quote lock + manual next** — `motiIdx` now initializes to `dayOfYear % length` so the same quote shows all day; `#moti-next-btn` button wired to call `loadMotivation()` to advance manually
+- **F147 — News bookmarks** — `🔖` button per article stores/removes URL in `dash_news_bookmarks` (max 15); `_getNewsBookmarks()` / `_toggleNewsBookmark(url)` helpers; bookmarked articles float to top of the news list with highlight background
+- **F148 — Weekly weather summary** — `#wx-week-summary` text div below the 7-day forecast computes average high temperature and rain probability over the coming week, outputting one of: ☀️ שבוע חם ויבש / 🌧 שבוע גשום / 🌦 שבוע עם גשמים חלקיים
+- **F149 — Per-stock portfolio P&L row** — `renderStock()` appends `.stk-pos-pnl` to `.stk-vals` for each stock with a configured position (qty + cost); shows `פוז׳: +$N (±X%)` in green/red; removes the element when no position is configured
+- **F150 — Help overlay upgrade** — `#help-panel` rebuilt as 2-column `.help-grid` with 18 shortcut rows; `H` key added as alternate trigger alongside `?`; footer shows "לחץ Escape / ? / H לסגירה"
+
+### Fixed
+
+- **F141 — Duplicate setInterval for `updateMarketBadge`** — Removed the 5-minute duplicate `setInterval(updateMarketBadge, 300000)` that was firing alongside the correct 1-minute interval
+- **F141 — Duplicate keydown handlers for N and R keys** — Removed redundant event handler block for `n`/`r` keys that was registered twice in `document.addEventListener('keydown')`
+- **F141 — Duplicate `updateWeatherSkyPill` call in `renderWeather()`** — Second call removed
+
+---
+
 ## [4.17.0] — 2026-05-04
 
 > **Sprint 14 (Features 131–140)** — Stock alert toasts, portfolio P&L header chip, calendar ICS source coloring, severe weather toast, motivation share button, news age tinting, after-hours prices, calendar conflict indicator, custom countdown chip, print mode improvements

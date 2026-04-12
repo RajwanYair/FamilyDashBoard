@@ -1148,9 +1148,9 @@ describe("Weather Card", () => {
     assert.equal(fdays, 7, `Expected 7 forecast days (F81), got ${fdays}`);
   });
 
-  it("should have 6 detail boxes (humidity, wind, UV, sunrise, AQI, feels-like)", () => {
+  it("should have 7 detail boxes (humidity, wind, UV, sunrise, AQI, feels-like, dew-point)", () => {
     const details = (html.match(/class="wx-detail"/g) || []).length;
-    assert.equal(details, 6, `Expected 6 weather detail boxes, got ${details}`);
+    assert.equal(details, 7, `Expected 7 weather detail boxes, got ${details}`);
   });
 
   it("should have hourly chart SVG", () => {
@@ -1782,7 +1782,7 @@ describe("Status Bar", () => {
 
   it("should display current version in status bar", () => {
     assert.ok(
-      html.includes("Dashboard v4.17.0"),
+      html.includes("Dashboard v4.18.0"),
       "Missing current version in status bar",
     );
   });
@@ -3968,9 +3968,9 @@ describe("Sprint 3 Features (v4.11)", () => {
       "renderWeather should set el.wxFeels from apparent_temperature",
     );
   });
-  it("wx-details should now have 6 detail boxes", () => {
+  it("wx-details should now have 7 detail boxes", () => {
     const count = (html.match(/class="wx-detail"/g) || []).length;
-    assert.equal(count, 6, `Expected 6 wx-detail boxes, got ${count}`);
+    assert.equal(count, 7, `Expected 7 wx-detail boxes, got ${count}`);
   });
   it("should have 6th wx-detail nth-child border CSS", () => {
     assert.ok(html.includes(".wx-detail:nth-child(6)"), "Missing 6th wx-detail border CSS");
@@ -6033,8 +6033,8 @@ describe("Sprint 13 Features (v4.16.0)", () => {
   });
 
   // Version
-  it("version should be v4.17.0", () => {
-    assert.ok(html.includes("Dashboard v4.17.0"), "Version should be v4.17.0");
+  it("version should be v4.18.0", () => {
+    assert.ok(html.includes("Dashboard v4.18.0"), "Version should be v4.18.0");
   });
 });
 
@@ -6154,9 +6154,115 @@ describe("Sprint 14 Features (v4.17.0)", () => {
   it("F140: @media print hides .clone elements", () => {
     assert.match(html, /@media print[^}]*\{[\s\S]{0,800}\.clone/, "F140: @media print does not hide .clone");
   });
+});
+
+// Suite 59 — Sprint 15 Features (v4.18.0, F141–F150)
+// node --test --test-name-pattern="Sprint 15" tests/dashboard.test.mjs
+describe("Sprint 15 Features (v4.18.0)", () => {
+  // F141: Bug fixes — no duplicate setInterval for updateMarketBadge at 5min
+  it("F141: updateMarketBadge has only one setInterval (60s)", () => {
+    const count = (html.match(/setInterval\(updateMarketBadge/g) || []).length;
+    assert.strictEqual(count, 1, "F141: updateMarketBadge should have exactly 1 setInterval");
+  });
+  it("F141: keydown handler has no duplicate N/R handlers", () => {
+    const nCount = (html.match(/e\.key === 'n' \|\| e\.key === 'N'/g) || []).length;
+    assert.strictEqual(nCount, 1, "F141: duplicate N keydown handler found");
+  });
+  it("F141: updateWeatherSkyPill called only once in renderWeather", () => {
+    const offset = html.indexOf("function renderWeather");
+    const endOffset = html.indexOf("function renderHourlyChart");
+    const slice = html.slice(offset, endOffset);
+    const count = (slice.match(/updateWeatherSkyPill/g) || []).length;
+    assert.strictEqual(count, 1, "F141: duplicate updateWeatherSkyPill call in renderWeather");
+  });
+
+  // F142: Dew point in weather
+  it("F142: #wx-dew element exists", () => {
+    assert.ok(html.includes('id="wx-dew"'), "Missing #wx-dew element (F142)");
+  });
+  it("F142: dew_point_2m in Open-Meteo URL", () => {
+    assert.ok(html.includes("dew_point_2m"), "F142: dew_point_2m not included in Open-Meteo URL");
+  });
+
+  // F143: Wind gusts
+  it("F143: #wx-gust element exists", () => {
+    assert.ok(html.includes('id="wx-gust"'), "Missing #wx-gust element (F143)");
+  });
+  it("F143: wind_gusts_10m in Open-Meteo URL", () => {
+    assert.ok(html.includes("wind_gusts_10m"), "F143: wind_gusts_10m not included in Open-Meteo URL");
+  });
+
+  // F144: News category badges
+  it("F144: detectNewsCategory function declared", () => {
+    assert.ok(html.includes("function detectNewsCategory"), "F144: detectNewsCategory function not found");
+  });
+  it("F144: .cat-security CSS rule exists", () => {
+    assert.match(html, /\.news-cat\.cat-security\s*\{/, "F144: .cat-security CSS missing");
+  });
+  it("F144: .cat-sport CSS rule exists", () => {
+    assert.match(html, /\.news-cat\.cat-sport\s*\{/, "F144: .cat-sport CSS missing");
+  });
+
+  // F145: News inline description expand
+  it("F145: .news-desc CSS rule exists", () => {
+    assert.match(html, /\.news-desc\s*\{/, "F145: .news-desc CSS missing");
+  });
+  it("F145: .rss-item.expanded .news-desc CSS rule exists", () => {
+    assert.match(html, /\.rss-item\.expanded \.news-desc\s*\{/, "F145: expanded news-desc CSS missing");
+  });
+
+  // F146: Daily quote lock
+  it("F146: motiIdx uses day-of-year offset, not random", () => {
+    assert.ok(html.includes("Math.floor(Date.now() / 86400000)"), "F146: motiIdx not using day-based offset");
+  });
+  it("F146: #moti-next-btn element exists", () => {
+    assert.ok(html.includes('id="moti-next-btn"'), "Missing #moti-next-btn element (F146)");
+  });
+
+  // F147: News bookmarks
+  it("F147: _getNewsBookmarks function declared", () => {
+    assert.ok(html.includes("function _getNewsBookmarks"), "F147: _getNewsBookmarks missing");
+  });
+  it("F147: dash_news_bookmarks localStorage key used", () => {
+    assert.ok(html.includes("dash_news_bookmarks"), "F147: bookmark localStorage key missing");
+  });
+  it("F147: bookmark button (.news-bkm) CSS exists", () => {
+    assert.match(html, /\.news-bkm\s*\{/, "F147: .news-bkm CSS rule missing");
+  });
+
+  // F148: Weather weekly summary
+  it("F148: #wx-week-summary element exists", () => {
+    assert.ok(html.includes('id="wx-week-summary"'), "Missing #wx-week-summary element (F148)");
+  });
+  it("F148: wxWeekSummary referenced in renderWeather", () => {
+    const offset = html.indexOf("function renderWeather");
+    const slice = html.slice(offset, offset + 6500);
+    assert.ok(slice.includes("wxWeekSummary"), "F148: wxWeekSummary not set in renderWeather");
+  });
+
+  // F149: Per-stock portfolio P&L row
+  it("F149: .stk-pos-pnl CSS rule exists", () => {
+    assert.match(html, /\.stk-pos-pnl\s*\{/, "F149: .stk-pos-pnl CSS rule missing");
+  });
+  it("F149: stk-pos-pnl created in renderStock", () => {
+    const offset = html.indexOf("function renderStock");
+    const slice = html.slice(offset, offset + 5000);
+    assert.ok(slice.includes("stk-pos-pnl"), "F149: stk-pos-pnl div not created in renderStock");
+  });
+
+  // F150: Help overlay upgrade + H key
+  it("F150: H key triggers help overlay", () => {
+    assert.ok(html.includes("'h' || e.key === 'H'"), "F150: H key not wired to toggleHelp");
+  });
+  it("F150: help-grid CSS layout exists", () => {
+    assert.match(html, /#help-panel \.help-grid\s*\{/, "F150: #help-panel .help-grid CSS missing");
+  });
+  it("F150: help overlay shows ? / H hint", () => {
+    assert.ok(html.includes("? / H"), "F150: help overlay missing ? / H instructions");
+  });
 
   // Version
-  it("version should be v4.17.0", () => {
-    assert.ok(html.includes("Dashboard v4.17.0"), "Version should be v4.17.0");
+  it("version should be v4.18.0", () => {
+    assert.ok(html.includes("Dashboard v4.18.0"), "Version should be v4.18.0");
   });
 });
