@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.19.0] — 2026-05-12
+
+> **Sprint 16 (Features 151–160)** — Sefirat HaOmer row, precipitation forecast, Gold/Silver/GBP sparklines, calendar today-strip, stocks summary bar, bookmark filter, halacha overlay, weather min/max, card collapse, news font slider
+> Tests: 1112 / 60 suites / 0 failures (was 1069 / 59 suites / 0)
+
+### Added
+
+- **F151 — Sefirat HaOmer row** — `#hc-omer-row` shows/hides inside the Hebrew Calendar card based on omer availability; `_renderOmer()` now exposes `el.hcOmerRow` to show the row only during the omer counting period (Pesach → Shavuot)
+- **F152 — Daily precipitation amount in forecast** — `precipitation_sum` added to Open-Meteo daily request; each forecast day shows a 💧 N.N מ"מ badge (`.wx-fday-mm`) when precipitation ≥ 0.2 mm
+- **F153 — Gold/Silver/GBP currency sparklines** — `recordCurrencyHistory()` expanded to store 5 rates (USD/EUR/Gold/Silver/GBP); `#cur-gold-spark`, `#cur-silver-spark`, `#cur-gbp-spark` SVG elements added to the three additional currency rows; `renderCurrencySparklines()` draws all 5 sparklines
+- **F154 — Calendar today-strip** — `#cal-today-strip` shows the next upcoming (non-all-day) events for today as time-labelled pills; updated each time the calendar renders via `_renderCalTodayStrip(events)`
+- **F155 — Stocks gainers/losers summary bar** — `#stk-summary` line shows `📈 N עולות • 📉 N יורדות • ➡️ N יציבות` by counting `.stk-up` / `.stk-down` DOM classes after each `loadStocks()` call; `updateStockSummary()` function
+- **F156 — Bookmark-only news filter (B key)** — `B` key toggles `body.news-bkm-mode` which hides all non-bookmarked `.rss-item` via CSS; `#news-bkm-pill` shows "🔖 מועדפים" indicator when active; `toggleNewsBookmarkFilter()` function
+- **F157 — Halacha full-text overlay** — Clicking the `.ticker-bar` opens a modal overlay (`#halacha-overlay`) showing the full Sefaria halacha text with reference; `_showHalachaOverlay()` / `_closeHalachaOverlay()`; Escape key closes it; `_halachaData` stored in `renderHalacha()` for later display
+- **F158 — Weather today min/max range** — `#wx-minmax` shown between the temperature and description with today's forecast low / high `(e.g. 18° / 32°)` from `d.daily.temperature_2m_min/max[0]`
+- **F159 — Card collapse toggle** — Every card header has a `▼` `.card-collapse-btn` button; clicking toggles `.card.collapsed` (hides the card body via CSS, rotates the arrow); collapse state persisted per-card via `dash_collapsed_{id}` localStorage keys; `setupCardCollapse()` called on init
+- **F160 — Config Display tab: news font size slider** — `#cfg-news-fontsize` range slider (70–130%, step 5) in the Display tab controls `--news-font-scale` CSS variable applied to `.rss-item .rss-title`; value persisted as `dash_news_fontsize`; `applyNewsFontScale()` restores the scale on startup
+
+---
+
 ## [4.18.0] — 2026-05-11
 
 > **Sprint 15 (Features 141–150)** — Bug fixes, dew point tile, wind gusts label, news category badges, news inline expand, daily quote lock + manual next, news bookmarks, weekly weather summary, per-stock portfolio P&L row, help overlay upgrade

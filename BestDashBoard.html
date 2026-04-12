@@ -1302,6 +1302,50 @@
         #moti-next-btn { font-size: 0.62em; padding: 1px 7px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; margin-top: 3px; margin-right: 4px; }
         #moti-next-btn:hover { color: var(--accent); }
         #print-datetime { display: none; }
+
+        /* ── Sprint 16 (F151–F160) ── */
+        /* F151 — Sefirat HaOmer row */
+        #hc-omer-row .omer-count { font-size: 0.82em; }
+        /* F152 — Daily precipitation amount (mm) label */
+        .wx-fday-mm { font-size: 0.60em; color: #60a5fa; opacity: 0.85; display: block; margin-top: 1px; }
+        /* F153 — Gold/Silver/GBP sparklines */
+        .cur-item { gap: 4px; }
+        /* F154 — Calendar today-strip */
+        #cal-today-strip { display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 6px; min-height: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        #cal-today-strip:empty { display: none; }
+        .cal-strip-event { font-size: 0.60em; background: var(--bg-card-inner); border-radius: 5px; padding: 2px 6px; color: var(--accent); border-left: 2px solid var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+        /* F155 — Stocks gainers/losers summary bar */
+        #stk-summary { font-size: 0.60em; color: var(--text-muted); text-align: center; padding: 3px 6px; border-top: 1px solid rgba(255,255,255,0.06); letter-spacing: 0.03em; }
+        /* F156 — Bookmarks-only news filter badge */
+        .news-bkm-pill { font-size: 0.55em; padding: 1px 5px; border-radius: 4px; background: rgba(96,165,250,0.15); color: #60a5fa; font-weight: 700; margin-right: 4px; cursor: pointer; display: none; }
+        body.news-bkm-mode .news-bkm-pill { display: inline-block; }
+        body.news-bkm-mode .rss-item:not(.bookmarked) { display: none; }
+        /* F157 — Halacha full-text overlay */
+        .halacha-overlay { position: fixed; inset: 0; z-index: 950; background: rgba(6,11,20,0.92); display: none; align-items: center; justify-content: center; padding: 20px; }
+        .halacha-overlay.visible { display: flex; }
+        .halacha-overlay-inner { background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 14px; max-width: 680px; width: 100%; padding: 22px 26px; direction: rtl; max-height: 80vh; overflow-y: auto; }
+        .halacha-overlay-ref { font-size: 0.70em; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
+        .halacha-overlay-text { font-size: 0.85em; line-height: 1.65; color: var(--text-primary); white-space: pre-wrap; }
+        .halacha-overlay-close { margin-top: 14px; font-size: 0.72em; color: var(--text-muted); text-align: center; cursor: pointer; }
+        .ticker-bar { cursor: pointer; }
+        /* F158 — Weather today min/max range */
+        #wx-minmax { font-size: 0.68em; color: var(--text-muted); margin-top: 2px; text-align: center; line-height: 1.2; }
+        /* F159 — Card collapse toggle */
+        .card-collapse-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75em; padding: 0 2px; margin-inline-end: 4px; transition: transform 0.25s ease, color 0.2s; line-height: 1; }
+        .card-collapse-btn:hover { color: var(--accent); }
+        .card.collapsed .card-collapse-btn { transform: rotate(-90deg); }
+        .card.collapsed > .card-body,
+        .card.collapsed > .weather-body,
+        .card.collapsed > .news-body,
+        .card.collapsed > .stocks-body,
+        .card.collapsed > .alerts-body,
+        .card.collapsed > .currency-body,
+        .card.collapsed > .hebcal-body,
+        .card.collapsed > .cal-body,
+        .card.collapsed > .moti-body { display: none !important; }
+        /* F160 — Config: news font size */
+        :root { --news-font-scale: 1; }
+        .rss-item .rss-title { font-size: calc(0.88em * var(--news-font-scale, 1)); }
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
@@ -1324,6 +1368,14 @@
     <!-- F140: Print date/time (hidden until @media print) -->
     <div id="print-datetime"></div>
     <div id="shabbat-mode-banner">🕯️ שבת שלום 🕯️</div>
+    <!-- F157: Halacha full-text overlay (click ticker bar) -->
+    <div id="halacha-overlay" class="halacha-overlay" role="dialog" aria-modal="true">
+      <div class="halacha-overlay-inner">
+        <div id="halacha-overlay-ref" class="halacha-overlay-ref"></div>
+        <div id="halacha-overlay-text" class="halacha-overlay-text"></div>
+        <div class="halacha-overlay-close">לחץ Escape או כאן לסגירה ✕</div>
+      </div>
+    </div>
     <!-- Feature 101: SW Update notification banner -->
     <div id="sw-update-banner">🆕 גרסה חדשה זמינה — <button id="sw-update-reload-btn" onclick="swUpdateReload()">↻ עדכן עכשיו</button></div>
     <div id="help-overlay">
@@ -1393,6 +1445,12 @@
           <div class="cfg-row">
             <span class="cfg-label">🌡️ יחידת טמפרטורה</span>
             <input class="cfg-input" id="cfg-temp-unit" type="text" placeholder="C / F" />
+          </div>
+          <!-- F160: News font size slider -->
+          <div class="cfg-row">
+            <span class="cfg-label">📰 גודל טקסט חדשות (%)</span>
+            <input id="cfg-news-fontsize" type="range" min="70" max="130" step="5" style="width:100px;direction:ltr" />
+            <span id="cfg-news-fontsize-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
           </div>
         </div>
         <!-- Tab: Calendar -->
@@ -1585,7 +1643,7 @@
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
             <div class="card" data-card-id="news">
-              <div class="card-header"><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span></div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד">🔖 מועדפים</span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
@@ -1599,7 +1657,7 @@
               </div>
             </div>
             <div class="card" data-card-id="weather">
-              <div class="card-header"><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
               <div class="weather-body">
                 <!-- Feature 45: Multi-city tabs -->
                 <div class="wx-city-tabs" id="wx-city-tabs">
@@ -1612,6 +1670,8 @@
                     <div class="wx-icon" id="wx-icon">🌤️</div>
                     <div class="wx-info">
                       <div class="wx-temp-main temp-toggle" id="wx-temp" title="לחץ לחילוף °C/°F">--°C</div>
+                      <!-- F158: Today min/max range -->
+                      <div id="wx-minmax" class="wx-minmax"></div>
                       <div class="wx-desc" id="wx-desc">טוען...</div>
                     </div>
                   </div>
@@ -1651,7 +1711,7 @@
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
             <div class="card" data-card-id="hcal">
-              <div class="card-header"><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
                 <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
                 <div class="hc-row" id="hc-countdown-row" style="display:none"><span class="hc-label">⏱ כניסה בעוד</span><span class="hc-val hc-countdown" id="hc-countdown">--:--:--</span></div>
@@ -1677,6 +1737,8 @@
                 <div class="hc-row" id="hc-event-row" style="display:none"><span class="hc-label">📆 הבא</span><span class="hc-val" id="hc-event">--</span></div>
                 <!-- Feature 34: Chore Wheel -->
                 <div class="hc-row" id="hc-chore-row" style="display:none"><span class="hc-label">🧹 משימה</span><span class="hc-val hc-chore-val" id="hc-chore">--</span></div>
+                <!-- F151: Sefirat HaOmer count -->
+                <div class="hc-row" id="hc-omer-row" style="display:none"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="omer-count"></span></div>
                 <!-- Feature 36: Earthquake alert -->
                 <!-- Feature 69: Earthquake 24h count badge -->
                 <div class="hc-row" id="quake-row"><span class="hc-label">🌍 רעש</span><span class="hc-val" id="quake-val">--</span><span id="quake-badge"></span><span class="quake-cnt" id="quake-count-badge" style="display:none"></span></div>
@@ -1691,8 +1753,10 @@
               </div>
             </div>
             <div class="card" data-card-id="cal" style="position:relative">
-              <div class="card-header"><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
+                <!-- F154: Today's upcoming events strip -->
+                <div id="cal-today-strip" class="cal-today-strip"></div>
                 <!-- Feature 63: 7-day event density strip -->
                 <div id="cal-week-strip" class="cal-week-strip"></div>
                 <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
@@ -1700,14 +1764,14 @@
               </div>
             </div>
             <div class="card" data-card-id="currency">
-              <div class="card-header"><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
               <div class="currency-body" id="currency-body">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
                 <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="cur-eur">--</div><div class="cur-chg" id="cur-eur-chg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
-                <div class="cur-item"><div class="cur-flag">🥇</div><div class="cur-pair">זהב / oz</div><div class="cur-rate" id="cur-gold">--</div><div class="cur-chg" id="cur-gold-chg"></div></div>
-                <div class="cur-item"><div class="cur-flag">🥈</div><div class="cur-pair">כסף / oz</div><div class="cur-rate" id="cur-silver">--</div><div class="cur-chg" id="cur-silver-chg"></div></div>
+                <div class="cur-item"><div class="cur-flag">🥇</div><div class="cur-pair">זהב / oz</div><div class="cur-rate" id="cur-gold">--</div><div class="cur-chg" id="cur-gold-chg"></div><svg class="cur-spark" id="cur-gold-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🥈</div><div class="cur-pair">כסף / oz</div><div class="cur-rate" id="cur-silver">--</div><div class="cur-chg" id="cur-silver-chg"></div><svg class="cur-spark" id="cur-silver-spark" viewBox="0 0 60 22"></svg></div>
                 <!-- Feature 71: GBP / ILS tile -->
-                <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-pair">GBP / ₪</div><div class="cur-rate" id="cur-gbp">--</div><div class="cur-chg" id="cur-gbp-chg"></div></div>
+                <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-pair">GBP / ₪</div><div class="cur-rate" id="cur-gbp">--</div><div class="cur-chg" id="cur-gbp-chg"></div><svg class="cur-spark" id="cur-gbp-spark" viewBox="0 0 60 22"></svg></div>
               </div>
             </div>
           </div>
@@ -1715,7 +1779,7 @@
           <!-- ── Right Column: Stocks + Alerts + Motivation + Transit ── -->
           <div class="grid-col grid-col-right">
             <div class="card" data-card-id="stocks">
-            <div class="card-header"><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
+            <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body">
                   <!-- Feature 74: Stock sector headers -->
@@ -1739,6 +1803,8 @@
                   <div class="stk" data-symbol="^TA35.TA"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=tase.co.il&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">ת"א 35</div><div class="stk-desc">בורסה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                 </div>
               </div>
+              <!-- F155: Stocks gainers/losers summary -->
+              <div id="stk-summary" class="stk-summary"></div>
               <!-- Feature 51: Portfolio Total Value Row -->
               <div id="stk-total-row" class="stk-total-row" style="display:none">
                 <span class="stk-total-label">💼 תיק:</span>
@@ -1749,7 +1815,7 @@
               <div id="stk-mkt-countdown"></div>
             </div>
             <div class="card" data-card-id="alerts">
-              <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge-count" class="alerts-badge"></span>צבע אדום</div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge-count" class="alerts-badge"></span>צבע אדום</div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll">
                   <div class="alert-count">טוען התרעות...</div>
@@ -1757,7 +1823,7 @@
               </div>
             </div>
             <div class="card" data-card-id="moti">
-              <div class="card-header"><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">✨</span> מוטיבציה</div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-moti"></div><span class="icon-badge pink">✨</span> מוטיבציה</div>
               <div class="moti-body">
                 <div class="moti-card">
                   <div class="moti-text" id="moti-text">טוען השראה...</div>
@@ -1770,7 +1836,7 @@
             </div>
             <!-- Feature 98: Transit departures card -->
             <div class="card" data-card-id="transit">
-              <div class="card-header"><div class="sync-dot" id="sync-transit"></div><span class="icon-badge cyan">🚌</span> תחבורה ציבורית</div>
+              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-transit"></div><span class="icon-badge cyan">🚌</span> תחבורה ציבורית</div>
               <div class="transit-body" id="transit-body">
                 <div class="transit-placeholder">הגדר מספר תחנה בהגדרות</div>
               </div>
@@ -1779,7 +1845,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.18.0 — משפחת רגואן</span>
+            <span>Dashboard v4.19.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1795,7 +1861,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.18.0 — 3-Column Layout · Hebrew Calendar Card · 150 Sprint Features · 1045 Tests
+       FAMILY DASHBOARD v4.19.0 — 3-Column Layout · Hebrew Calendar Card · 160 Sprint Features · 1069 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -2229,6 +2295,15 @@
         wxGust: $('wx-gust'),           // F143
         wxWeekSummary: $('wx-week-summary'), // F148
         motiNextBtn: $('moti-next-btn'), // F146
+        // Sprint 16 additions (F151-F160)
+        hcOmerRow: $('hc-omer-row'),         // F151
+        wxMinMax: $('wx-minmax'),            // F158
+        stkSummary: $('stk-summary'),        // F155
+        calTodayStrip: $('cal-today-strip'), // F154
+        newsBkmPill: $('news-bkm-pill'),     // F156
+        halachaOverlay: $('halacha-overlay'), // F157
+        halachaOverlayRef: $('halacha-overlay-ref'), // F157
+        halachaOverlayText: $('halacha-overlay-text'), // F157
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -2481,12 +2556,17 @@
     }
     function _renderOmer(item) {
         if (!el.omerCount) return;
-        if (!item) { el.omerCount.textContent = ''; return; }
+        if (!item) {
+            el.omerCount.textContent = '';
+            if (el.hcOmerRow) el.hcOmerRow.style.display = 'none';
+            return;
+        }
         // item.hebrew e.g. "ח׳ בָּעֹמֶר", item.title e.g. "Omer: day 8 of 49"
         const heb = item.hebrew || '';
         const day = heb || (item.title ? item.title.replace('Omer:', '').trim() : '');
         el.omerCount.textContent = day ? `🌾 ${day}` : '';
         if (item.title) el.omerCount.title = item.title;
+        if (el.hcOmerRow) el.hcOmerRow.style.display = day ? '' : 'none';
     }
 
     // ── Day / Year Progress ──
@@ -2525,7 +2605,7 @@
         try {
             // Feature 45: use current city lat/lon
             const city = (typeof getCurrentWxCity === 'function') ? getCurrentWxCity() : { lat: 31.7683, lon: 35.2137 };
-            const d = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature,precipitation_probability,dew_point_2m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max&timezone=Asia%2FJerusalem&forecast_days=8`).then(r => r.json());
+            const d = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,uv_index,apparent_temperature,precipitation_probability,dew_point_2m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,precipitation_sum&timezone=Asia%2FJerusalem&forecast_days=8`).then(r => r.json());
             if (d.current_weather) { cSet(key, d); renderWeather(d); setSync('wx', 'success'); syncBurst('wx'); recordSuccess('wx'); }
         } catch (e) { console.error('Weather:', e); setSync('wx', stale ? 'success' : 'error'); recordFailure('wx'); }
         releaseLock('wx');
@@ -2610,14 +2690,21 @@
                     const mn = Math.round(d.daily.temperature_2m_min[i]);
                     const wc = d.daily.weathercode[i];
                     const rain = d.daily.precipitation_probability_max?.[i];
+                    // F152: precipitation amount (mm)
+                    const mm = d.daily.precipitation_sum?.[i];
+                    const mmTxt = mm != null && mm >= 0.2 ? `<span class="wx-fday-mm">💧 ${mm.toFixed(1)} מ"מ</span>` : '';
                     // Feature 56: precipitation bar
                     const rainTxt = rain != null && rain >= 20
-                        ? `<div class="wx-fday-rain">\ud83c\udf27\ufe0f ${rain}%<div class="wx-precip-bar"><div class="wx-precip-fill" style="width:${rain}%"></div></div></div>`
+                        ? `<div class="wx-fday-rain">🌧️ ${rain}%<div class="wx-precip-bar"><div class="wx-precip-fill" style="width:${rain}%"></div></div>${mmTxt}</div>`
                         : rain != null && rain > 0
-                        ? `<div class="wx-precip-bar"><div class="wx-precip-fill" style="width:${rain}%"></div></div>`
+                        ? `<div class="wx-precip-bar"><div class="wx-precip-fill" style="width:${rain}%"></div></div>${mmTxt}`
                         : '';
-                    fDays[i - 1].innerHTML = `<div class="wx-fday-icon">${WX_EMOJI[wc] || '\ud83c\udf21\ufe0f'}</div><div class="wx-fday-name">${dn}</div><div class="wx-fday-temp">${toDisplayTemp(mx)}/${toDisplayTemp(mn)}</div>${rainTxt}`;
+                    fDays[i - 1].innerHTML = `<div class="wx-fday-icon">${WX_EMOJI[wc] || '🌡️'}</div><div class="wx-fday-name">${dn}</div><div class="wx-fday-temp">${toDisplayTemp(mx)}/${toDisplayTemp(mn)}</div>${rainTxt}`;
                 }
+            }
+            // F158: Today min/max range below main temperature
+            if (el.wxMinMax && d.daily.temperature_2m_max?.[0] != null && d.daily.temperature_2m_min?.[0] != null) {
+                el.wxMinMax.textContent = `${toDisplayTemp(Math.round(d.daily.temperature_2m_min[0]))} / ${toDisplayTemp(Math.round(d.daily.temperature_2m_max[0]))}`;
             }
             // F148: Weekly weather summary text (below 7-day forecast)
             if (el.wxWeekSummary) {
@@ -2937,6 +3024,94 @@
         const set = _getNewsBookmarks();
         if (set.has(url)) set.delete(url); else { set.add(url); if (set.size > 15) { const [first] = set; set.delete(first); } }
         try { localStorage.setItem(NEWS_BOOKMARKS_KEY, JSON.stringify([...set])); } catch (_) {}
+    }
+
+    // ── Sprint 16 Functions (F151–F160) ───────────────────────────────────────────
+
+    // F154: Today's upcoming events strip in calendar card
+    function _renderCalTodayStrip(events) {
+        if (!el.calTodayStrip) return;
+        const now = new Date();
+        const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        const todayEvents = events
+            .filter(e => !e.allDay && e.start >= now && e.start < endOfDay)
+            .sort((a, b) => a.start - b.start)
+            .slice(0, 5);
+        el.calTodayStrip.innerHTML = '';
+        if (!todayEvents.length) return;
+        todayEvents.forEach(ev => {
+            const pill = document.createElement('span');
+            pill.className = 'cal-strip-event';
+            const t = ev.start.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+            pill.textContent = `${t} ${ev.title || ''}`;
+            if (ev.icsIdx != null) pill.dataset.ics = ev.icsIdx;
+            el.calTodayStrip.appendChild(pill);
+        });
+    }
+
+    // F155: Stocks gainers/losers summary bar
+    function updateStockSummary() {
+        if (!el.stkSummary) return;
+        const stks = document.querySelectorAll('#stocks-body .stk');
+        let up = 0, dn = 0, flat = 0;
+        stks.forEach(s => {
+            if (s.classList.contains('stk-up')) up++;
+            else if (s.classList.contains('stk-down')) dn++;
+            else flat++;
+        });
+        if (up + dn + flat === 0) { el.stkSummary.textContent = ''; return; }
+        el.stkSummary.textContent = `📈 ${up} עולות  •  📉 ${dn} יורדות  •  ➡️ ${flat} יציבות`;
+    }
+
+    // F156: Toggle bookmarks-only news filter (B key)
+    function toggleNewsBookmarkFilter() {
+        const active = document.body.classList.toggle('news-bkm-mode');
+        showToast(active ? '🔖 מציג מועדפים בלבד' : '📰 מציג כל הכתבות');
+    }
+
+    // F157: Halacha overlay helpers
+    let _halachaData = null;
+    function _showHalachaOverlay() {
+        if (!_halachaData || !el.halachaOverlay) return;
+        if (el.halachaOverlayRef) el.halachaOverlayRef.textContent = '📜 ' + (_halachaData.ref || '');
+        if (el.halachaOverlayText) el.halachaOverlayText.textContent = (_halachaData.texts || []).map((t, i) => `(${i + 1}) ${t}`).join('\n\n');
+        el.halachaOverlay.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    }
+    function _closeHalachaOverlay() {
+        if (!el.halachaOverlay) return;
+        el.halachaOverlay.classList.remove('visible');
+        document.body.style.overflow = '';
+    }
+
+    // F159: Card collapse setup (called once at init)
+    function setupCardCollapse() {
+        document.querySelectorAll('.card-collapse-btn').forEach(btn => {
+            const card = btn.closest('.card');
+            if (!card || !card.dataset.cardId) return;
+            const key = `dash_collapsed_${card.dataset.cardId}`;
+            // Restore persisted state
+            if (localStorage.getItem(key) === '1') card.classList.add('collapsed');
+            btn.addEventListener('click', e => {
+                e.stopPropagation(); // don't trigger card maximize
+                card.classList.toggle('collapsed');
+                localStorage.setItem(key, card.classList.contains('collapsed') ? '1' : '0');
+            });
+        });
+    }
+
+    // F160: Apply saved news font scale on startup
+    function applyNewsFontScale() {
+        const val = parseInt(localStorage.getItem('dash_news_fontsize') || '100', 10);
+        document.documentElement.style.setProperty('--news-font-scale', (val / 100).toFixed(2));
+        const slider = document.getElementById('cfg-news-fontsize');
+        const label  = document.getElementById('cfg-news-fontsize-val');
+        if (slider) { slider.value = String(val); slider.oninput = () => {
+            const v = parseInt(slider.value, 10);
+            if (label) label.textContent = v + '%';
+            document.documentElement.style.setProperty('--news-font-scale', (v / 100).toFixed(2));
+        }; }
+        if (label) label.textContent = val + '%';
     }
 
     // F139: Custom event countdown header chip
@@ -3302,6 +3477,7 @@
 
     function renderHalacha(data) {
         if (!el.ticker || !data?.texts?.length) return;
+        _halachaData = data; // F157: store for overlay
         // Feature 48: prepend custom ticker announcement
         const customMsg = localStorage.getItem('dash_ticker_msg');
         function makeSet(isClone) {
@@ -3410,6 +3586,7 @@
             syncBurst('stocks'); recordSuccess('stocks');
             releaseLock('stocks');
             startStocksScroll();
+            updateStockSummary(); // F155
             return;
         }
 
@@ -3423,6 +3600,7 @@
         if (ok) { syncBurst('stocks'); recordSuccess('stocks'); } else { recordFailure('stocks'); }
         releaseLock('stocks');
         startStocksScroll();
+        updateStockSummary(); // F155: update gainers/losers summary bar
     }
 
     /** Load a single stock via Yahoo Finance v8 chart API.
@@ -3682,7 +3860,13 @@
         // Feature 38: record history + draw sparklines
         const usdRate = rates['USD'] ? (1 / rates['USD']) : 0;
         const eurRate = rates['EUR'] ? (1 / rates['EUR']) : 0;
-        if (usdRate && eurRate) { recordCurrencyHistory(usdRate, eurRate); renderCurrencySparklines(); }
+        const goldRate = rates['XAU'] ? Math.round(1 / rates['XAU']) : 0;
+        const silverRate = rates['XAG'] ? (1 / rates['XAG']) : 0;
+        const gbpRate = rates['GBP'] ? (1 / rates['GBP']) : 0;
+        if (usdRate && eurRate) {
+            recordCurrencyHistory(usdRate, eurRate, goldRate, silverRate, gbpRate);
+            renderCurrencySparklines();
+        }
         // Pulse effect on fresh data
         if (container) { container.classList.remove('data-fresh'); void container.offsetWidth; container.classList.add('data-fresh'); }
     }
@@ -3910,6 +4094,8 @@
     function renderCalendar(events) {
         // Feature 63: 7-day event density strip
         renderCalWeekStrip(events);
+        // F154: populate today's upcoming events strip
+        _renderCalTodayStrip(events);
         const now = new Date();
         const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * 86400000);
         // filter to window: from start of today
@@ -4217,9 +4403,11 @@
             if (e.key === '+' || e.key === '=') adjustFontScale(0.05);  // Feature 49
             if (e.key === '-' || e.key === '_') adjustFontScale(-0.05); // Feature 49
             if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+            if (e.key === 'b' || e.key === 'B') toggleNewsBookmarkFilter(); // F156
             if (e.key === '?' || e.key === 'h' || e.key === 'H') toggleHelp(); // F150: H as alt help
             if (e.key === 'Escape' && _maximizedCard) toggleCardMaximize(_maximizedCard);
             if (e.key === 'Escape' && el.helpOverlay?.classList.contains('visible')) toggleHelp();
+            if (e.key === 'Escape' && el.halachaOverlay?.classList.contains('visible')) _closeHalachaOverlay(); // F157
             if (e.key === 'Escape' && document.getElementById('config-overlay')?.classList.contains('visible')) toggleConfig();
         });
     }
@@ -5136,6 +5324,13 @@
             const val = membersInp.value.trim();
             if (val) localStorage.setItem('dash_members', val); else localStorage.removeItem('dash_members');
         }
+        // F160: News font size slider
+        const newsFontInp = document.getElementById('cfg-news-fontsize');
+        if (newsFontInp) {
+            const val = parseInt(newsFontInp.value, 10) || 100;
+            localStorage.setItem('dash_news_fontsize', String(val));
+            document.documentElement.style.setProperty('--news-font-scale', (val / 100).toFixed(2));
+        }
         toggleConfig();
         diagLog('Config saved');
     }
@@ -5267,13 +5462,13 @@
     // Feature 38: Currency Sparkline (7-day rate history in localStorage)
     const _CUR_HIST_KEY = 'dash_v2_cur_hist';
     const _CUR_HIST_MAX = 7;
-    function recordCurrencyHistory(usd, eur) {
+    function recordCurrencyHistory(usd, eur, gold = 0, silver = 0, gbp = 0) {
         try {
             const hist = JSON.parse(localStorage.getItem(_CUR_HIST_KEY) || '[]');
             const today = new Date().toDateString();
             // Replace or add today's entry
             const idx = hist.findIndex(h => h.d === today);
-            const entry = { d: today, usd, eur };
+            const entry = { d: today, usd, eur, gold, silver, gbp };
             if (idx >= 0) hist[idx] = entry; else hist.push(entry);
             // Keep last 7 days
             while (hist.length > _CUR_HIST_MAX) hist.shift();
@@ -5284,10 +5479,16 @@
         try {
             const hist = JSON.parse(localStorage.getItem(_CUR_HIST_KEY) || '[]');
             if (hist.length < 2) return;
-            const usdVals = hist.map(h => h.usd).filter(v => v > 0);
-            const eurVals = hist.map(h => h.eur).filter(v => v > 0);
+            const usdVals   = hist.map(h => h.usd).filter(v => v > 0);
+            const eurVals   = hist.map(h => h.eur).filter(v => v > 0);
+            const goldVals  = hist.map(h => h.gold).filter(v => v > 0);
+            const silverVals = hist.map(h => h.silver).filter(v => v > 0);
+            const gbpVals   = hist.map(h => h.gbp).filter(v => v > 0);
             _drawSparkline('cur-usd-spark', usdVals);
             _drawSparkline('cur-eur-spark', eurVals);
+            _drawSparkline('cur-gold-spark', goldVals);
+            _drawSparkline('cur-silver-spark', silverVals);
+            _drawSparkline('cur-gbp-spark', gbpVals);
         } catch (_) {}
     }
     function _drawSparkline(id, vals) {
@@ -6141,6 +6342,15 @@
         });
         initPrintDate();               // F140: wire beforeprint event for print datetime
         updateCountdownChip(new Date()); // F139: initial render of countdown chip
+        setupCardCollapse();           // F159: wire collapse buttons and restore persisted state
+        applyNewsFontScale();          // F160: apply saved news font size
+        // F157: wire halacha ticker bar click to show full text overlay
+        const tickerBar = document.querySelector('.ticker-bar');
+        if (tickerBar) tickerBar.addEventListener('click', _showHalachaOverlay);
+        if (el.halachaOverlay) {
+            el.halachaOverlay.addEventListener('click', e => { if (!e.target.closest('.halacha-overlay-inner')) _closeHalachaOverlay(); });
+            el.halachaOverlay.querySelector('.halacha-overlay-close')?.addEventListener('click', _closeHalachaOverlay);
+        }
     }
 
     // Real-time (1min) — clock has no seconds, minute tick is sufficient

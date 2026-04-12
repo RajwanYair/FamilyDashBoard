@@ -1782,7 +1782,7 @@ describe("Status Bar", () => {
 
   it("should display current version in status bar", () => {
     assert.ok(
-      html.includes("Dashboard v4.18.0"),
+      html.includes("Dashboard v4.19.0"),
       "Missing current version in status bar",
     );
   });
@@ -6033,8 +6033,8 @@ describe("Sprint 13 Features (v4.16.0)", () => {
   });
 
   // Version
-  it("version should be v4.18.0", () => {
-    assert.ok(html.includes("Dashboard v4.18.0"), "Version should be v4.18.0");
+  it("version should be v4.19.0", () => {
+    assert.ok(html.includes("Dashboard v4.19.0"), "Version should be v4.19.0");
   });
 });
 
@@ -6236,7 +6236,7 @@ describe("Sprint 15 Features (v4.18.0)", () => {
   });
   it("F148: wxWeekSummary referenced in renderWeather", () => {
     const offset = html.indexOf("function renderWeather");
-    const slice = html.slice(offset, offset + 6500);
+    const slice = html.slice(offset, offset + 8000);
     assert.ok(slice.includes("wxWeekSummary"), "F148: wxWeekSummary not set in renderWeather");
   });
 
@@ -6262,7 +6262,177 @@ describe("Sprint 15 Features (v4.18.0)", () => {
   });
 
   // Version
-  it("version should be v4.18.0", () => {
-    assert.ok(html.includes("Dashboard v4.18.0"), "Version should be v4.18.0");
+  it("version should be v4.19.0", () => {
+    assert.ok(html.includes("Dashboard v4.19.0"), "Version should be v4.19.0");
+  });
+});
+
+// Suite 60 — Sprint 16 Features (v4.19.0, F151–F160)
+// node --test --test-name-pattern="Sprint 16" tests/dashboard.test.mjs
+describe("Sprint 16 Features (v4.19.0)", () => {
+  // F151: Sefirat HaOmer row
+  it("F151: #hc-omer-row element exists", () => {
+    assert.ok(html.includes('id="hc-omer-row"'), "F151: #hc-omer-row element missing");
+  });
+  it("F151: #omer-count span exists inside omer row", () => {
+    assert.ok(html.includes('id="omer-count"'), "F151: #omer-count span missing");
+  });
+  it("F151: el.hcOmerRow wired in el object", () => {
+    assert.ok(scriptContent.includes("hcOmerRow:"), "F151: el.hcOmerRow not in el object");
+  });
+  it("F151: _renderOmer references hcOmerRow", () => {
+    const off = scriptContent.indexOf("function _renderOmer(");
+    assert.ok(off !== -1, "F151: _renderOmer function missing");
+    const slice = scriptContent.slice(off, off + 800);
+    assert.ok(slice.includes("hcOmerRow"), "F151: _renderOmer does not use hcOmerRow");
+  });
+
+  // F152: Precipitation sum in forecast
+  it("F152: precipitation_sum in loadWeather URL", () => {
+    assert.ok(scriptContent.includes("precipitation_sum"), "F152: precipitation_sum not in weather daily params");
+  });
+  it("F152: .wx-fday-mm CSS class defined", () => {
+    assert.ok(html.includes(".wx-fday-mm"), "F152: .wx-fday-mm CSS missing");
+  });
+  it("F152: wx-fday-mm used in renderWeather", () => {
+    assert.ok(scriptContent.includes("wx-fday-mm"), "F152: wx-fday-mm not used in renderWeather");
+  });
+
+  // F153: Gold/Silver/GBP sparklines
+  it("F153: #cur-gold-spark SVG element exists", () => {
+    assert.ok(html.includes('id="cur-gold-spark"'), "F153: #cur-gold-spark missing");
+  });
+  it("F153: #cur-silver-spark SVG element exists", () => {
+    assert.ok(html.includes('id="cur-silver-spark"'), "F153: #cur-silver-spark missing");
+  });
+  it("F153: #cur-gbp-spark SVG element exists", () => {
+    assert.ok(html.includes('id="cur-gbp-spark"'), "F153: #cur-gbp-spark missing");
+  });
+  it("F153: recordCurrencyHistory accepts gbp parameter", () => {
+    const off = scriptContent.indexOf("function recordCurrencyHistory(");
+    assert.ok(off !== -1, "F153: recordCurrencyHistory function missing");
+    const sig = scriptContent.slice(off, off + 100);
+    assert.ok(sig.includes("gbp"), "F153: recordCurrencyHistory missing gbp param");
+  });
+  it("F153: renderCurrencySparklines draws gold spark", () => {
+    const off = scriptContent.indexOf("function renderCurrencySparklines(");
+    assert.ok(off !== -1, "F153: renderCurrencySparklines function missing");
+    const slice = scriptContent.slice(off, off + 1000);
+    assert.ok(slice.includes("cur-gold-spark"), "F153: renderCurrencySparklines missing cur-gold-spark");
+  });
+
+  // F154: Calendar today strip
+  it("F154: #cal-today-strip element exists", () => {
+    assert.ok(html.includes('id="cal-today-strip"'), "F154: #cal-today-strip element missing");
+  });
+  it("F154: .cal-strip-event CSS defined", () => {
+    assert.ok(html.includes(".cal-strip-event"), "F154: .cal-strip-event CSS missing");
+  });
+  it("F154: _renderCalTodayStrip function declared", () => {
+    assert.ok(scriptContent.includes("function _renderCalTodayStrip("), "F154: _renderCalTodayStrip function missing");
+  });
+  it("F154: renderCalendar calls _renderCalTodayStrip", () => {
+    const off = scriptContent.indexOf("function renderCalendar(");
+    assert.ok(off !== -1, "F154: renderCalendar function missing");
+    const slice = scriptContent.slice(off, off + 500);
+    assert.ok(slice.includes("_renderCalTodayStrip"), "F154: renderCalendar does not call _renderCalTodayStrip");
+  });
+
+  // F155: Stocks gainers/losers summary bar
+  it("F155: #stk-summary element exists", () => {
+    assert.ok(html.includes('id="stk-summary"'), "F155: #stk-summary element missing");
+  });
+  it("F155: updateStockSummary function declared", () => {
+    assert.ok(scriptContent.includes("function updateStockSummary("), "F155: updateStockSummary function missing");
+  });
+  it("F155: loadStocks calls updateStockSummary", () => {
+    assert.ok(scriptContent.includes("updateStockSummary()"), "F155: loadStocks does not call updateStockSummary");
+  });
+
+  // F156: Bookmark-only filter (B key)
+  it("F156: B key wired in keydown handler", () => {
+    assert.ok(scriptContent.includes("toggleNewsBookmarkFilter"), "F156: toggleNewsBookmarkFilter not referenced in keyboard handler");
+  });
+  it("F156: toggleNewsBookmarkFilter function declared", () => {
+    assert.ok(scriptContent.includes("function toggleNewsBookmarkFilter("), "F156: toggleNewsBookmarkFilter function missing");
+  });
+  it("F156: news-bkm-mode CSS hides non-bookmarked items", () => {
+    assert.ok(html.includes("news-bkm-mode"), "F156: news-bkm-mode CSS missing");
+  });
+  it("F156: .news-bkm-pill element exists", () => {
+    assert.ok(html.includes('id="news-bkm-pill"'), "F156: #news-bkm-pill element missing");
+  });
+
+  // F157: Halacha full-text overlay
+  it("F157: #halacha-overlay element exists", () => {
+    assert.ok(html.includes('id="halacha-overlay"'), "F157: #halacha-overlay element missing");
+  });
+  it("F157: .halacha-overlay CSS defined", () => {
+    assert.ok(html.includes(".halacha-overlay"), "F157: .halacha-overlay CSS missing");
+  });
+  it("F157: _showHalachaOverlay function declared", () => {
+    assert.ok(scriptContent.includes("function _showHalachaOverlay("), "F157: _showHalachaOverlay function missing");
+  });
+  it("F157: _closeHalachaOverlay function declared", () => {
+    assert.ok(scriptContent.includes("function _closeHalachaOverlay("), "F157: _closeHalachaOverlay function missing");
+  });
+  it("F157: _halachaData stored in renderHalacha", () => {
+    const off = scriptContent.indexOf("function renderHalacha(");
+    assert.ok(off !== -1, "F157: renderHalacha function missing");
+    const slice = scriptContent.slice(off, off + 400);
+    assert.ok(slice.includes("_halachaData"), "F157: renderHalacha does not store _halachaData");
+  });
+  it("F157: _closeHalachaOverlay referenced in Escape handler", () => {
+    assert.ok(scriptContent.includes("_closeHalachaOverlay"), "F157: _closeHalachaOverlay not referenced in code");
+  });
+
+  // F158: Weather today min/max
+  it("F158: #wx-minmax element exists", () => {
+    assert.ok(html.includes('id="wx-minmax"'), "F158: #wx-minmax element missing");
+  });
+  it("F158: #wx-minmax CSS defined", () => {
+    assert.ok(html.includes("#wx-minmax"), "F158: #wx-minmax CSS missing");
+  });
+  it("F158: renderWeather populates wxMinMax", () => {
+    assert.ok(scriptContent.includes("wxMinMax"), "F158: renderWeather does not set wxMinMax");
+  });
+
+  // F159: Card collapse toggle
+  it("F159: .card-collapse-btn CSS defined", () => {
+    assert.ok(html.includes(".card-collapse-btn"), "F159: .card-collapse-btn CSS missing");
+  });
+  it("F159: setupCardCollapse function declared", () => {
+    assert.ok(scriptContent.includes("function setupCardCollapse("), "F159: setupCardCollapse function missing");
+  });
+  it("F159: dash_collapsed_ localStorage key used", () => {
+    assert.ok(scriptContent.includes("dash_collapsed_"), "F159: dash_collapsed_ localStorage key not found");
+  });
+  it("F159: .card.collapsed CSS hides card body", () => {
+    assert.ok(html.includes(".card.collapsed"), "F159: .card.collapsed CSS missing");
+  });
+  it("F159: at least one card has data-card-id attribute", () => {
+    assert.ok(html.includes('data-card-id="'), "F159: no card has data-card-id attribute");
+  });
+
+  // F160: News font size config slider
+  it("F160: #cfg-news-fontsize input exists", () => {
+    assert.ok(html.includes('id="cfg-news-fontsize"'), "F160: #cfg-news-fontsize input missing");
+  });
+  it("F160: --news-font-scale CSS variable defined", () => {
+    assert.ok(html.includes("--news-font-scale"), "F160: --news-font-scale CSS variable missing");
+  });
+  it("F160: applyNewsFontScale function declared", () => {
+    assert.ok(scriptContent.includes("function applyNewsFontScale("), "F160: applyNewsFontScale function missing");
+  });
+  it("F160: saveConfig persists dash_news_fontsize", () => {
+    assert.ok(scriptContent.includes("dash_news_fontsize"), "F160: saveConfig does not save dash_news_fontsize");
+  });
+  it("F160: rss-title applies --news-font-scale CSS variable", () => {
+    assert.ok(html.includes("--news-font-scale"), "F160: --news-font-scale CSS variable not referenced");
+  });
+
+  // Version
+  it("version should be v4.19.0", () => {
+    assert.ok(html.includes("Dashboard v4.19.0"), "Version should be v4.19.0");
   });
 });
