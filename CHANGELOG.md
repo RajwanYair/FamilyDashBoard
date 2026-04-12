@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.15.0] — 2026-05-02
+
+> **Sprint 12 (Features 111–120)** — SW full offline shell + API cache, network-recovery pane refresh, desktop notification bell + red-alert pop-up, unread alerts badge, configurable weather cities, family member rotation in greeting, config panel section tabs, dashboard URL share
+> Tests: 962 / 56 suites / 0 failures (was 942 / 55 suites / 0)
+
+### Added
+
+- **F111 — SW pre-cache `sw.js` itself** — `./sw.js` added to `APP_SHELL` array so the full offline shell is reliably cached on first install
+- **F112 — SW offline API fallback** — New `CACHE_NAME_API = "familydashboard-api-v4.15.0"` cache; `API_CACHE_ORIGINS` list covers open-meteo, hebcal, er-api, exchangerate-api; fetch handler uses network-first strategy with SW-cache fallback when network fails; old API cache cleared on activate
+- **F113 — Network recovery pane refresh** — SW tracks `_networkWasDown` flag; posts `{type:'NETWORK_BACK'}` to all clients when first successful fetch follows a failure; page `serviceWorker.message` listener re-loads Weather, HebCal, Alerts, Stocks
+- **F114 — Notification permission bell chip** — `#notif-bell` amber pulsing chip in `header-right`; `initNotifBell()` shows it when `Notification.permission === 'default'`; `requestNotifPermission()` requests browser permission on click and hides the bell if granted
+- **F115 — Red Alert desktop notification** — `new Notification('⚠️ צבע אדום', {body:cities, dir:'rtl', lang:'he'})` fires in `loadAlerts()` when a new alert arrives and browser permission is `granted`
+- **F116 — Unread alerts badge** — `<span class="alerts-badge" id="alerts-badge-count">` in alerts card header; `_unreadAlerts` counter incremented in `renderAlerts()` on `highlightNew`; badge hidden by `resetAlertsBadge()` when alerts card is maximized/opened
+- **F117 — Configurable weather city tabs** — Three `cfg-city-N` inputs (format `שם|lat|lon`) in Feeds config tab; `initWeatherCities()` reads `dash_city_1/2/3` from localStorage and updates `.wx-city-tab[data-city]` button text + data-lat/lon on startup and panel save
+- **F118 — Family members list + greeting rotation** — `cfg-members` comma-separated input saved to `dash_members`; `getMembers()` function; `getGreeting()` rotates through members by day-of-month for personalised morning/evening greetings
+- **F119 — Config panel section tabs** — Five tabs: `תצוגה` (Display), `לוח` (Calendar), `עדכונים` (Feeds), `התראות` (Notifications), `מתקדם` (Advanced); `switchCfgTab(tabName)` toggles `.cfg-tab.active` and `.cfg-section.active`; last tab persisted to `dash_cfg_tab`; save/close buttons always visible below tabs
+- **F120 — Dashboard URL share** — `shareSettings()` encodes theme, screen-mode, geonameid, alert-zone as URL hash params; `navigator.clipboard.writeText()` + toast; `loadFromHash()` reads hash on startup, applies settings, then strips hash from URL; `🔗 שתף קישור` button in Advanced config tab
+
+### Changed
+
+- **CSS** — Added Sprint 12 rules: `#notif-bell` (amber pulsing chip), `.alerts-badge` (red count badge), `.cfg-tabs/.cfg-tab/.cfg-section` (config panel tab system), `#cfg-share-btn` styling
+- **Config panel restructured** — All existing rows redistributed into 5 tabbed sections; export/import/share buttons moved into Advanced tab; save/close always visible below tabs
+
+---
+
 ## [4.14.0] — 2026-04-27
 
 > **Sprint 11 (Features 101–110)** — SW update banner, multi-ICS calendar, news search, birthday header chip, reconnect auto-refresh, halacha category colors, settings export/import, Hebrew wind direction, next Zman header, visited news tracking

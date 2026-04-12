@@ -22,6 +22,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const HTML_PATH = join(__dirname, "..", "BestDashBoard.html");
 const html = readFileSync(HTML_PATH, "utf8");
 
+// ── Load sw.js for Sprint 12 tests (F111–F113) ──
+const SW_PATH = join(__dirname, "..", "sw.js");
+const swContent = readFileSync(SW_PATH, "utf8");
+
 // ── Extract <script> block ──
 const scriptMatch = html.match(/<script[\s\S]*?>([\s\S]*?)<\/script>/);
 const scriptContent = scriptMatch ? scriptMatch[1] : "";
@@ -1778,7 +1782,7 @@ describe("Status Bar", () => {
 
   it("should display version v4.14.0", () => {
     assert.ok(
-      html.includes("Dashboard v4.14.0"),
+      html.includes("Dashboard v4.15.0"),
       "Missing version v4.14.0 in status bar",
     );
   });
@@ -5231,7 +5235,7 @@ describe("Sprint 9 Features (F81–F90)", () => {
     assert.ok(scriptContent.includes("function filterAlertsByZone("), "Missing filterAlertsByZone");
   });
   it("F86: renderAlerts should call filterAlertsByZone", () => {
-    const fn = scriptContent.slice(scriptContent.indexOf("function renderAlerts("), scriptContent.indexOf("function renderAlerts(") + 300);
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderAlerts("), scriptContent.indexOf("function renderAlerts(") + 600);
     assert.ok(fn.includes("filterAlertsByZone"), "renderAlerts should apply zone filter");
   });
   it("F86: saveConfig should persist dash_alert_zone", () => {
@@ -5727,3 +5731,176 @@ describe("Sprint 11 Features (F101–F110)", () => {
   });
 
 });
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Suite 56 — Sprint 12 Features (v4.15.0, F111–F120)
+// ──────────────────────────────────────────────────────────────────────────────
+describe("Sprint 12 Features (v4.15.0)", () => {
+  // F111: sw.js in APP_SHELL
+  it("F111: sw.js APP_SHELL should include sw.js itself", () => {
+    assert.ok(swContent.includes('"./sw.js"'), "APP_SHELL should contain './sw.js'");
+  });
+
+  // F112: SW API cache
+  it("F112: sw.js should define CACHE_NAME_API constant", () => {
+    assert.ok(swContent.includes("CACHE_NAME_API"), "Missing CACHE_NAME_API in sw.js");
+  });
+  it("F112: sw.js should list API_CACHE_ORIGINS", () => {
+    assert.ok(swContent.includes("API_CACHE_ORIGINS"), "Missing API_CACHE_ORIGINS in sw.js");
+  });
+  it("F112: sw.js should cache api.open-meteo.com", () => {
+    assert.ok(swContent.includes("api.open-meteo.com"), "sw.js should cache open-meteo API");
+  });
+  it("F112: sw.js should cache www.hebcal.com", () => {
+    assert.ok(swContent.includes("www.hebcal.com"), "sw.js should cache hebcal API");
+  });
+
+  // F113: Network recovery message
+  it("F113: sw.js should have _networkWasDown flag", () => {
+    assert.ok(swContent.includes("_networkWasDown"), "Missing _networkWasDown in sw.js");
+  });
+  it("F113: sw.js should post NETWORK_BACK message to clients", () => {
+    assert.ok(swContent.includes("NETWORK_BACK"), "sw.js should broadcast NETWORK_BACK on recovery");
+  });
+  it("F113: page should listen for SW NETWORK_BACK message", () => {
+    assert.ok(scriptContent.includes("NETWORK_BACK"), "Page should handle NETWORK_BACK SW message");
+  });
+
+  // F114: Notification bell chip
+  it("F114: should have #notif-bell element in header-right", () => {
+    assert.ok(html.includes('id="notif-bell"'), "Missing #notif-bell element");
+  });
+  it("F114: #notif-bell CSS should be defined", () => {
+    assert.ok(html.includes("#notif-bell"), "Missing #notif-bell CSS rule");
+  });
+  it("F114: should define initNotifBell function", () => {
+    assert.ok(scriptContent.includes("function initNotifBell("), "Missing initNotifBell function");
+  });
+  it("F114: should define requestNotifPermission function", () => {
+    assert.ok(scriptContent.includes("function requestNotifPermission("), "Missing requestNotifPermission function");
+  });
+  it("F114: initNotifBell should check Notification.permission", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function initNotifBell("), scriptContent.indexOf("function initNotifBell(") + 300);
+    assert.ok(fn.includes("Notification.permission"), "initNotifBell should check Notification.permission");
+  });
+  it("F114: el object should cache notifBell", () => {
+    assert.ok(scriptContent.includes("notifBell:"), "el object should have notifBell reference");
+  });
+
+  // F115: Desktop notification for red alert
+  it("F115: loadAlerts should send desktop Notification for new alerts", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function loadAlerts("));
+    assert.ok(fn.includes("new Notification("), "loadAlerts should create desktop Notification");
+  });
+  it("F115: desktop notification should have RTL direction", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function loadAlerts("));
+    assert.ok(fn.includes("dir: 'rtl'") || fn.includes('dir:"rtl"'), "Notification should be dir:rtl");
+  });
+
+  // F116: Unread alerts badge
+  it("F116: should have #alerts-badge-count element in alerts card header", () => {
+    assert.ok(html.includes('id="alerts-badge-count"'), "Missing #alerts-badge-count element");
+  });
+  it("F116: .alerts-badge CSS should be defined", () => {
+    assert.ok(html.includes(".alerts-badge"), "Missing .alerts-badge CSS rule");
+  });
+  it("F116: should define _unreadAlerts counter variable", () => {
+    assert.ok(scriptContent.includes("_unreadAlerts"), "Missing _unreadAlerts variable");
+  });
+  it("F116: should define resetAlertsBadge function", () => {
+    assert.ok(scriptContent.includes("function resetAlertsBadge("), "Missing resetAlertsBadge function");
+  });
+  it("F116: el object should cache alertsBadge", () => {
+    assert.ok(scriptContent.includes("alertsBadge:"), "el object should have alertsBadge reference");
+  });
+
+  // F117: Configurable weather city slots
+  it("F117: config panel should have cfg-city-1 input", () => {
+    assert.ok(html.includes('id="cfg-city-1"'), "Missing cfg-city-1 input");
+  });
+  it("F117: config panel should have cfg-city-2 input", () => {
+    assert.ok(html.includes('id="cfg-city-2"'), "Missing cfg-city-2 input");
+  });
+  it("F117: config panel should have cfg-city-3 input", () => {
+    assert.ok(html.includes('id="cfg-city-3"'), "Missing cfg-city-3 input");
+  });
+  it("F117: should define initWeatherCities function", () => {
+    assert.ok(scriptContent.includes("function initWeatherCities("), "Missing initWeatherCities function");
+  });
+  it("F117: initWeatherCities should update wx-city-tab data attributes", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function initWeatherCities("), scriptContent.indexOf("function initWeatherCities(") + 600);
+    assert.ok(fn.includes("dataset.lat") && fn.includes("dataset.lon"), "initWeatherCities should update lat/lon data attributes");
+  });
+  it("F117: saveConfig should save dash_city_1/2/3 to localStorage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function saveConfig("));
+    assert.ok(fn.includes("dash_city_"), "saveConfig should save weather city configs");
+  });
+
+  // F118: Family members list
+  it("F118: config panel should have cfg-members input", () => {
+    assert.ok(html.includes('id="cfg-members"'), "Missing cfg-members input");
+  });
+  it("F118: should define getMembers function", () => {
+    assert.ok(scriptContent.includes("function getMembers("), "Missing getMembers function");
+  });
+  it("F118: getMembers should read dash_members from localStorage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function getMembers("), scriptContent.indexOf("function getMembers(") + 300);
+    assert.ok(fn.includes("dash_members"), "getMembers should use dash_members key");
+  });
+  it("F118: getGreeting should call getMembers", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function getGreeting("), scriptContent.indexOf("function getGreeting(") + 600);
+    assert.ok(fn.includes("getMembers("), "getGreeting should call getMembers for personalised greeting");
+  });
+
+  // F119: Config panel section tabs
+  it("F119: config panel should have .cfg-tabs container", () => {
+    assert.ok(html.includes('class="cfg-tabs"'), "Missing .cfg-tabs container");
+  });
+  it("F119: should have display, calendar, feeds, alerts, advanced tabs", () => {
+    assert.ok(
+      html.includes('data-tab="display"') &&
+      html.includes('data-tab="calendar"') &&
+      html.includes('data-tab="feeds"') &&
+      html.includes('data-tab="alerts-tab"') &&
+      html.includes('data-tab="advanced"'),
+      "Missing one or more config tab sections"
+    );
+  });
+  it("F119: .cfg-tab CSS should be defined", () => {
+    assert.ok(html.includes(".cfg-tab"), "Missing .cfg-tab CSS rule");
+  });
+  it("F119: .cfg-section CSS should default to display:none", () => {
+    assert.ok(html.includes(".cfg-section"), "Missing .cfg-section CSS rule");
+  });
+  it("F119: should define switchCfgTab function", () => {
+    assert.ok(scriptContent.includes("function switchCfgTab("), "Missing switchCfgTab function");
+  });
+  it("F119: switchCfgTab should persist active tab to dash_cfg_tab", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function switchCfgTab("), scriptContent.indexOf("function switchCfgTab(") + 400);
+    assert.ok(fn.includes("dash_cfg_tab"), "switchCfgTab should save tab to localStorage");
+  });
+
+  // F120: Dashboard URL share
+  it("F120: should have share button in config panel", () => {
+    assert.ok(html.includes('id="cfg-share-btn"'), "Missing #cfg-share-btn button");
+  });
+  it("F120: should define shareSettings function", () => {
+    assert.ok(scriptContent.includes("function shareSettings("), "Missing shareSettings function");
+  });
+  it("F120: shareSettings should use navigator.clipboard.writeText", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function shareSettings("), scriptContent.indexOf("function shareSettings(") + 900);
+    assert.ok(fn.includes("clipboard.writeText"), "shareSettings should copy URL to clipboard");
+  });
+  it("F120: should define loadFromHash function", () => {
+    assert.ok(scriptContent.includes("function loadFromHash("), "Missing loadFromHash function");
+  });
+  it("F120: loadFromHash should strip hash from URL after applying", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function loadFromHash("), scriptContent.indexOf("function loadFromHash(") + 600);
+    assert.ok(fn.includes("history.replaceState"), "loadFromHash should strip hash from URL");
+  });
+  it("F120: loadFromHash should be called before init()", () => {
+    const lastChunk = scriptContent.slice(scriptContent.lastIndexOf("loadFromHash()"));
+    assert.ok(lastChunk.includes("loadFromHash()"), "loadFromHash should be called before init");
+  });
+});
+

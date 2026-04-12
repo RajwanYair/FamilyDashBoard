@@ -1193,6 +1193,21 @@
         /* F110 — News Visited Articles Dimming */
         .rss-item.visited { opacity: 0.45; }
         .rss-item.visited .rss-title { text-decoration: line-through; text-decoration-color: var(--text-muted); }
+        /* ── Sprint 12 CSS (F111–F120) ── */
+        /* F114 — Notification permission bell chip */
+        #notif-bell { font-size: 0.68em; background: rgba(251,191,36,0.16); color: var(--warning); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: pointer; animation: pulse 2s infinite; }
+        /* F116 — Unread alerts badge count */
+        .alerts-badge { font-size: 0.55em; padding: 1px 5px; border-radius: 8px; background: var(--negative); color: #fff; font-weight: 700; display: none; margin-left: 5px; min-width: 1.4em; text-align: center; vertical-align: middle; }
+        /* F117 — Weather city config (uses existing .wx-city-tab styles) */
+        /* F118 — Family members config (uses existing cfg-row styles) */
+        /* F119 — Config panel section tabs */
+        .cfg-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+        .cfg-tab { font-size: 0.74em; padding: 3px 8px; border-radius: 6px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+        .cfg-tab.active { background: var(--accent); color: #000; font-weight: 700; border-color: var(--accent); }
+        .cfg-section { display: none; }
+        .cfg-section.active { display: block; }
+        /* F120 — Dashboard URL share button */
+        #cfg-share-btn { font-size: 0.82em; background: var(--bg-card-inner); color: var(--text-primary); }
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
@@ -1237,111 +1252,152 @@
     <div id="config-overlay">
       <div id="config-panel">
         <h2>⚙️ הגדרות</h2>
-        <div class="cfg-row">
-          <span class="cfg-label">🖼️ תמונת רקע (URL)</span>
-          <input class="cfg-input" id="cfg-bg-url" type="text" placeholder="https://..." />
+        <!-- F119: Config panel section tabs -->
+        <div class="cfg-tabs">
+          <button class="cfg-tab active" data-tab="display" onclick="switchCfgTab('display')">🖥️ תצוגה</button>
+          <button class="cfg-tab" data-tab="calendar" onclick="switchCfgTab('calendar')">📅 לוח</button>
+          <button class="cfg-tab" data-tab="feeds" onclick="switchCfgTab('feeds')">📰 עדכונים</button>
+          <button class="cfg-tab" data-tab="alerts-tab" onclick="switchCfgTab('alerts-tab')">🚨 התראות</button>
+          <button class="cfg-tab" data-tab="advanced" onclick="switchCfgTab('advanced')">⚙️ מתקדם</button>
         </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🎂 יום הולדת (שם, חודש, יום)</span>
-          <input class="cfg-input" id="cfg-birthday" type="text" placeholder="שם,6,15" />
+        <!-- Tab: Display -->
+        <div class="cfg-section active" data-tab="display">
+          <div class="cfg-row">
+            <span class="cfg-label">🖼️ תמונת רקע (URL)</span>
+            <input class="cfg-input" id="cfg-bg-url" type="text" placeholder="https://..." />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">👨‍👩‍👧‍👦 שם משפחה (לברכה)</span>
+            <input class="cfg-input" id="cfg-family-name" type="text" placeholder="רגואן" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">👨‍👩‍👧 שמות בני המשפחה</span>
+            <input class="cfg-input" id="cfg-members" type="text" placeholder="ענה, עמרי, ריבה" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
+            <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌑 החשיכה אוטומטית — שעת התחלה (H)</span>
+            <input class="cfg-input" id="cfg-dim-start" type="number" min="0" max="23" placeholder="23" style="direction:ltr;width:70px" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌅 החשיכה אוטומטית — שעת סיום (H)</span>
+            <input class="cfg-input" id="cfg-dim-end" type="number" min="0" max="23" placeholder="6" style="direction:ltr;width:70px" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌡️ יחידת טמפרטורה</span>
+            <input class="cfg-input" id="cfg-temp-unit" type="text" placeholder="C / F" />
+          </div>
         </div>
-        <div class="cfg-row">
-          <span class="cfg-label">👨‍👩‍👧‍👦 שם משפחה (לברכה)</span>
-          <input class="cfg-input" id="cfg-family-name" type="text" placeholder="רגואן" />
+        <!-- Tab: Calendar -->
+        <div class="cfg-section" data-tab="calendar">
+          <div class="cfg-row">
+            <span class="cfg-label">🎂 יום הולדת (שם, חודש, יום)</span>
+            <input class="cfg-input" id="cfg-birthday" type="text" placeholder="שם,6,15" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📅 קישור ICS (גוגל-קלנדר)</span>
+            <input class="cfg-input" id="cfg-ics-url" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📅 קישור ICS שני (אופציונלי)</span>
+            <input class="cfg-input" id="cfg-ics-url-2" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📅 קישור ICS שלישי (אופציונלי)</span>
+            <input class="cfg-input" id="cfg-ics-url-3" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🕍 geonameid (Hebcal / Zmanim)</span>
+            <input class="cfg-input" id="cfg-heb-geonameid" type="text" placeholder="281184 = ירושלים" dir="ltr" style="width:110px" />
+          </div>
         </div>
-        <div class="cfg-row">
-          <span class="cfg-label">📅 קישור ICS (גוגל-קלנדר)</span>
-          <input class="cfg-input" id="cfg-ics-url" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+        <!-- Tab: Feeds -->
+        <div class="cfg-section" data-tab="feeds">
+          <div class="cfg-row">
+            <span class="cfg-label">📢 הודעה מיוחדת בטיקר</span>
+            <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📰 חדשות — נטרל ערוצים (שמות)</span>
+            <input class="cfg-input" id="cfg-feeds-disabled" type="text" placeholder="Ynet מבזקים, וואלה" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📉 הסתר מניות (סימול, פסיק)</span>
+            <input class="cfg-input" id="cfg-stocks-hidden" type="text" placeholder="^VIX, BRK-B" dir="ltr" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🚌 תחנת תחבורה (GID)</span>
+            <input class="cfg-input" id="cfg-transit-stop" type="text" placeholder="IL:12345" dir="ltr" />
+          </div>
+          <!-- F117: Configurable weather city tabs -->
+          <div class="cfg-row">
+            <span class="cfg-label">🌆 עיר מזג אויר 1 (שם|lat|lon)</span>
+            <input class="cfg-input" id="cfg-city-1" type="text" dir="ltr" placeholder="ירושלים|31.7683|35.2137" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌆 עיר מזג אויר 2 (שם|lat|lon)</span>
+            <input class="cfg-input" id="cfg-city-2" type="text" dir="ltr" placeholder="ת&quot;א|32.0853|34.7818" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌆 עיר מזג אויר 3 (שם|lat|lon)</span>
+            <input class="cfg-input" id="cfg-city-3" type="text" dir="ltr" placeholder="חיפה|32.7940|34.9896" />
+          </div>
         </div>
-        <!-- F102: Secondary ICS calendar URLs -->
-        <div class="cfg-row">
-          <span class="cfg-label">📅 קישור ICS שני (אופציונלי)</span>
-          <input class="cfg-input" id="cfg-ics-url-2" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+        <!-- Tab: Alerts -->
+        <div class="cfg-section" data-tab="alerts-tab">
+          <div class="cfg-row">
+            <span class="cfg-label">🚨 סינון אזורי התראה (קידומת עיר)</span>
+            <input class="cfg-input" id="cfg-alert-zone" type="text" placeholder="תל אביב, רמת גן..." />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🔔 צליל להתראות אדומות</span>
+            <input class="cfg-input" id="cfg-alert-sound" type="text" placeholder="on / off" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⚡ התראות מיידיות 10 שניות</span>
+            <input class="cfg-input" id="cfg-alert-realtime" type="text" placeholder="on / off" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📊 התראות מחיר מניה</span>
+            <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
+          </div>
         </div>
-        <div class="cfg-row">
-          <span class="cfg-label">📅 קישור ICS שלישי (אופציונלי)</span>
-          <input class="cfg-input" id="cfg-ics-url-3" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+        <!-- Tab: Advanced -->
+        <div class="cfg-section" data-tab="advanced">
+          <div class="cfg-row">
+            <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
+            <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🏠 קו אורך — עיר ביתי</span>
+            <input class="cfg-input" id="cfg-home-lon" type="number" step="0.0001" placeholder="35.2137" style="direction:ltr;width:90px" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🏠 שם העיר (ביתי)</span>
+            <input class="cfg-input" id="cfg-home-name" type="text" placeholder="ביתי" />
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🧹 משימות בית (JSON)</span>
+            <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;}]" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
+          </div>
+          <!-- F107: Settings export/import -->
+          <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
+            <button class="cfg-btn" onclick="exportSettings()" style="font-size:0.82em">📥 ייצוא הגדרות</button>
+            <button class="cfg-btn" onclick="importSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em">📤 ייבוא הגדרות</button>
+            <!-- F120: Dashboard URL share -->
+            <button class="cfg-btn" id="cfg-share-btn" onclick="shareSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em">🔗 שתף קישור</button>
+          </div>
+          <input type="file" id="cfg-import-file" accept=".json" style="display:none" />
         </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
-          <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🌑 החשיכה אוטומטית — שעת התחלה (H)</span>
-          <input class="cfg-input" id="cfg-dim-start" type="number" min="0" max="23" placeholder="23" style="direction:ltr;width:70px" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🌅 החשיכה אוטומטית — שעת סיום (H)</span>
-          <input class="cfg-input" id="cfg-dim-end" type="number" min="0" max="23" placeholder="6" style="direction:ltr;width:70px" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🌡️ יחידת טמפרטורה</span>
-          <input class="cfg-input" id="cfg-temp-unit" type="text" placeholder="C / F" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">📢 הודעה מיוחדת בטיקר</span>
-          <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🚨 סינון אזורי התראה (קידומת עיר)</span>
-          <input class="cfg-input" id="cfg-alert-zone" type="text" placeholder="תל אביב, רמת גן..." />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🔔 צליל להתראות אדומות</span>
-          <input class="cfg-input" id="cfg-alert-sound" type="text" placeholder="on / off" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">📊 התראות מחיר מניה</span>
-          <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
-        </div>
-        <!-- Sprint 10 config rows (F93-F100) -->
-        <div class="cfg-row">
-          <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
-          <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🏠 קו אורך — עיר ביתי</span>
-          <input class="cfg-input" id="cfg-home-lon" type="number" step="0.0001" placeholder="35.2137" style="direction:ltr;width:90px" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🏠 שם העיר (ביתי)</span>
-          <input class="cfg-input" id="cfg-home-name" type="text" placeholder="ביתי" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🕍 geonameid (Hebcal / Zmanim)</span>
-          <input class="cfg-input" id="cfg-heb-geonameid" type="text" placeholder="281184 = ירושלים" dir="ltr" style="width:110px" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">📰 חדשות — נטרל ערוצים (שמות)</span>
-          <input class="cfg-input" id="cfg-feeds-disabled" type="text" placeholder="Ynet מבזקים, וואלה" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">📉 הסתר מניות (סימול, פסיק)</span>
-          <input class="cfg-input" id="cfg-stocks-hidden" type="text" placeholder="^VIX, BRK-B" dir="ltr" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">⚡ התראות מיידיות 10 שניות</span>
-          <input class="cfg-input" id="cfg-alert-realtime" type="text" placeholder="on / off" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🚌 תחנת תחבורה (GID)</span>
-          <input class="cfg-input" id="cfg-transit-stop" type="text" placeholder="IL:12345" dir="ltr" />
-        </div>
-        <div class="cfg-row">
-          <span class="cfg-label">🧹 משימות בית (JSON)</span>
-          <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;}]" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
-        </div>
-        <div class="cfg-row" style="justify-content:center;gap:10px">
+        <!-- Always-visible actions -->
+        <div class="cfg-row" style="justify-content:center;gap:10px;margin-top:8px;border-top:1px solid var(--accent-border);padding-top:8px">
           <button class="cfg-btn" id="cfg-save-btn">שמור</button>
           <button class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)" id="cfg-close-btn">סגור</button>
         </div>
-        <!-- F107: Settings export/import -->
-        <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
-          <button class="cfg-btn" onclick="exportSettings()" style="font-size:0.82em">📥 ייצוא הגדרות</button>
-          <button class="cfg-btn" onclick="importSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em">📤 ייבוא הגדרות</button>
-        </div>
-        <input type="file" id="cfg-import-file" accept=".json" style="display:none" />
-        <div style="text-align:center;margin-top:10px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
+        <div style="text-align:center;margin-top:8px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
       </div>
     </div>
     <div class="diag-overlay" id="diag-overlay">
@@ -1402,6 +1458,8 @@
                 <span id="header-birthday-chip"></span>
                 <!-- Feature 109: Next Zman header indicator -->
                 <div id="header-next-zman"></div>
+                <!-- F114: Notification permission bell chip -->
+                <span id="notif-bell" title="הפעל התראות" onclick="requestNotifPermission()">🔔 הפעל התראות</span>
             </div>
         </div>
 
@@ -1568,7 +1626,7 @@
               <div id="stk-mkt-countdown"></div>
             </div>
             <div class="card" data-card-id="alerts">
-              <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> צבע אדום</div>
+              <div class="card-header"><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge-count" class="alerts-badge"></span>צבע אדום</div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll">
                   <div class="alert-count">טוען התרעות...</div>
@@ -1596,7 +1654,7 @@
 
         </div>
         <div class="status-bar">
-            <span>Dashboard v4.14.0 — משפחת רגואן</span>
+            <span>Dashboard v4.15.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -1612,7 +1670,7 @@
 
     <script>
     /* ═══════════════════════════════════════════════════════════════
-       FAMILY DASHBOARD v4.14.0 — 3-Column Layout · Hebrew Calendar Card · 110 Sprint Features · 942 Tests
+       FAMILY DASHBOARD v4.15.0 — 3-Column Layout · Hebrew Calendar Card · 120 Sprint Features · 962 Tests
        ═══════════════════════════════════════════════════════════════ */
 
     // ── Config ──
@@ -2034,6 +2092,8 @@
         newsSearchClear: $('news-search-clear'),
         newsSearchCount: $('news-search-count'),
         wxWindHeb: $('wx-wind-heb'),
+        notifBell: $('notif-bell'),           // F114
+        alertsBadge: $('alerts-badge-count'), // F116
     };
     const sync = { news: $('sync-news'), cal: $('sync-cal'), stocks: $('sync-stocks'), alerts: $('sync-alerts'), wx: $('sync-wx'), cur: $('sync-cur'), moti: $('sync-moti'), hebcal: $('sync-hebcal') };
     const setSync = (s, v) => { const d = sync[s]; if (!d) return; d.className = 'sync-dot'; if (v === 'syncing') d.classList.add('syncing'); else if (v === 'error') d.classList.add('error'); };
@@ -2063,7 +2123,19 @@
     }
 
     // ── Clock & Greeting ──
-    function getGreeting() { const fn = localStorage.getItem('dash_family_name') || 'רגואן'; const h = new Date().getHours(); if (h >= 5 && h < 12) return '🌅 בוקר טוב למשפחת ' + fn + '!'; if (h >= 12 && h < 17) return '☀️️ צהריים טובים!'; if (h >= 17 && h < 21) return '🏗️ ערב טוב למשפחת ' + fn + '!'; return '🌙 לילה טוב!'; }
+    function getGreeting() {
+        const fn = localStorage.getItem('dash_family_name') || 'רגואן';
+        const members = getMembers(); // F118
+        const h = new Date().getHours();
+        // Rotate through members by day of month so different person is greeted each day
+        const idx = (new Date().getDate() - 1) % Math.max(members.length, 1);
+        const greetPerson = members.length > 0 ? members[idx] : null;
+        const suffix = greetPerson ? greetPerson + '!' : 'למשפחת ' + fn + '!';
+        if (h >= 5 && h < 12)  return '🌅 בוקר טוב ' + suffix;
+        if (h >= 12 && h < 17) return '☀️️ צהריים טובים!';
+        if (h >= 17 && h < 21) return '🌆 ערב טוב ' + suffix;
+        return '🌙 לילה טוב!';
+    }
     function tickClock() {
         const now = new Date();
         // F89: show seconds when _clockSec mode is active
@@ -2602,6 +2674,90 @@
         input.click();
     }
 
+    // ── Sprint 12 Functions (F111–F120) ───────────────────────────────────────────
+
+    // F113/F114: Notification bell — show chip if permission not yet decided
+    function initNotifBell() {
+        if (typeof Notification === 'undefined') return;
+        if (Notification.permission === 'default') { if (el.notifBell) el.notifBell.style.display = ''; }
+    }
+    function requestNotifPermission() {
+        if (typeof Notification === 'undefined') return;
+        Notification.requestPermission().then(p => {
+            if (p === 'granted') { if (el.notifBell) el.notifBell.style.display = 'none'; diagLog('F114: Notification permission granted'); }
+            else { diagLog('F114: Notification permission ' + p); }
+        });
+    }
+
+    // F116: Unread alerts badge counter
+    let _unreadAlerts = 0;
+    function resetAlertsBadge() {
+        _unreadAlerts = 0;
+        if (el.alertsBadge) el.alertsBadge.style.display = 'none';
+    }
+
+    // F117: Apply configured weather city names/coords to wx-city-tab buttons
+    function initWeatherCities() {
+        const tabs = document.querySelectorAll('.wx-city-tab[data-city]');
+        const cityKeys = [...tabs].map((_, i) => `dash_city_${i + 1}`);
+        tabs.forEach((tab, i) => {
+            const stored = localStorage.getItem(cityKeys[i]);
+            if (!stored) return;
+            const parts = stored.split('|');
+            if (parts.length >= 3 && !isNaN(parseFloat(parts[1])) && !isNaN(parseFloat(parts[2]))) {
+                tab.textContent = parts[0].trim();
+                tab.dataset.lat = parts[1].trim();
+                tab.dataset.lon = parts[2].trim();
+            }
+        });
+    }
+
+    // F118: Get family members array from localStorage
+    function getMembers() {
+        const raw = localStorage.getItem('dash_members');
+        if (!raw) return [];
+        return raw.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    // F119: Config panel section tab switcher
+    function switchCfgTab(tabName) {
+        document.querySelectorAll('.cfg-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+        document.querySelectorAll('.cfg-section').forEach(s => s.classList.toggle('active', s.dataset.tab === tabName));
+        localStorage.setItem('dash_cfg_tab', tabName);
+    }
+
+    // F120: Share current dashboard settings as a URL hash
+    function shareSettings() {
+        const themes = ['black','blue','matrix','amber','purple'];
+        const activeTheme = themes.find(t => document.body.classList.contains('theme-' + t)) || 'black';
+        const settings = {
+            theme: activeTheme,
+            mode: localStorage.getItem('dash_screenMode') || 'tv',
+            city: localStorage.getItem('dash_geonameid') || '',
+            zone: localStorage.getItem('dash_alert_zone') || '',
+        };
+        const clean = Object.fromEntries(Object.entries(settings).filter(([, v]) => v));
+        const shareURL = location.origin + location.pathname + '#' + new URLSearchParams(clean).toString();
+        navigator.clipboard.writeText(shareURL)
+            .then(() => showToast('🔗 קישור הועתק ללוח!'))
+            .catch(() => { try { prompt('העתק את הקישור:', shareURL); } catch (_) {} });
+        diagLog('F120: share URL generated: ' + shareURL);
+    }
+
+    // F120: Apply settings from URL hash (called before init)
+    function loadFromHash() {
+        if (!location.hash) return;
+        try {
+            const params = new URLSearchParams(location.hash.slice(1));
+            if (params.get('theme')) localStorage.setItem('dash_theme', params.get('theme'));
+            if (params.get('mode'))  localStorage.setItem('dash_screenMode', params.get('mode'));
+            if (params.get('city'))  localStorage.setItem('dash_geonameid', params.get('city'));
+            if (params.get('zone'))  localStorage.setItem('dash_alert_zone', params.get('zone'));
+            history.replaceState(null, '', location.pathname + location.search); // clean URL
+            diagLog('F120: settings loaded from URL hash');
+        } catch (_) {}
+    }
+
     function renderNews(items) {
         const frag = document.createDocumentFragment();
         const list = items.slice(0, 25);
@@ -3135,6 +3291,11 @@
                 _lastAlertId = newTopId;
                 // Feature 43: play alert beep on new incoming alert
                 if (isNew) playAlertBeep(880, 0.18, 0.3);
+                // F115: Desktop notification for new red alert
+                if (isNew && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    const cities = data[0]?.alerts?.flatMap(a => a.cities ?? []).slice(0, 3).join(', ') || 'אזורים שונים';
+                    try { new Notification('⚠️ צבע אדום', { body: cities, icon: './favicon.ico', dir: 'rtl', lang: 'he' }); } catch (_) {}
+                }
                 cSet(key, data);
                 renderAlerts(data, isNew);
                 setSync('alerts', 'success'); syncBurst('alerts'); recordSuccess('alerts');
@@ -3157,6 +3318,11 @@
 
     function renderAlerts(data, highlightNew) {
         if (!el.alertsScroll || !Array.isArray(data)) return;
+        // F116: increment unread badge when new alert arrives
+        if (highlightNew) {
+            _unreadAlerts++;
+            if (el.alertsBadge) { el.alertsBadge.textContent = _unreadAlerts; el.alertsBadge.style.display = ''; }
+        }
         // F86: zone filter
         const filtered = filterAlertsByZone(data);
         const now = Date.now() / 1000;
@@ -4307,6 +4473,15 @@
             const ics3Input2 = document.getElementById('cfg-ics-url-3');
             if (ics2Input2) ics2Input2.value = localStorage.getItem('dash_ics_url_2') || '';
             if (ics3Input2) ics3Input2.value = localStorage.getItem('dash_ics_url_3') || '';
+            // Sprint 12: F117 weather cities, F118 members
+            for (let i = 1; i <= 3; i++) {
+                const ci = document.getElementById(`cfg-city-${i}`);
+                if (ci) ci.value = localStorage.getItem(`dash_city_${i}`) || '';
+            }
+            const membersInp = document.getElementById('cfg-members');
+            if (membersInp) membersInp.value = localStorage.getItem('dash_members') || '';
+            // F119: restore last active tab
+            switchCfgTab(localStorage.getItem('dash_cfg_tab') || 'display');
         }
     }
     function saveConfig() {
@@ -4465,6 +4640,21 @@
         }
         if (localStorage.getItem('dash_ics_url_2') || localStorage.getItem('dash_ics_url_3')) {
             safeLoad(loadCalendarExtra);
+        }
+        // F117: Configurable weather city slots
+        for (let i = 1; i <= 3; i++) {
+            const cityInp = document.getElementById(`cfg-city-${i}`);
+            if (!cityInp) continue;
+            const val = cityInp.value.trim();
+            if (val) localStorage.setItem(`dash_city_${i}`, val);
+            else localStorage.removeItem(`dash_city_${i}`);
+        }
+        initWeatherCities();
+        // F118: Family members list
+        const membersInp = document.getElementById('cfg-members');
+        if (membersInp) {
+            const val = membersInp.value.trim();
+            if (val) localStorage.setItem('dash_members', val); else localStorage.removeItem('dash_members');
         }
         toggleConfig();
         diagLog('Config saved');
@@ -5396,6 +5586,10 @@
         updateMarketCountdown(); // Feature 68: initial market countdown button wiring
         applyHiddenStocks();  // Feature 96: apply hidden stocks config
         applyTransitState();  // Feature 98: show/hide transit card based on config
+        // Sprint 12 init hooks
+        initNotifBell();      // F114: show bell if notification permission not granted
+        initWeatherCities();  // F117: load configured weather city names/coords
+        switchCfgTab(localStorage.getItem('dash_cfg_tab') || 'display'); // F119: restore last tab
         // F103: wire news search input
         if (el.newsSearch) {
             el.newsSearch.addEventListener('input', () => {
@@ -5613,6 +5807,8 @@
         }
         // ── EXPAND ──
         if (_maximizedCard) return; // already have one open
+        // F116: reset unread alerts badge when the alerts card is expanded
+        if (card.id === 'card-alerts' || card.querySelector('#alerts-badge-count')) resetAlertsBadge();
         // Record original position via FLIP technique
         const startRect = card.getBoundingClientRect();
         card._origRect = { top: startRect.top, left: startRect.left, width: startRect.width, height: startRect.height };
@@ -5656,6 +5852,7 @@
 
     // Inline end-of-body: DOM is parsed but DOMContentLoaded may not have fired yet.
     // Use exclusive if/else so init() is called exactly once.
+    loadFromHash(); // F120: apply URL hash settings before init
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             init();
@@ -5689,6 +5886,13 @@
             let refreshing = false;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) { refreshing = true; location.reload(); }
+            });
+            // F113: SW notifies page when network recovers — re-load stale panes
+            navigator.serviceWorker.addEventListener('message', e => {
+                if (e.data?.type === 'NETWORK_BACK') {
+                    diagLog('SW: network restored — refreshing stale panes');
+                    safeLoad(loadWeather); safeLoad(loadHebCal); safeLoad(loadAlerts); safeLoad(loadStocks);
+                }
             });
         }).catch(err => {
             diagLog('SW registration failed: ' + err.message);
