@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.16.0] — 2026-05-03
+
+> **Sprint 13 (Features 121–130)** — Toast system, UV pill, rain-% labels, calendar reminders, news translate, earthquake & halacha deeplinks, chart view toggle, search highlight, diag log toast feedback
+> Tests: 1014 / 57 suites / 0 failures (was 985 / 56 suites / 0)
+
+### Added
+
+- **F121 — Toast notification system** — Global `showToast(msg, dur=3000)` function + `<div id="toast">` element; CSS animated `opacity`/`transform` slide-up; called by `copyDiagLog` and other actions; eliminates use of `alert()` for non-blocking feedback
+- **F122 — UV index colored pill** — `renderWeather()` wraps UV value in `<span class="uv-pill uv-{level}">` with level label (נמוך / בינוני / גבוה / גבוה מאוד / קיצוני); five CSS color classes from green to purple; plain number replaced
+- **F123 — Rain % labels on hourly chart** — `renderHourlyChart()` now renders `<text class="wx-hourly-rain-pct">N%</text>` above rain bars when precipitation probability ≥ 30%; also in precipitation-only view bars ≥ 20%
+- **F124 — Calendar event reminder notifications** — `checkCalendarReminders()` reads cached ICS events; fires `new Notification()` for events starting within 0–16 minutes; deduplicates via `localStorage` (`dash_cal_reminded`); runs on `setInterval` every 60 s
+- **F125 — News article Google Translate button** — Each news item gets a `<button class="rss-translate-btn">🌐</button>`; opens `translate.google.com/translate?sl=iw&tl=en&u=…` in a new tab; `encodeURIComponent` used on the article URL; `noopener,noreferrer` set
+- **F126 — Earthquake USGS deeplink** — `loadEarthquakes()` stores `url: feat.properties?.url` in the cached info object; `_renderEarthquake()` sets `row.onclick` to open the USGS event detail page in a new tab; `#quake-row { cursor: pointer }` CSS added
+- **F127 — Halacha Sefaria deeplink** — `loadHalacha()` stores `url: 'https://www.sefaria.org/' + item.url`; `renderHalacha()` sets `el.hcHalachaRow.onclick` to open Sefaria; `#hc-halacha-row { cursor: pointer }` CSS added
+- **F128 — Hourly chart view toggle** — `<button id="wx-chart-toggle">🌡️ טמפ׳</button>` in weather card; `toggleHourlyChartView()` flips `_wxChartView` between `'temp'` and `'rain'`; `renderHourlyChart()` caches `_wxChartLastData` for re-render; rain view renders a full bar chart of precipitation probability with color-coded bars
+- **F129 — News search keyword highlight** — `applyNewsSearch()` wraps matched text in `<mark class="rss-highlight">` using `dataset.originalText` pattern; regex special chars escaped; restored to plain `textContent` when search is cleared
+- **F130 — Diag log copy toast feedback** — `copyDiagLog()` calls `showToast('📋 לוג אבחון הועתק!')` on successful clipboard write; also unified the diag copy button text encoding to readable string literals
+
+### Fixed
+
+- **Duplicate `refSpan.appendChild(cat)` in `renderHalacha`** — Leftover duplicate line + stray closing brace that caused a JS syntax error within `makeSet()`, preventing `scriptContent` from being fully parsed in tests
+
+### Changed
+
+- **CSS** — Added Sprint 13 rules: `#toast` / `.toast-show`, `.uv-pill.*` (5 levels), `.wx-hourly-rain-pct`, `.rss-translate-btn` + hover, `#quake-row` cursor + hover, `#hc-halacha-row` cursor + hover, `#wx-chart-toggle`, `.rss-highlight`
+
+---
+
 ## [4.15.0] — 2026-05-02
 
 > **Sprint 12 (Features 111–120)** — SW full offline shell + API cache, network-recovery pane refresh, desktop notification bell + red-alert pop-up, unread alerts badge, configurable weather cities, family member rotation in greeting, config panel section tabs, dashboard URL share

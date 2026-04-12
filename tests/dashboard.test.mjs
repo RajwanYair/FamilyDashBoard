@@ -1782,7 +1782,7 @@ describe("Status Bar", () => {
 
   it("should display version v4.14.0", () => {
     assert.ok(
-      html.includes("Dashboard v4.15.0"),
+      html.includes("Dashboard v4.16.0"),
       "Missing version v4.14.0 in status bar",
     );
   });
@@ -5904,3 +5904,136 @@ describe("Sprint 12 Features (v4.15.0)", () => {
   });
 });
 
+
+
+// Suite 57 — Sprint 13 Features (v4.16.0, F121–F130)
+describe("Sprint 13 Features (v4.16.0)", () => {
+  // F121: showToast system
+  it("F121: should have #toast HTML element", () => {
+    assert.ok(html.includes('id="toast"'), "Missing #toast element");
+  });
+  it("F121: should define showToast function", () => {
+    assert.ok(scriptContent.includes("function showToast("), "Missing showToast function");
+  });
+  it("F121: showToast should add toast-show class", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function showToast("), scriptContent.indexOf("function showToast(") + 400);
+    assert.ok(fn.includes("toast-show"), "showToast should toggle toast-show class");
+  });
+  it("F121: should have .toast-show CSS rule", () => {
+    assert.match(html, /#toast\.toast-show|\.toast-show/, "Missing .toast-show CSS rule");
+  });
+
+  // F122: UV index colored pill
+  it("F122: should have .uv-pill CSS class", () => {
+    assert.match(html, /\.uv-pill\s*\{/, "Missing .uv-pill CSS rule");
+  });
+  it("F122: should have UV pill color variants", () => {
+    assert.ok(html.includes("uv-low"), "Missing uv-low CSS class");
+    assert.ok(html.includes("uv-extreme"), "Missing uv-extreme CSS class");
+  });
+  it("F122: renderWeather should use uv-pill for UV display", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderWeather("), scriptContent.indexOf("function renderWeather(") + 2000);
+    assert.ok(fn.includes("uv-pill"), "renderWeather should render UV as pill");
+  });
+
+  // F123: Rain % labels in hourly chart
+  it("F123: should have .wx-hourly-rain-pct CSS class", () => {
+    assert.match(html, /\.wx-hourly-rain-pct\s*\{/, "Missing .wx-hourly-rain-pct CSS rule");
+  });
+  it("F123: renderHourlyChart should include rain % label text", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHourlyChart("), scriptContent.indexOf("function renderHourlyChart(") + 3000);
+    assert.ok(fn.includes("wx-hourly-rain-pct") || fn.includes("%</text>"), "renderHourlyChart should add rain % text labels");
+  });
+
+  // F124: Calendar event reminders
+  it("F124: should define checkCalendarReminders function", () => {
+    assert.ok(scriptContent.includes("function checkCalendarReminders("), "Missing checkCalendarReminders function");
+  });
+  it("F124: checkCalendarReminders should use Notification API", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function checkCalendarReminders("), scriptContent.indexOf("function checkCalendarReminders(") + 1200);
+    assert.ok(fn.includes("new Notification"), "checkCalendarReminders should create Notification");
+  });
+  it("F124: checkCalendarReminders should be scheduled on 1-min interval", () => {
+    assert.match(html, /setInterval\(checkCalendarReminders,\s*60000\)/, "Missing 60s interval for calendar reminders");
+  });
+
+  // F125: News translate button
+  it("F125: should have .rss-translate-btn CSS class", () => {
+    assert.match(html, /\.rss-translate-btn\s*\{/, "Missing .rss-translate-btn CSS rule");
+  });
+  it("F125: renderNews should add translate button using Google Translate URL", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderNews(") !== -1 ? scriptContent.lastIndexOf("rss-translate-btn") - 500 : 0, scriptContent.lastIndexOf("rss-translate-btn") + 400);
+    assert.ok(fn.includes("translate.google.com"), "News translate button should link to Google Translate");
+    assert.ok(fn.includes("encodeURIComponent"), "Translate URL should encode the article link");
+  });
+
+  // F126: Earthquake USGS deeplink
+  it("F126: loadEarthquakes should store url in cached info", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function loadEarthquakes("), scriptContent.indexOf("function loadEarthquakes(") + 2500);
+    assert.ok(fn.includes("feat.properties?.url") || fn.includes("properties?.url"), "loadEarthquakes should cache USGS url");
+  });
+  it("F126: _renderEarthquake should set onclick for USGS link", () => {
+    const idx = scriptContent.indexOf("function _renderEarthquake(");
+    const fn = scriptContent.slice(idx, idx + 1800);
+    assert.ok(fn.includes("window.open"), "_renderEarthquake should open USGS URL on click");
+    assert.ok(fn.includes("_blank"), "_renderEarthquake should open in new tab");
+  });
+  it("F126: quake-row should have cursor:pointer CSS", () => {
+    assert.match(html, /#quake-row[^{]*\{[^}]*cursor:\s*pointer/, "quake-row should have cursor:pointer");
+  });
+
+  // F127: Halacha Sefaria deeplink
+  it("F127: loadHalacha should store Sefaria url", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function loadHalacha("), scriptContent.indexOf("function loadHalacha(") + 2500);
+    assert.ok(fn.includes("sefaria.org"), "loadHalacha should build Sefaria URL");
+  });
+  it("F127: renderHalacha should set onclick for Sefaria link", () => {
+    const idx = scriptContent.indexOf("function renderHalacha(");
+    const fn = scriptContent.slice(idx, idx + 3500);
+    assert.ok(fn.includes("window.open"), "renderHalacha should open Sefaria URL on click");
+  });
+  it("F127: hc-halacha-row should have cursor:pointer CSS", () => {
+    assert.match(html, /#hc-halacha-row[^{]*\{[^}]*cursor:\s*pointer/, "hc-halacha-row should have cursor:pointer");
+  });
+
+  // F128: Hourly chart toggle
+  it("F128: should have #wx-chart-toggle HTML button", () => {
+    assert.ok(html.includes('id="wx-chart-toggle"'), "Missing #wx-chart-toggle button");
+  });
+  it("F128: should define toggleHourlyChartView function", () => {
+    assert.ok(scriptContent.includes("function toggleHourlyChartView("), "Missing toggleHourlyChartView function");
+  });
+  it("F128: toggleHourlyChartView should flip between temp and rain views", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function toggleHourlyChartView("), scriptContent.indexOf("function toggleHourlyChartView(") + 500);
+    assert.ok(fn.includes("'temp'") || fn.includes('"temp"'), "toggleHourlyChartView should reference temp view");
+    assert.ok(fn.includes("'rain'") || fn.includes('"rain"'), "toggleHourlyChartView should reference rain view");
+  });
+  it("F128: renderHourlyChart should cache last data for toggle re-render", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function renderHourlyChart("), scriptContent.indexOf("function renderHourlyChart(") + 800);
+    assert.ok(fn.includes("_wxChartLastData") || fn.includes("_wxLastTemps"), "renderHourlyChart should cache data for toggle");
+  });
+
+  // F129: News search keyword highlight
+  it("F129: should have .rss-highlight CSS class", () => {
+    assert.match(html, /\.rss-highlight\s*\{/, "Missing .rss-highlight CSS rule");
+  });
+  it("F129: applyNewsSearch should apply rss-highlight marks", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function applyNewsSearch("), scriptContent.indexOf("function applyNewsSearch(") + 1400);
+    assert.ok(fn.includes("rss-highlight"), "applyNewsSearch should add rss-highlight marks");
+  });
+  it("F129: applyNewsSearch should escape regex special characters", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function applyNewsSearch("), scriptContent.indexOf("function applyNewsSearch(") + 1400);
+    assert.ok(fn.includes("replace(/["), "applyNewsSearch should escape regex special chars");
+  });
+
+  // F130: Diag log toast feedback
+  it("F130: copyDiagLog should call showToast on success", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("function copyDiagLog("), scriptContent.indexOf("function copyDiagLog(") + 600);
+    assert.ok(fn.includes("showToast"), "copyDiagLog should call showToast after successful copy");
+  });
+
+  // Version
+  it("version should be v4.16.0", () => {
+    assert.ok(html.includes("Dashboard v4.16.0"), "Version should be v4.16.0");
+  });
+});

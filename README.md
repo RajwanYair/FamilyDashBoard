@@ -19,7 +19,7 @@
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-4.14-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-746_passing-34d399?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-1014_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -270,6 +270,8 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
+| **v4.16.0** | 🎯 Sprint 13 (F121–130): Toast system, UV index pill, rain % chart labels, calendar reminders, news translate button, earthquake & halacha deeplinks, hourly chart toggle, search highlight, diag toast |
+| **v4.15.0** | 🎯 Sprint 12 (F111–120): SW offline shell, API cache, network recovery, notification bell, desktop alerts, unread badge, configurable weather cities, family members, config tabs, URL share |
 | **v4.14.0** | 🎯 Sprint 11 (F101–110): SW update banner, multi-ICS calendar, news search, birthday chip, reconnect auto-refresh, halacha colors, settings export/import, Hebrew wind dir, next Zman header, visited news |
 | **v4.13.0** | 🎯 Sprint 10 (F91–100): PWA manifest.json, ServiceWorker offline, home city config, Hebcal geonameid, news feed toggle, stock hide, 10s alerts, transit card, card drag-reorder, chore config |
 | **v4.12.0** | 🎯 Sprint 9 (F81–90): 7-day forecast, halacha category, ICS URL config, family name config, photo slideshow, alert zone filter, news tooltips, dim schedule, clock seconds, offline cache age |
