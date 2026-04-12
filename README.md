@@ -18,8 +18,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-4.14-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-1014_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.19-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-1112_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -139,7 +139,7 @@ xdg-open BestDashBoard.html   # Linux
 
 No npm. No build step. No dependencies. Just **one HTML file**.
 
->  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (942 tests, 55 suites, zero dependencies).
+>  **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (1112 tests, 60 suites, zero dependencies).
 
 ---
 
@@ -205,7 +205,7 @@ FamilyDashBoard/
 ├── .editorconfig / .markdownlint.json
 ├── .gitignore / .gitattributes
 ├── tests/
-|   └── dashboard.test.mjs          # 942 tests, 55 suites (Node.js built-in runner)
+|   └── dashboard.test.mjs          # 1112 tests, 60 suites (Node.js built-in runner)
 ├── .github/
 │   ├── assets/                     # SVG graphics for docs
 │   ├── agents/                     # Copilot custom agents
@@ -270,6 +270,9 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 | Version | Highlights |
 | --------- | ----------- |
+| **v4.19.0** | 🎯 Sprint 16 (F151–160): HaOmer row, precip forecast mm, 5-currency sparklines, cal today-strip, stocks summary bar, bookmark filter (B key), halacha overlay, wx min/max, card collapse, news font slider |
+| **v4.18.0** | 🎯 Sprint 15 (F141–150): Dew point tile, wind gusts, news category badges, news inline expand, daily quote lock+next, news bookmarks, weekly weather summary, stock P&L row, help overlay upgrade |
+| **v4.17.0** | 🎯 Sprint 14 (F131–140): Stock alert toast, portfolio P&L chip, ICS color borders, severe-weather toast, motivation share, news age tint, after-hours price, calendar conflict badge, countdown chip, print date |
 | **v4.16.0** | 🎯 Sprint 13 (F121–130): Toast system, UV index pill, rain % chart labels, calendar reminders, news translate button, earthquake & halacha deeplinks, hourly chart toggle, search highlight, diag toast |
 | **v4.15.0** | 🎯 Sprint 12 (F111–120): SW offline shell, API cache, network recovery, notification bell, desktop alerts, unread badge, configurable weather cities, family members, config tabs, URL share |
 | **v4.14.0** | 🎯 Sprint 11 (F101–110): SW update banner, multi-ICS calendar, news search, birthday chip, reconnect auto-refresh, halacha colors, settings export/import, Hebrew wind dir, next Zman header, visited news |

@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.14.0**.
+Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV display in the family living room. Current version: **v4.19.0**.
 
 ## Technical Stack
 
@@ -13,7 +13,7 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **APIs consumed**: Open-Meteo (weather + UV + hourly + precipitation probability), Hebcal (Hebrew dates + Shabbat + holidays + Zmanim + Parasha + Daf Yomi), Yahoo Finance v8/chart (stocks + gold/silver via proxy), CoinGecko (BTC-USD fallback), ER-API + exchangerate-api (currency), 17 Hebrew RSS feeds (news), Sefaria.org (daily halacha + Parasha + Psalm + Aliyot + Daf Yomi links), Google Calendar ICS (native parser + iframe fallback), tzevaadom.co.il (red alerts), OpenWeatherMap AQI (free tier, no key), USGS GeoJSON (earthquakes)
 - **CORS proxies**: `allorigins.win`, `codetabs.com`, `corsproxy.io` (const array, direct fetch tried first)
 - **Design system**: Dark glassmorphism with 5 CSS-variable themes, animated background, bézier SVG charts, 6 card entrance animations, card maximize (FLIP animation)
-- **Tests**: 942 tests / 55 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
+- **Tests**: 1112 tests / 60 suites — `node --test tests/dashboard.test.mjs` (zero dependencies, Node.js built-in runner)
 
 ## Architecture
 
@@ -30,14 +30,14 @@ Single-page family dashboard (`BestDashBoard.html`) designed for always-on TV di
 - **5 themes**: `black` (OLED default), `blue`, `matrix`, `amber`, `purple` — stored in `localStorage` as `dash_theme`
 - **3 screen modes**: `tv` (default), `tablet`, `phone` — stored as `dash_screenMode`
 - **Phone mode**: full-page scroll, all card content visible, scroll-loop animations disabled, clone items hidden
-- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay, `A` = toggle alerts on/off, `Escape` = close maximized card, `S` = toggle config panel, `N` = toggle night dimmer, `+`/`-` = font scale, `P` = print mode
+- **Keyboard shortcuts**: `T` = cycle themes, `D` = toggle diagnostic overlay, `A` = toggle alerts on/off, `Escape` = close maximized card / halacha overlay, `S` = toggle config panel, `N` = toggle night dimmer, `+`/`-` = font scale, `P` = print mode, `B` = bookmark-only news filter, `H`/`?` = help overlay
 
 ### UI Layout
 
 - **Header**: Clock (HH:MM, 60s tick), Hebrew + English dates, greeting, temperature, market badge (no Shabbat/holiday in header — those are in the Hebrew Calendar card)
 - **Ticker bar**: Daily halacha from Sefaria.org (reference badge + numbered segments, seamless loop)
 - **Left column** (38%): News RSS (17 feeds, filter chips, age timestamps, copy+share buttons, 65% height) | Weather (split-panel: current + AQI + sky pill + wind arrow + extreme weather banner + RTL hourly chart with rain bars + 4-day forecast with precip bar, 35% height)
-- **Middle column** (33%): Hebrew Calendar card / לוח עברי (candle lighting, havdalah, holidays, omer, Parasha + Aliyot, Zmanim grid, Daf Yomi, Psalm, Moon phase, Shabbat countdown, chore wheel, 20%) | Google Calendar/ICS (week strip + agenda, 65%) | Currency USD+EUR+Gold+Silver (15%)
+- **Middle column** (33%): Hebrew Calendar card / לוח עברי (candle lighting, havdalah, holidays, omer, Parasha + Aliyot, Zmanim grid, Daf Yomi, Psalm, Moon phase, Shabbat countdown, chore wheel, 20%) | Google Calendar/ICS (week strip + today-strip + agenda, 65%) | Currency USD+EUR+GBP+Gold+Silver with sparklines (15%)
 - **Right column** (29%): Stocks (15 symbols incl. TA-35, brand-color logos, vol badge, sparklines, P&L overlay, 52w range, market countdown, 33%) | Red Alerts (toggleable via `A` key, off by default, 33%) | Motivation (50 static Hebrew quotes, 33%)
 - **Status bar**: Version, connectivity indicator, day/year progress bars, last refresh time
 
@@ -183,6 +183,11 @@ Every version bump must:
 | v4.12 | Sprint 9 (F81–90): 7-day forecast, halacha category, ICS URL config, family name, photo slideshow, alert zone filter, news tooltips, dim schedule, clock seconds, offline cache age | ✅ Done |
 | v4.13 | Sprint 10 (F91–100): PWA manifest.json, ServiceWorker offline, home city, Hebcal geonameid, news feed toggle, stock hide, 10s alerts, transit card, card drag-reorder, chore config | ✅ Done |
 | v4.14 | Sprint 11 (F101–110): SW update banner, multi-ICS calendar, news search, birthday chip, reconnect auto-refresh, halacha colors, settings export/import, Hebrew wind dir, next Zman header, visited news | ✅ Done |
+| v4.15 | Sprint 12 (F111–120): SW offline shell, API cache, network recovery, push-notif bell, desktop alerts, unread badge, weather cities config, family members, config tabs, URL share | ✅ Done |
+| v4.16 | Sprint 13 (F121–130): Toast system, UV index pill, rain % chart labels, calendar reminders, news translate, earthquake+halacha deeplinks, hourly chart toggle, search highlight, diag toast | ✅ Done |
+| v4.17 | Sprint 14 (F131–140): Stock alert toast, portfolio P&L chip, ICS color borders, severe-weather toast, motivation share, news age tint, after-hours price, calendar conflict badge, countdown chip, print date | ✅ Done |
+| v4.18 | Sprint 15 (F141–150): Dew point tile, wind gusts, news category badges, inline news expand, daily quote lock+next, news bookmarks, weekly weather summary, stock P&L row, help overlay upgrade | ✅ Done |
+| v4.19 | Sprint 16 (F151–160): HaOmer row, precip forecast mm, 5-currency sparklines, cal today-strip, stocks summary bar, bookmark filter (B key), halacha overlay, wx min/max, card collapse, news font slider | ✅ Done |
 | v5.0 | PWA manifest + ServiceWorker full offline | 🔜 Planned |
 | v5.1 | Web Push notifications for red alerts | 🔜 Planned |
 | v5.2 | Config panel for multi-city + multi-family + ICS URL | 🔜 Planned |
@@ -224,4 +229,6 @@ For any new header chip (like birthday chip, next-zman chip):
 
 ### GH Issue Tracking
 - After every sprint push, create tracking issues manually: `gh issue create --label "enhancement" --title "feat: vX.Y.Z..." --body "Commit: HASH | Tag: vX.Y.Z | Tests: N/S/0"` then immediately `gh issue close N --comment "Resolved in commit HASH"`
-- Confirmed all issues #1–#51 are CLOSED as of 2026-04-12
+- Confirmed all issues #1–#56 are CLOSED as of 2026-04-12
+  - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment
+  - Issues #52–#56 = Sprints 12–16 (v4.15–v4.19), closed with commit hash in comment

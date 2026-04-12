@@ -7,12 +7,12 @@
   </defs>
   <rect width="800" height="430" rx="14" fill="url(#bg)"/>
 
-  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture — v4.14.0</text>
+  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture — v4.19.0</text>
 
   <!-- Browser box -->
   <rect x="240" y="56" width="320" height="50" rx="10" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.25"/>
   <text x="400" y="78" font-family="Segoe UI" font-size="12" fill="#f1f5f9" text-anchor="middle" font-weight="600">🌐 BestDashBoard.html</text>
-  <text x="400" y="96" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">HTML + CSS + JS  ·  Zero Dependencies  ·  110 Features</text>
+  <text x="400" y="96" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">HTML + CSS + JS  ·  Zero Dependencies  ·  160 Features</text>
 
   <!-- Arrow down -->
   <line x1="400" y1="106" x2="400" y2="130" stroke="#60a5fa" stroke-width="1.5" stroke-opacity="0.5"/>
@@ -89,7 +89,7 @@
   <text x="400" y="376" font-family="monospace" font-size="8" fill="#94a3b8" text-anchor="middle">direct → allorigins.win → codetabs.com → corsproxy.io</text>
 
   <!-- Stats footer -->
-  <text x="100" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">14+ APIs · 942 Tests</text>
-  <text x="400" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Single HTML File · Zero Dependencies · v4.14.0</text>
-  <text x="700" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">51 Test Suites</text>
+  <text x="100" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">14+ APIs · 1112 Tests</text>
+  <text x="400" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Single HTML File · Zero Dependencies · v4.19.0</text>
+  <text x="700" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">60 Test Suites</text>
 </svg>

@@ -39,7 +39,7 @@
   <!-- APIs -->
   <rect x="560" y="50" width="110" height="110" rx="12" fill="#1e293b" stroke="#34d399" stroke-opacity="0.3"/>
   <text x="615" y="88" font-size="30" text-anchor="middle">🌐</text>
-  <text x="615" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">12+ Free APIs</text>
+  <text x="615" y="112" font-family="Segoe UI" font-size="13" fill="#f1f5f9" text-anchor="middle" font-weight="700">14+ Free APIs</text>
   <text x="615" y="128" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Proxy fallback</text>
   <text x="615" y="140" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Dual-layer cache</text>
 
