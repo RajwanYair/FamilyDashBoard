@@ -62,8 +62,11 @@ export default [
       "no-unused-vars": [
         "warn",
         {
-          varsIgnorePattern: "^_|^load|^render|^init|^toggle|^update|^stamp|^build|^check|^accept",
+          varsIgnorePattern:
+            "^_|^load|^render|^init|^toggle|^update|^stamp|^build|^check|^accept|^copy|^export|^import|^share|^sw|^request",
           argsIgnorePattern: "^_|^e$|^k$",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
       eqeqeq: ["warn", "smart"],

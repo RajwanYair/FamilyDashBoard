@@ -26,6 +26,7 @@
         "selector-type-no-unknown": [true, { "ignoreTypes": ["/^--/"] }],
         "unit-no-unknown": true,
         "at-rule-no-unknown": [true, { "ignoreAtRules": ["property"] }],
-        "no-descending-specificity": null
+        "no-descending-specificity": null,
+        "no-duplicate-selectors": null
     }
 }

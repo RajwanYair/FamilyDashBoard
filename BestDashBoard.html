@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -55,6 +55,7 @@
             --bg-gradient-1: rgba(96,165,250,0.06);
             --bg-gradient-2: rgba(52,211,153,0.04);
             --bg-gradient-3: rgba(139,92,246,0.04);
+            --news-font-scale: 1;
         }
 
         /* ── Theme: True Black (OLED) ── */
@@ -140,7 +141,7 @@
             --bg-gradient-2: rgba(139,92,246,0.04);
             --bg-gradient-3: rgba(236,72,153,0.03);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
         ::selection { background: var(--accent); color: var(--bg-primary); }
 
         /* ── Animated Background ── */
@@ -518,15 +519,12 @@
 
         /* ── Market Badge ── */
         .market-badge { display: inline-block; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; font-weight: 700; margin-right: 6px; vertical-align: middle; }
-        .market-open { background: var(--positive-glow); color: var(--positive); }
-        .market-closed { background: var(--negative-glow); color: var(--negative); }
 
         /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; transition: background 0.2s; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-bright); }
-        * { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
 
 /* Theme selector swatch dot */
         #theme-select option::before { content: '● '; }
@@ -1272,7 +1270,7 @@
         /* F145 — News inline description expand */
         .news-desc { display: none; font-size: 0.72em; color: var(--text-muted); padding: 3px 0 1px 0; line-height: 1.4; direction: rtl; }
         .rss-item.expanded .news-desc { display: block; }
-        .rss-item .rss-title { cursor: pointer; }
+        .rss-item .rss-title { cursor: pointer; font-size: calc(0.88em * var(--news-font-scale, 1)); }
         /* F147 — News bookmarks */
         .news-bkm { background: none; border: none; cursor: pointer; font-size: 0.82em; padding: 0 2px; opacity: 0.35; transition: opacity 0.2s; }
         .news-bkm:hover { opacity: 0.9; }
@@ -1331,9 +1329,6 @@
         .card.collapsed > .hebcal-body,
         .card.collapsed > .cal-body,
         .card.collapsed > .moti-body { display: none !important; }
-        /* F160 — Config: news font size */
-        :root { --news-font-scale: 1; }
-        .rss-item .rss-title { font-size: calc(0.88em * var(--news-font-scale, 1)); }
     </style>
     <meta name="referrer" content="no-referrer">
     <!-- Feature 80: PWA meta tags -->
@@ -2175,11 +2170,6 @@
 
     // ── Exponential Backoff for Failed Fetches ──
     const _backoff = {};
-    function getBackoff(key) {
-        const b = _backoff[key];
-        if (!b || Date.now() - b.ts > 600000) return 0; // reset after 10min success
-        return Math.min(b.count * 2000, 30000); // max 30s extra delay
-    }
     function recordFailure(key) {
         const b = _backoff[key] || { count: 0, ts: Date.now() };
         b.count++; b.ts = Date.now();
@@ -2211,8 +2201,6 @@
         if (!_spotlightCards) _spotlightCards = document.querySelectorAll('.card');
         return _spotlightCards;
     }
-    // Invalidate cache when DOM changes (card additions are rare)
-    function invalidateSpotlightCache() { _spotlightCards = null; }
     document.addEventListener('mousemove', e => {
         if (_rafSpotlight) return;
         _rafSpotlight = requestAnimationFrame(() => {
@@ -2328,15 +2316,6 @@
         }
         throw new Error('All fetch attempts failed: ' + short);
     }
-    async function translateHe(text) {
-        const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=he&dt=t&q=' + encodeURIComponent(text);
-        try { const r = await fetch(url); if (r.ok) { const d = await r.json(); return d[0].map(p => p[0]).join(''); } } catch (_) {}
-        for (const p of PROXIES) {
-            try { const r = await fetch(p + encodeURIComponent(url)); if (!r.ok) continue; const d = p.includes('allorigins') ? JSON.parse((await r.json()).contents) : JSON.parse(await r.text()); return d[0].map(q => q[0]).join(''); } catch (_) { continue; }
-        }
-        return text;
-    }
-
     // ── Clock & Greeting ──
     function getGreeting() {
         const fn = localStorage.getItem('dash_family_name') || 'רגואן';
@@ -3785,7 +3764,7 @@
         try {
             const d = await fetchJSON('https://open.er-api.com/v6/latest/ILS');
             if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); syncBurst('cur'); recordSuccess('cur'); }
-        } catch (e) {
+        } catch (_) {
             try { const d = await fetchJSON('https://api.exchangerate-api.com/v4/latest/ILS');
                 if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); syncBurst('cur'); recordSuccess('cur'); }
             } catch (_) { setSync('cur', stale ? 'success' : 'error'); recordFailure('cur'); }
@@ -3998,15 +3977,6 @@
     const CAL_ICS = 'https://calendar.google.com/calendar/ical/rajwan.family%40gmail.com/public/basic.ics';
     const CAL_DAYS_AHEAD = 21; // show 3 weeks of upcoming events
 
-    // F102: Return all configured ICS URLs (primary + 2 optional secondary)
-    function getICSUrls() {
-        const urls = [localStorage.getItem('dash_ics_url') || CAL_ICS];
-        for (let i = 2; i <= 3; i++) {
-            const u = localStorage.getItem(`dash_ics_url_${i}`);
-            if (u) urls.push(u);
-        }
-        return urls;
-    }
     // F102: Fetch secondary ICS sources and re-render merged calendar
     async function loadCalendarExtra() {
         if (!_pageVisible) return;
@@ -5221,7 +5191,7 @@
         const homeName = document.getElementById('cfg-home-name');
         if (homeLat && homeLon) {
             const lat = parseFloat(homeLat.value); const lon = parseFloat(homeLon.value);
-            const name = document.getElementById('cfg-home-name')?.value.trim() || 'ביתי';
+            const name = homeName?.value.trim() || 'ביתי';
             if (!isNaN(lat) && !isNaN(lon)) {
                 localStorage.setItem('dash_home_lat', String(lat));
                 localStorage.setItem('dash_home_lon', String(lon));
@@ -5809,14 +5779,12 @@
         const blk = document.querySelector(`.stk[data-symbol="${CSS.escape(sym)}"]`);
         if (!blk) return;
         blk.classList.remove('alert-above', 'alert-below');
-        let fired = false;
         if (rule.above != null && price >= parseFloat(rule.above)) {
             blk.classList.add('alert-above');
             playAlertBeep(1046, 0.12, 0.2);  // C6 — price above target
             const key = sym + ':above:' + Math.floor(price / 10);
             if (!_firedStockAlerts.has(key)) {
                 _firedStockAlerts.add(key);
-                fired = true;
                 const msg = `📈 ${sym} עלה מעל ${fmtPrice(rule.above, sym)}`;
                 showToast(msg, 5000); // F131
                 if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
@@ -5830,7 +5798,6 @@
             const key = sym + ':below:' + Math.floor(price / 10);
             if (!_firedStockAlerts.has(key)) {
                 _firedStockAlerts.add(key);
-                fired = true;
                 const msg = `📉 ${sym} ירד מתחת ל-${fmtPrice(rule.below, sym)}`;
                 showToast(msg, 5000); // F131
                 if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
@@ -6032,7 +5999,6 @@
                 x: (P + (i / (arr.length - 1)) * (W - 2 * P)).toFixed(1),
                 y: (H - P - ((v - mn) / rng) * (H - 2 * P)).toFixed(1)
             }));
-            const path = 'M' + pts.map(p => `${p.x},${p.y}`).join(' L');
             const aqiColor = arr[arr.length - 1] <= 40 ? '#34d399' : arr[arr.length - 1] <= 60 ? '#fbbf24' : '#f87171';
             svgEl.innerHTML = `<polyline points="${pts.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="${aqiColor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
         } catch (_) {}

@@ -1637,11 +1637,6 @@ describe("Utility Functions (v4.5)", () => {
 
   it("should have exponential backoff system", () => {
     assert.ok(
-      scriptContent.includes("function getBackoff(") ||
-        scriptContent.includes("getBackoff"),
-      "Missing getBackoff function",
-    );
-    assert.ok(
       scriptContent.includes("function recordFailure("),
       "Missing recordFailure function",
     );
@@ -5521,16 +5516,13 @@ describe("Sprint 11 Features (F101–F110)", () => {
   it("F102: should have cfg-ics-url-3 input in config panel", () => {
     assert.ok(html.includes('id="cfg-ics-url-3"'), "Missing #cfg-ics-url-3 config input");
   });
-  it("F102: should define getICSUrls function", () => {
-    assert.ok(scriptContent.includes("function getICSUrls("), "Missing getICSUrls function");
+  it("F102: ICS URL reading in loadCalendarExtra should read dash_ics_url_2 from localStorage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("async function loadCalendarExtra("));
+    assert.ok(fn.includes("dash_ics_url_2"), "loadCalendarExtra should read dash_ics_url_2");
   });
-  it("F102: getICSUrls should read dash_ics_url_2 from localStorage", () => {
-    const fn = scriptContent.slice(scriptContent.indexOf("function getICSUrls("));
-    assert.ok(fn.includes("dash_ics_url_2"), "getICSUrls should read dash_ics_url_2");
-  });
-  it("F102: getICSUrls should read dash_ics_url_3 from localStorage", () => {
-    const fn = scriptContent.slice(scriptContent.indexOf("function getICSUrls("));
-    assert.ok(fn.includes("dash_ics_url_3"), "getICSUrls should read dash_ics_url_3");
+  it("F102: ICS URL reading in loadCalendarExtra should read dash_ics_url_3 from localStorage", () => {
+    const fn = scriptContent.slice(scriptContent.indexOf("async function loadCalendarExtra("));
+    assert.ok(fn.includes("dash_ics_url_3"), "loadCalendarExtra should read dash_ics_url_3");
   });
   it("F102: should define loadCalendarExtra function", () => {
     assert.ok(scriptContent.includes("function loadCalendarExtra("), "Missing loadCalendarExtra function");
