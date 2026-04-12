@@ -2809,7 +2809,7 @@
             <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0.02"/></linearGradient></defs>
             ${rainBars}
             <path d="${areaPath}" fill="url(#hg)" /><path d="${path}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
-            ${pts.map((p, i) => i % 2 === 0 ? `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#60a5fa"><title>${Math.round(temps[i])}°${_useFahrenheit ? 'F' : 'C'} | ${String((startH + i) % 24).padStart(2, '0')}:00${rainProbs && rainProbs[i] >= 10 ? ' | 🌧 ' + rainProbs[i] + '%' : ''}</title></circle>` : '').join('')}
+            ${pts.map((p, i) => i % 2 === 0 ? `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#60a5fa"><title>${Math.round(temps[i])}°${_tempUnit === 'F' ? 'F' : 'C'} | ${String((startH + i) % 24).padStart(2, '0')}:00${rainProbs && rainProbs[i] >= 10 ? ' | 🌧 ' + rainProbs[i] + '%' : ''}</title></circle>` : '').join('')}
             ${labels}`;
     }
 
@@ -3011,19 +3011,6 @@
         const set = _getNewsBookmarks();
         if (set.has(url)) set.delete(url); else { set.add(url); if (set.size > 15) { const [first] = set; set.delete(first); } }
         try { localStorage.setItem(NEWS_BOOKMARKS_KEY, JSON.stringify([...set])); } catch (_) {}
-    }
-
-    // ── Sprint 15 Functions (F141–F150) ───────────────────────────────────────────
-
-    // F144: News category detection — Hebrew keyword matching
-    function detectNewsCategory(title) {
-        const t = (title || '').toLowerCase();
-        if (/ביטחון|צבא|לחימה|טיל|רקטה|מלחמה|חמאס|טרור|נשק|כיבוש|חי"ר|חיל|אש|פגיעה|כוחות|ירי/.test(t)) return 'security';
-        if (/פוליטיקה|ממשלה|כנסת|קואליציה|אופוזיציה|בחירות|מפלגה|שר.*ה|ראש.*ממשלה|נשיא|וועדה|הצבעה/.test(t)) return 'politics';
-        if (/כלכלה|שוק.*מניה|שקל|בנק|ריבית|תקציב|גז|נפט|ייצוא|ייבוא|שביתה|הסתדרות|אינפלציה/.test(t)) return 'economy';
-        if (/ספורט|כדורגל|כדורסל|טניס|אצלתנות|אולימפיאד|ליגה|אלופות|מונדיאל|מרוץ|גביע|שחיה/.test(t)) return 'sport';
-        if (/טכנולוגיה|סטארטאפ|בינה מלאכותית|ai\b|cyber|קיברנטי|אפליקציה|סמארטפון|מחשב|רובוט/.test(t)) return 'tech';
-        return null;
     }
 
     // ── Sprint 16 Functions (F151–F160) ───────────────────────────────────────────
@@ -6620,7 +6607,7 @@
             navigator.serviceWorker.addEventListener('message', e => {
                 if (e.data?.type === 'NETWORK_BACK') {
                     diagLog('SW: network restored — refreshing stale panes');
-                    safeLoad(loadWeather); safeLoad(loadHebCal); safeLoad(loadAlerts); safeLoad(loadStocks);
+                    safeLoad(loadWeather); safeLoad(loadHebCal); safeLoad(loadAlerts); safeLoad(loadAllStocks);
                 }
                 if (e.data?.type === 'VERSION_ACTIVATED') {
                     diagLog('SW: version activated — ' + (e.data.version || ''));
