@@ -7,7 +7,7 @@
   </defs>
   <rect width="800" height="430" rx="14" fill="url(#bg)"/>
 
-  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture — v4.19.0</text>
+  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture — v5.1.0</text>
 
   <!-- Browser box -->
   <rect x="240" y="56" width="320" height="50" rx="10" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.25"/>
@@ -89,7 +89,7 @@
   <text x="400" y="376" font-family="monospace" font-size="8" fill="#94a3b8" text-anchor="middle">direct → allorigins.win → codetabs.com → corsproxy.io</text>
 
   <!-- Stats footer -->
-  <text x="100" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">14+ APIs · 1135 Tests</text>
+  <text x="100" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">14+ APIs · 1084 Tests</text>
   <text x="400" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">Single HTML File · Zero Dependencies · v4.19.0</text>
   <text x="700" y="415" font-family="Segoe UI" font-size="8" fill="#94a3b8" text-anchor="middle">61 Test Suites</text>
 </svg>

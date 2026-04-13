@@ -1,0 +1,41 @@
+/* Scroll Containers, GPU Layers, Fade Masks */
+/* ── Performance: Paint Containment ── */
+/* Currency and motivation are compact cards — cap at 30% viewport height, centered in row */
+.bottom-grid > .card:nth-child(2),
+.bottom-grid > .card:nth-child(3) { max-height: 30vh; align-self: center; }
+.news-body, .stocks-body, .alerts-body, .weather-body, .currency-body, .moti-body { contain: content; }
+
+/* ── Performance: GPU-Accelerated Layers ── */
+/* Promote continuously-animating scroll containers to GPU-composited layers */
+.rss-scroll, .stocks-scroll, .alerts-scroll, .ticker-inner {
+    will-change: transform;
+    transform: translateZ(0);         /* force GPU layer */
+    backface-visibility: hidden;      /* skip back-face rasterization */
+}
+.stk-chart svg { will-change: contents; }
+
+/* Animated gradient border — GPU composite */
+.card::before { will-change: transform; backface-visibility: hidden; }
+
+/* ── Scroll Fade Masks (top/bottom gradient edges on scrolling containers) ── */
+.news-body, .stocks-body, .alerts-body {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+}
+
+
+
+/* ── Animated Gradient Border on Card Focus/Hover ── */
+@property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.card:hover::before {
+    content: ''; position: absolute; inset: -1px; border-radius: var(--border-radius); z-index: -1;
+    background: conic-gradient(from var(--border-angle), var(--accent), var(--cyan), var(--purple), var(--pink), var(--accent));
+    animation: rotateBorder 4s linear infinite;
+    opacity: 0.5;
+}
+@keyframes rotateBorder { to { --border-angle: 360deg; } }

@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "project": "FamilyDashBoard",
     "copilot": {
         "enabled": true,
@@ -15,35 +15,38 @@
             "aliases": ["design", "css", "layout", "theme"],
             "priority": "high",
             "context_files": ["BestDashBoard.html"],
-            "description": "UI/UX design and CSS styling specialist for the dashboard"
+            "description": "UI/UX: CSS custom properties, glassmorphism, RTL layout, themes"
         },
         "api-mode": {
             "enabled": true,
             "aliases": ["fetch", "data", "weather", "stocks"],
             "priority": "high",
             "context_files": ["BestDashBoard.html"],
-            "description": "API integration, data fetching, and caching specialist"
+            "description": "API integration: fetch, caching, proxy fallback, diagnostics"
         },
         "fix-mode": {
             "enabled": true,
             "aliases": ["debug", "troubleshoot", "error"],
             "priority": "high",
             "context_files": ["BestDashBoard.html"],
-            "description": "Debugging and error resolution specialist"
+            "description": "Debug fetch failures, dead code, JS syntax errors"
         },
         "docs-mode": {
             "enabled": true,
             "aliases": ["documentation", "readme"],
             "priority": "medium",
-            "context_files": ["README.md", ".github/copilot-instructions.md"],
-            "description": "Documentation and README expert"
+            "context_files": [
+                "README.md",
+                "CHANGELOG.md"
+            ],
+            "description": "Documentation, README, CHANGELOG, SVG assets"
         },
         "security-mode": {
             "enabled": true,
             "aliases": ["security", "audit", "xss"],
             "priority": "critical",
             "context_files": ["BestDashBoard.html", ".github/SECURITY.md"],
-            "description": "Security audit for XSS, CSP, and API safety"
+            "description": "Security: XSS prevention, CSP, API input sanitization"
         }
     }
 }

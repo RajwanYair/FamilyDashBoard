@@ -1,11 +1,11 @@
 ---
 mode: "agent"
-description: "Add a new dashboard section (widget/card). Provide the section name, data source, and refresh interval. The prompt will guide placement in the grid layout, API integration with caching and proxy fallback, and sync indicator wiring."
+description: "Add a new dashboard section (widget/card). Provide the section name, data source, and refresh interval."
 ---
 
 # Add New Dashboard Section
 
-Add a new section to the FamilyDashBoard.
+> Use the `/add-api` skill for the full integration checklist.
 
 ## Requirements
 
@@ -15,24 +15,22 @@ Add a new section to the FamilyDashBoard.
 
 ## Implementation Steps
 
-1. **HTML**: Add a new `.section` div in the appropriate row (top-row or bottom-row)
-2. **CSS**: Adjust grid column proportions if needed
+1. **HTML**: Add card markup in the appropriate column of `.dashboard-grid`
+2. **CSS**: Adjust grid column proportions if needed, use CSS custom properties
 3. **JavaScript**:
    - Add sync indicator to `syncIndicators` object
-   - Create `update{{SectionName}}()` async function with:
-     - `setSyncStatus('{{id}}', 'syncing')`
-     - Cache check via `getCachedData(key)`
-     - Fetch with proxy fallback
-     - `setCachedData(key, data)`
-     - Display function
-     - `setSyncStatus('{{id}}', 'success'|'error')`
-   - Call from `initDashboard()`
-   - Add `setInterval()` with the specified refresh interval
-   - Add to `updateRefreshTime()` chain
+   - Create `load{{SectionName}}()` async function with:
+     - `if (!_pageVisible) return;` guard
+     - `setSync('{{id}}', 'syncing')`
+     - Cache: `cGet(key, TTL)` → `cGetStale(key)` → fetch → `cSet(key, data)`
+     - `setSync('{{id}}', 'success'|'error')` on every exit path
+     - `diagLog()` on success and error
+   - Register in `initDashboard()` loaders array
+   - Add `setInterval(() => safeLoad(load{{SectionName}}), interval)`
+4. **Tests**: Add describe block (see `/update-tests` skill)
 
 ## Constraints
 
-- Use CSS custom properties for all colors
 - Hebrew text with RTL alignment
-- Font size readable on TV (minimum 1em for body text)
+- Font size readable on TV (base 28px)
 - No external libraries

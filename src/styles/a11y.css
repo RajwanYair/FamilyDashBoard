@@ -1,0 +1,20 @@
+/* Accessibility */
+/* ── Accessibility: Reduced Motion (R1.9) ── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    :root {
+        --duration-fast: 0.01ms;
+        --duration-normal: 0.01ms;
+        --duration-slow: 0.01ms;
+    }
+}
+
+
+/* ── Content Visibility for Off-screen Optimization ── */
+/* Skip weather card (first in bottom-grid) — its flex layout needs full height computation */
+.bottom-grid .card:nth-child(n+2) { content-visibility: auto; contain-intrinsic-size: auto 250px; }

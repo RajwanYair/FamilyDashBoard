@@ -6,242 +6,80 @@ argument-hint: "Describe what changed: new card name, changed CSS property, upda
 
 # Update Tests — FamilyDashBoard
 
-## When to Use
-- After adding a new dashboard card or API integration
-- After changing a CSS rule value (font-size, layout percentage, etc.)
-- After changing a JS constant (`STOCK_SYMBOLS`, `PROXIES`, `VERSION`, etc.)
-- After adding / removing HTML elements
-- After a test run reports failures you need to diagnose and fix
+## Infrastructure
 
----
+- **File**: `tests/dashboard.test.mjs`
+- **Runner**: `node --test tests/dashboard.test.mjs` (zero dependencies)
+- **Current**: 1084 tests / 61 suites (`describe` blocks)
+- **Method**: Reads `BestDashBoard.html` as raw string -> regex + string assertions
 
-## Test Infrastructure
-
-**File**: `tests/dashboard.test.mjs`
-**Runner**: `node --test tests/dashboard.test.mjs`
-**Dependencies**: zero — uses Node.js `node:test` and `node:assert/strict` only
-**Suites**: 44 (`describe` blocks) | **Tests**: 398 (`it` calls)
-
-The test file reads `BestDashBoard.html` as a raw string and uses **regex** or **string contains** to assert:
-- HTML element existence
-- CSS rule values
-- JS constant values
-- Security patterns (no `innerHTML` with external data, no eval, HTTPS URLs)
-- Per-pane refresh intervals
-
----
-
-## How to Run Tests
+## How to Run
 
 ```bash
-# Run all tests
-node --test tests/dashboard.test.mjs
-
-# Run with verbose output
-node --test --reporter=spec tests/dashboard.test.mjs
-
-# Run a single suite by name pattern
-node --test --test-name-pattern="Stock" tests/dashboard.test.mjs
+node --test tests/dashboard.test.mjs                              # all
+node --test --test-name-pattern="Stock" tests/dashboard.test.mjs  # one suite
 ```
-
-A passing run outputs: `# tests 398 # pass 398 # fail 0`
-
----
 
 ## Test Patterns
 
-### Pattern 1 — Element existence (string contains)
-
+### Element existence
 ```javascript
-it('should have <name> element', () => {
-  assert.ok(html.includes('id="<element-id>"'), 'Missing <element-id>');
-  assert.ok(html.includes('class="<class-name>"'), 'Missing <class-name>');
-});
+assert.ok(html.includes('id="card-<id>"'));
 ```
 
-Use for: ID/class checks, sync dot IDs, card layout IDs.
-
-### Pattern 2 — Regex match (CSS rule values)
-
+### CSS rule value
 ```javascript
-it('should have correct <property> on <selector>', () => {
-  assert.match(
-    html,
-    /\.<css-class>\s*\{[^}]*<property>:\s*<value>/,
-    '<selector> <property> should be <value>'
-  );
-});
+assert.match(html, /\.<class>\s*\{[^}]*<property>:\s*<value>/);
 ```
 
-**Critical**: when you change a CSS value (e.g. `font-size: 2em → 1.8em`), the test regex must also be updated.
-
-Example — matching `font-size: 2em` on `.wx-icon`:
+### JS constant
 ```javascript
-assert.match(html, /\.wx-icon\s*\{[^}]*font-size:\s*2em/);
+assert.match(html, /STOCK_SYMBOLS\s*=\s*\[.*'\^GSPC'.*\]/s);
 ```
 
-### Pattern 3 — JS constant value
-
+### Security check
 ```javascript
-it('STOCK_SYMBOLS should contain ^GSPC', () => {
-  assert.match(html, /STOCK_SYMBOLS\s*=\s*\[.*'\^GSPC'.*\]/s);
-});
-
-it('PROXIES should have at least 3 entries', () => {
-  const match = html.match(/const PROXIES\s*=\s*\[([\s\S]*?)\]/);
-  assert.ok(match, 'PROXIES not found');
-  const count = (match[1].match(/https:\/\//g) || []).length;
-  assert.ok(count >= 3, `Expected 3+ proxies, got ${count}`);
-});
+assert.doesNotMatch(html, /innerHTML\s*=\s*(rss|news|stock|alert)/i);
 ```
 
-### Pattern 4 — Security check
-
+### Interval registration
 ```javascript
-it('should not use innerHTML with external API data', () => {
-  // Spot-check: no innerHTML = rssText or similar
-  assert.doesNotMatch(html, /innerHTML\s*=\s*(rss|news|stock|alert)/i);
-});
+assert.match(html, /setInterval\s*\(\s*\(\s*\)\s*=>\s*safeLoad\(load<Name>\)\s*,\s*<N>/);
 ```
-
-### Pattern 5 — Interval registration
-
-```javascript
-it('<name> refresh interval should be <N>ms', () => {
-  assert.match(
-    html,
-    /setInterval\s*\(\s*\(\s*\)\s*=>\s*safeLoad\(load<Name>\)\s*,\s*<N>/,
-  );
-});
-```
-
----
 
 ## Adding Tests for a New Card
 
-Add a new `describe` block at an appropriate section in the file:
+Add a `describe` block:
 
 ```javascript
 describe('<Name> Card', () => {
-  it('should have <name> card markup', () => {
-    assert.ok(html.includes('id="card-<id>"'), 'Missing card-<id>');
-    assert.ok(html.includes('id="pane-<id>"'), 'Missing pane-<id>');
-    assert.ok(html.includes('id="sync-<id>"'), 'Missing sync-<id>');
+  it('card markup', () => {
+    assert.ok(html.includes('id="card-<id>"'));
+    assert.ok(html.includes('id="pane-<id>"'));
+    assert.ok(html.includes('id="sync-<id>"'));
   });
-
-  it('should register sync indicator', () => {
+  it('sync indicator registered', () => {
     assert.match(html, /'<id>'\s*:\s*document\.getElementById\('sync-<id>'\)/);
   });
-
-  it('should use dash_v2_ cache key prefix', () => {
+  it('cache key prefix', () => {
     assert.match(html, /dash_v2_<service>/);
   });
-
-  it('should register loader with safeLoad', () => {
+  it('loader with safeLoad', () => {
     assert.match(html, /safeLoad\(load<Name>\)/);
   });
-
-  it('should have refresh interval', () => {
-    assert.match(
-      html,
-      /setInterval\s*\(\s*\(\s*\)\s*=>\s*safeLoad\(load<Name>\)\s*,\s*\d+/,
-    );
+  it('refresh interval', () => {
+    assert.match(html, /setInterval\s*\(\s*\(\s*\)\s*=>\s*safeLoad\(load<Name>\)\s*,\s*\d+/);
   });
 });
 ```
 
-Also add the new `sync-<id>` to the "all sync dots" test near the top of `HTML Structure`:
-```javascript
-const syncDots = [
-  // ... existing ...
-  'sync-<id>',
-];
-```
+Also add `'sync-<id>'` to the `syncDots` array in the "HTML Structure" suite.
 
----
+## Fixing Broken Tests
 
-## Fixing Broken Tests After CSS/JS Changes
-
-### CSS property value changed
-Find the test by: `grep_search pattern: "<old-value>" in tests/dashboard.test.mjs`
-Update the regex to match the new value.
-
-### Constant array changed (e.g. STOCK_SYMBOLS)
-The "all symbols" test iterates the array. If you added/removed a symbol:
-```javascript
-// In tests/dashboard.test.mjs — find "stock tiles" test
-const symbols = ['^GSPC', '^VIX', 'AAPL', ...]; // update this array
-```
-
-### Version string changed
-```javascript
-// Find and update:
-assert.match(html, /VERSION\s*=\s*'v<NEW>'/);
-```
-
-### New element added / existing removed
-Add or remove `assert.ok(html.includes('id="..."'))` in the appropriate suite.
-
----
-
-## Suite Organization (current 44 suites)
-
-| # | Suite name | What it covers |
-|---|-----------|---------------|
-| 1 | HTML Structure | DOCTYPE, RTL, charset, layout, elements |
-| 2 | CSS Themes | 5 theme vars, glassmorphism, card CSS |
-| 3 | Security | No eval, no unsafe innerHTML, HTTPS |
-| 4 | JavaScript | Constants, cache functions, fetch pattern |
-| 5 | Weather Card | wx-* elements, layout classes |
-| 6 | Stocks | STOCK_SYMBOLS, tiles, intervals |
-| 7 | News / RSS | rss-scroll, feed URLs, intervals |
-| 8 | Calendar | cal-agenda, iframe fallback, ICS URL |
-| 9 | Currency | cur-* elements, exchange rate URLs |
-| 10 | Motivation | moti-* elements, quotes array |
-| …  | … | … |
-| 44 | Performance | will-change, contain, GPU hints |
-
-When adding a new suite, insert it logically — roughly matching the visual order in the dashboard (header → ticker → top row left-to-right → bottom row left-to-right → footer).
-
----
-
-## Quick Reference
-
-```bash
-# Run, then grep failures
-node --test tests/dashboard.test.mjs 2>&1 | grep -E "FAIL|Error"
-
-# Count passing tests
-node --test tests/dashboard.test.mjs 2>&1 | grep "# pass"
-```
-
----
-
-## Lessons Learned (Sprints 8–11)
-
-### Slice Length is the #1 Source of False Failures
-When writing `scriptContent.slice(idx, idx + N)` tests, the slice must cover the **entire function body**. If N is too small, the assertion finds nothing even though the code exists.
-
-**Rule of thumb**: measure the actual function in `BestDashBoard.html` before writing the constant, or start large (1500+) and trim if needed. When a test fails unexpectedly, increase the slice by 500–1000 before assuming the code is missing.
-
-```javascript
-// BAD — will fail if updateNetworkBanner grows beyond 400 chars
-const fn = scriptContent.slice(idx, idx + 400);
-
-// GOOD — safe upper bound
-const fn = scriptContent.slice(idx, idx + 1300);
-```
-
-### After Extending an Existing Function
-If you add lines to an existing function (e.g., `updateNetworkBanner`, `tickClock`, `checkBirthdays`), any existing test that asserts on a short slice of that function **may need its slice length increased**. Run the tests immediately and fix before committing.
-
-### Test Suite Current State (as of v4.14.0)
-- **942 tests / 55 suites / 0 failures**
-- Suite 55 = Sprint 11 (F101–F110)
-- Version assertion: `html.includes("Dashboard v4.14.0")`
-
-### Version Bump Checklist for Tests
-1. Update `it("should display version vX.Y.Z"` title in the suite
-2. Update `html.includes("Dashboard vX.Y.Z")` string match
-3. Update `"Missing version vX.Y.Z in status bar"` error message
-All three are in the same `it()` block — grep for `"should display version"` to find it.
+| What changed | Find in test file | Fix |
+|-------------|-------------------|-----|
+| CSS value | `grep "<old-value>"` | Update regex to new value |
+| JS constant array | Find "symbols" or constant name | Update expected array |
+| Element added/removed | Find `includes('id="..."')` | Add/remove assertion |
+| Version bumped | Find `Dashboard v` string | Update version string |

@@ -11,7 +11,7 @@ Scan and fix quality issues in `BestDashBoard.html`:
 
 ### Security Fixes
 - Replace any `innerHTML` used with external API data → `textContent`
-- Remove any `eval()` or inline event handlers
+- Remove any `eval()` usage
 - Ensure all API URLs use HTTPS
 
 ### Accessibility Fixes

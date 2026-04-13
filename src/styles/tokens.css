@@ -1,0 +1,77 @@
+/* Design Tokens — FamilyDashBoard v6 */
+:root {
+    /* ── Colors: Warm Dark (default) ── */
+    --bg-primary: #1a1410;
+    --bg-card: rgba(42, 34, 26, 0.82);
+    --bg-card-header: rgba(56, 46, 36, 0.88);
+    --bg-card-inner: rgba(48, 40, 30, 0.55);
+    --bg-card-hover: rgba(66, 54, 42, 0.65);
+    --accent: #d4a053;
+    --accent-bright: #e8c07a;
+    --accent-glow: rgba(212, 160, 83, 0.22);
+    --accent-border: rgba(212, 160, 83, 0.25);
+    --text-primary: #faf5ef;
+    --text-secondary: #c4b8a8;
+    --text-muted: #8a7e70;
+    --positive: #6abf7b;
+    --positive-glow: rgba(106, 191, 123, 0.22);
+    --negative: #e07070;
+    --negative-glow: rgba(224, 112, 112, 0.22);
+    --warning: #f0c040;
+    --purple: #b89adf;
+    --pink: #e89ab8;
+    --orange: #e8a060;
+    --cyan: #6abfcf;
+    --border-radius: 14px;
+    --card-border: 1px solid rgba(212, 160, 83, 0.15);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --bg-gradient-1: rgba(212,160,83,0.06);
+    --bg-gradient-2: rgba(106,191,123,0.04);
+    --bg-gradient-3: rgba(184,154,223,0.04);
+    --news-font-scale: 1;
+
+    /* ── Spacing Scale ── */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    /* ── Radius Scale ── */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    /* ── Shadow Scale ── */
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.18);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+
+    /* ── Fluid Typography (R1.4) ── */
+    --text-xs: clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);
+    --text-sm: clamp(0.75rem, 0.7rem + 0.3vw, 0.88rem);
+    --text-base: clamp(0.88rem, 0.8rem + 0.4vw, 1.05rem);
+    --text-lg: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+    --text-xl: clamp(1.15rem, 1rem + 0.7vw, 1.5rem);
+    --text-2xl: clamp(1.4rem, 1.2rem + 1vw, 2rem);
+    --text-3xl: clamp(1.8rem, 1.5rem + 1.5vw, 2.8rem);
+    --text-4xl: clamp(2.2rem, 1.8rem + 2vw, 3.6rem);
+    --font-body: 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', sans-serif;
+    --font-mono: 'Consolas', 'Courier New', monospace;
+
+    /* ── Grid Layout (R1.6) ── */
+    --grid-cols: 38fr 33fr 29fr;
+    --grid-gap: 8px;
+    --container-pad: 10px;
+
+    /* ── Animation Tokens (R1.9) ── */
+    --duration-fast: 0.15s;
+    --duration-normal: 0.3s;
+    --duration-slow: 0.6s;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}

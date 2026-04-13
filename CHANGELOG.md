@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.0.0-alpha.2] — 2026-04-13
+
+> **v6 Phase 3 — Card Modules: News, Stocks, Currency, Alerts + Main Wiring** (GH #66)
+> Tests: 596 Vitest / 5 suites / 0 failures · TypeScript: 0 errors · Vite build: 37.5 KB gzip total
+> Build: main-DOgTGrtu.js 2.37 KB gzip · cards-Dl5RiaYm.js 10.31 KB gzip · CSS 12.65 KB gzip
+
+### Added
+
+- **`src/cards/news/news.ts`**: RSS aggregator — 17 Hebrew feeds (`NEWS_FEEDS` array), concurrent fetch via `runConcurrent`, XML parsing with `DOMParser`, title-prefix dedup, sort newest-first, top 50 items. Seamless clone-scroll DOM rendering. Hebrew regex category detection → `security` | `politics` | `economy` | `sport` | `tech`. `initNewsCard()` export.
+- **`src/cards/stocks/stocks.ts`**: Yahoo Finance v8 chart API via `fetchJSON` proxy chain. BTC-USD via CoinGecko direct (CORS-enabled — Yahoo crypto fails through proxies). 2-phase load: cached-first then parallel fetch of uncached symbols (≤4 concurrent). Bezier SVG mini-charts (80×28px). 3-state trend coloring (positive/negative/neutral). 52-week range bar. Gainers/losers summary bar. `initStocksCard()` export.
+- **`src/cards/currency/currency.ts`**: `open.er-api.com` (ILS base) with `exchangerate-api.com` fallback. Renders 5 tiles: USD, EUR, GBP, Gold (XAU), Silver (XAG). Change indicators vs. previous fetch (per-tile thresholds). `data-fresh` animation flash on update. `initCurrencyCard()` export.
+- **`src/cards/alerts/alerts.ts`**: Tzeva Adom API (`api.tzevaadom.co.il/alerts-history`) with direct → proxy chain fallback. Adaptive polling: 60s active / 5min idle / 10s realtime mode. `AudioContext` beep + browser `Notification` on new alert. Clone-scroll DOM rendering with `@keyframes alertsScroll`. `setAlertsEnabled()` / `setAlertsRealtime()` controls. `initAlertsCard()` export.
+- **`src/types/api.ts`**: Added `AlertZone` interface (cities, threat, time) and corrected `AlertEvent` (alerts: `AlertZone[]`, not `string[]`). Matches actual Tzeva Adom API shape.
+- **`src/cards/base-card.ts`**: `createCardLoader<T>` generic wrapper for standard card lifecycle (visibility → lock → cache → fetch → render → sync indicators).
+- **`src/cards/weather/weather.ts`** + **`src/cards/motivation/motivation.ts`**: Cards now using `createCardLoader` / `scheduleCard` pattern from base-card.
+
+### Changed
+
+- **`src/main.ts`**: Entry point fully wired — imports all 6 card inits + 4 UI module inits + SW registration. Version bumped to `6.0.0-alpha.2`. All TODO stubs replaced with actual calls.
+- **`.github/workflows/deploy.yml`**: Changed from serving root directory (`path: "."`) to Vite build + `path: "dist"`. Now runs `npm ci && npx vite build` then deploys `dist/` to GitHub Pages.
+- **`vite.config.ts`**: `manualChunks.cards` updated to include all 6 card modules (was 2). Cards chunk is ~10 KB gzip.
+- **`package.json`**: Version updated to `6.0.0-alpha.2`.
+
+---
+
+## [5.2.0-rc.1] — 2026-04-13
+
+> **Refactoring Sprint R6 — Calendar, Alerts, Motivation + R7 verification + R8 partial**
+> Tests: 1095 / 62 suites / 0 failures (was 1084 / 61; delta: +11 R6 refactoring coverage tests)
+
+### Changed
+
+- **R6.1 — ICS parser helpers**: Extracted `_parseICSDate()` and `_unescapeICS()` as standalone shared helpers for calendar ICS processing
+- **R6.2 — Calendar loader**: Refactored `loadCalendar()` with `sources[]` direct → proxy fallback loop pattern (consistent with R5.8 CUR_APIS pattern); extracted `CAL_TTL` constant
+- **R6.3 — Calendar renderer**: Extracted `_renderCalEvent()` and `_renderCalCountdown()` as standalone rendering helpers
+- **R6.4 — Calendar iframe**: Extracted `_acceptICS()` validation helper for ICS content checks
+- **R6.5 — Red Alerts loader**: Extracted `ALERT_URL` constant; unified direct → proxy fallback with `sources[]` loop; extracted `_notifyNewAlert()` helper (beep + desktop notification)
+- **R6.6 — Alerts renderer**: Extracted `_buildAlertItem()` to module scope (was nested `buildAlertItems()` closure); replaced double function calls with `for (const isClone of [false, true])` loop
+- **R6.7 — Alert toggle**: Cached `_alertsToggleSel` to eliminate duplicate `getElementById` calls; consolidated `initAlerts()` and `applyAlerts()`
+- **R6.8 — Motivation**: Extracted `_setMotiContent()` (eliminated 3× text assignment duplication) and `_shareMoti()` helper for share/clipboard logic
+- **R6.9 — Card maximize**: Split 64-line `toggleCardMaximize()` into `_expandCard()` + `_collapseCard()` — dispatcher is now 2 lines
+- **R7 — PWA, Performance, Polish**: All 12 items (R7.1–R7.12) verified already implemented — SW v5.0.0, update flow, manifest, GPU layers, CSS contain, scroll fade masks, card entrance animations, night dimmer, background images, font scale, birthday chip, custom countdown
+- **R8.8 — ESLint config**: Expanded `varsIgnorePattern` to cover refactored function prefixes (`apply`, `schedule`, `card`, `save`, `trigger`, `show`, `hide`, `reset`, `filter`, `play`, `inject`, `set[A-Z]`, `cycle`, `random`)
+
+### Added
+
+- **11 refactoring coverage tests**: New "Refactoring R6" test suite verifying all extracted functions (`ALERT_URL`, `_notifyNewAlert`, sources array, `_buildAlertItem`, isClone loop, `_alertsToggleSel`, `_setMotiContent`, `_shareMoti`, `_expandCard`, `_collapseCard`, `toggleCardMaximize` delegation)
+
+### Fixed
+
+- **Test syntax errors**: Fixed 2 pre-existing `};)` → `});` typos in test file (lines 1119, 4893)
+
+---
+
 ## [5.1.0] — 2026-04-12
 
 > **Refactoring Sprints R1–R5 (partial)** — CSS Design System, HTML Structure, Core JS Infrastructure, Hebrew Calendar verification + dead code removal, News/Stocks verification
@@ -106,7 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **F135 — Motivation share button** — `<button id="moti-share-btn">📤 שתף</button>` added to motivation card; `loadMotivation()` wires `onclick` after each rotation; uses `navigator.share()` on supported devices, falls back to `navigator.clipboard.writeText()` with a copy toast
 - **F136 — News article age tinting** — `renderNews()` assigns `.stale-half` (>6h, opacity 0.80), `.stale-day` (>12h, opacity 0.60), `.stale-old` (>24h, opacity 0.35) CSS classes to original items (not clones) based on `pubDate` age
 - **F137 — After-hours / pre-market secondary price line** — `renderStock()` appends a `<div class="stk-after-price">` to `.stk-vals` showing `postMarketPrice` or `preMarketPrice` with labeled change percentage when market is not in REGULAR state; colored green/red by direction
-- **F138 — Calendar conflict indicator** — `renderCalendar()` builds a `conflictIdx` Set of overlapping timed events before the render loop; conflicting events receive `.cal-event.has-conflict` class which adds `⚠ ` before the title via CSS `::before` pseudo-element
+- **F138 — Calendar conflict indicator** — `renderCalendar()` builds a `conflictIdx` Set of overlapping timed events before the render loop; conflicting events receive `.cal-event.has-conflict` class which adds `⚠` before the title via CSS `::before` pseudo-element
 - **F139 — Custom countdown chip in header** — `<span id="header-countdown">` (purple pill) shows days remaining to a user-configured event; `updateCountdownChip(now)` called every minute from `tickClock()`; configured via new "⏳ ספירה לאחור" fields in the Advanced config tab (`dash_countdown_date` + `dash_countdown_label`)
 - **F140 — Print mode improvements** — `@media print` now hides `.clone`, `#toast`, `#night-dim`, `#print-datetime`, and `#config-overlay`; `<div id="print-datetime">` shows print timestamp; `initPrintDate()` wires the `beforeprint` event; called from `init()`
 
@@ -114,7 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Corrupted duplicate block in `init()`** — A garbled duplicate of the event-listener and loader setup inside init was removed; `initPrintDate()` and `updateCountdownChip()` are now correctly called at the end of init
 
-
+## [4.16.0] — 2026-04-27
 
 > **Sprint 13 (Features 121–130)** — Toast system, UV pill, rain-% labels, calendar reminders, news translate, earthquake & halacha deeplinks, chart view toggle, search highlight, diag log toast feedback
 > Tests: 1014 / 57 suites / 0 failures (was 985 / 56 suites / 0)
@@ -240,30 +294,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-**Currency**
+#### Currency
+
 - **F71 — GBP / ILS tile** — 5th currency tile `#cur-gbp` / `#cur-gbp-chg`; fetched from ER-API alongside USD/EUR; inverted display (1 GBP = X ₪); el cache `curGbp` / `curGbpChg`
 
-**Calendar**
+#### Calendar
+
 - **F72 — Week strip heat-map** — `renderCalWeekStrip()` now applies `.heat-1/.heat-2/.heat-3` CSS classes to day cells based on event count (1 / 2–3 / 4+); blue opacity gradient; today highlight unchanged
 
-**News**
+#### News
+
 - **F73 — Source favicon in filter chips** — `NEWS_SRC_DOMAIN` map (17 entries) provides domain per news source name; `addNewsFilterChip()` prepends `<img class="news-chip-favicon">` using Google S2 favicon API
 
-**Stocks**
+#### Stocks
+
 - **F74 — Sector grouping headers** — Static `<div class="stk-sector-hdr">` injected before מדדים (indices) and מניות (company stocks) groups in `#stocks-body` scroll list; CSS letter-spacing uppercase label
 
-**Weather / AQI**
+#### Weather / AQI
+
 - **F75 — AQI 8-reading sparkline** — `recordAqiHistory(val)` persists last 8 AQI readings in `localStorage:dash_aqi_hist`; `renderAqiSparkline()` draws 44×14 SVG polyline (green/yellow/red); called from `_renderAQI()`
 - **F79 — Weather chart hover tooltips** — Each visible data circle in `renderHourlyChart()` now includes an SVG `<title>` element showing temp°, hour, and rain% (when ≥10%); native browser tooltip on hover / touch
 
-**Hebrew Calendar**
+#### Hebrew Calendar
+
 - **F77 — Shabbat time pill in header** — `#header-shabbat-pill` in `header-right` shows 🕯️ countdown (≤36h before candles) or ✨ remaining time (during Shabbat); `updateShabbatHeaderPill()` runs every 60s; uses `_candleDate` + `_shabbatEnd`
 - **F78 — Parasha weekly progress bar** — `renderParashaProgress()` calculates `(dayOfWeek+1)/7` percent and fills `.hc-parasha-progress-fill`; shown below `#hc-parasha-row` when parasha is visible
 
-**PWA**
+#### PWA
+
 - **F80 — PWA meta tags + install button** — Added `theme-color`, `mobile-web-app-capable`, `apple-mobile-web-app-*` meta tags; `#pwa-install-btn` fixed button appears when `beforeinstallprompt` fires; `pwaInstall()` calls `e.prompt()`
 
 ### Fixed
+
 - Updated all 5 SVG documentation assets in `.github/assets/` with accurate v4.10.0 data (17 feeds, 15 stocks, 12+ APIs, correct intervals; added Sefaria + OWM AQI + USGS + CoinGecko to architecture diagram)
 
 ---
@@ -275,44 +337,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-**Stocks & Portfolio**
+#### Stocks & Portfolio
+
 - **F51 — Portfolio total row** — `#stk-total-row` shows live portfolio value (sum across all held symbols) with P&L % δ; updates on every stock render via `updatePortfolioTotal()`
 - **F55 — Stock price-alert system** — configure JSON threshold map in config panel (`cfg-stock-alerts`); `checkStockAlerts(sym, price)` fires `Notification` API with vibration on breach
 - **F60 — TA-35 index tile** — added `^TA35.TA` to `STOCK_SYMBOLS` + `STOCK_NAMES` + `STOCK_BRAND`; shows תּ"א 35 with TASE favicon; Yahoo Finance `^TA35.TA` ticker
 - **F61 — Relative-volume badge** — `getRelVolBadge(regularVol, avgVol)` returns yellow "VOL +56%" at ≥1.5× avg or orange "VOL ×3.2" at ≥2.5×; injected per-stock tile
 - **F65 — Per-stock price-history sparkline** — `recordStkPrice(sym, price)` persists last 8 closes in `localStorage:dash_sph_{sym}`; `drawStkSpark(blk, sym)` renders 44×12px SVG polyline (green/red trend)
 
-**Weather & AQI**
+#### Weather & AQI
+
 - **F53 — Daf Yomi Sefaria link** — Sefaria.org deeplink button next to Daf Yomi value in hc-card; opens tractate page; button wired once via `dataset.wired`
 - **F56 — Precipitation bar** — 24-hour accumulation bar under the weather details row; height proportional to `precipitation_sum` from Open-Meteo daily forecast; visible when precipitation > 0
 - **F64 — AQI category label + trend arrow** — `getAqiCategory(aqi)` returns Hebrew label (טוב/בינוני/מוגבר/גרוע/מסוכן); `#aqi-label` + `#aqi-trend` (↑/↓/→) updated each fetch via `_prevAqiVal`
 - **F66 — Hourly rain probability overlay** — `renderHourlyChart(temps, startH, rainProbs)` renders blue `<rect>` bars at chart bottom (height ∝ precipitation_probability%); Open-Meteo URL extended with `precipitation_probability`
 
-**Calendar & Hebrew Life**
+#### Calendar & Hebrew Life
+
 - **F58 — Calendar event category color-dots** — `detectCalCategory(summary)` maps keywords (בר מצווה/חגיגה/חג/birthday/work → emoji + color class); colored dots appear on `#cal-week-strip` day cells
 - **F63 — 7-day week activity strip** — `renderCalWeekStrip(events)` renders a compact 7-column strip (שאבגדהו) above the agenda with colored dot clusters (max 4 dots/day) and today highlight
 
-**News**
+#### News
+
 - **F57 — Copy-to-clipboard button on news items** — 📋 clipboard button appears on hover; `navigator.clipboard.writeText(title + '\n' + link)` with 2s visual feedback
 - **F62 — Web Share API share button** — 📤 share button on news items; `navigator.share({title, url})`; falls back to clipboard copy if Web Share not supported
 - **F67 — News item published age** — `newsRelAge(pubDate)` returns "לפני Nד'" / "לפני Nש'" / "לפני Nי'"; `.news-age` shown next to source label
 
-**Earthquake**
+#### Earthquake
+
 - **F52 — Earthquake magnitude color-coding** — `.quake-M3`, `.quake-M4`, `.quake-M5+` CSS classes with coloured badge; `_renderEarthquake` assigns class based on M value
 - **F69 — 24-hour earthquake count badge** — `loadEarthquakes` now fetches `limit=20`; counts M3.5+ events in last 24h → `_quake24hCount`; `#quake-count-badge` shown if count > 1
 
-**UX & Developer Tools**
+#### UX & Developer Tools
+
 - **F54 — Auto night dimmer** — `updateNightDimmer()` auto-dims to 40% brightness 22:00–07:00 IST + applies `.night-mode` body class; `toggleNightDim()` bound to `N` keyboard shortcut; intensity configurable in localStorage
 - **F59 — Force-refresh button in diagnostic overlay** — `forceRefresh()` clears all `dash_v2_` cache keys + calls all loaders; wired to `#diag-force-refresh` button; `diagLog` reports each cleared key
 - **F68 — NYSE market countdown chip** — `updateMarketCountdown()` uses America/New_York time; NYSE hours 9:30–16:00; shows hours/minutes to open or close; `.mkt-open` (green) / `.mkt-soon` (yellow / <30min) states; updates every 60s
 - **F70 — Diagnostic overlay copy-log button** — `copyDiagLog()` reads `#diag-panes` + `#diag-log` innerText and copies via `navigator.clipboard`; `#diag-copy-btn` button added to overlay header
 
 ### Changed
+
 - `loadEarthquakes` fetch limit raised from `limit=1` → `limit=20` to support 24h count badge (F69)
 - `renderHourlyChart` signature extended: `(temps, startH)` → `(temps, startH, rainProbs)` (backward compatible — rainProbs defaults to `[]`)
 - Open-Meteo `hourly` params extended with `precipitation_probability`
 
 ### Developer
+
 - Tests: +52 cases in Suite 51 "Sprint 7 Features"; total **746 tests / 51 suites / 0 failures**
 - All new HTML elements added with `id` attributes and cached in `el` object
 - New localStorage keys: `dash_sph_{SYM}` (price history), `dash_stock_alerts` (JSON thresholds)
@@ -326,7 +396,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-**Jewish Life & Hebrew Calendar Card**
+#### Jewish Life & Hebrew Calendar Card
+
 - **F1 — Parasha HaShavua** — `loadParasha()` fetches Hebcal parasha name + Sefaria summary; displays in hc-card with Sefaria deeplink button; 24h cache
 - **F2 — Zmanim (prayer times)** — `loadZmanim()` fetches Hebcal zmanim API; renders Alot/Netz/Sof Zman Shma/Mincha Ged./Plag HaMincha/Shkia in 3-column grid (`#zmanim-grid`); 1h TTL
 - **F3 — Daf Yomi** — `loadDafYomi()` fetches today's daf from Sefaria `/api/calendars`; shows tractate + daf number; 24h TTL
@@ -336,7 +407,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **F21 — Parasha Aliyot** — `_loadParashaAliyot()` fetches opening verse (first ref) from Sefaria `/api/texts/`; renders italic opening phrase in `#hc-aliyot` row
 - **F30 — Halacha excerpt in hc-card** — first segment of daily Halacha also shown in Hebrew Calendar card (`#hc-halacha`) alongside the full ticker
 
-**Weather & AQI**
+#### Weather & AQI
+
 - **F7 — AQI card** — `loadAQI()` fetches OpenWeatherMap Air Quality Index (free, no API key required for v1); renders PM2.5, PM10, O3 value + color badge + Hebrew health recommendation; 1h TTL; `_renderAQI()` function
 - **F8 — School holiday indicator** — parses Hebcal `min=on&maj=on` response; shows "חופש [name]" banner in hc-card when within a known school holiday date range; uses existing `loadHebCal` data
 - **F10 — Precipitation probability bar** — hourly `precipitation_probability` from Open-Meteo rendered as a thin colored bar under weather detail row; shows 24h max accumulation
@@ -345,22 +417,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **F32 — Extreme weather alert banner** — `checkSevereWeather(code)` matches WMO code 82/95/96/99 → Hebrew storm description; `#wx-alert-banner` slides in with `visible` class
 - **F42 — Sky condition colour pill** — `updateWeatherSkyPill(code)` maps WMO code ranges to CSS `--sky-*` gradient + Hebrew label (☀️ יום שמשי / ⛅ מעונן חלקית / 🌧 גשום etc.); shown in clock header area
 
-**Stocks & Currency**
+#### Stocks & Currency
+
 - **F9 — Gold & Silver prices** — `loadCurrency()` extended to fetch `GC=F` and `SI=F` via Yahoo Finance; renders `#cur-gold` + `#cur-silver` tiles in currency card; 1h cache
 - **F35 — Portfolio P&L overlay** — `updatePortfolioPnL(sym, currentPrice)` reads `dash_portfolio` JSON from localStorage (cost+qty per symbol); appends `.stk-pnl` div with `+$X (+Y%)` or loss; shown per-stock row
 - **F38 — Currency sparklines** — `recordCurrencyHistory(usd, eur)` stores daily USD+EUR rates in `dash_v2_cur_hist` (7-day ring); `renderCurrencySparklines()` draws bézier 60×22px SVG lines via `_drawSparkline()` in each currency tile
 - **F41 — Market pre/after-hours badge** — `updateMarketBadge()` extended to 4 states: Pre-market (04:00–09:30), Open (09:30–16:00), After-hours (16:00–20:00), Closed; shown in stocks card header chip
 - **F46 — 52-week range bar** — `updateStockRange(blk, cur, low52, high52)` renders a coloured pill bar showing current price position within the 52-week range; appended per-stock tile
 
-**Calendar**
+#### Calendar
+
 - **F37 — Today's event count in header** — `updateTodayEventCount()` reads ICS cache, counts today's events, shows `N 📅` badge in `#header-event-count`; refreshes on each calendar load
 - **F47 — Event duration label** — calendar events > 0 hours show "(Nh)' or multi-day range; computed from `event.start` / `event.end` in `renderCalendar`
 
-**News**
+#### News
+
 - **F29 — News count badge** — shows total article count in news card header chip; updates each render
 - **F39 — News source filter chips** — `initNewsFilter()` + `addNewsFilterChip(src)` build a filter bar below news header; click a source to filter, "הכל" shows all; `dataset.src` attribute per row
 
-**Infrastructure & UX**
+#### Infrastructure & UX
+
 - **F11 — Auto night-dim mode** — `updateNightDimmer()` applies `filter:brightness(40%)` + `.night-mode` body class between 22:00–07:00; respects `dash_nightDimOff`
 - **F33 — Config panel** — `toggleConfig()` / `saveConfig()`: full slide-over panel (gear icon + `S` key) with fields for background URL, auto-theme, °C/°F toggle, custom ticker announcement, stock alerts JSON, alert sound, birthday string; persists all to localStorage
 - **F34 — Chore wheel** — `updateChoreWheel()` uses day-of-year mod rotation over 7 family tasks; shows `person: chore` in `#hc-chore` row in hc-card
@@ -374,11 +450,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **F50 — Print mode** — `@media print` CSS renders cards as full-width stacked blocks; invoked via keyboard `P` triggering `window.print()`
 
 ### Changed
+
 - `_tempUnit` variable (`C`/`F`) toggles all temperature displays; click on any temperature element toggles unit; persisted in `localStorage:dash_tempUnit`
 - Weather hourly URL extended with `apparent_temperature,precipitation_probability,winddirection_10m`
 - Alerts card: `loadAlerts()` plays `alertBeep()` if new alerts detected and sound is enabled
 
 ### Developer
+
 - Tests: Suites 45–50 added covering new HTML elements, functions, and constants; **694 tests / 50 suites / 0 failures**
 - New localStorage keys: `dash_portfolio`, `dash_bgUrl`, `dash_autoTheme`, `dash_tempUnit`, `dash_ticker_msg`, `dash_alertSound`, `dash_city`, `dash_v2_cur_hist`, `dash_fontScale`, `dash_nightDimOff`
 - New globals: `_tempUnit`, `_autoTheme`, `_alertSoundEnabled`, `_fontScale`, `_activeCity`, `_prevAqiVal`
@@ -388,12 +466,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.8.0] — 2026-04-10
 
 ### Added
+
 - **🗓️ Hebrew Calendar card (`לוח עברי`)** — new dedicated card in the middle column showing: candle lighting time + day, havdalah time, next holiday with days remaining, special items (Sefirat HaOmer, Hanukkah candles etc.), hourly rotating rabbi saying from MOTIVATIONS; driven by `loadHebCal()` with its own `sync-hebcal` indicator, 6h refresh interval
 - **🎨 Brand-color stock rows** — each stock row now uses the company's primary brand color for its left border stripe and ticker symbol label; colors are defined in a new `STOCK_BRAND` constant (14 symbols including ^GSPC, ^VIX, BTC-USD, TSLA, NVDA, INTC, etc.)
 - **🖼️ Reliable stock logos via Google Favicons** — logos now fetch from `https://www.google.com/s2/favicons?domain=DOMAIN&sz=64` instead of the unreliable Clearbit API; logo domain registered in `STOCK_BRAND`; old `onerror`/`display:none` cleared on first render; colored letter-badge fallback (brand-colored background, white text) if favicon also fails
 - **Alphabetically sorted stocks** — `STOCK_SYMBOLS` array sorted A–Z with `^GSPC` and `^VIX` pinned first
 
 ### Changed
+
 - **Layout restructured to 3-column full-height grid** — `.grids-area` changed from `flex-column` (main-row + bottom-row) to a single CSS `grid` with `grid-template-columns: 38fr 33fr 29fr`; `.grid-col-left` (news 65% + weather 35%), `.grid-col-mid` (heb-cal 20% + calendar 65% + currency 15%), `.grid-col-right` (stocks 33% + alerts 33% + motivation 33%)
 - **Stocks and alerts are now standalone cards** — removed `.col-split` wrapper; stocks, alerts, and motivation are direct `.grid-col-right > .card` children
 - **Alerts-off CSS target updated** — `body.alerts-off` now hides `.grid-col-right > .card:nth-child(2)` and expands `.card:nth-child(1)` instead of the removed `.col-split` rules
@@ -402,15 +482,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Stock scroll changed to no-clone loop** — `setupStocksLoop()` replaced by `startStocksScroll()` which measures actual panel height, calculates real scroll distance, injects a unique `@keyframes` per render, no DOM cloning
 
 ### Fixed
+
 - **`^GSPC`/`^VIX` not updating** — `encodeURIComponent(sym)` added to Yahoo Finance v8 URL path so `.` is escaped correctly
 - **Stock tiles appearing twice** — removed all clone-sync logic; `renderStock` only touches original `.stk` tiles
 - **Neutral stock color** — changed from cyan `#22d3ee` to `#94a3b8` (chart) / `var(--text-secondary)` (CSS class)
 
 ### Removed
+
 - **`.col-split` layout wrapper** — no longer exists in HTML; CSS rules cleaned up
 - **Clearbit logo API** — replaced by Google favicons; no external rate-limited logo CDN dependency
 
 ### Developer
+
 - **4 project skills added** — `.github/skills/add-api`, `release`, `debug-fetch`, `update-tests` (SKILL.md files)
 - **MCP servers configured** — `.vscode/mcp.json` with `@modelcontextprotocol/server-fetch` and `@modelcontextprotocol/server-filesystem`
 - **AGENTS.md updated** — skills and MCP server tables documented
@@ -421,6 +504,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.8.2] — 2026-04-10
 
 ### Changed
+
 - **Clock header slimmed** — `.time-section` padding `12px 20px → 6px 16px`, clock `3.4em → 2.9em`, greeting `0.95em → 0.82em`, hebrew-date `1.25em → 1.05em`, english-date `1em → 0.85em`, temp `1.5em → 1.2em`; frees ~30px vertical space for cards
 - **Shabbat/holiday/omer removed from clock header** — `shabbat-info`, `holiday-info`, and `omer-count` divs removed from `.header-left`; only `hebrew-date` remains in header; Shabbat and holiday data lives exclusively in the Hebrew Calendar card now
 - **Stock fetch overhauled** — removed dead `loadStocksBatch()` (Yahoo v6/quote returns 404); switched to per-symbol v8/chart bare URL via `raceProxies`; added CoinGecko fallback for BTC-USD (Yahoo crypto fails through CORS proxies); stock fetches now use `runConcurrent(..., 4)` instead of `Promise.allSettled`; timeout increased from 6s to 8s
@@ -429,6 +513,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Roadmap expanded** — 6-phase roadmap (v4.9–v5.3+) with 20+ planned features; replaced flat table with phased sections in README and copilot-instructions
 
 ### Fixed
+
 - **Page blink on load** — `init()` was called twice (both `DOMContentLoaded` listener AND `readyState` fallback fired simultaneously); changed to exclusive `if/else`
 - **Auto hard-reload removed** — `setTimeout(() => location.reload())` every 1h removed entirely; was causing unexpected page resets on always-on TV
 - **loadShabbat TypeError** — `el.shabbat` was `null` after `shabbat-info` removal; added `if (!el.shabbat) return;` guard
@@ -436,6 +521,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Omer sunset logic** — added sunset-aware date correction to special items fetch in `loadHebCal` (same logic as `loadOmer`)
 
 ### Developer
+
 - **Tests updated** — 5 test assertions fixed for removed header elements (`omer-count`, `shabbat-info`, `holiday-info`) and stock fetch changes (v6 batch → v8 per-symbol + runConcurrent); 362 tests / 44 suites all passing
 - **Repo memory updated** — Yahoo v6 deprecation, CoinGecko fallback, Hebcal geonameid quirk, MOTIVATIONS property names documented
 
@@ -444,6 +530,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.8.1] — 2026-04-10
 
 ### Changed
+
 - **Card headers slimmer** — `padding` reduced from `5px 14px` → `3px 14px`, `font-size` from `1.15em` → `0.95em`, `letter-spacing` from `0.5px` → `0.3px`; icon badge shrunk (`1.6em` → `1.4em`); tablet and phone mode overrides updated proportionally; frees visible height in every card
 - **Per-card font density tuned** — font sizes and padding tightened per-card to match allocated screen space:
   - Currency (15% height): flag `2.8em→1.8em`, rate `1.7em→1.3em`, body/item padding halved
@@ -453,11 +540,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - News (scrolls): item font `0.96em→0.88em`, item margin/padding trimmed for tighter density
 
 ### Fixed
+
 - **Sefirat HaOmer not visible in Hebrew Calendar card** — `hc-special-row` was always present but empty (wasting space and pushing content out when data arrived); it now starts with `display:none` and is revealed by `loadHebCal()` only when Hebcal API returns omer items
 - **Shabbat candles + havdalah on separate rows** — merged into one row: `🕯️ נרות [time] | ✨ הבדלה [time]`; candle time shortened to just `HH:MM` (removed day name + Hebrew parasha text that overflowed)
 - **`hc-holiday-row` hidden until data loads** — previously rendered as an empty visible row on page load; now starts `display:none`, revealed when holiday data is available
 
 ### Developer
+
 - **README stale test-count fixed** — badge, structure, and Getting Started section updated `398→362` and `342→362`
 - **README Roadmap section added** — documents planned versions (v4.9–v5.1) and release convention (HTML artifact + GitHub Pages + auto-release)
 - **Roadmap persisted in `copilot-instructions.md`** — future agents know the planned roadmap
@@ -471,26 +560,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.7.0] — 2026-04-09
 
 ### Added
+
 - **🌾 ספירת העומר (Sefirat HaOmer)** — displays the Omer count in the header next to the Hebrew date; count automatically switches to the next day at sunset using cached weather sunset time or Jerusalem approximation (19:15 IST fallback); fetches from Hebcal API (`omer=on`) with 24h cache; shows nothing outside the Omer period
 - **📊 Top 10 S&P500 stocks** — expanded stock list to 14 unique symbols: INTC, ^GSPC, BTC-USD, NVDA, ^VIX, TSLA, AAPL, MSFT, AMZN, GOOGL, META, BRK-B, AVGO, JPM (no duplicates)
 - **🏷️ Company logos on stock tiles** — each stock row now shows the company logo using Clearbit logo API (`https://logo.clearbit.com/{domain}?`) with `onerror` fallback that hides the logo element if unavailable; BTC uses CoinGecko asset URL
 
 ### Changed
+
 - **Layout — bottom row** — `.bottom-grid` columns changed from `42% 28% 30%` to `50% 25% 25%`; weather card gets more space, currency and motivation shrink to 25%
 - **Layout — main row** — `.main-grid` columns changed from `42% 30% 28%` to `38% 33% 29%`; calendar and stocks+alerts columns enlarged
 - **Card overlap prevention** — added `overflow: hidden` to `.main-grid` and `.bottom-grid` so cards cannot bleed visually into adjacent grid cells
 - **STOCK_NAMES** — extended with Hebrew descriptions for all 14 symbols: AAPL (אפל — צרכן), MSFT (מיקרוסופט — תוכנה), AMZN (אמזון — פלטפורמה), GOOGL (אלפבית — טכנולוגיה), META (מטא — רשתות), BRK-B (ברקשייר — בופט), AVGO (ברודקום — שבבים), JPM (ג.פ.מורגן — בנקאות)
 
 ### Tests
+
 - All 398 tests passing (1 new test added: Sefirat HaOmer element; stock count updated 6→14; version assertion updated to v4.7)
 
-
+## [4.6.0] — 2026-04-08
 
 ### Added
+
 - **Auto hard-reload every 1h** — `setTimeout` self-rescheduling with visibility guard; defers in 1-min increments when tab is hidden, so the TV always picks up HTML file changes (`362ab9a`)
 - **Closest sun event** — weather detail panel dynamically shows the next upcoming event: `🌅 זריחה` before sunrise and mid-morning, switches to `🌇 שקיעה` once sunrise passes, reverts to sunrise label after sunset (`d88ea03`)
 
 ### Changed
+
 - **Row height split 65/35** — `main-grid` (news/calendar/stocks) grows to 65% of grid height; `bottom-grid` (weather/currency/motivation) shrinks to 35% (`e748027`)
 - **Currency: USD + EUR only** — GBP removed; layout improved with larger padding, flag 2em→2.8em, rate font 1.3em→1.7em; change indicator placeholder fixed (`5b1b83a`)
 - **News font size** — `.rss-item` base `0.82em` → `0.96em`; tablet `0.75em` → `0.86em`; small-screen `0.72em` → `0.82em` (`afca5ad`)
@@ -501,11 +595,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Emoji refresh** — currency flags changed from inline SVG back to flag emoji (🇺🇸 🇪🇺); card badge emoji refreshed: 🗞️ 📊 🌡️ 🪙 ✨; halacha ticker 📖→📜 (`f3a8a00`)
 
 ### Fixed
+
 - **Ticker seamless loop** — `renderHalacha` now duplicates the entire set (ref badge + all segments) as a true clone; scroll direction corrected from `translateX(-50%→0)` rightward to `0→-50%` leftward (`8ee041d`)
 - **Maximized card body fill** — `.card.maximized` lifts `contain:content` and `overflow:hidden` from all inner body elements so content fills the expanded area; weather sub-panels expand too (`e748027`)
 - **VS Code test runner hang** — added `package.json` with `"type":"module"`, set `--test-timeout=30000`, `--test-concurrency=4` in `.vscode/settings.json` (`c1d4116`)
 
 ### Tests
+
 - All 397 tests passing after this session's changes (`node --test tests/dashboard.test.mjs`)
 - Updated assertions: motivation interval `14400000→120000`, ticker clone structure, header emoji count, alerts default state
 
@@ -514,6 +610,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.5.0] — 2026-04-09
 
 ### Added
+
 - **🔍 Card maximize** — click any card header to expand it full-screen with smooth FLIP animation; click again or press `Escape` to collapse back
 - **📊 Animated number transitions** — `animateNumber()` smoothly counts up/down on temperature, stock prices, and currency values
 - **🔄 Exponential backoff** — `getBackoff()`/`recordFailure()`/`recordSuccess()` for smarter retry timing on failed API calls
@@ -530,6 +627,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **📁 .markdownlint.json** — markdown lint configuration (161 errors → 0)
 
 ### Changed
+
 - Alerts display increased from 15 → 25 visible items
 - News items show `relTime() + ' | ' + HH:MM` time format
 - Card headers use colorful emoji icons instead of inline GIF images
@@ -538,6 +636,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Actions workflows: `@v6` → `@v4` for `actions/checkout` and `actions/setup-node`
 
 ### Fixed
+
 - Weather card layout — forecast/hourly chart no longer overlaps current conditions section
 - README.md — 161 markdown lint errors fixed
 - `content-visibility: auto` excluded from weather card (was interfering with flex height calculation)
@@ -547,6 +646,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.4.0] — 2026-04-07
 
 ### Added
+
 - **🎨 5 CSS themes** — black (OLED default), blue, matrix, amber, purple — press `T` to cycle
 - **📱 3 screen modes** — tv (default), tablet, phone — phone mode enables full-page scroll
 - **🔍 Diagnostic overlay** — press `D` for per-pane status + rolling fetch log; auto-opens on errors
@@ -564,9 +664,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## [4.2.0] — 2026-04-07
-  - 24-hour alert count, last 15 events with city names, threat type, and relative time
-  - Active alerts (< 10 min) pulse red; older alerts dimmed
-  - 30-second refresh interval for life-safety data
+
+- 24-hour alert count, last 15 events with city names, threat type, and relative time
+- Active alerts (< 10 min) pulse red; older alerts dimmed
+- 30-second refresh interval for life-safety data
 - **Column split layout** — stock card and alerts card stacked vertically in the third column
 - **Colorful icon badges** — each card header has a colored rounded badge (blue/green/orange/red/cyan/pink)
 - **Gradient accents** — clock gradient text, rainbow header border, animated greeting shimmer
@@ -575,6 +676,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New CSS variables: `--purple`, `--pink`, `--orange`, `--cyan`
 
 ### Changed
+
 - Progress bar fills use gradient (day: blue→cyan, year: yellow→orange)
 - Motivation text uses gradient fill + diagonal card background
 - Ticker label uses red-to-orange gradient
@@ -587,6 +689,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.1.0] — 2026-03
 
 ### Added
+
 - **Per-pane independent refresh** — each data pane refreshes on its own schedule (no full-page reload)
 - **Persistent localStorage cache** — dual-layer cache survives browser restarts
   - `cGet(key, ttl)` — fresh data within TTL
@@ -596,9 +699,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smart per-pane refresh intervals: Clock 1s, Market badge 1min, News 2min, Stocks 5min/30min, Weather 15min, Currency 30min, Motivation 30min, Hebrew date 1h, Shabbat 3h, Holidays 6h
 
 ### Removed
+
 - Removed `<meta http-equiv="refresh" content="300">` (no more full-page reload)
 
 ### Fixed
+
 - Removed duplicate JS function definitions (loadHolidays, renderHoliday, updateProgress, updateMarketBadge, relTime)
 
 ---
@@ -606,6 +711,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0] — 2026-03
 
 ### Added
+
 - **🎉 Holiday countdown** — next Jewish holiday with days remaining in the header
 - **📊 Progress bars** — day progress and year progress in the status bar
 - **🏪 Market badge** — green "פתוח" / red "סגור" indicator for US market hours
@@ -616,6 +722,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expanded motivation list to 30 curated Hebrew quotes
 
 ### Changed
+
 - News sources expanded from RSS feeds to 10 Hebrew sources
 - Stock refresh uses smart TTL (5 min during market, 30 min off-hours)
 
@@ -624,6 +731,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0] — 2026-02
 
 ### Changed
+
 - **Complete UI/UX refactor** — dark glassmorphism theme
 - New CSS custom property system for theming
 - Responsive grid layout (45% / 30% / 25% top row, 42% / 28% / 30% bottom row)
@@ -637,6 +745,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] — 2026-01
 
 ### Added
+
 - Weather with hourly chart
 - Stock tracker with Yahoo Finance proxy
 - Currency exchange rates
@@ -648,6 +757,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] — 2025-12
 
 ### Added
+
 - Initial dashboard with clock, Hebrew date, Shabbat times
 - RSS news feed
 - Motivational quotes

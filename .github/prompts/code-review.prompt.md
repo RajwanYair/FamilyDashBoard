@@ -12,7 +12,6 @@ Review the dashboard HTML file for the following:
 - [ ] No `innerHTML` with unsanitized external API data
 - [ ] No hardcoded API keys or secrets
 - [ ] All external links use HTTPS
-- [ ] No inline event handlers (`onclick`, etc.)
 
 ## UI Quality
 - [ ] RTL layout intact (`dir="rtl"`)
@@ -23,16 +22,17 @@ Review the dashboard HTML file for the following:
 - [ ] Emoji icons display properly
 
 ## API Reliability
-- [ ] All fetch calls have try/catch
-- [ ] Proxy fallback mechanism for each API
-- [ ] Cache used for all API responses
-- [ ] Sync indicators update correctly (syncing → success/error)
-- [ ] Staggered stock requests to avoid rate limits
+- [ ] All fetch calls have try/catch + proxy fallback (`PROXIES`)
+- [ ] All responses cached via `cSet`/`cGet`/`cGetStale`
+- [ ] Sync indicators update on every exit path (`setSync`)
+- [ ] `fetchWithTimeout()` used (not bare `fetch`) for proxied APIs
+- [ ] `safeLoad()` wrapper + `_pageVisible` guard on all async loaders
+- [ ] Fetch locks (`acquireLock`/`releaseLock`) where needed
 
 ## Performance
-- [ ] DOM updates compare before setting (`.textContent` check)
-- [ ] Images use `loading="lazy"`
-- [ ] `will-change` hint on animated elements
+- [ ] DOM updates use DocumentFragment for batch writes
+- [ ] `contain: layout style` on cards
+- [ ] `will-change` on animated elements
 - [ ] No memory leaks (intervals cleaned, no growing arrays)
 
 Report: Critical issues first, then suggestions.

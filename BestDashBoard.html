@@ -238,13 +238,16 @@
             background: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80') center/cover no-repeat;
             opacity: 0.35;
             pointer-events: none;
+            transition: opacity 1.5s ease; /* Background Image Cycling */
         }
         body::before {
             content: ''; position: fixed; inset: 0; z-index: 0;
             background: radial-gradient(ellipse at 20% 50%, var(--bg-gradient-1) 0%, transparent 50%),
                         radial-gradient(ellipse at 80% 20%, var(--bg-gradient-2) 0%, transparent 50%),
                         radial-gradient(ellipse at 60% 80%, var(--bg-gradient-3) 0%, transparent 50%);
+            background: var(--season-tint, transparent); /* season overlay — wins by cascade */
             animation: bgShift 30s ease-in-out infinite alternate;
+            pointer-events: none;
         }
         @keyframes bgShift {
             0% { opacity: 0.6; transform: scale(1); }
@@ -258,6 +261,7 @@
             background: var(--bg-card-header); border-radius: 8px; overflow: hidden;
             position: relative; flex: 0 0 auto; height: 36px;
             border: var(--card-border); display: flex; align-items: center;
+            cursor: pointer;
         }
         .ticker-label {
             background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; font-weight: 800; font-size: 0.75em;
@@ -265,7 +269,11 @@
             white-space: nowrap; z-index: 2; letter-spacing: 1px;
             box-shadow: -4px 0 12px rgba(248,113,113,0.3);
         }
-        .ticker-track { flex: 1; overflow: hidden; position: relative; height: 100%; }
+        .ticker-track {
+            flex: 1; overflow: hidden; position: relative; height: 100%;
+            -webkit-mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
+            mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
+        }
         .ticker-content {
             display: flex; align-items: center; height: 100%; white-space: nowrap;
             animation: tickerScroll 30s linear infinite; will-change: transform;
@@ -331,6 +339,7 @@
             transition: box-shadow var(--duration-normal, 0.3s) ease, transform var(--duration-normal, 0.3s) ease, border-color var(--duration-normal, 0.3s);
             animation: cardIn var(--duration-slow, 0.6s) ease-out both;
             position: relative;
+            contain: layout style; /* Performance: Paint Containment */
         }
         .card::after {
             content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg, var(--border-radius)); pointer-events: none;
@@ -338,7 +347,11 @@
             opacity: 0; transition: opacity 0.3s;
         }
         .card:hover::after { opacity: 1; }
-        .card:hover { box-shadow: 0 0 28px var(--accent-glow), var(--shadow-md, var(--card-shadow)); transform: translateY(-1px); }
+        .card:hover {
+            box-shadow: 0 0 28px var(--accent-glow), var(--shadow-md, var(--card-shadow)); transform: translateY(-1px);
+            border-color: transparent; /* Animated gradient border */
+            background-origin: border-box;
+        }
         @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes cardSlideLeft  { from { opacity: 0; transform: translateX(-40px) scale(0.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
         @keyframes cardSlideRight { from { opacity: 0; transform: translateX(40px) scale(0.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
@@ -356,6 +369,7 @@
             letter-spacing: 0.3px;
             border-bottom: 1px solid var(--accent-border);
             background-image: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+            cursor: pointer; user-select: none;
         }
         .card-header .icon-badge {
             display: inline-flex; align-items: center; justify-content: center;
@@ -516,9 +530,9 @@
         .wx-detail:nth-child(4) { border-bottom: 2px solid var(--orange); }
         .wx-detail-label { color: var(--text-muted); font-size: 0.8em; margin-bottom: 1px; }
         .wx-detail-val { color: var(--text-primary); font-weight: 700; font-size: 0.95em; }
-        .wx-hourly-chart { width: 100%; flex: 1 1 0; min-height: 24px; max-height: 48px; }
+        .wx-hourly-chart { width: 100%; flex: 1 1 0; min-height: 24px; max-height: 48px; will-change: contents; }
         .wx-forecast { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; flex: 0 0 auto; padding: 2px 0; margin-top: auto; }
-        .wx-fday { background: var(--bg-card-inner); padding: 2px 4px; border-radius: 6px; display: flex; align-items: center; gap: 3px; }
+        .wx-fday { background: var(--bg-card-inner); padding: 2px 4px; border-radius: 6px; display: flex; align-items: center; gap: 3px; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default; }
         .wx-fday-icon { font-size: 0.9em; flex-shrink: 0; line-height: 1; }
         .wx-fday-name { font-size: 0.7em; color: var(--accent); font-weight: 600; white-space: nowrap; }
         .wx-fday-temp { font-size: 0.72em; font-weight: 700; margin-inline-start: auto; white-space: nowrap; }
@@ -527,7 +541,7 @@
         .currency-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px 8px; align-items: start; }
         .cur-item {
             flex: 1 1 0; background: var(--bg-card-inner); border-radius: 8px; padding: 4px 8px;
-            display: flex; flex-direction: row; align-items: center; gap: 6px;
+            display: flex; flex-direction: row; align-items: center; gap: 4px;
         }
         .cur-flag { font-size: 1.1em; flex-shrink: 0; line-height: 1; }
         .cur-item:nth-child(1) { border-left: 3px solid var(--accent); }
@@ -625,7 +639,7 @@
         body.mode-tablet .ticker-item { font-size: 0.72em; }
         body.mode-tablet .time-section { padding: 4px 10px; }
         body.mode-tablet .container { padding: var(--container-pad); gap: 4px; }
-        body.mode-phone { font-size: 12px; --container-pad: 4px; --grid-gap: 4px; }
+        body.mode-phone { font-size: 12px; --container-pad: 4px; --grid-gap: 4px; overflow-y: auto; height: auto; min-height: 100vh; }
         body.mode-phone .clock { font-size: 2em; }
         body.mode-phone .header-emoji { font-size: 1.8em; }
         body.mode-phone .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
@@ -638,23 +652,21 @@
         body.mode-phone .grid-col { overflow: visible; min-height: unset; }
 
         /* Phone: allow full-page scroll and show all card content */
-        body.mode-phone { overflow-y: auto; height: auto; min-height: 100vh; }
         body.mode-phone .container { height: auto; overflow: visible; }
-        body.mode-phone .card { overflow: visible; height: auto; flex: none; min-height: unset; }
+        body.mode-phone .card { overflow: visible; height: auto; flex: none; min-height: unset; contain: none; }
 
         /* Phone: col-split (legacy — stack naturally) */
         body.mode-phone .col-split { height: auto; min-height: unset; gap: 10px; }
         body.mode-phone .col-split > .card { flex: none; height: auto; min-height: unset; }
 
-        /* Phone: disable paint containment (prevents clipping in scroll mode) */
-        body.mode-phone .card { contain: none; }
+        /* Phone: disable paint containment + show all content */
         body.mode-phone .news-body,
         body.mode-phone .stocks-body,
         body.mode-phone .alerts-body,
         body.mode-phone .weather-body,
         body.mode-phone .currency-body,
         body.mode-phone .hebcal-body,
-        body.mode-phone .moti-body { contain: none; }
+        body.mode-phone .moti-body { contain: none; overflow: visible; height: auto; flex: none; min-height: unset; }
 
         /* Phone: disable scroll fade masks (not needed when showing all content) */
         body.mode-phone .news-body,
@@ -664,33 +676,24 @@
             mask-image: none;
         }
 
-        /* Phone: disable GPU layer hints on scroll containers (no animation) */
+        /* Phone: disable GPU layers + stop scroll loop animations */
         body.mode-phone .rss-scroll,
         body.mode-phone .stocks-scroll,
         body.mode-phone .alerts-scroll {
             will-change: auto;
-            transform: none;
+            transform: none !important;
             backface-visibility: visible;
+            animation: none !important;
         }
 
-        /* Phone: pane bodies — stop clipping, show all content */
-        body.mode-phone .news-body,
-        body.mode-phone .stocks-body,
-        body.mode-phone .alerts-body,
-        body.mode-phone .weather-body,
-        body.mode-phone .currency-body,
-        body.mode-phone .hebcal-body,
-        body.mode-phone .moti-body { overflow: visible; height: auto; flex: none; min-height: unset; }
+
 
         /* Phone: calendar — show native agenda, hide iframe */
         body.mode-phone .cal-wrapper { overflow: visible; height: auto; flex: none; }
         body.mode-phone .cal-agenda { overflow: visible; height: auto; flex: none; }
         body.mode-phone .cal-wrapper iframe { display: none !important; }
 
-        /* Phone: stop scroll loop animations; show all items statically */
-        body.mode-phone .rss-scroll,
-        body.mode-phone .stocks-scroll,
-        body.mode-phone .alerts-scroll { animation: none !important; transform: none !important; }
+
 
         /* Phone: hide cloned duplicate items (used only for the loop) */
         body.mode-phone .rss-item.clone,
@@ -750,7 +753,6 @@
         }
 
         /* ── Card Maximize (click header to expand) ── */
-        .card-header { cursor: pointer; user-select: none; }
         .card.maximized {
             position: fixed !important;
             z-index: 900;
@@ -761,6 +763,7 @@
                         border-color 0.3s;
             contain: none !important;
             overflow: auto;
+            will-change: transform, top, left, width, height; /* GPU promote during FLIP */
         }
         .card.maximized .card-header::after {
             content: '✕'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
@@ -815,7 +818,6 @@
         }
 
         /* ── Performance: Paint Containment ── */
-        .card { contain: layout style; }
         /* Currency and motivation are compact cards — cap at 30% viewport height, centered in row */
         .bottom-grid > .card:nth-child(2),
         .bottom-grid > .card:nth-child(3) { max-height: 30vh; align-self: center; }
@@ -829,9 +831,7 @@
             backface-visibility: hidden;      /* skip back-face rasterization */
         }
         .stk-chart svg { will-change: contents; }
-        .wx-hourly-chart { will-change: contents; }
-        /* Card maximize FLIP animation — promote during transition */
-        .card.maximized { will-change: transform, top, left, width, height; }
+
         /* Animated gradient border — GPU composite */
         .card::before { will-change: transform; backface-visibility: hidden; }
 
@@ -841,11 +841,7 @@
             mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
         }
 
-        /* ── Ticker Gradient Edges (horizontal fade at left/right) ── */
-        .ticker-track {
-            -webkit-mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
-            mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
-        }
+
 
         /* ── Animated Gradient Border on Card Focus/Hover ── */
         @property --border-angle {
@@ -853,10 +849,7 @@
             initial-value: 0deg;
             inherits: false;
         }
-        .card:hover {
-            border-color: transparent;
-            background-origin: border-box;
-        }
+
         .card:hover::before {
             content: ''; position: absolute; inset: -1px; border-radius: var(--border-radius); z-index: -1;
             background: conic-gradient(from var(--border-angle), var(--accent), var(--cyan), var(--purple), var(--pink), var(--accent));
@@ -899,10 +892,6 @@
         .sync-dot.just-synced { animation: syncBurst 0.6s ease-out; }
 
         /* ── Weather Forecast Day Improvements ── */
-        .wx-fday {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            cursor: default;
-        }
         .wx-fday:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 
         /* ── Uptime in Status Bar ── */
@@ -929,7 +918,6 @@
         body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition: background 0.5s ease, color 0.3s ease, border-color 0.3s ease; }
 
         /* ── Background Image Cycling ── */
-        body::after { transition: opacity 1.5s ease; }
 
         /* ── Temperature Unit Toggle ── */
         .temp-toggle { cursor: pointer; user-select: none; }
@@ -1010,7 +998,7 @@
         body.season-summer  { --season-tint: rgba(253,224,71,0.04); }
         body.season-autumn  { --season-tint: rgba(249,115,22,0.04); }
         body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
-        body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--season-tint, transparent); }
+
 
         /* Feature 28: Calendar Event Countdown Badge */
         #cal-countdown { display: none; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; background: var(--accent); color: #000; font-weight: 700; margin-right: 6px; vertical-align: middle; }
@@ -1141,8 +1129,8 @@
         #night-dim { position: fixed; inset: 0; background: #000; pointer-events: none; opacity: 0; transition: opacity 3s ease; z-index: 2; }
 
         /* Feature 55: Stock Price Threshold Alert Flash */
-        .stk.alert-above { border-left: 2px solid var(--positive) !important; box-shadow: 0 0 8px var(--positive) !important; }
-        .stk.alert-below { border-left: 2px solid var(--negative) !important; box-shadow: 0 0 8px var(--negative) !important; }
+        .stk.alert-above { border-left: 2px solid var(--positive) !important; box-shadow: 0 0 8px var(--positive) !important; box-shadow: 0 0 0 1.5px #34d399 inset, 0 0 8px rgba(52,211,153,0.25); }
+        .stk.alert-below { border-left: 2px solid var(--negative) !important; box-shadow: 0 0 8px var(--negative) !important; box-shadow: 0 0 0 1.5px #f87171 inset, 0 0 8px rgba(248,113,113,0.25); }
 
         /* Feature 56: Precipitation Bar in Forecast */
         .wx-precip-bar { width: 100%; height: 2px; background: rgba(96,165,250,0.12); border-radius: 1px; margin-top: 2px; }
@@ -1297,8 +1285,6 @@
 
         /* ── Sprint 14 CSS (F131–F140) ── */
         /* F131 — Stock alert notification indicators */
-        .stk.alert-above { box-shadow: 0 0 0 1.5px #34d399 inset, 0 0 8px rgba(52,211,153,0.25); }
-        .stk.alert-below { box-shadow: 0 0 0 1.5px #f87171 inset, 0 0 8px rgba(248,113,113,0.25); }
         /* F132 — Portfolio P&L header chip */
         #header-portfolio-pl { font-size: 0.68em; border-radius: 10px; padding: 2px 7px; font-weight: 700; white-space: nowrap; display: none; cursor: default; }
         #header-portfolio-pl.pl-gain { background: rgba(52,211,153,0.16); color: var(--positive); }
@@ -1363,7 +1349,6 @@
         /* F152 — Daily precipitation amount (mm) label */
         .wx-fday-mm { font-size: 0.60em; color: #60a5fa; opacity: 0.85; display: block; margin-top: 1px; }
         /* F153 — Gold/Silver/GBP sparklines */
-        .cur-item { gap: 4px; }
         /* F154 — Calendar today-strip */
         #cal-today-strip { display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 6px; min-height: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
         #cal-today-strip:empty { display: none; }
@@ -1381,7 +1366,6 @@
         .halacha-overlay-ref { font-size: 0.70em; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
         .halacha-overlay-text { font-size: 0.85em; line-height: 1.65; color: var(--text-primary); white-space: pre-wrap; }
         .halacha-overlay-close { margin-top: 14px; font-size: 0.72em; color: var(--text-muted); text-align: center; cursor: pointer; }
-        .ticker-bar { cursor: pointer; }
         /* F158 — Weather today min/max range */
         #wx-minmax { font-size: 0.68em; color: var(--text-muted); margin-top: 2px; text-align: center; line-height: 1.2; }
         /* F159 — Card collapse toggle */
@@ -1408,7 +1392,7 @@
 </head>
 <body>
     <!-- Feature 80: PWA install prompt button -->
-    <button id="pwa-install-btn" aria-label="התקן אפליקציה">📲 התקן</button>
+    <button type="button" id="pwa-install-btn" aria-label="התקן אפליקציה" title="התקן כאפליקציה עצמאית — עובד גם בלי אינטרנט">📲 התקן</button>
     <!-- Feature 54: Night screen dimmer overlay -->
     <div id="night-dim"></div>
     <!-- Feature 59: Force refresh toast -->
@@ -1428,7 +1412,7 @@
       </div>
     </div>
     <!-- Feature 101: SW Update notification banner -->
-    <div id="sw-update-banner">🆕 גרסה חדשה זמינה — <button id="sw-update-reload-btn" onclick="swUpdateReload()">↻ עדכן עכשיו</button></div>
+    <div id="sw-update-banner" title="גרסה חדשה של הדשבורד זמינה להתקנה">🆕 גרסה חדשה זמינה — <button type="button" id="sw-update-reload-btn" onclick="swUpdateReload()" title="לחץ לעדכון מיידי">↻ עדכן עכשיו</button></div>
     <div id="help-overlay">
       <div id="help-panel">
         <h2>⌨️ קיצורי מקלדת</h2>
@@ -1461,17 +1445,17 @@
         <h2>⚙️ הגדרות</h2>
         <!-- F119: Config panel section tabs -->
         <div class="cfg-tabs">
-          <button class="cfg-tab active" data-tab="display" onclick="switchCfgTab('display')">🖥️ תצוגה Display</button>
-          <button class="cfg-tab" data-tab="calendar" onclick="switchCfgTab('calendar')">📅 לוח Calendar</button>
-          <button class="cfg-tab" data-tab="feeds" onclick="switchCfgTab('feeds')">📰 עדכונים Feeds</button>
-          <button class="cfg-tab" data-tab="alerts-tab" onclick="switchCfgTab('alerts-tab')">🚨 התראות Alerts</button>
-          <button class="cfg-tab" data-tab="advanced" onclick="switchCfgTab('advanced')">⚙️ מתקדם Advanced</button>
+          <button type="button" class="cfg-tab active" data-tab="display" onclick="switchCfgTab('display')" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
+          <button type="button" class="cfg-tab" data-tab="calendar" onclick="switchCfgTab('calendar')" title="הגדרות לוח: קישור ICS, יום הולדת, זמנים">📅 לוח Calendar</button>
+          <button type="button" class="cfg-tab" data-tab="feeds" onclick="switchCfgTab('feeds')" title="הגדרות עדכונים: ערים, מניות, חדשות">📰 עדכונים Feeds</button>
+          <button type="button" class="cfg-tab" data-tab="alerts-tab" onclick="switchCfgTab('alerts-tab')" title="הגדרות התראות: צבע אדום, התראות מחירי מניות">🚨 התראות Alerts</button>
+          <button type="button" class="cfg-tab" data-tab="advanced" onclick="switchCfgTab('advanced')" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
         </div>
         <!-- Tab: Display -->
         <div class="cfg-section active" data-tab="display">
           <div class="cfg-row">
             <span class="cfg-label">�️ מצב מסך</span>
-            <select id="screen-mode-select" class="cfg-input">
+            <select id="screen-mode-select" class="cfg-input" title="בחר מצב תצוגה — TV = קבוע, Tablet = קטן, Phone = גלילה">
               <option value="tv">📺 טלוויזיה (TV)</option>
               <option value="tablet">📱 טאבלט (Tablet)</option>
               <option value="phone">📱 נייד (Phone)</option>
@@ -1479,7 +1463,7 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🎨 ערכת נושא</span>
-            <select id="theme-select" class="cfg-input">
+            <select id="theme-select" class="cfg-input" title="בחר ערכת צבעים — לחץ T למחזור מהיר">
               <option value="black">■ שחור OLED (Black)</option>
               <option value="blue">🟦 כחול לילה (Blue)</option>
               <option value="matrix">🟩 מטריקס (Matrix)</option>
@@ -1489,36 +1473,36 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">�🖼️ תמונת רקע (URL)</span>
-            <input class="cfg-input" id="cfg-bg-url" type="text" placeholder="https://..." />
+            <input class="cfg-input" id="cfg-bg-url" type="text" placeholder="https://..." >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">👨‍👩‍👧‍👦 שם משפחה (לברכה)</span>
-            <input class="cfg-input" id="cfg-family-name" type="text" placeholder="רגואן" />
+            <input class="cfg-input" id="cfg-family-name" type="text" placeholder="רגואן" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">👨‍👩‍👧 שמות בני המשפחה</span>
-            <input class="cfg-input" id="cfg-members" type="text" placeholder="ענה, עמרי, ריבה" />
+            <input class="cfg-input" id="cfg-members" type="text" placeholder="ענה, עמרי, ריבה" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
-            <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" />
+            <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌑 החשיכה אוטומטית — שעת התחלה (H)</span>
-            <input class="cfg-input" id="cfg-dim-start" type="number" min="0" max="23" placeholder="23" style="direction:ltr;width:70px" />
+            <input class="cfg-input" id="cfg-dim-start" type="number" min="0" max="23" placeholder="23" style="direction:ltr;width:70px" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌅 החשיכה אוטומטית — שעת סיום (H)</span>
-            <input class="cfg-input" id="cfg-dim-end" type="number" min="0" max="23" placeholder="6" style="direction:ltr;width:70px" />
+            <input class="cfg-input" id="cfg-dim-end" type="number" min="0" max="23" placeholder="6" style="direction:ltr;width:70px" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌡️ יחידת טמפרטורה</span>
-            <input class="cfg-input" id="cfg-temp-unit" type="text" placeholder="C / F" />
+            <input class="cfg-input" id="cfg-temp-unit" type="text" placeholder="C / F" >
           </div>
           <!-- F160: News font size slider -->
           <div class="cfg-row">
             <span class="cfg-label">📰 גודל טקסט חדשות (%)</span>
-            <input id="cfg-news-fontsize" type="range" min="70" max="130" step="5" style="width:100px;direction:ltr" />
+            <input id="cfg-news-fontsize" type="range" min="70" max="130" step="5" style="width:100px;direction:ltr" >
             <span id="cfg-news-fontsize-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
           </div>
         </div>
@@ -1526,92 +1510,92 @@
         <div class="cfg-section" data-tab="calendar">
           <div class="cfg-row">
             <span class="cfg-label">🎂 יום הולדת (שם, חודש, יום)</span>
-            <input class="cfg-input" id="cfg-birthday" type="text" placeholder="שם,6,15" />
+            <input class="cfg-input" id="cfg-birthday" type="text" placeholder="שם,6,15" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📅 קישור ICS (גוגל-קלנדר)</span>
-            <input class="cfg-input" id="cfg-ics-url" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+            <input class="cfg-input" id="cfg-ics-url" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📅 קישור ICS שני (אופציונלי)</span>
-            <input class="cfg-input" id="cfg-ics-url-2" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+            <input class="cfg-input" id="cfg-ics-url-2" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📅 קישור ICS שלישי (אופציונלי)</span>
-            <input class="cfg-input" id="cfg-ics-url-3" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." />
+            <input class="cfg-input" id="cfg-ics-url-3" type="text" dir="ltr" placeholder="https://calendar.google.com/calendar/ical/..." >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🕍 geonameid (Hebcal / Zmanim)</span>
-            <input class="cfg-input" id="cfg-heb-geonameid" type="text" placeholder="281184 = ירושלים" dir="ltr" style="width:110px" />
+            <input class="cfg-input" id="cfg-heb-geonameid" type="text" placeholder="281184 = ירושלים" dir="ltr" style="width:110px" >
           </div>
         </div>
         <!-- Tab: Feeds -->
         <div class="cfg-section" data-tab="feeds">
           <div class="cfg-row">
             <span class="cfg-label">📢 הודעה מיוחדת בטיקר</span>
-            <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." />
+            <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📰 חדשות — נטרל ערוצים (שמות)</span>
-            <input class="cfg-input" id="cfg-feeds-disabled" type="text" placeholder="Ynet מבזקים, וואלה" />
+            <input class="cfg-input" id="cfg-feeds-disabled" type="text" placeholder="Ynet מבזקים, וואלה" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📉 הסתר מניות (סימול, פסיק)</span>
-            <input class="cfg-input" id="cfg-stocks-hidden" type="text" placeholder="^VIX, BRK-B" dir="ltr" />
+            <input class="cfg-input" id="cfg-stocks-hidden" type="text" placeholder="^VIX, BRK-B" dir="ltr" >
           </div>
           <!-- F117: Configurable weather city tabs -->
           <div class="cfg-row">
             <span class="cfg-label">🌆 עיר מזג אויר 1 (שם|lat|lon)</span>
-            <input class="cfg-input" id="cfg-city-1" type="text" dir="ltr" placeholder="ירושלים|31.7683|35.2137" />
+            <input class="cfg-input" id="cfg-city-1" type="text" dir="ltr" placeholder="ירושלים|31.7683|35.2137" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌆 עיר מזג אויר 2 (שם|lat|lon)</span>
-            <input class="cfg-input" id="cfg-city-2" type="text" dir="ltr" placeholder="ת&quot;א|32.0853|34.7818" />
+            <input class="cfg-input" id="cfg-city-2" type="text" dir="ltr" placeholder="ת&quot;א|32.0853|34.7818" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌆 עיר מזג אויר 3 (שם|lat|lon)</span>
-            <input class="cfg-input" id="cfg-city-3" type="text" dir="ltr" placeholder="חיפה|32.7940|34.9896" />
+            <input class="cfg-input" id="cfg-city-3" type="text" dir="ltr" placeholder="חיפה|32.7940|34.9896" >
           </div>
         </div>
         <!-- Tab: Alerts -->
         <div class="cfg-section" data-tab="alerts-tab">
           <div class="cfg-row">
             <span class="cfg-label">🚨 הצגת התראות אדום</span>
-            <select id="alerts-toggle" class="cfg-input">
+            <select id="alerts-toggle" class="cfg-input" title="הפעל או כבה את כרטיס התראות אדום">
               <option value="on">פעיל</option>
               <option value="off">כבוי</option>
             </select>
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🚨 סינון אזורי התראה (קידומת עיר)</span>
-            <input class="cfg-input" id="cfg-alert-zone" type="text" placeholder="תל אביב, רמת גן..." />
+            <input class="cfg-input" id="cfg-alert-zone" type="text" placeholder="תל אביב, רמת גן..." >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🔔 צליל להתראות אדומות</span>
-            <input class="cfg-input" id="cfg-alert-sound" type="text" placeholder="on / off" />
+            <input class="cfg-input" id="cfg-alert-sound" type="text" placeholder="on / off" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⚡ התראות מיידיות 10 שניות</span>
-            <input class="cfg-input" id="cfg-alert-realtime" type="text" placeholder="on / off" />
+            <input class="cfg-input" id="cfg-alert-realtime" type="text" placeholder="on / off" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📊 התראות מחיר מניה</span>
-            <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
+            <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical" title="JSON: {&quot;SYMBOL&quot;:{&quot;above&quot;:N}} או {&quot;below&quot;:N} — התראה כשמחיר עובר או יורד מתחת לסף"></textarea>
           </div>
         </div>
         <!-- Tab: Advanced -->
         <div class="cfg-section" data-tab="advanced">
           <div class="cfg-row">
             <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
-            <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" />
+            <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🏠 קו אורך — עיר ביתי</span>
-            <input class="cfg-input" id="cfg-home-lon" type="number" step="0.0001" placeholder="35.2137" style="direction:ltr;width:90px" />
+            <input class="cfg-input" id="cfg-home-lon" type="number" step="0.0001" placeholder="35.2137" style="direction:ltr;width:90px" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🏠 שם העיר (ביתי)</span>
-            <input class="cfg-input" id="cfg-home-name" type="text" placeholder="ביתי" />
+            <input class="cfg-input" id="cfg-home-name" type="text" placeholder="ביתי" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🧹 משימות בית (JSON)</span>
@@ -1620,30 +1604,30 @@
           <!-- Custom CORS proxy for corporate/restricted networks -->
           <div class="cfg-row">
             <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
-            <input class="cfg-input" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" style="direction:ltr;font-size:0.8em" />
+            <input class="cfg-input" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" style="direction:ltr;font-size:0.8em" >
           </div>
           <!-- F139: Custom countdown chip config -->
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — תאריך</span>
-            <input class="cfg-input" id="cfg-countdown-date" type="date" style="direction:ltr;width:140px" />
+            <input class="cfg-input" id="cfg-countdown-date" type="date" style="direction:ltr;width:140px" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — שם</span>
-            <input class="cfg-input" id="cfg-countdown-label" type="text" placeholder="חופשה / בר מצווה / ..." />
+            <input class="cfg-input" id="cfg-countdown-label" type="text" placeholder="חופשה / בר מצווה / ..." >
           </div>
           <!-- F107: Settings export/import -->
           <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
-            <button class="cfg-btn" onclick="exportSettings()" style="font-size:0.82em">📥 ייצוא הגדרות</button>
-            <button class="cfg-btn" onclick="importSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em">📤 ייבוא הגדרות</button>
+            <button type="button" class="cfg-btn" onclick="exportSettings()" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
+            <button type="button" class="cfg-btn" onclick="importSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
             <!-- F120: Dashboard URL share -->
-            <button class="cfg-btn" id="cfg-share-btn" onclick="shareSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em">🔗 שתף קישור</button>
+            <button type="button" class="cfg-btn" id="cfg-share-btn" onclick="shareSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
           </div>
-          <input type="file" id="cfg-import-file" accept=".json" style="display:none" />
+          <input type="file" id="cfg-import-file" accept=".json" style="display:none" >
         </div>
         <!-- Always-visible actions -->
         <div class="cfg-row" style="justify-content:center;gap:10px;margin-top:8px;border-top:1px solid var(--accent-border);padding-top:8px">
-          <button class="cfg-btn" id="cfg-save-btn">שמור</button>
-          <button class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)" id="cfg-close-btn">סגור</button>
+          <button type="button" class="cfg-btn" id="cfg-save-btn" title="שמור את כל השינויים ורענן">שמור</button>
+          <button type="button" class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)" id="cfg-close-btn" title="סגור ללא שמירה — לחץ S או Escape">סגור</button>
         </div>
         <div style="text-align:center;margin-top:8px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
       </div>
@@ -1651,12 +1635,12 @@
     <div class="diag-overlay" id="diag-overlay">
         <h3>🛠 Dashboard Diagnostics (press D to close)</h3>
         <!-- Feature 70: Copy diagnostics log to clipboard -->
-        <button id="diag-copy-btn" onclick="copyDiagLog()">📋 העתק לוג</button>
+        <button type="button" id="diag-copy-btn" onclick="copyDiagLog()" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
         <div id="diag-panes"></div>
         <div class="diag-log" id="diag-log"></div>
     </div>
     <!-- Feature 33: Gear button (bottom-left corner) -->
-    <button id="cfg-gear-btn" title="הגדרות (S)">⚙️</button>
+    <button type="button" id="cfg-gear-btn" title="הגדרות (S)">⚙️</button>
 
         <div class="container">
         <!-- ── Daily Halacha Ticker ── -->
@@ -1666,27 +1650,27 @@
         </div>
 
         <!-- ── Header ── -->
-        <div class="time-section" role="banner">
+        <header class="time-section">
             <div class="header-left">
-                <div class="hebrew-date" id="hebrew-date">טוען תאריך עברי...</div>
+                <div class="hebrew-date" id="hebrew-date" title="תאריך עברי — מתעדכן אוטומטית">טוען תאריך עברי...</div>
             </div>
             <div class="header-center">
-                <div class="clock" id="clock">00:00</div>
+                <div class="clock" id="clock" title="לחץ ? או H לתפריט קיצורי מקלדת">00:00</div>
                 <div class="greeting" id="greeting"></div>
             </div>
             <div class="header-right">
                 <div class="english-date" id="english-date"></div>
                 <div class="top-temp temp-toggle" id="top-temp" title="לחץ לחילוף °C/°F">--°C</div>
                 <!-- Feature 22: Electricity peak warning badge -->
-                <span id="elec-badge">⚡ שעת שיא</span>
+                <span id="elec-badge" title="שעת שיא חשמל — תעריף מוגבר">⚡ שעת שיא</span>
                 <!-- Feature 37: Today event count badge -->
-                <span id="header-event-count"></span>
+                <span id="header-event-count" title="מספר אירועים היום בלוח"></span>
                 <!-- Feature 77: Shabbat time pill -->
-                <div id="header-shabbat-pill">🕯️ --</div>
+                <div id="header-shabbat-pill" title="זמן כניסת שבת">🕯️ --</div>
                 <!-- Feature 104: Birthday upcoming header chip -->
-                <span id="header-birthday-chip"></span>
+                <span id="header-birthday-chip" title="יום הולדת קרוב"></span>
                 <!-- Feature 109: Next Zman header indicator -->
-                <div id="header-next-zman"></div>
+                <div id="header-next-zman" title="הזמן ההלכתי הקרוב"></div>
                 <!-- F132: Portfolio total P&L header chip -->
                 <span id="header-portfolio-pl" title="סה״כ תיק - לחץ לפרט">--</span>
                 <!-- F139: Custom event countdown chip -->
@@ -1694,34 +1678,34 @@
                 <!-- F114: Notification permission bell chip -->
                 <span id="notif-bell" title="הפעל התראות" onclick="requestNotifPermission()">🔔 הפעל התראות</span>
             </div>
-        </div>
+        </header>
 
-        <div class="grids-area" role="main">
+        <main class="grids-area">
 
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
-            <div class="card" data-card-id="news" aria-label="News">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-news"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד">🔖 מועדפים</span></div>
+            <section class="card" data-card-id="news" aria-label="News">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
                 <!-- Feature 103: News keyword search filter -->
                 <div class="news-search-wrap" id="news-search-wrap">
-                  <input id="news-search" type="text" placeholder="🔍 חפש בחדשות..." autocomplete="off" />
-                  <button id="news-search-clear" title="נקה חיפוש">✕</button>
+                  <input id="news-search" type="text" placeholder="🔍 חפש בחדשות..." autocomplete="off" >
+                  <button type="button" id="news-search-clear" title="נקה חיפוש">✕</button>
                   <span id="news-search-count"></span>
                 </div>
                 <div class="rss-scroll" id="rss-scroll"></div>
               </div>
-            </div>
-            <div class="card" data-card-id="weather" aria-label="Weather">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-wx"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
+            </section>
+            <section class="card" data-card-id="weather" aria-label="Weather">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-wx" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
               <div class="weather-body">
                 <!-- Feature 45: Multi-city tabs -->
                 <div class="wx-city-tabs" id="wx-city-tabs">
-                  <button class="wx-city-tab active" data-city="jerusalem" data-lat="31.7683" data-lon="35.2137">ירושלים</button>
-                  <button class="wx-city-tab" data-city="telaviv" data-lat="32.0853" data-lon="34.7818">ת"א</button>
-                  <button class="wx-city-tab" data-city="haifa" data-lat="32.7940" data-lon="34.9896">חיפה</button>
+                  <button type="button" class="wx-city-tab active" data-city="jerusalem" data-lat="31.7683" data-lon="35.2137" title="לחץ להצגת מזג אוויר בירושלים">ירושלים</button>
+                  <button type="button" class="wx-city-tab" data-city="telaviv" data-lat="32.0853" data-lon="34.7818" title="לחץ להצגת מזג אוויר בתל אביב">ת"א</button>
+                  <button type="button" class="wx-city-tab" data-city="haifa" data-lat="32.7940" data-lon="34.9896" title="לחץ להצגת מזג אוויר בחיפה">חיפה</button>
                 </div>
                 <div class="wx-top-row">
                   <div class="wx-current">
@@ -1745,7 +1729,7 @@
                   </div>
                 </div>
                 <!-- F128: Hourly chart view toggle -->
-                <button id="wx-chart-toggle" onclick="toggleHourlyChartView()" title="החלף תצוגה">🌡️ טמפ׳</button>
+                <button type="button" id="wx-chart-toggle" onclick="toggleHourlyChartView()" title="החלף תצוגה">🌡️ טמפ׳</button>
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                 <!-- Feature 32: Extreme weather alert banner -->
                 <div id="wx-alert-banner"></div>
@@ -1761,13 +1745,13 @@
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
 
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
-            <div class="card" data-card-id="hcal" aria-label="Hebrew Calendar">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-hebcal"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
+            <section class="card" data-card-id="hcal" aria-label="Hebrew Calendar">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
                 <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
                 <div class="hc-row" id="hc-countdown-row" style="display:none"><span class="hc-label">⏱ כניסה בעוד</span><span class="hc-val hc-countdown" id="hc-countdown">--:--:--</span></div>
@@ -1783,7 +1767,7 @@
                 <!-- Feature 53: Daf Yomi Sefaria link -->
                 <div class="hc-row" id="hc-daf-link-row" style="display:none">
                   <span class="hc-label" style="visibility:hidden">.</span>
-                  <button class="hc-parasha-link" id="hc-daf-link">📚 ספריה</button>
+                  <button type="button" class="hc-parasha-link" id="hc-daf-link" title="פתח את דף היומי בספריא — Open in Sefaria">📚 ספריה</button>
                 </div>
                 <!-- Feature 23: Psalm of the Day -->
                 <div class="hc-row" id="hc-psalm-row" style="display:none"><span class="hc-label">🎵 שיר</span><span class="hc-val hc-psalm-val" id="hc-psalm">--</span></div>
@@ -1796,7 +1780,7 @@
                 <!-- F151: Sefirat HaOmer count -->
                 <div class="hc-row" id="hc-omer-row" style="display:none"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="omer-count"></span></div>
                 <!-- Feature 44: Parasha Sefaria link -->
-                <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button class="hc-parasha-link" id="hc-parasha-link">📖 ספרייה</button></div>
+                <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button type="button" class="hc-parasha-link" id="hc-parasha-link" title="פתח את פרשת השבוע בספריא — Open in Sefaria">📖 ספרייה</button></div>
                 <div class="hc-divider"></div>
                 <div class="zmanim-section" id="zmanim-section" style="display:none"><div class="zmanim-grid" id="zmanim-grid"></div><div class="hc-divider"></div></div>
                 <!-- Feature 30: Halacha excerpt -->
@@ -1804,20 +1788,20 @@
                 <div class="hc-saying" id="hc-saying">טוען...</div>
                 <div class="hc-birthday" id="hc-birthday" style="display:none"></div>
               </div>
-            </div>
-            <div class="card" data-card-id="cal" aria-label="Calendar" style="position:relative">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-cal"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
+            </section>
+            <section class="card" data-card-id="cal" aria-label="Calendar" style="position:relative">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
                 <!-- F154: Today's upcoming events strip -->
                 <div id="cal-today-strip" class="cal-today-strip"></div>
                 <!-- Feature 63: 7-day event density strip -->
                 <div id="cal-week-strip" class="cal-week-strip"></div>
                 <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
-                <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
+                <iframe id="cal-iframe" title="Family Calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
               </div>
-            </div>
-            <div class="card" data-card-id="currency" aria-label="Currency">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-cur"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
+            </section>
+            <section class="card" data-card-id="currency" aria-label="Currency">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cur" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
               <div class="currency-body" id="currency-body">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
                 <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="cur-eur">--</div><div class="cur-chg" id="cur-eur-chg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
@@ -1826,18 +1810,18 @@
                 <!-- Feature 71: GBP / ILS tile -->
                 <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-pair">GBP / ₪</div><div class="cur-rate" id="cur-gbp">--</div><div class="cur-chg" id="cur-gbp-chg"></div><svg class="cur-spark" id="cur-gbp-spark" viewBox="0 0 60 22"></svg></div>
               </div>
-            </div>
+            </section>
           </div>
 
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
-            <div class="card" data-card-id="stocks" aria-label="Stocks">
-            <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-stocks"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge"></span></div>
+            <section class="card" data-card-id="stocks" aria-label="Stocks">
+            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stocks" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body">
                   <!-- Feature 74: Stock sector headers -->
                   <div class="stk-sector-hdr">📊 מדדים</div>
-                  <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=spglobal.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=spglobal.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&amp;P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                   <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=cboe.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
                   <div class="stk-sector-hdr">📈 מניות</div>
                   <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=apple.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
@@ -1859,52 +1843,52 @@
               <!-- F155: Stocks gainers/losers summary -->
               <div id="stk-summary" class="stk-summary"></div>
               <!-- Feature 51: Portfolio Total Value Row -->
-              <div id="stk-total-row" class="stk-total-row" style="display:none">
+              <div id="stk-total-row" class="stk-total-row" style="display:none" title="סה״כ שווי תיק — הגדר מניות בהגדרות → מתקדם">
                 <span class="stk-total-label">💼 תיק:</span>
                 <span id="stk-total-val">--</span>
                 <span id="stk-total-pnl"></span>
               </div>
               <!-- Feature 68: Market open/close countdown -->
               <div id="stk-mkt-countdown"></div>
-            </div>
-            <div class="card" data-card-id="alerts" aria-label="Red Alerts">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><div class="sync-dot" id="sync-alerts"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge-count" class="alerts-badge"></span>צבע אדום</div>
+            </section>
+            <section class="card" data-card-id="alerts" aria-label="Red Alerts">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge-count" class="alerts-badge"></span>צבע אדום</div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll">
                   <div class="alert-count">טוען התרעות...</div>
                 </div>
               </div>
-            </div>
-            <div class="card" data-card-id="moti" aria-label="Motivation">
-              <div class="card-header"><button class="card-collapse-btn" title="מזער/הרחב">▼</button><span class="icon-badge pink">✨</span> מוטיבציה</div>
+            </section>
+            <section class="card" data-card-id="moti" aria-label="Motivation">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">✨</span> מוטיבציה</div>
               <div class="moti-body">
                 <div class="moti-card">
                   <div class="moti-text" id="moti-text">טוען השראה...</div>
                   <div class="moti-author" id="moti-author"></div>
                   <div class="moti-src" id="moti-src"></div>
                   <!-- F146: Next quote button; F135: share button -->
-                  <button id="moti-next-btn" title="ציטוט הבא">⏭ הבא</button><button id="moti-share-btn" title="שתף ציטוט">📤 שתף</button>
+                  <button type="button" id="moti-next-btn" title="ציטוט הבא">⏭ הבא</button><button type="button" id="moti-share-btn" title="שתף ציטוט">📤 שתף</button>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
 
-        </div>
-        <div class="status-bar" role="contentinfo">
+        </main>
+        <footer class="status-bar">
             <span>Dashboard v5.1.0 — משפחת רגואן</span>
             <div class="progress-group">
-                <div class="progress-bar"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
-                <div class="progress-bar"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
+                <div class="progress-bar" title="אחוז התקדמות היום"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
+                <div class="progress-bar" title="אחוז התקדמות השנה"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
             </div>
             <span class="status-uptime" id="uptime-display"></span>
             <!-- Feature 40: Connectivity indicator -->
-            <span id="conn-indicator"></span>
+            <span id="conn-indicator" title="סטטוס חיבור אינטרנט"></span>
             <!-- Feature 49: Font scale indicator -->
-            <span id="font-scale-indicator"></span>
+            <span id="font-scale-indicator" title="גודל גופן נוכחי — לחץ +/- לשינוי"></span>
             <!-- F165: PWA install prompt button -->
-            <button id="btn-install" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.72em;cursor:pointer">📲 התקן</button>
-            <span id="last-refresh">רענון: --:--</span>
-        </div>
+            <button type="button" id="btn-install" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.72em;cursor:pointer" title="התקן כאפליקציה עצמאית">📲 התקן</button>
+            <span id="last-refresh" title="שעת רענון נתונים אחרונה">רענון: --:--</span>
+        </footer>
     </div>
 
     <script>
@@ -1965,24 +1949,26 @@
     }
     const WX_CODES = {0:'שמיים בהירים',1:'בהיר בעיקר',2:'מעונן חלקית',3:'מעונן',45:'ערפל',48:'ערפל קפוא',51:'טפטוף קל',53:'טפטוף בינוני',55:'טפטוף כבד',61:'גשם קל',63:'גשם בינוני',65:'גשם כבד',71:'שלג קל',73:'שלג בינוני',75:'שלג כבד',80:'ממטרים קלים',81:'ממטרים בינוניים',82:'ממטרים כבדים'};
     const WX_EMOJI = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌧️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️'};
-    const STOCK_BRAND = {
-        '^GSPC':    { color: '#1a56db', domain: 'spglobal.com' },
-        '^VIX':     { color: '#e85d04', domain: 'cboe.com' },
-        '^TA35.TA': { color: '#003876', domain: 'tase.co.il' },
-        'AAPL':  { color: '#a3a3a3', domain: 'apple.com' },
-        'AMZN':  { color: '#ff9900', domain: 'amazon.com' },
-        'AVGO':  { color: '#cc0000', domain: 'broadcom.com' },
-        'BRK-B': { color: '#7b5ea7', domain: 'berkshirehathaway.com' },
-        'BTC-USD':{ color: '#f7931a', domain: 'bitcoin.org' },
-        'GOOGL': { color: '#4285f4', domain: 'google.com' },
-        'INTC':  { color: '#0071c5', domain: 'intel.com' },
-        'JPM':   { color: '#004b87', domain: 'jpmorgan.com' },
-        'META':  { color: '#0866ff', domain: 'meta.com' },
-        'MSFT':  { color: '#00a4ef', domain: 'microsoft.com' },
-        'NVDA':  { color: '#76b900', domain: 'nvidia.com' },
-        'TSLA':  { color: '#e82127', domain: 'tesla.com' },
+    // R5.7: Unified stock metadata — brand color, favicon domain, Hebrew name
+    const STOCK_META = {
+        '^GSPC':    { color: '#1a56db', domain: 'spglobal.com',          name: 'S&P 500 — מדד' },
+        '^VIX':     { color: '#e85d04', domain: 'cboe.com',             name: 'מדד הפחד — תנודתיות' },
+        '^TA35.TA': { color: '#003876', domain: 'tase.co.il',           name: 'ת"א 35 — בורסה' },
+        'AAPL':     { color: '#a3a3a3', domain: 'apple.com',            name: 'אפל — צרכן' },
+        'AMZN':     { color: '#ff9900', domain: 'amazon.com',           name: 'אמזון — פלטפורמה' },
+        'AVGO':     { color: '#cc0000', domain: 'broadcom.com',         name: 'ברודקום — שבבים' },
+        'BRK-B':    { color: '#7b5ea7', domain: 'berkshirehathaway.com', name: 'ברקשייר — בופט' },
+        'BTC-USD':  { color: '#f7931a', domain: 'bitcoin.org',          name: 'ביטקוין — קריפטו' },
+        'GOOGL':    { color: '#4285f4', domain: 'google.com',           name: 'אלפבית — טכנולוגיה' },
+        'INTC':     { color: '#0071c5', domain: 'intel.com',            name: 'אינטל — שבבים' },
+        'JPM':      { color: '#004b87', domain: 'jpmorgan.com',         name: 'ג.פ.מורגן — בנקאות' },
+        'META':     { color: '#0866ff', domain: 'meta.com',             name: 'מטא — רשתות' },
+        'MSFT':     { color: '#00a4ef', domain: 'microsoft.com',        name: 'מיקרוסופט — תוכנה' },
+        'NVDA':     { color: '#76b900', domain: 'nvidia.com',           name: 'נבידיה — AI/GPU' },
+        'TSLA':     { color: '#e82127', domain: 'tesla.com',            name: 'טסלה — רכב חשמלי' },
     };
-    const STOCK_NAMES = {INTC:'אינטל — שבבים','^GSPC':'S&P 500 — מדד','BTC-USD':'ביטקוין — קריפטו',NVDA:'נבידיה — AI/GPU','^VIX':'מדד הפחד — תנודתיות',TSLA:'טסלה — רכב חשמלי',AAPL:'אפל — צרכן',MSFT:'מיקרוסופט — תוכנה',AMZN:'אמזון — פלטפורמה',GOOGL:'אלפבית — טכנולוגיה',META:'מטא — רשתות','BRK-B':'ברקשייר — בופט',AVGO:'ברודקום — שבבים',JPM:'ג.פ.מורגן — בנקאות','^TA35.TA':'ת"א 35 — בורסה'};
+    // Backward-compat alias used by tests
+    const STOCK_NAMES = Object.fromEntries(Object.entries(STOCK_META).map(([k, v]) => [k, v.name]));
     const MOTIVATIONS = [
         {t:'הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.',a:'אברהם לינקולן'},
         {t:'אל תפחד להיכשל. פחד שלא תנסה.',a:'רוי ט. בנט'},
@@ -3321,7 +3307,7 @@
                 const bkmBtn = document.createElement('button');
                 bkmBtn.className = 'news-bkm';
                 bkmBtn.textContent = '🔖';
-                bkmBtn.title = 'שמור / בטל שמירה';
+                bkmBtn.title = 'שמור / בטל שמירה — Bookmark';
                 bkmBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     _toggleNewsBookmark(it.link, it.title);
@@ -3336,7 +3322,7 @@
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'news-copy';
                 copyBtn.textContent = '📋';
-                copyBtn.title = 'העתק כותרת';
+                copyBtn.title = 'העתק כותרת וקישור — Copy headline';
                 copyBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(it.title + (it.link ? '\n' + it.link : ''))
@@ -3353,7 +3339,7 @@
                 const shareBtn = document.createElement('button');
                 shareBtn.className = 'news-share';
                 shareBtn.textContent = '📤';
-                shareBtn.title = 'שתף';
+                shareBtn.title = 'שתף לאפליקציות — Share article';
                 shareBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     navigator.share({ title: it.title, url: it.link }).catch(() => {});
@@ -3365,7 +3351,7 @@
                 const transBtn = document.createElement('button');
                 transBtn.className = 'rss-translate-btn';
                 transBtn.textContent = '🌐';
-                transBtn.title = 'תרגום לאנגלית (Google Translate)';
+                transBtn.title = 'תרגום לאנגלית — Translate to English';
                 transBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const tUrl = 'https://translate.google.com/translate?sl=iw&tl=en&u=' + encodeURIComponent(it.link);
@@ -3506,11 +3492,14 @@
 
     // ── Stocks (multi-fallback, bezier charts) ──
     // Refresh faster during market hours (5min), slower when closed (30min)
+    // R5.6: Shared NY-time helper (used by getStockTTL + updateMarketBadge)
+    function _getNYTime() {
+        const ny = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        return { h: ny.getHours(), m: ny.getMinutes(), d: ny.getDay(), t: ny.getHours() * 60 + ny.getMinutes() };
+    }
     function getStockTTL() {
-        const now = new Date();
-        const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-        const h = ny.getHours(), d = ny.getDay(), t = h * 60 + ny.getMinutes();
-        return (d >= 1 && d <= 5 && t >= 570 && t <= 960) ? 600000 : 1800000; // 10min : 30min
+        const { d, t } = _getNYTime();
+        return (d >= 1 && d <= 5 && t >= 570 && t <= 960) ? 600000 : 1800000; // 10min open : 30min closed
     }
 
     /** Race all proxies for a URL — first successful response wins */
@@ -3630,6 +3619,7 @@
         const t = setTimeout(() => c.abort(), ms);
         return fetch(url, { signal: c.signal }).finally(() => clearTimeout(t));
     }
+    // R5.5: Refactored stock renderer — core + 3 extracted helpers
     function renderStock(blk, data, sym) {
         const r = data.chart?.result?.[0]; if (!r) return;
         const meta = r.meta || {};
@@ -3638,29 +3628,25 @@
         const prev = meta.previousClose || meta.chartPreviousClose || cur;
         let chg = 0;
         if (prev && cur && isFinite(prev) && prev !== 0) chg = ((cur - prev) / prev) * 100;
-        // 3-state trend: green (up), red (down), cyan (flat ±0.1%)
+        // 3-state trend: green (up), red (down), neutral (flat ±0.1%)
         const absChg = Math.abs(chg);
         const trend = (!isFinite(chg) || absChg < 0.1) ? 'neutral' : (chg > 0 ? 'positive' : 'negative');
         const trendColor = trend === 'positive' ? '#34d399' : trend === 'negative' ? '#f87171' : '#94a3b8';
-        // Brand color for border + symbol label
-        const brand = STOCK_BRAND[sym] || {};
+        const brand = STOCK_META[sym] || {};
         const brandColor = brand.color || '#94a3b8';
         blk.style.borderRightColor = brandColor;
         const symEl = blk.querySelector('.stk-sym');
         if (symEl) symEl.style.color = brandColor;
-        // Row tint based on trend
         blk.classList.remove('stk-up', 'stk-down');
         if (trend === 'positive') blk.classList.add('stk-up');
         else if (trend === 'negative') blk.classList.add('stk-down');
         blk.querySelector('.stk-desc').textContent = STOCK_NAMES[sym] || 'מניה';
         const prEl = blk.querySelector('.stk-price');
-        const newPrice = cur ? fmtPrice(cur, sym) : 'N/A';
-        animateNumber(prEl, newPrice);
+        animateNumber(prEl, cur ? fmtPrice(cur, sym) : 'N/A');
         prEl.classList.remove('skeleton');
         const chEl = blk.querySelector('.stk-chg');
         if (isFinite(chg) && absChg >= 0.1) {
-            const arrow = chg > 0 ? '▲' : '▼';
-            animateNumber(chEl, `${arrow} ${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`);
+            animateNumber(chEl, `${chg > 0 ? '▲' : '▼'} ${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`);
             chEl.className = `stk-chg ${trend}`;
         } else if (isFinite(chg)) {
             animateNumber(chEl, `● ${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`);
@@ -3669,31 +3655,25 @@
         if (prices.length >= 2) { blk.querySelector('.stk-chart').innerHTML = bezierChart(prices, trendColor); }
         else if (prices.length === 1 && cur) { blk.querySelector('.stk-chart').innerHTML = bezierChart([prices[0], prices[0] * 0.999, prices[0] * 1.001, cur], trendColor); }
         blk.querySelector('.stk-time').textContent = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
-        // Feature 35: Portfolio P&L
-        if (cur) updatePortfolioPnL(sym, cur);
-        // Feature 46: 52-week range bar
-        const low52 = meta.fiftyTwoWeekLow;
-        const high52 = meta.fiftyTwoWeekHigh;
+        if (cur) { updatePortfolioPnL(sym, cur); _stkPrices[sym] = cur; checkStockAlerts(sym, cur); updatePortfolioTotal(); }
+        const low52 = meta.fiftyTwoWeekLow, high52 = meta.fiftyTwoWeekHigh;
         if (cur && low52 && high52) updateStockRange(blk, cur, low52, high52);
-        // Feature 51: cache price for portfolio total; Feature 55: check threshold alerts
-        if (cur) {
-            _stkPrices[sym] = cur;
-            checkStockAlerts(sym, cur);
-            updatePortfolioTotal();
-        }
+        _renderStockExtended(blk, meta, sym, cur);
+        if (cur) recordStkPrice(sym, cur);
+        drawStkSpark(blk, sym);
+        _initStockLogo(blk, sym, brand, brandColor);
+    }
+    // R5.5 helper: after-hours/pre-market price + portfolio position + volume badge
+    function _renderStockExtended(blk, meta, sym, cur) {
         // F137: after-hours / pre-market secondary price line
-        const postPrice = meta.postMarketPrice;
-        const postChg = meta.postMarketChangePercent;
-        const prePrice = meta.preMarketPrice;
-        const preChg = meta.preMarketChangePercent;
+        const extPrice = meta.postMarketPrice || meta.preMarketPrice;
+        const extChg = meta.postMarketChangePercent ?? meta.preMarketChangePercent;
+        const extLbl = meta.postMarketPrice ? '(after)' : meta.preMarketPrice ? '(pre)' : null;
         let afterEl = blk.querySelector('.stk-after-price');
-        const extPrice = postPrice || prePrice;
-        const extChg = postChg ?? preChg;
-        const extLbl = postPrice ? '(after)' : prePrice ? '(pre)' : null;
         if (extPrice && extLbl) {
             if (!afterEl) { afterEl = document.createElement('div'); afterEl.className = 'stk-after-price'; blk.querySelector('.stk-vals')?.appendChild(afterEl); }
             const sign = (extChg ?? 0) >= 0 ? '+' : '';
-            afterEl.innerHTML = `${fmtPrice(extPrice, sym)} <span class="after-lbl">${extLbl} ${isFinite(extChg) ? sign + extChg.toFixed(2) + '%' : ''}</span>`;
+            afterEl.textContent = `${fmtPrice(extPrice, sym)} ${extLbl} ${isFinite(extChg) ? sign + extChg.toFixed(2) + '%' : ''}`;
             afterEl.style.color = !isFinite(extChg) || Math.abs(extChg) < 0.1 ? '' : extChg > 0 ? '#34d399' : '#f87171';
         } else if (afterEl) { afterEl.remove(); }
         // F149: Per-stock portfolio position P&L row
@@ -3713,37 +3693,30 @@
         const volBadge = getRelVolBadge(regVol, avgVol);
         let volBadgeEl = blk.querySelector('.stk-vol-badge');
         if (volBadge) {
-            if (!volBadgeEl) {
-                volBadgeEl = document.createElement('span');
-                blk.querySelector('.stk-chg')?.insertAdjacentElement('afterend', volBadgeEl);
-            }
+            if (!volBadgeEl) { volBadgeEl = document.createElement('span'); blk.querySelector('.stk-chg')?.insertAdjacentElement('afterend', volBadgeEl); }
             volBadgeEl.className = `stk-vol-badge ${volBadge.cls}`;
             volBadgeEl.textContent = volBadge.text;
         } else if (volBadgeEl) { volBadgeEl.remove(); }
-        // Feature 65: Price history sparkline
-        if (cur) recordStkPrice(sym, cur);
-        drawStkSpark(blk, sym);
-        // Logo: set src from STOCK_BRAND on first render (Google favicons are reliable)
+    }
+    // R5.5 helper: one-time logo setup per stock row
+    function _initStockLogo(blk, sym, brand, brandColor) {
         const logoDiv = blk.querySelector('.stk-logo');
         const img = logoDiv?.querySelector('img');
-        if (img && !img.dataset.logoInit) {
-            img.dataset.logoInit = '1';
-            img.removeAttribute('style');   // clear any display:none set by old onerror
-            img.removeAttribute('onerror'); // detach inline handler
-            if (brand.domain) {
-                img.src = `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=64`;
+        if (!img || img.dataset.logoInit) return;
+        img.dataset.logoInit = '1';
+        img.removeAttribute('style');
+        img.removeAttribute('onerror');
+        if (brand.domain) img.src = `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=64`;
+        img.addEventListener('error', () => {
+            img.style.display = 'none';
+            if (!logoDiv.querySelector('.stk-logo-fb')) {
+                const fb = document.createElement('span');
+                fb.className = 'stk-logo-fb';
+                fb.textContent = sym.replace('^', '').replace('-USD', '').slice(0, 2).toUpperCase();
+                fb.style.background = brandColor;
+                logoDiv.appendChild(fb);
             }
-            img.addEventListener('error', () => {
-                img.style.display = 'none';
-                if (!logoDiv.querySelector('.stk-logo-fb')) {
-                    const fb = document.createElement('span');
-                    fb.className = 'stk-logo-fb';
-                    fb.textContent = sym.replace('^', '').replace('-USD', '').slice(0, 2).toUpperCase();
-                    fb.style.background = brandColor;
-                    logoDiv.appendChild(fb);
-                }
-            });
-        }
+        });
     }
     function fmtPrice(p, s) { const n = parseFloat(p); if (s === 'BTC-USD') return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }); return n >= 1000 ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n >= 100 ? '$' + n.toFixed(1) : '$' + n.toFixed(2); }
     let _svgIdCounter = 0;
@@ -3762,131 +3735,121 @@
         return `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity="0.5"/><stop offset="100%" stop-color="${col}" stop-opacity="0.03"/></linearGradient></defs><path d="${area}" fill="url(#${gid})"/><path d="${path}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round"/><circle cx="${last.x}" cy="${last.y}" r="2.5" fill="${col}" opacity="0.9"/><circle cx="${last.x}" cy="${last.y}" r="4" fill="${col}" opacity="0.2"/>`;
     }
 
-    // ── Currency Rates (USD/ILS, EUR/ILS) ──
+    // R5.8: Currency Rates — ER-API (primary) + ExchangeRate-API (fallback)
+    const CUR_APIS = ['https://open.er-api.com/v6/latest/ILS', 'https://api.exchangerate-api.com/v4/latest/ILS'];
+    const CUR_TTL = 1800000; // 30min
     async function loadCurrency() {
         if (!_pageVisible || !acquireLock('cur')) return;
         setSync('cur', 'syncing');
         const key = 'cur';
-        const fresh = cGet(key, 1800000); // 30min TTL
+        const fresh = cGet(key, CUR_TTL);
         if (fresh) { renderCurrency(fresh); setSync('cur', 'success'); releaseLock('cur'); return; }
         const stale = cGetStale(key); if (stale) renderCurrency(stale);
-        try {
-            const d = await fetchJSON('https://open.er-api.com/v6/latest/ILS');
-            if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); syncBurst('cur'); recordSuccess('cur'); }
-        } catch (_) {
-            try { const d = await fetchJSON('https://api.exchangerate-api.com/v4/latest/ILS');
-                if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); syncBurst('cur'); recordSuccess('cur'); }
-            } catch (_) { setSync('cur', stale ? 'success' : 'error'); recordFailure('cur'); }
+        let ok = false;
+        for (const api of CUR_APIS) {
+            try {
+                const d = await fetchJSON(api);
+                if (d.rates) { cSet(key, d.rates); renderCurrency(d.rates); setSync('cur', 'success'); syncBurst('cur'); recordSuccess('cur'); ok = true; break; }
+            } catch (_) { /* try next */ }
         }
+        if (!ok) { setSync('cur', stale ? 'success' : 'error'); recordFailure('cur'); }
         releaseLock('cur');
     }
     let _prevRates = null;
+    // R5.9: Unified currency tiles config — pairs + metals in one array
+    const CUR_TILES = [
+        { code: 'USD', el: 'curUsd', chgEl: 'curUsdChg', decimals: 3, threshold: 0.0005, prefix: '₪', sparkId: 'usd', histKey: 'usd' },
+        { code: 'EUR', el: 'curEur', chgEl: 'curEurChg', decimals: 3, threshold: 0.0005, prefix: '₪', sparkId: 'eur', histKey: 'eur' },
+        { code: 'GBP', el: 'curGbp', chgEl: 'curGbpChg', decimals: 3, threshold: 0.0005, prefix: '₪', sparkId: 'gbp', histKey: 'gbp' },
+        { code: 'XAU', el: 'curGold', chgEl: 'curGoldChg', decimals: 0, threshold: 5, prefix: '₪', sparkId: 'gold', histKey: 'gold' },
+        { code: 'XAG', el: 'curSilver', chgEl: 'curSilverChg', decimals: 1, threshold: 1, prefix: '₪', sparkId: 'silver', histKey: 'silver' },
+    ];
     function renderCurrency(rates) {
-        // rates are ILS-based, so 1 ILS = X USD → we want 1 USD = 1/X ILS
         const container = document.getElementById('currency-body');
-        const pairs = [
-            { code: 'USD', el: el.curUsd, chgEl: el.curUsdChg },
-            { code: 'EUR', el: el.curEur, chgEl: el.curEurChg },
-            // Feature 71: GBP / ILS tile
-            { code: 'GBP', el: el.curGbp, chgEl: el.curGbpChg },
-        ];
-        for (const p of pairs) {
-            const val = rates[p.code] ? (1 / rates[p.code]) : null;
-            animateNumber(p.el, val ? '₪' + val.toFixed(3) : '--');
-            p.el.classList.remove('skeleton');
-            // Show change arrow vs previous fetch
-            const chgEl = p.chgEl;
-            if (chgEl && _prevRates?.[p.code] && val) {
-                const prevVal = 1 / _prevRates[p.code];
-                const diff = val - prevVal;
-                if (Math.abs(diff) > 0.0005) {
-                    chgEl.textContent = (diff > 0 ? '▲' : '▼') + ' ' + Math.abs(diff).toFixed(3);
+        for (const tile of CUR_TILES) {
+            const rateEl = el[tile.el], chgEl = el[tile.chgEl];
+            if (!rateEl) continue;
+            const raw = rates[tile.code];
+            const val = raw ? (1 / raw) : null;
+            const display = val ? tile.prefix + (tile.decimals === 0 ? Math.round(val).toLocaleString('he-IL') : val.toFixed(tile.decimals)) : '--';
+            animateNumber(rateEl, display);
+            rateEl.classList.remove('skeleton');
+            // Change indicator vs previous fetch
+            if (chgEl && _prevRates?.[tile.code] && val) {
+                const prevVal = 1 / _prevRates[tile.code];
+                const diff = tile.decimals === 0 ? Math.round(val) - Math.round(prevVal) : val - prevVal;
+                if (Math.abs(diff) > tile.threshold) {
+                    chgEl.textContent = (diff > 0 ? '▲' : '▼') + ' ' + Math.abs(tile.decimals === 0 ? diff : +diff.toFixed(tile.decimals));
                     chgEl.className = 'cur-chg ' + (diff > 0 ? 'positive' : 'negative');
                 } else { chgEl.textContent = ''; chgEl.className = 'cur-chg'; }
             } else if (chgEl) { chgEl.textContent = ''; }
         }
-        // Gold (XAU) and Silver (XAG) — 1 oz in ILS (if ER-API returns them)
-        const metals = [
-            { code: 'XAU', el: el.curGold, chgEl: el.curGoldChg, decimals: 0, sym: '₪' },
-            { code: 'XAG', el: el.curSilver, chgEl: el.curSilverChg, decimals: 1, sym: '₪' },
-        ];
-        for (const m of metals) {
-            if (!m.el) continue;
-            const val = rates[m.code] ? Math.round(1 / rates[m.code]) : null;
-            if (val) {
-                m.el.textContent = m.sym + val.toLocaleString('he-IL');
-                if (m.chgEl && _prevRates?.[m.code]) {
-                    const prevVal = Math.round(1 / _prevRates[m.code]);
-                    const diff = val - prevVal;
-                    if (Math.abs(diff) > 5) {
-                        m.chgEl.textContent = (diff > 0 ? '▲' : '▼') + ' ' + Math.abs(diff);
-                        m.chgEl.className = 'cur-chg ' + (diff > 0 ? 'positive' : 'negative');
-                    } else { m.chgEl.textContent = ''; m.chgEl.className = 'cur-chg'; }
-                }
-            }
-        }
         _prevRates = { ...rates };
-        // Feature 38: record history + draw sparklines
-        const usdRate = rates['USD'] ? (1 / rates['USD']) : 0;
-        const eurRate = rates['EUR'] ? (1 / rates['EUR']) : 0;
-        const goldRate = rates['XAU'] ? Math.round(1 / rates['XAU']) : 0;
-        const silverRate = rates['XAG'] ? (1 / rates['XAG']) : 0;
-        const gbpRate = rates['GBP'] ? (1 / rates['GBP']) : 0;
-        if (usdRate && eurRate) {
-            recordCurrencyHistory(usdRate, eurRate, goldRate, silverRate, gbpRate);
+        // Record history + draw sparklines
+        const histValues = {};
+        for (const tile of CUR_TILES) {
+            histValues[tile.histKey] = rates[tile.code] ? (tile.decimals === 0 ? Math.round(1 / rates[tile.code]) : (1 / rates[tile.code])) : 0;
+        }
+        if (histValues.usd && histValues.eur) {
+            recordCurrencyHistory(histValues.usd, histValues.eur, histValues.gold, histValues.silver, histValues.gbp);
             renderCurrencySparklines();
         }
-        // Pulse effect on fresh data
         if (container) { container.classList.remove('data-fresh'); void container.offsetWidth; container.classList.add('data-fresh'); }
     }
 
     // ── Red Alerts — צבע אדום (dynamic adaptive polling via api.tzevaadom.co.il) ──
+    const ALERT_URL = 'https://api.tzevaadom.co.il/alerts-history';
     const THREAT_LABELS = { 0: '🚀 ירי רקטות', 1: '🚀 ירי רקטות', 5: '✈️ כלי טיס עוין' };
     let _lastAlertId = null;
     let _alertsHaveActive = false;
     let _alertTimer = null;
     let _alertRealtime = localStorage.getItem('dash_alert_rt') === 'on';
     const ALERT_INTERVAL_ACTIVE = 60000;  // 60s when active alerts
-    const ALERT_INTERVAL_RT     = 10000;  // 10s real-time mode (F97)
+    const ALERT_INTERVAL_RT     = 10000;  // 10s real-time mode
     const ALERT_INTERVAL_IDLE   = 300000; // 5min when no recent alerts
+
+    // R6.5: Notify on new alert — beep + desktop notification
+    function _notifyNewAlert(data) {
+        playAlertBeep(880, 0.18, 0.3);
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            const cities = data[0]?.alerts?.flatMap(a => a.cities ?? []).slice(0, 3).join(', ') || 'אזורים שונים';
+            try { new Notification('⚠️ צבע אדום', { body: cities, icon: './favicon.ico', dir: 'rtl', lang: 'he' }); } catch (_) {}
+        }
+    }
 
     async function loadAlerts() {
         if (!_alertsOn) return;
         if (!_pageVisible) { scheduleAlerts(); return; }
         setSync('alerts', 'syncing');
         const key = 'alerts';
-        // No cache TTL gating — always fetch to detect new alerts quickly
         const stale = cGetStale(key); if (stale) renderAlerts(stale, false);
         try {
-            const url = 'https://api.tzevaadom.co.il/alerts-history';
+            // R6.5: direct → proxy fallback loop (same pattern as R6.2)
             let data;
-            try { const r = await fetch(url); if (r.ok) data = await r.json(); } catch (_) {}
-            if (!data) {
-                for (const p of PROXIES) {
-                    try {
-                        const r = await fetch(p + encodeURIComponent(url));
-                        if (!r.ok) continue;
-                        data = p.includes('allorigins') ? JSON.parse((await r.json()).contents) : JSON.parse(await r.text());
-                        break;
-                    } catch (_) { continue; }
-                }
+            const sources = [
+                { url: ALERT_URL, extract: r => r.json() },
+                ...PROXIES.map(p => ({
+                    url: p + encodeURIComponent(ALERT_URL),
+                    extract: r => p.includes('allorigins') ? r.json().then(j => JSON.parse(j.contents)) : r.json()
+                })),
+            ];
+            for (const src of sources) {
+                try {
+                    const r = await fetch(src.url);
+                    if (!r.ok) continue;
+                    data = await src.extract(r);
+                    if (Array.isArray(data) && data.length) break;
+                    data = null;
+                } catch (_) { continue; }
             }
             if (Array.isArray(data) && data.length) {
-                // Detect new alerts by comparing top event id
                 const newTopId = data[0]?.id ?? null;
                 const isNew = _lastAlertId !== null && newTopId !== _lastAlertId;
                 _lastAlertId = newTopId;
-                // Feature 43: play alert beep on new incoming alert
-                if (isNew) playAlertBeep(880, 0.18, 0.3);
-                // F115: Desktop notification for new red alert
-                if (isNew && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                    const cities = data[0]?.alerts?.flatMap(a => a.cities ?? []).slice(0, 3).join(', ') || 'אזורים שונים';
-                    try { new Notification('⚠️ צבע אדום', { body: cities, icon: './favicon.ico', dir: 'rtl', lang: 'he' }); } catch (_) {}
-                }
+                if (isNew) _notifyNewAlert(data);
                 cSet(key, data);
                 renderAlerts(data, isNew);
                 setSync('alerts', 'success'); syncBurst('alerts'); recordSuccess('alerts');
-                // Check if any alert is active (<10 min)
                 const now = Date.now() / 1000;
                 _alertsHaveActive = data.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
             } else {
@@ -3903,25 +3866,53 @@
         _alertTimer = setTimeout(loadAlerts, interval);
     }
 
+    // R6.6: Build a single alert event DOM element
+    function _buildAlertItem(ev, now, isHighlightFirst, isClone) {
+        if (!ev.alerts?.length) return null;
+        const firstAlert = ev.alerts[0];
+        const allCities = ev.alerts.flatMap(a => a.cities);
+        const threat = ev.alerts.reduce((mx, a) => Math.max(mx, a.threat ?? 0), 0);
+        const ageMin = Math.floor((now - firstAlert.time) / 60);
+        const div = document.createElement('div');
+        div.className = 'alert-item' + (ageMin < 10 ? ' active' : ' past') + (isHighlightFirst ? ' new-alert' : '') + (isClone ? ' clone' : '');
+        const cities = document.createElement('div');
+        cities.className = 'alert-cities';
+        const unique = [...new Set(allCities)];
+        cities.textContent = unique.length > 5 ? unique.slice(0, 5).join(', ') + ` (+${unique.length - 5})` : unique.join(', ');
+        div.appendChild(cities);
+        const meta = document.createElement('div');
+        meta.className = 'alert-meta';
+        const time = document.createElement('span');
+        time.className = 'alert-time';
+        const d = new Date(firstAlert.time * 1000);
+        time.textContent = relTime(d.toISOString()) + ' | ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+        meta.appendChild(time);
+        const thr = document.createElement('span');
+        thr.className = 'alert-threat';
+        thr.textContent = THREAT_LABELS[threat] || '⚠️ התרעה';
+        meta.appendChild(thr);
+        div.appendChild(meta);
+        return div;
+    }
+
     function renderAlerts(data, highlightNew) {
         if (!el.alertsScroll || !Array.isArray(data)) return;
-        // F116: increment unread badge when new alert arrives
         if (highlightNew) {
             _unreadAlerts++;
             if (el.alertsBadge) { el.alertsBadge.textContent = _unreadAlerts; el.alertsBadge.style.display = ''; }
         }
-        // F86: zone filter
         const filtered = filterAlertsByZone(data);
         const now = Date.now() / 1000;
         let total24h = 0;
+        for (const ev of filtered) { for (const a of ev.alerts) { if (now - a.time < 86400) total24h++; } }
         const recentEvents = filtered.slice(0, 25);
-        for (const ev of filtered) {
-            for (const a of ev.alerts) { if (now - a.time < 86400) total24h++; }
-        }
-        function buildAlertItems(container, isClone) {
+        const hasActive = filtered.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
+
+        // Build items twice for seamless scroll loop
+        const frag = document.createDocumentFragment();
+        for (const isClone of [false, true]) {
             const counter = document.createElement('div');
             counter.className = 'alert-count' + (isClone ? ' clone' : '');
-            const hasActive = filtered.some(ev => ev.alerts?.some(a => (now - a.time) < 600));
             counter.textContent = '🚨 ' + total24h + ' התרעות ב-24 שעות האחרונות';
             if (hasActive && !isClone) {
                 const dot = document.createElement('span');
@@ -3929,50 +3920,22 @@
                 dot.title = 'התרעה פעילה';
                 counter.appendChild(dot);
             }
-            container.appendChild(counter);
-            for (let i = 0; i < recentEvents.length; i++) {
-                const ev = recentEvents[i];
-                if (!ev.alerts?.length) continue;
-                const firstAlert = ev.alerts[0];
-                const allCities = ev.alerts.flatMap(a => a.cities);
-                const threat = ev.alerts.reduce((mx, a) => Math.max(mx, a.threat ?? 0), 0);
-                const ageMin = Math.floor((now - firstAlert.time) / 60);
-                const isRecent = ageMin < 10;
-                const div = document.createElement('div');
-                div.className = 'alert-item' + (isRecent ? ' active' : ' past') + (highlightNew && i === 0 && !isClone ? ' new-alert' : '') + (isClone ? ' clone' : '');
-                const cities = document.createElement('div');
-                cities.className = 'alert-cities';
-                const unique = [...new Set(allCities)];
-                cities.textContent = unique.length > 5 ? unique.slice(0, 5).join(', ') + ` (+${unique.length - 5})` : unique.join(', ');
-                div.appendChild(cities);
-                const meta = document.createElement('div');
-                meta.className = 'alert-meta';
-                const time = document.createElement('span');
-                time.className = 'alert-time';
-                const d = new Date(firstAlert.time * 1000);
-                time.textContent = relTime(d.toISOString()) + ' | ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
-                meta.appendChild(time);
-                const thr = document.createElement('span');
-                thr.className = 'alert-threat';
-                thr.textContent = THREAT_LABELS[threat] || '⚠️ התרעה';
-                meta.appendChild(thr);
-                div.appendChild(meta);
-                container.appendChild(div);
-            }
+            frag.appendChild(counter);
             if (!recentEvents.length) {
                 const empty = document.createElement('div');
                 empty.className = 'alert-count';
                 empty.textContent = '✅ אין התרעות אחרונות';
-                container.appendChild(empty);
+                frag.appendChild(empty);
+            } else {
+                for (let i = 0; i < recentEvents.length; i++) {
+                    const item = _buildAlertItem(recentEvents[i], now, highlightNew && i === 0 && !isClone, isClone);
+                    if (item) frag.appendChild(item);
+                }
             }
         }
-        // Build items twice for seamless scroll loop
-        const frag = document.createDocumentFragment();
-        buildAlertItems(frag, false);
-        buildAlertItems(frag, true);
         el.alertsScroll.innerHTML = '';
-        el.alertsScroll.appendChild(frag); // single DOM write
-        // Dynamic keyframe
+        el.alertsScroll.appendChild(frag);
+        // Dynamic keyframe for scroll animation
         const h = el.alertsScroll.scrollHeight / 2;
         const dur = Math.max(25, recentEvents.length * 4);
         injectScrollKeyframes('alerts-scroll-style', 'alertsScroll', h);
@@ -3981,9 +3944,10 @@
 
     // ── Google Calendar (ICS native render) ──
     const CAL_ICS = 'https://calendar.google.com/calendar/ical/rajwan.family%40gmail.com/public/basic.ics';
-    const CAL_DAYS_AHEAD = 21; // show 3 weeks of upcoming events
+    const CAL_DAYS_AHEAD = 21;
+    const CAL_TTL = 900000; // 15 min
 
-    // F102: Fetch secondary ICS sources and re-render merged calendar
+    // R6.4: Fetch secondary ICS sources and merge with primary calendar
     async function loadCalendarExtra() {
         if (!_pageVisible) return;
         const extra = [];
@@ -3991,8 +3955,8 @@
             const url = localStorage.getItem(`dash_ics_url_${i}`);
             if (!url) continue;
             const key = `cal-ics-${i}`;
-            const fresh = cGet(key, 900000);
-            if (fresh) { extra.push(...parseICS(fresh, i)); continue; } // F133: pass icsIdx
+            const fresh = cGet(key, CAL_TTL);
+            if (fresh) { extra.push(...parseICS(fresh, i)); continue; }
             const stale = cGetStale(key); if (stale) extra.push(...parseICS(stale, i));
             try {
                 const r = await fetchWithTimeout(url, 10000);
@@ -4003,70 +3967,119 @@
             } catch (e) { diagLog(`cal-extra-${i} ERR: ` + e.message); }
         }
         if (!extra.length) return;
-        const primary = parseICS(cGetStale('cal-ics') || '', 1); // F133: primary = icsIdx 1
+        const primary = parseICS(cGetStale('cal-ics') || '', 1);
         const merged = [...primary, ...extra].sort((a, b) => a.start - b.start);
         renderCalendar(merged);
         updateTodayEventCount();
         diagLog(`cal-extra merged: ${extra.length} extra events`);
     }
 
+    // R6.1: ICS date parser — handles YYYYMMDD (all-day) and YYYYMMDDTHHmmSS[Z]
+    function _parseICSDate(raw) {
+        if (!raw) return null;
+        if (raw.length === 8) return new Date(raw.slice(0, 4) + '-' + raw.slice(4, 6) + '-' + raw.slice(6, 8) + 'T00:00:00');
+        const s = raw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, '$1-$2-$3T$4:$5:$6' + (raw.endsWith('Z') ? 'Z' : ''));
+        const d = new Date(s);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    // R6.1: Unescape ICS text values
+    function _unescapeICS(str, sep = ' ') {
+        return (str || '').replace(/\\,/g, ',').replace(/\\n/g, sep).replace(/\\;/g, ';').replace(/\\\\/g, '\\');
+    }
+
     function parseICS(text, icsIdx = 0) {
         const events = [];
         const blocks = text.split('BEGIN:VEVENT');
         for (let i = 1; i < blocks.length; i++) {
-            const b = blocks[i];
-            // unfold long lines (CRLF + space/tab = continuation)
-            const unfolded = b.replace(/\r?\n[ \t]/g, '');
+            const unfolded = blocks[i].replace(/\r?\n[ \t]/g, '');
             const get = key => {
                 const m = unfolded.match(new RegExp('(?:^|\n)' + key + '(?:;[^:]*)?:([^\r\n]+)', 'i'));
                 return m ? m[1].trim() : null;
             };
             const dtRaw = get('DTSTART') || '';
-            const dtEndRaw = get('DTEND') || '';
-            const summary = (get('SUMMARY') || '').replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
-            const location = (get('LOCATION') || '').replace(/\\,/g, ',').replace(/\\n/g, ', ').replace(/\\;/g, ';');
+            const summary = _unescapeICS(get('SUMMARY'));
             if (!dtRaw || !summary) continue;
-            // parse DTSTART: VALUE=DATE (YYYYMMDD) or datetime (YYYYMMDDTHHmmSSZ)
-            let start, end = null, allDay = false;
-            if (dtRaw.length === 8) {
-                start = new Date(dtRaw.slice(0,4) + '-' + dtRaw.slice(4,6) + '-' + dtRaw.slice(6,8) + 'T00:00:00');
-                allDay = true;
-            } else {
-                const s = dtRaw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, '$1-$2-$3T$4:$5:$6' + (dtRaw.endsWith('Z') ? 'Z' : ''));
-                start = new Date(s);
-            }
-            // Feature 47: parse DTEND
-            if (dtEndRaw && !allDay) {
-                const e = dtEndRaw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, '$1-$2-$3T$4:$5:$6' + (dtEndRaw.endsWith('Z') ? 'Z' : ''));
-                const parsed = new Date(e);
-                if (!isNaN(parsed.getTime())) end = parsed;
-            }
-            if (isNaN(start.getTime())) continue;
-            events.push({ start, end, allDay, summary, location, icsIdx }); // F133: tag source
+            const start = _parseICSDate(dtRaw);
+            if (!start) continue;
+            const allDay = dtRaw.length === 8;
+            const end = allDay ? null : _parseICSDate(get('DTEND') || '');
+            const location = _unescapeICS(get('LOCATION'), ', ');
+            events.push({ start, end, allDay, summary, location, icsIdx });
         }
         return events;
     }
 
+    // R6.3: Build a single calendar event row element
+    function _renderCalEvent(ev, isConflict) {
+        const row = document.createElement('div');
+        row.className = 'cal-event' + (isConflict ? ' has-conflict' : '');
+        if (ev.icsIdx) row.dataset.ics = String(ev.icsIdx);
+        const timeEl = document.createElement('div');
+        timeEl.className = 'cal-event-time';
+        timeEl.textContent = ev.allDay
+            ? 'כל היום'
+            : ev.start.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+        if (!ev.allDay && ev.end && ev.end > ev.start) {
+            const endStr = ev.end.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+            const durMin = Math.round((ev.end - ev.start) / 60000);
+            const durStr = durMin >= 60 ? `${Math.floor(durMin / 60)}:${String(durMin % 60).padStart(2, '0')}h` : `${durMin}m`;
+            timeEl.textContent += `–${endStr} (${durStr})`;
+        }
+        const titleEl = document.createElement('div');
+        titleEl.style.flex = '1';
+        const catRow = document.createElement('div');
+        catRow.style.cssText = 'display:flex;align-items:flex-start;gap:2px';
+        const dot = document.createElement('span');
+        dot.className = 'cal-dot cal-dot-' + detectCalCategory(ev.summary);
+        catRow.appendChild(dot);
+        const titleLine = document.createElement('div');
+        titleLine.className = 'cal-event-title';
+        titleLine.textContent = ev.summary;
+        catRow.appendChild(titleLine);
+        titleEl.appendChild(catRow);
+        if (ev.location) {
+            const locEl = document.createElement('div');
+            locEl.className = 'cal-event-loc';
+            locEl.textContent = '\uD83D\uDCCD ' + ev.location;
+            titleEl.appendChild(locEl);
+        }
+        row.appendChild(timeEl);
+        row.appendChild(titleEl);
+        return row;
+    }
+
+    // R6.3: Update countdown badge for next upcoming event
+    function _renderCalCountdown(upcoming, now) {
+        if (!el.calCountdown) return;
+        const next7 = upcoming.filter(e => e.start > now && (e.start - now) < 7 * 86400000);
+        if (next7.length) {
+            const ev = next7[0];
+            const days = Math.ceil((ev.start - now) / 86400000);
+            const label = days === 0 ? 'היום' : days === 1 ? 'מחר' : `עוד ${days} ימים`;
+            el.calCountdown.textContent = `${label}: ${(ev.summary || '').substring(0, 20)}`;
+            el.calCountdown.style.display = '';
+        } else {
+            el.calCountdown.style.display = 'none';
+        }
+    }
+
     function renderCalendar(events) {
-        // Feature 63: 7-day event density strip
         renderCalWeekStrip(events);
-        // F154: populate today's upcoming events strip
         _renderCalTodayStrip(events);
         const now = new Date();
         const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * 86400000);
-        // filter to window: from start of today
         const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const upcoming = events
             .filter(e => e.start >= todayMidnight && e.start <= cutoff)
             .sort((a, b) => a.start - b.start);
 
-        // F138: detect overlapping non-all-day events
-        const conflictIdx = new Set();
+        // Detect overlapping timed events
+        const conflictSet = new Set();
         const timed = upcoming.filter(e => !e.allDay && e.end);
         for (let i = 0; i < timed.length; i++) {
             for (let j = i + 1; j < timed.length; j++) {
                 if (timed[j].start >= timed[i].end) break;
-                conflictIdx.add(timed[i]); conflictIdx.add(timed[j]);
+                conflictSet.add(timed[i]); conflictSet.add(timed[j]);
             }
         }
 
@@ -4078,190 +4091,109 @@
             frag.appendChild(empty);
         } else {
             let lastDateKey = null;
-            const todayKey = new Date().toDateString();
+            const todayKey = now.toDateString();
             for (const ev of upcoming) {
                 const dateKey = ev.start.toDateString();
                 if (dateKey !== lastDateKey) {
                     lastDateKey = dateKey;
                     const hdr = document.createElement('div');
                     hdr.className = 'cal-day-header' + (dateKey === todayKey ? ' today' : '');
-                    // e.g. "יום שלישי · 08 אפריל"
                     const dayHe = ev.start.toLocaleDateString('he-IL', { weekday: 'long', timeZone: 'Asia/Jerusalem' });
                     const dateFmt = ev.start.toLocaleDateString('he-IL', { day: '2-digit', month: 'long', timeZone: 'Asia/Jerusalem' });
                     hdr.textContent = dayHe + ' · ' + dateFmt;
                     frag.appendChild(hdr);
                 }
-                const row = document.createElement('div');
-                // F133: ICS source color border; F138: conflict warning
-                row.className = 'cal-event' + (conflictIdx.has(ev) ? ' has-conflict' : '');
-                if (ev.icsIdx) row.dataset.ics = String(ev.icsIdx);
-                const timeEl = document.createElement('div');
-                timeEl.className = 'cal-event-time';
-                timeEl.textContent = ev.allDay
-                    ? 'כל היום'
-                    : ev.start.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
-                // Feature 47: show end time + duration
-                if (!ev.allDay && ev.end && ev.end > ev.start) {
-                    const endStr = ev.end.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
-                    const durMin = Math.round((ev.end - ev.start) / 60000);
-                    const durStr = durMin >= 60 ? `${Math.floor(durMin/60)}:${String(durMin%60).padStart(2,'0')}h` : `${durMin}m`;
-                    timeEl.textContent += `–${endStr} (${durStr})`;
-                }
-                const titleEl = document.createElement('div');
-                titleEl.style.flex = '1';
-                // Feature 58: category color dot
-                const catRow = document.createElement('div');
-                catRow.style.cssText = 'display:flex;align-items:flex-start;gap:2px';
-                const dot = document.createElement('span');
-                dot.className = 'cal-dot cal-dot-' + detectCalCategory(ev.summary);
-                catRow.appendChild(dot);
-                const titleLine = document.createElement('div');
-                titleLine.className = 'cal-event-title';
-                titleLine.textContent = ev.summary;
-                catRow.appendChild(titleLine);
-                titleEl.appendChild(catRow);
-                if (ev.location) {
-                    const locEl = document.createElement('div');
-                    locEl.className = 'cal-event-loc';
-                    locEl.textContent = '📍 ' + ev.location;
-                    titleEl.appendChild(locEl);
-                }
-                row.appendChild(timeEl);
-                row.appendChild(titleEl);
-                frag.appendChild(row);
+                frag.appendChild(_renderCalEvent(ev, conflictSet.has(ev)));
             }
         }
         if (el.calAgenda) {
             el.calAgenda.innerHTML = '';
             el.calAgenda.appendChild(frag);
         }
-        // Feature 28: show countdown badge for the next upcoming event within 7 days
-        if (el.calCountdown) {
-            const next7 = upcoming.filter(e => e.start > now && (e.start - now) < 7 * 86400000);
-            if (next7.length) {
-                const ev = next7[0];
-                const days = Math.ceil((ev.start - now) / 86400000);
-                const label = days === 0 ? 'היום' : days === 1 ? 'מחר' : `עוד ${days} ימים`;
-                const name = (ev.summary || '').substring(0, 20);
-                el.calCountdown.textContent = `${label}: ${name}`;
-                el.calCountdown.style.display = '';
-            } else {
-                el.calCountdown.style.display = 'none';
-            }
-        }
+        _renderCalCountdown(upcoming, now);
         return upcoming.length;
+    }
+
+    // R6.2: Validate and store ICS data (extracted from loadCalendar for reuse)
+    function _acceptICS(icsText, source) {
+        if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) return false;
+        const events = parseICS(icsText);
+        diagLog(`calendar ${source} OK (${icsText.length} bytes, ${events.length} events)`);
+        cSet('cal-ics', icsText);
+        const count = renderCalendar(events);
+        if (count > 0) el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
+        updateTodayEventCount();
+        setSync('cal', 'success'); syncBurst('cal'); recordSuccess('cal');
+        return true;
     }
 
     async function loadCalendar() {
         if (!_pageVisible || !acquireLock('cal')) return;
         const CAL_ICS_ACTIVE = localStorage.getItem('dash_ics_url') || CAL_ICS;
         const key = 'cal-ics';
-        const fresh = cGet(key, 900000); // 15min TTL
+        const fresh = cGet(key, CAL_TTL);
         if (fresh) {
             const count = renderCalendar(parseICS(fresh));
             if (count > 0) el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
-            updateTodayEventCount(); // Feature 37
+            updateTodayEventCount();
             setSync('cal', 'success'); releaseLock('cal'); return;
         }
         const staleText = cGetStale(key);
-        if (staleText) {
-            renderCalendar(parseICS(staleText));
-            // iframe stays visible until a fresh ICS fetch succeeds
-        }
+        if (staleText) renderCalendar(parseICS(staleText));
         setSync('cal', 'syncing');
 
-        // Helper: validate and store ICS data
-        function acceptICS(icsText, source) {
-            if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) return false;
-            const events = parseICS(icsText);
-            diagLog(`calendar ${source} OK (${icsText.length} bytes, ${events.length} events)`);
-            cSet(key, icsText);
-            const count = renderCalendar(events);
-            if (count > 0) el.calAgenda?.closest('.cal-wrapper')?.classList.add('ics-loaded');
-            updateTodayEventCount(); // Feature 37
-            setSync('cal', 'success'); syncBurst('cal'); recordSuccess('cal');
-            return true;
-        }
-
-        // 1. Try direct fetch (works when no CORS / same-origin)
-        try {
-            diagLog('calendar: trying direct fetch...');
-            const r = await fetchWithTimeout(CAL_ICS_ACTIVE, 10000);
-            if (r.ok) {
-                const t = await r.text();
-                if (acceptICS(t, 'direct')) { releaseLock('cal'); return; }
-            } else { diagLog(`calendar direct HTTP ${r.status}`); }
-        } catch (e) { diagLog(`calendar direct ERR: ${e.message}`); }
-
-        // 2. Try each CORS proxy (allorigins, codetabs)
-        for (const proxy of PROXIES) {
-            const pName = proxy.includes('allorigins') ? 'allorigins' : 'codetabs';
+        // R6.2: Build ordered source list — direct → CORS proxies → corsproxy.io
+        const sources = [
+            { url: CAL_ICS_ACTIVE, name: 'direct', timeout: 10000, extract: r => r.text() },
+            ...PROXIES.map(p => ({
+                url: p + encodeURIComponent(CAL_ICS_ACTIVE),
+                name: p.includes('allorigins') ? 'allorigins' : 'codetabs',
+                timeout: 12000,
+                extract: r => p.includes('allorigins') ? r.json().then(j => j.contents) : r.text()
+            })),
+            { url: 'https://corsproxy.io/?' + encodeURIComponent(CAL_ICS), name: 'corsproxy.io', timeout: 12000, extract: r => r.text() },
+        ];
+        for (const src of sources) {
             try {
-                diagLog(`calendar: trying ${pName}...`);
-                const r = await fetchWithTimeout(proxy + encodeURIComponent(CAL_ICS_ACTIVE), 12000);
-                if (!r.ok) { diagLog(`calendar ${pName} HTTP ${r.status}`); continue; }
-                let icsText;
-                if (proxy.includes('allorigins')) {
-                    const j = await r.json();
-                    icsText = j.contents;
-                } else {
-                    icsText = await r.text();
-                }
-                if (acceptICS(icsText, pName)) { releaseLock('cal'); return; }
-                diagLog(`calendar ${pName} no VCALENDAR (len=${(icsText||'').length})`);
-            } catch (e) { diagLog(`calendar ${pName} ERR: ${e.message}`); continue; }
+                diagLog(`calendar: trying ${src.name}...`);
+                const r = await fetchWithTimeout(src.url, src.timeout);
+                if (!r.ok) { diagLog(`calendar ${src.name} HTTP ${r.status}`); continue; }
+                const icsText = await src.extract(r);
+                if (_acceptICS(icsText, src.name)) { releaseLock('cal'); return; }
+                diagLog(`calendar ${src.name} no VCALENDAR (len=${(icsText || '').length})`);
+            } catch (e) { diagLog(`calendar ${src.name} ERR: ${e.message}`); }
         }
-
-        // 3. Try corsproxy.io as additional fallback (URL path pattern)
-        try {
-            diagLog('calendar: trying corsproxy.io...');
-            const r = await fetchWithTimeout('https://corsproxy.io/?' + encodeURIComponent(CAL_ICS), 12000);
-            if (r.ok) {
-                const t = await r.text();
-                if (acceptICS(t, 'corsproxy.io')) { releaseLock('cal'); return; }
-            }
-        } catch (e) { diagLog(`calendar corsproxy.io ERR: ${e.message}`); }
-
-        // All ICS fetches failed — iframe is already visible by default
         diagLog('calendar ALL FAILED — iframe embed remains visible');
         setSync('cal', 'error'); recordFailure('cal');
         releaseLock('cal');
     }
 
-    // ── Motivation (30-min rotation, online + offline, crossfade) ──
+    // ── R6.8: Motivation (2-min rotation, crossfade) ──
+    function _setMotiContent(m) {
+        el.motiText.textContent = m.t;
+        el.motiAuthor.textContent = m.a ? '— ' + m.a : '';
+        el.motiSrc.textContent = '';
+    }
+    function _shareMoti(m) {
+        const text = m.t + (m.a ? ' — ' + m.a : '');
+        if (navigator.share) {
+            navigator.share({ text }).catch(() => {});
+        } else {
+            navigator.clipboard?.writeText(text).then(() => showToast('📋 הציטוט הועתק!')).catch(() => {});
+        }
+    }
     function loadMotivation() {
         const card = el.motiText?.closest('.moti-card');
         const m = MOTIVATIONS[motiIdx++ % MOTIVATIONS.length];
-        // Crossfade
         if (card) {
             card.style.transition = 'opacity 0.5s ease';
             card.style.opacity = '0';
-            setTimeout(() => {
-                el.motiText.textContent = m.t;
-                el.motiAuthor.textContent = m.a ? '— ' + m.a : '';
-                el.motiSrc.textContent = '';
-                card.style.opacity = '1';
-            }, 500);
+            setTimeout(() => { _setMotiContent(m); card.style.opacity = '1'; }, 500);
         } else {
-            el.motiText.textContent = m.t;
-            el.motiAuthor.textContent = m.a ? '— ' + m.a : '';
-            el.motiSrc.textContent = '';
+            _setMotiContent(m);
         }
-        // F135: Wire share button to current quote
-        if (el.motiShareBtn) {
-            el.motiShareBtn.onclick = () => {
-                const text = m.t + (m.a ? ' — ' + m.a : '');
-                if (navigator.share) {
-                    navigator.share({ text }).catch(() => {});
-                } else {
-                    navigator.clipboard?.writeText(text).then(() => showToast('📋 הציטוט הועתק!')).catch(() => {});
-                }
-            };
-        }
-        // F146: Wire "next" button to advance to next quote
-        if (el.motiNextBtn) {
-            el.motiNextBtn.onclick = () => loadMotivation();
-        }
+        if (el.motiShareBtn) el.motiShareBtn.onclick = () => _shareMoti(m);
+        if (el.motiNextBtn) el.motiNextBtn.onclick = () => loadMotivation();
         setSync('moti', 'success');
     }
 
@@ -4308,25 +4240,22 @@
         if (sel) sel.addEventListener('change', e => applyScreenMode(e.target.value));
     }
 
-    // ── Alerts Toggle (show/hide red alerts pane) ──
+    // ── R6.7: Alerts Toggle (show/hide red alerts pane) ──
     let _alertsOn = true;
+    let _alertsToggleSel = null;
     function applyAlerts(state) {
         _alertsOn = state === 'on';
         document.body.classList.toggle('alerts-off', !_alertsOn);
         try { localStorage.setItem('dash_alerts', state); } catch (_) {}
-        const sel = document.getElementById('alerts-toggle');
-        if (sel && sel.value !== state) sel.value = state;
-        // Stop/start alert fetching
+        if (_alertsToggleSel && _alertsToggleSel.value !== state) _alertsToggleSel.value = state;
         if (!_alertsOn && _alertTimer) { clearTimeout(_alertTimer); _alertTimer = null; }
         if (_alertsOn && !_alertTimer) loadAlerts();
-        // Re-setup stocks scroll loop (height changed)
         startStocksScroll();
     }
     function initAlerts() {
-        const saved = localStorage.getItem('dash_alerts') || 'off';
-        applyAlerts(saved);
-        const sel = document.getElementById('alerts-toggle');
-        if (sel) sel.addEventListener('change', e => applyAlerts(e.target.value));
+        _alertsToggleSel = document.getElementById('alerts-toggle');
+        applyAlerts(localStorage.getItem('dash_alerts') || 'off');
+        if (_alertsToggleSel) _alertsToggleSel.addEventListener('change', e => applyAlerts(e.target.value));
     }
 
     const THEMES = ['black', 'blue', 'matrix', 'amber', 'purple'];
@@ -5299,23 +5228,32 @@
             _drawSparkline('cur-gbp-spark', gbpVals);
         } catch (_) {}
     }
+    // R5.10: Shared sparkline path builder — Bézier (smooth) or polyline
+    function _sparkPath(vals, W, H, smooth) {
+        const P = 2;
+        const min = Math.min(...vals), max = Math.max(...vals), rng = max - min || 0.01;
+        const pts = vals.map((v, i) => ({
+            x: +(P + (i / (vals.length - 1)) * (W - 2 * P)).toFixed(1),
+            y: +(P + (1 - (v - min) / rng) * (H - 2 * P)).toFixed(1)
+        }));
+        let d;
+        if (smooth) {
+            d = `M${pts[0].x},${pts[0].y}`;
+            for (let i = 1; i < pts.length; i++) {
+                const cp = (pts[i].x - pts[i - 1].x) / 2;
+                d += ` C${pts[i - 1].x + cp},${pts[i - 1].y} ${pts[i].x - cp},${pts[i].y} ${pts[i].x},${pts[i].y}`;
+            }
+        } else {
+            d = pts.map(p => `${p.x},${p.y}`).join(' ');
+        }
+        const trend = vals[vals.length - 1] >= vals[0] ? '#34d399' : '#f87171';
+        return { d, trend, last: pts[pts.length - 1] };
+    }
     function _drawSparkline(id, vals) {
         const svg = document.getElementById(id);
         if (!svg || vals.length < 2) return;
-        const W = 60, H = 22, P = 2;
-        const min = Math.min(...vals), max = Math.max(...vals), rng = max - min || 0.01;
-        const pts = vals.map((v, i) => ({
-            x: P + (i / (vals.length - 1)) * (W - 2 * P),
-            y: P + (1 - (v - min) / rng) * (H - 2 * P)
-        }));
-        let path = `M${pts[0].x},${pts[0].y}`;
-        for (let i = 1; i < pts.length; i++) {
-            const cp = (pts[i].x - pts[i - 1].x) / 2;
-            path += ` C${pts[i - 1].x + cp},${pts[i - 1].y} ${pts[i].x - cp},${pts[i].y} ${pts[i].x},${pts[i].y}`;
-        }
-        const trend = vals[vals.length - 1] >= vals[0] ? '#34d399' : '#f87171';
-        const last = pts[pts.length - 1];
-        svg.innerHTML = `<path d="${path}" fill="none" stroke="${trend}" stroke-width="1.5" stroke-linecap="round"/><circle cx="${last.x}" cy="${last.y}" r="2" fill="${trend}"/>`;
+        const { d, trend, last } = _sparkPath(vals, 60, 22, true);
+        svg.innerHTML = `<path d="${d}" fill="none" stroke="${trend}" stroke-width="1.5" stroke-linecap="round"/><circle cx="${last.x}" cy="${last.y}" r="2" fill="${trend}"/>`;
     }
 
     // Feature 39: News Source Filter chips
@@ -5379,20 +5317,16 @@
 
     // ── Sprint 5 Features ──
 
-    // Feature 41: Market Pre/After Hours (4-state badge)
-    // Overriding updateMarketBadge with extended states
+    // R5.6: Market status badge — uses shared _getNYTime()
     function updateMarketBadge() {
         if (!el.marketBadge) return;
-        const now = new Date();
-        const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-        const h = ny.getHours(), m = ny.getMinutes(), d = ny.getDay();
-        const t = h * 60 + m;
+        const { d, t } = _getNYTime();
         const isWeekday = d >= 1 && d <= 5;
         let label, cls;
         if (!isWeekday)                       { label = '🔴 סגור'; cls = 'market-closed'; }
-        else if (t >= 240 && t < 570)         { label = '🟡 טרום'; cls = 'market-premarket'; }    // 4:00–9:29 ET
-        else if (t >= 570 && t <= 960)        { label = '🟢 פתוח'; cls = 'market-open'; }          // 9:30–16:00 ET
-        else if (t > 960 && t <= 1200)        { label = '🟣 אחרי'; cls = 'market-afterhours'; }    // 16:01–20:00 ET
+        else if (t >= 240 && t < 570)         { label = '🟡 טרום'; cls = 'market-premarket'; }
+        else if (t >= 570 && t <= 960)        { label = '🟢 פתוח'; cls = 'market-open'; }
+        else if (t > 960 && t <= 1200)        { label = '🟣 אחרי'; cls = 'market-afterhours'; }
         else                                  { label = '🔴 סגור'; cls = 'market-closed'; }
         el.marketBadge.textContent = label;
         el.marketBadge.className = `market-badge ${cls}`;
@@ -5736,13 +5670,9 @@
                 if (rangeEl) rangeEl.insertAdjacentElement('afterend', svgEl);
                 else blk.appendChild(svgEl);
             }
-            const W = 44, H = 12;
-            const mn = Math.min(...arr), mx = Math.max(...arr), rng = mx - mn || 1;
-            const pts = arr.map((v, i) =>
-                `${((i / (arr.length - 1)) * W).toFixed(1)},${(H - 1 - ((v - mn) / rng * (H - 2))).toFixed(1)}`
-            ).join(' ');
-            const color = arr[arr.length - 1] >= arr[0] ? '#34d399' : '#f87171';
-            svgEl.innerHTML = `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+            // R5.10: use shared sparkline path builder (polyline mode)
+            const { d, trend } = _sparkPath(arr, 44, 12, false);
+            svgEl.innerHTML = `<polyline points="${d}" fill="none" stroke="${trend}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
         } catch (_) {}
     }
 
@@ -6242,55 +6172,45 @@
         return { top, left: cRect.left, width: cRect.width, height: bottom - top };
     }
 
-    function toggleCardMaximize(card) {
-        // ── COLLAPSE ──
-        if (card.classList.contains('maximized')) {
-            // Restore CSS animation for scroll loops
-            _disableManualScroll();
-            card.removeEventListener('wheel', _onMaximizedWheel);
-            const orig = card._origRect;
-            if (orig) {
-                // Animate back to original position
-                card.style.top = orig.top + 'px';
-                card.style.left = orig.left + 'px';
-                card.style.width = orig.width + 'px';
-                card.style.height = orig.height + 'px';
-            }
-            // After transition, remove fixed positioning
-            const onEnd = () => {
-                card.removeEventListener('transitionend', onEnd);
-                card.classList.remove('maximized');
-                card.style.top = card.style.left = card.style.width = card.style.height = '';
-                card.style.position = '';
-                delete card._origRect;
-            };
-            card.addEventListener('transitionend', onEnd, { once: false });
-            // Fallback if transitionend doesn't fire (e.g. reduced-motion)
-            setTimeout(onEnd, 500);
-            // Show all hidden siblings
-            document.querySelectorAll('.card-hidden').forEach(c => c.classList.remove('card-hidden'));
-            _maximizedCard = null;
-            return;
+    // R6.9: Collapse a maximized card back to its original position
+    function _collapseCard(card) {
+        _disableManualScroll();
+        card.removeEventListener('wheel', _onMaximizedWheel);
+        const orig = card._origRect;
+        if (orig) {
+            card.style.top = orig.top + 'px';
+            card.style.left = orig.left + 'px';
+            card.style.width = orig.width + 'px';
+            card.style.height = orig.height + 'px';
         }
-        // ── EXPAND ──
-        if (_maximizedCard) return; // already have one open
-        // F116: reset unread alerts badge when the alerts card is expanded
+        const onEnd = () => {
+            card.removeEventListener('transitionend', onEnd);
+            card.classList.remove('maximized');
+            card.style.top = card.style.left = card.style.width = card.style.height = '';
+            card.style.position = '';
+            delete card._origRect;
+        };
+        card.addEventListener('transitionend', onEnd, { once: false });
+        setTimeout(onEnd, 500);
+        document.querySelectorAll('.card-hidden').forEach(c => c.classList.remove('card-hidden'));
+        _maximizedCard = null;
+    }
+
+    // R6.9: Expand a card to fill the viewport area below clock
+    function _expandCard(card) {
+        if (_maximizedCard) return;
         if (card.id === 'card-alerts' || card.querySelector('#alerts-badge-count')) resetAlertsBadge();
-        // Record original position via FLIP technique
         const startRect = card.getBoundingClientRect();
         card._origRect = { top: startRect.top, left: startRect.left, width: startRect.width, height: startRect.height };
-        // Hide sibling cards (other cards in grid columns)
         document.querySelectorAll('.grid-col > .card').forEach(el => {
             if (el !== card) el.classList.add('card-hidden');
         });
-        // Set fixed position at current location first (FLIP: First)
         card.style.position = 'fixed';
         card.style.top = startRect.top + 'px';
         card.style.left = startRect.left + 'px';
         card.style.width = startRect.width + 'px';
         card.style.height = startRect.height + 'px';
         card.classList.add('maximized');
-        // Force reflow then animate to target (FLIP: Last → Invert → Play)
         void card.offsetWidth;
         const target = _maxTargetRect();
         card.style.top = target.top + 'px';
@@ -6298,11 +6218,15 @@
         card.style.width = target.width + 'px';
         card.style.height = target.height + 'px';
         _maximizedCard = card;
-        // Enable manual wheel scroll for looping cards
         if (_findScrollLoop(card)) {
             _enableManualScroll(card);
             card.addEventListener('wheel', _onMaximizedWheel, { passive: false });
         }
+    }
+
+    function toggleCardMaximize(card) {
+        if (card.classList.contains('maximized')) _collapseCard(card);
+        else _expandCard(card);
     }
 
     /** Attach click listeners to all card headers */

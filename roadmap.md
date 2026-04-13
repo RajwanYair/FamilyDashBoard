@@ -281,18 +281,18 @@ node --test tests/dashboard.test.mjs
 
 ## 6. Sprint Status Tracker
 
-| Sprint                            | Status         | Lines After | Tests After |
-| --------------------------------- | -------------- | ----------- | ----------- |
-| Baseline v5.0.0                   | ✅ Done        | 6,613       | 1,134 / 61  |
-| R1 — CSS Design System            | ✅ Complete    | 6,711       | 1,134 / 61  |
-| R2 — HTML Structure               | ✅ Complete    | 6,455       | 1,083 / 61  |
-| R3 — Core JS Infrastructure       | ✅ Complete               | 6,449 | 1,088 / 61 |
-| R4 — Weather + Hebrew Cal         | ✅ Complete | 6,405 | 1,084 / 61 |
-| R5 — News, Stocks, Currency       | 🔄 Partial (R5.1-R5.4) | 6,405 | 1,084 / 61 |
-| R6 — Calendar, Alerts, Motivation | ⬜ Not started | —           | —           |
-| R7 — PWA, Performance, Polish     | ⬜ Not started | —           | —           |
-| R8 — Tests, Lint, Docs            | ⬜ Not started | —           | —           |
-| **v6.0.0 Release**                | ⬜             | **~3,500**  | **500+**    |
+| Sprint                            | Status                 | Lines After | Tests After |
+| --------------------------------- | ---------------------- | ----------- | ----------- |
+| Baseline v5.0.0                   | ✅ Done                | 6,613       | 1,134 / 61  |
+| R1 — CSS Design System            | ✅ Complete            | 6,711       | 1,134 / 61  |
+| R2 — HTML Structure               | ✅ Complete            | 6,455       | 1,083 / 61  |
+| R3 — Core JS Infrastructure       | ✅ Complete            | 6,449       | 1,088 / 61  |
+| R4 — Weather + Hebrew Cal         | ✅ Complete            | 6,405       | 1,084 / 61  |
+| R5 — News, Stocks, Currency       | ✅ Complete             | 6,405       | 1,084 / 61  |
+| R6 — Calendar, Alerts, Motivation | ✅ Complete (R6.1-R6.9) | —           | 1,084 / 61  |
+| R7 — PWA, Performance, Polish     | ✅ Complete (verified)  | —           | 1,084 / 61  |
+| R8 — Tests, Lint, Docs            | 🔄 Partial (R8.1-R8.5, R8.8-R8.11) | —          | 1,184 / 66  |
+| **v6.0.0 Release**                | ⬜                     | **~3,500**  | **500+**    |
 
 ---
 
@@ -337,7 +337,7 @@ node --test tests/dashboard.test.mjs
 
 ## 9. Card Layout (v6.0)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  [Halacha Ticker Bar]                                       │
 ├─────────────────────────────────────────────────────────────┤

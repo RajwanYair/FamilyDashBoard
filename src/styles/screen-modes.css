@@ -1,0 +1,77 @@
+/* Screen Mode Overrides — TV/Tablet/Phone */
+/* ── Screen Mode Overrides (R1.8) ── */
+body.mode-tv { font-size: 28px; --container-pad: 10px; --grid-gap: 8px; }
+body.mode-tablet { font-size: 15px; --container-pad: 6px; --grid-gap: 6px; }
+body.mode-tablet .clock { font-size: 2.6em; }
+body.mode-tablet .hebrew-date { font-size: 1.05em; }
+body.mode-tablet .top-temp { font-size: 1.2em; }
+body.mode-tablet .header-emoji { font-size: 2.4em; }
+body.mode-tablet .card-header { font-size: 0.88em; padding: 4px 10px; }
+body.mode-tablet .stk-price { font-size: 1.15em; }
+body.mode-tablet .rss-item { font-size: 0.82em; padding: 4px 9px; }
+body.mode-tablet .wx-temp-main { font-size: 1.15em; }
+body.mode-tablet .moti-text { font-size: 0.92em; }
+body.mode-tablet .ticker-bar { height: 30px; }
+body.mode-tablet .ticker-item { font-size: 0.72em; }
+body.mode-tablet .time-section { padding: 4px 10px; }
+body.mode-tablet .container { padding: var(--container-pad); gap: 4px; }
+body.mode-phone { font-size: 12px; --container-pad: 4px; --grid-gap: 4px; overflow-y: auto; height: auto; min-height: 100vh; }
+body.mode-phone .clock { font-size: 2em; }
+body.mode-phone .header-emoji { font-size: 1.8em; }
+body.mode-phone .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
+body.mode-phone .header-left, body.mode-phone .header-right { align-items: center; flex: 1 1 100%; }
+body.mode-phone .card-header { font-size: 0.82em; padding: 3px 8px; }
+body.mode-phone .ticker-bar { height: 26px; }
+body.mode-phone .ticker-item { font-size: 0.62em; }
+/* Phone: single column layout */
+body.mode-phone .grids-area { grid-template-columns: 1fr; overflow: visible; height: auto; }
+body.mode-phone .grid-col { overflow: visible; min-height: unset; }
+
+/* Phone: allow full-page scroll and show all card content */
+body.mode-phone .container { height: auto; overflow: visible; }
+body.mode-phone .card { overflow: visible; height: auto; flex: none; min-height: unset; contain: none; }
+
+/* Phone: col-split (legacy — stack naturally) */
+body.mode-phone .col-split { height: auto; min-height: unset; gap: 10px; }
+body.mode-phone .col-split > .card { flex: none; height: auto; min-height: unset; }
+
+/* Phone: disable paint containment + show all content */
+body.mode-phone .news-body,
+body.mode-phone .stocks-body,
+body.mode-phone .alerts-body,
+body.mode-phone .weather-body,
+body.mode-phone .currency-body,
+body.mode-phone .hebcal-body,
+body.mode-phone .moti-body { contain: none; overflow: visible; height: auto; flex: none; min-height: unset; }
+
+/* Phone: disable scroll fade masks (not needed when showing all content) */
+body.mode-phone .news-body,
+body.mode-phone .stocks-body,
+body.mode-phone .alerts-body {
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+/* Phone: disable GPU layers + stop scroll loop animations */
+body.mode-phone .rss-scroll,
+body.mode-phone .stocks-scroll,
+body.mode-phone .alerts-scroll {
+    will-change: auto;
+    transform: none !important;
+    backface-visibility: visible;
+    animation: none !important;
+}
+
+
+
+/* Phone: calendar — show native agenda, hide iframe */
+body.mode-phone .cal-wrapper { overflow: visible; height: auto; flex: none; }
+body.mode-phone .cal-agenda { overflow: visible; height: auto; flex: none; }
+body.mode-phone .cal-wrapper iframe { display: none !important; }
+
+
+
+/* Phone: hide cloned duplicate items (used only for the loop) */
+body.mode-phone .rss-item.clone,
+body.mode-phone .alert-item.clone,
+body.mode-phone .alert-count.clone { display: none; }

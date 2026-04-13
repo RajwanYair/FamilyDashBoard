@@ -1,0 +1,66 @@
+/* Grid Layout + Responsive */
+/* ── Layout (R1.6) ── */
+.grids-area { flex: 1 1 0; min-height: 0; overflow: hidden; display: grid; grid-template-columns: var(--grid-cols, 38fr 33fr 29fr); gap: var(--grid-gap, 8px); }
+.grid-col { display: flex; flex-direction: column; gap: var(--grid-gap, 8px); min-height: 0; overflow: hidden; }
+/* Left col: news 65% + weather 35% */
+.grid-col-left > .card:nth-child(1) { flex: 65 1 0; }
+.grid-col-left > .card:nth-child(2) { flex: 35 1 0; }
+/* Mid col: heb-cal 20% + cal 65% + currency 15% */
+.grid-col-mid > .card:nth-child(1) { flex: 20 1 0; }
+.grid-col-mid > .card:nth-child(2) { flex: 65 1 0; }
+.grid-col-mid > .card:nth-child(3) { flex: 15 1 0; }
+/* Right col: stocks + alerts + motivation each 33% */
+.grid-col-right > .card { flex: 1 1 0; }
+
+
+/* ── Responsive (R1.7) ── */
+@media (max-width: 1200px) {
+    :root { --grid-cols: 1fr 1fr; --grid-gap: 6px; --container-pad: 8px; }
+    body { font-size: 17px; }
+    .grids-area { grid-template-columns: var(--grid-cols); }
+    .grid-col-left { grid-column: 1; }
+    .grid-col-mid { grid-column: 2; }
+    .grid-col-right { grid-column: 1 / span 2; flex-direction: row; }
+    .grid-col-right > .card { flex: 1 1 0; }
+    .clock { font-size: 2.8em; }
+    .ticker-bar { height: 32px; }
+    .ticker-item { font-size: 0.75em; padding: 0 14px; }
+}
+@media (max-width: 768px) {
+    :root { --grid-cols: 1fr; --grid-gap: 6px; --container-pad: 6px; }
+    body { font-size: 14px; }
+    .grids-area { grid-template-columns: 1fr; height: auto; overflow: visible; }
+    .grid-col { min-height: unset; overflow: visible; }
+    .col-split { min-height: unset; }
+    .col-split > .card { flex: none; min-height: unset; }
+    .wx-top-row { flex-direction: column; }
+    .wx-details { grid-template-columns: repeat(2, 1fr); }
+    .clock { font-size: 2.4em; }
+    .hebrew-date { font-size: 1.05em; }
+    .top-temp { font-size: 1.2em; }
+    .ticker-bar { height: 30px; }
+    .ticker-item { font-size: 0.7em; padding: 0 10px; }
+    .ticker-label { font-size: 0.65em; padding: 0 8px; }
+    .card-header { font-size: 0.88em; padding: 3px 10px; }
+}
+@media (max-width: 480px) {
+    :root { --grid-cols: 1fr; --grid-gap: 4px; --container-pad: 4px; }
+    body { font-size: 12px; }
+    .container { padding: var(--container-pad); gap: 4px; }
+    .time-section { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
+    .header-left, .header-right { align-items: center; flex: 1 1 100%; }
+    .clock { font-size: 2em; }
+    .hebrew-date { font-size: 0.9em; }
+    .shabbat-info { font-size: 0.75em; }
+    .top-temp { font-size: 1em; }
+    .greeting { font-size: 0.8em; }
+    .ticker-bar { height: 26px; }
+    .ticker-item { font-size: 0.62em; padding: 0 8px; }
+    .ticker-label { font-size: 0.6em; padding: 0 6px; }
+    .card-header { font-size: 0.82em; padding: 2px 8px; }
+    .stk-price { font-size: 1em; }
+    .stk-sym { font-size: 0.8em; }
+    .rss-item { font-size: 0.82em; }
+    .wx-fday { padding: 4px; }
+    .wx-forecast { grid-template-columns: repeat(4, 1fr); }
+}

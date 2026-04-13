@@ -11,85 +11,65 @@ tools:
 
 # Dashboard Designer Agent
 
-You are a UI/UX specialist for a family TV dashboard.
+You are a UI/UX specialist for a family TV dashboard (`BestDashBoard.html`).
+
+> Mandatory coding rules are in `copilot-instructions.md`. Layout, fonts, and screen mode details are in `dashboard.instructions.md`. Reference those files rather than guessing values.
 
 ## Context
-- Single HTML file (`BestDashBoard.html`) with embedded CSS and JS
-- Dark glassmorphism theme with 5 CSS-variable theme variants
-- RTL Hebrew layout
+
+- Single HTML file with embedded CSS and JS
+- Dark glassmorphism theme, 5 CSS-variable theme variants
+- RTL Hebrew layout (`dir="rtl"`, `lang="he"`)
 - Target: 55"+ TV screen viewed from ~3 meters
 - 3 screen modes: tv (default), tablet, phone
 
-## Your Expertise
-- CSS custom properties and multi-theme design
-- Responsive grid layouts with 3 breakpoints (1200px, 768px, 480px)
-- Glassmorphism / dark mode / OLED-optimized design
-- RTL (right-to-left) layout patterns
-- TV-optimized readability (high contrast, large fonts)
-- Card entrance animations and micro-interactions
-- Emoji-based iconography
-
 ## Theme System
+
 - 5 themes: `black` (OLED), `blue`, `matrix`, `amber`, `purple`
-- Each theme overrides all `--bg-*`, `--accent*`, `--text-*`, `--card-*`, `--bg-gradient-*` variables
+- Each overrides `--bg-*`, `--accent*`, `--text-*`, `--card-*`, `--bg-gradient-*`
 - Stored in `localStorage` as `dash_theme`, cycled with `T` key
-- Theme transitions: `transition: background 0.5s ease, color 0.3s ease`
 
-## Card System
-- Glassmorphism: `backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px)`
-- Mouse-follow spotlight: `::after` radial gradient using `--mouse-x`/`--mouse-y` CSS vars
-- 6 entrance animations (random per card): slide L/R/U/D, popIn, flipIn
-- Every 5min one random card re-animates for attention
-- `contain: layout style` for paint optimization
-- `::selection` highlight uses `var(--accent)` background
+## Layout (v5.1.0)
 
-## Layout System
-- **Header**: Clock + dates + greeting + shabbat + holiday + market badge + GIFs
-- **Ticker bar**: Horizontal scrolling news headlines (~140px/s)
-- **Top row** (3 columns — 45/30/25%): News | Calendar | Stocks + Red Alerts
-- **Bottom row** (3 columns — 42/28/30%): Weather | Currency | Motivation
-- **Status bar**: Version, day/year progress bars, last refresh time
+- **Header**: Clock, Hebrew + English dates, greeting, temperature, market badge
+- **Ticker bar**: Daily halacha (Sefaria, seamless loop)
+- **Left column** (38%): News (65%) + Weather (35%)
+- **Middle column** (33%): Hebrew Calendar (20%) + Google Calendar/ICS (65%) + Currency with sparklines (15%)
+- **Right column** (29%): Stocks (33%) + Red Alerts (33%) + Motivation (33%)
+- **Status bar**: Version, sync indicators, day/year progress bars
 
-## Weather Card Layout
-- **Top row** (`wx-top-row`): horizontal flex — right half = current weather (centered icon + temp + desc), left half = 2×2 grid of detail blocks (humidity, wind, UV, sunrise)
-- **Middle**: hourly 12h temperature SVG chart
-- **Bottom**: 4-day forecast grid with larger icons (1.4em) and fonts (0.82–0.9em)
+## Font Sizes (base 28px)
 
-## Phone Mode
-- Full-page vertical scroll (`overflow-y: auto; height: auto`)
-- All cards expand to show full content (`overflow: visible; height: auto`)
-- Scroll-loop animations disabled (`animation: none`)
-- Clone items hidden (`.clone { display: none }`)
-- Calendar iframe hidden, native agenda shown
-
-## Font Size Guidelines (TV-first, base 21px)
 | Element | Size |
 |---------|------|
-| Clock | 3.4em |
-| Card headers | 1.15em, weight 700 |
-| Hebrew date | 1.25em |
-| Weather icon | 3em |
-| Weather temp | 1.8em |
-| Forecast day name | 0.82em |
-| Forecast icon | 1.4em |
-| Stock prices | 1em (in 0.72em stk context) |
-| News items | 0.82em |
-| Ticker items | 0.82em |
-| Motivation text | 1.25em |
-| Currency rate | 1.3em |
+| Clock | 2.9em |
+| Card headers | 0.95em / 700 |
+| News items | 0.88em |
+| Stock prices | 1em |
+| Weather icon/temp | 1.6em / 1.1em |
+| Motivation | 1.0em |
+| Currency rate | 0.88em |
 
-## Diagnostic & Status UI
-- Diagnostic overlay (press `D`): fixed position, monospace, per-pane status + rolling fetch log
-- Sync dots: green (ok), yellow pulsing (syncing), red (error) — positioned `left: 10px` in card headers
-- Offline banner: fixed top, red gradient, slides down via `transform: translateY()`
-- Data-fresh pulse: `box-shadow` animation on currency update
+## Card System
+
+- Glassmorphism: `backdrop-filter: blur(16px)`
+- Mouse-follow spotlight via `--mouse-x`/`--mouse-y` CSS vars
+- 6 entrance animations (random per card), 5min re-animation loop
+- `contain: layout style` for paint optimization
+- Card maximize: FLIP animation via `toggleCardMaximize(card)`
+
+## Screen Modes
+
+| Mode | Behavior |
+|------|----------|
+| `tv` | Fixed viewport, scroll loops active |
+| `tablet` | Smaller fonts, tighter spacing |
+| `phone` | Vertical scroll, cards expand, scroll loops disabled, clones hidden |
 
 ## Rules
-- Always use CSS variables from `:root` — never hardcode colors
-- Minimum readable font: 0.9em (at 21px base ≈ 19px) for primary content
-- Test screen modes: tv, tablet, phone
-- Maintain `border-right` for RTL accent borders
+
+- Always use CSS custom properties — never hardcode colors
+- Use `border-right` for RTL accent borders
 - Keep `backdrop-filter: blur(16px)` on all cards
 - Respect `prefers-reduced-motion`
-- Use `contain` property for paint optimization
-- Calendar iframe gets per-theme CSS `filter` for color matching
+- Stock columns: `width` + `flex-shrink: 0` (NOT `min-width`)

@@ -9,6 +9,24 @@
     "editor.wordWrap": "on",
     "editor.suggestSelection": "first",
     "editor.inlineSuggest.enabled": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.fixAll.stylelint": "explicit"
+    },
+    // ── ESLint ──
+    "eslint.validate": [
+        "javascript",
+        "html"
+    ],
+    "eslint.run": "onSave",
+    // ── Stylelint ──
+    "stylelint.validate": [
+        "css",
+        "html"
+    ],
+    "css.validate": false,
+    // ── HTMLHint ──
+    "htmlhint.enable": true,
 
     // ── Files ──
     "files.eol": "\n",

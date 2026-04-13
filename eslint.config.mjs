@@ -1,7 +1,7 @@
 export default [
   {
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: "latest",
       sourceType: "script",
       globals: {
         window: "readonly",
@@ -45,9 +45,13 @@ export default [
         PushManager: "readonly",
         ServiceWorkerRegistration: "readonly",
         IDBFactory: "readonly",
+        structuredClone: "readonly",
+        queueMicrotask: "readonly",
+        crypto: "readonly",
       },
     },
     rules: {
+      // ── Errors (zero tolerance) ──
       "no-eval": "error",
       "no-implied-eval": "error",
       "no-new-func": "error",
@@ -60,22 +64,76 @@ export default [
       "valid-typeof": "error",
       "no-constant-condition": ["error", { checkLoops: false }],
       "no-unused-vars": [
-        "warn",
+        "error",
         {
           varsIgnorePattern:
-            "^_|^load|^render|^init|^toggle|^update|^stamp|^build|^check|^accept|^copy|^export|^import|^share|^sw|^request",
+            "^_|^load|^render|^init|^toggle|^update|^stamp|^build|^check|^accept|^copy|^export|^import|^share|^sw|^request|^apply|^schedule|^card|^save|^trigger|^show|^hide|^reset|^filter|^play|^inject|^set[A-Z]|^cycle|^random",
           argsIgnorePattern: "^_|^e$|^k$",
           caughtErrors: "all",
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      eqeqeq: ["warn", "smart"],
-      "no-var": "warn",
-      "no-redeclare": "warn",
-      "no-empty": ["warn", { allowEmptyCatch: true }],
+      eqeqeq: ["error", "smart"],
+      "no-var": "error",
+      "no-redeclare": "error",
+      "no-empty": ["error", { allowEmptyCatch: true }],
+      "no-debugger": "error",
+      "no-sparse-arrays": "error",
+      "no-template-curly-in-string": "error",
+      "no-unsafe-finally": "error",
+      "no-unsafe-negation": "error",
+      "no-loss-of-precision": "error",
+      "no-useless-escape": "error",
+      "no-self-assign": "error",
+      "no-self-compare": "error",
+      "no-throw-literal": "error",
+      "no-useless-catch": "error",
+      "no-useless-concat": "error",
+      "no-useless-return": "error",
+      "no-with": "error",
+      "no-shadow-restricted-names": "error",
+      "no-delete-var": "error",
+      "no-label-var": "error",
+      "no-global-assign": "error",
+      "no-octal": "error",
+      "no-fallthrough": "error",
+      "no-case-declarations": "error",
       "prefer-const": "off",
       "no-prototype-builtins": "off",
       "no-inner-declarations": "off",
     },
+  },
+  {
+    files: ["sw.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "script",
+      globals: {
+        self: "readonly",
+        caches: "readonly",
+        fetch: "readonly",
+        Response: "readonly",
+        URL: "readonly",
+        clients: "readonly",
+        addEventListener: "readonly",
+        skipWaiting: "readonly",
+      },
+    },
+  },
+  {
+    files: ["tests/**/*.mjs"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        process: "readonly",
+      },
+    },
+    rules: {
+      "no-unused-vars": "off",
+    },
+  },
+  {
+    ignores: ["node_modules/**", "check_emoji.mjs", "check2.mjs"],
   },
 ];

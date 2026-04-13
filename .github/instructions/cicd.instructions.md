@@ -1,30 +1,24 @@
 ---
 applyTo: "**/*.yml,**/*.yaml,.github/**"
-description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML config. Provides patterns for the FamilyDashBoard CI pipeline."
+description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML config."
 ---
 
 # CI/CD Instructions
 
 ## Workflow Standards
 
-- Use `actions/checkout@v6` and `actions/setup-node@v6` for all jobs
+- Use `actions/checkout@v6` and `actions/setup-node@v6`
 - Set `permissions: contents: read` (least privilege)
-- Run validation: HTML lint, security scan, Lighthouse
-- Run unit tests: `node --test tests/dashboard.test.mjs` (1084 tests, 61 suites, zero dependencies)
+- Run: HTML lint, security scan, Lighthouse, `node --test tests/dashboard.test.mjs` (1084 tests, 61 suites)
 - Deploy via GitHub Pages on push to `main`
+- Release: `release.yml` auto-attaches 4 artifacts on tags (`vX.Y.Z`)
 
 ## Commit Convention
 
-Use Conventional Commits:
-- `feat:` — new feature or section
-- `fix:` — bug fix
-- `style:` — visual/CSS changes
-- `docs:` — documentation
-- `ci:` — workflow changes
-- `chore:` — maintenance
+`feat:` | `fix:` | `style:` | `docs:` | `ci:` | `chore:`
 
 ## Security
 
-- Never log secrets or API keys in CI output
-- Use `${{ secrets.TOKEN }}` for any credentials
-- Pin action versions to specific tags (e.g., `@v6`)
+- Never log secrets in CI output
+- Use `${{ secrets.TOKEN }}` for credentials
+- Pin action versions to specific tags

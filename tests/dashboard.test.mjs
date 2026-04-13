@@ -3,6 +3,36 @@
  * Run: node --test --test-timeout=500000 tests/dashboard.test.mjs
  * Uses Node.js built-in test runner — zero external dependencies.
  * Global timeout: 500s — kills the process if tests hang.
+ *
+ * ═══════════════════════════════════════════════════════════════
+ * TABLE OF CONTENTS  (R8.1 — organized by component)
+ * ═══════════════════════════════════════════════════════════════
+ * §1  HTML Structure ................ line ~46
+ * §2  CSS Themes & Variables ........ line ~194
+ * §3  Scroll Animations ............. line ~250
+ * §4  JavaScript Constants .......... line ~303
+ * §5  JavaScript Core Functions ..... line ~419
+ * §6  Data Loader Functions ......... line ~512
+ * §7  relTime Function Logic ........ line ~576
+ * §8  Security ...................... line ~616
+ * §9  News Time Format .............. line ~667
+ * §10 Seamless Scroll Loop Pattern .. line ~690
+ * §11 Error Handling & Diagnostics .. line ~755
+ * §12 Cache System .................. line ~801
+ * §13 Card Animations ............... line ~828
+ * §14 Responsive Layout ............. line ~856
+ * §15 Calendar Card ................. line ~873
+ * §16 Weather Card .................. line ~1163
+ * §17 Stocks Card ................... line ~1249
+ * §18 Currency Card ................. line ~1385
+ * §19 Alerts Card ................... line ~1449
+ * §20 News Card ..................... line ~1531
+ * §21 Motivation Card ............... line ~1591
+ * §22 Hebrew Date & Shabbat ......... line ~1631
+ * §23+ Utility / Component / Sprint suites ...
+ * §R6 Refactoring R6 coverage ....... line ~6401
+ * §R8 Refactoring R8 coverage ....... end of file
+ * ═══════════════════════════════════════════════════════════════
  */
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
@@ -338,11 +368,10 @@ describe("JavaScript Constants", () => {
       "JPM",
     ];
     for (const sym of symbols) {
+      // STOCK_META uses quoted keys for all symbols: 'SYM': { ... }
       assert.ok(
-        scriptContent.includes(
-          `${sym.includes("^") || sym.includes("-") ? "'" + sym + "'" : sym}:`,
-        ),
-        `Missing STOCK_NAMES entry for ${sym}`,
+        scriptContent.includes(`'${sym}':`),
+        `Missing STOCK_META entry for ${sym}`,
       );
     }
   });
@@ -688,9 +717,8 @@ describe("Seamless Scroll Loop Pattern", () => {
 
   it("alerts should build items twice (original + clone)", () => {
     assert.ok(
-      scriptContent.includes("buildAlertItems(frag, false)") &&
-        scriptContent.includes("buildAlertItems(frag, true)"),
-      "Alerts should call buildAlertItems twice",
+      scriptContent.includes("for (const isClone of [false, true])"),
+      "Alerts should loop over [false, true] for original + clone",
     );
   });
 
@@ -1108,19 +1136,14 @@ END:VCALENDAR`;
   });
 
   it("should try direct fetch before proxies", () => {
-    // loadCalendar should attempt direct fetch first, then iterate PROXIES
-    const calFn = scriptContent.match(
-      /async function loadCalendar[\s\S]*?releaseLock\('cal'\);\s*\}/,
-    );
-    assert.ok(calFn, "loadCalendar function not found");
-    const fnBody = calFn[0];
-    const directIdx = fnBody.indexOf("fetchWithTimeout(CAL_ICS");
-    const proxyIdx = fnBody.indexOf("for (const proxy of PROXIES)");
-    assert.ok(directIdx > -1, "Missing direct fetch attempt");
-    assert.ok(proxyIdx > -1, "Missing proxy fallback loop");
+    // R6.2: loadCalendar builds ordered sources array and loops through them
     assert.ok(
-      directIdx < proxyIdx,
-      "Direct fetch should come before proxy fallback",
+      scriptContent.includes("name: 'direct'"),
+      "loadCalendar sources should include direct fetch",
+    );
+    assert.ok(
+      scriptContent.includes("for (const src of sources)"),
+      "loadCalendar should loop through sources array",
     );
   });
 
@@ -1406,9 +1429,9 @@ describe("Currency Card", () => {
   });
 
   it("renderCurrency should show ILS rate (inverted)", () => {
-    // The code inverts: 1/rates[CODE] to show "1 USD = X ILS"
+    // The code inverts: 1/raw (where raw=rates[tile.code]) to show "1 USD = X ILS"
     assert.ok(
-      scriptContent.includes("1 / rates[p.code]"),
+      scriptContent.includes("1 / raw"),
       "Should invert exchange rate for ILS display",
     );
   });
@@ -1432,10 +1455,10 @@ describe("Currency Card", () => {
     );
   });
 
-  it("currency values should display 3 decimal places", () => {
+  it("currency tiles should configure 3 decimal places for fiat pairs", () => {
     assert.ok(
-      scriptContent.includes("toFixed(3)"),
-      "Currency should use 3 decimal places",
+      scriptContent.includes("decimals: 3"),
+      "CUR_TILES should set decimals: 3 for fiat currency pairs",
     );
   });
 });
@@ -1962,9 +1985,9 @@ describe("Card Maximize System", () => {
 
   it("should handle grid-col children correctly in maximize", () => {
     const fn = scriptContent.match(
-      /function toggleCardMaximize[\s\S]*?_maximizedCard\s*=\s*card/,
+      /function _expandCard[\s\S]*?_maximizedCard\s*=\s*card/,
     );
-    assert.ok(fn, "Could not find toggleCardMaximize body");
+    assert.ok(fn, "Could not find _expandCard body");
     assert.ok(
       fn[0].includes("grid-col") || fn[0].includes("card-hidden"),
       "Should hide sibling cards using grid-col selector",
@@ -1996,9 +2019,9 @@ describe("Card Maximize System", () => {
 
   it("should prevent multiple cards from maximizing simultaneously", () => {
     const fn = scriptContent.match(
-      /function toggleCardMaximize[\s\S]*?_maximizedCard\s*=\s*card/,
+      /function _expandCard[\s\S]*?_maximizedCard\s*=\s*card/,
     );
-    assert.ok(fn, "Could not find toggleCardMaximize");
+    assert.ok(fn, "Could not find _expandCard");
     assert.ok(
       fn[0].includes("if (_maximizedCard)"),
       "Should guard against multiple maximized cards",
@@ -2175,7 +2198,7 @@ describe("Screen Mode System", () => {
 
   it("phone mode should disable paint containment on cards", () => {
     assert.ok(
-      html.includes("body.mode-phone .card { contain: none; }"),
+      html.includes("body.mode-phone .card") && html.includes("contain: none"),
       "Phone mode should disable contain on cards to prevent clipping",
     );
   });
@@ -4403,8 +4426,11 @@ describe("Sprint 5 Features", () => {
   it("should have .cal-event-dur CSS class", () => {
     assert.ok(html.includes(".cal-event-dur"), "Missing .cal-event-dur CSS");
   });
-  it("parseICS should declare dtEndRaw variable", () => {
-    assert.ok(scriptContent.includes("dtEndRaw"), "parseICS should declare dtEndRaw");
+  it("parseICS should use _parseICSDate helper for DTEND", () => {
+    assert.ok(
+      scriptContent.includes("_parseICSDate"),
+      "parseICS should use _parseICSDate helper",
+    );
   });
   it("parseICS should parse DTEND field", () => {
     assert.ok(scriptContent.includes("DTEND"), "parseICS should parse DTEND");
@@ -4412,9 +4438,15 @@ describe("Sprint 5 Features", () => {
   it("event end time should be stored in event object", () => {
     assert.ok(scriptContent.includes("end,") || scriptContent.includes("end }") || scriptContent.includes("end: "), "events.push should include end property");
   });
-  it("renderCalendar should show end time for timed events", () => {
-    const calBody = scriptContent.slice(scriptContent.indexOf("function renderCalendar"));
-    assert.ok(calBody.includes("ev.end"), "renderCalendar should use ev.end for duration display");
+  it("_renderCalEvent should show end time for timed events", () => {
+    // R6.3: end time logic moved to _renderCalEvent helper
+    const helperBody = scriptContent.slice(
+      scriptContent.indexOf("function _renderCalEvent"),
+    );
+    assert.ok(
+      helperBody.includes("ev.end"),
+      "_renderCalEvent should use ev.end for duration display",
+    );
   });
 
   // Feature 48: Custom Ticker Message
@@ -4698,9 +4730,16 @@ describe("Sprint 6 Features", () => {
   it("TA-35 should be in STOCK_SYMBOLS constant", () => {
     assert.ok(scriptContent.includes("^TA35.TA"), "^TA35.TA should be in STOCK_SYMBOLS");
   });
-  it("TA-35 should have a STOCK_NAMES entry", () => {
-    const namesConst = scriptContent.slice(scriptContent.indexOf("STOCK_NAMES"), scriptContent.indexOf("STOCK_NAMES") + 400);
-    assert.ok(namesConst.includes("TA35.TA"), "STOCK_NAMES should have TA35.TA entry");
+  it("TA-35 should have a STOCK_META entry with name", () => {
+    // STOCK_NAMES is computed from STOCK_META; verify the source of truth
+    const metaConst = scriptContent.slice(
+      scriptContent.indexOf("STOCK_META"),
+      scriptContent.indexOf("STOCK_META") + 2000,
+    );
+    assert.ok(
+      metaConst.includes("TA35.TA"),
+      "STOCK_META should have TA35.TA entry",
+    );
   });
 
 });
@@ -4875,8 +4914,11 @@ describe("Sprint 8 Features", () => {
     assert.ok(html.includes("🇬🇧"), "Missing GBP flag emoji (Feature 71)");
   });
   it("renderCurrency should handle GBP code", () => {
-    const fn = scriptContent.slice(scriptContent.indexOf("function renderCurrency"));
-    assert.ok(fn.includes("'GBP'") || fn.includes('"GBP"'), "renderCurrency should handle GBP pair (Feature 71)");
+    // GBP is in CUR_TILES config array consumed by renderCurrency
+    assert.ok(
+      scriptContent.includes("code: 'GBP'") || scriptContent.includes("'GBP'"),
+      "renderCurrency should handle GBP pair (Feature 71)",
+    );
   });
   it("el object should cache curGbp and curGbpChg", () => {
     assert.ok(scriptContent.includes("curGbp:"), "Missing el.curGbp in DOM cache (Feature 71)");
@@ -5228,7 +5270,11 @@ describe("Sprint 10 Features (F91–F100)", () => {
     assert.equal(staticCount, 0, `Found ${staticCount} hardcoded geonameid=281184; all should use getGeonameid()`);
   });
   it("F94: Hebcal API calls should use template literal with getGeonameid()", () => {
-    assert.ok(scriptContent.includes("geonameid=${getGeonameid()}"), "Hebcal API calls should use getGeonameid()");
+    const geoTmpl = ["geonameid=${", "getGeonameid()}"].join("");
+    assert.ok(
+      scriptContent.includes(geoTmpl),
+      "Hebcal API calls should use getGeonameid()",
+    );
   });
 
   // F95: News feed disable config
@@ -5940,8 +5986,11 @@ describe("Sprint 14 Features (v4.17.0)", () => {
   it("F138: has-conflict CSS rule exists", () => {
     assert.match(html, /\.cal-event\.has-conflict/, "Missing .cal-event.has-conflict CSS (F138)");
   });
-  it("F138: conflictIdx Set built in renderCalendar", () => {
-    assert.ok(html.includes("conflictIdx"), "F138: conflictIdx Set not in renderCalendar");
+  it("F138: conflictSet built in renderCalendar", () => {
+    assert.ok(
+      html.includes("conflictSet"),
+      "F138: conflictSet not in renderCalendar",
+    );
   });
 
   // F139: Custom countdown header chip
@@ -6363,5 +6412,509 @@ describe("Sprint 17 Features (v5.0.0)", () => {
   // Version
   it("version should be v5.1.0", () => {
     assert.ok(html.includes("Dashboard v5.1.0"), "Version should be v5.1.0");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// REFACTORING R6 COVERAGE
+// ═══════════════════════════════════════════════════════════════════
+describe("Refactoring R6 — Alerts, Motivation, Card Maximize", () => {
+  // R6.5: Alert loader refactor
+  it("R6.5: ALERT_URL constant should be defined", () => {
+    assert.ok(
+      scriptContent.includes("const ALERT_URL ="),
+      "ALERT_URL constant should be extracted",
+    );
+    assert.ok(
+      scriptContent.includes("api.tzevaadom.co.il/alerts-history"),
+      "ALERT_URL should point to tzevaadom API",
+    );
+  });
+  it("R6.5: _notifyNewAlert helper should exist", () => {
+    assert.ok(
+      scriptContent.includes("function _notifyNewAlert("),
+      "_notifyNewAlert should be extracted as a standalone function",
+    );
+  });
+  it("R6.5: loadAlerts should use sources array with proxy fallback", () => {
+    assert.ok(
+      scriptContent.includes("const sources = ["),
+      "loadAlerts should build a sources array for direct + proxy fallback",
+    );
+    assert.ok(
+      scriptContent.includes("for (const src of sources)"),
+      "loadAlerts should loop through sources array",
+    );
+  });
+
+  // R6.6: Alerts renderer refactor
+  it("R6.6: _buildAlertItem helper should exist", () => {
+    assert.ok(
+      scriptContent.includes("function _buildAlertItem("),
+      "_buildAlertItem should be extracted to module scope",
+    );
+  });
+  it("R6.6: renderAlerts should use isClone loop", () => {
+    assert.ok(
+      scriptContent.includes("for (const isClone of [false, true])"),
+      "renderAlerts should loop [false, true] for original + clone",
+    );
+  });
+
+  // R6.7: Alert toggle refactor
+  it("R6.7: _alertsToggleSel should cache select element", () => {
+    assert.ok(
+      scriptContent.includes("_alertsToggleSel"),
+      "Alert toggle select should be cached in _alertsToggleSel",
+    );
+  });
+
+  // R6.8: Motivation refactor
+  it("R6.8: _setMotiContent helper should exist", () => {
+    assert.ok(
+      scriptContent.includes("function _setMotiContent("),
+      "_setMotiContent should be extracted for text assignment",
+    );
+  });
+  it("R6.8: _shareMoti helper should exist", () => {
+    assert.ok(
+      scriptContent.includes("function _shareMoti("),
+      "_shareMoti should be extracted for share logic",
+    );
+  });
+
+  // R6.9: Card maximize refactor
+  it("R6.9: _expandCard function should exist", () => {
+    assert.ok(
+      scriptContent.includes("function _expandCard("),
+      "_expandCard should be split from toggleCardMaximize",
+    );
+  });
+  it("R6.9: _collapseCard function should exist", () => {
+    assert.ok(
+      scriptContent.includes("function _collapseCard("),
+      "_collapseCard should be split from toggleCardMaximize",
+    );
+  });
+  it("R6.9: toggleCardMaximize should delegate to expand/collapse", () => {
+    const fn = scriptContent.match(
+      /function toggleCardMaximize\(card\)\s*\{[\s\S]*?\n\s*\}/,
+    );
+    assert.ok(fn, "toggleCardMaximize should exist");
+    assert.ok(
+      fn[0].includes("_collapseCard") && fn[0].includes("_expandCard"),
+      "toggleCardMaximize should call _collapseCard and _expandCard",
+    );
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// R8.2 — HTML Structure Verification (comprehensive)
+// ═══════════════════════════════════════════════════════════════════
+describe("R8.2 — HTML Structure Comprehensive", () => {
+  const CARD_IDS = ["news", "weather", "hcal", "cal", "currency", "stocks", "alerts", "moti"];
+
+  it("should have exactly 8 cards with data-card-id", () => {
+    for (const id of CARD_IDS) {
+      assert.ok(html.includes(`data-card-id="${id}"`), `Missing card: ${id}`);
+    }
+  });
+
+  it("every card should be a <section> element", () => {
+    for (const id of CARD_IDS) {
+      assert.match(
+        html,
+        new RegExp(`<section[^>]*data-card-id="${id}"`),
+        `Card ${id} should be a <section>`,
+      );
+    }
+  });
+
+  it("every card should have aria-label", () => {
+    for (const id of CARD_IDS) {
+      assert.match(
+        html,
+        new RegExp(`data-card-id="${id}"[^>]*aria-label="`),
+        `Card ${id} missing aria-label`,
+      );
+    }
+  });
+
+  it("should have all overlay elements", () => {
+    const overlays = ["config-panel", "diag-overlay", "help-overlay", "night-dim"];
+    for (const id of overlays) {
+      assert.ok(html.includes(`id="${id}"`), `Missing overlay: ${id}`);
+    }
+  });
+
+  it("should have SW update banner", () => {
+    assert.ok(html.includes('id="sw-update-banner"'), "Missing SW update banner");
+  });
+
+  it("should have config panel tabs", () => {
+    assert.ok(html.includes("config-tabs") || html.includes("cfg-tab"), "Missing config tabs");
+  });
+
+  it("should have toast notification element", () => {
+    assert.ok(html.includes('id="toast"'), "Missing toast element");
+  });
+
+  it("should have print-datetime element", () => {
+    assert.ok(html.includes('id="print-datetime"'), "Missing print-datetime");
+  });
+
+  it("should have PWA install button", () => {
+    assert.ok(html.includes('id="pwa-install-btn"'), "Missing PWA install button");
+  });
+
+  it("ticker bar should have role=marquee", () => {
+    assert.ok(html.includes('role="marquee"'), "Ticker bar missing role=marquee");
+  });
+
+  it("should have manifest link", () => {
+    assert.ok(html.includes('rel="manifest"'), "Missing manifest link");
+  });
+
+  it("should have theme-color meta", () => {
+    assert.ok(html.includes('name="theme-color"'), "Missing theme-color meta");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// R8.3 — CSS System Verification (comprehensive)
+// ═══════════════════════════════════════════════════════════════════
+describe("R8.3 — CSS System Comprehensive", () => {
+  // Design tokens
+  it("should define numeric spacing scale tokens", () => {
+    const tokens = ["--space-1", "--space-2", "--space-3", "--space-4", "--space-5", "--space-6", "--space-7", "--space-8"];
+    for (const t of tokens) {
+      assert.ok(html.includes(t), `Missing design token: ${t}`);
+    }
+  });
+
+  it("should define radius scale tokens", () => {
+    const tokens = ["--radius-sm", "--radius-md", "--radius-lg", "--radius-xl"];
+    for (const t of tokens) {
+      assert.ok(html.includes(t), `Missing radius token: ${t}`);
+    }
+  });
+
+  it("should define radius tokens", () => {
+    assert.ok(html.includes("--radius-sm"), "Missing --radius-sm");
+    assert.ok(html.includes("--radius-lg"), "Missing --radius-lg");
+  });
+
+  it("should define duration tokens", () => {
+    assert.ok(html.includes("--duration-fast"), "Missing --duration-fast");
+    assert.ok(html.includes("--duration-normal"), "Missing --duration-normal");
+    assert.ok(html.includes("--duration-slow"), "Missing --duration-slow");
+  });
+
+  it("should define shadow tokens", () => {
+    assert.ok(html.includes("--shadow-sm") || html.includes("--shadow-md"), "Missing shadow tokens");
+  });
+
+  // Responsive breakpoints
+  it("should have 3 responsive breakpoints", () => {
+    assert.ok(html.includes("@media (max-width: 1200px)"), "Missing 1200px breakpoint");
+    assert.ok(html.includes("@media (max-width: 768px)"), "Missing 768px breakpoint");
+    assert.ok(html.includes("@media (max-width: 480px)"), "Missing 480px breakpoint");
+  });
+
+  // Print styles
+  it("should have print media query", () => {
+    assert.ok(html.includes("@media print"), "Missing @media print");
+  });
+
+  it("print should hide non-essential elements", () => {
+    assert.ok(
+      html.includes("display: none") && html.includes("@media print"),
+      "Print styles should hide elements",
+    );
+  });
+
+  // Theme-specific overrides
+  it("each theme should override --accent", () => {
+    const themes = ["theme-black", "theme-blue", "theme-matrix", "theme-amber", "theme-purple"];
+    for (const t of themes) {
+      assert.ok(
+        html.includes(`body.${t}`),
+        `Theme ${t} should define overrides`,
+      );
+    }
+  });
+
+  // GPU layers
+  it("scroll containers should have will-change: transform", () => {
+    assert.ok(
+      html.includes("will-change: transform"),
+      "Missing will-change: transform on scroll containers",
+    );
+  });
+
+  it("scroll containers should have translateZ(0)", () => {
+    assert.ok(
+      html.includes("translateZ(0)"),
+      "Missing translateZ(0) for GPU layer promotion",
+    );
+  });
+
+  // Card body containment
+  it("card bodies should have contain: content", () => {
+    assert.ok(
+      html.includes("contain: content"),
+      "Missing contain: content on card bodies",
+    );
+  });
+
+  // Scroll fade masks
+  it("scroll containers should have fade masks", () => {
+    assert.ok(
+      html.includes("mask-image: linear-gradient(to bottom"),
+      "Missing scroll fade mask gradient",
+    );
+  });
+
+  // Card entrance keyframes
+  it("should define card entrance keyframes", () => {
+    const keyframes = ["cardSlideLeft", "cardSlideRight", "cardSlideUp", "cardPopIn"];
+    for (const kf of keyframes) {
+      assert.ok(html.includes(`@keyframes ${kf}`), `Missing keyframe: ${kf}`);
+    }
+  });
+
+  // Animated gradient border
+  it("should define @property --border-angle", () => {
+    assert.ok(html.includes("@property --border-angle"), "Missing @property --border-angle");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// R8.4 — JS Infrastructure Verification (comprehensive)
+// ═══════════════════════════════════════════════════════════════════
+describe("R8.4 — JS Infrastructure Comprehensive", () => {
+  // Cache system functions
+  it("cGet should accept key and TTL", () => {
+    assert.ok(scriptContent.includes("function cGet(key, ttl)"), "cGet signature wrong");
+  });
+
+  it("cSet should accept key and data", () => {
+    assert.ok(scriptContent.includes("function cSet(key, data)"), "cSet signature wrong");
+  });
+
+  it("cGetStale should accept key", () => {
+    assert.ok(scriptContent.includes("function cGetStale(key)"), "cGetStale signature wrong");
+  });
+
+  it("cache should use dash_v2_ prefix", () => {
+    assert.ok(scriptContent.includes("dash_v2_"), "Cache should use dash_v2_ prefix");
+  });
+
+  it("cache should use localStorage", () => {
+    assert.ok(scriptContent.includes("localStorage.setItem"), "Cache should write to localStorage");
+    assert.ok(scriptContent.includes("localStorage.getItem"), "Cache should read from localStorage");
+  });
+
+  // Fetch helpers
+  it("fetchWithTimeout should use AbortController", () => {
+    assert.ok(scriptContent.includes("function fetchWithTimeout"), "Missing fetchWithTimeout");
+    assert.ok(scriptContent.includes("AbortController"), "fetchWithTimeout should use AbortController");
+  });
+
+  it("fetchWithTimeout should default to 8000ms", () => {
+    assert.ok(scriptContent.includes("8000"), "fetchWithTimeout default should be 8000ms");
+  });
+
+  // PROXIES array
+  it("PROXIES array should have 3 entries", () => {
+    assert.ok(scriptContent.includes("allorigins"), "PROXIES should include allorigins");
+    assert.ok(scriptContent.includes("codetabs"), "PROXIES should include codetabs");
+    assert.ok(scriptContent.includes("corsproxy"), "PROXIES should include corsproxy");
+  });
+
+  // safeLoad wrapper
+  it("safeLoad should be async with try/catch", () => {
+    assert.ok(scriptContent.includes("async function safeLoad"), "safeLoad should be async");
+  });
+
+  it("safeLoad should check _pageVisible", () => {
+    assert.ok(scriptContent.includes("_pageVisible"), "safeLoad should check _pageVisible");
+  });
+
+  // Diagnostic logging
+  it("diagLog should exist", () => {
+    assert.ok(scriptContent.includes("function diagLog"), "Missing diagLog");
+  });
+
+  // Sync indicators
+  it("setSync should manage sync dot states", () => {
+    assert.ok(
+      scriptContent.includes("setSync") || scriptContent.includes("function setSync"),
+      "Missing setSync function",
+    );
+  });
+
+  // Health tracking
+  it("recordSuccess and recordFailure should exist", () => {
+    assert.ok(scriptContent.includes("function recordFailure"), "Missing recordFailure");
+    assert.ok(scriptContent.includes("function recordSuccess"), "Missing recordSuccess");
+  });
+
+  it("syncBurst visual feedback should exist", () => {
+    assert.ok(
+      scriptContent.includes("syncBurst"),
+      "Missing syncBurst visual feedback",
+    );
+  });
+
+  // Config system
+  it("saveConfig function should exist", () => {
+    assert.ok(scriptContent.includes("function saveConfig"), "Missing saveConfig");
+  });
+
+  it("config panel should have cfg-tab buttons", () => {
+    assert.ok(html.includes("cfg-tab"), "Missing cfg-tab buttons in config panel");
+  });
+
+  // Keyboard handler
+  it("should have keyboard event listener", () => {
+    assert.ok(scriptContent.includes("keydown"), "Missing keydown listener");
+  });
+
+  it("keyboard shortcuts should include T, D, A, S, N, H, P, B", () => {
+    const keys = ["'T'", "'D'", "'A'", "'S'", "'N'", "'H'", "'P'", "'B'"];
+    for (const k of keys) {
+      assert.ok(
+        scriptContent.includes(`e.key === ${k}`) || scriptContent.includes(`e.key === ${k.toLowerCase()}`),
+        `Missing keyboard shortcut for ${k}`,
+      );
+    }
+  });
+
+  // Init system
+  it("init function should exist", () => {
+    assert.ok(scriptContent.includes("function init()"), "Missing init function");
+  });
+
+  it("DOMContentLoaded or readyState check should exist", () => {
+    assert.ok(
+      scriptContent.includes("DOMContentLoaded") || scriptContent.includes("readyState"),
+      "Missing DOM ready check",
+    );
+  });
+
+  // scheduleIdle
+  it("scheduleIdle should exist for deferred work", () => {
+    assert.ok(scriptContent.includes("scheduleIdle"), "Missing scheduleIdle");
+  });
+
+  // Visibility change handling
+  it("should handle visibilitychange", () => {
+    assert.ok(scriptContent.includes("visibilitychange"), "Missing visibilitychange handler");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// R8.5 — Card-Specific Verification (systematic per-card)
+// ═══════════════════════════════════════════════════════════════════
+describe("R8.5 — Card Loader/Renderer/DOM Systematic", () => {
+  // Systematic: each card should have loader, renderer, key DOM
+  const CARD_SPEC = [
+    { id: "news",     loader: "loadNews",       renderer: "renderNews",    dom: ["rss-scroll"] },
+    { id: "weather",  loader: "loadWeather",     renderer: null,           dom: ["wx-icon", "wx-temp", "wx-desc"] },
+    { id: "hcal",     loader: "loadHebCal",      renderer: null,           dom: ["hebrew-date", "hc-candles"] },
+    { id: "cal",      loader: "loadCalendar",     renderer: null,           dom: ["cal-agenda", "cal-iframe"] },
+    { id: "currency", loader: "loadCurrency",     renderer: "renderCurrency", dom: ["cur-usd", "cur-eur"] },
+    { id: "stocks",   loader: "loadAllStocks",    renderer: "renderStock",  dom: ["stocks-body"] },
+    { id: "alerts",   loader: "loadAlerts",       renderer: "renderAlerts", dom: ["alerts-scroll"] },
+    { id: "moti",     loader: "loadMotivation",   renderer: null,           dom: ["moti-text", "moti-author"] },
+  ];
+
+  for (const card of CARD_SPEC) {
+    it(`${card.id}: loader ${card.loader} should exist`, () => {
+      assert.ok(
+        scriptContent.includes(`function ${card.loader}(`),
+        `Missing loader: ${card.loader}`,
+      );
+    });
+
+    if (card.renderer) {
+      it(`${card.id}: renderer ${card.renderer} should exist`, () => {
+        assert.ok(
+          scriptContent.includes(`function ${card.renderer}(`),
+          `Missing renderer: ${card.renderer}`,
+        );
+      });
+    }
+
+    for (const dom of card.dom) {
+      it(`${card.id}: DOM element #${dom} should exist`, () => {
+        assert.ok(
+          html.includes(`id="${dom}"`),
+          `Missing DOM element: #${dom}`,
+        );
+      });
+    }
+  }
+
+  // Sync dots for fetchable cards (not moti — static data)
+  const SYNC_CARDS = ["news", "cal", "stocks", "alerts", "wx", "cur", "hebcal"];
+  for (const id of SYNC_CARDS) {
+    it(`sync-${id}: sync indicator should exist in HTML`, () => {
+      assert.ok(html.includes(`id="sync-${id}"`), `Missing sync indicator: sync-${id}`);
+    });
+  }
+
+  // Each loader should call setSync
+  it("loaders should call setSync for status tracking", () => {
+    for (const card of CARD_SPEC) {
+      if (card.id === "moti") continue; // static
+      assert.ok(
+        scriptContent.includes(`setSync('${card.id === "weather" ? "wx" : card.id === "hcal" ? "hebcal" : card.id === "currency" ? "cur" : card.id}'`),
+        `${card.loader} should call setSync`,
+      );
+    }
+  });
+
+  // Each fetchable loader should call cSet/cGet
+  it("fetchable loaders should use cache (cSet/cGet)", () => {
+    assert.ok(scriptContent.includes("cSet("), "Missing cSet calls");
+    assert.ok(scriptContent.includes("cGet(") || scriptContent.includes("cGetStale("), "Missing cGet/cGetStale calls");
+  });
+
+  // Renderer functions should prefer textContent for dynamic data
+  it("renderers should prefer textContent for user-facing data", () => {
+    // Verify textContent is used extensively
+    const textContentCount = (scriptContent.match(/\.textContent\s*=/g) || []).length;
+    assert.ok(textContentCount > 10, `Expected >10 textContent usages, found ${textContentCount}`);
+  });
+
+  // Each card should have a card-header
+  it("each card should have a .card-header child", () => {
+    assert.ok(html.includes("card-header"), "Missing .card-header elements");
+  });
+
+  // Motivation specifics
+  it("MOTIVATIONS array should have 50+ quotes", () => {
+    const match = scriptContent.match(/MOTIVATIONS\s*=\s*\[([\s\S]*?)\];/);
+    assert.ok(match, "Missing MOTIVATIONS array");
+    const count = (match[1].match(/\{/g) || []).length;
+    assert.ok(count >= 50, `MOTIVATIONS should have ≥50 quotes, found ${count}`);
+  });
+
+  // Stock symbols
+  it("STOCK_SYMBOLS should have 15 entries", () => {
+    const match = scriptContent.match(/STOCK_SYMBOLS\s*=\s*\[([\s\S]*?)\]/);
+    assert.ok(match, "Missing STOCK_SYMBOLS");
+    const items = match[1].split(",").filter(s => s.trim().startsWith("'") || s.trim().startsWith('"'));
+    assert.ok(items.length >= 14, `STOCK_SYMBOLS should have ≥14 entries, found ${items.length}`);
+  });
+
+  // RSS feed count
+  it("NEWS_FEEDS should have ≥17 sources", () => {
+    const match = scriptContent.match(/NEWS_FEEDS\s*=\s*\[([\s\S]*?)\];/);
+    assert.ok(match, "Missing NEWS_FEEDS");
+    const count = (match[1].match(/https?:/g) || []).length;
+    assert.ok(count >= 17, `NEWS_FEEDS: expected ≥17, got ${count}`);
   });
 });

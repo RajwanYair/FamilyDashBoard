@@ -1,0 +1,65 @@
+/* Card Maximize — FLIP Animation */
+/* ── Card Maximize (click header to expand) ── */
+.card.maximized {
+    position: fixed !important;
+    z-index: 900;
+    transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s;
+    contain: none !important;
+    overflow: auto;
+    will-change: transform, top, left, width, height; /* GPU promote during FLIP */
+}
+.card.maximized .card-header::after {
+    content: '✕'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 0.8em; opacity: 0.5; pointer-events: none;
+}
+.card.card-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.3s ease;
+}
+.col-split.card-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.3s ease;
+}
+.card.maximized:hover { transform: none; }
+/* When maximized: lift containment & hidden overflow so body fills the full card */
+.card.maximized .news-body,
+.card.maximized .cal-wrapper,
+.card.maximized .stocks-body,
+.card.maximized .alerts-body,
+.card.maximized .currency-body,
+.card.maximized .moti-body { contain: none; flex: 1; min-height: 0; overflow: auto; }
+/* Weather body uses hidden overflow so its flex children pin top/mid/bottom correctly */
+.card.maximized .weather-body { contain: none; flex: 1; min-height: 0; overflow: hidden; }
+/* Weather layout when maximized: top info fixed top, chart fills middle, forecast pinned bottom */
+.card.maximized .wx-top-row { flex: 0 0 auto; }
+.card.maximized .wx-hourly-chart { max-height: none; flex: 1 1 0; }
+.card.maximized .wx-fday { padding: 8px 10px; }
+/* Maximized: scale up font and center content for each body type */
+.card.maximized .news-body { font-size: 1.35em; }
+.card.maximized .stocks-body { font-size: 1.3em; }
+.card.maximized .alerts-body { font-size: 1.35em; }
+.card.maximized .currency-body { font-size: 1.5em; justify-content: center; }
+.card.maximized .moti-body { font-size: 1.4em; display: flex; align-items: center; justify-content: center; }
+.card.maximized .hc-body { font-size: 1.3em; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.card.maximized .cal-wrapper { font-size: 1.2em; }
+
+/* ── Accessibility: Reduced Motion (R1.9) ── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    :root {
+        --duration-fast: 0.01ms;
+        --duration-normal: 0.01ms;
+        --duration-slow: 0.01ms;
+    }
+}

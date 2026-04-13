@@ -1,80 +1,30 @@
 ---
 applyTo: "**"
-description: "Use when: working on any file in the FamilyDashBoard workspace. Provides project context, architecture overview, and cross-cutting concerns."
+description: "Project context and file map for FamilyDashBoard."
 ---
 
-# Workspace Instructions — FamilyDashBoard
+# FamilyDashBoard — v5.1.0
 
-## Project Overview
+Single-file TV dashboard · HTML5 + CSS3 + vanilla JS (ES2020+) · Hebrew RTL · Zero dependencies · 1920×1080+ always-on display · 5 themes · 3 screen modes
 
-| Property | Value |
-|----------|-------|
-| **Name** | FamilyDashBoard |
-| **Type** | Single-page HTML dashboard |
-| **Version** | v5.0.0 |
-| **Owner** | @RajwanYair |
-| **Stack** | HTML5, CSS3, vanilla JS (ES2020+) |
-| **Dependencies** | Zero (no npm, no build) |
-| **Target display** | TV screen (1920x1080+), always-on |
-| **Language** | Hebrew (RTL), with English dates |
-| **Themes** | 5 (black OLED, blue, matrix, amber, purple) |
-| **Screen modes** | 3 (tv, tablet, phone) |
-
-## File Structure
+## Files
 
 ```
-FamilyDashBoard/
-├── BestDashBoard.html    # Dashboard (HTML + CSS + JS)
-├── sw.js                 # ServiceWorker (offline + API cache, v5.0.0)
-├── manifest.json         # PWA manifest (icons, display)
-├── icon.svg              # 512×512 app icon (4-panel dashboard)
-├── index.html            # GitHub Pages redirect
-├── README.md
-├── CHANGELOG.md
-├── LICENSE / SUPPORT.md
-├── .editorconfig
-├── .gitignore / .gitattributes
-├── .markdownlint.json
-├── tests/
-|   └── dashboard.test.mjs  # 1084 tests, 61 suites (node --test)
-├── .github/
-│   ├── copilot-instructions.md
-│   ├── copilot/config.json
-│   ├── workflows/          # ci, deploy, release, auto-label
-│   ├── instructions/
-│   ├── prompts/
-│   ├── agents/
-│   ├── skills/             # add-api, release, debug-fetch, update-tests
-│   ├── assets/             # SVG docs graphics
-│   ├── ISSUE_TEMPLATE/ / DISCUSSION_TEMPLATE/
-│   └── CONTRIBUTING.md / SECURITY.md / CODEOWNERS
-└── .vscode/
-    ├── settings.json
-    ├── extensions.json
-    └── mcp.json            # MCP servers (fetch, filesystem)
+BestDashBoard.html          # Dashboard (HTML + CSS + JS, ~6400 lines)
+sw.js                       # ServiceWorker v5.0.0 (offline + API cache)
+manifest.json / icon.svg    # PWA manifest + app icon
+tests/dashboard.test.mjs    # 1084 tests, 61 suites (node --test)
+.github/skills/             # add-api, release, debug-fetch, update-tests
+.github/agents/             # api-integrator, dashboard-designer
+.github/assets/             # SVG docs graphics (5 files)
 ```
 
-## Key Systems
+## Architecture
 
-| System | Details |
+| System | Pattern |
 |--------|---------|
-| **Cache** | Dual-layer: in-memory `Map` + `localStorage` (prefix `dash_v2_`, 7-day eviction) |
-| **Fetch** | Direct → CORS proxy fallback (`allorigins` → `codetabs` → `corsproxy.io`) with diagnostic logging |
-| **SW / PWA** | `sw.js` v5.0.0 — APP_SHELL pre-cached, API responses cached (7 origins), offline HTML fallback, `VERSION_ACTIVATED` broadcast |
-| **Error handling** | `safeLoad()` async wrapper, startup self-check, global error catchers, auto-show diagnostic overlay |
-| **Diagnostics** | Press `D` for overlay: per-pane status + fetch log. Auto-opens on errors. `copyDiagLog()` copies log to clipboard |
-| **Offline** | Banner slides down when `navigator.onLine` is false, serves stale cache |
-| **Animations** | 6 card entrance variants, random per card, 5min attention re-animation loop, card maximize (FLIP) |
-| **Performance** | GPU-accelerated scroll layers, CPU-aware concurrency pool (`runConcurrent`), `scheduleIdle()`, DocumentFragment batch writes |
-| **Keyboard** | `T` = cycle themes, `D` = diagnostic overlay, `A` = toggle alerts, `S` = config panel, `N` = night dimmer, `+/-` = font scale, `P` = print, `Escape` = close maximized card, `B` = bookmark filter, `H`/`?` = help overlay |
-| **Tests** | 1084 tests, 61 suites — `node --test tests/dashboard.test.mjs` (zero dependencies) |
-
-## What NOT To Do
-
-- Do NOT add npm/node/build tools
-- Do NOT use external CSS/JS libraries
-- Do NOT hardcode API keys or colors
-- Do NOT break the RTL layout or per-pane refresh
-- Do NOT use `innerHTML` with unsanitized external data
-- Do NOT wrap async loaders in sync try/catch (use `await`)
-- Do NOT remove the diagnostic overlay or self-check system
+| Cache | `cGet(key,TTL)` / `cSet(key,data)` / `cGetStale(key)` — in-memory Map + localStorage (`dash_v2_*`, 7-day eviction) |
+| Fetch | Direct → `allorigins` → `codetabs` → `corsproxy.io` · `fetchWithTimeout(url, 8000)` · `diagLog()` |
+| SW | APP_SHELL pre-cache, API cache (7 origins), offline HTML fallback, `VERSION_ACTIVATED` broadcast |
+| Init | `safeLoad()` wrappers → `Promise.allSettled` · per-pane `setInterval` · startup self-check |
+| Keyboard | `T` theme · `D` diagnostics · `A` alerts · `S` config · `N` dimmer · `+/-` font · `P` print · `B` bookmarks · `H/?` help · `Esc` close |

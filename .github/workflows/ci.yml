@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   lint:
-    name: Lint (HTML + CSS + JS)
+    name: Lint (HTML + CSS + JS + Markdown)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -24,34 +24,35 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Install linters
-        run: npm install -g htmlhint stylelint eslint
+        run: npm install -g htmlhint stylelint eslint markdownlint-cli
 
       - name: Lint HTML
-        run: htmlhint BestDashBoard.html
+        run: htmlhint --config .htmlhintrc BestDashBoard.html
 
       - name: Extract and lint CSS
         run: |
-          # Extract <style> content from the single-file dashboard
           sed -n '/<style>/,/<\/style>/p' BestDashBoard.html | sed '1d;$d' > .extracted.css
-          stylelint --config .stylelintrc.json .extracted.css
+          stylelint --config .stylelintrc.json --max-warnings 0 .extracted.css
           rm .extracted.css
 
       - name: Extract and lint JS
         run: |
-          # Extract <script> content from the single-file dashboard
           sed -n '/<script>/,/<\/script>/p' BestDashBoard.html | sed '1d;$d' > .extracted.js
-          eslint --config eslint.config.mjs .extracted.js
+          eslint --config eslint.config.mjs --max-warnings 0 .extracted.js sw.js tests/dashboard.test.mjs
           rm .extracted.js
+
+      - name: Lint Markdown
+        run: markdownlint-cli '*.md'
 
   unit-tests:
     name: Unit Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ["20", "22"]
+        node-version: ["20", "22", "24"]
     steps:
       - uses: actions/checkout@v6
 
