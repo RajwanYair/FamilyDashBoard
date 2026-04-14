@@ -919,3 +919,66 @@ describe("Config Panel — font size slider live preview", () => {
     expect(() => btn.click()).not.toThrow();
   });
 });
+
+// ── initConfigPanel overlay background click and edge branches (lines 483-524) ──
+
+describe("Config Panel — initConfigPanel overlay and tab branch coverage", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("covers if(ov) false branch when config-overlay is absent", async () => {
+    document.body.innerHTML =
+      '<button id="cfg-save-btn">Save</button><button id="cfg-close-btn">X</button><button id="cfg-gear-btn">G</button>';
+    const mod = await freshCfg();
+    // initConfigPanel with no overlay element → if(ov) branch is false → no crash
+    expect(() => mod.initConfigPanel()).not.toThrow();
+  });
+
+  it("fires overlay background click to close panel (e.target === ov)", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    expect(mod.isConfigPanelOpen()).toBe(true);
+    // Fire click ON the overlay element itself (e.target === ov true branch)
+    const ov = document.getElementById("config-overlay")!;
+    ov.dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    expect(mod.isConfigPanelOpen()).toBe(false);
+  });
+
+  it("does NOT close panel when click target is a child element (e.target !== ov)", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    // Fire click on a CHILD element inside the overlay → e.target !== ov → no close
+    const panel = document.getElementById("config-panel")!;
+    panel.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(mod.isConfigPanelOpen()).toBe(true);
+  });
+
+  it("tab button with empty data-tab skips switchCfgTab (if(tab) false branch)", async () => {
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <div id="config-panel">
+          <button class="cfg-tab" data-tab="">Empty Tab</button>
+        </div>
+      </div>
+      <button id="cfg-save-btn">Save</button>
+      <button id="cfg-close-btn">X</button>
+      <button id="cfg-gear-btn">G</button>
+    `;
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    // Click the button with data-tab="" — should not throw (if(tab) = false, skips switchCfgTab)
+    const btn = document.querySelector<HTMLButtonElement>(
+      ".cfg-tab[data-tab]",
+    )!;
+    expect(() => btn.click()).not.toThrow();
+  });
+});

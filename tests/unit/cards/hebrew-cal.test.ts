@@ -1361,14 +1361,11 @@ describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayNam
       return null;
     });
 
-    // Make cGetStale return ICS data with a matching VEVENT
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 3);
-    const dtStr = futureDate.toISOString().slice(0, 10).replace(/-/g, "");
+    // Make cGetStale return ICS data with a matching VEVENT using fixed far-future UTC date
     const icsWithPassover = [
       "BEGIN:VCALENDAR",
       "BEGIN:VEVENT",
-      `DTSTART:${dtStr}`,
+      "DTSTART:21000101T120000Z",
       "SUMMARY:פסח",
       "END:VEVENT",
       "END:VCALENDAR",
@@ -1394,11 +1391,10 @@ describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayNam
     vi.mocked(cGet).mockReturnValue(null);
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 5);
-    const dtStr = futureDate.toISOString().slice(0, 10).replace(/-/g, "");
     const icsUnique = [
       "BEGIN:VCALENDAR",
       "BEGIN:VEVENT",
-      `DTSTART:${dtStr}`,
+      "DTSTART:21000101T120000Z",
       "SUMMARY:אירוע ייחודי",
       "END:VEVENT",
       "END:VCALENDAR",
@@ -1409,5 +1405,426 @@ describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayNam
     renderNextCalEvent();
     const row = document.getElementById("hc-event-row");
     expect(row?.style.display).toBe("");
+  });
+});
+
+// ── renderSchool vacation detection ──
+
+describe("Hebrew Calendar — renderSchool vacation detection (lines 254-270)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("shows school vacation row when a holiday started within 7 days (vacationItem found)", () => {
+    setupDom();
+    const tomorrow = new Date(Date.now() + 86_400_000).toISOString();
+    const threeDaysAgo = new Date(Date.now() - 3 * 86_400_000).toISOString();
+    // Cache returns two items: one upcoming (required for renderHoliday to proceed)
+    // and one recent vacation matching SCHOOL_VACATION_TITLES
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("holidays-")) {
+        return {
+          items: [
+            {
+              category: "holiday",
+              title: "Future Festival",
+              hebrew: "חג עתידי",
+              date: tomorrow,
+            },
+            {
+              category: "holiday",
+              title: "Passover",
+              hebrew: "פסח",
+              date: threeDaysAgo,
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    expect(document.getElementById("hc-school")?.textContent).toBe("פסח");
+    expect(document.getElementById("hc-school-row")?.style.display).toBe("");
+  });
+
+  it("hides school row when no vacation holiday is within the [-7, 0] window", () => {
+    setupDom();
+    const tomorrow = new Date(Date.now() + 86_400_000).toISOString();
+    const twoWeeksAgo = new Date(Date.now() - 14 * 86_400_000).toISOString();
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("holidays-")) {
+        return {
+          items: [
+            {
+              category: "holiday",
+              title: "Future Festival",
+              hebrew: "חג עתידי",
+              date: tomorrow,
+            },
+            // Passover was 14 days ago — outside the [-7, 0] window
+            {
+              category: "holiday",
+              title: "Passover",
+              hebrew: "פסח",
+              date: twoWeeksAgo,
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    expect(document.getElementById("hc-school-row")?.style.display).toBe(
+      "none",
+    );
+  });
+
+  it("hides school row when title does not match any SCHOOL_VACATION_TITLES keyword", () => {
+    setupDom();
+    const tomorrow = new Date(Date.now() + 86_400_000).toISOString();
+    const yesterday = new Date(Date.now() - 86_400_000).toISOString();
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("holidays-")) {
+        return {
+          items: [
+            {
+              category: "holiday",
+              title: "Future Festival",
+              hebrew: "חג עתידי",
+              date: tomorrow,
+            },
+            // Recent holiday but NOT a school vacation keyword
+            {
+              category: "holiday",
+              title: "Independence Day",
+              hebrew: "יום העצמאות",
+              date: yesterday,
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    expect(document.getElementById("hc-school-row")?.style.display).toBe(
+      "none",
+    );
+  });
+});
+
+// ── tickCountdown Saturday / Friday paths ──
+
+describe("Hebrew Calendar — tickCountdown Saturday and Friday paths", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("shows havdala countdown on Saturday when havdalaTime is set and in future", () => {
+    setupDom();
+    vi.useFakeTimers();
+    // Set to a known Saturday (2024-01-06 UTC = Saturday)
+    const saturday = new Date("2024-01-06T16:00:00.000Z"); // 18:00 IL time
+    vi.setSystemTime(saturday);
+    const futureHavdala = new Date(saturday.getTime() + 2 * 3_600_000); // 2h from now
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("shabbat-")) {
+        return {
+          items: [
+            {
+              category: "havdalah",
+              date: futureHavdala.toISOString(),
+              title: "Havdalah",
+              hebrew: "הבדלה",
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    const row = document.getElementById("hc-countdown-row");
+    const el = document.getElementById("hc-countdown");
+    expect(row?.style.display).toBe("");
+    expect(el?.textContent).toContain("הבדלה בעוד");
+  });
+
+  it("shows candles countdown on Friday when candlesTime is set and in future", () => {
+    setupDom();
+    vi.useFakeTimers();
+    // Set to a known Friday (2024-01-05 UTC = Friday)
+    const friday = new Date("2024-01-05T15:00:00.000Z"); // 17:00 IL time
+    vi.setSystemTime(friday);
+    const futureCandles = new Date(friday.getTime() + 2 * 3_600_000); // 2h from now
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("shabbat-")) {
+        return {
+          items: [
+            {
+              category: "candles",
+              date: futureCandles.toISOString(),
+              title: "Candle lighting",
+              hebrew: "הדלקת נרות",
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    const row = document.getElementById("hc-countdown-row");
+    const el = document.getElementById("hc-countdown");
+    expect(row?.style.display).toBe("");
+    expect(el?.textContent).toContain("כניסה בעוד");
+  });
+
+  it("hides countdown row when neither candles nor havdala are set", () => {
+    setupDom();
+    vi.mocked(cGet).mockReturnValue(null);
+    initHebrewCalCard();
+    expect(document.getElementById("hc-countdown-row")?.style.display).toBe(
+      "none",
+    );
+  });
+});
+
+// ── renderNextCalEvent isDuplicate via _lastHolidayName (correct 'holidays-' key) ──
+
+describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayName (correct key)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("hides event row when ICS summary matches _lastHolidayName set by loadHoliday", () => {
+    setupDom();
+    const farFuture = new Date(Date.now() + 7 * 86_400_000).toISOString();
+    // Use a fixed far-future UTC datetime to avoid timezone edge cases in DTSTART parsing
+    const dtStr = "21000101T120000Z";
+    // Use the CORRECT key prefix 'holidays-' (not 'holiday-')
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("holidays-")) {
+        return {
+          items: [
+            {
+              category: "holiday",
+              title: "Passover",
+              hebrew: "פסח",
+              date: farFuture,
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      `DTSTART:${dtStr}`,
+      "SUMMARY:פסח",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    vi.mocked(cGetStale).mockImplementation((key: string) =>
+      key === "cal-ics" ? ics : null,
+    );
+    // initHebrewCalCard() fires loadHebCal() which synchronously runs loadHoliday()
+    // (cache hit path) → sets _lastHolidayName = "פסח" before any await suspends
+    initHebrewCalCard();
+    // Now _lastHolidayName = "פסח"; call renderNextCalEvent explicitly
+    renderNextCalEvent();
+    expect(document.getElementById("hc-event-row")?.style.display).toBe(
+      "none",
+    );
+  });
+
+  it("shows event row when ICS summary does not match _lastHolidayName", () => {
+    setupDom();
+    const farFuture = new Date(Date.now() + 7 * 86_400_000).toISOString();
+    // Fixed far-future UTC datetime avoids timezone edge cases  
+    const dtStr = "21000101T120000Z";
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("holidays-")) {
+        return {
+          items: [
+            {
+              category: "holiday",
+              title: "Rosh Hashana",
+              hebrew: "ראש השנה",
+              date: farFuture,
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      `DTSTART:${dtStr}`,
+      "SUMMARY:אירוע לא קשור",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    vi.mocked(cGetStale).mockImplementation((key: string) =>
+      key === "cal-ics" ? ics : null,
+    );
+    initHebrewCalCard();
+    renderNextCalEvent();
+    expect(document.getElementById("hc-event-row")?.style.display).toBe("");
+  });
+});
+
+// ── renderDaf dafLink row wiring ──
+
+describe("Hebrew Calendar — renderDaf dafLink row wiring (full DOM)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("shows daf-link-row and wires onclick when daf item has url field", () => {
+    setupDom();
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("daf-")) {
+        return {
+          ref: "Sukkah.2a",
+          heRef: "מסכת סוכה דף ב׳ עמוד א׳",
+          url: "Sukkah.2a",
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    const dafLinkRow = document.getElementById("hc-daf-link-row");
+    const dafLink = document.getElementById("hc-daf-link");
+    expect(dafLinkRow?.style.display).toBe("");
+    expect(dafLink?.onclick).not.toBeNull();
+  });
+
+  it("shows daf-link-row and builds ref URL when daf item has no url field", () => {
+    setupDom();
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("daf-")) {
+        return { ref: "Sukkah 12a", heRef: "סוכה י״ב" };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    const dafLinkRow = document.getElementById("hc-daf-link-row");
+    expect(dafLinkRow?.style.display).toBe("");
+  });
+
+  it("hides daf-link-row and daf-row when daf item is null (via full DOM)", () => {
+    setupDom();
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("daf-")) return null;
+      return null;
+    });
+    initHebrewCalCard();
+    expect(document.getElementById("hc-daf-row")?.style.display).toBe("none");
+    expect(document.getElementById("hc-daf-link-row")?.style.display).toBe(
+      "none",
+    );
+  });
+});
+
+// ── renderHalacha null and url wiring ──
+
+describe("Hebrew Calendar — renderHalacha null / url wiring paths", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("hides halacha-row when DafYomi response has no halachaYomit entry", async () => {
+    setupDom();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    vi.mocked(fetchJSONWithWorker).mockResolvedValue({
+      calendar_items: [
+        {
+          title: { en: "Daf Yomi: Sukkah 15", he: "סוכה ט״ו" },
+          ref: "Sukkah.15a",
+        },
+        // No halacha yomit entry → renderHalacha(null) → hides row
+      ],
+    });
+    initHebrewCalCard();
+    // Let the async fetch complete
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    expect(document.getElementById("hc-halacha-row")?.style.display).toBe(
+      "none",
+    );
+  });
+
+  it("shows halacha-row and wires onclick when halachaYomit has url", async () => {
+    setupDom();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    vi.mocked(fetchJSONWithWorker).mockResolvedValue({
+      calendar_items: [
+        {
+          title: { en: "Daf Yomi: Sukkah 15", he: "סוכה ט״ו" },
+          ref: "Sukkah.15a",
+        },
+        {
+          title: { en: "Halacha Yomit: Orach Chaim", he: "אורח חיים כ׳" },
+          ref: "Shulchan_Aruch.OC.20",
+          url: "Shulchan_Aruch.OC.20",
+        },
+      ],
+    });
+    initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    const halacaRow = document.getElementById("hc-halacha-row");
+    const halacha = document.getElementById("hc-halacha");
+    expect(halacaRow?.style.display).toBe("");
+    expect(halacha?.textContent).toContain("אורח חיים");
+  });
+});
+
+// ── renderParasha parasha-link row wiring ──
+
+describe("Hebrew Calendar — renderParasha parasha-link wiring (full DOM)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("shows parasha-link-row when parasha item has title and link elements exist in DOM", () => {
+    setupDom();
+    vi.mocked(cGet).mockImplementation((key: string) => {
+      if ((key as string).startsWith("parasha-")) {
+        return {
+          items: [
+            {
+              category: "parashat",
+              title: "Metzora",
+              hebrew: "מצורע",
+              date: new Date(Date.now() + 86_400_000).toISOString(),
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    expect(document.getElementById("hc-parasha-link-row")?.style.display).toBe(
+      "",
+    );
+    expect(
+      (document.getElementById("hc-parasha-link") as HTMLButtonElement | null)
+        ?.onclick,
+    ).not.toBeNull();
   });
 });
