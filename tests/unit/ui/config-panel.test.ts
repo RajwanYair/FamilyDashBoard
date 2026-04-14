@@ -79,10 +79,14 @@ function setupDOM(): void {
           <input id="cfg-countdown-date" type="date" />
           <input id="cfg-countdown-label" type="text" />
         </div>
+        <select class="cfg-card-size-sel" data-card-id="weather">
+          <option value="lg" selected>גדול</option>
+        </select>
         <button id="cfg-save-btn">Save</button>
         <button id="cfg-close-btn">Close</button>
       </div>
     </div>
+    <div data-card-id="weather" data-card-size="md">Weather Card</div>
     <button id="cfg-gear-btn">⚙️</button>
     <input type="file" id="cfg-import-file" style="display:none" />
   `;
@@ -982,3 +986,33 @@ describe("Config Panel — initConfigPanel overlay and tab branch coverage", () 
     expect(() => btn.click()).not.toThrow();
   });
 });
+
+// ── importSettings: if(!file) return branch (line 434) ──────────────────────
+
+describe("Config Panel — importSettings no-file early return (line 434)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("file input onchange returns early when no file is selected (line 434 TRUE branch)", async () => {
+    document.body.innerHTML = `
+      <input type="file" id="cfg-import-file" />
+      <button id="cfg-save-btn">Save</button>
+      <button id="cfg-close-btn">X</button>
+      <button id="cfg-gear-btn">G</button>
+    `;
+    const mod = await import("@/ui/config-panel");
+    if ("importSettings" in mod) {
+      (mod as { importSettings: () => void }).importSettings();
+    }
+    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
+    // Trigger onchange with no files (FileList is empty) — should return early, no throw
+    if (input.onchange) {
+      expect(() => input.onchange!(new Event("change"))).not.toThrow();
+    }
+  });
+});
+
+

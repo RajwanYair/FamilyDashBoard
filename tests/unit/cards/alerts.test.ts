@@ -960,3 +960,70 @@ describe("Alerts — loadAlerts empty response else branch", () => {
     vi.runAllTimers();
   });
 });
+
+// ── renderAlerts total24h++ branch (line 196) ────────────────────────────────
+
+describe("Alerts — renderAlerts total24h++ branch (line 196)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("increments total24h for alerts within last 24 hours", () => {
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+
+    const nowSec = Math.floor(Date.now() / 1000);
+    const data: AlertEvent[] = [
+      { id: "r1", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowSec - 30 }] },
+    ];
+    expect(() => renderAlerts(data, false)).not.toThrow();
+    const scroll = document.getElementById("alerts-scroll");
+    expect(scroll?.textContent).toContain("1");
+  });
+
+  it("counts zero for alerts outside 24h window (total24h++ FALSE branch)", () => {
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+
+    const nowSec = Math.floor(Date.now() / 1000);
+    const data: AlertEvent[] = [
+      { id: "old1", alerts: [{ cities: ["ירושלים"], threat: 1, time: nowSec - 90_000 }] },
+    ];
+    expect(() => renderAlerts(data, false)).not.toThrow();
+    const scroll = document.getElementById("alerts-scroll");
+    expect(scroll?.textContent).toContain("0");
+  });
+});
+
+// ── loadAlerts data[0]?.id ?? null branch (line 271) ────────────────────────
+
+describe("Alerts — loadAlerts data[0]?.id ?? null (line 271)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+  });
+
+  it("uses null when alert event has no id field (line 271 ?? null branch)", async () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+
+    const nowTs = Math.floor(Date.now() / 1000);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] },
+        ],
+      }),
+    );
+
+    await expect(loadAlerts()).resolves.toBeUndefined();
+    vi.runAllTimers();
+  });
+});

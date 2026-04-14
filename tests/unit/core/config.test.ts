@@ -161,3 +161,21 @@ describe("Config — extra coverage", () => {
     vi.mocked(Storage.prototype.setItem).mockRestore();
   });
 });
+
+// ── saveConfig catch path via localStorage direct spy (line 37) ──────────────
+
+describe("Config — saveConfig localStorage.setItem catch (line 37)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+  });
+
+  it("executes catch branch diagLog when localStorage.setItem throws (line 37)", () => {
+    // Spy directly on the instance method to ensure it throws in happy-dom
+    vi.spyOn(localStorage, "setItem").mockImplementation(() => {
+      throw new Error("quota exceeded");
+    });
+    // saveConfig's try block catches the error → line 37 diagLog runs
+    expect(() => saveConfig(DEFAULT_CONFIG)).not.toThrow();
+  });
+});

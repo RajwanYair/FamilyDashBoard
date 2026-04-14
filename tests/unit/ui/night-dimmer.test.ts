@@ -343,3 +343,21 @@ describe("Night Dimmer — applyDim reconnect when element not connected", () =>
     expect(fresh.style.opacity).toBe("0.4");
   });
 });
+
+// ── applyDim line 34 TRUE branch: dimEl null after re-query ─────────────────────
+
+describe("Night Dimmer — applyDim returns early when #night-dim absent (line 34)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it("returns early without throwing when #night-dim is absent from DOM (line 34 TRUE branch)", async () => {
+    // No #night-dim element in DOM → applyDim re-queries → still null → if(!dimEl) return
+    document.body.innerHTML = "";
+    const { toggleNightDim } = await freshDimmer();
+    // toggleNightDim → applyDim → dimEl = null → re-query = null → line 34 return
+    expect(() => toggleNightDim()).not.toThrow();
+  });
+});

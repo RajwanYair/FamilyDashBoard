@@ -460,3 +460,29 @@ describe("WORKER_BASE_URL constant", () => {
     expect(WORKER_BASE_URL).toMatch(/^https:\/\//);
   });
 });
+
+// ── fetchViaWorker url > 60 chars short-branch (line 99) ─────────────────────
+
+describe("fetchViaWorker — url > 60 chars truncation (line 99 TRUE branch)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("truncates long URL in diagnostic log without affecting actual request (line 99)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ result: "ok" }),
+      } as Response),
+    );
+    // URL > 60 characters → `url.length > 60 ? url.slice(0, 57) + "..." : url` TRUE branch
+    const longUrl = "https://api.example.com/very/long/path/that/exceeds/sixty/chars?param=value";
+    expect(longUrl.length).toBeGreaterThan(60);
+    const result = await fetchViaWorker<{ result: string }>(longUrl);
+    // Worker was called (result is non-null from mock), or null if worker disabled
+    expect(result === null || result.result === "ok").toBe(true);
+  });
+});

@@ -336,3 +336,47 @@ describe("DiagOverlay — initDiagOverlay wires copy button", () => {
     expect(() => initDiagOverlay()).not.toThrow();
   });
 });
+
+// ── Branch coverage: logContainer FALSE path (line 24) ──────────────────────
+
+describe("DiagOverlay — logContainer branch: logEl already connected (line 24)", () => {
+  beforeEach(() => {
+    buildDOM();
+    clearDiag();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    clearDiag();
+    vi.restoreAllMocks();
+  });
+
+  it("skips logEl re-query on second call when logEl is already connected", () => {
+    // First call: logEl is null → re-queries DOM (TRUE branch of line 24 condition)
+    openDiagOverlay();
+    // Second call: logEl is non-null AND connected → condition is FALSE → skip re-query
+    // This also adds a second diagLog entry to render
+    diagLog("[test] second open");
+    openDiagOverlay();
+    // Result: log still renders correctly
+    const log = document.getElementById("diag-log");
+    expect(log?.textContent).toContain("[test] second open");
+  });
+});
+
+// ── Branch coverage: closeDiagOverlay when ov.open = false (line 81) ────────
+
+describe("DiagOverlay — closeDiagOverlay when overlay not open (line 81)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    clearDiag();
+  });
+
+  it("does not throw when dialog exists but is not open (ov?.open FALSE branch)", () => {
+    buildDOM();
+    // Dialog is in DOM but NOT open — closeDiagOverlay's `if (ov?.open) ov.close()`
+    // → ov.open = false → skip close (FALSE branch of line 81)
+    expect(() => closeDiagOverlay()).not.toThrow();
+    // Overlay should still be closed
+    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(false);
+  });
+});

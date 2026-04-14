@@ -740,3 +740,53 @@ describe("Header — getGreeting noon branch", () => {
     expect(greeting.textContent).toContain("בוקר");
   });
 });
+
+// ── getGreeting: cfg.members ?? [] fallback (line 25) ─────────────────────────
+
+describe("Header — cfg.members null ?? [] fallback (line 25)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("falls back to empty members array when config has members: null (line 25)", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T09:00:00"));
+    // Save config with members explicitly set to null — triggers cfg.members ?? []
+    localStorage.setItem("dash_v2_config", JSON.stringify({ members: null }));
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    mod.tickClock();
+    // Greeting should still render (falls back to empty [] with familyName default)
+    const greeting = document.getElementById("greeting")!;
+    expect(greeting.textContent?.length).toBeGreaterThan(0);
+  });
+});
+
+// ── initHeader: cfg.clockSeconds ?? false fallback (line 209) ─────────────────
+
+describe("Header — cfg.clockSeconds ?? false fallback (line 209)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("uses false when clockSeconds key is absent from saved config (line 209)", async () => {
+    // Save a config WITHOUT clockSeconds → loadConfig spreads over defaults
+    // If saved config has clockSeconds=undefined (key absent), the spread keeps default=false
+    // But a saved config with explicit clockSeconds=null → cfg.clockSeconds=null → ?? false fires
+    localStorage.setItem("dash_v2_config", JSON.stringify({ clockSeconds: null }));
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    // clockShowSeconds should be false (from ?? false fallback)
+    mod.tickClock(); // no throw
+    const clock = document.getElementById("clock");
+    expect(clock).not.toBeNull();
+  });
+});

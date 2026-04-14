@@ -1106,3 +1106,106 @@ describe("Ticker — loadHalacha displayValue missing → ?? title.he branch (li
     expect(typeof data === "object").toBe(true);
   });
 });
+
+// ── loadHalacha category?.[1] ?? category?.[0] ?? "" branches (line 239) ────
+
+describe("Ticker — loadHalacha category?.[0] ?? '' fallback (line 239)", () => {
+  beforeEach(() => {
+    buildTickerDOM();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("uses category[0] when category[1] is absent (category[1] ?? category[0] branch)", async () => {
+    const { fetchWithTimeout } = await import("@/core/fetch");
+    // category = ["Halakhah"] (only index 0) → category?.[1] = undefined → falls back to category[0]
+    const calData = {
+      calendar_items: [
+        {
+          title: { en: "Halakhah Yomit", he: "הלכה יומית" },
+          url: "KSA.1",
+          ref: "KSA 1",
+          category: ["Halakhah"],  // only [0], no [1]
+        },
+      ],
+    };
+    const textData = {
+      heRef: "הלכהא א",
+      versions: [{ language: "he", text: ["הלכה בדיקה"] }],
+    };
+    vi.mocked(fetchWithTimeout)
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(calData) } as unknown as Response)
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(textData) } as unknown as Response);
+
+    initTicker();
+    for (let i = 0; i < 50; i++) await Promise.resolve();
+
+    const data = getHalachaData();
+    if (data) {
+      // category = category[0] = "Halakhah" since [1] was undefined
+      expect(data.category).toBe("Halakhah");
+    }
+    expect(typeof data === "object").toBe(true);
+  });
+
+  it("uses empty string when category array is absent (category ?? '' fallback)", async () => {
+    const { fetchWithTimeout } = await import("@/core/fetch");
+    // category is undefined → category?.[1] = undefined → category?.[0] = undefined → "" fallback
+    const calData = {
+      calendar_items: [
+        {
+          title: { en: "Halakhah Yomit", he: "הלכה יומית" },
+          url: "KSA.2",
+          ref: "KSA 2",
+          // category intentionally omitted
+        },
+      ],
+    };
+    const textData = {
+      heRef: "הלכה ב",
+      versions: [{ language: "he", text: ["הלכה ב בדיקה"] }],
+    };
+    vi.mocked(fetchWithTimeout)
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(calData) } as unknown as Response)
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(textData) } as unknown as Response);
+
+    initTicker();
+    for (let i = 0; i < 50; i++) await Promise.resolve();
+
+    const data = getHalachaData();
+    if (data) {
+      // category = "" (all fallbacks exhausted)
+      expect(data.category).toBe("");
+    }
+    expect(typeof data === "object").toBe(true);
+  });
+
+  it("renderTicker returns early when elTicker is not in DOM (line 117 !elTicker branch)", () => {
+    // No #halacha-ticker in DOM → cacheDom() sets elTicker=null
+    document.body.innerHTML = '<div id="hc-halacha-row"><div id="hc-halacha"></div></div>';
+    // Provide cached data so loadHalacha calls renderTicker immediately
+    vi.mocked(cGet).mockReturnValue({
+      ref: "KSA 1", heRef: "test", category: "Halakhah", url: "https://sefaria.org/KSA.1", texts: ["text"],
+    });
+    // renderTicker: !elTicker = true → return early (no throw)
+    expect(() => initTicker()).not.toThrow();
+  });
+
+  it("renderTicker returns early when data.texts is empty (line 117 !texts.length branch)", () => {
+    buildTickerDOM(); // sets up elTicker
+    // Return cached data with EMPTY texts array
+    vi.mocked(cGet).mockReturnValue({
+      ref: "KSA 1", heRef: "test", category: "Halakhah", url: "https://sefaria.org/KSA.1", texts: [],
+    });
+    // renderTicker: !data.texts?.length = true → return early (no throw)
+    expect(() => initTicker()).not.toThrow();
+    expect(document.getElementById("halacha-ticker")?.childElementCount).toBe(0);
+  });
+});

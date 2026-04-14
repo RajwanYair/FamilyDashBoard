@@ -1808,3 +1808,62 @@ describe("Stocks — initStocksCard closed market interval (line 749)", () => {
     expect(vi.mocked(scheduleCard)).toHaveBeenCalled();
   });
 });
+
+// ── initStocksCard STOCKS_OPEN branch (line 749 TRUE branch) ─────────────────
+
+describe("Stocks — initStocksCard market-open interval (line 749 TRUE branch)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("uses STOCKS_OPEN interval when market is open (NYSE weekday 14:30-21:00 UTC)", async () => {
+    vi.useFakeTimers();
+    // Tuesday 15:00 UTC = NYSE market open (14:30-21:00 UTC)
+    vi.setSystemTime(new Date("2024-01-09T15:00:00Z"));
+    document.body.innerHTML = `
+      <div id="stocks-body"></div>
+      <div id="stk-summary"></div>
+      <div id="stk-mkt-badge"></div>
+      <div id="stk-mkt-countdown"></div>
+    `;
+    const { scheduleCard } = await import("@/cards/base-card");
+    vi.mocked(scheduleCard).mockClear();
+    expect(() => initStocksCard()).not.toThrow();
+    // isMarketOpen() = true → STOCKS_OPEN branch used
+    expect(vi.mocked(scheduleCard)).toHaveBeenCalled();
+  });
+});
+
+// ── renderPortfolioRow totalCost=0 branch (line 664 FALSE) ───────────────────
+
+describe("Stocks — renderPortfolioRow totalCost=0 branch (line 664)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("uses 0 for pnlPct when totalCost is 0 (line 664 FALSE branch)", () => {
+    document.body.innerHTML = `
+      <div id="stk-total-row" style="display:none"></div>
+      <div id="stk-total-val"></div>
+      <div id="stk-total-pnl"></div>
+      <div id="header-portfolio-pl" style="display:none"></div>
+    `;
+    // Portfolio entry with cost=0 → totalCost = 0 → ternary FALSE branch
+    const portfolio = { AAPL: { shares: 10, cost: 0 } };
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify(portfolio));
+    // cache a price for AAPL
+    cSet("stk-AAPL", {
+      chart: {
+        result: [{ meta: { regularMarketPrice: 180, previousClose: 175, currency: "USD", regularMarketVolume: 0 }, indicators: { quote: [{ close: [175, 180] }] } }],
+        error: null,
+      },
+    });
+    expect(() => renderPortfolioRow()).not.toThrow();
+    // pnlPct = 0 since totalCost = 0 — chip renders with "+0.0%"
+    const chip = document.getElementById("header-portfolio-pl");
+    expect(chip?.textContent).toContain("0.0%");
+  });
+});

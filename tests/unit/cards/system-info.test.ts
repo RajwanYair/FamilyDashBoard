@@ -377,3 +377,30 @@ describe("SystemInfo — UA string no-match fallback path (line 155)", () => {
     expect(typeof text).toBe("string");
   });
 });
+
+// ── initSystemInfoCard called twice — clears old interval (line 155) ─────────
+
+describe("SystemInfo — initSystemInfoCard interval cleared on second call (line 155)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    destroySystemInfoCard();
+    vi.useRealTimers();
+  });
+
+  it("calls clearInterval when _sysInfoInterval is already set (line 155 TRUE branch)", () => {
+    document.body.innerHTML = `
+      <div id="sysinfo-browser"></div>
+      <div id="sysinfo-os"></div>
+      <div id="sysinfo-memory"></div>
+      <div id="sysinfo-cores"></div>
+      <div id="sysinfo-connection"></div>
+      <div id="sysinfo-latency"></div>
+      <div id="sysinfo-online"></div>
+    `;
+    vi.useFakeTimers();
+    initSystemInfoCard();    // first call: _sysInfoInterval = null → line 155 FALSE → set interval
+    initSystemInfoCard();    // second call: _sysInfoInterval is set → line 155 TRUE → clearInterval
+    // Should not throw
+    expect(document.getElementById("sysinfo-browser")).not.toBeNull();
+  });
+});

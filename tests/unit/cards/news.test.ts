@@ -1506,3 +1506,25 @@ describe("News — fetchAllNews sort and dedup path", () => {
     expect(document.getElementById("rss-scroll")).not.toBeNull();
   });
 });
+
+// ── loadVisited catch path (line 141) via dynamic import ────────────────────
+
+describe("News — loadVisited catch path via fresh module (line 141)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    sessionStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("resets _visited to empty Set when sessionStorage has invalid JSON (line 141)", async () => {
+    // Set CORRUPT data BEFORE module import so loadVisited() in cacheDom() finds it
+    sessionStorage.setItem("rss_visited_v1", "{{not-valid-json");
+    vi.resetModules();
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    const mod = await import("@/cards/news/news");
+    // cacheDom() → loadVisited() → JSON.parse throws → catch → _visited = new Set()
+    mod.cacheDom();
+    // isVisited should return false (empty visited set from catch)
+    expect(mod.isVisited("any-url")).toBe(false);
+  });
+});

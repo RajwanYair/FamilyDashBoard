@@ -242,6 +242,14 @@ describe("Tasks — initTasksCard / destroyTasksCard", () => {
     initTasksCard();
     expect(() => destroyTasksCard()).not.toThrow();
   });
+
+  it("clearInterval fires when initTasksCard called twice (line 175 TRUE branch)", () => {
+    vi.useFakeTimers();
+    initTasksCard();         // sets _tasksInterval
+    initTasksCard();         // _tasksInterval is now non-null → line 175 clears it
+    // No throw expected
+    expect(document.getElementById("tasks-list")).not.toBeNull();
+  });
 });
 
 // ── tasksCard CardDefinition ─────────────────────────────────────────────────
