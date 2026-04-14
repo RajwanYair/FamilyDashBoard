@@ -277,33 +277,46 @@ describe("Currency — fetchCurrency fallback API", () => {
   });
 
   it("falls back to second API when first returns non-ok", async () => {
+    // fetchCurrency now uses fetchJSON (proxy chain) internally.
+    // Mock: first call (direct primary URL) fails, subsequent calls succeed.
     let callNum = 0;
     vi.stubGlobal(
       "fetch",
-      vi.fn(async function () {
+      vi.fn(async function (url: string) {
         callNum++;
+        // First direct attempt fails; all subsequent calls (proxy chain) succeed
         if (callNum === 1) return { ok: false, json: async () => ({}) };
-        return { ok: true, json: async () => ({ rates: MOCK_RATES }) };
+        // allorigins wraps content; other proxies return JSON directly
+        const isAllOrigins = String(url).includes("allorigins");
+        const payload = isAllOrigins
+          ? { contents: JSON.stringify({ rates: MOCK_RATES }) }
+          : { rates: MOCK_RATES };
+        return { ok: true, json: async () => payload };
       }),
     );
     const rates = await fetchCurrency();
     expect(rates).toHaveProperty("USD");
-    expect(callNum).toBe(2);
+    expect(callNum).toBeGreaterThanOrEqual(2);
   });
 
   it("falls back to second API when first returns empty rates", async () => {
     let callNum = 0;
     vi.stubGlobal(
       "fetch",
-      vi.fn(async function () {
+      vi.fn(async function (url: string) {
         callNum++;
+        // First call returns empty rates → caught by the empty-check → continues
         if (callNum === 1)
           return { ok: true, json: async () => ({ rates: {} }) };
-        return { ok: true, json: async () => ({ rates: MOCK_RATES }) };
+        const isAllOrigins = String(url).includes("allorigins");
+        const payload = isAllOrigins
+          ? { contents: JSON.stringify({ rates: MOCK_RATES }) }
+          : { rates: MOCK_RATES };
+        return { ok: true, json: async () => payload };
       }),
     );
     const rates = await fetchCurrency();
     expect(rates).toHaveProperty("USD");
-    expect(callNum).toBe(2);
+    expect(callNum).toBeGreaterThanOrEqual(2);
   });
 });

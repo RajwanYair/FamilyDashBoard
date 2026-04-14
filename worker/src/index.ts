@@ -19,10 +19,9 @@ export interface Env {
 }
 
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://rajwanyair.github.io",
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Max-Age": "86400",
-  "Vary": "Origin",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "geolocation=(), microphone=(), camera=()",

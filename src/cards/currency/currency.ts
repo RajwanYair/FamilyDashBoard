@@ -10,6 +10,7 @@
 import { createCardLoader, scheduleCard } from "../base-card";
 import { INTERVALS, CUR_TILES, API } from "../../core/constants";
 import { diagLog } from "../../core/diag";
+import { fetchJSON } from "../../core/fetch";
 import type { CurrencyResponse } from "../../types/api";
 
 // ── State ──
@@ -70,14 +71,11 @@ export function cacheDom(): void {
 }
 
 // ── Fetch exchange rates ──
-const CUR_APIS = [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK];
-
 export async function fetchCurrency(): Promise<Record<string, number>> {
-  for (const apiUrl of CUR_APIS) {
+  const apis = [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK] as const;
+  for (const apiUrl of apis) {
     try {
-      const res = await fetch(apiUrl);
-      if (!res.ok) continue;
-      const json = (await res.json()) as CurrencyResponse;
+      const json = await fetchJSON<CurrencyResponse>(apiUrl);
       if (json.rates && Object.keys(json.rates).length > 0) {
         diagLog(`[currency] Rates OK from ${apiUrl}`);
         return json.rates;
