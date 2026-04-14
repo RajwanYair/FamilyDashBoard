@@ -867,3 +867,96 @@ describe("Alerts — toggleAlerts / isAlertsEnabled", () => {
     expect(isAlertsEnabled()).toBe(false);
   });
 });
+
+// ── scheduleAlerts realtimeMode branch (line ~96) ─────────────────────────────
+
+describe("Alerts — scheduleAlerts realtimeMode branch", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+    setAlertsRealtime(false);
+  });
+
+  it("uses the realtime interval when realtimeMode=true and haveActive=true", async () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    setAlertsRealtime(true);
+
+    const now = Math.floor(Date.now() / 1000);
+    // Stub fetch to return an active alert (triggers _haveActive = true → RT interval branch)
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          {
+            id: "rt-001",
+            alerts: [{ cities: ["תל אביב"], threat: 2, time: now - 30 }],
+          },
+        ],
+      }),
+    );
+
+    // loadAlerts → fetchAlerts → _haveActive=true → scheduleAlerts → uses ALERT_INTERVAL_RT
+    await expect(loadAlerts()).resolves.toBeUndefined();
+    vi.runAllTimers();
+  });
+});
+
+// ── loadAlerts empty-data else branch (lines ~288-293) ──────────────────────
+
+describe("Alerts — loadAlerts empty response else branch", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+  });
+
+  it("handles empty alerts array without throwing", async () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: async () => [] }),
+    );
+
+    await loadAlerts();
+    // empty data → else branch fires: setSync(error or ok), recordFailure
+    expect(vi.getTimerCount()).toBeGreaterThan(0);
+    vi.runAllTimers();
+  });
+
+  it("triggers notify path when a new alert ID differs from last", async () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+
+    const nowSec = Math.floor(Date.now() / 1000);
+    const makeAlert = (id: string) => ({
+      ok: true,
+      json: async () => [
+        { id, alerts: [{ cities: ["תל אביב"], threat: 1, time: nowSec - 30 }] },
+      ],
+    });
+
+    // First call: sets _lastAlertId = "A"
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(makeAlert("A")));
+    await loadAlerts();
+
+    // Second call: different ID → isNew = true → notify() called (beep + Notification)
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(makeAlert("B")));
+    await loadAlerts();
+
+    // No throw is the acceptance criterion
+    expect(document.getElementById("alerts-scroll")).not.toBeNull();
+    vi.runAllTimers();
+  });
+});

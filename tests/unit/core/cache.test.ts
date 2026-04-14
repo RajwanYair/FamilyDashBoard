@@ -260,3 +260,26 @@ describe("Cache — cClear preserves non-prefixed keys", () => {
     localStorage.removeItem("unrelated_key");
   });
 });
+
+// ── cEvict: getItem returns null (line 29 early-exit) ────────────────────────
+
+describe("Cache — cEvict handles getItem returning null (line 29)", () => {
+  afterEach(() => {
+    cClear();
+    vi.restoreAllMocks();
+  });
+
+  it("skips entry when localStorage.getItem returns null for a known key", () => {
+    // Inject a key manually so that localStorage.key(i) sees it, then mock getItem to return null
+    localStorage.setItem("dash_v2_null-test", JSON.stringify({ data: "x", ts: Date.now() }));
+
+    const origGetItem = localStorage.getItem.bind(localStorage);
+    vi.spyOn(localStorage, "getItem").mockImplementation((k: string) => {
+      if (k === "dash_v2_null-test") return null;
+      return origGetItem(k);
+    });
+
+    // Should not throw — the `if (!raw) continue` guard skips this entry
+    expect(() => cEvict()).not.toThrow();
+  });
+});

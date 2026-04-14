@@ -222,3 +222,18 @@ describe("DOM Contract — Status bar", () => {
   it("has #version-badge", () => expect(hasId("version-badge")).toBe(true));
   it("has #refresh-stamp", () => expect(hasId("refresh-stamp")).toBe(true));
 });
+
+// ── Tasks card buttons (v7.1) ──
+
+describe("DOM Contract — Tasks card action buttons", () => {
+  it("has #tasks-mark-all-btn", () =>
+    expect(hasId("tasks-mark-all-btn")).toBe(true));
+  it("has #tasks-reset-btn", () =>
+    expect(hasId("tasks-reset-btn")).toBe(true));
+});
+
+// ── Currency last-fetch chip (v7.1) ──
+
+describe("DOM Contract — Currency last-fetch chip", () => {
+  it("has #cur-last-fetch", () => expect(hasId("cur-last-fetch")).toBe(true));
+});

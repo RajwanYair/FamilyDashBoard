@@ -1290,6 +1290,28 @@ describe("Weather — inline coverage: renderWeather sunrise/sunset (line 304)",
     // line 304 executed → wx-rise has a time string
     expect(rise.textContent).toBeTruthy();
   });
+
+  it("skips sunset text when sunset[0] is null → ?? '' fallback (line 302)", () => {
+    document.body.innerHTML = `
+      <div id="top-temp"></div><div id="wx-temp"></div>
+      <div id="wx-desc"></div><div id="wx-icon"></div>
+      <div id="wx-wind"></div><div id="wx-hum"></div>
+      <div id="wx-uv"></div><div id="wx-rise"></div>
+      <div id="wx-hourly"></div>
+      <div id="wx-forecast"></div>
+      <div id="wx-minmax"></div>
+      <div id="wx-week-summary"></div>
+      <div id="wx-feels"></div>
+      <span id="wx-sky-pill"></span>
+    `;
+    cacheDom();
+    const data = makeWeather();
+    // sunset[0] = null → new Date(null ?? "") = new Date("") → invalid → wx-rise stays empty
+    data.daily.sunset = [null as unknown as string, "2024-01-02T17:00:00"];
+    renderWeather(data);
+    const rise = document.getElementById("wx-rise")!;
+    expect(rise.textContent).toBe(""); // invalid date → no update
+  });
 });
 
 describe("Weather — inline coverage: city tab click handler (line 353)", () => {
@@ -1555,6 +1577,29 @@ describe("Weather — renderWeather without daily data", () => {
     // wx-rise should not be updated (daily is null)
     expect(document.getElementById("wx-rise")?.textContent).toBe("");
     expect(document.getElementById("wx-minmax")?.textContent).toBe("");
+  });
+
+  it("renderWeather weekly summary with unknown weather code → emoji fallback (line 295)", () => {
+    // Use weather_code=10 in positions 1-7 (not in WX_EMOJI) → domEmoji = "🌡️" fallback
+    const data = makeWeather();
+    // Replace weather_code with code 10 (not in WX_EMOJI map) for positions 1-7
+    data.daily.weather_code = [0, 10, 10, 10, 10, 10, 10, 10];
+    renderWeather(data);
+    const summary = document.getElementById("wx-week-summary")!;
+    // domEmoji = WX_EMOJI[10] ?? "🌡️" = "🌡️" (10 not in map)
+    expect(summary.textContent).toContain("🌡️");
+  });
+
+  it("renderWeather weekly summary with all-null weather codes → codes[0]??0 fallback (line 287)", () => {
+    // weather_code positions 1-7 are null → codes=[] → codes[0]??0 = 0 → WX_EMOJI[0]="☀️"
+    const data = makeWeather();
+    data.daily.weather_code = [0, null as unknown as number, null as unknown as number,
+      null as unknown as number, null as unknown as number, null as unknown as number,
+      null as unknown as number, null as unknown as number];
+    renderWeather(data);
+    const summary = document.getElementById("wx-week-summary")!;
+    // dominant = 0 (from ?? 0 fallback), WX_EMOJI[0] = "☀️"
+    expect(summary.textContent).toContain("☀️");
   });
 
   it("renderWeather city tab click with invalid lat/lon returns early", async () => {

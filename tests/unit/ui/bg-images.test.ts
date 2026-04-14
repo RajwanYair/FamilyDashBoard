@@ -291,3 +291,48 @@ describe("BgImages — rotateBgImage Image.onload crossfade", () => {
     expect(() => rotateBgImage()).not.toThrow();
   });
 });
+// ── rotateBgImage img.onload crossfade (lines 38-44) ─────────────────
+
+describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("swaps opacity layers when image loads successfully", async () => {
+    vi.resetModules();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ bgImages: ["https://example.com/img1.jpg", "https://example.com/img2.jpg"] }),
+    );
+    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
+
+    // Intercept Image constructor so onload fires immediately on src assignment
+    const OrigImage = globalThis.Image;
+    class AutoFireImage {
+      onload: (() => void) | null = null;
+      set src(_v: string) {
+        if (this.onload) this.onload();
+      }
+    }
+    vi.stubGlobal("Image", AutoFireImage);
+
+    initBgImages();
+    expect(() => rotateBgImage()).not.toThrow();
+
+    vi.stubGlobal("Image", OrigImage);
+  });
+
+  it("does not throw when layers are null before rotateBgImage img.onload", async () => {
+    vi.resetModules();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ bgImages: ["https://example.com/img1.jpg", "https://example.com/img2.jpg"] }),
+    );
+    const { rotateBgImage } = await import("@/ui/bg-images");
+    // Layers not initialized (→ _layerA/B are null) — onload guard must not throw
+    expect(() => rotateBgImage()).not.toThrow();
+  });
+});

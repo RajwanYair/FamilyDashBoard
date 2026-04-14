@@ -283,3 +283,56 @@ describe("Diag Overlay — null element branches", () => {
     expect(newLog.textContent).not.toBe("");
   });
 });
+
+// ── renderLog empty state (line 60) ─────────────────────────────────────────
+
+describe("DiagOverlay — renderLog empty state", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <div id="diag-log"></div>
+      </dialog>`;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    clearDiag();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("shows Hebrew empty message when no diag entries exist", () => {
+    openDiagOverlay();
+    const log = document.getElementById("diag-log")!;
+    expect(log.textContent).toBe("אין רשומות אבחון");
+  });
+});
+
+// ── initDiagOverlay copy-btn wiring (line 81) ───────────────────────────────
+
+describe("DiagOverlay — initDiagOverlay wires copy button", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("clicking diag-copy-btn triggers copyDiagLog without throwing", () => {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay"><div id="diag-log"></div></dialog>
+      <button id="diag-copy-btn">📋 העתק לוג</button>`;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    vi.stubGlobal("navigator", {
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    });
+    initDiagOverlay();
+    const btn = document.getElementById("diag-copy-btn")!;
+    expect(() => btn.click()).not.toThrow();
+  });
+
+  it("initDiagOverlay handles missing copy button without throwing", () => {
+    document.body.innerHTML = `<dialog id="diag-overlay"><div id="diag-log"></div></dialog>`;
+    polyfillDialog(document.getElementById("diag-overlay"));
+    // No #diag-copy-btn in DOM — the if-guard (line 82) should skip wiring
+    expect(() => initDiagOverlay()).not.toThrow();
+  });
+});

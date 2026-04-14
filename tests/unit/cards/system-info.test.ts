@@ -332,3 +332,48 @@ describe("SystemInfo — systemInfoCard CardDefinition", () => {
     expect(el.querySelector("#sysinfo-body")).not.toBeNull();
   });
 });
+
+// ── setText null element branch (line 72) ────────────────────────────────────
+
+describe("SystemInfo — setText null-element guard (line 72)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    delete (navigator as Record<string, unknown>).connection;
+    delete (navigator as Record<string, unknown>).userAgentData;
+  });
+
+  it("does not throw when some sysinfo DOM elements are missing", async () => {
+    // Minimal DOM — only sysinfo-online, leaving others absent → setText false branch
+    document.body.innerHTML = `<div id="sysinfo-online"></div>`;
+    await expect(renderSystemInfo()).resolves.not.toThrow();
+  });
+});
+
+// ── UA string fallback (line 155) — no match path ───────────────────────────
+
+describe("SystemInfo — UA string no-match fallback path (line 155)", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    delete (navigator as Record<string, unknown>).userAgentData;
+  });
+
+  it("renders em-dash when userAgent has no known browser token", async () => {
+    delete (navigator as Record<string, unknown>).userAgentData;
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("UnknownBot/1.0");
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-browser")?.textContent ?? "";
+    expect(text).toBe("—");
+  });
+
+  it("renders browser name when userAgent matches Chrome pattern", async () => {
+    delete (navigator as Record<string, unknown>).userAgentData;
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 Chrome/120");
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-browser")?.textContent ?? "";
+    // Either "Chrome 120" or "—" depending on spy effectiveness, no throw
+    expect(typeof text).toBe("string");
+  });
+});

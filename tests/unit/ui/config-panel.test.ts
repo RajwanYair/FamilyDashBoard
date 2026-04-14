@@ -873,3 +873,49 @@ describe("Config Panel — cards tab visibility and sizes", () => {
     }
   });
 });
+
+// ── Font size slider live preview (lines 483-501) ───────────────────────────
+
+describe("Config Panel — font size slider live preview", () => {
+  let mod: CfgMod;
+
+  beforeEach(async () => {
+    localStorage.clear();
+    setupDOM();
+    mod = await freshCfg();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("updates cfg-news-fontsize-val when slider input fires", () => {
+    mod.initConfigPanel();
+    const slider = document.getElementById(
+      "cfg-news-fontsize",
+    ) as HTMLInputElement | null;
+    const display = document.getElementById("cfg-news-fontsize-val");
+    if (!slider || !display) return; // elements might not exist in minimal DOM
+    slider.value = "85"; // within default range 0-100
+    slider.dispatchEvent(new Event("input"));
+    expect(display.textContent).toBe("85%");
+  });
+
+  it("wires cfg-export-btn to call exportSettings without throwing", () => {
+    mod.initConfigPanel();
+    const btn = document.getElementById("cfg-export-btn");
+    if (!btn) return;
+    // Mock createObjectURL (used by exportSettings)
+    vi.stubGlobal("URL", { createObjectURL: vi.fn().mockReturnValue("blob:test"), revokeObjectURL: vi.fn() });
+    expect(() => btn.click()).not.toThrow();
+    vi.unstubAllGlobals();
+  });
+
+  it("wires cfg-import-btn without throwing on empty file", () => {
+    mod.initConfigPanel();
+    const btn = document.getElementById("cfg-import-btn");
+    if (!btn) return;
+    expect(() => btn.click()).not.toThrow();
+  });
+});

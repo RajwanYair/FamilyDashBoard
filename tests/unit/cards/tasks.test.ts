@@ -447,3 +447,46 @@ describe("Tasks — resetDoneToday", () => {
     expect(() => resetDoneToday()).not.toThrow();
   });
 });
+
+// ── initTasksCard button wiring (line 175) ───────────────────────────────────
+
+describe("Tasks — initTasksCard wires button click handlers (line 175)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <button id="tasks-mark-all-btn">סמן הכל</button>
+      <button id="tasks-reset-btn">איפוס</button>`;
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
+    );
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+    destroyTasksCard();
+  });
+
+  it("clicking tasks-mark-all-btn triggers markAllDone", () => {
+    vi.useFakeTimers();
+    initTasksCard();
+    document.getElementById("tasks-mark-all-btn")!.click();
+    const raw = localStorage.getItem("dash_tasks_done");
+    expect(raw).not.toBeNull();
+  });
+
+  it("clicking tasks-reset-btn triggers resetDoneToday", () => {
+    vi.useFakeTimers();
+    // Pre-mark all done
+    localStorage.setItem(
+      "dash_tasks_done",
+      JSON.stringify({ "עמרי::🧹 לנקות": true }),
+    );
+    initTasksCard();
+    document.getElementById("tasks-reset-btn")!.click();
+    expect(localStorage.getItem("dash_tasks_done")).toBeNull();
+  });
+});

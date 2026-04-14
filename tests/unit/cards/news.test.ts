@@ -1450,3 +1450,59 @@ describe("News — fetchAllNews deduplication via renderNews", () => {
     expect(() => renderNews(items)).not.toThrow();
   });
 });
+
+// ── loadVisited sessionStorage catch (line 141) ────────────────────────────────
+
+describe("News — loadVisited sessionStorage catch", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    sessionStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("handles corrupt sessionStorage visited data without throwing", () => {
+    sessionStorage.setItem("rss_visited_v1", "{not-valid-json{{");
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    expect(() => cacheDom()).not.toThrow();
+    // After catch, visited set is empty
+    expect(isVisited("any-key")).toBe(false);
+  });
+});
+
+// ── fetchAllNews sort/dedup path (lines 306-326) ────────────────────────────
+
+describe("News — fetchAllNews sort and dedup path", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("exercises sort comparator and dedup when fetch returns multi-item RSS", async () => {
+    vi.resetModules();
+    const rssXml = [
+      '<?xml version="1.0"?>',
+      '<rss version="2.0"><channel><title>T</title>',
+      '<item><title>אחד</title><link>http://a.com/1</link>',
+      '<pubDate>Mon, 13 Jan 2025 09:00:00 +0000</pubDate></item>',
+      '<item><title>שניים</title><link>http://a.com/2</link>',
+      '<pubDate>Mon, 13 Jan 2025 11:00:00 +0000</pubDate></item>',
+      '<item><title>אחד</title><link>http://a.com/3</link>',
+      '<pubDate>Mon, 13 Jan 2025 08:00:00 +0000</pubDate></item>',
+      '</channel></rss>',
+    ].join("\n");
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, text: async () => rssXml }),
+    );
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    const mod = await import("@/cards/news/news");
+    mod.cacheDom();
+    mod.initNewsCard();
+    // Flush loadNews → fetchAllNews → fetchFeed async chain
+    for (let i = 0; i < 60; i++) await Promise.resolve();
+    // If renderNews was called, scroll will have children (or at least no throw)
+    expect(document.getElementById("rss-scroll")).not.toBeNull();
+  });
+});

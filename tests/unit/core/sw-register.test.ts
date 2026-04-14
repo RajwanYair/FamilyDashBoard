@@ -608,3 +608,39 @@ describe("SW Register — showUpdateBanner with empty DOM", () => {
     expect(() => stateChangeCb?.()).not.toThrow();
   });
 });
+
+// ── file:// protocol guard (lines 23-24) ─────────────────────────────────────
+
+describe("SW Register — file:// protocol guard", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("returns early without registering when protocol is file:", async () => {
+    const registerSpy = vi.fn().mockResolvedValue({});
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { register: registerSpy, addEventListener: vi.fn(), controller: null },
+      writable: true,
+      configurable: true,
+    });
+    // Override location.protocol
+    Object.defineProperty(window, "location", {
+      value: { protocol: "file:", href: "file:///index.html", hostname: "localhost" },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    expect(registerSpy).not.toHaveBeenCalled();
+
+    // Restore location to http
+    Object.defineProperty(window, "location", {
+      value: { protocol: "http:", href: "http://localhost/", hostname: "localhost" },
+      writable: true,
+      configurable: true,
+    });
+  });
+});

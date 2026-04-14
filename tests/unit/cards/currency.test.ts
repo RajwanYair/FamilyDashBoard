@@ -359,3 +359,41 @@ describe("Currency — formatRelativeTime", () => {
     expect(result).toBe("לפני 1 דק׳");
   });
 });
+
+// ── renderCurrency last-fetch chip (lines 159-165) ────────────────────────────
+
+describe("Currency — renderCurrency updates last-fetch chip", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="curUsd"></div><div id="curUsdChg"></div>
+      <div id="curEur"></div><div id="curEurChg"></div>
+      <div id="curGbp"></div><div id="curGbpChg"></div>
+      <div id="curGold"></div><div id="curGoldChg"></div>
+      <div id="curSilver"></div><div id="curSilverChg"></div>
+      <div id="currency-body"></div>
+      <span id="cur-last-fetch" title=""></span>`;
+    cacheDom();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+  });
+
+  it("sets textContent to time string on last-fetch chip after renderCurrency", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T14:30:00"));
+    renderCurrency(MOCK_RATES);
+    const chip = document.getElementById("cur-last-fetch")!;
+    // textContent should be a time string like "14:30" (Hebrew locale)
+    expect(chip.textContent).not.toBe("--:--");
+    expect(chip.textContent!.length).toBeGreaterThan(0);
+  });
+
+  it("sets title attribute on last-fetch chip after renderCurrency", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T14:30:00"));
+    renderCurrency(MOCK_RATES);
+    const chip = document.getElementById("cur-last-fetch")!;
+    expect(chip.title).toContain("עדכון אחרון");
+  });
+});

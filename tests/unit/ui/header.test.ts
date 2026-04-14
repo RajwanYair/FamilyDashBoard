@@ -682,3 +682,61 @@ describe("Header — updateBirthdayChip next-year birthday path", () => {
     expect(chip.textContent).not.toContain("רחוק");
   });
 });
+
+// ── getGreeting noon + evening branches (lines 32/33) ───────────────────────────
+
+describe("Header — getGreeting noon branch", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  it("returns noon greeting between 12:00 and 16:59", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T14:00:00"));
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    mod.tickClock();
+    const greeting = document.getElementById("greeting")!;
+    expect(greeting.textContent).toContain("צהריים");
+  });
+
+  it("returns evening greeting between 17:00 and 20:59", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T19:00:00"));
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    mod.tickClock();
+    const greeting = document.getElementById("greeting")!;
+    expect(greeting.textContent).toContain("ערב");
+  });
+
+  it("returns night greeting after 21:00", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T22:00:00"));
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    mod.tickClock();
+    const greeting = document.getElementById("greeting")!;
+    expect(greeting.textContent).toContain("לילה");
+  });
+
+  it("returns morning greeting for member at index-based rotation", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T08:00:00"));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ members: ["עמרי", "ריבה"] }),
+    );
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    mod.tickClock();
+    const greeting = document.getElementById("greeting")!;
+    expect(greeting.textContent).toContain("בוקר");
+  });
+});

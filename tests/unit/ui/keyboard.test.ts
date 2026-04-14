@@ -89,6 +89,15 @@ describe("Keyboard — initKeyboard built-in shortcuts", () => {
     ta.dispatchEvent(new KeyboardEvent("keydown", { key: "e", bubbles: true }));
     expect(handler).not.toHaveBeenCalled();
   });
+
+  it("ignores keydown when target is SELECT", () => {
+    const handler = vi.fn();
+    registerKey("r", "should ignore in select", handler);
+    const sel = document.createElement("select");
+    document.body.appendChild(sel);
+    sel.dispatchEvent(new KeyboardEvent("keydown", { key: "r", bubbles: true }));
+    expect(handler).not.toHaveBeenCalled();
+  });
 });
 
 describe("Keyboard — closeAllOverlays", () => {
