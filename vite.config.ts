@@ -1,13 +1,24 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
 
 const tempBase = join(tmpdir(), "fdb-dev");
 
+/** Remove crossorigin attributes so the built app loads from file:// URLs.
+ *  Chrome blocks crossorigin CORS fetches on file:// origins; without these
+ *  attributes standard module loading works fine (no SRI hashes are used). */
+const removeCrossOrigin: Plugin = {
+  name: "remove-crossorigin",
+  transformIndexHtml(html: string): string {
+    return html.replace(/ crossorigin(?:="[^"]*")?/g, "");
+  },
+};
+
 export default defineConfig({
   root: "src",
   base: "/FamilyDashBoard/",
   cacheDir: join(tempBase, ".vite"),
+  plugins: [removeCrossOrigin],
 
   build: {
     outDir: resolve(__dirname, "dist"),

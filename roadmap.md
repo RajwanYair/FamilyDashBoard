@@ -10,44 +10,28 @@
 
 | Version    | Status      | Tests                       | Highlights |
 | ---------- | ----------- | --------------------------- | ---------- |
-| v5.x       | ✅ Released  | 1084 mocha / 61 suites      | Single-file HTML era (archived) |
-| v6.0       | ✅ Released  | 510 Vitest / 29 suites      | Full TypeScript modular rewrite |
+| v5.x       | ✅ Released  | 1084 mocha / 61 suites      | Single-file HTML era (archived as `BestDashBoard.html`) |
+| v6.0       | ✅ Released  | 510 Vitest / 29 suites      | Full TypeScript modular rewrite (Vite 8 + TS 5.9) |
 | v6.1       | ✅ Released  | 574 Vitest / 30 suites      | Birthday chip, bookmarks, market badge, bg rotation |
-| v6.2       | ✅ Released  | 849 Vitest / 31 suites      | 50+ features: portfolio, alerts, weather tabs, news search |
+| v6.2       | ✅ Released  | 849 Vitest / 31 suites      | Portfolio, alerts, weather tabs, news search, 50+ features |
 | v6.3       | ✅ Released  | 896 Vitest / 31 suites      | Coverage sprint: news, alerts, bg-images, config-panel |
 | v6.4       | ✅ Released  | 932 Vitest / 32 suites      | Coverage sprint: stocks, hebrew-cal, ticker, calendar |
 | v6.5       | ✅ Released  | 1240 Vitest / 33 suites     | Coverage sprint: cache, base-card, motivation, maximize |
-| **v7.0**   | 🔄 Alpha    | 1274 Vitest / 36 suites     | Card type system, tasks card, system-info, CSS @layer, dialog migration |
-| v7.1       | 📋 Planned  | —                           | Full card registry UI, drag-and-drop layout, card add/remove |
+| **v7.0**   | ✅ Released  | 1390+ Vitest / 37 suites    | Card registry, tasks card, system-info, CSS @layer, dialog migration, 6 themes, `removeCrossOrigin` build plugin |
+| v7.1       | 📋 Planned  | —                           | Adaptive maximize, drag-and-drop layout, card add/remove |
 | v7.2       | 💡 Idea     | —                           | Multi-user profiles, cloud sync via Cloudflare KV |
 
 ---
 
-## v7.0 — Alpha (in progress)
+## v7.0 — Released
 
-### Completed in v7.0-alpha
+Card type system · card registry · tasks card · system-info card · 6th theme (Rose) · CSS `@layer` · CSS `@container` · `color-mix()` tokens · dialog migration (`<dialog>` + `showModal()`) · worker-first fetch (`fetchViaWorker`) · `removeCrossOrigin` build plugin (file:// compatibility) · ESLint hardening · shared npm model · 1390+ tests / 37 suites.
 
-- [x] **Card type system** (`src/types/card.ts`): `CardDefinition`, `CardSlot`, `CardRegistryEntry`
-- [x] **Card registry** (`src/core/card-registry.ts`): dynamic `import()` loader, `registerCard/getCard/listCards`
-- [x] **Tasks card** (`src/cards/tasks/`): family chore board, localStorage-persisted, daily 6AM reset
-- [x] **System Info card** (`src/cards/system-info/`): battery, network, timing, browser — zero network
-- [x] **6th theme "Rose Night"**: deep crimson/burgundy palette
-- [x] **CSS `@layer`**: explicit layer order (`tokens→themes→base→layout→components→animations`)
-- [x] **CSS `@container`**: card-level inline-size container queries
-- [x] **CSS `color-mix()` tokens**: `--accent-subtle`, `--bg-overlay`, `--positive-subtle`, `--negative-subtle`
-- [x] **Dialog migration**: `#help-overlay` + `#diag-overlay` → `<dialog>` with `showModal()/close()/::backdrop`
-- [x] **Worker-first fetch**: `fetchViaWorker<T>()` + `fetchJSONWithWorker<T>()` using Cloudflare Worker
-- [x] **Security**: `renderStocksShell()` replaced `innerHTML` with `DocumentFragment` + `createElement`
-- [x] **Shared npm model**: all devDeps at parent `MyScripts/`; CI uses `install-tools.sh`
-- [x] **ESLint hardening**: `no-explicit-any` error, `prefer-const` error, `consistent-type-imports` + `no-unnecessary-type-assertion`
-- [x] **Tests**: tasks (9), card-registry (12), worker-fetch (9) — 3 new suites
+### Remaining for v7.0 release (deferred to v7.1)
 
-### Remaining for v7.0 release
-
-- [ ] Card registry → HTML: dynamic `data-card-id` slots rendered by registry (replace static HTML)
+- [ ] Card registry → HTML: dynamic `data-card-id` slots rendered by registry
 - [ ] Card add/remove via config panel (registry-aware)
-- [ ] Cloudflare Worker migration for all 6 API routes (complete worker-first for all cards)
-- [ ] Comprehensive `fetchViaWorker` tests with mock Cloudflare env
+- [ ] Cloudflare Worker migration for all remaining API routes
 - [ ] Final v7.0 release tagging + changelog
 
 ---
@@ -59,6 +43,139 @@
 - Card size control: s/m/l chips in config panel
 - URL-based config sharing (base64-encoded layout in `#hash`)
 - **Replace hc-chore with Tasks card integration**: the old `renderChores()` hardcoded wheel (rotated by weekday % array length, stored as raw JSON in `dash_v2_chores`) has been removed. Replace with a live-synced display inside the Hebrew Calendar card that reads from the existing Tasks card store (`src/cards/tasks/`), showing today's pending/assigned tasks without duplicating state. Consider a `getTasksForToday()` bridge function, or a shared observable task store.
+- **Adaptive card maximize** — see detailed spec below.
+
+---
+
+## Feature Spec: Adaptive Card Maximize (v7.1)
+
+### Problem
+
+The current FLIP-animation maximize (`src/ui/maximize.ts` + `src/styles/maximize.css`) expands a card
+to fill the viewport using `position: fixed`, but font sizes are bumped by hardcoded static `em`
+multipliers per card type (e.g. `.card.maximized .news-body { font-size: 1.35em }`).
+These do **not** scale relative to the actual new card size — on a very large 4K display they are
+too small; on a small 720p display they may be too large. Content also does not fill the available
+height, leaving dead whitespace in taller cards.
+
+### Goal
+
+When a card is maximized, its content and base font size should scale dynamically to fill the full
+expanded size, proportional to the ratio of the expanded card area to the original collapsed area,
+so every maximized card looks like it was designed for that size.
+
+### Design Decisions
+
+| Decision | Rationale |
+|---|---|
+| JS computes the scale ratio, CSS applies it | FLIP already captures both rects; ratio = `expandedWidth / collapsedWidth`. Avoids container-query complexity and works with existing `@layer` architecture. |
+| `--max-font-scale` CSS custom property on the card element | Single property drives all `font-size`, `gap`, and `padding` in CSS; easy to animate; zero coupling between JS and per-card styles. |
+| `clamp(1, var(--max-font-scale, 1), 4)` guard | Prevents scale from going absurdly large on ultra-wide displays or very small cards. |
+| Per-card-type `overflow` and `flex` rules remain in CSS | JS only sets the scale number; layout strategy per card stays in the CSS layer. |
+| `font-size` transition matches the FLIP duration | Feels cohesive; collapseCard resets the variable after the animation ends. |
+
+### Implementation Plan
+
+#### Step 1 — JS: Compute and inject `--max-font-scale` (`src/ui/maximize.ts`)
+
+In `expandCard()`, after recording the FLIP rects:
+```ts
+const scaleW = last.width  / first.width;   // e.g. 3.4 on a 1920-wide screen
+const scaleH = last.height / first.height;
+// Use the smaller axis so content is never clipped in the other direction
+const fontScale = Math.min(scaleW, scaleH);
+card.style.setProperty("--max-font-scale", String(parseFloat(fontScale.toFixed(3))));
+```
+
+In `collapseCard()`, after removing the `maximized` class and when the animation ends:
+```ts
+const anim = card.animate([...], { duration: 300, easing: "ease-out" });
+anim.finished.then(() => card.style.removeProperty("--max-font-scale"));
+```
+
+#### Step 2 — CSS: Replace hardcoded `em` multipliers with the computed scale (`src/styles/maximize.css`)
+
+Replace all the per-type static font rules with a single variable-driven rule:
+
+```css
+/* Remove these hardcoded rules: */
+/* .card.maximized .news-body    { font-size: 1.35em; } */
+/* .card.maximized .stocks-body  { font-size: 1.3em;  } */
+/* ... etc ... */
+
+/* Replace with: */
+.card.maximized .card-body,
+.card.maximized .news-body,
+.card.maximized .stocks-body,
+.card.maximized .alerts-body,
+.card.maximized .currency-body,
+.card.maximized .moti-body,
+.card.maximized .hc-body,
+.card.maximized .cal-wrapper {
+  font-size: clamp(1rem, calc(1rem * clamp(1, var(--max-font-scale, 1), 4)), 6rem);
+  transition: font-size 0.3s ease-out;
+}
+```
+
+Cards that require special layout adjustments (centering, no-scroll) keep those existing rules
+untouched (e.g. `justify-content: center` on `.currency-body`, `flex-direction: column` on `.hc-body`).
+
+#### Step 3 — Per-card layout audit
+
+Each card body must fill its new dimensions without overflow or dead space:
+
+| Card | Current issue | Fix |
+|---|---|---|
+| **News** | Scroll container has `max-height`; extra items hidden. | Set `.card.maximized .news-body { max-height: 100%; }` so the flex column fills available height. |
+| **Stocks** | Table column widths use `flex-shrink: 0` + fixed `width`; scaling text may clip cells. | After font scale is applied, re-call `applyHiddenStocks()` to repaint column widths relative to new font. |
+| **Calendar** | `.cal-agenda` has `overflow: auto` — works; but day-header font is a fixed `0.75em`. | Cascade `.cal-agenda` font-size from the parent body so headers inherit scale. |
+| **Weather** | `wx-hourly-chart` max-height removed (already). | Verify `svg` viewBox scales with CSS width; add `width: 100%` if needed. |
+| **Currency** | Flex-center already works. | No change needed. |
+| **Hebrew Cal** | Flex-center already works. | No change needed. |
+| **Alerts** | Items are variable length — may need scrolling. | Keep `overflow: auto`; scaled font makes each alert card taller, which is desirable. |
+
+#### Step 4 — Smooth transition
+
+Both `expandCard` and `collapseCard` trigger the CSS `transition: font-size 0.3s ease-out` rule
+added in Step 2. The FLIP animation (scale transform) and the content font-size transition run in
+parallel, giving a smooth "everything grows together" effect.
+
+For `collapseCard`, clear the variable only **after** the collapse animation finishes (via
+`animation.finished.then(...)`) so the font does not abruptly snap before the card reaches its
+original size.
+
+#### Step 5 — `prefers-reduced-motion` guard
+
+The existing `@media (prefers-reduced-motion: reduce)` block already zeroes out `transition-duration`.
+No changes needed; the font-size transition will be suppressed automatically on accessible setups.
+
+#### Step 6 — Tests (`tests/unit/ui/maximize.test.ts`)
+
+Add to the existing maximize suite:
+
+- `expandCard sets --max-font-scale CSS variable on the card element`
+- `expandCard scale value equals min(expandedW/collapsedW, expandedH/collapsedH)`
+- `collapseCard removes --max-font-scale after animation finishes`
+- `expandCard clamps scale to 4 maximum` (mock a card with 0.001px original size)
+
+#### Step 7 — Acceptance checklist (manual QA)
+
+- [ ] All 8 card types fill their maximized viewport slot with no whitespace dead zones
+- [ ] Font is legible from 3 m on a 1920×1080 display when maximized
+- [ ] Collapsing restores original font size with no visible snap
+- [ ] `prefers-reduced-motion` shows no transition
+- [ ] No horizontal scroll inside any maximized card
+- [ ] `npx eslint src tests --max-warnings 0` passes
+- [ ] `npx tsc --noEmit` passes
+- [ ] All Vitest suites pass (0 failures)
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `src/ui/maximize.ts` | Compute `--max-font-scale` in `expandCard`; clear in `collapseCard.finished.then` |
+| `src/styles/maximize.css` | Replace 8 static em rules with single `clamp()`-driven CSS variable rule |
+| `tests/unit/ui/maximize.test.ts` | 4 new tests for scale computation and variable lifecycle |
 
 ---
 

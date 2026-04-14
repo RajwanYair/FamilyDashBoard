@@ -77,18 +77,29 @@ vi.mock("@/cards/alerts/alerts", () => ({
   initAlertsCard: vi.fn(),
   setAlertsEnabled: vi.fn(),
   setAlertsRealtime: vi.fn(),
+  toggleAlerts: vi.fn(),
+  isAlertsEnabled: vi.fn().mockReturnValue(true),
 }));
 vi.mock("@/cards/hebrew-cal/hebrew-cal", () => ({
   initHebrewCalCard: vi.fn(),
 }));
 vi.mock("@/cards/calendar/calendar", () => ({ initCalendarCard: vi.fn() }));
+vi.mock("@/cards/tasks/tasks", () => ({ initTasksCard: vi.fn() }));
+vi.mock("@/cards/system-info/system-info", () => ({
+  initSystemInfoCard: vi.fn(),
+}));
 
-import { applySeasonClass, init } from "@/main";
+import {
+  applySeasonClass,
+  applyHiddenCards,
+  applyCardLayout,
+  init,
+} from "@/main";
 import { diagLog } from "@/core/diag";
 import { cEvict } from "@/core/cache";
 import { initVisibility } from "@/core/idle";
 import { registerSW } from "@/core/sw-register";
-import { loadConfig } from "@/core/config";
+import { loadConfig, saveConfig, loadConfigFromHash } from "@/core/config";
 import { initTheme, checkAutoTheme } from "@/ui/theme";
 import { initKeyboard, registerKey } from "@/ui/keyboard";
 import { initHeader } from "@/ui/header";
@@ -108,7 +119,11 @@ import {
   initAlertsCard,
   setAlertsEnabled,
   setAlertsRealtime,
+  toggleAlerts,
+  isAlertsEnabled,
 } from "@/cards/alerts/alerts";
+import { initTasksCard } from "@/cards/tasks/tasks";
+import { initSystemInfoCard } from "@/cards/system-info/system-info";
 import { initMotivationCard } from "@/cards/motivation/motivation";
 import { initHebrewCalCard } from "@/cards/hebrew-cal/hebrew-cal";
 import { initCalendarCard } from "@/cards/calendar/calendar";
@@ -792,5 +807,221 @@ describe("Main — init() SW NETWORK_BACK message", () => {
       expect.stringContaining("החיבור חזר"),
       expect.anything(),
     );
+  });
+});
+
+// ── applyHiddenCards ────────────────────────────────────────────────────────
+
+describe("Main — applyHiddenCards", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("hides a card whose id is in hiddenCards", () => {
+    document.body.innerHTML = '<div data-card-id="weather"></div>';
+    applyHiddenCards(["weather"]);
+    const el = document.querySelector<HTMLElement>("[data-card-id='weather']")!;
+    expect(el.style.display).toBe("none");
+  });
+
+  it("shows a card whose id is NOT in hiddenCards", () => {
+    document.body.innerHTML = '<div data-card-id="stocks" style="display:none"></div>';
+    applyHiddenCards([]);
+    const el = document.querySelector<HTMLElement>("[data-card-id='stocks']")!;
+    expect(el.style.display).toBe("");
+  });
+
+  it("handles multiple cards: hides some, shows others", () => {
+    document.body.innerHTML = `
+      <div data-card-id="weather"></div>
+      <div data-card-id="news"></div>
+      <div data-card-id="stocks"></div>
+    `;
+    applyHiddenCards(["weather", "stocks"]);
+    expect(document.querySelector<HTMLElement>("[data-card-id='weather']")!.style.display).toBe("none");
+    expect(document.querySelector<HTMLElement>("[data-card-id='news']")!.style.display).toBe("");
+    expect(document.querySelector<HTMLElement>("[data-card-id='stocks']")!.style.display).toBe("none");
+  });
+
+  it("does not throw when no [data-card-id] elements exist", () => {
+    document.body.innerHTML = "";
+    expect(() => applyHiddenCards(["weather"])).not.toThrow();
+  });
+
+  it("shows all cards when hiddenCards is empty array", () => {
+    document.body.innerHTML = `
+      <div data-card-id="weather" style="display:none"></div>
+      <div data-card-id="news" style="display:none"></div>
+    `;
+    applyHiddenCards([]);
+    expect(document.querySelector<HTMLElement>("[data-card-id='weather']")!.style.display).toBe("");
+    expect(document.querySelector<HTMLElement>("[data-card-id='news']")!.style.display).toBe("");
+  });
+});
+
+// ── applyCardLayout ─────────────────────────────────────────────────────────
+
+describe("Main — applyCardLayout", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("returns early when layout is null", () => {
+    document.body.innerHTML = `
+      <div class="grid-col-left"></div>
+      <div data-card-id="weather"></div>
+    `;
+    expect(() => applyCardLayout(null)).not.toThrow();
+    // card should still be in body, not moved
+    expect(document.querySelector("[data-card-id='weather']")).not.toBeNull();
+  });
+
+  it("moves a card to the correct column", () => {
+    document.body.innerHTML = `
+      <div class="grid-col-left"></div>
+      <div class="grid-col-mid"></div>
+      <div class="grid-col-right"></div>
+      <div data-card-id="weather"></div>
+      <div data-card-id="news"></div>
+    `;
+    applyCardLayout([["weather"], ["news"], []]);
+    const left = document.querySelector(".grid-col-left")!;
+    const mid = document.querySelector(".grid-col-mid")!;
+    expect(left.querySelector("[data-card-id='weather']")).not.toBeNull();
+    expect(mid.querySelector("[data-card-id='news']")).not.toBeNull();
+  });
+
+  it("ignores unknown card ids silently", () => {
+    document.body.innerHTML = `
+      <div class="grid-col-left"></div>
+      <div class="grid-col-mid"></div>
+      <div class="grid-col-right"></div>
+    `;
+    expect(() => applyCardLayout([["nonexistent-card"], [], []])).not.toThrow();
+  });
+
+  it("does not throw when column elements are missing", () => {
+    document.body.innerHTML = '<div data-card-id="weather"></div>';
+    expect(() => applyCardLayout([["weather"], [], []])).not.toThrow();
+  });
+});
+
+// ── Additional card init tests ──────────────────────────────────────────────
+
+describe("Main — init() tasks and system-info cards", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("calls initTasksCard", () => {
+    init();
+    expect(initTasksCard).toHaveBeenCalled();
+  });
+
+  it("calls initSystemInfoCard", () => {
+    init();
+    expect(initSystemInfoCard).toHaveBeenCalled();
+  });
+});
+
+// ── 'a' key handler ──────────────────────────────────────────────────────────
+
+describe("Main — init() 'a' key alerts toggle", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("registers 'a' key for alerts toggle", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    expect(calls.some(([k]) => k === "a")).toBe(true);
+  });
+
+  it("'a' handler calls toggleAlerts and shows toast", () => {
+    vi.mocked(isAlertsEnabled).mockReturnValue(true);
+    init();
+    const aCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "a");
+    expect(aCall).toBeDefined();
+    const handler = aCall![2] as () => void;
+    handler();
+    expect(toggleAlerts).toHaveBeenCalled();
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("התרעות"), 2500);
+  });
+
+  it("'a' handler shows enabled toast when alerts are on", () => {
+    vi.mocked(isAlertsEnabled).mockReturnValue(true);
+    init();
+    const aCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "a");
+    const handler = aCall![2] as () => void;
+    handler();
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("✅"), 2500);
+  });
+
+  it("'a' handler shows disabled toast when alerts are off", () => {
+    vi.mocked(isAlertsEnabled).mockReturnValue(false);
+    init();
+    const aCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "a");
+    const handler = aCall![2] as () => void;
+    handler();
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("❌"), 2500);
+  });
+});
+
+// ── URL hash config import ──────────────────────────────────────────────────
+
+describe("Main — init() URL hash config import", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+    vi.unstubAllGlobals();
+  });
+
+  it("calls saveConfig when loadConfigFromHash returns config", () => {
+    vi.mocked(loadConfigFromHash).mockReturnValueOnce({ theme: "ocean" } as ReturnType<typeof loadConfig>);
+    Object.defineProperty(window, "location", {
+      value: { hash: "#cfg=abc123", pathname: "/", search: "" },
+      configurable: true,
+    });
+    Object.defineProperty(window, "history", {
+      value: { replaceState: vi.fn() },
+      configurable: true,
+    });
+    init();
+    expect(vi.mocked(saveConfig)).toHaveBeenCalled();
   });
 });

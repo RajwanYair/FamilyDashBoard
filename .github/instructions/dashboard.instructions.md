@@ -3,15 +3,16 @@ applyTo: "**/*.html"
 description: "Use when: editing the dashboard HTML file. Coding standards for HTML/CSS/JS, API patterns, layout, and DOM caching."
 ---
 
-# Dashboard HTML Instructions — v6.5.0
+# Dashboard HTML Instructions — v7.0
 
-> Coding rules are in `copilot-instructions.md`. This file covers layout, patterns, and constants specific to the HTML entry point and legacy `BestDashBoard.html`.
+> Coding rules are in `copilot-instructions.md`. This file covers layout, patterns, and constants specific to the TypeScript modular dashboard (`src/`) and the archived `BestDashBoard.html`.
 
 ## CSS Specifics
 
 - Variables: `--bg-primary`, `--bg-card`, `--accent`, `--text-primary`, `--text-secondary`, `--positive`, `--negative`, `--warning`, `--purple`, `--pink`, `--orange`, `--cyan`, `--border-radius`, `--card-border`, `--card-shadow`
-- 5 themes: `body.theme-{black,blue,matrix,amber,purple}`
+- 6 themes: `dark` · `ocean` · `forest` · `warm` · `high-contrast` · `rose` (set via `data-theme` attribute)
 - Glassmorphism: `backdrop-filter: blur(16px)` on cards
+- CSS layers: `@layer tokens, themes, base, layout, components, animations`
 - CSS containment: `contain: layout style` on `.card`, `contain: content` on pane bodies
 - `prefers-reduced-motion`: disables all animations
 
@@ -87,9 +88,10 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 | Motivation | 1.0em |
 | Currency rate | 0.88em |
 
-## JS Constants (v5.1.0)
+## JS Constants (v7.0)
 
 - `DIAG_BUFFER_SIZE = 80`, `DIAG_DISPLAY_LIMIT = 20`, `WAKE_REFRESH_MS = 30 * 60 * 1000`
+- All in `src/core/constants.ts`
 
 ## Performance
 

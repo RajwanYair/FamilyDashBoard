@@ -309,3 +309,37 @@ describe("Night Dimmer — initNightDimmer setInterval re-check", () => {
     expect(isDimActive()).toBe(true);
   });
 });
+
+// ── applyDim reconnect branch (L34) ──────────────────────────────────────────
+
+describe("Night Dimmer — applyDim reconnect when element not connected", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it("re-fetches #night-dim when dimEl.isConnected is false (L34)", async () => {
+    // First render with element present → toggleNightDim caches dimEl reference
+    document.body.innerHTML = '<div id="night-dim" style="display:none"></div>';
+    const { toggleNightDim, setDimLevel } = await freshDimmer();
+
+    // Activate to cache the element reference
+    toggleNightDim();
+    const el = document.getElementById("night-dim")!;
+    expect(el.style.display).toBe("block");
+
+    // Remove element from DOM → dimEl.isConnected becomes false
+    el.remove();
+    expect(document.getElementById("night-dim")).toBeNull();
+
+    // Re-add a fresh element
+    const fresh = document.createElement("div");
+    fresh.id = "night-dim";
+    document.body.appendChild(fresh);
+
+    // setDimLevel triggers applyDim → detects !isConnected → re-queries → updates fresh element
+    setDimLevel(40);
+    expect(fresh.style.opacity).toBe("0.4");
+  });
+});

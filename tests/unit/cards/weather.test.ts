@@ -1499,3 +1499,82 @@ describe("Weather — renderWeather defensive branches", () => {
     expect(document.getElementById("wx-temp")?.textContent).not.toBe("");
   });
 });
+
+// ── Branch coverage: initWeatherCities active tab ──────────────────────────
+
+describe("Weather — initWeatherCities active tab coord sync", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("syncs _activeLat/_activeLon from active tab with valid coords", async () => {
+    document.body.innerHTML = `
+      <button class="wx-city-tab active" data-city="1" data-lat="32.1" data-lon="34.8"></button>
+      <button class="wx-city-tab" data-city="2" data-lat="31.0" data-lon="35.1"></button>
+    `;
+    const { initWeatherCities, switchWeatherCity } = await import("@/cards/weather/weather");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 200 })));
+    expect(() => initWeatherCities()).not.toThrow();
+    vi.unstubAllGlobals();
+  });
+
+  it("skips active tab coord sync when lat/lon are invalid (NaN)", () => {
+    document.body.innerHTML = `
+      <button class="wx-city-tab active" data-city="1" data-lat="not-a-number" data-lon="also-bad"></button>
+    `;
+    // initWeatherCities should not throw even with invalid coords
+    expect(() => initWeatherCities()).not.toThrow();
+  });
+});
+
+// ── Branch coverage: renderWeather with null daily ─────────────────────────
+
+describe("Weather — renderWeather without daily data", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <span id="top-temp"></span><span id="wx-temp"></span>
+      <span id="wx-desc"></span><span id="wx-icon"></span>
+      <span id="wx-wind"></span><span id="wx-hum"></span>
+      <span id="wx-uv"></span><span id="wx-rise"></span>
+      <div id="wx-hourly"></div><div id="wx-forecast"></div>
+      <span id="wx-minmax"></span><span id="wx-week-summary"></span>
+      <span id="wx-feels"></span><span id="wx-sky-pill"></span>
+    `;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("renderWeather with null daily does not throw", () => {
+    const data = makeWeather();
+    (data as Record<string, unknown>).daily = null;
+    expect(() => renderWeather(data as WeatherResponse)).not.toThrow();
+    // wx-rise should not be updated (daily is null)
+    expect(document.getElementById("wx-rise")?.textContent).toBe("");
+    expect(document.getElementById("wx-minmax")?.textContent).toBe("");
+  });
+
+  it("renderWeather city tab click with invalid lat/lon returns early", async () => {
+    document.body.innerHTML += `
+      <div id="wx-city-tabs">
+        <button class="wx-city-tab" data-city="1" data-lat="bad" data-lon="bad">צ'ק</button>
+        <span id="non-tab-child"></span>
+      </div>
+    `;
+    const { initWeatherCard } = await import("@/cards/weather/weather");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 200 })));
+    initWeatherCard();
+
+    // Click on a non-tab element inside wx-city-tabs (no .wx-city-tab parent)
+    const span = document.getElementById("non-tab-child")!;
+    expect(() => span.click()).not.toThrow();
+
+    // Click on a tab with invalid coords
+    const btn = document.querySelector<HTMLElement>(".wx-city-tab");
+    expect(() => btn?.click()).not.toThrow();
+    vi.unstubAllGlobals();
+  });
+});

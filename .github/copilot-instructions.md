@@ -1,9 +1,9 @@
-# GitHub Copilot Instructions — FamilyDashBoard v7.0-alpha
+# GitHub Copilot Instructions — FamilyDashBoard v7.0
 
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · Vite 8 + TS 5.9 + Vitest 4
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`
-> Tests: `npx vitest run` — 1274 / 36 suites / 0 failures
+> Tests: `npx vitest run` — 1390+ / 37 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
 
 ## Mandatory Rules
@@ -43,3 +43,5 @@
 20. Themes: 6 total — dark · ocean · forest · warm · high-contrast · rose (ThemeName union in `types/config.ts`)
 21. After each sprint/set of changes: `git add -A && git commit -m "feat|fix|chore: <description>"` before proceeding to the next sprint
 22. `cGet()` and `cGetStale()` return `null` (not `undefined`) for cache misses — always check `!== null`, never `!== undefined`
+23. `dist/` is built with `--base ./` for `file://` access; `removeCrossOrigin` Vite plugin strips `crossorigin` attrs
+24. After **every** Copilot chat session: commit with `git add -A && git commit -m "chore: <session summary>"` before closing

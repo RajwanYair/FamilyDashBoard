@@ -51,7 +51,7 @@ jobs:
           node-version: "22"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
-      - run: npx eslint src/ sw.js --max-warnings 0
+      - run: npx eslint src tests --max-warnings 0
 
   unit-tests:
     name: Vitest (${{ matrix.node-version }})

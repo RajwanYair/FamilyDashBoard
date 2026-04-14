@@ -578,3 +578,107 @@ describe("Header — greeting with members config", () => {
     expect(greeting).toContain("למשפחת ישראלי!");
   });
 });
+// ── Branch coverage: getGreeting variants ─────────────────────────────────
+
+describe("Header — getGreeting with members configured", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  it("uses greetPerson name in suffix when members array is non-empty", async () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        members: ["אלי", "שרה", "דדי"],
+        familyName: "לוי",
+      }),
+    );
+    buildHeaderDOM();
+    vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning
+    const mod = await freshHdr();
+    mod.initHeader();
+    const greeting = document.getElementById("greeting")?.textContent ?? "";
+    // Should contain one of the member names + "!"
+    expect(greeting).toMatch(/אלי!|שרה!|דדי!/);
+  });
+
+  it("falls back to familyName when members is empty array", async () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ members: [], familyName: "כהן" }),
+    );
+    buildHeaderDOM();
+    vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning
+    const mod = await freshHdr();
+    mod.initHeader();
+    const greeting = document.getElementById("greeting")?.textContent ?? "";
+    expect(greeting).toContain("למשפחת כהן!");
+  });
+
+  it("handles undefined members key in config (uses ?? [] default)", async () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ familyName: "ברק" }),
+    );
+    buildHeaderDOM();
+    vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning — uses familyName
+    const mod = await freshHdr();
+    mod.initHeader();
+    const greeting = document.getElementById("greeting")?.textContent ?? "";
+    expect(greeting).toContain("למשפחת ברק!");
+  });
+});
+
+// ── Branch coverage: updateBirthdayChip next-year birthday ────────────────
+
+describe("Header — updateBirthdayChip next-year birthday path", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  it("handles birthday that already passed this year — uses next-year date", async () => {
+    vi.setSystemTime(new Date("2024-06-15T00:00:00"));
+    // Birthday on Jan 1 — already passed in June
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        birthdays: [{ name: "יפה", month: 1, day: 1 }],
+      }),
+    );
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    mod.updateBirthdayChip();
+    const chip = document.getElementById("header-birthday-chip") as HTMLElement;
+    // Birthday is next Jan 1, 2025 — 200 days away, so chip should be hidden
+    expect(chip.hidden).toBe(true);
+  });
+
+  it("birthday within 14 days AND second birthday farther — shows first", async () => {
+    vi.setSystemTime(new Date("2024-06-15T00:00:00"));
+    // First birthday in 3 days, second in 10 days — both within 14
+    const d1 = new Date("2024-06-18");
+    const d2 = new Date("2024-06-25");
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({
+        birthdays: [
+          { name: "קרוב", month: d1.getMonth() + 1, day: d1.getDate() },
+          { name: "רחוק", month: d2.getMonth() + 1, day: d2.getDate() },
+        ],
+      }),
+    );
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    mod.updateBirthdayChip();
+    const chip = document.getElementById("header-birthday-chip") as HTMLElement;
+    // First birthday (3 days) is closer, so chip shows "קרוב"
+    expect(chip.textContent).toContain("קרוב");
+    expect(chip.textContent).not.toContain("רחוק");
+  });
+});

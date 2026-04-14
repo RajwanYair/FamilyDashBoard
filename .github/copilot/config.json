@@ -14,21 +14,21 @@
             "enabled": true,
             "aliases": ["design", "css", "layout", "theme"],
             "priority": "high",
-            "context_files": ["BestDashBoard.html"],
-            "description": "UI/UX: CSS custom properties, glassmorphism, RTL layout, themes"
+            "context_files": ["src/styles/tokens.css", "src/styles/themes.css", "src/styles/components.css"],
+            "description": "UI/UX: CSS custom properties, glassmorphism, RTL layout, 6 themes"
         },
         "api-mode": {
             "enabled": true,
             "aliases": ["fetch", "data", "weather", "stocks"],
             "priority": "high",
-            "context_files": ["BestDashBoard.html"],
+            "context_files": ["src/core/fetch.ts", "src/core/cache.ts", "src/core/constants.ts"],
             "description": "API integration: fetch, caching, proxy fallback, diagnostics"
         },
         "fix-mode": {
             "enabled": true,
             "aliases": ["debug", "troubleshoot", "error"],
             "priority": "high",
-            "context_files": ["BestDashBoard.html"],
+            "context_files": ["src/core/diag.ts", "src/core/fetch.ts "src/core/fetch.ts"],
             "description": "Debug fetch failures, dead code, JS syntax errors"
         },
         "docs-mode": {
@@ -45,7 +45,7 @@
             "enabled": true,
             "aliases": ["security", "audit", "xss"],
             "priority": "critical",
-            "context_files": ["BestDashBoard.html", ".github/SECURITY.md"],
+            "context_files": ["src/main.tsthub/SECURITY.md"],
             "description": "Security: XSS prevention, CSP, API input sanitization"
         }
     }

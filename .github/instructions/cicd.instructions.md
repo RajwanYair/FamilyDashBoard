@@ -7,13 +7,14 @@ description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML con
 
 ## Workflow Standards
 
-- Use `actions/checkout@v6` and `actions/setup-node@v6`
+- Use `actions/checkout@v4` and `actions/setup-node@v4` minimum; upgrade to latest stable when available
 - Set `permissions: contents: read` (least privilege)
 - **No `npm ci` / no `cache: "npm"` / no `package-lock.json`** in this project
 - All workflows install tools via `bash .github/ci/install-tools.sh`
-- Run: HTML lint, security scan, Lighthouse, `node --test tests/dashboard.test.mjs` (1084 tests, 61 suites)
-- Deploy via GitHub Pages on push to `main`
-- Release: `release.yml` auto-attaches 4 artifacts on tags (`vX.Y.Z`)
+- CI runs: `npx tsc --noEmit` → `npx eslint src tests --max-warnings 0` → `npx vitest run` → `npx vite build`
+- Lint command matches local: `npx eslint src tests --max-warnings 0` (covers both src and tests)
+- Deploy via GitHub Pages on push to `main` (`deploy.yml`)
+- Release: `release.yml` auto-attaches artifacts on tags (`vX.Y.Z`)
 
 ## Tool Install Model
 

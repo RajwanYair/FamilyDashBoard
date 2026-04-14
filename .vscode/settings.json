@@ -20,10 +20,9 @@
     // ── ESLint ──
     "eslint.validate": [
         "javascript",
-        "typescript",
-        "html"
+        "typescript"
     ],
-    "eslint.run": "onType",
+    "eslint.run": "onSave",
     "eslint.useFlatConfig": true,
     // ── Stylelint ──
     "stylelint.validate": [

@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v7.0-alpha
+# CLAUDE.md — FamilyDashBoard v7.0
 
 > Context file for Claude Code / Claude agents. Lean project brief — see `.github/instructions/` for scoped details.
 
@@ -14,7 +14,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 - ESLint 10 + typescript-eslint 8 (0 errors · 0 warnings · no suppressions)
 - **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 - No local `package-lock.json` or `devDependencies` in this project
-- Tests: `npx vitest run` (1274 tests, 36 suites, 0 failures)
+- Tests: `npx vitest run` (1390+ tests, 37 suites, 0 failures)
 - SW: `sw.js` v6.5.0 (offline + API cache)
 
 ## Key Rules
@@ -32,6 +32,8 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 11. 6 themes: dark · ocean · forest · warm · high-contrast · rose
 12. Card registry: `registerCard()` / `getCard()` — use `src/core/card-registry.ts` for new card wiring
 13. New overlays use `<dialog>` + `showModal()` / `close()` — not `<div>` with `display:block`
+14. `dist/` built with `--base ./` + `removeCrossOrigin` plugin for `file://` compatibility
+15. After every Copilot session: `git add -A && git commit -m "chore: <session summary>"`
 
 ## File Map
 

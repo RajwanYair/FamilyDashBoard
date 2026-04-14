@@ -1,0 +1,78 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "✅ Check All (typecheck + lint + test)",
+            "type": "shell",
+            "command": "npm run check",
+            "group": { "kind": "test", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": ["$tsc", "$eslint-stylish"]
+        },
+        {
+            "label": "🔬 Vitest: Run All Tests",
+            "type": "shell",
+            "command": "npx vitest run",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "📊 Vitest: Coverage Report",
+            "type": "shell",
+            "command": "npx vitest run --coverage",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔍 ESLint: Lint src + tests",
+            "type": "shell",
+            "command": "npx eslint src tests --max-warnings 0",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": ["$eslint-stylish"]
+        },
+        {
+            "label": "🔧 ESLint: Fix src + tests",
+            "type": "shell",
+            "command": "npx eslint src tests --fix",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": ["$eslint-stylish"]
+        },
+        {
+            "label": "🏷️ TypeScript: Type Check",
+            "type": "shell",
+            "command": "npx tsc --noEmit",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": ["$tsc"]
+        },
+        {
+            "label": "🏗️ Build: GitHub Pages",
+            "type": "shell",
+            "command": "npm run build",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": ["$tsc"]
+        },
+        {
+            "label": "🏗️ Build: Local file://",
+            "type": "shell",
+            "command": "npm run build:local",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": ["$tsc"]
+        },
+        {
+            "label": "🚀 Dev Server",
+            "type": "shell",
+            "command": "npx vite",
+            "group": "build",
+            "isBackground": true,
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        }
+    ]
+}

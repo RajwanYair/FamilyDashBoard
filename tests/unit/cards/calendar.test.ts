@@ -337,7 +337,9 @@ describe("Calendar — renderCalendar today strip", () => {
   });
 
   it("today strip shows future timed events happening today", () => {
-    // Use a time 2 hours from now so it's "today" and in the future
+    // Pin to 10:00 AM so +2 hours is noon (always same day, never crosses midnight)
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T10:00:00"));
     const soon = new Date(Date.now() + 2 * 3600_000);
     const end = new Date(soon.getTime() + 1800_000);
     const ev = {
@@ -349,6 +351,7 @@ describe("Calendar — renderCalendar today strip", () => {
       category: "default" as const,
     };
     renderCalendar([ev]);
+    vi.useRealTimers();
     const strip = document.getElementById("cal-today-strip")!;
     expect(strip.textContent).toContain("Today Event");
   });
@@ -988,5 +991,69 @@ describe("Calendar — loadCalendar outer catch block", () => {
     await new Promise<void>((r) => setTimeout(r, 50));
     // Should not reject — error is caught in the catch block (lines 483-485)
     cSetSpy.mockRestore();
+  });
+});
+
+// ── Sprint: stale-while-revalidating path (L455-459) ──────────────────────
+
+describe("Calendar — loadCalendar stale-while-revalidating path", () => {
+  // Use a far-future date so the event appears in the agenda (not filtered as past)
+  // Pin the time to 2099-01-01 so that 2099-01-05 is within 21-day window
+  const STALE_ICS = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20990105T100000Z\nSUMMARY:Stale Event\nEND:VEVENT\nEND:VCALENDAR`;
+
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
+      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    Object.defineProperty(document, "hidden", {
+      value: false,
+      configurable: true,
+    });
+    vi.clearAllMocks();
+  });
+
+  it("renders stale events while fresh fetch is pending (L455-459)", async () => {
+    // Pin clock to 2099-01-01 so the stale ICS event (Jan 5 2099) is within the 21-day window
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2099-01-01T10:00:00Z"));
+
+    // Write stale ICS to localStorage with timestamp=0 (expired for cGet, but available for cGetStale)
+    cClear(); // clear in-memory so cGetStale falls through to localStorage
+    localStorage.setItem("dash_v2_cal-ics", JSON.stringify({ data: STALE_ICS, ts: 0 }));
+
+    vi.mocked(fetchCore.acquireLock).mockReturnValue(true);
+    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(new Error("network down"));
+
+    initCalendarCard();
+    await vi.runAllTimersAsync();
+
+    vi.useRealTimers();
+
+    // Stale events should have been rendered into the DOM
+    const agenda = document.getElementById("cal-agenda");
+    expect(agenda?.textContent).toContain("Stale Event");
+  });
+
+  it("renders empty slot events when allEvents length is 0 (setSync error path)", async () => {
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    vi.mocked(fetchCore.runConcurrent).mockResolvedValueOnce([]);
+    // fetchWithTimeout resolves successfully but returns empty ICS
+    vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValue({
+      ok: true,
+      text: async () => "BEGIN:VCALENDAR\nEND:VCALENDAR",
+    } as unknown as Response);
+
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    // No throw — empty events → setSync("cal", "error") path
   });
 });
