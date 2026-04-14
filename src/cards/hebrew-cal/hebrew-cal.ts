@@ -45,6 +45,17 @@ interface HebCalEls {
   eventRow: HTMLElement | null;
   psalmEl: HTMLElement | null;
   psalmRow: HTMLElement | null;
+  // v7.1 additions
+  countdown: HTMLElement | null;
+  countdownRow: HTMLElement | null;
+  dafLink: HTMLElement | null;
+  dafLinkRow: HTMLElement | null;
+  parashaLink: HTMLElement | null;
+  parashaLinkRow: HTMLElement | null;
+  halacha: HTMLElement | null;
+  halacaRow: HTMLElement | null;
+  school: HTMLElement | null;
+  schoolRow: HTMLElement | null;
 }
 
 let els: HebCalEls = {
@@ -63,6 +74,16 @@ let els: HebCalEls = {
   saying: null,
   moonEl: null,
   moonRow: null,
+  countdown: null,
+  countdownRow: null,
+  dafLink: null,
+  dafLinkRow: null,
+  parashaLink: null,
+  parashaLinkRow: null,
+  halacha: null,
+  halacaRow: null,
+  school: null,
+  schoolRow: null,
   zmanimSection: null,
   zmanimGrid: null,
   eventEl: null,
@@ -94,6 +115,16 @@ function cacheDom(): void {
     eventRow: document.getElementById("hc-event-row"),
     psalmEl: document.getElementById("hc-psalm"),
     psalmRow: document.getElementById("hc-psalm-row"),
+    countdown: document.getElementById("hc-countdown"),
+    countdownRow: document.getElementById("hc-countdown-row"),
+    dafLink: document.getElementById("hc-daf-link"),
+    dafLinkRow: document.getElementById("hc-daf-link-row"),
+    parashaLink: document.getElementById("hc-parasha-link"),
+    parashaLinkRow: document.getElementById("hc-parasha-link-row"),
+    halacha: document.getElementById("hc-halacha"),
+    halacaRow: document.getElementById("hc-halacha-row"),
+    school: document.getElementById("hc-school"),
+    schoolRow: document.getElementById("hc-school-row"),
   };
 }
 
@@ -113,6 +144,35 @@ function fmtTime(dateStr: string): string {
 // ── Dedup state (holiday/special names for filtering event & special rows) ──
 let _lastHolidayName = "";
 let _lastSpecialNames: string[] = [];
+
+// ── Shabbat countdown state ──
+let _candlesTime: Date | null = null;
+let _havdalaTime: Date | null = null;
+let _countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+// ── Sefaria link refs ──
+let _dafSefariaUrl = "";
+let _parashaSefariaName = "";
+
+// ── School vacation keywords (Hebrew + English) ──
+const SCHOOL_VACATION_TITLES = [
+  "Passover",
+  "Pesach",
+  "Sukkot",
+  "Shavuot",
+  "Hanukkah",
+  "Chanukah",
+  "Purim",
+  "Rosh Hashana",
+  "Yom Kippur",
+  "פסח",
+  "סוכות",
+  "שבועות",
+  "חנוכה",
+  "פורים",
+  "ראש השנה",
+  "יום כיפור",
+] as const;
 
 // ── Candles + Havdalah ──
 async function loadCandlesHavdala(): Promise<void> {
@@ -145,6 +205,10 @@ function renderCandlesHavdala(items: HebcalItem[]): void {
   if (els.havdala) {
     els.havdala.textContent = havdala ? fmtTime(havdala.date) : "--";
   }
+  // Capture times for Shabbat countdown
+  if (candle) _candlesTime = new Date(candle.date);
+  if (havdala) _havdalaTime = new Date(havdala.date);
+  startCountdown();
 }
 
 // ── Next Holiday ──
@@ -188,6 +252,31 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
         ? `מחר: ${name}`
         : `${name} — בעוד ${days} ימים`;
   if (els.holidayRow) els.holidayRow.style.display = "";
+
+  // School vacation: show if any major holiday started in the last 7 days
+  renderSchool(items, now);
+}
+
+function renderSchool(items: HebcalItem[], now: Date): void {
+  if (!els.school || !els.schoolRow) return;
+  const vacationItem = items.find((i) => {
+    if (i.category !== "holiday") return false;
+    const d = new Date(i.date);
+    const diffDays = (d.getTime() - now.getTime()) / 86_400_000;
+    // Show if this holiday started 0-7 days ago (we're in the vacation window)
+    if (diffDays < -7 || diffDays > 0) return false;
+    const lc = (i.hebrew ?? i.title).toLowerCase();
+    const titleLc = i.title.toLowerCase();
+    return SCHOOL_VACATION_TITLES.some(
+      (k) => lc.includes(k.toLowerCase()) || titleLc.includes(k.toLowerCase()),
+    );
+  });
+  if (vacationItem) {
+    els.school.textContent = vacationItem.hebrew ?? vacationItem.title;
+    els.schoolRow.style.display = "";
+  } else {
+    els.schoolRow.style.display = "none";
+  }
 }
 
 // ── Omer + Special items ──
@@ -284,16 +373,24 @@ function renderParasha(items: HebcalItem[]): void {
   if (!p || !els.parasha) return;
   els.parasha.textContent = p.hebrew ?? p.title;
   if (els.parashaRow) els.parashaRow.style.display = "";
+  // Wire Sefaria parasha link button
+  _parashaSefariaName = p.title.replace(/\s+/g, "_");
+  if (els.parashaLink && els.parashaLinkRow) {
+    els.parashaLink.onclick = () =>
+      window.open(
+        `https://www.sefaria.org/${_parashaSefariaName}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+    els.parashaLinkRow.style.display = "";
+  }
 }
 
 // ── Daf Yomi ──
 async function loadDafYomi(): Promise<void> {
   const now = new Date();
   const key = `daf-${now.toDateString()}`;
-  const fresh = cGet<{ ref: string; heRef: string }>(
-    key,
-    24 * 60 * 60_000,
-  );
+  const fresh = cGet<{ ref: string; heRef: string }>(key, 24 * 60 * 60_000);
   if (fresh !== null) {
     renderDaf(fresh);
     return;
@@ -303,27 +400,119 @@ async function loadDafYomi(): Promise<void> {
 
   try {
     const d = await fetchJSONWithWorker<{
-      calendar_items: Array<{ title: { he: string; en: string }; ref: string }>;
+      calendar_items: Array<{
+        title: { he: string; en: string };
+        ref: string;
+        url?: string;
+      }>;
     }>(API.SEFARIA_CALENDAR);
     const daf = d.calendar_items?.find((i) =>
       i.title?.en?.toLowerCase().includes("daf yomi"),
     );
-    const item = daf ? { ref: daf.ref, heRef: daf.title.he } : null;
+    const item = daf
+      ? { ref: daf.ref, heRef: daf.title.he, url: daf.url }
+      : null;
     cSet(key, item);
     renderDaf(item);
+    // Also extract Halacha Yomit from the same response (no extra network call)
+    const halachaItem = d.calendar_items?.find((i) =>
+      i.title?.en?.toLowerCase().includes("halacha yomit"),
+    );
+    renderHalacha(
+      halachaItem
+        ? {
+            text: halachaItem.title.he,
+            ref: halachaItem.ref,
+            url: halachaItem.url,
+          }
+        : null,
+    );
   } catch {
     diagLog("[hebrew-cal] Daf Yomi fetch failed");
   }
 }
 
-function renderDaf(item: { ref: string; heRef: string } | null): void {
+function renderDaf(
+  item: { ref: string; heRef: string; url?: string } | null,
+): void {
   if (!els.daf) return;
   if (!item) {
     if (els.dafRow) els.dafRow.style.display = "none";
+    if (els.dafLinkRow) els.dafLinkRow.style.display = "none";
     return;
   }
   els.daf.textContent = item.heRef ?? item.ref;
   if (els.dafRow) els.dafRow.style.display = "";
+  // Wire Sefaria Daf Yomi link button
+  _dafSefariaUrl = item.url
+    ? `https://www.sefaria.org/${item.url}`
+    : `https://www.sefaria.org/${item.ref.replace(/\s+/g, ".")}`;
+  if (els.dafLink && els.dafLinkRow) {
+    els.dafLink.onclick = () =>
+      window.open(_dafSefariaUrl, "_blank", "noopener,noreferrer");
+    els.dafLinkRow.style.display = "";
+  }
+}
+
+// ── Halacha Yomit ──
+function renderHalacha(
+  item: { text: string; ref: string; url?: string } | null,
+): void {
+  if (!els.halacha || !els.halacaRow) return;
+  if (!item) {
+    els.halacaRow.style.display = "none";
+    return;
+  }
+  els.halacha.textContent = item.text;
+  if (item.url) {
+    const halachaUrl = `https://www.sefaria.org/${item.url}`;
+    els.halacha.title = halachaUrl;
+    els.halacha.onclick = () =>
+      window.open(halachaUrl, "_blank", "noopener,noreferrer");
+    els.halacha.style.cursor = "pointer";
+  }
+  els.halacaRow.style.display = "";
+}
+
+// ── Shabbat Countdown ──
+export function formatCountdown(ms: number): string {
+  if (ms <= 0) return "00:00";
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const pad = (n: number): string => String(n).padStart(2, "0");
+  return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+function tickCountdown(): void {
+  const el = els.countdown ?? document.getElementById("hc-countdown");
+  const row = els.countdownRow ?? document.getElementById("hc-countdown-row");
+  if (!el || !row) return;
+  const now = Date.now();
+  const dow = new Date().getDay(); // 5=Fri, 6=Sat
+  // Saturday: show havdala countdown
+  if (dow === 6 && _havdalaTime && _havdalaTime.getTime() > now) {
+    el.textContent = `הבדלה בעוד ${formatCountdown(_havdalaTime.getTime() - now)}`;
+    row.style.display = "";
+    return;
+  }
+  // Friday or within 6 hours of candles: show candles countdown
+  if (_candlesTime && _candlesTime.getTime() > now) {
+    const ms = _candlesTime.getTime() - now;
+    if (ms <= 6 * 3_600_000 || dow === 5) {
+      el.textContent = `כניסה בעוד ${formatCountdown(ms)}`;
+      row.style.display = "";
+      return;
+    }
+  }
+  row.style.display = "none";
+}
+
+export function startCountdown(): void {
+  if (_countdownInterval !== null) clearInterval(_countdownInterval);
+  tickCountdown();
+  _countdownInterval = setInterval(tickCountdown, 1000);
 }
 
 // ── Main load function ──
@@ -577,6 +766,10 @@ export function renderPsalmOfDay(): void {
 export function initHebrewCalCard(): void {
   _lastHolidayName = "";
   _lastSpecialNames = [];
+  _candlesTime = null;
+  _havdalaTime = null;
+  _dafSefariaUrl = "";
+  _parashaSefariaName = "";
   cacheDom();
   renderMoonPhase();
   renderNextCalEvent();

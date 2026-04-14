@@ -242,3 +242,71 @@ describe("Theme — initTheme without #theme-select", () => {
     expect(currentTheme()).toBe("black");
   });
 });
+
+// ── OS dark-mode preference listener (lines 91-94) ──────────────────────────
+
+describe("Theme — OS prefers-color-scheme change listener", () => {
+  let changeHandler: ((e: { matches: boolean }) => void) | null = null;
+
+  beforeEach(() => {
+    document.body.className = "";
+    localStorage.clear();
+    changeHandler = null;
+    // Use stubGlobal to reliably replace matchMedia in happy-dom
+    vi.stubGlobal(
+      "matchMedia",
+      (query: string): MediaQueryList => {
+        const mql = {
+          matches: false,
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          addEventListener: vi.fn(
+            (event: string, handler: EventListenerOrEventListenerObject) => {
+              if (event === "change")
+                changeHandler = handler as (e: { matches: boolean }) => void;
+            },
+          ),
+          removeEventListener: vi.fn(),
+        };
+        return mql as unknown as MediaQueryList;
+      },
+    );
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+    localStorage.clear();
+    vi.unstubAllGlobals();
+  });
+
+  it("registers a change listener for prefers-color-scheme", () => {
+    initTheme();
+    expect(changeHandler).toBeTypeOf("function");
+  });
+
+  it("applies amber when OS switches to light and no saved theme", () => {
+    initTheme();
+    // initTheme() saves "black" to localStorage; remove it to simulate no user preference
+    localStorage.clear();
+    changeHandler?.({ matches: true });
+    expect(currentTheme()).toBe("amber");
+  });
+
+  it("applies black when OS switches to dark and no saved theme", () => {
+    initTheme();
+    localStorage.clear();
+    changeHandler?.({ matches: false });
+    expect(currentTheme()).toBe("black");
+  });
+
+  it("does NOT change theme when OS changes and user has a saved theme", () => {
+    localStorage.setItem("dash_theme", "blue");
+    applyTheme("blue");
+    initTheme();
+    changeHandler?.({ matches: true });
+    expect(currentTheme()).toBe("blue");
+  });
+});

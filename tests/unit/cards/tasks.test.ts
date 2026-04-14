@@ -290,3 +290,67 @@ describe("Tasks — invalid JSON in localStorage", () => {
     expect(() => renderTasksCard()).not.toThrow();
   });
 });
+
+// ── getTasksForToday ─────────────────────────────────────────────────────────
+
+import { getTasksForToday } from "@/cards/tasks/tasks";
+
+describe("Tasks — getTasksForToday", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("returns all chores when none are done", () => {
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "עמרי", chore: "🧹 לנקות" },
+        { person: "ריבה", chore: "🍳 בישול" },
+      ]),
+    );
+    const tasks = getTasksForToday();
+    expect(tasks).toHaveLength(2);
+  });
+
+  it("excludes completed chores from result", () => {
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
+    );
+    localStorage.setItem(
+      "dash_tasks_done",
+      JSON.stringify({ "עמרי::🧹 לנקות": true }),
+    );
+    const today = new Date();
+    localStorage.setItem(
+      "dash_tasks_reset_date",
+      `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+    );
+    const tasks = getTasksForToday();
+    expect(tasks).toHaveLength(0);
+  });
+
+  it("returns empty array when no chores configured", () => {
+    localStorage.removeItem("dash_chores");
+    expect(getTasksForToday()).toHaveLength(0);
+  });
+
+  it("loadDoneMap catch: returns empty map for corrupted JSON", () => {
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
+    );
+    localStorage.setItem("dash_tasks_done", "not-json{{{}");
+    const today = new Date();
+    localStorage.setItem(
+      "dash_tasks_reset_date",
+      `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+    );
+    // Corrupt JSON → loadDoneMap catch returns {} → all tasks appear pending
+    const tasks = getTasksForToday();
+    expect(tasks).toHaveLength(1);
+  });
+});

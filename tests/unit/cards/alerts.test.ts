@@ -19,6 +19,8 @@ import {
   buildAlertItem,
   renderAlerts,
   setAlertsEnabled,
+  toggleAlerts,
+  isAlertsEnabled,
   setAlertsRealtime,
   loadAlerts,
   cacheDom,
@@ -826,5 +828,42 @@ describe("Alerts — notify with Notification permission granted", () => {
     const lastOpts = calls[calls.length - 1]?.[1] as { body: string };
     expect(lastOpts.body).toBe("");
     m.setAlertsEnabled(false);
+  });
+});
+
+// ── toggleAlerts + isAlertsEnabled ──────────────────────────────────────────
+
+describe("Alerts — toggleAlerts / isAlertsEnabled", () => {
+  afterEach(() => {
+    setAlertsEnabled(false);
+  });
+
+  it("isAlertsEnabled returns false after setAlertsEnabled(false)", () => {
+    setAlertsEnabled(false);
+    expect(isAlertsEnabled()).toBe(false);
+  });
+
+  it("isAlertsEnabled returns true after setAlertsEnabled(true)", () => {
+    setAlertsEnabled(true);
+    expect(isAlertsEnabled()).toBe(true);
+  });
+
+  it("toggleAlerts flips disabled → enabled", () => {
+    setAlertsEnabled(false);
+    toggleAlerts();
+    expect(isAlertsEnabled()).toBe(true);
+  });
+
+  it("toggleAlerts flips enabled → disabled", () => {
+    setAlertsEnabled(true);
+    toggleAlerts();
+    expect(isAlertsEnabled()).toBe(false);
+  });
+
+  it("double-toggle returns to original state", () => {
+    setAlertsEnabled(false);
+    toggleAlerts();
+    toggleAlerts();
+    expect(isAlertsEnabled()).toBe(false);
   });
 });

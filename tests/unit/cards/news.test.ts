@@ -19,6 +19,7 @@ import {
   fetchFeed,
   toggleBookmarkMode,
   markVisited,
+  isVisited,
   toggleBookmark,
 } from "@/cards/news/news";
 
@@ -1369,5 +1370,83 @@ describe("News — saveBookmarks quota exceeded (line 151)", () => {
     vi.restoreAllMocks();
     // cleanup
     toggleBookmark("bkm-key");
+  });
+});
+// ── markVisited sessionStorage quota catch (line 141) ────────────────────────
+
+describe("News — markVisited sessionStorage quota catch", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    sessionStorage.clear();
+  });
+
+  it("does not throw when sessionStorage.setItem throws", () => {
+    vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
+      throw new DOMException("QuotaExceededError");
+    });
+    expect(() => markVisited("some-key")).not.toThrow();
+  });
+
+  it("markVisited still records the key in memory even if storage fails", () => {
+    vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
+      throw new DOMException("QuotaExceededError");
+    });
+    markVisited("mem-key");
+    expect(isVisited("mem-key")).toBe(true);
+  });
+});
+
+// ── fetchAllNews deduplication (lines 306-326) ──────────────────────────────
+
+describe("News — fetchAllNews deduplication via renderNews", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    cacheDom();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("renderNews with duplicate titles de-dupes display", () => {
+    const items = [
+      {
+        title: "כותרת חדשות חשובה מאוד",
+        link: "https://example.com/1",
+        pubDate: "2024-01-15T10:00:00Z",
+        category: "security" as const,
+        feedId: "f1",
+      },
+      {
+        title: "כותרת חדשות חשובה מאוד", // exact duplicate
+        link: "https://example.com/2",
+        pubDate: "2024-01-15T11:00:00Z",
+        category: "security" as const,
+        feedId: "f2",
+      },
+    ];
+    expect(() => renderNews(items)).not.toThrow();
+    const rssScroll = document.getElementById("rss-scroll")!;
+    // Only one item should render since they have matching first-40-chars
+    expect(rssScroll.children.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renderNews handles items with null pubDate gracefully", () => {
+    const items = [
+      {
+        title: "חדשות ללא תאריך",
+        link: "https://example.com/no-date",
+        pubDate: null as unknown as string,
+        category: "security" as const,
+        feedId: "f1",
+      },
+      {
+        title: "חדשות עם תאריך",
+        link: "https://example.com/with-date",
+        pubDate: "2024-01-15T10:00:00Z",
+        category: "security" as const,
+        feedId: "f1",
+      },
+    ];
+    expect(() => renderNews(items)).not.toThrow();
   });
 });

@@ -13,6 +13,8 @@ import {
   renderNextCalEvent,
   getPsalmOfDay,
   renderPsalmOfDay,
+  formatCountdown,
+  startCountdown,
 } from "@/cards/hebrew-cal/hebrew-cal";
 import { cGet, cGetStale, cSet } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
@@ -51,8 +53,23 @@ function setupDom(): void {
     <div id="hc-omer-row" style="display:none"></div>
     <div id="hc-parasha"></div>
     <div id="hc-parasha-row" style="display:none"></div>
+    <button id="hc-parasha-link" style="display:none"></button>
+    <div id="hc-parasha-link-row" style="display:none"></div>
     <div id="hc-daf"></div>
     <div id="hc-daf-row" style="display:none"></div>
+    <button id="hc-daf-link" style="display:none"></button>
+    <div id="hc-daf-link-row" style="display:none"></div>
+    <div id="hc-halacha" style="display:none"></div>
+    <div id="hc-halacha-row" style="display:none"></div>
+    <div id="hc-school" style="display:none"></div>
+    <div id="hc-school-row" style="display:none"></div>
+    <div id="hc-countdown" style="display:none"></div>
+    <div id="hc-countdown-row" style="display:none"></div>
+    <div id="hc-event"></div>
+    <div id="hc-event-row" style="display:none"></div>
+    <div id="hc-psalm"></div>
+    <div id="hc-psalm-row" style="display:none"></div>
+    <div id="hc-tasks-strip" style="display:none"></div>
     <div id="hc-saying"></div>
   `;
 }
@@ -1204,5 +1221,119 @@ describe("Hebrew Calendar — loadZmanim fresh cache path", () => {
     const grid = document.getElementById("zmanim-grid")!;
     expect(grid.children.length).toBeGreaterThan(0);
     expect(document.getElementById("zmanim-section")!.style.display).toBe("");
+  });
+});
+// ── formatCountdown ──────────────────────────────────────────────────────────
+
+describe("Hebrew Calendar — formatCountdown", () => {
+  it("formats exactly 0 ms as 00:00", () => {
+    expect(formatCountdown(0)).toBe("00:00");
+  });
+
+  it("formats negative ms as 00:00", () => {
+    expect(formatCountdown(-5000)).toBe("00:00");
+  });
+
+  it("formats 90 seconds as 01:30", () => {
+    expect(formatCountdown(90_000)).toBe("01:30");
+  });
+
+  it("formats 59:59 correctly without hours", () => {
+    expect(formatCountdown(59 * 60_000 + 59_000)).toBe("59:59");
+  });
+
+  it("formats 1 hour as 01:00:00", () => {
+    expect(formatCountdown(3_600_000)).toBe("01:00:00");
+  });
+
+  it("formats 1h 2m 3s as 01:02:03", () => {
+    expect(formatCountdown(3_600_000 + 2 * 60_000 + 3_000)).toBe("01:02:03");
+  });
+
+  it("returns MM:SS format (2 colon-separated parts, no hours) for 59m 59s", () => {
+    const ms = 59 * 60_000 + 59_000;
+    expect(formatCountdown(ms).split(":")).toHaveLength(2);
+  });
+
+  it("returns HH:MM:SS (with hours) for 60 minutes", () => {
+    expect(formatCountdown(60 * 60_000).split(":")).toHaveLength(3);
+  });
+});
+
+// ── startCountdown ────────────────────────────────────────────────────────────
+
+describe("Hebrew Calendar — startCountdown", () => {
+  beforeEach(() => {
+    setupDom();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+  });
+
+  it("does not throw when called", () => {
+    expect(() => startCountdown()).not.toThrow();
+  });
+
+  it("can be called multiple times without error", () => {
+    expect(() => {
+      startCountdown();
+      startCountdown();
+      startCountdown();
+    }).not.toThrow();
+  });
+});
+
+// ── renderNextCalEvent with full DOM ──────────────────────────────────────────
+
+describe("Hebrew Calendar — renderNextCalEvent (full DOM)", () => {
+  beforeEach(() => {
+    setupDom();
+    vi.mocked(cGetStale).mockReturnValue(null);
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("hides hc-event-row when no ICS cached", () => {
+    renderNextCalEvent();
+    expect(document.getElementById("hc-event-row")!.style.display).toBe("none");
+  });
+
+  it("does not throw with full DOM present", () => {
+    expect(() => renderNextCalEvent()).not.toThrow();
+  });
+});
+
+// ── renderTasksStrip (tasks strip in hebrew-cal card) ─────────────────────────
+
+describe("Hebrew Calendar — renderTasksStrip via initHebrewCalCard", () => {
+  beforeEach(() => {
+    setupDom();
+    localStorage.clear();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("hides hc-tasks-strip when no chores configured", () => {
+    initHebrewCalCard();
+    expect(document.getElementById("hc-tasks-strip")!.style.display).toBe(
+      "none",
+    );
+  });
+
+  it("shows hc-tasks-strip when chores are present", () => {
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
+    );
+    initHebrewCalCard();
+    const strip = document.getElementById("hc-tasks-strip")!;
+    expect(strip.style.display).toBe("");
+    expect(strip.textContent).toContain("עמרי");
   });
 });

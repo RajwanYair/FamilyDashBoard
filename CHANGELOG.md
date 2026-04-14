@@ -9,11 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [7.0.0] — 2026-04-14
+## [7.0.0] — 2026-04-14 (alpha2 — 2026-04-14)
 
-> TypeScript v7 card system · **1324 tests / 37 suites / 0 failures**
+> TypeScript v7 card system · **1359 tests / 37 suites / 0 failures**
 
-### Added
+### Added (alpha2)
+- **Hebrew Calendar: Shabbat countdown** (`hc-countdown`): live HH:MM:SS timer showing time until candle lighting on Friday (within 6h) and Havdalah on Saturday
+- **Hebrew Calendar: Sefaria deep-link buttons** (`hc-daf-link`, `hc-parasha-link`): open Sefaria.org at the exact Daf or Parasha page
+- **Hebrew Calendar: Halacha Yomit** (`hc-halacha`): daily halacha from Sefaria calendars API — zero extra network cost (same request as Daf Yomi)
+- **Hebrew Calendar: School vacation indicator** (`hc-school`): shows when a major Israeli school vacation started within the past 7 days (Chagim, חנוכה, פורים, פסח, קיץ)
+- **Keyboard: `A` key** toggles Tzeva Adom alerts on/off with toast confirmation
+- **alerts.ts**: `toggleAlerts()` and `isAlertsEnabled()` exported for external wiring
+- **Coverage tests**: 35 new tests — `toggleAlerts`/`isAlertsEnabled`, OS dark-mode matchMedia listener, `getTasksForToday`, `loadDoneMap` catch, `formatCountdown`, `startCountdown`, `renderTasksStrip`, `renderNextCalEvent` with full DOM, `markVisited` quota catch, news dedup/sort branches, logo img error handler, config-panel cards tab rendering, collectForm card visibility + size saves
+
+### Added (alpha1 — 2026-04-14)
 - **Card type system** (`src/types/card.ts`): `CardDefinition`, `CardConfigField`, `CardSlot`, `CardRegistryEntry`
 - **Card registry** (`src/core/card-registry.ts`): Map-based `registerCard/getCard/listCards/loadCard`; lazy-loads all 10 cards via dynamic `import()`
 - **Tasks card** (`src/cards/tasks/`): Family chore board — localStorage-persisted, daily 6AM reset, grouped by person, checkbox done-state; exports `getTasksForToday()`

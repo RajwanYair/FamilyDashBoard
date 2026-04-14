@@ -51,6 +51,8 @@ import {
   initAlertsCard,
   setAlertsEnabled,
   setAlertsRealtime,
+  toggleAlerts,
+  isAlertsEnabled,
 } from "./cards/alerts/alerts";
 import { initHebrewCalCard } from "./cards/hebrew-cal/hebrew-cal";
 import { initCalendarCard } from "./cards/calendar/calendar";
@@ -158,6 +160,13 @@ export function init(): void {
   });
   registerKey("b", "מועדפים", () => toggleBookmarkMode());
   registerKey("r", "רענון נתונים", () => window.location.reload());
+  registerKey("a", "התרעות צבע אדום", () => {
+    toggleAlerts();
+    showToast(
+      isAlertsEnabled() ? "✅ התרעות פעילות" : "❌ התרעות הושבתו",
+      2500,
+    );
+  });
   const _toggleHelp = (): void => {
     const dlg = document.getElementById(
       "help-overlay",

@@ -305,6 +305,14 @@ export function setAlertsEnabled(enabled: boolean): void {
   }
 }
 
+export function toggleAlerts(): void {
+  setAlertsEnabled(!_enabled);
+}
+
+export function isAlertsEnabled(): boolean {
+  return _enabled;
+}
+
 export function setAlertsRealtime(on: boolean): void {
   _realtimeMode = on;
 }
