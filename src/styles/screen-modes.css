@@ -1,5 +1,7 @@
 /* Screen Mode Overrides — TV/Tablet/Phone */
 /* ── Screen Mode Overrides (R1.8) ── */
+/* Smooth font-size transition when switching screen modes */
+body { transition: font-size 0.3s ease-out; }
 body.mode-tv { font-size: 28px; --container-pad: 10px; --grid-gap: 8px; }
 body.mode-tablet { font-size: 15px; --container-pad: 6px; --grid-gap: 6px; }
 body.mode-tablet .clock { font-size: 2.6em; }

@@ -17,6 +17,8 @@
     <title>רגואן Family Dashboard</title>
 </head>
 <body>
+    <!-- A11y: skip to main content -->
+    <a href="#main-content" class="skip-link">דלג לתוכן הראשי</a>
     <!-- Feature 80: PWA install prompt button -->
     <button type="button" id="pwa-install-btn" aria-label="התקן אפליקציה" title="התקן כאפליקציה עצמאית — עובד גם בלי אינטרנט">📲 התקן</button>
     <!-- Feature 54: Night screen dimmer overlay -->
@@ -317,7 +319,7 @@
             </div>
         </header>
 
-        <main class="grids-area">
+        <main class="grids-area" id="main-content">
 
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
@@ -452,6 +454,8 @@
                 <div class="cur-item"><div class="cur-flag">🥈</div><div class="cur-pair">כסף / oz</div><div class="cur-rate" id="curSilver">--</div><div class="cur-chg" id="curSilverChg"></div><svg class="cur-spark" id="cur-silver-spark" viewBox="0 0 60 22"></svg></div>
                 <!-- Feature 71: GBP / ILS tile -->
                 <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-pair">GBP / ₪</div><div class="cur-rate" id="curGbp">--</div><div class="cur-chg" id="curGbpChg"></div><svg class="cur-spark" id="cur-gbp-spark" viewBox="0 0 60 22"></svg></div>
+                <!-- v7.1: Last fetch timestamp chip -->
+                <div class="cur-footer"><span class="cur-last-fetch-label">⏱ עדכון:</span><span class="cur-last-fetch" id="cur-last-fetch" title="">--:--</span></div>
               </div>
             </section>
           </div>
@@ -500,19 +504,23 @@
             <section class="card" data-card-id="tasks" aria-label="Tasks">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge green">✅</span> משימות</div>
               <div class="tasks-body">
+                <div class="tasks-actions">
+                  <button type="button" id="tasks-mark-all-btn" class="tasks-action-btn" title="סמן הכל כבוצע">✅ סמן הכל</button>
+                  <button type="button" id="tasks-reset-btn" class="tasks-action-btn tasks-action-reset" title="אפס סימוני היום">🔄 אפס</button>
+                </div>
                 <div class="tasks-list" id="tasks-list"></div>
               </div>
             </section>
             <!-- System Info card -->
             <section class="card" data-card-id="system-info" aria-label="System Info">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge cyan">🖥</span> מצב מערכת</div>
-              <div class="sysinfo-body" id="sysinfo-body">
-                <div class="sysinfo-row"><span class="sysinfo-label">🛰️ מצב</span><span class="sysinfo-val" id="sysinfo-online">—</span></div>
-                <div class="sysinfo-row"><span class="sysinfo-label">🖊️ סוללר</span><span class="sysinfo-val" id="sysinfo-battery">—</span></div>
-                <div class="sysinfo-row"><span class="sysinfo-label">📶 רשת</span><span class="sysinfo-val" id="sysinfo-net">—</span></div>
-                <div class="sysinfo-row"><span class="sysinfo-label">⏱️ פעיל</span><span class="sysinfo-val" id="sysinfo-uptime">—</span></div>
-                <div class="sysinfo-row"><span class="sysinfo-label">⚡ טעינת דף</span><span class="sysinfo-val" id="sysinfo-load">—</span></div>
-                <div class="sysinfo-row"><span class="sysinfo-label">🌐 דפדפן</span><span class="sysinfo-val" id="sysinfo-browser">—</span></div>
+              <div class="sysinfo-grid" id="sysinfo-body">
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-online">—</span><span class="sysinfo-tile-label">🛰️ מצב</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-battery">—</span><span class="sysinfo-tile-label">🔋 סוללה</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-net">—</span><span class="sysinfo-tile-label">📶 רשת</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-uptime">—</span><span class="sysinfo-tile-label">⏱️ פעיל</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-load">—</span><span class="sysinfo-tile-label">⚡ טעינת דף</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-browser">—</span><span class="sysinfo-tile-label">🌐 דפדפן</span></div>
               </div>
             </section>
           </div>

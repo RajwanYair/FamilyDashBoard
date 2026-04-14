@@ -228,6 +228,18 @@ body.alerts-off .grid-col-right > .card:nth-child(1) { flex: 2 1 0; }
 .cur-chg.negative { color: var(--negative); }
 .cur-chart { display: none; }
 
+/* v7.1: Currency last-fetch footer */
+.cur-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 4px 2px;
+}
+.cur-last-fetch-label { font-size: 0.60em; color: var(--text-muted); }
+.cur-last-fetch { font-size: 0.60em; color: var(--accent); font-variant-numeric: tabular-nums; cursor: help; }
+
 /* ── Red Alerts (צבע אדום) ── */
 .alerts-body { flex: 1; overflow: hidden; position: relative; padding: 4px; }
 .alerts-scroll { display: flex; flex-direction: column; gap: 3px; animation: alertsScroll 40s linear infinite; will-change: transform; }

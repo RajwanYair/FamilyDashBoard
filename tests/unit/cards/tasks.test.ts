@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { renderTasksCard } from "@/cards/tasks/tasks";
+import { renderTasksCard, markAllDone, resetDoneToday } from "@/cards/tasks/tasks";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -352,5 +352,98 @@ describe("Tasks — getTasksForToday", () => {
     // Corrupt JSON → loadDoneMap catch returns {} → all tasks appear pending
     const tasks = getTasksForToday();
     expect(tasks).toHaveLength(1);
+  });
+});
+
+// ── v7.1: markAllDone ─────────────────────────────────────────────────────────
+
+describe("Tasks — markAllDone", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "עמרי", chore: "🧹 לנקות" },
+        { person: "ריבה", chore: "🍳 בישול" },
+      ]),
+    );
+    // Prevent daily-reset from wiping state we set during tests
+    const today = new Date();
+    localStorage.setItem(
+      "dash_tasks_reset_date",
+      `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+    );
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("marks all chores done in localStorage", () => {
+    markAllDone();
+    const raw = localStorage.getItem("dash_tasks_done");
+    expect(raw).not.toBeNull();
+    const map = JSON.parse(raw!);
+    expect(map["עמרי::🧹 לנקות"]).toBe(true);
+    expect(map["ריבה::🍳 בישול"]).toBe(true);
+  });
+
+  it("renders tasks-list after markAllDone", () => {
+    markAllDone();
+    const list = document.getElementById("tasks-list");
+    expect(list).not.toBeNull();
+    // All checkboxes should be checked
+    const checkboxes = list!.querySelectorAll<HTMLInputElement>(
+      "input[type='checkbox']",
+    );
+    checkboxes.forEach((cb) => expect(cb.checked).toBe(true));
+  });
+
+  it("does not throw when no chores are configured", () => {
+    localStorage.removeItem("dash_chores");
+    expect(() => markAllDone()).not.toThrow();
+  });
+});
+
+// ── v7.1: resetDoneToday ────────────────────────────────────────────────
+
+describe("Tasks — resetDoneToday", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
+    );
+    // Pre-seed done map
+    localStorage.setItem(
+      "dash_tasks_done",
+      JSON.stringify({ "עמרי::🧹 לנקות": true }),
+    );
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("removes done map from localStorage", () => {
+    resetDoneToday();
+    expect(localStorage.getItem("dash_tasks_done")).toBeNull();
+  });
+
+  it("re-renders task list with checkboxes unchecked after reset", () => {
+    resetDoneToday();
+    const list = document.getElementById("tasks-list");
+    const checkboxes = list!.querySelectorAll<HTMLInputElement>(
+      "input[type='checkbox']",
+    );
+    // After reset all chores should be unchecked
+    checkboxes.forEach((cb) => expect(cb.checked).toBe(false));
+  });
+
+  it("does not throw when done map is already empty", () => {
+    localStorage.removeItem("dash_tasks_done");
+    expect(() => resetDoneToday()).not.toThrow();
   });
 });

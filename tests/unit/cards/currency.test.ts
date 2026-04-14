@@ -9,6 +9,7 @@ import {
   fetchCurrency,
   renderCurrency,
   cacheDom,
+  formatRelativeTime,
 } from "@/cards/currency/currency";
 
 const MOCK_RATES: Record<string, number> = {
@@ -318,5 +319,43 @@ describe("Currency — fetchCurrency fallback API", () => {
     const rates = await fetchCurrency();
     expect(rates).toHaveProperty("USD");
     expect(callNum).toBeGreaterThanOrEqual(2);
+  });
+});
+
+// ── v7.1: formatRelativeTime ───────────────────────────────────────────────
+
+describe("Currency — formatRelativeTime", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("returns 'עכשיו' for a date within 60 seconds", () => {
+    vi.useFakeTimers();
+    const now = new Date("2024-06-15T12:00:00");
+    vi.setSystemTime(now);
+    const result = formatRelativeTime(new Date(now.getTime() - 30_000));
+    expect(result).toBe("עכשיו");
+  });
+
+  it("returns minutes label for 2-59 minutes ago", () => {
+    vi.useFakeTimers();
+    const now = new Date("2024-06-15T12:05:00");
+    vi.setSystemTime(now);
+    const result = formatRelativeTime(new Date(now.getTime() - 3 * 60_000));
+    expect(result).toBe("לפני 3 דק׳");
+  });
+
+  it("returns hours label for 1+ hours ago", () => {
+    vi.useFakeTimers();
+    const now = new Date("2024-06-15T14:00:00");
+    vi.setSystemTime(now);
+    const result = formatRelativeTime(new Date(now.getTime() - 2 * 3_600_000));
+    expect(result).toBe("לפני 2 ש׳");
+  });
+
+  it("returns 'לפני 1 דק\u05f3' for exactly 60-119 seconds ago", () => {
+    vi.useFakeTimers();
+    const now = new Date("2024-06-15T12:02:00");
+    vi.setSystemTime(now);
+    const result = formatRelativeTime(new Date(now.getTime() - 90_000));
+    expect(result).toBe("לפני 1 דק׳");
   });
 });

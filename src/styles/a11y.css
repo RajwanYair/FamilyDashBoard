@@ -1,4 +1,26 @@
 /* Accessibility */
+/* ── A11y: Skip-to-main link (R1.11) ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.85em;
+  font-weight: 700;
+  text-decoration: none;
+  transition: top 0.2s ease;
+  white-space: nowrap;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
 /* ── Accessibility: Reduced Motion (R1.9) ── */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

@@ -15,6 +15,17 @@ import type { CurrencyResponse } from "../../types/api";
 
 // ── State ──
 let _prevRates: Record<string, number> = {};
+let _lastFetchTime: Date | null = null;
+
+/** Format a past date as a relative Hebrew label (e.g. "לפני 5 דק׳"). */
+export function formatRelativeTime(date: Date): string {
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60_000);
+  if (diffMin < 1) return "עכשיו";
+  if (diffMin < 60) return `לפני ${diffMin} דק׳`;
+  const diffH = Math.floor(diffMin / 60);
+  return `לפני ${diffH} ש׳`;
+}
 
 // ── DOM cache ──
 interface CurEls {
@@ -29,6 +40,7 @@ interface CurEls {
   goldChg: HTMLElement | null;
   silverChg: HTMLElement | null;
   body: HTMLElement | null;
+  lastFetch: HTMLElement | null;
 }
 
 let curEls: CurEls = {
@@ -43,6 +55,7 @@ let curEls: CurEls = {
   goldChg: null,
   silverChg: null,
   body: null,
+  lastFetch: null,
 };
 
 // Map tile key → element IDs
@@ -67,6 +80,7 @@ export function cacheDom(): void {
     goldChg: document.getElementById("curGoldChg"),
     silverChg: document.getElementById("curSilverChg"),
     body: document.getElementById("currency-body"),
+    lastFetch: document.getElementById("cur-last-fetch"),
   };
 }
 
@@ -139,6 +153,17 @@ export function renderCurrency(rates: Record<string, number>): void {
   }
 
   _prevRates = { ...rates };
+  _lastFetchTime = new Date();
+
+  // Update last-fetch timestamp chip
+  if (curEls.lastFetch) {
+    curEls.lastFetch.textContent = _lastFetchTime.toLocaleTimeString("he-IL", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Jerusalem",
+    });
+    curEls.lastFetch.title = `עדכון אחרון: ${formatRelativeTime(_lastFetchTime)}`;
+  }
 
   // Flash data-fresh animation
   if (curEls.body) {

@@ -146,6 +146,26 @@ export function renderTasksCard(): void {
   container.replaceChildren(fragment);
 }
 
+// ── Bulk actions ─────────────────────────────────────────────────────────────
+
+/** Mark every chore as done for today. */
+export function markAllDone(): void {
+  const chores = loadChores();
+  if (!chores.length) return;
+  const map: Record<string, boolean> = {};
+  for (const item of chores) map[fingerprint(item)] = true;
+  saveDoneMap(map);
+  renderTasksCard();
+  diagLog("[tasks] All marked done");
+}
+
+/** Clear all done-flags for today (manual reset, ignores daily-reset hour). */
+export function resetDoneToday(): void {
+  localStorage.removeItem(LS_DONE_KEY);
+  renderTasksCard();
+  diagLog("[tasks] Done flags reset");
+}
+
 // ── Init ────────────────────────────────────────────────────────────────────
 
 let _tasksInterval: number | null = null;
@@ -155,6 +175,9 @@ export function initTasksCard(): void {
   if (_tasksInterval) clearInterval(_tasksInterval);
   // Re-render every hour (catches daily reset if dashboard is always on)
   _tasksInterval = window.setInterval(renderTasksCard, 60 * 60 * 1_000);
+
+  document.getElementById("tasks-mark-all-btn")?.addEventListener("click", markAllDone);
+  document.getElementById("tasks-reset-btn")?.addEventListener("click", resetDoneToday);
 }
 
 export function destroyTasksCard(): void {

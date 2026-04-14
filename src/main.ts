@@ -43,7 +43,7 @@ import { showToast } from "./ui/toast";
 
 // ── Cards ──
 import { initWeatherCard } from "./cards/weather/weather";
-import { initMotivationCard } from "./cards/motivation/motivation";
+import { initMotivationCard, renderMotivation } from "./cards/motivation/motivation";
 import { initNewsCard, toggleBookmarkMode } from "./cards/news/news";
 import { initStocksCard } from "./cards/stocks/stocks";
 import { initCurrencyCard } from "./cards/currency/currency";
@@ -159,6 +159,7 @@ export function init(): void {
     else void document.exitFullscreen();
   });
   registerKey("b", "מועדפים", () => toggleBookmarkMode());
+  registerKey("m", "ציטוט הבא", () => renderMotivation());
   registerKey("r", "רענון נתונים", () => window.location.reload());
   registerKey("a", "התרעות צבע אדום", () => {
     toggleAlerts();
