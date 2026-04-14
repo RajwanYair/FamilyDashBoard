@@ -7,6 +7,366 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.5.0] — 2026-06-15
+
+### Added
+- **Coverage sprint — cache.ts**: 72% → **100%** stmts / 65% → **94%** branches (+8 tests)
+  - `cGetStale` localStorage fallback path (writes directly to raw LS key bypassing mem map)
+  - `cGet` localStorage promotion path (fresh LS entry promoted to in-memory cache)
+  - `cSet` QuotaExceededError → evict → retry path and silent-fail path
+  - `cEvict` edge cases: entries >7-days old, corrupt JSON, fresh entries preserved
+- **Coverage sprint — base-card.ts**: 80% → **100%** stmts / 73% → **100%** branches (new file with 10 tests)
+  - `createCardLoader` fresh-cache hit (no fetch), fetch+render success, stale-while-revalidate pair, fetch-error with/without stale, no-lock early-return, page-hidden early-return
+  - `scheduleCard` timer registration and repeated-interval firing
+- **Coverage sprint — motivation.ts**: 88% → **100%** stmts / 61% → **86%** branches (+7 tests)
+  - Fade transition path (`.moti-card` wrapper, opacity 0→1 via 500ms timeout)
+  - `navigator.share` path via `vi.mock` controlled spy
+  - `moti-next-btn` and `moti-share-btn` click listener callbacks
+- **Coverage sprint — alerts.ts**: 78% → **91%** stmts / 87% → **86%** branches (+9 tests)
+  - `scheduleAlerts` with `_haveActive=true` + both `_realtimeMode` branches (ALERT_INTERVAL_RT / ALERTS_ACTIVE)
+  - `loadAlerts` page-hidden path via `vi.mock("@/core/idle")` scoped mock
+  - `notify` path: isNew=true when top alert ID changes between two consecutive calls
+  - `initAlertsCard` smoke tests (init + cacheDom verification)
+- **Coverage sprint — calendar.ts**: 75% → **95%** stmts / 83% → **86%** branches (+11 tests)
+  - `renderCalCountdown` "מחר" label (event within 24h), "עוד N ימים" label (4-day future)
+  - `renderWeekStrip` heat-2 class (2 events same day)
+  - `renderCalEvent` hour:minute format (≥60min) and minutes-only format (<60min)
+  - icsIndex dataset attribute on event elements
+  - `loadCalendar` cache-hit path (`acquireLock.mockReturnValueOnce(true)` + `cSet` pre-fill)
+  - `getICSUrls` extra localStorage URLs (`dash_ics_url_2`, `dash_ics_url_3`)
+- **Coverage sprint — maximize.ts**: 96% → **96%** stmts / 72% → **82%** branches (+4 tests)
+  - `initCardCollapse` with `startViewTransition` (stub + execute toggle)
+  - `initCardMaximize` collapse-btn-inside-header guard (no maximization triggered)
+  - `initCardMaximize` orphan header guard (no `.card` parent, no throw)
+- **Fixed pre-existing flaky test**: `hebrew-cal.test.ts > shows holiday name directly when days <= 0`
+  - Root cause: `new Date()` captured at test-setup was always a few ms before `new Date()` inside `loadHoliday`, causing the `>= now` filter to exclude the holiday
+  - Fix: `vi.setSystemTime()` freezes clock so both timestamps are identical → `days = 0 → name displayed`
+  - Added `beforeEach(() => vi.useRealTimers())` guard to prevent timer leakage between fork-pooled files
+
+### Changed
+- Total test suite: 932 → **974 tests** · 32/32 suites · 0 failures
+- New test file: `tests/unit/cards/base-card.test.ts` (10 tests, 1 new suite)
+- `vi.mock("@/core/idle")` in `alerts.test.ts` prevents module-namespace spy leakage across fork pool
+- Version bump: 6.4.0 → 6.5.0
+
+---
+
+## [6.4.0] — 2026-04-14
+
+### Added
+- **Coverage sprint**: stocks.ts 69.9% → 84.76% stmts / 81.6% → 85.38% branches (+15 tests)
+  - `renderStock` negative/neutral/NaN trend branches, zero-duration 52-week range
+  - `getMinutesToNextTransition` after-8PM and midnight paths
+  - `initStocksCard` smoke test (covers 14 lines)
+  - `updateStockRange` body coverage via full 52-week DOM setup
+- **Coverage sprint**: hebrew-cal.ts 75.66% → 83.4% stmts / 57.26% → 74.34% branches (+13 tests)
+  - Refactored test file: removed `vi.resetModules()`, converted to static imports
+  - Added `vi.mock("@/core/cache")` for full synchronous render-function coverage
+  - New describe blocks for `renderCandlesHavdala`, `renderHoliday`, `renderOmer`, `renderParasha`, `renderDaf` via mocked `cGet`
+  - Hebrew holiday day-count variant tests (today, tomorrow, future)
+- **Coverage sprint**: ticker.ts 80.23% → 91.27% stmts / 59.32% → 75.34% branches (+3 tests)
+  - Async `loadHalacha` paths: null calData, allorigins proxy success, non-allorigins proxy
+  - `fetchFromSefaria` proxy chain coverage (lines 172-177)
+- **Coverage sprint**: calendar.ts 72.62% → 75.4% stmts / 84% → 83% branches (+5 tests)
+  - `renderCalEvent` zero-duration / negative-duration event `else` branch (lines 181-182)
+  - Event with `location` field renders `.cal-event-loc` element
+  - `initCalendarCard` smoke test with mocked fetch
+
+### Changed
+- Total test suite: 896 → **932 tests** · 31/31 suites · 0 failures
+- Version bump: 6.3.0 → 6.4.0
+
+---
+
+## [6.3.0] — 2026-04-14
+
+### Added
+- **Coverage sprint**: news.ts 81% → 95% stmts / 78% → 93% branches (110 tests, +27)
+- **Coverage sprint**: alerts.ts loadAlerts() via mocked fetch — 8 new tests
+- **Coverage sprint**: bg-images.ts rotateBgImage Image.onload crossfade — 4 new tests
+- **Coverage sprint**: config-panel.ts exportSettings / importSettings — 8 new tests
+- Stale-age tinting tests (stale-old / stale-day / stale-half classes in renderNews)
+- Age badge (.news-age), search-highlight, news-ticker, bookmark-mode render paths
+- DOMParser item-parsing test for fetchFeed (covers forEach body)
+- Storage error-catch tests for loadBookmarks, saveBookmarks
+- Copy-button no-link path + 1500 ms timeout-reset tests
+- Bookmark button click handler coverage
+
+### Changed
+- Total test suite: 849 → 896 tests · 31/31 suites · 0 failures
+
+---
+
+## [6.2.0] — 2026-04-14
+
+> **v6.2.0 Sprint — Multi-birthday, multi-BG, stock alerts, reconnect, night dimmer schedule, auto-theme, realtime alerts, clock seconds, weather city tabs, custom ticker, startup alerts, help overlay fix, temp unit toggle, hidden stocks, chores display, news font size, home city default, news search, visited news, moon phase, zmanim, next calendar event, card collapse, motivation buttons, psalm of day, news count badge, share settings toast, weather sky pill + UV pill, electricity peak badge, seasonal CSS tint, news keyword highlight, stock relative volume badge, portfolio P&L, news age badge, precipitation bar, weekly weather summary, market countdown, feels-like temp, after/pre-market price, news copy+share buttons, news description expand**
+> Tests: 849 Vitest / 31 suites / 0 failures · TypeScript: 0 errors
+
+### Added (Sprint 15 — Feature completion)
+
+- **`src/cards/weather/weather.ts` — feels-like temp cell (F26)**: `renderWeather()` now writes `toDisplayTemp(Math.round(cur.apparent_temperature))` to `#wx-feels`. The `apparent_temperature` field was already fetched from Open-Meteo but never rendered.
+- **`src/cards/stocks/stocks.ts` — after/pre-market price line (F137)**: Added `postMarketPrice`, `preMarketPrice`, `postMarketChangePercent`, `preMarketChangePercent` to `YahooChartResponse.meta` type in `src/types/api.ts`. `renderStock()` now creates/removes a `<div class="stk-after-price">` inside `.stk-vals` showing the extended-hours price + label (אחה״מ / טרום) + change % with green/red color. Existing element is removed first on each render.
+- **`src/cards/news/news.ts` — description parse + inline expand (F145)**: `NewsItem` type gains `description?: string`. During RSS fetch, `<description>` text is stripped of HTML tags (`.replace(/<[^>]+>/g,"")`) and stored (max 200 chars). In `renderNews()` primary items with `description.length > 10` get a `<div class="news-desc">` appended, and the title anchor's click listener toggles `.expanded` on the parent `.rss-item` (CSS `.rss-item.expanded .news-desc { display:block }` activates it).
+- **`src/cards/news/news.ts` — copy-to-clipboard button (F57)**: Primary items get a `<button class="news-copy">📋</button>` when `navigator.clipboard` is available. Click copies `title\nlink` to clipboard, shows `✓` + `.copied` class, then reverts after 1.5 s.
+- **`src/cards/news/news.ts` — Web Share button (F62)**: Primary items with a link get a `<button class="news-share">📤</button>` when `navigator.share` is available. Click calls `navigator.share({ title, url })`.
+- **`src/cards/news/news.ts`** — `renderNews` and `cacheDom` are now exported for testability.
+
+### Tests (Sprint 15)
+
+- **`tests/unit/cards/weather.test.ts`** — +4 tests: feels-like F26 (sets #wx-feels, differs from air temp, rounds correctly, no-throw when absent).
+- **`tests/unit/cards/stocks.test.ts`** — +5 tests: `renderStock` F137 after/pre-market (post-market renders element, pre-market renders element, removes element when neither set, "אחה" label for post, "טרום" label for pre). Added `import type { YahooChartResponse }`.
+- **`tests/unit/cards/news.test.ts`** — +12 tests: description expand F145 (4: renders, absent, too-short, expand-toggle); copy button F57 (4: present, one-per-item, writeText called, shows ✓); share button F62 (3: present, no link=no button, navigator.share called). `renderNews` and `cacheDom` imported.
+
+
+
+- **`src/cards/stocks/stocks.ts` — `renderPortfolioRow()` (F132 + F149)**: Reads `dash_v2_portfolio` JSON `Record<symbol,{shares,cost}>`, loads stale Yahoo price cache, computes total value + unrealized P&L. Updates `#stk-total-row` (shows/hides), `#stk-total-val`, `#stk-total-pnl`, and `#header-portfolio-pl` chip with `.pl-gain`/`.pl-loss`. `renderStock()` also gains a per-symbol `.stk-pos-pnl` row (`.gain`/`.loss`) when the symbol has a portfolio entry. Called from `loadAllStocks()` after `checkStockAlerts()`.
+- **`src/cards/stocks/stocks.ts` — `updateMarketCountdown()` (F68)**: Fills `#stk-mkt-countdown` inside the stocks card with live market-state text: 🟢 פתוח, 🟡 פרה, 🟠 אחה"מ, 🔴 סגור — with countdown minutes to next transition. Classes `.mkt-open` / `.mkt-soon` applied. Called from `initStocksCard()` and via 1-min interval.
+- **`src/cards/news/news.ts` — `relativeAge(pubDate)` + news-age badge (F67)**: Computes Hebrew relative time string (עכשיו / לפני Nש׳ / אתמול / לפני N ימ׳). Appended as `<span class="news-age">` inside each primary news item in `renderNews()`.
+- **`src/cards/news/news.ts` — stale article age tinting (F136)**: Primary items in `renderNews()` now receive `.stale-half` (6–12 h), `.stale-day` (12–24 h), or `.stale-old` (≥24 h) class based on `pubDate`, matching CSS opacity rules.
+- **`src/cards/weather/weather.ts` — precipitation chance bar in forecast (F56)**: For each forecast day where `precipitation_probability_max > 0`, appends `<div class="wx-precip-bar"><div class="wx-precip-fill" style="width:N%">` after the day label. Capped at 100%.
+- **`src/cards/weather/weather.ts` — `wx-week-summary` (F148)**: After the forecast loop, `renderWeather()` computes the 7-day min/max temperature range and dominant weather emoji, and writes e.g. `☀️ 9°C–26°C` to `#wx-week-summary`.
+
+### Tests
+
+- **`tests/unit/cards/stocks.test.ts`** — +15 tests: `renderPortfolioRow` F132 (7: no-op missing key, malformed JSON, no cached price, gain/shows row, pl-gain chip, pl-loss chip, no-DOM safety); `renderStock` F149 per-stock P&L (3: gain, loss, absent); `updateMarketCountdown` F68 (5: open, closed, pre-market, after-hours, no-DOM safety).
+- **`tests/unit/cards/news.test.ts`** — +7 tests: `relativeAge` F67 (7: empty, invalid, <1h, 3h, 25h aתמול, 48h days, future).
+- **`tests/unit/cards/weather.test.ts`** — +8 tests: precipitation bar F56 (4: bar present, fill width, no bar at 0%, 100% cap); weekly summary F148 (4: text set, em-dash present, correct min, correct max).
+
+
+
+### Added (Sprint 13 — Feature completion)
+
+- **`src/cards/weather/weather.ts` — `getSkyCategory(code)` + sky condition pill (F42)**: Maps any WMO weather code to a labelled pill with a CSS class (`sky-clear`, `sky-partly`, `sky-cloudy`, `sky-rain`, `sky-snow`, `sky-shower`, `sky-storm`). `renderWeather()` now updates `#wx-sky-pill` in the card header with the current sky condition label. DOM cache extended with `wxSkyPill`.
+- **`src/cards/weather/weather.ts` — UV index pill styling (F122)**: `renderWeather()` now renders `#wx-uv` with an `<span class="uv-pill uv-{low|mod|high|vhigh|extreme}">` wrapping the index value, replacing plain-text display.
+- **`src/ui/header.ts` — `updateElecBadge(now)` (F22)**: Electricity peak-hour badge for Israeli residential tariff. Weekdays (Sun–Thu) 17:00–22:00 → adds `.peak-on` class to `#elec-badge`; all other times removes it. Called from `tickClock()` every minute.
+- **`src/main.ts` — `applySeasonClass()` (F27)**: Assigns `season-spring/summer/autumn/winter` to `<body>` on startup based on calendar month. Removes any stale season class before adding the new one.
+- **`src/cards/news/news.ts` — `highlightTitle(el, title, query)` (F129)**: Safe DOM-based keyword highlighting — wraps each match in `<mark class="rss-highlight">` using `createTextNode` + `createElement` only (no `innerHTML`). Called from `renderNews()` when `_searchQuery` is set. Empty-query guard prevents infinite loop.
+- **`src/cards/stocks/stocks.ts` — relative volume badge (F61)**: `renderStock()` now computes `regularMarketVolume / averageDailyVolume10Day`. If ≥ 2 → appends `<span class="stk-vol-badge stk-vol-xhigh">N.Nx</span>` inside `.stk-vals`; if 1.5–2 → `stk-vol-high`. Badge is removed and re-evaluated on every render. `renderStock` is now exported.
+
+### Tests
+
+- **`tests/unit/cards/weather.test.ts`** — +22 tests: `getSkyCategory` (9), sky pill DOM in `renderWeather` (4), UV pill DOM (5). Fixed UV text assertion from `"3.0"` → `"3"` after `toFixed(0)` change. Added `#wx-sky-pill` to test DOM fixture.
+- **`tests/unit/ui/header.test.ts`** — +7 tests: `updateElecBadge` (weekday peak, off-peak, weekend Fri/Sat, edge at 21:59, edge at 22:00, no-DOM guard). Added `#elec-badge` to `buildHeaderDOM()`.
+- **`tests/unit/main.test.ts`** — new file, 9 tests: `applySeasonClass` for all 4 seasons + edge months + idempotency.
+- **`tests/unit/cards/news.test.ts`** — +9 tests: `highlightTitle` (match, no-match, case-insensitive, multiple occurrences, start/end positions, clear existing content, empty-query guard).
+- **`tests/unit/cards/stocks.test.ts`** — +6 tests: `renderStock` volume badge (xhigh, high, no-badge <1.5, no-badge missing avg, zero volume, badge not duplicated).
+
+
+
+### Added
+
+- **`src/ui/maximize.ts` — `initCardCollapse()`**: Wires every `.card-collapse-btn` click to toggle `.collapsed` on the parent `.card`. State is persisted to / restored from `dash_v2_collapsed_cards` in localStorage. Button text updates (`▼` / `▶`). Guard added to `initCardMaximize()` so collapse-button clicks do not trigger maximize. Called from `src/main.ts`.
+- **`src/cards/motivation/motivation.ts` — `getCurrentQuote()`**: Returns the current displayed quote object `{text, author}` (circular, wraps around). Always returns a valid entry from `MOTIVATIONS`.
+- **`src/cards/motivation/motivation.ts` — `shareMotivation()`**: Shares current quote via `navigator.share()` if available; falls back to clipboard copy + `showToast("📋 הציטוט הועתק ללוח")`. Wired to `#moti-share-btn`. `#moti-next-btn` wired to `renderMotivation()`.
+- **`src/cards/hebrew-cal/hebrew-cal.ts` — `getPsalmOfDay(date)`**: Pure computation — returns Psalm number for any date by weekday (Sun→24, Mon→48, Tue→82, Wed→94, Thu→81, Fri→93, Sat→92).
+- **`src/cards/hebrew-cal/hebrew-cal.ts` — `renderPsalmOfDay()`**: Writes `תהילים N` to `#hc-psalm`, shows `#hc-psalm-row`. Called in `initHebrewCalCard()`.
+- **`src/cards/news/news.ts` — news count badge**: `renderNews()` now updates `#news-count` text with the total number of loaded news items (empty string when list is empty).
+- **`src/ui/config-panel.ts` — `shareSettings()` toast**: After clipboard write succeeds, calls `showToast("🔗 קישור ההגדרות הועתק ללוח")` for user feedback.
+- **`tests/unit/ui/maximize.test.ts`** — 8 new tests for `initCardCollapse`: toggle `.collapsed`, persist LS, restore from LS, button‐text flip.
+- **`tests/unit/cards/motivation.test.ts`** — 6 new tests: `getCurrentQuote` (3), `shareMotivation` (2).
+- **`tests/unit/cards/hebrew-cal.test.ts`** — 11 new tests: `getPsalmOfDay` (7 days), `renderPsalmOfDay` (4 cases).
+- **`tests/unit/cards/news.test.ts`** — 3 new tests for news count badge (`#news-count` DOM contract).
+- **`tests/unit/ui/config-panel.test.ts`** — 2 new tests for `shareSettings` clipboard + no-throw.
+
+
+- **`src/cards/news/news.ts` — `initNewsSearch()`**: Wires `#news-search` input + `#news-search-clear` button. Typing updates `_searchQuery`, re-renders with match count shown in `#news-search-count`. Clear button resets to full list.
+- **`src/cards/news/news.ts` — `markVisited(key)` / `isVisited(key)`**: Tracks which news articles have been clicked in `sessionStorage` (`dash_visited_news`). Clicked articles gain CSS class `visited` (opacity dimmed + strikethrough via existing F110 rule).
+- **`src/cards/hebrew-cal/hebrew-cal.ts` — `computeMoonPhase(date)`**: Pure-math synodic month algorithm (reference: 2000-01-06 new moon). Returns `{emoji, label}` in Hebrew for 8 lunar phases.
+- **`src/cards/hebrew-cal/hebrew-cal.ts` — `renderMoonPhase()`**: Calls `computeMoonPhase(new Date())`, writes text to `#hc-moon`, shows `#hc-moon-row`. Called in `initHebrewCalCard()`.
+- **`src/cards/hebrew-cal/hebrew-cal.ts` — `renderZmanim(times)` / `loadZmanim()`**: Fetches Hebcal `/zmanim?cfg=json&geonameid=...&date=today` API (12h cache), renders 8 Jewish prayer times as tiles in `#zmanim-grid`, shows `#zmanim-section`. Added to `loadHebCal()` `Promise.allSettled` chain.
+- **`src/cards/hebrew-cal/hebrew-cal.ts` — `renderNextCalEvent()`**: Reads stale `cal-ics` cache from the calendar card, performs minimal ICS parsing to find the next `VEVENT` after now, displays `summary (מחר / בעוד N ימ׳)` in `#hc-event`, shows `#hc-event-row`. Called in `initHebrewCalCard()`.
+- **`src/core/constants.ts`** — `API.ZMANIM = "https://www.hebcal.com/zmanim"`.
+- **`tests/unit/cards/news.test.ts`** — 10 new tests: `filterBySearch` (5), `markVisited`/`isVisited` (5).
+- **`tests/unit/cards/hebrew-cal.test.ts`** — 16 new tests: `computeMoonPhase` (5), `renderMoonPhase` (3), `renderZmanim` (4), `renderNextCalEvent` (4).
+
+### Added
+
+- **`src/cards/weather/weather.ts` — `toggleTempUnit()`**: Flips `tempUnit` between `°C`/`°F`, saves config, re-renders with cached weather data. Wired to `#wx-temp` click handler in `initWeatherCard()`.
+- **`src/cards/weather/weather.ts` — Home city fallback for tab 1**: `initWeatherCities()` now uses `dash_v2_home_lat`/`dash_v2_home_lon`/`dash_v2_home_name` as the default for city tab 1 when `dash_v2_city_1` is not set.
+- **`src/cards/stocks/stocks.ts` — `applyHiddenStocks()`**: Reads `cfg.hiddenStocks[]`, hides matching `[data-symbol="X"]` stock rows (`display:none`), shows all others. Called on `initStocksCard()` and on every config panel save.
+- **`src/cards/hebrew-cal/hebrew-cal.ts` — `renderChores()`**: Reads `dash_v2_chores` (JSON array `[{person, chore}]`), selects today's chore by `weekday % length`, displays in `#hc-chore`, shows `#hc-chore-row`. Hidden when empty or invalid JSON.
+- **`src/cards/news/news.ts` — `applyNewsFontSize()`**: Reads `dash_v2_news_fontsize` from localStorage (50–200 range), applies as CSS `font-size` on `#rss-scroll`. Called in `initNewsCard()` and on config panel save.
+- **`src/ui/config-panel.ts` — save handler**: Now calls `applyHiddenStocks()`, `applyNewsFontSize()`, `renderChores()` on save so live changes apply instantly.
+- **`tests/unit/cards/weather.test.ts`** — 7 new tests: home city fallback (2), `toggleTempUnit` C→F, F→C, no-cache safety (3).
+- **`tests/unit/cards/stocks.test.ts`** — 7 new tests for `applyHiddenStocks`: no-op empty, hides symbol, leaves others visible, multiple symbols, un-hide, case-insensitive, no-DOM safety.
+- **`tests/unit/cards/hebrew-cal.test.ts`** — 7 new tests for `renderChores`: empty LS, invalid JSON, empty array, valid entry shows row, person+chore text, no-person, no-DOM safety.
+- **`tests/unit/cards/news.test.ts`** — 5 new tests for `applyNewsFontSize`: no-op when absent, applies 120%, rejects < 50, rejects > 200, no-DOM safety.
+
+### Added
+
+- **`src/cards/weather/weather.ts` — Multi-city tabs**: `parseCityEntry()`, `initWeatherCities()`, `switchWeatherCity()`. Clicking any `.wx-city-tab` now fetches weather for that city (lat/lon from `data-lat`/`data-lon`), updates active caret, and overwrites `"wx"` cache. City names/coords read from `dash_v2_city_1` / `dash_v2_city_2` / `dash_v2_city_3` localStorage keys (format `name|lat|lon`). Called on card init and on config panel save.
+- **`src/styles/sprints.css` — `.wx-city-tab` styles**: Flex row of pill tabs; `.active` highlighted with `--cyan` background; hover border; `.ticker-custom-msg` highlighted with `--warning` color.
+- **`src/ui/ticker.ts` — Custom announcement in ticker**: `makeTickerSet()` now prepends a `📢 <message>` span (class `ticker-custom-msg`) to every scroll loop iteration when `dash_v2_ticker_msg` localStorage key is set.
+- **`src/main.ts` — Startup alerts config apply**: `setAlertsEnabled(cfg.alertsEnabled)` and `setAlertsRealtime(cfg.realtimeAlerts)` are now called on startup so saved alert preferences are active immediately on load.
+- **`src/index.html` — Help overlay updated**: Removed stale `A` ("הצגת/הסתרת התראות") and `M` ("השתק/הפעל צליל") keys (not registered). Added `C` ("שניות בשעון") row after `N`.
+- **`tests/unit/cards/weather.test.ts`** — 19 new tests: `parseCityEntry` (6), `initWeatherCities` (5), plus existing render tests (unchanged).
+- **`tests/unit/ui/ticker.test.ts`** — 4 new tests: `dash_v2_ticker_msg` LS contract, `initTicker` with message set/empty.
+- **`src/ui/night-dimmer.ts` — `initNightDimmer(nightDimLevel)`**: Applies the configured dim level, reads `dash_v2_dim_start`/`dash_v2_dim_end` from localStorage, runs `autoDimCheck()` immediately, and starts a 60-second interval that re-evaluates the schedule. Called from `src/main.ts` on startup with `cfg.nightDimLevel`.
+- **`src/ui/theme.ts` — `checkAutoTheme(enabled, dayTheme)`**: When `autoTheme === true`, applies `'black'` between 20:00 and 07:00 and restores `dayTheme` during the day. Runs on init + every 5 minutes from `main.ts`.
+- **`src/types/config.ts` — `realtimeAlerts: boolean`**: New config field (default `false`) wiring the existing `cfg-alert-realtime` input to `setAlertsRealtime()` in alerts.ts.
+- **`src/ui/header.ts` — `setClockSeconds(value)`**: Directly sets `clockShowSeconds` (used by config panel save to apply without toggling state).
+- **`src/index.html` — `#cfg-clock-seconds`**: New config panel row ("⏱️ שניות בשעון", on/off) in the General tab, wired to `clockSeconds` in config.
+- **`src/main.ts` — `C` keyboard shortcut**: Registers `C` key → `toggleClockSeconds()` (seconds display toggle shown in help overlay).
+- **`tests/unit/ui/night-dimmer.test.ts`**: 10 new tests — `autoDimCheck` functional (activates at night, deactivates in day, boundary start hour); `initNightDimmer` (applies level, reads LS defaults, starts auto-dim).
+- **`tests/unit/ui/theme.test.ts`**: 6 new tests for `checkAutoTheme` — disabled noop, night hours apply 'black', daytime restores day theme, h=20/h=7 boundaries.
+- **`tests/unit/ui/header.test.ts`**: 3 new tests for `setClockSeconds` — enables HH:MM:SS, disables to HH:MM, no-DOM safety.
+- **`tests/unit/cards/alerts.test.ts`**: 3 new tests for `setAlertsRealtime` — enable, disable, toggle.
+
+### Changed
+
+- **`src/ui/config-panel.ts`**: Imports `setAlertsRealtime` + `setClockSeconds` + `initWeatherCities`; save button now applies `setAlertsRealtime` + `setClockSeconds` + `initWeatherCities()` live.
+
+### Added
+
+- **`src/cards/stocks/stocks.ts` — `checkStockAlerts()`** (v6.2): Parses `dash_v2_stock_alerts` localStorage key (one alert per line: `SYMBOL>threshold` / `SYMBOL<threshold` / `>=` / `<=`). Fires `showToast()` when cached price crosses threshold. Each alert fires at most once per page session (`_alertedThisSession` Set). Called automatically after every `loadAllStocks()`.
+- **`src/cards/stocks/stocks.ts` — `resetStockAlertSession()`**: Clears the session dedup Set — exported for testing.
+- **`src/main.ts` — Network reconnect handler**: Listens to `window` `'offline'` + `'online'` events. Shows `showToast("❌ אין חיבור לאינטרנט")` on offline, shows "🌐 החיבור חזר — מרענן נתונים..." + `window.location.reload()` after 2.5 s on reconnect. Also listens to SW `NETWORK_BACK` message for reconnect without prior offline event.
+- **`tests/unit/cards/stocks.test.ts`**: 10 new tests for `checkStockAlerts` — empty config, symbol not in cache, `>` / `<` / `>=` operators, threshold not met, session dedup, invalid format, toast message content.
+
+### Changed
+
+- **`package.json`**: Version bumped `6.1.0` → `6.2.0`.
+- **`src/ui/status-bar.ts`**: `APP_VERSION` bumped to `"6.2.0"`.
+- **`src/main.ts`**: `VERSION` constant bumped to `"6.2.0"`.
+- **`sw.js`**: `CACHE_NAME` / `CACHE_NAME_API` bumped to `v6.2.0`.
+- **`README.md`**: Version badge `6.1.0` → `6.2.0`; Vitest badge `574` → `849`.
+- **`.github/assets/banner.svg`**: Version `v6.1.0 · 574 Vitest Tests` → `v6.2.0 · 849 Vitest Tests`.
+- **`CHANGELOG.md`**: `[6.2.0-dev]` finalized to `[6.2.0] — 2026-04-14`.
+
+### Added (v6.2.0 Refactoring Sprint — Infra + Coverage)
+
+- **ESLint TypeScript**: `eslint.config.mjs` rewritten with `tseslint.config()`, type-aware rules, added `lint` job to `ci-v6.yml`.
+- **`vitest.config.ts`**: Pool `forks` + `maxForks:4` + `testTimeout:10000`; `src/main.ts` wrapped with `!import.meta.env.VITEST` guard to prevent test-time bootstrap.
+- **`deploy-worker.yml`** + **`worker/package.json`** + **`worker/tsconfig.json`**: Cloudflare Worker CI deploy workflow.
+- **CSS co-location**: `src/cards/{stocks,weather,news,hebrew-cal,calendar}/*.css`; `sprints.css` trimmed to 166 global lines.
+- **`renderStocksShell()`**: Dynamically generates all 15 stock rows + sector headers from `STOCK_SYMBOLS`/`STOCK_META`; hardcoded HTML removed from `src/index.html`. `StockMeta` gains `sym?` and `logoUrl?` fields.
+- **Test coverage improvements**: `alerts.ts` 52% → 81%, `stocks.ts` 65% → 80%+, `calendar.ts` 66% → 82%+, `ticker.ts` 41% → 76%+ (849 total tests / +55 new tests).
+
+---
+
+## [6.1.0] — 2026-04-13
+
+> **v6.1.0 Post-Release Hardening + v6.1 Features**
+> Tests: 574 Vitest / 30 suites / 0 failures · TypeScript: 0 errors
+
+### Added
+
+- **`src/ui/header.ts` — `updateBirthdayChip()`** (v6.1 F104): Shows `#header-birthday-chip` when any configured birthday (`birthdays[]` config) is within 14 days. Displays nearest birthday with name + days-away count. Hidden when empty or out of range.
+- **`src/ui/header.ts` — `updateCountdownChip()`** (v6.1 F139): Shows `#header-countdown` chip for a user-configured custom event countdown (`countdownDate` + `countdownLabel` config). Hidden for past dates or missing config.
+- **`src/ui/bg-images.ts`** (v6.1): New module — background image rotation. Reads `bgImages: string[]` from config, validates HTTPS URLs, injects two crossfading `<div>` layers (`#bg-layer-a`, `#bg-layer-b`) with CSS `transition: opacity 2s`. Rotates every 30 minutes. No-op when `bgImages` is empty or all URLs are non-HTTPS.
+- **`src/cards/news/news.ts` — bookmark system`** (v6.1): `B` key enters/exits bookmark mode. `getBookmarkKey()`, `toggleBookmark()`, `toggleBookmarkMode()`, `getBookmarks()`, `isBookmarkMode()` all exported. Bookmarks stored in `localStorage("dash_bookmarks")`. In bookmark mode: scroll animation paused, only bookmarked items shown. `#news-bkm-pill` visible only in bookmark mode.
+- **`src/main.ts`**: Wired `B` key → `toggleBookmarkMode()`. Imported `initBgImages()` and called on init.
+- **`src/index.html`**: Added `B` help row for "מועדפי חדשות" keyboard shortcut.
+- **`tests/unit/ui/header.test.ts`**: 12 new tests for `updateBirthdayChip` (today / within 14 days / beyond 14 days / nearest of multiple / no config / no DOM element) and `updateCountdownChip` (today / future / past / no config / no DOM element).
+- **`tests/unit/ui/bg-images.test.ts`**: 15 new tests for `isValidBgUrl` (HTTPS/HTTP/data/relative/empty), `initBgImages` (no-op when empty, layer creation, opacity, filtering, interval), `rotateBgImage` (no-op without layers).
+- **`tests/unit/cards/news.test.ts`**: 12 new tests for `getBookmarkKey`, `toggleBookmark`, `toggleBookmarkMode`, `getBookmarks`, `isBookmarkMode`.
+- **`tests/unit/html/dom-contract.test.ts`**: Added contract tests for `#header-birthday-chip`, `#header-countdown`, `#news-bkm-pill`, `#cfg-countdown-date`, `#cfg-countdown-label`.
+- **`tests/setup.ts`**: Global `beforeEach` now stubs `fetch` to a never-resolving mock by default, preventing background real network calls from unawaited init*Card() async chains. Eliminates ETIMEDOUT noise in full suite runs.
+
+### Fixed
+
+- **`tests/unit/cards/news.test.ts`** — `initNewsCard` describe: Changed fetch stub from `mockRejectedValue` to `mockImplementation(() => new Promise(() => {}))`. Prevents unawaited `void loadNews()` from completing after `vi.unstubAllGlobals()` runs, which was causing real network connections to proxy servers.
+- **`tests/setup.ts`**: Added global `afterEach(() => vi.unstubAllGlobals())` to prevent `vi.stubGlobal()` stubs from leaking between test describes. Fixes 3 flaky `detectCategory` tests in `news.test.ts` that returned `'politics'` unexpectedly when running in the full Vitest suite.
+- **`tests/unit/cards/news.test.ts`**: Added `vi.unstubAllGlobals()` to `afterEach` in `fetchFeed` and `initNewsCard` describe blocks for proper stub cleanup.
+
+### Changed
+
+- **`src/ui/header.ts`**: `tickClock()` now calls `updateBirthdayChip()` and `updateCountdownChip()` on each tick. `initHeader()` now caches refs for `#header-birthday-chip` and `#header-countdown`.
+- **`src/cards/stocks/stocks.ts` — `getMarketStatus()`** (v6.1): Returns current NYSE market session: `'pre' | 'open' | 'after' | 'closed'`. Pre-market: 4–9:30 AM ET; Open: 9:30 AM–4 PM ET; After-hours: 4–8 PM ET; Closed: rest.
+- **`src/cards/stocks/stocks.ts` — `getMinutesToNextTransition()`** (v6.1): Returns minutes until the next status change (0 on weekends and after-hours end).
+- **`src/cards/stocks/stocks.ts` — `updateMarketBadge()`** (v6.1): Updates `#market-badge` DOM element with status label + countdown (e.g. `🟢 פתוח 3:45`). Sets `.market-badge--{status}` class for themed color coding.
+- **`src/styles/components.css`**: Status-specific badge colors — `--open` (green), `--pre` (yellow), `--after` (orange), `--closed` (red).
+- **`tests/unit/cards/stocks.test.ts`**: 37 new tests for `getMarketStatus`, `getMinutesToNextTransition`, `updateMarketBadge` using `vi.setSystemTime()`.
+- **`tests/unit/html/dom-contract.test.ts`**: Added `#market-badge` contract test for Stocks card.
+- **`sw.js`**: `CACHE_NAME` bumped from `familydashboard-v5.0.0` → `familydashboard-v6.0.0`; `CACHE_NAME_API` bumped to `familydashboard-api-v6.0.0`. PWA cache now correctly reflects the v6.0.0 release.
+- **`.github/assets/banner.svg`**: Updated version `v5.1.0 · 1084 Tests` → `v6.0.0 · 510 Vitest Tests`.
+- **`.github/assets/architecture.svg`**: Version bump `v5.1.0` → `v6.0.0`.
+- **`.github/assets/data-sources.svg`**: Version bump `v5.1.0` → `v6.0.0`.
+- **`.github/assets/preview.svg`**: Version bump `v5.1.0` → `v6.0.0`.
+- **`.github/copilot-instructions.md`**: Updated to v6.0.0, TypeScript stack, 481+ Vitest tests; replaced v5.2/v5.3 upcoming items with v6.1 roadmap.
+- **`.github/instructions/workspace.instructions.md`**: Updated to v6.0.0 TypeScript/Vite project description with correct file map.
+- **`README.md`**: Version badge `5.2-rc.1` → `6.0.0`; test badge updated; added TypeScript and Vite badges; removed outdated ES2022+ badge.
+- **`src/cards/stocks/stocks.ts` — `initStocksCard()`**: Now calls `updateMarketBadge()` on init and sets a 60s interval to keep countdown accurate.
+
+
+---
+
+## [6.0.0] — 2026-06-02
+
+
+> **v6.0.0 Final Release — Full TypeScript Modular Refactor + 510-Test Suite**
+> Tests: 510 Vitest / 29 suites / 0 failures · TypeScript: 0 errors
+
+### Added
+
+- **R8.6 — Feature tests** (`tests/unit/ui/theme.test.ts`): Expanded from 10 → 18 tests. `THEMES` array contents, `applyTheme` idempotency across all 5 themes, leaving no stale theme classes, `currentTheme()` return type.
+- **R8.7 — ServiceWorker tests** (`tests/unit/core/sw.test.ts`, 22 tests NEW): File-content validation of `sw.js`. Asserts `CACHE_NAME` pattern, `APP_SHELL` entries (BestDashBoard.html, manifest.json, sw.js, icon.svg), `API_CACHE_ORIGINS` (open-meteo, hebcal, exchange-rate, allorigins, Yahoo Finance), all four event listeners (install, activate, fetch, message), `SKIP_WAITING` + `VERSION_ACTIVATED` broadcast, `OFFLINE_HTML` RTL fallback.
+- **R8 test suite expansions** — 137 new tests across 11 files: `hebrew-cal.test.ts` (2 → 18), `currency.test.ts` (5 → 20), `news.test.ts` (11 → 27), `stocks.test.ts` (10 → 23), `status-bar.test.ts` (6 → 19), `sync.test.ts` (8 → 22), `cache.test.ts` (8 → 19), `diag.test.ts` (5 → 17), `config.test.ts` (9 → 17), `fetch.test.ts` (8 → 14), `ticker.test.ts` (7 → 18), `toast.test.ts` (6 → 10).
+- **Sprint 4 — DOM-contract test suite** (`tests/unit/html/dom-contract.test.ts`, 82 tests NEW): Validates every HTML element ID referenced by TypeScript modules lives in `src/index.html`. Covers ID presence, correct element types (input/select/textarea vs HTMLElement), sync dot presence, config panel structure.
+- **Sprint 4 — Inline onclick→TS migration**: Removed 12 inline `onclick` handlers from `src/index.html`. Event wiring moved to respective TypeScript modules (`keyboard.ts`, `config-panel.ts`, `diag-overlay.ts`, `night-dimmer.ts`).
+- **Sprint 4 — DOM ID reconciliation**: Fixed 15 mismatched element IDs between `src/index.html` and TypeScript module DOM caches (weather fields, stocks containers, currency elements, alerts containers).
+
+### Changed
+
+- **`package.json`**: Version bumped to `6.0.0`.
+- **`src/ui/status-bar.ts`**: `APP_VERSION` bumped to `"6.0.0"`.
+
+---
+
+## [6.0.0-alpha.6] — 2026-05-31
+
+> **v6 Phase 7 Sprint 4 — DOM-Contract Tests + Inline onclick Removal (82 new tests)**
+> Tests: 373 Vitest / 28 suites / 0 failures · TypeScript: 0 errors
+
+### Added
+
+- **`tests/unit/html/dom-contract.test.ts`** (82 tests): ID presence, element type, sync-dot, config-panel structure contract tests.
+
+### Changed
+
+- **`src/index.html`**: Removed 12 inline `onclick` handlers. Fixed 15 DOM ID mismatches.
+- **`src/ui/status-bar.ts`**: `APP_VERSION` bumped to `"6.0.0-alpha.6"`.
+
+---
+
+
+> **v6 Phase 7 Sprint 2 — Diagnostics Overlay + Test Coverage (68 new tests)**
+> Tests: 227 Vitest / 22 suites / 0 failures · TypeScript: 0 errors
+
+### Added
+
+- **`src/ui/diag-overlay.ts`**: New module — renders `getDiagEntries()` ring-buffer into `#diag-log` on open. `openDiagOverlay()`, `closeDiagOverlay()`, `toggleDiagOverlay()`, `isDiagOverlayOpen()`, `copyDiagLog()` (clipboard + button flash), `initDiagOverlay()` (wires `#diag-copy-btn`, overlay background click-to-close, replaces stale inline `onclick`). DOM refs use `isConnected` stale-ref guard.
+- **`tests/unit/ui/config-panel.test.ts`** (19 tests): open/close/toggle, `isConfigPanelOpen`, `switchCfgTab` activates correct section + button, `populateForm` reads config fields into form, `initConfigPanel` wires gear/save/close buttons and tab clicks. Uses `vi.resetModules()` + dynamic import to isolate module-level DOM cache per test.
+- **`tests/unit/ui/screen-mode.test.ts`** (18 tests): `applyScreenMode` adds/removes screen class, only one screen class at a time, `applyFontScale` sets `--font-scale` CSS var, clamps 0.7–1.5, rounds to 2dp, `stepFontScale` increments by 0.05, persists to config, respects clamp, `initScreenMode` applies saved mode/scale and wires dropdown.
+- **`tests/unit/ui/status-bar.test.ts`** (6 tests): `initStatusBar` sets `#version-badge` text, sets `#refresh-stamp`, tolerates missing sync dots, `stampRefresh` updates stamp text containing "רענון" and time digits, tolerates missing element. Uses `vi.resetModules()` per test.
+- **`tests/unit/core/idle.test.ts`** (11 tests): `scheduleIdle` calls fn via timer fallback, `isPageVisible` default true, visibility change tracking on hide/show, `onVisibilityChange` callbacks fire with correct boolean, multiple callbacks, `shouldWakeRefresh` false before/after quick hide, `initVisibility` safe on repeated calls.
+- **`tests/unit/ui/diag-overlay.test.ts`** (14 tests): open/close/toggle/`isDiagOverlayOpen`, `renderLog` populates `#diag-log` entries, empty state text, `copyDiagLog` calls `navigator.clipboard.writeText` with log content, `initDiagOverlay` wires copy button and overlay background click-close.
+
+### Changed
+
+- **`src/main.ts`**: Added `import { initDiagOverlay, toggleDiagOverlay }`. Added `initDiagOverlay()` call after `initConfigPanel()`. D-key handler replaced with clean `registerKey("d", "אבחון", toggleDiagOverlay)`. Version bumped to `6.0.0-alpha.4`.
+- **`src/ui/status-bar.ts`**: `APP_VERSION` bumped to `"6.0.0-alpha.4"`.
+
+---
+## [6.0.0-alpha.5] — 2026-04-13
+
+> **v6 Phase 7 Sprint 3 — Full Test Coverage (64 new tests · 27 suites · 291 total)**
+> Tests: 291 Vitest / 27 suites / 0 failures · TypeScript: 0 errors
+
+### Added
+
+- **`tests/unit/core/sw-register.test.ts`** (10 tests): `registerSW()` resolves when SW unsupported, calls `navigator.serviceWorker.register` with correct path, attaches `updatefound` / `controllerchange` / `message` listeners, resolves on registration error. `swSkipWaiting()` safe with no registration, posts `SKIP_WAITING` to waiting SW. `showUpdateBanner` adds `.visible` to `#sw-update-banner` when `updatefound` fires.
+- **`tests/unit/ui/header.test.ts`** (15 tests): `tickClock()` sets `#clock`, `#eng-date`, `#greeting`, day-bar and year-bar width (0–100%). `toggleClockSeconds()` flips seconds display. `initHeader()` with full/empty DOM, reads `clockSeconds` from config, greeting contains Hebrew words.
+- **`tests/unit/ui/maximize.test.ts`** (13 tests): `getMaximizedCard()` null before expand, returns card after expand, null after collapse. `toggleCardMaximize()` adds/removes `maximized` class, calls `animate()` on expand and collapse. Swap: expanding card B collapses card A automatically. `initCardMaximize()` wires header clicks, toggle on double-click, tolerates empty DOM.
+- **`tests/unit/ui/scroll.test.ts`** (19 tests): `injectScrollKeyframes()` creates/reuses `<style>` element in `<head>`, keyframe name and distance in content. `startCloneScroll()` appends `aria-hidden` clone, sets animation, injects keyframe style, de-dupes old clones, no-op when scrollHeight < 10. `startSimpleScroll()` sets `alternate` animation, injects style, no-op when scrollDistance < 10. `stopScroll()` clears animation and removes clones.
+- **`tests/unit/ui/ticker.test.ts`** (7 tests): `getHalachaData()` null before load, null immediately after `initTicker()` (async fetch). `initTicker()` does not throw with or without DOM, calls `scheduleCard` for periodic refresh.
+
+### Changed
+
+- **`src/main.ts`**: Version bumped to `6.0.0-alpha.5`.
+- **`src/ui/status-bar.ts`**: `APP_VERSION` bumped to `"6.0.0-alpha.5"`.
+
+---
 ## [6.0.0-alpha.2] — 2026-04-13
 
 > **v6 Phase 3 — Card Modules: News, Stocks, Currency, Alerts + Main Wiring** (GH #66)

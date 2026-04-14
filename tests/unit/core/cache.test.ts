@@ -2,7 +2,7 @@
  * Tests for src/core/cache.ts — Dual-layer cache
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { cGet, cSet, cGetStale, cEvict, cClear } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -59,5 +59,160 @@ describe("Cache — cClear", () => {
     cClear();
     expect(cGet("a", 60_000)).toBeNull();
     expect(cGet("b", 60_000)).toBeNull();
+  });
+});
+
+describe("Cache — extra coverage", () => {
+  beforeEach(() => {
+    cClear();
+  });
+
+  it("cSet overwrites existing data", () => {
+    cSet("key", "first");
+    cSet("key", "second");
+    expect(cGet<string>("key", 60_000)).toBe("second");
+  });
+
+  it("cGet returns latest value after overwrite", () => {
+    cSet("over", { v: 1 });
+    cSet("over", { v: 2 });
+    expect(cGet<{ v: number }>("over", 60_000)?.v).toBe(2);
+  });
+
+  it("cGetStale returns data even when TTL=0 would expire it", () => {
+    cSet("stale2", "value");
+    expect(cGetStale<string>("stale2")).toBe("value");
+  });
+
+  it("cSet handles array value", () => {
+    cSet("arr", [1, 2, 3]);
+    expect(cGet<number[]>("arr", 60_000)).toEqual([1, 2, 3]);
+  });
+
+  it("cSet handles complex object", () => {
+    const obj = { nested: { a: true }, count: 42 };
+    cSet("obj", obj);
+    expect(cGet<typeof obj>("obj", 60_000)).toEqual(obj);
+  });
+
+  it("cSet handles null value", () => {
+    cSet("null-key", null);
+    // cGet returns null for missing OR for null stored (consistent behavior)
+    const result = cGetStale("null-key");
+    expect(result).toBeNull();
+  });
+
+  it("cEvict does not throw with populated cache", () => {
+    cSet("evict1", "x");
+    cSet("evict2", "y");
+    expect(() => cEvict()).not.toThrow();
+  });
+
+  it("cGet returns null for key that was cleared", () => {
+    cSet("cleared", "data");
+    cClear();
+    expect(cGet("cleared", 60_000)).toBeNull();
+  });
+
+  it("cGetStale returns null after cClear", () => {
+    cSet("st", "data");
+    cClear();
+    expect(cGetStale("st")).toBeNull();
+  });
+});
+
+// ── Sprint 5: localStorage path coverage ─────────────────────────────────────
+
+describe("Cache — cGetStale localStorage path", () => {
+  beforeEach(() => { cClear(); });
+  afterEach(() => { cClear(); });
+
+  it("reads from localStorage when key not in memory", () => {
+    // Write directly to localStorage (bypasses mem Map)
+    const raw = JSON.stringify({ data: "from-ls", ts: Date.now() });
+    localStorage.setItem("dash_v2_ls-only", raw);
+    // cClear() cleared mem but not our manual entry (it IS prefixed so cClear would remove it)
+    // So we need to set AFTER cClear
+    const raw2 = JSON.stringify({ data: "ls-fresh", ts: Date.now() });
+    localStorage.setItem("dash_v2_ls-direct", raw2);
+    // mem is empty for this key → falls through to localStorage
+    expect(cGetStale<string>("ls-direct")).toBe("ls-fresh");
+  });
+
+  it("returns null when localStorage entry is corrupt JSON", () => {
+    localStorage.setItem("dash_v2_bad-json", "{{{not-valid");
+    expect(cGetStale("bad-json")).toBeNull();
+  });
+});
+
+describe("Cache — cGet localStorage path", () => {
+  beforeEach(() => { cClear(); });
+  afterEach(() => { cClear(); });
+
+  it("promotes fresh localStorage entry to memory", () => {
+    const ts = Date.now();
+    const raw = JSON.stringify({ data: "promoted", ts });
+    localStorage.setItem("dash_v2_promo", raw);
+    // mem is empty → falls to LS → within TTL → promotes to mem
+    const result = cGet<string>("promo", 60_000);
+    expect(result).toBe("promoted");
+  });
+
+  it("returns null for corrupt localStorage entry", () => {
+    localStorage.setItem("dash_v2_corrupt-get", "bad{json");
+    expect(cGet("corrupt-get", 60_000)).toBeNull();
+  });
+});
+
+describe("Cache — cSet localStorage-full retry", () => {
+  afterEach(() => { cClear(); vi.restoreAllMocks(); });
+
+  it("retries setItem after eviction when quota exceeded first time", () => {
+    let calls = 0;
+    const spy = vi.spyOn(localStorage, "setItem").mockImplementation((k: string, v: string) => {
+      calls++;
+      if (calls === 1) throw new DOMException("QuotaExceededError");
+      const real = Storage.prototype.setItem;
+      if (real) real.call(localStorage, k, v);
+    });
+    expect(() => cSet("retry-key", "data")).not.toThrow();
+    // called at least twice: first call throws, second call (after evict) succeeds
+    expect(calls).toBeGreaterThanOrEqual(2);
+    spy.mockRestore();
+  });
+
+  it("silently fails when localStorage is full even after eviction", () => {
+    const spy = vi.spyOn(localStorage, "setItem").mockImplementation(() => {
+      throw new DOMException("QuotaExceededError");
+    });
+    expect(() => cSet("full-key", "value")).not.toThrow();
+    spy.mockRestore();
+    // in-memory cache still holds the data
+    expect(cGetStale("full-key")).toBe("value");
+  });
+});
+
+describe("Cache — cEvict edge cases", () => {
+  afterEach(() => { cClear(); });
+
+  it("removes localStorage entry older than 7 days", () => {
+    const oldTs = Date.now() - 8 * 24 * 60 * 60 * 1000; // 8 days ago
+    localStorage.setItem("dash_v2_evict-old", JSON.stringify({ data: "old", ts: oldTs }));
+    cEvict();
+    expect(localStorage.getItem("dash_v2_evict-old")).toBeNull();
+  });
+
+  it("removes corrupt localStorage entry during eviction", () => {
+    localStorage.setItem("dash_v2_corrupt-evict", "{{bad}}");
+    cEvict();
+    expect(localStorage.getItem("dash_v2_corrupt-evict")).toBeNull();
+  });
+
+  it("keeps fresh localStorage entry (< 7 days)", () => {
+    const freshTs = Date.now() - 1 * 24 * 60 * 60 * 1000; // 1 day ago
+    localStorage.setItem("dash_v2_fresh-entry", JSON.stringify({ data: "fresh", ts: freshTs }));
+    cEvict();
+    expect(localStorage.getItem("dash_v2_fresh-entry")).not.toBeNull();
+    localStorage.removeItem("dash_v2_fresh-entry");
   });
 });

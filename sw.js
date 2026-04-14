@@ -1,16 +1,25 @@
-/* FamilyDashBoard ServiceWorker — v5.0.0
+/* FamilyDashBoard ServiceWorker — v6.0.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
  * F113: SW posts NETWORK_BACK message to clients on network recovery
  * F162: CACHE_NAME bumped to v5.0.0; CORS proxy + stock origins added to API cache
  * F163: icon.svg added to APP_SHELL
  * F166: OFFLINE_RESPONSE fallback for navigation requests with no cache
- * F167: VERSION_ACTIVATED broadcast to all clients on activate */
+ * F167: VERSION_ACTIVATED broadcast to all clients on activate
+ * v6.0.0: TypeScript modular rewrite release — CACHE_NAME bumped to v6.0.0
+ * v6.1.0: Birthday chip, countdown chip, news bookmarks, BG rotation, stock alerts, multi-birthday, multi-BG URLs
+ * v6.2.0: CSS co-location, renderStocksShell(), ESLint TS, vitest pool:forks, worker CI deploy
+ * v6.5.0: Coverage sprint — cache.ts 100%, base-card.ts 100%, motivation.ts 100%, alerts.ts 91%, calendar.ts 95%, maximize.ts 96% */
 
-const CACHE_NAME     = "familydashboard-v5.0.0";
-const CACHE_NAME_API = "familydashboard-api-v5.0.0";
+const CACHE_NAME = "familydashboard-v6.5.0";
+const CACHE_NAME_API = "familydashboard-api-v6.5.0";
 // F111: include sw.js itself in app shell pre-cache
-const APP_SHELL = ["./BestDashBoard.html", "./manifest.json", "./sw.js", "./icon.svg"];
+const APP_SHELL = [
+  "./BestDashBoard.html",
+  "./manifest.json",
+  "./sw.js",
+  "./icon.svg",
+];
 
 // F162: API origins to cache for offline fallback (direct APIs + CORS proxies)
 const API_CACHE_ORIGINS = [
@@ -37,9 +46,7 @@ const OFFLINE_HTML = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta chars
 // ── Install: pre-cache the app shell ──────────────────────────────────────
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL)),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)),
     // Note: skipWaiting() is triggered by the page via postMessage({type:'SKIP_WAITING'})
     // so the user is notified before the SW activates (F101).
   );
@@ -67,7 +74,9 @@ self.addEventListener("activate", (event) => {
       // F167: tell all clients this version has activated
       .then(() => {
         self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
-          clients.forEach((c) => c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }));
+          clients.forEach((c) =>
+            c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }),
+          );
         });
         return self.clients.claim();
       }),
@@ -99,7 +108,9 @@ self.addEventListener("fetch", (event) => {
               _notifyNetworkBack();
             }
             const clone = response.clone();
-            caches.open(CACHE_NAME_API).then((c) => c.put(event.request, clone));
+            caches
+              .open(CACHE_NAME_API)
+              .then((c) => c.put(event.request, clone));
           }
           return response;
         })
@@ -134,7 +145,13 @@ self.addEventListener("fetch", (event) => {
           })
           .catch(() => null);
         // Return cached immediately if available; update cache in background
-        return cached || fresh || new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        return (
+          cached ||
+          fresh ||
+          new Response(OFFLINE_HTML, {
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+          })
+        );
       }),
     ),
   );
