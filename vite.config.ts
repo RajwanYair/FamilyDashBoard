@@ -4,13 +4,40 @@ import { tmpdir } from "node:os";
 
 const tempBase = join(tmpdir(), "fdb-dev");
 
-/** Remove crossorigin attributes so the built app loads from file:// URLs.
- *  Chrome blocks crossorigin CORS fetches on file:// origins; without these
- *  attributes standard module loading works fine (no SRI hashes are used). */
+/**
+ * Detect if this is a local (file://) build by checking --base ./ on the
+ * CLI args.  process.argv is stable across platforms and requires no env vars.
+ */
+const isLocalBuild = (() => {
+  const idx = process.argv.indexOf("--base");
+  return idx !== -1 && process.argv[idx + 1] === "./";
+})();
+
+/**
+ * Remove crossorigin attributes so the built app loads from file:// URLs.
+ * Chrome blocks crossorigin CORS fetches on file:// origins.
+ *
+ * For LOCAL builds (--base ./) two additional transforms are applied:
+ *  1. Strip the CSP <meta> tag — `script-src 'self'` for a null/file:// origin
+ *     blocks ALL script execution because 'self' matches nothing on opaque
+ *     origins, making the entire JS bundle silently unreachable.
+ *  2. Rewrite absolute /FamilyDashBoard/ paths → relative ./ so manifest,
+ *     icon, and SW scope resolve correctly from a local directory.
+ */
 const removeCrossOrigin: Plugin = {
   name: "remove-crossorigin",
   transformIndexHtml(html: string): string {
-    return html.replace(/ crossorigin(?:="[^"]*")?/g, "");
+    let result = html.replace(/ crossorigin(?:="[^"]*")?/g, "");
+    if (isLocalBuild) {
+      // 1. Strip the CSP meta — opaque file:// origin makes 'self' = 'none'
+      result = result.replace(
+        /<meta[^>]*http-equiv=["']Content-Security-Policy["'][^>]*\/?>/gi,
+        "",
+      );
+      // 2. Fix all /FamilyDashBoard/ absolute refs to relative for file://
+      result = result.replace(/\/FamilyDashBoard\//g, "./");
+    }
+    return result;
   },
 };
 

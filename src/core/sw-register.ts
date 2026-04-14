@@ -17,6 +17,13 @@ export async function registerSW(): Promise<void> {
     return;
   }
 
+  // Service Workers require HTTPS (or localhost). Skip silently on file://
+  // so the controllerchange → reload trap never fires for local file access.
+  if (window.location.protocol === "file:") {
+    diagLog("[sw] Skipping SW registration on file:// (requires HTTPS)");
+    return;
+  }
+
   try {
     swRegistration = await navigator.serviceWorker.register(
       "/FamilyDashBoard/sw.js",

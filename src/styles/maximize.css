@@ -40,14 +40,26 @@
 .card.maximized .wx-top-row { flex: 0 0 auto; }
 .card.maximized .wx-hourly-chart { max-height: none; flex: 1 1 0; }
 .card.maximized .wx-fday { padding: 8px 10px; }
-/* Maximized: scale up font and center content for each body type */
-.card.maximized .news-body { font-size: 1.35em; }
-.card.maximized .stocks-body { font-size: 1.3em; }
-.card.maximized .alerts-body { font-size: 1.35em; }
-.card.maximized .currency-body { font-size: 1.5em; justify-content: center; }
-.card.maximized .moti-body { font-size: 1.4em; display: flex; align-items: center; justify-content: center; }
-.card.maximized .hc-body { font-size: 1.3em; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.card.maximized .cal-wrapper { font-size: 1.2em; }
+/* Maximized: scale up font dynamically via --max-font-scale (set by JS).
+ * clamp(1rem, scale·1rem, 6rem) ensures content fills the expanded card while
+ * staying legible. Layout-only rules (justify-content, flex-direction) stay per-type. */
+.card.maximized .card-body,
+.card.maximized .news-body,
+.card.maximized .stocks-body,
+.card.maximized .alerts-body,
+.card.maximized .currency-body,
+.card.maximized .moti-body,
+.card.maximized .hc-body,
+.card.maximized .cal-wrapper {
+    font-size: clamp(1rem, calc(1rem * clamp(1, var(--max-font-scale, 1), 4)), 6rem);
+    transition: font-size 0.3s ease-out;
+}
+/* Per-type layout rules preserved */
+.card.maximized .currency-body { justify-content: center; }
+.card.maximized .moti-body { display: flex; align-items: center; justify-content: center; }
+.card.maximized .hc-body { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+/* News: let scroll container fill the full expanded height */
+.card.maximized .news-body { max-height: 100%; }
 
 /* ── Accessibility: Reduced Motion (R1.9) ── */
 @media (prefers-reduced-motion: reduce) {

@@ -1,7 +1,8 @@
 /**
- * FamilyDashBoard v6 — Card Maximize (FLIP Animation)
+ * FamilyDashBoard v7 — Card Maximize (FLIP Animation)
  *
  * Click a card header to expand it fullscreen. Click again or Escape to collapse.
+ * v7.1: Adaptive font scaling via --max-font-scale CSS custom property.
  */
 
 import { diagLog } from "../core/diag";
@@ -26,6 +27,21 @@ export function toggleCardMaximize(card: HTMLElement): void {
   }
 }
 
+/**
+ * Compute the adaptive font scale: ratio of expanded area to collapsed area,
+ * clamped to [1, 4] so fonts are never smaller than normal and never absurdly large.
+ */
+export function computeFontScale(
+  first: DOMRect,
+  last: DOMRect,
+): number {
+  const scaleW = last.width / (first.width || 1);
+  const scaleH = last.height / (first.height || 1);
+  // Use the smaller axis so content is never clipped horizontally or vertically
+  const raw = Math.min(scaleW, scaleH);
+  return Math.max(1, Math.min(4, parseFloat(raw.toFixed(3))));
+}
+
 function expandCard(card: HTMLElement): void {
   // Collapse any other maximized card first
   if (maximizedCard && maximizedCard !== card) {
@@ -36,6 +52,10 @@ function expandCard(card: HTMLElement): void {
   const first = card.getBoundingClientRect();
   card.classList.add("maximized");
   const last = card.getBoundingClientRect();
+
+  // v7.1: Inject adaptive font scale
+  const fontScale = computeFontScale(first, last);
+  card.style.setProperty("--max-font-scale", String(fontScale));
 
   // Animate from first → last
   const dx = first.left - last.left;
@@ -52,7 +72,7 @@ function expandCard(card: HTMLElement): void {
   );
 
   maximizedCard = card;
-  diagLog("[maximize] Expanded card");
+  diagLog(`[maximize] Expanded card (fontScale=${fontScale})`);
 }
 
 function collapseCard(card: HTMLElement): void {
@@ -66,13 +86,19 @@ function collapseCard(card: HTMLElement): void {
   const sx = first.width / last.width;
   const sy = first.height / last.height;
 
-  card.animate(
+  const anim = card.animate(
     [
       { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
       { transform: "none" },
     ],
     { duration: 300, easing: "ease-out" },
   );
+
+  // Remove the scale variable only after the collapse animation, so font
+  // does not snap before the card reaches its original size
+  void anim.finished.then(() => {
+    card.style.removeProperty("--max-font-scale");
+  });
 
   maximizedCard = null;
   diagLog("[maximize] Collapsed card");
