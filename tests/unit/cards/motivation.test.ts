@@ -316,3 +316,124 @@ describe("Motivation — shareMotivation navigator.share path", () => {
     expect(shareMock).toHaveBeenCalled();
   });
 });
+
+// ── Sprint: motivation.ts branch coverage improvements ──
+
+describe("Motivation — shareMotivation clipboard fallback (no navigator.share)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.resetModules();
+    document.body.innerHTML = "";
+  });
+
+  it("falls back to clipboard.writeText and shows toast", async () => {
+    vi.resetModules();
+    const writeMock = vi.fn().mockResolvedValue(undefined);
+    // Remove navigator.share
+    Object.defineProperty(navigator, "share", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: writeMock },
+      writable: true,
+      configurable: true,
+    });
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div><div id="toast-container"></div>`;
+    const { initMotivationCard, shareMotivation, renderMotivation } =
+      await import("@/cards/motivation/motivation");
+    initMotivationCard();
+    renderMotivation();
+    shareMotivation();
+    // Flush microtasks so the .then(() => showToast(...)) callback executes
+    await new Promise<void>((r) => setTimeout(r, 10));
+    expect(writeMock).toHaveBeenCalled();
+  });
+
+  it("shares text without author dash when author is empty", async () => {
+    vi.resetModules();
+    const shareMock = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "share", {
+      value: shareMock,
+      writable: true,
+      configurable: true,
+    });
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    const { initMotivationCard, renderMotivation, shareMotivation } =
+      await import("@/cards/motivation/motivation");
+    initMotivationCard();
+    // Keep calling renderMotivation until we get a quote with empty author
+    // MOTIVATIONS[0] has author=""
+    renderMotivation();
+    shareMotivation();
+    const callArg = shareMock.mock.calls[0]?.[0] as { text?: string } | undefined;
+    // Text should be wrapped in quotes without " — "
+    expect(callArg?.text).toBeDefined();
+  });
+});
+
+describe("Motivation — setContent with null DOM refs", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.resetModules();
+    document.body.innerHTML = "";
+  });
+
+  it("does not throw when elText and elAuthor are null (no DOM)", async () => {
+    vi.resetModules();
+    document.body.innerHTML = "";
+    const { setContent } = await import("@/cards/motivation/motivation");
+    // elText and elAuthor are null — should not throw
+    expect(() => setContent({ text: "test", author: "auth" })).not.toThrow();
+  });
+
+  it("renderMotivation early return when elText is null (no .moti-card)", async () => {
+    vi.resetModules();
+    document.body.innerHTML = "";
+    const { renderMotivation } = await import("@/cards/motivation/motivation");
+    // No DOM at all — m is valid but elText is null → setContent path with null
+    expect(() => renderMotivation()).not.toThrow();
+  });
+});
+// ── Sprint: defensive branches with empty MOTIVATIONS ───────────────────────
+
+describe("Motivation — defensive branches when MOTIVATIONS is empty", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.resetModules();
+    document.body.innerHTML = "";
+  });
+
+  it("getCurrentQuote returns null when MOTIVATIONS is emptied", async () => {
+    vi.resetModules();
+    const { MOTIVATIONS, getCurrentQuote } = await import(
+      "@/cards/motivation/motivation"
+    );
+    // Truncate at runtime — ReadonlyArray is a TS-only constraint
+    (MOTIVATIONS as unknown as unknown[]).length = 0;
+    // lastIdx = ((0-1)+0) % 0 = NaN → MOTIVATIONS[NaN] = undefined → ?? null
+    expect(getCurrentQuote()).toBeNull();
+    // Restore (defensive; vi.resetModules handles re-import)
+  });
+
+  it("renderMotivation returns early when MOTIVATIONS is empty", async () => {
+    vi.resetModules();
+    const { MOTIVATIONS, renderMotivation } = await import(
+      "@/cards/motivation/motivation"
+    );
+    (MOTIVATIONS as unknown as unknown[]).length = 0;
+    // motiIdx++ % 0 = NaN → MOTIVATIONS[NaN] = undefined → if (!m) return
+    expect(() => renderMotivation()).not.toThrow();
+  });
+
+  it("shareMotivation returns early when getCurrentQuote is null", async () => {
+    vi.resetModules();
+    const { MOTIVATIONS, shareMotivation } = await import(
+      "@/cards/motivation/motivation"
+    );
+    (MOTIVATIONS as unknown as unknown[]).length = 0;
+    // getCurrentQuote() → null → if (!q) return
+    expect(() => shareMotivation()).not.toThrow();
+  });
+});

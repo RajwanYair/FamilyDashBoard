@@ -1,4 +1,5 @@
-/* Theme Definitions — 5 Warm Themes */
+/* Theme Definitions — FamilyDashBoard v7 (6 themes) */
+@layer themes {
 /* ── Theme: True Black (OLED) ── */
 body.theme-black {
     --bg-primary: #000000;
@@ -98,4 +99,28 @@ body.theme-purple {
     --bg-gradient-1: rgba(184,154,223,0.06);
     --bg-gradient-2: rgba(160,120,200,0.04);
     --bg-gradient-3: rgba(200,100,160,0.03);
+}
+
+/* ── Theme: Rose Night ── */
+body.theme-rose {
+    --bg-primary: #180a0e;
+    --bg-card: rgba(38, 18, 26, 0.82);
+    --bg-card-header: rgba(52, 26, 36, 0.88);
+    --bg-card-inner: rgba(44, 22, 30, 0.55);
+    --bg-card-hover: rgba(62, 32, 44, 0.65);
+    --accent: #d47090;
+    --accent-bright: #e898ae;
+    --accent-glow: rgba(212,112,144,0.22);
+    --accent-border: rgba(212,112,144,0.25);
+    --text-muted: #8a5e70;
+    --cyan: #c88898;
+    --purple: #d08898;
+    --positive: #7abf8a;
+    --negative: #e08080;
+    --card-border: 1px solid rgba(212,112,144,0.15);
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.48);
+    --bg-gradient-1: rgba(212,112,144,0.06);
+    --bg-gradient-2: rgba(180,80,120,0.04);
+    --bg-gradient-3: rgba(220,100,140,0.03);
+}
 }

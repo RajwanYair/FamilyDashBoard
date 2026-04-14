@@ -1,0 +1,57 @@
+/* ── Stocks Card Styles ── */
+
+/* Feature 35: Portfolio P&L per-stock */
+.stk-pnl { font-size: 0.65em; color: var(--text-muted); font-weight: 500; }
+.stk-pnl.gain { color: var(--positive); }
+.stk-pnl.loss { color: var(--negative); }
+
+/* Feature 41: Market session badges */
+.market-premarket  { background: rgba(251,191,36,0.15); color: var(--warning); }
+.market-afterhours { background: rgba(139,92,246,0.15); color: var(--purple); }
+.market-open       { background: rgba(52,211,153,0.15); color: var(--positive); }
+.market-closed     { background: rgba(248,113,113,0.15); color: var(--negative); }
+
+/* Feature 46: Stock 52-week range bar */
+.stk-range { width: 100%; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; position: relative; margin-top: 1px; }
+.stk-range-fill { height: 100%; border-radius: 2px; background: var(--accent); min-width: 3px; transition: width 0.4s ease; }
+
+/* Feature 51: Portfolio total value row */
+.stk-total-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 8px; font-size: 0.68em; border-top: 1px solid var(--accent-border); color: var(--text-secondary); flex-shrink: 0; background: var(--bg-card-inner); gap: 4px; }
+.stk-total-label { color: var(--text-muted); white-space: nowrap; }
+
+/* Feature 55: Stock price threshold alert flash */
+.stk.alert-above { border-left: 2px solid var(--positive) !important; box-shadow: 0 0 0 1.5px #34d399 inset, 0 0 8px rgba(52,211,153,0.25); }
+.stk.alert-below { border-left: 2px solid var(--negative) !important; box-shadow: 0 0 0 1.5px #f87171 inset, 0 0 8px rgba(248,113,113,0.25); }
+
+/* Feature 61: Relative volume badge */
+.stk-vol-badge { font-size: 0.54em; padding: 1px 4px; border-radius: 3px; font-weight: 700; margin-right: 3px; letter-spacing: 0; }
+.stk-vol-high  { background: rgba(251,191,36,0.16); color: var(--warning); }
+.stk-vol-xhigh { background: rgba(249,115,22,0.16); color: #f97316; }
+
+/* Feature 65: Per-stock price history sparkline */
+.stk-ph-spark { width: 44px; height: 12px; overflow: visible; display: block; margin-top: 1px; }
+
+/* Feature 68: Market open/close countdown chip */
+#stk-mkt-countdown { font-size: 0.62em; color: var(--text-muted); text-align: center; padding: 2px 8px; border-top: 1px solid var(--accent-border); background: var(--bg-card-inner); flex-shrink: 0; }
+#stk-mkt-countdown.mkt-open { color: var(--positive); }
+#stk-mkt-countdown.mkt-soon { color: var(--warning); }
+
+/* Feature 74: Stock sector grouping header */
+.stk-sector-hdr { font-size: 0.52em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 8px 0; font-weight: 700; opacity: 0.65; flex-shrink: 0; }
+
+/* F132: Portfolio P&L header chip */
+#header-portfolio-pl { font-size: 0.68em; border-radius: 10px; padding: 2px 7px; font-weight: 700; white-space: nowrap; display: none; cursor: default; }
+#header-portfolio-pl.pl-gain { background: rgba(52,211,153,0.16); color: var(--positive); }
+#header-portfolio-pl.pl-loss { background: rgba(248,113,113,0.16); color: var(--negative); }
+
+/* F137: After/pre-market price line */
+.stk-after-price { font-size: 0.62em; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
+.stk-after-price .after-lbl { opacity: 0.7; margin-left: 2px; }
+
+/* F149: Per-stock portfolio P&L position row */
+.stk-pos-pnl { font-size: 0.59em; color: var(--text-muted); line-height: 1.1; margin-top: 1px; }
+.stk-pos-pnl.gain { color: var(--positive); }
+.stk-pos-pnl.loss { color: var(--negative); }
+
+/* F155: Stocks gainers/losers summary bar */
+#stk-summary { font-size: 0.60em; color: var(--text-muted); text-align: center; padding: 3px 6px; border-top: 1px solid rgba(255,255,255,0.06); letter-spacing: 0.03em; }

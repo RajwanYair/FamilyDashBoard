@@ -524,4 +524,307 @@ describe("Alerts — initAlertsCard", () => {
   });
 });
 
+// ── loadAlerts success path (fetchAlerts + new alert detection + notify) ──
+
+describe("Alerts — loadAlerts success with new alert (full path)", () => {
+  const freshAlert: AlertEvent = {
+    id: "new-001",
+    alerts: [{ cities: ["תל אביב"], threat: 2, time: NOW_SEC - 30 }],
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `
+      <div id="alerts-scroll"></div>
+      <div id="alerts-badge" style="display:none"></div>
+    `;
+    cacheDom();
+    setAlertsEnabled(true);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+  });
+
+  it("renders data from direct fetch and sets sync ok", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [freshAlert],
+    } as Response);
+
+    await loadAlerts();
+    const scroll = document.getElementById("alerts-scroll");
+    expect(scroll?.querySelector(".alert-item")).not.toBeNull();
+  });
+
+  it("detects new alert ID and marks highlightNew on second load", async () => {
+    // First load: establishes _lastAlertId
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [freshAlert],
+    } as Response);
+    await loadAlerts();
+
+    // Second load: different ID → isNew=true → notify + highlightNew
+    const newerAlert: AlertEvent = {
+      id: "new-002",
+      alerts: [{ cities: ["חיפה"], threat: 1, time: NOW_SEC - 10 }],
+    };
+    vi.mocked(globalThis.fetch).mockResolvedValue({
+      ok: true,
+      json: async () => [newerAlert],
+    } as Response);
+    await loadAlerts();
+
+    // Badge should be shown (unread counter incremented)
+    const badge = document.getElementById("alerts-badge");
+    expect(badge?.style.display).toBe("");
+    expect(Number(badge?.textContent)).toBeGreaterThan(0);
+  });
+
+  it("falls back to allorigins proxy when direct fails", async () => {
+    let callNum = 0;
+    vi.spyOn(globalThis, "fetch").mockImplementation(async () => {
+      callNum++;
+      if (callNum === 1) return { ok: false, json: async () => [] } as Response;
+      // allorigins wraps in { contents }
+      return {
+        ok: true,
+        json: async () => ({ contents: JSON.stringify([freshAlert]) }),
+      } as Response;
+    });
+    await loadAlerts();
+    expect(callNum).toBeGreaterThan(1);
+    expect(
+      document.getElementById("alerts-scroll")?.querySelector(".alert-item"),
+    ).not.toBeNull();
+  });
+
+  it("handles empty data array (no alerts) gracefully", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    await loadAlerts();
+    // Should not throw; scroll should be empty or have "no alerts" message
+  });
+
+  it("handles fetch throwing error", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("network"));
+    await expect(loadAlerts()).resolves.not.toThrow();
+  });
+
+  it("triggers notify with AudioContext beep on new alert", async () => {
+    const stopFn = vi.fn();
+    const closeFn = vi.fn().mockResolvedValue(undefined);
+    // Use function (not arrow) so vi.fn can construct via `new AudioCtor()`
+    const AudioMock = vi.fn(function (this: Record<string, unknown>) {
+      this.createOscillator = vi.fn().mockReturnValue({
+        connect: vi.fn().mockReturnValue({ connect: vi.fn() }),
+        start: vi.fn(),
+        stop: stopFn,
+        frequency: { value: 0 },
+      });
+      this.createGain = vi.fn().mockReturnValue({
+        connect: vi.fn(),
+        gain: { value: 0 },
+      });
+      this.destination = {};
+      this.currentTime = 0;
+      this.close = closeFn;
+    });
+    vi.stubGlobal("AudioContext", AudioMock);
+
+    // First load
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [freshAlert],
+    } as Response);
+    await loadAlerts();
+
+    // Second load with new ID → notify → playBeep
+    vi.mocked(globalThis.fetch).mockResolvedValue({
+      ok: true,
+      json: async () => [{ ...freshAlert, id: "new-999" }],
+    } as Response);
+    await loadAlerts();
+    expect(AudioMock).toHaveBeenCalled();
+    expect(stopFn).toHaveBeenCalled();
+  });
+});
+
 // ──────── END OF SPRINT 5 TESTS ──────────────────────────────────────────────
+
+// ── Sprint 6: catch block (lines 292-294) + setAlertsEnabled timer cleanup (lines 303-304) ──
+
+describe("Alerts — setAlertsEnabled clears active timer", () => {
+  const TS = Math.floor(Date.now() / 1000);
+  const DATA: AlertEvent[] = [
+    { id: "timer-001", alerts: [{ cities: ["חדרה"], threat: 1, time: TS - 60 }] },
+  ];
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    setAlertsEnabled(true);
+    setAlertsRealtime(false);
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("clearTimeout fires when disabling alerts after loadAlerts scheduled a timer", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => DATA,
+    } as Response);
+    await loadAlerts(); // scheduleAlerts sets _timer
+    const timersBefore = vi.getTimerCount();
+    expect(timersBefore).toBeGreaterThan(0);
+    // Now disable — should clear the timer (lines 303-304)
+    setAlertsEnabled(false);
+    // The timer should have been cleared
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+describe("Alerts — loadAlerts catch block with stale data", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    setAlertsEnabled(true);
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("catch block runs when cSet throws during data processing", async () => {
+    // Mock cSet to throw, which is called inside the try block
+    const cacheMod = await import("@/core/cache");
+    vi.spyOn(cacheMod, "cSet").mockImplementation(() => {
+      throw new Error("quota exceeded");
+    });
+    // Fetch returns valid data so the try block gets far enough to call cSet
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [
+        { id: "catch-001", alerts: [{ cities: ["אשדוד"], threat: 1, time: Math.floor(Date.now() / 1000) - 30 }] },
+      ],
+    } as Response);
+    await expect(loadAlerts()).resolves.not.toThrow();
+    vi.mocked(cacheMod.cSet).mockRestore();
+  });
+});
+// ── Sprint: notify() with Notification permission ──────────────────────────
+
+describe("Alerts — notify with Notification permission granted", () => {
+  const NOW = Math.floor(Date.now() / 1000);
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("calls Notification with city names when isNew and permission granted", async () => {
+    vi.resetModules();
+    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
+    (NotifMock as unknown as { permission: string }).permission = "granted";
+    vi.stubGlobal("Notification", NotifMock);
+
+    const data1 = [{ id: "n-001", alerts: [{ cities: ["תל אביב"], threat: 1, time: NOW - 30 }] }];
+    const data2 = [{ id: "n-002", alerts: [{ cities: ["חיפה", "נצרת", "עכו", "קצרין"], threat: 2, time: NOW - 10 }] }];
+
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({ ok: true, json: async () => data1 } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
+
+    const m = await import("@/cards/alerts/alerts");
+    m.cacheDom();
+    m.setAlertsEnabled(true);
+    await m.loadAlerts(); // first call sets _lastAlertId
+    await m.loadAlerts(); // second call: different id → isNew → notify
+
+    expect(NotifMock).toHaveBeenCalled();
+    const calls = (NotifMock as ReturnType<typeof vi.fn>).mock.calls;
+    const lastOpts = calls[calls.length - 1]?.[1] as { body: string };
+    expect(lastOpts.body).toContain("חיפה");
+    expect(lastOpts.body).toContain("עכו");
+    expect(lastOpts.body).not.toContain("קצרין");
+    m.setAlertsEnabled(false);
+  });
+
+  it("uses fallback text when alert event has no alerts array", async () => {
+    vi.resetModules();
+    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
+    (NotifMock as unknown as { permission: string }).permission = "granted";
+    vi.stubGlobal("Notification", NotifMock);
+
+    const data1 = [{ id: "f-001", alerts: [{ cities: ["ירושלים"], threat: 1, time: NOW - 30 }] }];
+    const data2 = [{ id: "f-002" }];
+
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({ ok: true, json: async () => data1 } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
+
+    const m = await import("@/cards/alerts/alerts");
+    m.cacheDom();
+    m.setAlertsEnabled(true);
+    await m.loadAlerts();
+    await m.loadAlerts();
+
+    expect(NotifMock).toHaveBeenCalled();
+    const calls = (NotifMock as ReturnType<typeof vi.fn>).mock.calls;
+    const lastOpts = calls[calls.length - 1]?.[1] as { body: string };
+    expect(lastOpts.body).toBe("אזורים שונים");
+    m.setAlertsEnabled(false);
+  });
+
+  it("uses cities ?? [] fallback when alert has no cities property", async () => {
+    vi.resetModules();
+    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
+    (NotifMock as unknown as { permission: string }).permission = "granted";
+    vi.stubGlobal("Notification", NotifMock);
+
+    const data1 = [{ id: "c-001", alerts: [{ cities: ["באר שבע"], threat: 1, time: NOW - 30 }] }];
+    const data2 = [{ id: "c-002", alerts: [{ threat: 1, time: NOW - 10 }] }];
+
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce({ ok: true, json: async () => data1 } as Response)
+      .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
+
+    const m = await import("@/cards/alerts/alerts");
+    m.cacheDom();
+    m.setAlertsEnabled(true);
+    await m.loadAlerts();
+    await m.loadAlerts();
+
+    expect(NotifMock).toHaveBeenCalled();
+    const calls = (NotifMock as ReturnType<typeof vi.fn>).mock.calls;
+    const lastOpts = calls[calls.length - 1]?.[1] as { body: string };
+    expect(lastOpts.body).toBe("");
+    m.setAlertsEnabled(false);
+  });
+});

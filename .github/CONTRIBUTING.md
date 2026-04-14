@@ -25,6 +25,26 @@ For questions, ideas, or help, please use [GitHub Discussions](https://github.co
 
 ## Development Setup
 
+> **Single install point** — All dev tools (Vite, Vitest, ESLint, TypeScript) live in
+> `MyScripts/package.json` (one level up). `FamilyDashBoard/package.json` carries only
+> project metadata and `scripts`; it has **no `devDependencies`** and **no `package-lock.json`**.
+> Node's module resolution walks up the directory tree to find tools automatically.
+
+```bash
+# One-time setup (from the parent directory — do this once for ALL sub-projects)
+cd MyScripts && npm install
+
+# Daily workflow (from FamilyDashBoard/)
+npx vitest run          # 1240+ tests
+npx eslint src tests --max-warnings 0
+npx tsc --noEmit
+npx vite build
+```
+
+> **Never run `npm install` inside `FamilyDashBoard/`.**
+> If you accidentally do so, delete `node_modules/` and `package-lock.json` here
+> and re-run `npm install` from `MyScripts/` instead.
+
 ### Recommended VS Code Extensions
 
 Install via the workspace recommendations (`.vscode/extensions.json`):
@@ -36,26 +56,15 @@ Install via the workspace recommendations (`.vscode/extensions.json`):
 ### Project Structure
 
 ```
-FamilyDashBoard/
-├── BestDashBoard.html        # The entire dashboard (HTML + CSS + JS)
-├── index.html                # GitHub Pages redirect
-├── README.md / CHANGELOG.md  # Documentation
-├── SUPPORT.md / LICENSE
-├── tests/
-│   └── dashboard.test.mjs    # 342 tests, 44 suites (Node.js built-in runner)
-├── .github/
-│   ├── assets/               # SVG graphics for docs
-│   ├── agents/               # Copilot custom agents
-│   ├── instructions/         # Copilot context files
-│   ├── prompts/              # Reusable Copilot prompts
-│   ├── copilot/              # Copilot modes config
-│   ├── hooks/                # Git hooks
-│   ├── workflows/            # CI, deploy, release, auto-label, dependabot-merge
-│   ├── ISSUE_TEMPLATE/       # Bug, feature, API issue forms
-│   ├── DISCUSSION_TEMPLATE/  # Ideas, Q&A, show-and-tell
-│   ├── SECURITY.md / CONTRIBUTING.md / CODE_OF_CONDUCT.md
-│   └── PULL_REQUEST_TEMPLATE.md
-└── .vscode/                  # VS Code workspace + testing config
+MyScripts/                      # Parent workspace — shared node_modules
+└── FamilyDashBoard/
+    ├── src/                    # TypeScript v6 modular source (Vite build)
+    ├── tests/unit/             # Vitest — 1240+ tests / 33 suites
+    ├── BestDashBoard.html      # Legacy v5 dashboard (HTML + CSS + JS)
+    ├── sw.js                   # ServiceWorker v6
+    ├── index.html              # Vite entry point
+    ├── .github/                # CI, agents, instructions, skills, prompts
+    └── .vscode/                # VS Code workspace + lint config
 ```
 
 ## Coding Standards
@@ -98,34 +107,29 @@ ci: add Lighthouse performance audit
 
 ## Linting
 
-The project uses three linters (zero local install — all run via `npx`):
+All tools resolve from the parent `MyScripts/node_modules/`:
 
 ```bash
-# HTML
-npx htmlhint BestDashBoard.html
-
-# CSS (extract from HTML first)
-# Runs automatically in CI
-
-# JS (extract from HTML first)
-# Runs automatically in CI
+npx eslint src tests --max-warnings 0   # 0 errors, 0 warnings
+npx tsc --noEmit                         # TypeScript strict check
 ```
 
 ## Testing
 
-342 tests / 44 suites using the Node.js built-in test runner (zero dependencies):
+1240+ tests / 33 suites via Vitest (happy-dom):
 
 ```bash
-node --test tests/dashboard.test.mjs
+npx vitest run                  # all tests
+npx vitest run --coverage       # with coverage report
 ```
 
-Requires **Node.js 18+**. All tests must pass before merging.
+Requires **Node.js 22+**. All tests must pass with 0 failures before merging.
 
 ## What NOT To Do
 
-- Do NOT add npm, webpack, or any build tools
-- Do NOT add external JS/CSS frameworks
-- Do NOT hardcode API keys
+- Do NOT add external JS/CSS libraries or CDNs
+- Do NOT add `devDependencies` here — add to `MyScripts/package.json`
+- Do NOT hardcode API keys or colors (use CSS custom properties)
 - Do NOT break the RTL layout
 - Do NOT remove the auto-refresh mechanism
 - Do NOT use `innerHTML` with unsanitized external data

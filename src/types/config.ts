@@ -3,13 +3,14 @@
  */
 
 export interface DashboardConfig {
-  theme: "black" | "blue" | "matrix" | "amber" | "purple";
+  theme: "black" | "blue" | "matrix" | "amber" | "purple" | "rose";
   screenMode: "tv" | "tablet" | "phone";
   tempUnit: "C" | "F";
   fontScale: number;
   alertsEnabled: boolean;
   alertSound: boolean;
   alertZone: string;
+  realtimeAlerts: boolean;
   autoTheme: boolean;
   clockSeconds: boolean;
   nightDimLevel: number;
@@ -25,6 +26,12 @@ export interface DashboardConfig {
   countdownLabel: string;
   countdownDate: string;
   bgImages: string[];
+  /** Ordered list of card IDs per column: [col0_ids, col1_ids, col2_ids]. Null = use hardcoded layout. */
+  cardLayout: [string[], string[], string[]] | null;
+  /** IDs of cards hidden from the dashboard. */
+  hiddenCards: string[];
+  /** Per-card size override: { [card-id]: "sm"|"md"|"lg"|"xl" } */
+  cardSizes: Record<string, string>;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -35,6 +42,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   alertsEnabled: false,
   alertSound: false,
   alertZone: "",
+  realtimeAlerts: false,
   autoTheme: true,
   clockSeconds: false,
   nightDimLevel: 55,
@@ -50,4 +58,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownLabel: "",
   countdownDate: "",
   bgImages: [],
+  cardLayout: null,
+  hiddenCards: [],
+  cardSizes: {},
 };

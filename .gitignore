@@ -11,6 +11,7 @@ Desktop.ini
 # Node
 node_modules/
 coverage/
+.eslintcache
 
 # Build output
 dist/

@@ -1,0 +1,194 @@
+/**
+ * FamilyDashBoard v7 — System Info Card
+ *
+ * Displays live client-side system status with zero network dependency:
+ *   - Online / offline status
+ *   - Battery level + charging state (Battery Status API)
+ *   - Connection type + effective speed (Network Information API)
+ *   - Page performance (navigation timing)
+ *   - Browser + platform info
+ *   - Dashboard uptime since page load
+ *
+ * All APIs are optional — gracefully degrades when unavailable.
+ */
+
+import { diagLog } from "../../core/diag";
+import type { CardDefinition } from "../../types/card";
+
+// ── Types for non-standard browser APIs ──────────────────────────────────
+
+interface BatteryManager extends EventTarget {
+  charging: boolean;
+  level: number;
+}
+
+interface NetworkInformation {
+  type?: string;
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+}
+
+interface NavigatorUABrandVersion {
+  brand: string;
+  version: string;
+}
+interface NavigatorUAData {
+  brands: NavigatorUABrandVersion[];
+  platform: string;
+}
+type NavigatorWithExtras = Navigator & {
+  getBattery?: () => Promise<BatteryManager>;
+  connection?: NetworkInformation;
+  userAgentData?: NavigatorUAData;
+};
+
+const PAGE_LOAD_TIME = Date.now();
+
+// ── Battery helper ─────────────────────────────────────────────────────────
+
+async function getBatteryInfo(): Promise<{
+  level: number;
+  charging: boolean;
+} | null> {
+  try {
+    const nav = navigator as NavigatorWithExtras;
+    if (!nav.getBattery) return null;
+    const battery = await nav.getBattery();
+    return { level: battery.level, charging: battery.charging };
+  } catch {
+    return null;
+  }
+}
+
+// ── DOM refs ───────────────────────────────────────────────────────────────
+
+function el(id: string): HTMLElement | null {
+  return document.getElementById(id);
+}
+
+function setText(id: string, text: string): void {
+  const e = el(id);
+  if (e) e.textContent = text;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+
+export async function renderSystemInfo(): Promise<void> {
+  // Online status
+  setText("sysinfo-online", navigator.onLine ? "🟢 מחובר" : "🔴 מנותק");
+
+  // Battery
+  const battery = await getBatteryInfo();
+  if (battery) {
+    const pct = Math.round(battery.level * 100);
+    const icon = battery.charging
+      ? "⚡"
+      : pct > 50
+        ? "🔋"
+        : pct > 20
+          ? "🪫"
+          : "🔴";
+    setText(
+      "sysinfo-battery",
+      `${icon} ${pct}%${battery.charging ? " (טוען)" : ""}`,
+    );
+  } else {
+    setText("sysinfo-battery", "—");
+  }
+
+  // Network info (Chrome / Android)
+  const conn = (navigator as NavigatorWithExtras).connection;
+  if (conn) {
+    const parts: string[] = [];
+    if (conn.effectiveType) parts.push(conn.effectiveType);
+    if (conn.downlink !== undefined) parts.push(`${conn.downlink} Mbps`);
+    if (conn.rtt !== undefined) parts.push(`RTT ${conn.rtt}ms`);
+    setText("sysinfo-net", parts.join(" · ") || "—");
+  } else {
+    setText("sysinfo-net", "—");
+  }
+
+  // Uptime
+  const upMs = Date.now() - PAGE_LOAD_TIME;
+  const upH = Math.floor(upMs / 3_600_000);
+  const upM = Math.floor((upMs % 3_600_000) / 60_000);
+  setText("sysinfo-uptime", `${upH}:${String(upM).padStart(2, "0")} שעות`);
+
+  // Page load timing
+  const perf = performance.getEntriesByType("navigation")[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+  if (perf) {
+    const loadMs = Math.round(perf.loadEventEnd - perf.startTime);
+    setText("sysinfo-load", loadMs > 0 ? `${loadMs} ms` : "—");
+  }
+
+  // Browser / platform
+  const ua = (navigator as NavigatorWithExtras).userAgentData;
+  let platform = "—";
+  if (ua) {
+    platform =
+      ua.brands
+        .filter(
+          (b: NavigatorUABrandVersion) =>
+            !b.brand.includes("Not") && !b.brand.includes("Chromium"),
+        )
+        .map((b: NavigatorUABrandVersion) => `${b.brand} ${b.version}`)
+        .join(", ") || ua.platform;
+  } else {
+    // Fallback: parse navigator.userAgent
+    const m = navigator.userAgent?.match(/(Chrome|Firefox|Safari|Edge)\/(\d+)/);
+    if (m) platform = `${m[1]} ${m[2]}`;
+  }
+  setText("sysinfo-browser", platform);
+
+  diagLog("[system-info] Rendered");
+}
+
+// ── Init ────────────────────────────────────────────────────────────────────
+
+let _sysInfoInterval: number | null = null;
+
+export function initSystemInfoCard(): void {
+  void renderSystemInfo();
+  if (_sysInfoInterval) clearInterval(_sysInfoInterval);
+  // Refresh every 30 seconds
+  _sysInfoInterval = window.setInterval(() => void renderSystemInfo(), 30_000);
+
+  // React to online/offline events
+  window.addEventListener("online", () => {
+    setText("sysinfo-online", "🟢 מחובר");
+  });
+  window.addEventListener("offline", () => {
+    setText("sysinfo-online", "🔴 מנותק");
+  });
+}
+
+export function destroySystemInfoCard(): void {
+  if (_sysInfoInterval) {
+    clearInterval(_sysInfoInterval);
+    _sysInfoInterval = null;
+  }
+}
+
+// ── CardDefinition export (for registry) ─────────────────────────────────
+
+export const systemInfoCard: CardDefinition = {
+  id: "system-info",
+  icon: "🖥",
+  titleHe: "מצב מערכת",
+  titleEn: "System Info",
+  defaultSlot: { col: 2, order: 4, flexGrow: 14, hidden: false },
+  defaultSize: "sm",
+  render(): HTMLElement {
+    const section = document.createElement("section");
+    section.className = "card";
+    section.dataset.cardId = "system-info";
+    section.setAttribute("aria-label", "System Info");
+    section.innerHTML = `<div class="card-header"><span class="icon-badge cyan">🖥</span> מצב מערכת</div><div class="sysinfo-body" id="sysinfo-body"></div>`;
+    return section;
+  },
+  init: initSystemInfoCard,
+  destroy: destroySystemInfoCard,
+};

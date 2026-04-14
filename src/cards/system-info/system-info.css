@@ -1,0 +1,39 @@
+/* System Info Card — FamilyDashBoard v7 */
+
+.sysinfo-body {
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1 1 0;
+  font-size: var(--text-sm);
+}
+
+.sysinfo-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 3px 0;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--accent-border) 40%, transparent);
+}
+
+.sysinfo-row:last-child {
+  border-bottom: none;
+}
+
+.sysinfo-label {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.sysinfo-val {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}

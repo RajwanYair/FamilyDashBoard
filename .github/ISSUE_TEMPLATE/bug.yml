@@ -1,0 +1,73 @@
+name: "🐛 Bug Report"
+description: "Report a broken card, API failure, UI glitch or regression."
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as possible.
+
+  - type: dropdown
+    id: card
+    attributes:
+      label: "Affected card / area"
+      options:
+        - Weather
+        - Stocks / Currency
+        - News
+        - Hebrew Calendar
+        - Google Calendar
+        - Red Alerts
+        - Motivation
+        - Header / Clock
+        - Config panel
+        - Theme / UI
+        - Service Worker / PWA
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "What happened?"
+      description: "A clear description of the bug."
+      placeholder: "The weather card shows '--°C' after refresh and never updates."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected behaviour"
+      placeholder: "Temperature should update within 30 seconds."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to reproduce"
+      placeholder: |
+        1. Open the dashboard
+        2. Wait 30 seconds
+        3. Check the weather card
+    validations:
+      required: false
+
+  - type: input
+    id: browser
+    attributes:
+      label: "Browser & OS"
+      placeholder: "e.g. Chrome 124 / Windows 11"
+    validations:
+      required: false
+
+  - type: textarea
+    id: diaglog
+    attributes:
+      label: "Diagnostics output (optional)"
+      description: "Press `D` to open the diagnostics overlay and paste any errors here."
+      render: text
+    validations:
+      required: false

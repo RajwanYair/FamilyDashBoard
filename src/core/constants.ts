@@ -20,10 +20,23 @@ export const PROXIES: readonly string[] = [
   "https://corsproxy.io/",
 ] as const;
 
+// ── Cloudflare Worker (Phase 4 migration target) ──
+/** Base URL for the FamilyDashBoard Cloudflare Worker proxy. Set to empty string to disable. */
+export const WORKER_BASE_URL = "https://fdb.rajwanyair.workers.dev";
+
+/**
+ * True when the worker is enabled (non-empty URL and we're online).
+ * Cards that support worker-first fetch check this before using direct/proxy.
+ */
+export function isWorkerEnabled(): boolean {
+  return WORKER_BASE_URL.length > 0 && navigator.onLine;
+}
+
 // ── API Endpoints (will migrate to Cloudflare Worker in Phase 4) ──
 export const API = {
   WEATHER: "https://api.open-meteo.com/v1/forecast",
   HEBCAL: "https://www.hebcal.com/hebcal",
+  ZMANIM: "https://www.hebcal.com/zmanim",
   SEFARIA_CALENDAR: "https://www.sefaria.org/api/calendars",
   SEFARIA_TEXT: "https://www.sefaria.org/api/v3/texts/",
   CURRENCY_PRIMARY: "https://open.er-api.com/v6/latest/ILS",
@@ -58,6 +71,10 @@ export interface StockMeta {
   he: string;
   color: string;
   domain: string;
+  /** Short display label for the .stk-sym element (defaults to the symbol key). */
+  sym?: string;
+  /** Override logo image URL (defaults to Google Favicons CDN via `domain`). */
+  logoUrl?: string;
 }
 
 export const STOCK_META: Record<string, StockMeta> = {
@@ -66,13 +83,21 @@ export const STOCK_META: Record<string, StockMeta> = {
     he: "אס אנד פי 500",
     color: "#e8c07a",
     domain: "spglobal.com",
+    sym: "S&P500",
   },
-  "^VIX": { name: "VIX", he: "מדד הפחד", color: "#e07070", domain: "cboe.com" },
+  "^VIX": {
+    name: "VIX",
+    he: "מדד הפחד",
+    color: "#e07070",
+    domain: "cboe.com",
+    sym: "VIX",
+  },
   "^TA35.TA": {
     name: "TA-35",
     he: 'ת"א 35',
     color: "#6abfcf",
     domain: "tase.co.il",
+    sym: 'ת"א 35',
   },
   AAPL: { name: "Apple", he: "אפל", color: "#a2aaad", domain: "apple.com" },
   AMZN: { name: "Amazon", he: "אמזון", color: "#ff9900", domain: "amazon.com" },
@@ -93,6 +118,8 @@ export const STOCK_META: Record<string, StockMeta> = {
     he: "ביטקוין",
     color: "#f7931a",
     domain: "bitcoin.org",
+    sym: "BTC",
+    logoUrl: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
   },
   GOOGL: {
     name: "Alphabet",

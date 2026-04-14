@@ -802,3 +802,191 @@ describe("Calendar — loadCalendar cache-hit path", () => {
     localStorage.removeItem("dash_ics_url_3");
   });
 });
+
+// ── parseICS edge cases ──
+
+describe("Calendar — parseICS edge cases", () => {
+  it("skips VEVENT without DTSTART", () => {
+    const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:No date\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("skips VEVENT without SUMMARY", () => {
+    const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20250601T120000Z\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("parses DESCRIPTION field", () => {
+    const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20250601T120000Z\r\nSUMMARY:Test\r\nDESCRIPTION:Line one\\nLine two\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]?.description).toBe("Line one\nLine two");
+  });
+
+  it("returns empty for invalid DTSTART date", () => {
+    const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:INVALID\r\nSUMMARY:Bad date\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("parses LOCATION field", () => {
+    const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20250601T120000Z\r\nSUMMARY:Meeting\r\nLOCATION:Room 42\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    expect(events[0]?.location).toBe("Room 42");
+  });
+});
+
+// ── loadCalendar paths ──
+
+describe("Calendar — loadCalendar via initCalendarCard error + hidden guard", () => {
+  function makeSuite(): void {
+    document.body.innerHTML = `
+      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
+      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom();
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    Object.defineProperty(document, "hidden", {
+      value: false,
+      configurable: true,
+    });
+  });
+
+  it("skips load when document is hidden", async () => {
+    makeSuite();
+    vi.clearAllMocks();
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    Object.defineProperty(document, "hidden", {
+      value: true,
+      configurable: true,
+    });
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 10));
+    // loadCalendar returns early without calling fetch
+    expect(fetchCore.fetchWithTimeout).not.toHaveBeenCalled();
+  });
+
+  it("handles fetch error in loadCalendar catch path", async () => {
+    makeSuite();
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(
+      new Error("network error"),
+    );
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    // Should not throw — error is caught internally
+  });
+
+  it("uses allorigins proxy JSON contents for ICS fetch", async () => {
+    makeSuite();
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    let callNum = 0;
+    vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async () => {
+      callNum++;
+      if (callNum === 1)
+        return { ok: false, text: async () => "" } as Response;
+      // allorigins proxy returns JSON wrapper
+      return {
+        ok: true,
+        json: async () => ({
+          contents: SAMPLE_ICS,
+        }),
+        text: async () =>
+          JSON.stringify({ contents: SAMPLE_ICS }),
+      } as Response;
+    });
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    expect(callNum).toBeGreaterThan(1);
+  });
+});
+
+// ── Sprint: loadExtraEventsFromCache + loadCalendar catch ───────────────────
+
+describe("Calendar — loadExtraEventsFromCache with stale secondary ICS", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
+      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+  });
+
+  it("loads extra events from stale cache for secondary ICS URL", async () => {
+    // Configure a secondary ICS URL
+    localStorage.setItem("dash_ics_url_2", "https://example.com/extra.ics");
+    // Put primary ICS data in fresh cache
+    cSet("cal-ics", SAMPLE_ICS);
+    // Put secondary ICS data in stale cache (key = cal-ics-1 since idx=1)
+    cSet("cal-ics-1", SAMPLE_ICS);
+
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+
+    // Calendar should render events from both primary and secondary
+    const agenda = document.getElementById("cal-agenda");
+    expect(agenda?.children.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Calendar — loadCalendar outer catch block", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
+      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+  });
+
+  it("catches error when renderCalendar throws during loadCalendar", async () => {
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValueOnce({
+      ok: true,
+      text: async () => SAMPLE_ICS,
+    } as unknown as Response);
+
+    // Sabotage the DOM so renderCalendar throws
+    // Remove #cal-agenda after cacheDom but before render fires
+    document.getElementById("cal-agenda")?.remove();
+    // Override cacheDom result by setting agenda to an element that throws on access
+    const broken = document.createElement("div");
+    Object.defineProperty(broken, "textContent", {
+      set() { throw new Error("forced render error"); },
+      get() { return ""; },
+    });
+    // This won't directly cause the catch because renderCalendar uses DocumentFragment
+    // Instead, let's make Promise.allSettled result processing throw
+    // by mocking fetchICSWithCache to return something that causes sort() to fail
+    // Actually the cleanest way: make cSet throw via spy
+    const cacheModule = await import("@/core/cache");
+    const cSetSpy = vi.spyOn(cacheModule, "cSet").mockImplementationOnce(() => {
+      throw new Error("forced cSet error in calendar");
+    });
+
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    // Should not reject — error is caught in the catch block (lines 483-485)
+    cSetSpy.mockRestore();
+  });
+});

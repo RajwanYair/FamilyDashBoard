@@ -38,19 +38,18 @@
       </div>
     </div>
     <!-- Feature 101: SW Update notification banner -->
-    <div id="sw-update-banner" title="גרסה חדשה של הדשבורד זמינה להתקנה">🆕 גרסה חדשה זמינה — <button type="button" id="sw-update-reload-btn" onclick="swUpdateReload()" title="לחץ לעדכון מיידי">↻ עדכן עכשיו</button></div>
-    <div id="help-overlay">
+    <div id="sw-update-banner" title="גרסה חדשה של הדשבורד זמינה להתקנה">🆕 גרסה חדשה זמינה — <button type="button" id="sw-update-reload-btn" title="לחץ לעדכון מיידי">↻ עדכן עכשיו</button></div>
+    <dialog id="help-overlay" aria-label="קיצורי מקלדת">
       <div id="help-panel">
         <h2>⌨️ קיצורי מקלדת</h2>
         <div class="help-grid">
           <div class="help-row"><span>מחזור ערכות נושא</span><span class="help-key">T</span></div>
           <div class="help-row"><span>מסך מלא</span><span class="help-key">F</span></div>
-          <div class="help-row"><span>הצגת / הסתרת התראות</span><span class="help-key">A</span></div>
           <div class="help-row"><span>הגדרות</span><span class="help-key">S</span></div>
           <div class="help-row"><span>אבחון</span><span class="help-key">D</span></div>
-          <div class="help-row"><span>השתק / הפעל צליל</span><span class="help-key">M</span></div>
           <div class="help-row"><span>הדפסה</span><span class="help-key">P</span></div>
           <div class="help-row"><span>דימר לילה</span><span class="help-key">N</span></div>
+          <div class="help-row"><span>שניות בשעון</span><span class="help-key">C</span></div>
           <div class="help-row"><span>רענון כלל הנתונים</span><span class="help-key">R</span></div>
           <div class="help-row"><span>הגדלת גופן</span><span class="help-key">+</span></div>
           <div class="help-row"><span>הקטנת גופן</span><span class="help-key">−</span></div>
@@ -61,21 +60,23 @@
           <div class="help-row"><span>שיתוף לוח</span><span class="help-key">S → מתקדם → 🔗</span></div>
           <div class="help-row"><span>הפעל התראות דסקטאפ</span><span class="help-key">לחץ 🔔</span></div>
           <div class="help-row"><span>ספירה לאחור מותאמת</span><span class="help-key">S → מתקדם</span></div>
+          <div class="help-row"><span>מועדפי חדשות</span><span class="help-key">B</span></div>
         </div>
         <div style="text-align:center;margin-top:10px;font-size:0.75em;color:var(--text-muted)">לחץ Escape / ? / H לסגירה</div>
       </div>
-    </div>
+    </dialog>
     <!-- Feature 33: Config overlay -->
     <div id="config-overlay">
       <div id="config-panel">
         <h2>⚙️ הגדרות</h2>
         <!-- F119: Config panel section tabs -->
         <div class="cfg-tabs">
-          <button type="button" class="cfg-tab active" data-tab="display" onclick="switchCfgTab('display')" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
-          <button type="button" class="cfg-tab" data-tab="calendar" onclick="switchCfgTab('calendar')" title="הגדרות לוח: קישור ICS, יום הולדת, זמנים">📅 לוח Calendar</button>
-          <button type="button" class="cfg-tab" data-tab="feeds" onclick="switchCfgTab('feeds')" title="הגדרות עדכונים: ערים, מניות, חדשות">📰 עדכונים Feeds</button>
-          <button type="button" class="cfg-tab" data-tab="alerts-tab" onclick="switchCfgTab('alerts-tab')" title="הגדרות התראות: צבע אדום, התראות מחירי מניות">🚨 התראות Alerts</button>
-          <button type="button" class="cfg-tab" data-tab="advanced" onclick="switchCfgTab('advanced')" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
+          <button type="button" class="cfg-tab active" data-tab="display" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
+          <button type="button" class="cfg-tab" data-tab="calendar" title="הגדרות לוח: קישור ICS, יום הולדת, זמנים">📅 לוח Calendar</button>
+          <button type="button" class="cfg-tab" data-tab="feeds" title="הגדרות עדכונים: ערים, מניות, חדשות">📰 עדכונים Feeds</button>
+          <button type="button" class="cfg-tab" data-tab="alerts-tab" title="הגדרות התראות: צבע אדום, התראות מחירי מניה">🚨 התראות Alerts</button>
+          <button type="button" class="cfg-tab" data-tab="cards" title="הצג/הסתר כרטיסיות ✓ — קביעת גודל כרטיסיה">🃏 כרטיסיות Cards</button>
+          <button type="button" class="cfg-tab" data-tab="advanced" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
         </div>
         <!-- Tab: Display -->
         <div class="cfg-section active" data-tab="display">
@@ -95,11 +96,12 @@
               <option value="matrix">🟩 מטריקס (Matrix)</option>
               <option value="amber">🟧 ענבר (Amber)</option>
               <option value="purple">🟥 סגול (Purple)</option>
+              <option value="rose">🌹 ורד לילה (Rose)</option>
             </select>
           </div>
           <div class="cfg-row">
-            <span class="cfg-label">�🖼️ תמונת רקע (URL)</span>
-            <input class="cfg-input" id="cfg-bg-url" type="text" placeholder="https://..." >
+            <span class="cfg-label">🖼️ תמונות רקע (כל URL בשורה)</span>
+            <textarea class="cfg-input" id="cfg-bg-url" rows="3" placeholder="https://...&#10;https://..."></textarea>
           </div>
           <div class="cfg-row">
             <span class="cfg-label">👨‍👩‍👧‍👦 שם משפחה (לברכה)</span>
@@ -112,6 +114,10 @@
           <div class="cfg-row">
             <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
             <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏱️ שניות בשעון</span>
+            <input class="cfg-input" id="cfg-clock-seconds" type="text" placeholder="on / off" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌑 החשיכה אוטומטית — שעת התחלה (H)</span>
@@ -135,8 +141,8 @@
         <!-- Tab: Calendar -->
         <div class="cfg-section" data-tab="calendar">
           <div class="cfg-row">
-            <span class="cfg-label">🎂 יום הולדת (שם, חודש, יום)</span>
-            <input class="cfg-input" id="cfg-birthday" type="text" placeholder="שם,6,15" >
+            <span class="cfg-label">🎂 ימי הולדת (כל ערך בשורה: שם,חודש,יום)</span>
+            <textarea class="cfg-input" id="cfg-birthday" rows="3" placeholder="שרה,3,18&#10;יוסי,11,4"></textarea>
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📅 קישור ICS (גוגל-קלנדר)</span>
@@ -209,6 +215,11 @@
             <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical" title="JSON: {&quot;SYMBOL&quot;:{&quot;above&quot;:N}} או {&quot;below&quot;:N} — התראה כשמחיר עובר או יורד מתחת לסף"></textarea>
           </div>
         </div>
+        <!-- Tab: Cards visibility + size -->
+        <div class="cfg-section" data-tab="cards">
+          <p style="font-size:0.75em;color:var(--text-muted);margin:0 0 6px">הסתר/הצג כרטיסיות ובחר גודל. השינויים נכנסים לתוקף לאחר שמירה.</p>
+          <div id="cfg-cards-list" class="cfg-cards-list"></div>
+        </div>
         <!-- Tab: Advanced -->
         <div class="cfg-section" data-tab="advanced">
           <div class="cfg-row">
@@ -222,10 +233,6 @@
           <div class="cfg-row">
             <span class="cfg-label">🏠 שם העיר (ביתי)</span>
             <input class="cfg-input" id="cfg-home-name" type="text" placeholder="ביתי" >
-          </div>
-          <div class="cfg-row">
-            <span class="cfg-label">🧹 משימות בית (JSON)</span>
-            <textarea class="cfg-input" id="cfg-chores" rows="2" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;}]" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical"></textarea>
           </div>
           <!-- Custom CORS proxy for corporate/restricted networks -->
           <div class="cfg-row">
@@ -243,10 +250,10 @@
           </div>
           <!-- F107: Settings export/import -->
           <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
-            <button type="button" class="cfg-btn" onclick="exportSettings()" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
-            <button type="button" class="cfg-btn" onclick="importSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
+            <button type="button" class="cfg-btn" id="cfg-export-btn" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
+            <button type="button" class="cfg-btn" id="cfg-import-btn" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
             <!-- F120: Dashboard URL share -->
-            <button type="button" class="cfg-btn" id="cfg-share-btn" onclick="shareSettings()" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
+            <button type="button" class="cfg-btn" id="cfg-share-btn" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
           </div>
           <input type="file" id="cfg-import-file" accept=".json" style="display:none" >
         </div>
@@ -258,13 +265,13 @@
         <div style="text-align:center;margin-top:8px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
       </div>
     </div>
-    <div class="diag-overlay" id="diag-overlay">
+    <dialog class="diag-overlay" id="diag-overlay">
         <h3>🛠 Dashboard Diagnostics (press D to close)</h3>
         <!-- Feature 70: Copy diagnostics log to clipboard -->
-        <button type="button" id="diag-copy-btn" onclick="copyDiagLog()" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
+        <button type="button" id="diag-copy-btn" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
         <div id="diag-panes"></div>
         <div class="diag-log" id="diag-log"></div>
-    </div>
+    </dialog>
     <!-- Feature 33: Gear button (bottom-left corner) -->
     <button type="button" id="cfg-gear-btn" title="הגדרות (S)">⚙️</button>
 
@@ -272,7 +279,7 @@
         <!-- ── Daily Halacha Ticker ── -->
         <div class="ticker-bar" role="marquee" aria-label="Daily Halacha">
             <div class="ticker-label">� הלכה יומית</div>
-            <div class="ticker-track"><div class="ticker-content" id="ticker-content">טוען הלכה יומית...</div></div>
+            <div class="ticker-track"><div class="ticker-content" id="halacha-ticker">טוען הלכה יומית...</div></div>
         </div>
 
         <!-- ── Header ── -->
@@ -283,9 +290,13 @@
             <div class="header-center">
                 <div class="clock" id="clock" title="לחץ ? או H לתפריט קיצורי מקלדת">00:00</div>
                 <div class="greeting" id="greeting"></div>
+                <div class="time-progress-bars" aria-hidden="true">
+                  <div class="progress-bar day-progress"><div class="progress-fill" id="day-bar" style="width:0%"></div></div>
+                  <div class="progress-bar year-progress"><div class="progress-fill" id="year-bar" style="width:0%"></div></div>
+                </div>
             </div>
             <div class="header-right">
-                <div class="english-date" id="english-date"></div>
+                <div class="english-date" id="eng-date"></div>
                 <div class="top-temp temp-toggle" id="top-temp" title="לחץ לחילוף °C/°F">--°C</div>
                 <!-- Feature 22: Electricity peak warning badge -->
                 <span id="elec-badge" title="שעת שיא חשמל — תעריף מוגבר">⚡ שעת שיא</span>
@@ -302,7 +313,7 @@
                 <!-- F139: Custom event countdown chip -->
                 <span id="header-countdown" title="ספירה אישית">--</span>
                 <!-- F114: Notification permission bell chip -->
-                <span id="notif-bell" title="הפעל התראות" onclick="requestNotifPermission()">🔔 הפעל התראות</span>
+                <span id="notif-bell" title="הפעל התראות" role="button" tabindex="0">🔔 הפעל התראות</span>
             </div>
         </header>
 
@@ -321,6 +332,7 @@
                   <button type="button" id="news-search-clear" title="נקה חיפוש">✕</button>
                   <span id="news-search-count"></span>
                 </div>
+                <div class="news-ticker" id="news-ticker" aria-live="polite"></div>
                 <div class="rss-scroll" id="rss-scroll"></div>
               </div>
             </section>
@@ -355,7 +367,7 @@
                   </div>
                 </div>
                 <!-- F128: Hourly chart view toggle -->
-                <button type="button" id="wx-chart-toggle" onclick="toggleHourlyChartView()" title="החלף תצוגה">🌡️ טמפ׳</button>
+                <button type="button" id="wx-chart-toggle" title="החלף תצוגה">🌡️ טמפ׳</button>
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                 <!-- Feature 32: Extreme weather alert banner -->
                 <div id="wx-alert-banner"></div>
@@ -379,40 +391,45 @@
             <section class="card" data-card-id="hcal" aria-label="Hebrew Calendar">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
-                <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
-                <div class="hc-row" id="hc-countdown-row" style="display:none"><span class="hc-label">⏱ כניסה בעוד</span><span class="hc-val hc-countdown" id="hc-countdown">--:--:--</span></div>
-                <div class="hc-row" id="hc-holiday-row" style="display:none"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
-                <div class="hc-row hc-special-row" id="hc-special-row" style="display:none"><span class="hc-val hc-special" id="hc-special"></span></div>
-                <div class="hc-row" id="hc-school-row" style="display:none"><span class="hc-label">🎒 חופשה</span><span class="hc-val hc-school-val" id="hc-school">--</span></div>
-                <div class="hc-row" id="hc-parasha-row" style="display:none"><span class="hc-label">📖 פרשה</span><span class="hc-val hc-parasha-val" id="hc-parasha">--</span><span class="hc-parasha-ref" id="hc-parasha-ref"></span></div>
-                <!-- Feature 78: Parasha weekly progress bar -->
-                <div class="hc-row" id="hc-parasha-progress-row" style="display:none"><span class="hc-label" aria-hidden="true" style="visibility:hidden">.</span><div class="hc-parasha-progress"><div class="hc-parasha-progress-fill" id="hc-parasha-progress-fill" style="width:0%"></div></div></div>
-                <!-- Feature 21: Parasha Aliyot summary -->
-                <div class="hc-row" id="hc-aliyot-row" style="display:none"><span class="hc-label">📜 פתיחה</span><span class="hc-val hc-aliyot-val" id="hc-aliyot">--</span></div>
-                <div class="hc-row" id="hc-daf-row" style="display:none"><span class="hc-label">📚 דף יומי</span><span class="hc-val hc-daf-val" id="hc-daf">--</span></div>
-                <!-- Feature 53: Daf Yomi Sefaria link -->
-                <div class="hc-row" id="hc-daf-link-row" style="display:none">
-                  <span class="hc-label" style="visibility:hidden">.</span>
-                  <button type="button" class="hc-parasha-link" id="hc-daf-link" title="פתח את דף היומי בספריא — Open in Sefaria">📚 ספריה</button>
+                <!-- Main content column (right side in RTL) -->
+                <div class="hc-main-col">
+                  <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
+                  <div class="hc-row" id="hc-countdown-row" style="display:none"><span class="hc-label">⏱ כניסה בעוד</span><span class="hc-val hc-countdown" id="hc-countdown">--:--:--</span></div>
+                  <div class="hc-row" id="hc-holiday-row" style="display:none"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
+                  <div class="hc-row hc-special-row" id="hc-special-row" style="display:none"><span class="hc-val hc-special" id="hc-special"></span></div>
+                  <div class="hc-row" id="hc-school-row" style="display:none"><span class="hc-label">🎒 חופשה</span><span class="hc-val hc-school-val" id="hc-school">--</span></div>
+                  <div class="hc-row" id="hc-parasha-row" style="display:none"><span class="hc-label">📖 פרשה</span><span class="hc-val hc-parasha-val" id="hc-parasha">--</span><span class="hc-parasha-ref" id="hc-parasha-ref"></span></div>
+                  <div class="hc-row" id="hc-daf-row" style="display:none"><span class="hc-label">📚 דף יומי</span><span class="hc-val hc-daf-val" id="hc-daf">--</span></div>
+                  <!-- Feature 53: Daf Yomi Sefaria link -->
+                  <div class="hc-row" id="hc-daf-link-row" style="display:none">
+                    <span class="hc-label" style="visibility:hidden">.</span>
+                    <button type="button" class="hc-parasha-link" id="hc-daf-link" title="פתח את דף היומי בספריא — Open in Sefaria">📚 ספריה</button>
+                  </div>
+                  <!-- Feature 23: Psalm of the Day -->
+                  <div class="hc-row" id="hc-psalm-row" style="display:none"><span class="hc-label">🎵 שיר</span><span class="hc-val hc-psalm-val" id="hc-psalm">--</span></div>
+                  <!-- Feature 28: Upcoming calendar event countdown -->
+                  <div class="hc-row" id="hc-event-row" style="display:none"><span class="hc-label">📆 הבא</span><span class="hc-val" id="hc-event">--</span></div>
+                  <!-- F151: Sefirat HaOmer count -->
+                  <div class="hc-row" id="hc-omer-row" style="display:none"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="hc-omer"></span></div>
+                  <!-- Feature 44: Parasha Sefaria link -->
+                  <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button type="button" class="hc-parasha-link" id="hc-parasha-link" title="פתח את פרשת השבוע בספריא — Open in Sefaria">📖 ספרייה</button></div>
+                  <div class="hc-divider"></div>
+                  <!-- Feature 30: Halacha excerpt -->
+                  <div class="hc-row" id="hc-halacha-row" style="display:none"><span class="hc-label">⚖️ הלכה</span><span class="hc-val hc-halacha-val" id="hc-halacha">--</span></div>
+                  <div class="hc-saying" id="hc-saying">טוען...</div>
+                  <div class="hc-birthday" id="hc-birthday" style="display:none"></div>
+                  <!-- v7: Pending tasks strip -->
+                  <div class="hc-tasks-strip" id="hc-tasks-strip" style="display:none"></div>
                 </div>
-                <!-- Feature 23: Psalm of the Day -->
-                <div class="hc-row" id="hc-psalm-row" style="display:none"><span class="hc-label">🎵 שיר</span><span class="hc-val hc-psalm-val" id="hc-psalm">--</span></div>
-                <!-- Feature 24: Moon Phase -->
-                <div class="hc-row" id="hc-moon-row"><span class="hc-label">🌙 ירח</span><span class="hc-val hc-moon-val" id="hc-moon">--</span></div>
-                <!-- Feature 28: Upcoming calendar event countdown -->
-                <div class="hc-row" id="hc-event-row" style="display:none"><span class="hc-label">📆 הבא</span><span class="hc-val" id="hc-event">--</span></div>
-                <!-- Feature 34: Chore Wheel -->
-                <div class="hc-row" id="hc-chore-row" style="display:none"><span class="hc-label">🧹 משימה</span><span class="hc-val hc-chore-val" id="hc-chore">--</span></div>
-                <!-- F151: Sefirat HaOmer count -->
-                <div class="hc-row" id="hc-omer-row" style="display:none"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="omer-count"></span></div>
-                <!-- Feature 44: Parasha Sefaria link -->
-                <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button type="button" class="hc-parasha-link" id="hc-parasha-link" title="פתח את פרשת השבוע בספריא — Open in Sefaria">📖 ספרייה</button></div>
-                <div class="hc-divider"></div>
-                <div class="zmanim-section" id="zmanim-section" style="display:none"><div class="zmanim-grid" id="zmanim-grid"></div><div class="hc-divider"></div></div>
-                <!-- Feature 30: Halacha excerpt -->
-                <div class="hc-row" id="hc-halacha-row" style="display:none"><span class="hc-label">⚖️ הלכה</span><span class="hc-val hc-halacha-val" id="hc-halacha">--</span></div>
-                <div class="hc-saying" id="hc-saying">טוען...</div>
-                <div class="hc-birthday" id="hc-birthday" style="display:none"></div>
+                <!-- Side column: moon + zmanim (left side in RTL) -->
+                <div class="hc-side-col">
+                  <div class="hc-moon-block" id="hc-moon-row">
+                    <div class="hc-moon-val" id="hc-moon">--</div>
+                  </div>
+                  <div class="zmanim-section" id="zmanim-section" style="display:none">
+                    <div class="zmanim-grid" id="zmanim-grid"></div>
+                  </div>
+                </div>
               </div>
             </section>
             <section class="card" data-card-id="cal" aria-label="Calendar" style="position:relative">
@@ -429,12 +446,12 @@
             <section class="card" data-card-id="currency" aria-label="Currency">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cur" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
               <div class="currency-body" id="currency-body">
-                <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="cur-usd">--</div><div class="cur-chg" id="cur-usd-chg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
-                <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="cur-eur">--</div><div class="cur-chg" id="cur-eur-chg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
-                <div class="cur-item"><div class="cur-flag">🥇</div><div class="cur-pair">זהב / oz</div><div class="cur-rate" id="cur-gold">--</div><div class="cur-chg" id="cur-gold-chg"></div><svg class="cur-spark" id="cur-gold-spark" viewBox="0 0 60 22"></svg></div>
-                <div class="cur-item"><div class="cur-flag">🥈</div><div class="cur-pair">כסף / oz</div><div class="cur-rate" id="cur-silver">--</div><div class="cur-chg" id="cur-silver-chg"></div><svg class="cur-spark" id="cur-silver-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="curUsd">--</div><div class="cur-chg" id="curUsdChg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="curEur">--</div><div class="cur-chg" id="curEurChg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🥇</div><div class="cur-pair">זהב / oz</div><div class="cur-rate" id="curGold">--</div><div class="cur-chg" id="curGoldChg"></div><svg class="cur-spark" id="cur-gold-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🥈</div><div class="cur-pair">כסף / oz</div><div class="cur-rate" id="curSilver">--</div><div class="cur-chg" id="curSilverChg"></div><svg class="cur-spark" id="cur-silver-spark" viewBox="0 0 60 22"></svg></div>
                 <!-- Feature 71: GBP / ILS tile -->
-                <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-pair">GBP / ₪</div><div class="cur-rate" id="cur-gbp">--</div><div class="cur-chg" id="cur-gbp-chg"></div><svg class="cur-spark" id="cur-gbp-spark" viewBox="0 0 60 22"></svg></div>
+                <div class="cur-item"><div class="cur-flag">🇬🇧</div><div class="cur-pair">GBP / ₪</div><div class="cur-rate" id="curGbp">--</div><div class="cur-chg" id="curGbpChg"></div><svg class="cur-spark" id="cur-gbp-spark" viewBox="0 0 60 22"></svg></div>
               </div>
             </section>
           </div>
@@ -442,28 +459,10 @@
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
             <section class="card" data-card-id="stocks" aria-label="Stocks">
-            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stocks" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
+            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body">
-                  <!-- Feature 74: Stock sector headers -->
-                  <div class="stk-sector-hdr">📊 מדדים</div>
-                  <div class="stk" data-symbol="^GSPC"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=spglobal.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">S&amp;P500</div><div class="stk-desc">מדד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="^VIX"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=cboe.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">VIX</div><div class="stk-desc">פחד</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk-sector-hdr">📈 מניות</div>
-                  <div class="stk" data-symbol="AAPL"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=apple.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AAPL</div><div class="stk-desc">אפל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="AMZN"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AMZN</div><div class="stk-desc">אמזון</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="AVGO"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=broadcom.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">AVGO</div><div class="stk-desc">ברודקום</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="BRK-B"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=berkshirehathaway.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BRK-B</div><div class="stk-desc">ברקשייר</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="BTC-USD"><div class="stk-logo"><img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">BTC</div><div class="stk-desc">ביטקוין</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="GOOGL"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=google.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">GOOGL</div><div class="stk-desc">אלפבית</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="INTC"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=intel.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">INTC</div><div class="stk-desc">אינטל</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="JPM"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=jpmorgan.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">JPM</div><div class="stk-desc">ג׳י.פי.מורגן</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="META"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=meta.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">META</div><div class="stk-desc">מטא</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="MSFT"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">MSFT</div><div class="stk-desc">מיקרוסופט</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="NVDA"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=nvidia.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">NVDA</div><div class="stk-desc">נבידיה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <div class="stk" data-symbol="TSLA"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=tesla.com&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">TSLA</div><div class="stk-desc">טסלה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
-                  <!-- Feature 60: Tel Aviv 35 Index -->
-                  <div class="stk" data-symbol="^TA35.TA"><div class="stk-logo"><img src="https://www.google.com/s2/favicons?domain=tase.co.il&sz=64" alt="" loading="lazy" onerror="this.style.display='none'"></div><div class="stk-info"><div class="stk-sym">ת"א 35</div><div class="stk-desc">בורסה</div></div><div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div><svg class="stk-chart" viewBox="0 0 200 22"></svg><div class="stk-time">-</div></div>
+                  <!-- Stock rows are rendered dynamically by initStocksCard() in stocks.ts -->
                 </div>
               </div>
               <!-- F155: Stocks gainers/losers summary -->
@@ -478,7 +477,7 @@
               <div id="stk-mkt-countdown"></div>
             </section>
             <section class="card" data-card-id="alerts" aria-label="Red Alerts">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge-count" class="alerts-badge"></span>צבע אדום</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span>צבע אדום</div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll">
                   <div class="alert-count">טוען התרעות...</div>
@@ -497,11 +496,30 @@
                 </div>
               </div>
             </section>
+            <!-- Tasks card -->
+            <section class="card" data-card-id="tasks" aria-label="Tasks">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge green">✅</span> משימות</div>
+              <div class="tasks-body">
+                <div class="tasks-list" id="tasks-list"></div>
+              </div>
+            </section>
+            <!-- System Info card -->
+            <section class="card" data-card-id="system-info" aria-label="System Info">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge cyan">🖥</span> מצב מערכת</div>
+              <div class="sysinfo-body" id="sysinfo-body">
+                <div class="sysinfo-row"><span class="sysinfo-label">🛰️ מצב</span><span class="sysinfo-val" id="sysinfo-online">—</span></div>
+                <div class="sysinfo-row"><span class="sysinfo-label">🖊️ סוללר</span><span class="sysinfo-val" id="sysinfo-battery">—</span></div>
+                <div class="sysinfo-row"><span class="sysinfo-label">📶 רשת</span><span class="sysinfo-val" id="sysinfo-net">—</span></div>
+                <div class="sysinfo-row"><span class="sysinfo-label">⏱️ פעיל</span><span class="sysinfo-val" id="sysinfo-uptime">—</span></div>
+                <div class="sysinfo-row"><span class="sysinfo-label">⚡ טעינת דף</span><span class="sysinfo-val" id="sysinfo-load">—</span></div>
+                <div class="sysinfo-row"><span class="sysinfo-label">🌐 דפדפן</span><span class="sysinfo-val" id="sysinfo-browser">—</span></div>
+              </div>
+            </section>
           </div>
 
         </main>
         <footer class="status-bar">
-            <span>Dashboard v5.1.0 — משפחת רגואן</span>
+            <span id="version-badge">Dashboard v6.0.0 — משפחת רגואן</span>
             <div class="progress-group">
                 <div class="progress-bar" title="אחוז התקדמות היום"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
                 <div class="progress-bar" title="אחוז התקדמות השנה"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
@@ -513,7 +531,7 @@
             <span id="font-scale-indicator" title="גודל גופן נוכחי — לחץ +/- לשינוי"></span>
             <!-- F165: PWA install prompt button -->
             <button type="button" id="btn-install" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.72em;cursor:pointer" title="התקן כאפליקציה עצמאית">📲 התקן</button>
-            <span id="last-refresh" title="שעת רענון נתונים אחרונה">רענון: --:--</span>
+            <span id="refresh-stamp" title="שעת רענון נתונים אחרונה">רענון: --:--</span>
         </footer>
     </div>
 

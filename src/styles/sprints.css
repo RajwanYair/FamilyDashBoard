@@ -1,49 +1,28 @@
 /* Sprint Feature Styles */
+/* ───────────────────────────────────────────────────────────────────────────
+   NOTE: Per-card CSS has been extracted to co-located card files:
+     src/cards/stocks/stocks.css
+     src/cards/weather/weather.css
+     src/cards/news/news.css
+     src/cards/hebrew-cal/hebrew-cal.css
+     src/cards/calendar/calendar.css
+   This file retains only global / cross-cutting styles.
+   ─────────────────────────────────────────────────────────────────────────── */
 .help-key { background: var(--bg-card-inner); border-radius: 5px; padding: 2px 8px; font-family: monospace; font-size: 0.92em; color: var(--cyan); border: 1px solid var(--accent-border); }
 
-/* ── Sprint 3 Features ── */
-
-/* Feature 21: Parasha Aliyot */
-.hc-aliyot-val { font-size: 0.68em; color: var(--text-secondary); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+/* ── Custom Ticker ── */
+.ticker-custom-msg { color: var(--warning); font-weight: 700; }
 
 /* Feature 22: Electricity Peak Warning Badge */
 #elec-badge { display: none; font-size: 0.62em; padding: 1px 5px; border-radius: 4px; font-weight: 700; background: var(--warning); color: #000; animation: elecPulse 2s ease-in-out infinite; margin-right: 4px; vertical-align: middle; }
 #elec-badge.peak-on { display: inline; }
 @keyframes elecPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
 
-/* Feature 23: Psalm of the Day */
-.hc-psalm-val { font-size: 0.68em; color: var(--text-secondary); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
-
-/* Feature 24: Moon Phase (in hc-card) */
-.hc-moon-val { font-size: 0.88em; color: var(--cyan); }
-
-/* Feature 26: Feels-like temp — 6th detail cell border accent */
-.wx-detail:nth-child(6) { border-bottom: 2px solid var(--pink); }
-
-/* Feature 27: Seasonal CSS Tint (subtle body overlay color hint) */
+/* Feature 27: Seasonal CSS Tint */
 body.season-spring  { --season-tint: rgba(134,239,172,0.03); }
 body.season-summer  { --season-tint: rgba(253,224,71,0.04); }
 body.season-autumn  { --season-tint: rgba(249,115,22,0.04); }
 body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
-
-
-/* Feature 28: Calendar Event Countdown Badge */
-#cal-countdown { display: none; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; background: var(--accent); color: #000; font-weight: 700; margin-right: 6px; vertical-align: middle; }
-
-/* Feature 29: News Count Badge */
-.news-count-badge { font-size: 0.55em; padding: 1px 6px; border-radius: 4px; background: var(--bg-card-inner); color: var(--text-secondary); font-weight: 600; margin-right: 6px; vertical-align: middle; }
-
-/* Feature 30: Halacha Excerpt in HC Card */
-.hc-halacha-val { font-size: 0.67em; color: var(--text-muted); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
-
-/* ── Sprint 4 Features ── */
-
-/* Feature 31: Wind Direction arrow */
-.wx-wind-dir { font-size: 0.78em; color: var(--cyan); display: inline-block; transition: transform 0.6s ease; }
-
-/* Feature 32: Weather Extreme Alert banner */
-#wx-alert-banner { display: none; background: var(--negative); color: #fff; font-weight: 700; font-size: 0.74em; padding: 3px 10px; border-radius: 6px; text-align: center; margin: 2px 0; }
-#wx-alert-banner.visible { display: block; }
 
 /* Feature 33: Config Panel */
 #config-overlay { display: none; position: fixed; inset: 0; z-index: 1300; background: rgba(6,11,20,0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); align-items: center; justify-content: center; }
@@ -53,19 +32,17 @@ body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
 .cfg-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.83em; gap: 8px; }
 .cfg-row:last-child { border-bottom: none; }
 .cfg-label { color: var(--text-secondary); flex: 1; }
+/* Cards tab rows (v7) */
+.cfg-card-row { justify-content: space-between; }
+.cfg-card-label { display: flex; align-items: center; gap: 6px; flex: 1; cursor: pointer; }
+.cfg-card-label input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+.cfg-cards-list { max-height: 340px; overflow-y: auto; scrollbar-width: thin; }
+.cfg-card-size-wrap { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .cfg-input { background: var(--bg-card-inner); border: 1px solid var(--accent-border); border-radius: 6px; color: var(--text-primary); padding: 3px 8px; font-size: 0.9em; width: 140px; font-family: inherit; }
 .cfg-btn { background: var(--accent); color: #000; border: none; border-radius: 6px; padding: 4px 12px; font-weight: 700; font-size: 0.85em; cursor: pointer; }
 .cfg-btn:hover { opacity: 0.85; }
 #cfg-gear-btn { position: fixed; bottom: 14px; left: 14px; z-index: 800; background: var(--bg-card-inner); border: 1px solid var(--accent-border); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
 #cfg-gear-btn:hover { opacity: 1; }
-
-/* Feature 34: Chore Wheel */
-.hc-chore-val { font-size: 0.74em; color: var(--warning); font-weight: 600; }
-
-/* Feature 35: Portfolio P&L */
-.stk-pnl { font-size: 0.65em; color: var(--text-muted); font-weight: 500; }
-.stk-pnl.gain { color: var(--positive); }
-.stk-pnl.loss { color: var(--negative); }
 
 /* Feature 37: Today-event count badge in header */
 #header-event-count { display: none; font-size: 0.6em; background: var(--accent); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; margin-right: 4px; }
@@ -73,47 +50,15 @@ body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
 /* Feature 38: Currency Sparkline */
 .cur-spark { width: 60px; height: 22px; display: block; }
 
-/* Feature 39: News Source Filter chips */
-.news-filter-bar { display: flex; flex-wrap: wrap; gap: 3px; padding: 3px 6px 3px; }
-.news-filter-chip { font-size: 0.58em; padding: 1px 6px; border-radius: 10px; background: var(--bg-card-inner); color: var(--text-muted); cursor: pointer; border: 1px solid transparent; transition: all 0.15s; user-select: none; }
-.news-filter-chip.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
-
 /* Feature 40: Connectivity indicator in status bar */
 #conn-indicator { font-size: 0.72em; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
 #conn-indicator.conn-ok   { color: var(--positive); }
 #conn-indicator.conn-slow { color: var(--warning); }
 #conn-indicator.conn-bad  { color: var(--negative); }
 
-/* ── Sprint 5 Features ── */
-
-/* Feature 41: Market Pre/After Hours */
-.market-premarket  { background: rgba(251,191,36,0.15); color: var(--warning); }
-.market-afterhours { background: rgba(139,92,246,0.15); color: var(--purple); }
-.market-open       { background: rgba(52,211,153,0.15); color: var(--positive); }
-.market-closed     { background: rgba(248,113,113,0.15); color: var(--negative); }
-
-/* Feature 42: Weather Sky Color Header */
-.wx-sky-pill { display: inline-block; font-size: 0.6em; padding: 1px 6px; border-radius: 8px; margin-right: 4px; font-weight: 700; vertical-align: middle; }
-
 /* Feature 43: Alert Sound toggle */
 #sound-toggle { font-size: 0.65em; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; user-select: none; }
 #sound-toggle:hover { opacity: 1; }
-
-/* Feature 44: Parasha Sefaria link */
-.hc-parasha-link { font-size: 0.62em; color: var(--accent); cursor: pointer; text-decoration: underline; margin-right: 4px; opacity: 0.8; }
-.hc-parasha-link:hover { opacity: 1; }
-
-/* Feature 45: Multi-city weather tabs */
-.wx-city-tabs { display: flex; gap: 3px; padding: 2px 6px 0; flex-shrink: 0; }
-.wx-city-tab  { font-size: 0.6em; padding: 1px 7px; border-radius: 8px; background: var(--bg-card-inner); color: var(--text-muted); cursor: pointer; border: 1px solid transparent; transition: all 0.15s; user-select: none; }
-.wx-city-tab.active { background: var(--cyan); color: #000; font-weight: 700; border-color: var(--cyan); }
-
-/* Feature 46: Stock 52-week range bar */
-.stk-range { width: 100%; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; position: relative; margin-top: 1px; }
-.stk-range-fill { height: 100%; border-radius: 2px; background: var(--accent); min-width: 3px; transition: width 0.4s ease; }
-
-/* Feature 47: Calendar event duration */
-.cal-event-dur { font-size: 0.68em; color: var(--text-muted); margin-top: 1px; }
 
 /* Feature 48: Custom ticker prefix chip */
 .ticker-custom { background: var(--warning); color: #000; font-weight: 800; padding: 0 6px; border-radius: 3px; font-size: 0.9em; margin-left: 8px; }
@@ -122,260 +67,96 @@ body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
 #font-scale-indicator { font-size: 0.7em; color: var(--text-muted); transition: opacity 0.3s; opacity: 0; }
 #font-scale-indicator.visible { opacity: 1; }
 
-/* Feature 50: Print mode (R1.10 — enhanced) */
-
-/* ═══════════════════════════════════════════════════════
-   SPRINT 6 FEATURES (Features 51–60)
-   ═══════════════════════════════════════════════════════ */
-
-/* Feature 51: Portfolio Total Value Row */
-.stk-total-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 8px; font-size: 0.68em; border-top: 1px solid var(--accent-border); color: var(--text-secondary); flex-shrink: 0; background: var(--bg-card-inner); gap: 4px; }
-.stk-total-label { color: var(--text-muted); white-space: nowrap; }
-
 /* Feature 54: Night Screen Auto-Dimmer */
 #night-dim { position: fixed; inset: 0; background: #000; pointer-events: none; opacity: 0; transition: opacity 3s ease; z-index: 2; }
-
-/* Feature 55: Stock Price Threshold Alert Flash */
-.stk.alert-above { border-left: 2px solid var(--positive) !important; box-shadow: 0 0 8px var(--positive) !important; box-shadow: 0 0 0 1.5px #34d399 inset, 0 0 8px rgba(52,211,153,0.25); }
-.stk.alert-below { border-left: 2px solid var(--negative) !important; box-shadow: 0 0 8px var(--negative) !important; box-shadow: 0 0 0 1.5px #f87171 inset, 0 0 8px rgba(248,113,113,0.25); }
-
-/* Feature 56: Precipitation Bar in Forecast */
-.wx-precip-bar { width: 100%; height: 2px; background: rgba(96,165,250,0.12); border-radius: 1px; margin-top: 2px; }
-.wx-precip-fill { height: 100%; border-radius: 1px; background: var(--cyan); min-width: 2px; transition: width 0.5s ease; }
-
-/* Feature 57: News Copy-to-Clipboard Button */
-.news-copy { font-size: 0.62em; color: var(--text-muted); cursor: pointer; padding: 1px 3px; border-radius: 3px; background: transparent; border: none; opacity: 0; flex-shrink: 0; margin-right: 3px; font-family: inherit; transition: opacity 0.15s; }
-.rss-item:hover .news-copy { opacity: 0.7; }
-.news-copy:hover { opacity: 1 !important; color: var(--accent); background: var(--bg-card-inner); }
-.news-copy.copied { color: var(--positive) !important; opacity: 1; }
-
-/* Feature 58: Calendar Event Category Color Dots */
-.cal-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-right: 4px; margin-top: 3px; align-self: flex-start; }
-.cal-dot-work    { background: var(--cyan); }
-.cal-dot-family  { background: var(--positive); }
-.cal-dot-health  { background: #f472b6; }
-.cal-dot-holiday { background: var(--warning); }
-.cal-dot-default { background: var(--accent); opacity: 0.5; }
 
 /* Feature 59: Force Refresh Toast */
 #refresh-toast { position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 20px; padding: 5px 16px; font-size: 0.75em; color: var(--text-primary); pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 600; white-space: nowrap; }
 #refresh-toast.visible { opacity: 1; }
 
-/* ── SPRINT 7 FEATURES (Features 61–70) ── */
-/* Feature 61: Stock Relative Volume Badge */
-.stk-vol-badge { font-size: 0.54em; padding: 1px 4px; border-radius: 3px; font-weight: 700; margin-right: 3px; letter-spacing: 0; }
-.stk-vol-high  { background: rgba(251,191,36,0.16); color: var(--warning); }
-.stk-vol-xhigh { background: rgba(249,115,22,0.16); color: #f97316; }
-/* Feature 62: Web Share button */
-.news-share { font-size: 0.62em; opacity: 0; transition: opacity 0.2s; cursor: pointer; background: none; border: none; color: var(--accent); padding: 0 2px; margin-right: 2px; line-height: 1; }
-.rss-item:hover .news-share { opacity: 0.7; }
-/* Feature 63: Calendar 7-day strip */
-#cal-week-strip { display: flex; gap: 2px; padding: 4px 8px 2px; border-bottom: 1px solid var(--accent-border); flex-shrink: 0; }
-.cal-week-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; }
-.cal-week-label { font-size: 0.54em; color: var(--text-muted); }
-.cal-week-dots { display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 6px; }
-.cal-week-dot { width: 4px; height: 4px; border-radius: 50%; opacity: 0.75; }
-.cal-week-today .cal-week-label { color: var(--accent); font-weight: 700; }
-
-/* Feature 65: Per-stock price history sparkline */
-.stk-ph-spark { width: 44px; height: 12px; overflow: visible; display: block; margin-top: 1px; }
-/* Feature 66: Hourly rain probability overlay — SVG rects at chart bottom */
-/* (rendered inline in SVG, no extra CSS needed) */
-/* Feature 67: News item published age */
-.news-age { font-size: 0.55em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
-/* Feature 68: Market open/close countdown chip */
-#stk-mkt-countdown { font-size: 0.62em; color: var(--text-muted); text-align: center; padding: 2px 8px; border-top: 1px solid var(--accent-border); background: var(--bg-card-inner); flex-shrink: 0; }
-#stk-mkt-countdown.mkt-open { color: var(--positive); }
-#stk-mkt-countdown.mkt-soon { color: var(--warning); }
 /* Feature 70: Diagnostic copy log button */
 #diag-copy-btn { font-size: 0.75em; padding: 2px 10px; border-radius: 4px; background: var(--bg-card-inner); border: 1px solid var(--accent-border); color: var(--text-primary); cursor: pointer; margin-bottom: 6px; }
 
-/* ── SPRINT 8 FEATURES (Features 71–80) ── */
-/* Feature 72: Cal week heat-map (event density → background intensity) */
-.cal-week-day.heat-1 { background: rgba(96,165,250,0.08); border-radius: 4px; }
-.cal-week-day.heat-2 { background: rgba(96,165,250,0.18); border-radius: 4px; }
-.cal-week-day.heat-3 { background: rgba(96,165,250,0.32); border-radius: 4px; }
-/* Feature 73: News source favicon in filter chips */
-.news-chip-favicon { width: 10px; height: 10px; border-radius: 2px; margin-left: 3px; vertical-align: middle; opacity: 0.85; }
-/* Feature 74: Stock sector grouping header */
-.stk-sector-hdr { font-size: 0.52em; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 8px 0; font-weight: 700; opacity: 0.65; flex-shrink: 0; }
-
 /* Feature 77: Header Shabbat time pill */
 #header-shabbat-pill { font-size: 0.70em; background: rgba(251,191,36,0.12); color: var(--warning); border-radius: 8px; padding: 1px 8px; margin: 1px 0; display: none; white-space: nowrap; }
-/* Feature 78: Parasha weekly reading progress bar */
-.hc-parasha-progress { height: 3px; background: var(--bg-card-inner); border-radius: 2px; margin: 0 0 1px 4px; flex: 1; overflow: hidden; min-width: 40px; }
-.hc-parasha-progress-fill { height: 100%; background: var(--cyan); border-radius: 2px; transition: width 0.4s ease; }
+
 /* Feature 80: PWA install prompt button */
 #pwa-install-btn { display: none; position: fixed; bottom: 20px; left: 20px; z-index: 800; font-size: 0.75em; padding: 6px 14px; border-radius: 20px; background: var(--accent); color: #0f172a; border: none; cursor: pointer; font-weight: 700; box-shadow: 0 2px 12px rgba(96,165,250,0.4); }
-/* ── SPRINT 9 FEATURES (Features 81–90) ── */
-/* Feature 82: Halacha ticker category badge */
-.ticker-halacha-cat { font-size: 0.68em; padding: 1px 6px; border-radius: 8px; background: rgba(96,165,250,0.14); color: var(--accent); margin-inline-end: 8px; white-space: nowrap; vertical-align: middle; }
-/* Feature 84: Family name config — greeting uses it*/
+
 /* Feature 85: Multi-photo slideshow fade */
 @keyframes slideshow-fadein { from { opacity: 0; } to { opacity: 0.18; } }
 body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwards; }
+
 /* Feature 89: Clock seconds display */
 #clock.with-seconds { letter-spacing: -0.02em; font-size: 2.5em; }
+
 /* Feature 90: Offline banner details */
 .offline-banner .offline-age { font-size: 0.82em; opacity: 0.75; margin-inline-start: 6px; }
-/* ── Sprint 10 CSS (F91-F100) ── */
-/* F99 — Card drag-reorder */
+
+/* F99: Card drag-reorder */
 .card.dragging { opacity: 0.42; outline: 2px dashed var(--accent); }
 .card.drag-over { outline: 2px solid var(--accent); transform: scale(1.012); transition: transform 0.12s; }
 .card-header[draggable="true"] { cursor: grab; }
 .card-header[draggable="true"]:active { cursor: grabbing; }
-/* ── Sprint 11 CSS (F101-F110) ── */
-/* F101 — SW Update Banner */
+
+/* F101: SW Update Banner */
 #sw-update-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: #22c55e; color: #000; padding: 8px 16px; display: none; align-items: center; justify-content: center; gap: 10px; font-size: 0.88em; font-weight: 600; text-align: center; }
 #sw-update-banner.visible { display: flex; }
 #sw-update-reload-btn { background: rgba(0,0,0,0.18); color: inherit; border: 1px solid rgba(0,0,0,0.3); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 0.9em; font-weight: 700; }
-/* F103 — News Keyword Search */
-.news-search-wrap { display: flex; align-items: center; gap: 4px; padding: 4px 8px 2px; }
-#news-search { flex: 1; background: var(--bg-card-inner); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 0.8em; padding: 3px 8px; outline: none; direction: rtl; min-width: 0; }
-#news-search::placeholder { color: var(--text-muted); }
-#news-search-clear { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95em; padding: 0 3px; line-height: 1; display: none; }
-#news-search-count { font-size: 0.7em; color: var(--text-muted); white-space: nowrap; min-width: 3em; text-align: end; }
-.rss-item.search-hidden { display: none !important; }
-/* F104 — Birthday Header Chip */
+
+/* F104: Birthday Header Chip */
 #header-birthday-chip { font-size: 0.68em; background: rgba(251,191,36,0.16); color: var(--warning); border-radius: 10px; padding: 2px 7px; font-weight: 600; white-space: nowrap; display: none; cursor: default; }
-/* F106 — Halacha Category Color Tags */
-.hc-tag-shabbat { background: rgba(251,191,36,0.16) !important; color: var(--warning) !important; }
-.hc-tag-tefila  { background: rgba(96,165,250,0.16) !important; color: var(--accent) !important; }
-.hc-tag-kashrut { background: rgba(52,211,153,0.16) !important; color: var(--positive) !important; }
-.hc-tag-family  { background: rgba(244,114,182,0.16) !important; color: #f472b6 !important; }
-.hc-tag-moadim  { background: rgba(167,139,250,0.16) !important; color: #a78bfa !important; }
-/* F108 — Hebrew Wind Direction Label */
-#wx-wind-heb { font-size: 0.78em; color: var(--text-muted); display: block; line-height: 1.1; }
-/* F109 — Next Zman Header Indicator */
+
+/* F109: Next Zman Header Indicator */
 #header-next-zman { font-size: 0.68em; color: var(--accent); background: var(--accent-glow); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; }
-/* F110 — News Visited Articles Dimming */
-.rss-item.visited { opacity: 0.45; }
-.rss-item.visited .rss-title { text-decoration: line-through; text-decoration-color: var(--text-muted); }
-/* ── Sprint 12 CSS (F111–F120) ── */
-/* F114 — Notification permission bell chip */
+
+/* F114: Notification permission bell chip */
 #notif-bell { font-size: 0.68em; background: rgba(251,191,36,0.16); color: var(--warning); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: pointer; animation: pulse 2s infinite; }
-/* F116 — Unread alerts badge count */
+
+/* F116: Unread alerts badge count */
 .alerts-badge { font-size: 0.55em; padding: 1px 5px; border-radius: 8px; background: var(--negative); color: #fff; font-weight: 700; display: none; margin-left: 5px; min-width: 1.4em; text-align: center; vertical-align: middle; }
-/* F117 — Weather city config (uses existing .wx-city-tab styles) */
-/* F118 — Family members config (uses existing cfg-row styles) */
-/* F119 — Config panel section tabs */
+
+/* F119: Config panel section tabs */
 .cfg-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
 .cfg-tab { font-size: 0.74em; padding: 3px 8px; border-radius: 6px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .cfg-tab.active { background: var(--accent); color: #000; font-weight: 700; border-color: var(--accent); }
 .cfg-section { display: none; }
 .cfg-section.active { display: block; }
-/* F120 — Dashboard URL share button */
+
+/* F120: Dashboard URL share button */
 #cfg-share-btn { font-size: 0.82em; background: var(--bg-card-inner); color: var(--text-primary); }
-/* ── Sprint 13 CSS (F121–F130) ── */
-/* F121 — Toast notification */
+
+/* F121: Toast notification */
 #toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg-card); border: 1px solid var(--accent-border); color: var(--text-primary); padding: 9px 20px; border-radius: 12px; font-size: 0.9em; box-shadow: 0 4px 16px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; z-index: 9999; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; }
 #toast.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
-/* F122 — UV pill color levels */
+
+/* F122: UV pill color levels */
 .uv-pill { display: inline-block; padding: 0 5px; border-radius: 6px; font-size: 0.75em; font-weight: 700; color: #fff; }
 .uv-pill.uv-low { background: #22c55e; }
 .uv-pill.uv-mod { background: #eab308; color: #000; }
 .uv-pill.uv-high { background: #f97316; }
 .uv-pill.uv-vhigh { background: #ef4444; }
 .uv-pill.uv-extreme { background: #a855f7; }
-/* F123 — Rain % text labels inside hourly chart */
-.wx-hourly-rain-pct { font-size: 7px; fill: #93c5fd; text-anchor: middle; }
-/* F125 — News translate button */
-.rss-translate-btn { font-size: 0.65em; padding: 1px 5px; border-radius: 4px; background: rgba(96,165,250,0.12); color: var(--accent); cursor: pointer; border: 1px solid var(--accent-border); flex-shrink: 0; opacity: 0.7; }
-.rss-translate-btn:hover { opacity: 1; background: rgba(96,165,250,0.22); }
-/* F127 — Halacha Sefaria deeplink */
-#hc-halacha-row { cursor: pointer; }
-#hc-halacha-row:hover .hc-halacha-val { color: var(--accent); }
-/* F128 — Hourly chart toggle button */
-#wx-chart-toggle { font-size: 0.62em; padding: 1px 6px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; float: left; margin: 2px 0; }
-/* F129 — Search keyword highlight */
-.rss-highlight { background: rgba(251,191,36,0.3); border-radius: 2px; padding: 0 1px; color: var(--text-primary); font-weight: 600; }
 
-/* ── Sprint 14 CSS (F131–F140) ── */
-/* F131 — Stock alert notification indicators */
-/* F132 — Portfolio P&L header chip */
-#header-portfolio-pl { font-size: 0.68em; border-radius: 10px; padding: 2px 7px; font-weight: 700; white-space: nowrap; display: none; cursor: default; }
-#header-portfolio-pl.pl-gain { background: rgba(52,211,153,0.16); color: var(--positive); }
-#header-portfolio-pl.pl-loss { background: rgba(248,113,113,0.16); color: var(--negative); }
-/* F133 — Calendar ICS source color badges */
-.cal-event[data-ics="1"] { border-right: 3px solid #60a5fa; }
-.cal-event[data-ics="2"] { border-right: 3px solid #34d399; }
-.cal-event[data-ics="3"] { border-right: 3px solid #f97316; }
-/* F135 — Motivation share button */
+/* F135: Motivation share button */
 #moti-share-btn { font-size: 0.62em; padding: 1px 7px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; margin-top: 6px; }
 #moti-share-btn:hover { color: var(--accent); }
-/* F136 — News article age tinting */
-.rss-item.stale-half { opacity: 0.80; }
-.rss-item.stale-day  { opacity: 0.60; }
-.rss-item.stale-old  { opacity: 0.35; }
-/* F137 — Stocks after/pre-market price line */
-.stk-after-price { font-size: 0.62em; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
-.stk-after-price .after-lbl { opacity: 0.7; margin-left: 2px; }
-/* F138 — Calendar conflict indicator */
-.cal-event.has-conflict .cal-event-title::before { content: '⚠ '; color: var(--warning); font-size: 0.8em; }
-/* F139 — Custom countdown chip */
-#header-countdown { font-size: 0.68em; background: rgba(192,132,252,0.14); color: var(--purple); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: default; font-weight: 600; }
-/* F140 — Print mode improvements (merged into R1.10 print block above) */
 
-/* ── Sprint 15 (F141–F150) ── */
-/* F142 — Dew point tile in weather details */
-.wx-detail:nth-child(7) { border-bottom: 2px solid #22d3ee; }
-/* F143 — Wind gust sub-label */
-#wx-gust { font-size: 0.72em; color: var(--warning); line-height: 1.1; margin-top: 1px; display: none; }
-/* F144 — News category badges */
-.news-cat { font-size: 0.60em; border-radius: 8px; padding: 1px 5px; font-weight: 700; white-space: nowrap; margin-left: 3px; vertical-align: middle; display: inline-block; }
-.news-cat.cat-security { background: rgba(248,113,113,0.18); color: #f87171; }
-.news-cat.cat-politics { background: rgba(168,85,247,0.18); color: #a855f7; }
-.news-cat.cat-economy  { background: rgba(52,211,153,0.18); color: #34d399; }
-.news-cat.cat-sport    { background: rgba(59,130,246,0.18); color: #60a5fa; }
-.news-cat.cat-tech     { background: rgba(192,132,252,0.18); color: #c084fc; }
-/* F145 — News inline description expand */
-.news-desc { display: none; font-size: 0.72em; color: var(--text-muted); padding: 3px 0 1px 0; line-height: 1.4; direction: rtl; }
-.rss-item.expanded .news-desc { display: block; }
-.rss-item .rss-title { cursor: pointer; font-size: calc(0.88em * var(--news-font-scale, 1)); }
-/* F147 — News bookmarks */
-.news-bkm { background: none; border: none; cursor: pointer; font-size: 0.82em; padding: 0 2px; opacity: 0.35; transition: opacity 0.2s; }
-.news-bkm:hover { opacity: 0.9; }
-.rss-item.bookmarked .news-bkm { opacity: 1; color: #60a5fa; }
-.rss-item.bookmarked { background: rgba(96,165,250,0.07) !important; }
-/* F148 — Weather weekly summary */
-#wx-week-summary { font-size: 0.70em; color: var(--text-muted); text-align: center; padding: 2px 6px; border-radius: 6px; background: rgba(255,255,255,0.04); margin-top: 3px; }
-/* F149 — Per-stock portfolio P&L position row */
-.stk-pos-pnl { font-size: 0.59em; color: var(--text-muted); line-height: 1.1; margin-top: 1px; }
-.stk-pos-pnl.gain { color: var(--positive); } .stk-pos-pnl.loss { color: var(--negative); }
-/* F150 — Help overlay 2-column grid */
-#help-panel .help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 6px; }
-#help-panel .help-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-/* F146 — Moti next-quote button */
+/* F139: Custom countdown chip */
+#header-countdown { font-size: 0.68em; background: rgba(192,132,252,0.14); color: var(--purple); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: default; font-weight: 600; }
+
+/* F146: Moti next-quote button */
 #moti-next-btn { font-size: 0.62em; padding: 1px 7px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; margin-top: 3px; margin-right: 4px; }
 #moti-next-btn:hover { color: var(--accent); }
 #print-datetime { display: none; }
 
-/* ── Sprint 16 (F151–F160) ── */
-/* F151 — Sefirat HaOmer row */
-#hc-omer-row .omer-count { font-size: 0.82em; }
-/* F152 — Daily precipitation amount (mm) label */
-.wx-fday-mm { font-size: 0.60em; color: #60a5fa; opacity: 0.85; display: block; margin-top: 1px; }
-/* F153 — Gold/Silver/GBP sparklines */
-/* F154 — Calendar today-strip */
-#cal-today-strip { display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 6px; min-height: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-#cal-today-strip:empty { display: none; }
-.cal-strip-event { font-size: 0.60em; background: var(--bg-card-inner); border-radius: 5px; padding: 2px 6px; color: var(--accent); border-left: 2px solid var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
-/* F155 — Stocks gainers/losers summary bar */
-#stk-summary { font-size: 0.60em; color: var(--text-muted); text-align: center; padding: 3px 6px; border-top: 1px solid rgba(255,255,255,0.06); letter-spacing: 0.03em; }
-/* F156 — Bookmarks-only news filter badge */
-.news-bkm-pill { font-size: 0.55em; padding: 1px 5px; border-radius: 4px; background: rgba(96,165,250,0.15); color: #60a5fa; font-weight: 700; margin-right: 4px; cursor: pointer; display: none; }
-body.news-bkm-mode .news-bkm-pill { display: inline-block; }
-body.news-bkm-mode .rss-item:not(.bookmarked) { display: none; }
-/* F157 — Halacha full-text overlay */
-.halacha-overlay { position: fixed; inset: 0; z-index: 950; background: rgba(6,11,20,0.92); display: none; align-items: center; justify-content: center; padding: 20px; }
-.halacha-overlay.visible { display: flex; }
-.halacha-overlay-inner { background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 14px; max-width: 680px; width: 100%; padding: 22px 26px; direction: rtl; max-height: 80vh; overflow-y: auto; }
-.halacha-overlay-ref { font-size: 0.70em; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
-.halacha-overlay-text { font-size: 0.85em; line-height: 1.65; color: var(--text-primary); white-space: pre-wrap; }
-.halacha-overlay-close { margin-top: 14px; font-size: 0.72em; color: var(--text-muted); text-align: center; cursor: pointer; }
-/* F158 — Weather today min/max range */
-#wx-minmax { font-size: 0.68em; color: var(--text-muted); margin-top: 2px; text-align: center; line-height: 1.2; }
-/* F159 — Card collapse toggle */
+/* F150: Help overlay 2-column grid */
+#help-panel .help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 6px; }
+#help-panel .help-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+/* F153: Gold/Silver/GBP sparklines — no CSS needed, rendered via SVG */
+
+/* F159: Card collapse toggle */
 .card-collapse-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75em; padding: 0 2px; margin-inline-end: 4px; transition: transform 0.25s ease, color 0.2s; line-height: 1; }
 .card-collapse-btn:hover { color: var(--accent); }
 .card.collapsed .card-collapse-btn { transform: rotate(-90deg); }
@@ -388,3 +169,4 @@ body.news-bkm-mode .rss-item:not(.bookmarked) { display: none; }
 .card.collapsed > .hebcal-body,
 .card.collapsed > .cal-body,
 .card.collapsed > .moti-body { display: none !important; }
+

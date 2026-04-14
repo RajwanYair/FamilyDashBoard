@@ -1,4 +1,8 @@
-/* Design Tokens — FamilyDashBoard v6 */
+/* Design Tokens — FamilyDashBoard v7 */
+/* Cascade layer order — declared once here so all sheets can opt in. */
+@layer tokens, themes, base, layout, components, animations;
+
+@layer tokens {
 :root {
     /* ── Colors: Warm Dark (default) ── */
     --bg-primary: #1a1410;
@@ -74,4 +78,12 @@
     --duration-slow: 0.6s;
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ── Derived colors via color-mix() ── */
+    --accent-subtle: color-mix(in srgb, var(--accent) 12%, transparent);
+    --accent-dim: color-mix(in srgb, var(--accent) 40%, transparent);
+    --positive-subtle: color-mix(in srgb, var(--positive) 12%, transparent);
+    --negative-subtle: color-mix(in srgb, var(--negative) 12%, transparent);
+    --bg-overlay: color-mix(in srgb, var(--bg-primary) 92%, transparent);
+}
 }

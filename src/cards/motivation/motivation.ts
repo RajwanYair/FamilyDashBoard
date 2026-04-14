@@ -8,9 +8,10 @@ import { INTERVALS } from "../../core/constants";
 import { scheduleCard } from "../base-card";
 import { setSync } from "../../core/sync";
 import { diagLog } from "../../core/diag";
+import { showToast } from "../../ui/toast";
 
 // Hebrew motivational quotes
-const MOTIVATIONS: ReadonlyArray<{ text: string; author: string }> = [
+export const MOTIVATIONS: ReadonlyArray<{ text: string; author: string }> = [
   { text: "הכל מתחיל בצעד אחד קטן.", author: "" },
   { text: "אל תשפטו את כל השנה על ידי יום אחד בלבד.", author: "" },
   { text: "גם מסע של אלף מיל מתחיל בצעד אחד.", author: "לאו דזה" },
@@ -30,7 +31,12 @@ let motiIdx = 0;
 let elText: HTMLElement | null = null;
 let elAuthor: HTMLElement | null = null;
 
-function renderMotivation(): void {
+export function getCurrentQuote(): { text: string; author: string } | null {
+  const lastIdx = ((motiIdx - 1) + MOTIVATIONS.length) % MOTIVATIONS.length;
+  return MOTIVATIONS[lastIdx] ?? null;
+}
+
+export function renderMotivation(): void {
   const m = MOTIVATIONS[motiIdx++ % MOTIVATIONS.length];
   if (!m) return;
 
@@ -48,9 +54,23 @@ function renderMotivation(): void {
   setSync("moti", "ok");
 }
 
-function setContent(m: { text: string; author: string }): void {
+export function setContent(m: { text: string; author: string }): void {
   if (elText) elText.textContent = m.text;
   if (elAuthor) elAuthor.textContent = m.author ? `— ${m.author}` : "";
+}
+
+export function shareMotivation(): void {
+  const q = getCurrentQuote();
+  if (!q) return;
+  const text = q.author ? `"${q.text}" — ${q.author}` : `"${q.text}"`;
+  if (navigator.share) {
+    void navigator.share({ text });
+  } else {
+    void navigator.clipboard.writeText(text).then(() => {
+      showToast("📋 הציטוט הועתק ללוח");
+    });
+  }
+  diagLog("[motivation] Quote shared");
 }
 
 async function loadMotivation(): Promise<void> {
@@ -60,6 +80,13 @@ async function loadMotivation(): Promise<void> {
 export function initMotivationCard(): void {
   elText = document.getElementById("moti-text");
   elAuthor = document.getElementById("moti-author");
+
+  document.getElementById("moti-next-btn")?.addEventListener("click", () => {
+    renderMotivation();
+  });
+  document.getElementById("moti-share-btn")?.addEventListener("click", () => {
+    shareMotivation();
+  });
 
   void loadMotivation();
   scheduleCard(loadMotivation, INTERVALS.MOTIVATION);

@@ -2,12 +2,13 @@
  * Tests for src/ui/theme.ts — Theme System
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   applyTheme,
   cycleTheme,
   currentTheme,
   initTheme,
+  checkAutoTheme,
   THEMES,
 } from "@/ui/theme";
 
@@ -55,7 +56,7 @@ describe("Theme System", () => {
   });
 
   it("wraps around to first theme after last", () => {
-    applyTheme("purple");
+    applyTheme("rose");
     cycleTheme();
     expect(currentTheme()).toBe("black");
   });
@@ -71,7 +72,173 @@ describe("Theme System", () => {
     expect(currentTheme()).toBe("amber");
   });
 
-  it("has exactly 5 themes", () => {
-    expect(THEMES.length).toBe(5);
+  it("has exactly 6 themes", () => {
+    expect(THEMES.length).toBe(6);
+  });
+
+  it("THEMES includes 'black'", () => {
+    expect(THEMES).toContain("black");
+  });
+
+  it("THEMES includes 'blue'", () => {
+    expect(THEMES).toContain("blue");
+  });
+
+  it("THEMES includes 'matrix'", () => {
+    expect(THEMES).toContain("matrix");
+  });
+
+  it("THEMES includes 'amber'", () => {
+    expect(THEMES).toContain("amber");
+  });
+
+  it("THEMES includes 'purple'", () => {
+    expect(THEMES).toContain("purple");
+  });
+
+  it("applyTheme does not leave stale theme classes after switching all themes", () => {
+    for (const t of THEMES) {
+      applyTheme(t);
+    }
+    const themeClasses = [...document.body.classList].filter((c) =>
+      c.startsWith("theme-"),
+    );
+    expect(themeClasses).toHaveLength(1);
+    expect(themeClasses[0]).toBe("theme-rose");
+  });
+
+  it("currentTheme returns string type", () => {
+    applyTheme("black");
+    expect(typeof currentTheme()).toBe("string");
+  });
+});
+
+describe("Theme — checkAutoTheme", () => {
+  beforeEach(() => {
+    document.body.className = "";
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("does nothing when autoTheme is disabled", () => {
+    applyTheme("blue");
+    checkAutoTheme(false, "blue");
+    expect(currentTheme()).toBe("blue"); // no change
+  });
+
+  it("applies black theme at night hour (23:00)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-15T23:00:00"));
+    applyTheme("blue");
+    checkAutoTheme(true, "blue");
+    expect(currentTheme()).toBe("black");
+    vi.useRealTimers();
+  });
+
+  it("applies black theme during early morning (05:00)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-15T05:00:00"));
+    applyTheme("blue");
+    checkAutoTheme(true, "blue");
+    expect(currentTheme()).toBe("black");
+    vi.useRealTimers();
+  });
+
+  it("restores day theme at noon (12:00)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-15T12:00:00"));
+    applyTheme("black");
+    checkAutoTheme(true, "blue");
+    expect(currentTheme()).toBe("blue");
+    vi.useRealTimers();
+  });
+
+  it("boundary: h=20 is nighttime", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-15T20:00:00"));
+    applyTheme("purple");
+    checkAutoTheme(true, "purple");
+    expect(currentTheme()).toBe("black");
+    vi.useRealTimers();
+  });
+
+  it("boundary: h=7 is daytime", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-15T07:00:00"));
+    applyTheme("black");
+    checkAutoTheme(true, "amber");
+    expect(currentTheme()).toBe("amber");
+    vi.useRealTimers();
+  });
+});
+
+// ── applyTheme edge cases: localStorage quota + startViewTransition ──
+
+describe("Theme — applyTheme edge cases", () => {
+  afterEach(() => {
+    document.body.className = "";
+    vi.restoreAllMocks();
+  });
+
+  it("handles localStorage quota exceeded gracefully", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("QuotaExceededError");
+    });
+    expect(() => applyTheme("blue")).not.toThrow();
+    expect(document.body.classList.contains("theme-blue")).toBe(true);
+  });
+
+  it("uses startViewTransition when available", () => {
+    const startVT = vi.fn((cb: () => void) => {
+      cb();
+      return { finished: Promise.resolve() };
+    });
+    Object.defineProperty(document, "startViewTransition", {
+      value: startVT,
+      configurable: true,
+      writable: true,
+    });
+    applyTheme("amber");
+    expect(startVT).toHaveBeenCalled();
+    expect(document.body.classList.contains("theme-amber")).toBe(true);
+    // Cleanup: remove startViewTransition
+    delete (document as Record<string, unknown>)["startViewTransition"];
+  });
+});
+
+// ── Sprint 6: uncovered branches — currentTheme fallback + initTheme no select ──
+
+describe("Theme — currentTheme fallback when no theme class", () => {
+  it("returns 'black' when body has no theme-* class", () => {
+    document.body.className = "";
+    expect(currentTheme()).toBe("black");
+  });
+
+  it("returns 'black' when body has unrelated classes", () => {
+    document.body.className = "some-class another-class";
+    expect(currentTheme()).toBe("black");
+  });
+});
+
+describe("Theme — initTheme without #theme-select", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    document.body.className = "";
+    localStorage.clear();
+  });
+
+  it("applies theme from localStorage without wiring dropdown", () => {
+    localStorage.setItem("dash_theme", "matrix");
+    initTheme();
+    expect(currentTheme()).toBe("matrix");
+    // No select in DOM — no throw
+    expect(document.getElementById("theme-select")).toBeNull();
+  });
+
+  it("applies default black when no saved theme and no select", () => {
+    initTheme();
+    expect(currentTheme()).toBe("black");
   });
 });

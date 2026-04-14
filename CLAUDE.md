@@ -1,40 +1,47 @@
-# CLAUDE.md — FamilyDashBoard v5.1.0
+# CLAUDE.md — FamilyDashBoard v7.0-alpha
 
 > Context file for Claude Code / Claude agents. Lean project brief — see `.github/instructions/` for scoped details.
 
 ## Project
 
-Single-file family TV dashboard (`BestDashBoard.html`) — HTML + CSS + JS in one file.
-Hebrew RTL, dark glassmorphism, 5 themes, zero dependencies, always-on 1920×1080 display.
+TypeScript modular TV dashboard (`src/`) built with Vite.
+Hebrew RTL, dark glassmorphism, 6 themes, always-on 1920×1080 display.
+Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 
 ## Stack
 
-- HTML5 + CSS3 + vanilla JS (ES2020+)
-- No npm, no build tools, no frameworks
-- Tests: `node --test tests/dashboard.test.mjs` (1084 tests, 61 suites)
-- SW: `sw.js` v5.0.0 (offline + API cache)
+- TypeScript 5.9 + Vite 8 + Vitest 4 (happy-dom)
+- ESLint 10 + typescript-eslint 8 (0 errors · 0 warnings · no suppressions)
+- **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
+- No local `package-lock.json` or `devDependencies` in this project
+- Tests: `npx vitest run` (1274 tests, 36 suites, 0 failures)
+- SW: `sw.js` v6.5.0 (offline + API cache)
 
 ## Key Rules
 
-1. No npm/build/external libraries
+1. No external JS/CSS libraries or CDNs
 2. No `innerHTML` with unsanitized data — use `textContent`
 3. No hardcoded colors — use CSS custom properties
 4. All async loaders: `safeLoad()` + `if (!_pageVisible) return;`
 5. All fetches: try/catch + proxy fallback (`PROXIES` array) + `diagLog()`
 6. All API data: `cSet`/`cGet`/`cGetStale` cache
 7. DOM refs in `el` object — no repeated `getElementById`
-8. Run `node --check` + ESLint after JS edits
-9. `_tempUnit` = `'C'`/`'F'` (not `_useFahrenheit`)
-10. Stock function = `loadAllStocks()` (not `loadStocks()`)
+8. `_tempUnit` = `'C'`/`'F'` (not `_useFahrenheit`)
+9. Stock function = `loadAllStocks()` (not `loadStocks()`)
+10. All tools/devDeps live in `MyScripts/package.json` (parent) — never add `devDependencies` here
+11. 6 themes: dark · ocean · forest · warm · high-contrast · rose
+12. Card registry: `registerCard()` / `getCard()` — use `src/core/card-registry.ts` for new card wiring
+13. New overlays use `<dialog>` + `showModal()` / `close()` — not `<div>` with `display:block`
 
 ## File Map
 
 ```text
-BestDashBoard.html   # The dashboard (HTML+CSS+JS)
-sw.js                # ServiceWorker
-manifest.json        # PWA manifest
-icon.svg             # App icon
-tests/dashboard.test.mjs  # 1084 tests
+src/                   # TypeScript v7 modular source (Vite build)
+tests/unit/            # Vitest — 1274 tests / 36 suites
+sw.js                  # ServiceWorker v6.5
+manifest.json          # PWA manifest
+icon.svg               # App icon
+BestDashBoard.html     # Legacy v5 dashboard (read-only, archived)
 ```
 
 ## Architecture
@@ -44,7 +51,16 @@ tests/dashboard.test.mjs  # 1084 tests
 - **Refresh**: per-pane setInterval (no full-page reload)
 - **Performance**: GPU layers, CPU-aware concurrency, `scheduleIdle()`, DocumentFragments
 
+## Commands
+
+```bash
+npx vitest run                          # tests
+npx vitest run --coverage               # coverage
+npx eslint src tests --max-warnings 0   # lint (must be 0)
+npx tsc --noEmit                        # type-check
+npx vite build                          # production build
+```
+
 ## Release
 
-Artifacts: `BestDashBoard.html` + `sw.js` + `manifest.json` + `icon.svg` (no binaries).
 Tag `vX.Y.Z` → GitHub Actions auto-releases + deploys to Pages.

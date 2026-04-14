@@ -11,6 +11,8 @@
     animation: cardIn var(--duration-slow, 0.6s) ease-out both;
     position: relative;
     contain: layout style; /* Performance: Paint Containment */
+    container-type: inline-size; /* Enable @container queries per card */
+    container-name: card;
 }
 .card::after {
     content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg, var(--border-radius)); pointer-events: none;
@@ -77,15 +79,15 @@
 }
 .offline-banner.visible { transform: translateY(0); }
 
-/* ── Diagnostic Overlay (toggle with D key) ── */
-.diag-overlay {
-    display: none; position: fixed; bottom: 10px; right: 10px; z-index: 300;
+/* ── Diagnostic Overlay (<dialog>, toggle with D key) ── */
+dialog.diag-overlay {
+    position: fixed; bottom: 10px; right: 10px; z-index: 300;
     background: rgba(0,0,0,0.92); color: #e2e8f0; font-family: var(--font-mono, 'Consolas', monospace);
     font-size: 11px; padding: 10px 14px; border-radius: 10px; max-width: 420px;
     max-height: 60vh; overflow-y: auto; direction: ltr; text-align: left;
     border: 1px solid rgba(96,165,250,0.3); backdrop-filter: blur(8px);
 }
-.diag-overlay.visible { display: block; }
+dialog.diag-overlay::backdrop { background: transparent; }
 .diag-overlay h3 { margin: 0 0 6px; color: var(--accent); font-size: 13px; }
 .diag-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
 .diag-row .pane { color: #94a3b8; min-width: 80px; }
@@ -145,7 +147,9 @@ body.theme-black  .cal-wrapper iframe { filter: invert(1) hue-rotate(180deg) bri
 .cal-empty { font-size: 0.78em; color: var(--text-muted); text-align: center; padding: 16px; }
 
 /* ── Hebrew Calendar Card ── */
-.hebcal-body { flex: 1; overflow-y: auto; padding: 3px 6px; display: flex; flex-direction: column; gap: 2px; }
+.hebcal-body { flex: 1; overflow: hidden; padding: 3px 6px; display: flex; flex-direction: row; gap: 8px; align-items: flex-start; }
+.hc-main-col { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hc-side-col { flex-shrink: 0; width: fit-content; min-width: 150px; display: flex; flex-direction: column; gap: 4px; }
 .hc-row { display: flex; align-items: baseline; gap: 6px; padding: 1px 0; }
 .hc-label { font-size: 0.68em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; min-width: 4.5em; }
 .hc-val { font-size: 0.76em; font-weight: 600; color: var(--text-primary); }
@@ -283,6 +287,10 @@ body.alerts-off .grid-col-right > .card:nth-child(1) { flex: 2 1 0; }
 
 /* ── Market Badge ── */
 .market-badge { display: inline-block; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; font-weight: 700; margin-right: 6px; vertical-align: middle; }
+.market-badge--open  { background: rgba(34,197,94,0.15); color: #22c55e; }
+.market-badge--pre   { background: rgba(234,179,8,0.15);  color: #eab308; }
+.market-badge--after { background: rgba(249,115,22,0.15); color: #f97316; }
+.market-badge--closed{ background: rgba(239,68,68,0.15);  color: #ef4444; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }

@@ -1,0 +1,64 @@
+/* Tasks Card — FamilyDashBoard v7 */
+
+.tasks-body {
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  overflow-y: auto;
+  flex: 1 1 0;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-sm);
+}
+
+.tasks-person {
+  font-size: var(--text-xs);
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: var(--space-1) 0 2px;
+  border-bottom: 1px solid var(--accent-border);
+  margin-top: var(--space-2);
+}
+
+.tasks-person:first-child {
+  margin-top: 0;
+}
+
+.tasks-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast) ease;
+}
+
+.tasks-row:hover {
+  background: var(--bg-card-hover);
+}
+
+.tasks-row.done .tasks-chore {
+  text-decoration: line-through;
+  opacity: 0.5;
+  color: var(--text-muted);
+}
+
+.tasks-cb {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tasks-chore {
+  color: var(--text-primary);
+  flex: 1;
+  line-height: 1.3;
+}

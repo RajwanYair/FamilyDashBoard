@@ -84,6 +84,8 @@ function collapseCard(card: HTMLElement): void {
 export function initCardMaximize(): void {
   document.querySelectorAll<HTMLElement>(".card-header").forEach((hdr) => {
     hdr.addEventListener("click", (e: Event) => {
+      // Ignore clicks on the collapse button — handled by initCardCollapse
+      if ((e.target as HTMLElement).closest(".card-collapse-btn")) return;
       const card = hdr.closest<HTMLElement>(".card");
       if (!card) return;
       e.stopPropagation();
@@ -92,4 +94,70 @@ export function initCardMaximize(): void {
   });
 
   diagLog("[maximize] Card maximize initialized");
+}
+
+// ── Card Collapse ──
+
+const LS_COLLAPSED = "dash_v2_collapsed_cards";
+
+function loadCollapsedCards(): Set<string> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(LS_COLLAPSED) ?? "[]") as string[]);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveCollapsedCards(set: Set<string>): void {
+  try {
+    localStorage.setItem(LS_COLLAPSED, JSON.stringify([...set]));
+  } catch { /* quota */ }
+}
+
+export function getCollapsedCards(): Set<string> {
+  return loadCollapsedCards();
+}
+
+/**
+ * Wire every `.card-collapse-btn` to toggle the `.collapsed` class
+ * on its parent `.card`. State is persisted to localStorage.
+ */
+export function initCardCollapse(): void {
+  const collapsed = loadCollapsedCards();
+
+  // Restore persisted state
+  document.querySelectorAll<HTMLElement>(".card").forEach((card) => {
+    const id = (card.id || card.querySelector("[id]")?.id) ?? "";
+    if (id && collapsed.has(id)) card.classList.add("collapsed");
+  });
+
+  document.querySelectorAll<HTMLElement>(".card-collapse-btn").forEach((btn) => {
+    btn.addEventListener("click", (e: Event) => {
+      e.stopPropagation();
+      const card = btn.closest<HTMLElement>(".card");
+      if (!card) return;
+
+      const doToggle = (): void => {
+        card.classList.toggle("collapsed");
+        const isNowCollapsed = card.classList.contains("collapsed");
+        btn.textContent = isNowCollapsed ? "▶" : "▼";
+        const cardId = (card.id || card.querySelector("[id]")?.id) ?? "";
+        if (cardId) {
+          const set = loadCollapsedCards();
+          if (isNowCollapsed) set.add(cardId);
+          else set.delete(cardId);
+          saveCollapsedCards(set);
+        }
+        diagLog(`[maximize] Card ${card.classList.contains("collapsed") ? "collapsed" : "expanded"}: ${cardId}`);
+      };
+
+      if ("startViewTransition" in document) {
+        void document.startViewTransition(doToggle);
+      } else {
+        doToggle();
+      }
+    });
+  });
+
+  diagLog("[maximize] Card collapse initialized");
 }

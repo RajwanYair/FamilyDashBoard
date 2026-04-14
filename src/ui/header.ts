@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Header (Clock, Greeting, Progress Bars)
+ * FamilyDashBoard v6 — Header (Clock, Greeting, Progress Bars, Chips)
  */
 
 import { loadConfig } from "../core/config";
@@ -11,6 +11,9 @@ let elEngDate: HTMLElement | null = null;
 let elGreeting: HTMLElement | null = null;
 let elDayBar: HTMLElement | null = null;
 let elYearBar: HTMLElement | null = null;
+let elBirthdayChip: HTMLElement | null = null;
+let elCountdownChip: HTMLElement | null = null;
+let elElecBadge: HTMLElement | null = null;
 let clockShowSeconds = false;
 
 /**
@@ -50,6 +53,88 @@ function updateProgress(now: Date): void {
 }
 
 /**
+ * Show a birthday chip in the header if any birthday is within 14 days.
+ * Config: `birthdays: Array<{ name, month, day }>` (1-based month).
+ */
+export function updateBirthdayChip(): void {
+  if (!elBirthdayChip) return;
+  const { birthdays } = loadConfig();
+  if (!birthdays.length) {
+    elBirthdayChip.textContent = "";
+    elBirthdayChip.hidden = true;
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let nearest: { name: string; daysAway: number } | null = null;
+
+  for (const { name, month, day } of birthdays) {
+    const bdayThisYear = new Date(today.getFullYear(), month - 1, day);
+    const bday = bdayThisYear >= today ? bdayThisYear : new Date(today.getFullYear() + 1, month - 1, day);
+    const daysAway = Math.round((bday.getTime() - today.getTime()) / 86_400_000);
+    if (daysAway <= 14 && (!nearest || daysAway < nearest.daysAway)) {
+      nearest = { name, daysAway };
+    }
+  }
+
+  if (nearest) {
+    const label =
+      nearest.daysAway === 0
+        ? `🎂 יום הולדת — ${nearest.name}!`
+        : `🎂 ${nearest.name} בעוד ${nearest.daysAway} ימים`;
+    elBirthdayChip.textContent = label;
+    elBirthdayChip.hidden = false;
+  } else {
+    elBirthdayChip.textContent = "";
+    elBirthdayChip.hidden = true;
+  }
+}
+
+/**
+ * Show a countdown chip in the header for a user-configured event.
+ * Config: `countdownDate` (ISO date string) + `countdownLabel` (text).
+ */
+export function updateCountdownChip(): void {
+  if (!elCountdownChip) return;
+  const { countdownDate, countdownLabel } = loadConfig();
+  if (!countdownDate || !countdownLabel) {
+    elCountdownChip.textContent = "--";
+    elCountdownChip.hidden = true;
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(countdownDate + "T00:00:00");
+  const msAway = target.getTime() - today.getTime();
+
+  if (msAway < 0) {
+    elCountdownChip.textContent = "";
+    elCountdownChip.hidden = true;
+    return;
+  }
+
+  const days = Math.round(msAway / 86_400_000);
+  elCountdownChip.textContent =
+    days === 0 ? `🎉 ${countdownLabel} — היום!` : `⏳ ${countdownLabel}: ${days} ימים`;
+  elCountdownChip.hidden = false;
+}
+
+/**
+ * Show/hide the electricity peak-hour badge.
+ * Israeli residential tariff: weekdays (Sun–Thu) 17:00–22:00 = peak.
+ */
+export function updateElecBadge(now: Date): void {
+  if (!elElecBadge) return;
+  const hour = now.getHours();
+  const day = now.getDay(); // 0=Sun … 6=Sat
+  const isWeekday = day <= 4; // Sun–Thu
+  const isPeak = isWeekday && hour >= 17 && hour < 22;
+  elElecBadge.classList.toggle("peak-on", isPeak);
+}
+
+/**
  * Tick the clock, update greeting and progress bars.
  */
 export function tickClock(): void {
@@ -86,6 +171,9 @@ export function tickClock(): void {
   if (elGreeting && elGreeting.textContent !== g) elGreeting.textContent = g;
 
   updateProgress(now);
+  updateBirthdayChip();
+  updateCountdownChip();
+  updateElecBadge(now);
 }
 
 /**
@@ -93,6 +181,14 @@ export function tickClock(): void {
  */
 export function toggleClockSeconds(): void {
   clockShowSeconds = !clockShowSeconds;
+  tickClock();
+}
+
+/**
+ * Directly set the seconds display mode (used by config panel on save).
+ */
+export function setClockSeconds(value: boolean): void {
+  clockShowSeconds = value;
   tickClock();
 }
 
@@ -105,6 +201,9 @@ export function initHeader(): void {
   elGreeting = document.getElementById("greeting");
   elDayBar = document.getElementById("day-bar");
   elYearBar = document.getElementById("year-bar");
+  elBirthdayChip = document.getElementById("header-birthday-chip");
+  elCountdownChip = document.getElementById("header-countdown");
+  elElecBadge = document.getElementById("elec-badge");
 
   const cfg = loadConfig();
   clockShowSeconds = cfg.clockSeconds ?? false;

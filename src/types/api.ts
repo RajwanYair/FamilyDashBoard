@@ -45,6 +45,10 @@ export interface YahooChartResponse {
         averageDailyVolume10Day?: number;
         fiftyTwoWeekLow?: number;
         fiftyTwoWeekHigh?: number;
+        postMarketPrice?: number;
+        preMarketPrice?: number;
+        postMarketChangePercent?: number;
+        preMarketChangePercent?: number;
       };
       indicators: {
         quote: Array<{
@@ -130,6 +134,7 @@ export interface NewsItem {
   pubDate: string;
   source: string;
   category?: string;
+  description?: string;
 }
 
 // ── Calendar (ICS parsed event) ──

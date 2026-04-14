@@ -1,16 +1,20 @@
 import { defineConfig } from "vite";
-import { resolve } from "node:path";
+import { resolve, join } from "node:path";
+import { tmpdir } from "node:os";
+
+const tempBase = join(tmpdir(), "fdb-dev");
 
 export default defineConfig({
   root: "src",
   base: "/FamilyDashBoard/",
+  cacheDir: join(tempBase, ".vite"),
 
   build: {
     outDir: resolve(__dirname, "dist"),
     emptyOutDir: true,
     target: "es2022",
     sourcemap: true,
-    minify: "esbuild",
+    minify: true,
     rollupOptions: {
       input: {
         main: resolve(__dirname, "src/index.html"),
@@ -20,16 +24,31 @@ export default defineConfig({
         entryFileNames: "assets/[name]-[hash].js",
         chunkFileNames: "assets/[name]-[hash].js",
         assetFileNames: "assets/[name]-[hash].[ext]",
-        manualChunks: {
-          // All card loaders in a separate chunk
-          cards: [
-            "./src/cards/weather/weather.ts",
-            "./src/cards/motivation/motivation.ts",
-            "./src/cards/news/news.ts",
-            "./src/cards/stocks/stocks.ts",
-            "./src/cards/currency/currency.ts",
-            "./src/cards/alerts/alerts.ts",
-          ],
+        manualChunks: (id: string) => {
+          if (
+            id.includes("/cards/weather/") ||
+            id.includes("/cards/motivation/") ||
+            id.includes("/cards/news/") ||
+            id.includes("/cards/stocks/") ||
+            id.includes("/cards/currency/") ||
+            id.includes("/cards/alerts/") ||
+            id.includes("/cards/hebrew-cal/") ||
+            id.includes("/cards/calendar/")
+          ) {
+            return "cards";
+          }
+          if (
+            id.includes("/cards/tasks/") ||
+            id.includes("/cards/system-info/")
+          ) {
+            return "cards-v7";
+          }
+          if (
+            id.includes("/core/card-registry") ||
+            id.includes("/types/card")
+          ) {
+            return "card-infra";
+          }
         },
       },
     },

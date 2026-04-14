@@ -33,7 +33,7 @@ let elBadge: HTMLElement | null = null;
 
 const ALERT_INTERVAL_RT = 10_000; // 10s real-time mode
 
-function cacheDom(): void {
+export function cacheDom(): void {
   elScroll = document.getElementById("alerts-scroll");
   elBadge = document.getElementById("alerts-badge");
 }
@@ -125,7 +125,7 @@ async function fetchAlerts(): Promise<AlertEvent[]> {
 }
 
 // ── Build a single alert DOM element ──
-function buildAlertItem(
+export function buildAlertItem(
   ev: AlertEvent,
   now: number,
   highlightNew: boolean,
@@ -178,7 +178,7 @@ function buildAlertItem(
 }
 
 // ── Render alerts list ──
-function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
+export function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
   if (!elScroll) return;
 
   if (highlightNew) {

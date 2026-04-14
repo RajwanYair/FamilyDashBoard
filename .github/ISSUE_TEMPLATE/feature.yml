@@ -1,0 +1,60 @@
+name: "✨ Feature Request"
+description: "Suggest a new card, widget, data source, or UI improvement."
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea? Describe it below. The more context you provide, the easier it is to evaluate.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Category"
+      options:
+        - New data card / widget
+        - New API / data source
+        - UI / UX improvement
+        - Performance optimization
+        - Accessibility
+        - Keyboard shortcut
+        - Hebrew / Jewish content
+        - Configuration / settings
+        - CI/CD / DevOps
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "What problem does this solve?"
+      placeholder: "I always have to open a separate browser tab to check the bus schedule..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Proposed solution"
+      placeholder: "Add a public-transport card that fetches the Moovit or Google Transit API..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives considered"
+      placeholder: "I considered adding it to the news ticker but it needs its own card..."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: "Constraints check"
+      options:
+        - label: "No new runtime npm packages (zero-dependency rule)"
+        - label: "Works offline / graceful degradation"
+        - label: "Accessible at 3 m reading distance on 1080p TV"
+        - label: "Hebrew RTL-compatible"

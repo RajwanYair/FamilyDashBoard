@@ -383,3 +383,146 @@ describe("Maximize — initCardMaximize guard branches", () => {
     expect(() => header.click()).not.toThrow();
   });
 });
+
+// ── getCollapsedCards + loadCollapsedCards catch ──
+
+describe("Maximize — getCollapsedCards", () => {
+  async function freshCollapseMod(): Promise<{
+    getCollapsedCards: () => Set<string>;
+    initCardCollapse: () => void;
+  }> {
+    vi.resetModules();
+    return import("@/ui/maximize") as Promise<{
+      getCollapsedCards: () => Set<string>;
+      initCardCollapse: () => void;
+    }>;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("returns empty Set when nothing persisted", async () => {
+    const mod = await freshCollapseMod();
+    const result = mod.getCollapsedCards();
+    expect(result).toBeInstanceOf(Set);
+    expect(result.size).toBe(0);
+  });
+
+  it("returns persisted card IDs from localStorage", async () => {
+    localStorage.setItem(
+      "dash_v2_collapsed_cards",
+      JSON.stringify(["card-1", "card-2"]),
+    );
+    const mod = await freshCollapseMod();
+    const result = mod.getCollapsedCards();
+    expect(result.has("card-1")).toBe(true);
+    expect(result.has("card-2")).toBe(true);
+    expect(result.size).toBe(2);
+  });
+
+  it("returns empty Set for corrupted localStorage JSON", async () => {
+    localStorage.setItem("dash_v2_collapsed_cards", "!INVALID{JSON!");
+    const mod = await freshCollapseMod();
+    const result = mod.getCollapsedCards();
+    expect(result).toBeInstanceOf(Set);
+    expect(result.size).toBe(0);
+  });
+});
+
+// ── Sprint 6: initCardCollapse uncovered branches ────────────────────────────
+
+describe("Maximize — initCardCollapse card-id fallback via child element", () => {
+  let mod: MaxModFull;
+
+  beforeEach(async () => {
+    stubAnimate();
+    localStorage.clear();
+    mod = await freshMaxFull();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("restores collapsed state using child element ID when card has no id", async () => {
+    // Card without .id but with a child that has an id (line 130 fallback)
+    localStorage.setItem(
+      "dash_v2_collapsed_cards",
+      JSON.stringify(["inner-child"]),
+    );
+    const card = document.createElement("div");
+    card.className = "card";
+    // No card.id!
+    const child = document.createElement("div");
+    child.id = "inner-child";
+    card.appendChild(child);
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.textContent = "▼";
+    card.appendChild(btn);
+    document.body.appendChild(card);
+
+    const freshMod = await freshMaxFull();
+    freshMod.initCardCollapse();
+    expect(card.classList.contains("collapsed")).toBe(true);
+  });
+
+  it("collapse button click does nothing when not inside a .card (line 138)", () => {
+    // Button NOT inside a .card element
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.textContent = "▼";
+    document.body.appendChild(btn);
+
+    mod.initCardCollapse();
+    expect(() => btn.click()).not.toThrow();
+    // Button text unchanged since doToggle never ran
+    expect(btn.textContent).toBe("▼");
+  });
+
+  it("doToggle handles card without any ID (cardId is empty, lines 144-145)", () => {
+    // Card without .id and no child with id → cardId = ""
+    const card = document.createElement("div");
+    card.className = "card";
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.textContent = "▼";
+    card.appendChild(btn);
+    document.body.appendChild(card);
+
+    mod.initCardCollapse();
+    btn.click(); // collapse
+    expect(card.classList.contains("collapsed")).toBe(true);
+    expect(btn.textContent).toBe("▶");
+    // No LS entry since cardId is empty
+    const stored = JSON.parse(
+      localStorage.getItem("dash_v2_collapsed_cards") ?? "[]",
+    ) as string[];
+    expect(stored).not.toContain("");
+  });
+
+  it("doToggle persists using child-id fallback when card has no id (line 144)", () => {
+    const card = document.createElement("div");
+    card.className = "card";
+    const child = document.createElement("div");
+    child.id = "child-panel";
+    card.appendChild(child);
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.textContent = "▼";
+    card.appendChild(btn);
+    document.body.appendChild(card);
+
+    mod.initCardCollapse();
+    btn.click(); // collapse
+    expect(card.classList.contains("collapsed")).toBe(true);
+    const stored = JSON.parse(
+      localStorage.getItem("dash_v2_collapsed_cards") ?? "[]",
+    ) as string[];
+    expect(stored).toContain("child-panel");
+  });
+});

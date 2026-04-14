@@ -3,20 +3,24 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v5.1.0
+# FamilyDashBoard — v7.0-alpha
 
-Single-file TV dashboard · HTML5 + CSS3 + vanilla JS (ES2020+) · Hebrew RTL · Zero dependencies · 1920×1080+ always-on display · 5 themes · 3 screen modes
+TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
+
+> **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`.
+> **Tests**: 1274 / 36 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
 
 ## Files
 
 ```
-BestDashBoard.html          # Dashboard (HTML + CSS + JS, ~6400 lines)
-sw.js                       # ServiceWorker v5.0.0 (offline + API cache)
+src/                        # TypeScript v7 modular source (Vite build)
+tests/unit/                 # Vitest unit tests — 1240+ tests / 33 suites
+sw.js                       # ServiceWorker v6.0.0 (offline + API cache)
 manifest.json / icon.svg    # PWA manifest + app icon
-tests/dashboard.test.mjs    # 1084 tests, 61 suites (node --test)
+BestDashBoard.html          # Legacy dashboard (read-only, preserved)
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer
-.github/assets/             # SVG docs graphics (5 files)
+.github/assets/             # SVG docs graphics
 ```
 
 ## Architecture

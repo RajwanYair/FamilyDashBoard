@@ -76,4 +76,8 @@ export function swSkipWaiting(): void {
 function showUpdateBanner(): void {
   const banner = document.getElementById("sw-update-banner");
   if (banner) banner.classList.add("visible");
+  // Wire reload button (replaces inline onclick="swUpdateReload()")
+  const reloadBtn = document.getElementById("sw-update-reload-btn");
+  if (reloadBtn)
+    reloadBtn.addEventListener("click", swSkipWaiting, { once: true });
 }

@@ -1,4 +1,6 @@
-/* Grid Layout + Responsive */
+/* Grid Layout + Responsive — FamilyDashBoard v7 */
+@layer layout {
+
 /* ── Layout (R1.6) ── */
 .grids-area { flex: 1 1 0; min-height: 0; overflow: hidden; display: grid; grid-template-columns: var(--grid-cols, 38fr 33fr 29fr); gap: var(--grid-gap, 8px); }
 .grid-col { display: flex; flex-direction: column; gap: var(--grid-gap, 8px); min-height: 0; overflow: hidden; }
@@ -64,3 +66,20 @@
     .wx-fday { padding: 4px; }
     .wx-forecast { grid-template-columns: repeat(4, 1fr); }
 }
+
+
+/* -- Card container queries (R1.8) -- */
+@container card (max-width: 320px) {
+    .stk-sym { font-size: 0.72em; }
+    .stk-desc { display: none; }
+    .rss-item { font-size: 0.78em; }
+}
+
+/* ── Card size overrides (R1.9) ── */
+/* Applied via data-card-size="sm|md|lg|xl" by config-panel */
+.grid-col > [data-card-size="sm"] { flex-grow: 0.5 !important; }
+.grid-col > [data-card-size="md"] { flex-grow: 1   !important; }
+.grid-col > [data-card-size="lg"] { flex-grow: 2   !important; }
+.grid-col > [data-card-size="xl"] { flex-grow: 3   !important; }
+
+} /* end @layer layout */

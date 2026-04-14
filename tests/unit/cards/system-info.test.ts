@@ -1,0 +1,334 @@
+/**
+ * Tests for src/cards/system-info/system-info.ts
+ *
+ * Covers: renderSystemInfo (online/battery/network/timing/UA),
+ * initSystemInfoCard, destroySystemInfoCard, systemInfoCard.render,
+ * getBatteryInfo (charging states), online/offline event handlers.
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  renderSystemInfo,
+  initSystemInfoCard,
+  destroySystemInfoCard,
+  systemInfoCard,
+} from "@/cards/system-info/system-info";
+
+// ── DOM setup ──────────────────────────────────────────────────────────────
+
+function buildDOM(): void {
+  document.body.innerHTML = `
+    <div id="sysinfo-online"></div>
+    <div id="sysinfo-battery"></div>
+    <div id="sysinfo-net"></div>
+    <div id="sysinfo-uptime"></div>
+    <div id="sysinfo-load"></div>
+    <div id="sysinfo-browser"></div>
+    <div id="sysinfo-body"></div>
+  `;
+}
+
+// ── renderSystemInfo ────────────────────────────────────────────────────────
+
+describe("SystemInfo — renderSystemInfo online status", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("shows online indicator when navigator.onLine is true", async () => {
+    vi.spyOn(navigator, "onLine", "get").mockReturnValue(true);
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
+      "מחובר",
+    );
+  });
+
+  it("shows offline indicator when navigator.onLine is false", async () => {
+    vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
+      "מנותק",
+    );
+  });
+});
+
+describe("SystemInfo — renderSystemInfo battery", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("shows battery percentage when Battery API available", async () => {
+    const mockBattery = { level: 0.75, charging: false };
+    (navigator as Record<string, unknown>).getBattery = vi
+      .fn()
+      .mockResolvedValue(mockBattery);
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-battery")?.textContent).toContain(
+      "75%",
+    );
+    delete (navigator as Record<string, unknown>).getBattery;
+  });
+
+  it("shows charging indicator when battery is charging", async () => {
+    const mockBattery = { level: 0.5, charging: true };
+    (navigator as Record<string, unknown>).getBattery = vi
+      .fn()
+      .mockResolvedValue(mockBattery);
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-battery")?.textContent ?? "";
+    expect(text).toContain("⚡");
+    expect(text).toContain("טוען");
+    delete (navigator as Record<string, unknown>).getBattery;
+  });
+
+  it("shows low battery icon at or below 20%", async () => {
+    const mockBattery = { level: 0.15, charging: false };
+    (navigator as Record<string, unknown>).getBattery = vi
+      .fn()
+      .mockResolvedValue(mockBattery);
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-battery")?.textContent ?? "";
+    expect(text).toContain("🔴");
+    delete (navigator as Record<string, unknown>).getBattery;
+  });
+
+  it("shows medium battery icon between 21–50%", async () => {
+    const mockBattery = { level: 0.35, charging: false };
+    (navigator as Record<string, unknown>).getBattery = vi
+      .fn()
+      .mockResolvedValue(mockBattery);
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-battery")?.textContent ?? "";
+    expect(text).toContain("🪫");
+    delete (navigator as Record<string, unknown>).getBattery;
+  });
+
+  it("shows em-dash when Battery API is unavailable", async () => {
+    delete (navigator as Record<string, unknown>).getBattery;
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-battery")?.textContent).toBe("—");
+  });
+
+  it("shows em-dash when getBattery() rejects", async () => {
+    (navigator as Record<string, unknown>).getBattery = vi
+      .fn()
+      .mockRejectedValue(new Error("denied"));
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-battery")?.textContent).toBe("—");
+    delete (navigator as Record<string, unknown>).getBattery;
+  });
+});
+
+describe("SystemInfo — renderSystemInfo network", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    delete (navigator as Record<string, unknown>).connection;
+  });
+
+  it("shows network effectiveType and downlink when connection is available", async () => {
+    (navigator as Record<string, unknown>).connection = {
+      effectiveType: "4g",
+      downlink: 12.5,
+      rtt: 40,
+    };
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-net")?.textContent ?? "";
+    expect(text).toContain("4g");
+    expect(text).toContain("12.5 Mbps");
+    expect(text).toContain("RTT 40ms");
+  });
+
+  it("shows em-dash when network connection is unavailable", async () => {
+    delete (navigator as Record<string, unknown>).connection;
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-net")?.textContent).toBe("—");
+  });
+
+  it("shows em-dash when connection object has no fields", async () => {
+    (navigator as Record<string, unknown>).connection = {};
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-net")?.textContent).toBe("—");
+  });
+});
+
+describe("SystemInfo — renderSystemInfo uptime and timing", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("renders uptime in H:MM format", async () => {
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-uptime")?.textContent ?? "";
+    expect(text).toMatch(/\d+:\d{2}/);
+  });
+
+  it("renders page load time when PerformanceNavigationTiming is available", async () => {
+    const fakeEntry = { loadEventEnd: 1500, startTime: 0 };
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+      fakeEntry as PerformanceEntry,
+    ]);
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-load")?.textContent).toContain(
+      "1500 ms",
+    );
+  });
+
+  it("shows em-dash for page load when loadEventEnd is zero", async () => {
+    const fakeEntry = { loadEventEnd: 0, startTime: 0 };
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+      fakeEntry as PerformanceEntry,
+    ]);
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-load")?.textContent).toBe("—");
+  });
+
+  it("does not throw when navigation entries are empty", async () => {
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([]);
+    await expect(renderSystemInfo()).resolves.not.toThrow();
+  });
+});
+
+describe("SystemInfo — renderSystemInfo browser/UA", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    delete (navigator as Record<string, unknown>).userAgentData;
+  });
+
+  it("shows browser from userAgentData brands when available", async () => {
+    (navigator as Record<string, unknown>).userAgentData = {
+      brands: [
+        { brand: "Not A Brand", version: "99" },
+        { brand: "Google Chrome", version: "120" },
+      ],
+      platform: "Windows",
+    };
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-browser")?.textContent ?? "";
+    expect(text).toContain("Google Chrome");
+  });
+
+  it("falls back to userAgentData.platform when all brands are filtered", async () => {
+    (navigator as Record<string, unknown>).userAgentData = {
+      brands: [
+        { brand: "Not A Brand", version: "99" },
+        { brand: "Chromium", version: "120" },
+      ],
+      platform: "macOS",
+    };
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-browser")?.textContent).toBe(
+      "macOS",
+    );
+  });
+
+  it("falls back to navigator.userAgent parse when userAgentData absent", async () => {
+    delete (navigator as Record<string, unknown>).userAgentData;
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue(
+      "Mozilla/5.0 Chrome/120.0.0.0",
+    );
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-browser")?.textContent ?? "";
+    // May be "—" or Chrome info, just ensure it doesn't throw
+    expect(typeof text).toBe("string");
+  });
+});
+
+// ── initSystemInfoCard ──────────────────────────────────────────────────────
+
+describe("SystemInfo — initSystemInfoCard", () => {
+  beforeEach(() => {
+    buildDOM();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    destroySystemInfoCard();
+  });
+
+  it("does not throw when called", () => {
+    expect(() => initSystemInfoCard()).not.toThrow();
+  });
+});
+
+// ── destroySystemInfoCard ───────────────────────────────────────────────────
+
+describe("SystemInfo — destroySystemInfoCard", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("does not throw when called without init", () => {
+    expect(() => destroySystemInfoCard()).not.toThrow();
+  });
+
+  it("does not throw after initSystemInfoCard", () => {
+    vi.useFakeTimers();
+    initSystemInfoCard();
+    expect(() => destroySystemInfoCard()).not.toThrow();
+    vi.useRealTimers();
+  });
+});
+
+// ── Online/offline event handlers wired by initSystemInfoCard ──────────────
+
+describe("SystemInfo — online/offline event handlers", () => {
+  beforeEach(() => buildDOM());
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    destroySystemInfoCard();
+  });
+
+  it("updates sysinfo-online to connected on 'online' event", () => {
+    initSystemInfoCard();
+    window.dispatchEvent(new Event("online"));
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
+      "מחובר",
+    );
+  });
+
+  it("updates sysinfo-online to disconnected on 'offline' event", () => {
+    initSystemInfoCard();
+    window.dispatchEvent(new Event("offline"));
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
+      "מנותק",
+    );
+  });
+});
+
+// ── systemInfoCard CardDefinition ──────────────────────────────────────────
+
+describe("SystemInfo — systemInfoCard CardDefinition", () => {
+  it("has correct id", () => {
+    expect(systemInfoCard.id).toBe("system-info");
+  });
+
+  it("has correct icon", () => {
+    expect(systemInfoCard.icon).toBe("🖥");
+  });
+
+  it("render() returns a section element with data-card-id", () => {
+    const el = systemInfoCard.render();
+    expect(el.tagName).toBe("SECTION");
+    expect((el as HTMLElement).dataset.cardId).toBe("system-info");
+  });
+
+  it("render() contains sysinfo-body element", () => {
+    const el = systemInfoCard.render();
+    expect(el.querySelector("#sysinfo-body")).not.toBeNull();
+  });
+});

@@ -193,11 +193,16 @@ describe("Cache — cSet localStorage-full retry", () => {
 });
 
 describe("Cache — cEvict edge cases", () => {
-  afterEach(() => { cClear(); });
+  afterEach(() => {
+    cClear();
+  });
 
   it("removes localStorage entry older than 7 days", () => {
     const oldTs = Date.now() - 8 * 24 * 60 * 60 * 1000; // 8 days ago
-    localStorage.setItem("dash_v2_evict-old", JSON.stringify({ data: "old", ts: oldTs }));
+    localStorage.setItem(
+      "dash_v2_evict-old",
+      JSON.stringify({ data: "old", ts: oldTs }),
+    );
     cEvict();
     expect(localStorage.getItem("dash_v2_evict-old")).toBeNull();
   });
@@ -210,9 +215,48 @@ describe("Cache — cEvict edge cases", () => {
 
   it("keeps fresh localStorage entry (< 7 days)", () => {
     const freshTs = Date.now() - 1 * 24 * 60 * 60 * 1000; // 1 day ago
-    localStorage.setItem("dash_v2_fresh-entry", JSON.stringify({ data: "fresh", ts: freshTs }));
+    localStorage.setItem(
+      "dash_v2_fresh-entry",
+      JSON.stringify({ data: "fresh", ts: freshTs }),
+    );
     cEvict();
     expect(localStorage.getItem("dash_v2_fresh-entry")).not.toBeNull();
     localStorage.removeItem("dash_v2_fresh-entry");
+  });
+
+  it("skips non-prefixed keys during eviction", () => {
+    // Non-dash_v2_ key should be ignored (line 25: !k?.startsWith(LS_PREFIX) continue)
+    localStorage.setItem("other_app_key", "some-value");
+    const oldTs = Date.now() - 10 * 24 * 60 * 60 * 1000;
+    localStorage.setItem(
+      "dash_v2_stale",
+      JSON.stringify({ data: "x", ts: oldTs }),
+    );
+    cEvict();
+    // Non-prefixed key survives
+    expect(localStorage.getItem("other_app_key")).toBe("some-value");
+    // Prefixed stale key is removed
+    expect(localStorage.getItem("dash_v2_stale")).toBeNull();
+    localStorage.removeItem("other_app_key");
+  });
+});
+
+describe("Cache — cClear preserves non-prefixed keys", () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it("removes only dash_v2_ keys and preserves others", () => {
+    localStorage.setItem(
+      "dash_v2_cached",
+      JSON.stringify({ data: "a", ts: Date.now() }),
+    );
+    localStorage.setItem("unrelated_key", "keep-me");
+    cClear();
+    // Prefixed key removed
+    expect(localStorage.getItem("dash_v2_cached")).toBeNull();
+    // Non-prefixed key preserved (line 121: if (k?.startsWith(LS_PREFIX)))
+    expect(localStorage.getItem("unrelated_key")).toBe("keep-me");
+    localStorage.removeItem("unrelated_key");
   });
 });

@@ -1,26 +1,33 @@
 {
     "recommendations": [
-        "connor4312.nodejs-testing",
-        "ritwickdey.LiveServer",
-        "esbenp.prettier-vscode",
-        "HTMLHint.vscode-htmlhint",
-        "stylelint.vscode-stylelint",
+        // Linting & formatting
         "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "stylelint.vscode-stylelint",
+        "HTMLHint.vscode-htmlhint",
+        // TypeScript / JavaScript
+        "ms-vscode.vscode-typescript-next",
+        // Git & GitHub
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",
-        "streetsidesoftware.code-spell-checker",
-        "streetsidesoftware.code-spell-checker-hebrew",
+        "mhutchie.git-graph",
+        // HTML / CSS
         "ecmel.vscode-html-css",
         "formulahendry.auto-rename-tag",
-        "formulahendry.auto-close-tag",
         "pranaygp.vscode-css-peek",
-        "vincaslt.highlight-matching-tag",
         "naumovs.color-highlight",
+        // Productivity
+        "ritwickdey.LiveServer",
         "EditorConfig.EditorConfig",
-        "Gruntfuggly.todo-tree",
-        "mhutchie.git-graph",
-        "christian-kohler.path-intellisense"
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-hebrew",
+        "christian-kohler.path-intellisense",
+        "Gruntfuggly.todo-tree"
     ],
-    "unwantedRecommendations": []
+    "unwantedRecommendations": [
+        "connor4312.nodejs-testing",
+        "formulahendry.auto-close-tag",
+        "vincaslt.highlight-matching-tag"
+    ]
 }

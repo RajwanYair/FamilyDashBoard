@@ -4,6 +4,9 @@
 
 import { diagLog } from "../core/diag";
 
+const LS_DIM_START = "dash_v2_dim_start";
+const LS_DIM_END = "dash_v2_dim_end";
+
 let dimEl: HTMLElement | null = null;
 let dimLevel = 55; // default opacity percentage
 let dimActive = false;
@@ -26,7 +29,8 @@ export function setDimLevel(level: number): void {
 }
 
 function applyDim(): void {
-  if (!dimEl) dimEl = document.getElementById("night-dim");
+  if (!dimEl || !dimEl.isConnected)
+    dimEl = document.getElementById("night-dim");
   if (!dimEl) return;
 
   if (dimActive) {
@@ -58,4 +62,27 @@ export function autoDimCheck(startHour: number, endHour: number): void {
 
 export function isDimActive(): boolean {
   return dimActive;
+}
+
+/**
+ * Initialize night dimmer: apply configured level, run immediate check,
+ * then re-check every 60 seconds using the schedule saved in localStorage.
+ */
+export function initNightDimmer(nightDimLevel: number): void {
+  setDimLevel(nightDimLevel);
+
+  const readHours = (): { start: number; end: number } => ({
+    start: parseInt(localStorage.getItem(LS_DIM_START) ?? "23", 10),
+    end: parseInt(localStorage.getItem(LS_DIM_END) ?? "6", 10),
+  });
+
+  const { start, end } = readHours();
+  autoDimCheck(start, end);
+
+  setInterval(() => {
+    const { start: s, end: e } = readHours();
+    autoDimCheck(s, e);
+  }, 60_000);
+
+  diagLog(`[dimmer] auto-dim scheduled ${start}h–${end}h @ ${nightDimLevel}%`);
 }

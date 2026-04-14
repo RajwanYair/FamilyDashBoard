@@ -1,0 +1,41 @@
+/* ── Calendar Card Styles ── */
+
+/* Feature 28: Calendar event countdown badge */
+#cal-countdown { display: none; font-size: 0.55em; padding: 1px 6px; border-radius: 4px; background: var(--accent); color: #000; font-weight: 700; margin-right: 6px; vertical-align: middle; }
+
+/* Feature 47: Calendar event duration */
+.cal-event-dur { font-size: 0.68em; color: var(--text-muted); margin-top: 1px; }
+
+/* Feature 58: Calendar event category color dots */
+.cal-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-right: 4px; margin-top: 3px; align-self: flex-start; }
+.cal-dot-work    { background: var(--cyan); }
+.cal-dot-family  { background: var(--positive); }
+.cal-dot-health  { background: #f472b6; }
+.cal-dot-holiday { background: var(--warning); }
+.cal-dot-default { background: var(--accent); opacity: 0.5; }
+
+/* Feature 63: Calendar 7-day strip */
+#cal-week-strip { display: flex; gap: 2px; padding: 4px 8px 2px; border-bottom: 1px solid var(--accent-border); flex-shrink: 0; }
+.cal-week-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.cal-week-label { font-size: 0.54em; color: var(--text-muted); }
+.cal-week-dots { display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 6px; }
+.cal-week-dot { width: 4px; height: 4px; border-radius: 50%; opacity: 0.75; }
+.cal-week-today .cal-week-label { color: var(--accent); font-weight: 700; }
+
+/* Feature 72: Cal week heat-map (event density → background intensity) */
+.cal-week-day.heat-1 { background: rgba(96,165,250,0.08); border-radius: 4px; }
+.cal-week-day.heat-2 { background: rgba(96,165,250,0.18); border-radius: 4px; }
+.cal-week-day.heat-3 { background: rgba(96,165,250,0.32); border-radius: 4px; }
+
+/* F133: Calendar ICS source color badges */
+.cal-event[data-ics="1"] { border-right: 3px solid #60a5fa; }
+.cal-event[data-ics="2"] { border-right: 3px solid #34d399; }
+.cal-event[data-ics="3"] { border-right: 3px solid #f97316; }
+
+/* F138: Calendar conflict indicator */
+.cal-event.has-conflict .cal-event-title::before { content: '⚠ '; color: var(--warning); font-size: 0.8em; }
+
+/* F154: Calendar today-strip */
+#cal-today-strip { display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 6px; min-height: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+#cal-today-strip:empty { display: none; }
+.cal-strip-event { font-size: 0.60em; background: var(--bg-card-inner); border-radius: 5px; padding: 2px 6px; color: var(--accent); border-left: 2px solid var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }

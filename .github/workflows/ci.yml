@@ -1,6 +1,7 @@
 # =============================================================================
-# CI — FamilyDashBoard
-# HTML validation, security scan, Lighthouse audit, link check
+# CI — FamilyDashBoard v6+ — Cross-cutting quality gates
+# Runs on ALL pushes (no path filter) to catch docs, config, and repo-wide issues.
+# TypeScript / Vite build checks live in ci-v6.yml (path-filtered).
 # =============================================================================
 name: CI
 
@@ -15,54 +16,14 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Lint (HTML + CSS + JS + Markdown)
+  lint-docs:
+    name: Markdown Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-
-      - name: Install linters
-        run: npm install -g htmlhint stylelint eslint markdownlint-cli
-
-      - name: Lint HTML
-        run: htmlhint --config .htmlhintrc BestDashBoard.html
-
-      - name: Extract and lint CSS
-        run: |
-          sed -n '/<style>/,/<\/style>/p' BestDashBoard.html | sed '1d;$d' > .extracted.css
-          stylelint --config .stylelintrc.json --max-warnings 0 .extracted.css
-          rm .extracted.css
-
-      - name: Extract and lint JS
-        run: |
-          sed -n '/<script>/,/<\/script>/p' BestDashBoard.html | sed '1d;$d' > .extracted.js
-          eslint --config eslint.config.mjs --max-warnings 0 .extracted.js sw.js tests/dashboard.test.mjs
-          rm .extracted.js
-
-      - name: Lint Markdown
-        run: markdownlint-cli '*.md'
-
-  unit-tests:
-    name: Unit Tests (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ["20", "22", "24"]
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Run unit tests
-        run: node --test --test-timeout=500000 tests/dashboard.test.mjs
+      - name: Lint Markdown files
+        run: npx --yes markdownlint-cli@0.44.0 "*.md" ".github/**/*.md"
 
   security-scan:
     name: Security Scan
@@ -70,85 +31,79 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Check for hardcoded secrets
-        run: |
-          echo "🔍 Scanning for potential secrets..."
-          if grep -rn "api_key\|apiKey\|secret\|password\|token" BestDashBoard.html --include="*.html" | grep -v "//.*api_key\|//.*secret"; then
-            echo "::warning::Potential secrets found in source code"
-          else
-            echo "✅ No hardcoded secrets detected"
-          fi
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
 
-      - name: Check for dangerous patterns
-        run: |
-          echo "🔍 Scanning for dangerous JavaScript patterns..."
-          FAILED=0
-          if grep -n "eval(" BestDashBoard.html; then
-            echo "::error::eval() usage detected — potential security risk"
-            FAILED=1
-          fi
-          if grep -n "document\.write(" BestDashBoard.html; then
-            echo "::error::document.write() detected — potential security risk"
-            FAILED=1
-          fi
-          if grep -Pn "\.innerHTML\s*=" BestDashBoard.html | grep -v "//"; then
-            echo "::warning::innerHTML assignment detected — verify sanitization"
-          fi
-          if [ "$FAILED" -eq 1 ]; then exit 1; fi
-          echo "✅ No dangerous patterns found"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
 
-  link-check:
-    name: Check External Links
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
+      - name: npm audit (high+critical)
+        run: npm audit --audit-level=high
 
-      - name: Extract and validate URLs
+      - name: Scan for hardcoded secrets
         run: |
-          echo "🔍 Checking external URLs..."
-          grep -oP 'https?://[^\s"'"'"'<>]+' BestDashBoard.html | sort -u | while read -r url; do
-            CODE=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$url" 2>/dev/null || echo "000")
-            if [ "$CODE" -ge 400 ] || [ "$CODE" = "000" ]; then
-              echo "::warning::Broken link ($CODE): $url"
+          echo "🔍 Scanning for potential secrets in src/..."
+          FOUND=0
+          for PATTERN in 'api[_-]?key\s*[:=]' 'apiKey\s*[:=]' 'secret\s*[:=]' 'password\s*[:=]' 'Bearer\s+[A-Za-z0-9]{20,}'; do
+            if grep -rEn "$PATTERN" src/ --include="*.ts" 2>/dev/null | grep -qv '//.*:'; then
+              echo "::warning::Potential secret pattern found: $PATTERN"
+              grep -rEn "$PATTERN" src/ --include="*.ts" | grep -v '//.*:'
+              FOUND=1
             fi
           done
-          echo "✅ Link check complete"
+          [ "$FOUND" -eq 0 ] && echo "✅ No hardcoded secrets detected"
 
-  lighthouse:
-    name: Lighthouse Audit
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "20"
-
-      - name: Install http-server
-        run: npm install -g http-server
-
-      - name: Start server
-        run: http-server . -p 8080 &
-
-      - name: Run Lighthouse
-        uses: treosh/lighthouse-ci-action@v12
-        with:
-          urls: "http://localhost:8080/BestDashBoard.html"
-          temporaryPublicStorage: true
-
-  size-check:
-    name: File Size Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Check dashboard file size
+      - name: Scan for dangerous JS patterns
         run: |
-          SIZE=$(stat -c%s BestDashBoard.html)
-          SIZE_KB=$((SIZE / 1024))
-          echo "📦 BestDashBoard.html: ${SIZE_KB}KB"
-          if [ "$SIZE_KB" -gt 200 ]; then
-            echo "::warning::Dashboard file is ${SIZE_KB}KB — consider if it's growing too large"
+          echo "🔍 Scanning for dangerous JS patterns in src/..."
+          FAILED=0
+          if grep -rn "eval(" src/ --include="*.ts" 2>/dev/null; then
+            echo "::error::eval() usage detected in src/ — security risk"
+            FAILED=1
           fi
+          if grep -rn "document\.write(" src/ --include="*.ts" 2>/dev/null; then
+            echo "::error::document.write() detected in src/ — security risk"
+            FAILED=1
+          fi
+          if grep -rEn '\.innerHTML\s*=\s*(?!["'"'"'`]*)' src/ --include="*.ts" 2>/dev/null | grep -Ev '(//|\.textContent)'; then
+            echo "::warning::innerHTML assignment detected in src/ — verify no unsanitized user data"
+          fi
+          [ "$FAILED" -eq 0 ] && echo "✅ No dangerous patterns found"
+          exit $FAILED
+
+  bundle-size:
+    name: Bundle Size Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+
+      - name: Build
+        run: npx vite build
+
+      - name: Enforce size budget
+        run: |
+          echo "## 📦 Bundle Size Report" >> $GITHUB_STEP_SUMMARY
+          ls -lhS dist/assets/ >> $GITHUB_STEP_SUMMARY
+
+          JS_GZ=$(find dist/assets -name '*.js' -exec cat {} + | gzip -c | wc -c)
+          CSS_GZ=$(find dist/assets -name '*.css' -exec cat {} + | gzip -c | wc -c)
+          JS_KB=$((JS_GZ / 1024))
+          CSS_KB=$((CSS_GZ / 1024))
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**JS gzip:** ${JS_KB} KB  |  **CSS gzip:** ${CSS_KB} KB" >> $GITHUB_STEP_SUMMARY
+
+          echo "JS gzipped: ${JS_KB} KB"
+          echo "CSS gzipped: ${CSS_KB} KB"
+
+          [ "$JS_KB" -gt 40 ] && echo "::warning::JS bundle exceeds 40 KB gz (${JS_KB} KB)"
+          [ "$CSS_KB" -gt 18 ] && echo "::warning::CSS bundle exceeds 18 KB gz (${CSS_KB} KB)"
+          echo "✅ Size check complete"

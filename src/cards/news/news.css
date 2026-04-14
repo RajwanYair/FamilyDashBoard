@@ -1,0 +1,73 @@
+/* ── News Card Styles ── */
+
+/* Feature 29: News count badge */
+.news-count-badge { font-size: 0.55em; padding: 1px 6px; border-radius: 4px; background: var(--bg-card-inner); color: var(--text-secondary); font-weight: 600; margin-right: 6px; vertical-align: middle; }
+
+/* Feature 39: News source filter chips */
+.news-filter-bar { display: flex; flex-wrap: wrap; gap: 3px; padding: 3px 6px 3px; }
+.news-filter-chip { font-size: 0.58em; padding: 1px 6px; border-radius: 10px; background: var(--bg-card-inner); color: var(--text-muted); cursor: pointer; border: 1px solid transparent; transition: all 0.15s; user-select: none; }
+.news-filter-chip.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+/* Feature 57: News copy-to-clipboard button */
+.news-copy { font-size: 0.62em; color: var(--text-muted); cursor: pointer; padding: 1px 3px; border-radius: 3px; background: transparent; border: none; opacity: 0; flex-shrink: 0; margin-right: 3px; font-family: inherit; transition: opacity 0.15s; }
+.rss-item:hover .news-copy { opacity: 0.7; }
+.news-copy:hover { opacity: 1 !important; color: var(--accent); background: var(--bg-card-inner); }
+.news-copy.copied { color: var(--positive) !important; opacity: 1; }
+
+/* Feature 62: Web share button */
+.news-share { font-size: 0.62em; opacity: 0; transition: opacity 0.2s; cursor: pointer; background: none; border: none; color: var(--accent); padding: 0 2px; margin-right: 2px; line-height: 1; }
+.rss-item:hover .news-share { opacity: 0.7; }
+
+/* Feature 67: News item published age */
+.news-age { font-size: 0.55em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+
+/* Feature 73: News source favicon in filter chips */
+.news-chip-favicon { width: 10px; height: 10px; border-radius: 2px; margin-left: 3px; vertical-align: middle; opacity: 0.85; }
+
+/* F103: News keyword search */
+.news-search-wrap { display: flex; align-items: center; gap: 4px; padding: 4px 8px 2px; }
+#news-search { flex: 1; background: var(--bg-card-inner); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 0.8em; padding: 3px 8px; outline: none; direction: rtl; min-width: 0; }
+#news-search::placeholder { color: var(--text-muted); }
+#news-search-clear { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95em; padding: 0 3px; line-height: 1; display: none; }
+#news-search-count { font-size: 0.7em; color: var(--text-muted); white-space: nowrap; min-width: 3em; text-align: end; }
+.rss-item.search-hidden { display: none !important; }
+
+/* F110: Visited articles dimming */
+.rss-item.visited { opacity: 0.45; }
+.rss-item.visited .rss-title { text-decoration: line-through; text-decoration-color: var(--text-muted); }
+
+/* F125: News translate button */
+.rss-translate-btn { font-size: 0.65em; padding: 1px 5px; border-radius: 4px; background: rgba(96,165,250,0.12); color: var(--accent); cursor: pointer; border: 1px solid var(--accent-border); flex-shrink: 0; opacity: 0.7; }
+.rss-translate-btn:hover { opacity: 1; background: rgba(96,165,250,0.22); }
+
+/* F129: Search keyword highlight */
+.rss-highlight { background: rgba(251,191,36,0.3); border-radius: 2px; padding: 0 1px; color: var(--text-primary); font-weight: 600; }
+
+/* F136: News article age tinting */
+.rss-item.stale-half { opacity: 0.80; }
+.rss-item.stale-day  { opacity: 0.60; }
+.rss-item.stale-old  { opacity: 0.35; }
+
+/* F144: News category badges */
+.news-cat { font-size: 0.60em; border-radius: 8px; padding: 1px 5px; font-weight: 700; white-space: nowrap; margin-left: 3px; vertical-align: middle; display: inline-block; }
+.news-cat.cat-security { background: rgba(248,113,113,0.18); color: #f87171; }
+.news-cat.cat-politics { background: rgba(168,85,247,0.18); color: #a855f7; }
+.news-cat.cat-economy  { background: rgba(52,211,153,0.18); color: #34d399; }
+.news-cat.cat-sport    { background: rgba(59,130,246,0.18); color: #60a5fa; }
+.news-cat.cat-tech     { background: rgba(192,132,252,0.18); color: #c084fc; }
+
+/* F145: News inline description expand */
+.news-desc { display: none; font-size: 0.72em; color: var(--text-muted); padding: 3px 0 1px 0; line-height: 1.4; direction: rtl; }
+.rss-item.expanded .news-desc { display: block; }
+.rss-item .rss-title { cursor: pointer; font-size: calc(0.88em * var(--news-font-scale, 1)); }
+
+/* F147: News bookmarks */
+.news-bkm { background: none; border: none; cursor: pointer; font-size: 0.82em; padding: 0 2px; opacity: 0.35; transition: opacity 0.2s; }
+.news-bkm:hover { opacity: 0.9; }
+.rss-item.bookmarked .news-bkm { opacity: 1; color: #60a5fa; }
+.rss-item.bookmarked { background: rgba(96,165,250,0.07) !important; }
+
+/* F156: Bookmarks-only news filter badge */
+.news-bkm-pill { font-size: 0.55em; padding: 1px 5px; border-radius: 4px; background: rgba(96,165,250,0.15); color: #60a5fa; font-weight: 700; margin-right: 4px; cursor: pointer; display: none; }
+body.news-bkm-mode .news-bkm-pill { display: inline-block; }
+body.news-bkm-mode .rss-item:not(.bookmarked) { display: none; }

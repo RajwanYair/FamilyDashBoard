@@ -1,4 +1,136 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="430" viewBox="0 0 800 430">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060b14"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#162032"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="560" rx="16" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="450" y="34" font-family="Segoe UI,system-ui" font-size="18" font-weight="700" fill="#60a5fa" text-anchor="middle">FamilyDashBoard — Architecture (v6.5 / v7.0-alpha)</text>
+
+  <!-- ── BROWSER LAYER ── -->
+  <rect x="30" y="54" width="840" height="68" rx="10" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="450" y="78" font-family="Segoe UI" font-size="13" font-weight="700" fill="#f1f5f9" text-anchor="middle">🌐  Browser (index.html + main.ts)</text>
+  <text x="450" y="96" font-family="Segoe UI" font-size="10" fill="#94a3b8" text-anchor="middle">safeLoad() · Promise.allSettled · setInterval per card · cGet/cSet dual-layer cache · keyboard shortcuts</text>
+  <text x="450" y="112" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">TypeScript 5.9 · Vite 8 build · ES Modules · 10 cards · 6 themes · RTL Hebrew</text>
+
+  <!-- ── SERVICE WORKER ── -->
+  <rect x="30" y="140" width="200" height="50" rx="8" fill="#1e293b" stroke="#a78bfa" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="130" y="162" font-family="Segoe UI" font-size="11" font-weight="600" fill="#a78bfa" text-anchor="middle">⚙️  sw.js (v6.5)</text>
+  <text x="130" y="178" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">APP_SHELL · API cache · offline HTML</text>
+
+  <!-- ── CARD REGISTRY ── -->
+  <rect x="250" y="140" width="190" height="50" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="345" y="162" font-family="Segoe UI" font-size="11" font-weight="600" fill="#34d399" text-anchor="middle">🗂  card-registry.ts (v7)</text>
+  <text x="345" y="178" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">dynamic import() · registerCard · loadCard</text>
+
+  <!-- ── FETCH CHAIN ── -->
+  <rect x="460" y="140" width="410" height="50" rx="8" fill="#1e293b" stroke="#fbbf24" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="665" y="162" font-family="Segoe UI" font-size="11" font-weight="600" fill="#fbbf24" text-anchor="middle">🔗  Fetch Chain — fetch.ts</text>
+  <text x="665" y="178" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">direct → allorigins → codetabs → corsproxy.io → fetchViaWorker(CF)</text>
+
+  <!-- Arrow from browser to SW / registry / fetch -->
+  <line x1="130" y1="122" x2="130" y2="140" stroke="#a78bfa" stroke-width="1.5" stroke-opacity="0.6" stroke-dasharray="4,3"/>
+  <line x1="345" y1="122" x2="345" y2="140" stroke="#34d399" stroke-width="1.5" stroke-opacity="0.6" stroke-dasharray="4,3"/>
+  <line x1="665" y1="122" x2="665" y2="140" stroke="#fbbf24" stroke-width="1.5" stroke-opacity="0.6" stroke-dasharray="4,3"/>
+
+  <!-- ── CARDS ROW ── -->
+  <!-- Left col cards -->
+  <rect x="30" y="218" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#60a5fa" stroke-opacity="0.25"/>
+  <text x="92" y="235" font-family="Segoe UI" font-size="10" fill="#93c5fd" text-anchor="middle" font-weight="600">📰 News</text>
+  <text x="92" y="250" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">RSS · search · bookmarks</text>
+
+  <rect x="165" y="218" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#60a5fa" stroke-opacity="0.25"/>
+  <text x="227" y="235" font-family="Segoe UI" font-size="10" fill="#93c5fd" text-anchor="middle" font-weight="600">🌤️ Weather</text>
+  <text x="227" y="250" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">Open-Meteo · 3 cities</text>
+
+  <rect x="300" y="218" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#60a5fa" stroke-opacity="0.25"/>
+  <text x="362" y="235" font-family="Segoe UI" font-size="10" fill="#93c5fd" text-anchor="middle" font-weight="600">📈 Stocks</text>
+  <text x="362" y="250" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">Yahoo Finance · portfolio</text>
+
+  <rect x="435" y="218" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#60a5fa" stroke-opacity="0.25"/>
+  <text x="497" y="235" font-family="Segoe UI" font-size="10" fill="#93c5fd" text-anchor="middle" font-weight="600">💱 Currency</text>
+  <text x="497" y="250" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">ER-API · gold/silver</text>
+
+  <rect x="570" y="218" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#60a5fa" stroke-opacity="0.25"/>
+  <text x="632" y="235" font-family="Segoe UI" font-size="10" fill="#93c5fd" text-anchor="middle" font-weight="600">📅 Calendar</text>
+  <text x="632" y="250" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">ICS · week strip</text>
+
+  <rect x="705" y="218" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#60a5fa" stroke-opacity="0.25"/>
+  <text x="767" y="235" font-family="Segoe UI" font-size="10" fill="#93c5fd" text-anchor="middle" font-weight="600">✡️ Hebrew Cal</text>
+  <text x="767" y="250" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">Hebcal · Zmanim · moon</text>
+
+  <!-- Second row of cards -->
+  <rect x="30" y="270" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#34d399" stroke-opacity="0.25"/>
+  <text x="92" y="287" font-family="Segoe UI" font-size="10" fill="#6ee7b7" text-anchor="middle" font-weight="600">🚨 Alerts</text>
+  <text x="92" y="302" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">Tzeva Adom · realtime</text>
+
+  <rect x="165" y="270" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#34d399" stroke-opacity="0.25"/>
+  <text x="227" y="287" font-family="Segoe UI" font-size="10" fill="#6ee7b7" text-anchor="middle" font-weight="600">💬 Motivation</text>
+  <text x="227" y="302" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">quotes · share · next</text>
+
+  <rect x="300" y="270" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#f59e0b" stroke-opacity="0.4"/>
+  <text x="362" y="287" font-family="Segoe UI" font-size="10" fill="#fcd34d" text-anchor="middle" font-weight="600">✅ Tasks (v7)</text>
+  <text x="362" y="302" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">chores · daily reset</text>
+
+  <rect x="435" y="270" width="125" height="40" rx="7" fill="url(#card-grad)" stroke="#f59e0b" stroke-opacity="0.4"/>
+  <text x="497" y="287" font-family="Segoe UI" font-size="10" fill="#fcd34d" text-anchor="middle" font-weight="600">🖥️ SysInfo (v7)</text>
+  <text x="497" y="302" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">battery · network · timing</text>
+
+  <!-- ── CACHE LAYER ── -->
+  <rect x="30" y="332" width="400" height="48" rx="8" fill="#1e293b" stroke="#e2e8f0" stroke-opacity="0.15"/>
+  <text x="230" y="352" font-family="Segoe UI" font-size="11" font-weight="600" fill="#e2e8f0" text-anchor="middle">🗄  Cache (cache.ts)</text>
+  <text x="230" y="368" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">L1: in-memory Map  ·  L2: localStorage dash_v2_*  ·  L3: SW cache (stale-while-revalidate)</text>
+
+  <!-- ── CLOUDFLARE WORKER ── -->
+  <rect x="450" y="332" width="420" height="48" rx="8" fill="#1e293b" stroke="#f97316" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="660" y="352" font-family="Segoe UI" font-size="11" font-weight="600" fill="#f97316" text-anchor="middle">☁️  Cloudflare Worker (worker/)</text>
+  <text x="660" y="368" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">routes: weather · stocks · news · currency · calendar · alerts  ·  CORS · rate-limit · cache</text>
+
+  <!-- ── EXTERNAL APIs ── -->
+  <text x="450" y="412" font-family="Segoe UI" font-size="10" fill="#64748b" text-anchor="middle">── External APIs ──</text>
+
+  <rect x="30"  y="424" width="118" height="36" rx="6" fill="#0f172a" stroke="#475569" stroke-opacity="0.4"/>
+  <text x="89"  y="448" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">🌤 Open-Meteo</text>
+
+  <rect x="154" y="424" width="118" height="36" rx="6" fill="#0f172a" stroke="#475569" stroke-opacity="0.4"/>
+  <text x="213" y="448" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">✡️ Hebcal + Sefaria</text>
+
+  <rect x="278" y="424" width="118" height="36" rx="6" fill="#0f172a" stroke="#475569" stroke-opacity="0.4"/>
+  <text x="337" y="448" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">📈 Yahoo Finance</text>
+
+  <rect x="402" y="424" width="118" height="36" rx="6" fill="#0f172a" stroke="#475569" stroke-opacity="0.4"/>
+  <text x="461" y="448" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">📰 17 RSS feeds</text>
+
+  <rect x="526" y="424" width="118" height="36" rx="6" fill="#0f172a" stroke="#475569" stroke-opacity="0.4"/>
+  <text x="585" y="448" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">💱 Exchange Rates</text>
+
+  <rect x="650" y="424" width="118" height="36" rx="6" fill="#0f172a" stroke="#475569" stroke-opacity="0.4"/>
+  <text x="709" y="448" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">🚨 Tzeva Adom</text>
+
+  <rect x="774" y="424" width="96" height="36" rx="6" fill="#0f172a" stroke="#475569" stroke-opacity="0.4"/>
+  <text x="822" y="448" font-family="Segoe UI" font-size="9" fill="#94a3b8" text-anchor="middle">📅 Google Cal</text>
+
+  <!-- Arrow: worker → APIs -->
+  <line x1="660" y1="380" x2="660" y2="424" stroke="#f97316" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="3,3"/>
+
+  <!-- ── FOOTER ── -->
+  <text x="450" y="516" font-family="Segoe UI" font-size="9" fill="#475569" text-anchor="middle">Vite 8 · TypeScript 5.9 · Vitest 4 · ESLint 10  ·  1274 tests / 36 suites / 0 failures  ·  0 errors / 0 warnings</text>
+
+  <!-- Legend -->
+  <rect x="30" y="490" width="10" height="10" rx="2" fill="#f59e0b" opacity="0.6"/>
+  <text x="46" y="500" font-family="Segoe UI" font-size="9" fill="#f59e0b">v7 new</text>
+  <rect x="100" y="490" width="10" height="10" rx="2" fill="#34d399" opacity="0.6"/>
+  <text x="116" y="500" font-family="Segoe UI" font-size="9" fill="#34d399">v7 infra</text>
+  <rect x="174" y="490" width="10" height="10" rx="2" fill="#60a5fa" opacity="0.6"/>
+  <text x="190" y="500" font-family="Segoe UI" font-size="9" fill="#60a5fa">v6 stable</text>
+</svg>
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#060b14"/>
@@ -7,7 +139,7 @@
   </defs>
   <rect width="800" height="430" rx="14" fill="url(#bg)"/>
 
-  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture — v5.1.0</text>
+  <text x="400" y="36" font-family="Segoe UI" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">Architecture — v6.0.0</text>
 
   <!-- Browser box -->
   <rect x="240" y="56" width="320" height="50" rx="10" fill="#1e293b" stroke="#60a5fa" stroke-opacity="0.25"/>

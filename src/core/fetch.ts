@@ -7,7 +7,13 @@
  * runConcurrent: CPU-aware task pool limiter.
  */
 
-import { PROXIES, FETCH_TIMEOUT_MS, MAX_CONCURRENT } from "./constants";
+import {
+  PROXIES,
+  FETCH_TIMEOUT_MS,
+  MAX_CONCURRENT,
+  WORKER_BASE_URL,
+  isWorkerEnabled,
+} from "./constants";
 import { diagLog } from "./diag";
 
 /**
@@ -78,6 +84,41 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
   }
 
   throw new Error(`All proxies failed for: ${short}`);
+}
+
+/**
+ * Fetch JSON via the Cloudflare Worker proxy.
+ * The worker accepts: GET /proxy?url=<encoded>
+ * Returns the original API's JSON (worker unwraps CORS).
+ *
+ * @returns The parsed JSON or null if the worker is unavailable.
+ */
+export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null> {
+  if (!isWorkerEnabled()) return null;
+  const workerUrl = `${WORKER_BASE_URL}/proxy?url=${encodeURIComponent(url)}`;
+  const short = url.length > 60 ? url.slice(0, 57) + "..." : url;
+  try {
+    const r = await fetchWithTimeout(workerUrl, FETCH_TIMEOUT_MS);
+    if (!r.ok) {
+      diagLog(`fetchViaWorker HTTP ${r.status}: ${short}`);
+      return null;
+    }
+    diagLog(`fetchViaWorker OK: ${short}`);
+    return (await r.json()) as T;
+  } catch {
+    diagLog(`fetchViaWorker FAIL: ${short}`);
+    return null;
+  }
+}
+
+/**
+ * Fetch JSON — worker-first, then direct/proxy fallback.
+ * Drop-in replacement for fetchJSON() in worker-aware cards.
+ */
+export async function fetchJSONWithWorker<T = unknown>(url: string): Promise<T> {
+  const workerResult = await fetchViaWorker<T>(url);
+  if (workerResult !== null) return workerResult;
+  return fetchJSON<T>(url);
 }
 
 /**

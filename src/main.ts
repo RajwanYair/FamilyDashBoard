@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Main Entry Point
+ * FamilyDashBoard v7 — Main Entry Point
  *
  * Imports all modules, initializes the dashboard.
  */
@@ -17,13 +17,15 @@ import "./styles/maximize.css";
 import "./styles/a11y.css";
 import "./styles/print.css";
 import "./styles/sprints.css";
+import "./cards/tasks/tasks.css";
+import "./cards/system-info/system-info.css";
 
 // ── Core ──
 import { diagLog } from "./core/diag";
 import { cEvict } from "./core/cache";
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
-import { loadConfig } from "./core/config";
+import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
 
 // ── UI ──
 import { initTheme, checkAutoTheme } from "./ui/theme";
@@ -52,9 +54,49 @@ import {
 } from "./cards/alerts/alerts";
 import { initHebrewCalCard } from "./cards/hebrew-cal/hebrew-cal";
 import { initCalendarCard } from "./cards/calendar/calendar";
+import { initTasksCard } from "./cards/tasks/tasks";
+import { initSystemInfoCard } from "./cards/system-info/system-info";
 
 // ── Version ──
-export const VERSION = "6.5.0";
+export const VERSION = "7.0.0";
+
+/**
+ * Hide/show cards based on the `hiddenCards` array in config.
+ * Matches `[data-card-id]` elements in the DOM and toggles `display:none`.
+ */
+export function applyHiddenCards(hiddenCards: string[]): void {
+  document.querySelectorAll<HTMLElement>("[data-card-id]").forEach((el) => {
+    const id = el.dataset["cardId"] ?? "";
+    el.style.display = hiddenCards.includes(id) ? "none" : "";
+  });
+}
+
+/**
+ * Re-parent cards to the correct DOM column per the saved layout.
+ * `layout[0]` = col-left ids, `layout[1]` = col-mid ids, `layout[2]` = col-right ids.
+ * Each id is matched against `[data-card-id]` and appended to the target column.
+ * Missing ids (unregistered) are silently ignored.
+ */
+export function applyCardLayout(
+  layout: [string[], string[], string[]] | null,
+): void {
+  if (!layout) return;
+  const cols = [
+    document.querySelector<HTMLElement>(".grid-col-left"),
+    document.querySelector<HTMLElement>(".grid-col-mid"),
+    document.querySelector<HTMLElement>(".grid-col-right"),
+  ];
+  layout.forEach((ids, colIdx) => {
+    const col = cols[colIdx];
+    if (!col) return;
+    for (const id of ids) {
+      const card = document.querySelector<HTMLElement>(
+        `[data-card-id="${id}"]`,
+      );
+      if (card) col.appendChild(card);
+    }
+  });
+}
 
 /**
  * Apply a seasonal CSS class to <body> based on Northern Hemisphere months.
@@ -82,7 +124,7 @@ export function applySeasonClass(): void {
 /**
  * Application initialization.
  */
-function init(): void {
+export function init(): void {
   diagLog(`[init] FamilyDashBoard v${VERSION} starting...`);
 
   // Core setup
@@ -116,14 +158,19 @@ function init(): void {
   });
   registerKey("b", "מועדפים", () => toggleBookmarkMode());
   registerKey("r", "רענון נתונים", () => window.location.reload());
-  registerKey("h", "עזרה", () => {
-    const ov = document.getElementById("help-overlay");
-    if (ov) ov.classList.toggle("visible");
-  });
-  registerKey("?", "עזרה", () => {
-    const ov = document.getElementById("help-overlay");
-    if (ov) ov.classList.toggle("visible");
-  });
+  const _toggleHelp = (): void => {
+    const dlg = document.getElementById(
+      "help-overlay",
+    ) as HTMLDialogElement | null;
+    if (!dlg) return;
+    if (dlg.open) {
+      dlg.close();
+    } else {
+      dlg.showModal();
+    }
+  };
+  registerKey("h", "עזרה", _toggleHelp);
+  registerKey("?", "עזרה", _toggleHelp);
   registerKey("d", "אבחון", toggleDiagOverlay);
   registerKey("escape", "סגור כל חלון", closeAllOverlays);
 
@@ -136,11 +183,35 @@ function init(): void {
   initMotivationCard();
   initHebrewCalCard();
   initCalendarCard();
+  initTasksCard();
+  initSystemInfoCard();
   initTicker();
+
+  // ── URL hash config import: #cfg=<base64> overrides localStorage config ──
+  const _urlHash = window.location.hash ?? "";
+  if (_urlHash.startsWith("#cfg=")) {
+    const imported = loadConfigFromHash(_urlHash);
+    if (imported) {
+      saveConfig(imported);
+      // Strip hash so the next reload doesn't re-import
+      history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+      diagLog("[init] Config imported from URL hash");
+    }
+  }
 
   // ── Night dimmer auto-schedule (reads dim hours from localStorage) ──
   const cfg = loadConfig();
   initNightDimmer(cfg.nightDimLevel);
+
+  // ── Apply card visibility from config ──
+  applyHiddenCards(cfg.hiddenCards ?? []);
+
+  // ── Apply saved card layout column assignment ──
+  applyCardLayout(cfg.cardLayout ?? null);
 
   // ── Apply alert config state from saved settings ──
   setAlertsEnabled(cfg.alertsEnabled);

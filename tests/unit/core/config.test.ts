@@ -77,3 +77,87 @@ describe("Config — loadConfigFromHash", () => {
     expect(loadConfigFromHash("#cfg=!!!invalid!!!")).toBeNull();
   });
 });
+
+describe("Config — extra coverage", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("loadConfig returns an object with all expected keys", () => {
+    const cfg = loadConfig();
+    expect(cfg).toHaveProperty("theme");
+    expect(cfg).toHaveProperty("tempUnit");
+    expect(cfg).toHaveProperty("screenMode");
+    expect(cfg).toHaveProperty("homeCity");
+  });
+
+  it("saveConfig then loadConfig round-trips all fields", () => {
+    const toSave = {
+      ...DEFAULT_CONFIG,
+      theme: "amber" as const,
+      tempUnit: "F" as const,
+    };
+    saveConfig(toSave);
+    const loaded = loadConfig();
+    expect(loaded.theme).toBe("amber");
+    expect(loaded.tempUnit).toBe("F");
+  });
+
+  it("updateConfig with theme persists correctly", () => {
+    updateConfig("theme", "blue");
+    expect(loadConfig().theme).toBe("blue");
+  });
+
+  it("updateConfig with screenMode persists correctly", () => {
+    updateConfig("screenMode", "desk");
+    expect(loadConfig().screenMode).toBe("desk");
+  });
+
+  it("shareConfigHash encodes different configs differently", () => {
+    const hash1 = shareConfigHash({
+      ...DEFAULT_CONFIG,
+      theme: "black" as const,
+    });
+    const hash2 = shareConfigHash({
+      ...DEFAULT_CONFIG,
+      theme: "amber" as const,
+    });
+    expect(hash1).not.toBe(hash2);
+  });
+
+  it("loadConfigFromHash returns null for plain string without #", () => {
+    expect(loadConfigFromHash("cfg=abc")).toBeNull();
+  });
+
+  it("loadConfigFromHash null for hash with empty cfg value", () => {
+    expect(loadConfigFromHash("#cfg=")).toBeNull();
+  });
+
+  it("loadConfig returns defaults when stored value is a non-object JSON (number)", () => {
+    localStorage.setItem("dash_v2_config", "42");
+    const cfg = loadConfig();
+    expect(cfg.theme).toBe(DEFAULT_CONFIG.theme);
+  });
+
+  it("loadConfig returns defaults when stored value is a JSON string", () => {
+    localStorage.setItem("dash_v2_config", '"hello"');
+    const cfg = loadConfig();
+    expect(cfg.theme).toBe(DEFAULT_CONFIG.theme);
+  });
+
+  it("loadConfig returns defaults when stored value is JSON null", () => {
+    localStorage.setItem("dash_v2_config", "null");
+    const cfg = loadConfig();
+    expect(cfg.theme).toBe(DEFAULT_CONFIG.theme);
+  });
+
+  it("saveConfig catch block handles localStorage quota error", () => {
+    const orig = localStorage.setItem.bind(localStorage);
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("quota exceeded", "QuotaExceededError");
+    });
+    // Should not throw — the catch silently logs
+    expect(() => saveConfig(DEFAULT_CONFIG)).not.toThrow();
+    vi.mocked(Storage.prototype.setItem).mockRestore();
+  });
+});

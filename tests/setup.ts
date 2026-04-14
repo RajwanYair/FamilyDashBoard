@@ -40,4 +40,15 @@ beforeEach(() => {
   store.clear();
   document.body.innerHTML = "";
   document.body.className = "";
+  // Default: freeze any real fetch to prevent background network connections from
+  // unawaited init*Card() calls. Individual tests override this in their own beforeEach.
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockImplementation(() => new Promise(() => {})),
+  );
+});
+
+// Restore all globals after each test (vi.restoreAllMocks does NOT restore stubGlobal)
+afterEach(() => {
+  vi.unstubAllGlobals();
 });

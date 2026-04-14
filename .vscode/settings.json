@@ -11,14 +11,20 @@
     "editor.inlineSuggest.enabled": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit",
-        "source.fixAll.stylelint": "explicit"
+        "source.fixAll.stylelint": "explicit",
+        "source.organizeImports": "never"
     },
+    // ── TypeScript ──
+    "typescript.tsdk": "../node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
     // ── ESLint ──
     "eslint.validate": [
         "javascript",
+        "typescript",
         "html"
     ],
-    "eslint.run": "onSave",
+    "eslint.run": "onType",
+    "eslint.useFlatConfig": true,
     // ── Stylelint ──
     "stylelint.validate": [
         "css",
@@ -122,27 +128,10 @@
     }
 },
 
-    // ── Node.js Testing (connor4312.nodejs-testing) ──
-    "nodejs-testing.include": [
-        "tests"
-    ],
-    "nodejs-testing.exclude": [
-        "**/node_modules/**"
-    ],
-    "nodejs-testing.extensions": [
-        {
-            "extensions": [
-                "mjs",
-                "cjs",
-                "js"
-            ],
-            // --test-timeout: per-test limit (ms) prevents individual tests hanging forever
-            // --test-concurrency=1: serialize test execution — avoids pipe back-pressure
-            //   that causes VS Code test explorer to hang with large test suites
-            "parameters": [
-                "--test-timeout=30000",
-                "--test-concurrency=4"
-            ]
-        }
-    ]
+    // ── Testing — use terminal only, not VS Code test explorer ──
+    "nodejs-testing.enable": false,
+    "vitest.enable": false,
+    "testing.automaticallyOpenPeekView": "never",
+    "testing.openTesting": "neverOpen",
+    "testing.automaticallyOpenTestResults": "neverOpen"
 }

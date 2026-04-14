@@ -5,7 +5,10 @@
 
 dashboard:
   - changed-files:
-      - any-glob-to-any-file: "BestDashBoard.html"
+      - any-glob-to-any-file:
+          - "src/**"
+          - "vite.config.ts"
+          - "tsconfig.json"
 
 ci:
   - changed-files:
@@ -45,3 +48,7 @@ github-config:
           - ".github/release.yml"
           - ".github/FUNDING.yml"
           - ".github/assets/**"
+
+worker:
+  - changed-files:
+      - any-glob-to-any-file: "worker/**"

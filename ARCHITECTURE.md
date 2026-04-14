@@ -1,259 +1,148 @@
-# FamilyDashBoard v6.0 — Architecture Plan
+# FamilyDashBoard — Architecture (v6.5 / v7.0-alpha)
 
-> Full rewrite: Vite + TypeScript + Cloudflare Workers + Vitest
 > Deployment: https://rajwanyair.github.io/FamilyDashBoard/
+> Worker: https://familydashboard.rajwanyair.workers.dev
 
-## Decision Record
+![Architecture diagram](.github/assets/architecture.svg)
 
-| Decision       | Choice                                                   | Rationale                                                                |
-| -------------- | -------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Build tool     | **Vite 6**                                               | Fast dev server, Rollup bundler, native TS, tree-shaking, code-splitting |
-| Language       | **TypeScript 5.8**                                       | Type safety, better IDE, catches bugs at build time                      |
-| API proxy      | **Cloudflare Workers**                                   | Eliminates CORS chain, 100K req/day free, edge-deployed                  |
-| Test framework | **Vitest + happy-dom**                                   | Vite-native, real DOM simulation, module-level tests                     |
-| Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API) |
-| CSS approach   | **Vanilla CSS** with design tokens (no preprocessor)     |
-| Module format  | **ES Modules** (native `import`/`export`)                |
+## Stack
+
+| Decision       | Choice                                                          | Rationale                                                       |
+| -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
+| Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
+| Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 1274 tests / 36 suites        |
+| Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
+| API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
+| Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
+| CSS approach   | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`     | No preprocessor; cascade-aware; container queries               |
+| Module format  | **ES Modules** native `import`/`export`                         |                                                                 |
+| npm model      | Tools installed at parent **`MyScripts/`**; no local lock file  | Single-root install for all scripts in the monorepo             |
+| CI             | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed |                                                                 |
 
 ## File Structure
 
 ```
-FamilyDashBoard/
-├── .github/
-│   ├── workflows/
-│   │   ├── ci.yml                # Lint + Test + Build on PR
-│   │   ├── deploy.yml            # Build → GitHub Pages on push
-│   │   ├── release.yml           # Tag → GH Release
-│   │   └── worker-deploy.yml     # Deploy Cloudflare Workers
-│   ├── instructions/             # Copilot instructions (updated)
-│   ├── skills/                   # Copilot skills (updated)
-│   └── ...                       # Existing templates, etc.
+src/
+├── index.html                  # App shell HTML (RTL, Hebrew)
+├── main.ts                     # Startup: safeLoad wrappers, Promise.allSettled, intervals
+├── types/
+│   ├── api.ts                  # API response shapes (weather, stocks, news…)
+│   ├── config.ts               # User config schema + defaults
+│   └── card.ts                 # CardDefinition, CardSlot, CardRegistryEntry (v7)
+├── core/
+│   ├── constants.ts            # URLs, symbols, intervals, WORKER_BASE_URL
+│   ├── cache.ts                # cGet/cSet/cGetStale — in-memory Map + localStorage (dash_v2_*)
+│   ├── fetch.ts                # fetchWithTimeout(8 s) · proxy chain · fetchViaWorker (v7)
+│   ├── card-registry.ts        # Map-based card registry, lazy dynamic import() (v7)
+│   ├── diag.ts                 # diagLog() + diagnostic overlay
+│   ├── config.ts               # Settings load/save/export/import (localStorage)
+│   ├── sync.ts                 # setSync(id, state) — sync dots + health
+│   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper
+│   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED
+├── ui/
+│   ├── theme.ts                # 6-theme system: dark·ocean·forest·warm·high-contrast·rose
+│   ├── keyboard.ts             # All keyboard shortcuts (T/D/A/S/N/+/-/P/B/H/C/Esc)
+│   ├── maximize.ts             # Card maximize/FLIP + collapse (startViewTransition)
+│   ├── scroll.ts               # Scroll loop helpers + GPU keyframe injection
+│   ├── header.ts               # Clock, greeting, market badge, birthday/countdown chips
+│   ├── ticker.ts               # Halacha/Daf ticker bar
+│   ├── status-bar.ts           # Version, sync dots, progress bars
+│   ├── night-dimmer.ts         # Night dim overlay with schedule (dash_v2_dim_start/end)
+│   ├── bg-images.ts            # Background image rotation (HTTPS-only, 30-min crossfade)
+│   ├── config-panel.ts         # Settings panel (save, export, import, shareSettings)
+│   ├── diag-overlay.ts         # Diagnostics <dialog> (migrated from <div>, v7)
+│   ├── screen-mode.ts          # Screen mode manager (normal/compact/theater)
+│   └── toast.ts                # Toast notification system
+├── cards/
+│   ├── base-card.ts            # createCardLoader() + scheduleCard() — shared lifecycle
+│   ├── news/news.ts            # RSS feeds + search + bookmarks + stale tinting
+│   ├── weather/weather.ts      # Open-Meteo, multi-city tabs, UV, sky, precipitation
+│   ├── stocks/stocks.ts        # Yahoo Finance, portfolio P&L, alerts, market countdown
+│   ├── currency/currency.ts    # Exchange rates + gold/silver
+│   ├── calendar/calendar.ts    # ICS parser + week strip + countdown
+│   ├── hebrew-cal/hebrew-cal.ts # Hebcal API, Zmanim, moon phase, psalm, chores
+│   ├── alerts/alerts.ts        # Tzeva Adom (Red Alert), realtime mode
+│   ├── motivation/motivation.ts # Rotating quotes with share
+│   ├── tasks/tasks.ts          # Family chore board (v7, localStorage, daily reset)
+│   └── system-info/system-info.ts # Battery, network, timing, browser info (v7)
+├── styles/
+│   ├── tokens.css              # @layer tokens: design tokens, @layer order declaration
+│   ├── themes.css              # 6 theme overrides + auto-theme hooks
+│   ├── base.css                # Reset, typography, body, scrollbar
+│   ├── layout.css              # 3-column grid, @container queries
+│   ├── components.css          # Cards, headers, badges, config panel, dialogs
+│   ├── animations.css          # Keyframes, transitions, entrance effects
+│   ├── scroll.css              # Scroll containers, GPU layers, fade masks
+│   ├── maximize.css            # Card maximize + collapse animations
+│   ├── screen-modes.css        # Compact / theater mode overrides
+│   ├── print.css               # @media print
+│   ├── sprints.css             # Global additions from feature sprints
+│   └── a11y.css                # prefers-reduced-motion, prefers-contrast
+worker/
 ├── src/
-│   ├── index.html                # Lean HTML shell (~200 lines)
-│   ├── main.ts                   # App entry point
-│   ├── vite-env.d.ts             # Vite type declarations
-│   ├── types/
-│   │   ├── api.ts                # API response types (weather, stocks, news, etc.)
-│   │   ├── config.ts             # User config schema
-│   │   └── cards.ts              # Card lifecycle types
-│   ├── core/
-│   │   ├── constants.ts          # All magic numbers, URLs, symbols
-│   │   ├── cache.ts              # Dual-layer cache (Map + localStorage)
-│   │   ├── fetch.ts              # fetchWithTimeout, proxy chain, AbortController
-│   │   ├── diag.ts               # Diagnostic logging + overlay
-│   │   ├── config.ts             # Settings load/save/export/import
-│   │   ├── sync.ts               # Sync indicators + health tracking
-│   │   ├── idle.ts               # scheduleIdle, requestIdleCallback
-│   │   └── sw-register.ts        # Service worker registration + update flow
-│   ├── ui/
-│   │   ├── theme.ts              # 5-theme system (cycle, persist, apply)
-│   │   ├── keyboard.ts           # All keyboard shortcuts
-│   │   ├── maximize.ts           # Card maximize/FLIP animation
-│   │   ├── scroll.ts             # Scroll loop helpers + keyframe injection
-│   │   ├── header.ts             # Clock, greeting, market badge, birthday chip
-│   │   ├── ticker.ts             # Halacha ticker bar
-│   │   ├── status-bar.ts         # Version, sync dots, progress bars
-│   │   ├── night-dimmer.ts       # Night dim overlay
-│   │   └── toast.ts              # Toast notification system
-│   ├── cards/
-│   │   ├── card.ts               # Base card lifecycle (init, refresh, interval)
-│   │   ├── news/
-│   │   │   ├── news.ts           # Loader + renderer
-│   │   │   └── news.css          # Card-specific styles
-│   │   ├── weather/
-│   │   │   ├── weather.ts
-│   │   │   └── weather.css
-│   │   ├── stocks/
-│   │   │   ├── stocks.ts
-│   │   │   └── stocks.css
-│   │   ├── currency/
-│   │   │   ├── currency.ts
-│   │   │   └── currency.css
-│   │   ├── calendar/
-│   │   │   ├── calendar.ts
-│   │   │   └── calendar.css
-│   │   ├── hebrew-cal/
-│   │   │   ├── hebrew-cal.ts
-│   │   │   └── hebrew-cal.css
-│   │   ├── alerts/
-│   │   │   ├── alerts.ts
-│   │   │   └── alerts.css
-│   │   └── motivation/
-│   │       ├── motivation.ts
-│   │       └── motivation.css
-│   ├── styles/
-│   │   ├── tokens.css            # Design tokens (colors, spacing, radius, shadows)
-│   │   ├── themes.css            # 5 theme overrides
-│   │   ├── base.css              # Reset, typography, body, scrollbar
-│   │   ├── layout.css            # 3-column grid, responsive breakpoints
-│   │   ├── components.css        # Cards, headers, config panel, overlays
-│   │   ├── animations.css        # Keyframes, transitions, entrance effects
-│   │   ├── scroll.css            # Scroll containers, GPU layers, fade masks
-│   │   ├── print.css             # @media print
-│   │   └── a11y.css              # prefers-reduced-motion, prefers-contrast
-│   ├── sw.ts                     # Service Worker (compiled separately)
-│   └── assets/
-│       ├── icon.svg
-│       └── manifest.webmanifest
-├── worker/                        # Cloudflare Workers API proxy
-│   ├── src/
-│   │   ├── index.ts              # Worker entry + router
-│   │   ├── routes/
-│   │   │   ├── weather.ts        # /api/weather → Open-Meteo
-│   │   │   ├── stocks.ts         # /api/stocks → Yahoo Finance
-│   │   │   ├── news.ts           # /api/news → RSS feeds
-│   │   │   ├── currency.ts       # /api/currency → ER-API + Yahoo (gold/silver)
-│   │   │   ├── calendar.ts       # /api/calendar → Hebcal + Sefaria
-│   │   │   └── alerts.ts         # /api/alerts → Tzeva Adom
-│   │   ├── middleware/
-│   │   │   ├── cors.ts           # CORS headers for dashboard origin
-│   │   │   ├── cache.ts          # Cache-Control + Cloudflare cache API
-│   │   │   └── rate-limit.ts     # Per-IP rate limiting
-│   │   └── types.ts              # Worker types
-│   ├── wrangler.toml
-│   ├── tsconfig.json
-│   └── package.json
-├── tests/
-│   ├── unit/
-│   │   ├── core/
-│   │   │   ├── cache.test.ts
-│   │   │   ├── fetch.test.ts
-│   │   │   └── config.test.ts
-│   │   ├── cards/
-│   │   │   ├── news.test.ts
-│   │   │   ├── weather.test.ts
-│   │   │   ├── stocks.test.ts
-│   │   │   └── ...
-│   │   └── ui/
-│   │       ├── theme.test.ts
-│   │       └── keyboard.test.ts
-│   ├── integration/
-│   │   ├── card-lifecycle.test.ts
-│   │   └── sw.test.ts
-│   └── setup.ts                  # Global test setup (happy-dom env)
-├── vite.config.ts
-├── tsconfig.json
-├── tsconfig.node.json
-├── vitest.config.ts
-├── eslint.config.ts
-├── package.json
-├── CHANGELOG.md
-├── README.md
-└── CLAUDE.md
+│   ├── index.ts                # Worker entry + router
+│   ├── routes/                 # weather · stocks · news · currency · calendar · alerts
+│   └── middleware/             # cors · cache · rate-limit
+├── wrangler.toml
+└── package.json
+tests/unit/
+├── core/                       # cache · fetch · config · constants · diag · sync · sw
+├── cards/                      # all 10 card modules
+├── ui/                         # theme · header · keyboard · maximize · night-dimmer …
+└── html/dom-contract.test.ts   # Element ID existence contract tests
 ```
 
-## Phases
-
-### Phase 1: Scaffold (this session)
-
-- [x] Architecture plan
-- [ ] Vite 6 + TypeScript 5.8 config
-- [ ] Directory structure created
-- [ ] `tsconfig.json`, `vite.config.ts`, `vitest.config.ts`
-- [ ] `src/index.html` — lean HTML shell
-- [ ] CSS modules split from monolith
-- [ ] Core TS modules: `constants.ts`, `cache.ts`, `fetch.ts`
-- [ ] `package.json` with all dependencies
-- [ ] Dev server working locally
-
-### Phase 2: Core Infrastructure
-
-- [ ] `types/api.ts` — all API response types
-- [ ] `core/diag.ts` — diagnostic overlay
-- [ ] `core/config.ts` — settings system
-- [ ] `core/sync.ts` — sync indicators
-- [ ] `core/sw-register.ts` — SW registration
-- [ ] `sw.ts` — updated service worker
-- [ ] `ui/theme.ts` — 5 theme system
-- [ ] `ui/keyboard.ts` — all shortcuts
-- [ ] `ui/header.ts` — clock, greeting, market badge
-
-### Phase 3: Card Components
-
-- [ ] `cards/card.ts` — base lifecycle
-- [ ] Each card module (8 cards)
-- [ ] Card-specific CSS
-- [ ] `main.ts` — wire everything together
-- [ ] Full app boots in dev server
-
-### Phase 4: Cloudflare Workers
-
-- [ ] Worker project setup (wrangler)
-- [ ] Route handlers per API
-- [ ] CORS middleware
-- [ ] Cache middleware
-- [ ] Rate limiting
-- [ ] Deploy to `api.familydashboard.workers.dev`
-
-### Phase 5: Test Migration
-
-- [ ] Vitest config + happy-dom
-- [ ] Unit tests per core module
-- [ ] Unit tests per card
-- [ ] Integration tests
-- [ ] Coverage reporting
-
-### Phase 6: CI/CD Update
-
-- [ ] Updated `ci.yml` (lint + test + build)
-- [ ] Updated `deploy.yml` (Vite build → GH Pages)
-- [ ] `worker-deploy.yml` (deploy Workers)
-- [ ] CodeQL security scanning
-- [ ] Lighthouse CI
-
-### Phase 7: Polish + Migration
-
-- [ ] Remove old `BestDashBoard.html`
-- [ ] Update all documentation
-- [ ] Update Copilot instructions
-- [ ] Performance audit
-- [ ] Security audit (CSP, SRI, etc.)
-- [ ] Tag `v6.0.0`
-
-## Security Enhancements
-
-| Area         | Current              | v6.0                                                          |
-| ------------ | -------------------- | ------------------------------------------------------------- |
-| CSP          | None                 | Strict `<meta>` CSP — `default-src 'self'; script-src 'self'` |
-| XSS          | Manual textContent   | TypeScript + ESLint enforce no innerHTML                      |
-| CORS         | 3 public proxy chain | Dedicated Cloudflare Worker (no CORS)                         |
-| API keys     | N/A (all free APIs)  | Worker-side env vars if needed                                |
-| Secrets scan | GH Actions grep      | CodeQL + `gitleaks` in CI                                     |
-| Dependencies | Zero                 | npm audit + Dependabot (Vite + Vitest only)                   |
-| HTTPS        | GH Pages default     | Enforced via canonical                                        |
-| SRI          | None                 | Auto-generated hashes in build                                |
-
-## Performance Budget
-
-| Metric           | Target             |
-| ---------------- | ------------------ |
-| LCP              | < 1.5s             |
-| FID              | < 100ms            |
-| CLS              | < 0.05             |
-| Bundle (JS)      | < 60KB gzip        |
-| Bundle (CSS)     | < 15KB gzip        |
-| HTML shell       | < 5KB              |
-| Service Worker   | < 10KB             |
-| Lighthouse score | 95+ all categories |
-
-## API Proxy Design (Cloudflare Workers)
+## Runtime Architecture
 
 ```
-Dashboard → https://api.familydashboard.workers.dev/
-           ├── /api/weather?lat=X&lon=Y      → api.open-meteo.com
-           ├── /api/stocks?symbols=AAPL,MSFT  → query1.finance.yahoo.com
-           ├── /api/news                      → RSS feeds (server-parsed)
-           ├── /api/currency                  → open.er-api.com + Yahoo
-           ├── /api/calendar                  → hebcal.com + sefaria.org
-           ├── /api/alerts                    → tzevaadom.co.il
-           └── /api/health                    → Status of all upstreams
+Browser
+ ├─ main.ts ─── safeLoad(each card) ──► Promise.allSettled
+ │               └── setInterval per card (TTL-based refresh)
+ ├─ sw.js ────── APP_SHELL pre-cache ─► offline HTML fallback
+ │               └── API cache (7 origins, 7-day TTL stale-while-revalidate)
+ └─ card-registry.ts (v7)
+     └── dynamic import() per card ──► lazy load + init
+
+Fetch chain (per request):
+  cGet(key, TTL) → hit: return cached
+                 → miss: fetchWithTimeout(direct)
+                       → fallback: allorigins proxy
+                       → fallback: codetabs proxy
+                       → fallback: corsproxy.io
+                       → fallback: fetchViaWorker (v7, Cloudflare)
+                 → cSet(key, data)
+
+Cache layers:
+  L1: in-memory Map (process lifetime)
+  L2: localStorage (dash_v2_*, 7-day eviction)
+  L3: Service Worker cache (API endpoints, stale-while-revalidate)
 ```
 
-Benefits:
+## CSS Architecture (v7)
 
-- **Zero CORS issues** — Worker fetches server-side
-- **Response caching** — Cloudflare edge cache + Cache API
-- **RSS pre-parsing** — return JSON instead of XML
-- **Rate limiting** — protect upstream APIs
-- **Health endpoint** — monitor all API upstreams
-- **A/B proxy** — if one upstream fails, try alternatives
+```css
+@layer tokens, themes, base, layout, components, animations;
+/* Declared in tokens.css — explicit layer ordering prevents specificity wars */
+
+/* Derived tokens using color-mix() */
+--accent-subtle: color-mix(in oklch, var(--accent) 20%, transparent);
+--bg-overlay: color-mix(in oklch, var(--bg-card) 85%, transparent);
+
+/* Container queries on cards */
+.card { container-type: inline-size; }
+@container (max-width: 320px) { .card-title { font-size: 0.85rem; } }
+```
+
+## Key Invariants
+
+1. **No external JS/CSS libraries** — zero runtime CDN dependencies
+2. **No hardcoded colors** — all via CSS custom properties (`--accent`, `--bg-card`, etc.)
+3. **No `innerHTML` with unsanitized data** — use `textContent` or `createElement`
+4. **All async loaders**: `safeLoad()` + `if (!_pageVisible) return;` guard
+5. **All fetches**: try/catch + proxy chain (`PROXIES`) + `diagLog()`
+6. **All API data**: `cSet`/`cGet`/`cGetStale` dual-layer cache
+7. **DOM refs in `el` object** — no repeated `getElementById`
+8. **0 ESLint errors/warnings** enforced on every commit (CI gate)
+9. **0 TypeScript errors** enforced (`tsc --noEmit` in CI)
+10. **No `eslint-disable` / `@ts-ignore` suppressions** — violations must be fixed

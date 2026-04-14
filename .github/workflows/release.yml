@@ -1,5 +1,6 @@
 # =============================================================================
-# Release — Auto-create GitHub Releases on version tags
+# Release — Build v6 and attach dist + PWA files to GitHub Releases
+# Triggered by version tags: vX.Y.Z
 # =============================================================================
 name: Release
 
@@ -12,12 +13,31 @@ permissions:
 
 jobs:
   release:
-    name: Create Release
+    name: Build & Create Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npx vitest run
+
+      - name: Production build
+        run: npx vite build
+
+      - name: Package dist
+        run: zip -r dist.zip dist/ -x "dist/**/*.map"
 
       - name: Generate changelog
         id: changelog
@@ -40,12 +60,11 @@ jobs:
             ## What's Changed
             ${{ steps.changelog.outputs.CHANGELOG }}
 
-            ## 🚀 Quick Start
-            ```
-            Open BestDashBoard.html in your browser
-            ```
+            ## 🚀 Deploy
+            Deployed automatically to GitHub Pages on push to `main`.
+            To self-host: extract `dist.zip` and serve the `dist/` folder from any static host.
           files: |
-            BestDashBoard.html
+            dist.zip
             sw.js
             manifest.json
             icon.svg

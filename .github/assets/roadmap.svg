@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060b14"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="320" rx="14" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="450" y="30" font-family="Segoe UI,system-ui" font-size="16" font-weight="700" fill="#60a5fa" text-anchor="middle">FamilyDashBoard — Release Timeline</text>
+
+  <!-- Timeline spine -->
+  <line x1="60" y1="110" x2="840" y2="110" stroke="#334155" stroke-width="2"/>
+
+  <!-- ── v5.x ── -->
+  <circle cx="90" cy="110" r="10" fill="#475569"/>
+  <text x="90" y="90"  font-family="Segoe UI" font-size="11" font-weight="700" fill="#94a3b8" text-anchor="middle">v5.x</text>
+  <text x="90" y="138" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">Single-file</text>
+  <text x="90" y="150" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">1084 tests</text>
+  <text x="90" y="162" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">archived</text>
+
+  <!-- ── v6.0 ── -->
+  <circle cx="220" cy="110" r="12" fill="#1d4ed8" stroke="#60a5fa" stroke-width="2"/>
+  <text x="220" y="86"  font-family="Segoe UI" font-size="12" font-weight="700" fill="#60a5fa" text-anchor="middle">v6.0</text>
+  <text x="220" y="138" font-family="Segoe UI" font-size="8"  fill="#93c5fd" text-anchor="middle">TS modular rewrite</text>
+  <text x="220" y="150" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">Vite 8 · Vitest</text>
+  <text x="220" y="162" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">510 tests</text>
+
+  <!-- ── v6.1 ── -->
+  <circle cx="330" cy="110" r="10" fill="#1e40af" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="330" y="90"  font-family="Segoe UI" font-size="11" font-weight="700" fill="#60a5fa" text-anchor="middle">v6.1</text>
+  <text x="330" y="138" font-family="Segoe UI" font-size="8"  fill="#93c5fd" text-anchor="middle">bg rotation</text>
+  <text x="330" y="150" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">bookmarks</text>
+  <text x="330" y="162" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">574 tests</text>
+
+  <!-- ── v6.2 ── -->
+  <circle cx="430" cy="110" r="10" fill="#1e40af" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="430" y="90"  font-family="Segoe UI" font-size="11" font-weight="700" fill="#60a5fa" text-anchor="middle">v6.2</text>
+  <text x="430" y="138" font-family="Segoe UI" font-size="8"  fill="#93c5fd" text-anchor="middle">50+ features</text>
+  <text x="430" y="150" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">portfolio · alerts</text>
+  <text x="430" y="162" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">849 tests</text>
+
+  <!-- ── v6.3 ── -->
+  <circle cx="515" cy="110" r="8" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1"/>
+  <text x="515" y="92"  font-family="Segoe UI" font-size="10" font-weight="700" fill="#60a5fa" text-anchor="middle">v6.3</text>
+  <text x="515" y="138" font-family="Segoe UI" font-size="8"  fill="#93c5fd" text-anchor="middle">coverage sprint</text>
+  <text x="515" y="150" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">896 tests</text>
+
+  <!-- ── v6.4 ── -->
+  <circle cx="587" cy="110" r="8" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1"/>
+  <text x="587" y="92"  font-family="Segoe UI" font-size="10" font-weight="700" fill="#60a5fa" text-anchor="middle">v6.4</text>
+  <text x="587" y="138" font-family="Segoe UI" font-size="8"  fill="#93c5fd" text-anchor="middle">coverage sprint</text>
+  <text x="587" y="150" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">932 tests</text>
+
+  <!-- ── v6.5 ── -->
+  <circle cx="660" cy="110" r="12" fill="#065f46" stroke="#34d399" stroke-width="2"/>
+  <text x="660" y="86"  font-family="Segoe UI" font-size="12" font-weight="700" fill="#34d399" text-anchor="middle">v6.5</text>
+  <text x="660" y="138" font-family="Segoe UI" font-size="8"  fill="#6ee7b7" text-anchor="middle">100% coverage sprints</text>
+  <text x="660" y="150" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">cache · base-card</text>
+  <text x="660" y="162" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">1240 tests</text>
+
+  <!-- ── v7.0 alpha ── (highlighted) -->
+  <circle cx="770" cy="110" r="14" fill="#92400e" stroke="#f59e0b" stroke-width="2.5"/>
+  <text x="770" y="84"  font-family="Segoe UI" font-size="13" font-weight="700" fill="#f59e0b" text-anchor="middle">v7.0 🔄</text>
+  <text x="770" y="138" font-family="Segoe UI" font-size="8"  fill="#fcd34d" text-anchor="middle">card registry · tasks</text>
+  <text x="770" y="150" font-family="Segoe UI" font-size="8"  fill="#fbbf24" text-anchor="middle">dialog · @layer · worker</text>
+  <text x="770" y="162" font-family="Segoe UI" font-size="8"  fill="#64748b" text-anchor="middle">1274 tests (alpha)</text>
+
+  <!-- ── v7.1 ── (future dashed) -->
+  <line x1="784" y1="110" x2="862" y2="110" stroke="#334155" stroke-width="2" stroke-dasharray="5,4"/>
+  <circle cx="862" cy="110" r="10" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <text x="862" y="90"  font-family="Segoe UI" font-size="10" fill="#475569" text-anchor="middle">v7.1</text>
+  <text x="862" y="138" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle">layout drag</text>
+  <text x="862" y="150" font-family="Segoe UI" font-size="8"  fill="#475569" text-anchor="middle">card management</text>
+
+  <!-- ── Feature bands ── -->
+  <text x="450" y="196" font-family="Segoe UI" font-size="11" font-weight="700" fill="#60a5fa" text-anchor="middle">Cumulative Features by Release</text>
+
+  <!-- Band: CSS / Design -->
+  <rect x="60"  y="210" width="762" height="14" rx="3" fill="#1e3a8a" opacity="0.7"/>
+  <text x="68"  y="221" font-family="Segoe UI" font-size="8" fill="#93c5fd">CSS: design tokens · 6 themes · @layer · @container · color-mix()</text>
+
+  <!-- Band: Cards -->
+  <rect x="60"  y="228" width="762" height="14" rx="3" fill="#065f46" opacity="0.7"/>
+  <text x="68"  y="239" font-family="Segoe UI" font-size="8" fill="#6ee7b7">Cards: 8 original (v6.0) + tasks + system-info (v7.0) = 10 cards</text>
+
+  <!-- Band: Tests -->
+  <rect x="60"  y="246" width="762" height="14" rx="3" fill="#78350f" opacity="0.7"/>
+  <text x="68"  y="257" font-family="Segoe UI" font-size="8" fill="#fcd34d">Tests: 510 → 574 → 849 → 896 → 932 → 1240 → 1274 (v7-alpha) · 36 suites · 0 failures always</text>
+
+  <!-- Band: Infra -->
+  <rect x="60"  y="264" width="762" height="14" rx="3" fill="#3b0764" opacity="0.7"/>
+  <text x="68"  y="275" font-family="Segoe UI" font-size="8" fill="#c4b5fd">Infra: ESLint flat-config → type-aware rules · SW v6.0 → v7 · Cloudflare Worker · shared npm</text>
+
+  <!-- Footer -->
+  <text x="450" y="308" font-family="Segoe UI" font-size="9" fill="#475569" text-anchor="middle">TypeScript 5.9 · Vite 8 · Vitest 4 · ESLint 10 · 0 errors · 0 warnings · 0 suppressions</text>
+</svg>

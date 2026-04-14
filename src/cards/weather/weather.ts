@@ -5,10 +5,122 @@
  */
 
 import { createCardLoader, scheduleCard } from "../base-card";
+import "./weather.css";
 import { INTERVALS, WX_CODES, WX_EMOJI } from "../../core/constants";
 import type { WeatherResponse } from "../../types/api";
 import { diagLog } from "../../core/diag";
-import { loadConfig } from "../../core/config";
+import { cGet, cGetStale, cSet } from "../../core/cache";
+import { setSync } from "../../core/sync";
+import { loadConfig, saveConfig } from "../../core/config";
+
+// ── City state ──
+let _activeLat = 31.7683;
+let _activeLon = 35.2137;
+
+const LS_CITY_1 = "dash_v2_city_1";
+const LS_CITY_2 = "dash_v2_city_2";
+const LS_CITY_3 = "dash_v2_city_3";
+
+interface CityEntry {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
+export function parseCityEntry(raw: string): CityEntry | null {
+  const parts = raw.split("|");
+  if (parts.length < 3) return null;
+  const lat = parseFloat(parts[1] ?? "");
+  const lon = parseFloat(parts[2] ?? "");
+  if (isNaN(lat) || isNaN(lon)) return null;
+  return { name: parts[0]?.trim() ?? "", lat, lon };
+}
+
+/**
+ * Apply configured city names/coords from localStorage to the tab buttons,
+ * and sync _activeLat/_activeLon from the currently active tab.
+ */
+export function initWeatherCities(): void {
+  const tabs = document.querySelectorAll<HTMLButtonElement>(
+    ".wx-city-tab[data-city]",
+  );
+  const lsKeys = [LS_CITY_1, LS_CITY_2, LS_CITY_3];
+
+  tabs.forEach((tab, i) => {
+    const key = lsKeys[i];
+    if (!key) return;
+    const raw = localStorage.getItem(key);
+    if (!raw) return;
+    const entry = parseCityEntry(raw);
+    if (!entry) return;
+    tab.dataset["lat"] = String(entry.lat);
+    tab.dataset["lon"] = String(entry.lon);
+    if (entry.name) tab.textContent = entry.name;
+  });
+
+  // If city 1 has no explicit LS override, fall back to home city coords
+  const tab1 = document.querySelector<HTMLButtonElement>(
+    ".wx-city-tab[data-city='1']",
+  );
+  if (tab1 && !localStorage.getItem(LS_CITY_1)) {
+    const homeLat = parseFloat(localStorage.getItem("dash_v2_home_lat") ?? "");
+    const homeLon = parseFloat(localStorage.getItem("dash_v2_home_lon") ?? "");
+    const homeName = localStorage.getItem("dash_v2_home_name") ?? "";
+    if (!isNaN(homeLat) && !isNaN(homeLon)) {
+      tab1.dataset["lat"] = String(homeLat);
+      tab1.dataset["lon"] = String(homeLon);
+      if (homeName) tab1.textContent = homeName;
+    }
+  }
+
+  // Sync active coords from the active tab
+  const active = document.querySelector<HTMLButtonElement>(
+    ".wx-city-tab.active",
+  );
+  if (active) {
+    const lat = parseFloat(active.dataset["lat"] ?? "");
+    const lon = parseFloat(active.dataset["lon"] ?? "");
+    if (!isNaN(lat) && !isNaN(lon)) {
+      _activeLat = lat;
+      _activeLon = lon;
+    }
+  }
+}
+
+/**
+ * Toggle temperature unit between °C and °F,
+ * save config, and re-render with cached data.
+ */
+export function toggleTempUnit(): void {
+  const c = loadConfig();
+  c.tempUnit = c.tempUnit === "C" ? "F" : "C";
+  saveConfig(c);
+  const fresh = cGet<WeatherResponse>("wx", INTERVALS.WEATHER);
+  const data = fresh ?? cGetStale<WeatherResponse>("wx");
+  if (data) renderWeather(data);
+  diagLog(`[weather] tempUnit toggled to ${c.tempUnit}`);
+}
+
+/**
+ * Switch to a different weather city: update state, fetch fresh data, render.
+ */
+export async function switchWeatherCity(
+  lat: number,
+  lon: number,
+): Promise<void> {
+  _activeLat = lat;
+  _activeLon = lon;
+  setSync("wx", "loading");
+  try {
+    const data = await fetchWeather();
+    cSet("wx", data);
+    renderWeather(data);
+    setSync("wx", "ok");
+  } catch (err) {
+    diagLog(`[weather] City switch failed: ${String(err)}`);
+    setSync("wx", "error");
+  }
+}
 
 // ── DOM cache ──
 const el = {
@@ -25,9 +137,10 @@ const el = {
   wxMinMax: null as HTMLElement | null,
   wxWeekSummary: null as HTMLElement | null,
   wxFeels: null as HTMLElement | null,
+  wxSkyPill: null as HTMLElement | null,
 };
 
-function cacheDom(): void {
+export function cacheDom(): void {
   el.topTemp = document.getElementById("top-temp");
   el.wxTemp = document.getElementById("wx-temp");
   el.wxDesc = document.getElementById("wx-desc");
@@ -41,26 +154,40 @@ function cacheDom(): void {
   el.wxMinMax = document.getElementById("wx-minmax");
   el.wxWeekSummary = document.getElementById("wx-week-summary");
   el.wxFeels = document.getElementById("wx-feels");
+  el.wxSkyPill = document.getElementById("wx-sky-pill");
 }
 
 function getTempUnit(): "C" | "F" {
   return loadConfig().tempUnit;
 }
 
-function toDisplayTemp(c: number): string {
+/**
+ * Map WMO weather code to a sky condition label and CSS class.
+ * Used by the sky condition pill in the weather card header.
+ */
+export function getSkyCategory(code: number): { label: string; cls: string } {
+  if (code === 0) return { label: "☀️ בהיר", cls: "sky-clear" };
+  if (code <= 2) return { label: "⛅ חלקי", cls: "sky-partly" };
+  if (code <= 48) return { label: "☁️ מעונן", cls: "sky-cloudy" };
+  if (code <= 67) return { label: "🌧️ גשם", cls: "sky-rain" };
+  if (code <= 77) return { label: "❄️ שלג", cls: "sky-snow" };
+  if (code <= 82) return { label: "🌦️ ממטרות", cls: "sky-shower" };
+  return { label: "⛈️ סערה", cls: "sky-storm" };
+}
+
+export function toDisplayTemp(c: number): string {
   if (getTempUnit() === "F") return `${Math.round((c * 9) / 5 + 32)}°F`;
   return `${c}°C`;
 }
 
-function deg2arrow(deg: number): string {
+export function deg2arrow(deg: number): string {
   const arrows = ["↓", "↙", "←", "↖", "↑", "↗", "→", "↘"];
   return arrows[Math.round(deg / 45) % 8] ?? "↓";
 }
 
 async function fetchWeather(): Promise<WeatherResponse> {
-  // TODO: support multi-city when city config is wired
-  const lat = 31.7683;
-  const lon = 35.2137;
+  const lat = _activeLat;
+  const lon = _activeLon;
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
 
   const res = await fetch(url);
@@ -68,7 +195,7 @@ async function fetchWeather(): Promise<WeatherResponse> {
   return (await res.json()) as WeatherResponse;
 }
 
-function renderWeather(d: WeatherResponse): void {
+export function renderWeather(d: WeatherResponse): void {
   const cur = d.current;
   const tempC = Math.round(cur.temperature_2m);
 
@@ -79,25 +206,36 @@ function renderWeather(d: WeatherResponse): void {
     const feels = Math.round(cur.apparent_temperature);
     el.wxDesc.textContent = `${desc} · מרגיש ${toDisplayTemp(feels)}`;
   }
+  // Feels-like cell (F26)
+  if (el.wxFeels) el.wxFeels.textContent = toDisplayTemp(Math.round(cur.apparent_temperature));
   if (el.wxIcon) el.wxIcon.textContent = WX_EMOJI[cur.weather_code] ?? "🌡️";
+
+  // Sky condition pill
+  if (el.wxSkyPill) {
+    const { label, cls } = getSkyCategory(cur.weather_code);
+    el.wxSkyPill.textContent = label;
+    el.wxSkyPill.className = `wx-sky-pill ${cls}`;
+  }
+
   if (el.wxWind)
     el.wxWind.textContent = `${Math.round(cur.wind_speed_10m)} קמ"ש ${deg2arrow(cur.wind_direction_10m)}`;
   if (el.wxHum) el.wxHum.textContent = `${cur.relative_humidity_2m}%`;
 
-  // UV index
+  // UV index pill (F122)
   if (el.wxUv) {
     const uv = cur.uv_index;
-    const label =
+    const [uvCls, uvLabel] =
       uv <= 2
-        ? "נמוך"
+        ? ["uv-low", "נמוך"]
         : uv <= 5
-          ? "בינוני"
+          ? ["uv-mod", "בינוני"]
           : uv <= 7
-            ? "גבוה"
+            ? ["uv-high", "גבוה"]
             : uv <= 10
-              ? "גבוה מאוד"
-              : "קיצוני";
-    el.wxUv.textContent = `${uv.toFixed(1)} (${label})`;
+              ? ["uv-vhigh", "גבוה מאוד"]
+              : ["uv-extreme", "קיצוני"];
+    // All values are computed constants — innerHTML is safe here
+    el.wxUv.innerHTML = `<span class="uv-pill ${uvCls}">${uv.toFixed(0)}</span> ${uvLabel}`;
   }
 
   // Daily forecast
@@ -115,7 +253,49 @@ function renderWeather(d: WeatherResponse): void {
         const wc = d.daily.weather_code[i] ?? 0;
         const emoji = WX_EMOJI[wc] ?? "🌡️";
         fDay.textContent = `${emoji} ${dn} ${toDisplayTemp(mx)}/${toDisplayTemp(mn)}`;
+
+        // Precipitation chance bar (F56)
+        const precip = d.daily.precipitation_probability_max[i];
+        if (precip != null && precip > 0) {
+          const bar = document.createElement("div");
+          bar.className = "wx-precip-bar";
+          const fill = document.createElement("div");
+          fill.className = "wx-precip-fill";
+          fill.style.width = `${Math.min(100, precip)}%`;
+          bar.appendChild(fill);
+          fDay.appendChild(bar);
+        }
       }
+    }
+  }
+
+  // Weekly weather summary (F148)
+  if (d.daily && el.wxWeekSummary) {
+    const maxTemps = d.daily.temperature_2m_max.slice(1, 8).filter(
+      (v): v is number => v != null,
+    );
+    const minTemps = d.daily.temperature_2m_min.slice(1, 8).filter(
+      (v): v is number => v != null,
+    );
+    const codes = d.daily.weather_code.slice(1, 8).filter(
+      (v): v is number => v != null,
+    );
+    if (maxTemps.length && minTemps.length) {
+      const weekMax = Math.round(Math.max(...maxTemps));
+      const weekMin = Math.round(Math.min(...minTemps));
+      // Find dominant weather code (most frequent in range)
+      const freq = new Map<number, number>();
+      codes.forEach((c) => freq.set(c, (freq.get(c) ?? 0) + 1));
+      let dominant = codes[0] ?? 0;
+      let domCount = 0;
+      freq.forEach((cnt, code) => {
+        if (cnt > domCount) {
+          dominant = code;
+          domCount = cnt;
+        }
+      });
+      const domEmoji = WX_EMOJI[dominant] ?? "🌡️";
+      el.wxWeekSummary.textContent = `${domEmoji} ${toDisplayTemp(weekMin)}–${toDisplayTemp(weekMax)}`;
     }
   }
 
@@ -148,7 +328,37 @@ const loadWeather = createCardLoader<WeatherResponse>(
 
 export function initWeatherCard(): void {
   cacheDom();
+  initWeatherCities(); // Apply configured cities from localStorage
   void loadWeather();
   scheduleCard(loadWeather, INTERVALS.WEATHER);
+
+  // Wire chart toggle button (replaces inline onclick="toggleHourlyChartView()")
+  document.getElementById("wx-chart-toggle")?.addEventListener("click", () => {
+    const chart = document.getElementById("wx-hourly");
+    if (chart) chart.classList.toggle("wx-chart-rain");
+  });
+
+  // Wire temperature unit toggle (°C ↔ °F)
+  document
+    .getElementById("wx-temp")
+    ?.addEventListener("click", () => toggleTempUnit());
+
+  // Wire city tab clicks
+  document.getElementById("wx-city-tabs")?.addEventListener("click", (e) => {
+    const tab = (e.target as HTMLElement).closest<HTMLButtonElement>(
+      ".wx-city-tab",
+    );
+    if (!tab) return;
+    const lat = parseFloat(tab.dataset["lat"] ?? "");
+    const lon = parseFloat(tab.dataset["lon"] ?? "");
+    if (isNaN(lat) || isNaN(lon)) return;
+    // Update active state
+    document
+      .querySelectorAll(".wx-city-tab")
+      .forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    void switchWeatherCity(lat, lon);
+  });
+
   diagLog("[weather] Initialized");
 }

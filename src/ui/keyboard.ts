@@ -60,3 +60,22 @@ export function initKeyboard(): void {
 
   diagLog(`[keyboard] Initialized with ${String(actions.length)} shortcuts`);
 }
+
+/**
+ * Convenience: close all known overlays.
+ * For <dialog> elements, calls .close(); for div overlays, removes .visible.
+ * Used by the Escape key handler.
+ */
+export function closeAllOverlays(): void {
+  // <dialog> elements — use native close()
+  const dialogIds = ["config-overlay", "help-overlay", "diag-overlay"];
+  for (const id of dialogIds) {
+    const el = document.getElementById(id) as HTMLDialogElement | null;
+    if (el instanceof HTMLDialogElement && el.open) {
+      el.close();
+    } else {
+      el?.classList.remove("visible");
+    }
+  }
+  diagLog("[keyboard] closeAllOverlays");
+}

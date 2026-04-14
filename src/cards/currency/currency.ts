@@ -53,7 +53,7 @@ const TILE_EL_MAP: Record<string, { rate: keyof CurEls; chg: keyof CurEls }> = {
   XAG: { rate: "silver", chg: "silverChg" },
 };
 
-function cacheDom(): void {
+export function cacheDom(): void {
   curEls = {
     usd: document.getElementById("curUsd"),
     eur: document.getElementById("curEur"),
@@ -72,7 +72,7 @@ function cacheDom(): void {
 // ── Fetch exchange rates ──
 const CUR_APIS = [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK];
 
-async function fetchCurrency(): Promise<Record<string, number>> {
+export async function fetchCurrency(): Promise<Record<string, number>> {
   for (const apiUrl of CUR_APIS) {
     try {
       const res = await fetch(apiUrl);
@@ -90,7 +90,7 @@ async function fetchCurrency(): Promise<Record<string, number>> {
 }
 
 // ── Render currency tiles ──
-function renderCurrency(rates: Record<string, number>): void {
+export function renderCurrency(rates: Record<string, number>): void {
   for (const tile of CUR_TILES) {
     const elMap = TILE_EL_MAP[tile.key];
     if (!elMap) continue;

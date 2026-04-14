@@ -56,4 +56,47 @@ describe("DiagLog", () => {
       expect(formatted.length).toBeGreaterThan(10); // has timestamp prefix
     }
   });
+
+  it("handles empty string without throwing", () => {
+    expect(() => diagLog("")).not.toThrow();
+  });
+
+  it("empty string message stored correctly", () => {
+    diagLog("non-empty");
+    diagLog("");
+    const entries = getDiagEntries();
+    expect(entries[0]?.msg).toBe("");
+  });
+
+  it("handles special characters", () => {
+    diagLog("test <script>alert(1)</script>");
+    const entry = getDiagEntries()[0];
+    expect(entry?.msg).toBe("test <script>alert(1)</script>");
+  });
+
+  it("each entry has a numeric ts field", () => {
+    diagLog("ts-check");
+    const entry = getDiagEntries()[0];
+    expect(typeof entry?.ts).toBe("number");
+  });
+
+  it("ts is a recent timestamp", () => {
+    const before = Date.now();
+    diagLog("time-check");
+    const after = Date.now();
+    const entry = getDiagEntries()[0];
+    expect(entry?.ts).toBeGreaterThanOrEqual(before);
+    expect(entry?.ts).toBeLessThanOrEqual(after);
+  });
+
+  it("getDiagEntries returns array type", () => {
+    expect(Array.isArray(getDiagEntries())).toBe(true);
+  });
+
+  it("formatDiagEntry result contains the timestamp", () => {
+    diagLog("with-ts");
+    const entry = getDiagEntries()[0]!;
+    const formatted = formatDiagEntry(entry);
+    expect(formatted).toMatch(/\d/); // contains digits (timestamp)
+  });
 });

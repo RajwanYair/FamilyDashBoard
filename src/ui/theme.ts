@@ -1,38 +1,53 @@
 /**
- * FamilyDashBoard v6 — Theme System
+ * FamilyDashBoard v7 — Theme System
  *
- * 5 themes: black, blue, matrix, amber, purple.
+ * 6 themes: black, blue, matrix, amber, purple, rose.
  * Cycle with T key, persist in localStorage.
+ * v7: respects prefers-color-scheme when no saved theme.
  */
 
 import { diagLog } from "../core/diag";
 
-export const THEMES = ["black", "blue", "matrix", "amber", "purple"] as const;
+export const THEMES = [
+  "black",
+  "blue",
+  "matrix",
+  "amber",
+  "purple",
+  "rose",
+] as const;
 export type ThemeName = (typeof THEMES)[number];
 
 const LS_THEME_KEY = "dash_theme";
 
 /**
  * Apply a named theme to the body element.
+ * Uses View Transitions API when available for a smooth crossfade.
  */
 export function applyTheme(theme: string): void {
   const valid = THEMES.includes(theme as ThemeName) ? theme : "black";
-  document.body.classList.remove(...THEMES.map((t) => `theme-${t}`));
-  document.body.classList.add(`theme-${valid}`);
 
-  try {
-    localStorage.setItem(LS_THEME_KEY, valid);
-  } catch {
-    /* quota exceeded */
+  const doApply = (): void => {
+    document.body.classList.remove(...THEMES.map((t) => `theme-${t}`));
+    document.body.classList.add(`theme-${valid}`);
+    try {
+      localStorage.setItem(LS_THEME_KEY, valid);
+    } catch {
+      /* quota exceeded */
+    }
+    // Sync the config panel's theme dropdown
+    const sel = document.getElementById(
+      "theme-select",
+    ) as HTMLSelectElement | null;
+    if (sel && sel.value !== valid) sel.value = valid;
+    diagLog(`[theme] Applied: ${valid}`);
+  };
+
+  if ("startViewTransition" in document) {
+    void document.startViewTransition(doApply);
+  } else {
+    doApply();
   }
-
-  // Sync the config panel's theme dropdown
-  const sel = document.getElementById(
-    "theme-select",
-  ) as HTMLSelectElement | null;
-  if (sel && sel.value !== valid) sel.value = valid;
-
-  diagLog(`[theme] Applied: ${valid}`);
 }
 
 /**
@@ -67,5 +82,30 @@ export function initTheme(): void {
   ) as HTMLSelectElement | null;
   if (sel) {
     sel.addEventListener("change", () => applyTheme(sel.value));
+  }
+
+  // v7: Follow OS dark/light preference changes (only when user hasn't picked a theme)
+  window
+    .matchMedia("(prefers-color-scheme: light)")
+    .addEventListener("change", (e) => {
+      const hasSaved = !!localStorage.getItem(LS_THEME_KEY);
+      if (!hasSaved) {
+        // Light OS → amber; Dark OS → black
+        applyTheme(e.matches ? "amber" : "black");
+      }
+    });
+}
+
+/**
+ * Auto-theme by time of day: apply 'black' between 20:00–07:00 when enabled,
+ * otherwise restore the configured day theme.
+ */
+export function checkAutoTheme(enabled: boolean, dayTheme: ThemeName): void {
+  if (!enabled) return;
+  const h = new Date().getHours();
+  const isNight = h >= 20 || h < 7;
+  const target: ThemeName = isNight ? "black" : dayTheme;
+  if (!document.body.classList.contains(`theme-${target}`)) {
+    applyTheme(target);
   }
 }

@@ -1,0 +1,143 @@
+/* ── Hebrew Calendar Card Styles ── */
+
+/* Feature 23: Psalm of the Day */
+.hc-psalm-val {
+  font-size: 0.68em;
+  color: var(--text-secondary);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+/* Feature 24: Moon Phase — side block */
+.hc-moon-block {
+  background: var(--bg-card-inner);
+  border-radius: 7px;
+  padding: 5px 6px;
+  text-align: center;
+  direction: rtl;
+}
+.hc-moon-val {
+  font-size: 0.86em;
+  color: var(--cyan);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Feature 30: Halacha Excerpt */
+.hc-halacha-val {
+  font-size: 0.67em;
+  color: var(--text-muted);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+/* Feature 44: Parasha Sefaria link */
+.hc-parasha-link {
+  font-size: 0.62em;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  margin-right: 4px;
+  opacity: 0.8;
+}
+.hc-parasha-link:hover {
+  opacity: 1;
+}
+
+/* Feature 82: Halacha ticker category badge */
+.ticker-halacha-cat {
+  font-size: 0.68em;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(96, 165, 250, 0.14);
+  color: var(--accent);
+  margin-inline-end: 8px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* F106: Halacha category color tags */
+.hc-tag-shabbat {
+  background: rgba(251, 191, 36, 0.16) !important;
+  color: var(--warning) !important;
+}
+.hc-tag-tefila {
+  background: rgba(96, 165, 250, 0.16) !important;
+  color: var(--accent) !important;
+}
+.hc-tag-kashrut {
+  background: rgba(52, 211, 153, 0.16) !important;
+  color: var(--positive) !important;
+}
+.hc-tag-family {
+  background: rgba(244, 114, 182, 0.16) !important;
+  color: #f472b6 !important;
+}
+.hc-tag-moadim {
+  background: rgba(167, 139, 250, 0.16) !important;
+  color: #a78bfa !important;
+}
+
+/* F127: Halacha Sefaria deeplink */
+#hc-halacha-row {
+  cursor: pointer;
+}
+#hc-halacha-row:hover .hc-halacha-val {
+  color: var(--accent);
+}
+
+/* F151: Sefirat HaOmer row */
+#hc-omer-row .omer-count {
+  font-size: 0.82em;
+}
+
+/* F157: Halacha full-text overlay */
+.halacha-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  background: rgba(6, 11, 20, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.halacha-overlay.visible {
+  display: flex;
+}
+.halacha-overlay-inner {
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-radius: 14px;
+  max-width: 680px;
+  width: 100%;
+  padding: 22px 26px;
+  direction: rtl;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.halacha-overlay-ref {
+  font-size: 0.7em;
+  color: var(--accent);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.halacha-overlay-text {
+  font-size: 0.85em;
+  line-height: 1.65;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+.halacha-overlay-close {
+  margin-top: 14px;
+  font-size: 0.72em;
+  color: var(--text-muted);
+  text-align: center;
+  cursor: pointer;
+}
