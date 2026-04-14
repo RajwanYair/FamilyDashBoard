@@ -2,7 +2,8 @@
  * Tests for src/ui/maximize.ts
  *
  * Covers: getMaximizedCard, toggleCardMaximize (expand/collapse/swap),
- * initCardMaximize (wires header click listeners).
+ * initCardMaximize (wires header click listeners),
+ * computeFontScale (v7.1 adaptive font scaling).
  *
  * Uses vi.resetModules() per describe because maximize.ts holds module-level
  * `maximizedCard` state.
@@ -15,6 +16,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 type MaxMod = {
   getMaximizedCard: () => HTMLElement | null;
   toggleCardMaximize: (card: HTMLElement) => void;
+  computeFontScale: (first: DOMRect, last: DOMRect) => number;
   initCardMaximize: () => void;
 };
 
@@ -526,3 +528,74 @@ describe("Maximize — initCardCollapse card-id fallback via child element", () 
     expect(stored).toContain("child-panel");
   });
 });
+
+// ── v7.1: computeFontScale ────────────────────────────────────────────────────
+
+describe("Maximize — computeFontScale (v7.1 adaptive font scaling)", () => {
+  let mod: MaxMod;
+
+  beforeEach(async () => {
+    stubAnimate();
+    mod = await freshMax();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  function rect(w: number, h: number): DOMRect {
+    return { width: w, height: h, top: 0, left: 0, bottom: h, right: w, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+  }
+
+  it("returns 1 when expanded card is same size as original (no scale-up)", () => {
+    expect(mod.computeFontScale(rect(400, 300), rect(400, 300))).toBe(1);
+  });
+
+  it("uses the smaller axis — width-limited expansion", () => {
+    // Expands 3× wider but only 2× taller → should use factor 2
+    const scale = mod.computeFontScale(rect(300, 200), rect(900, 400));
+    expect(scale).toBe(2);
+  });
+
+  it("uses the smaller axis — height-limited expansion", () => {
+    // Expands 4× taller but only 1.5× wider → should use factor 1.5
+    const scale = mod.computeFontScale(rect(400, 100), rect(600, 400));
+    expect(scale).toBe(1.5);
+  });
+
+  it("clamps scale to [1, 4] — prevents absurdly large fonts", () => {
+    // A full-HD expansion from a tiny 50×50 collapsed card
+    expect(mod.computeFontScale(rect(50, 50), rect(1920, 1080))).toBe(4);
+  });
+
+  it("clamps scale to minimum 1 — never shrinks font below normal", () => {
+    // Maximized card somehow ends up smaller than collapsed (should not happen in practice)
+    expect(mod.computeFontScale(rect(500, 400), rect(200, 100))).toBe(1);
+  });
+
+  it("sets --max-font-scale CSS property on the card element when expanded", () => {
+    const card = makeCard("scale-card");
+    // Mock getBoundingClientRect to simulate a 2× expansion (height-limited)
+    let callCount = 0;
+    card.getBoundingClientRect = vi.fn(() => {
+      callCount++;
+      // First call (before .maximized): small rect
+      if (callCount === 1) return rect(300, 200);
+      // Second call (after .maximized): 2× taller, 3× wider → min axis = 2
+      return rect(900, 400);
+    });
+    mod.toggleCardMaximize(card);
+    const scaleVar = card.style.getPropertyValue("--max-font-scale");
+    expect(scaleVar).toBe("2");
+  });
+
+  it("removes --max-font-scale after collapse animation finishes", async () => {
+    const card = makeCard("cleanup-card");
+    mod.toggleCardMaximize(card); // expand → sets --max-font-scale
+    mod.toggleCardMaximize(card); // collapse → removes after animation
+    // anim.finished is a resolved Promise, so wait a microtask tick
+    await Promise.resolve();
+    expect(card.style.getPropertyValue("--max-font-scale")).toBe("");
+  });
+})

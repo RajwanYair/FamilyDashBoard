@@ -36,6 +36,13 @@ const removeCrossOrigin: Plugin = {
       );
       // 2. Fix all /FamilyDashBoard/ absolute refs to relative for file://
       result = result.replace(/\/FamilyDashBoard\//g, "./");
+      // 3. Convert module scripts to plain scripts — Chrome enforces CORS for
+      //    type="module" fetches; file:// has no CORS headers, so they fail.
+      //    The IIFE bundle has no runtime `import` statements, so plain <script>
+      //    is functionally identical and loads without CORS restrictions.
+      result = result.replace(/<script type="module"/g, "<script");
+      // 4. Remove all modulepreload links — they're only meaningful for ES modules
+      result = result.replace(/<link[^>]*rel="modulepreload"[^>]*\/?>\s*/gi, "");
     }
     return result;
   },
@@ -57,38 +64,49 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "src/index.html"),
       },
-      output: {
-        // Deterministic chunk names for long-term caching
-        entryFileNames: "assets/[name]-[hash].js",
-        chunkFileNames: "assets/[name]-[hash].js",
-        assetFileNames: "assets/[name]-[hash].[ext]",
-        manualChunks: (id: string) => {
-          if (
-            id.includes("/cards/weather/") ||
-            id.includes("/cards/motivation/") ||
-            id.includes("/cards/news/") ||
-            id.includes("/cards/stocks/") ||
-            id.includes("/cards/currency/") ||
-            id.includes("/cards/alerts/") ||
-            id.includes("/cards/hebrew-cal/") ||
-            id.includes("/cards/calendar/")
-          ) {
-            return "cards";
+      output: isLocalBuild
+        ? {
+            // Single self-contained IIFE for file:// access.
+            // No ES module `import` statements at runtime = no CORS restrictions,
+            // so Chrome can load this directly from file:// without --allow-file-access-from-files.
+            format: "iife" as const,
+            inlineDynamicImports: true,
+            entryFileNames: "assets/[name]-[hash].js",
+            chunkFileNames: "assets/[name]-[hash].js",
+            assetFileNames: "assets/[name]-[hash].[ext]",
           }
-          if (
-            id.includes("/cards/tasks/") ||
-            id.includes("/cards/system-info/")
-          ) {
-            return "cards-v7";
-          }
-          if (
-            id.includes("/core/card-registry") ||
-            id.includes("/types/card")
-          ) {
-            return "card-infra";
-          }
-        },
-      },
+        : {
+            // GitHub Pages build: ES modules with code splitting for optimal caching.
+            entryFileNames: "assets/[name]-[hash].js",
+            chunkFileNames: "assets/[name]-[hash].js",
+            assetFileNames: "assets/[name]-[hash].[ext]",
+            manualChunks: (id: string) => {
+              if (
+                id.includes("/cards/weather/") ||
+                id.includes("/cards/motivation/") ||
+                id.includes("/cards/news/") ||
+                id.includes("/cards/stocks/") ||
+                id.includes("/cards/currency/") ||
+                id.includes("/cards/alerts/") ||
+                id.includes("/cards/hebrew-cal/") ||
+                id.includes("/cards/calendar/")
+              ) {
+                return "cards";
+              }
+              if (
+                id.includes("/cards/tasks/") ||
+                id.includes("/cards/system-info/")
+              ) {
+                return "cards-v7";
+              }
+              if (
+                id.includes("/core/card-registry") ||
+                id.includes("/types/card")
+              ) {
+                return "card-infra";
+              }
+            },
+          },
     },
   },
 
@@ -97,6 +115,16 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
     },
   },
+
+  // Suppress rolldown warning for IIFE local builds:
+  // Vite has already replaced import.meta.env.* at transform time,
+  // so the remaining import.meta references are only in Vite's own injected CSS
+  // helper snippets which rolldown replaces with {} correctly.
+  ...(isLocalBuild
+    ? {
+        define: { "import.meta": "{}" },
+      }
+    : {}),
 
   server: {
     port: 3000,
