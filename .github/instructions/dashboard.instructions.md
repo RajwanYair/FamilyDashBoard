@@ -100,3 +100,40 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 - `scheduleIdle(fn)`: `requestIdleCallback` wrapper
 - DocumentFragment batch writes for alerts/news
 - `raceProxies()` via `Promise.any()` for fastest stock data
+
+## Card Content Layout — Tile Grid Rule
+
+**All card body content must use rectangular tile blocks, not line/list display.**
+
+| ✅ Preferred (tile grid) | ❌ Avoid (line list) |
+|--------------------------|----------------------|
+| Weather UV, wind, humidity as chips in a row | System-info `<p>label: value</p>` rows |
+| Currency pairs as 2-col grid tiles | Stacked `<div class="row">` label + value |
+| Stock stats as pill badges | Plain `<li>item</li>` list |
+
+**Pattern to use:**
+```css
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  padding: 8px;
+}
+.card-tile {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius);
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.card-tile-label { font-size: 0.72em; color: var(--text-secondary); }
+.card-tile-value { font-size: 1em; font-weight: 700; }
+```
+
+**Exceptions** (inherently sequential content):
+- News feed headlines
+- Stock ticker price rows
+- Calendar event list

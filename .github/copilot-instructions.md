@@ -43,5 +43,6 @@
 20. Themes: 6 total — dark · ocean · forest · warm · high-contrast · rose (ThemeName union in `types/config.ts`)
 21. After each sprint/set of changes: `git add -A && git commit -m "feat|fix|chore: <description>"` before proceeding to the next sprint
 22. `cGet()` and `cGetStale()` return `null` (not `undefined`) for cache misses — always check `!== null`, never `!== undefined`
-23. `dist/` is built with `--base ./` for `file://` access; `removeCrossOrigin` Vite plugin strips `crossorigin` attrs
+23. `dist/` is built with `--base ./` for `file://` access; `removeCrossOrigin` Vite plugin strips `crossorigin` attrs, strips CSP meta, converts `type=module` → plain `<script>`, and outputs a single IIFE bundle
 24. After **every** Copilot chat session: commit with `git add -A && git commit -m "chore: <session summary>"` before closing
+25. **Card content layout: always use rectangular tile/grid blocks** — never plain vertical line lists. Each data point (metric, stat, label+value pair) must be a self-contained visually-bordered tile in a `display: grid` or `display: flex; flex-wrap: wrap` container. Model: weather UV/wind/humidity chips, not system-status `<p>` rows. CSS: `grid-template-columns: repeat(auto-fit, minmax(Xpx, 1fr))` is the default pattern. Exception only when content is inherently sequential (e.g. news feed headlines, stock ticker rows).
