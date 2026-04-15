@@ -1623,3 +1623,96 @@ describe("Weather — renderWeather without daily data", () => {
     vi.unstubAllGlobals();
   });
 });
+// ── WX_EMOJI fallback "🌡️" for current weather (line 209) ───────────────────
+
+describe("Weather — renderWeather WX_EMOJI fallback for unknown weather_code (line 209)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <span id="top-temp"></span><span id="wx-temp"></span>
+      <span id="wx-desc"></span><span id="wx-icon"></span>
+      <span id="wx-wind"></span><span id="wx-hum"></span>
+      <span id="wx-uv"></span><span id="wx-rise"></span>
+      <div id="wx-hourly"></div><div id="wx-forecast"></div>
+      <span id="wx-minmax"></span><span id="wx-week-summary"></span>
+      <span id="wx-feels"></span><span id="wx-sky-pill"></span>
+    `;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("sets wxIcon to '🌡️' when weather_code is not in WX_EMOJI map (line 209 ?? branch)", () => {
+    // Use weather_code=10 which is NOT in WX_EMOJI → WX_EMOJI[10] = undefined → "🌡️" fallback
+    const data = makeWeather({ weather_code: 10 });
+    renderWeather(data);
+    expect(document.getElementById("wx-icon")?.textContent).toBe("🌡️");
+  });
+});
+
+// ── WX_EMOJI fallback and wc ?? 0 in forecast (lines 251-252) ────────────────
+
+describe("Weather — renderWeather forecast wc ?? 0 and WX_EMOJI ?? '🌡️' (lines 251-252)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <span id="top-temp"></span><span id="wx-temp"></span>
+      <span id="wx-desc"></span><span id="wx-icon"></span>
+      <span id="wx-wind"></span><span id="wx-hum"></span>
+      <span id="wx-uv"></span><span id="wx-rise"></span>
+      <div id="wx-hourly"></div>
+      <div id="wx-forecast">
+        <div class="wx-fday"></div><div class="wx-fday"></div>
+        <div class="wx-fday"></div><div class="wx-fday"></div>
+        <div class="wx-fday"></div><div class="wx-fday"></div>
+        <div class="wx-fday"></div>
+      </div>
+      <span id="wx-minmax"></span><span id="wx-week-summary"></span>
+      <span id="wx-feels"></span><span id="wx-sky-pill"></span>
+    `;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("uses wc=0 via ?? 0 for null weather_code entry (line 251) and emoji fallback for code 10 (line 252)", () => {
+    const data = makeWeather();
+    // Index 1: null → wc=0 via ?? 0 (line 251 TRUE branch) — WX_EMOJI[0]="☀️" (no 252 fallback)
+    // Index 2: 10 → wc=10 (line 251 FALSE branch) — WX_EMOJI[10]=undefined → "🌡️" (line 252 TRUE branch)
+    data.daily.weather_code = [0, null as unknown as number, 10, 0, 0, 0, 0, 0];
+    renderWeather(data);
+    const fDays = document.querySelectorAll<HTMLElement>(".wx-fday");
+    // fDays[0] = i=1 (null→0→"☀️"), fDays[1] = i=2 (10→"🌡️")
+    expect(fDays[0]?.textContent).toContain("☀️"); // wc=0 via ?? 0 → "☀️"
+    expect(fDays[1]?.textContent).toContain("🌡️"); // wc=10 → "🌡️" fallback
+  });
+});
+
+// ── City tab missing data-lon → ?? "" → isNaN(lon) → return (line 351) ───────
+
+describe("Weather — city tab click missing data-lon triggers ?? '' fallback (line 351)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+  });
+
+  it("lon ?? '' fires when .wx-city-tab has no data-lon attribute (line 351 ?? '' branch)", async () => {
+    document.body.innerHTML = `
+      <span id="wx-temp"></span><span id="top-temp"></span>
+      <div id="wx-city-tabs">
+        <button class="wx-city-tab active" data-city="1" data-lat="32.0">ירושלים</button>
+      </div>
+    `;
+    // initWeatherCard wires the click handler
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 200 })));
+    const mod = await import("@/cards/weather/weather");
+    mod.initWeatherCard();
+    // Tab has data-lat but NO data-lon → dataset["lon"] = undefined → ?? "" → parseFloat("") = NaN
+    // → isNaN(lon) = true → early return at line 352 (no crash)
+    const tab = document.querySelector<HTMLElement>(".wx-city-tab");
+    expect(() => tab?.click()).not.toThrow();
+    vi.unstubAllGlobals();
+  });
+});

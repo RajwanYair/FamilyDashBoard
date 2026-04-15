@@ -179,3 +179,19 @@ describe("Config — saveConfig localStorage.setItem catch (line 37)", () => {
     expect(() => saveConfig(DEFAULT_CONFIG)).not.toThrow();
   });
 });
+// ── loadConfigFromHash non-object parsed (line 70) ────────────────────────────
+
+describe("Config — loadConfigFromHash non-object parsed value (line 70)", () => {
+  it("returns null when decoded JSON is a primitive string (line 70 typeof check)", () => {
+    // Encode a JSON string (not an object) → typeof parsed !== "object" → return null
+    const hash = "#cfg=" + btoa(unescape(encodeURIComponent(JSON.stringify("hello"))));
+    const result = loadConfigFromHash(hash);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when decoded JSON is JSON null (line 70 parsed===null branch)", () => {
+    const hash = "#cfg=" + btoa(unescape(encodeURIComponent(JSON.stringify(null))));
+    const result = loadConfigFromHash(hash);
+    expect(result).toBeNull();
+  });
+});

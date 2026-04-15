@@ -1528,3 +1528,23 @@ describe("News — loadVisited catch path via fresh module (line 141)", () => {
     expect(mod.isVisited("any-url")).toBe(false);
   });
 });
+// ── loadVisited catch correct key (line 141) ─────────────────────────────────
+
+describe("News — loadVisited catch using correct VISITED_KEY (line 141)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    sessionStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("sets _visited to empty Set when dash_visited_news has invalid JSON (line 141 catch)", async () => {
+    // Use the actual key from news.ts ("dash_visited_news") with invalid JSON
+    sessionStorage.setItem("dash_visited_news", "{INVALID_JSON!!!");
+    vi.resetModules();
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    const mod = await import("@/cards/news/news");
+    // cacheDom() calls loadVisited() → JSON.parse("{INVALID_JSON!!!") throws → catch → _visited = new Set()
+    mod.cacheDom();
+    expect(mod.isVisited("http://any.url")).toBe(false);
+  });
+});

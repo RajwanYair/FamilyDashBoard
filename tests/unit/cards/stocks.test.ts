@@ -1867,3 +1867,95 @@ describe("Stocks — renderPortfolioRow totalCost=0 branch (line 664)", () => {
     expect(chip?.textContent).toContain("0.0%");
   });
 });
+// ── updateMarketBadge countdown="" on Saturday (line 130 FALSE branch) ────────
+
+describe("Stocks — updateMarketBadge countdown empty string on Saturday (line 130)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("shows closed badge with empty countdown on Saturday (line 130 FALSE mins=0)", () => {
+    vi.useFakeTimers();
+    // Saturday: getMinutesToNextTransition returns 0 → countdown = "" (FALSE branch of mins > 0)
+    vi.setSystemTime(new Date("2024-01-13T14:00:00Z")); // Saturday 14:00 UTC
+    document.body.innerHTML = `<span id="market-badge"></span>`;
+    updateMarketBadge();
+    const badge = document.getElementById("market-badge");
+    // Status=closed + countdown="" → label = "🔴 סגור"
+    expect(badge?.textContent).toBe("🔴 סגור");
+  });
+});
+
+// ── updateStockSummary flat++ branch (line 558) via loadAllStocks ─────────────
+
+describe("Stocks — updateStockSummary flat++ branch (line 558)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("counts flat stocks when no stk-up/stk-down class present (line 558 flat++)", async () => {
+    // DOM with all required elements
+    document.body.innerHTML = `
+      <div id="stocks-body"></div>
+      <div id="stk-summary"></div>
+      <span id="market-badge"></span>
+      <div id="stk-mkt-countdown"></div>
+      <div id="stk-total-row" style="display:none"></div>
+      <div id="stk-total-val"></div>
+      <div id="stk-total-pnl"></div>
+      <div id="header-portfolio-pl" style="display:none"></div>
+    `;
+    // Clear all stock cache so all symbols are uncached → loadStockSingle fails for each
+    cClear();
+    // initStocksCard → renderStocksShell (creates .stk elements without stk-up/stk-down)
+    // → loadAllStocks → all fetch fail → updateStockSummary → flat++ for each .stk element
+    initStocksCard();
+    // Await async completion of loadAllStocks (Promises resolve, no timers needed)
+    await new Promise<void>((resolve) => setTimeout(resolve, 50));
+    const summaryEl = document.getElementById("stk-summary");
+    // flat > 0 → textContent includes the flat count (15 stocks, all flat because fetch failed)
+    expect(summaryEl?.textContent).toContain("15");
+  });
+});
+
+// ── renderPortfolioRow entry.cost undefined → ?? 0 (line 657) ────────────────
+
+describe("Stocks — renderPortfolioRow entry.cost undefined → ?? 0 (line 657)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+  });
+
+  it("uses 0 for cost when entry.cost field is absent (line 657 ?? 0 branch)", () => {
+    document.body.innerHTML = `
+      <div id="stk-total-row" style="display:none"></div>
+      <div id="stk-total-val"></div>
+      <div id="stk-total-pnl"></div>
+      <div id="header-portfolio-pl" style="display:none"></div>
+    `;
+    // Portfolio entry WITHOUT cost field → entry.cost = undefined → ?? 0 fires at line 657
+    const portfolio = { AAPL: { shares: 10 } };
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify(portfolio));
+    // Provide a cached price so cGetStale returns data (line 653-654)
+    cSet("stk-AAPL", {
+      chart: {
+        result: [{
+          meta: { regularMarketPrice: 180, previousClose: 175, currency: "USD", regularMarketVolume: 0 },
+          indicators: { quote: [{ close: [175, 180] }] },
+        }],
+        error: null,
+      },
+    });
+    expect(() => renderPortfolioRow()).not.toThrow();
+    // entry.cost was undefined → ?? 0 → totalCost = 0 → totalValue = 1800
+    const totalEl = document.getElementById("stk-total-val");
+    expect(totalEl?.textContent).toContain("1,800");
+  });
+});

@@ -1209,3 +1209,30 @@ describe("Ticker — loadHalacha category?.[0] ?? '' fallback (line 239)", () =>
     expect(document.getElementById("halacha-ticker")?.childElementCount).toBe(0);
   });
 });
+
+// ── renderHalachaExcerpt early return when hc-halacha absent (line 138) ──────
+
+describe("Ticker — renderHalachaExcerpt early return when #hc-halacha absent (line 138)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("returns early at line 138 when #hc-halacha is not in DOM", () => {
+    // Set up DOM with #halacha-ticker but NO #hc-halacha or #hc-halacha-row
+    // cacheDom() in ticker sets elHcHalacha = null → renderHalachaExcerpt returns early
+    document.body.innerHTML = `<div id="halacha-ticker" class="ticker-inner"></div>`;
+    // Return cached data WITH texts so renderTicker runs past line 117
+    vi.mocked(cGet).mockReturnValue({
+      ref: "SA.OC.1",
+      heRef: "שולחן ערוך א",
+      category: "Halakhah",
+      url: "https://sefaria.org/SA.OC.1",
+      texts: ["הלכה בדיקה"],
+    });
+    // initTicker → cacheDom (elHcHalacha=null) → loadHalacha → renderTicker →
+    // elTicker exists, texts.length>0 → renderHalachaExcerpt → !elHcHalacha → return (line 138)
+    expect(() => initTicker()).not.toThrow();
+  });
+});

@@ -160,3 +160,21 @@ describe("Keyboard — closeAllOverlays", () => {
     expect(config?.hasAttribute("open")).toBe(false);
   });
 });
+// ── keyboard: "p" key → window.print() (line 42 fn coverage) ────────────────
+
+describe("Keyboard — p key dispatches window.print (line 42 handler)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("calls window.print when p keydown is dispatched (covers the print handler fn)", () => {
+    // happy-dom doesn't define window.print — stub it before spying
+    const printMock = vi.fn();
+    vi.stubGlobal("print", printMock);
+    initKeyboard();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "p", bubbles: true }));
+    expect(printMock).toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+});

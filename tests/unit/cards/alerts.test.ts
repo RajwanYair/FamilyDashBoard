@@ -1027,3 +1027,83 @@ describe("Alerts — loadAlerts data[0]?.id ?? null (line 271)", () => {
     vi.runAllTimers();
   });
 });
+
+// ── renderAlerts highlightNew=true → elBadge update (line 186) ───────────────
+
+describe("Alerts — renderAlerts highlightNew=true updates badge (line 186)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("sets elBadge.textContent when highlightNew=true and badge is in DOM (line 186 TRUE)", () => {
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge" style="display:none"></div>`;
+    cacheDom();
+    const nowSec = Math.floor(Date.now() / 1000);
+    const data: AlertEvent[] = [
+      { id: "hl1", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowSec - 30 }] },
+    ];
+    // highlightNew=true → _unread++ → if (elBadge) → line 186 fires
+    renderAlerts(data, true);
+    const badge = document.getElementById("alerts-badge");
+    // Badge text should be the unread count (≥ 1)
+    expect(Number(badge?.textContent)).toBeGreaterThanOrEqual(1);
+    expect(badge?.style.display).toBe("");
+  });
+});
+
+// ── loadAlerts else block data.length=0 (lines 287-290) ──────────────────────
+
+describe("Alerts — loadAlerts else block when fetch returns empty array (lines 287-290)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+  });
+
+  it("hits else block (_haveActive=false) when fetchAlerts returns [] (lines 287-290)", async () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    // fetch returns empty array → data.length === 0 → else branch fires
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => [] }));
+    await loadAlerts();
+    vi.runAllTimers();
+    // No throw and function completed
+    expect(document.getElementById("alerts-scroll")).not.toBeNull();
+  });
+});
+
+// ── loadAlerts catch block via cSet throw (lines 291-295) ────────────────────
+
+describe("Alerts — loadAlerts catch block when cSet throws (lines 291-295)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+  });
+
+  it("hits catch block when cSet throws after valid data received (lines 291-295)", async () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    const nowTs = Math.floor(Date.now() / 1000);
+    // fetch returns valid alert data (data.length > 0) → then cSet throws → outer catch fires
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: "z1", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] }],
+    }));
+    // Spy on cSet from the real cache module to throw when called
+    const cacheModule = await import("@/core/cache");
+    vi.spyOn(cacheModule, "cSet").mockImplementationOnce(() => {
+      throw new Error("forced cSet throw for catch coverage");
+    });
+    // Should resolve (catch handles error) rather than reject
+    await expect(loadAlerts()).resolves.toBeUndefined();
+    vi.runAllTimers();
+  });
+});

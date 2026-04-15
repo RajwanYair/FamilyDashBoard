@@ -1015,4 +1015,113 @@ describe("Config Panel — importSettings no-file early return (line 434)", () =
   });
 });
 
+// ── collectForm disabledFeeds split → array (line 303) ───────────────────────
 
+describe("Config Panel — collectForm disabledFeeds split (line 303)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("splits cfg-feeds-disabled comma-value into disabledFeeds array (line 303)", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const feedsEl = document.getElementById("cfg-feeds-disabled") as HTMLInputElement | null;
+    if (feedsEl) feedsEl.value = "Ynet,וואלה,N12";
+    document.getElementById("cfg-save-btn")?.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as { disabledFeeds?: string[] };
+    // Should have split by comma and filtered empty strings
+    expect(Array.isArray(saved.disabledFeeds)).toBe(true);
+    if (saved.disabledFeeds?.length) {
+      expect(saved.disabledFeeds).toContain("Ynet");
+      expect(saved.disabledFeeds).toContain("N12");
+    }
+  });
+});
+
+// ── isConfigPanelOpen returns false via ?? false when overlay null (line 409) ──
+
+describe("Config Panel — isConfigPanelOpen ?? false when overlay is null (line 409)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.resetModules();
+  });
+
+  it("returns false via ?? false when config-overlay not in DOM (line 409)", async () => {
+    document.body.innerHTML = ""; // no config-overlay
+    vi.resetModules();
+    const mod = await import("@/ui/config-panel");
+    // overlay() returns null → ?.classList.contains() returns undefined → ?? false → false
+    expect(mod.isConfigPanelOpen()).toBe(false);
+  });
+});
+
+// ── applyConfig card size sets data-card-size on matching element (line 507) ──
+
+describe("Config Panel — applyConfig sets [data-card-size] on matching card element (line 507)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("sets data-card-size attribute on card element when cardSizes config has matching id (line 507)", async () => {
+    setupDOM(); // includes <select class="cfg-card-size-sel" data-card-id="weather"> and <div data-card-id="weather">
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    // Select the weather card size as "lg"
+    const sizeEl = document.querySelector<HTMLSelectElement>(".cfg-card-size-sel[data-card-id='weather']");
+    if (sizeEl) sizeEl.value = "lg";
+    // Click save → collectForm sets cardSizes["weather"]="lg" → applyConfig runs → line 507 fires
+    document.getElementById("cfg-save-btn")?.click();
+    const cardEl = document.querySelector<HTMLElement>("[data-card-id='weather']");
+    // After apply, data-card-size should be updated to "lg"
+    expect(cardEl?.dataset["cardSize"]).toBe("lg");
+  });
+});
+
+// ── isConfigPanelOpen returns false via ?? false when overlay null (line 409) ──
+
+describe("Config Panel — isConfigPanelOpen ?? false when overlay is null (line 409)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.resetModules();
+  });
+
+  it("returns false via ?? false when config-overlay not in DOM (line 409)", async () => {
+    document.body.innerHTML = ""; // no config-overlay
+    vi.resetModules();
+    const mod = await import("@/ui/config-panel");
+    // overlay() returns null → ?.classList.contains() returns undefined → ?? false → false
+    expect(mod.isConfigPanelOpen()).toBe(false);
+  });
+});
+
+// ── applyConfig card size sets data-card-size on matching element (line 507) ──
+
+describe("Config Panel — applyConfig sets [data-card-size] on matching card element (line 507)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("sets data-card-size attribute on card element when cardSizes config has matching id (line 507)", async () => {
+    setupDOM(); // includes <select class="cfg-card-size-sel" data-card-id="weather"> and <div data-card-id="weather">
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    // Select the weather card size as "lg"
+    const sizeEl = document.querySelector<HTMLSelectElement>(".cfg-card-size-sel[data-card-id='weather']");
+    if (sizeEl) sizeEl.value = "lg";
+    // Click save → collectForm sets cardSizes["weather"]="lg" → applyConfig runs → line 507 fires
+    document.getElementById("cfg-save-btn")?.click();
+    const cardEl = document.querySelector<HTMLElement>("[data-card-id='weather']");
+    // After apply, data-card-size should be updated to "lg"
+    expect(cardEl?.dataset["cardSize"]).toBe("lg");
+  });
+});
