@@ -1,0 +1,68 @@
+/* ── Countdown Card Styles ── */
+
+.countdown-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  gap: 6px;
+  text-align: center;
+}
+
+.cd-title {
+  font-size: 0.88em;
+  font-weight: 700;
+  color: var(--accent-bright, var(--accent));
+  letter-spacing: 0.02em;
+  direction: rtl;
+}
+
+.cd-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+.cd-tile {
+  background: var(--bg-card-inner);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  padding: 6px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cd-num {
+  font-size: 1.6em;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s;
+}
+
+.cd-tile:nth-child(1) .cd-num { color: var(--accent); }
+.cd-tile:nth-child(2) .cd-num { color: var(--cyan, #67e8f9); }
+.cd-tile:nth-child(3) .cd-num { color: var(--purple, #a78bfa); }
+.cd-tile:nth-child(4) .cd-num { color: var(--positive, #34d399); }
+
+.cd-unit {
+  font-size: 0.58em;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.cd-msg {
+  font-size: 0.72em;
+  color: var(--positive, #34d399);
+  font-weight: 600;
+  min-height: 1.2em;
+  direction: rtl;
+}

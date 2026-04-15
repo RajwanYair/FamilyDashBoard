@@ -260,3 +260,25 @@ registerCard({
     return m.systemInfoCard;
   },
 });
+
+registerCard({
+  id: "countdown",
+  icon: "💍",
+  titleHe: "ספירה לאחור",
+  titleEn: "Countdown",
+  load: async (): Promise<CardDefinition> => {
+    const { initCountdownCard } = await import(
+      "@/cards/countdown/countdown"
+    );
+    return legacyAdapter(
+      "countdown",
+      "💍",
+      "ספירה לאחור",
+      "Countdown",
+      2,
+      3,
+      12,
+      initCountdownCard,
+    );
+  },
+});

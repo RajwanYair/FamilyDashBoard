@@ -1,5 +1,15 @@
 /* ── Hebrew Calendar Card Styles ── */
 
+/* Tile grid: link rows, halacha, divider, saying, birthday, tasks strip all span full width */
+#hc-daf-link-row,
+#hc-parasha-link-row,
+#hc-halacha-row,
+#hc-birthday,
+#hc-tasks-strip { grid-column: 1 / -1; }
+/* Link-only rows: show as a centered action button tile */
+#hc-daf-link-row,
+#hc-parasha-link-row { align-items: center; justify-content: center; background: transparent; border-color: transparent; }
+
 /* Feature 23: Psalm of the Day */
 .hc-psalm-val {
   font-size: 0.68em;

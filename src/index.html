@@ -13,7 +13,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rajwanyair.github.io/FamilyDashBoard/">
     <link rel="manifest" href="/FamilyDashBoard/manifest.webmanifest">
-    <link rel="icon" href="/FamilyDashBoard/assets/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="/FamilyDashBoard/icon.svg" type="image/svg+xml">
     <title>רגואן Family Dashboard</title>
 </head>
 <body>
@@ -338,7 +338,9 @@
                   <span id="news-search-count"></span>
                 </div>
                 <div class="news-ticker" id="news-ticker" aria-live="polite"></div>
-                <div class="rss-scroll" id="rss-scroll"></div>
+                <div class="news-scroll-wrap">
+                  <div class="rss-scroll" id="rss-scroll"></div>
+                </div>
               </div>
             </section>
             <section class="card" data-card-id="weather" aria-label="Weather">
@@ -501,6 +503,20 @@
                   <!-- F146: Next quote button; F135: share button -->
                   <button type="button" id="moti-next-btn" title="ציטוט הבא">⏭ הבא</button><button type="button" id="moti-share-btn" title="שתף ציטוט">📤 שתף</button>
                 </div>
+              </div>
+            </section>
+            <!-- Countdown card -->
+            <section class="card" data-card-id="countdown" aria-label="Countdown">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">💍</span> ספירה לאחור</div>
+              <div class="countdown-body">
+                <div class="cd-title" id="cd-wedding-title">חתונת אליאור וטובה</div>
+                <div class="cd-tiles">
+                  <div class="cd-tile"><span class="cd-num" id="cd-days">--</span><span class="cd-unit">ימים</span></div>
+                  <div class="cd-tile"><span class="cd-num" id="cd-hours">--</span><span class="cd-unit">שעות</span></div>
+                  <div class="cd-tile"><span class="cd-num" id="cd-mins">--</span><span class="cd-unit">דקות</span></div>
+                  <div class="cd-tile"><span class="cd-num" id="cd-secs">--</span><span class="cd-unit">שניות</span></div>
+                </div>
+                <div class="cd-msg" id="cd-msg"></div>
               </div>
             </section>
             <!-- Tasks card -->

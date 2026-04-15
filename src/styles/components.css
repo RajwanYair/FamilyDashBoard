@@ -98,7 +98,8 @@ dialog.diag-overlay::backdrop { background: transparent; }
 .diag-log { margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: #94a3b8; max-height: 120px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
 
 /* ── News ── */
-.news-body { flex: 1; overflow: hidden; position: relative; }
+.news-body { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.news-scroll-wrap { flex: 1; overflow: hidden; min-height: 0; }
 .rss-scroll { display: flex; flex-direction: column; animation: newsScroll 60s linear infinite; will-change: transform; }
 .rss-scroll:hover { animation-play-state: paused; }
 .rss-item {
@@ -148,17 +149,18 @@ body.theme-black  .cal-wrapper iframe { filter: invert(1) hue-rotate(180deg) bri
 
 /* ── Hebrew Calendar Card ── */
 .hebcal-body { flex: 1; overflow: hidden; padding: 3px 6px; display: flex; flex-direction: row; gap: 8px; align-items: flex-start; }
-.hc-main-col { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hc-main-col { flex: 1; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; min-width: 0; align-content: start; }
 .hc-side-col { flex-shrink: 0; width: fit-content; min-width: 150px; display: flex; flex-direction: column; gap: 4px; }
-.hc-row { display: flex; align-items: baseline; gap: 6px; padding: 1px 0; }
-.hc-label { font-size: 0.68em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; min-width: 4.5em; }
-.hc-val { font-size: 0.76em; font-weight: 600; color: var(--text-primary); }
+.hc-row { display: flex; flex-direction: column; gap: 1px; padding: 4px 6px; background: var(--bg-card-inner); border-radius: 7px; border: 1px solid var(--accent-border); min-width: 0; overflow: hidden; }
+.hc-label { font-size: 0.62em; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hc-val { font-size: 0.76em; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hc-shab-row { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 8px; justify-content: space-between; }
 .hc-shab-row .hc-label { min-width: 0; }
 .hc-sep { font-size: 0.68em; color: var(--text-muted); flex-shrink: 0; padding: 0 3px; }
-.hc-special-row { justify-content: center; padding: 1px 0; }
+.hc-special-row { grid-column: 1 / -1; justify-content: center; padding: 4px; }
 .hc-special { font-size: 0.74em; font-weight: 700; color: var(--positive); text-align: center; }
-.hc-divider { border-top: 1px solid var(--accent-border); margin: 2px 0; }
-.hc-saying { font-size: 0.66em; color: var(--text-secondary); font-style: italic; line-height: 1.3; text-align: center; padding: 1px 4px; }
+.hc-divider { grid-column: 1 / -1; border-top: 1px solid var(--accent-border); margin: 1px 0; }
+.hc-saying { grid-column: 1 / -1; font-size: 0.66em; color: var(--text-secondary); font-style: italic; line-height: 1.3; text-align: center; padding: 3px 4px; background: var(--bg-card-inner); border-radius: 6px; }
 
 /* ── Stocks ── */
 .col-split { display: flex; flex-direction: column; gap: 8px; min-height: 0; }

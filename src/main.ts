@@ -19,6 +19,7 @@ import "./styles/print.css";
 import "./styles/sprints.css";
 import "./cards/tasks/tasks.css";
 import "./cards/system-info/system-info.css";
+import "./cards/countdown/countdown.css";
 
 // ── Core ──
 import { diagLog } from "./core/diag";
@@ -59,6 +60,7 @@ import { initHebrewCalCard } from "./cards/hebrew-cal/hebrew-cal";
 import { initCalendarCard } from "./cards/calendar/calendar";
 import { initTasksCard } from "./cards/tasks/tasks";
 import { initSystemInfoCard } from "./cards/system-info/system-info";
+import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
 export const VERSION = "7.0.0";
@@ -197,6 +199,7 @@ export function init(): void {
   initCalendarCard();
   initTasksCard();
   initSystemInfoCard();
+  initCountdownCard();
   initTicker();
 
   // ── URL hash config import: #cfg=<base64> overrides localStorage config ──

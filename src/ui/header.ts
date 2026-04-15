@@ -8,6 +8,7 @@ import { diagLog } from "../core/diag";
 // ── DOM cache ──
 let elClock: HTMLElement | null = null;
 let elEngDate: HTMLElement | null = null;
+let elHebrewDate: HTMLElement | null = null;
 let elGreeting: HTMLElement | null = null;
 let elDayBar: HTMLElement | null = null;
 let elYearBar: HTMLElement | null = null;
@@ -167,6 +168,14 @@ export function tickClock(): void {
   });
   if (elEngDate && elEngDate.textContent !== d) elEngDate.textContent = d;
 
+  const hd = now.toLocaleDateString("he-u-ca-hebrew", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jerusalem",
+  });
+  if (elHebrewDate && elHebrewDate.textContent !== hd) elHebrewDate.textContent = hd;
+
   const g = getGreeting();
   if (elGreeting && elGreeting.textContent !== g) elGreeting.textContent = g;
 
@@ -198,6 +207,7 @@ export function setClockSeconds(value: boolean): void {
 export function initHeader(): void {
   elClock = document.getElementById("clock");
   elEngDate = document.getElementById("eng-date");
+  elHebrewDate = document.getElementById("hebrew-date");
   elGreeting = document.getElementById("greeting");
   elDayBar = document.getElementById("day-bar");
   elYearBar = document.getElementById("year-bar");
