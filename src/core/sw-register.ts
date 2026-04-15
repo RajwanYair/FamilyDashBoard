@@ -25,6 +25,31 @@ export async function registerSW(): Promise<void> {
   }
 
   try {
+    // Unregister any stale service workers (e.g. old v5 SW still installed)
+    // before registering the current one. This silently evicts legacy SWs
+    // even if they have an incompatible scope or cache-name, ensuring no old
+    // version can intercept requests after an upgrade.
+    // Also purge any cache entries whose name doesn't start with "familydashboard-v7"
+    // so old caches (v5, v6) never serve stale content.
+    const existing = await navigator.serviceWorker.getRegistrations();
+    for (const reg of existing) {
+      if (reg.scope !== `${window.location.origin}/FamilyDashBoard/`) {
+        diagLog(`[sw] Unregistering stale SW (wrong scope): ${reg.scope}`);
+        await reg.unregister();
+      }
+    }
+
+    // Delete any caches from old versions (v5/v6) that don't match v7
+    if ("caches" in window) {
+      const cacheNames = await caches.keys();
+      for (const name of cacheNames) {
+        if (!name.startsWith("familydashboard-v7")) {
+          diagLog(`[sw] Deleting stale cache: ${name}`);
+          await caches.delete(name);
+        }
+      }
+    }
+
     swRegistration = await navigator.serviceWorker.register(
       "/FamilyDashBoard/sw.js",
       {
