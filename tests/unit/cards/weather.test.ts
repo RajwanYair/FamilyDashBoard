@@ -1716,3 +1716,55 @@ describe("Weather — city tab click missing data-lon triggers ?? '' fallback (l
     vi.unstubAllGlobals();
   });
 });
+
+// ── Branch coverage: initWeatherCities active tab lat ?? "" fallback (line 82) ─
+
+describe("Weather — initWeatherCities active tab with no data-lat fires ?? '' (line 82)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("triggers ?? '' fallback when active tab has no data-lat attribute (line 82 right branch)", () => {
+    // Active tab with NO data-lat → active.dataset["lat"] is undefined → ?? "" fires
+    document.body.innerHTML = `
+      <button class="wx-city-tab active" data-city="1" data-lon="34.8"></button>
+    `;
+    // initWeatherCities: querySelector(".wx-city-tab.active") returns the button;
+    // active.dataset["lat"] is undefined → ?? "" → parseFloat("") = NaN → skip update
+    expect(() => initWeatherCities()).not.toThrow();
+  });
+});
+
+// ── Branch coverage: toggleTempUnit with fresh cache (line 100 LEFT branch) ──
+
+describe("Weather — toggleTempUnit with fresh cache (line 100 ?? left branch)", () => {
+  function buildWeatherDOM(): void {
+    document.body.innerHTML = `
+      <div id="top-temp"></div><div id="wx-temp"></div>
+      <div id="wx-desc"></div><div id="wx-icon"></div>
+      <div id="wx-wind"></div><div id="wx-hum"></div>
+      <div id="wx-uv"></div><div id="wx-rise"></div>
+      <div id="wx-hourly"></div><div id="wx-forecast"></div>
+      <div id="wx-minmax"></div><div id="wx-week-summary"></div>
+      <div id="wx-feels"></div>
+    `;
+    cacheDom();
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("uses fresh cache directly when cGet returns non-null (line 100 ?? LEFT branch / line 101 TRUE branch)", async () => {
+    buildWeatherDOM();
+    const { cSet: realCSet } = await import("@/core/cache");
+    // Store weather data without advancing time — within 30-min TTL
+    // cGet("wx", INTERVALS.WEATHER) returns fresh → ?? left branch taken
+    realCSet("wx", makeWeather());
+    toggleTempUnit();
+    // cGet returned fresh → data = fresh → if (data) TRUE → renderWeather called
+    expect(document.getElementById("wx-temp")?.textContent).not.toBe("");
+  });
+});

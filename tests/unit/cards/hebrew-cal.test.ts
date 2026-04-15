@@ -2080,3 +2080,93 @@ describe("Hebrew Calendar — loadOmer specialRow hidden when all specials duped
     expect(document.getElementById("hc-special-row")?.style.display).toBe("none");
   });
 });
+
+// ── renderHoliday sort comparator runs with 2+ holidays (line 239) ────────────
+
+describe("Hebrew Calendar — renderHoliday sort comparator with 2+ holidays (line 239)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("sort comparator is executed when 2+ future holidays are present (line 239)", async () => {
+    setupDom();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    // Return 2 future holidays via stale cache so renderHoliday is called with 2+ items
+    // → .sort() comparator (line 239) is actually invoked to compare 2 elements
+    const farFuture1 = new Date(Date.now() + 86_400_000 * 5).toISOString(); // 5 days away
+    const farFuture2 = new Date(Date.now() + 86_400_000 * 10).toISOString(); // 10 days away
+    vi.mocked(cGetStale).mockImplementation((key: string) => {
+      if ((key as string).startsWith("holidays-")) {
+        return {
+          items: [
+            { category: "holiday", hebrew: "פסח", title: "Passover", date: farFuture2 },
+            { category: "holiday", hebrew: "שבועות", title: "Shavuot", date: farFuture1 },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    // renderHoliday receives 2 future holidays → .sort() comparator fires for ordering
+    // The closer holiday (farFuture1=5days) comes first after sorting
+    expect(document.getElementById("hc-holiday")?.textContent).toContain("שבועות");
+  });
+});
+
+// ── renderNextCalEvent dedup via _lastSpecialNames.some() (line 736) ─────────
+
+describe("Hebrew Calendar — renderNextCalEvent dedup via _lastSpecialNames.some() (line 736)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("_lastSpecialNames.some() callback executes when a special name is in the ICS (line 736)", async () => {
+    setupDom();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    // Mock loadOmer (via fetchJSONWithWorker) to return a holiday with a real name
+    // This populates _lastSpecialNames = ["שבועות"] after async resolution
+    vi.mocked(fetchJSONWithWorker).mockImplementation(async (url: string) => {
+      if ((url as string).includes("omer=on")) {
+        return {
+          items: [{
+            category: "holiday",
+            hebrew: "שבועות",
+            title: "Shavuot",
+            date: new Date(Date.now() + 86_400_000 * 2).toISOString(),
+          }],
+        };
+      }
+      return {};
+    });
+    initHebrewCalCard();
+    // Wait for the async loadHebCal → loadOmer chain to complete
+    for (let i = 0; i < 30; i++) await Promise.resolve();
+    // _lastSpecialNames is now ["שבועות"]
+    // Set up ICS cache with an event whose summary matches a special name
+    const icsWithShavuot = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:21000101T120000Z",
+      "SUMMARY:שבועות",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    vi.mocked(cGetStale).mockImplementation((key: string) => {
+      if (key === "cal-ics") return icsWithShavuot;
+      return null;
+    });
+    // renderNextCalEvent checks _lastSpecialNames.some() → finds match → isDuplicate=true
+    renderNextCalEvent();
+    // The event row should be hidden (duplicate detected via _lastSpecialNames.some())
+    const row = document.getElementById("hc-event-row");
+    expect(row?.style.display).toBe("none");
+  });
+});

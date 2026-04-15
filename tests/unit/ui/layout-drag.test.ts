@@ -518,3 +518,54 @@ describe("Layout Drag — readCurrentLayout with missing columns (lines 38-40 ??
     expect(layout).toEqual([[], [], []]);
   });
 });
+
+// ── getColIds with child missing data-card-id (line 28 ?? "" right branch) ────
+
+describe("Layout Drag — getColIds skips children without data-card-id (line 28 ?? empty string)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("filters out children with no data-card-id from readCurrentLayout result (line 28 ?? branch)", () => {
+    // Add a child WITHOUT data-card-id — dataset.cardId = undefined → ?? "" → "" filtered by Boolean
+    document.body.innerHTML = `
+      <div class="grid-col grid-col-left">
+        <section class="card" data-card-id="news"></section>
+        <div class="no-id-child"></div>
+      </div>
+      <div class="grid-col grid-col-mid"></div>
+      <div class="grid-col grid-col-right"></div>
+    `;
+    const [left] = readCurrentLayout();
+    // Only "news" should appear — "" (from no-id child) was filtered out
+    expect(left).toEqual(["news"]);
+  });
+});
+
+// ── onDragStart with non-null dataTransfer (lines 64-65 TRUE branch) ──────────
+
+describe("Layout Drag — dragstart with non-null dataTransfer via defineProperty (lines 64-65)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("calls setData and sets effectAllowed when dataTransfer is non-null (lines 64-65 TRUE)", () => {
+    setupColumns(["news"], [], []);
+    initCardDragDrop();
+    const header = document.querySelector<HTMLElement>(".card-header")!;
+
+    const dt = { setData: vi.fn(), effectAllowed: "" as string };
+    const dragEvt = new Event("dragstart", { bubbles: true });
+    // Use defineProperty so dataTransfer is actually readable as non-null
+    Object.defineProperty(dragEvt, "dataTransfer", {
+      value: dt,
+      writable: true,
+      configurable: true,
+    });
+    header.dispatchEvent(dragEvt);
+
+    // Lines 64-65: setData was called AND effectAllowed was set to "move"
+    expect(dt.setData).toHaveBeenCalledWith("text/plain", "news");
+    expect(dt.effectAllowed).toBe("move");
+  });
+});

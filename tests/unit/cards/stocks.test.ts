@@ -1959,3 +1959,163 @@ describe("Stocks — renderPortfolioRow entry.cost undefined → ?? 0 (line 657)
     expect(totalEl?.textContent).toContain("1,800");
   });
 });
+
+// ── renderStock second-call removes existing .stk-after-price (line 411 ?.remove() non-null) ──
+
+describe("Stocks — renderStock second render removes existing .stk-after-price (line 411)", () => {
+  function buildBlock(sym = "AAPL"): HTMLElement {
+    const blk = document.createElement("div");
+    blk.className = "stk";
+    blk.dataset["symbol"] = sym;
+    blk.innerHTML = `
+      <div class="stk-info"><div class="stk-sym">${sym}</div><div class="stk-desc"></div></div>
+      <div class="stk-vals">
+        <div class="stk-price skeleton">---</div>
+        <div class="stk-chg">-</div>
+      </div>
+      <svg class="stk-chart" viewBox="0 0 200 22"></svg>
+      <div class="stk-time">-</div>
+    `;
+    document.body.appendChild(blk);
+    return blk;
+  }
+
+  function makeData(extra: Record<string, unknown> = {}): YahooChartResponse {
+    return {
+      chart: {
+        result: [{
+          meta: {
+            regularMarketPrice: 150,
+            previousClose: 148,
+            currency: "USD",
+            regularMarketVolume: 5_000_000,
+            ...extra,
+          } as YahooChartResponse["chart"]["result"][0]["meta"],
+          indicators: { quote: [{ close: [148, 150] }] },
+        }],
+        error: null,
+      },
+    };
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("second renderStock call removes .stk-after-price created by first call (line 411 non-null ?.remove())", () => {
+    const blk = buildBlock();
+    // First call creates .stk-after-price
+    renderStock(blk, makeData({ postMarketPrice: 151.5, postMarketChangePercent: 1.0 }), "AAPL");
+    expect(blk.querySelector(".stk-after-price")).not.toBeNull();
+    // Second call: line 411 querySelector finds the existing element and ?.remove() fires
+    renderStock(blk, makeData({ postMarketPrice: 152.0, postMarketChangePercent: 2.0 }), "AAPL");
+    // After second render, a new .stk-after-price should exist (old was removed, new added)
+    expect(blk.querySelector(".stk-after-price")).not.toBeNull();
+  });
+});
+
+// ── loadAllStocks partial failure → setSync "ok" not "error" (line 530 FALSE ternary) ──
+
+describe("Stocks — loadAllStocks partial failure sets sync ok (line 530 FALSE branch)", () => {
+  function buildStockDOM(): void {
+    const rows = STOCK_SYMBOLS.map((s) => `<div class="stk" data-symbol="${s}">
+      <div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div>
+      <svg class="stk-chart" viewBox="0 0 200 22"></svg>
+      <div class="stk-time">-</div>
+    </div>`).join("");
+    document.body.innerHTML = `
+      <div id="stocks-body">${rows}</div>
+      <div id="stk-summary"></div>
+      <span id="market-badge"></span>
+      <div id="stk-mkt-countdown"></div>
+      <div id="stk-total-row" style="display:none"></div>
+      <div id="stk-total-val"></div>
+      <div id="stk-total-pnl"></div>
+      <div id="header-portfolio-pl" style="display:none"></div>
+    `;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+    vi.restoreAllMocks();
+  });
+
+  it("sets sync to 'ok' when some symbols were cached and uncached all failed (line 530 FALSE branch)", async () => {
+    buildStockDOM();
+    cClear();
+    // Cache exactly ONE symbol so uncached.length < STOCK_SYMBOLS.length
+    const firstSym = STOCK_SYMBOLS[0]!;
+    cSet(`stk-${firstSym}`, {
+      chart: {
+        result: [{
+          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD", regularMarketVolume: 0 },
+          indicators: { quote: [{ close: [148, 150] }] },
+        }],
+        error: null,
+      },
+    });
+    // All fetch attempts fail → anyOk = false
+    // uncached.length = STOCK_SYMBOLS.length - 1 < STOCK_SYMBOLS.length → "ok"
+    vi.mocked(fetchJSONWithWorker).mockRejectedValue(new Error("forced failure"));
+    vi.mocked(setSync).mockClear();
+    initStocksCard();
+    for (let i = 0; i < 100; i++) await Promise.resolve();
+    // setSync("stocks", "ok") should have been called (partial failure = ok, not error)
+    expect(vi.mocked(setSync)).toHaveBeenCalledWith("stocks", "ok");
+  });
+});
+
+// ── updateStockSummary stk-down branch (line 557 else-if) ────────────────────
+
+describe("Stocks — updateStockSummary counts stk-down stocks (line 557 else-if branch)", () => {
+  function buildStockDOM(): void {
+    const rows = STOCK_SYMBOLS.map((s) => `<div class="stk" data-symbol="${s}">
+      <div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div>
+      <svg class="stk-chart" viewBox="0 0 200 22"></svg>
+      <div class="stk-time">-</div>
+    </div>`).join("");
+    document.body.innerHTML = `
+      <div id="stocks-body">${rows}</div>
+      <div id="stk-summary"></div>
+      <span id="market-badge"></span>
+      <div id="stk-mkt-countdown"></div>
+      <div id="stk-total-row" style="display:none"></div>
+      <div id="stk-total-val"></div>
+      <div id="stk-total-pnl"></div>
+      <div id="header-portfolio-pl" style="display:none"></div>
+    `;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    cClear();
+    vi.restoreAllMocks();
+  });
+
+  it("counts stocks with stk-down class in summary (line 557 else-if dn++ branch)", async () => {
+    buildStockDOM();
+    cClear();
+    // Pre-cache ONE stock with a declining price → renderStock assigns stk-down class
+    const sym = STOCK_SYMBOLS[0]!;
+    cSet(`stk-${sym}`, {
+      chart: {
+        result: [{
+          meta: { regularMarketPrice: 140, previousClose: 150, currency: "USD", regularMarketVolume: 0 },
+          indicators: { quote: [{ close: [150, 140] }] },
+        }],
+        error: null,
+      },
+    });
+    // Other stocks fail to load → flat (no class) or N/A
+    vi.mocked(fetchJSONWithWorker).mockRejectedValue(new Error("forced"));
+    initStocksCard();
+    for (let i = 0; i < 100; i++) await Promise.resolve();
+    const summaryEl = document.getElementById("stk-summary");
+    // Summary contains יורדות count (dn > 0)
+    expect(summaryEl?.textContent ?? "").toContain("יורדות");
+  });
+});

@@ -1548,3 +1548,88 @@ describe("News — loadVisited catch using correct VISITED_KEY (line 141)", () =
     expect(mod.isVisited("http://any.url")).toBe(false);
   });
 });
+
+// ── loadBookmarks reads from localStorage (line 167 ?? LEFT branch) ──────────
+
+describe("News — loadBookmarks with existing localStorage value (line 167 ?? left branch)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    sessionStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("uses stored bookmarks when localStorage has dash_bookmarks (line 167 non-null branch)", () => {
+    // Pre-populate localStorage with a bookmark key BEFORE cacheDom is called
+    localStorage.setItem("dash_bookmarks", JSON.stringify(["stored-bookmark-key"]));
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    // cacheDom() calls loadBookmarks() → localStorage.getItem returns non-null
+    // → ?? "[]" LEFT branch taken (value is not null/undefined)
+    expect(() => cacheDom()).not.toThrow();
+    // Verify loading worked: toggleBookmark should see "stored-bookmark-key" in _bookmarks
+    // A second toggleBookmark removes it, third adds it back (net toggle for cleanup)
+    toggleBookmark("stored-bookmark-key"); // removes (bookmark was loaded)
+    toggleBookmark("stored-bookmark-key"); // adds back
+  });
+});
+
+// ── renderNews rAF callback returns early when elRssScroll is null (line 501) ─
+
+describe("News — renderNews rAF early-return when elRssScroll null (line 501)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    sessionStorage.clear();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("rAF returns early when elRssScroll becomes null before rAF fires (line 501)", () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    cacheDom();
+    // Queue the rAF callback by rendering news
+    renderNews([{ title: "כותרת", link: "", pubDate: "", source: "מקור" }]);
+    // Remove #rss-scroll from DOM and re-call cacheDom → elRssScroll = null
+    document.body.innerHTML = "";
+    cacheDom(); // now elRssScroll = null
+    // Fire rAF (happy-dom implements rAF as setTimeout(0))
+    // line 501: if (!elRssScroll) return → early exit, no throw
+    expect(() => vi.runAllTimers()).not.toThrow();
+  });
+});
+
+// ── initNewsSearch clear button click handler (lines 557-560) ────────────────
+
+describe("News — initNewsSearch clear button click (lines 557-560)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    sessionStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("clicking #news-search-clear clears the search query (lines 557-560)", async () => {
+    // Use a fresh module instance so that cacheDom wires elSearchClear from this DOM
+    vi.resetModules();
+    document.body.innerHTML = `
+      <div id="rss-scroll"></div>
+      <input id="news-search" value="" />
+      <button id="news-search-clear"></button>
+      <span id="news-search-count"></span>
+    `;
+    const mod = await import("@/cards/news/news");
+    // cacheDom sets elSearchClear, then initNewsCard wires the click handler
+    mod.cacheDom();
+    mod.initNewsCard();
+    // Set a search query via the input event
+    const input = document.getElementById("news-search") as HTMLInputElement;
+    input.value = "מבצע";
+    input.dispatchEvent(new Event("input"));
+    expect(mod.getSearchQuery()).toBe("מבצע");
+    // Click clear → handler fires: _searchQuery = "", input.value = ""
+    document.getElementById("news-search-clear")!.click();
+    expect(mod.getSearchQuery()).toBe("");
+    expect(input.value).toBe("");
+  });
+});

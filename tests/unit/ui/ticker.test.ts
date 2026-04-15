@@ -1236,3 +1236,56 @@ describe("Ticker — renderHalachaExcerpt early return when #hc-halacha absent (
     expect(() => initTicker()).not.toThrow();
   });
 });
+
+// ── loadHalacha: category[1] undefined → ?? takes category[0] (line 240) ─────
+
+describe("Ticker — loadHalacha category with 1 element → category[1] ?? category[0] (line 240)", () => {
+  beforeEach(() => {
+    buildTickerDOM();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("uses category[0] when category has only 1 element (line 240 ?? [0] branch)", async () => {
+    const { fetchWithTimeout } = await import("@/core/fetch");
+    const calData = {
+      calendar_items: [
+        {
+          title: { en: "Halakhah Yomit", he: "הלכה יומית" },
+          url: "KSA.1",
+          displayValue: { he: "שולחן ערוך א", en: "SA OC 1" },
+          // category has only 1 element → [1] is undefined → ?? takes [0] = "Halakhah"
+          category: ["Halakhah"],
+        },
+      ],
+    };
+    const textData = {
+      heRef: "שו\"ע א",
+      versions: [{ language: "he", text: ["הלכה כלשהי"] }],
+    };
+
+    vi.mocked(fetchWithTimeout)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(calData),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(textData),
+      } as unknown as Response);
+
+    initTicker();
+    for (let i = 0; i < 100; i++) await Promise.resolve();
+    // category[1] is undefined → ?? category[0] → ?? "" → category = "Halakhah"
+    // renderTicker was called successfully — ticker contains category text
+    const ticker = document.getElementById("halacha-ticker");
+    expect(ticker?.textContent).toContain("הלכה כלשהי");
+  });
+});
