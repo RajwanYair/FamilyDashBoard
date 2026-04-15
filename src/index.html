@@ -63,6 +63,8 @@
           <div class="help-row"><span>הפעל התראות דסקטאפ</span><span class="help-key">לחץ 🔔</span></div>
           <div class="help-row"><span>ספירה לאחור מותאמת</span><span class="help-key">S → מתקדם</span></div>
           <div class="help-row"><span>מועדפי חדשות</span><span class="help-key">B</span></div>
+          <div class="help-row"><span>ציטוט מוטיבציה הבא</span><span class="help-key">M</span></div>
+          <div class="help-row"><span>הפעל / כבה התרעות צבע אדום</span><span class="help-key">A</span></div>
         </div>
         <div style="text-align:center;margin-top:10px;font-size:0.75em;color:var(--text-muted)">לחץ Escape / ? / H לסגירה</div>
       </div>
@@ -255,8 +257,7 @@
           </div>
           <!-- Countdown card configuration -->
           <div class="cfg-row">
-            <span class="cfg-label">💍 כרטיס ספירה — שם האירוע</span>
-            <input class="cfg-input" id="cfg-cd-card-title" type="text" placeholder="חתונת אליאור וטובה" >
+            <span class="cfg-label">💍 כרטיס ספירה — שם האירוע</span>            <input class="cfg-input" id="cfg-cd-card-title" type="text" placeholder="חתונת אליאור וטובה" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — תאריך</span>
@@ -271,6 +272,11 @@
             <input class="cfg-input" id="cfg-cd-card-done-msg" type="text" placeholder="🎉 מזל טוב!" >
           </div>
           <!-- F107: Settings export/import -->
+          <!-- Chores / Tasks editor (reads/writes localStorage dash_chores) -->
+          <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:4px">
+            <span class="cfg-label">📋 משימות משפחתיות (JSON)</span>
+            <textarea class="cfg-input" id="cfg-chores" rows="4" style="width:100%;direction:ltr;font-size:0.78em;font-family:monospace;resize:vertical" placeholder='[{"person":"עמרי","chore":"🧹 לנקות"},{"person":"ריבה","chore":"🛒 קניות"}]' title="רשימת משימות משפחתיות — כל רשומה עם שדות person ו-chore. JSON תקני בלבד."></textarea>
+          </div>
           <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
             <button type="button" class="cfg-btn" id="cfg-export-btn" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
             <button type="button" class="cfg-btn" id="cfg-import-btn" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
@@ -538,7 +544,7 @@
             </section>
             <!-- Tasks card -->
             <section class="card" data-card-id="tasks" aria-label="Tasks">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge green">✅</span> משימות</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge green">✅</span> משימות <span id="tasks-pending-badge" style="display:none;font-size:0.65em;background:var(--warning);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle"></span></div>
               <div class="tasks-body">
                 <div class="tasks-actions">
                   <button type="button" id="tasks-mark-all-btn" class="tasks-action-btn" title="סמן הכל כבוצע">✅ סמן הכל</button>
@@ -571,6 +577,10 @@
             <span class="status-uptime" id="uptime-display"></span>
             <!-- Feature 40: Connectivity indicator -->
             <span id="conn-indicator" title="סטטוס חיבור אינטרנט"></span>
+            <!-- Market status chip (updated by stocks card) -->
+            <span id="status-market-chip" title="סטטוס שוק המניות NYSE" style="font-size:0.72em;padding:1px 5px;border-radius:3px;font-weight:700"></span>
+            <!-- Night dimmer active indicator -->
+            <span id="dim-indicator" style="display:none;font-size:0.8em" title="עמעום לילה פעיל — לחץ N לכיבוי">🌙</span>
             <!-- Feature 49: Font scale indicator -->
             <span id="font-scale-indicator" title="גודל גופן נוכחי — לחץ +/- לשינוי"></span>
             <!-- F165: PWA install prompt button -->

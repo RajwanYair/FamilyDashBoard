@@ -118,12 +118,15 @@ export function getMinutesToNextTransition(): number {
 }
 
 let _marketBadgeEl: HTMLElement | null = null;
+let _statusMarketChip: HTMLElement | null = null;
 
 export function updateMarketBadge(): void {
   if (!_marketBadgeEl || !_marketBadgeEl.isConnected) {
     _marketBadgeEl = document.getElementById("market-badge");
   }
-  if (!_marketBadgeEl) return;
+  if (!_statusMarketChip || !_statusMarketChip.isConnected) {
+    _statusMarketChip = document.getElementById("status-market-chip");
+  }
 
   const status = getMarketStatus();
   const mins = getMinutesToNextTransition();
@@ -138,9 +141,16 @@ export function updateMarketBadge(): void {
     after: `🟠 אח"מ${countdown}`,
     closed: "🔴 סגור",
   };
+  const label = labels[status];
 
-  _marketBadgeEl.textContent = labels[status];
-  _marketBadgeEl.className = `market-badge market-badge--${status}`;
+  if (_marketBadgeEl) {
+    _marketBadgeEl.textContent = label;
+    _marketBadgeEl.className = `market-badge market-badge--${status}`;
+  }
+  if (_statusMarketChip) {
+    _statusMarketChip.textContent = label;
+    _statusMarketChip.className = `market-badge market-badge--${status}`;
+  }
 }
 
 // ── Bezier mini-chart (same as monolith) ──

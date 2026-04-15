@@ -131,6 +131,17 @@ export function renderTasksCard(): void {
         map[fp] = cb.checked;
         saveDoneMap(map);
         row.classList.toggle("done", cb.checked);
+        // Refresh pending badge count
+        const pending = chores.filter((c) => !map[fingerprint(c)]).length;
+        const badge = document.getElementById("tasks-pending-badge");
+        if (badge) {
+          if (pending > 0) {
+            badge.textContent = `${pending} ממתינות`;
+            badge.style.display = "";
+          } else {
+            badge.style.display = "none";
+          }
+        }
         diagLog(`[tasks] ${fp} = ${String(cb.checked)}`);
       });
 
@@ -144,6 +155,18 @@ export function renderTasksCard(): void {
   }
 
   container.replaceChildren(fragment);
+
+  // Update pending-tasks badge in card header
+  const badge = document.getElementById("tasks-pending-badge");
+  if (badge) {
+    const pending = chores.filter((item) => !doneMap[fingerprint(item)]).length;
+    if (pending > 0) {
+      badge.textContent = `${pending} ממתינות`;
+      badge.style.display = "";
+    } else {
+      badge.style.display = "none";
+    }
+  }
 }
 
 // ── Bulk actions ─────────────────────────────────────────────────────────────

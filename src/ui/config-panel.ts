@@ -19,6 +19,7 @@ import { applyHiddenStocks } from "../cards/stocks/stocks";
 import { applyNewsFontSize } from "../cards/news/news";
 import { initCountdownCard } from "../cards/countdown/countdown";
 import { resetLayout } from "./layout-drag";
+import { renderTasksCard } from "../cards/tasks/tasks";
 // ── Extra localStorage keys (fields not stored in DashboardConfig) ──
 const LS_DIM_START = "dash_v2_dim_start";
 const LS_DIM_END = "dash_v2_dim_end";
@@ -31,6 +32,7 @@ const LS_HOME_LAT = "dash_v2_home_lat";
 const LS_HOME_LON = "dash_v2_home_lon";
 const LS_HOME_NAME = "dash_v2_home_name";
 const LS_NEWS_FONT = "dash_v2_news_fontsize";
+const LS_CHORES = "dash_chores";
 
 let overlayEl: HTMLElement | null = null;
 
@@ -178,6 +180,10 @@ function populateForm(): void {
 
   const cdCardDoneMsg = g("cfg-cd-card-done-msg");
   if (cdCardDoneMsg) cdCardDoneMsg.value = c.countdownCardDoneMsg;
+
+  // Chores / tasks (Advanced tab)
+  const choresEl = gTxt("cfg-chores");
+  if (choresEl) choresEl.value = localStorage.getItem(LS_CHORES) ?? "";
 
   // Cards tab — dynamically build per-card rows
   const cardsList = document.getElementById("cfg-cards-list");
@@ -527,6 +533,18 @@ export function initConfigPanel(): void {
     applyHiddenStocks();
     applyNewsFontSize();
     initCountdownCard();
+    // Save chores JSON to localStorage and refresh tasks card
+    const choresEl = gTxt("cfg-chores");
+    if (choresEl) {
+      const raw = choresEl.value.trim();
+      try {
+        JSON.parse(raw || "[]");
+        localStorage.setItem(LS_CHORES, raw || "[]");
+        renderTasksCard();
+      } catch {
+        showToast("⚠️ JSON משימות לא תקין — לא נשמר", 3500);
+      }
+    }
     // Apply card visibility immediately without reload
     document.querySelectorAll<HTMLElement>("[data-card-id]").forEach((el) => {
       const id = el.dataset["cardId"] ?? "";

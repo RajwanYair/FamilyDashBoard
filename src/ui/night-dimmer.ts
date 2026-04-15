@@ -17,6 +17,7 @@ let dimActive = false;
 export function toggleNightDim(): void {
   dimActive = !dimActive;
   applyDim();
+  updateDimIndicator();
   diagLog(`[dimmer] ${dimActive ? "ON" : "OFF"} (${dimLevel}%)`);
 }
 
@@ -41,6 +42,17 @@ function applyDim(): void {
   }
 }
 
+function updateDimIndicator(): void {
+  const chip = document.getElementById("dim-indicator");
+  if (!chip) return;
+  if (dimActive) {
+    chip.style.display = "";
+    chip.title = `עמעום לילה פעיל (${dimLevel}%) — לחץ N לכיבוי`;
+  } else {
+    chip.style.display = "none";
+  }
+}
+
 /**
  * Auto-dim check: activate between start and end hours.
  */
@@ -54,9 +66,11 @@ export function autoDimCheck(startHour: number, endHour: number): void {
   if (shouldDim && !dimActive) {
     dimActive = true;
     applyDim();
+    updateDimIndicator();
   } else if (!shouldDim && dimActive) {
     dimActive = false;
     applyDim();
+    updateDimIndicator();
   }
 }
 
@@ -78,6 +92,7 @@ export function initNightDimmer(nightDimLevel: number): void {
 
   const { start, end } = readHours();
   autoDimCheck(start, end);
+  updateDimIndicator();
 
   setInterval(() => {
     const { start: s, end: e } = readHours();

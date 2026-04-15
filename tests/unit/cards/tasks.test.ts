@@ -498,3 +498,71 @@ describe("Tasks — initTasksCard wires button click handlers (line 175)", () =>
     expect(localStorage.getItem("dash_tasks_done")).toBeNull();
   });
 });
+
+// ── tasks-pending-badge ───────────────────────────────────────────────────────
+
+describe("Tasks — tasks-pending-badge", () => {
+  const chores = [
+    { person: "עמרי", chore: "🧹 לנקות" },
+    { person: "ריבה", chore: "🍳 בישול" },
+  ];
+
+  function setupWithBadge(choreDef?: string): void {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge" style="display:none"></span>`;
+    if (choreDef !== undefined) {
+      localStorage.setItem("dash_chores", choreDef);
+    } else {
+      localStorage.removeItem("dash_chores");
+    }
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("shows badge with pending count when chores are pending", () => {
+    setupWithBadge(JSON.stringify(chores));
+    renderTasksCard();
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.style.display).not.toBe("none");
+    expect(badge.textContent).toContain("2");
+  });
+
+  it("hides badge when all chores are done", () => {
+    setupWithBadge(JSON.stringify(chores));
+    const today = new Date();
+    const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+    localStorage.setItem("dash_tasks_reset_date", resetKey);
+    localStorage.setItem(
+      "dash_tasks_done",
+      JSON.stringify({ "עמרי::🧹 לנקות": true, "ריבה::🍳 בישול": true }),
+    );
+    renderTasksCard();
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.style.display).toBe("none");
+  });
+
+  it("badge hides when no tasks-pending-badge element in DOM", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    expect(() => renderTasksCard()).not.toThrow();
+  });
+
+  it("updates badge to 1 when one of two chores is checked via checkbox", () => {
+    setupWithBadge(JSON.stringify(chores));
+    renderTasksCard();
+    const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
+    cbs[0]!.checked = true;
+    cbs[0]!.dispatchEvent(new Event("change"));
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.style.display).not.toBe("none");
+    expect(badge.textContent).toContain("1");
+  });
+});

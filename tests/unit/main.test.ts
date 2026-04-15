@@ -93,6 +93,7 @@ import {
   applySeasonClass,
   applyHiddenCards,
   applyCardLayout,
+  applyCardSizes,
   init,
 } from "@/main";
 import { diagLog } from "@/core/diag";
@@ -903,6 +904,44 @@ describe("Main — applyCardLayout", () => {
   it("does not throw when column elements are missing", () => {
     document.body.innerHTML = '<div data-card-id="weather"></div>';
     expect(() => applyCardLayout([["weather"], [], []])).not.toThrow();
+  });
+});
+
+// ── applyCardSizes ──────────────────────────────────────────────────────────
+
+describe("Main — applyCardSizes", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("sets data-card-size on matching card element", () => {
+    document.body.innerHTML = '<section data-card-id="weather"></section>';
+    applyCardSizes({ weather: "lg" });
+    const el = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;
+    expect(el.dataset["cardSize"]).toBe("lg");
+  });
+
+  it("applies multiple card sizes in one call", () => {
+    document.body.innerHTML = `
+      <section data-card-id="weather"></section>
+      <section data-card-id="news"></section>`;
+    applyCardSizes({ weather: "sm", news: "xl" });
+    const w = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;
+    const n = document.querySelector<HTMLElement>('[data-card-id="news"]')!;
+    expect(w.dataset["cardSize"]).toBe("sm");
+    expect(n.dataset["cardSize"]).toBe("xl");
+  });
+
+  it("does not throw for unknown card id", () => {
+    document.body.innerHTML = '<section data-card-id="weather"></section>';
+    expect(() => applyCardSizes({ nonexistent: "md" })).not.toThrow();
+  });
+
+  it("does nothing when given an empty object", () => {
+    document.body.innerHTML = '<section data-card-id="weather"></section>';
+    applyCardSizes({});
+    const el = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;
+    expect(el.dataset["cardSize"]).toBeUndefined();
   });
 });
 

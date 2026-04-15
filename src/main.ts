@@ -63,7 +63,18 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
-export const VERSION = "7.0.0";
+export const VERSION = "7.1.2";
+
+/**
+ * Apply card size overrides from config to DOM elements.
+ * Called on init so sizes persist across page reloads.
+ */
+export function applyCardSizes(cardSizes: Record<string, string>): void {
+  Object.entries(cardSizes).forEach(([id, size]) => {
+    const el = document.querySelector<HTMLElement>(`[data-card-id="${id}"]`);
+    if (el) el.dataset["cardSize"] = size;
+  });
+}
 
 /**
  * Hide/show cards based on the `hiddenCards` array in config.
@@ -227,6 +238,9 @@ export function init(): void {
 
   // ── Apply saved card layout column assignment ──
   applyCardLayout(cfg.cardLayout ?? null);
+
+  // ── Apply saved card size overrides (sm/md/lg/xl) ──
+  applyCardSizes(cfg.cardSizes ?? {});
 
   // ── Apply alert config state from saved settings ──
   setAlertsEnabled(cfg.alertsEnabled);

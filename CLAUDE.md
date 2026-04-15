@@ -29,7 +29,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 8. `_tempUnit` = `'C'`/`'F'` (not `_useFahrenheit`)
 9. Stock function = `loadAllStocks()` (not `loadStocks()`)
 10. All tools/devDeps live in `MyScripts/package.json` (parent) — never add `devDependencies` here
-11. 6 themes: dark · ocean · forest · warm · high-contrast · rose
+11. 6 themes: black · blue · matrix · amber · purple · rose
 12. Card registry: `registerCard()` / `getCard()` — use `src/core/card-registry.ts` for new card wiring
 13. New overlays use `<dialog>` + `showModal()` / `close()` — not `<div>` with `display:block`
 14. `dist/` built with `--base ./` + `removeCrossOrigin` plugin for `file://` compatibility

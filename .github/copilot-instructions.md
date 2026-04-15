@@ -40,7 +40,7 @@
 17. New overlays: use `<dialog>` + `showModal()` / `close()` — not `<div>` visibility toggling
 18. CSS architecture: `@layer tokens, themes, base, layout, components, animations` — add new rules to correct layer
 19. Worker fetch: prefer `fetchJSONWithWorker<T>()` when `isWorkerEnabled()` — fallback to proxy chain otherwise
-20. Themes: 6 total — dark · ocean · forest · warm · high-contrast · rose (ThemeName union in `types/config.ts`)
+20. Themes: 6 total — black · blue · matrix · amber · purple · rose (ThemeName union in `types/config.ts`)
 21. After each sprint/set of changes: `git add -A && git commit -m "feat|fix|chore: <description>"` before proceeding to the next sprint
 22. `cGet()` and `cGetStale()` return `null` (not `undefined`) for cache misses — always check `!== null`, never `!== undefined`
 23. `dist/` is built with `--base ./` for `file://` access; `removeCrossOrigin` Vite plugin strips `crossorigin` attrs, strips CSP meta, converts `type=module` → plain `<script>`, and outputs a single IIFE bundle
