@@ -581,3 +581,79 @@ describe("Tasks — tasks-pending-badge", () => {
     expect(badge.textContent).toContain("1");
   });
 });
+
+// ── Sprint v7.12: tasks-all-done-msg ─────────────────────────────────────────
+
+describe("Tasks — tasks-all-done-msg visibility (Sprint v7.12)", () => {
+  const chores = [
+    { person: "עמרי", chore: "🧹 לנקות" },
+    { person: "ריבה", chore: "🍳 בישול" },
+  ];
+
+  function setupWithDoneMsg(choreDef?: string): void {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <div id="tasks-all-done-msg" style="display:none"></div>
+      <span id="tasks-pending-badge" style="display:none"></span>`;
+    if (choreDef !== undefined) {
+      localStorage.setItem("dash_chores", choreDef);
+    } else {
+      localStorage.removeItem("dash_chores");
+    }
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("hides all-done-msg when no chores are configured", () => {
+    setupWithDoneMsg(); // no chores
+    renderTasksCard();
+    expect(document.getElementById("tasks-all-done-msg")?.style.display).toBe("none");
+  });
+
+  it("hides all-done-msg when tasks are pending", () => {
+    setupWithDoneMsg(JSON.stringify(chores));
+    renderTasksCard();
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe("none");
+  });
+
+  it("shows all-done-msg when all chores are pre-marked done", () => {
+    setupWithDoneMsg(JSON.stringify(chores));
+    const today = new Date();
+    const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+    localStorage.setItem("dash_tasks_reset_date", resetKey);
+    localStorage.setItem(
+      "dash_tasks_done",
+      JSON.stringify({ "עמרי::🧹 לנקות": true, "ריבה::🍳 בישול": true }),
+    );
+    renderTasksCard();
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe("none");
+  });
+
+  it("shows all-done-msg after markAllDone() is called", () => {
+    setupWithDoneMsg(JSON.stringify(chores));
+    // Prevent checkDailyReset() from wiping the done state mid-call
+    const today = new Date();
+    const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+    localStorage.setItem("dash_tasks_reset_date", resetKey);
+    markAllDone();
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe("none");
+  });
+
+  it("hides all-done-msg after resetDoneToday() following markAllDone()", () => {
+    setupWithDoneMsg(JSON.stringify(chores));
+    // Prevent checkDailyReset() from wiping the done state mid-call
+    const today = new Date();
+    const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+    localStorage.setItem("dash_tasks_reset_date", resetKey);
+    markAllDone();
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe("none");
+    resetDoneToday();
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe("none");
+  });
+});

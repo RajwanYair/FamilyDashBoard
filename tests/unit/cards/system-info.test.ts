@@ -404,3 +404,133 @@ describe("SystemInfo — initSystemInfoCard interval cleared on second call (lin
     expect(document.getElementById("sysinfo-browser")).not.toBeNull();
   });
 });
+
+// ── Sprint v7.12: sysinfo-memory, sysinfo-cpu, sysinfo-viewport ──────────────
+
+describe("SystemInfo — sysinfo-memory tile (Sprint v7.12)", () => {
+  function buildFullDOM(): void {
+    document.body.innerHTML = `
+      <div id="sysinfo-online"></div>
+      <div id="sysinfo-battery"></div>
+      <div id="sysinfo-net"></div>
+      <div id="sysinfo-uptime"></div>
+      <div id="sysinfo-load"></div>
+      <div id="sysinfo-browser"></div>
+      <div id="sysinfo-viewport"></div>
+      <div id="sysinfo-memory"></div>
+      <div id="sysinfo-cpu"></div>`;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    Object.defineProperty(navigator, "deviceMemory", {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    });
+  });
+
+  it("shows 'X GB' when navigator.deviceMemory is defined", async () => {
+    buildFullDOM();
+    Object.defineProperty(navigator, "deviceMemory", {
+      value: 8,
+      configurable: true,
+      writable: true,
+    });
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-memory")?.textContent).toBe("8 GB");
+  });
+
+  it("shows '—' when navigator.deviceMemory is undefined", async () => {
+    buildFullDOM();
+    Object.defineProperty(navigator, "deviceMemory", {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    });
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-memory")?.textContent).toBe("—");
+  });
+});
+
+describe("SystemInfo — sysinfo-cpu tile (Sprint v7.12)", () => {
+  function buildFullDOM(): void {
+    document.body.innerHTML = `
+      <div id="sysinfo-online"></div>
+      <div id="sysinfo-battery"></div>
+      <div id="sysinfo-net"></div>
+      <div id="sysinfo-uptime"></div>
+      <div id="sysinfo-load"></div>
+      <div id="sysinfo-browser"></div>
+      <div id="sysinfo-viewport"></div>
+      <div id="sysinfo-memory"></div>
+      <div id="sysinfo-cpu"></div>`;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("shows '×N ליבות' when hardwareConcurrency > 0", async () => {
+    buildFullDOM();
+    Object.defineProperty(navigator, "hardwareConcurrency", {
+      value: 8,
+      configurable: true,
+      writable: true,
+    });
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-cpu")?.textContent).toBe("×8 ליבות");
+  });
+
+  it("shows '—' when hardwareConcurrency is 0", async () => {
+    buildFullDOM();
+    Object.defineProperty(navigator, "hardwareConcurrency", {
+      value: 0,
+      configurable: true,
+      writable: true,
+    });
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-cpu")?.textContent).toBe("—");
+  });
+});
+
+describe("SystemInfo — sysinfo-viewport tile (Sprint v7.12)", () => {
+  function buildFullDOM(): void {
+    document.body.innerHTML = `
+      <div id="sysinfo-online"></div>
+      <div id="sysinfo-battery"></div>
+      <div id="sysinfo-net"></div>
+      <div id="sysinfo-uptime"></div>
+      <div id="sysinfo-load"></div>
+      <div id="sysinfo-browser"></div>
+      <div id="sysinfo-viewport"></div>
+      <div id="sysinfo-memory"></div>
+      <div id="sysinfo-cpu"></div>`;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("renders 'WxH' without DPR suffix when devicePixelRatio is 1", async () => {
+    buildFullDOM();
+    Object.defineProperty(window, "innerWidth", { value: 1920, configurable: true });
+    Object.defineProperty(window, "innerHeight", { value: 1080, configurable: true });
+    vi.stubGlobal("devicePixelRatio", 1);
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-viewport")?.textContent).toBe("1920×1080");
+  });
+
+  it("renders 'WxH @2x' when devicePixelRatio is 2", async () => {
+    buildFullDOM();
+    Object.defineProperty(window, "innerWidth", { value: 2560, configurable: true });
+    Object.defineProperty(window, "innerHeight", { value: 1440, configurable: true });
+    vi.stubGlobal("devicePixelRatio", 2);
+    await renderSystemInfo();
+    expect(document.getElementById("sysinfo-viewport")?.textContent).toBe("2560×1440 @2x");
+  });
+});

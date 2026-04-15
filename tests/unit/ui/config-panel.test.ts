@@ -1096,8 +1096,7 @@ describe("Config Panel — applyConfig sets [data-card-size] on matching card el
 
   it("sets data-card-size attribute on card element when cardSizes config has matching id (line 507)", async () => {
     setupDOM(); // includes <select class="cfg-card-size-sel" data-card-id="weather"> and <div data-card-id="weather">
-    const mod = await freshCfg();
-    mod.initConfigPanel();
+    const mod = await freshCfg();    mod.initConfigPanel();
     mod.openConfigPanel();
     // Select the weather card size as "lg"
     const sizeEl = document.querySelector<HTMLSelectElement>(".cfg-card-size-sel[data-card-id='weather']");
@@ -1234,5 +1233,59 @@ describe("Config Panel — collectForm countdown card fields persist", () => {
     expect(saved["countdownCardDate"]).toBe("2027-01-15");
     expect(saved["countdownCardTime"]).toBe("19:30");
     expect(saved["countdownCardDoneMsg"]).toBe("🎂 מזל טוב!");
+  });
+});
+
+// ── Sprint v7.12: cfg-clock-seconds populate + collect ────────────────────────
+
+describe("Config Panel — populateForm cfg-clock-seconds (Sprint v7.12)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("populates cfg-clock-seconds as 'on' when clockSeconds is true", async () => {
+    setupDOM();
+    localStorage.setItem("dash_v2_config", JSON.stringify({ clockSeconds: true }));
+    const mod = await freshCfg();
+    mod.openConfigPanel();
+    expect((document.getElementById("cfg-clock-seconds") as HTMLInputElement).value).toBe("on");
+  });
+
+  it("populates cfg-clock-seconds as 'off' when clockSeconds is false", async () => {
+    setupDOM();
+    localStorage.setItem("dash_v2_config", JSON.stringify({ clockSeconds: false }));
+    const mod = await freshCfg();
+    mod.openConfigPanel();
+    expect((document.getElementById("cfg-clock-seconds") as HTMLInputElement).value).toBe("off");
+  });
+});
+
+describe("Config Panel — collectForm cfg-clock-seconds (Sprint v7.12)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("saves clockSeconds = true when cfg-clock-seconds value is 'on'", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-clock-seconds") as HTMLInputElement).value = "on";
+    document.getElementById("cfg-save-btn")?.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    expect(saved["clockSeconds"]).toBe(true);
+  });
+
+  it("saves clockSeconds = false when cfg-clock-seconds value is 'off'", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    (document.getElementById("cfg-clock-seconds") as HTMLInputElement).value = "off";
+    document.getElementById("cfg-save-btn")?.click();
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    expect(saved["clockSeconds"]).toBe(false);
   });
 });

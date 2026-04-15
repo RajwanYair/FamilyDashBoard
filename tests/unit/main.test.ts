@@ -1064,3 +1064,108 @@ describe("Main — init() URL hash config import", () => {
     expect(vi.mocked(saveConfig)).toHaveBeenCalled();
   });
 });
+
+// ── Sprint v7.12: w/1/2/3/m key registrations ─────────────────────────────
+
+describe("Main — init() keyboard shortcuts — w/1/2/3/m (Sprint v7.12)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("registers 'w' key for °C/°F toggle", () => {
+    init();
+    expect(vi.mocked(registerKey).mock.calls.some(([k]) => k === "w")).toBe(true);
+  });
+
+  it("registers '1' key for weather city 1", () => {
+    init();
+    expect(vi.mocked(registerKey).mock.calls.some(([k]) => k === "1")).toBe(true);
+  });
+
+  it("registers '2' key for weather city 2", () => {
+    init();
+    expect(vi.mocked(registerKey).mock.calls.some(([k]) => k === "2")).toBe(true);
+  });
+
+  it("registers '3' key for weather city 3", () => {
+    init();
+    expect(vi.mocked(registerKey).mock.calls.some(([k]) => k === "3")).toBe(true);
+  });
+
+  it("registers 'm' key for motivation next", () => {
+    init();
+    expect(vi.mocked(registerKey).mock.calls.some(([k]) => k === "m")).toBe(true);
+  });
+});
+
+// ── Sprint v7.12: city-tab handlers 1/2/3 ────────────────────────────────────
+
+describe("Main — keyboard handlers for city tab shortcuts (Sprint v7.12)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = `
+      <button class="wx-city-tab active" data-city="1">ירושלים</button>
+      <button class="wx-city-tab" data-city="2">ת"א</button>
+      <button class="wx-city-tab" data-city="3">חיפה</button>
+    `;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.body.className = "";
+  });
+
+  it("'1' handler does not throw when tab is present in DOM", () => {
+    init();
+    const handler = vi.mocked(registerKey).mock.calls.find(([k]) => k === "1")?.[2] as () => void;
+    expect(handler).toBeDefined();
+    expect(() => handler()).not.toThrow();
+  });
+
+  it("'2' handler does not throw when tab is present in DOM", () => {
+    init();
+    const handler = vi.mocked(registerKey).mock.calls.find(([k]) => k === "2")?.[2] as () => void;
+    expect(handler).toBeDefined();
+    expect(() => handler()).not.toThrow();
+  });
+
+  it("'3' handler does not throw when tab is present in DOM", () => {
+    init();
+    const handler = vi.mocked(registerKey).mock.calls.find(([k]) => k === "3")?.[2] as () => void;
+    expect(handler).toBeDefined();
+    expect(() => handler()).not.toThrow();
+  });
+
+  it("'1' handler does not throw when city-tab absent from DOM", () => {
+    document.body.innerHTML = "";
+    init();
+    const handler = vi.mocked(registerKey).mock.calls.find(([k]) => k === "1")?.[2] as () => void;
+    expect(() => handler()).not.toThrow();
+  });
+
+  it("'w' handler is registered as a callable function", () => {
+    init();
+    const wCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "w");
+    expect(wCall).toBeDefined();
+    expect(typeof wCall![2]).toBe("function");
+  });
+});
