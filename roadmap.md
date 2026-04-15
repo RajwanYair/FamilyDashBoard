@@ -24,9 +24,10 @@
 | **v7.1.0** | ✅ Released  | 1554 Vitest / 38 suites     | Countdown card (11th), unified CI, Hebrew date fix, favicon fix |
 | **v7.1.1** | ✅ Released  | 1570 Vitest / 39 suites     | Pre-release checklist pass, markdown lint fix, test count update |
 | **v7.1.2** | ✅ Released  | 1574 Vitest / 39 suites     | VERSION fixed, applyCardSizes init, chores editor, help M/A shortcuts, tasks pending badge, market status bar chip, night dim indicator, theme doc fixes |
-| **v7.1.5** | ✅ Released | 1648 Vitest / 39 suites     | sysinfo-memory/cpu/viewport tile tests; tasks-all-done-msg tests; w/1/2/3/m keyboard tests; cfg-clock-seconds populate+collect tests |
-| **v7.1.4** | ✅ Released | 1623 Vitest / 39 suites     | `getDaysSince()` countdown days-since; 1/2/3 screen-mode shortcuts; alerts+config-panel test coverage; test stability fixes |
-| **v7.1.3** | ✅ Released | 1605 Vitest / 39 suites     | Weather dew/gust wiring; portfolio editor in config; configurable tasks reset hour; W key °C/°F; sysinfo memory+CPU tiles; countdown test stability |
+| **v7.1.3** | ✅ Released  | 1605 Vitest / 39 suites     | Weather dew/gust wiring; portfolio editor in config; configurable tasks reset hour; W key °C/°F; sysinfo memory+CPU tiles; countdown test stability |
+| **v7.1.4** | ✅ Released  | 1623 Vitest / 39 suites     | `getDaysSince()` countdown days-since; 1/2/3 screen-mode shortcuts; alerts+config-panel test coverage; test stability fixes |
+| **v7.1.5** | ✅ Released  | 1648 Vitest / 39 suites     | sysinfo-memory/cpu/viewport tile tests; tasks-all-done-msg tests; w/1/2/3/m keyboard tests; cfg-clock-seconds populate+collect tests |
+| **v7.1.6** | ✅ Released  | 1663 Vitest / 39 suites     | Coverage sprint: status-bar online/offline, night-dimmer chip, bg-images crossfade, layout-drag branches, tasks checkbox handler, countdown clearInterval, stocks statusMarketChip, config-panel sliders |
 | v7.2       | 💡 Idea     | —                           | Multi-user profiles, cloud sync via Cloudflare KV |
 
 ---

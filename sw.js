@@ -16,8 +16,8 @@
  * v7.1.1: Countdown card (11th card), fix hebrew-date/favicon/news-overlap, tile layout, CI unified, 1570 tests/39 suites
  * v7.1.2: Markdown lint fix, 1574 tests/39 suites */
 
-const CACHE_NAME = "familydashboard-v7.1.2";
-const CACHE_NAME_API = "familydashboard-api-v7.1.2";
+const CACHE_NAME = "familydashboard-v7.1.6";
+const CACHE_NAME_API = "familydashboard-api-v7.1.6";
 // F111: include sw.js itself in app shell pre-cache
 const APP_SHELL = [
   "./BestDashBoard.html",
