@@ -1289,3 +1289,40 @@ describe("Config Panel — collectForm cfg-clock-seconds (Sprint v7.12)", () => 
     expect(saved["clockSeconds"]).toBe(false);
   });
 });
+
+// ── Sprint v7.13: dim-level / font-scale slider live preview (initConfigPanel) ──
+
+describe("Config Panel — dim-level and font-scale slider live preview", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("slider input events update the matching display value spans", async () => {
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <button id="cfg-gear-btn"></button>
+        <button id="cfg-save-btn"></button>
+        <button id="cfg-close-btn"></button>
+        <input id="cfg-dim-level" type="range" value="40" />
+        <span id="cfg-dim-level-val">80%</span>
+        <input id="cfg-font-scale" type="range" min="70" max="150" value="100" />
+        <span id="cfg-font-scale-val">100%</span>
+      </div>`;
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+
+    // dim-level slider
+    const dimSlider = document.getElementById("cfg-dim-level") as HTMLInputElement;
+    dimSlider.value = "55";
+    dimSlider.dispatchEvent(new Event("input"));
+    expect(document.getElementById("cfg-dim-level-val")?.textContent).toBe("55%");
+
+    // font-scale slider (same module instance — listener already registered)
+    const fsSlider = document.getElementById("cfg-font-scale") as HTMLInputElement;
+    fsSlider.value = "120";
+    fsSlider.dispatchEvent(new Event("input"));
+    expect(document.getElementById("cfg-font-scale-val")?.textContent).toBe("120%");
+  });
+});

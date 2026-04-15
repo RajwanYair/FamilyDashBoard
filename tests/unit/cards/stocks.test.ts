@@ -297,6 +297,30 @@ describe("Stocks — updateMarketBadge (v6.1)", () => {
     const badge = document.getElementById("market-badge")!;
     expect(badge.className).toContain("market-badge--closed");
   });
+
+  it("also updates #status-market-chip when present (lines 151-152)", () => {
+    document.body.innerHTML = `
+      <span id="market-badge"></span>
+      <span id="status-market-chip"></span>
+    `;
+    vi.setSystemTime(new Date("2024-01-08T15:00:00Z")); // Mon 10:00 ET (open)
+    updateMarketBadge();
+    const chip = document.getElementById("status-market-chip")!;
+    expect(chip.textContent).toContain("פתוח");
+    expect(chip.className).toContain("market-badge--open");
+  });
+
+  it("sets correct label on #status-market-chip when market is pre (lines 151-152)", () => {
+    document.body.innerHTML = `
+      <span id="market-badge"></span>
+      <span id="status-market-chip"></span>
+    `;
+    vi.setSystemTime(new Date("2024-01-08T13:00:00Z")); // Mon 08:00 ET (pre-market)
+    updateMarketBadge();
+    const chip = document.getElementById("status-market-chip")!;
+    expect(chip.textContent).toContain("פרה");
+    expect(chip.className).toContain("market-badge--pre");
+  });
 });
 
 // ── helpers ──────────────────────────────────────────────────────────────────

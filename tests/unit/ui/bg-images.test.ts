@@ -297,42 +297,65 @@ describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
-    vi.unstubAllGlobals();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
-  it("swaps opacity layers when image loads successfully", async () => {
-    vi.resetModules();
+  it("crossfades layers and swaps references when onload fires", async () => {
     localStorage.setItem(
       "dash_v2_config",
-      JSON.stringify({ bgImages: ["https://example.com/img1.jpg", "https://example.com/img2.jpg"] }),
+      JSON.stringify({
+        bgImages: ["https://a.com/a.jpg", "https://b.com/b.jpg"],
+      }),
     );
-    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
 
-    // Intercept Image constructor so onload fires immediately on src assignment
-    const OrigImage = globalThis.Image;
-    class AutoFireImage {
+    // Use synchronous Image so onload fires immediately on src assignment
+    class SyncImage {
       onload: (() => void) | null = null;
-      set src(_v: string) {
+      private _src = "";
+      get src(): string { return this._src; }
+      set src(v: string) {
+        this._src = v;
         if (this.onload) this.onload();
       }
     }
-    vi.stubGlobal("Image", AutoFireImage);
+    vi.stubGlobal("Image", SyncImage);
 
+    vi.resetModules();
+    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
     initBgImages();
-    expect(() => rotateBgImage()).not.toThrow();
 
-    vi.stubGlobal("Image", OrigImage);
+    const layerA = document.getElementById("bg-layer-a") as HTMLDivElement;
+    const layerB = document.getElementById("bg-layer-b") as HTMLDivElement;
+    expect(layerA).not.toBeNull();
+    expect(layerB).not.toBeNull();
+
+    // rotateBgImage → picks nextUrl → creates Image → onload → crossfade
+    rotateBgImage();
+
+    // After crossfade: old layerB should have the next image's background
+    // and opacity should be set to 0.35 (the "visible" layer)
+    expect(layerB.style.backgroundImage).toContain("b.com");
+    expect(layerB.style.opacity).toBe("0.35");
+    expect(layerA.style.opacity).toBe("0");
   });
 
-  it("does not throw when layers are null before rotateBgImage img.onload", async () => {
+  it("rotateBgImage returns early when validImages is empty (no config)", async () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({ bgImages: [] }));
     vi.resetModules();
+    const { rotateBgImage } = await import("@/ui/bg-images");
+    // Layers are null (no initBgImages called) → early return
+    expect(() => rotateBgImage()).not.toThrow();
+  });
+
+  it("rotateBgImage returns early when layers are null and images exist", async () => {
     localStorage.setItem(
       "dash_v2_config",
-      JSON.stringify({ bgImages: ["https://example.com/img1.jpg", "https://example.com/img2.jpg"] }),
+      JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
     );
+    vi.resetModules();
     const { rotateBgImage } = await import("@/ui/bg-images");
-    // Layers not initialized (→ _layerA/B are null) — onload guard must not throw
+    // initBgImages NOT called → _layerA and _layerB are null → early return
     expect(() => rotateBgImage()).not.toThrow();
   });
 });

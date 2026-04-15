@@ -63,7 +63,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
-export const VERSION = "7.1.5";
+export const VERSION = "7.1.6";
 
 /**
  * Apply card size overrides from config to DOM elements.

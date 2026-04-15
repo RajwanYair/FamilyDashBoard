@@ -341,3 +341,37 @@ describe("Countdown — tick shows daysSince when event has passed", () => {
     expect(msgEl?.textContent).toContain("יום 3");
   });
 });
+
+// ── Sprint v7.13: tick() clears _cdInterval when event is past on second tick (lines 119-120) ──
+
+describe("Countdown — tick() clears interval on second tick when event is past (lines 119-120)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `
+      <div id="cd-wedding-title"></div>
+      <div id="cd-days"></div>
+      <div id="cd-hours"></div>
+      <div id="cd-mins"></div>
+      <div id="cd-secs"></div>
+      <div id="cd-msg"></div>`;
+  });
+
+  afterEach(() => {
+    destroyCountdownCard();
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+  });
+
+  it("clears the interval when tick fires a second time with a past event (lines 119-120)", () => {
+    vi.mocked(loadConfig).mockReturnValue(PAST_CFG);
+    // Position now 1 day after the 2000-01-01 target
+    vi.setSystemTime(new Date("2000-01-02T12:00:00"));
+    initCountdownCard(); // first tick runs synchronously (_cdInterval still null → lines 119-120 NOT hit yet)
+    // Advance clock 1001ms: interval fires tick() again; now _cdInterval !== null → lines 119-120 HIT
+    vi.advanceTimersByTime(1001);
+    // destroyCountdownCard now operates on the already-nulled _cdInterval — should not throw
+    expect(() => destroyCountdownCard()).not.toThrow();
+    const msgEl = document.getElementById("cd-msg");
+    expect(msgEl?.textContent).toContain("מזל טוב");
+  });
+});

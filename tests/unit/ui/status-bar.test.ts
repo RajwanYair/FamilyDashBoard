@@ -341,3 +341,64 @@ describe("Status Bar — updateFontScaleIndicator", () => {
     expect(() => mod.updateFontScaleIndicator()).not.toThrow();
   });
 });
+
+// ── Sprint v7.13: online / offline event callbacks (lines 134-135, 138-139) ──
+
+describe("Status Bar — online/offline events update conn-indicator", () => {
+  let mod: StatusBarMod;
+
+  beforeEach(async () => {
+    document.body.innerHTML = `
+      <div id="conn-indicator"></div>
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="uptime-display"></div>
+      <div id="font-scale-indicator"></div>
+    `;
+    mod = await freshBar();
+    mod.initStatusBar();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.documentElement.style.removeProperty("--font-scale");
+  });
+
+  it("fires updateConnIndicator when window 'online' event dispatched", () => {
+    Object.defineProperty(navigator, "onLine", {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    window.dispatchEvent(new Event("online"));
+    expect(document.getElementById("conn-indicator")?.textContent).toBe("🟢");
+  });
+
+  it("fires updateConnIndicator when window 'offline' event dispatched", () => {
+    Object.defineProperty(navigator, "onLine", {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+    window.dispatchEvent(new Event("offline"));
+    expect(document.getElementById("conn-indicator")?.textContent).toBe("🔴");
+  });
+
+  it("online then offline toggles indicator correctly", () => {
+    Object.defineProperty(navigator, "onLine", {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    window.dispatchEvent(new Event("online"));
+    expect(document.getElementById("conn-indicator")?.textContent).toBe("🟢");
+
+    Object.defineProperty(navigator, "onLine", {
+      value: false,
+      configurable: true,
+      writable: true,
+    });
+    window.dispatchEvent(new Event("offline"));
+    expect(document.getElementById("conn-indicator")?.textContent).toBe("🔴");
+  });
+});

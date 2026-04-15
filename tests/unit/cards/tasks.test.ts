@@ -657,3 +657,42 @@ describe("Tasks — tasks-all-done-msg visibility (Sprint v7.12)", () => {
     expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe("none");
   });
 });
+
+// ── Sprint v7.13: checkbox change handler — badge.style.display="none" + doneMsg (lines 146, 150) ──
+
+describe("Tasks — badge hides + doneMsg shows when last task checked via checkbox (lines 146, 150)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("hides #tasks-pending-badge when last task checked (line 146)", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]));
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+    renderTasksCard();
+    const cb = document.querySelector<HTMLInputElement>(".tasks-cb")!;
+    cb.checked = true;
+    cb.dispatchEvent(new Event("change"));
+    expect((document.getElementById("tasks-pending-badge") as HTMLElement).style.display).toBe("none");
+  });
+
+  it("shows #tasks-all-done-msg when last task checked (line 150)", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]));
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+    renderTasksCard();
+    const cb = document.querySelector<HTMLInputElement>(".tasks-cb")!;
+    cb.checked = true;
+    cb.dispatchEvent(new Event("change"));
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe("");
+  });
+});

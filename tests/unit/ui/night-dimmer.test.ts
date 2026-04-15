@@ -361,3 +361,40 @@ describe("Night Dimmer — applyDim returns early when #night-dim absent (line 3
     expect(() => toggleNightDim()).not.toThrow();
   });
 });
+
+// ── Sprint v7.13: updateDimIndicator with #dim-indicator element (lines 48-52) ──
+
+describe("Night Dimmer — updateDimIndicator with chip element", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="night-dim" style="display:none"></div>
+      <span id="dim-indicator" style="display:none"></span>
+    `;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("shows chip and sets title when dimmer is active (line 48-49 TRUE branch)", async () => {
+    const { toggleNightDim } = await freshDimmer();
+    toggleNightDim(); // activate
+    const chip = document.getElementById("dim-indicator");
+    expect(chip?.style.display).toBe("");
+    expect(chip?.title).toContain("עמעום לילה פעיל");
+  });
+
+  it("hides chip when dimmer is inactive (line 51-52 FALSE branch)", async () => {
+    const { toggleNightDim } = await freshDimmer();
+    toggleNightDim(); // ON
+    toggleNightDim(); // OFF
+    const chip = document.getElementById("dim-indicator");
+    expect(chip?.style.display).toBe("none");
+  });
+
+  it("updateDimIndicator does nothing when #dim-indicator is absent", async () => {
+    document.getElementById("dim-indicator")?.remove();
+    const { updateDimIndicator } = await freshDimmer();
+    expect(() => updateDimIndicator()).not.toThrow();
+  });
+});

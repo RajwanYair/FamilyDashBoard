@@ -573,3 +573,65 @@ describe("Layout Drag — dragstart with non-null dataTransfer via definePropert
     expect(dt.effectAllowed).toBe("move");
   });
 });
+
+// ── Sprint v7.13: uncovered branches ─────────────────────────────────────────
+
+describe("Layout Drag — readCurrentLayout() when columns are absent from DOM (line 28)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("returns empty arrays when .grid-col-left/mid/right are absent", () => {
+    // No setupColumns() call → columns not in DOM → ?? fallback creates empty div
+    document.body.innerHTML = "<div>no columns here</div>";
+    const [left, mid, right] = readCurrentLayout();
+    expect(left).toEqual([]);
+    expect(mid).toEqual([]);
+    expect(right).toEqual([]);
+  });
+});
+
+describe("Layout Drag — drop AFTER target uses insertBefore(card, target.nextSibling) (line 118)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("inserts dragged card AFTER target when clientY > card midpoint (line 118)", () => {
+    setupColumns(["news", "weather"], [], []);
+    initCardDragDrop();
+
+    const newsCard = document.querySelector<HTMLElement>('[data-card-id="news"]')!;
+    const weatherCard = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;
+    const newsHeader = newsCard.querySelector<HTMLElement>(".card-header")!;
+    const leftCol = document.querySelector<HTMLElement>(".grid-col-left")!;
+
+    // Mock getBoundingClientRect so midpoint is 50+100/2 = 100; clientY = 150 > 100 → insert AFTER
+    vi.spyOn(weatherCard, "getBoundingClientRect").mockReturnValue({
+      top: 50, height: 100, bottom: 150, left: 0, right: 100, width: 100, x: 0, y: 50,
+      toJSON: () => ({}),
+    } as DOMRect);
+
+    // Start drag
+    newsHeader.dispatchEvent(
+      Object.assign(new Event("dragstart", { bubbles: true }), {
+        dataTransfer: { setData: vi.fn(), effectAllowed: "" },
+      }),
+    );
+
+    // Drop on the weather card, clientY = 150 > midpoint 100
+    const dropEvt = Object.assign(
+      new Event("drop", { bubbles: true }),
+      { preventDefault: vi.fn(), clientY: 150, dataTransfer: { dropEffect: "" } },
+    );
+    Object.defineProperty(dropEvt, "target", { value: weatherCard });
+    leftCol.dispatchEvent(dropEvt);
+
+    // news card should now be AFTER weather card (nextSibling of weather)
+    const children = Array.from(leftCol.children);
+    const newsIdx = children.indexOf(newsCard);
+    const weatherIdx = children.indexOf(weatherCard);
+    expect(newsIdx).toBeGreaterThan(weatherIdx);
+  });
+});
