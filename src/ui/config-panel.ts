@@ -17,6 +17,7 @@ import { setClockSeconds } from "./header";
 import { initWeatherCities } from "../cards/weather/weather";
 import { applyHiddenStocks } from "../cards/stocks/stocks";
 import { applyNewsFontSize } from "../cards/news/news";
+import { resetLayout } from "./layout-drag";
 // ── Extra localStorage keys (fields not stored in DashboardConfig) ──
 const LS_DIM_START = "dash_v2_dim_start";
 const LS_DIM_END = "dash_v2_dim_end";
@@ -544,6 +545,13 @@ export function initConfigPanel(): void {
   document
     .getElementById("cfg-share-btn")
     ?.addEventListener("click", shareSettings);
+
+  // Reset card layout button
+  document.getElementById("cfg-reset-layout-btn")?.addEventListener("click", () => {
+    resetLayout();
+    showToast("↩ סידור הכרטיסיות אופס — טען מחדש להחלה");
+    diagLog("[config-panel] layout reset");
+  });
 
   diagLog("[config-panel] initialized");
 }

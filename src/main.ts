@@ -39,6 +39,7 @@ import { initScreenMode, stepFontScale } from "./ui/screen-mode";
 import { toggleNightDim, initNightDimmer } from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initBgImages } from "./ui/bg-images";
+import { initCardDragDrop } from "./ui/layout-drag";
 import { showToast } from "./ui/toast";
 
 // ── Cards ──
@@ -142,6 +143,7 @@ export function init(): void {
   initBgImages();
   initCardMaximize();
   initCardCollapse();
+  initCardDragDrop();
   initStatusBar();
   initConfigPanel();
   initDiagOverlay();

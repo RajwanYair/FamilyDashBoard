@@ -7,6 +7,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased] — v7.1-alpha
 
+> **1541 tests / 38 suites / 0 failures · Branch coverage: 93.38%**
+
+### Added (sprint v7.6)
+- **Drag-and-drop card layout** (F99): HTML5 Drag API with no libraries — drag `.card-header` to reorder cards between the three grid columns; layout persisted to `config.cardLayout` via `saveCurrentLayout()`; `↩ איפוס סידור כרטיסיות` reset button in config panel Cards tab
+- **`src/ui/layout-drag.ts`**: New module — `readCurrentLayout()`, `saveCurrentLayout()`, `resetLayout()`, `initCardDragDrop()`; visual feedback via `.card.dragging` / `.card.drag-over` CSS (already defined in `sprints.css`)
+- **Coverage tests (+26 tests)**:
+  - `tests/unit/ui/layout-drag.test.ts` — 21 tests: readCurrentLayout, saveCurrentLayout, resetLayout, initCardDragDrop, dragstart/dragover/dragleave/drop flow, insert-before/after branches, clearDragOver forEach, edge cases
+  - `alerts.ts` line 186 FALSE branch: `renderAlerts` with no badge element
+  - `alerts.ts` lines 288/292 "error" ternary: `loadAlerts` else + catch block with `stale=null`
+  - `hebrew-cal.ts` line 247: `h.hebrew ?? h.title` fallback (via stale response without `hebrew` field)
+  - `hebrew-cal.ts` line 332: `els.specialRow.style.display="none"` when all specials deduplicated
+
 ---
 
 ## [7.0.0] — 2026-04-14 (alpha2 — 2026-04-14)

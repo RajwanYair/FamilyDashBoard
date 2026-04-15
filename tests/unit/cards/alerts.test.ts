@@ -1107,3 +1107,76 @@ describe("Alerts — loadAlerts catch block when cSet throws (lines 291-295)", (
     vi.runAllTimers();
   });
 });
+
+// ── renderAlerts: if (elBadge) FALSE branch (line 186) ───────────────────────
+
+describe("Alerts — renderAlerts if(elBadge) FALSE branch (line 186)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("skips badge update when elBadge is null and highlightNew=true (line 186 FALSE branch)", () => {
+    // DOM has scroll but NO badge → cacheDom sets elBadge=null → if(elBadge) = FALSE
+    document.body.innerHTML = `<div id="alerts-scroll"></div>`;
+    cacheDom();
+    const nowSec = Math.floor(Date.now() / 1000);
+    const data: AlertEvent[] = [
+      { id: "b1", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowSec - 30 }] },
+    ];
+    expect(() => renderAlerts(data, true)).not.toThrow();
+    expect(document.getElementById("alerts-badge")).toBeNull();
+  });
+});
+
+// ── loadAlerts else stale=null → "error" ternary (line 288) ─────────────────
+
+describe("Alerts — loadAlerts else block stale=null ternary FALSE (line 288)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+  });
+
+  it("takes stale?'ok':'error' FALSE path in else block when cache empty + all fetches fail (line 288)", async () => {
+    const cacheModule = await import("@/core/cache");
+    cacheModule.cClear(); // stale = null
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    setAlertsEnabled(true);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
+    await loadAlerts();
+    expect(document.getElementById("alerts-scroll")).not.toBeNull();
+  });
+});
+
+// ── loadAlerts catch stale=null → "error" ternary (lines 291-293) ───────────
+
+describe("Alerts — loadAlerts catch block stale=null ternary FALSE (lines 291-293)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    setAlertsEnabled(true);
+  });
+
+  it("takes stale?'ok':'error' FALSE path in catch when cache empty + cSet throws (lines 291-293)", async () => {
+    const cacheModule = await import("@/core/cache");
+    cacheModule.cClear(); // stale = null → ternary takes 'error'
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    setAlertsEnabled(true);
+    const nowTs = Math.floor(Date.now() / 1000);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: "c1", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 10 }] }],
+    }));
+    vi.spyOn(cacheModule, "cSet").mockImplementationOnce(() => {
+      throw new Error("forced cSet throw for catch stale=null coverage");
+    });
+    await expect(loadAlerts()).resolves.toBeUndefined();
+  });
+});

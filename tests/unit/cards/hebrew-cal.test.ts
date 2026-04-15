@@ -2007,3 +2007,76 @@ describe("Hebrew Calendar — renderZmanim rAF maxW > 0 sets gridTemplateColumns
     rectSpy.mockRestore();
   });
 });
+
+// ── renderHoliday: h.hebrew ?? h.title — fallback to title when hebrew absent ─
+
+describe("Hebrew Calendar — renderHoliday h.title fallback (line 247)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("uses h.title when h.hebrew is absent, covering h.hebrew ?? h.title FALSE branch", () => {
+    setupDom();
+    vi.mocked(cGet).mockReturnValue(null);
+    // Stale data returns a holiday item with NO hebrew field → forces ?? h.title branch
+    vi.mocked(cGetStale).mockImplementation((key: string) => {
+      if ((key as string).startsWith("holidays-")) {
+        return {
+          items: [
+            {
+              category: "holiday",
+              title: "Pesach",
+              // intentionally omit 'hebrew' to hit the ?? h.title branch
+              date: new Date(Date.now() + 86_400_000 * 5).toISOString(),
+            },
+          ],
+        };
+      }
+      return null;
+    });
+    initHebrewCalCard();
+    expect(document.getElementById("hc-holiday")?.textContent).toContain("Pesach");
+  });
+});
+
+// ── loadOmer: specialRow hidden when all specials deduped (line 332) ──────────
+
+describe("Hebrew Calendar — loadOmer specialRow hidden when all specials duped (line 332)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("sets specialRow display='none' when all special holiday names equal _lastHolidayName (covers line 332)", async () => {
+    setupDom();
+    // Start with special row visible so we can confirm it gets hidden
+    document.getElementById("hc-special-row")!.style.display = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetStale).mockReturnValue(null);
+    // omer fetch returns a "holiday" item with empty-string names that match
+    // _lastHolidayName="" (initial value) → deduped.length === 0 → line 332
+    vi.mocked(fetchJSONWithWorker).mockImplementation(async (url: string) => {
+      if ((url as string).includes("omer=on")) {
+        return {
+          items: [
+            {
+              category: "holiday",
+              hebrew: "",
+              title: "",
+              date: new Date().toISOString(),
+            },
+          ],
+        };
+      }
+      return {};
+    });
+    initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    expect(document.getElementById("hc-special-row")?.style.display).toBe("none");
+  });
+});
