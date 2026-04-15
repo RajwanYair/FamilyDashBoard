@@ -7,14 +7,15 @@ description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML con
 
 ## Workflow Standards
 
-- Use `actions/checkout@v4` and `actions/setup-node@v4` minimum; upgrade to latest stable when available
+- Use **`actions/checkout@v4`** and **`actions/setup-node@v4`** — these are the current stable major versions. Do NOT use @v5/@v6 (they don't exist for these actions).
 - Set `permissions: contents: read` (least privilege)
-- **No `npm ci` / no `cache: "npm"` / no `package-lock.json`** in this project
+- **No `npm ci` / no `cache: "npm"` / no `package-lock.json`** in this project (worker/ is the exception — it has its own lock file)
 - All workflows install tools via `bash .github/ci/install-tools.sh`
-- CI runs: `npx tsc --noEmit` → `npx eslint src tests --max-warnings 0` → `npx vitest run` → `npx vite build`
-- Lint command matches local: `npx eslint src tests --max-warnings 0` (covers both src and tests)
+- CI runs: `npx tsc --noEmit` → `npx eslint src tests --max-warnings 0` → `npx markdownlint-cli2 "**/*.md"` → `npx vitest run` → `npx vite build`
+- Bundle size violations must `exit 1` — never use `::warning::` for size budget failures
 - Deploy via GitHub Pages on push to `main` (`deploy.yml`)
 - Release: `release.yml` auto-attaches artifacts on tags (`vX.Y.Z`)
+- Single CI file: `ci.yml` covers all checks. `ci-v6.yml` is deleted — do not recreate it.
 
 ## Tool Install Model
 
@@ -33,4 +34,4 @@ description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML con
 
 - Never log secrets in CI output
 - Use `${{ secrets.TOKEN }}` for credentials
-- Pin action versions to specific tags
+- Pin action versions to specific major tags (`@v4`, not `@latest`)

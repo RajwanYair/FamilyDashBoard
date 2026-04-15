@@ -1,7 +1,7 @@
 # =============================================================================
-# CI — FamilyDashBoard v6+ — Cross-cutting quality gates
-# Runs on ALL pushes (no path filter) to catch docs, config, and repo-wide issues.
-# TypeScript / Vite build checks live in ci-v6.yml (path-filtered).
+# CI — FamilyDashBoard v7 — Unified quality gate
+# Typecheck · ESLint · Markdownlint · Vitest (Node 20/22/24) · Security · Build
+# Runs on every push to main and all pull requests.
 # =============================================================================
 name: CI
 
@@ -16,44 +16,73 @@ permissions:
   contents: read
 
 jobs:
-  lint-docs:
-    name: Markdown Lint
+  typecheck:
+    name: TypeScript
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - run: npx tsc --noEmit
 
-      - name: Lint Markdown files
-        run: npx --yes markdownlint-cli2 "**/*.md"
+  lint:
+    name: ESLint + Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - name: ESLint (0 warnings allowed)
+        run: npx eslint src tests --max-warnings 0
+      - name: Markdownlint
+        run: npx markdownlint-cli2 "**/*.md"
 
-  security-scan:
+  unit-tests:
+    name: Vitest (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - run: npx vitest run --reporter=verbose
+
+  security:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
-
       - name: npm audit (high+critical)
         run: npm audit --audit-level=high
-
       - name: Scan for hardcoded secrets
         run: |
           echo "🔍 Scanning for potential secrets in src/..."
           FOUND=0
           for PATTERN in 'api[_-]?key\s*[:=]' 'apiKey\s*[:=]' 'secret\s*[:=]' 'password\s*[:=]' 'Bearer\s+[A-Za-z0-9]{20,}'; do
             if grep -rEn "$PATTERN" src/ --include="*.ts" 2>/dev/null | grep -qv '//.*:'; then
-              echo "::warning::Potential secret pattern found: $PATTERN"
+              echo "::error::Potential secret pattern found: $PATTERN"
               grep -rEn "$PATTERN" src/ --include="*.ts" | grep -v '//.*:'
               FOUND=1
             fi
           done
           [ "$FOUND" -eq 0 ] && echo "✅ No hardcoded secrets detected"
-
+          [ "$FOUND" -eq 1 ] && exit 1
       - name: Scan for dangerous JS patterns
         run: |
           echo "🔍 Scanning for dangerous JS patterns in src/..."
@@ -66,29 +95,23 @@ jobs:
             echo "::error::document.write() detected in src/ — security risk"
             FAILED=1
           fi
-          if grep -rEn '\.innerHTML\s*=\s*(?!["'"'"'`]*)' src/ --include="*.ts" 2>/dev/null | grep -Ev '(//|\.textContent)'; then
-            echo "::warning::innerHTML assignment detected in src/ — verify no unsanitized user data"
-          fi
           [ "$FAILED" -eq 0 ] && echo "✅ No dangerous patterns found"
           exit $FAILED
 
-  bundle-size:
-    name: Bundle Size Guard
+  build:
+    name: Production Build + Size
     runs-on: ubuntu-latest
+    needs: [typecheck, lint, unit-tests]
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
-
       - name: Build
         run: npx vite build
-
-      - name: Enforce size budget
+      - name: Bundle size report
         run: |
           echo "## 📦 Bundle Size Report" >> $GITHUB_STEP_SUMMARY
           ls -lhS dist/assets/ >> $GITHUB_STEP_SUMMARY
@@ -100,10 +123,15 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**JS gzip:** ${JS_KB} KB  |  **CSS gzip:** ${CSS_KB} KB" >> $GITHUB_STEP_SUMMARY
-
           echo "JS gzipped: ${JS_KB} KB"
           echo "CSS gzipped: ${CSS_KB} KB"
 
-          [ "$JS_KB" -gt 40 ] && echo "::warning::JS bundle exceeds 40 KB gz (${JS_KB} KB)"
-          [ "$CSS_KB" -gt 18 ] && echo "::warning::CSS bundle exceeds 18 KB gz (${CSS_KB} KB)"
-          echo "✅ Size check complete"
+          if [ "$JS_KB" -gt 40 ]; then
+            echo "::error::JS bundle exceeds 40 KB gz (${JS_KB} KB)"
+            exit 1
+          fi
+          if [ "$CSS_KB" -gt 18 ]; then
+            echo "::error::CSS bundle exceeds 18 KB gz (${CSS_KB} KB)"
+            exit 1
+          fi
+          echo "✅ Size check passed"

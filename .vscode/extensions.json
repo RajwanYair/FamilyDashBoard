@@ -4,6 +4,7 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "stylelint.vscode-stylelint",
+        "DavidAnson.vscode-markdownlint",
         // TypeScript / JavaScript
         "ms-vscode.vscode-typescript-next",
         // Git & GitHub

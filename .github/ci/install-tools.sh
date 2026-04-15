@@ -23,6 +23,7 @@ npm install --no-save --no-package-lock \
   "eslint@^10.2.0" \
   "typescript-eslint@^8.31.0" \
   "@eslint/js@^10.2.0" \
-  "happy-dom@^20.8.9"
+  "happy-dom@^20.8.9" \
+  "markdownlint-cli2@^0.17.0"
 
 echo "✅ CI toolchain installed"

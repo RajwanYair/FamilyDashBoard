@@ -1,9 +1,9 @@
-# GitHub Copilot Instructions — FamilyDashBoard v7.0
+# GitHub Copilot Instructions — FamilyDashBoard v7.1
 
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · Vite 8 + TS 5.9 + Vitest 4
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`
-> Tests: `npx vitest run` — 1554+ / 38 suites / 0 failures
+> Tests: `npx vitest run` — 1570+ / 39 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
 
 ## Mandatory Rules
@@ -21,7 +21,7 @@
 11. Verify function names before wiring (`loadAllStocks()` not `loadStocks()`)
 12. `_tempUnit` = `'C'`/`'F'` (NOT `_useFahrenheit`)
 13. Stock columns: `width` + `flex-shrink: 0` (NOT `min-width`)
-14. Grep `id="X"` in HTML before keeping any loader — dead elements = dead code
+14. Grep `id="X"` in `index.html` before keeping any loader — dead elements = dead code
 15. Dev deps go in `MyScripts/package.json` (parent) — **never** add `devDependencies` to `FamilyDashBoard/package.json`
 
 ## Key Names & Gotchas
@@ -34,7 +34,7 @@
 | `setCachedData()` | `cSet(key, data)` |
 | `setSyncStatus()` | `setSync(id, state)` |
 
-## v7.0 Rules (alpha)
+## v7.x Rules
 
 16. Card registry: `registerCard()` / `getCard()` in `src/core/card-registry.ts` — new cards must be registered here
 17. New overlays: use `<dialog>` + `showModal()` / `close()` — not `<div>` visibility toggling
@@ -45,4 +45,9 @@
 22. `cGet()` and `cGetStale()` return `null` (not `undefined`) for cache misses — always check `!== null`, never `!== undefined`
 23. `dist/` is built with `--base ./` for `file://` access; `removeCrossOrigin` Vite plugin strips `crossorigin` attrs, strips CSP meta, converts `type=module` → plain `<script>`, and outputs a single IIFE bundle
 24. After **every** Copilot chat session: commit with `git add -A && git commit -m "chore: <session summary>"` before closing
-25. **Card content layout: always use rectangular tile/grid blocks** — never plain vertical line lists. Each data point (metric, stat, label+value pair) must be a self-contained visually-bordered tile in a `display: grid` or `display: flex; flex-wrap: wrap` container. Model: weather UV/wind/humidity chips, not system-status `<p>` rows. CSS: `grid-template-columns: repeat(auto-fit, minmax(Xpx, 1fr))` is the default pattern. Exception only when content is inherently sequential (e.g. news feed headlines, stock ticker rows).
+25. **Card content layout: always use rectangular tile/grid blocks** — never plain vertical line lists. Each data point must be a self-contained visually-bordered tile in `display: grid` or `display: flex; flex-wrap: wrap`. Default: `grid-template-columns: repeat(auto-fit, minmax(Xpx, 1fr))`. Exception: sequential content (news feed, stock rows).
+26. **Static PWA — no auth**: This is a client-only static HTML dashboard with no server/backend. Authentication (Google/Facebook/Apple/other) is not applicable and should never be added.
+27. **Icons & manifests go in `src/public/`** (Vite static dir, copied verbatim to `dist/`). NOT in `src/assets/` (which Vite fingerprints). Fix: `<link rel="icon" href="/FamilyDashBoard/icon.svg">`.
+28. **Hebrew date display**: use `Intl.DateTimeFormat('he-u-ca-hebrew', { ... })` — never compute Hebrew dates manually.
+29. **GitHub Actions versions**: use `actions/checkout@v4`, `actions/setup-node@v4`. Do NOT use `@v5` or `@v6` (don't exist for these actions). Bundle size violations must `exit 1`, not `::warning::`.
+30. **CI**: single unified workflow in `.github/workflows/ci.yml` covers all checks (typecheck → lint → test → build). `ci-v6.yml` is deleted — do not recreate it.

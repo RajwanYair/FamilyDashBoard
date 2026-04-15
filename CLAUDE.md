@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v7.0
+# CLAUDE.md — FamilyDashBoard v7.1
 
 > Context file for Claude Code / Claude agents. Lean project brief — see `.github/instructions/` for scoped details.
 
@@ -14,7 +14,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 - ESLint 10 + typescript-eslint 8 (0 errors · 0 warnings · no suppressions)
 - **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 - No local `package-lock.json` or `devDependencies` in this project
-- Tests: `npx vitest run` (1554+ tests, 38 suites, 0 failures)
+- Tests: `npx vitest run` (1570+ tests, 39 suites, 0 failures)
 - SW: `sw.js` v6.5.0 (offline + API cache)
 
 ## Key Rules
@@ -34,15 +34,21 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 13. New overlays use `<dialog>` + `showModal()` / `close()` — not `<div>` with `display:block`
 14. `dist/` built with `--base ./` + `removeCrossOrigin` plugin for `file://` compatibility
 15. After every Copilot session: `git add -A && git commit -m "chore: <session summary>"`
+16. Icons/manifests go in `src/public/` (Vite static dir) — NOT `src/assets/` (fingerprinted)
+17. Hebrew date: `Intl.DateTimeFormat('he-u-ca-hebrew', {...})` — never compute manually
+18. GitHub Actions: `actions/checkout@v4`, `actions/setup-node@v4` — **not** @v5/@v6
+19. Static PWA — no auth. No server/backend. Google/Facebook/Apple sign-in: NOT applicable.
+20. Card layout: bordered tile/grid blocks — not vertical lists (except news/stock rows)
 
 ## File Map
 
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
-tests/unit/            # Vitest — 1554 tests / 38 suites
+src/public/            # Vite static dir — icon.svg, manifest.webmanifest
+tests/unit/            # Vitest — 1570 tests / 39 suites
 sw.js                  # ServiceWorker v6.5
-manifest.json          # PWA manifest
-icon.svg               # App icon
+manifest.json          # PWA manifest (root copy)
+icon.svg               # App icon (root copy)
 BestDashBoard.html     # Legacy v5 dashboard (read-only, archived)
 ```
 
@@ -59,8 +65,10 @@ BestDashBoard.html     # Legacy v5 dashboard (read-only, archived)
 npx vitest run                          # tests
 npx vitest run --coverage               # coverage
 npx eslint src tests --max-warnings 0   # lint (must be 0)
+npx markdownlint-cli2 "**/*.md"         # markdown lint
 npx tsc --noEmit                        # type-check
 npx vite build                          # production build
+npm run check                           # all of the above
 ```
 
 ## Release

@@ -3,25 +3,30 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v7.0-alpha
+# FamilyDashBoard — v7.1
 
 TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`.
-> **Tests**: 1554+ / 38 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Tests**: 1570+ / 39 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
 
 ## Files
 
 ```text
 src/                        # TypeScript v7 modular source (Vite build)
-tests/unit/                 # Vitest unit tests — 1554+ tests / 38 suites
-sw.js                       # ServiceWorker v6.0.0 (offline + API cache)
-manifest.json / icon.svg    # PWA manifest + app icon
+src/public/                 # Vite static dir — icon.svg, manifest.webmanifest (NOT src/assets/)
+tests/unit/                 # Vitest unit tests — 1570+ tests / 39 suites
+sw.js                       # ServiceWorker v6.5.0 (offline + API cache)
+manifest.json / icon.svg    # PWA manifest + app icon (root copies)
 BestDashBoard.html          # Legacy dashboard (read-only, preserved)
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer
 .github/assets/             # SVG docs graphics
 ```
+
+## Cards (11 total)
+
+news · weather · stocks · currency · calendar · hebrew-cal · alerts · motivation · tasks · system-info · countdown
 
 ## Architecture
 

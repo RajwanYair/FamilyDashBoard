@@ -28,7 +28,10 @@
             "enabled": true,
             "aliases": ["debug", "troubleshoot", "error"],
             "priority": "high",
-            "context_files": ["src/core/diag.ts", "src/core/fetch.ts "src/core/fetch.ts"],
+            "context_files": [
+                "src/core/diag.ts",
+                "src/core/fetch.ts"
+            ],
             "description": "Debug fetch failures, dead code, JS syntax errors"
         },
         "docs-mode": {
@@ -45,7 +48,10 @@
             "enabled": true,
             "aliases": ["security", "audit", "xss"],
             "priority": "critical",
-            "context_files": ["src/main.tsthub/SECURITY.md"],
+            "context_files": [
+                "src/main.ts",
+                ".github/SECURITY.md"
+            ],
             "description": "Security: XSS prevention, CSP, API input sanitization"
         }
     }
