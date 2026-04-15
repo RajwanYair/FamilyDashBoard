@@ -63,7 +63,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
-export const VERSION = "7.1.3";
+export const VERSION = "7.1.4";
 
 /**
  * Apply card size overrides from config to DOM elements.
@@ -177,6 +177,21 @@ export function init(): void {
   registerKey("m", "ציטוט הבא", () => renderMotivation());
   registerKey("r", "רענון נתונים", () => window.location.reload());
   registerKey("w", "מעבר °C/°F", () => toggleTempUnit());
+  registerKey("1", "עיר מזג אוויר 1", () =>
+    document
+      .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']")
+      ?.click(),
+  );
+  registerKey("2", "עיר מזג אוויר 2", () =>
+    document
+      .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='2']")
+      ?.click(),
+  );
+  registerKey("3", "עיר מזג אוויר 3", () =>
+    document
+      .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='3']")
+      ?.click(),
+  );
   registerKey("a", "התרעות צבע אדום", () => {
     toggleAlerts();
     showToast(

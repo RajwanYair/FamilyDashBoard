@@ -1180,3 +1180,145 @@ describe("Alerts — loadAlerts catch block stale=null ternary FALSE (lines 291-
     await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });
+
+// ── Sprint v7.11: coverage for playBeep, notify, renderAlerts, fetchAlerts ──
+
+describe("Alerts — playBeep AudioContext unavailable (no throw)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("does not throw when AudioContext and webkitAudioContext are both undefined", async () => {
+    vi.stubGlobal("AudioContext", undefined);
+    vi.resetModules();
+    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cd();
+    sae(true);
+    // Mock fetch to return data that triggers notify (new alert) → playBeep is called internally
+    // playBeep will try AudioContext → undefined → AudioCtor = undefined → if (!AudioCtor) return
+    const nowTs = Math.floor(Date.now() / 1000);
+    const { cSet: rCs } = await import("@/core/cache");
+    rCs("alerts", [{ id: "old", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 60 }] }]);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: "new_id", alerts: [{ cities: ["חיפה"], threat: 1, time: nowTs - 5 }] }],
+    }));
+    await expect(la()).resolves.toBeUndefined();
+  });
+});
+
+describe("Alerts — notify without Notification API (no throw)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("does not throw when typeof Notification === 'undefined'", async () => {
+    vi.stubGlobal("Notification", undefined);
+    vi.resetModules();
+    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cd();
+    sae(true);
+    const nowTs = Math.floor(Date.now() / 1000);
+    const { cSet: rCs } = await import("@/core/cache");
+    rCs("alerts", [{ id: "prev", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 60 }] }]);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: "next_id", alerts: [{ cities: ["רחובות"], threat: 1, time: nowTs - 3 }] }],
+    }));
+    await expect(la()).resolves.toBeUndefined();
+  });
+});
+
+describe("Alerts — notify Notification.permission not granted (no throw)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("does not throw when Notification.permission is 'denied'", async () => {
+    vi.stubGlobal("Notification", { permission: "denied" });
+    vi.resetModules();
+    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cd();
+    sae(true);
+    const nowTs = Math.floor(Date.now() / 1000);
+    const { cSet: rCs } = await import("@/core/cache");
+    rCs("alerts", [{ id: "deny1", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 120 }] }]);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: "deny2", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 2 }] }],
+    }));
+    await expect(la()).resolves.toBeUndefined();
+  });
+});
+
+describe("Alerts — renderAlerts elScroll null (no throw)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.resetModules();
+  });
+
+  it("returns immediately without throwing when elScroll is null", async () => {
+    vi.resetModules();
+    const { renderAlerts: ra, cacheDom: cd } = await import("@/cards/alerts/alerts");
+    // No DOM → elScroll stays null after cacheDom
+    document.body.innerHTML = "";
+    cd(); // elScroll = null
+    const nowTs = Math.floor(Date.now() / 1000);
+    const ev: AlertEvent = { id: "x", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] };
+    expect(() => ra([ev], false)).not.toThrow();
+  });
+});
+
+describe("Alerts — fetchAlerts !res.ok falls through to next proxy", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("skips non-ok responses and falls through chain returning []", async () => {
+    vi.resetModules();
+    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cd();
+    sae(true);
+    // All responses are 404 (not ok)
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, json: async () => [] }));
+    await expect(la()).resolves.toBeUndefined();
+    // Sync should be 'error' (no stale data, fetch returned nothing)
+  });
+});
+
+describe("Alerts — buildAlertItem THREAT_LABELS fallback (unknown threat)", () => {
+  it("uses '⚠️ התרעה' fallback for threat value not in THREAT_LABELS", () => {
+    const ev: AlertEvent = {
+      id: "t1",
+      alerts: [{ cities: ["תל אביב"], threat: 99, time: NOW_SEC - 60 }],
+    };
+    const el = buildAlertItem(ev, NOW_SEC, false, false);
+    expect(el?.textContent).toContain("⚠️ התרעה");
+  });
+});
+
+describe("Alerts — renderAlerts badge null guard (no throw)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.resetModules();
+  });
+
+  it("does not throw when badge element is null during highlight", async () => {
+    vi.resetModules();
+    const { renderAlerts: ra, cacheDom: cd } = await import("@/cards/alerts/alerts");
+    // Provide scroll but no badge
+    document.body.innerHTML = `<div id="alerts-scroll"></div>`;
+    cd(); // elBadge = null
+    const nowTs = Math.floor(Date.now() / 1000);
+    const ev: AlertEvent = { id: "x2", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 5 }] };
+    expect(() => ra([ev], true)).not.toThrow();
+  });
+});

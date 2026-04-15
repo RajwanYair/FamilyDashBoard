@@ -15,6 +15,7 @@ import {
   getCountdownTargetDate,
   getCountdownTitle,
   getCountdownDoneMsg,
+  getDaysSince,
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
 import type { DashboardConfig } from "@/types/config";
@@ -143,9 +144,10 @@ describe("tick — event has passed", () => {
     expect(document.getElementById("cd-msg")?.textContent).toContain("מזל טוב");
   });
 
-  it("resets all digits to 0 when target has passed", () => {
+  it("shows days-since and zeroes hours/mins/secs when target has passed", () => {
     tick();
-    expect(document.getElementById("cd-days")?.textContent).toBe("0");
+    // cd-days now shows days elapsed since the event (getDaysSince)
+    expect(document.getElementById("cd-days")?.textContent).toMatch(/^\d+$/);
     expect(document.getElementById("cd-hours")?.textContent).toBe("00");
     expect(document.getElementById("cd-mins")?.textContent).toBe("00");
     expect(document.getElementById("cd-secs")?.textContent).toBe("00");
@@ -273,5 +275,69 @@ describe("config helper functions", () => {
     const d = getCountdownTargetDate();
     expect(d instanceof Date).toBe(true);
     expect(d.getFullYear()).toBe(2026);
+  });
+});
+
+// ── Sprint v7.11: getDaysSince + tick past-event days-since display ──
+
+describe("Countdown — getDaysSince", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("returns 0 when targetMs is now", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1_000_000_000_000);
+    expect(getDaysSince(1_000_000_000_000)).toBe(0);
+  });
+
+  it("returns 1 when one day (86_400_000 ms) has elapsed", () => {
+    vi.useFakeTimers();
+    const target = 1_000_000_000_000;
+    vi.setSystemTime(target + 86_400_000);
+    expect(getDaysSince(target)).toBe(1);
+  });
+
+  it("returns 5 when five days have elapsed", () => {
+    vi.useFakeTimers();
+    const target = 1_000_000_000_000;
+    vi.setSystemTime(target + 5 * 86_400_000);
+    expect(getDaysSince(target)).toBe(5);
+  });
+});
+
+describe("Countdown — tick shows daysSince when event has passed", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `
+      <div id="cd-wedding-title"></div>
+      <div id="cd-days"></div>
+      <div id="cd-hours"></div>
+      <div id="cd-mins"></div>
+      <div id="cd-secs"></div>
+      <div id="cd-msg"></div>`;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+  });
+
+  it("shows daysSince count of 3 in daysEl when 3 days past the event", () => {
+    const PAST_CFG_LOCAL = {
+      countdownCardDate: "2020-01-01",
+      countdownCardTime: "00:00",
+      countdownCardTitle: "test",
+      countdownCardDoneMsg: "🎉 מזל טוב",
+    } as DashboardConfig;
+    vi.mocked(loadConfig).mockReturnValue(PAST_CFG_LOCAL);
+    // Set now to 3 days + 1 hour after target
+    const target = new Date("2020-01-01T00:00:00").getTime();
+    vi.setSystemTime(target + 3 * 86_400_000 + 3_600_000);
+    // initCountdownCard refreshes els cache so tick() writes to the current DOM
+    initCountdownCard();
+    destroyCountdownCard();
+    const daysEl = document.getElementById("cd-days");
+    expect(daysEl?.textContent).toBe("3");
+    const msgEl = document.getElementById("cd-msg");
+    expect(msgEl?.textContent).toContain("יום 3");
   });
 });

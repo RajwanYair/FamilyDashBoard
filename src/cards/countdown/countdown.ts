@@ -80,6 +80,11 @@ export function getTimeComponents(targetMs: number): TimeComponents {
   };
 }
 
+/** Returns the number of whole days that have elapsed since `targetMs`. */
+export function getDaysSince(targetMs: number): number {
+  return Math.max(0, Math.floor((Date.now() - targetMs) / 86_400_000));
+}
+
 function pad(n: number): string {
   return String(n).padStart(2, "0");
 }
@@ -100,12 +105,16 @@ export function tick(): void {
   if (now >= targetMs) {
     // Event has passed
     if (titleEl) titleEl.textContent = "🎉 מזל טוב!";
-    daysEl.textContent = "0";
+    const daysSince = getDaysSince(targetMs);
+    daysEl.textContent = String(daysSince);
     if (hoursEl) hoursEl.textContent = "00";
     if (minsEl) minsEl.textContent = "00";
     if (secsEl) secsEl.textContent = "00";
     if (msgEl)
-      msgEl.textContent = getCountdownDoneMsg();
+      msgEl.textContent =
+        daysSince > 0
+          ? `${getCountdownDoneMsg()} · יום ${daysSince}`
+          : getCountdownDoneMsg();
     if (_cdInterval !== null) {
       clearInterval(_cdInterval);
       _cdInterval = null;

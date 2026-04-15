@@ -1844,3 +1844,72 @@ describe(`Weather — dew point rendering`, () => {
     expect(gust?.style.display).toBe(`none`);
   });
 });
+
+// ── Sprint v7.11: weather null-guard + toggleTempUnit no-cache paths ──
+
+describe("Weather — renderWeather with null wxDew (no #wx-dew element)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    // DOM without #wx-dew and #wx-gust — guard branches take false path
+    document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><span id="wx-sky-pill"></span><div id="top-temp"></div>`;
+    cacheDom();
+  });
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("does not throw when wx-dew element is absent", () => {
+    expect(() => renderWeather(makeWeather({ dew_point_2m: 14 }))).not.toThrow();
+  });
+
+  it("does not throw when wx-gust element is absent", () => {
+    expect(() => renderWeather(makeWeather({ wind_speed_10m: 10, wind_gusts_10m: 30 }))).not.toThrow();
+  });
+});
+
+describe("Weather — toggleTempUnit no-cache path (neither fresh nor stale)", () => {
+  afterEach(() => {
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("saves config and does not call renderWeather when cache is empty", async () => {
+    vi.resetModules();
+    localStorage.clear();
+    const { toggleTempUnit: ttu } = await import("@/cards/weather/weather");
+    // No cache seeded → cGet and cGetStale both return null
+    expect(() => ttu()).not.toThrow();
+    // Check tempUnit was actually saved
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    expect(["C", "F"]).toContain(saved["tempUnit"]);
+  });
+});
+
+describe("Weather — renderWeather wx-sky-pill null guard", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    // DOM without #wx-sky-pill
+    document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><div id="wx-dew"></div><span id="wx-gust"></span><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><div id="top-temp"></div>`;
+    cacheDom();
+  });
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("does not throw when wx-sky-pill element is absent", () => {
+    expect(() => renderWeather(makeWeather({ weather_code: 0 }))).not.toThrow();
+  });
+});
+
+describe("Weather — weekly summary 'שמשי' label (all-clear week)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><div id="wx-dew"></div><span id="wx-gust"></span><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><span id="wx-sky-pill"></span><div id="top-temp"></div>`;
+    cacheDom();
+  });
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("shows '☀️' emoji when all forecast days are clear (code 0)", () => {
+    const wx = makeWeather({ weather_code: 0 });
+    // All forecast days clear
+    wx.daily.weather_code = [0, 0, 0, 0, 0, 0, 0, 0];
+    renderWeather(wx);
+    expect(document.getElementById("wx-week-summary")?.textContent).toContain("☀️");
+  });
+});

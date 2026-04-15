@@ -1110,44 +1110,129 @@ describe("Config Panel — applyConfig sets [data-card-size] on matching card el
   });
 });
 
-// ── isConfigPanelOpen returns false via ?? false when overlay null (line 409) ──
+// ── Sprint v7.11: collectForm portfolio validation + tasksResetHour clamping ──
 
-describe("Config Panel — isConfigPanelOpen ?? false when overlay is null (line 409)", () => {
+describe("Config Panel — collectForm invalid portfolio JSON shows toast", () => {
   afterEach(() => {
     document.body.innerHTML = "";
+    localStorage.clear();
     vi.resetModules();
+    vi.restoreAllMocks();
   });
 
-  it("returns false via ?? false when config-overlay not in DOM (line 409)", async () => {
-    document.body.innerHTML = ""; // no config-overlay
+  it("preserves previous portfolio when textarea contains invalid JSON", async () => {
     vi.resetModules();
-    const mod = await import("@/ui/config-panel");
-    // overlay() returns null → ?.classList.contains() returns undefined → ?? false → false
-    expect(mod.isConfigPanelOpen()).toBe(false);
+    document.body.innerHTML = `
+      <div id="config-overlay" class="visible">
+        <div id="config-panel">
+          <textarea id="cfg-portfolio">invalid-json-{{</textarea>
+          <input id="cfg-tasks-reset-hour" type="number" value="6" />
+          <input id="cfg-cd-card-title" type="text" value="" />
+          <input id="cfg-cd-card-date" type="text" value="" />
+          <input id="cfg-cd-card-time" type="text" value="" />
+          <input id="cfg-cd-card-done-msg" type="text" value="" />
+          <button id="cfg-save-btn">שמור</button>
+          <div id="cfg-cards-list"></div>
+          <div id="toast-container"></div>
+        </div>
+      </div>`;
+    const prevPortfolio = '[{"symbol":"AAPL"}]';
+    localStorage.setItem("dash_v2_portfolio", prevPortfolio);
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    document.getElementById("cfg-save-btn")?.click();
+    // Portfolio should NOT have been overwritten with invalid JSON
+    expect(localStorage.getItem("dash_v2_portfolio")).toBe(prevPortfolio);
   });
 });
 
-// ── applyConfig card size sets data-card-size on matching element (line 507) ──
-
-describe("Config Panel — applyConfig sets [data-card-size] on matching card element (line 507)", () => {
+describe("Config Panel — collectForm tasksResetHour NaN preserves default", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
     vi.resetModules();
   });
 
-  it("sets data-card-size attribute on card element when cardSizes config has matching id (line 507)", async () => {
-    setupDOM(); // includes <select class="cfg-card-size-sel" data-card-id="weather"> and <div data-card-id="weather">
+  it("keeps tasksResetHour at default (6) when input value is NaN", async () => {
+    vi.resetModules();
+    document.body.innerHTML = `
+      <div id="config-overlay" class="visible">
+        <div id="config-panel">
+          <input id="cfg-tasks-reset-hour" type="number" value="not-a-number" />
+          <button id="cfg-save-btn">שמור</button>
+          <div id="cfg-cards-list"></div>
+          <div id="toast-container"></div>
+        </div>
+      </div>`;
     const mod = await freshCfg();
     mod.initConfigPanel();
-    mod.openConfigPanel();
-    // Select the weather card size as "lg"
-    const sizeEl = document.querySelector<HTMLSelectElement>(".cfg-card-size-sel[data-card-id='weather']");
-    if (sizeEl) sizeEl.value = "lg";
-    // Click save → collectForm sets cardSizes["weather"]="lg" → applyConfig runs → line 507 fires
     document.getElementById("cfg-save-btn")?.click();
-    const cardEl = document.querySelector<HTMLElement>("[data-card-id='weather']");
-    // After apply, data-card-size should be updated to "lg"
-    expect(cardEl?.dataset["cardSize"]).toBe("lg");
+    const saved = JSON.parse(
+      localStorage.getItem("dash_v2_config") ?? "{}",
+    ) as Record<string, unknown>;
+    // When NaN, collectForm does not overwrite the field — DEFAULT_CONFIG value (6) is kept
+    expect(saved["tasksResetHour"]).toBe(6);
+  });
+});
+
+describe("Config Panel — collectForm tasksResetHour > 23 clamps to 23", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("stores tasksResetHour = 23 when input value is 30", async () => {
+    vi.resetModules();
+    document.body.innerHTML = `
+      <div id="config-overlay" class="visible">
+        <div id="config-panel">
+          <input id="cfg-tasks-reset-hour" type="number" value="30" />
+          <button id="cfg-save-btn">שמור</button>
+          <div id="cfg-cards-list"></div>
+          <div id="toast-container"></div>
+        </div>
+      </div>`;
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    document.getElementById("cfg-save-btn")?.click();
+    const saved = JSON.parse(
+      localStorage.getItem("dash_v2_config") ?? "{}",
+    ) as Record<string, unknown>;
+    expect(saved["tasksResetHour"]).toBe(23);
+  });
+});
+
+describe("Config Panel — collectForm countdown card fields persist", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("saves countdown card title + date + time + doneMsg from form", async () => {
+    vi.resetModules();
+    document.body.innerHTML = `
+      <div id="config-overlay" class="visible">
+        <div id="config-panel">
+          <input id="cfg-cd-card-title" type="text" value="יום הולדת" />
+          <input id="cfg-cd-card-date" type="text" value="2027-01-15" />
+          <input id="cfg-cd-card-time" type="text" value="19:30" />
+          <input id="cfg-cd-card-done-msg" type="text" value="🎂 מזל טוב!" />
+          <button id="cfg-save-btn">שמור</button>
+          <div id="cfg-cards-list"></div>
+          <div id="toast-container"></div>
+        </div>
+      </div>`;
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    document.getElementById("cfg-save-btn")?.click();
+    const saved = JSON.parse(
+      localStorage.getItem("dash_v2_config") ?? "{}",
+    ) as Record<string, unknown>;
+    expect(saved["countdownCardTitle"]).toBe("יום הולדת");
+    expect(saved["countdownCardDate"]).toBe("2027-01-15");
+    expect(saved["countdownCardTime"]).toBe("19:30");
+    expect(saved["countdownCardDoneMsg"]).toBe("🎂 מזל טוב!");
   });
 });

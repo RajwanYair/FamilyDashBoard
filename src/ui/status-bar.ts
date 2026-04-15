@@ -45,7 +45,7 @@ function cacheDom(): void {
 }
 
 // ── Version Badge ──
-const APP_VERSION = "7.1.3";
+const APP_VERSION = "7.1.4";
 
 function renderVersionBadge(): void {
   if (!elVersion) return;
