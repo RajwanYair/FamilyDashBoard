@@ -170,6 +170,7 @@ function loadBookmarks(): void {
   } catch {
     _bookmarks = new Set();
   }
+  updateBkmCount();
 }
 
 function saveBookmarks(): void {
@@ -177,6 +178,19 @@ function saveBookmarks(): void {
     localStorage.setItem(BOOKMARKS_KEY, JSON.stringify([..._bookmarks]));
   } catch {
     /* quota */
+  }
+  updateBkmCount();
+}
+
+function updateBkmCount(): void {
+  const el = document.getElementById("news-bkm-count");
+  if (!el) return;
+  const n = _bookmarks.size;
+  if (n > 0) {
+    el.textContent = `🔖 ${n}`;
+    el.style.display = "";
+  } else {
+    el.style.display = "none";
   }
 }
 

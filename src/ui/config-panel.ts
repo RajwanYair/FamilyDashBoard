@@ -20,6 +20,8 @@ import { applyNewsFontSize } from "../cards/news/news";
 import { initCountdownCard } from "../cards/countdown/countdown";
 import { resetLayout } from "./layout-drag";
 import { renderTasksCard } from "../cards/tasks/tasks";
+import { applyFontScale } from "./screen-mode";
+import { setDimLevel, updateDimIndicator } from "./night-dimmer";
 // ── Extra localStorage keys (fields not stored in DashboardConfig) ──
 const LS_DIM_START = "dash_v2_dim_start";
 const LS_DIM_END = "dash_v2_dim_end";
@@ -93,6 +95,22 @@ function populateForm(): void {
     newsFont.value = localStorage.getItem(LS_NEWS_FONT) ?? "100";
     const val = document.getElementById("cfg-news-fontsize-val");
     if (val) val.textContent = `${newsFont.value}%`;
+  }
+
+  // Night dimmer intensity
+  const dimLevel = g("cfg-dim-level");
+  if (dimLevel) {
+    dimLevel.value = String(c.nightDimLevel);
+    const val = document.getElementById("cfg-dim-level-val");
+    if (val) val.textContent = `${c.nightDimLevel}%`;
+  }
+
+  // Font scale
+  const fontScale = g("cfg-font-scale");
+  if (fontScale) {
+    fontScale.value = String(Math.round(c.fontScale * 100));
+    const val = document.getElementById("cfg-font-scale-val");
+    if (val) val.textContent = `${Math.round(c.fontScale * 100)}%`;
   }
 
   // Calendar tab
@@ -289,6 +307,20 @@ function collectForm(): DashboardConfig {
 
   const newsFont = g("cfg-news-fontsize");
   if (newsFont) localStorage.setItem(LS_NEWS_FONT, newsFont.value);
+
+  // Night dimmer intensity
+  const dimLevelEl = g("cfg-dim-level");
+  if (dimLevelEl) {
+    const lvl = parseInt(dimLevelEl.value, 10);
+    if (!isNaN(lvl)) c.nightDimLevel = Math.max(10, Math.min(95, lvl));
+  }
+
+  // Font scale
+  const fontScaleEl = g("cfg-font-scale");
+  if (fontScaleEl) {
+    const pct = parseInt(fontScaleEl.value, 10);
+    if (!isNaN(pct)) c.fontScale = Math.max(0.7, Math.min(1.5, pct / 100));
+  }
 
   // Calendar
   const bday = gTxt("cfg-birthday");
@@ -532,6 +564,9 @@ export function initConfigPanel(): void {
     initWeatherCities();
     applyHiddenStocks();
     applyNewsFontSize();
+    applyFontScale(c.fontScale);
+    setDimLevel(c.nightDimLevel);
+    updateDimIndicator();
     initCountdownCard();
     // Save chores JSON to localStorage and refresh tasks card
     const choresEl = gTxt("cfg-chores");
@@ -580,6 +615,24 @@ export function initConfigPanel(): void {
   if (newsFont && newsFontVal) {
     newsFont.addEventListener("input", () => {
       newsFontVal.textContent = `${newsFont.value}%`;
+    });
+  }
+
+  // Night dimmer level slider live preview
+  const dimLevelSlider = g("cfg-dim-level");
+  const dimLevelValEl = document.getElementById("cfg-dim-level-val");
+  if (dimLevelSlider && dimLevelValEl) {
+    dimLevelSlider.addEventListener("input", () => {
+      dimLevelValEl.textContent = `${dimLevelSlider.value}%`;
+    });
+  }
+
+  // Font scale slider live preview + apply
+  const fontScaleSlider = g("cfg-font-scale");
+  const fontScaleValEl = document.getElementById("cfg-font-scale-val");
+  if (fontScaleSlider && fontScaleValEl) {
+    fontScaleSlider.addEventListener("input", () => {
+      fontScaleValEl.textContent = `${fontScaleSlider.value}%`;
     });
   }
 

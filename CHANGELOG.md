@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.1.3] — 2026-04-16
+
+> **1582+ tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+- **Status bar — uptime indicator**: `#uptime-display` now shows live session uptime (⏱ Xh Ym), updating every minute
+- **Status bar — connection indicator**: `#conn-indicator` shows 🟢/🔴 based on `navigator.onLine`; updates on browser `online`/`offline` events
+- **Status bar — font-scale indicator**: `#font-scale-indicator` shows current font scale (e.g. `110%`); hidden at 100% default; updates on `+`/`-` key press
+- **Config panel — night dimmer slider**: `cfg-dim-level` range (10–95%) in Display tab; live label update; saved to `nightDimLevel`, applied immediately on save
+- **Config panel — font scale slider**: `cfg-font-scale` range (70–150%) in Display tab; live label update; saved to `fontScale`, applied immediately on save
+- **Weather — Hebrew wind direction**: `#wx-wind-heb` element (existed but empty) now populated via `deg2hebrewDir()` — returns Hebrew compass labels (ד׳, מ׳, צ׳, etc.)
+- **System info card — viewport tile**: 7th tile `#sysinfo-viewport` shows current viewport resolution + DPR (e.g. `1920×1080 @2x`)
+- **Tasks card — all-done message**: `#tasks-all-done-msg` shows 🎉 celebration when all chores are checked off; hides again when any task is unchecked
+- **News card — bookmark count badge**: `#news-bkm-count` chip appears next to the bookmark pill showing saved count (🔖 N); updates on every add/remove/load
+
+---
+
 ## [7.1.2] — 2026-04-15
 
 > **1574 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

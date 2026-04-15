@@ -8,6 +8,7 @@
 import { loadConfig, updateConfig } from "../core/config";
 import type { DashboardConfig } from "../types/config";
 import { diagLog } from "../core/diag";
+import { updateFontScaleIndicator } from "./status-bar";
 
 const SCREEN_CLASSES = ["screen-tv", "screen-tablet", "screen-phone"] as const;
 
@@ -38,6 +39,7 @@ export function stepFontScale(dir: 1 | -1): void {
   const clamped = Math.max(0.7, Math.min(1.5, next));
   applyFontScale(clamped);
   updateConfig("fontScale", clamped);
+  updateFontScaleIndicator();
   diagLog(`[screen-mode] Font scale → ${clamped}`);
 }
 

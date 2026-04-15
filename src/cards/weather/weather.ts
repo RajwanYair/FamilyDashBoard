@@ -139,6 +139,7 @@ const el = {
   wxWeekSummary: null as HTMLElement | null,
   wxFeels: null as HTMLElement | null,
   wxSkyPill: null as HTMLElement | null,
+  wxWindHeb: null as HTMLElement | null,
 };
 
 export function cacheDom(): void {
@@ -156,6 +157,7 @@ export function cacheDom(): void {
   el.wxWeekSummary = document.getElementById("wx-week-summary");
   el.wxFeels = document.getElementById("wx-feels");
   el.wxSkyPill = document.getElementById("wx-sky-pill");
+  el.wxWindHeb = document.getElementById("wx-wind-heb");
 }
 
 function getTempUnit(): "C" | "F" {
@@ -184,6 +186,12 @@ export function toDisplayTemp(c: number): string {
 export function deg2arrow(deg: number): string {
   const arrows = ["↓", "↙", "←", "↖", "↑", "↗", "→", "↘"];
   return arrows[Math.round(deg / 45) % 8] ?? "↓";
+}
+
+/** Return Hebrew compass direction label for a wind bearing. */
+export function deg2hebrewDir(deg: number): string {
+  const dirs = ["ד׳", "ד׳-מ׳", "מ׳", "צ׳-מ׳", "צ׳", "צ׳-מ׳ב׳", "מ׳ב׳", "ד׳-מ׳ב׳"];
+  return dirs[Math.round(deg / 45) % 8] ?? "ד׳";
 }
 
 async function fetchWeather(): Promise<WeatherResponse> {
@@ -217,6 +225,8 @@ export function renderWeather(d: WeatherResponse): void {
 
   if (el.wxWind)
     el.wxWind.textContent = `${Math.round(cur.wind_speed_10m)} קמ"ש ${deg2arrow(cur.wind_direction_10m)}`;
+  if (el.wxWindHeb)
+    el.wxWindHeb.textContent = deg2hebrewDir(cur.wind_direction_10m);
   if (el.wxHum) el.wxHum.textContent = `${cur.relative_humidity_2m}%`;
 
   // UV index pill (F122)

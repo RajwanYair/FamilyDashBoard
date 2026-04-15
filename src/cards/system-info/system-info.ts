@@ -143,6 +143,15 @@ export async function renderSystemInfo(): Promise<void> {
   }
   setText("sysinfo-browser", platform);
 
+  // Viewport resolution
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const dpr = window.devicePixelRatio ?? 1;
+  setText(
+    "sysinfo-viewport",
+    `${vw}×${vh}${dpr !== 1 ? ` @${dpr}x` : ""}`,
+  );
+
   diagLog("[system-info] Rendered");
 }
 

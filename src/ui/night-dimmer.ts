@@ -42,7 +42,7 @@ function applyDim(): void {
   }
 }
 
-function updateDimIndicator(): void {
+export function updateDimIndicator(): void {
   const chip = document.getElementById("dim-indicator");
   if (!chip) return;
   if (dimActive) {

@@ -12,6 +12,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 type StatusBarMod = {
   initStatusBar: () => void;
   stampRefresh: () => void;
+  updateUptime: () => void;
+  updateConnIndicator: () => void;
+  updateFontScaleIndicator: () => void;
 };
 
 function buildStatusBarDOM(): void {
@@ -207,5 +210,134 @@ describe("Status Bar — registerSyncDots partial DOM", () => {
     mod.initStatusBar();
     const badge = document.getElementById("version-badge");
     expect(badge?.textContent).toMatch(/^v\d+/);
+  });
+});
+
+// ── Sprint v7.9: updateUptime ──
+
+describe("Status Bar — updateUptime", () => {
+  let mod: StatusBarMod;
+
+  beforeEach(async () => {
+    document.body.innerHTML = `
+      <div id="uptime-display"></div>
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+    `;
+    mod = await freshBar();
+    mod.initStatusBar();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+  });
+
+  it("uptime-display shows ⏱ symbol", () => {
+    mod.updateUptime();
+    const text = document.getElementById("uptime-display")?.textContent ?? "";
+    expect(text).toContain("⏱");
+  });
+
+  it("uptime-display shows minutes", () => {
+    mod.updateUptime();
+    const text = document.getElementById("uptime-display")?.textContent ?? "";
+    expect(text).toMatch(/⏱ \d+[mh]/);
+  });
+
+  it("does not throw when uptime-display is absent", () => {
+    document.getElementById("uptime-display")?.remove();
+    expect(() => mod.updateUptime()).not.toThrow();
+  });
+});
+
+// ── Sprint v7.9: updateConnIndicator ──
+
+describe("Status Bar — updateConnIndicator", () => {
+  let mod: StatusBarMod;
+
+  beforeEach(async () => {
+    document.body.innerHTML = `
+      <div id="conn-indicator"></div>
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+    `;
+    mod = await freshBar();
+    mod.initStatusBar();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("shows 🟢 when navigator.onLine is true", () => {
+    Object.defineProperty(navigator, "onLine", {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    mod.updateConnIndicator();
+    expect(
+      document.getElementById("conn-indicator")?.textContent,
+    ).toBe("🟢");
+  });
+
+  it("shows 🔴 when navigator.onLine is false", () => {
+    Object.defineProperty(navigator, "onLine", {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+    mod.updateConnIndicator();
+    expect(
+      document.getElementById("conn-indicator")?.textContent,
+    ).toBe("🔴");
+  });
+
+  it("does not throw when conn-indicator is absent", () => {
+    document.getElementById("conn-indicator")?.remove();
+    expect(() => mod.updateConnIndicator()).not.toThrow();
+  });
+});
+
+// ── Sprint v7.9: updateFontScaleIndicator ──
+
+describe("Status Bar — updateFontScaleIndicator", () => {
+  let mod: StatusBarMod;
+
+  beforeEach(async () => {
+    document.body.innerHTML = `
+      <div id="font-scale-indicator"></div>
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+    `;
+    mod = await freshBar();
+    mod.initStatusBar();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.documentElement.style.removeProperty("--font-scale");
+  });
+
+  it("shows empty string at default 100% scale", () => {
+    document.documentElement.style.setProperty("--font-scale", "1");
+    mod.updateFontScaleIndicator();
+    expect(
+      document.getElementById("font-scale-indicator")?.textContent,
+    ).toBe("");
+  });
+
+  it("shows percentage when scale differs from 100%", () => {
+    document.documentElement.style.setProperty("--font-scale", "1.1");
+    mod.updateFontScaleIndicator();
+    expect(
+      document.getElementById("font-scale-indicator")?.textContent,
+    ).toBe("110%");
+  });
+
+  it("does not throw when font-scale-indicator is absent", () => {
+    document.getElementById("font-scale-indicator")?.remove();
+    expect(() => mod.updateFontScaleIndicator()).not.toThrow();
   });
 });

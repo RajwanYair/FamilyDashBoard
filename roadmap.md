@@ -18,10 +18,13 @@
 | v6.4       | ✅ Released  | 932 Vitest / 32 suites      | Coverage sprint: stocks, hebrew-cal, ticker, calendar |
 | v6.5       | ✅ Released  | 1240 Vitest / 33 suites     | Coverage sprint: cache, base-card, motivation, maximize |
 | **v7.0**   | ✅ Released  | 1390+ Vitest / 37 suites    | Card registry, tasks card, system-info, CSS @layer, dialog migration, 6 themes, `removeCrossOrigin` build plugin |
-| v7.6       | ✅ Done      | 1541 Vitest / 38 suites     | Drag-and-drop card layout, layout persistence, config panel reset |
-| v7.7       | ✅ Done      | 1554 Vitest / 38 suites     | Coverage sprint: 13 branch-gap tests (stocks, news, weather, hebrew-cal, ticker, layout-drag) |
-| v7.8 infra | ✅ Done      | 1554 Vitest / 38 suites     | 0 markdownlint errors, dead files removed, CI uses markdownlint-cli2, lint:md in check pipeline |
-| v7.1       | 📋 Planned  | —                           | Adaptive maximize, drag-and-drop layout, card add/remove |
+| v7.6       | ✅ Released  | 1541 Vitest / 38 suites     | Drag-and-drop card layout, layout persistence, config panel reset |
+| v7.7       | ✅ Released  | 1554 Vitest / 38 suites     | Coverage sprint: 13 branch-gap tests (stocks, news, weather, hebrew-cal, ticker, layout-drag) |
+| v7.8 infra | ✅ Released  | 1554 Vitest / 38 suites     | 0 markdownlint errors, dead files removed, CI uses markdownlint-cli2, lint:md in check pipeline |
+| **v7.1.0** | ✅ Released  | 1554 Vitest / 38 suites     | Countdown card (11th), unified CI, Hebrew date fix, favicon fix |
+| **v7.1.1** | ✅ Released  | 1570 Vitest / 39 suites     | Pre-release checklist pass, markdown lint fix, test count update |
+| **v7.1.2** | ✅ Released  | 1574 Vitest / 39 suites     | VERSION fixed, applyCardSizes init, chores editor, help M/A shortcuts, tasks pending badge, market status bar chip, night dim indicator, theme doc fixes |
+| **v7.1.3** | 🚧 In Dev   | 1582+ Vitest / 39 suites    | Status bar uptime/conn/font-scale; dim level + font scale sliders; Hebrew wind dir; viewport tile; all-done task msg; news bookmarks badge |
 | v7.2       | 💡 Idea     | —                           | Multi-user profiles, cloud sync via Cloudflare KV |
 
 ---
@@ -39,18 +42,24 @@ Card type system · card registry · tasks card · system-info card · 6th theme
 
 ---
 
-## v7.1 — Planned
+## v7.1 — Released
 
-- Layout drag-and-drop (column assignment via config panel, persisted to localStorage)
-- Card slot persistence: per-device layout via `dash_v2_layout_*`
-- Card size control: s/m/l chips in config panel
-- URL-based config sharing (base64-encoded layout in `#hash`)
-- **Replace hc-chore with Tasks card integration**: the old `renderChores()` hardcoded wheel (rotated by weekday % array length, stored as raw JSON in `dash_v2_chores`) has been removed. Replace with a live-synced display inside the Hebrew Calendar card that reads from the existing Tasks card store (`src/cards/tasks/`), showing today's pending/assigned tasks without duplicating state. Consider a `getTasksForToday()` bridge function, or a shared observable task store.
-- **Adaptive card maximize** — see detailed spec below.
+- [x] Layout drag-and-drop (column assignment via config panel, persisted to localStorage) — v7.6
+- [x] Card slot persistence: per-device layout via `dash_v2_layout_*` — v7.6
+- [x] Card size control: sm/md/lg/xl chips in config panel — v7.1.2
+- [x] URL-based config sharing (base64-encoded layout in `#cfg=` hash) — v7.0
+- [x] Tasks card integration in Hebrew Calendar (`getTasksForToday()` bridge, `renderTasksStrip()`) — v7.0
+- [x] Adaptive card maximize (`--max-font-scale` CSS variable, FLIP animation) — v7.1.x
+- [x] VERSION constant sync across main.ts + status-bar.ts — v7.1.2
+- [x] Countdown card (11th card) — v7.1.0
+- [x] Chores JSON editor in config panel Advanced tab — v7.1.2
+- [x] Help overlay M/A keyboard shortcuts — v7.1.2
 
----
+### Remaining for v7.0 release (deferred to v7.1+)
 
-## Feature Spec: Adaptive Card Maximize (v7.1)
+- [ ] Card registry → HTML: dynamic `data-card-id` slots rendered by registry
+- [ ] Card add/remove via config panel (registry-aware, new card discovery)
+- [ ] Cloudflare Worker migration for all remaining API routes
 
 ### Problem
 

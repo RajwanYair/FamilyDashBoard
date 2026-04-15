@@ -10,6 +10,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   toDisplayTemp,
   deg2arrow,
+  deg2hebrewDir,
   renderWeather,
   cacheDom,
   getSkyCategory,
@@ -113,6 +114,45 @@ describe("Weather — deg2arrow", () => {
 
   it("360° wraps to ↓", () => {
     expect(deg2arrow(360)).toBe("↓");
+  });
+});
+
+// ── deg2hebrewDir ──
+describe("Weather — deg2hebrewDir", () => {
+  it("0° (N wind from N) → ד׳", () => {
+    expect(deg2hebrewDir(0)).toBe("ד׳");
+  });
+
+  it("90° (E) → מ׳", () => {
+    expect(deg2hebrewDir(90)).toBe("מ׳");
+  });
+
+  it("180° (S) → צ׳", () => {
+    expect(deg2hebrewDir(180)).toBe("צ׳");
+  });
+
+  it("270° (W) → מ׳ב׳", () => {
+    expect(deg2hebrewDir(270)).toBe("מ׳ב׳");
+  });
+
+  it("45° (NE) → ד׳-מ׳", () => {
+    expect(deg2hebrewDir(45)).toBe("ד׳-מ׳");
+  });
+
+  it("135° (SE) → צ׳-מ׳", () => {
+    expect(deg2hebrewDir(135)).toBe("צ׳-מ׳");
+  });
+
+  it("225° (SW) → צ׳-מ׳ב׳", () => {
+    expect(deg2hebrewDir(225)).toBe("צ׳-מ׳ב׳");
+  });
+
+  it("315° (NW) → ד׳-מ׳ב׳", () => {
+    expect(deg2hebrewDir(315)).toBe("ד׳-מ׳ב׳");
+  });
+
+  it("360° wraps to ד׳", () => {
+    expect(deg2hebrewDir(360)).toBe("ד׳");
   });
 });
 

@@ -141,6 +141,18 @@
             <input id="cfg-news-fontsize" type="range" min="70" max="130" step="5" style="width:100px;direction:ltr" >
             <span id="cfg-news-fontsize-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
           </div>
+          <!-- Night dimmer intensity slider -->
+          <div class="cfg-row">
+            <span class="cfg-label">🌑 עוצמת החשיכה (%)</span>
+            <input id="cfg-dim-level" type="range" min="10" max="95" step="5" style="width:110px;direction:ltr" title="כמה כהה המסך בזמן החשיכה">
+            <span id="cfg-dim-level-val" style="font-size:0.75em;margin-right:6px;min-width:32px">55%</span>
+          </div>
+          <!-- Font scale slider -->
+          <div class="cfg-row">
+            <span class="cfg-label">🔡 גודל גופן (+/- כדי לשנות)</span>
+            <input id="cfg-font-scale" type="range" min="70" max="150" step="5" style="width:110px;direction:ltr" title="גודל גופן גלובלי (%)">
+            <span id="cfg-font-scale-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
+          </div>
         </div>
         <!-- Tab: Calendar -->
         <div class="cfg-section" data-tab="calendar">
@@ -350,7 +362,7 @@
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
             <section class="card" data-card-id="news" aria-label="News">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
@@ -551,6 +563,10 @@
                   <button type="button" id="tasks-reset-btn" class="tasks-action-btn tasks-action-reset" title="אפס סימוני היום">🔄 אפס</button>
                 </div>
                 <div class="tasks-list" id="tasks-list"></div>
+                <!-- Celebratory message when all tasks are done -->
+                <div id="tasks-all-done-msg" style="display:none;text-align:center;padding:10px 0;font-size:1.1em;color:var(--success-color,#4caf50)">🎉 כל המשימות הושלמו! כל הכבוד!</div>
+                <!-- Celebratory message when all tasks are done -->
+                <div id="tasks-all-done-msg" style="display:none;text-align:center;padding:10px 0;font-size:1.1em;color:var(--success-color,#4caf50)">🎉 כל המשימות הושלמו! כל הכבוד!</div>
               </div>
             </section>
             <!-- System Info card -->
@@ -563,6 +579,7 @@
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-uptime">—</span><span class="sysinfo-tile-label">⏱️ פעיל</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-load">—</span><span class="sysinfo-tile-label">⚡ טעינת דף</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-browser">—</span><span class="sysinfo-tile-label">🌐 דפדפן</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-viewport">—</span><span class="sysinfo-tile-label">📐 מסך</span></div>
               </div>
             </section>
           </div>
