@@ -220,14 +220,15 @@ describe("Calendar — renderTodayStrip sort comparator with multiple today even
       icsIndex: 1,
       category: "work",
     };
-    // Filter to only 'today' events - adjust start time to be > now
+    // Filter to only 'today' events - use small offsets (seconds/minutes) so
+    // events always remain within today regardless of what time the test runs
     const afterNow = new Date(now.getTime() + 60_000); // 1 min from now
-    ev1.start = new Date(afterNow.getTime() + 4 * 3_600_000); // +4h
-    ev1.end = new Date(afterNow.getTime() + 5 * 3_600_000);
-    ev2.start = new Date(afterNow.getTime() + 2 * 3_600_000); // +2h
-    ev2.end = new Date(afterNow.getTime() + 3 * 3_600_000);
-    ev3.start = new Date(afterNow.getTime() + 1_000); // +1s
-    ev3.end = new Date(afterNow.getTime() + 3_600_000);
+    ev1.start = new Date(afterNow.getTime() + 180_000); // +3 min
+    ev1.end   = new Date(afterNow.getTime() + 300_000); // +5 min
+    ev2.start = new Date(afterNow.getTime() +  90_000); // +1.5 min
+    ev2.end   = new Date(afterNow.getTime() + 180_000); // +3 min
+    ev3.start = new Date(afterNow.getTime() +  1_000);  // +1 s (earliest)
+    ev3.end   = new Date(afterNow.getTime() +  90_000); // +1.5 min
     const strip = document.getElementById("cal-today-strip");
     renderCalendar([ev1, ev2, ev3]);
     // After rendering, today strip should have sorted events (earliest first)

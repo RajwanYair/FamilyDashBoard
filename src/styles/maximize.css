@@ -1,15 +1,15 @@
 /* Card Maximize — FLIP Animation */
 /* ── Card Maximize (click header to expand) ── */
 
-/* Keep ticker + header above the maximized card */
+/* Keep ticker + header above the maximized card — fallback z-index */
 .ticker-bar, .time-section { position: relative; z-index: 901; }
 
 .card.maximized {
     position: fixed !important;
-    top: 0;
+    top: var(--maximize-top, 0px);
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: var(--maximize-height, 100vh);
     z-index: 900;
     border-radius: 0;
     transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1),

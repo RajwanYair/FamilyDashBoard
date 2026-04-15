@@ -599,3 +599,76 @@ describe("Maximize — computeFontScale (v7.1 adaptive font scaling)", () => {
     expect(card.style.getPropertyValue("--max-font-scale")).toBe("");
   });
 })
+
+// ── Sprint v7.14: header-offset maximize (card stays below header/clock) ──
+
+describe("Maximize — card starts below header.time-section (v7.14)", () => {
+  let mod: MaxMod;
+
+  beforeEach(async () => {
+    stubAnimate();
+    mod = await freshMax();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("sets --maximize-top to header bottom when header is present", () => {
+    // Build header at a known position
+    const header = document.createElement("header");
+    header.className = "time-section";
+    header.getBoundingClientRect = vi.fn(() => ({
+      bottom: 120, top: 0, left: 0, right: 1920, width: 1920, height: 120,
+      x: 0, y: 0, toJSON: () => ({}),
+    } as DOMRect));
+    document.body.appendChild(header);
+
+    const card = makeCard("offset-card");
+    mod.toggleCardMaximize(card);
+
+    expect(card.style.getPropertyValue("--maximize-top")).toBe("120px");
+  });
+
+  it("sets --maximize-height to viewport height minus header bottom", () => {
+    const header = document.createElement("header");
+    header.className = "time-section";
+    header.getBoundingClientRect = vi.fn(() => ({
+      bottom: 80, top: 0, left: 0, right: 1920, width: 1920, height: 80,
+      x: 0, y: 0, toJSON: () => ({}),
+    } as DOMRect));
+    document.body.appendChild(header);
+
+    // happy-dom reports window.innerHeight as 768 by default
+    const card = makeCard("height-card");
+    mod.toggleCardMaximize(card);
+
+    const expectedHeight = Math.round(window.innerHeight - 80);
+    expect(card.style.getPropertyValue("--maximize-height")).toBe(`${expectedHeight}px`);
+  });
+
+  it("defaults --maximize-top to 0px when no header present", () => {
+    const card = makeCard("no-header-card");
+    mod.toggleCardMaximize(card);
+    expect(card.style.getPropertyValue("--maximize-top")).toBe("0px");
+  });
+
+  it("removes --maximize-top and --maximize-height after collapse", async () => {
+    const header = document.createElement("header");
+    header.className = "time-section";
+    header.getBoundingClientRect = vi.fn(() => ({
+      bottom: 100, top: 0, left: 0, right: 1920, width: 1920, height: 100,
+      x: 0, y: 0, toJSON: () => ({}),
+    } as DOMRect));
+    document.body.appendChild(header);
+
+    const card = makeCard("collapse-cleanup-card");
+    mod.toggleCardMaximize(card); // expand
+    mod.toggleCardMaximize(card); // collapse
+    await Promise.resolve();
+
+    expect(card.style.getPropertyValue("--maximize-top")).toBe("");
+    expect(card.style.getPropertyValue("--maximize-height")).toBe("");
+  });
+});

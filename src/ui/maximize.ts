@@ -48,6 +48,13 @@ function expandCard(card: HTMLElement): void {
     collapseCard(maximizedCard);
   }
 
+  // Measure the header so the maximized card starts below it (not covering the clock)
+  const headerEl = document.querySelector<HTMLElement>("header.time-section");
+  const headerBottom = headerEl ? Math.round(headerEl.getBoundingClientRect().bottom) : 0;
+  const availableHeight = Math.round(window.innerHeight - headerBottom);
+  card.style.setProperty("--maximize-top", `${headerBottom}px`);
+  card.style.setProperty("--maximize-height", `${availableHeight}px`);
+
   // FLIP: Record initial position
   const first = card.getBoundingClientRect();
   card.classList.add("maximized");
@@ -98,6 +105,8 @@ function collapseCard(card: HTMLElement): void {
   // does not snap before the card reaches its original size
   void anim.finished.then(() => {
     card.style.removeProperty("--max-font-scale");
+    card.style.removeProperty("--maximize-top");
+    card.style.removeProperty("--maximize-height");
   });
 
   maximizedCard = null;
