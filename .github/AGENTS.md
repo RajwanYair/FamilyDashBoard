@@ -10,9 +10,11 @@
 ## Custom Agents
 
 ### `@dashboard-designer`
+
 UI/UX specialist — CSS custom properties, RTL layout, TV readability, 6 themes, 3 screen modes, glassmorphism, card animations.
 
 ### `@api-integrator`
+
 API integration specialist — CORS proxy fallback, dual-layer cache (`cGet`/`cSet`/`cGetStale`), sync indicators, fetch locks, `diagLog()`.
 
 ## Copilot Modes

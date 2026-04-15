@@ -112,6 +112,7 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 | Stock stats as pill badges | Plain `<li>item</li>` list |
 
 **Pattern to use:**
+
 ```css
 .card-grid {
   display: grid;
@@ -134,6 +135,7 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 ```
 
 **Exceptions** (inherently sequential content):
+
 - News feed headlines
 - Stock ticker price rows
 - Calendar event list

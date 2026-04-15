@@ -99,6 +99,7 @@ Then add `"tests/unit/cards/<name>.test.ts"` reference to `vitest.config.ts` inc
 4. Key patterns:
 
 ### Stale-while-revalidate cache path
+
 ```typescript
 // Write expired data to localStorage; cGetStale reads it even past TTL
 cClear();
@@ -107,6 +108,7 @@ vi.mocked(cGet).mockReturnValue(null); // force cache miss
 ```
 
 ### Proxy !r.ok branch
+
 ```typescript
 vi.mocked(fetchWithTimeout)
   .mockResolvedValue({ ok: false, json: vi.fn() } as unknown as Response);
@@ -114,6 +116,7 @@ vi.mocked(fetchWithTimeout)
 ```
 
 ### allorigins proxy unwrapping
+
 ```typescript
 vi.mocked(fetchWithTimeout).mockResolvedValue({
   ok: true,
@@ -122,6 +125,7 @@ vi.mocked(fetchWithTimeout).mockResolvedValue({
 ```
 
 ### Time-sensitive functions (greeting, birthday, today-strip)
+
 ```typescript
 vi.useFakeTimers();
 vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning = greet with name
@@ -142,6 +146,7 @@ vi.useRealTimers();
 ## Session Commit Rule
 
 After each Copilot session that adds/fixes tests:
+
 ```bash
 git add -A && git commit -m "test(<scope>): <description> — <N> tests, <M> suites"
 ```

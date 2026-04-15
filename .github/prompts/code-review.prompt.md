@@ -8,6 +8,7 @@ description: "Perform a thorough code review of the FamilyDashBoard TypeScript s
 Review the TypeScript source files in `src/` for the following:
 
 ## Security
+
 - [ ] No `eval()` or `Function()` usage
 - [ ] No `innerHTML` with unsanitized external API data — use `textContent` or `DocumentFragment`
 - [ ] No hardcoded API keys or secrets
@@ -15,12 +16,14 @@ Review the TypeScript source files in `src/` for the following:
 - [ ] Content Security Policy (`default-src 'self'`) not weakened
 
 ## TypeScript Quality
+
 - [ ] `npx tsc --noEmit` passes (0 errors)
 - [ ] `npx eslint src tests --max-warnings 0` passes (0 warnings)
 - [ ] No `@ts-ignore` or `eslint-disable` suppressions
 - [ ] Type imports use `import type` for type-only imports
 
 ## UI Quality
+
 - [ ] RTL layout intact (`dir="rtl"`)
 - [ ] CSS custom properties used — no hardcoded colors
 - [ ] 6 themes covered: dark · ocean · forest · warm · high-contrast · rose
@@ -29,6 +32,7 @@ Review the TypeScript source files in `src/` for the following:
 - [ ] No duplicate CSS selectors
 
 ## API Reliability
+
 - [ ] All fetches use `fetchWithTimeout()` + try/catch + proxy fallback (`PROXIES`)
 - [ ] All responses cached via `cSet`/`cGet`/`cGetStale`
 - [ ] Sync indicators update on every exit path (`setSync`)
@@ -36,12 +40,14 @@ Review the TypeScript source files in `src/` for the following:
 - [ ] Fetch locks (`acquireLock`/`releaseLock`) where needed
 
 ## Performance
+
 - [ ] DOM updates use `DocumentFragment` for batch writes
 - [ ] `contain: layout style` on cards
 - [ ] `will-change` on animated elements only
 - [ ] No memory leaks (intervals use `setInterval` reference, no growing arrays)
 
 ## Tests
+
 - [ ] `npx vitest run` passes (0 failures)
 - [ ] New code has corresponding test in `tests/unit/`
 

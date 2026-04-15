@@ -24,7 +24,7 @@ FamilyDashBoard is a client-side HTML dashboard that fetches data from public AP
 
 **Please report security vulnerabilities privately** via [GitHub Security Advisories](https://github.com/RajwanYair/FamilyDashBoard/security/advisories/new).
 
-Alternatively, email **yair.rajwan@gmail.com** with details.
+Alternatively, email [yair.rajwan@gmail.com](mailto:yair.rajwan@gmail.com) with details.
 
 **Do NOT** open public issues for security vulnerabilities.
 

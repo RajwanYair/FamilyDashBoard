@@ -15,6 +15,7 @@ Please report security issues privately via:
 [GitHub Security Advisories](https://github.com/rajwanyair/FamilyDashBoard/security/advisories/new)
 
 Include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
@@ -33,7 +34,7 @@ You will receive a response within 7 days. If the issue is confirmed, a fix will
 
 The dashboard enforces a strict CSP in `src/index.html`:
 
-```
+```http
 default-src 'self'
 script-src 'self'
 style-src 'self' 'unsafe-inline'
@@ -62,5 +63,6 @@ form-action 'none'
 ### Dependencies
 
 This project has **zero runtime npm dependencies**. All packages are development-only (build tools, test frameworks, linters). Dependency security is enforced by:
+
 - `npm audit --audit-level=high` on every CI run
 - Dependabot automated PRs for version updates

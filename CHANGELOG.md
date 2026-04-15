@@ -5,11 +5,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [Unreleased] — v7.1-alpha
+## [Unreleased] — v7.8-alpha
 
-> **1541 tests / 38 suites / 0 failures · Branch coverage: 93.38%**
+> **1554 tests / 38 suites / 0 failures · Branch coverage: 93.72% · 0 markdownlint errors**
+
+### Changed (infra)
+
+- **Markdownlint**: 297 → 0 errors — fixed MD022/MD031/MD032/MD034/MD040/MD047 across 29 files; added `.markdownlint.json` rules MD060/MD029; added `.markdownlintignore`
+- **CI**: `ci.yml` markdown lint step updated from `markdownlint-cli@0.44.0` → `markdownlint-cli2` (matches local tooling)
+- **package.json**: Added `lint:md` script; `check` now runs typecheck + lint + lint:md + test
+- **Dead files removed**: `package.v5.json`, `package.v6.json`, `BestDashBoard.html copy.bak`, `eslint_out.txt`, `eslint.config.ts`
+
+---
+
+## [7.0.1] — sprint v7.7
+
+> **1554 tests / 38 suites / 0 failures · Branch coverage: 93.72%**
+
+### Added (sprint v7.7 — coverage gaps)
+
+- +13 branch-gap tests: stocks (3), news (3), weather (2), hebrew-cal (2), ticker (1), layout-drag (2)
+
+---
+
+## [7.0.0] — 2026-04-14 · sprint v7.6
+
+> **1541 tests / 38 suites · Drag-and-drop layout**
 
 ### Added (sprint v7.6)
+
 - **Drag-and-drop card layout** (F99): HTML5 Drag API with no libraries — drag `.card-header` to reorder cards between the three grid columns; layout persisted to `config.cardLayout` via `saveCurrentLayout()`; `↩ איפוס סידור כרטיסיות` reset button in config panel Cards tab
 - **`src/ui/layout-drag.ts`**: New module — `readCurrentLayout()`, `saveCurrentLayout()`, `resetLayout()`, `initCardDragDrop()`; visual feedback via `.card.dragging` / `.card.drag-over` CSS (already defined in `sprints.css`)
 - **Coverage tests (+26 tests)**:
@@ -26,6 +50,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 > TypeScript v7 card system · **1359 tests / 37 suites / 0 failures**
 
 ### Added (alpha2)
+
 - **Hebrew Calendar: Shabbat countdown** (`hc-countdown`): live HH:MM:SS timer showing time until candle lighting on Friday (within 6h) and Havdalah on Saturday
 - **Hebrew Calendar: Sefaria deep-link buttons** (`hc-daf-link`, `hc-parasha-link`): open Sefaria.org at the exact Daf or Parasha page
 - **Hebrew Calendar: Halacha Yomit** (`hc-halacha`): daily halacha from Sefaria calendars API — zero extra network cost (same request as Daf Yomi)
@@ -35,6 +60,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - **Coverage tests**: 35 new tests — `toggleAlerts`/`isAlertsEnabled`, OS dark-mode matchMedia listener, `getTasksForToday`, `loadDoneMap` catch, `formatCountdown`, `startCountdown`, `renderTasksStrip`, `renderNextCalEvent` with full DOM, `markVisited` quota catch, news dedup/sort branches, logo img error handler, config-panel cards tab rendering, collectForm card visibility + size saves
 
 ### Added (alpha1 — 2026-04-14)
+
 - **Card type system** (`src/types/card.ts`): `CardDefinition`, `CardConfigField`, `CardSlot`, `CardRegistryEntry`
 - **Card registry** (`src/core/card-registry.ts`): Map-based `registerCard/getCard/listCards/loadCard`; lazy-loads all 10 cards via dynamic `import()`
 - **Tasks card** (`src/cards/tasks/`): Family chore board — localStorage-persisted, daily 6AM reset, grouped by person, checkbox done-state; exports `getTasksForToday()`
@@ -56,6 +82,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - **Tests**: tasks (22), card-registry (22), worker-fetch (9+) — 3+  new suites
 
 ### Changed
+
 - hc-chore removed; replaced by Tasks card integration (roadmap v7.1)
 - `hc-parasha-progress-row` and `hc-aliyot-row` removed (dead code)
 - Hebrew Calendar layout: 2-column `hc-main-col` + `hc-side-col` (moon block + zmanim on physical left in RTL)

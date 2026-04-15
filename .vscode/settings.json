@@ -98,34 +98,37 @@
     // ── Search ──
     "search.exclude": {
         "**/node_modules": true,
-        "**/.git": true
+        "**/.git": true,
+        "**/dist": true,
+        "**/coverage": true
     },
-// ── Terminal Performance ──
-"terminal.integrated.gpuAcceleration": "on",
-"terminal.integrated.smoothScrolling": false,
-"terminal.integrated.persistentSessionScrollback": 500,
-"terminal.integrated.scrollback": 5000,
-"terminal.integrated.shellIntegration.enabled": true,
-"terminal.integrated.shellIntegration.decorationsEnabled": "never",
-"terminal.integrated.enableImages": false,
-"terminal.integrated.defaultProfile.windows": "PowerShell Fast",
-"terminal.integrated.profiles.windows": {
-    "PowerShell Fast": {
-        "source": "PowerShell",
-        "args": [
-            "-NoLogo"
-        ],
-        "icon": "terminal-powershell"
+
+    // ── Terminal Performance ──
+    "terminal.integrated.gpuAcceleration": "on",
+    "terminal.integrated.smoothScrolling": false,
+    "terminal.integrated.persistentSessionScrollback": 500,
+    "terminal.integrated.scrollback": 5000,
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.shellIntegration.decorationsEnabled": "never",
+    "terminal.integrated.enableImages": false,
+    "terminal.integrated.defaultProfile.windows": "PowerShell Fast",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell Fast": {
+            "source": "PowerShell",
+            "args": [
+                "-NoLogo"
+            ],
+            "icon": "terminal-powershell"
+        },
+        "PowerShell NoProfile": {
+            "source": "PowerShell",
+            "args": [
+                "-NoLogo",
+                "-NoProfile"
+            ],
+            "icon": "terminal-powershell"
+        }
     },
-    "PowerShell NoProfile": {
-        "source": "PowerShell",
-        "args": [
-            "-NoLogo",
-            "-NoProfile"
-        ],
-        "icon": "terminal-powershell"
-    }
-},
 
     // ── Testing — use terminal only, not VS Code test explorer ──
     "nodejs-testing.enable": false,

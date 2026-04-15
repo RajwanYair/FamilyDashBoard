@@ -48,6 +48,7 @@ npx vite build
 ### Recommended VS Code Extensions
 
 Install via the workspace recommendations (`.vscode/extensions.json`):
+
 - **Live Server** — local dev server with auto-reload
 - **HTMLHint** — HTML linting
 - **Prettier** — code formatting
@@ -55,7 +56,7 @@ Install via the workspace recommendations (`.vscode/extensions.json`):
 
 ### Project Structure
 
-```
+```text
 MyScripts/                      # Parent workspace — shared node_modules
 └── FamilyDashBoard/
     ├── src/                    # TypeScript v6 modular source (Vite build)
@@ -87,7 +88,8 @@ MyScripts/                      # Parent workspace — shared node_modules
 ### Commit Messages
 
 Use conventional commits:
-```
+
+```text
 feat: add Shabbat candle lighting times
 fix: stock chart not rendering on Firefox
 style: increase forecast card font size

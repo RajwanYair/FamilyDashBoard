@@ -14,7 +14,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 - ESLint 10 + typescript-eslint 8 (0 errors · 0 warnings · no suppressions)
 - **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 - No local `package-lock.json` or `devDependencies` in this project
-- Tests: `npx vitest run` (1390+ tests, 37 suites, 0 failures)
+- Tests: `npx vitest run` (1554+ tests, 38 suites, 0 failures)
 - SW: `sw.js` v6.5.0 (offline + API cache)
 
 ## Key Rules
@@ -39,7 +39,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
-tests/unit/            # Vitest — 1274 tests / 36 suites
+tests/unit/            # Vitest — 1554 tests / 38 suites
 sw.js                  # ServiceWorker v6.5
 manifest.json          # PWA manifest
 icon.svg               # App icon

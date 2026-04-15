@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Lint Markdown files
-        run: npx --yes markdownlint-cli@0.44.0 "*.md" ".github/**/*.md"
+        run: npx --yes markdownlint-cli2 "**/*.md"
 
   security-scan:
     name: Security Scan

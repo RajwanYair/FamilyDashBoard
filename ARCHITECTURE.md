@@ -1,7 +1,7 @@
 # FamilyDashBoard — Architecture (v6.5 / v7.0-alpha)
 
-> Deployment: https://rajwanyair.github.io/FamilyDashBoard/
-> Worker: https://familydashboard.rajwanyair.workers.dev
+> Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
+> Worker: <https://familydashboard.rajwanyair.workers.dev>
 
 ![Architecture diagram](.github/assets/architecture.svg)
 
@@ -11,7 +11,7 @@
 | -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
 | Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 1274 tests / 36 suites        |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 1554 tests / 38 suites        |
 | Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
 | API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
 | Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
@@ -22,7 +22,7 @@
 
 ## File Structure
 
-```
+```text
 src/
 ├── index.html                  # App shell HTML (RTL, Hebrew)
 ├── main.ts                     # Startup: safeLoad wrappers, Promise.allSettled, intervals
@@ -95,7 +95,7 @@ tests/unit/
 
 ## Runtime Architecture
 
-```
+```text
 Browser
  ├─ main.ts ─── safeLoad(each card) ──► Promise.allSettled
  │               └── setInterval per card (TTL-based refresh)

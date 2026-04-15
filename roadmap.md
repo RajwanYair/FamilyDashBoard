@@ -18,6 +18,9 @@
 | v6.4       | ✅ Released  | 932 Vitest / 32 suites      | Coverage sprint: stocks, hebrew-cal, ticker, calendar |
 | v6.5       | ✅ Released  | 1240 Vitest / 33 suites     | Coverage sprint: cache, base-card, motivation, maximize |
 | **v7.0**   | ✅ Released  | 1390+ Vitest / 37 suites    | Card registry, tasks card, system-info, CSS @layer, dialog migration, 6 themes, `removeCrossOrigin` build plugin |
+| v7.6       | ✅ Done      | 1541 Vitest / 38 suites     | Drag-and-drop card layout, layout persistence, config panel reset |
+| v7.7       | ✅ Done      | 1554 Vitest / 38 suites     | Coverage sprint: 13 branch-gap tests (stocks, news, weather, hebrew-cal, ticker, layout-drag) |
+| v7.8 infra | ✅ Done      | 1554 Vitest / 38 suites     | 0 markdownlint errors, dead files removed, CI uses markdownlint-cli2, lint:md in check pipeline |
 | v7.1       | 📋 Planned  | —                           | Adaptive maximize, drag-and-drop layout, card add/remove |
 | v7.2       | 💡 Idea     | —                           | Multi-user profiles, cloud sync via Cloudflare KV |
 
@@ -79,6 +82,7 @@ so every maximized card looks like it was designed for that size.
 #### Step 1 — JS: Compute and inject `--max-font-scale` (`src/ui/maximize.ts`)
 
 In `expandCard()`, after recording the FLIP rects:
+
 ```ts
 const scaleW = last.width  / first.width;   // e.g. 3.4 on a 1920-wide screen
 const scaleH = last.height / first.height;
@@ -88,6 +92,7 @@ card.style.setProperty("--max-font-scale", String(parseFloat(fontScale.toFixed(3
 ```
 
 In `collapseCard()`, after removing the `maximized` class and when the animation ends:
+
 ```ts
 const anim = card.animate([...], { duration: 300, easing: "ease-out" });
 anim.finished.then(() => card.style.removeProperty("--max-font-scale"));

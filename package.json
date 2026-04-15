@@ -14,8 +14,9 @@
         "test:coverage": "vitest run --coverage",
         "lint": "eslint . --max-warnings 0 --cache --cache-strategy content",
         "lint:fix": "eslint . --fix --cache --cache-strategy content",
+        "lint:md": "markdownlint-cli2 \"**/*.md\"",
         "typecheck": "tsc -b --noEmit",
-        "check": "npm run typecheck && npm run lint && npm run test",
+        "check": "npm run typecheck && npm run lint && npm run lint:md && npm run test",
         "audit": "npm audit --audit-level=high"
     },
     "engines": {

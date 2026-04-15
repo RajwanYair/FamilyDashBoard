@@ -27,6 +27,7 @@ Look for: which pane is red, how far down the proxy chain each attempt got, whet
 ## Step 3 — Inspect Cache
 
 DevTools -> Application -> Local Storage -> `dash_v2_<service>` keys.
+
 - Check `_ts` timestamp — if recent, cache is serving fresh data
 - Delete key + reload to force re-fetch
 
@@ -63,7 +64,7 @@ If a URL or constant changed, update the corresponding regex in `tests/dashboard
 
 ## Quick Cheatsheet
 
-```
+```text
 1. Press D -> check which pane is red
 2. Read diagLog -> find where chain broke
 3. DevTools > Network -> filter by API domain

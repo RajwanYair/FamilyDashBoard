@@ -8,13 +8,13 @@ description: "Project context and file map for FamilyDashBoard."
 TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`.
-> **Tests**: 1390+ / 37 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Tests**: 1554+ / 38 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
 
 ## Files
 
-```
+```text
 src/                        # TypeScript v7 modular source (Vite build)
-tests/unit/                 # Vitest unit tests — 1240+ tests / 33 suites
+tests/unit/                 # Vitest unit tests — 1554+ tests / 38 suites
 sw.js                       # ServiceWorker v6.0.0 (offline + API cache)
 manifest.json / icon.svg    # PWA manifest + app icon
 BestDashBoard.html          # Legacy dashboard (read-only, preserved)
