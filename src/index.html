@@ -253,6 +253,23 @@
             <span class="cfg-label">⏳ אירוע ספירה לאחור — שם</span>
             <input class="cfg-input" id="cfg-countdown-label" type="text" placeholder="חופשה / בר מצווה / ..." >
           </div>
+          <!-- Countdown card configuration -->
+          <div class="cfg-row">
+            <span class="cfg-label">💍 כרטיס ספירה — שם האירוע</span>
+            <input class="cfg-input" id="cfg-cd-card-title" type="text" placeholder="חתונת אליאור וטובה" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">💍 כרטיס ספירה — תאריך</span>
+            <input class="cfg-input" id="cfg-cd-card-date" type="date" style="direction:ltr;width:140px" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">💍 כרטיס ספירה — שעה</span>
+            <input class="cfg-input" id="cfg-cd-card-time" type="time" style="direction:ltr;width:100px" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">💍 כרטיס ספירה — הודעת סיום</span>
+            <input class="cfg-input" id="cfg-cd-card-done-msg" type="text" placeholder="🎉 מזל טוב!" >
+          </div>
           <!-- F107: Settings export/import -->
           <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
             <button type="button" class="cfg-btn" id="cfg-export-btn" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
@@ -395,7 +412,7 @@
 
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
-            <section class="card" data-card-id="hcal" aria-label="Hebrew Calendar">
+            <section class="card" data-card-id="hebrew-cal" aria-label="Hebrew Calendar">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
                 <!-- Main content column (right side in RTL) -->
@@ -439,7 +456,7 @@
                 </div>
               </div>
             </section>
-            <section class="card" data-card-id="cal" aria-label="Calendar" style="position:relative">
+            <section class="card" data-card-id="calendar" aria-label="Calendar" style="position:relative">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
                 <!-- F154: Today's upcoming events strip -->
@@ -493,7 +510,7 @@
                 </div>
               </div>
             </section>
-            <section class="card" data-card-id="moti" aria-label="Motivation">
+            <section class="card" data-card-id="motivation" aria-label="Motivation">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">✨</span> מוטיבציה</div>
               <div class="moti-body">
                 <div class="moti-card">

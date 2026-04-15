@@ -17,6 +17,7 @@ import { setClockSeconds } from "./header";
 import { initWeatherCities } from "../cards/weather/weather";
 import { applyHiddenStocks } from "../cards/stocks/stocks";
 import { applyNewsFontSize } from "../cards/news/news";
+import { initCountdownCard } from "../cards/countdown/countdown";
 import { resetLayout } from "./layout-drag";
 // ── Extra localStorage keys (fields not stored in DashboardConfig) ──
 const LS_DIM_START = "dash_v2_dim_start";
@@ -164,6 +165,19 @@ function populateForm(): void {
 
   const clabel = g("cfg-countdown-label");
   if (clabel) clabel.value = c.countdownLabel;
+
+  // Countdown card config
+  const cdCardTitle = g("cfg-cd-card-title");
+  if (cdCardTitle) cdCardTitle.value = c.countdownCardTitle;
+
+  const cdCardDate = g("cfg-cd-card-date");
+  if (cdCardDate) cdCardDate.value = c.countdownCardDate;
+
+  const cdCardTime = g("cfg-cd-card-time");
+  if (cdCardTime) cdCardTime.value = c.countdownCardTime;
+
+  const cdCardDoneMsg = g("cfg-cd-card-done-msg");
+  if (cdCardDoneMsg) cdCardDoneMsg.value = c.countdownCardDoneMsg;
 
   // Cards tab — dynamically build per-card rows
   const cardsList = document.getElementById("cfg-cards-list");
@@ -363,6 +377,21 @@ function collectForm(): DashboardConfig {
   const clabel = g("cfg-countdown-label");
   if (clabel) c.countdownLabel = clabel.value.trim();
 
+  // Countdown card config
+  const cdCardTitleEl = g("cfg-cd-card-title");
+  if (cdCardTitleEl) c.countdownCardTitle = cdCardTitleEl.value.trim();
+
+  const cdCardDateEl = g("cfg-cd-card-date");
+  if (cdCardDateEl && cdCardDateEl.value)
+    c.countdownCardDate = cdCardDateEl.value;
+
+  const cdCardTimeEl = g("cfg-cd-card-time");
+  if (cdCardTimeEl && cdCardTimeEl.value)
+    c.countdownCardTime = cdCardTimeEl.value;
+
+  const cdCardDoneMsgEl = g("cfg-cd-card-done-msg");
+  if (cdCardDoneMsgEl) c.countdownCardDoneMsg = cdCardDoneMsgEl.value.trim();
+
   // Cards tab — hidden cards + sizes
   const hiddenCards: string[] = [];
   document
@@ -497,6 +526,7 @@ export function initConfigPanel(): void {
     initWeatherCities();
     applyHiddenStocks();
     applyNewsFontSize();
+    initCountdownCard();
     // Apply card visibility immediately without reload
     document.querySelectorAll<HTMLElement>("[data-card-id]").forEach((el) => {
       const id = el.dataset["cardId"] ?? "";

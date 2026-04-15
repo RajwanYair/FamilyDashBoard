@@ -8,14 +8,32 @@ description: "Project context and file map for FamilyDashBoard."
 TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`.
-> **Tests**: 1570+ / 39 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Tests**: 1574+ / 39 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+
+## Shell / Terminal
+
+> **OS: Windows · Shell: PowerShell** — All terminal commands must be valid PowerShell.
+
+| Unix (FORBIDDEN) | PowerShell equivalent |
+|---|---|
+| `tail -n 20 file` | `Get-Content file \| Select-Object -Last 20` |
+| `grep pattern file` | `Select-String -Path file -Pattern pattern` |
+| `grep pattern` (pipe) | `\| Select-String pattern` |
+| `cat file` | `Get-Content file` |
+| `head -n 5 file` | `Get-Content file \| Select-Object -First 5` |
+| `find . -name "*.ts"` | `Get-ChildItem -Recurse -Filter *.ts` |
+| `ls` | `Get-ChildItem` |
+| `rm -rf dir` | `Remove-Item -Recurse -Force dir` |
+| `cmd1 && cmd2` | `cmd1 ; cmd2` |
+| `export VAR=val` | `$env:VAR = "val"` |
+| `echo $VAR` | `Write-Output $env:VAR` |
 
 ## Files
 
 ```text
 src/                        # TypeScript v7 modular source (Vite build)
 src/public/                 # Vite static dir — icon.svg, manifest.webmanifest (NOT src/assets/)
-tests/unit/                 # Vitest unit tests — 1570+ tests / 39 suites
+tests/unit/                 # Vitest unit tests — 1574+ tests / 39 suites
 sw.js                       # ServiceWorker v6.5.0 (offline + API cache)
 manifest.json / icon.svg    # PWA manifest + app icon (root copies)
 BestDashBoard.html          # Legacy dashboard (read-only, preserved)

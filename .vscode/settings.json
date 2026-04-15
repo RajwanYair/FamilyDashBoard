@@ -22,8 +22,9 @@
         "javascript",
         "typescript"
     ],
-    "eslint.run": "onSave",
+    "eslint.run": "onType",
     "eslint.useFlatConfig": true,
+    "eslint.lintTask.enable": true,
     // ── Stylelint ──
     "stylelint.validate": [
         "css",
@@ -79,6 +80,9 @@
     },
     "chat.promptFilesLocations": {
         ".github/prompts": true
+    },
+    "chat.skillsFilesLocations": {
+        ".github/skills": true
     },
 
     // ── Spell Check ──

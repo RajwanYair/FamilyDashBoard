@@ -20,7 +20,7 @@ body {
 /* Full-screen background image (behind gradient overlay) */
 body::after {
     content: ''; position: fixed; inset: 0; z-index: 0;
-    background: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80') center/cover no-repeat;
+    background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80') center/cover no-repeat;
     opacity: 0.35;
     pointer-events: none;
     transition: opacity 1.5s ease; /* Background Image Cycling */

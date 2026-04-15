@@ -41,10 +41,14 @@ describe("Layout Drag — readCurrentLayout()", () => {
   });
 
   it("returns three arrays matching the live DOM column order", () => {
-    setupColumns(["news", "weather"], ["hcal", "cal"], ["stocks", "alerts"]);
+    setupColumns(
+      ["news", "weather"],
+      ["hebrew-cal", "calendar"],
+      ["stocks", "alerts"],
+    );
     const [left, mid, right] = readCurrentLayout();
     expect(left).toEqual(["news", "weather"]);
-    expect(mid).toEqual(["hcal", "cal"]);
+    expect(mid).toEqual(["hebrew-cal", "calendar"]);
     expect(right).toEqual(["stocks", "alerts"]);
   });
 
@@ -77,11 +81,11 @@ describe("Layout Drag — saveCurrentLayout()", () => {
   });
 
   it("persists the live layout to localStorage config.cardLayout", () => {
-    setupColumns(["news"], ["hcal"], ["stocks"]);
+    setupColumns(["news"], ["hebrew-cal"], ["stocks"]);
     saveCurrentLayout();
     const raw = localStorage.getItem("dash_v2_config");
     const cfg = JSON.parse(raw ?? "{}") as { cardLayout?: unknown };
-    expect(cfg.cardLayout).toEqual([["news"], ["hcal"], ["stocks"]]);
+    expect(cfg.cardLayout).toEqual([["news"], ["hebrew-cal"], ["stocks"]]);
   });
 });
 
@@ -112,7 +116,7 @@ describe("Layout Drag — initCardDragDrop() sets draggable on headers", () => {
   });
 
   it("sets draggable=true on all .card-header elements", () => {
-    setupColumns(["news", "weather"], ["hcal"], []);
+    setupColumns(["news", "weather"], ["hebrew-cal"], []);
     initCardDragDrop();
     const headers = document.querySelectorAll<HTMLElement>(".card-header");
     headers.forEach((h) => {

@@ -50,13 +50,19 @@ Validate XML: open in browser or run `Get-Content .github/assets/banner.svg -Raw
 
 ## Pre-release Checklist
 
-```bash
-npx tsc --noEmit            # 0 type errors
-npx eslint src tests --max-warnings 0   # 0 lint errors
-npx markdownlint-cli2 "**/*.md"         # 0 markdown errors
-npx vitest run              # all tests pass
-npx vite build              # clean build
+> **Full checklist lives in `.github/instructions/pre-release.instructions.md`** — load it and run every item in order.
+
+Quick summary (PowerShell):
+
+```powershell
+npx tsc --noEmit                              # 0 type errors
+npx eslint src tests --max-warnings 0         # 0 errors, 0 warnings, 0 suppressions
+npx markdownlint-cli2 "**/*.md" --ignore node_modules --ignore dist
+npx vitest run                                # all tests pass, 0 failures
+npx vite build                                # clean build, no warnings
 ```
+
+All five must exit 0. No `eslint-disable`, no `@ts-ignore`, no `console.log` in `src/`.
 
 ## Commit & Tag
 

@@ -53,6 +53,24 @@
                 ".github/SECURITY.md"
             ],
             "description": "Security: XSS prevention, CSP, API input sanitization"
+        },
+        "pre-release-mode": {
+            "enabled": true,
+            "aliases": [
+                "release",
+                "cleanup",
+                "pre-release",
+                "production",
+                "tag"
+            ],
+            "priority": "critical",
+            "context_files": [
+                ".github/instructions/pre-release.instructions.md",
+                ".github/skills/release/SKILL.md",
+                "CHANGELOG.md",
+                "package.json"
+            ],
+            "description": "Pre-release cleanup: 0 errors, 0 warnings, dead-code removal, docs dedup, issue closing, git tag"
         }
     }
 }

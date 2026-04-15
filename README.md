@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-7.1.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-1554_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-7.1.2-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-1574_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -28,8 +28,8 @@
 [![Last Commit](https://img.shields.io/github/last-commit/RajwanYair/FamilyDashBoard?style=flat-square&color=60a5fa)](https://github.com/RajwanYair/FamilyDashBoard/commits/main)
 [![Repo Size](https://img.shields.io/github/repo-size/RajwanYair/FamilyDashBoard?style=flat-square&color=34d399)](https://github.com/RajwanYair/FamilyDashBoard)
 
-**A single-file, zero-dependency family dashboard for always-on TV display.**<br/>
-Dark glassmorphism · 5 themes · Hebrew RTL · 17 Hebrew news feeds · Per-pane smart refresh · Diagnostic overlay
+**A zero-dependency TypeScript family dashboard for always-on TV display.**<br/>
+Dark glassmorphism · 6 themes · Hebrew RTL · 11 cards · Per-pane smart refresh · Drag-and-drop layout · Diagnostic overlay
 
 [Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#%EF%B8%8F-architecture) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
 

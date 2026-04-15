@@ -1,17 +1,31 @@
 /**
  * FamilyDashBoard v7 — Countdown Card
  *
- * Displays a ticking countdown to a fixed target date/time.
+ * Displays a ticking countdown to a configurable target date/time.
  * Pure client-side, no API required.
- *
- * Target: 2026-05-07 18:00 — חתונת אליאור וטובה
+ * Target, title and done-message are read from DashboardConfig each tick.
  */
 
 import "./countdown.css";
+import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
 
-export const COUNTDOWN_TARGET = new Date("2026-05-07T18:00:00");
-export const COUNTDOWN_TITLE = "חתונת אליאור וטובה";
+// ── Config-driven helpers ─────────────────────────────────────────────────────
+
+export function getCountdownTargetDate(): Date {
+  const c = loadConfig();
+  const d = c.countdownCardDate || "2026-05-07";
+  const t = c.countdownCardTime || "18:00";
+  return new Date(`${d}T${t}:00`);
+}
+
+export function getCountdownTitle(): string {
+  return loadConfig().countdownCardTitle || "חתונת אליאור וטובה";
+}
+
+export function getCountdownDoneMsg(): string {
+  return loadConfig().countdownCardDoneMsg || "🎉 מזל טוב לאליאור ולטובה!";
+}
 
 let _cdInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -80,7 +94,7 @@ export function tick(): void {
   const secsEl = els.secs ?? document.getElementById("cd-secs");
   const msgEl = els.msg ?? document.getElementById("cd-msg");
   if (!daysEl) return;
-  const targetMs = COUNTDOWN_TARGET.getTime();
+  const targetMs = getCountdownTargetDate().getTime();
   const now = Date.now();
 
   if (now >= targetMs) {
@@ -91,7 +105,7 @@ export function tick(): void {
     if (minsEl) minsEl.textContent = "00";
     if (secsEl) secsEl.textContent = "00";
     if (msgEl)
-      msgEl.textContent = "🎉 מזל טוב לאליאור ולטובה!";
+      msgEl.textContent = getCountdownDoneMsg();
     if (_cdInterval !== null) {
       clearInterval(_cdInterval);
       _cdInterval = null;
@@ -100,7 +114,7 @@ export function tick(): void {
   }
 
   const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
-  if (titleEl) titleEl.textContent = COUNTDOWN_TITLE;
+  if (titleEl) titleEl.textContent = getCountdownTitle();
   daysEl.textContent = String(days);
   if (hoursEl) hoursEl.textContent = pad(hours);
   if (minsEl) minsEl.textContent = pad(minutes);

@@ -78,6 +78,10 @@ function setupDOM(): void {
           <input id="cfg-custom-proxy" type="url" />
           <input id="cfg-countdown-date" type="date" />
           <input id="cfg-countdown-label" type="text" />
+          <input id="cfg-cd-card-title" type="text" />
+          <input id="cfg-cd-card-date" type="date" />
+          <input id="cfg-cd-card-time" type="time" />
+          <input id="cfg-cd-card-done-msg" type="text" />
         </div>
         <select class="cfg-card-size-sel" data-card-id="weather">
           <option value="lg" selected>גדול</option>
@@ -261,6 +265,28 @@ describe("Config Panel — populateForm (via openConfigPanel)", () => {
       ?.value;
     expect(v).toContain("אבא");
     expect(v).toContain("אמא");
+  });
+
+  it("populates countdown card title from config", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ countdownCardTitle: "יום הולדת" }),
+    );
+    mod.openConfigPanel();
+    expect(
+      (document.getElementById("cfg-cd-card-title") as HTMLInputElement)?.value,
+    ).toBe("יום הולדת");
+  });
+
+  it("populates countdown card date from config", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ countdownCardDate: "2027-06-15" }),
+    );
+    mod.openConfigPanel();
+    expect(
+      (document.getElementById("cfg-cd-card-date") as HTMLInputElement)?.value,
+    ).toBe("2027-06-15");
   });
 });
 

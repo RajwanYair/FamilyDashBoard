@@ -8,7 +8,6 @@
         // TypeScript / JavaScript
         "ms-vscode.vscode-typescript-next",
         // Git & GitHub
-        "GitHub.copilot",
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",

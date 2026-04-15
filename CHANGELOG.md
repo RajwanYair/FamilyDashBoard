@@ -5,24 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [Unreleased]
+## [7.1.2] — 2026-04-15
 
-- CI/CD infrastructure consolidated: unified `ci.yml`, removed dead `ci-v6.yml`, fixed `actions/checkout@v4` + `setup-node@v4` (previously `@v6` which don't exist), bundle size now fails CI instead of warning, `markdownlint-cli2` added to `install-tools.sh`
-- Docs deduplication: `copilot-instructions.md` updated to v7.1/1570 tests, `workspace.instructions.md` updated, `cicd.instructions.md` corrected, `copilot/config.json` syntax errors fixed
-- VSCode `extensions.json`: added `DavidAnson.vscode-markdownlint`
-- Release `SKILL.md` updated for v7 file map (removed legacy v5/v6 references)
+> **1574 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+- **Markdown lint**: fixed `MD032/blanks-around-lists` in `pre-release.instructions.md` — all 26 markdown files now 0 errors
+- **Test count**: corrected to 1574 tests (4 additional tests counted; was 1570 in badges/docs)
 
 ---
 
-## [7.1.1] — 2026-04-16
+## [7.1.1] — 2026-04-15
 
-> **1570 tests / 39 suites / 0 failures** · 0 ESLint errors · 0 TS errors (commit `0ca3e4f`)
+> **1570 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `aee6b84`)
 
-- **Countdown card** (`src/cards/countdown/`): animated tile grid counting down to חתונת אליאור וטובה — 7 May 2026 18:00 · 16 new tests
-- **Hebrew date header**: was stuck at "טוען תאריך עברי…" — fixed via `Intl.DateTimeFormat('he-u-ca-hebrew')`
-- **Favicon**: was showing browser default — icons moved to `src/public/` (Vite static dir)
-- **News scroll overlap**: summary text was looping over headlines — wrapped in `overflow:hidden` flex container
-- **Hebrew Cal + Tasks**: refactored to bordered tile/grid layout (rule 25)
+- **CI unified**: merged `ci-v6.yml` into a single `ci.yml` (typecheck → lint → markdownlint → vitest matrix → security → build); `actions/checkout@v4` + `setup-node@v4` (were broken `@v6`); bundle size violations now `exit 1`
+- **Countdown card** (11th card): animated tile grid counting to חתונת אליאור וטובה — 7 May 2026 18:00 · 16 new tests (commit `0ca3e4f`)
+- **Hebrew date header**: fixed stuck "טוען תאריך עברי…" via `Intl.DateTimeFormat('he-u-ca-hebrew')`
+- **Favicon**: fixed browser-default icon — moved to `src/public/` (Vite static dir); manifest `start_url` corrected
+- **News scroll**: fixed summary text overlapping headlines — `overflow:hidden` flex wrapper
+- **Hebrew Cal + Tasks**: refactored to bordered tile/grid layout
+- **Docs consolidated**: `copilot-instructions.md`, `workspace.instructions.md`, `cicd.instructions.md`, `CLAUDE.md`, `release/SKILL.md` all updated to v7.1 / 1570 tests
 
 ---
 

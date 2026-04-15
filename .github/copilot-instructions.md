@@ -3,7 +3,7 @@
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · Vite 8 + TS 5.9 + Vitest 4
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`
-> Tests: `npx vitest run` — 1570+ / 39 suites / 0 failures
+> Tests: `npx vitest run` — 1574+ / 39 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
 
 ## Mandatory Rules
@@ -51,3 +51,6 @@
 28. **Hebrew date display**: use `Intl.DateTimeFormat('he-u-ca-hebrew', { ... })` — never compute Hebrew dates manually.
 29. **GitHub Actions versions**: use `actions/checkout@v4`, `actions/setup-node@v4`. Do NOT use `@v5` or `@v6` (don't exist for these actions). Bundle size violations must `exit 1`, not `::warning::`.
 30. **CI**: single unified workflow in `.github/workflows/ci.yml` covers all checks (typecheck → lint → test → build). `ci-v6.yml` is deleted — do not recreate it.
+31. **PowerShell-only terminal** — The developer OS is **Windows / PowerShell**. Every terminal command MUST use PowerShell syntax. NEVER use Unix/bash commands. Forbidden: `tail`, `grep`, `cat`, `head`, `find`, `ls`, `rm`, `cp`, `mv`, `touch`, `export VAR=`, `&&` (use `;` instead). Use instead: `Select-Object -Last N`, `Select-String`, `Get-Content`, `Get-ChildItem`, `Remove-Item`, `Copy-Item`, `Move-Item`, `New-Item`, `$env:VAR =`. Chain commands with `;` not `&&`. Pipe with `|`.
+32. **Pre-release gate**: Before every `git tag vX.Y.Z`, run the full checklist in `.github/instructions/pre-release.instructions.md`. Zero tolerance: 0 type errors · 0 lint errors · 0 lint warnings · 0 test failures · 0 markdown errors · no `eslint-disable` · no `@ts-ignore` · no dead code · no dead config files. All GitHub issues for the milestone must be closed with a commit hash before tagging.
+33. **card `data-card-id` must match registry ID exactly** — use `"hebrew-cal"`, `"calendar"`, `"motivation"` (never short aliases `hcal`, `cal`, `moti`). The registry ID is the canonical identifier used for hide/show, layout persistence, and size config.

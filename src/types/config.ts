@@ -25,6 +25,14 @@ export interface DashboardConfig {
   birthdays: Array<{ name: string; month: number; day: number }>;
   countdownLabel: string;
   countdownDate: string;
+  /** Countdown card — event title (default: חתונת אליאור וטובה) */
+  countdownCardTitle: string;
+  /** Countdown card — target date YYYY-MM-DD (default: 2026-05-07) */
+  countdownCardDate: string;
+  /** Countdown card — target time HH:MM (default: 18:00) */
+  countdownCardTime: string;
+  /** Countdown card — message shown after event passes */
+  countdownCardDoneMsg: string;
   bgImages: string[];
   /** Ordered list of card IDs per column: [col0_ids, col1_ids, col2_ids]. Null = use hardcoded layout. */
   cardLayout: [string[], string[], string[]] | null;
@@ -57,6 +65,10 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   birthdays: [],
   countdownLabel: "",
   countdownDate: "",
+  countdownCardTitle: "חתונת אליאור וטובה",
+  countdownCardDate: "2026-05-07",
+  countdownCardTime: "18:00",
+  countdownCardDoneMsg: "🎉 מזל טוב לאליאור ולטובה!",
   bgImages: [],
   cardLayout: null,
   hiddenCards: [],
