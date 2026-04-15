@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.0.0
+/* FamilyDashBoard ServiceWorker — v7.1.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
  * F113: SW posts NETWORK_BACK message to clients on network recovery
@@ -11,10 +11,11 @@
  * v6.2.0: CSS co-location, renderStocksShell(), ESLint TS, vitest pool:forks, worker CI deploy
  * v6.5.0: Coverage sprint — cache.ts 100%, base-card.ts 100%, motivation.ts 100%, alerts.ts 91%, calendar.ts 95%, maximize.ts 96%
  * v7.0.0: Card type system, tasks card, system-info, CSS @layer, dialog migration, worker-first fetch, card visibility
- * v7.0.0 (alpha2): Shabbat countdown, Sefaria deep-links, halacha yomit, school vacation indicator, A-key alerts */
+ * v7.0.0 (alpha2): Shabbat countdown, Sefaria deep-links, halacha yomit, school vacation indicator, A-key alerts
+ * v7.1.0: Drag-and-drop card layout, layout persistence, 1554 tests/38 suites, 0-error lint suite */
 
-const CACHE_NAME = "familydashboard-v7.0.0";
-const CACHE_NAME_API = "familydashboard-api-v7.0.0";
+const CACHE_NAME = "familydashboard-v7.1.0";
+const CACHE_NAME_API = "familydashboard-api-v7.1.0";
 // F111: include sw.js itself in app shell pre-cache
 const APP_SHELL = [
   "./BestDashBoard.html",

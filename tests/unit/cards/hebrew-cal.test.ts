@@ -1647,7 +1647,7 @@ describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayNam
   it("shows event row when ICS summary does not match _lastHolidayName", () => {
     setupDom();
     const farFuture = new Date(Date.now() + 7 * 86_400_000).toISOString();
-    // Fixed far-future UTC datetime avoids timezone edge cases  
+    // Fixed far-future UTC datetime avoids timezone edge cases
     const dtStr = "21000101T120000Z";
     vi.mocked(cGet).mockImplementation((key: string) => {
       if ((key as string).startsWith("holidays-")) {

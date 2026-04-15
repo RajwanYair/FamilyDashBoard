@@ -5,49 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [Unreleased] — v7.8-alpha
+## [7.1.0] — 2026-04-15
 
 > **1554 tests / 38 suites / 0 failures · Branch coverage: 93.72% · 0 markdownlint errors**
 
-### Changed (infra)
+### Added
 
-- **Markdownlint**: 297 → 0 errors — fixed MD022/MD031/MD032/MD034/MD040/MD047 across 29 files; added `.markdownlint.json` rules MD060/MD029; added `.markdownlintignore`
-- **CI**: `ci.yml` markdown lint step updated from `markdownlint-cli@0.44.0` → `markdownlint-cli2` (matches local tooling)
-- **package.json**: Added `lint:md` script; `check` now runs typecheck + lint + lint:md + test
+- **Drag-and-drop card layout** (sprint v7.6): HTML5 Drag API — drag card headers to reorder between columns; layout persisted to `config.cardLayout`; ↩ reset button in config panel Cards tab
+- **Coverage sprint** (sprint v7.7): +13 branch-gap tests covering stocks, news, weather, hebrew-cal, ticker, layout-drag
+
+### Changed (infra — sprint v7.8)
+
+- **Markdownlint**: 297 → 0 errors — fixed MD022/MD031/MD032/MD034/MD040/MD047 across 29 files
+- **CI**: markdown lint step updated to `markdownlint-cli2`; `lint:md` script added to `package.json`
 - **Dead files removed**: `package.v5.json`, `package.v6.json`, `BestDashBoard.html copy.bak`, `eslint_out.txt`, `eslint.config.ts`
 
 ---
 
-## [7.0.1] — sprint v7.7
+## [7.0.0] — 2026-04-14
 
-> **1554 tests / 38 suites / 0 failures · Branch coverage: 93.72%**
-
-### Added (sprint v7.7 — coverage gaps)
-
-- +13 branch-gap tests: stocks (3), news (3), weather (2), hebrew-cal (2), ticker (1), layout-drag (2)
-
----
-
-## [7.0.0] — 2026-04-14 · sprint v7.6
-
-> **1541 tests / 38 suites · Drag-and-drop layout**
-
-### Added (sprint v7.6)
-
-- **Drag-and-drop card layout** (F99): HTML5 Drag API with no libraries — drag `.card-header` to reorder cards between the three grid columns; layout persisted to `config.cardLayout` via `saveCurrentLayout()`; `↩ איפוס סידור כרטיסיות` reset button in config panel Cards tab
-- **`src/ui/layout-drag.ts`**: New module — `readCurrentLayout()`, `saveCurrentLayout()`, `resetLayout()`, `initCardDragDrop()`; visual feedback via `.card.dragging` / `.card.drag-over` CSS (already defined in `sprints.css`)
-- **Coverage tests (+26 tests)**:
-  - `tests/unit/ui/layout-drag.test.ts` — 21 tests: readCurrentLayout, saveCurrentLayout, resetLayout, initCardDragDrop, dragstart/dragover/dragleave/drop flow, insert-before/after branches, clearDragOver forEach, edge cases
-  - `alerts.ts` line 186 FALSE branch: `renderAlerts` with no badge element
-  - `alerts.ts` lines 288/292 "error" ternary: `loadAlerts` else + catch block with `stale=null`
-  - `hebrew-cal.ts` line 247: `h.hebrew ?? h.title` fallback (via stale response without `hebrew` field)
-  - `hebrew-cal.ts` line 332: `els.specialRow.style.display="none"` when all specials deduplicated
-
----
-
-## [7.0.0] — 2026-04-14 (alpha2 — 2026-04-14)
-
-> TypeScript v7 card system · **1359 tests / 37 suites / 0 failures**
+> TypeScript v7 card system · **1390 tests / 37 suites / 0 failures**
 
 ### Added (alpha2)
 
