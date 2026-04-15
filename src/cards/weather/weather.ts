@@ -140,6 +140,8 @@ const el = {
   wxFeels: null as HTMLElement | null,
   wxSkyPill: null as HTMLElement | null,
   wxWindHeb: null as HTMLElement | null,
+  wxDew: null as HTMLElement | null,
+  wxGust: null as HTMLElement | null,
 };
 
 export function cacheDom(): void {
@@ -158,6 +160,8 @@ export function cacheDom(): void {
   el.wxFeels = document.getElementById("wx-feels");
   el.wxSkyPill = document.getElementById("wx-sky-pill");
   el.wxWindHeb = document.getElementById("wx-wind-heb");
+  el.wxDew = document.getElementById("wx-dew");
+  el.wxGust = document.getElementById("wx-gust");
 }
 
 function getTempUnit(): "C" | "F" {
@@ -197,7 +201,7 @@ export function deg2hebrewDir(deg: number): string {
 async function fetchWeather(): Promise<WeatherResponse> {
   const lat = _activeLat;
   const lon = _activeLon;
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
   return fetchJSON<WeatherResponse>(url);
 }
 
@@ -228,6 +232,23 @@ export function renderWeather(d: WeatherResponse): void {
   if (el.wxWindHeb)
     el.wxWindHeb.textContent = deg2hebrewDir(cur.wind_direction_10m);
   if (el.wxHum) el.wxHum.textContent = `${cur.relative_humidity_2m}%`;
+
+  // Dew point (נ.ר.)
+  if (el.wxDew)
+    el.wxDew.textContent = toDisplayTemp(Math.round(cur.dew_point_2m));
+
+  // Wind gust — shown only when significantly higher than sustained wind speed
+  if (el.wxGust) {
+    const gust = Math.round(cur.wind_gusts_10m);
+    const sustained = Math.round(cur.wind_speed_10m);
+    if (gust > sustained + 5) {
+      el.wxGust.textContent = `↑ ${gust} קמ"ש`;
+      el.wxGust.style.display = "";
+    } else {
+      el.wxGust.textContent = "";
+      el.wxGust.style.display = "none";
+    }
+  }
 
   // UV index pill (F122)
   if (el.wxUv) {

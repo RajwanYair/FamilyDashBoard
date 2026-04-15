@@ -24,7 +24,7 @@
 | **v7.1.0** | ✅ Released  | 1554 Vitest / 38 suites     | Countdown card (11th), unified CI, Hebrew date fix, favicon fix |
 | **v7.1.1** | ✅ Released  | 1570 Vitest / 39 suites     | Pre-release checklist pass, markdown lint fix, test count update |
 | **v7.1.2** | ✅ Released  | 1574 Vitest / 39 suites     | VERSION fixed, applyCardSizes init, chores editor, help M/A shortcuts, tasks pending badge, market status bar chip, night dim indicator, theme doc fixes |
-| **v7.1.3** | 🚧 In Dev   | 1582+ Vitest / 39 suites    | Status bar uptime/conn/font-scale; dim level + font scale sliders; Hebrew wind dir; viewport tile; all-done task msg; news bookmarks badge |
+| **v7.1.3** | ✅ Released | 1605 Vitest / 39 suites     | Weather dew/gust wiring; portfolio editor in config; configurable tasks reset hour; W key °C/°F; sysinfo memory+CPU tiles; countdown test stability |
 | v7.2       | 💡 Idea     | —                           | Multi-user profiles, cloud sync via Cloudflare KV |
 
 ---

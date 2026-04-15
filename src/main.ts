@@ -44,7 +44,7 @@ import { initCardDragDrop } from "./ui/layout-drag";
 import { showToast } from "./ui/toast";
 
 // ── Cards ──
-import { initWeatherCard } from "./cards/weather/weather";
+import { initWeatherCard, toggleTempUnit } from "./cards/weather/weather";
 import { initMotivationCard, renderMotivation } from "./cards/motivation/motivation";
 import { initNewsCard, toggleBookmarkMode } from "./cards/news/news";
 import { initStocksCard } from "./cards/stocks/stocks";
@@ -63,7 +63,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
-export const VERSION = "7.1.2";
+export const VERSION = "7.1.3";
 
 /**
  * Apply card size overrides from config to DOM elements.
@@ -176,6 +176,7 @@ export function init(): void {
   registerKey("b", "מועדפים", () => toggleBookmarkMode());
   registerKey("m", "ציטוט הבא", () => renderMotivation());
   registerKey("r", "רענון נתונים", () => window.location.reload());
+  registerKey("w", "מעבר °C/°F", () => toggleTempUnit());
   registerKey("a", "התרעות צבע אדום", () => {
     toggleAlerts();
     showToast(

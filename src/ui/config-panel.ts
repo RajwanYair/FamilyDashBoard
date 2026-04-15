@@ -15,7 +15,7 @@ import { showToast } from "./toast";
 import { setAlertsRealtime } from "../cards/alerts/alerts";
 import { setClockSeconds } from "./header";
 import { initWeatherCities } from "../cards/weather/weather";
-import { applyHiddenStocks } from "../cards/stocks/stocks";
+import { applyHiddenStocks, renderPortfolioRow } from "../cards/stocks/stocks";
 import { applyNewsFontSize } from "../cards/news/news";
 import { initCountdownCard } from "../cards/countdown/countdown";
 import { resetLayout } from "./layout-drag";
@@ -202,6 +202,14 @@ function populateForm(): void {
   // Chores / tasks (Advanced tab)
   const choresEl = gTxt("cfg-chores");
   if (choresEl) choresEl.value = localStorage.getItem(LS_CHORES) ?? "";
+
+  // Portfolio editor (Advanced tab)
+  const portfolioEl = gTxt("cfg-portfolio");
+  if (portfolioEl) portfolioEl.value = localStorage.getItem("dash_v2_portfolio") ?? "";
+
+  // Tasks reset hour (Advanced tab)
+  const resetHourEl = g("cfg-tasks-reset-hour");
+  if (resetHourEl) resetHourEl.value = String(c.tasksResetHour ?? 6);
 
   // Cards tab — dynamically build per-card rows
   const cardsList = document.getElementById("cfg-cards-list");
@@ -449,6 +457,13 @@ function collectForm(): DashboardConfig {
     });
   c.cardSizes = cardSizes;
 
+  // Tasks reset hour (Advanced tab)
+  const resetHourEl = g("cfg-tasks-reset-hour");
+  if (resetHourEl) {
+    const h = parseInt(resetHourEl.value, 10);
+    if (!isNaN(h)) c.tasksResetHour = Math.max(0, Math.min(23, h));
+  }
+
   return c;
 }
 
@@ -578,6 +593,22 @@ export function initConfigPanel(): void {
         renderTasksCard();
       } catch {
         showToast("⚠️ JSON משימות לא תקין — לא נשמר", 3500);
+      }
+    }
+    // Save portfolio JSON to localStorage
+    const portfolioEl = gTxt("cfg-portfolio");
+    if (portfolioEl) {
+      const raw = portfolioEl.value.trim();
+      if (raw === "") {
+        localStorage.removeItem("dash_v2_portfolio");
+      } else {
+        try {
+          JSON.parse(raw);
+          localStorage.setItem("dash_v2_portfolio", raw);
+          renderPortfolioRow();
+        } catch {
+          showToast("⚠️ JSON תיק השקעות לא תקין — לא נשמר", 3500);
+        }
       }
     }
     // Apply card visibility immediately without reload

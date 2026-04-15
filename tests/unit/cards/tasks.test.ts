@@ -153,6 +153,21 @@ describe("Tasks — daily reset", () => {
     const doneMap = localStorage.getItem("dash_tasks_done");
     expect(doneMap).not.toBeNull();
   });
+
+  it("does NOT reset when current hour is below tasksResetHour config", () => {
+    // Set reset hour to 22 (10 PM), but fake time to 8 AM
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2024, 0, 15, 8, 0, 0)); // 8 AM
+    setupDOM();
+    localStorage.setItem("dash_v2_config", JSON.stringify({ tasksResetHour: 22 }));
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ "a::b": true }));
+    localStorage.setItem("dash_tasks_reset_date", "1970-0-1"); // old date
+    renderTasksCard();
+    vi.useRealTimers();
+    const doneMap = localStorage.getItem("dash_tasks_done");
+    // Should NOT reset because 8 AM < tasksResetHour 22
+    expect(doneMap).not.toBeNull();
+  });
 });
 
 // ── Checkbox change handler ─────────────────────────────────────────────────

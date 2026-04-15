@@ -41,6 +41,7 @@ type NavigatorWithExtras = Navigator & {
   getBattery?: () => Promise<BatteryManager>;
   connection?: NetworkInformation;
   userAgentData?: NavigatorUAData;
+  deviceMemory?: number;
 };
 
 const PAGE_LOAD_TIME = Date.now();
@@ -151,6 +152,14 @@ export async function renderSystemInfo(): Promise<void> {
     "sysinfo-viewport",
     `${vw}×${vh}${dpr !== 1 ? ` @${dpr}x` : ""}`,
   );
+
+  // Device memory (GB, Chrome-only)
+  const devMem = (navigator as NavigatorWithExtras).deviceMemory;
+  setText("sysinfo-memory", devMem !== undefined ? `${devMem} GB` : "—");
+
+  // CPU hardware concurrency (core count)
+  const cores = navigator.hardwareConcurrency;
+  setText("sysinfo-cpu", cores ? `×${cores} ליבות` : "—");
 
   diagLog("[system-info] Rendered");
 }

@@ -55,9 +55,12 @@ function buildDOM(): void {
 
 describe("getTimeComponents", () => {
   it("breaks a future ms value into days/hours/minutes/seconds", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-03-15T12:00:00.000Z"));
     const now = Date.now();
     const targetMs = now + 1 * 86400 * 1000 + 2 * 3600 * 1000 + 3 * 60 * 1000 + 4 * 1000;
     const result = getTimeComponents(targetMs);
+    vi.useRealTimers();
     expect(result.days).toBe(1);
     expect(result.hours).toBe(2);
     expect(result.minutes).toBe(3);

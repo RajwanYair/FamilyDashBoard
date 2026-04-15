@@ -33,8 +33,10 @@ function makeWeather(
       weather_code: 0,
       wind_speed_10m: 15,
       wind_direction_10m: 180,
+      wind_gusts_10m: 25,
       apparent_temperature: 20,
       uv_index: 3,
+      dew_point_2m: 14,
       ...overrides,
     },
     hourly: {
@@ -1806,5 +1808,39 @@ describe("Weather — toggleTempUnit with fresh cache (line 100 ?? left branch)"
     toggleTempUnit();
     // cGet returned fresh → data = fresh → if (data) TRUE → renderWeather called
     expect(document.getElementById("wx-temp")?.textContent).not.toBe("");
+  });
+});
+
+// ── Sprint v7.10: dew point + wind gust rendering ──
+describe(`Weather — dew point rendering`, () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><div id="wx-dew"></div><span id="wx-gust"></span><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><span id="wx-sky-pill"></span><div id="top-temp"></div>`;
+    cacheDom();
+  });
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it(`renders dew point in Celsius`, () => {
+    renderWeather(makeWeather({ dew_point_2m: 14 }));
+    expect(document.getElementById(`wx-dew`)?.textContent).toBe(`14°C`);
+  });
+
+  it(`renders dew point correctly in Fahrenheit`, () => {
+    localStorage.setItem(`dash_v2_config`, JSON.stringify({ tempUnit: `F` }));
+    renderWeather(makeWeather({ dew_point_2m: 0 }));
+    expect(document.getElementById(`wx-dew`)?.textContent).toBe(`32°F`);
+  });
+
+  it(`shows wind gust when significantly higher than sustained wind`, () => {
+    renderWeather(makeWeather({ wind_speed_10m: 10, wind_gusts_10m: 30 }));
+    const gust = document.getElementById(`wx-gust`);
+    expect(gust?.textContent).toContain(`30`);
+    expect(gust?.style.display).not.toBe(`none`);
+  });
+
+  it(`hides wind gust when close to sustained wind`, () => {
+    renderWeather(makeWeather({ wind_speed_10m: 20, wind_gusts_10m: 22 }));
+    const gust = document.getElementById(`wx-gust`);
+    expect(gust?.style.display).toBe(`none`);
   });
 });

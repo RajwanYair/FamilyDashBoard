@@ -40,6 +40,8 @@ export interface DashboardConfig {
   hiddenCards: string[];
   /** Per-card size override: { [card-id]: "sm"|"md"|"lg"|"xl" } */
   cardSizes: Record<string, string>;
+  /** Hour (0-23) at which the daily tasks checklist resets (default: 6 = 6 AM) */
+  tasksResetHour: number;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -73,4 +75,5 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   cardLayout: null,
   hiddenCards: [],
   cardSizes: {},
+  tasksResetHour: 6,
 };

@@ -13,6 +13,7 @@
  */
 
 import { diagLog } from "../../core/diag";
+import { loadConfig } from "../../core/config";
 import type { CardDefinition } from "../../types/card";
 
 export interface ChoreItem {
@@ -21,7 +22,8 @@ export interface ChoreItem {
 }
 
 const LS_DONE_KEY = "dash_tasks_done";
-const RESET_HOUR = 6; // Reset at 6:00 AM daily
+// RESET_HOUR default fallback (overridden by config.tasksResetHour at runtime)
+const DEFAULT_RESET_HOUR = 6;
 
 // ── Persistence helpers ────────────────────────────────────────────────────
 
@@ -52,7 +54,8 @@ function checkDailyReset(): void {
   const lastReset = localStorage.getItem("dash_tasks_reset_date");
   const today = new Date();
   const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-  if (lastReset !== resetKey && today.getHours() >= RESET_HOUR) {
+  const resetHour = loadConfig().tasksResetHour ?? DEFAULT_RESET_HOUR;
+  if (lastReset !== resetKey && today.getHours() >= resetHour) {
     localStorage.removeItem(LS_DONE_KEY);
     try {
       localStorage.setItem("dash_tasks_reset_date", resetKey);

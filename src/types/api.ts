@@ -12,8 +12,10 @@ export interface WeatherResponse {
     weather_code: number;
     wind_speed_10m: number;
     wind_direction_10m: number;
+    wind_gusts_10m: number;
     apparent_temperature: number;
     uv_index: number;
+    dew_point_2m: number;
   };
   hourly: {
     time: string[];

@@ -53,11 +53,12 @@
           <div class="help-row"><span>דימר לילה</span><span class="help-key">N</span></div>
           <div class="help-row"><span>שניות בשעון</span><span class="help-key">C</span></div>
           <div class="help-row"><span>רענון כלל הנתונים</span><span class="help-key">R</span></div>
+          <div class="help-row"><span>מעבר °C / °F (מזג אוויר)</span><span class="help-key">W</span></div>
           <div class="help-row"><span>הגדלת גופן</span><span class="help-key">+</span></div>
           <div class="help-row"><span>הקטנת גופן</span><span class="help-key">−</span></div>
           <div class="help-row"><span>עזרה</span><span class="help-key">? / H</span></div>
           <div class="help-row"><span>סגירת כרטיס מוגדל</span><span class="help-key">Escape</span></div>
-          <div class="help-row"><span>מעבר °C / °F</span><span class="help-key">לחץ על הטמפ׳</span></div>
+          <div class="help-row"><span>מעבר °C / °F</span><span class="help-key">W / לחץ על הטמפ׳</span></div>
           <div class="help-row"><span>הגדרת ערים (מזג אוויר)</span><span class="help-key">S → עדכונים</span></div>
           <div class="help-row"><span>שיתוף לוח</span><span class="help-key">S → מתקדם → 🔗</span></div>
           <div class="help-row"><span>הפעל התראות דסקטאפ</span><span class="help-key">לחץ 🔔</span></div>
@@ -288,6 +289,16 @@
           <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:4px">
             <span class="cfg-label">📋 משימות משפחתיות (JSON)</span>
             <textarea class="cfg-input" id="cfg-chores" rows="4" style="width:100%;direction:ltr;font-size:0.78em;font-family:monospace;resize:vertical" placeholder='[{"person":"עמרי","chore":"🧹 לנקות"},{"person":"ריבה","chore":"🛒 קניות"}]' title="רשימת משימות משפחתיות — כל רשומה עם שדות person ו-chore. JSON תקני בלבד."></textarea>
+          </div>
+          <!-- Portfolio editor (reads/writes localStorage dash_v2_portfolio) -->
+          <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:4px">
+            <span class="cfg-label">💼 תיק השקעות (JSON) — שדות: symbol, shares, cost</span>
+            <textarea class="cfg-input" id="cfg-portfolio" rows="3" style="width:100%;direction:ltr;font-size:0.78em;font-family:monospace;resize:vertical" placeholder='{"AAPL":{"shares":10,"cost":150},"MSFT":{"shares":5,"cost":300}}' title="תיק השקעות: מפתח = סימן מניה, ערך = {shares, cost}. JSON תקני."></textarea>
+          </div>
+          <!-- Tasks daily reset hour -->
+          <div class="cfg-row">
+            <span class="cfg-label">⏰ שעת איפוס משימות (0-23)</span>
+            <input class="cfg-input" id="cfg-tasks-reset-hour" type="number" min="0" max="23" step="1" style="width:70px;direction:ltr" placeholder="6" title="שעה (0-23) לאיפוס יומי של רשימת המשימות. ברירת מחדל: 6 (6:00 בבוקר)">
           </div>
           <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
             <button type="button" class="cfg-btn" id="cfg-export-btn" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
@@ -565,8 +576,6 @@
                 <div class="tasks-list" id="tasks-list"></div>
                 <!-- Celebratory message when all tasks are done -->
                 <div id="tasks-all-done-msg" style="display:none;text-align:center;padding:10px 0;font-size:1.1em;color:var(--success-color,#4caf50)">🎉 כל המשימות הושלמו! כל הכבוד!</div>
-                <!-- Celebratory message when all tasks are done -->
-                <div id="tasks-all-done-msg" style="display:none;text-align:center;padding:10px 0;font-size:1.1em;color:var(--success-color,#4caf50)">🎉 כל המשימות הושלמו! כל הכבוד!</div>
               </div>
             </section>
             <!-- System Info card -->
@@ -580,6 +589,8 @@
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-load">—</span><span class="sysinfo-tile-label">⚡ טעינת דף</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-browser">—</span><span class="sysinfo-tile-label">🌐 דפדפן</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-viewport">—</span><span class="sysinfo-tile-label">📐 מסך</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-memory">—</span><span class="sysinfo-tile-label">🧠 זיכרון</span></div>
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-cpu">—</span><span class="sysinfo-tile-label">⚙️ מעבד</span></div>
               </div>
             </section>
           </div>
