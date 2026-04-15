@@ -155,6 +155,11 @@
             <input id="cfg-font-scale" type="range" min="70" max="150" step="5" style="width:110px;direction:ltr" title="גודל גופן גלובלי (%)">
             <span id="cfg-font-scale-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
           </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🎞 מהירות גוּלֵל ההלכה</span>
+            <input id="cfg-ticker-speed" type="range" min="1" max="5" step="1" style="width:100px;direction:ltr" title="1=איטי מאוד … 5=מהיר מאוד">
+            <span id="cfg-ticker-speed-val" style="font-size:0.75em;margin-right:6px;min-width:20px">3</span>
+          </div>
         </div>
         <!-- Tab: Calendar -->
         <div class="cfg-section" data-tab="calendar">
@@ -284,6 +289,10 @@
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — הודעת סיום</span>
             <input class="cfg-input" id="cfg-cd-card-done-msg" type="text" placeholder="🎉 מזל טוב!" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">💍 כרטיס ספירה — תאריך התחלה (לסרגל התקדמות)</span>
+            <input class="cfg-input" id="cfg-cd-card-start-date" type="date" style="direction:ltr;width:140px" >
           </div>
           <!-- F107: Settings export/import -->
           <!-- Chores / Tasks editor (reads/writes localStorage dash_chores) -->
@@ -564,6 +573,9 @@
                   <div class="cd-tile"><span class="cd-num" id="cd-secs">--</span><span class="cd-unit">שניות</span></div>
                 </div>
                 <div class="cd-msg" id="cd-msg"></div>
+                <div class="cd-progress-wrap" id="cd-progress-wrap" style="display:none">
+                  <div class="cd-progress-bar" id="cd-progress-bar"></div>
+                </div>
               </div>
             </section>
             <!-- Tasks card -->

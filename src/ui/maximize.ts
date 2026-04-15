@@ -78,6 +78,7 @@ function expandCard(card: HTMLElement): void {
     { duration: 300, easing: "ease-out" },
   );
 
+  card.setAttribute("aria-expanded", "true");
   maximizedCard = card;
   diagLog(`[maximize] Expanded card (fontScale=${fontScale})`);
 }
@@ -109,6 +110,7 @@ function collapseCard(card: HTMLElement): void {
     card.style.removeProperty("--maximize-height");
   });
 
+  card.setAttribute("aria-expanded", "false");
   maximizedCard = null;
   diagLog("[maximize] Collapsed card");
 }

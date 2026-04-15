@@ -16,6 +16,7 @@ import {
   getCountdownTitle,
   getCountdownDoneMsg,
   getDaysSince,
+  computeProgress,
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
 import type { DashboardConfig } from "@/types/config";
@@ -373,5 +374,40 @@ describe("Countdown — tick() clears interval on second tick when event is past
     expect(() => destroyCountdownCard()).not.toThrow();
     const msgEl = document.getElementById("cd-msg");
     expect(msgEl?.textContent).toContain("מזל טוב");
+  });
+});
+
+// ── computeProgress (sprint v7.1.7) ──────────────────────────────────────────
+
+describe("Countdown — computeProgress", () => {
+  it("returns null when startMs >= targetMs (invalid range)", () => {
+    const target = new Date("2026-06-01").getTime();
+    expect(computeProgress(target, target)).toBeNull();
+    expect(computeProgress(target + 1000, target)).toBeNull();
+  });
+
+  it("returns 0 when now is exactly at the start date", () => {
+    vi.useFakeTimers();
+    const start = Date.now();
+    const target = start + 10_000_000;
+    expect(computeProgress(start, target)).toBe(0);
+    vi.useRealTimers();
+  });
+
+  it("returns 1 (clamped) when now is past the target date", () => {
+    const target = Date.now() - 1000;
+    const start = target - 10_000_000;
+    expect(computeProgress(start, target)).toBe(1);
+  });
+
+  it("returns a value between 0 and 1 for an in-progress countdown", () => {
+    const start = Date.now() - 5_000_000;
+    const target = Date.now() + 5_000_000;
+    const progress = computeProgress(start, target);
+    expect(progress).not.toBeNull();
+    if (progress !== null) {
+      expect(progress).toBeGreaterThan(0);
+      expect(progress).toBeLessThan(1);
+    }
   });
 });

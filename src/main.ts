@@ -34,8 +34,8 @@ import { initKeyboard, registerKey, closeAllOverlays } from "./ui/keyboard";
 import { initHeader, toggleClockSeconds } from "./ui/header";
 import { initCardMaximize, initCardCollapse } from "./ui/maximize";
 import { initStatusBar, stampRefresh } from "./ui/status-bar";
-import { initTicker } from "./ui/ticker";
-import { initConfigPanel, toggleConfigPanel } from "./ui/config-panel";
+import { initTicker, applyTickerSpeed } from "./ui/ticker";
+import { initConfigPanel, toggleConfigPanel, openConfigPanel, switchCfgTab } from "./ui/config-panel";
 import { initScreenMode, stepFontScale } from "./ui/screen-mode";
 import { toggleNightDim, initNightDimmer } from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
@@ -63,7 +63,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
-export const VERSION = "7.1.6";
+export const VERSION = "7.1.7";
 
 /**
  * Apply card size overrides from config to DOM elements.
@@ -213,6 +213,7 @@ export function init(): void {
   registerKey("h", "עזרה", _toggleHelp);
   registerKey("?", "עזרה", _toggleHelp);
   registerKey("d", "אבחון", toggleDiagOverlay);
+  registerKey("v", "ניהול כרטיסיות", () => { openConfigPanel(); switchCfgTab("cards"); });
   registerKey("escape", "סגור כל חלון", closeAllOverlays);
 
   // Cards — non-blocking, parallel load
@@ -248,6 +249,9 @@ export function init(): void {
   // ── Night dimmer auto-schedule (reads dim hours from localStorage) ──
   const cfg = loadConfig();
   initNightDimmer(cfg.nightDimLevel);
+
+  // ── Apply ticker scroll speed from config ──
+  applyTickerSpeed(cfg.tickerSpeed ?? 3);
 
   // ── Apply card visibility from config ──
   applyHiddenCards(cfg.hiddenCards ?? []);

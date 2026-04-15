@@ -61,7 +61,7 @@ body::before {
 }
 .ticker-content {
     display: flex; align-items: center; height: 100%; white-space: nowrap;
-    animation: tickerScroll 30s linear infinite; will-change: transform;
+    animation: tickerScroll var(--ticker-duration, 30s) linear infinite; will-change: transform;
 }
 .ticker-content:hover { animation-play-state: paused; }
 .ticker-item {

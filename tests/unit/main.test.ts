@@ -44,7 +44,7 @@ vi.mock("@/ui/status-bar", () => ({
   initStatusBar: vi.fn(),
   stampRefresh: vi.fn(),
 }));
-vi.mock("@/ui/ticker", () => ({ initTicker: vi.fn() }));
+vi.mock("@/ui/ticker", () => ({ initTicker: vi.fn(), applyTickerSpeed: vi.fn() }));
 vi.mock("@/ui/config-panel", () => ({
   initConfigPanel: vi.fn(),
   toggleConfigPanel: vi.fn(),

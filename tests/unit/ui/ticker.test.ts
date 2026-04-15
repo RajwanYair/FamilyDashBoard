@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getHalachaData, initTicker } from "@/ui/ticker";
+import { getHalachaData, initTicker, applyTickerSpeed } from "@/ui/ticker";
 import { cGet, cGetStale } from "@/core/cache";
 
 // Mock the fetch module so no real network calls are made
@@ -1287,5 +1287,36 @@ describe("Ticker — loadHalacha category with 1 element → category[1] ?? cate
     // renderTicker was called successfully — ticker contains category text
     const ticker = document.getElementById("halacha-ticker");
     expect(ticker?.textContent).toContain("הלכה כלשהי");
+  });
+});
+
+// ── Sprint v7.1.7: applyTickerSpeed ──────────────────────────────────────────
+
+describe("Ticker — applyTickerSpeed (v7.1.7)", () => {
+  afterEach(() => {
+    document.documentElement.style.removeProperty("--ticker-duration");
+    document.body.innerHTML = "";
+  });
+
+  it("sets --ticker-duration CSS var to 30s for speed 3 (default)", () => {
+    applyTickerSpeed(3);
+    expect(document.documentElement.style.getPropertyValue("--ticker-duration")).toBe("30s");
+  });
+
+  it("sets --ticker-duration to 60s for speed 1 (slowest)", () => {
+    applyTickerSpeed(1);
+    expect(document.documentElement.style.getPropertyValue("--ticker-duration")).toBe("60s");
+  });
+
+  it("sets --ticker-duration to 12s for speed 5 (fastest)", () => {
+    applyTickerSpeed(5);
+    expect(document.documentElement.style.getPropertyValue("--ticker-duration")).toBe("12s");
+  });
+
+  it("clamps out-of-range values (0 → 1, 9 → 5)", () => {
+    applyTickerSpeed(0);
+    expect(document.documentElement.style.getPropertyValue("--ticker-duration")).toBe("60s");
+    applyTickerSpeed(9);
+    expect(document.documentElement.style.getPropertyValue("--ticker-duration")).toBe("12s");
   });
 });

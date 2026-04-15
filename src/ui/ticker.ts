@@ -45,6 +45,31 @@ interface SefariaTextResponse {
 
 // ── State ──
 let _halachaData: HalachaData | null = null;
+// Speed multiplier: tickerSpeed 1–5 maps to 0.5–2× reference speed (higher = faster)
+let _speedMultiplier = 1;
+
+const TICKER_SPEED_DURATIONS: Record<number, number> = { 1: 60, 2: 45, 3: 30, 4: 20, 5: 12 };
+
+/**
+ * Apply ticker scroll speed from config (1 = slowest, 5 = fastest).
+ * Updates the CSS custom property and re-sets the current animation.
+ */
+export function applyTickerSpeed(speed: number): void {
+  const clamped = Math.max(1, Math.min(5, Math.round(speed)));
+  const baseSec = TICKER_SPEED_DURATIONS[clamped] ?? 30;
+  // Compute a simple multiplier vs default 30s reference
+  _speedMultiplier = 30 / baseSec;
+  // Update CSS var for the initial load before ticker JS sets inline style
+  document.documentElement.style.setProperty("--ticker-duration", `${baseSec}s`);
+  // If ticker is already rendered, update inline duration
+  if (elTicker) {
+    const w = elTicker.scrollWidth / 2;
+    if (w > 0) {
+      const base = Math.max(30, w / 140);
+      elTicker.style.animationDuration = `${Math.round(base / _speedMultiplier)}s`;
+    }
+  }
+}
 
 const TICKER_CACHE_KEY = "halacha";
 const TICKER_TTL = 12 * 60 * 60_000; // 12h
@@ -124,9 +149,9 @@ function renderTicker(data: HalachaData): void {
   elTicker.textContent = "";
   elTicker.appendChild(frag);
 
-  // Duration proportional to content width (140px/s reference)
+  // Duration proportional to content width (140px/s reference), scaled by speed
   const w = elTicker.scrollWidth / 2;
-  elTicker.style.animationDuration = `${Math.max(30, w / 140)}s`;
+  elTicker.style.animationDuration = `${Math.round(Math.max(12, w / 140) / _speedMultiplier)}s`;
 
   // Render excerpt in Hebrew-Cal card
   renderHalachaExcerpt(data);

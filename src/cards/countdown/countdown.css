@@ -66,3 +66,21 @@
   min-height: 1.2em;
   direction: rtl;
 }
+
+/* Progress bar — visible when countdownCardStartDate is set */
+.cd-progress-wrap {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.cd-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--positive, #34d399));
+  border-radius: 3px;
+  transition: width 1s linear;
+  width: 0%;
+}

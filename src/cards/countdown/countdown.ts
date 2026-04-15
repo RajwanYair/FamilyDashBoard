@@ -38,6 +38,8 @@ interface CdEls {
   mins: HTMLElement | null;
   secs: HTMLElement | null;
   msg: HTMLElement | null;
+  progressWrap: HTMLElement | null;
+  progressBar: HTMLElement | null;
 }
 
 let els: CdEls = {
@@ -47,6 +49,8 @@ let els: CdEls = {
   mins: null,
   secs: null,
   msg: null,
+  progressWrap: null,
+  progressBar: null,
 };
 
 function cacheDom(): void {
@@ -57,6 +61,8 @@ function cacheDom(): void {
     mins: document.getElementById("cd-mins"),
     secs: document.getElementById("cd-secs"),
     msg: document.getElementById("cd-msg"),
+    progressWrap: document.getElementById("cd-progress-wrap"),
+    progressBar: document.getElementById("cd-progress-bar"),
   };
 }
 
@@ -83,6 +89,17 @@ export function getTimeComponents(targetMs: number): TimeComponents {
 /** Returns the number of whole days that have elapsed since `targetMs`. */
 export function getDaysSince(targetMs: number): number {
   return Math.max(0, Math.floor((Date.now() - targetMs) / 86_400_000));
+}
+
+/**
+ * Compute elapsed progress (0–1) between a start and end date.
+ * Returns null when no valid start date is configured.
+ */
+export function computeProgress(startMs: number, targetMs: number): number | null {
+  if (!startMs || startMs >= targetMs) return null;
+  const total = targetMs - startMs;
+  const elapsed = Date.now() - startMs;
+  return Math.max(0, Math.min(1, elapsed / total));
 }
 
 function pad(n: number): string {
@@ -137,6 +154,24 @@ export function tick(): void {
           : days <= 7
             ? `⏳ עוד ${days} ימים!`
             : "";
+  }
+
+  // Progress bar — show when a start date is configured
+  const cfg = loadConfig();
+  const startDate = cfg.countdownCardStartDate;
+  const progressWrapEl = els.progressWrap ?? document.getElementById("cd-progress-wrap");
+  const progressBarEl = els.progressBar ?? document.getElementById("cd-progress-bar");
+  if (progressWrapEl && progressBarEl && startDate) {
+    const startMs = new Date(startDate).getTime();
+    const progress = computeProgress(startMs, targetMs);
+    if (progress !== null) {
+      progressWrapEl.style.display = "";
+      progressBarEl.style.width = `${Math.round(progress * 100)}%`;
+    } else {
+      progressWrapEl.style.display = "none";
+    }
+  } else if (progressWrapEl) {
+    progressWrapEl.style.display = "none";
   }
 }
 

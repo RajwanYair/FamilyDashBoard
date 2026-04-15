@@ -22,6 +22,7 @@ import { resetLayout } from "./layout-drag";
 import { renderTasksCard } from "../cards/tasks/tasks";
 import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator } from "./night-dimmer";
+import { applyTickerSpeed } from "./ticker";
 // ── Extra localStorage keys (fields not stored in DashboardConfig) ──
 const LS_DIM_START = "dash_v2_dim_start";
 const LS_DIM_END = "dash_v2_dim_end";
@@ -113,6 +114,14 @@ function populateForm(): void {
     if (val) val.textContent = `${Math.round(c.fontScale * 100)}%`;
   }
 
+  // Ticker speed
+  const tickerSpeedEl = g("cfg-ticker-speed");
+  if (tickerSpeedEl) {
+    tickerSpeedEl.value = String(c.tickerSpeed ?? 3);
+    const tickerSpeedVal = document.getElementById("cfg-ticker-speed-val");
+    if (tickerSpeedVal) tickerSpeedVal.textContent = String(c.tickerSpeed ?? 3);
+  }
+
   // Calendar tab
   const bday = gTxt("cfg-birthday");
   if (bday)
@@ -198,6 +207,8 @@ function populateForm(): void {
 
   const cdCardDoneMsg = g("cfg-cd-card-done-msg");
   if (cdCardDoneMsg) cdCardDoneMsg.value = c.countdownCardDoneMsg;
+  const cdCardStartDate = g("cfg-cd-card-start-date");
+  if (cdCardStartDate) cdCardStartDate.value = c.countdownCardStartDate ?? "";
 
   // Chores / tasks (Advanced tab)
   const choresEl = gTxt("cfg-chores");
@@ -330,6 +341,13 @@ function collectForm(): DashboardConfig {
     if (!isNaN(pct)) c.fontScale = Math.max(0.7, Math.min(1.5, pct / 100));
   }
 
+  // Ticker speed
+  const tickerSpeedCollect = g("cfg-ticker-speed");
+  if (tickerSpeedCollect) {
+    const spd = parseInt(tickerSpeedCollect.value, 10);
+    if (!isNaN(spd)) c.tickerSpeed = Math.max(1, Math.min(5, spd));
+  }
+
   // Calendar
   const bday = gTxt("cfg-birthday");
   if (bday) {
@@ -437,6 +455,8 @@ function collectForm(): DashboardConfig {
 
   const cdCardDoneMsgEl = g("cfg-cd-card-done-msg");
   if (cdCardDoneMsgEl) c.countdownCardDoneMsg = cdCardDoneMsgEl.value.trim();
+  const cdCardStartDateEl = g("cfg-cd-card-start-date");
+  if (cdCardStartDateEl) c.countdownCardStartDate = cdCardStartDateEl.value.trim();
 
   // Cards tab — hidden cards + sizes
   const hiddenCards: string[] = [];
@@ -580,6 +600,7 @@ export function initConfigPanel(): void {
     applyHiddenStocks();
     applyNewsFontSize();
     applyFontScale(c.fontScale);
+    applyTickerSpeed(c.tickerSpeed ?? 3);
     setDimLevel(c.nightDimLevel);
     updateDimIndicator();
     initCountdownCard();
@@ -623,6 +644,7 @@ export function initConfigPanel(): void {
     });
     closeConfigPanel();
     diagLog("[config-panel] settings saved");
+    showToast("✅ הגדרות נשמרו בהצלחה");
   });
 
   // Close button
@@ -664,6 +686,15 @@ export function initConfigPanel(): void {
   if (fontScaleSlider && fontScaleValEl) {
     fontScaleSlider.addEventListener("input", () => {
       fontScaleValEl.textContent = `${fontScaleSlider.value}%`;
+    });
+  }
+
+  // Ticker speed slider live preview
+  const tickerSpeedSlider = g("cfg-ticker-speed");
+  const tickerSpeedValEl = document.getElementById("cfg-ticker-speed-val");
+  if (tickerSpeedSlider && tickerSpeedValEl) {
+    tickerSpeedSlider.addEventListener("input", () => {
+      tickerSpeedValEl.textContent = tickerSpeedSlider.value;
     });
   }
 

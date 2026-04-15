@@ -46,12 +46,15 @@ function stubServiceWorker(
       : vi.fn().mockResolvedValue(reg ?? makeRegistration()),
     addEventListener: vi.fn(),
     controller: {} as ServiceWorker,
+    getRegistrations: vi.fn().mockResolvedValue([]),
   };
   Object.defineProperty(navigator, "serviceWorker", {
     value: swContainer,
     writable: true,
     configurable: true,
   });
+  // Stub caches so stale-cache cleanup doesn't fail
+  vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
 }
 
 function removeServiceWorker(): void {
@@ -142,10 +145,12 @@ describe("SW Register — VERSION_ACTIVATED message handling", () => {
   it("logs version when VERSION_ACTIVATED message received", async () => {
     const navListeners: Record<string, (e: unknown) => void> = {};
     const reg = makeRegistration();
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: null,
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn(
           (evt: string, handler: (e: unknown) => void) => {
             navListeners[evt] = handler;
@@ -171,10 +176,12 @@ describe("SW Register — VERSION_ACTIVATED message handling", () => {
   it("ignores messages without VERSION_ACTIVATED type", async () => {
     const navListeners: Record<string, (e: unknown) => void> = {};
     const reg = makeRegistration();
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: null,
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn(
           (evt: string, handler: (e: unknown) => void) => {
             navListeners[evt] = handler;
@@ -299,10 +306,12 @@ describe("SW Register — controllerchange triggers reload", () => {
   it("calls window.location.reload() when controllerchange fires", async () => {
     const navListeners: Record<string, (...args: unknown[]) => void> = {};
     const reg = makeRegistration();
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: null,
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn((evt: string, handler: (...args: unknown[]) => void) => {
           navListeners[evt] = handler;
         }),
@@ -362,10 +371,12 @@ describe("SW Register — statechange installing → installed", () => {
       dispatchEvent: vi.fn(),
     } as unknown as ServiceWorkerRegistration;
 
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: { postMessage: vi.fn() }, // controller exists
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn(),
       },
       writable: true,
@@ -408,10 +419,12 @@ describe("SW Register — statechange installing → installed", () => {
       }),
     } as unknown as ServiceWorkerRegistration;
 
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: {},
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn(),
       },
       writable: true,
@@ -453,10 +466,12 @@ describe("SW Register — statechange installing → installed", () => {
       }),
     } as unknown as ServiceWorkerRegistration;
 
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: {},
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn(),
       },
       writable: true,
@@ -497,10 +512,12 @@ describe("SW Register — updatefound with null installing", () => {
       dispatchEvent: vi.fn(),
     } as unknown as ServiceWorkerRegistration;
 
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: null,
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn(),
       },
       writable: true,
@@ -540,10 +557,12 @@ describe("SW Register — showUpdateBanner without reload button", () => {
       }),
     } as unknown as ServiceWorkerRegistration;
 
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
         controller: {},
+        getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn(),
       },
       writable: true,
@@ -642,5 +661,115 @@ describe("SW Register — file:// protocol guard", () => {
       writable: true,
       configurable: true,
     });
+  });
+});
+
+// ── Stale SW cleanup (sprint v7.1.7) ─────────────────────────────────────────
+
+describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("unregisters SW with a different scope before registering", async () => {
+    const unregisterSpy = vi.fn().mockResolvedValue(true);
+    const registerSpy = vi.fn().mockResolvedValue({
+      installing: null,
+      waiting: null,
+      addEventListener: vi.fn(),
+    });
+    const staleReg = {
+      scope: "http://localhost/other-app/",
+      unregister: unregisterSpy,
+    } as unknown as ServiceWorkerRegistration;
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        getRegistrations: vi.fn().mockResolvedValue([staleReg]),
+        register: registerSpy,
+        addEventListener: vi.fn(),
+        controller: null,
+      },
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(window, "location", {
+      value: { protocol: "http:", origin: "http://localhost", href: "http://localhost/FamilyDashBoard/" },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    expect(unregisterSpy).toHaveBeenCalledOnce();
+    expect(registerSpy).toHaveBeenCalledOnce();
+  });
+
+  it("does NOT unregister SW that already has the correct scope", async () => {
+    const unregisterSpy = vi.fn();
+    const registerSpy = vi.fn().mockResolvedValue({
+      installing: null,
+      waiting: null,
+      addEventListener: vi.fn(),
+    });
+    const currentReg = {
+      scope: "http://localhost/FamilyDashBoard/",
+      unregister: unregisterSpy,
+    } as unknown as ServiceWorkerRegistration;
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        getRegistrations: vi.fn().mockResolvedValue([currentReg]),
+        register: registerSpy,
+        addEventListener: vi.fn(),
+        controller: null,
+      },
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(window, "location", {
+      value: { protocol: "http:", origin: "http://localhost", href: "http://localhost/FamilyDashBoard/" },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    expect(unregisterSpy).not.toHaveBeenCalled();
+    expect(registerSpy).toHaveBeenCalledOnce();
+  });
+
+  it("deletes old caches that don't start with familydashboard-v7", async () => {
+    const deleteSpy = vi.fn().mockResolvedValue(true);
+    const cachesMock = {
+      keys: vi.fn().mockResolvedValue(["familydashboard-v5-shell", "familydashboard-v6-api", "familydashboard-v7.1.6-shell"]),
+      delete: deleteSpy,
+    };
+    vi.stubGlobal("caches", cachesMock);
+
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        getRegistrations: vi.fn().mockResolvedValue([]),
+        register: vi.fn().mockResolvedValue({ installing: null, waiting: null, addEventListener: vi.fn() }),
+        addEventListener: vi.fn(),
+        controller: null,
+      },
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(window, "location", {
+      value: { protocol: "http:", origin: "http://localhost", href: "http://localhost/FamilyDashBoard/" },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    // Should delete v5 and v6 caches, but NOT the v7 cache
+    expect(deleteSpy).toHaveBeenCalledWith("familydashboard-v5-shell");
+    expect(deleteSpy).toHaveBeenCalledWith("familydashboard-v6-api");
+    expect(deleteSpy).not.toHaveBeenCalledWith("familydashboard-v7.1.6-shell");
   });
 });

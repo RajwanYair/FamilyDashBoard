@@ -134,20 +134,18 @@ export function renderTasksCard(): void {
         map[fp] = cb.checked;
         saveDoneMap(map);
         row.classList.toggle("done", cb.checked);
-        // Refresh pending badge count and all-done message
-        const pending = chores.filter((c) => !map[fingerprint(c)]).length;
+        // Refresh N/M badge count and all-done message
+        const total2 = chores.length;
+        const pending2 = chores.filter((c) => !map[fingerprint(c)]).length;
+        const done2 = total2 - pending2;
         const badge = document.getElementById("tasks-pending-badge");
         const doneMsg = document.getElementById("tasks-all-done-msg");
         if (badge) {
-          if (pending > 0) {
-            badge.textContent = `${pending} ממתינות`;
-            badge.style.display = "";
-          } else {
-            badge.style.display = "none";
-          }
+          badge.textContent = `${done2} / ${total2} ✓`;
+          badge.style.display = total2 > 0 ? "" : "none";
         }
         if (doneMsg) {
-          doneMsg.style.display = pending === 0 ? "" : "none";
+          doneMsg.style.display = pending2 === 0 ? "" : "none";
         }
         diagLog(`[tasks] ${fp} = ${String(cb.checked)}`);
       });
@@ -163,20 +161,18 @@ export function renderTasksCard(): void {
 
   container.replaceChildren(fragment);
 
-  // Update pending-tasks badge in card header + all-done message
+  // Update tasks badge: show "done / total" counter + all-done message
   const badge = document.getElementById("tasks-pending-badge");
   const doneMsg = document.getElementById("tasks-all-done-msg");
+  const total = chores.length;
   const pending = chores.filter((item) => !doneMap[fingerprint(item)]).length;
+  const done = total - pending;
   if (badge) {
-    if (pending > 0) {
-      badge.textContent = `${pending} ממתינות`;
-      badge.style.display = "";
-    } else {
-      badge.style.display = "none";
-    }
+    badge.textContent = `${done} / ${total} ✓`;
+    badge.style.display = total > 0 ? "" : "none";
   }
   if (doneMsg) {
-    doneMsg.style.display = chores.length > 0 && pending === 0 ? "" : "none";
+    doneMsg.style.display = total > 0 && pending === 0 ? "" : "none";
   }
 }
 

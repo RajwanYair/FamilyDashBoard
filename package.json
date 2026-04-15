@@ -1,6 +1,6 @@
 {
     "name": "familydashboard",
-    "version": "7.1.6",
+    "version": "7.1.7",
     "description": "Family TV Dashboard — Hebrew RTL, TypeScript, Vite, Cloudflare Workers",
     "type": "module",
     "private": true,

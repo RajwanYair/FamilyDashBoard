@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.1.7] — 2026-04-16
+
+> **1686 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+- **Config save toast**: shows "✅ הגדרות נשמרו בהצלחה" confirmation toast after saving settings panel
+- **Maximize ARIA**: `aria-expanded` attribute set/cleared on card expand/collapse for accessibility
+- **Keyboard V**: `V` key opens config panel directly to the Cards visibility tab
+- **System-info uptime**: reformatted from `H:MM שעות` to `HH:MM:SS` for clarity
+- **Countdown progress bar**: visual `cd-progress-bar` driven by new `countdownCardStartDate` config field; start date input in Advanced tab
+- **Ticker speed**: configurable 1–5 speed slider in Display tab; `applyTickerSpeed()` sets `--ticker-duration` CSS var and updates running animation
+- **Tasks badge**: shows `N / M ✓` done-counter format (previously hid when all done)
+- **Test coverage — stale-SW cleanup**: 3 tests for unregistering wrong-scope SW, skipping correct-scope SW, and deleting old version caches
+- **Test coverage — countdown `computeProgress`**: 4 tests for null on invalid range, 0 at start, 1 past target, and in-range interpolation
+- **Test coverage — maximize `aria-expanded`**: 2 tests confirming attribute set on expand and cleared on collapse
+- **Test coverage — tasks N/M badge**: 3 tests for initial render, single-check update, and all-done display
+- **Test coverage — ticker `applyTickerSpeed`**: 4 tests for speed 1/3/5 and out-of-range clamping
+
+---
+
 ## [7.1.6] — 2026-04-16
 
 > **1663 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

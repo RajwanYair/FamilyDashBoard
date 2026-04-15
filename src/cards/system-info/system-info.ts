@@ -110,11 +110,13 @@ export async function renderSystemInfo(): Promise<void> {
     setText("sysinfo-net", "—");
   }
 
-  // Uptime
+  // Uptime — formatted as HH:MM:SS
   const upMs = Date.now() - PAGE_LOAD_TIME;
-  const upH = Math.floor(upMs / 3_600_000);
-  const upM = Math.floor((upMs % 3_600_000) / 60_000);
-  setText("sysinfo-uptime", `${upH}:${String(upM).padStart(2, "0")} שעות`);
+  const upHh = Math.floor(upMs / 3_600_000);
+  const upMm = Math.floor((upMs % 3_600_000) / 60_000);
+  const upSs = Math.floor((upMs % 60_000) / 1_000);
+  const upStr = `${String(upHh).padStart(2, "0")}:${String(upMm).padStart(2, "0")}:${String(upSs).padStart(2, "0")}`;
+  setText("sysinfo-uptime", upStr);
 
   // Page load timing
   const perf = performance.getEntriesByType("navigation")[0] as

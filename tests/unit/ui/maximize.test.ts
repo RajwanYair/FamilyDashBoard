@@ -672,3 +672,32 @@ describe("Maximize — card starts below header.time-section (v7.14)", () => {
     expect(card.style.getPropertyValue("--maximize-height")).toBe("");
   });
 });
+
+// ── Sprint v7.1.7: aria-expanded accessibility ──────────────────────────────
+
+describe("Maximize — aria-expanded accessibility (v7.1.7)", () => {
+  let mod: MaxMod;
+
+  beforeEach(async () => {
+    stubAnimate();
+    mod = await freshMax();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("sets aria-expanded='true' when card is expanded", () => {
+    const card = makeCard("aria-expand-card");
+    mod.toggleCardMaximize(card);
+    expect(card.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("sets aria-expanded='false' when card is collapsed", () => {
+    const card = makeCard("aria-collapse-card");
+    mod.toggleCardMaximize(card); // expand
+    mod.toggleCardMaximize(card); // collapse
+    expect(card.getAttribute("aria-expanded")).toBe("false");
+  });
+});

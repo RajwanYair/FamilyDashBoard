@@ -550,7 +550,7 @@ describe("Tasks — tasks-pending-badge", () => {
     expect(badge.textContent).toContain("2");
   });
 
-  it("hides badge when all chores are done", () => {
+  it("shows '2 / 2 ✓' badge (not hidden) when all chores are done", () => {
     setupWithBadge(JSON.stringify(chores));
     const today = new Date();
     const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
@@ -561,7 +561,9 @@ describe("Tasks — tasks-pending-badge", () => {
     );
     renderTasksCard();
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    expect(badge.style.display).toBe("none");
+    // Badge shows "2 / 2 ✓" when all done — stays visible
+    expect(badge.textContent).toBe("2 / 2 ✓");
+    expect(badge.style.display).not.toBe("none");
   });
 
   it("badge hides when no tasks-pending-badge element in DOM", () => {
@@ -666,7 +668,7 @@ describe("Tasks — badge hides + doneMsg shows when last task checked via check
     localStorage.clear();
   });
 
-  it("hides #tasks-pending-badge when last task checked (line 146)", () => {
+  it("shows '1 / 1 ✓' badge (not hidden) when last task checked (line 146)", () => {
     document.body.innerHTML = `
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
@@ -678,7 +680,10 @@ describe("Tasks — badge hides + doneMsg shows when last task checked via check
     const cb = document.querySelector<HTMLInputElement>(".tasks-cb")!;
     cb.checked = true;
     cb.dispatchEvent(new Event("change"));
-    expect((document.getElementById("tasks-pending-badge") as HTMLElement).style.display).toBe("none");
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    // Badge shows "1 / 1 ✓" when all tasks done (not hidden)
+    expect(badge.textContent).toBe("1 / 1 ✓");
+    expect(badge.style.display).not.toBe("none");
   });
 
   it("shows #tasks-all-done-msg when last task checked (line 150)", () => {
@@ -694,5 +699,137 @@ describe("Tasks — badge hides + doneMsg shows when last task checked via check
     cb.checked = true;
     cb.dispatchEvent(new Event("change"));
     expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe("");
+  });
+});
+
+// ── Sprint v7.1.7: N/M badge counter ─────────────────────────────────────────
+
+describe("Tasks — N/M done counter badge (v7.1.7)", () => {
+  beforeEach(() => {
+    localStorage.removeItem("dash_chores");
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("badge shows '0 / 2 ✓' when no tasks are done", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "A", chore: "task1" },
+      { person: "A", chore: "task2" },
+    ]));
+    renderTasksCard();
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.textContent).toBe("0 / 2 ✓");
+    expect(badge.style.display).not.toBe("none");
+  });
+
+  it("badge shows '1 / 2 ✓' after checking one of two tasks", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "A", chore: "task1" },
+      { person: "A", chore: "task2" },
+    ]));
+    renderTasksCard();
+    const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
+    cbs[0].checked = true;
+    cbs[0].dispatchEvent(new Event("change"));
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.textContent).toBe("1 / 2 ✓");
+  });
+
+  it("badge shows '2 / 2 ✓' after all tasks are done", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "A", chore: "task1" },
+      { person: "A", chore: "task2" },
+    ]));
+    renderTasksCard();
+    const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
+    cbs[0].checked = true;
+    cbs[0].dispatchEvent(new Event("change"));
+    cbs[1].checked = true;
+    cbs[1].dispatchEvent(new Event("change"));
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.textContent).toBe("2 / 2 ✓");
+  });
+});
+
+// ── Sprint v7.1.7: N/M badge counter ─────────────────────────────────────────
+
+describe("Tasks — N/M done counter badge (v7.1.7)", () => {
+  beforeEach(() => {
+    localStorage.removeItem("dash_chores");
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("badge shows '0 / 2 ✓' when no tasks are done", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "A", chore: "task1" },
+      { person: "A", chore: "task2" },
+    ]));
+    renderTasksCard();
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.textContent).toBe("0 / 2 ✓");
+    expect(badge.style.display).not.toBe("none");
+  });
+
+  it("badge shows '1 / 2 ✓' after checking one of two tasks", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "A", chore: "task1" },
+      { person: "A", chore: "task2" },
+    ]));
+    renderTasksCard();
+    const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
+    cbs[0].checked = true;
+    cbs[0].dispatchEvent(new Event("change"));
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.textContent).toBe("1 / 2 ✓");
+  });
+
+  it("badge shows '2 / 2 ✓' after all tasks are done", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "A", chore: "task1" },
+      { person: "A", chore: "task2" },
+    ]));
+    renderTasksCard();
+    const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
+    cbs[0].checked = true;
+    cbs[0].dispatchEvent(new Event("change"));
+    cbs[1].checked = true;
+    cbs[1].dispatchEvent(new Event("change"));
+    const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
+    expect(badge.textContent).toBe("2 / 2 ✓");
   });
 });
