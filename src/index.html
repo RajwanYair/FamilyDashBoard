@@ -421,7 +421,7 @@
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
             <section class="card" data-card-id="news" aria-label="News">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
@@ -438,7 +438,7 @@
               </div>
             </section>
             <section class="card" data-card-id="weather" aria-label="Weather">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-wx" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-wx" role="status" aria-label="מצב סנכרון מזג אוויר" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
               <div class="weather-body">
                 <!-- Feature 45: Multi-city tabs -->
                 <div class="wx-city-tabs" id="wx-city-tabs">
@@ -492,7 +492,7 @@
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
             <section class="card" data-card-id="hebrew-cal" aria-label="Hebrew Calendar">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
               <div class="hebcal-body" id="hebcal-body">
                 <!-- Main content column (right side in RTL) -->
                 <div class="hc-main-col">
@@ -536,7 +536,7 @@
               </div>
             </section>
             <section class="card" data-card-id="calendar" aria-label="Calendar" style="position:relative">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
                 <!-- F154: Today's upcoming events strip -->
                 <div id="cal-today-strip" class="cal-today-strip"></div>
@@ -547,8 +547,8 @@
               </div>
             </section>
             <section class="card" data-card-id="currency" aria-label="Currency">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cur" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
-              <div class="currency-body" id="currency-body">
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cur" role="status" aria-label="מצב סנכרון מטבעות" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
+              <div class="currency-body" id="currency-body" aria-live="polite" aria-label="שערי מטבע" role="region">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="curUsd">--</div><div class="cur-chg" id="curUsdChg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
                 <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="curEur">--</div><div class="cur-chg" id="curEurChg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
                 <div class="cur-item"><div class="cur-flag">🥇</div><div class="cur-pair">זהב / oz</div><div class="cur-rate" id="curGold">--</div><div class="cur-chg" id="curGoldChg"></div><svg class="cur-spark" id="cur-gold-spark" viewBox="0 0 60 22"></svg></div>
@@ -564,7 +564,7 @@
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
             <section class="card" data-card-id="stocks" aria-label="Stocks">
-            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
+            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" role="status" aria-label="מצב סנכרון מניות" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body" aria-live="polite" aria-label="נתוני מניות">
                   <!-- Stock rows are rendered dynamically by initStocksCard() in stocks.ts -->
@@ -582,9 +582,9 @@
               <div id="stk-mkt-countdown"></div>
             </section>
             <section class="card" data-card-id="alerts" aria-label="Red Alerts">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span>צבע אדום</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" role="status" aria-label="מצב סנכרון התראות" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span>צבע אדום</div>
               <div class="alerts-body">
-                <div class="alerts-scroll" id="alerts-scroll">
+                <div class="alerts-scroll" id="alerts-scroll" aria-live="assertive" aria-label="התרעות צבע אדום" role="log">
                   <div class="alert-count">טוען התרעות...</div>
                 </div>
               </div>
@@ -593,7 +593,7 @@
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">✨</span> מוטיבציה</div>
               <div class="moti-body">
                 <div class="moti-card">
-                  <div class="moti-text" id="moti-text">טוען השראה...</div>
+                  <div class="moti-text" id="moti-text" aria-live="polite">טוען השראה...</div>
                   <div class="moti-author" id="moti-author"></div>
                   <div class="moti-src" id="moti-src"></div>
                   <!-- F146: Next quote button; F135: share button -->
