@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchWithTimeout, fetchJSON, raceProxies } from "@/core/fetch";
+import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures } from "@/core/fetch";
 
 // Helper: mock fetch that resolves after `delay` ms
 function delayedFetch(delay: number, response: unknown) {
@@ -484,5 +484,91 @@ describe("fetchViaWorker — url > 60 chars truncation (line 99 TRUE branch)", (
     const result = await fetchViaWorker<{ result: string }>(longUrl);
     // Worker was called (result is non-null from mock), or null if worker disabled
     expect(result === null || result.result === "ok").toBe(true);
+  });
+});
+
+// ── Sprint 6 (v7.4): network state tracker ───────────────────────────────────
+
+describe("Fetch — network state tracker (v7.4)", () => {
+  beforeEach(() => {
+    // Reset state between tests
+    for (let i = 0; i < 5; i++) recordFetchSuccess();
+  });
+
+  it("starts with 0 consecutive failures", () => {
+    expect(getConsecutiveFailures()).toBe(0);
+    expect(isNetworkOffline()).toBe(false);
+  });
+
+  it("recordFetchFailure increments consecutive failures", () => {
+    recordFetchFailure();
+    expect(getConsecutiveFailures()).toBe(1);
+    recordFetchFailure();
+    expect(getConsecutiveFailures()).toBe(2);
+  });
+
+  it("becomes offline after 3 consecutive failures", () => {
+    recordFetchFailure();
+    recordFetchFailure();
+    expect(isNetworkOffline()).toBe(false);
+    recordFetchFailure();
+    expect(isNetworkOffline()).toBe(true);
+  });
+
+  it("recordFetchSuccess resets failure streak", () => {
+    recordFetchFailure();
+    recordFetchFailure();
+    recordFetchFailure();
+    expect(isNetworkOffline()).toBe(true);
+    recordFetchSuccess();
+    expect(isNetworkOffline()).toBe(false);
+    expect(getConsecutiveFailures()).toBe(0);
+  });
+});
+
+// ── Sprint 6 (v7.4): fetchWithRetry ─────────────────────────────────────────
+
+describe("Fetch — fetchWithRetry (v7.4)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("resolves on first attempt when fetchJSON succeeds", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ data: "ok" }),
+        text: async () => '{"data":"ok"}',
+      } as Response),
+    );
+    const result = await fetchWithRetry<{ data: string }>("https://example.com");
+    expect(result.data).toBe("ok");
+  });
+
+  it("retries on failure and succeeds on second attempt", async () => {
+    let calls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(() => {
+        calls++;
+        if (calls < 2) return Promise.reject(new Error("network error"));
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ data: "retry-ok" }),
+          text: async () => '{"data":"retry-ok"}',
+        } as Response);
+      }),
+    );
+    // Use baseDelayMs=1 to make test fast
+    const result = await fetchWithRetry<{ data: string }>("https://example.com", 3, 1);
+    expect(result.data).toBe("retry-ok");
+  });
+
+  it("throws after maxAttempts exhausted", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("always fails")));
+    await expect(
+      fetchWithRetry("https://example.com", 2, 1),
+    ).rejects.toThrow();
   });
 });

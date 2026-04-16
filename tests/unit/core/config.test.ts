@@ -11,7 +11,7 @@ import {
   loadConfigFromHash,
   migrateConfig,
 } from "@/core/config";
-import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, CONFIG_VERSION } from "@/types/config";
+import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, isValidFontScale, CONFIG_VERSION } from "@/types/config";
 
 describe("Config — loadConfig", () => {
   it("returns defaults when localStorage is empty", () => {
@@ -258,6 +258,29 @@ describe("Config — type guards (v7.4)", () => {
     expect(isValidTempUnit("K")).toBe(false);
     expect(isValidTempUnit("c")).toBe(false);
     expect(isValidTempUnit(null)).toBe(false);
+  });
+});
+
+describe("Config — isValidFontScale (v7.4)", () => {
+  it("accepts values in 0.5–2.0 range", () => {
+    expect(isValidFontScale(0.5)).toBe(true);
+    expect(isValidFontScale(1.0)).toBe(true);
+    expect(isValidFontScale(2.0)).toBe(true);
+    expect(isValidFontScale(1.3)).toBe(true);
+  });
+
+  it("rejects out-of-range values", () => {
+    expect(isValidFontScale(0.4)).toBe(false);
+    expect(isValidFontScale(2.1)).toBe(false);
+    expect(isValidFontScale(-1)).toBe(false);
+    expect(isValidFontScale(0)).toBe(false);
+  });
+
+  it("rejects non-numeric values", () => {
+    expect(isValidFontScale("1.0")).toBe(false);
+    expect(isValidFontScale(null)).toBe(false);
+    expect(isValidFontScale(NaN)).toBe(false);
+    expect(isValidFontScale(Infinity)).toBe(false);
   });
 });
 
