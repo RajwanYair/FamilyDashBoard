@@ -46,6 +46,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
     const r = await fetchWithTimeout(url);
     if (r.ok) {
       diagLog(`fetchJSON direct OK: ${short}`);
+      recordFetchSuccess();
       return (await r.json()) as T;
     }
   } catch {
@@ -73,16 +74,19 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
       if (p.includes("allorigins")) {
         const wrapper = (await r.json()) as { contents: string };
         diagLog(`fetchJSON ${pName} OK: ${short}`);
+        recordFetchSuccess();
         return JSON.parse(wrapper.contents) as T;
       }
 
       diagLog(`fetchJSON ${pName} OK: ${short}`);
+      recordFetchSuccess();
       return (await r.json()) as T;
     } catch {
       diagLog(`fetchJSON ${pName} FAIL: ${short}`);
     }
   }
 
+  recordFetchFailure();
   throw new Error(`All proxies failed for: ${short}`);
 }
 
@@ -184,4 +188,71 @@ export function acquireLock(name: string): boolean {
 
 export function releaseLock(name: string): void {
   fetchLocks.delete(name);
+}
+
+// ── Network failure tracking ──────────────────────────────────────────────────
+/** Number of consecutive proxy-chain failures across all cards. */
+let _consecutiveFailures = 0;
+/** Whether the last attempt ended in network-wide failure. */
+let _networkOffline = false;
+
+/** Record a successful fetch (resets failure streak). */
+export function recordFetchSuccess(): void {
+  if (_networkOffline) {
+    diagLog("[network] connectivity restored");
+  }
+  _consecutiveFailures = 0;
+  _networkOffline = false;
+}
+
+/** Record a failed fetch (increments streak; logs degraded/offline transitions). */
+export function recordFetchFailure(): void {
+  _consecutiveFailures += 1;
+  if (_consecutiveFailures === 3) {
+    _networkOffline = true;
+    diagLog("[network] 3+ consecutive failures — degraded mode");
+  }
+}
+
+/** Returns true when 3+ consecutive failures have been seen. */
+export function isNetworkOffline(): boolean {
+  return _networkOffline;
+}
+
+/** Returns the current consecutive-failure count. */
+export function getConsecutiveFailures(): number {
+  return _consecutiveFailures;
+}
+
+/**
+ * Fetch JSON with exponential backoff retries.
+ *
+ * On transient failures (network error or 5xx), retry up to `maxAttempts`
+ * times with a doubling delay starting at `baseDelayMs`.
+ *
+ * @param url         The URL to fetch (proxied via fetchJSON).
+ * @param maxAttempts Total attempts including the first (default 3).
+ * @param baseDelayMs Initial retry delay in ms (doubles each retry).
+ */
+export async function fetchWithRetry<T = unknown>(
+  url: string,
+  maxAttempts = 3,
+  baseDelayMs = 1_000,
+): Promise<T> {
+  let lastErr: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fetchJSON<T>(url);
+    } catch (err) {
+      lastErr = err;
+      if (attempt < maxAttempts) {
+        const delay = baseDelayMs * Math.pow(2, attempt - 1);
+        diagLog(`fetchWithRetry attempt ${attempt}/${maxAttempts} failed, retry in ${delay}ms`);
+        await new Promise<void>((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  throw lastErr;
 }
