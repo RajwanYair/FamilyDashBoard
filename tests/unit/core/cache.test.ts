@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { cGet, cSet, cGetStale, cEvict, cClear, getOldestCacheAgeMinutes } from "@/core/cache";
+import { cGet, cSet, cGetStale, cEvict, cClear, getOldestCacheAgeMinutes, cacheStats, resetCacheStats } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
   beforeEach(() => {
@@ -320,5 +320,52 @@ describe("Cache — getOldestCacheAgeMinutes (F6 v7.2)", () => {
   it("ignores non-dash_v2_ keys", () => {
     localStorage.setItem("other_key", JSON.stringify({ ts: Date.now() - 100 * 60_000 }));
     expect(getOldestCacheAgeMinutes()).toBe(0);
+  });
+});
+
+// ── Sprint 29: cacheStats ─────────────────────────────────────────────────────
+
+describe("cacheStats", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("starts with zero hits and misses", () => {
+    const stats = cacheStats();
+    expect(stats.hits).toBe(0);
+    expect(stats.misses).toBe(0);
+    expect(stats.hitRate).toBe(0);
+  });
+
+  it("counts misses when key is absent", () => {
+    cGet("no-such-key", 60_000);
+    const stats = cacheStats();
+    expect(stats.misses).toBe(1);
+    expect(stats.hits).toBe(0);
+  });
+
+  it("counts hits on in-memory hit", () => {
+    cSet("test-key", { v: 1 });
+    cGet("test-key", 60_000);
+    const stats = cacheStats();
+    expect(stats.hits).toBe(1);
+    expect(stats.misses).toBe(0);
+  });
+
+  it("computes hit rate correctly", () => {
+    cSet("k", 42);
+    cGet("k", 60_000); // hit
+    cGet("missing", 60_000); // miss
+    const stats = cacheStats();
+    expect(stats.hitRate).toBe(0.5);
+  });
+
+  it("resetCacheStats resets to zero", () => {
+    cGet("x", 1);
+    resetCacheStats();
+    const stats = cacheStats();
+    expect(stats.hits).toBe(0);
+    expect(stats.misses).toBe(0);
   });
 });

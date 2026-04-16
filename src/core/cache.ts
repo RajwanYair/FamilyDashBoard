@@ -52,23 +52,26 @@ export function cGet<T = unknown>(key: string, ttl: number): T | null {
   // Check in-memory first
   const entry = mem.get(key);
   if (entry && now - entry.ts < ttl) {
+    _recordCacheHit();
     return entry.data as T;
   }
 
   // Fall back to localStorage
   try {
     const raw = localStorage.getItem(LS_PREFIX + key);
-    if (!raw) return null;
+    if (!raw) { _recordCacheMiss(); return null; }
     const parsed = JSON.parse(raw) as { data: T; ts: number };
     if (now - parsed.ts < ttl) {
       // Promote to in-memory for speed
       mem.set(key, { data: parsed.data, ts: parsed.ts });
+      _recordCacheHit();
       return parsed.data;
     }
   } catch {
     // Corrupted entry — ignore
   }
 
+  _recordCacheMiss();
   return null;
 }
 
@@ -146,4 +149,30 @@ export function getOldestCacheAgeMinutes(): number {
   if (!found) return 0;
   const ageMs = Date.now() - oldest;
   return ageMs < 0 ? 0 : Math.floor(ageMs / 60_000);
+}
+
+// ── Sprint 29: cache statistics ───────────────────────────────────────────────
+
+let _cacheHits = 0;
+let _cacheMisses = 0;
+
+/** Increment hit counter (called internally by cGet). */
+export function _recordCacheHit(): void { _cacheHits++; }
+/** Increment miss counter (called internally by cGet). */
+export function _recordCacheMiss(): void { _cacheMisses++; }
+
+/** Returns current cache hit/miss counts and hit rate. */
+export function cacheStats(): { hits: number; misses: number; hitRate: number } {
+  const total = _cacheHits + _cacheMisses;
+  return {
+    hits: _cacheHits,
+    misses: _cacheMisses,
+    hitRate: total === 0 ? 0 : Math.round((_cacheHits / total) * 100) / 100,
+  };
+}
+
+/** Reset stats counters (useful in tests). */
+export function resetCacheStats(): void {
+  _cacheHits = 0;
+  _cacheMisses = 0;
 }
