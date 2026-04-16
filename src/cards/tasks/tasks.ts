@@ -25,6 +25,9 @@ const LS_DONE_KEY = "dash_tasks_done";
 // RESET_HOUR default fallback (overridden by config.tasksResetHour at runtime)
 const DEFAULT_RESET_HOUR = 6;
 
+// F8 (v7.3): Person filter state
+let _filterPerson: string | null = null;
+
 // ── Persistence helpers ────────────────────────────────────────────────────
 
 function fingerprint(item: ChoreItem): string {
@@ -98,8 +101,19 @@ export function renderTasksCard(): void {
   const chores = loadChores();
   const doneMap = loadDoneMap();
 
-  if (!chores.length) {
-    container.textContent = "אין משימות – הוסף משימות בהגדרות ← מתקדם";
+  // F8 (v7.3): Render person filter chips
+  renderFilterChips(chores);
+
+  // Apply active person filter
+  const visibleChores =
+    _filterPerson !== null
+      ? chores.filter((c) => c.person === _filterPerson)
+      : chores;
+
+  if (!visibleChores.length) {
+    container.textContent = chores.length
+      ? "אין משימות לאדם זה"
+      : "אין משימות – הוסף משימות בהגדרות ← מתקדם";
     return;
   }
 
@@ -107,7 +121,7 @@ export function renderTasksCard(): void {
 
   // Group by person
   const byPerson = new Map<string, ChoreItem[]>();
-  for (const item of chores) {
+  for (const item of visibleChores) {
     const list = byPerson.get(item.person) ?? [];
     list.push(item);
     byPerson.set(item.person, list);
@@ -134,7 +148,7 @@ export function renderTasksCard(): void {
         map[fp] = cb.checked;
         saveDoneMap(map);
         row.classList.toggle("done", cb.checked);
-        // Refresh N/M badge count and all-done message
+        // Refresh N/M badge count and all-done message (uses full chores list)
         const total2 = chores.length;
         const pending2 = chores.filter((c) => !map[fingerprint(c)]).length;
         const done2 = total2 - pending2;
@@ -197,6 +211,48 @@ export function resetDoneToday(): void {
 }
 
 /**
+ * F3 (v7.3): Remove tasks that are marked done from the permanent chores list.
+ * Clears the done-map as a side effect.
+ */
+export function removeDoneTasks(): void {
+  const chores = loadChores();
+  const doneMap = loadDoneMap();
+  const remaining = chores.filter((item) => !doneMap[fingerprint(item)]);
+  const removed = chores.length - remaining.length;
+  try {
+    localStorage.setItem("dash_chores", JSON.stringify(remaining));
+  } catch {
+    /* quota */
+  }
+  localStorage.removeItem(LS_DONE_KEY);
+  renderTasksCard();
+  diagLog(`[tasks] Removed ${removed} done item(s)`);
+}
+
+/**
+ * F8 (v7.3): Render person-filter chips above the task list.
+ * Only renders when more than one unique person exists.
+ */
+function renderFilterChips(chores: ChoreItem[]): void {
+  const bar = document.getElementById("tasks-filter-bar");
+  if (!bar) return;
+  const persons = [...new Set(chores.map((c) => c.person))].filter(Boolean);
+  bar.innerHTML = "";
+  if (persons.length <= 1) return;
+  for (const person of persons) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "tasks-person-chip" + (_filterPerson === person ? " active" : "");
+    chip.textContent = person;
+    chip.addEventListener("click", () => {
+      _filterPerson = _filterPerson === person ? null : person;
+      renderTasksCard();
+    });
+    bar.appendChild(chip);
+  }
+}
+
+/**
  * F7 (v7.2): Add a quick chore to the stored list and re-render.
  * Appends to dash_chores without opening config panel.
  */
@@ -222,12 +278,24 @@ export function initTasksCard(): void {
   // Re-render every hour (catches daily reset if dashboard is always on)
   _tasksInterval = window.setInterval(renderTasksCard, 60 * 60 * 1_000);
 
-  document.getElementById("tasks-mark-all-btn")?.addEventListener("click", markAllDone);
-  document.getElementById("tasks-reset-btn")?.addEventListener("click", resetDoneToday);
+  document
+    .getElementById("tasks-mark-all-btn")
+    ?.addEventListener("click", markAllDone);
+  document
+    .getElementById("tasks-reset-btn")
+    ?.addEventListener("click", resetDoneToday);
+  // F3 (v7.3): Remove done tasks button
+  document
+    .getElementById("tasks-remove-done-btn")
+    ?.addEventListener("click", removeDoneTasks);
 
   // F7 (v7.2): Quick-add task
-  const quickInput = document.getElementById("tasks-quick-input") as HTMLInputElement | null;
-  const quickPerson = document.getElementById("tasks-quick-person") as HTMLInputElement | null;
+  const quickInput = document.getElementById(
+    "tasks-quick-input",
+  ) as HTMLInputElement | null;
+  const quickPerson = document.getElementById(
+    "tasks-quick-person",
+  ) as HTMLInputElement | null;
   const quickBtn = document.getElementById("tasks-quick-add-btn");
   if (quickBtn && quickInput) {
     quickBtn.addEventListener("click", () => {

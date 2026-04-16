@@ -69,6 +69,8 @@
           <div class="help-row"><span>הפעל / כבה התרעות צבע אדום</span><span class="help-key">A</span></div>
           <div class="help-row"><span>גוון חם לדימר לילה (on/off)</span><span class="help-key">L</span></div>
         </div>
+        <!-- F10 (v7.3): Dynamically populated shortcuts from getKeyboardActions() -->
+        <div id="help-dynamic-keys" style="margin-top:8px;font-size:0.8em;color:var(--text-muted);text-align:center"></div>
         <div style="text-align:center;margin-top:10px;font-size:0.75em;color:var(--text-muted)">לחץ Escape / ? / H לסגירה</div>
       </div>
     </dialog>
@@ -163,6 +165,11 @@
             <span class="cfg-label">🎞 מהירות גוּלֵל ההלכה</span>
             <input id="cfg-ticker-speed" type="range" min="1" max="5" step="1" style="width:100px;direction:ltr" title="1=איטי מאוד … 5=מהיר מאוד">
             <span id="cfg-ticker-speed-val" style="font-size:0.75em;margin-right:6px;min-width:20px">3</span>
+          </div>
+          <!-- F7 (v7.3): Motivation auto-advance interval -->
+          <div class="cfg-row">
+            <span class="cfg-label">💬 מחזור ציטוטים אוטומטי (דקות, 0=כבוי)</span>
+            <input id="cfg-moti-interval" class="cfg-input" type="number" min="0" max="60" step="1" style="width:70px;direction:ltr" placeholder="0" title="4-60 דקות — 0 = ידני בלבד">
           </div>
         </div>
         <!-- Tab: Calendar -->
@@ -319,7 +326,7 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 2 — הודעת סיום</span>
-            <input class="cfg-input" id="cfg-cd2-done-msg" type="text" placeholder="🎉 מזל טוב!" >  
+            <input class="cfg-input" id="cfg-cd2-done-msg" type="text" placeholder="🎉 מזל טוב!" >
           </div>
           <!-- F107: Settings export/import -->
           <!-- Chores / Tasks editor (reads/writes localStorage dash_chores) -->
@@ -359,6 +366,8 @@
         <h3>🛠 Dashboard Diagnostics (press D to close)</h3>
         <!-- Feature 70: Copy diagnostics log to clipboard -->
         <button type="button" id="diag-copy-btn" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
+        <!-- F1 (v7.3): Clear diagnostics log -->
+        <button type="button" id="diag-clear-btn" title="נקה את כל רשומות האבחון — Clear log">🗑 נקה לוג</button>
         <div id="diag-panes"></div>
         <div class="diag-log" id="diag-log"></div>
     </dialog>
@@ -627,7 +636,11 @@
                 <div class="tasks-actions">
                   <button type="button" id="tasks-mark-all-btn" class="tasks-action-btn" title="סמן הכל כבוצע">✅ סמן הכל</button>
                   <button type="button" id="tasks-reset-btn" class="tasks-action-btn tasks-action-reset" title="אפס סימוני היום">🔄 אפס</button>
+                  <!-- F3 (v7.3): Remove done tasks from list -->
+                  <button type="button" id="tasks-remove-done-btn" class="tasks-action-btn" title="הסר משימות שבוצעו מהרשימה">🗑 הסר בוצעות</button>
                 </div>
+                <!-- F8 (v7.3): Person filter chips -->
+                <div id="tasks-filter-bar" class="tasks-filter-bar"></div>
                 <!-- F7 (v7.2): Quick-add task without opening config -->
                 <div class="tasks-quick-add" id="tasks-quick-add">
                   <input type="text" id="tasks-quick-input" placeholder="📝 משימה חדשה..." autocomplete="off" >
@@ -652,6 +665,10 @@
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-viewport">—</span><span class="sysinfo-tile-label">📐 מסך</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-memory">—</span><span class="sysinfo-tile-label">🧠 זיכרון</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-cpu">—</span><span class="sysinfo-tile-label">⚙️ מעבד</span></div>
+                <!-- F2 (v7.3): localStorage storage estimate -->
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-storage">—</span><span class="sysinfo-tile-label">💾 אחסון</span></div>
+                <!-- F9 (v7.3): Network RTT -->
+                <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-rtt">—</span><span class="sysinfo-tile-label">📡 זמן תגובה</span></div>
               </div>
             </section>
           </div>
@@ -677,6 +694,8 @@
             <span id="refresh-stamp" title="שעת רענון נתונים אחרונה">רענון: --:--</span>
             <!-- F6 (v7.2): Oldest cached data age -->
             <span id="cache-age" style="font-size:0.72em;opacity:0.7" title="גיל הנתונים המאוכסנים ביותר"></span>
+            <!-- F5 (v7.3): Service Worker version chip -->
+            <span id="sw-version" hidden style="font-size:0.65em;opacity:0.55;margin-inline-start:4px" title="גרסת ה-Service Worker הפעילה"></span>
         </footer>
     </div>
 

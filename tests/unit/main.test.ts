@@ -31,6 +31,10 @@ vi.mock("@/ui/keyboard", () => ({
   initKeyboard: vi.fn(),
   registerKey: vi.fn(),
   closeAllOverlays: vi.fn(),
+  getKeyboardActions: vi.fn().mockReturnValue([
+    { key: "T", desc: "Theme" },
+    { key: "D", desc: "Diagnostics" },
+  ]),
 }));
 vi.mock("@/ui/header", () => ({
   initHeader: vi.fn(),
@@ -105,7 +109,7 @@ import { initVisibility } from "@/core/idle";
 import { registerSW } from "@/core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "@/core/config";
 import { initTheme, checkAutoTheme } from "@/ui/theme";
-import { initKeyboard, registerKey } from "@/ui/keyboard";
+import { initKeyboard, registerKey, getKeyboardActions } from "@/ui/keyboard";
 import { initHeader } from "@/ui/header";
 import { initCardMaximize, initCardCollapse } from "@/ui/maximize";
 import { initStatusBar, stampRefresh } from "@/ui/status-bar";
@@ -1202,5 +1206,65 @@ describe("Main — 'l' key registers warm tint toggle (F10 v7.2)", () => {
     const lHandler = vi.mocked(registerKey).mock.calls.find(([k]) => k === "l")?.[2] as () => void;
     expect(lHandler).toBeDefined();
     expect(() => lHandler()).not.toThrow();
+  });
+});
+
+// ── F10 (v7.3): Dynamic help overlay ─────────────────────────────────────────
+
+describe("Main — dynamic help overlay (F10 v7.3)", () => {
+  function buildHelpDOM(): HTMLDialogElement {
+    document.body.innerHTML = `
+      <dialog id="help-overlay">
+        <div id="help-dynamic-keys"></div>
+      </dialog>`;
+    const dlg = document.getElementById("help-overlay") as HTMLDialogElement & {
+      showModal?: () => void;
+      close?: () => void;
+    };
+    if (typeof dlg.showModal !== "function") {
+      dlg.showModal = function () { this.setAttribute("open", ""); };
+      dlg.close = function () { this.removeAttribute("open"); };
+    }
+    return dlg;
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+    } as ReturnType<typeof loadConfig>);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.body.className = "";
+  });
+
+  it("populates #help-dynamic-keys when opening help dialog", () => {
+    buildHelpDOM();
+    init();
+    const hCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "h");
+    const handler = hCall![2] as () => void;
+    handler();
+    const dynEl = document.getElementById("help-dynamic-keys")!;
+    expect(dynEl.textContent).toContain("2");
+    expect(dynEl.textContent).toContain("קיצורים רשומים");
+  });
+
+  it("does not populate when getKeyboardActions returns empty", () => {
+    vi.mocked(getKeyboardActions).mockReturnValueOnce([]);
+    buildHelpDOM();
+    init();
+    const hCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "h");
+    const handler = hCall![2] as () => void;
+    handler();
+    const dynEl = document.getElementById("help-dynamic-keys")!;
+    expect(dynEl.textContent).toBe("");
   });
 });

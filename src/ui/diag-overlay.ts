@@ -6,7 +6,7 @@
  * Exposes openDiagOverlay / closeDiagOverlay / toggleDiagOverlay.
  */
 
-import { getDiagEntries, formatDiagEntry } from "../core/diag";
+import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
 
 let overlayEl: HTMLDialogElement | null = null;
@@ -98,6 +98,16 @@ export function initDiagOverlay(): void {
   const copyBtn = document.getElementById("diag-copy-btn");
   if (copyBtn) {
     copyBtn.addEventListener("click", copyDiagLog);
+  }
+
+  // F1 (v7.3): Clear diagnostics log button
+  const clearBtn = document.getElementById("diag-clear-btn");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      clearDiag();
+      renderLog();
+      diagLog("[diag] Log cleared");
+    });
   }
 
   // Close when clicking the overlay background

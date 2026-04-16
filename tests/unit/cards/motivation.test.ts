@@ -10,6 +10,7 @@ import {
   MOTIVATIONS,
   renderMotivation,
   setContent,
+  setMotivationInterval,
 } from "@/cards/motivation/motivation";
 
 describe("Motivation — MOTIVATIONS array", () => {
@@ -435,5 +436,36 @@ describe("Motivation — defensive branches when MOTIVATIONS is empty", () => {
     (MOTIVATIONS as unknown as unknown[]).length = 0;
     // getCurrentQuote() → null → if (!q) return
     expect(() => shareMotivation()).not.toThrow();
+  });
+});
+
+// ── F7 (v7.3): setMotivationInterval ────────────────────────────────────────
+
+describe("Motivation — setMotivationInterval (F7 v7.3)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    setMotivationInterval(0);
+    vi.useRealTimers();
+  });
+
+  it("does nothing when minutes is 0", () => {
+    const spy = vi.spyOn(globalThis, "setInterval");
+    setMotivationInterval(0);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("sets an interval when minutes > 0", () => {
+    const spy = vi.spyOn(globalThis, "setInterval");
+    setMotivationInterval(5);
+    expect(spy).toHaveBeenCalledWith(expect.any(Function), 5 * 60_000);
+  });
+
+  it("clears previous interval before setting new one", () => {
+    const clearSpy = vi.spyOn(globalThis, "clearInterval");
+    setMotivationInterval(3);
+    setMotivationInterval(5);
+    expect(clearSpy).toHaveBeenCalled();
   });
 });

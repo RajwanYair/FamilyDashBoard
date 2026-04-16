@@ -58,6 +58,8 @@ export interface DashboardConfig {
   countdownCard2Time: string;
   /** Countdown card 2 — message shown after event passes */
   countdownCard2DoneMsg: string;
+  /** Motivation card — auto-advance interval in minutes (0 = off). */
+  motivationInterval: number;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -100,4 +102,5 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard2Date: "",
   countdownCard2Time: "18:00",
   countdownCard2DoneMsg: "🎉 מזל טוב!",
+  motivationInterval: 0,
 };

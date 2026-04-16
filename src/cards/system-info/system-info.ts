@@ -150,10 +150,7 @@ export async function renderSystemInfo(): Promise<void> {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const dpr = window.devicePixelRatio ?? 1;
-  setText(
-    "sysinfo-viewport",
-    `${vw}×${vh}${dpr !== 1 ? ` @${dpr}x` : ""}`,
-  );
+  setText("sysinfo-viewport", `${vw}×${vh}${dpr !== 1 ? ` @${dpr}x` : ""}`);
 
   // Device memory (GB, Chrome-only)
   const devMem = (navigator as NavigatorWithExtras).deviceMemory;
@@ -162,6 +159,34 @@ export async function renderSystemInfo(): Promise<void> {
   // CPU hardware concurrency (core count)
   const cores = navigator.hardwareConcurrency;
   setText("sysinfo-cpu", cores ? `×${cores} ליבות` : "—");
+
+  // F2 (v7.3): Storage quota estimate (StorageManager API)
+  if (navigator.storage?.estimate) {
+    try {
+      const est = await navigator.storage.estimate();
+      const usedMb = ((est.usage ?? 0) / 1_048_576).toFixed(1);
+      const quotaMb = ((est.quota ?? 0) / 1_048_576).toFixed(0);
+      setText("sysinfo-storage", `${usedMb} / ${quotaMb} MB`);
+    } catch {
+      setText("sysinfo-storage", "—");
+    }
+  }
+
+  // F9 (v7.3): Network RTT tile — prefer Connection API, fallback to navigation timing
+  const rttConn = (navigator as NavigatorWithExtras).connection;
+  if (rttConn?.rtt !== undefined && rttConn.rtt > 0) {
+    setText("sysinfo-rtt", `${rttConn.rtt}ms`);
+  } else {
+    const navEntry = performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined;
+    if (navEntry) {
+      const rttMs = Math.round(navEntry.responseEnd - navEntry.fetchStart);
+      setText("sysinfo-rtt", rttMs > 0 ? `${rttMs}ms` : "—");
+    } else {
+      setText("sysinfo-rtt", "—");
+    }
+  }
 
   diagLog("[system-info] Rendered");
 }

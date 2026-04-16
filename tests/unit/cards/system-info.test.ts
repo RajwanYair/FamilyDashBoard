@@ -534,3 +534,97 @@ describe("SystemInfo — sysinfo-viewport tile (Sprint v7.12)", () => {
     expect(document.getElementById("sysinfo-viewport")?.textContent).toBe("2560×1440 @2x");
   });
 });
+
+// ── F2 (v7.3): Storage estimate tile ────────────────────────────────────────
+
+describe("SystemInfo — storage estimate (F2 v7.3)", () => {
+  function buildStorageDOM(): void {
+    document.body.innerHTML = `
+      <div id="sysinfo-online"></div>
+      <div id="sysinfo-battery"></div>
+      <div id="sysinfo-net"></div>
+      <div id="sysinfo-uptime"></div>
+      <div id="sysinfo-load"></div>
+      <div id="sysinfo-browser"></div>
+      <div id="sysinfo-storage"></div>
+      <div id="sysinfo-rtt"></div>`;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("displays storage usage when StorageManager is available", async () => {
+    buildStorageDOM();
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      onLine: true,
+      storage: {
+        estimate: vi.fn().mockResolvedValue({ usage: 5_242_880, quota: 1_073_741_824 }),
+      },
+    });
+    await renderSystemInfo();
+    const el = document.getElementById("sysinfo-storage");
+    expect(el?.textContent).toBe("5.0 / 1024 MB");
+  });
+
+  it("shows — when storage throws", async () => {
+    buildStorageDOM();
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      onLine: true,
+      storage: {
+        estimate: vi.fn().mockRejectedValue(new Error("fail")),
+      },
+    });
+    await renderSystemInfo();
+    const el = document.getElementById("sysinfo-storage");
+    expect(el?.textContent).toBe("—");
+  });
+});
+
+// ── F9 (v7.3): RTT tile ────────────────────────────────────────────────────
+
+describe("SystemInfo — RTT tile (F9 v7.3)", () => {
+  function buildRttDOM(): void {
+    document.body.innerHTML = `
+      <div id="sysinfo-online"></div>
+      <div id="sysinfo-battery"></div>
+      <div id="sysinfo-net"></div>
+      <div id="sysinfo-uptime"></div>
+      <div id="sysinfo-load"></div>
+      <div id="sysinfo-browser"></div>
+      <div id="sysinfo-rtt"></div>`;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("displays RTT from Connection API when available", async () => {
+    buildRttDOM();
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      onLine: true,
+      connection: { rtt: 42 },
+    });
+    await renderSystemInfo();
+    const el = document.getElementById("sysinfo-rtt");
+    expect(el?.textContent).toBe("42ms");
+  });
+
+  it("falls back to navigation timing when Connection API is absent", async () => {
+    buildRttDOM();
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+      { responseEnd: 150, fetchStart: 100 } as unknown as PerformanceEntry,
+    ]);
+    await renderSystemInfo();
+    const el = document.getElementById("sysinfo-rtt");
+    expect(el?.textContent).toBe("50ms");
+  });
+});

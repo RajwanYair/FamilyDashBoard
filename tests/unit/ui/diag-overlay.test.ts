@@ -40,6 +40,7 @@ function buildDOM(): void {
   document.body.innerHTML = `
     <dialog id="diag-overlay">
       <button id="diag-copy-btn">📋 העתק לוג</button>
+      <button id="diag-clear-btn">🗑 נקה לוג</button>
       <div id="diag-log"></div>
     </dialog>
   `;
@@ -378,5 +379,47 @@ describe("DiagOverlay — closeDiagOverlay when overlay not open (line 81)", () 
     expect(() => closeDiagOverlay()).not.toThrow();
     // Overlay should still be closed
     expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(false);
+  });
+});
+
+// ── F1 (v7.3): Clear log button ────────────────────────────────────────────
+
+describe("DiagOverlay — clear log button (F1 v7.3)", () => {
+  beforeEach(() => {
+    buildDOM();
+    clearDiag();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    clearDiag();
+  });
+
+  it("clicking clear button empties the log", () => {
+    diagLog("[test] entry one");
+    diagLog("[test] entry two");
+    initDiagOverlay();
+    openDiagOverlay();
+    // Verify entries exist
+    expect(document.getElementById("diag-log")?.textContent).toContain("entry one");
+    // Click clear
+    document.getElementById("diag-clear-btn")?.click();
+    // After clear + renderLog + diagLog("[diag] Log cleared"), we should NOT see original entries
+    const text = document.getElementById("diag-log")?.textContent ?? "";
+    expect(text).not.toContain("entry one");
+    expect(text).not.toContain("entry two");
+  });
+
+  it("initDiagOverlay wires clear button", () => {
+    initDiagOverlay();
+    diagLog("[test] before clear");
+    openDiagOverlay();
+    const clearBtn = document.getElementById("diag-clear-btn")!;
+    clearBtn.click();
+    // The handler calls clearDiag() then renderLog() — log is re-rendered empty
+    // then diagLog("[diag] Log cleared") adds one entry but doesn't re-render
+    // Re-open to force renderLog
+    openDiagOverlay();
+    const log = document.getElementById("diag-log")!;
+    expect(log.textContent).toContain("Log cleared");
   });
 });

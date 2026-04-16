@@ -23,6 +23,7 @@ import { renderTasksCard } from "../cards/tasks/tasks";
 import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
+import { setMotivationInterval } from "../cards/motivation/motivation";
 // ── Extra localStorage keys (fields not stored in DashboardConfig) ──
 const LS_DIM_START = "dash_v2_dim_start";
 const LS_DIM_END = "dash_v2_dim_end";
@@ -236,11 +237,16 @@ function populateForm(): void {
 
   // Portfolio editor (Advanced tab)
   const portfolioEl = gTxt("cfg-portfolio");
-  if (portfolioEl) portfolioEl.value = localStorage.getItem("dash_v2_portfolio") ?? "";
+  if (portfolioEl)
+    portfolioEl.value = localStorage.getItem("dash_v2_portfolio") ?? "";
 
   // Tasks reset hour (Advanced tab)
   const resetHourEl = g("cfg-tasks-reset-hour");
   if (resetHourEl) resetHourEl.value = String(c.tasksResetHour ?? 6);
+
+  // F7 (v7.3): Motivation auto-advance interval
+  const motiInterval = g("cfg-moti-interval");
+  if (motiInterval) motiInterval.value = String(c.motivationInterval ?? 0);
 
   // Cards tab — dynamically build per-card rows
   const cardsList = document.getElementById("cfg-cards-list");
@@ -487,7 +493,8 @@ function collectForm(): DashboardConfig {
   const cdCardDoneMsgEl = g("cfg-cd-card-done-msg");
   if (cdCardDoneMsgEl) c.countdownCardDoneMsg = cdCardDoneMsgEl.value.trim();
   const cdCardStartDateEl = g("cfg-cd-card-start-date");
-  if (cdCardStartDateEl) c.countdownCardStartDate = cdCardStartDateEl.value.trim();
+  if (cdCardStartDateEl)
+    c.countdownCardStartDate = cdCardStartDateEl.value.trim();
 
   // F8 (v7.2): 2nd countdown event
   const cd2TitleEl = g("cfg-cd2-title");
@@ -523,6 +530,13 @@ function collectForm(): DashboardConfig {
   if (resetHourEl) {
     const h = parseInt(resetHourEl.value, 10);
     if (!isNaN(h)) c.tasksResetHour = Math.max(0, Math.min(23, h));
+  }
+
+  // F7 (v7.3): Motivation auto-advance interval
+  const motiIntervalEl = g("cfg-moti-interval");
+  if (motiIntervalEl) {
+    const mi = parseInt(motiIntervalEl.value, 10);
+    c.motivationInterval = isNaN(mi) ? 0 : Math.max(0, Math.min(60, mi));
   }
 
   return c;
@@ -688,6 +702,8 @@ export function initConfigPanel(): void {
     closeConfigPanel();
     diagLog("[config-panel] settings saved");
     showToast("✅ הגדרות נשמרו בהצלחה");
+    // F7 (v7.3): Apply motivation interval from updated config
+    setMotivationInterval(c.motivationInterval ?? 0);
   });
 
   // Close button
@@ -741,6 +757,14 @@ export function initConfigPanel(): void {
     });
   }
 
+  // F4 (v7.3): Live theme preview on select change
+  const themeSelectLive = gSel("theme-select");
+  if (themeSelectLive) {
+    themeSelectLive.addEventListener("change", () => {
+      applyTheme(themeSelectLive.value as DashboardConfig["theme"]);
+    });
+  }
+
   // Settings export / import / share buttons (replaces inline onclick)
   document
     .getElementById("cfg-export-btn")
@@ -753,11 +777,13 @@ export function initConfigPanel(): void {
     ?.addEventListener("click", shareSettings);
 
   // Reset card layout button
-  document.getElementById("cfg-reset-layout-btn")?.addEventListener("click", () => {
-    resetLayout();
-    showToast("↩ סידור הכרטיסיות אופס — טען מחדש להחלה");
-    diagLog("[config-panel] layout reset");
-  });
+  document
+    .getElementById("cfg-reset-layout-btn")
+    ?.addEventListener("click", () => {
+      resetLayout();
+      showToast("↩ סידור הכרטיסיות אופס — טען מחדש להחלה");
+      diagLog("[config-panel] layout reset");
+    });
 
   // F2 (v7.2): Alert volume live preview
   const alertVolSliderInit = g("cfg-alert-volume");
@@ -769,13 +795,15 @@ export function initConfigPanel(): void {
   }
 
   // F4 (v7.2): Reset all defaults
-  document.getElementById("cfg-reset-all-btn")?.addEventListener("click", () => {
-    if (!confirm("מחיקת כל ההגדרות ואיפוס לברירות המחדל?")) return;
-    Object.keys(localStorage)
-      .filter((k) => k.startsWith("dash"))
-      .forEach((k) => localStorage.removeItem(k));
-    location.reload();
-  });
+  document
+    .getElementById("cfg-reset-all-btn")
+    ?.addEventListener("click", () => {
+      if (!confirm("מחיקת כל ההגדרות ואיפוס לברירות המחדל?")) return;
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("dash"))
+        .forEach((k) => localStorage.removeItem(k));
+      location.reload();
+    });
 
   diagLog("[config-panel] initialized");
 }

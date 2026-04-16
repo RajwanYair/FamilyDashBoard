@@ -5,6 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.3.0] — 2026-04-16
+
+> **1723 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint: 10-Feature Sprint (F1–F10)
+
+- **F1 — Diag clear log button**: `#diag-clear-btn` in diagnostics overlay wired via `initDiagOverlay()` → calls `clearDiag()`, `renderLog()`, then `diagLog("[diag] Log cleared")`
+- **F2 — Storage estimate tile**: `#sysinfo-storage` tile in system-info card shows `usedMb / quotaMb MB` from `navigator.storage.estimate()` (StorageManager API)
+- **F3 — Remove done tasks button**: `removeDoneTasks()` exported from `tasks.ts`; `#tasks-remove-done-btn` permanently removes completed items from `dash_chores` localStorage and clears done-map
+- **F4 — Config panel live theme preview**: `#theme-select` change event calls `applyTheme()` immediately for live preview before saving config
+- **F5 — SW version chip in status bar**: `#sw-version` span listens for `VERSION_ACTIVATED` SW message → displays SW cache version with `hidden=false`
+- **F7 — Motivation auto-advance timer**: `setMotivationInterval(minutes)` exported from `motivation.ts`; `#cfg-moti-interval` input (0–60) in config panel; 0 = disabled, >0 = auto-rotate quotes every N minutes
+- **F8 — Tasks person-filter chips**: `renderFilterChips()` in `tasks.ts` builds `.tasks-person-chip` buttons in `#tasks-filter-bar` when >1 unique person; clicking toggles `_filterPerson` and re-renders filtered tasks
+- **F9 — System info RTT tile**: `#sysinfo-rtt` tile shows network round-trip time from Connection API (`navigator.connection.rtt`) with fallback to `PerformanceNavigationTiming`
+- **F10 — Dynamic help overlay shortcuts**: `getKeyboardActions()` populates `#help-dynamic-keys` with registered shortcut count when help dialog opens
+- **Tests**: 17 new tests covering F1 clear button, F2 storage estimate, F3 removeDoneTasks, F7 setMotivationInterval, F8 person filter chips, F9 RTT tile, F10 dynamic help
+- **Version**: bumped to `7.3.0` in `package.json`, `sw.js`, README badge, docs, SVG assets
+
+---
+
 ## [7.2.0] — 2026-04-17
 
 > **1706 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

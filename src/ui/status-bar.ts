@@ -151,5 +151,20 @@ export function initStatusBar(): void {
     diagLog("[status-bar] Offline");
   });
 
+  // F5 (v7.3): Listen for VERSION_ACTIVATED from Service Worker
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
+      const data = e.data as { type?: string; version?: string };
+      if (data?.type === "VERSION_ACTIVATED" && data.version) {
+        const swChip = document.getElementById("sw-version");
+        if (swChip) {
+          swChip.textContent = `SW ${data.version.replace("familydashboard-", "")}`;
+          swChip.hidden = false;
+          diagLog(`[status-bar] SW activated: ${data.version}`);
+        }
+      }
+    });
+  }
+
   diagLog("[status-bar] Initialized");
 }

@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v7.1
+# CLAUDE.md — FamilyDashBoard v7.3
 
 > Context file for Claude Code / Claude agents. Lean project brief — see `.github/instructions/` for scoped details.
 
@@ -14,7 +14,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 - ESLint 10 + typescript-eslint 8 (0 errors · 0 warnings · no suppressions)
 - **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 - No local `package-lock.json` or `devDependencies` in this project
-- Tests: `npx vitest run` (1686+ tests, 39 suites, 0 failures)
+- Tests: `npx vitest run` (1723+ tests, 39 suites, 0 failures)
 - SW: `sw.js` v6.5.0 (offline + API cache)
 
 ## Key Rules
@@ -45,7 +45,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
 src/public/            # Vite static dir — icon.svg, manifest.webmanifest
-tests/unit/            # Vitest — 1686 tests / 39 suites
+tests/unit/            # Vitest — 1723 tests / 39 suites
 sw.js                  # ServiceWorker v6.5
 manifest.json          # PWA manifest (root copy)
 icon.svg               # App icon (root copy)

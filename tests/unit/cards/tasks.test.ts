@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { renderTasksCard, markAllDone, resetDoneToday } from "@/cards/tasks/tasks";
+import { renderTasksCard, markAllDone, resetDoneToday, removeDoneTasks } from "@/cards/tasks/tasks";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -831,5 +831,98 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
     cbs[1].dispatchEvent(new Event("change"));
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
     expect(badge.textContent).toBe("2 / 2 ✓");
+  });
+});
+
+// ── F3 (v7.3): removeDoneTasks ──────────────────────────────────────────────
+
+describe("Tasks — removeDoneTasks (F3 v7.3)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("removes done items and keeps undone ones", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div><span id="tasks-pending-badge"></span>`;
+    const chores = [
+      { person: "Alice", chore: "Laundry" },
+      { person: "Bob", chore: "Dishes" },
+    ];
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    renderTasksCard();
+    const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
+    cbs[0].checked = true;
+    cbs[0].dispatchEvent(new Event("change"));
+    removeDoneTasks();
+    const remaining = JSON.parse(localStorage.getItem("dash_chores") ?? "[]") as unknown[];
+    expect(remaining).toHaveLength(1);
+  });
+
+  it("clears done map after removing", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div><span id="tasks-pending-badge"></span>`;
+    const chores = [{ person: "A", chore: "X" }];
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    renderTasksCard();
+    const cb = document.querySelector<HTMLInputElement>(".tasks-cb")!;
+    cb.checked = true;
+    cb.dispatchEvent(new Event("change"));
+    removeDoneTasks();
+    expect(localStorage.getItem("dash_tasks_done")).toBeNull();
+  });
+
+  it("does nothing when no tasks are done", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div><span id="tasks-pending-badge"></span>`;
+    const chores = [{ person: "A", chore: "X" }, { person: "B", chore: "Y" }];
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    renderTasksCard();
+    removeDoneTasks();
+    const remaining = JSON.parse(localStorage.getItem("dash_chores") ?? "[]") as unknown[];
+    expect(remaining).toHaveLength(2);
+  });
+});
+
+// ── F8 (v7.3): Person filter chips ───────────────────────────────────────────
+
+describe("Tasks — person filter chips (F8 v7.3)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("renders filter chips when multiple persons exist", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div><div id="tasks-filter-bar"></div><span id="tasks-pending-badge"></span>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "Alice", chore: "A" },
+      { person: "Bob", chore: "B" },
+    ]));
+    renderTasksCard();
+    const chips = document.querySelectorAll(".tasks-person-chip");
+    expect(chips.length).toBe(2);
+  });
+
+  it("does not render chips when only one person", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div><div id="tasks-filter-bar"></div><span id="tasks-pending-badge"></span>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "Alice", chore: "A" },
+      { person: "Alice", chore: "B" },
+    ]));
+    renderTasksCard();
+    const chips = document.querySelectorAll(".tasks-person-chip");
+    expect(chips.length).toBe(0);
+  });
+
+  it("clicking a chip filters tasks, clicking again shows all", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div><div id="tasks-filter-bar"></div><span id="tasks-pending-badge"></span>`;
+    localStorage.setItem("dash_chores", JSON.stringify([
+      { person: "Alice", chore: "A" },
+      { person: "Bob", chore: "B" },
+      { person: "Alice", chore: "C" },
+    ]));
+    renderTasksCard();
+    expect(document.querySelectorAll(".tasks-cb").length).toBe(3);
+    document.querySelector<HTMLButtonElement>(".tasks-person-chip")!.click();
+    expect(document.querySelectorAll(".tasks-cb").length).toBe(2);
+    document.querySelector<HTMLButtonElement>(".tasks-person-chip")!.click();
+    expect(document.querySelectorAll(".tasks-cb").length).toBe(3);
   });
 });

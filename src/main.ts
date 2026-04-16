@@ -30,7 +30,12 @@ import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
 
 // ── UI ──
 import { initTheme, checkAutoTheme } from "./ui/theme";
-import { initKeyboard, registerKey, closeAllOverlays } from "./ui/keyboard";
+import {
+  initKeyboard,
+  registerKey,
+  closeAllOverlays,
+  getKeyboardActions,
+} from "./ui/keyboard";
 import { initHeader, toggleClockSeconds } from "./ui/header";
 import { initCardMaximize, initCardCollapse } from "./ui/maximize";
 import { initStatusBar, stampRefresh } from "./ui/status-bar";
@@ -208,6 +213,20 @@ export function init(): void {
     if (dlg.open) {
       dlg.close();
     } else {
+      // F10 (v7.3): Populate dynamic shortcuts section from registered keyboard actions
+      const dynamicEl = document.getElementById("help-dynamic-keys");
+      if (dynamicEl) {
+        const actions = getKeyboardActions();
+        if (actions.length > 0) {
+          const frag = document.createDocumentFragment();
+          const hdr = document.createElement("div");
+          hdr.style.cssText =
+            "font-weight:700;margin-bottom:4px;color:var(--accent)";
+          hdr.textContent = `⌨ ${String(actions.length)} קיצורים רשומים`;
+          frag.appendChild(hdr);
+          dynamicEl.replaceChildren(frag);
+        }
+      }
       dlg.showModal();
     }
   };

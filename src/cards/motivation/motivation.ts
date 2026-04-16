@@ -9,6 +9,7 @@ import { scheduleCard } from "../base-card";
 import { setSync } from "../../core/sync";
 import { diagLog } from "../../core/diag";
 import { showToast } from "../../ui/toast";
+import { loadConfig } from "../../core/config";
 
 // Hebrew motivational quotes
 export const MOTIVATIONS: ReadonlyArray<{ text: string; author: string }> = [
@@ -30,6 +31,24 @@ export const MOTIVATIONS: ReadonlyArray<{ text: string; author: string }> = [
 let motiIdx = 0;
 let elText: HTMLElement | null = null;
 let elAuthor: HTMLElement | null = null;
+
+// F7 (v7.3): Auto-advance timer
+let _motiAutoInterval: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * F7 (v7.3): Start or stop motivation auto-advance.
+ * @param minutes 0 = disabled; 1–60 = rotate every N minutes
+ */
+export function setMotivationInterval(minutes: number): void {
+  if (_motiAutoInterval !== null) {
+    clearInterval(_motiAutoInterval);
+    _motiAutoInterval = null;
+  }
+  if (minutes > 0) {
+    _motiAutoInterval = setInterval(renderMotivation, minutes * 60_000);
+    diagLog(`[motivation] Auto-advance every ${minutes}min`);
+  }
+}
 
 export function getCurrentQuote(): { text: string; author: string } | null {
   const lastIdx = ((motiIdx - 1) + MOTIVATIONS.length) % MOTIVATIONS.length;
@@ -90,5 +109,7 @@ export function initMotivationCard(): void {
 
   void loadMotivation();
   scheduleCard(loadMotivation, INTERVALS.MOTIVATION);
+  // F7 (v7.3): Start auto-advance timer if configured
+  setMotivationInterval(loadConfig().motivationInterval ?? 0);
   diagLog("[motivation] Initialized");
 }
