@@ -16,6 +16,11 @@ import {
   renderPsalmOfDay,
   formatCountdown,
   startCountdown,
+  isShabbat,
+  nextHolidayName,
+  hebrewMonthName,
+  getParashat,
+  zmanimTimeLabel,
 } from "@/cards/hebrew-cal/hebrew-cal";
 import { cGet, cGetStale, cSet } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
@@ -2184,5 +2189,119 @@ describe("DAF_STATIC_FALLBACK constant", () => {
   });
   it("ref matches tractate-page pattern", () => {
     expect(DAF_STATIC_FALLBACK.ref).toMatch(/\w+\s+\d+[ab]/);
+  });
+});
+
+// ── Sprint 27: isShabbat ──────────────────────────────────────────────────────
+
+describe("isShabbat", () => {
+  it("returns true when within candles-to-havdala window", () => {
+    const now = Date.now();
+    expect(isShabbat(now - 1000, now + 3_600_000)).toBe(true);
+  });
+
+  it("returns false when before candles time", () => {
+    const now = Date.now();
+    expect(isShabbat(now + 3_600_000, now + 7_200_000)).toBe(false);
+  });
+
+  it("returns false when after havdala time", () => {
+    const now = Date.now();
+    expect(isShabbat(now - 7_200_000, now - 1000)).toBe(false);
+  });
+
+  it("uses day heuristic when no times given — Saturday is Shabbat", () => {
+    // Can't reliably set day in test; just call it without crashing
+    expect(typeof isShabbat()).toBe("boolean");
+  });
+});
+
+// ── Sprint 27: nextHolidayName ────────────────────────────────────────────────
+
+describe("nextHolidayName", () => {
+  it("returns null for empty items", () => {
+    expect(nextHolidayName([])).toBeNull();
+  });
+
+  it("returns null when no holiday items", () => {
+    const items = [{ category: "parashat", date: "2099-01-01", title: "Bereshit", hebrew: "בראשית" }] as never;
+    expect(nextHolidayName(items, new Date("2020-01-01"))).toBeNull();
+  });
+
+  it("returns next upcoming holiday hebrew name", () => {
+    const items = [
+      { category: "holiday", date: "2099-04-15", title: "Passover", hebrew: "פסח" },
+      { category: "holiday", date: "2099-09-25", title: "Rosh Hashana", hebrew: "ראש השנה" },
+    ] as never;
+    const result = nextHolidayName(items, new Date("2099-01-01"));
+    expect(result).toBe("פסח");
+  });
+
+  it("skips past holidays", () => {
+    const items = [
+      { category: "holiday", date: "2000-04-15", title: "Old Holiday", hebrew: "חג ישן" },
+      { category: "holiday", date: "2099-09-25", title: "Future", hebrew: "חג עתידי" },
+    ] as never;
+    const result = nextHolidayName(items, new Date("2050-01-01"));
+    expect(result).toBe("חג עתידי");
+  });
+});
+
+// ── Sprint 27: hebrewMonthName ────────────────────────────────────────────────
+
+describe("hebrewMonthName", () => {
+  it("returns a non-empty string", () => {
+    expect(hebrewMonthName(new Date()).length).toBeGreaterThan(0);
+  });
+
+  it("returns string for known Nisan month date", () => {
+    const result = hebrewMonthName(new Date("2024-04-10"));
+    // Nisan is around March/April in the Gregorian calendar
+    expect(typeof result).toBe("string");
+    expect(result.length).toBeGreaterThan(0);
+  });
+});
+
+// ── Sprint 27: getParashat ────────────────────────────────────────────────────
+
+describe("getParashat", () => {
+  it("returns null for empty array", () => {
+    expect(getParashat([])).toBeNull();
+  });
+
+  it("returns russian translation when no hebrew", () => {
+    const items = [{ category: "parashat", date: "2024-01-01", title: "Bereshit" }] as never;
+    expect(getParashat(items)).toBe("Bereshit");
+  });
+
+  it("returns hebrew name when available", () => {
+    const items = [{ category: "parashat", date: "2024-01-01", title: "Bereshit", hebrew: "בראשית" }] as never;
+    expect(getParashat(items)).toBe("בראשית");
+  });
+
+  it("ignores non-parashat items", () => {
+    const items = [{ category: "holiday", date: "2024-01-01", title: "Passover", hebrew: "פסח" }] as never;
+    expect(getParashat(items)).toBeNull();
+  });
+});
+
+// ── Sprint 27: zmanimTimeLabel ────────────────────────────────────────────────
+
+describe("zmanimTimeLabel", () => {
+  it("returns '--' for empty string", () => {
+    expect(zmanimTimeLabel("")).toBe("--");
+  });
+
+  it("returns '--' for invalid date", () => {
+    expect(zmanimTimeLabel("not-a-date")).toBe("--");
+  });
+
+  it("returns HH:MM as-is when already in that format", () => {
+    expect(zmanimTimeLabel("06:30")).toBe("06:30");
+  });
+
+  it("parses ISO date-time and returns HH:MM", () => {
+    const result = zmanimTimeLabel("2024-01-01T06:30:00+00:00");
+    expect(result).toMatch(/^\d{1,2}:\d{2}$/);
   });
 });

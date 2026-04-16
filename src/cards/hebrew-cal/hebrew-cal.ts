@@ -22,6 +22,87 @@ import { loadConfig } from "../../core/config";
 import { getTasksForToday } from "../tasks/tasks";
 import type { HebcalResponse, HebcalItem } from "../../types/api";
 
+// ── Sprint 27: Pure Hebrew-cal utility functions ───────────────────────────
+
+/**
+ * Returns true if the current moment is between candle-lighting and havdala
+ * (i.e., we are currently in Shabbat or Yom Tov).
+ * Uses the known candles/havdala times if provided; otherwise falls back
+ * to a simple Friday/Saturday heuristic (covers most UI cases).
+ */
+export function isShabbat(
+  candlesMs?: number | null,
+  havdalaMs?: number | null,
+): boolean {
+  const now = Date.now();
+  if (candlesMs != null && havdalaMs != null) {
+    return now >= candlesMs && now < havdalaMs;
+  }
+  // Heuristic: Friday after 18:00 or all of Saturday
+  const d = new Date();
+  const day = d.getDay();
+  const h = d.getHours();
+  if (day === 6) return true; // All of Saturday
+  if (day === 5 && h >= 18) return true; // Friday evening
+  return false;
+}
+
+/**
+ * Find the next upcoming holiday name from a list of Hebcal items.
+ * Looks at items with category "holiday" and a future date.
+ * Returns null when there are no upcoming holidays.
+ */
+export function nextHolidayName(
+  items: HebcalItem[],
+  now: Date = new Date(),
+): string | null {
+  const upcoming = items
+    .filter(
+      (i) =>
+        i.category === "holiday" &&
+        new Date(i.date).getTime() >= now.setHours(0, 0, 0, 0),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return upcoming[0]?.hebrew ?? upcoming[0]?.title ?? null;
+}
+
+/**
+ * Get the Hebrew date month name (e.g. "תשרי", "ניסן") for a given date
+ * using the `Intl.DateTimeFormat` Hebrew calendar extension.
+ */
+export function hebrewMonthName(date: Date = new Date()): string {
+  return new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "long" }).format(date);
+}
+
+/**
+ * Extract the Parasha (weekly Torah portion) Hebrew name from a list of
+ * Hebcal items. Returns null when no parasha is found.
+ */
+export function getParashat(items: HebcalItem[]): string | null {
+  const p = items.find((i) => i.category === "parashat");
+  return p?.hebrew ?? p?.title ?? null;
+}
+
+/**
+ * Format a zmanim time string (ISO or HH:MM) to a fixed "HH:MM" display,
+ * with AM/PM stripped. Returns "--" on parse failure.
+ */
+export function zmanimTimeLabel(isoOrTime: string): string {
+  if (!isoOrTime) return "--";
+  // Handles both "2024-01-01T06:00:00+02:00" and "06:00"
+  const d = new Date(isoOrTime);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleTimeString("he-IL", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  }
+  // If it looks like HH:MM already, return as-is
+  if (/^\d{1,2}:\d{2}$/u.test(isoOrTime)) return isoOrTime;
+  return "--";
+}
+
 // ── DOM cache ──
 interface HebCalEls {
   candles: HTMLElement | null;

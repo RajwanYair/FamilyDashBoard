@@ -1770,3 +1770,102 @@ describe("News — sanitizeNewsTitle", () => {
     expect(sanitizeNewsTitle("Plain title")).toBe("Plain title");
   });
 });
+
+// ── Sprint 26: readingTimeMinutes ────────────────────────────────────────────
+
+describe("News — readingTimeMinutes", () => {
+  it("returns 0 for empty string", () => {
+    expect(readingTimeMinutes("")).toBe(0);
+  });
+
+  it("returns 1 for fewer than 200 words", () => {
+    const text = Array(50).fill("word").join(" ");
+    expect(readingTimeMinutes(text)).toBe(1);
+  });
+
+  it("returns 2 for ~400 words", () => {
+    const text = Array(400).fill("word").join(" ");
+    expect(readingTimeMinutes(text)).toBe(2);
+  });
+
+  it("rounds correctly", () => {
+    const text = Array(300).fill("word").join(" ");
+    expect(readingTimeMinutes(text)).toBe(2);
+  });
+});
+
+// ── Sprint 26: isBreaking ─────────────────────────────────────────────────────
+
+describe("News — isBreaking", () => {
+  it("returns true for title containing 'breaking'", () => {
+    expect(isBreaking("Breaking: Major update", "2000-01-01")).toBe(true);
+  });
+
+  it("returns true for title containing 'בזק'", () => {
+    expect(isBreaking("בזק: פיגוע בירושלים", "2000-01-01")).toBe(true);
+  });
+
+  it("returns true for pubDate within 30 minutes of now", () => {
+    const recent = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    expect(isBreaking("Normal title", recent)).toBe(true);
+  });
+
+  it("returns false for old non-breaking article", () => {
+    expect(isBreaking("Normal title", "2000-01-01")).toBe(false);
+  });
+
+  it("returns false for empty pubDate with non-breaking title", () => {
+    expect(isBreaking("Normal title", "")).toBe(false);
+  });
+});
+
+// ── Sprint 26: newsSourceDomain ──────────────────────────────────────────────
+
+describe("News — newsSourceDomain", () => {
+  it("extracts domain from https URL", () => {
+    expect(newsSourceDomain("https://www.ynet.co.il/news/article/123")).toBe("ynet.co.il");
+  });
+
+  it("strips www. prefix", () => {
+    expect(newsSourceDomain("https://www.haaretz.com/article")).toBe("haaretz.com");
+  });
+
+  it("handles no www", () => {
+    expect(newsSourceDomain("https://news.bbc.co.uk/article")).toBe("news.bbc.co.uk");
+  });
+
+  it("returns the input string on failure", () => {
+    expect(newsSourceDomain("not-a-url")).toBe("not-a-url");
+  });
+});
+
+// ── Sprint 26: sanitizeNewsTitle ─────────────────────────────────────────────
+
+describe("News — sanitizeNewsTitle", () => {
+  it("replaces &amp; with &", () => {
+    expect(sanitizeNewsTitle("Cats &amp; Dogs")).toBe("Cats & Dogs");
+  });
+
+  it("replaces &lt; and &gt;", () => {
+    expect(sanitizeNewsTitle("A &lt; B &gt; C")).toBe("A < B > C");
+  });
+
+  it("truncates long titles", () => {
+    const long = "a".repeat(200);
+    const result = sanitizeNewsTitle(long);
+    expect(result.length).toBeLessThanOrEqual(120);
+    expect(result.endsWith("…")).toBe(true);
+  });
+
+  it("respects custom maxLen", () => {
+    expect(sanitizeNewsTitle("Hello world", 5)).toBe("Hell…");
+  });
+
+  it("strips numeric HTML entities", () => {
+    expect(sanitizeNewsTitle("Hello&#8212;World")).toBe("HelloWorld");
+  });
+
+  it("returns clean title unchanged when no entities", () => {
+    expect(sanitizeNewsTitle("Plain title")).toBe("Plain title");
+  });
+});
