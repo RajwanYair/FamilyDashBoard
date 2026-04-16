@@ -1,0 +1,9 @@
+/* Diagnostics Overlay — co-located styles (v7.8) */
+/* Migrated from src/styles/sprints.css */
+
+@layer components {
+
+/* F70: Diagnostic copy log button */
+#diag-copy-btn { font-size: 0.75em; padding: 2px 10px; border-radius: 4px; background: var(--bg-card-inner); border: 1px solid var(--accent-border); color: var(--text-primary); cursor: pointer; margin-bottom: 6px; }
+
+}

@@ -6,6 +6,7 @@
  * v7: Cards tab for card visibility + size; URL hash import/export.
  */
 
+import "./config-panel.css";
 import { loadConfig, saveConfig, shareConfigHash } from "../core/config";
 import type { DashboardConfig } from "../types/config";
 import { listCards } from "../core/card-registry";

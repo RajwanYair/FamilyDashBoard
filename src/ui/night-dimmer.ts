@@ -2,6 +2,7 @@
  * FamilyDashBoard v6 — Night Dimmer Overlay
  */
 
+import "./night-dimmer.css";
 import { diagLog } from "../core/diag";
 
 const LS_DIM_START = "dash_v2_dim_start";

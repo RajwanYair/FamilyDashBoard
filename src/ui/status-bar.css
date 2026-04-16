@@ -1,0 +1,19 @@
+/* Status Bar — co-located styles (v7.8) */
+/* Migrated from src/styles/sprints.css */
+
+@layer components {
+
+/* F40: Connectivity indicator */
+#conn-indicator { font-size: 0.72em; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
+#conn-indicator.conn-ok   { color: var(--positive); }
+#conn-indicator.conn-slow { color: var(--warning); }
+#conn-indicator.conn-bad  { color: var(--negative); }
+
+/* F49: Font Size Scaler indicator */
+#font-scale-indicator { font-size: 0.7em; color: var(--text-muted); transition: opacity 0.3s; opacity: 0; }
+#font-scale-indicator.visible { opacity: 1; }
+
+/* F80: PWA install prompt button */
+#pwa-install-btn { display: none; position: fixed; bottom: 20px; left: 20px; z-index: 800; font-size: 0.75em; padding: 6px 14px; border-radius: 20px; background: var(--accent); color: #0f172a; border: none; cursor: pointer; font-weight: 700; box-shadow: 0 2px 12px rgba(96,165,250,0.4); }
+
+}

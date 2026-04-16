@@ -6,6 +6,7 @@
  * Exposes openDiagOverlay / closeDiagOverlay / toggleDiagOverlay.
  */
 
+import "./diag-overlay.css";
 import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
 import { getFailedPanes } from "../core/sync";

@@ -2,6 +2,7 @@
  * FamilyDashBoard v6 — Header (Clock, Greeting, Progress Bars, Chips)
  */
 
+import "./header.css";
 import { loadConfig } from "../core/config";
 import { diagLog } from "../core/diag";
 

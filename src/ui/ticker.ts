@@ -7,6 +7,7 @@
  * Refresh: 12 hours (changes once per day).
  */
 
+import "./ticker.css";
 import { cGet, cGetStale, cSet } from "../core/cache";
 import { fetchWithTimeout } from "../core/fetch";
 import { diagLog } from "../core/diag";

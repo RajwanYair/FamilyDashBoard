@@ -11,6 +11,7 @@
  *   - Font scale indicator (current --font-scale %)
  */
 
+import "./status-bar.css";
 import { registerSyncDot } from "../core/sync";
 import { diagLog } from "../core/diag";
 import { getOldestCacheAgeMinutes } from "../core/cache";

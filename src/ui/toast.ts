@@ -2,6 +2,8 @@
  * FamilyDashBoard v6 — Toast Notifications
  */
 
+import "./toast.css";
+
 let toastEl: HTMLElement | null = null;
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
