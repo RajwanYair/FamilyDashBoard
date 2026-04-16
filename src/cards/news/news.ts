@@ -133,6 +133,64 @@ export function relativeAge(pubDate: string): string {
 const VISITED_KEY = "dash_visited_news";
 let _visited: Set<string> = new Set();
 
+/**
+ * Estimate reading time in minutes from a description/body string.
+ * Assumes average reading speed of 200 words per minute.
+ * Returns 0 when text is empty.
+ */
+export function readingTimeMinutes(text: string): number {
+  if (!text) return 0;
+  const words = text.trim().split(/\s+/u).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+/**
+ * Returns true when the item is likely "breaking news":
+ * published within the past 30 minutes or title contains a breaking keyword.
+ */
+export function isBreaking(title: string, pubDate: string): boolean {
+  const BREAKING_KEYWORDS = ["בזק", "דחוף", "breaking", "urgent", "flash"];
+  const lc = title.toLowerCase();
+  if (BREAKING_KEYWORDS.some((kw) => lc.includes(kw))) return true;
+  if (!pubDate) return false;
+  const d = new Date(pubDate);
+  if (isNaN(d.getTime())) return false;
+  const ageMs = Date.now() - d.getTime();
+  return ageMs >= 0 && ageMs < 30 * 60 * 1000;
+}
+
+/**
+ * Extract the bare domain (without "www.") from a URL.
+ * Returns the full URL on failure.
+ */
+export function newsSourceDomain(url: string): string {
+  try {
+    const host = new URL(url).hostname;
+    return host.startsWith("www.") ? host.slice(4) : host;
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Strip HTML entities from a news title and truncate to `maxLen` chars.
+ * Uses only safe text operations — no innerHTML / DOMParser.
+ */
+export function sanitizeNewsTitle(title: string, maxLen = 120): string {
+  const entities: Record<string, string> = {
+    "&amp;": "&", "&lt;": "<", "&gt;": ">",
+    "&quot;": '"', "&#39;": "'", "&apos;": "'", "&nbsp;": " ",
+  };
+  let out = title;
+  for (const [ent, ch] of Object.entries(entities)) {
+    out = out.split(ent).join(ch);
+  }
+  // Strip any remaining numeric entities (&#NN;)
+  out = out.replace(/&#\d+;/gu, "").trim();
+  if (out.length > maxLen) return `${out.slice(0, maxLen - 1)}…`;
+  return out;
+}
+
 function loadVisited(): void {
   try {
     const s = sessionStorage.getItem(VISITED_KEY) ?? "[]";
