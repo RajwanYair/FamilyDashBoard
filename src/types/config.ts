@@ -157,7 +157,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   weatherShowHourly: true,
   weatherShowWind: true,
   weatherShowSunrise: true,
-  stocksGroupBySector: false,
+  stocksGroupBySector: true,
   tasksShowCategories: true,
   newsShowSource: true,
   sysInfoShowRtt: true,

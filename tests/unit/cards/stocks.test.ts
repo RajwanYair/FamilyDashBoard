@@ -2264,3 +2264,49 @@ describe("Stocks — marketStatusLabel", () => {
     expect(label.length).toBeGreaterThan(0);
   });
 });
+
+// ── Sprint 49: stocksGroupBySector config gate ────────────────────────────
+
+describe("Stocks — stocksGroupBySector config gate (Sprint 49)", () => {
+  function buildContainer(): void {
+    document.body.innerHTML = `<div id="stocks-body"></div>`;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("shows 2 sector headers when stocksGroupBySector=true", () => {
+    buildContainer();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ stocksGroupBySector: true, configVersion: 3 }),
+    );
+    renderStocksShell();
+    const hdrs = document.querySelectorAll(".stk-sector-hdr");
+    expect(hdrs.length).toBe(2);
+  });
+
+  it("shows 0 sector headers when stocksGroupBySector=false", () => {
+    buildContainer();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ stocksGroupBySector: false, configVersion: 3 }),
+    );
+    renderStocksShell();
+    const hdrs = document.querySelectorAll(".stk-sector-hdr");
+    expect(hdrs.length).toBe(0);
+  });
+
+  it("still renders all stock rows when stocksGroupBySector=false", () => {
+    buildContainer();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ stocksGroupBySector: false, configVersion: 3 }),
+    );
+    renderStocksShell();
+    const rows = document.querySelectorAll(".stk");
+    expect(rows.length).toBe(STOCK_SYMBOLS.length);
+  });
+});

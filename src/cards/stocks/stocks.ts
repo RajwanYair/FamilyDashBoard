@@ -345,12 +345,14 @@ export function renderStocksShell(): void {
   );
 
   const fragment = document.createDocumentFragment();
-  fragment.appendChild(makeSectorHeader("📊 מדדים"));
+  // Sprint 49: gate sector headers on cfg.stocksGroupBySector
+  const cfg = loadConfig();
+  if (cfg.stocksGroupBySector) fragment.appendChild(makeSectorHeader("📊 מדדים"));
   INDEX_SYMBOLS.forEach((s) => {
     const el = makeStockRow(s);
     if (el) fragment.appendChild(el);
   });
-  fragment.appendChild(makeSectorHeader("📈 מניות"));
+  if (cfg.stocksGroupBySector) fragment.appendChild(makeSectorHeader("📈 מניות"));
   stockSymbols.forEach((s) => {
     const el = makeStockRow(s);
     if (el) fragment.appendChild(el);

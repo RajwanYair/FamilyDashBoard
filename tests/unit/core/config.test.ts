@@ -467,7 +467,7 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
     expect(result.weatherShowHourly).toBe(true);
     expect(result.weatherShowWind).toBe(true);
     expect(result.weatherShowSunrise).toBe(true);
-    expect(result.stocksGroupBySector).toBe(false);
+    expect(result.stocksGroupBySector).toBe(true);
     expect(result.tasksShowCategories).toBe(true);
     expect(result.newsShowSource).toBe(true);
     expect(result.sysInfoShowRtt).toBe(true);
@@ -495,7 +495,7 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
     expect(DEFAULT_CONFIG.weatherShowHourly).toBe(true);
     expect(DEFAULT_CONFIG.weatherShowWind).toBe(true);
     expect(DEFAULT_CONFIG.weatherShowSunrise).toBe(true);
-    expect(DEFAULT_CONFIG.stocksGroupBySector).toBe(false);
+    expect(DEFAULT_CONFIG.stocksGroupBySector).toBe(true);
     expect(DEFAULT_CONFIG.tasksShowCategories).toBe(true);
     expect(DEFAULT_CONFIG.newsShowSource).toBe(true);
     expect(DEFAULT_CONFIG.sysInfoShowRtt).toBe(true);
