@@ -11,7 +11,7 @@
 | -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
 | Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2027+ tests / 47 suites       |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2182+ tests / 51 suites       |
 | Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
 | API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
 | Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
@@ -192,7 +192,4 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5)
-15. **2027 tests / 47 suites / 0 failures** — coverage thresholds: 75% statements, 70% branches, 75% functions, 75% lines (v7.4)
-13. **Card CSS co-located** — each card and UI component imports its own CSS file; `sprints.css` for cross-cutting globals only (v7.5+)
-14. **Worker-first fetch** — `fetchViaWorker()` is the primary path for all API calls when `isWorkerEnabled()` (v7.5)
-15. **2027 tests / 47 suites / 0 failures** — coverage thresholds: 75% statements, 70% branches, 75% functions, 75% lines
+15. **2182 tests / 51 suites / 0 failures** — coverage thresholds: 75% statements, 70% branches, 75% functions, 75% lines (v7.4)

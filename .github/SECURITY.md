@@ -1,58 +1,68 @@
-<div align="center">
-
-# 🔒 Security Policy — FamilyDashBoard
-
-![Security](https://img.shields.io/badge/XSS-Protected-34d399?style=flat-square)
-![HTTPS](https://img.shields.io/badge/APIs-HTTPS_Only-60a5fa?style=flat-square)
-![No Secrets](https://img.shields.io/badge/API_Keys-None_Required-fbbf24?style=flat-square)
-
-</div>
-
-## Overview
-
-FamilyDashBoard is a client-side HTML dashboard that fetches data from public APIs. While it doesn't handle authentication or sensitive user data, it follows secure coding practices.
+# Security Policy
 
 ## Supported Versions
 
 | Version | Supported |
 |---------|-----------|
-| 4.5.x   | ✅ Yes    |
-| 4.4.x   | ✅ Yes    |
-| < 4.4   | ❌ No     |
+| 6.x (current) | ✅ Active |
+| 5.x (BestDashBoard.html) | ❌ End of life |
 
-## Reporting Vulnerabilities
+## Reporting a Vulnerability
 
-**Please report security vulnerabilities privately** via [GitHub Security Advisories](https://github.com/RajwanYair/FamilyDashBoard/security/advisories/new).
+**Do not open a public GitHub issue for security vulnerabilities.**
 
-Alternatively, email [yair.rajwan@gmail.com](mailto:yair.rajwan@gmail.com) with details.
+Please report security issues privately via:
+[GitHub Security Advisories](https://github.com/rajwanyair/FamilyDashBoard/security/advisories/new)
 
-**Do NOT** open public issues for security vulnerabilities.
+Include:
 
-## Security Best Practices
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (optional)
 
-### For Contributors
+You will receive a response within 7 days. If the issue is confirmed, a fix will be published and you will be credited (unless you prefer anonymity).
 
-- **No hardcoded API keys** — API keys should never appear in source code
-- **No `eval()`** — Never use eval() with external data
-- **Sanitize external data** — Use `textContent` instead of `innerHTML` for API content
-- **No inline event handlers** — Use `addEventListener` in JavaScript
-- **CORS proxies** — Only use trusted proxy services (allorigins.win, codetabs.com, corsproxy.io)
-- **CSP-safe patterns** — Avoid patterns that would break Content Security Policy
+## Security Design
 
-### External API Safety
+### Architecture Boundaries
 
-- All API calls use HTTPS
-- API responses are cached client-side only (no server-side storage)
-- No personal data is sent to APIs beyond location coordinates (Jerusalem lat/lon)
-- Calendar embed uses Google's sandboxed iframe
-- Red Alerts (tzevaadom.co.il) data is public Home Front Command information
-- CORS proxies (allorigins.win, codetabs.com, corsproxy.io) are trusted third-party services
+- **Frontend** (GitHub Pages): Static files — no server-side execution, no secrets
+- **API Proxy** (Cloudflare Worker): Validates all inputs, allowlists upstream origins, no secrets stored client-side
 
-## Security Checklist
+### Content Security Policy
 
-- [ ] No `eval()`, `Function()`, or `setTimeout(string)`
-- [ ] No `innerHTML` with unsanitized external data
-- [ ] No hardcoded credentials or API keys
-- [ ] HTTPS-only API endpoints
-- [ ] No `document.write()` usage
-- [ ] External links use `rel="noopener noreferrer"` if clickable
+The dashboard enforces a strict CSP in `src/index.html`:
+
+```http
+default-src 'self'
+script-src 'self'
+style-src 'self' 'unsafe-inline'
+img-src 'self' https: data:
+connect-src 'self' https:
+font-src 'self'
+frame-src https://calendar.google.com
+base-uri 'self'
+form-action 'none'
+```
+
+### Cloudflare Worker Security Controls
+
+- Input validation on all parameters (coords, symbols, URLs)
+- SSRF prevention: ICS calendar URL allowlist (`ALLOWED_CALENDAR_ORIGINS`)
+- CORS locked to `https://rajwanyair.github.io` only
+- Security headers on all responses: `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`
+
+### Data Handling
+
+- No user authentication — the dashboard is a private family display
+- Configuration stored in `localStorage` only (never transmitted)
+- No cookies, no tracking, no analytics
+- All API calls are read-only; no user data is sent to any upstream service
+
+### Dependencies
+
+This project has **zero runtime npm dependencies**. All packages are development-only (build tools, test frameworks, linters). Dependency security is enforced by:
+
+- `npm audit --audit-level=high` on every CI run
+- Dependabot automated PRs for version updates

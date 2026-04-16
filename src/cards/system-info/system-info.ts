@@ -13,6 +13,7 @@
  */
 
 import { diagLog } from "../../core/diag";
+import { loadConfig } from "../../core/config";
 import type { CardDefinition } from "../../types/card";
 
 // ── Types for non-standard browser APIs ──────────────────────────────────
@@ -173,6 +174,12 @@ export async function renderSystemInfo(): Promise<void> {
   }
 
   // F9 (v7.3): Network RTT tile — prefer Connection API, fallback to navigation timing
+  const rttTile =
+    (document
+      .getElementById("sysinfo-rtt")
+      ?.closest(".sysinfo-tile") as HTMLElement) ?? null;
+  if (rttTile)
+    rttTile.style.display = loadConfig().sysInfoShowRtt ? "" : "none";
   const rttConn = (navigator as NavigatorWithExtras).connection;
   if (rttConn?.rtt !== undefined && rttConn.rtt > 0) {
     setText("sysinfo-rtt", `${rttConn.rtt}ms`);

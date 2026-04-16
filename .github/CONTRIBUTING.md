@@ -1,137 +1,177 @@
-<div align="center">
+# Contributing to FamilyDashBoard
 
-# 🤝 Contributing to FamilyDashBoard
+> TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL
 
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-34d399?style=flat-square)
-![HTML Only](https://img.shields.io/badge/Single_File-HTML-E34F26?style=flat-square&logo=html5&logoColor=white)
-![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-60a5fa?style=flat-square)
+Thank you for your interest in contributing! This guide covers everything you need to get started.
 
-</div>
+---
 
-## Code of Conduct
+## Table of Contents
 
-This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Be respectful, inclusive, and constructive.
+1. [Prerequisites](#prerequisites)
+2. [Setup](#setup)
+3. [Development Workflow](#development-workflow)
+4. [Testing](#testing)
+5. [Code Style](#code-style)
+6. [Submitting a Pull Request](#submitting-a-pull-request)
+7. [Architecture Overview](#architecture-overview)
+8. [Key Rules](#key-rules)
 
-## Questions?
+---
 
-For questions, ideas, or help, please use [GitHub Discussions](https://github.com/RajwanYair/FamilyDashBoard/discussions) instead of opening issues.
+## Prerequisites
 
-## Getting Started
+- **Node.js** 20+ with npm
+- **PowerShell** (Windows) or bash-compatible shell (Linux/macOS)
+- Git
 
-1. Fork the repository
-2. Clone your fork
-3. Open `BestDashBoard.html` in a browser — that's it, no build step needed
-4. Use VS Code with Live Server extension for hot reload during development
+---
 
-## Development Setup
+## Setup
 
-> **Single install point** — All dev tools (Vite, Vitest, ESLint, TypeScript) live in
-> `MyScripts/package.json` (one level up). `FamilyDashBoard/package.json` carries only
-> project metadata and `scripts`; it has **no `devDependencies`** and **no `package-lock.json`**.
-> Node's module resolution walks up the directory tree to find tools automatically.
+All dev tools live in the **parent** `MyScripts/` directory, not in this project.
 
-```bash
-# One-time setup (from the parent directory — do this once for ALL sub-projects)
-cd MyScripts && npm install
+```powershell
+# From the parent MyScripts/ directory:
+npm install
 
-# Daily workflow (from FamilyDashBoard/)
-npx vitest run          # 1240+ tests
-npx eslint src tests --max-warnings 0
+# Then you can run commands from FamilyDashBoard/:
+cd FamilyDashBoard
+npx vite          # dev server at http://localhost:5173
+```
+
+> **Important**: Never run `npm install` inside `FamilyDashBoard/`. There is no local `package-lock.json` — this is intentional. All dependencies resolve from `MyScripts/node_modules/`.
+
+---
+
+## Development Workflow
+
+```powershell
+# Type-check
 npx tsc --noEmit
+
+# Lint (must be 0 errors, 0 warnings)
+npx eslint src tests --max-warnings 0
+
+# Markdown lint
+npx markdownlint-cli2 "**/*.md"
+
+# Run all tests
+npx vitest run
+
+# Run tests with coverage
+npx vitest run --coverage
+
+# Build for GitHub Pages
 npx vite build
+
+# Build for local file:// access
+npx vite build --mode local
+
+# Run everything (full quality gate)
+npm run check
 ```
 
-> **Never run `npm install` inside `FamilyDashBoard/`.**
-> If you accidentally do so, delete `node_modules/` and `package-lock.json` here
-> and re-run `npm install` from `MyScripts/` instead.
-
-### Recommended VS Code Extensions
-
-Install via the workspace recommendations (`.vscode/extensions.json`):
-
-- **Live Server** — local dev server with auto-reload
-- **HTMLHint** — HTML linting
-- **Prettier** — code formatting
-- **GitHub Copilot** — AI assistance
-
-### Project Structure
-
-```text
-MyScripts/                      # Parent workspace — shared node_modules
-└── FamilyDashBoard/
-    ├── src/                    # TypeScript v6 modular source (Vite build)
-    ├── tests/unit/             # Vitest — 1240+ tests / 33 suites
-    ├── BestDashBoard.html      # Legacy v5 dashboard (HTML + CSS + JS)
-    ├── sw.js                   # ServiceWorker v6
-    ├── index.html              # Vite entry point
-    ├── .github/                # CI, agents, instructions, skills, prompts
-    └── .vscode/                # VS Code workspace + lint config
-```
-
-## Coding Standards
-
-### HTML/CSS
-
-- 2-space indentation
-- Use CSS custom properties (`--accent`, `--bg-card`, etc.) — never hardcode colors
-- RTL layout (`dir="rtl"`, `lang="he"`)
-- Responsive design: test at 1920x1080 (TV), 1024px (tablet), 768px (phone)
-
-### JavaScript
-
-- Modern ES2020+ (async/await, optional chaining, nullish coalescing)
-- Cache DOM references in the `el` object
-- Wrap API calls in try/catch with proxy fallback
-- Use `cSet()` / `cGet()` / `cGetStale()` for every API response
-- Use `textContent` not `innerHTML` for external data (XSS prevention)
-
-### Commit Messages
-
-Use conventional commits:
-
-```text
-feat: add Shabbat candle lighting times
-fix: stock chart not rendering on Firefox
-style: increase forecast card font size
-docs: update README with new section
-ci: add Lighthouse performance audit
-```
-
-## Pull Request Process
-
-1. Create a feature branch from `main`
-2. Make changes following the coding standards
-3. Run linters and tests (see below)
-4. Test in Chrome + Firefox, full-screen mode
-5. Verify RTL layout is intact
-6. Open a PR using the template
-7. Wait for CI to pass
-
-## Linting
-
-All tools resolve from the parent `MyScripts/node_modules/`:
-
-```bash
-npx eslint src tests --max-warnings 0   # 0 errors, 0 warnings
-npx tsc --noEmit                         # TypeScript strict check
-```
+---
 
 ## Testing
 
-1240+ tests / 33 suites via Vitest (happy-dom):
+Tests live in `tests/unit/` — one file per source module. We use Vitest 4 with `happy-dom`.
 
-```bash
-npx vitest run                  # all tests
-npx vitest run --coverage       # with coverage report
+```powershell
+# Run all tests
+npx vitest run
+
+# Watch mode during development
+npx vitest
+
+# Run a specific test file
+npx vitest run tests/unit/core/fetch.test.ts
+
+# Coverage report
+npx vitest run --coverage
 ```
 
-Requires **Node.js 22+**. All tests must pass with 0 failures before merging.
+**Thresholds**: statements 75%, branches 70%, functions 75%, lines 75%.
 
-## What NOT To Do
+**Rules for new tests**:
 
-- Do NOT add external JS/CSS libraries or CDNs
-- Do NOT add `devDependencies` here — add to `MyScripts/package.json`
-- Do NOT hardcode API keys or colors (use CSS custom properties)
-- Do NOT break the RTL layout
-- Do NOT remove the auto-refresh mechanism
-- Do NOT use `innerHTML` with unsanitized external data
+- Place in `tests/unit/<same-path-as-source>/`
+- Use `vi.stubGlobal` / `vi.fn()` for mocks — not global mutation
+- Clean up with `afterEach(() => { vi.restoreAllMocks(); })`
+- Never import `localStorage` — stub it via `vi.stubGlobal`
+
+---
+
+## Code Style
+
+Follow all rules in `.github/copilot-instructions.md`. Key points:
+
+1. **No external runtime dependencies** — no npm packages in `src/` at runtime
+2. **No raw `innerHTML`** — use `textContent`, or `createTextNode()` for user data
+3. **No hardcoded colors** — always `var(--token-name)`
+4. **Cache all API data** — `cSet(key, data)` after every successful fetch; check `cGet(key, TTL)` first
+5. **Proxy fallback** — use `fetchJSON()` or `fetchJSONWithWorker()`, never bare `fetch()`
+6. **`safeLoad()` wrappers** — every card loader is wrapped with `safeLoad()`
+7. **`if (!_pageVisible) return`** — first line of every async card loader
+8. **DOM refs** — all `getElementById` calls go in `el` objects, not repeated inline
+9. **CSS layers** — new styles go in `@layer components`, new animations in `@layer animations`
+10. **No `eslint-disable`**, no `@ts-ignore`
+
+---
+
+## Submitting a Pull Request
+
+1. Fork the repository and create a feature branch from `main`
+2. Make your changes, following the code style above
+3. Run the full quality gate: `npm run check` — must be clean
+4. Commit with conventional format: `feat(scope): description` / `fix(scope): description`
+5. Open a PR targeting `main`
+
+**PR checklist**:
+
+- [ ] `npm run check` passes with 0 errors
+- [ ] New code has matching tests
+- [ ] No new `eslint-disable` or `@ts-ignore`
+- [ ] No hardcoded colors or strings that belong in config
+- [ ] CSS added to the correct `@layer`
+
+---
+
+## Architecture Overview
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full diagram. Quick summary:
+
+```text
+src/
+  main.ts             Entry point — registers cards, starts intervals
+  core/               Cache, config, fetch, sync, diagnostics
+  cards/              11 cards — each folder has a loader + optional CSS
+  ui/                 Overlays, header, keyboard, theme, layout
+  styles/             CSS @layer files (tokens → themes → base → layout → components → animations)
+  types/              TypeScript interfaces shared across modules
+worker/
+  src/index.ts        Cloudflare Worker router
+  src/routes/         data.ts (weather/currency/hebcal) + feeds.ts (stocks/news/alerts/calendar)
+  src/middleware/     cors.ts, rate-limit.ts, log.ts
+  src/utils/          response.ts, allowlists.ts, validation.ts
+tests/
+  unit/               Vitest suites — one per source module
+```
+
+**Cards (11 total)**:
+`calendar` · `countdown` · `currency` · `hebrew-cal` · `motivation` · `news` · `stocks` · `tasks` · `system-info` · `weather` · `alerts`
+
+---
+
+## Key Rules
+
+| Wrong | Correct |
+|-------|---------|
+| `loadStocks()` | `loadAllStocks()` |
+| `_useFahrenheit` | `_tempUnit` (`'C'`/`'F'`) |
+| `getCachedData()` | `cGet(key, TTL)` |
+| `setCachedData()` | `cSet(key, data)` |
+| `setSyncStatus()` | `setSync(id, state)` |
+| `innerHTML = userInput` | `textContent = userInput` |
+| bare `fetch()` | `fetchJSON()` or `fetchJSONWithWorker()` |

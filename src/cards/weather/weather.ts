@@ -145,6 +145,8 @@ const el = {
   wxGust: null as HTMLElement | null,
   wxPrecip: null as HTMLElement | null,
   wxHourlyStrip: null as HTMLElement | null,
+  wxWindTile: null as HTMLElement | null,
+  wxRiseTile: null as HTMLElement | null,
 };
 
 export function cacheDom(): void {
@@ -167,6 +169,8 @@ export function cacheDom(): void {
   el.wxGust = document.getElementById("wx-gust");
   el.wxPrecip = document.getElementById("wx-precip");
   el.wxHourlyStrip = document.getElementById("wx-hourly-strip");
+  el.wxWindTile = (el.wxWind?.closest(".wx-detail") as HTMLElement) ?? null;
+  el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
 }
 
 function getTempUnit(): "C" | "F" {
@@ -326,6 +330,11 @@ async function fetchWeather(): Promise<WeatherResponse> {
 export function renderWeather(d: WeatherResponse): void {
   const cur = d.current;
   const tempC = Math.round(cur.temperature_2m);
+  const wCfg = loadConfig();
+  if (el.wxWindTile)
+    el.wxWindTile.style.display = wCfg.weatherShowWind ? "" : "none";
+  if (el.wxRiseTile)
+    el.wxRiseTile.style.display = wCfg.weatherShowSunrise ? "" : "none";
 
   if (el.topTemp) el.topTemp.textContent = toDisplayTemp(tempC);
   if (el.wxTemp) el.wxTemp.textContent = toDisplayTemp(tempC);
