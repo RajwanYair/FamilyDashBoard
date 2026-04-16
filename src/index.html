@@ -387,7 +387,7 @@
                 <div class="hebrew-date" id="hebrew-date" title="תאריך עברי — מתעדכן אוטומטית">טוען תאריך עברי...</div>
             </div>
             <div class="header-center">
-                <div class="clock" id="clock" title="לחץ ? או H לתפריט קיצורי מקלדת">00:00</div>
+                <div class="clock" id="clock" role="timer" aria-label="שעה" title="לחץ ? או H לתפריט קיצורי מקלדת">00:00</div>
                 <div class="greeting" id="greeting"></div>
                 <div class="time-progress-bars" aria-hidden="true">
                   <div class="progress-bar day-progress"><div class="progress-fill" id="day-bar" style="width:0%"></div></div>
@@ -476,7 +476,7 @@
                 <div id="wx-alert-banner"></div>
                 <!-- F148: Weekly weather summary -->
                 <div id="wx-week-summary"></div>
-                <div class="wx-forecast" id="wx-forecast">
+                <div class="wx-forecast" id="wx-forecast" aria-live="polite" aria-label="תחזית שבועית">
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
                   <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
@@ -566,7 +566,7 @@
             <section class="card" data-card-id="stocks" aria-label="Stocks">
             <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
               <div class="stocks-body">
-                <div class="stocks-scroll" id="stocks-body">
+                <div class="stocks-scroll" id="stocks-body" aria-live="polite" aria-label="נתוני מניות">
                   <!-- Stock rows are rendered dynamically by initStocksCard() in stocks.ts -->
                 </div>
               </div>

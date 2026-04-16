@@ -12,9 +12,10 @@ export type SyncState = "ok" | "loading" | "error";
 const syncDots = new Map<string, HTMLElement>();
 
 /**
- * Register a sync dot element.
+ * Register a sync dot element. Sets role="status" for accessibility.
  */
 export function registerSyncDot(name: string, el: HTMLElement): void {
+  el.setAttribute("role", "status");
   syncDots.set(name, el);
 }
 
@@ -26,6 +27,12 @@ export function setSync(name: string, state: SyncState): void {
   if (!dot) return;
   dot.className = "sync-dot";
   if (state !== "ok") dot.classList.add(state);
+  const labels: Record<SyncState, string> = {
+    ok: "סנכרון תקין",
+    loading: "טוען...",
+    error: "שגיאת סנכרון",
+  };
+  dot.setAttribute("aria-label", labels[state]);
 }
 
 /**

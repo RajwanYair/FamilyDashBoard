@@ -162,10 +162,16 @@ export function getCollapsedCards(): Set<string> {
 export function initCardCollapse(): void {
   const collapsed = loadCollapsedCards();
 
-  // Restore persisted state
+  // Restore persisted state and set initial aria-expanded
   document.querySelectorAll<HTMLElement>(".card").forEach((card) => {
     const id = (card.id || card.querySelector("[id]")?.id) ?? "";
-    if (id && collapsed.has(id)) card.classList.add("collapsed");
+    const btn = card.querySelector<HTMLElement>(".card-collapse-btn");
+    if (id && collapsed.has(id)) {
+      card.classList.add("collapsed");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    } else if (btn) {
+      btn.setAttribute("aria-expanded", "true");
+    }
   });
 
   document.querySelectorAll<HTMLElement>(".card-collapse-btn").forEach((btn) => {
@@ -178,6 +184,7 @@ export function initCardCollapse(): void {
         card.classList.toggle("collapsed");
         const isNowCollapsed = card.classList.contains("collapsed");
         btn.textContent = isNowCollapsed ? "▶" : "▼";
+        btn.setAttribute("aria-expanded", String(!isNowCollapsed));
         const cardId = (card.id || card.querySelector("[id]")?.id) ?? "";
         if (cardId) {
           const set = loadCollapsedCards();
