@@ -137,6 +137,18 @@ export function renderTasksCard(): void {
       const fp = fingerprint(item);
       const row = document.createElement("div");
       row.className = "tasks-row" + (doneMap[fp] ? " done" : "");
+      row.tabIndex = 0;
+      row.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "ArrowDown") {
+          const next = row.nextElementSibling as HTMLElement | null;
+          next?.focus();
+          e.preventDefault();
+        } else if (e.key === "ArrowUp") {
+          const prev = row.previousElementSibling as HTMLElement | null;
+          prev?.focus();
+          e.preventDefault();
+        }
+      });
 
       const cb = document.createElement("input");
       cb.type = "checkbox";

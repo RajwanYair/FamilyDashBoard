@@ -35,6 +35,10 @@
 /* F138: Calendar conflict indicator */
 .cal-event.has-conflict .cal-event-title::before { content: '⚠ '; color: var(--warning); font-size: 0.8em; }
 
+/* event-soon: upcoming within 60 min */
+.cal-event.event-soon { background: rgba(251, 191, 36, 0.10); border-right-color: #fbbf24 !important; }
+.cal-event.event-soon .cal-event-time { color: #fbbf24; font-weight: 600; }
+
 /* F154: Calendar today-strip */
 #cal-today-strip { display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 6px; min-height: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
 #cal-today-strip:empty { display: none; }

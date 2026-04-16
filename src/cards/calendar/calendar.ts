@@ -151,8 +151,16 @@ export function detectCalCategory(summary: string): string {
 // ── Rendering ──
 
 function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
+  const now = Date.now();
+  const msTilStart = ev.start.getTime() - now;
+  const isSoon =
+    !ev.allDay && msTilStart > 0 && msTilStart < 60 * 60 * 1000;
+
   const row = document.createElement("div");
-  row.className = "cal-event" + (isConflict ? " has-conflict" : "");
+  row.className =
+    "cal-event" +
+    (isConflict ? " has-conflict" : "") +
+    (isSoon ? " event-soon" : "");
   if (ev.icsIndex) row.dataset["ics"] = String(ev.icsIndex);
 
   const timeEl = document.createElement("div");

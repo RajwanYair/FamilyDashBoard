@@ -484,6 +484,7 @@ async function loadStockSingle(sym: string): Promise<boolean> {
     if (data.chart?.result?.[0]) {
       cSet(key, data);
       renderStock(blk, data, sym);
+      delete (blk as HTMLElement).dataset["stale"];
       diagLog(`[stocks] ${sym} OK`);
       return true;
     }
@@ -516,9 +517,13 @@ async function loadAllStocks(): Promise<void> {
     const fresh = cGet<YahooChartResponse>(`stk-${sym}`, ttl);
     if (fresh) {
       renderStock(blk, fresh, sym);
+      delete (blk as HTMLElement).dataset["stale"];
     } else {
       const stale = cGetStale<YahooChartResponse>(`stk-${sym}`);
-      if (stale) renderStock(blk, stale, sym);
+      if (stale) {
+        renderStock(blk, stale, sym);
+        (blk as HTMLElement).dataset["stale"] = "true";
+      }
       uncached.push(sym);
     }
   }

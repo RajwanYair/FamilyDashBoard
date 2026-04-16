@@ -93,6 +93,8 @@ body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition:
 .zman-item { display: flex; flex-direction: column; align-items: center; gap: 1px; background: var(--bg-card-inner); border-radius: 5px; padding: 3px 2px; min-width: 0; }
 .zman-name { font-size: 0.52em; color: var(--text-muted); white-space: nowrap; text-align: center; }
 .zman-time { font-size: 0.66em; font-weight: 700; color: var(--accent-bright); font-variant-numeric: tabular-nums; }
+.zman-item.zman-next { background: rgba(251, 191, 36, 0.15); outline: 1px solid #fbbf24; }
+.zman-item.zman-next .zman-time { color: #fbbf24; }
 
 /* ── Birthday Notification ── */
 .hc-birthday { font-size: 0.68em; color: var(--warning); text-align: center; padding: 2px 4px; font-weight: 600; }

@@ -643,10 +643,14 @@ export function renderZmanim(times: Record<string, string>): void {
   const section =
     els.zmanimSection ?? document.getElementById("zmanim-section");
   if (!grid || !section) return;
+  const now = Date.now();
   const frag = document.createDocumentFragment();
+  let nextItem: HTMLElement | null = null;
+  let nextTime = Infinity;
   for (const [key, label] of ZMANIM_DISPLAY) {
     const raw = times[key];
     if (!raw) continue;
+    const t = new Date(raw).getTime();
     const item = document.createElement("div");
     item.className = "zman-item";
     const nameEl = document.createElement("div");
@@ -662,7 +666,12 @@ export function renderZmanim(times: Record<string, string>): void {
     item.appendChild(nameEl);
     item.appendChild(timeEl);
     frag.appendChild(item);
+    if (t > now && t < nextTime) {
+      nextTime = t;
+      nextItem = item;
+    }
   }
+  if (nextItem) nextItem.classList.add("zman-next");
   grid.innerHTML = "";
   grid.appendChild(frag);
   section.style.display = "";
