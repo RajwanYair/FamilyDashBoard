@@ -79,16 +79,16 @@
       <div id="config-panel">
         <h2>⚙️ הגדרות</h2>
         <!-- F119: Config panel section tabs -->
-        <div class="cfg-tabs">
-          <button type="button" class="cfg-tab active" data-tab="display" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
-          <button type="button" class="cfg-tab" data-tab="calendar" title="הגדרות לוח: קישור ICS, יום הולדת, זמנים">📅 לוח Calendar</button>
-          <button type="button" class="cfg-tab" data-tab="feeds" title="הגדרות עדכונים: ערים, מניות, חדשות">📰 עדכונים Feeds</button>
-          <button type="button" class="cfg-tab" data-tab="alerts-tab" title="הגדרות התראות: צבע אדום, התראות מחירי מניה">🚨 התראות Alerts</button>
-          <button type="button" class="cfg-tab" data-tab="cards" title="הצג/הסתר כרטיסיות ✓ — קביעת גודל כרטיסיה">🃏 כרטיסיות Cards</button>
-          <button type="button" class="cfg-tab" data-tab="advanced" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
+        <div class="cfg-tabs" role="tablist" aria-label="לשוניות הגדרות">
+          <button type="button" class="cfg-tab active" data-tab="display" role="tab" aria-selected="true" aria-controls="cfg-section-display" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
+          <button type="button" class="cfg-tab" data-tab="calendar" role="tab" aria-selected="false" aria-controls="cfg-section-calendar" title="הגדרות לוח: קישור ICS, יום הולדת, זמנים">📅 לוח Calendar</button>
+          <button type="button" class="cfg-tab" data-tab="feeds" role="tab" aria-selected="false" aria-controls="cfg-section-feeds" title="הגדרות עדכונים: ערים, מניות, חדשות">📰 עדכונים Feeds</button>
+          <button type="button" class="cfg-tab" data-tab="alerts-tab" role="tab" aria-selected="false" aria-controls="cfg-section-alerts-tab" title="הגדרות התראות: צבע אדום, התראות מחירי מניה">🚨 התראות Alerts</button>
+          <button type="button" class="cfg-tab" data-tab="cards" role="tab" aria-selected="false" aria-controls="cfg-section-cards" title="הצג/הסתר כרטיסיות ✓ — קביעת גודל כרטיסיה">🃏 כרטיסיות Cards</button>
+          <button type="button" class="cfg-tab" data-tab="advanced" role="tab" aria-selected="false" aria-controls="cfg-section-advanced" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
         </div>
         <!-- Tab: Display -->
-        <div class="cfg-section active" data-tab="display">
+        <div class="cfg-section active" id="cfg-section-display" role="tabpanel" aria-labelledby="" data-tab="display">
           <div class="cfg-row">
             <span class="cfg-label">�️ מצב מסך</span>
             <select id="screen-mode-select" class="cfg-input" title="בחר מצב תצוגה — TV = קבוע, Tablet = קטן, Phone = גלילה">
@@ -209,7 +209,7 @@
           </div>
         </div>
         <!-- Tab: Calendar -->
-        <div class="cfg-section" data-tab="calendar">
+        <div class="cfg-section" id="cfg-section-calendar" role="tabpanel" aria-labelledby="" data-tab="calendar">
           <div class="cfg-row">
             <span class="cfg-label">🎂 ימי הולדת (כל ערך בשורה: שם,חודש,יום)</span>
             <textarea class="cfg-input" id="cfg-birthday" rows="3" placeholder="שרה,3,18&#10;יוסי,11,4"></textarea>
@@ -232,7 +232,7 @@
           </div>
         </div>
         <!-- Tab: Feeds -->
-        <div class="cfg-section" data-tab="feeds">
+        <div class="cfg-section" id="cfg-section-feeds" role="tabpanel" aria-labelledby="" data-tab="feeds">
           <div class="cfg-row">
             <span class="cfg-label">📢 הודעה מיוחדת בטיקר</span>
             <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." >
@@ -260,7 +260,7 @@
           </div>
         </div>
         <!-- Tab: Alerts -->
-        <div class="cfg-section" data-tab="alerts-tab">
+        <div class="cfg-section" id="cfg-section-alerts-tab" role="tabpanel" aria-labelledby="" data-tab="alerts-tab">
           <div class="cfg-row">
             <span class="cfg-label">🚨 הצגת התראות אדום</span>
             <select id="alerts-toggle" class="cfg-input" title="הפעל או כבה את כרטיס התראות אדום">
@@ -292,7 +292,7 @@
           </div>
         </div>
         <!-- Tab: Cards visibility + size -->
-        <div class="cfg-section" data-tab="cards">
+        <div class="cfg-section" id="cfg-section-cards" role="tabpanel" aria-labelledby="" data-tab="cards">
           <p style="font-size:0.75em;color:var(--text-muted);margin:0 0 6px">הסתר/הצג כרטיסיות ובחר גודל. גרור כרטיסייה בלוח הראשי לשינוי סדר/עמודה. השינויים נכנסים לתוקף לאחר שמירה.</p>
           <div id="cfg-cards-list" class="cfg-cards-list"></div>
           <div class="cfg-row" style="margin-top:8px">
@@ -300,7 +300,7 @@
           </div>
         </div>
         <!-- Tab: Advanced -->
-        <div class="cfg-section" data-tab="advanced">
+        <div class="cfg-section" id="cfg-section-advanced" role="tabpanel" aria-labelledby="" data-tab="advanced">
           <div class="cfg-row">
             <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
             <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" >
@@ -415,7 +415,7 @@
         <div class="diag-log" id="diag-log"></div>
     </dialog>
     <!-- Feature 33: Gear button (bottom-left corner) -->
-    <button type="button" id="cfg-gear-btn" title="הגדרות (S)">⚙️</button>
+    <button type="button" id="cfg-gear-btn" aria-label="פתח הגדרות" title="הגדרות (S)">⚙️</button>
 
         <div class="container">
         <!-- ── Daily Halacha Ticker ── -->
@@ -471,7 +471,7 @@
                 <!-- Feature 103: News keyword search filter -->
                 <div class="news-search-wrap" id="news-search-wrap">
                   <input id="news-search" type="text" placeholder="🔍 חפש בחדשות..." autocomplete="off" >
-                  <button type="button" id="news-search-clear" title="נקה חיפוש">✕</button>
+                  <button type="button" id="news-search-clear" aria-label="נקה חיפוש" title="נקה חיפוש">✕</button>
                   <span id="news-search-count"></span>
                 </div>
                 <div class="news-ticker" id="news-ticker" aria-live="polite"></div>

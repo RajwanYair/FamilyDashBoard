@@ -9,7 +9,6 @@ import {
   SW_MSG_SKIP_WAITING,
   SW_MSG_VERSION_ACTIVATED,
   isVersionActivatedMsg,
-  postMessageToSW,
 } from "./sw-constants";
 
 let swRegistration: ServiceWorkerRegistration | null = null;
@@ -109,7 +108,6 @@ export function swSkipWaiting(): void {
   const waiting = swRegistration?.waiting;
   if (!waiting) return;
   waiting.postMessage({ type: SW_MSG_SKIP_WAITING });
-  postMessageToSW({ type: SW_MSG_SKIP_WAITING });
 }
 
 /**

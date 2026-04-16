@@ -145,3 +145,42 @@ describe("Sync Indicators — advanced", () => {
     expect(dotA.classList.contains("error")).toBe(false);
   });
 });
+
+// ── Sprint 45: aria-busy on parent card ──────────────────────────────────────
+describe("Sync — aria-busy on parent card (Sprint 45)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div class="card">
+        <div id="sync-a45"></div>
+      </div>`;
+  });
+
+  it("sets aria-busy=true on parent card when loading", () => {
+    const dot = document.getElementById("sync-a45")!;
+    registerSyncDot("a45", dot);
+    setSync("a45", "loading");
+    expect(dot.closest(".card")?.getAttribute("aria-busy")).toBe("true");
+  });
+
+  it("sets aria-busy=false on parent card when ok", () => {
+    const dot = document.getElementById("sync-a45")!;
+    registerSyncDot("a45", dot);
+    setSync("a45", "loading");
+    setSync("a45", "ok");
+    expect(dot.closest(".card")?.getAttribute("aria-busy")).toBe("false");
+  });
+
+  it("sets aria-busy=false on parent card when error", () => {
+    const dot = document.getElementById("sync-a45")!;
+    registerSyncDot("a45", dot);
+    setSync("a45", "error");
+    expect(dot.closest(".card")?.getAttribute("aria-busy")).toBe("false");
+  });
+
+  it("does not throw when sync dot has no .card ancestor", () => {
+    document.body.innerHTML = '<div id="sync-no-card"></div>';
+    const dot = document.getElementById("sync-no-card")!;
+    registerSyncDot("no-card", dot);
+    expect(() => setSync("no-card", "loading")).not.toThrow();
+  });
+});

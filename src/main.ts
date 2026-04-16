@@ -174,6 +174,15 @@ export function init(): void {
   initConfigPanel();
   initDiagOverlay();
 
+  // Sprint 45: Add aria-label to icon-only collapse buttons
+  document
+    .querySelectorAll<HTMLButtonElement>(".card-collapse-btn")
+    .forEach((btn) => {
+      if (!btn.getAttribute("aria-label")) {
+        btn.setAttribute("aria-label", "מזער/הרחב כרטיסית");
+      }
+    });
+
   // ── Additional keyboard shortcuts ──
   registerKey("s", "הגדרות", toggleConfigPanel);
   registerKey("n", "דימר לילה", toggleNightDim);

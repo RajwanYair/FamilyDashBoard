@@ -679,7 +679,43 @@ export function switchCfgTab(tab: string): void {
     s.classList.toggle("active", s.dataset["tab"] === tab);
   });
   document.querySelectorAll<HTMLElement>(".cfg-tab").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset["tab"] === tab);
+    const isActive = btn.dataset["tab"] === tab;
+    btn.classList.toggle("active", isActive);
+    btn.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+}
+
+// ── Tab arrow-key navigation (Sprint 45) ──
+function initTabKeyboard(): void {
+  const container = document.querySelector<HTMLElement>(".cfg-tabs");
+  if (!container) return;
+
+  container.addEventListener("keydown", (e: KeyboardEvent) => {
+    const tabs = Array.from(
+      container.querySelectorAll<HTMLButtonElement>(".cfg-tab"),
+    );
+    const current = tabs.indexOf(e.target as HTMLButtonElement);
+    if (current === -1) return;
+
+    let next = -1;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      next = (current + 1) % tabs.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      next = (current - 1 + tabs.length) % tabs.length;
+    } else if (e.key === "Home") {
+      next = 0;
+    } else if (e.key === "End") {
+      next = tabs.length - 1;
+    }
+
+    if (next !== -1) {
+      e.preventDefault();
+      const nextTab = tabs[next];
+      if (!nextTab) return;
+      nextTab.focus();
+      const tabName = nextTab.dataset["tab"];
+      if (tabName) switchCfgTab(tabName);
+    }
   });
 }
 
@@ -689,6 +725,9 @@ export function initConfigPanel(): void {
   document
     .getElementById("cfg-gear-btn")
     ?.addEventListener("click", toggleConfigPanel);
+
+  // Arrow-key navigation for config tabs (Sprint 45)
+  initTabKeyboard();
 
   // Close on overlay background click
   const ov = overlay();
