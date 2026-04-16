@@ -1997,3 +1997,97 @@ describe("Weather — precipSummaryLabel", () => {
     expect(precipSummaryLabel(100)).toBe("כנראה גשם");
   });
 });
+
+// ── Sprint 46: renderHourlyStrip ─────────────────────────────────────────────
+
+import { renderHourlyStrip } from "@/cards/weather/weather";
+
+function makeHourlyWeather(hourCount = 6): WeatherResponse {
+  const now = new Date();
+  const times: string[] = [];
+  const temps: number[] = [];
+  const probs: number[] = [];
+  const codes: number[] = [];
+  for (let i = 0; i < hourCount; i++) {
+    const d = new Date(now);
+    d.setHours(now.getHours() + i, 0, 0, 0);
+    times.push(d.toISOString().slice(0, 16)); // "2024-01-01T14:00"
+    temps.push(20 + i);
+    probs.push(i * 10);
+    codes.push(0);
+  }
+  const base = makeWeather();
+  return { ...base, hourly: { time: times, temperature_2m: temps, precipitation_probability: probs, weather_code: codes } };
+}
+
+describe("Weather — renderHourlyStrip (Sprint 46)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    localStorage.setItem("dash_v2_config", JSON.stringify({ weatherShowHourly: true }));
+    document.body.innerHTML = '<div id="wx-hourly-strip"></div>';
+    cacheDom();
+  });
+
+  it("renders 6 tiles when weatherShowHourly is true", () => {
+    renderHourlyStrip(makeHourlyWeather(10));
+    const strip = document.getElementById("wx-hourly-strip")!;
+    const tiles = strip.querySelectorAll(".wx-h-tile");
+    expect(tiles.length).toBe(6);
+  });
+
+  it("hides the strip when weatherShowHourly is false", () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({ weatherShowHourly: false, configVersion: 3 }));
+    renderHourlyStrip(makeHourlyWeather(10));
+    const strip = document.getElementById("wx-hourly-strip")!;
+    expect(strip.querySelector(".wx-h-tile")).toBeNull();
+  });
+
+  it("renders time labels on tiles", () => {
+    renderHourlyStrip(makeHourlyWeather(6));
+    const strip = document.getElementById("wx-hourly-strip")!;
+    const timeCells = strip.querySelectorAll(".wx-h-time");
+    expect(timeCells.length).toBeGreaterThan(0);
+    // Should have HH:MM format
+    expect(timeCells[0]?.textContent).toMatch(/^\d{2}:\d{2}$/);
+  });
+
+  it("renders temperature on each tile", () => {
+    renderHourlyStrip(makeHourlyWeather(6));
+    const strip = document.getElementById("wx-hourly-strip")!;
+    const tempCells = strip.querySelectorAll(".wx-h-temp");
+    expect(tempCells.length).toBe(6);
+    expect(tempCells[0]?.textContent).toMatch(/°/);
+  });
+
+  it("shows precip% only when > 0", () => {
+    const data = makeHourlyWeather(6);
+    data.hourly.precipitation_probability = [0, 30, 60, 0, 10, 80];
+    renderHourlyStrip(data);
+    const strip = document.getElementById("wx-hourly-strip")!;
+    const precipCells = strip.querySelectorAll(".wx-h-precip");
+    // Index 0 → 0% → empty text
+    expect(precipCells[0]?.textContent).toBe("");
+    // Index 1 → 30% → shows
+    expect(precipCells[1]?.textContent).toBe("30%");
+  });
+
+  it("adds wx-h-precip-high class when precip >= 50", () => {
+    const data = makeHourlyWeather(6);
+    data.hourly.precipitation_probability = [0, 0, 50, 70, 0, 0];
+    renderHourlyStrip(data);
+    const strip = document.getElementById("wx-hourly-strip")!;
+    const highCells = strip.querySelectorAll(".wx-h-precip-high");
+    expect(highCells.length).toBe(2);
+  });
+
+  it("does not throw when strip element is missing", () => {
+    document.body.innerHTML = "";
+    cacheDom();
+    expect(() => renderHourlyStrip(makeHourlyWeather(6))).not.toThrow();
+  });
+
+  it("does not throw with empty hourly data", () => {
+    const base = makeWeather();
+    expect(() => renderHourlyStrip(base)).not.toThrow();
+  });
+});

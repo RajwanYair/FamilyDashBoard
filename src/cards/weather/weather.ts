@@ -144,6 +144,7 @@ const el = {
   wxDew: null as HTMLElement | null,
   wxGust: null as HTMLElement | null,
   wxPrecip: null as HTMLElement | null,
+  wxHourlyStrip: null as HTMLElement | null,
 };
 
 export function cacheDom(): void {
@@ -165,6 +166,7 @@ export function cacheDom(): void {
   el.wxDew = document.getElementById("wx-dew");
   el.wxGust = document.getElementById("wx-gust");
   el.wxPrecip = document.getElementById("wx-precip");
+  el.wxHourlyStrip = document.getElementById("wx-hourly-strip");
 }
 
 function getTempUnit(): "C" | "F" {
@@ -249,6 +251,70 @@ export function precipSummaryLabel(pp: number): string {
 
 /** localStorage key for persisting hourly chart view mode. */
 const LS_CHART_MODE = "dash_wx_chart_mode";
+
+/**
+ * Sprint 46: Render the next-6-hours strip from hourly data.
+ * Finds the current hour index in d.hourly.time and renders 6 tiles.
+ * Respects cfg.weatherShowHourly.
+ */
+export function renderHourlyStrip(d: WeatherResponse): void {
+  const container = el.wxHourlyStrip ?? document.getElementById("wx-hourly-strip");
+  if (!container) return;
+
+  const cfg = loadConfig();
+  if (!cfg.weatherShowHourly) {
+    container.style.display = "none";
+    return;
+  }
+  container.style.display = "";
+
+  const { time, temperature_2m, precipitation_probability, weather_code } = d.hourly;
+  if (!time.length) return;
+
+  // Find current or next hour index
+  const nowHour = new Date().toISOString().slice(0, 13); // "2024-01-01T14"
+  let startIdx = time.findIndex((t) => t.slice(0, 13) >= nowHour);
+  if (startIdx === -1) startIdx = 0;
+
+  const frag = document.createDocumentFragment();
+  for (let i = startIdx; i < Math.min(startIdx + 6, time.length); i++) {
+    const tile = document.createElement("div");
+    tile.className = "wx-h-tile";
+
+    const t = time[i] ?? "";
+    const hourLabel = t.length >= 16 ? t.slice(11, 16) : "";
+    const temp = toDisplayTemp(Math.round(temperature_2m[i] ?? 0));
+    const pp = precipitation_probability[i] ?? 0;
+    const wc = weather_code[i] ?? 0;
+    const emoji = WX_EMOJI[wc] ?? "🌡️";
+
+    const timeEl = document.createElement("div");
+    timeEl.className = "wx-h-time";
+    timeEl.textContent = hourLabel;
+
+    const iconEl = document.createElement("div");
+    iconEl.className = "wx-h-icon";
+    iconEl.textContent = emoji;
+
+    const tempEl = document.createElement("div");
+    tempEl.className = "wx-h-temp";
+    tempEl.textContent = temp;
+
+    const precipEl = document.createElement("div");
+    precipEl.className = "wx-h-precip";
+    precipEl.textContent = pp > 0 ? `${pp}%` : "";
+    if (pp >= 50) precipEl.classList.add("wx-h-precip-high");
+
+    tile.appendChild(timeEl);
+    tile.appendChild(iconEl);
+    tile.appendChild(tempEl);
+    tile.appendChild(precipEl);
+    frag.appendChild(tile);
+  }
+
+  container.textContent = "";
+  container.appendChild(frag);
+}
 
 async function fetchWeather(): Promise<WeatherResponse> {
   const lat = _activeLat;
@@ -407,6 +473,9 @@ export function renderWeather(d: WeatherResponse): void {
       el.wxMinMax.textContent = `${toDisplayTemp(Math.round(dayMin))} / ${toDisplayTemp(Math.round(dayMax))}`;
     }
   }
+
+  // Sprint 46: Hourly strip (next 6 hours)
+  renderHourlyStrip(d);
 }
 
 const loadWeather = createCardLoader<WeatherResponse>(
