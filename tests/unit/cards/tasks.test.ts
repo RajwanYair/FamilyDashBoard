@@ -7,6 +7,13 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderTasksCard, markAllDone, resetDoneToday, removeDoneTasks } from "@/cards/tasks/tasks";
+import {
+  parseTaskPriority,
+  parseTaskDueDate,
+  isOverdue,
+  formatTaskDueDate,
+  taskCompletionRatio,
+} from "@/cards/tasks/tasks";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -924,5 +931,123 @@ describe("Tasks — person filter chips (F8 v7.3)", () => {
     expect(document.querySelectorAll(".tasks-cb").length).toBe(2);
     document.querySelector<HTMLButtonElement>(".tasks-person-chip")!.click();
     expect(document.querySelectorAll(".tasks-cb").length).toBe(3);
+  });
+});
+// ── Sprint 24: parseTaskPriority ─────────────────────────────────────────────
+
+describe("Tasks — parseTaskPriority", () => {
+  it("returns high priority for [H] prefix", () => {
+    const r = parseTaskPriority("[H] vaccuum");
+    expect(r.priority).toBe("high");
+    expect(r.cleanText).toBe("vaccuum");
+  });
+
+  it("returns medium priority for [M] prefix", () => {
+    const r = parseTaskPriority("[M]dishes");
+    expect(r.priority).toBe("medium");
+    expect(r.cleanText).toBe("dishes");
+  });
+
+  it("returns low priority for [L] prefix", () => {
+    const r = parseTaskPriority("[l] water plants");
+    expect(r.priority).toBe("low");
+    expect(r.cleanText).toBe("water plants");
+  });
+
+  it("returns none when no prefix", () => {
+    const r = parseTaskPriority("buy milk");
+    expect(r.priority).toBe("none");
+    expect(r.cleanText).toBe("buy milk");
+  });
+
+  it("handles [H] case-insensitively", () => {
+    expect(parseTaskPriority("[h] task").priority).toBe("high");
+  });
+});
+
+// ── Sprint 24: parseTaskDueDate ──────────────────────────────────────────────
+
+describe("Tasks — parseTaskDueDate", () => {
+  it("extracts @YYYY-MM-DD suffix", () => {
+    const r = parseTaskDueDate("buy milk @2025-12-31");
+    expect(r.dueDate).toBe("2025-12-31");
+    expect(r.cleanText).toBe("buy milk");
+  });
+
+  it("returns null dueDate when no suffix", () => {
+    const r = parseTaskDueDate("no date here");
+    expect(r.dueDate).toBeNull();
+    expect(r.cleanText).toBe("no date here");
+  });
+
+  it("handles suffix with no space before @", () => {
+    const r = parseTaskDueDate("task@2025-01-01");
+    expect(r.dueDate).toBe("2025-01-01");
+  });
+});
+
+// ── Sprint 24: isOverdue ─────────────────────────────────────────────────────
+
+describe("Tasks — isOverdue", () => {
+  it("returns true for a past date", () => {
+    expect(isOverdue("2000-01-01")).toBe(true);
+  });
+
+  it("returns false for a future date", () => {
+    expect(isOverdue("2099-12-31")).toBe(false);
+  });
+
+  it("returns false for an invalid string", () => {
+    expect(isOverdue("not-a-date")).toBe(false);
+  });
+});
+
+// ── Sprint 24: formatTaskDueDate ─────────────────────────────────────────────
+
+describe("Tasks — formatTaskDueDate", () => {
+  it("returns a formatted string for a valid date", () => {
+    const s = formatTaskDueDate("2024-06-15");
+    expect(typeof s).toBe("string");
+    expect(s.length).toBeGreaterThan(0);
+  });
+
+  it("returns the input unchanged for an invalid date", () => {
+    expect(formatTaskDueDate("bad-date")).toBe("bad-date");
+  });
+});
+
+// ── Sprint 24: taskCompletionRatio ────────────────────────────────────────────
+
+describe("Tasks — taskCompletionRatio", () => {
+  const chores = [
+    { person: "עמרי", chore: "מטאטא" },
+    { person: "עמרי", chore: "שואב אבק" },
+    { person: "ריבה", chore: "כביסה" },
+  ];
+
+  it("returns 0/3 with empty done map", () => {
+    const r = taskCompletionRatio(chores, {});
+    expect(r.total).toBe(3);
+    expect(r.done).toBe(0);
+    expect(r.pct).toBe(0);
+  });
+
+  it("returns 1/3 with one task done", () => {
+    const r = taskCompletionRatio(chores, { "עמרי::מטאטא": true });
+    expect(r.done).toBe(1);
+    expect(r.pct).toBe(33);
+  });
+
+  it("returns 3/3 with all done", () => {
+    const map = { "עמרי::מטאטא": true, "עמרי::שואב אבק": true, "ריבה::כביסה": true };
+    const r = taskCompletionRatio(chores, map);
+    expect(r.done).toBe(3);
+    expect(r.pct).toBe(100);
+  });
+
+  it("returns 0/0 with empty chores", () => {
+    const r = taskCompletionRatio([], {});
+    expect(r.total).toBe(0);
+    expect(r.pct).toBe(0);
   });
 });

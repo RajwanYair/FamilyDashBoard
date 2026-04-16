@@ -80,6 +80,76 @@ function loadChores(): ChoreItem[] {
   }
 }
 
+// ── Sprint 24: Priority + Due-date helpers ─────────────────────────────────
+
+/** Priority levels derived from a `[H]`/`[M]`/`[L]` prefix in the chore text. */
+export type TaskPriority = "high" | "medium" | "low" | "none";
+
+/** Priority color map — CSS variable names. */
+const PRIORITY_COLORS: Record<TaskPriority, string> = {
+  high:   "var(--danger,  #f87171)",
+  medium: "var(--warning, #fbbf24)",
+  low:    "var(--positive,#34d399)",
+  none:   "",
+};
+
+/**
+ * Extract the priority level from a chore text that starts with
+ * `[H]`, `[M]`, or `[L]` (case-insensitive).
+ * Returns `{ priority, cleanText }` where `cleanText` has the prefix removed.
+ */
+export function parseTaskPriority(chore: string): { priority: TaskPriority; cleanText: string } {
+  const m = /^\[([HMLhml])\]\s*/u.exec(chore);
+  if (!m) return { priority: "none", cleanText: chore };
+  const letter = m[1]?.toUpperCase();
+  const priority: TaskPriority =
+    letter === "H" ? "high" : letter === "M" ? "medium" : "low";
+  return { priority, cleanText: chore.slice(m[0].length) };
+}
+
+/**
+ * Extract the due date from a chore text that ends with `@YYYY-MM-DD`.
+ * Returns `{ dueDate, cleanText }`. `dueDate` is null when absent.
+ */
+export function parseTaskDueDate(chore: string): { dueDate: string | null; cleanText: string } {
+  const m = /\s*@(\d{4}-\d{2}-\d{2})$/u.exec(chore);
+  if (!m) return { dueDate: null, cleanText: chore };
+  return { dueDate: m[1] ?? null, cleanText: chore.slice(0, chore.length - m[0].length) };
+}
+
+/**
+ * Returns true when `dueDateStr` is before today (task is overdue).
+ */
+export function isOverdue(dueDateStr: string): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(dueDateStr + "T00:00:00");
+  return !isNaN(d.getTime()) && d < today;
+}
+
+/**
+ * Format a `YYYY-MM-DD` due-date string to a short Hebrew-locale string.
+ */
+export function formatTaskDueDate(dueDateStr: string): string {
+  const d = new Date(dueDateStr + "T00:00:00");
+  if (isNaN(d.getTime())) return dueDateStr;
+  return d.toLocaleDateString("he-IL", { month: "short", day: "numeric" });
+}
+
+/**
+ * Compute the completion ratio for a list of chores + done-map.
+ * Returns `{ done, total, pct }` (pct is 0–100, rounded).
+ */
+export function taskCompletionRatio(
+  chores: ChoreItem[],
+  doneMap: Record<string, boolean>,
+): { done: number; total: number; pct: number } {
+  const total = chores.length;
+  const done = chores.filter((c) => !!doneMap[fingerprint(c)]).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  return { done, total, pct };
+}
+
 // ── Renderer ────────────────────────────────────────────────────────────────
 
 /**
@@ -179,7 +249,30 @@ export function renderTasksCard(): void {
 
       const label = document.createElement("span");
       label.className = "tasks-chore";
-      label.textContent = item.chore;
+      // Parse priority + due date from the chore text
+      const { priority, cleanText: afterPri } = parseTaskPriority(item.chore);
+      const { dueDate, cleanText } = parseTaskDueDate(afterPri);
+      label.textContent = cleanText;
+
+      // Priority badge
+      if (priority !== "none") {
+        const badge = document.createElement("span");
+        badge.className = `tasks-priority tasks-pri-${priority}`;
+        badge.style.color = PRIORITY_COLORS[priority];
+        badge.textContent = priority === "high" ? "!!" : priority === "medium" ? "!" : "·";
+        badge.title = priority === "high" ? "עדיפות גבוהה" : priority === "medium" ? "עדיפות בינונית" : "עדיפות נמוכה";
+        row.appendChild(badge);
+      }
+
+      // Due date chip + overdue class
+      if (dueDate) {
+        const overdue = isOverdue(dueDate);
+        if (overdue) row.classList.add("overdue");
+        const chip = document.createElement("span");
+        chip.className = `tasks-due${overdue ? " tasks-due-overdue" : ""}`;
+        chip.textContent = `📅 ${formatTaskDueDate(dueDate)}`;
+        row.appendChild(chip);
+      }
 
       row.append(cb, label);
       fragment.appendChild(row);

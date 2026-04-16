@@ -153,3 +153,28 @@
   padding: 2px 6px;
   cursor: pointer;
 }
+
+/* Sprint 24: Priority badges + due date chips */
+.tasks-priority {
+  font-size: 0.7em;
+  font-weight: 800;
+  margin-inline-end: 4px;
+  flex-shrink: 0;
+}
+
+.tasks-due {
+  font-size: 0.65em;
+  margin-inline-start: auto;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.tasks-due.tasks-due-overdue {
+  color: var(--danger, #f87171);
+  font-weight: 700;
+}
+
+.tasks-row.overdue {
+  background: color-mix(in srgb, var(--danger, #f87171) 8%, transparent);
+  border-inline-start: 3px solid var(--danger, #f87171);
+}
