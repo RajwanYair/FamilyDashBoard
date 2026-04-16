@@ -544,6 +544,7 @@ export function renderNews(items: NewsItem[]): void {
   }
 
   elRssScroll.innerHTML = "";
+  elRssScroll.scrollTop = 0;
   elRssScroll.appendChild(frag);
 
   // Start scroll animation (pause in bookmark mode)

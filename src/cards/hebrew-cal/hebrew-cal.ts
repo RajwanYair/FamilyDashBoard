@@ -671,7 +671,11 @@ export function renderZmanim(times: Record<string, string>): void {
       nextItem = item;
     }
   }
-  if (nextItem) nextItem.classList.add("zman-next");
+  if (nextItem) {
+    nextItem.classList.add("zman-next");
+    const minsUntil = Math.round((nextTime - now) / 60_000);
+    nextItem.title = `בעוד ${minsUntil} דק׳`;
+  }
   grid.innerHTML = "";
   grid.appendChild(frag);
   section.style.display = "";

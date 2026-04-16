@@ -28,6 +28,11 @@ let _unread = 0;
 let _timer: ReturnType<typeof setTimeout> | null = null;
 let _realtimeMode = false;
 let _beepVolume = 18; // 0-100, matches config.alertVolume default
+const _baseTitle = document.title || "FamilyDashBoard";
+
+function updateTitle(): void {
+  document.title = _unread > 0 ? `⚠️ (${_unread}) ${_baseTitle}` : _baseTitle;
+}
 
 /** Set alert beep volume (0–100). Persists for the session. */
 export function setAlertVolume(vol: number): void {
@@ -48,6 +53,19 @@ const ALERT_INTERVAL_RT = 10_000; // 10s real-time mode
 export function cacheDom(): void {
   elScroll = document.getElementById("alerts-scroll");
   elBadge = document.getElementById("alerts-badge");
+  if (elBadge) {
+    elBadge.addEventListener("click", () => clearUnreadAlerts());
+    elBadge.style.cursor = "pointer";
+  }
+}
+
+export function clearUnreadAlerts(): void {
+  _unread = 0;
+  if (elBadge) {
+    elBadge.textContent = "0";
+    elBadge.style.display = "none";
+  }
+  updateTitle();
 }
 
 // ── Sound notification (AudioContext beep) ──
@@ -216,6 +234,7 @@ export function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
       elBadge.textContent = String(_unread);
       elBadge.style.display = "";
     }
+    updateTitle();
   }
 
   const now = Date.now() / 1000;

@@ -71,6 +71,11 @@
 .stk.stk-up { background: linear-gradient(90deg, var(--bg-card-inner), rgba(52,211,153,0.04)); }
 .stk.stk-down { background: linear-gradient(90deg, var(--bg-card-inner), rgba(248,113,113,0.04)); }
 
+/* ── Stale Stock Data ── */
+.stk[data-stale="true"] .stk-price,
+.stk[data-stale="true"] .stk-chg { opacity: 0.5; font-style: italic; }
+.stk[data-stale="true"] .stk-name::after { content: " ⏱"; font-size: 0.65em; color: var(--text-secondary); vertical-align: super; }
+
 /* ── Theme Transition ── */
 body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition: background 0.5s ease, color 0.3s ease, border-color 0.3s ease; }
 
