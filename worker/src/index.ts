@@ -36,6 +36,29 @@ const ALLOWED_CALENDAR_ORIGINS = [
   "apple.com",
 ];
 
+// Allowlist of permitted RSS/news feed origins (SSRF prevention)
+const ALLOWED_NEWS_ORIGINS = [
+  "rss.ynet.co.il",
+  "www.ynet.co.il",
+  "rss.haaretz.co.il",
+  "www.haaretz.co.il",
+  "www.mako.co.il",
+  "rss.mako.co.il",
+  "www.calcalist.co.il",
+  "rss.walla.co.il",
+  "feeds.walla.co.il",
+  "rssfeeds.jpost.com",
+  "www.jpost.com",
+  "feeds.jpost.com",
+  "rss.timesofisrael.com",
+  "www.timesofisrael.com",
+  "www.ynetnews.com",
+  "feeds.ynetnews.com",
+  "www.n12.co.il",
+  "rss.n12.co.il",
+  "www.13tv.co.il",
+];
+
 export default {
   async fetch(request: Request, _env: Env): Promise<Response> {
     // Handle CORS preflight
@@ -47,6 +70,8 @@ export default {
     const path = url.pathname;
 
     try {
+      if (path === "/health")
+        return jsonResponse({ ok: true, status: "healthy", ts: Date.now() });
       if (path === "/api/weather") return await handleWeather(url);
       if (path === "/api/currency") return await handleCurrency();
       if (path === "/api/hebcal") return await handleHebcal(url);
@@ -144,6 +169,9 @@ async function handleNews(url: URL): Promise<Response> {
   }
   if (parsed.protocol !== "https:") {
     return jsonResponse({ error: "Only HTTPS feeds allowed" }, 400);
+  }
+  if (!ALLOWED_NEWS_ORIGINS.some((origin) => parsed.hostname === origin)) {
+    return jsonResponse({ error: "News feed origin not permitted" }, 403);
   }
 
   const res = await fetch(feedUrl, {
