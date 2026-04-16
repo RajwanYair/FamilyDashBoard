@@ -1,12 +1,8 @@
 /* Ticker Bar — co-located styles (v7.8) */
 /* Migrated from src/styles/sprints.css */
 
-@layer components {
-
 /* Custom ticker messages */
 .ticker-custom-msg { color: var(--warning); font-weight: 700; }
 
 /* F48: Custom ticker prefix chip */
 .ticker-custom { background: var(--warning); color: #000; font-weight: 800; padding: 0 6px; border-radius: 3px; font-size: 0.9em; margin-left: 8px; }
-
-}

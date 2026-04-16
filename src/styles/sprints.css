@@ -11,13 +11,6 @@
    This file keeps only truly global cross-cutting styles.
    ─────────────────────────────────────────────────────────────────────────── */
 
-@layer animations {
-  @keyframes elecPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
-  @keyframes slideshow-fadein { from { opacity: 0; } to { opacity: 0.18; } }
-}
-
-@layer components {
-
 /* Keyboard shortcut key chip (used in help overlay) */
 .help-key { background: var(--bg-card-inner); border-radius: 5px; padding: 2px 8px; font-family: monospace; font-size: 0.92em; color: var(--cyan); border: 1px solid var(--accent-border); }
 
@@ -47,8 +40,6 @@ body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwar
 #sw-update-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: #22c55e; color: #000; padding: 8px 16px; display: none; align-items: center; justify-content: center; gap: 10px; font-size: 0.88em; font-weight: 600; text-align: center; }
 #sw-update-banner.visible { display: flex; }
 #sw-update-reload-btn { background: rgba(0,0,0,0.18); color: inherit; border: 1px solid rgba(0,0,0,0.3); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 0.9em; font-weight: 700; }
-
-}
 
 /* F122: UV pill color levels */
 .uv-pill { display: inline-block; padding: 0 5px; border-radius: 6px; font-size: 0.75em; font-weight: 700; color: #fff; }
@@ -84,4 +75,7 @@ body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwar
 .card.collapsed > .cal-body,
 .card.collapsed > .moti-body { display: none !important; }
 
-} /* end @layer components */
+@layer animations {
+  @keyframes elecPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @keyframes slideshow-fadein { from { opacity: 0; } to { opacity: 0.18; } }
+}

@@ -1,10 +1,6 @@
 /* Night Dimmer Overlay — co-located styles (v7.8) */
 /* Migrated from src/styles/sprints.css */
 
-@layer components {
-
 /* F54: Night Screen Auto-Dimmer */
 #night-dim { position: fixed; inset: 0; background: #000; pointer-events: none; opacity: 0; transition: opacity 3s ease; z-index: 2; }
 #night-dim.warm-tint { background: #6B3A1F; }
-
-}

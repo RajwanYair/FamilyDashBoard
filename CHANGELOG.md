@@ -5,6 +5,62 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.8.0] — 2025-01-30
+
+> **2056 tests / 47 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `5b8aa62`)
+
+### Sprint 31 — Architecture Documentation
+
+- **ARCHITECTURE.md**: Updated from v7.4 to v7.7 — test count, CSS co-location section, Worker section, 3 new invariants, fetch chain
+- **ROADMAP.md**: All v7.4 + v7.5 checkboxes marked done with notes
+
+### Sprint 32 — CSS Co-location (UI Components)
+
+- **7 new CSS files**: `config-panel.css`, `toast.css`, `night-dimmer.css`, `header.css`, `ticker.css`, `diag-overlay.css`, `status-bar.css` — each imported in its owning TS module
+- **sprints.css**: Stripped ~95 lines of migrated rules; retains only 7 cross-cutting globals
+
+### Sprint 33 — Config v2 Schema
+
+- **7 new config fields**: `newsMaxItems`, `weatherShowDetails`, `tasksShowDone`, `stocksShowPortfolio`, `nightDimScheduleEnabled`, `nightDimStartHour`, `nightDimEndHour`
+- **CONFIG_VERSION**: 1 → 2 with v1→v2 migration in `migrateConfig()`
+- **6 new type guards**: `isValidAlertVolume`, `isValidNightDimLevel`, `isValidNewsMaxItems`, `isValidTickerSpeed`, `isValidHour`
+- **`resetConfig()`**: resets to `DEFAULT_CONFIG` and persists
+- **`dispatchConfigChange(config)`**: fires `CustomEvent<DashboardConfig>('configchange')` on document
+
+### Sprint 34 — Fetch Resilience
+
+- **`fetchJSONDeduped<T>(url)`**: promise-based request deduplication — concurrent callers for same URL share one in-flight Promise
+- **`getInflightCount()`**: diagnostic helper for in-flight dedup requests
+- **`getNetworkQualityTier()`**: returns `"ok"|"slow"|"bad"|"unknown"` using Network Information API + consecutive failure tracking
+- **`clearFetchLocks()`**: test/reset utility for the fetch lock Set
+- **`fetchJSON` proxy failure logging**: now includes HTTP status code + first 60 chars of error message
+- **`fetchWithRetry`**: calls `recordFetchFailure()` on each failed attempt
+
+### Sprint 35 — ARIA & Accessibility
+
+- **`a11y.css`**: Comprehensive `:focus-visible` rules — 3px accent ring + glow for cards; rules for buttons, inputs, selects, textareas
+- **7 sync dots**: added `role="status" + aria-label` for screen reader announcement of sync state
+- **Currency body**: `aria-live="polite" + role="region" + aria-label`
+- **Alerts scroll**: `aria-live="assertive" + role="log" + aria-label`
+- **Motivation text**: `aria-live="polite"` — announces new quotes
+
+### Sprint 36 — Test Coverage (+28 tests)
+
+- **`fetchJSONDeduped` tests**: deduplication, different-URL non-dedup, return value
+- **`getInflightCount`/`clearFetchLocks`/`acquireLock`**: 5 new tests
+- **`getNetworkQualityTier`**: 7 tests including Network Info API stubs
+- **`resetConfig`/`dispatchConfigChange`**: 6 tests
+- **New type guards** (`isValidAlertVolume/NightDimLevel/NewsMaxItems/TickerSpeed/Hour`): 18 tests
+- **`isValidHour`**: hardened with `Number.isInteger()` to reject floats
+
+### Sprint 37 — Night Dimmer Schedule + Cache Diagnostics
+
+- **`initNightDimmer(level, scheduleEnabled, startHour, endHour)`**: wires config v2 schedule fields; auto-dim only fires when `scheduleEnabled=true`
+- **`main.ts`**: passes `nightDimScheduleEnabled`, `nightDimStartHour`, `nightDimEndHour` from config to dimmer
+- **Diag overlay stats**: now shows cache hit/miss/hit-rate, oldest cache age, network quality tier + consecutive failure count
+
+---
+
 ## [7.7.0] — 2026-06-14
 
 > **2027 tests / 47 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `5a3b937`)

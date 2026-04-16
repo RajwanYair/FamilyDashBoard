@@ -1,8 +1,6 @@
 /* Config Panel — co-located styles (v7.8) */
 /* Migrated from src/styles/sprints.css */
 
-@layer components {
-
 #config-overlay { display: none; position: fixed; inset: 0; z-index: 1300; background: rgba(6,11,20,0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); align-items: center; justify-content: center; }
 #config-overlay.visible { display: flex; }
 #config-panel { background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 14px; padding: 22px 28px; max-width: 420px; width: 92%; color: var(--text-primary); max-height: 80vh; overflow-y: auto; }
@@ -30,5 +28,3 @@
 
 /* F120: Dashboard URL share button */
 #cfg-share-btn { font-size: 0.82em; background: var(--bg-card-inner); color: var(--text-primary); }
-
-}
