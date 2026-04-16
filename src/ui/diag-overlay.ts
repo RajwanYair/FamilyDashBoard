@@ -13,6 +13,7 @@ import { getFailedPanes } from "../core/sync";
 import { isWorkerEnabled } from "../core/constants";
 import { cacheStats, getOldestCacheAgeMinutes } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
+import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core/error-tracker";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -96,6 +97,9 @@ function renderStats(): void {
   const buildTime =
     typeof __BUILD_TIME__ !== "undefined" ? __BUILD_TIME__ : "?";
 
+  // Error count
+  const errCount = getErrorCount();
+
   panes.innerHTML = "";
   const html = `
     <div class="diag-stats">
@@ -107,6 +111,7 @@ function renderStats(): void {
       <span>${networkIcon} רשת: <b>${networkTier}${networkOffline}</b>${consecutiveFails > 0 ? ` (×${consecutiveFails})` : ""}</span>
       <span>🏷️ v${version}</span>
       <span>🕒 Build: ${buildTime.slice(0, 10)}</span>
+      ${errCount > 0 ? `<span style="color:var(--negative)">⚠️ שגיאות: <b>${errCount}</b></span>` : "<span style=\"color:var(--positive)\">\u2705 אין שגיאות</span>"}
     </div>`;
   panes.innerHTML = html;
 }
@@ -129,6 +134,31 @@ export function copyDiagLog(): void {
   });
 }
 
+// ── Render runtime error log ──
+function renderErrors(): void {
+  const el = document.getElementById("diag-error-log");
+  if (!el) return;
+
+  const errors = getErrors();
+  if (errors.length === 0) {
+    el.textContent = "✅ אין שגיאות זמן-ריצה";
+    el.style.color = "var(--positive)";
+    return;
+  }
+
+  el.style.color = "";
+  const frag = document.createDocumentFragment();
+  for (const err of errors) {
+    const row = document.createElement("div");
+    row.className = "diag-entry diag-error";
+    row.style.color = "var(--negative)";
+    row.textContent = formatErrorEntry(err);
+    frag.appendChild(row);
+  }
+  el.textContent = "";
+  el.appendChild(frag);
+}
+
 // ── Public API ──
 
 let _refreshTimer: ReturnType<typeof setInterval> | null = null;
@@ -138,11 +168,13 @@ export function openDiagOverlay(): void {
   if (!ov) return;
   renderLog();
   renderStats();
+  renderErrors();
   ov.show(); // non-modal: positioned in corner
   // Auto-refresh log + stats every 5 seconds while open
   _refreshTimer = setInterval(() => {
     renderLog();
     renderStats();
+    renderErrors();
   }, 5000);
   diagLog("[diag] Overlay opened");
 }
@@ -182,6 +214,15 @@ export function initDiagOverlay(): void {
       clearDiag();
       renderLog();
       diagLog("[diag] Log cleared");
+    });
+  }
+
+  // Sprint 39: Clear runtime errors button
+  const clearErrBtn = document.getElementById("diag-clear-errors-btn");
+  if (clearErrBtn) {
+    clearErrBtn.addEventListener("click", () => {
+      clearErrors();
+      renderErrors();
     });
   }
 

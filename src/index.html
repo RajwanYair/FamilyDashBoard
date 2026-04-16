@@ -368,7 +368,14 @@
         <button type="button" id="diag-copy-btn" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
         <!-- F1 (v7.3): Clear diagnostics log -->
         <button type="button" id="diag-clear-btn" title="נקה את כל רשומות האבחון — Clear log">🗑 נקה לוג</button>
+        <!-- Sprint 39: Clear runtime errors button -->
+        <button type="button" id="diag-clear-errors-btn" title="נקה שגיאות זמן-ריצה — Clear errors">🧹 נקה שגיאות</button>
         <div id="diag-panes"></div>
+        <!-- Sprint 39: Runtime error log section -->
+        <details style="margin-top:6px">
+          <summary style="font-size:0.8em;cursor:pointer;color:var(--text-secondary)">⚠️ שגיאות זמן-ריצה</summary>
+          <div class="diag-log" id="diag-error-log" style="max-height:100px;margin-top:4px"></div>
+        </details>
         <div class="diag-log" id="diag-log"></div>
     </dialog>
     <!-- Feature 33: Gear button (bottom-left corner) -->

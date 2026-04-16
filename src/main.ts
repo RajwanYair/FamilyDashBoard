@@ -68,8 +68,13 @@ import { initTasksCard } from "./cards/tasks/tasks";
 import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
+import { installGlobalErrorHandlers } from "./core/error-tracker";
+
 // ── Version ──
 export const VERSION = __APP_VERSION__;
+
+// Install error handlers as early as possible (before init)
+installGlobalErrorHandlers();
 
 /**
  * Apply card size overrides from config to DOM elements.
@@ -343,6 +348,7 @@ export function init(): void {
 
   diagLog(`[init] Dashboard initialized`);
 }
+
 
 // ── Bootstrap ──
 // Skip auto-init in Vitest to prevent side effects (intervals, fetch calls)
