@@ -171,6 +171,42 @@
             <span class="cfg-label">💬 מחזור ציטוטים אוטומטי (דקות, 0=כבוי)</span>
             <input id="cfg-moti-interval" class="cfg-input" type="number" min="0" max="60" step="1" style="width:70px;direction:ltr" placeholder="0" title="4-60 דקות — 0 = ידני בלבד">
           </div>
+          <!-- Config v3 (v7.9): Per-card settings -->
+          <div class="cfg-row">
+            <span class="cfg-label">🌤️ מזג אוויר — תחזית שעתית</span>
+            <select id="cfg-weather-hourly" class="cfg-input" style="width:auto">
+              <option value="on">מופעל</option>
+              <option value="off">כבוי</option>
+            </select>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌬️ מזג אוויר — רוח</span>
+            <select id="cfg-weather-wind" class="cfg-input" style="width:auto">
+              <option value="on">מופעל</option>
+              <option value="off">כבוי</option>
+            </select>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">🌅 מזג אוויר — זריחה/שקיעה</span>
+            <select id="cfg-weather-sunrise" class="cfg-input" style="width:auto">
+              <option value="on">מופעל</option>
+              <option value="off">כבוי</option>
+            </select>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📰 חדשות — מקור/אתר</span>
+            <select id="cfg-news-show-source" class="cfg-input" style="width:auto">
+              <option value="on">מוצג</option>
+              <option value="off">מוסתר</option>
+            </select>
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">📈 מניות — קיבוץ לפי ענף</span>
+            <select id="cfg-stocks-group-sector" class="cfg-input" style="width:auto">
+              <option value="off">ללא קיבוץ</option>
+              <option value="on">קיבוץ לפי ענף</option>
+            </select>
+          </div>
         </div>
         <!-- Tab: Calendar -->
         <div class="cfg-section" data-tab="calendar">

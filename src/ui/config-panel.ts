@@ -265,6 +265,18 @@ function populateForm(): void {
   const motiInterval = g("cfg-moti-interval");
   if (motiInterval) motiInterval.value = String(c.motivationInterval ?? 0);
 
+  // Config v3 (v7.9): per-card boolean settings
+  const wxHourly = g("cfg-weather-hourly") as HTMLSelectElement | null;
+  if (wxHourly) wxHourly.value = (c.weatherShowHourly ?? true) ? "on" : "off";
+  const wxWind = g("cfg-weather-wind") as HTMLSelectElement | null;
+  if (wxWind) wxWind.value = (c.weatherShowWind ?? true) ? "on" : "off";
+  const wxSunrise = g("cfg-weather-sunrise") as HTMLSelectElement | null;
+  if (wxSunrise) wxSunrise.value = (c.weatherShowSunrise ?? true) ? "on" : "off";
+  const newsSource = g("cfg-news-show-source") as HTMLSelectElement | null;
+  if (newsSource) newsSource.value = (c.newsShowSource ?? true) ? "on" : "off";
+  const stocksSector = g("cfg-stocks-group-sector") as HTMLSelectElement | null;
+  if (stocksSector) stocksSector.value = (c.stocksGroupBySector ?? false) ? "on" : "off";
+
   // Cards tab — dynamically build per-card rows
   const cardsList = document.getElementById("cfg-cards-list");
   if (cardsList) {
@@ -555,6 +567,13 @@ function collectForm(): DashboardConfig {
     const mi = parseInt(motiIntervalEl.value, 10);
     c.motivationInterval = isNaN(mi) ? 0 : Math.max(0, Math.min(60, mi));
   }
+
+  // Config v3 (v7.9): per-card boolean settings
+  c.weatherShowHourly = (g("cfg-weather-hourly") as HTMLSelectElement | null)?.value !== "off";
+  c.weatherShowWind = (g("cfg-weather-wind") as HTMLSelectElement | null)?.value !== "off";
+  c.weatherShowSunrise = (g("cfg-weather-sunrise") as HTMLSelectElement | null)?.value !== "off";
+  c.newsShowSource = (g("cfg-news-show-source") as HTMLSelectElement | null)?.value !== "off";
+  c.stocksGroupBySector = (g("cfg-stocks-group-sector") as HTMLSelectElement | null)?.value === "on";
 
   return c;
 }

@@ -202,27 +202,27 @@ describe("Config — loadConfigFromHash non-object parsed value (line 70)", () =
 // ── Sprint 1 (v7.4) + v7.8 config v2: migrateConfig + type guards + configVersion ──
 
 describe("Config — migrateConfig (v7.4)", () => {
-  it("migrates to configVersion=2 when version is missing (v0→v1→v2)", () => {
+  it("migrates to configVersion=3 when version is missing (v0→v1→v2→v3)", () => {
     const result = migrateConfig({ theme: "blue" });
-    expect(result.configVersion).toBe(2);
+    expect(result.configVersion).toBe(3);
   });
 
-  it("migrates to configVersion=2 when version is 0", () => {
+  it("migrates to configVersion=3 when version is 0", () => {
     const result = migrateConfig({ configVersion: 0 });
-    expect(result.configVersion).toBe(2);
+    expect(result.configVersion).toBe(3);
   });
 
-  it("migrates version 1 to version 2, adding v2 fields", () => {
+  it("migrates version 1 to version 3, adding v2+v3 fields", () => {
     const result = migrateConfig({ configVersion: 1, theme: "rose" as const });
-    expect(result.configVersion).toBe(2);
+    expect(result.configVersion).toBe(3);
     expect(result.theme).toBe("rose");
     expect(result.newsMaxItems).toBe(5);
     expect(result.weatherShowDetails).toBe(true);
   });
 
-  it("does not modify config already at current version", () => {
-    const result = migrateConfig({ configVersion: 2, theme: "rose" as const });
-    expect(result.configVersion).toBe(2);
+  it("does not modify config already at current version (v3)", () => {
+    const result = migrateConfig({ configVersion: 3, theme: "rose" as const });
+    expect(result.configVersion).toBe(3);
     expect(result.theme).toBe("rose");
   });
 
@@ -295,8 +295,8 @@ describe("Config — isValidFontScale (v7.4)", () => {
 });
 
 describe("Config — configVersion sanity (v7.4)", () => {
-  it("DEFAULT_CONFIG has configVersion 2", () => {
-    expect(DEFAULT_CONFIG.configVersion).toBe(2);
+  it("DEFAULT_CONFIG has configVersion 3", () => {
+    expect(DEFAULT_CONFIG.configVersion).toBe(3);
   });
 
   it("CONFIG_VERSION constant matches DEFAULT_CONFIG", () => {
@@ -455,5 +455,49 @@ describe("Config — isValidHour (Sprint 33)", () => {
     expect(isValidHour("12")).toBe(false);
     expect(isValidHour(null)).toBe(false);
     expect(isValidHour(1.5)).toBe(false);
+  });
+});
+
+// ── Sprint 42 (v7.9): Config v3 migration + per-card settings ─────────────────
+
+describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
+  it("migrates v2 config to v3, adding all per-card fields", () => {
+    const result = migrateConfig({ configVersion: 2, theme: "blue" });
+    expect(result.configVersion).toBe(3);
+    expect(result.weatherShowHourly).toBe(true);
+    expect(result.weatherShowWind).toBe(true);
+    expect(result.weatherShowSunrise).toBe(true);
+    expect(result.stocksGroupBySector).toBe(false);
+    expect(result.tasksShowCategories).toBe(false);
+    expect(result.newsShowSource).toBe(true);
+    expect(result.sysInfoShowRtt).toBe(true);
+  });
+
+  it("migrates v0 all the way to v3 in one call", () => {
+    const result = migrateConfig({});
+    expect(result.configVersion).toBe(3);
+    expect(result.weatherShowHourly).toBe(true);
+    expect(result.newsMaxItems).toBe(5); // v2 field also present
+  });
+
+  it("does not overwrite existing v3 boolean fields when already at v3", () => {
+    const result = migrateConfig({ configVersion: 3, weatherShowHourly: false });
+    expect(result.configVersion).toBe(3);
+    // Migration does not re-run for v3, so pre-existing value is preserved
+    expect(result.weatherShowHourly).toBe(false);
+  });
+
+  it("CONFIG_VERSION constant is 3", () => {
+    expect(CONFIG_VERSION).toBe(3);
+  });
+
+  it("DEFAULT_CONFIG has all v3 fields with correct defaults", () => {
+    expect(DEFAULT_CONFIG.weatherShowHourly).toBe(true);
+    expect(DEFAULT_CONFIG.weatherShowWind).toBe(true);
+    expect(DEFAULT_CONFIG.weatherShowSunrise).toBe(true);
+    expect(DEFAULT_CONFIG.stocksGroupBySector).toBe(false);
+    expect(DEFAULT_CONFIG.tasksShowCategories).toBe(false);
+    expect(DEFAULT_CONFIG.newsShowSource).toBe(true);
+    expect(DEFAULT_CONFIG.sysInfoShowRtt).toBe(true);
   });
 });

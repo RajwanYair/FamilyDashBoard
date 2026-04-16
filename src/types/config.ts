@@ -82,6 +82,23 @@ export interface DashboardConfig {
   nightDimStartHour: number;
   /** Night dimmer auto-end hour 0–23 (default: 7). */
   nightDimEndHour: number;
+
+  // ── Config v3 additions (v7.9) — per-card settings ──
+
+  /** Weather card: show hourly forecast strip (next 6h). Default: true. */
+  weatherShowHourly: boolean;
+  /** Weather card: show wind speed and direction. Default: true. */
+  weatherShowWind: boolean;
+  /** Weather card: show sunrise/sunset times. Default: true. */
+  weatherShowSunrise: boolean;
+  /** Stocks card: group by sector in display. Default: false. */
+  stocksGroupBySector: boolean;
+  /** Tasks card: enable category labels (freeform string per task). Default: false. */
+  tasksShowCategories: boolean;
+  /** News card: show source domain badge on each news item. Default: true. */
+  newsShowSource: boolean;
+  /** System info card: show network RTT tile. Default: true. */
+  sysInfoShowRtt: boolean;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -125,7 +142,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard2Time: "18:00",
   countdownCard2DoneMsg: "🎉 מזל טוב!",
   motivationInterval: 0,
-  configVersion: 2,
+  configVersion: 3,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -135,10 +152,19 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   nightDimScheduleEnabled: false,
   nightDimStartHour: 22,
   nightDimEndHour: 7,
+
+  // Config v3 defaults
+  weatherShowHourly: true,
+  weatherShowWind: true,
+  weatherShowSunrise: true,
+  stocksGroupBySector: false,
+  tasksShowCategories: false,
+  newsShowSource: true,
+  sysInfoShowRtt: true,
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 2;
+export const CONFIG_VERSION = 3;
 
 /** Type guard: checks if a string is a valid theme name. */
 export function isValidTheme(v: unknown): v is DashboardConfig["theme"] {

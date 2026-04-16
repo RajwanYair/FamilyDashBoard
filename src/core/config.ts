@@ -51,6 +51,20 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v1 → v2");
   }
 
+  // v2 → v3: added per-card settings (weatherShowHourly/Wind/Sunrise,
+  //           stocksGroupBySector, tasksShowCategories, newsShowSource, sysInfoShowRtt)
+  if (version < 3) {
+    cfg.weatherShowHourly = DEFAULT_CONFIG.weatherShowHourly;
+    cfg.weatherShowWind = DEFAULT_CONFIG.weatherShowWind;
+    cfg.weatherShowSunrise = DEFAULT_CONFIG.weatherShowSunrise;
+    cfg.stocksGroupBySector = DEFAULT_CONFIG.stocksGroupBySector;
+    cfg.tasksShowCategories = DEFAULT_CONFIG.tasksShowCategories;
+    cfg.newsShowSource = DEFAULT_CONFIG.newsShowSource;
+    cfg.sysInfoShowRtt = DEFAULT_CONFIG.sysInfoShowRtt;
+    cfg.configVersion = 3;
+    diagLog("[config] migrated v2 → v3");
+  }
+
   return cfg;
 }
 
@@ -69,6 +83,14 @@ function sanitize(cfg: DashboardConfig): DashboardConfig {
   if (!isValidTickerSpeed(cfg.tickerSpeed)) cfg.tickerSpeed = DEFAULT_CONFIG.tickerSpeed;
   if (!isValidHour(cfg.nightDimStartHour)) cfg.nightDimStartHour = DEFAULT_CONFIG.nightDimStartHour;
   if (!isValidHour(cfg.nightDimEndHour)) cfg.nightDimEndHour = DEFAULT_CONFIG.nightDimEndHour;
+  // v3 boolean fields — coerce non-boolean to default
+  if (typeof cfg.weatherShowHourly !== "boolean") cfg.weatherShowHourly = DEFAULT_CONFIG.weatherShowHourly;
+  if (typeof cfg.weatherShowWind !== "boolean") cfg.weatherShowWind = DEFAULT_CONFIG.weatherShowWind;
+  if (typeof cfg.weatherShowSunrise !== "boolean") cfg.weatherShowSunrise = DEFAULT_CONFIG.weatherShowSunrise;
+  if (typeof cfg.stocksGroupBySector !== "boolean") cfg.stocksGroupBySector = DEFAULT_CONFIG.stocksGroupBySector;
+  if (typeof cfg.tasksShowCategories !== "boolean") cfg.tasksShowCategories = DEFAULT_CONFIG.tasksShowCategories;
+  if (typeof cfg.newsShowSource !== "boolean") cfg.newsShowSource = DEFAULT_CONFIG.newsShowSource;
+  if (typeof cfg.sysInfoShowRtt !== "boolean") cfg.sysInfoShowRtt = DEFAULT_CONFIG.sysInfoShowRtt;
   return cfg;
 }
 
