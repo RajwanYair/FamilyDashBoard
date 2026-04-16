@@ -12,7 +12,7 @@ import { listCards } from "../core/card-registry";
 import { applyTheme } from "./theme";
 import { diagLog } from "../core/diag";
 import { showToast } from "./toast";
-import { setAlertsRealtime } from "../cards/alerts/alerts";
+import { setAlertsRealtime, setAlertVolume } from "../cards/alerts/alerts";
 import { setClockSeconds } from "./header";
 import { initWeatherCities } from "../cards/weather/weather";
 import { applyHiddenStocks, renderPortfolioRow } from "../cards/stocks/stocks";
@@ -21,7 +21,7 @@ import { initCountdownCard } from "../cards/countdown/countdown";
 import { resetLayout } from "./layout-drag";
 import { renderTasksCard } from "../cards/tasks/tasks";
 import { applyFontScale } from "./screen-mode";
-import { setDimLevel, updateDimIndicator } from "./night-dimmer";
+import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
 // ── Extra localStorage keys (fields not stored in DashboardConfig) ──
 const LS_DIM_START = "dash_v2_dim_start";
@@ -78,6 +78,10 @@ function populateForm(): void {
 
   const autoTheme = g("cfg-auto-theme");
   if (autoTheme) autoTheme.value = c.autoTheme ? "on" : "off";
+
+  // F3 (v7.2): Warm tint toggle
+  const dimWarm = g("cfg-dim-warm");
+  if (dimWarm) dimWarm.value = c.dimWarmTint ? "on" : "off";
 
   const clockSec = g("cfg-clock-seconds");
   if (clockSec) clockSec.value = c.clockSeconds ? "on" : "off";
@@ -168,6 +172,12 @@ function populateForm(): void {
   const alertSound = g("cfg-alert-sound");
   if (alertSound) alertSound.value = c.alertSound ? "on" : "off";
 
+  // F2 (v7.2): Alert volume slider
+  const alertVolSlider = g("cfg-alert-volume");
+  const alertVolVal = document.getElementById("cfg-alert-volume-val");
+  if (alertVolSlider) alertVolSlider.value = String(c.alertVolume ?? 18);
+  if (alertVolVal) alertVolVal.textContent = `${c.alertVolume ?? 18}%`;
+
   const alertRealtime = g("cfg-alert-realtime");
   if (alertRealtime) alertRealtime.value = c.realtimeAlerts ? "on" : "off";
 
@@ -209,6 +219,16 @@ function populateForm(): void {
   if (cdCardDoneMsg) cdCardDoneMsg.value = c.countdownCardDoneMsg;
   const cdCardStartDate = g("cfg-cd-card-start-date");
   if (cdCardStartDate) cdCardStartDate.value = c.countdownCardStartDate ?? "";
+
+  // F8 (v7.2): 2nd countdown event
+  const cd2Title = g("cfg-cd2-title");
+  if (cd2Title) cd2Title.value = c.countdownCard2Title ?? "";
+  const cd2Date = g("cfg-cd2-date");
+  if (cd2Date) cd2Date.value = c.countdownCard2Date ?? "";
+  const cd2Time = g("cfg-cd2-time");
+  if (cd2Time) cd2Time.value = c.countdownCard2Time ?? "18:00";
+  const cd2DoneMsg = g("cfg-cd2-done-msg");
+  if (cd2DoneMsg) cd2DoneMsg.value = c.countdownCard2DoneMsg ?? "🎉 מזל טוב!";
 
   // Chores / tasks (Advanced tab)
   const choresEl = gTxt("cfg-chores");
@@ -307,6 +327,10 @@ function collectForm(): DashboardConfig {
 
   const autoTheme = g("cfg-auto-theme");
   if (autoTheme) c.autoTheme = autoTheme.value.trim().toLowerCase() === "on";
+
+  // F3 (v7.2): Warm tint toggle
+  const dimWarm = g("cfg-dim-warm");
+  if (dimWarm) c.dimWarmTint = dimWarm.value.trim().toLowerCase() === "on";
 
   const clockSec = g("cfg-clock-seconds");
   if (clockSec) c.clockSeconds = clockSec.value.trim().toLowerCase() === "on";
@@ -410,6 +434,13 @@ function collectForm(): DashboardConfig {
   const alertSound = g("cfg-alert-sound");
   if (alertSound) c.alertSound = alertSound.value.trim().toLowerCase() === "on";
 
+  // F2 (v7.2): Alert volume
+  const alertVolSlider2 = g("cfg-alert-volume");
+  if (alertVolSlider2) {
+    const vol = parseInt(alertVolSlider2.value, 10);
+    if (!isNaN(vol)) c.alertVolume = Math.max(0, Math.min(100, vol));
+  }
+
   const alertRealtime = g("cfg-alert-realtime");
   if (alertRealtime)
     c.realtimeAlerts = alertRealtime.value.trim().toLowerCase() === "on";
@@ -457,6 +488,16 @@ function collectForm(): DashboardConfig {
   if (cdCardDoneMsgEl) c.countdownCardDoneMsg = cdCardDoneMsgEl.value.trim();
   const cdCardStartDateEl = g("cfg-cd-card-start-date");
   if (cdCardStartDateEl) c.countdownCardStartDate = cdCardStartDateEl.value.trim();
+
+  // F8 (v7.2): 2nd countdown event
+  const cd2TitleEl = g("cfg-cd2-title");
+  if (cd2TitleEl) c.countdownCard2Title = cd2TitleEl.value.trim();
+  const cd2DateEl = g("cfg-cd2-date");
+  if (cd2DateEl) c.countdownCard2Date = cd2DateEl.value.trim();
+  const cd2TimeEl = g("cfg-cd2-time");
+  if (cd2TimeEl) c.countdownCard2Time = cd2TimeEl.value.trim();
+  const cd2DoneMsgEl = g("cfg-cd2-done-msg");
+  if (cd2DoneMsgEl) c.countdownCard2DoneMsg = cd2DoneMsgEl.value.trim();
 
   // Cards tab — hidden cards + sizes
   const hiddenCards: string[] = [];
@@ -595,6 +636,8 @@ export function initConfigPanel(): void {
     saveConfig(c);
     applyTheme(c.theme);
     setAlertsRealtime(c.realtimeAlerts);
+    setAlertVolume(c.alertVolume ?? 18);
+    setWarmTint(c.dimWarmTint ?? false);
     setClockSeconds(c.clockSeconds);
     initWeatherCities();
     applyHiddenStocks();
@@ -714,6 +757,24 @@ export function initConfigPanel(): void {
     resetLayout();
     showToast("↩ סידור הכרטיסיות אופס — טען מחדש להחלה");
     diagLog("[config-panel] layout reset");
+  });
+
+  // F2 (v7.2): Alert volume live preview
+  const alertVolSliderInit = g("cfg-alert-volume");
+  const alertVolValInit = document.getElementById("cfg-alert-volume-val");
+  if (alertVolSliderInit && alertVolValInit) {
+    alertVolSliderInit.addEventListener("input", () => {
+      alertVolValInit.textContent = `${alertVolSliderInit.value}%`;
+    });
+  }
+
+  // F4 (v7.2): Reset all defaults
+  document.getElementById("cfg-reset-all-btn")?.addEventListener("click", () => {
+    if (!confirm("מחיקת כל ההגדרות ואיפוס לברירות המחדל?")) return;
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith("dash"))
+      .forEach((k) => localStorage.removeItem(k));
+    location.reload();
   });
 
   diagLog("[config-panel] initialized");

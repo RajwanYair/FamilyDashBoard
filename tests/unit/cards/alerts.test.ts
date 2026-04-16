@@ -1322,3 +1322,29 @@ describe("Alerts — renderAlerts badge null guard (no throw)", () => {
     expect(() => ra([ev], true)).not.toThrow();
   });
 });
+
+// ── F2 (v7.2): Alert volume control ──────────────────────────────────────
+
+describe("Alerts — setAlertVolume / getAlertVolume (F2 v7.2)", () => {
+  it("getAlertVolume returns 18 by default", async () => {
+    vi.resetModules();
+    const { getAlertVolume } = await import("@/cards/alerts/alerts");
+    expect(getAlertVolume()).toBe(18);
+  });
+
+  it("setAlertVolume updates getAlertVolume", async () => {
+    vi.resetModules();
+    const { setAlertVolume, getAlertVolume } = await import("@/cards/alerts/alerts");
+    setAlertVolume(55);
+    expect(getAlertVolume()).toBe(55);
+  });
+
+  it("setAlertVolume clamps to 0-100", async () => {
+    vi.resetModules();
+    const { setAlertVolume, getAlertVolume } = await import("@/cards/alerts/alerts");
+    setAlertVolume(-10);
+    expect(getAlertVolume()).toBe(0);
+    setAlertVolume(200);
+    expect(getAlertVolume()).toBe(100);
+  });
+});

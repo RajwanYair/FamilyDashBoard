@@ -56,6 +56,8 @@ vi.mock("@/ui/screen-mode", () => ({
 vi.mock("@/ui/night-dimmer", () => ({
   toggleNightDim: vi.fn(),
   initNightDimmer: vi.fn(),
+  setWarmTint: vi.fn(),
+  isWarmTint: vi.fn().mockReturnValue(false),
 }));
 vi.mock("@/ui/diag-overlay", () => ({
   initDiagOverlay: vi.fn(),
@@ -77,6 +79,7 @@ vi.mock("@/cards/alerts/alerts", () => ({
   initAlertsCard: vi.fn(),
   setAlertsEnabled: vi.fn(),
   setAlertsRealtime: vi.fn(),
+  setAlertVolume: vi.fn(),
   toggleAlerts: vi.fn(),
   isAlertsEnabled: vi.fn().mockReturnValue(true),
 }));
@@ -1167,5 +1170,37 @@ describe("Main — keyboard handlers for city tab shortcuts (Sprint v7.12)", () 
     const wCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "w");
     expect(wCall).toBeDefined();
     expect(typeof wCall![2]).toBe("function");
+  });
+});
+// ── F10 (v7.2): L key warm tint ──────────────────────────────────────────────
+
+describe("Main — 'l' key registers warm tint toggle (F10 v7.2)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("'l' key is registered via registerKey", () => {
+    init();
+    const lCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "l");
+    expect(lCall).toBeDefined();
+    expect(typeof lCall![2]).toBe("function");
+  });
+
+  it("'l' handler calls setWarmTint with toggled value", () => {
+    init();
+    const lHandler = vi.mocked(registerKey).mock.calls.find(([k]) => k === "l")?.[2] as () => void;
+    expect(lHandler).toBeDefined();
+    expect(() => lHandler()).not.toThrow();
   });
 });

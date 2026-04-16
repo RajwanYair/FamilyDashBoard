@@ -10,6 +10,18 @@ const LS_DIM_END = "dash_v2_dim_end";
 let dimEl: HTMLElement | null = null;
 let dimLevel = 55; // default opacity percentage
 let dimActive = false;
+let _warmTint = false; // F3 (v7.2): amber/warm tint mode
+
+/** Enable or disable warm amber tint on the night dimmer overlay. */
+export function setWarmTint(on: boolean): void {
+  _warmTint = on;
+  applyDim();
+}
+
+/** Return whether warm tint mode is active. */
+export function isWarmTint(): boolean {
+  return _warmTint;
+}
 
 /**
  * Toggle the night dimmer on/off.
@@ -37,8 +49,13 @@ function applyDim(): void {
   if (dimActive) {
     dimEl.style.opacity = String(dimLevel / 100);
     dimEl.style.display = "block";
+    // F3 (v7.2): Apply warm amber tint via CSS filter
+    dimEl.style.backgroundColor = _warmTint ? "#8B4513" : "";
+    dimEl.style.filter = _warmTint ? "none" : "";
+    dimEl.classList.toggle("warm-tint", _warmTint);
   } else {
     dimEl.style.display = "none";
+    dimEl.classList.remove("warm-tint");
   }
 }
 

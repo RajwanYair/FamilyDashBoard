@@ -37,7 +37,7 @@ import { initStatusBar, stampRefresh } from "./ui/status-bar";
 import { initTicker, applyTickerSpeed } from "./ui/ticker";
 import { initConfigPanel, toggleConfigPanel, openConfigPanel, switchCfgTab } from "./ui/config-panel";
 import { initScreenMode, stepFontScale } from "./ui/screen-mode";
-import { toggleNightDim, initNightDimmer } from "./ui/night-dimmer";
+import { toggleNightDim, initNightDimmer, setWarmTint, isWarmTint } from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
@@ -55,6 +55,7 @@ import {
   setAlertsRealtime,
   toggleAlerts,
   isAlertsEnabled,
+  setAlertVolume,
 } from "./cards/alerts/alerts";
 import { initHebrewCalCard } from "./cards/hebrew-cal/hebrew-cal";
 import { initCalendarCard } from "./cards/calendar/calendar";
@@ -63,7 +64,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
-export const VERSION = "7.1.7";
+export const VERSION = "7.2.0";
 
 /**
  * Apply card size overrides from config to DOM elements.
@@ -214,6 +215,7 @@ export function init(): void {
   registerKey("?", "עזרה", _toggleHelp);
   registerKey("d", "אבחון", toggleDiagOverlay);
   registerKey("v", "ניהול כרטיסיות", () => { openConfigPanel(); switchCfgTab("cards"); });
+  registerKey("l", "גוון חם לדימר לילה", () => setWarmTint(!isWarmTint()));
   registerKey("escape", "סגור כל חלון", closeAllOverlays);
 
   // Cards — non-blocking, parallel load
@@ -265,6 +267,10 @@ export function init(): void {
   // ── Apply alert config state from saved settings ──
   setAlertsEnabled(cfg.alertsEnabled);
   setAlertsRealtime(cfg.realtimeAlerts);
+  setAlertVolume(cfg.alertVolume ?? 18);
+
+  // ── Apply warm tint from config ──
+  if (cfg.dimWarmTint) setWarmTint(true);
 
   // ── Auto-theme by time of day (runs every 5 minutes) ──
   const runAutoTheme = (): void => {

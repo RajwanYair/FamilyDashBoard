@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.1.2
+/* FamilyDashBoard ServiceWorker — v7.2.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
  * F113: SW posts NETWORK_BACK message to clients on network recovery
@@ -14,10 +14,11 @@
  * v7.0.0 (alpha2): Shabbat countdown, Sefaria deep-links, halacha yomit, school vacation indicator, A-key alerts
  * v7.1.0: Drag-and-drop card layout, layout persistence, 1554 tests/38 suites, 0-error lint suite
  * v7.1.1: Countdown card (11th card), fix hebrew-date/favicon/news-overlap, tile layout, CI unified, 1570 tests/39 suites
- * v7.1.2: Markdown lint fix, 1574 tests/39 suites */
+ * v7.1.2: Markdown lint fix, 1574 tests/39 suites
+ * v7.2.0: F5 CLEAR_API_CACHE handler, precipitation chip, alert volume, warm tint, reset-all, cache-age chip, tasks quick-add, countdown 2nd event, news filter chips, L-key warm tint */
 
-const CACHE_NAME = "familydashboard-v7.1.7";
-const CACHE_NAME_API = "familydashboard-api-v7.1.6";
+const CACHE_NAME = "familydashboard-v7.2.0";
+const CACHE_NAME_API = "familydashboard-api-v7.2.0";
 // F111: include sw.js itself in app shell pre-cache
 const APP_SHELL = [
   "./BestDashBoard.html",
@@ -61,6 +62,20 @@ self.addEventListener("install", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") {
     self.skipWaiting();
+  }
+  // F5 (v7.2): Clear API cache on demand
+  if (event.data?.type === "CLEAR_API_CACHE") {
+    event.waitUntil(
+      caches.delete(CACHE_NAME_API).then(() => {
+        return self.clients
+          .matchAll({ includeUncontrolled: true })
+          .then((clients) =>
+            clients.forEach((c) =>
+              c.postMessage({ type: "API_CACHE_CLEARED" }),
+            ),
+          );
+      }),
+    );
   }
 });
 

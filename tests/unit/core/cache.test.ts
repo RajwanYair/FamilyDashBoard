@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { cGet, cSet, cGetStale, cEvict, cClear } from "@/core/cache";
+import { cGet, cSet, cGetStale, cEvict, cClear, getOldestCacheAgeMinutes } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
   beforeEach(() => {
@@ -281,5 +281,44 @@ describe("Cache — cEvict handles getItem returning null (line 29)", () => {
 
     // Should not throw — the `if (!raw) continue` guard skips this entry
     expect(() => cEvict()).not.toThrow();
+  });
+});
+// ── F6 (v7.2): getOldestCacheAgeMinutes ──────────────────────────────────
+
+describe("Cache — getOldestCacheAgeMinutes (F6 v7.2)", () => {
+  afterEach(() => {
+    cClear();
+    localStorage.clear();
+  });
+
+  it("returns 0 when no dash_v2_ entries exist", () => {
+    expect(getOldestCacheAgeMinutes()).toBe(0);
+  });
+
+  it("returns approximate age in minutes for single entry", () => {
+    const fiveMinAgo = Date.now() - 5 * 60_000;
+    localStorage.setItem("dash_v2_test", JSON.stringify({ data: "x", ts: fiveMinAgo }));
+    expect(getOldestCacheAgeMinutes()).toBeGreaterThanOrEqual(4);
+    expect(getOldestCacheAgeMinutes()).toBeLessThanOrEqual(6);
+  });
+
+  it("returns age of oldest entry across multiple entries", () => {
+    const tenMinAgo = Date.now() - 10 * 60_000;
+    const twoMinAgo = Date.now() - 2 * 60_000;
+    localStorage.setItem("dash_v2_old", JSON.stringify({ data: "a", ts: tenMinAgo }));
+    localStorage.setItem("dash_v2_new", JSON.stringify({ data: "b", ts: twoMinAgo }));
+    expect(getOldestCacheAgeMinutes()).toBeGreaterThanOrEqual(9);
+    expect(getOldestCacheAgeMinutes()).toBeLessThanOrEqual(11);
+  });
+
+  it("ignores malformed JSON entries gracefully", () => {
+    localStorage.setItem("dash_v2_bad", "not-json");
+    expect(() => getOldestCacheAgeMinutes()).not.toThrow();
+    expect(getOldestCacheAgeMinutes()).toBe(0);
+  });
+
+  it("ignores non-dash_v2_ keys", () => {
+    localStorage.setItem("other_key", JSON.stringify({ ts: Date.now() - 100 * 60_000 }));
+    expect(getOldestCacheAgeMinutes()).toBe(0);
   });
 });

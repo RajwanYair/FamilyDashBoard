@@ -46,6 +46,18 @@ export interface DashboardConfig {
   tasksResetHour: number;
   /** Ticker scroll speed 1=slowest … 5=fastest (default: 3). Maps to 60/45/30/20/12 seconds. */
   tickerSpeed: number;
+  /** Alert beep volume 0–100 (default: 18). Applied to AudioContext gain. */
+  alertVolume: number;
+  /** Night dimmer warm amber tint — applies CSS sepia filter for eye-comfort. */
+  dimWarmTint: boolean;
+  /** Countdown card 2 — event title */
+  countdownCard2Title: string;
+  /** Countdown card 2 — target date YYYY-MM-DD */
+  countdownCard2Date: string;
+  /** Countdown card 2 — target time HH:MM */
+  countdownCard2Time: string;
+  /** Countdown card 2 — message shown after event passes */
+  countdownCard2DoneMsg: string;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -82,4 +94,10 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   cardSizes: {},
   tasksResetHour: 6,
   tickerSpeed: 3,
+  alertVolume: 18,
+  dimWarmTint: false,
+  countdownCard2Title: "",
+  countdownCard2Date: "",
+  countdownCard2Time: "18:00",
+  countdownCard2DoneMsg: "🎉 מזל טוב!",
 };

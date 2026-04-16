@@ -13,6 +13,7 @@
 
 import { registerSyncDot } from "../core/sync";
 import { diagLog } from "../core/diag";
+import { getOldestCacheAgeMinutes } from "../core/cache";
 
 // ── Sync Pane Definitions ──
 // Each pane name maps to an HTML element ID for its sync indicator.
@@ -33,6 +34,7 @@ let elRefreshStamp: HTMLElement | null = null;
 let elUptime: HTMLElement | null = null;
 let elConn: HTMLElement | null = null;
 let elFontScale: HTMLElement | null = null;
+let elCacheAge: HTMLElement | null = null;
 
 const PAGE_START = Date.now();
 
@@ -42,10 +44,11 @@ function cacheDom(): void {
   elUptime = document.getElementById("uptime-display");
   elConn = document.getElementById("conn-indicator");
   elFontScale = document.getElementById("font-scale-indicator");
+  elCacheAge = document.getElementById("cache-age");
 }
 
 // ── Version Badge ──
-const APP_VERSION = "7.1.7";
+const APP_VERSION = "7.2.0";
 
 function renderVersionBadge(): void {
   if (!elVersion) return;
@@ -128,6 +131,15 @@ export function initStatusBar(): void {
 
   // Uptime ticks every 60 s
   setInterval(updateUptime, 60_000);
+
+  // F6 (v7.2): Cache staleness chip — update every 60 s
+  const updateCacheAge = (): void => {
+    if (!elCacheAge) return;
+    const mins = getOldestCacheAgeMinutes();
+    elCacheAge.textContent = mins > 0 ? `⏱ ${mins}m` : "";
+  };
+  updateCacheAge();
+  setInterval(updateCacheAge, 60_000);
 
   // Listen for connectivity changes
   window.addEventListener("online", () => {

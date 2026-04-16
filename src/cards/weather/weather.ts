@@ -142,6 +142,7 @@ const el = {
   wxWindHeb: null as HTMLElement | null,
   wxDew: null as HTMLElement | null,
   wxGust: null as HTMLElement | null,
+  wxPrecip: null as HTMLElement | null,
 };
 
 export function cacheDom(): void {
@@ -162,6 +163,7 @@ export function cacheDom(): void {
   el.wxWindHeb = document.getElementById("wx-wind-heb");
   el.wxDew = document.getElementById("wx-dew");
   el.wxGust = document.getElementById("wx-gust");
+  el.wxPrecip = document.getElementById("wx-precip");
 }
 
 function getTempUnit(): "C" | "F" {
@@ -265,6 +267,12 @@ export function renderWeather(d: WeatherResponse): void {
               : ["uv-extreme", "קיצוני"];
     // All values are computed constants — innerHTML is safe here
     el.wxUv.innerHTML = `<span class="uv-pill ${uvCls}">${uv.toFixed(0)}</span> ${uvLabel}`;
+  }
+
+  // F1 (v7.2): Today's precipitation probability (from daily forecast index 0)
+  if (el.wxPrecip) {
+    const pp = d.daily.precipitation_probability_max[0] ?? 0;
+    el.wxPrecip.textContent = `${pp}%`;
   }
 
   // Daily forecast

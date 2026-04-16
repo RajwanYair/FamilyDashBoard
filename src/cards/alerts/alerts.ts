@@ -26,6 +26,17 @@ let _haveActive = false;
 let _unread = 0;
 let _timer: ReturnType<typeof setTimeout> | null = null;
 let _realtimeMode = false;
+let _beepVolume = 18; // 0-100, matches config.alertVolume default
+
+/** Set alert beep volume (0–100). Persists for the session. */
+export function setAlertVolume(vol: number): void {
+  _beepVolume = Math.max(0, Math.min(100, vol));
+}
+
+/** Get current alert beep volume. */
+export function getAlertVolume(): number {
+  return _beepVolume;
+}
 
 // ── DOM cache ──
 let elScroll: HTMLElement | null = null;
@@ -52,7 +63,7 @@ function playBeep(): void {
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.frequency.value = 880;
-    gain.gain.value = 0.18;
+    gain.gain.value = _beepVolume / 100;
     osc.start();
     osc.stop(ctx.currentTime + 0.3);
     ctx.close().catch(() => {});

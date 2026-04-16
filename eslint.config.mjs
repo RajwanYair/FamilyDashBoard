@@ -93,7 +93,7 @@ const sharedRules = {
 export default tseslint.config(
   // ── Global ignores ───────────────────────────────────────────────────────
   {
-    ignores: ["node_modules/**", "dist/**", "worker/**"],
+    ignores: ["node_modules/**", "dist/**", "worker/**", "coverage/**"],
   },
 
   // ── TypeScript source files ──────────────────────────────────────────────

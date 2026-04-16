@@ -123,3 +123,27 @@ export function cClear(): void {
     }
   }
 }
+
+/** F6 (v7.2): Returns age in minutes of the oldest dash_v2_ cache entry. 0 if none found. */
+export function getOldestCacheAgeMinutes(): number {
+  let oldest = Date.now();
+  let found = false;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key?.startsWith(LS_PREFIX)) continue;
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as { ts?: number };
+      if (typeof parsed.ts === "number" && parsed.ts < oldest) {
+        oldest = parsed.ts;
+        found = true;
+      }
+    } catch {
+      /* skip malformed entries */
+    }
+  }
+  if (!found) return 0;
+  const ageMs = Date.now() - oldest;
+  return ageMs < 0 ? 0 : Math.floor(ageMs / 60_000);
+}

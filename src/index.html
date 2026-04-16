@@ -67,6 +67,7 @@
           <div class="help-row"><span>מועדפי חדשות</span><span class="help-key">B</span></div>
           <div class="help-row"><span>ציטוט מוטיבציה הבא</span><span class="help-key">M</span></div>
           <div class="help-row"><span>הפעל / כבה התרעות צבע אדום</span><span class="help-key">A</span></div>
+          <div class="help-row"><span>גוון חם לדימר לילה (on/off)</span><span class="help-key">L</span></div>
         </div>
         <div style="text-align:center;margin-top:10px;font-size:0.75em;color:var(--text-muted)">לחץ Escape / ? / H לסגירה</div>
       </div>
@@ -120,8 +121,11 @@
           <div class="cfg-row">
             <span class="cfg-label">🌙 ערכת נושא אוטומטית בלילה</span>
             <input class="cfg-input" id="cfg-auto-theme" type="text" placeholder="on / off" >
-          </div>
+          </div>          <!-- F3 (v7.2): Night dimmer warm amber tint -->
           <div class="cfg-row">
+            <span class="cfg-label">🌗 עמעום בגוון חמים (שימור עיניים)</span>
+            <input class="cfg-input" id="cfg-dim-warm" type="text" placeholder="on / off" title="מפעיל סנן צבע ענבר נעים לעיניים בלילה" >
+          </div>          <div class="cfg-row">
             <span class="cfg-label">⏱️ שניות בשעון</span>
             <input class="cfg-input" id="cfg-clock-seconds" type="text" placeholder="on / off" >
           </div>
@@ -229,6 +233,12 @@
             <span class="cfg-label">🔔 צליל להתראות אדומות</span>
             <input class="cfg-input" id="cfg-alert-sound" type="text" placeholder="on / off" >
           </div>
+          <!-- F2 (v7.2): Alert beep volume slider -->
+          <div class="cfg-row">
+            <span class="cfg-label">🔊 עוצמת צליל התראה (%)</span>
+            <input id="cfg-alert-volume" type="range" min="0" max="100" step="5" style="width:100px;direction:ltr" title="עוצמת יציאת הקול לצלילי התראות">
+            <span id="cfg-alert-volume-val" style="font-size:0.75em;margin-right:6px;min-width:32px">18%</span>
+          </div>
           <div class="cfg-row">
             <span class="cfg-label">⚡ התראות מיידיות 10 שניות</span>
             <input class="cfg-input" id="cfg-alert-realtime" type="text" placeholder="on / off" >
@@ -294,6 +304,23 @@
             <span class="cfg-label">💍 כרטיס ספירה — תאריך התחלה (לסרגל התקדמות)</span>
             <input class="cfg-input" id="cfg-cd-card-start-date" type="date" style="direction:ltr;width:140px" >
           </div>
+          <!-- F8 (v7.2): Countdown card 2nd event -->
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 2 — שם האירוע</span>
+            <input class="cfg-input" id="cfg-cd2-title" type="text" placeholder="חג / יום הולדת / ..." >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 2 — תאריך</span>
+            <input class="cfg-input" id="cfg-cd2-date" type="date" style="direction:ltr;width:140px" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 2 — שעה</span>
+            <input class="cfg-input" id="cfg-cd2-time" type="time" style="direction:ltr;width:100px" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 2 — הודעת סיום</span>
+            <input class="cfg-input" id="cfg-cd2-done-msg" type="text" placeholder="🎉 מזל טוב!" >  
+          </div>
           <!-- F107: Settings export/import -->
           <!-- Chores / Tasks editor (reads/writes localStorage dash_chores) -->
           <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:4px">
@@ -315,6 +342,8 @@
             <button type="button" class="cfg-btn" id="cfg-import-btn" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
             <!-- F120: Dashboard URL share -->
             <button type="button" class="cfg-btn" id="cfg-share-btn" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
+            <!-- F4 (v7.2): Reset all to defaults -->
+            <button type="button" id="cfg-reset-all-btn" style="background:#c33;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:0.82em;cursor:pointer" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
           </div>
           <input type="file" id="cfg-import-file" accept=".json" style="display:none" >
         </div>
@@ -427,6 +456,8 @@
                     <div class="wx-detail"><div class="wx-detail-label">🌡️ מרגיש</div><div class="wx-detail-val" id="wx-feels">--°</div></div>
                     <!-- F142: Dew point -->
                     <div class="wx-detail"><div class="wx-detail-label">🌫️ נ.ר.</div><div class="wx-detail-val" id="wx-dew">--°</div></div>
+                    <!-- F1 (v7.2): Today's precipitation probability -->
+                    <div class="wx-detail"><div class="wx-detail-label">🌧️ גשם</div><div class="wx-detail-val" id="wx-precip">--%</div></div>
                   </div>
                 </div>
                 <!-- F128: Hourly chart view toggle -->
@@ -576,6 +607,17 @@
                 <div class="cd-progress-wrap" id="cd-progress-wrap" style="display:none">
                   <div class="cd-progress-bar" id="cd-progress-bar"></div>
                 </div>
+                <!-- F8 (v7.2): Second countdown event -->
+                <div class="cd2-section" id="cd2-section" style="display:none;margin-top:10px;border-top:1px solid var(--accent-border);padding-top:8px">
+                  <div class="cd-title cd2-title" id="cd2-title"></div>
+                  <div class="cd-tiles cd2-tiles">
+                    <div class="cd-tile"><span class="cd-num" id="cd2-days">--</span><span class="cd-unit">ימים</span></div>
+                    <div class="cd-tile"><span class="cd-num" id="cd2-hours">--</span><span class="cd-unit">שעות</span></div>
+                    <div class="cd-tile"><span class="cd-num" id="cd2-mins">--</span><span class="cd-unit">דקות</span></div>
+                    <div class="cd-tile"><span class="cd-num" id="cd2-secs">--</span><span class="cd-unit">שניות</span></div>
+                  </div>
+                  <div class="cd-msg cd2-msg" id="cd2-msg"></div>
+                </div>
               </div>
             </section>
             <!-- Tasks card -->
@@ -585,6 +627,12 @@
                 <div class="tasks-actions">
                   <button type="button" id="tasks-mark-all-btn" class="tasks-action-btn" title="סמן הכל כבוצע">✅ סמן הכל</button>
                   <button type="button" id="tasks-reset-btn" class="tasks-action-btn tasks-action-reset" title="אפס סימוני היום">🔄 אפס</button>
+                </div>
+                <!-- F7 (v7.2): Quick-add task without opening config -->
+                <div class="tasks-quick-add" id="tasks-quick-add">
+                  <input type="text" id="tasks-quick-input" placeholder="📝 משימה חדשה..." autocomplete="off" >
+                  <input type="text" id="tasks-quick-person" placeholder="שם" style="width:70px" >
+                  <button type="button" id="tasks-quick-add-btn" title="הוסף משימה">➕</button>
                 </div>
                 <div class="tasks-list" id="tasks-list"></div>
                 <!-- Celebratory message when all tasks are done -->
@@ -627,6 +675,8 @@
             <!-- F165: PWA install prompt button -->
             <button type="button" id="btn-install" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.72em;cursor:pointer" title="התקן כאפליקציה עצמאית">📲 התקן</button>
             <span id="refresh-stamp" title="שעת רענון נתונים אחרונה">רענון: --:--</span>
+            <!-- F6 (v7.2): Oldest cached data age -->
+            <span id="cache-age" style="font-size:0.72em;opacity:0.7" title="גיל הנתונים המאוכסנים ביותר"></span>
         </footer>
     </div>
 

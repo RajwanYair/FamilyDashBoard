@@ -69,6 +69,8 @@ body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
 
 /* Feature 54: Night Screen Auto-Dimmer */
 #night-dim { position: fixed; inset: 0; background: #000; pointer-events: none; opacity: 0; transition: opacity 3s ease; z-index: 2; }
+/* F3 (v7.2): Warm amber tint mode — OLED-friendly eye comfort */
+#night-dim.warm-tint { background: #6B3A1F; }
 
 /* Feature 59: Force Refresh Toast */
 #refresh-toast { position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 20px; padding: 5px 16px; font-size: 0.75em; color: var(--text-primary); pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 600; white-space: nowrap; }

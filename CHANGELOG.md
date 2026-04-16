@@ -5,6 +5,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.2.0] — 2026-04-17
+
+> **1706 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint: 10-Feature Sprint (F1–F10)
+
+- **F1 — Precipitation chip**: `#wx-precip` tile in weather card shows today's max precipitation probability (`%`) from Open-Meteo `daily.precipitation_probability_max[0]`
+- **F2 — Alert beep volume**: `setAlertVolume(vol)` / `getAlertVolume()` exported from `alerts.ts`; range slider `#cfg-alert-volume` in Alerts config tab; saved in `config.alertVolume`; applied on startup and config save; live-preview value label
+- **F3 — Night dimmer warm tint**: `setWarmTint(on)` / `isWarmTint()` in `night-dimmer.ts`; `#cfg-dim-warm` toggle in Display tab; applies `.warm-tint` CSS class (`background: #6B3A1F`) when dimmer is active; saved in `config.dimWarmTint`
+- **F4 — Reset all to defaults**: `#cfg-reset-all-btn` red danger button in Advanced tab; clears all `dash_*` localStorage keys after confirmation prompt, then reloads
+- **F5 — SW CLEAR_API_CACHE**: Service Worker message handler for `{ type: "CLEAR_API_CACHE" }` deletes `CACHE_NAME_API` and broadcasts `API_CACHE_CLEARED` to all clients; SW version bumped to `v7.2.0`
+- **F6 — Cache staleness chip**: `getOldestCacheAgeMinutes()` exported from `cache.ts` scans all `dash_v2_*` localStorage entries for oldest `ts`; `#cache-age` span in status bar shows `⏱ Nm` updated every 60 s
+- **F7 — Tasks quick-add form**: `#tasks-quick-add` form with person + chore text inputs and add button; `addQuickChore(person, chore)` appends to `dash_chores` localStorage JSON and re-renders; wired in `initTasksCard()`
+- **F8 — Countdown 2nd event**: `tick2()` exported from `countdown.ts`; reads `countdownCard2{Title,Date,Time,DoneMsg}` from config; shows/hides `#cd2-section`; 4 config inputs in Advanced tab under "אירוע 2"
+- **F9 — News source filter chips**: `renderSourceFilterChips()` exported from `news.ts`; populates `#news-filter-bar` with one `.news-src-chip` per `NEWS_FEEDS` entry with Google favicon; called in `initNewsCard()`
+- **F10 — L key warm tint toggle**: `L` key registered in `main.ts` calls `setWarmTint(!isWarmTint())`; description "גוון חם לדימר לילה" in help overlay
+- **ESLint**: `coverage/**` added to ignore list in `eslint.config.mjs` (removes false warnings from generated coverage artifacts)
+- **Tests**: 20 new tests covering F2 alert volume, F3 warm tint, F6 cache age, F8 tick2, F9 filter chips, F10 L-key registration
+- **Version**: bumped to `7.2.0` in `package.json`, `src/main.ts`, `src/ui/status-bar.ts`, `sw.js`
+
+---
+
 ## [7.1.7] — 2026-04-16
 
 > **1686 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

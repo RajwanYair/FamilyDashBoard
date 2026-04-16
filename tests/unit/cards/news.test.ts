@@ -21,6 +21,7 @@ import {
   markVisited,
   isVisited,
   toggleBookmark,
+  renderSourceFilterChips,
 } from "@/cards/news/news";
 
 describe("News — detectCategory", () => {
@@ -1631,5 +1632,38 @@ describe("News — initNewsSearch clear button click (lines 557-560)", () => {
     document.getElementById("news-search-clear")!.click();
     expect(mod.getSearchQuery()).toBe("");
     expect(input.value).toBe("");
+  });
+});
+
+// ── F9 (v7.2): renderSourceFilterChips ──────────────────────────────────────
+
+describe("News — renderSourceFilterChips (F9 v7.2)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("populates #news-filter-bar with one chip per NEWS_FEEDS entry", () => {
+    document.body.innerHTML = `<div id="news-filter-bar"></div>`;
+    renderSourceFilterChips();
+    const bar = document.getElementById("news-filter-bar")!;
+    const chips = bar.querySelectorAll(".news-src-chip");
+    expect(chips.length).toBe(NEWS_FEEDS.length);
+  });
+
+  it("each chip has correct data-src attribute", () => {
+    document.body.innerHTML = `<div id="news-filter-bar"></div>`;
+    renderSourceFilterChips();
+    const chips = Array.from(
+      document.querySelectorAll<HTMLElement>(".news-src-chip"),
+    );
+    const srcs = chips.map((c) => c.dataset["src"]);
+    for (const feed of NEWS_FEEDS) {
+      expect(srcs).toContain(feed.src);
+    }
+  });
+
+  it("does not throw when #news-filter-bar is absent", () => {
+    document.body.innerHTML = "";
+    expect(() => renderSourceFilterChips()).not.toThrow();
   });
 });

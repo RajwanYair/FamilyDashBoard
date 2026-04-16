@@ -177,11 +177,55 @@ export function tick(): void {
 
 // ── Init / Destroy ───────────────────────────────────────────────────────────
 
+/** F8 (v7.2): Tick for the optional 2nd countdown event. */
+export function tick2(): void {
+  const cfg = loadConfig();
+  const section = document.getElementById("cd2-section");
+  if (!section) return;
+
+  const d2 = cfg.countdownCard2Date;
+  const t2 = cfg.countdownCard2Time || "18:00";
+  if (!d2) {
+    section.style.display = "none";
+    return;
+  }
+
+  const targetMs = new Date(`${d2}T${t2}:00`).getTime();
+  const now = Date.now();
+  const titleEl = document.getElementById("cd2-title");
+  const daysEl = document.getElementById("cd2-days");
+  const hoursEl = document.getElementById("cd2-hours");
+  const minsEl = document.getElementById("cd2-mins");
+  const secsEl = document.getElementById("cd2-secs");
+  const msgEl = document.getElementById("cd2-msg");
+
+  section.style.display = "";
+  if (titleEl) titleEl.textContent = cfg.countdownCard2Title || "אירוע 2";
+
+  if (now >= targetMs) {
+    const daysSince = getDaysSince(targetMs);
+    if (daysEl) daysEl.textContent = String(daysSince);
+    if (hoursEl) hoursEl.textContent = "00";
+    if (minsEl) minsEl.textContent = "00";
+    if (secsEl) secsEl.textContent = "00";
+    if (msgEl) msgEl.textContent = cfg.countdownCard2DoneMsg || "🎉 מזל טוב!";
+    return;
+  }
+
+  const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
+  if (daysEl) daysEl.textContent = String(days);
+  if (hoursEl) hoursEl.textContent = pad(hours);
+  if (minsEl) minsEl.textContent = pad(minutes);
+  if (secsEl) secsEl.textContent = pad(seconds);
+  if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
+}
+
 export function initCountdownCard(): void {
   cacheDom();
   tick();
+  tick2();
   if (_cdInterval !== null) clearInterval(_cdInterval);
-  _cdInterval = setInterval(tick, 1000);
+  _cdInterval = setInterval(() => { tick(); tick2(); }, 1000);
   diagLog("[countdown] Initialized");
 }
 

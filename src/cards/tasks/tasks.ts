@@ -196,6 +196,22 @@ export function resetDoneToday(): void {
   diagLog("[tasks] Done flags reset");
 }
 
+/**
+ * F7 (v7.2): Add a quick chore to the stored list and re-render.
+ * Appends to dash_chores without opening config panel.
+ */
+export function addQuickChore(person: string, chore: string): void {
+  const current = loadChores();
+  current.push({ person: person.trim() || "משפחה", chore: chore.trim() });
+  try {
+    localStorage.setItem("dash_chores", JSON.stringify(current));
+  } catch {
+    /* quota */
+  }
+  renderTasksCard();
+  diagLog(`[tasks] Quick-added: "${chore}" for ${person}`);
+}
+
 // ── Init ────────────────────────────────────────────────────────────────────
 
 let _tasksInterval: number | null = null;
@@ -208,6 +224,24 @@ export function initTasksCard(): void {
 
   document.getElementById("tasks-mark-all-btn")?.addEventListener("click", markAllDone);
   document.getElementById("tasks-reset-btn")?.addEventListener("click", resetDoneToday);
+
+  // F7 (v7.2): Quick-add task
+  const quickInput = document.getElementById("tasks-quick-input") as HTMLInputElement | null;
+  const quickPerson = document.getElementById("tasks-quick-person") as HTMLInputElement | null;
+  const quickBtn = document.getElementById("tasks-quick-add-btn");
+  if (quickBtn && quickInput) {
+    quickBtn.addEventListener("click", () => {
+      const chore = quickInput.value.trim();
+      const person = quickPerson?.value.trim() || "משפחה";
+      if (!chore) return;
+      addQuickChore(person, chore);
+      quickInput.value = "";
+      if (quickPerson) quickPerson.value = "";
+    });
+    quickInput.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Enter") quickBtn.click();
+    });
+  }
 }
 
 export function destroyTasksCard(): void {

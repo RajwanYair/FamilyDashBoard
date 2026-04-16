@@ -398,3 +398,35 @@ describe("Night Dimmer — updateDimIndicator with chip element", () => {
     expect(() => updateDimIndicator()).not.toThrow();
   });
 });
+
+// ── F3 (v7.2): Warm tint toggle ─────────────────────────────────────────────
+
+describe("Night dimmer — setWarmTint / isWarmTint (F3 v7.2)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="night-dim"></div>`;
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("isWarmTint returns false by default", async () => {
+    vi.resetModules();
+    const { isWarmTint } = await import("@/ui/night-dimmer");
+    expect(isWarmTint()).toBe(false);
+  });
+
+  it("setWarmTint(true) sets isWarmTint() to true", async () => {
+    vi.resetModules();
+    const { setWarmTint, isWarmTint } = await import("@/ui/night-dimmer");
+    setWarmTint(true);
+    expect(isWarmTint()).toBe(true);
+  });
+
+  it("setWarmTint(false) sets isWarmTint() to false", async () => {
+    vi.resetModules();
+    const { setWarmTint, isWarmTint } = await import("@/ui/night-dimmer");
+    setWarmTint(true);
+    setWarmTint(false);
+    expect(isWarmTint()).toBe(false);
+  });
+});

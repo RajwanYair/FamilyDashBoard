@@ -411,3 +411,73 @@ describe("Countdown — computeProgress", () => {
     }
   });
 });
+// ── F8 (v7.2): tick2 — 2nd event ─────────────────────────────────────────
+
+import { tick2 } from "@/cards/countdown/countdown";
+
+describe("Countdown — tick2 (F8 v7.2)", () => {
+  function build2DOM(): void {
+    document.body.innerHTML = `
+      <div id="cd2-section"></div>
+      <div id="cd2-title"></div>
+      <div id="cd2-days"></div>
+      <div id="cd2-hours"></div>
+      <div id="cd2-mins"></div>
+      <div id="cd2-secs"></div>
+      <div id="cd2-msg"></div>
+    `;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("hides #cd2-section when no date is configured", () => {
+    build2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "",
+      countdownCard2Title: "",
+      countdownCard2Time: "18:00",
+      countdownCard2DoneMsg: "🎉",
+    } as DashboardConfig);
+    tick2();
+    expect(document.getElementById("cd2-section")?.style.display).toBe("none");
+  });
+
+  it("shows #cd2-section and renders title when date is set", () => {
+    build2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2099-12-31",
+      countdownCard2Title: "אירוע מיוחד",
+      countdownCard2Time: "18:00",
+      countdownCard2DoneMsg: "🎉",
+    } as DashboardConfig);
+    tick2();
+    expect(document.getElementById("cd2-section")?.style.display).not.toBe("none");
+    expect(document.getElementById("cd2-title")?.textContent).toBe("אירוע מיוחד");
+  });
+
+  it("shows done message when event date is in the past", () => {
+    build2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2000-01-01",
+      countdownCard2Title: "אירוע עבר",
+      countdownCard2Time: "00:00",
+      countdownCard2DoneMsg: "🎉 מזל טוב!",
+    } as DashboardConfig);
+    tick2();
+    expect(document.getElementById("cd2-msg")?.textContent).toContain("מזל טוב");
+  });
+
+  it("does not throw when #cd2-section is absent", () => {
+    document.body.innerHTML = "";
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2099-01-01",
+      countdownCard2Title: "Test",
+      countdownCard2Time: "12:00",
+      countdownCard2DoneMsg: "done",
+    } as DashboardConfig);
+    expect(() => tick2()).not.toThrow();
+  });
+});

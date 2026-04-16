@@ -7,6 +7,8 @@
 .news-filter-bar { display: flex; flex-wrap: wrap; gap: 3px; padding: 3px 6px 3px; }
 .news-filter-chip { font-size: 0.58em; padding: 1px 6px; border-radius: 10px; background: var(--bg-card-inner); color: var(--text-muted); cursor: pointer; border: 1px solid transparent; transition: all 0.15s; user-select: none; }
 .news-filter-chip.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+/* F9 (v7.2): Per-source favicon chip */
+.news-src-chip { font-size: 0.56em; padding: 1px 6px; border-radius: 10px; background: var(--bg-card-inner); color: var(--text-muted); cursor: default; border: 1px solid var(--accent-border); user-select: none; display: inline-flex; align-items: center; }
 
 /* Feature 57: News copy-to-clipboard button */
 .news-copy { font-size: 0.62em; color: var(--text-muted); cursor: pointer; padding: 1px 3px; border-radius: 3px; background: transparent; border: none; opacity: 0; flex-shrink: 0; margin-right: 3px; font-family: inherit; transition: opacity 0.15s; }

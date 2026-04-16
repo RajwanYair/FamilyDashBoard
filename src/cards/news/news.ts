@@ -239,6 +239,42 @@ export function cacheDom(): void {
   loadVisited();
 }
 
+// ── F9 (v7.2): Source filter chips with favicons ──────────────────────────
+
+/** Render per-source toggle chips into #news-filter-bar. */
+export function renderSourceFilterChips(): void {
+  const bar = document.getElementById("news-filter-bar");
+  if (!bar) return;
+  bar.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  for (const feed of NEWS_FEEDS) {
+    const domain = (() => {
+      try {
+        return new URL(feed.url).hostname.replace(/^www\./, "");
+      } catch {
+        return "";
+      }
+    })();
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "news-src-chip";
+    chip.title = feed.src;
+    chip.dataset["src"] = feed.src;
+    if (domain) {
+      const img = document.createElement("img");
+      img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=16`;
+      img.alt = "";
+      img.width = 14;
+      img.height = 14;
+      img.style.cssText = "margin-inline-end:3px;vertical-align:middle;border-radius:2px";
+      chip.appendChild(img);
+    }
+    chip.appendChild(document.createTextNode(feed.src));
+    frag.appendChild(chip);
+  }
+  bar.appendChild(frag);
+}
+
 // ── Category detection ──
 export function detectCategory(title: string): string | null {
   const t = (title || "").toLowerCase();
@@ -581,6 +617,7 @@ export function initNewsCard(): void {
   cacheDom();
   applyNewsFontSize();
   initNewsSearch();
+  renderSourceFilterChips();
   void loadNews();
   scheduleCard(loadNews, INTERVALS.NEWS);
   diagLog("[news] Initialized");
