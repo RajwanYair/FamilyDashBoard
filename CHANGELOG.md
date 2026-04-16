@@ -5,6 +5,68 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.4.0] — 2026-04-16
+
+> **1755 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `d3ebc66`)
+
+### Sprint 1 — Quality Gates & Tooling
+
+- **Coverage thresholds**: Vitest coverage minimums set to 75/70/75/75 (statements/branches/functions/lines)
+- **Renovate**: `.github/renovate.json5` added with grouped dependency update rules
+- **`configVersion`**: `CONFIG_VERSION = 1` constant + `configVersion` field in `DashboardConfig`
+- **`migrateConfig()`**: Exported from `src/core/config.ts`; handles forward migration from older config shapes
+- **`sanitize()`**: Applies `isValidTheme`, `isValidScreenMode`, `isValidTempUnit` type guards on load
+- **SW version check**: `scripts/check-sw-version.mjs` added; wired into `npm run check` pipeline
+
+### Sprint 2 — SW Auto-Version & Config Hardening
+
+- **`__APP_VERSION__`**: Vite + Vitest `define` reads `package.json` version at build time; declared in `vite-env.d.ts`
+- **`injectSwVersion` plugin**: Vite plugin replaces `__APP_VERSION__` placeholder in `dist/sw.js` post-build
+- **SW placeholder**: `sw.js` cache names now use `"familydashboard-v__APP_VERSION__"` — no manual version bumps needed
+- **`main.ts` VERSION**: `export const VERSION = __APP_VERSION__` replaces hardcoded string
+- **`isValidFontScale()`**: Type guard (0.5–2.0) added to `src/types/config.ts`; applied in `sanitize()`
+
+### Sprint 3 — Worker Security Hardening
+
+- **News SSRF allowlist**: `ALLOWED_NEWS_ORIGINS` (19 RSS origins) enforced in `handleNews`
+- **`/health` endpoint**: Worker responds `{ status: "ok" }` at `GET /health`
+
+### Sprint 4 — Worker Route Split
+
+- **`worker/src/utils/response.ts`**: Shared `CORS_HEADERS`, `jsonResponse()`, `proxyResponse()`
+- **`worker/src/utils/allowlists.ts`**: `ALLOWED_CALENDAR_ORIGINS` + `ALLOWED_NEWS_ORIGINS`
+- **`worker/src/routes/data.ts`**: `handleWeather`, `handleCurrency`, `handleHebcal`, `handleHebcalHolidays`
+- **`worker/src/routes/feeds.ts`**: `handleStocks`, `handleNews`, `handleAlerts`, `handleCalendar`, `handleSefariaCalendar`
+- **`worker/src/index.ts`**: Refactored to 50-line router importing from extracted modules
+
+### Sprint 5 — CSS Architecture Cleanup
+
+- **`sprints.css` layering**: All `@keyframes` moved into `@layer animations {}`; all component rules into `@layer components {}`
+
+### Sprint 6 — Fetch Backoff & Network State
+
+- **`fetchWithRetry<T>()`**: Exponential backoff with configurable `maxAttempts` (default 3) and `baseDelayMs` (default 1000ms)
+- **Network state tracker**: `recordFetchSuccess()`, `recordFetchFailure()`, `isNetworkOffline()`, `getConsecutiveFailures()`
+- **`fetchJSON()` integration**: Wires `recordFetchSuccess`/`recordFetchFailure` on all success/failure paths
+
+### Sprint 7 — ESLint Strict
+
+- **`prefer-optional-chain`**: Enforced as error; 8 violations fixed across stocks, diag-overlay, night-dimmer, toast, config-panel
+- **`no-import-type-side-effects`**: Enforced as error
+- **`no-console`**: Enforced as warning; no `console.*` in `src/`
+
+### Sprint 8 — Documentation
+
+- **`ARCHITECTURE.md`**: Updated to v7.4 — worker split structure, fetch chain with backoff, updated test count, 2 new key invariants
+
+### Sprint 9 — Tests
+
+- **`fetch.test.ts`**: +8 tests for `fetchWithRetry` (success, retry, exhaustion) and network state tracker
+- **`config.test.ts`**: +9 tests for `isValidFontScale` (valid range, out-of-range, NaN/Infinity/string)
+- **Total**: 1748 tests / 39 suites / 0 failures (up from 1723)
+
+---
+
 ## [7.3.0] — 2026-04-16
 
 > **1723 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
