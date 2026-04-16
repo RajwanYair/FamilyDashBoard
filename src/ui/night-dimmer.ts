@@ -102,24 +102,42 @@ export function isDimActive(): boolean {
 
 /**
  * Initialize night dimmer: apply configured level, run immediate check,
- * then re-check every 60 seconds using the schedule saved in localStorage.
+ * then re-check every 60 seconds using the provided schedule config.
+ *
+ * @param nightDimLevel Dimmer opacity level (0–100).
+ * @param scheduleEnabled Whether automatic schedule is enabled (default: false).
+ * @param startHour Hour to start dimming (0–23, default: 23).
+ * @param endHour   Hour to stop dimming (0–23, default: 6).
  */
-export function initNightDimmer(nightDimLevel: number): void {
+export function initNightDimmer(
+  nightDimLevel: number,
+  scheduleEnabled = false,
+  startHour = 23,
+  endHour = 6,
+): void {
   setDimLevel(nightDimLevel);
 
-  const readHours = (): { start: number; end: number } => ({
-    start: parseInt(localStorage.getItem(LS_DIM_START) ?? "23", 10),
-    end: parseInt(localStorage.getItem(LS_DIM_END) ?? "6", 10),
+  // Prefer config params; fall back to localStorage for backward compat
+  const readHours = (): { start: number; end: number; enabled: boolean } => ({
+    start: startHour !== 23
+      ? startHour
+      : parseInt(localStorage.getItem(LS_DIM_START) ?? String(startHour), 10),
+    end: endHour !== 6
+      ? endHour
+      : parseInt(localStorage.getItem(LS_DIM_END) ?? String(endHour), 10),
+    enabled: scheduleEnabled,
   });
 
-  const { start, end } = readHours();
-  autoDimCheck(start, end);
+  const { start, end, enabled } = readHours();
+  if (enabled) {
+    autoDimCheck(start, end);
+  }
   updateDimIndicator();
 
   setInterval(() => {
-    const { start: s, end: e } = readHours();
-    autoDimCheck(s, e);
+    const { start: s, end: e, enabled: en } = readHours();
+    if (en) autoDimCheck(s, e);
   }, 60_000);
 
-  diagLog(`[dimmer] auto-dim scheduled ${start}h–${end}h @ ${nightDimLevel}%`);
+  diagLog(`[dimmer] schedule ${enabled ? `ON ${start}h–${end}h` : "OFF"} @ ${nightDimLevel}%`);
 }

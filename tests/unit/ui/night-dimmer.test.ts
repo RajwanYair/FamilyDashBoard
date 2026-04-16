@@ -186,7 +186,7 @@ describe("Night Dimmer — initNightDimmer", () => {
     localStorage.setItem("dash_v2_dim_start", "23");
     localStorage.setItem("dash_v2_dim_end", "6");
     const { initNightDimmer } = await freshDimmer();
-    initNightDimmer(55);
+    initNightDimmer(55, true); // scheduleEnabled = true
     const el = document.getElementById("night-dim");
     expect(el?.style.display).toBe("block");
     vi.useRealTimers();
@@ -283,7 +283,7 @@ describe("Night Dimmer — initNightDimmer setInterval re-check", () => {
     localStorage.setItem("dash_v2_dim_start", "23");
     localStorage.setItem("dash_v2_dim_end", "6");
     const { initNightDimmer, isDimActive } = await freshDimmer();
-    initNightDimmer(55);
+    initNightDimmer(55, true); // scheduleEnabled = true
     expect(isDimActive()).toBe(false);
 
     // Advance time to 23:30 and trigger the 60s interval
@@ -299,7 +299,7 @@ describe("Night Dimmer — initNightDimmer setInterval re-check", () => {
     localStorage.setItem("dash_v2_dim_start", "23");
     localStorage.setItem("dash_v2_dim_end", "6");
     const { initNightDimmer, isDimActive } = await freshDimmer();
-    initNightDimmer(55);
+    initNightDimmer(55, true); // scheduleEnabled = true
     expect(isDimActive()).toBe(false);
 
     // Change schedule to include current hour

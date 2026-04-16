@@ -267,9 +267,14 @@ export function init(): void {
     }
   }
 
-  // ── Night dimmer auto-schedule (reads dim hours from localStorage) ──
+  // ── Night dimmer auto-schedule (uses config v2 schedule fields) ──
   const cfg = loadConfig();
-  initNightDimmer(cfg.nightDimLevel);
+  initNightDimmer(
+    cfg.nightDimLevel,
+    cfg.nightDimScheduleEnabled ?? false,
+    cfg.nightDimStartHour ?? 23,
+    cfg.nightDimEndHour ?? 6,
+  );
 
   // ── Apply ticker scroll speed from config ──
   applyTickerSpeed(cfg.tickerSpeed ?? 3);

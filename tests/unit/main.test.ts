@@ -388,7 +388,7 @@ describe("Main — init() config-based setup", () => {
 
   it("passes nightDimLevel to initNightDimmer", () => {
     init();
-    expect(initNightDimmer).toHaveBeenCalledWith(0.7);
+    expect(initNightDimmer).toHaveBeenCalledWith(0.7, false, 23, 6);
   });
 
   it("passes alertsEnabled to setAlertsEnabled", () => {

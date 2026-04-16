@@ -11,6 +11,8 @@ import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
 import { getFailedPanes } from "../core/sync";
 import { isWorkerEnabled } from "../core/constants";
+import { cacheStats, getOldestCacheAgeMinutes } from "../core/cache";
+import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -76,6 +78,18 @@ function renderStats(): void {
   // Worker status
   const workerStatus = isWorkerEnabled() ? "✅ פעיל" : "❌ כבוי";
 
+  // Cache stats (Sprint 37)
+  const cs = cacheStats();
+  const hitPct = cs.hitRate.toFixed(0);
+  const oldestAge = getOldestCacheAgeMinutes();
+  const cacheAgeStr = oldestAge > 0 ? `${oldestAge}m` : "N/A";
+
+  // Network quality (Sprint 34+37)
+  const networkTier = getNetworkQualityTier();
+  const networkIcon = networkTier === "ok" ? "🟢" : networkTier === "slow" ? "🟡" : networkTier === "bad" ? "🔴" : "⚪";
+  const consecutiveFails = getConsecutiveFailures();
+  const networkOffline = isNetworkOffline() ? " (offline)" : "";
+
   // Build info
   const version =
     typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "?";
@@ -88,6 +102,9 @@ function renderStats(): void {
       <span>🗄️ LocalStorage: <b>${lsKB} KB</b></span>
       <span>🌐 Worker: <b>${workerStatus}</b></span>
       <span>⚠️ כשלים: <b>${failedText}</b></span>
+      <span>📦 Cache: <b>${cs.hits}↑ / ${cs.misses}↓ (${hitPct}%)</b></span>
+      <span>🕰️ ותק מטמון: <b>${cacheAgeStr}</b></span>
+      <span>${networkIcon} רשת: <b>${networkTier}${networkOffline}</b>${consecutiveFails > 0 ? ` (×${consecutiveFails})` : ""}</span>
       <span>🏷️ v${version}</span>
       <span>🕒 Build: ${buildTime.slice(0, 10)}</span>
     </div>`;
