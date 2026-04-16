@@ -125,6 +125,11 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        { "checksVoidReturn": { "attributes": false } }
+      ],
+      "@typescript-eslint/require-await": "error",
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { prefer: "type-imports" },

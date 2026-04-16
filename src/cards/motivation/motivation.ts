@@ -93,7 +93,7 @@ export function shareMotivation(): void {
 }
 
 async function loadMotivation(): Promise<void> {
-  renderMotivation();
+  await Promise.resolve(renderMotivation());
 }
 
 export function initMotivationCard(): void {
