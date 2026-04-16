@@ -57,8 +57,6 @@ body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
 #conn-indicator.conn-bad  { color: var(--negative); }
 
 /* F43: Alert Sound toggle */
-#sound-toggle { font-size: 0.65em; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; user-select: none; }
-#sound-toggle:hover { opacity: 1; }
 
 /* F48: Custom ticker prefix chip */
 .ticker-custom { background: var(--warning); color: #000; font-weight: 800; padding: 0 6px; border-radius: 3px; font-size: 0.9em; margin-left: 8px; }

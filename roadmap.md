@@ -11,8 +11,8 @@
 1. [Version History](#version-history)
 2. [Strategic Analysis — What We Got Right](#strategic-analysis--what-we-got-right)
 3. [Critical Assessment — What Needs Rethinking](#critical-assessment--what-needs-rethinking)
-4. [v7.4 — Architecture Hardening](#v74--architecture-hardening)
-5. [v7.5 — Worker-First Migration](#v75--worker-first-migration)
+4. [v7.4 — Architecture Hardening](#v74--architecture-hardening) ✅ Released
+5. [v7.5 — Worker-First Migration](#v75--worker-first-migration) ✅ Released
 6. [v8.0 — Modern Frontend Rewrite](#v80--modern-frontend-rewrite)
 7. [v8.1 — Data Layer & Persistence](#v81--data-layer--persistence)
 8. [v8.2 — Observability & Reliability](#v82--observability--reliability)
@@ -36,6 +36,9 @@
 | v7.2      | ✅ Released | 1706 Vitest / 39 suites    | Precipitation chip, alert volume, warm tint, reset-all, cache staleness, tasks quick-add, countdown 2nd event, news filter chips |
 | **v7.3**  | ✅ Released | **1723 Vitest / 39 suites** | Diag clear, storage estimate, remove-done tasks, live theme preview, SW version chip, motivation auto-advance, person filter chips, RTT tile, dynamic help |
 | **v7.4**  | ✅ Released | **1755 Vitest / 39 suites** | Coverage thresholds, Renovate, configVersion, migrateConfig, SW auto-version, isValidFontScale, worker SSRF allowlist, worker route split, sprints.css @layer, fetchWithRetry, network state tracker, ESLint strict rules |
+| **v7.5**  | ✅ Released | **1850 Vitest / 45 suites** | Worker-first migration, Cloudflare Worker routes/middleware split, per-card CSS co-location, integration tests (config-save, sync-dots, cache-stale, theme-switch) |
+| **v7.6**  | ✅ Released | **1850 Vitest / 45 suites** | Moon phase in weather, Daf Yomi/Halacha, Psalm of day, Zmanim grid, Next calendar event, bookmarks overlay, PWA install prompt, hebrew-cal full refactor |
+| **v7.7**  | ✅ Released | **2027 Vitest / 47 suites** | Runtime API type guards, weather UX (humidity/moon/precip), countdown urgency, tasks priority/due-date, stocks sector emoji, news reading time/breaking detection, hebrew-cal utilities, system-info expansion, core utils (debounce/throttle/clamp/cacheStats) |
 
 ---
 
