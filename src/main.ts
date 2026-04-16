@@ -69,12 +69,14 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 import { installGlobalErrorHandlers } from "./core/error-tracker";
+import { initPerfObserver } from "./core/perf";
 
 // ── Version ──
 export const VERSION = __APP_VERSION__;
 
-// Install error handlers as early as possible (before init)
+// Install error handlers + perf observer as early as possible (before init)
 installGlobalErrorHandlers();
+initPerfObserver();
 
 /**
  * Apply card size overrides from config to DOM elements.

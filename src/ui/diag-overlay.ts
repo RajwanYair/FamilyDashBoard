@@ -14,6 +14,7 @@ import { isWorkerEnabled } from "../core/constants";
 import { cacheStats, getOldestCacheAgeMinutes } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core/error-tracker";
+import { getPerfVitals, formatVital, rateVital, hasPerfSupport } from "../core/perf";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -113,7 +114,20 @@ function renderStats(): void {
       <span>🕒 Build: ${buildTime.slice(0, 10)}</span>
       ${errCount > 0 ? `<span style="color:var(--negative)">⚠️ שגיאות: <b>${errCount}</b></span>` : "<span style=\"color:var(--positive)\">\u2705 אין שגיאות</span>"}
     </div>`;
-  panes.innerHTML = html;
+  // Web Vitals section (Sprint 41)
+  const vitalsHtml = hasPerfSupport() ? (() => {
+    const v = getPerfVitals();
+    const vitalColor = (r: string): string =>
+      r === "good" ? "var(--positive)" : r === "poor" ? "var(--negative)" : "var(--warning)";
+    const items: string[] = [];
+    for (const key of ["lcp", "fcp", "ttfb", "inp", "cls"] as const) {
+      const rating = rateVital(key, v[key]);
+      items.push(`<span style="color:${vitalColor(rating)}">${key.toUpperCase()}: <b>${formatVital(key, v[key])}</b></span>`);
+    }
+    return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">${items.join("")}</div>`;
+  })() : "";
+
+  panes.innerHTML += vitalsHtml;  panes.innerHTML = html;
 }
 
 // ── Copy log to clipboard ──

@@ -111,27 +111,5 @@ jobs:
         run: bash .github/ci/install-tools.sh
       - name: Build
         run: npx vite build
-      - name: Bundle size report
-        run: |
-          echo "## 📦 Bundle Size Report" >> $GITHUB_STEP_SUMMARY
-          ls -lhS dist/assets/ >> $GITHUB_STEP_SUMMARY
-
-          JS_GZ=$(find dist/assets -name '*.js' -exec cat {} + | gzip -c | wc -c)
-          CSS_GZ=$(find dist/assets -name '*.css' -exec cat {} + | gzip -c | wc -c)
-          JS_KB=$((JS_GZ / 1024))
-          CSS_KB=$((CSS_GZ / 1024))
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**JS gzip:** ${JS_KB} KB  |  **CSS gzip:** ${CSS_KB} KB" >> $GITHUB_STEP_SUMMARY
-          echo "JS gzipped: ${JS_KB} KB"
-          echo "CSS gzipped: ${CSS_KB} KB"
-
-          if [ "$JS_KB" -gt 40 ]; then
-            echo "::error::JS bundle exceeds 40 KB gz (${JS_KB} KB)"
-            exit 1
-          fi
-          if [ "$CSS_KB" -gt 18 ]; then
-            echo "::error::CSS bundle exceeds 18 KB gz (${CSS_KB} KB)"
-            exit 1
-          fi
-          echo "✅ Size check passed"
+      - name: Bundle size check
+        run: node scripts/check-bundle-size.mjs
