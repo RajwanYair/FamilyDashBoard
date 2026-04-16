@@ -14,9 +14,12 @@
  *   GET /api/sefaria/calendar             → Sefaria calendars (Daf Yomi)
  */
 
-import { CORS_HEADERS, jsonResponse } from "./utils/response";
+import { jsonResponse } from "./utils/response";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
 import { handleStocks, handleNews, handleAlerts, handleCalendar, handleSefariaCalendar } from "./routes/feeds";
+import { isPreflight, handlePreflight } from "./middleware/cors";
+import { isRateLimited, getClientIp, rateLimitResponse } from "./middleware/rate-limit";
+import { logRequest } from "./middleware/log";
 
 export interface Env {
   ENVIRONMENT: string;
@@ -24,32 +27,38 @@ export interface Env {
 
 export default {
   async fetch(request: Request, _env: Env): Promise<Response> {
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: CORS_HEADERS });
-    }
+    const startMs = Date.now();
+
+    // CORS preflight
+    if (isPreflight(request)) return handlePreflight();
+
+    // Rate limiting
+    const ip = getClientIp(request);
+    if (isRateLimited(ip)) return rateLimitResponse();
 
     const url = new URL(request.url);
     const path = url.pathname;
 
+    let response: Response;
     try {
       if (path === "/health")
-        return jsonResponse({ ok: true, status: "healthy", ts: Date.now() });
-      if (path === "/api/weather") return await handleWeather(url);
-      if (path === "/api/currency") return await handleCurrency();
-      if (path === "/api/hebcal") return await handleHebcal(url);
-      if (path === "/api/hebcal/holidays")
-        return await handleHebcalHolidays(url);
-      if (path === "/api/stocks") return await handleStocks(url);
-      if (path === "/api/news") return await handleNews(url);
-      if (path === "/api/alerts") return await handleAlerts();
-      if (path === "/api/calendar") return await handleCalendar(url);
-      if (path === "/api/sefaria/calendar")
-        return await handleSefariaCalendar();
-
-      return jsonResponse({ error: "Not found" }, 404);
+        response = jsonResponse({ ok: true, status: "healthy", ts: Date.now() });
+      else if (path === "/api/weather") response = await handleWeather(url);
+      else if (path === "/api/currency") response = await handleCurrency();
+      else if (path === "/api/hebcal") response = await handleHebcal(url);
+      else if (path === "/api/hebcal/holidays") response = await handleHebcalHolidays(url);
+      else if (path === "/api/stocks") response = await handleStocks(url);
+      else if (path === "/api/news") response = await handleNews(url);
+      else if (path === "/api/alerts") response = await handleAlerts();
+      else if (path === "/api/calendar") response = await handleCalendar(url);
+      else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar();
+      else response = jsonResponse({ error: "Not found" }, 404);
     } catch {
-      return jsonResponse({ error: "Internal error" }, 500);
+      response = jsonResponse({ error: "Internal error" }, 500);
     }
+
+    logRequest(request, response, startMs, ip);
+    return response;
   },
 };
 
