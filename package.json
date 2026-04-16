@@ -16,8 +16,9 @@
         "lint:fix": "eslint . --fix --cache --cache-strategy content",
         "lint:md": "markdownlint-cli2 \"**/*.md\"",
         "typecheck": "tsc -b --noEmit",
-        "check": "npm run typecheck && npm run lint && npm run lint:md && npm run test",
-        "audit": "npm audit --audit-level=high"
+        "check": "npm run typecheck && npm run lint && npm run lint:md && npm run check:sw && npm run test",
+        "audit": "npm audit --audit-level=high",
+        "check:sw": "node scripts/check-sw-version.mjs"
     },
     "engines": {
         "node": ">=22.0.0"

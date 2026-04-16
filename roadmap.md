@@ -1,202 +1,350 @@
 # FamilyDashBoard — Roadmap
 
-> Always-on family TV dashboard · Hebrew RTL · 1920×1080+
+> Always-on family TV dashboard · Hebrew RTL · 1920×1080+ · TypeScript · Vite · Cloudflare Workers
 
 ![Roadmap timeline](.github/assets/roadmap.svg)
 
 ---
 
-## Status at a Glance
+## Table of Contents
 
-| Version    | Status      | Tests                       | Highlights |
-| ---------- | ----------- | --------------------------- | ---------- |
-| v5.x       | ✅ Released  | 1084 mocha / 61 suites      | Single-file HTML era (archived as `BestDashBoard.html`) |
-| v6.0       | ✅ Released  | 510 Vitest / 29 suites      | Full TypeScript modular rewrite (Vite 8 + TS 5.9) |
-| v6.1       | ✅ Released  | 574 Vitest / 30 suites      | Birthday chip, bookmarks, market badge, bg rotation |
-| v6.2       | ✅ Released  | 849 Vitest / 31 suites      | Portfolio, alerts, weather tabs, news search, 50+ features |
-| v6.3       | ✅ Released  | 896 Vitest / 31 suites      | Coverage sprint: news, alerts, bg-images, config-panel |
-| v6.4       | ✅ Released  | 932 Vitest / 32 suites      | Coverage sprint: stocks, hebrew-cal, ticker, calendar |
-| v6.5       | ✅ Released  | 1240 Vitest / 33 suites     | Coverage sprint: cache, base-card, motivation, maximize |
-| **v7.0**   | ✅ Released  | 1390+ Vitest / 37 suites    | Card registry, tasks card, system-info, CSS @layer, dialog migration, 6 themes, `removeCrossOrigin` build plugin |
-| v7.6       | ✅ Released  | 1541 Vitest / 38 suites     | Drag-and-drop card layout, layout persistence, config panel reset |
-| v7.7       | ✅ Released  | 1554 Vitest / 38 suites     | Coverage sprint: 13 branch-gap tests (stocks, news, weather, hebrew-cal, ticker, layout-drag) |
-| v7.8 infra | ✅ Released  | 1554 Vitest / 38 suites     | 0 markdownlint errors, dead files removed, CI uses markdownlint-cli2, lint:md in check pipeline |
-| **v7.1.0** | ✅ Released  | 1554 Vitest / 38 suites     | Countdown card (11th), unified CI, Hebrew date fix, favicon fix |
-| **v7.1.1** | ✅ Released  | 1570 Vitest / 39 suites     | Pre-release checklist pass, markdown lint fix, test count update |
-| **v7.1.2** | ✅ Released  | 1574 Vitest / 39 suites     | VERSION fixed, applyCardSizes init, chores editor, help M/A shortcuts, tasks pending badge, market status bar chip, night dim indicator, theme doc fixes |
-| **v7.1.3** | ✅ Released  | 1605 Vitest / 39 suites     | Weather dew/gust wiring; portfolio editor in config; configurable tasks reset hour; W key °C/°F; sysinfo memory+CPU tiles; countdown test stability |
-| **v7.1.4** | ✅ Released  | 1623 Vitest / 39 suites     | `getDaysSince()` countdown days-since; 1/2/3 screen-mode shortcuts; alerts+config-panel test coverage; test stability fixes |
-| **v7.1.5** | ✅ Released  | 1648 Vitest / 39 suites     | sysinfo-memory/cpu/viewport tile tests; tasks-all-done-msg tests; w/1/2/3/m keyboard tests; cfg-clock-seconds populate+collect tests |
-| **v7.1.6** | ✅ Released  | 1663 Vitest / 39 suites     | Coverage sprint: status-bar online/offline, night-dimmer chip, bg-images crossfade, layout-drag branches, tasks checkbox handler, countdown clearInterval, stocks statusMarketChip, config-panel sliders |
-| v7.2       | 💡 Idea     | —                           | Multi-user profiles, cloud sync via Cloudflare KV |
+1. [Version History](#version-history)
+2. [Strategic Analysis — What We Got Right](#strategic-analysis--what-we-got-right)
+3. [Critical Assessment — What Needs Rethinking](#critical-assessment--what-needs-rethinking)
+4. [v7.4 — Architecture Hardening](#v74--architecture-hardening)
+5. [v7.5 — Worker-First Migration](#v75--worker-first-migration)
+6. [v8.0 — Modern Frontend Rewrite](#v80--modern-frontend-rewrite)
+7. [v8.1 — Data Layer & Persistence](#v81--data-layer--persistence)
+8. [v8.2 — Observability & Reliability](#v82--observability--reliability)
+9. [v9.0 — Multi-Device & Cloud Sync](#v90--multi-device--cloud-sync)
+10. [Long-Term Vision](#long-term-vision)
+11. [Decision Log](#decision-log)
 
 ---
 
-## v7.0 — Released
+## Version History
 
-Card type system · card registry · tasks card · system-info card · 6th theme (Rose) · CSS `@layer` · CSS `@container` · `color-mix()` tokens · dialog migration (`<dialog>` + `showModal()`) · worker-first fetch (`fetchViaWorker`) · `removeCrossOrigin` build plugin (file:// compatibility) · ESLint hardening · shared npm model · 1390+ tests / 37 suites.
-
-### Remaining for v7.0 release (deferred to v7.1)
-
-- [ ] Card registry → HTML: dynamic `data-card-id` slots rendered by registry
-- [ ] Card add/remove via config panel (registry-aware)
-- [ ] Cloudflare Worker migration for all remaining API routes
-- [ ] Final v7.0 release tagging + changelog
-
----
-
-## v7.1 — Released
-
-- [x] Layout drag-and-drop (column assignment via config panel, persisted to localStorage) — v7.6
-- [x] Card slot persistence: per-device layout via `dash_v2_layout_*` — v7.6
-- [x] Card size control: sm/md/lg/xl chips in config panel — v7.1.2
-- [x] URL-based config sharing (base64-encoded layout in `#cfg=` hash) — v7.0
-- [x] Tasks card integration in Hebrew Calendar (`getTasksForToday()` bridge, `renderTasksStrip()`) — v7.0
-- [x] Adaptive card maximize (`--max-font-scale` CSS variable, FLIP animation) — v7.1.x
-- [x] VERSION constant sync across main.ts + status-bar.ts — v7.1.2
-- [x] Countdown card (11th card) — v7.1.0
-- [x] Chores JSON editor in config panel Advanced tab — v7.1.2
-- [x] Help overlay M/A keyboard shortcuts — v7.1.2
-
-### Remaining for v7.0 release (deferred to v7.1+)
-
-- [ ] Card registry → HTML: dynamic `data-card-id` slots rendered by registry
-- [ ] Card add/remove via config panel (registry-aware, new card discovery)
-- [ ] Cloudflare Worker migration for all remaining API routes
-
-### Problem
-
-The current FLIP-animation maximize (`src/ui/maximize.ts` + `src/styles/maximize.css`) expands a card
-to fill the viewport using `position: fixed`, but font sizes are bumped by hardcoded static `em`
-multipliers per card type (e.g. `.card.maximized .news-body { font-size: 1.35em }`).
-These do **not** scale relative to the actual new card size — on a very large 4K display they are
-too small; on a small 720p display they may be too large. Content also does not fill the available
-height, leaving dead whitespace in taller cards.
-
-### Goal
-
-When a card is maximized, its content and base font size should scale dynamically to fill the full
-expanded size, proportional to the ratio of the expanded card area to the original collapsed area,
-so every maximized card looks like it was designed for that size.
-
-### Design Decisions
-
-| Decision | Rationale |
-|---|---|
-| JS computes the scale ratio, CSS applies it | FLIP already captures both rects; ratio = `expandedWidth / collapsedWidth`. Avoids container-query complexity and works with existing `@layer` architecture. |
-| `--max-font-scale` CSS custom property on the card element | Single property drives all `font-size`, `gap`, and `padding` in CSS; easy to animate; zero coupling between JS and per-card styles. |
-| `clamp(1, var(--max-font-scale, 1), 4)` guard | Prevents scale from going absurdly large on ultra-wide displays or very small cards. |
-| Per-card-type `overflow` and `flex` rules remain in CSS | JS only sets the scale number; layout strategy per card stays in the CSS layer. |
-| `font-size` transition matches the FLIP duration | Feels cohesive; collapseCard resets the variable after the animation ends. |
-
-### Implementation Plan
-
-#### Step 1 — JS: Compute and inject `--max-font-scale` (`src/ui/maximize.ts`)
-
-In `expandCard()`, after recording the FLIP rects:
-
-```ts
-const scaleW = last.width  / first.width;   // e.g. 3.4 on a 1920-wide screen
-const scaleH = last.height / first.height;
-// Use the smaller axis so content is never clipped in the other direction
-const fontScale = Math.min(scaleW, scaleH);
-card.style.setProperty("--max-font-scale", String(parseFloat(fontScale.toFixed(3))));
-```
-
-In `collapseCard()`, after removing the `maximized` class and when the animation ends:
-
-```ts
-const anim = card.animate([...], { duration: 300, easing: "ease-out" });
-anim.finished.then(() => card.style.removeProperty("--max-font-scale"));
-```
-
-#### Step 2 — CSS: Replace hardcoded `em` multipliers with the computed scale (`src/styles/maximize.css`)
-
-Replace all the per-type static font rules with a single variable-driven rule:
-
-```css
-/* Remove these hardcoded rules: */
-/* .card.maximized .news-body    { font-size: 1.35em; } */
-/* .card.maximized .stocks-body  { font-size: 1.3em;  } */
-/* ... etc ... */
-
-/* Replace with: */
-.card.maximized .card-body,
-.card.maximized .news-body,
-.card.maximized .stocks-body,
-.card.maximized .alerts-body,
-.card.maximized .currency-body,
-.card.maximized .moti-body,
-.card.maximized .hc-body,
-.card.maximized .cal-wrapper {
-  font-size: clamp(1rem, calc(1rem * clamp(1, var(--max-font-scale, 1), 4)), 6rem);
-  transition: font-size 0.3s ease-out;
-}
-```
-
-Cards that require special layout adjustments (centering, no-scroll) keep those existing rules
-untouched (e.g. `justify-content: center` on `.currency-body`, `flex-direction: column` on `.hc-body`).
-
-#### Step 3 — Per-card layout audit
-
-Each card body must fill its new dimensions without overflow or dead space:
-
-| Card | Current issue | Fix |
-|---|---|---|
-| **News** | Scroll container has `max-height`; extra items hidden. | Set `.card.maximized .news-body { max-height: 100%; }` so the flex column fills available height. |
-| **Stocks** | Table column widths use `flex-shrink: 0` + fixed `width`; scaling text may clip cells. | After font scale is applied, re-call `applyHiddenStocks()` to repaint column widths relative to new font. |
-| **Calendar** | `.cal-agenda` has `overflow: auto` — works; but day-header font is a fixed `0.75em`. | Cascade `.cal-agenda` font-size from the parent body so headers inherit scale. |
-| **Weather** | `wx-hourly-chart` max-height removed (already). | Verify `svg` viewBox scales with CSS width; add `width: 100%` if needed. |
-| **Currency** | Flex-center already works. | No change needed. |
-| **Hebrew Cal** | Flex-center already works. | No change needed. |
-| **Alerts** | Items are variable length — may need scrolling. | Keep `overflow: auto`; scaled font makes each alert card taller, which is desirable. |
-
-#### Step 4 — Smooth transition
-
-Both `expandCard` and `collapseCard` trigger the CSS `transition: font-size 0.3s ease-out` rule
-added in Step 2. The FLIP animation (scale transform) and the content font-size transition run in
-parallel, giving a smooth "everything grows together" effect.
-
-For `collapseCard`, clear the variable only **after** the collapse animation finishes (via
-`animation.finished.then(...)`) so the font does not abruptly snap before the card reaches its
-original size.
-
-#### Step 5 — `prefers-reduced-motion` guard
-
-The existing `@media (prefers-reduced-motion: reduce)` block already zeroes out `transition-duration`.
-No changes needed; the font-size transition will be suppressed automatically on accessible setups.
-
-#### Step 6 — Tests (`tests/unit/ui/maximize.test.ts`)
-
-Add to the existing maximize suite:
-
-- `expandCard sets --max-font-scale CSS variable on the card element`
-- `expandCard scale value equals min(expandedW/collapsedW, expandedH/collapsedH)`
-- `collapseCard removes --max-font-scale after animation finishes`
-- `expandCard clamps scale to 4 maximum` (mock a card with 0.001px original size)
-
-#### Step 7 — Acceptance checklist (manual QA)
-
-- [ ] All 8 card types fill their maximized viewport slot with no whitespace dead zones
-- [ ] Font is legible from 3 m on a 1920×1080 display when maximized
-- [ ] Collapsing restores original font size with no visible snap
-- [ ] `prefers-reduced-motion` shows no transition
-- [ ] No horizontal scroll inside any maximized card
-- [ ] `npx eslint src tests --max-warnings 0` passes
-- [ ] `npx tsc --noEmit` passes
-- [ ] All Vitest suites pass (0 failures)
-
-### Files Changed
-
-| File | Change |
-|---|---|
-| `src/ui/maximize.ts` | Compute `--max-font-scale` in `expandCard`; clear in `collapseCard.finished.then` |
-| `src/styles/maximize.css` | Replace 8 static em rules with single `clamp()`-driven CSS variable rule |
-| `tests/unit/ui/maximize.test.ts` | 4 new tests for scale computation and variable lifecycle |
+| Version   | Status     | Tests                      | Highlights |
+| --------- | ---------- | -------------------------- | ---------- |
+| v5.x      | ✅ Archived | 1084 Mocha / 61 suites     | Single-file HTML era (`BestDashBoard.html`) |
+| v6.0      | ✅ Released | 510 Vitest / 29 suites     | Full TypeScript modular rewrite (Vite + TS) |
+| v6.1      | ✅ Released | 574 Vitest / 30 suites     | Birthday chip, bookmarks, market badge, BG rotation |
+| v6.2      | ✅ Released | 849 Vitest / 31 suites     | Portfolio, alerts, weather tabs, news search, 50+ features |
+| v6.3–6.5  | ✅ Released | → 1240 Vitest / 33 suites  | Coverage sprints: cache 100%, base-card 100%, motivation 100% |
+| v7.0      | ✅ Released | 1390 Vitest / 37 suites    | Card registry, tasks/system-info cards, CSS @layer, dialog migration, 6 themes |
+| v7.1.x    | ✅ Released | → 1686 Vitest / 39 suites  | Countdown card, drag-drop layout, ticker speed, V/W/L/1/2/3 keys, unified CI |
+| v7.2      | ✅ Released | 1706 Vitest / 39 suites    | Precipitation chip, alert volume, warm tint, reset-all, cache staleness, tasks quick-add, countdown 2nd event, news filter chips |
+| **v7.3**  | ✅ Released | **1723 Vitest / 39 suites** | Diag clear, storage estimate, remove-done tasks, live theme preview, SW version chip, motivation auto-advance, person filter chips, RTT tile, dynamic help |
 
 ---
 
-## v7.2 — Ideas / backlog
+## Strategic Analysis — What We Got Right
+
+These decisions were strong and should be *preserved and doubled down on*:
+
+| Decision | Why It Works |
+| -------- | ------------ |
+| **Zero runtime dependencies** | No CDN outages, no supply-chain risk, sub-100 KB gzipped JS, instant load |
+| **TypeScript strict mode** | Caught hundreds of bugs during the v5→v6 migration; `noUncheckedIndexedAccess` is especially valuable for API data |
+| **Vitest + happy-dom** | 1723 tests in ~4 s; pool=forks isolates DOM state; coverage thresholds enforce discipline |
+| **CSS @layer architecture** | Eliminated specificity wars; themes, components, and animations compose cleanly |
+| **Vanilla CSS custom properties** | No preprocessor build step; theme switching is instant; 6 themes with zero duplication |
+| **`cGet`/`cSet`/`cGetStale` dual-layer cache** | Graceful offline: memory → localStorage → SW cache. Stale-while-revalidate keeps the display warm even with network failures |
+| **Proxy fallback chain** | 4-tier fetch (direct → allorigins → codetabs → corsproxy.io → Worker) gives ~99.9% data availability |
+| **Card registry + lazy import** | Decoupled card lifecycle; new cards don't touch main.ts startup; tree-shaking works per-card |
+| **`safeLoad()` + `Promise.allSettled`** | One failing card never takes down the whole dashboard |
+| **SW offline fallback** | App shell pre-cache + API cache + offline HTML = the dashboard works without network |
+| **Cloudflare Worker** | Routes are fast (edge-deployed), SSRF-hardened, and eliminate CORS entirely for production |
+| **0-warning ESLint + markdownlint** | Enforced consistently; no `eslint-disable`, no `@ts-ignore`; CI gates guard quality |
+| **Hebrew RTL-first design** | `dir=rtl` on `<html>`, logical CSS properties, RTL-aware flex — works correctly for the target audience |
+| **`<dialog>` + `showModal()`** | Native accessibility (ESC close, focus trap, inert backdrop) for free |
+
+---
+
+## Critical Assessment — What Needs Rethinking
+
+### 1. Frontend Architecture
+
+| Issue | Current State | Impact | Recommendation |
+| ----- | ------------- | ------ | -------------- |
+| **HTML is static, not registry-driven** | 11 cards are hardcoded in `index.html`; registry exists but doesn't generate DOM | Dead `data-card-id` slots aren't auto-detected; adding/removing cards requires HTML edits | **v7.4**: registry renders card shells → HTML becomes a skeleton with `<div id="dashboard">` only |
+| **No component abstraction** | Each card is a collection of exported functions + CSS; no encapsulation boundary | Style leaks between cards; hard to test card rendering in isolation | **v8.0**: adopt Web Components (native `<family-card>` custom element) or a lightweight reactive library (Lit, Preact) |
+| **State scattered in module closures** | `_filterPerson`, `_pageVisible`, `_tempUnit` etc. are file-scoped `let` vars | State is invisible to DevTools; no event when state changes; tests must mock module internals | **v8.0**: centralize state in a reactive store (Signals or lightweight pub/sub) |
+| **Config is a flat bag** | `DashboardConfig` has 40+ fields, growing every sprint | Hard to validate, hard to version-migrate, collides on cloud sync | **v8.1**: namespace config per card (`config.cards.weather.tempUnit`, `config.cards.stocks.hidden`) |
+| **CSS files growing via `sprints.css`** | Sprint additions land in a catch-all file | Violates the @layer architecture; hard to attribute styles to features | **v7.4**: each card owns its CSS (already started with tasks/system-info/countdown); delete `sprints.css` |
+
+### 2. Backend / Worker Architecture
+
+| Issue | Current State | Impact | Recommendation |
+| ----- | ------------- | ------ | -------------- |
+| **Worker is a single 250-line file** | All routes in `index.ts`; `routes/` and `middleware/` dirs are empty | Hard to test; no rate limiting; no per-route caching strategy | **v7.5**: split into `routes/*.ts` + `middleware/*.ts`; add Vitest worker tests |
+| **No input validation library** | Each handler does manual `parseInt`/regex; inconsistent error shapes | Security risk; DRY violation | **v7.5**: use `zod` for request validation (single dep, 13 KB) |
+| **No Worker tests** | Zero test coverage for the Cloudflare Worker | Regressions are caught only in production | **v7.5**: add `vitest` suite for worker (miniflare env) |
+| **News feed SSRF not fully locked** | `handleNews()` accepts any HTTPS URL — no origin allowlist | Could be used to probe internal HTTPS services | **v7.5**: add RSS origin allowlist (like `ALLOWED_CALENDAR_ORIGINS`) |
+| **Client still has full proxy chain fallback** | Even with Worker, the client carries 3 CORS proxy URLs | Bloat; proxies are unreliable; security surface | **v8.0**: Worker-only fetch for production; proxy chain as dev-only fallback |
+
+### 3. Data & API Layer
+
+| Issue | Current State | Impact | Recommendation |
+| ----- | ------------- | ------ | -------------- |
+| **Yahoo Finance v8 is unofficial** | No API key; scraping `query1.finance.yahoo.com` | Breaks without warning; rate-limited; legally gray | **v7.5**: migrate to Yahoo Finance v2 with API key, or evaluate Twelve Data / Polygon.io / Alpha Vantage free tier |
+| **CORS proxies are single points of failure** | allorigins, codetabs, corsproxy.io — all free, all unreliable | Proxies go down weekly; each outage triggers timeout cascades | **v7.5**: complete Worker migration so proxies are fallback-only; add health checks |
+| **No API response schema validation** | Raw `as T` casts on all JSON responses | Malformed API data silently renders garbage in the UI | **v8.0**: validate API responses with `zod` schemas at the boundary; fall back to stale cache on schema mismatch |
+| **localStorage is approaching its 5 MB limit** | ~40 keys + cache entries with 7-day eviction | On some Safari/iOS devices, `dash_v2_*` entries can exceed quota | **v8.1**: migrate cache to IndexedDB (via `idb-keyval`, 1 KB); keep `localStorage` for config only |
+| **No API rate-limit tracking** | Exponential backoff exists in BestDashBoard.html but was lost in the v6 rewrite | Rapid failures can hammer APIs and get the IP banned | **v7.4**: restore `recordFailure()`/`recordSuccess()` backoff in `fetch.ts` |
+| **Sefaria API has no fallback** | If Sefaria is down, halacha/daf/psalm are blank | Lost content with no cache fallback | **v7.4**: ensure `cGetStale()` is always checked; add static fallback quotes |
+
+### 4. Testing & Quality
+
+| Issue | Current State | Impact | Recommendation |
+| ----- | ------------- | ------ | -------------- |
+| **No integration tests** | `tests/integration/` dir exists but is empty | Card interactions (e.g., config panel ↔ theme ↔ cards) are untested end-to-end | **v8.0**: add Playwright component tests for critical flows |
+| **No visual regression tests** | CSS changes are verified manually | Theme changes or layout shifts go undetected | **v8.2**: Playwright screenshot comparison for each theme |
+| **Coverage thresholds are low** | 60% statements / 55% branches | Allows significant dead/untested code | **v7.4**: raise to 75%/70%/75%/75% (current actual coverage is likely higher) |
+| **No mutation testing** | Tests pass but may not catch real bugs | False confidence in test quality | **v9.0**: evaluate Stryker.js for mutation testing on core modules |
+| **Worker has zero tests** | Handlers are untested | Every Worker change is deployed blind | **v7.5**: add Miniflare-based test suite |
+
+### 5. Build, Deploy & DevOps
+
+| Issue | Current State | Impact | Recommendation |
+| ----- | ------------- | ------ | -------------- |
+| **Shared `MyScripts/node_modules`** | All deps installed at parent dir; no lockfile in project | CI uses `install-tools.sh` which is fragile; non-standard for contributors | **v8.0**: move to a proper monorepo tool (npm workspaces or Turborepo); each project gets its own lockfile |
+| **No preview deployments** | Only `main` is deployed to GitHub Pages | PR changes can't be previewed visually | **v8.0**: add Cloudflare Pages preview deploys per PR |
+| **SW version is manually synced** | `sw.js` version string updated by hand each release | Easy to forget; stale SW version in production | **v7.4**: generate SW version from `package.json` at build time (Vite define plugin) |
+| **No Lighthouse CI** | Performance/accessibility not tracked over time | Regressions in LCP/CLS/a11y go unnoticed | **v8.2**: add Lighthouse CI to the CI pipeline with budgets |
+| **No dependency update automation** | No Dependabot or Renovate configured | Deps grow stale silently | **v7.4**: add Renovate config for automated PRs |
+
+### 6. Documentation
+
+| Issue | Current State | Impact | Recommendation |
+| ----- | ------------- | ------ | -------------- |
+| **ARCHITECTURE.md says "v6.5 / v7.0-alpha"** | Outdated header; doesn't cover v7.3 features | Misleading for contributors | **v7.4**: update to v7.3; add Worker architecture section |
+| **No API documentation** | Worker routes are documented only in code comments | No external reference for the API contract | **v7.5**: add OpenAPI spec or `worker/README.md` with request/response examples |
+| **Too many instruction files** | 4 `.instructions.md` + `copilot-instructions.md` + `CLAUDE.md` + skills overlap | Contradictions between files; maintenance burden | **v7.4**: consolidate into 2 files: `CONTRIBUTING.md` (human) + `copilot-instructions.md` (AI) |
+| **Inventory file is v5-era** | `/memories/repo/fdb-complete-inventory.md` still references `BestDashBoard.html` | AI agents get confused about current architecture | **v7.4**: update or archive; point to `ARCHITECTURE.md` |
+
+---
+
+## v7.4 — Architecture Hardening
+
+> Focus: clean up debt, raise quality gates, prepare for the Worker-first migration.
+
+### Code Quality
+
+- [ ] **Registry-driven HTML**: `index.html` becomes a skeleton; `card-registry.ts` renders card shells on startup via `listCards()` → `createElement()`. Remove all static `data-card-id` divs from HTML.
+- [ ] **Delete `sprints.css`**: move all rules to the owning card's CSS file or the correct @layer file. Each card should co-locate its CSS (like tasks/system-info/countdown already do).
+- [ ] **Restore exponential backoff**: port `recordFailure()`/`recordSuccess()` from BestDashBoard.html into `fetch.ts`. Apply to all card loaders.
+- [ ] **Stale fallback for all APIs**: audit every card loader — ensure `cGetStale()` is checked when fresh fetch fails. Add static fallback data for Sefaria (motivation quotes, daf placeholder).
+- [ ] **Raise coverage thresholds**: statements 75%, branches 70%, functions 75%, lines 75%.
+
+### Build & Config
+
+- [ ] **Auto-generate SW version**: use `vite.config.ts` `define` plugin to inject `__SW_VERSION__` from `package.json` into `sw.js` (or convert SW to TypeScript and import).
+- [ ] **Add Renovate**: `.github/renovate.json5` for automated dependency update PRs.
+- [ ] **ESLint strict plugin additions**: enable `@typescript-eslint/no-floating-promises` and `@typescript-eslint/no-misused-promises` (catch forgotten `await`).
+
+### Documentation
+
+- [ ] **Update ARCHITECTURE.md to v7.3**: add Worker architecture, card registry flow diagram, CSS layer diagram.
+- [ ] **Consolidate AI instructions**: merge overlapping content from `workspace.instructions.md`, `dashboard.instructions.md`, and `CLAUDE.md` into a single source of truth per concern.
+- [ ] **Create CONTRIBUTING.md**: human-readable setup/dev/test/PR guide.
+
+---
+
+## v7.5 — Worker-First Migration
+
+> Focus: harden the Cloudflare Worker; make it the primary data path; add API validation.
+
+### Worker Refactor
+
+- [ ] **Split `worker/src/index.ts`**: extract each `handle*` function into `worker/src/routes/{weather,stocks,news,currency,calendar,alerts,hebcal,sefaria}.ts`. Shared helpers into `worker/src/utils/`.
+- [ ] **Add middleware layer**: `worker/src/middleware/cors.ts`, `rate-limit.ts` (per-IP 100 req/min via CF `request.headers.get("CF-Connecting-IP")`), `cache-control.ts`.
+- [ ] **Add request validation**: use `zod` for query param validation in each route (single dependency, ~13 KB).
+- [ ] **News feed SSRF lockdown**: add `ALLOWED_NEWS_ORIGINS` allowlist (like calendar already has). Reject unknown origins with 403.
+- [ ] **Worker test suite**: Vitest + Miniflare (`@cloudflare/vitest-pool-workers`). Target: 90%+ coverage on all routes + middleware.
+- [ ] **OpenAPI spec**: `worker/openapi.yaml` documenting all routes, params, response shapes, error codes.
+
+### Stock API Migration
+
+- [ ] **Evaluate alternatives**: Twelve Data (free: 800 req/day, official API), Polygon.io (free: 5 req/min, real-time), Alpha Vantage (free: 25 req/day). Compare data quality, latency, reliability.
+- [ ] **Decision**: pick one and implement in Worker as the primary stock route; keep Yahoo Finance as fallback.
+- [ ] **API key management**: store in Cloudflare Worker secrets (`wrangler secret put STOCK_API_KEY`).
+
+### Client Migration
+
+- [ ] **Worker-first for all cards**: every card's fetch path calls `fetchViaWorker()` first when `isWorkerEnabled()`. Document the full fetch chain: Worker → direct → proxy1 → proxy2 → proxy3 → stale cache.
+- [ ] **Remove proxy chain from production build**: add build-time flag `__USE_PROXIES__`; production build strips proxy URLs; local/dev build keeps them for development without Worker.
+
+---
+
+## v8.0 — Modern Frontend Rewrite
+
+> Focus: proper component model, reactive state, type-safe API boundary, modern tooling.
+
+### Component Architecture
+
+- [ ] **Evaluate: Web Components vs Lit vs Preact**
+  - **Web Components (native)**: zero deps, works today, Shadow DOM isolates card styles. Downside: verbose, no reactive templating.
+  - **Lit** (5 KB gzipped): thin layer over Web Components, reactive properties, fast templates. Recommended if we stay "close to the platform."
+  - **Preact** (4 KB gzipped): JSX/TSX, hooks, familiar React mental model. Better ecosystem. Recommended if we want faster iteration speed.
+  - **Decision criteria**: bundle size (must stay under 100 KB gzipped), RTL support, test ergonomics.
+- [ ] **Implement card base class**: whether native CE or Lit, each card becomes `<fdb-weather>`, `<fdb-news>`, etc. with lifecycle hooks (`connectedCallback`, `disconnectedCallback`).
+- [ ] **Scoped card CSS**: each card's CSS is co-located and scoped (Shadow DOM or CSS modules via Vite plugin).
+
+### Reactive State
+
+- [ ] **Centralized store**: implement a Signals-based store (TC39 proposal, or Preact signals — 1.5 KB).
+  - `state.config` — user configuration (persisted)
+  - `state.cache` — API data cache (ephemeral)
+  - `state.ui` — transient UI state (theme, overlay, maximize)
+- [ ] **Config namespaced per card**: `config.cards.weather = { tempUnit, cities, ... }`. Migration function auto-converts flat config to namespaced on first load.
+- [ ] **Reactive UI updates**: cards subscribe to their slice of state; no manual DOM updates via `textContent` assignment. The reactive layer diffs and patches.
+
+### API Boundary
+
+- [ ] **Zod schemas for all API responses**: `src/types/schemas/{weather,stocks,news,...}.ts`. Each schema validates at the fetch boundary. Invalid data → stale cache fallback.
+- [ ] **Generated TypeScript types from schemas**: `z.infer<typeof WeatherSchema>` replaces hand-written `api.ts` interfaces.
+
+### Tooling
+
+- [ ] **Monorepo migration**: npm workspaces with `packages/dashboard` + `packages/worker` + `packages/shared`. Each package has its own `package.json` and lockfile.
+- [ ] **E2E tests**: Playwright for critical user flows (theme switch, config save, card maximize, keyboard shortcuts).
+- [ ] **Preview deployments**: Cloudflare Pages for PR previews; GitHub Actions publishes preview URL as PR comment.
+
+---
+
+## v8.1 — Data Layer & Persistence
+
+> Focus: robust offline-first data layer, cloud-ready persistence.
+
+### IndexedDB Migration
+
+- [ ] **Replace localStorage cache with IndexedDB**: use `idb-keyval` (1 KB) for the `dash_v2_*` cache. Benefits: no 5 MB limit, structured clone (stores objects directly), async API.
+- [ ] **Keep localStorage for config only**: `DashboardConfig` stays in localStorage (small, sync access needed on startup).
+- [ ] **Migration path**: on first load, copy all `dash_v2_*` from localStorage to IndexedDB, then delete from localStorage.
+
+### Config Versioning
+
+- [ ] **Add `configVersion` field**: `DashboardConfig.version = 3`. On load, run migration functions (`migrateV1toV2`, `migrateV2toV3`) to transform old config shapes.
+- [ ] **Per-card config namespace**: `config.cards = { weather: {...}, stocks: {...}, ... }`. Flat fields become namespaced. Old flat keys are auto-migrated.
+- [ ] **JSON Schema validation**: validate config on load; reject corrupt data and reset to defaults with a toast.
+
+### Service Worker Rewrite
+
+- [ ] **Convert `sw.js` to TypeScript**: `src/sw.ts` compiled by Vite's `worker` option. Imports constants and version from shared code.
+- [ ] **Workbox**: evaluate replacing hand-written SW with Workbox (code-generated strategies). Benefits: precache manifest auto-generated, stale-while-revalidate built-in, cache expiration policies.
+- [ ] **Background sync**: queue failed API writes (e.g., config sync) for retry when online.
+
+---
+
+## v8.2 — Observability & Reliability
+
+> Focus: know when things break before users notice; measure performance continuously.
+
+### Error Reporting
+
+- [ ] **Client error reporting**: integrate a lightweight error tracker (Sentry free tier — 10K events/month, or self-hosted GlitchTip). Capture unhandled rejections, fetch failures, and `diagLog()` errors.
+- [ ] **Worker error reporting**: Cloudflare Workers analytics + Sentry for server-side errors.
+
+### Performance Monitoring
+
+- [ ] **Lighthouse CI**: add `lhci` to GitHub Actions. Set budgets: LCP < 2.5s, CLS < 0.1, TBT < 200ms, accessibility 95+.
+- [ ] **Web Vitals tracking**: add `web-vitals` (1.5 KB) to report CLS, LCP, FID/INP to the diagnostics overlay.
+- [ ] **Bundle size tracking**: CI reports bundle size diff on every PR; fail if JS gzipped > 100 KB or CSS gzipped > 25 KB.
+
+### Visual Regression
+
+- [ ] **Playwright screenshot tests**: capture each theme × normal/compact/cinema screen mode = 18 screenshots. Run on CI; fail on pixel diff > 0.1%.
+- [ ] **Theme contrast checker**: automated WCAG contrast ratio check for all 6 themes using `color-contrast()` or a CI script.
+
+### Health Dashboard
+
+- [ ] **Status page**: simple self-hosted status page (Upptime or Gatus) monitoring Worker health, GitHub Pages, and upstream APIs (Hebcal, Open-Meteo, etc.).
+- [ ] **Alerting**: PagerDuty/email/Telegram alert when critical APIs are down for > 5 min.
+
+---
+
+## v9.0 — Multi-Device & Cloud Sync
+
+> Focus: use the dashboard on multiple screens with shared configuration and state.
+
+### Cloud Sync via Cloudflare KV
+
+- [ ] **Device ID**: generate a UUID per device; store in `localStorage dash_device_id`.
+- [ ] **Family ID**: shared family code entered once in config; stored in Worker KV as the partition key.
+- [ ] **Sync protocol**: on config save → `PUT /api/sync/:familyId` with JSON payload; Worker writes to KV. On load → `GET /api/sync/:familyId` returns latest config. Conflict resolution: last-write-wins with timestamp.
+- [ ] **Selective sync**: sync config + card layout + hidden cards. Do NOT sync cache or transient UI state.
+
+### Multi-User Profiles
+
+- [ ] **Profile switcher**: header shows current family member name; dropdown to switch profiles.
+- [ ] **Per-profile config**: each member can have different hidden cards, theme, font scale. Stored as `config.profiles[memberName]`.
+- [ ] **Profile-aware tasks**: task completion state is per-person; filter chips use the active profile.
+
+### Multi-Display
+
+- [ ] **Screen roles**: configure each device as "kitchen display" (weather + calendar), "living room" (full), "bedroom" (minimal + dimmer). Roles map to card visibility presets.
+- [ ] **WebSocket real-time sync**: Worker uses Durable Objects for real-time config push. When one device changes theme, all devices update instantly.
+
+---
+
+## Long-Term Vision
+
+### v10.0 — Voice & Accessibility
+
+- [ ] **Voice control**: Web Speech API for Hebrew ("מה מזג האוויר?", "הצג חדשות").
+- [ ] **Screen reader full support**: ARIA live regions for updating data, landmark roles, skip-to-content.
+- [ ] **High-contrast mode**: 7th theme designed for low-vision users (WCAG AAA contrast).
+- [ ] **Touch gestures**: swipe between screen modes on tablet; pinch to zoom cards.
+
+### v10.1 — Smart Integrations
+
+- [ ] **Home Assistant integration**: card showing entity states (lights, sensors, cameras) via HA WebSocket API.
+- [ ] **Shelly / Tuya / Sonoff**: direct device control tiles for smart switches.
+- [ ] **Waze traffic tile**: commute time from home to work via Waze API.
+- [ ] **Package tracking**: 17track or AfterShip API integration for delivery status.
+- [ ] **Grocery list**: shared family grocery list with completion sync.
+
+### v10.2 — AI Enhancements
+
+- [ ] **Daily briefing**: AI-generated Hebrew morning summary combining weather, calendar, news highlights, and Hebrew calendar events.
+- [ ] **Smart notifications**: ML model predicts which alerts/news are important based on user interaction history.
+- [ ] **Photo memories**: Google Photos API or local NAS integration showing "this day N years ago" photos.
+
+---
+
+## Decision Log
+
+Key architectural decisions and their rationale, for future reference.
+
+| # | Date | Decision | Alternatives Considered | Rationale |
+| - | ---- | -------- | ----------------------- | --------- |
+| D1 | 2026-04 | TypeScript + Vite (no framework) | React, Vue, Svelte, Angular | Zero-dep constraint; Vite gives fast dev + optimal bundle; TS catches bugs at compile time. Framework overhead unjustified for a read-heavy dashboard. |
+| D2 | 2026-04 | Vitest + happy-dom (not jsdom) | Jest, Mocha, jsdom | Vite-native; happy-dom is 2–3× faster than jsdom; pool=forks prevents DOM leakage. |
+| D3 | 2026-04 | Vanilla CSS + @layer (no Tailwind/Sass) | Tailwind, Sass, CSS-in-JS, styled-components | Zero build overhead; @layer ordering is more maintainable than BEM cascades; CSS custom properties give theme switching for free. |
+| D4 | 2026-04 | Cloudflare Workers (not Vercel/Netlify Functions) | Vercel, Netlify, AWS Lambda, self-hosted | 100K req/day free; edge-deployed = low latency; Wrangler CLI is excellent; KV for future sync. |
+| D5 | 2026-04 | PWA + SW (not Electron/Tauri) | Electron, Tauri, native app | Dashboard runs in a browser tab on a TV/Raspberry Pi; PWA gives offline + installable without app store distribution. |
+| D6 | 2026-04 | localStorage + in-memory Map (not IndexedDB) | IndexedDB, SQLite via wasm | Simple, synchronous, sufficient for config + short-lived cache. **Revisit in v8.1** when cache exceeds 5 MB. |
+| D7 | 2026-04 | No auth / static-only | Firebase Auth, Auth0, Clerk | This is a local family display with no user accounts and no sensitive write operations. Auth adds complexity with zero value. **Revisit in v9.0** if cloud sync requires identity. |
+| D8 | 2026-04 | Hebrew RTL-first | i18n library (i18next), multi-language | Target audience is Hebrew-speaking Israeli families. Adding i18n infrastructure for one language is wasted complexity. **Revisit** only if international users become a real audience. |
+| D9 | TBD | Component model (Web Components vs Lit vs Preact) | Stay vanilla | **Pending v8.0 evaluation**. Current vanilla approach works but doesn't scale well for card isolation and reactive updates. |
+| D10 | TBD | Stock data provider | Yahoo Finance (current), Twelve Data, Polygon.io, Alpha Vantage | **Pending v7.5 evaluation**. Yahoo Finance v8 is unofficial and brittle. Need a provider with: free tier ≥ 15 symbols, official API, JSON response, reasonable rate limits. |
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) (planned for v7.4) for setup, development workflow, and PR guidelines.
+
+Run the full quality gate before every PR:
+
+```bash
+npm run check    # typecheck + lint + markdownlint + vitest
+```
+
+---
+
+<!-- Last updated: v7.3.0 — April 2026 -->
 
 - Multi-user profiles (family members, each with own config)
 - Cloudflare KV sync (sync config across devices)

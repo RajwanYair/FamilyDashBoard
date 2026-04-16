@@ -2,15 +2,16 @@
  * Tests for src/core/config.ts — Config Persistence
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import {
   loadConfig,
   saveConfig,
   updateConfig,
   shareConfigHash,
   loadConfigFromHash,
+  migrateConfig,
 } from "@/core/config";
-import { DEFAULT_CONFIG } from "@/types/config";
+import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, CONFIG_VERSION } from "@/types/config";
 
 describe("Config — loadConfig", () => {
   it("returns defaults when localStorage is empty", () => {
@@ -109,8 +110,8 @@ describe("Config — extra coverage", () => {
   });
 
   it("updateConfig with screenMode persists correctly", () => {
-    updateConfig("screenMode", "desk");
-    expect(loadConfig().screenMode).toBe("desk");
+    updateConfig("screenMode", "tablet");
+    expect(loadConfig().screenMode).toBe("tablet");
   });
 
   it("shareConfigHash encodes different configs differently", () => {
@@ -193,5 +194,97 @@ describe("Config — loadConfigFromHash non-object parsed value (line 70)", () =
     const hash = "#cfg=" + btoa(unescape(encodeURIComponent(JSON.stringify(null))));
     const result = loadConfigFromHash(hash);
     expect(result).toBeNull();
+  });
+});
+
+// ── Sprint 1 (v7.4): migrateConfig + type guards + configVersion ──────────────
+
+describe("Config — migrateConfig (v7.4)", () => {
+  it("adds configVersion=1 when version is missing", () => {
+    const result = migrateConfig({ theme: "blue" });
+    expect(result.configVersion).toBe(1);
+  });
+
+  it("adds configVersion=1 when version is 0", () => {
+    const result = migrateConfig({ configVersion: 0 });
+    expect(result.configVersion).toBe(1);
+  });
+
+  it("does not modify config already at version 1", () => {
+    const result = migrateConfig({ configVersion: 1, theme: "rose" as const });
+    expect(result.configVersion).toBe(1);
+    expect(result.theme).toBe("rose");
+  });
+
+  it("preserves all existing fields during migration", () => {
+    const result = migrateConfig({ theme: "matrix" as const, tempUnit: "F" as const });
+    expect(result.theme).toBe("matrix");
+    expect(result.tempUnit).toBe("F");
+  });
+});
+
+describe("Config — type guards (v7.4)", () => {
+  it("isValidTheme accepts all 6 theme names", () => {
+    for (const t of ["black", "blue", "matrix", "amber", "purple", "rose"]) {
+      expect(isValidTheme(t)).toBe(true);
+    }
+  });
+
+  it("isValidTheme rejects invalid strings", () => {
+    expect(isValidTheme("dark")).toBe(false);
+    expect(isValidTheme("")).toBe(false);
+    expect(isValidTheme(null)).toBe(false);
+    expect(isValidTheme(42)).toBe(false);
+  });
+
+  it("isValidScreenMode accepts tv, tablet, phone", () => {
+    expect(isValidScreenMode("tv")).toBe(true);
+    expect(isValidScreenMode("tablet")).toBe(true);
+    expect(isValidScreenMode("phone")).toBe(true);
+  });
+
+  it("isValidScreenMode rejects invalid strings", () => {
+    expect(isValidScreenMode("desk")).toBe(false);
+    expect(isValidScreenMode("")).toBe(false);
+    expect(isValidScreenMode(undefined)).toBe(false);
+  });
+
+  it("isValidTempUnit accepts C and F", () => {
+    expect(isValidTempUnit("C")).toBe(true);
+    expect(isValidTempUnit("F")).toBe(true);
+  });
+
+  it("isValidTempUnit rejects other values", () => {
+    expect(isValidTempUnit("K")).toBe(false);
+    expect(isValidTempUnit("c")).toBe(false);
+    expect(isValidTempUnit(null)).toBe(false);
+  });
+});
+
+describe("Config — configVersion sanity (v7.4)", () => {
+  it("DEFAULT_CONFIG has configVersion 1", () => {
+    expect(DEFAULT_CONFIG.configVersion).toBe(1);
+  });
+
+  it("CONFIG_VERSION constant matches DEFAULT_CONFIG", () => {
+    expect(CONFIG_VERSION).toBe(DEFAULT_CONFIG.configVersion);
+  });
+
+  it("loadConfig resets invalid theme to default", () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({ theme: "neon" }));
+    const cfg = loadConfig();
+    expect(cfg.theme).toBe(DEFAULT_CONFIG.theme);
+  });
+
+  it("loadConfig resets invalid screenMode to default", () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({ screenMode: "widescreen" }));
+    const cfg = loadConfig();
+    expect(cfg.screenMode).toBe(DEFAULT_CONFIG.screenMode);
+  });
+
+  it("loadConfig resets invalid tempUnit to default", () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({ tempUnit: "K" }));
+    const cfg = loadConfig();
+    expect(cfg.tempUnit).toBe(DEFAULT_CONFIG.tempUnit);
   });
 });

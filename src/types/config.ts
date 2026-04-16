@@ -60,6 +60,11 @@ export interface DashboardConfig {
   countdownCard2DoneMsg: string;
   /** Motivation card — auto-advance interval in minutes (0 = off). */
   motivationInterval: number;
+  /**
+   * Schema version — used to run forward migrations when loading older stored configs.
+   * Increment each time the config shape changes in a breaking way.
+   */
+  configVersion: number;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -103,4 +108,26 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard2Time: "18:00",
   countdownCard2DoneMsg: "🎉 מזל טוב!",
   motivationInterval: 0,
+  configVersion: 1,
 };
+
+/** Current config schema version — bump when shape changes. */
+export const CONFIG_VERSION = 1;
+
+/** Type guard: checks if a string is a valid theme name. */
+export function isValidTheme(v: unknown): v is DashboardConfig["theme"] {
+  return (
+    typeof v === "string" &&
+    ["black", "blue", "matrix", "amber", "purple", "rose"].includes(v)
+  );
+}
+
+/** Type guard: checks if a string is a valid screen mode. */
+export function isValidScreenMode(v: unknown): v is DashboardConfig["screenMode"] {
+  return typeof v === "string" && ["tv", "tablet", "phone"].includes(v);
+}
+
+/** Type guard: checks if a string is a valid temperature unit. */
+export function isValidTempUnit(v: unknown): v is DashboardConfig["tempUnit"] {
+  return typeof v === "string" && ["C", "F"].includes(v);
+}

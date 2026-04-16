@@ -5,10 +5,47 @@
  */
 
 import type { DashboardConfig } from "../types/config";
-import { DEFAULT_CONFIG } from "../types/config";
+import {
+  DEFAULT_CONFIG,
+  CONFIG_VERSION,
+  isValidTheme,
+  isValidScreenMode,
+  isValidTempUnit,
+} from "../types/config";
 import { diagLog } from "./diag";
 
 const LS_KEY = "dash_v2_config";
+
+/**
+ * Run forward migrations on a raw config object.
+ * Each branch handles a specific version-to-version upgrade.
+ * Safe to call with any version (no-ops for current version).
+ */
+export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardConfig> {
+  const version = typeof raw.configVersion === "number" ? raw.configVersion : 0;
+  const cfg: Partial<DashboardConfig> = { ...raw };
+
+  // v0 → v1: configVersion field did not exist
+  if (version < 1) {
+    cfg.configVersion = 1;
+    diagLog("[config] migrated v0 → v1");
+  }
+
+  // Future: v1 → v2, v2 → v3, etc.
+
+  return cfg;
+}
+
+/**
+ * Sanitize enum fields using type guards so stale/invalid values
+ * from old formats are replaced with defaults rather than crashing.
+ */
+function sanitize(cfg: DashboardConfig): DashboardConfig {
+  if (!isValidTheme(cfg.theme)) cfg.theme = DEFAULT_CONFIG.theme;
+  if (!isValidScreenMode(cfg.screenMode)) cfg.screenMode = DEFAULT_CONFIG.screenMode;
+  if (!isValidTempUnit(cfg.tempUnit)) cfg.tempUnit = DEFAULT_CONFIG.tempUnit;
+  return cfg;
+}
 
 /**
  * Load user config from localStorage, merging with defaults.
@@ -20,7 +57,13 @@ export function loadConfig(): DashboardConfig {
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null)
       return { ...DEFAULT_CONFIG };
-    return { ...DEFAULT_CONFIG, ...(parsed as Partial<DashboardConfig>) };
+    const migrated = migrateConfig(parsed as Partial<DashboardConfig>);
+    const config: DashboardConfig = { ...DEFAULT_CONFIG, ...migrated };
+    // Log if schema is behind current version
+    if (config.configVersion !== CONFIG_VERSION) {
+      diagLog(`[config] version ${config.configVersion} → ${CONFIG_VERSION}`);
+    }
+    return sanitize(config);
   } catch {
     diagLog("[config] Failed to parse localStorage config");
     return { ...DEFAULT_CONFIG };
