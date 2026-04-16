@@ -201,6 +201,55 @@ export function deg2hebrewDir(deg: number): string {
   return dirs[Math.round(deg / 45) % 8] ?? "ד׳";
 }
 
+/**
+ * Return a Hebrew comfort-label for a relative-humidity percentage.
+ * Used in the humidity detail tile to augment the raw percentage.
+ */
+export function humidityLabel(rh: number): string {
+  if (rh < 30) return "יבש";
+  if (rh < 50) return "נוח";
+  if (rh < 70) return "לח";
+  return "מאוד לח";
+}
+
+/**
+ * Compute the approximate moon phase for a given date (defaults to today).
+ * Returns a tuple of [emoji, Hebrew name].
+ * Algorithm: synodic month = 29.53 days; reference new moon 2000-01-06.
+ */
+export function moonPhase(date: Date = new Date()): [string, string] {
+  const KNOWN_NEW_MOON_MS = 947182440000; // 2000-01-06T18:14:00Z
+  const SYNODIC_MS = 29.530588853 * 24 * 60 * 60 * 1000;
+  const elapsed = ((date.getTime() - KNOWN_NEW_MOON_MS) % SYNODIC_MS + SYNODIC_MS) % SYNODIC_MS;
+  const phase = elapsed / SYNODIC_MS; // 0–1
+  const phases: [string, string][] = [
+    ["🌑", "מולד"],
+    ["🌒", "סהר גדל"],
+    ["🌓", "רבע ראשון"],
+    ["🌔", "גדל מתמלא"],
+    ["🌕", "מלא"],
+    ["🌖", "קטן מתמלא"],
+    ["🌗", "רבע אחרון"],
+    ["🌘", "סהר קטן"],
+  ];
+  const idx = Math.round(phase * 8) % 8;
+  return phases[idx] ?? ["🌑", "מולד"];
+}
+
+/**
+ * Return a Hebrew summary label for today's precipitation probability.
+ * Shown in the rain/precip detail tile.
+ */
+export function precipSummaryLabel(pp: number): string {
+  if (pp >= 70) return "כנראה גשם";
+  if (pp >= 40) return "ייתכן גשם";
+  if (pp >= 10) return "סיכוי נמוך";
+  return "אין גשם";
+}
+
+/** localStorage key for persisting hourly chart view mode. */
+const LS_CHART_MODE = "dash_wx_chart_mode";
+
 async function fetchWeather(): Promise<WeatherResponse> {
   const lat = _activeLat;
   const lon = _activeLon;
@@ -234,7 +283,7 @@ export function renderWeather(d: WeatherResponse): void {
     el.wxWind.textContent = `${Math.round(cur.wind_speed_10m)} קמ"ש ${deg2arrow(cur.wind_direction_10m)}`;
   if (el.wxWindHeb)
     el.wxWindHeb.textContent = deg2hebrewDir(cur.wind_direction_10m);
-  if (el.wxHum) el.wxHum.textContent = `${cur.relative_humidity_2m}%`;
+  if (el.wxHum) el.wxHum.textContent = `${cur.relative_humidity_2m}% · ${humidityLabel(cur.relative_humidity_2m)}`;
 
   // Dew point (נ.ר.)
   if (el.wxDew)
@@ -273,7 +322,7 @@ export function renderWeather(d: WeatherResponse): void {
   // F1 (v7.2): Today's precipitation probability (from daily forecast index 0)
   if (el.wxPrecip) {
     const pp = d.daily.precipitation_probability_max[0] ?? 0;
-    el.wxPrecip.textContent = `${pp}%`;
+    el.wxPrecip.textContent = `${pp}% · ${precipSummaryLabel(pp)}`;
   }
 
   // Daily forecast
@@ -337,14 +386,16 @@ export function renderWeather(d: WeatherResponse): void {
     }
   }
 
-  // Sunrise/sunset
+  // Sunrise/sunset + moon phase
   if (d.daily && el.wxRise) {
     const ss = new Date(d.daily.sunset[0] ?? "");
     if (!isNaN(ss.getTime())) {
-      el.wxRise.textContent = ss.toLocaleTimeString("he-IL", {
+      const sunsetStr = ss.toLocaleTimeString("he-IL", {
         hour: "2-digit",
         minute: "2-digit",
       });
+      const [moonEmoji] = moonPhase();
+      el.wxRise.textContent = `${sunsetStr} ${moonEmoji}`;
     }
   }
 
@@ -371,11 +422,20 @@ export function initWeatherCard(): void {
   void loadWeather();
   scheduleCard(loadWeather, INTERVALS.WEATHER);
 
-  // Wire chart toggle button (replaces inline onclick="toggleHourlyChartView()")
+  // Wire chart toggle button — persist view mode to localStorage
   document.getElementById("wx-chart-toggle")?.addEventListener("click", () => {
     const chart = document.getElementById("wx-hourly");
-    if (chart) chart.classList.toggle("wx-chart-rain");
+    if (chart) {
+      chart.classList.toggle("wx-chart-rain");
+      try {
+        localStorage.setItem(LS_CHART_MODE, chart.classList.contains("wx-chart-rain") ? "rain" : "temp");
+      } catch { /* quota */ }
+    }
   });
+  // Restore persisted chart mode
+  if (localStorage.getItem(LS_CHART_MODE) === "rain") {
+    document.getElementById("wx-hourly")?.classList.add("wx-chart-rain");
+  }
 
   // Wire temperature unit toggle (°C ↔ °F)
   document

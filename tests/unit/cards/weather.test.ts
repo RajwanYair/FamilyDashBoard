@@ -19,6 +19,9 @@ import {
   toggleTempUnit,
   switchWeatherCity,
   initWeatherCard,
+  humidityLabel,
+  moonPhase,
+  precipSummaryLabel,
 } from "@/cards/weather/weather";
 import type { WeatherResponse } from "@/types/api";
 
@@ -200,9 +203,11 @@ describe("Weather — renderWeather + cacheDom", () => {
     expect(document.getElementById("top-temp")?.textContent).toBe("18°C");
   });
 
-  it("renders humidity percentage", () => {
+  it("renders humidity percentage with comfort label", () => {
     renderWeather(makeWeather({ relative_humidity_2m: 72 }));
-    expect(document.getElementById("wx-hum")?.textContent).toBe("72%");
+    const text = document.getElementById("wx-hum")?.textContent ?? "";
+    expect(text).toContain("72%");
+    expect(text).toContain("מאוד לח");
   });
 
   it("renders wind speed with arrow", () => {
@@ -1911,5 +1916,84 @@ describe("Weather — weekly summary 'שמשי' label (all-clear week)", () => {
     wx.daily.weather_code = [0, 0, 0, 0, 0, 0, 0, 0];
     renderWeather(wx);
     expect(document.getElementById("wx-week-summary")?.textContent).toContain("☀️");
+  });
+});
+
+// ── humidityLabel ────────────────────────────────────────────────────────────
+
+describe("Weather — humidityLabel", () => {
+  it("returns 'יבש' for rh < 30", () => {
+    expect(humidityLabel(0)).toBe("יבש");
+    expect(humidityLabel(29)).toBe("יבש");
+  });
+
+  it("returns 'נוח' for rh 30–49", () => {
+    expect(humidityLabel(30)).toBe("נוח");
+    expect(humidityLabel(49)).toBe("נוח");
+  });
+
+  it("returns 'לח' for rh 50–69", () => {
+    expect(humidityLabel(50)).toBe("לח");
+    expect(humidityLabel(69)).toBe("לח");
+  });
+
+  it("returns 'מאוד לח' for rh >= 70", () => {
+    expect(humidityLabel(70)).toBe("מאוד לח");
+    expect(humidityLabel(100)).toBe("מאוד לח");
+  });
+});
+
+// ── moonPhase ────────────────────────────────────────────────────────────────
+
+describe("Weather — moonPhase", () => {
+  it("returns a tuple [emoji, hebrewName]", () => {
+    const [emoji, name] = moonPhase(new Date("2024-01-11")); // roughly full moon
+    expect(emoji).toMatch(/[\u{1F311}-\u{1F318}]/u);
+    expect(typeof name).toBe("string");
+    expect(name.length).toBeGreaterThan(0);
+  });
+
+  it("returns new moon values for known new moon date", () => {
+    // 2000-01-06 is the reference new moon
+    const [emoji, name] = moonPhase(new Date("2000-01-06T18:14:00Z"));
+    expect(emoji).toBe("🌑");
+    expect(name).toBe("מולד");
+  });
+
+  it("returns full moon emoji for approximately half synodic period later", () => {
+    // ~14.77 days after reference new moon → full moon
+    const ref = new Date("2000-01-06T18:14:00Z");
+    const full = new Date(ref.getTime() + 14.77 * 24 * 60 * 60 * 1000);
+    const [emoji] = moonPhase(full);
+    expect(emoji).toBe("🌕");
+  });
+
+  it("uses today's date when no argument is passed", () => {
+    const [emoji] = moonPhase();
+    expect(["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"]).toContain(emoji);
+  });
+});
+
+// ── precipSummaryLabel ───────────────────────────────────────────────────────
+
+describe("Weather — precipSummaryLabel", () => {
+  it("returns 'אין גשם' for pp < 10", () => {
+    expect(precipSummaryLabel(0)).toBe("אין גשם");
+    expect(precipSummaryLabel(9)).toBe("אין גשם");
+  });
+
+  it("returns 'סיכוי נמוך' for pp 10–39", () => {
+    expect(precipSummaryLabel(10)).toBe("סיכוי נמוך");
+    expect(precipSummaryLabel(39)).toBe("סיכוי נמוך");
+  });
+
+  it("returns 'ייתכן גשם' for pp 40–69", () => {
+    expect(precipSummaryLabel(40)).toBe("ייתכן גשם");
+    expect(precipSummaryLabel(69)).toBe("ייתכן גשם");
+  });
+
+  it("returns 'כנראה גשם' for pp >= 70", () => {
+    expect(precipSummaryLabel(70)).toBe("כנראה גשם");
+    expect(precipSummaryLabel(100)).toBe("כנראה גשם");
   });
 });
