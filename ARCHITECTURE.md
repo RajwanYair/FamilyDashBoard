@@ -1,7 +1,7 @@
-# FamilyDashBoard — Architecture (v6.5 / v7.0-alpha)
+# FamilyDashBoard — Architecture (v7.4)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
-> Worker: <https://familydashboard.rajwanyair.workers.dev>
+> Worker: <https://fdb.rajwanyair.workers.dev>
 
 ![Architecture diagram](.github/assets/architecture.svg)
 
@@ -11,7 +11,7 @@
 | -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
 | Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 1554 tests / 38 suites        |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 1738+ tests / 39 suites       |
 | Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
 | API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
 | Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
@@ -33,10 +33,10 @@ src/
 ├── core/
 │   ├── constants.ts            # URLs, symbols, intervals, WORKER_BASE_URL
 │   ├── cache.ts                # cGet/cSet/cGetStale — in-memory Map + localStorage (dash_v2_*)
-│   ├── fetch.ts                # fetchWithTimeout(8 s) · proxy chain · fetchViaWorker (v7)
+│   ├── fetch.ts                # fetchWithTimeout · proxy chain · fetchViaWorker · fetchWithRetry (backoff) · network state tracker
 │   ├── card-registry.ts        # Map-based card registry, lazy dynamic import() (v7)
 │   ├── diag.ts                 # diagLog() + diagnostic overlay
-│   ├── config.ts               # Settings load/save/export/import (localStorage)
+│   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize() (v7.4)
 │   ├── sync.ts                 # setSync(id, state) — sync dots + health
 │   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper
 │   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED
@@ -81,9 +81,14 @@ src/
 │   └── a11y.css                # prefers-reduced-motion, prefers-contrast
 worker/
 ├── src/
-│   ├── index.ts                # Worker entry + router
-│   ├── routes/                 # weather · stocks · news · currency · calendar · alerts
-│   └── middleware/             # cors · cache · rate-limit
+│   ├── index.ts                # Worker entry + router (50 lines, v7.4)
+│   ├── routes/
+│   │   ├── data.ts             # weather · currency · hebcal · hebcal/holidays
+│   │   └── feeds.ts            # stocks · news · alerts · calendar · sefaria
+│   ├── utils/
+│   │   ├── response.ts         # jsonResponse() · proxyResponse() · CORS_HEADERS
+│   │   └── allowlists.ts       # ALLOWED_NEWS_ORIGINS · ALLOWED_CALENDAR_ORIGINS
+│   └── middleware/             # (planned: cors · cache · rate-limit)
 ├── wrangler.toml
 └── package.json
 tests/unit/
@@ -106,12 +111,14 @@ Browser
 
 Fetch chain (per request):
   cGet(key, TTL) → hit: return cached
-                 → miss: fetchWithTimeout(direct)
+                 → miss: fetchWithRetry(url)   ← exponential backoff (v7.4)
+                       → inner chain: fetchWithTimeout(direct)
                        → fallback: allorigins proxy
                        → fallback: codetabs proxy
                        → fallback: corsproxy.io
-                       → fallback: fetchViaWorker (v7, Cloudflare)
+                       → fallback: fetchViaWorker (Cloudflare, v7)
                  → cSet(key, data)
+                 → recordFetchSuccess / recordFetchFailure (network state, v7.4)
 
 Cache layers:
   L1: in-memory Map (process lifetime)
@@ -140,9 +147,11 @@ Cache layers:
 2. **No hardcoded colors** — all via CSS custom properties (`--accent`, `--bg-card`, etc.)
 3. **No `innerHTML` with unsanitized data** — use `textContent` or `createElement`
 4. **All async loaders**: `safeLoad()` + `if (!_pageVisible) return;` guard
-5. **All fetches**: try/catch + proxy chain (`PROXIES`) + `diagLog()`
+5. **All fetches**: try/catch + proxy chain (`PROXIES`) + `diagLog()` + network state tracking
 6. **All API data**: `cSet`/`cGet`/`cGetStale` dual-layer cache
 7. **DOM refs in `el` object** — no repeated `getElementById`
 8. **0 ESLint errors/warnings** enforced on every commit (CI gate)
 9. **0 TypeScript errors** enforced (`tsc --noEmit` in CI)
 10. **No `eslint-disable` / `@ts-ignore` suppressions** — violations must be fixed
+11. **Config validated on load** — `migrateConfig()` + `sanitize()` via type guards (v7.4)
+12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
