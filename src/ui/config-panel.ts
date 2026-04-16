@@ -38,6 +38,22 @@ const LS_HOME_NAME = "dash_v2_home_name";
 const LS_NEWS_FONT = "dash_v2_news_fontsize";
 const LS_CHORES = "dash_chores";
 
+// ── Unsaved-changes indicator ──
+let _formDirty = false;
+
+function markDirty(): void {
+  if (_formDirty) return;
+  _formDirty = true;
+  const gear = document.getElementById("cfg-gear-btn");
+  if (gear) gear.textContent = "⚙️*";
+}
+
+function clearDirty(): void {
+  _formDirty = false;
+  const gear = document.getElementById("cfg-gear-btn");
+  if (gear) gear.textContent = "⚙️";
+}
+
 let overlayEl: HTMLElement | null = null;
 
 function overlay(): HTMLElement | null {
@@ -549,11 +565,25 @@ export function openConfigPanel(): void {
   if (!ov) return;
   populateForm();
   ov.classList.add("visible");
+  // Auto-focus first text input for immediate keyboard access
+  setTimeout(() => {
+    const first = ov.querySelector<HTMLElement>(
+      "input[type='text']:not([disabled])",
+    );
+    first?.focus();
+  }, 50);
+  // Wire unsaved-changes indicator on first open
+  if (!ov.dataset["dirtyWired"]) {
+    ov.dataset["dirtyWired"] = "1";
+    ov.addEventListener("input", () => markDirty());
+    ov.addEventListener("change", () => markDirty());
+  }
   diagLog("[config-panel] opened");
 }
 
 export function closeConfigPanel(): void {
   overlay()?.classList.remove("visible");
+  clearDirty();
 }
 
 export function toggleConfigPanel(): void {
@@ -598,9 +628,13 @@ export function importSettings(): void {
         if (typeof parsed === "object" && parsed !== null) {
           saveConfig(parsed as DashboardConfig);
           populateForm();
+          clearDirty();
+          const fieldCount = Object.keys(parsed as Record<string, unknown>).length;
+          showToast(`✅ ייבאו ${fieldCount} שדות הגדרה`);
           diagLog("[config-panel] imported settings");
         }
       } catch {
+        showToast("⚠️ ייבוא נכשל — קובץ JSON לא תקין", 4000);
         diagLog("[config-panel] import failed: invalid JSON");
       }
     };
@@ -700,6 +734,7 @@ export function initConfigPanel(): void {
       if (el) el.dataset["cardSize"] = size;
     });
     closeConfigPanel();
+    clearDirty();
     diagLog("[config-panel] settings saved");
     showToast("✅ הגדרות נשמרו בהצלחה");
     // F7 (v7.3): Apply motivation interval from updated config
@@ -804,6 +839,33 @@ export function initConfigPanel(): void {
         .forEach((k) => localStorage.removeItem(k));
       location.reload();
     });
+
+  // JSON live validation for chores + portfolio textareas
+  const validateJsonField = (el: HTMLTextAreaElement): void => {
+    try {
+      JSON.parse(el.value || "[]");
+      el.style.outline = "";
+    } catch {
+      el.style.outline = "2px solid #f87171";
+    }
+  };
+  const choresEl = gTxt("cfg-chores");
+  if (choresEl) {
+    choresEl.addEventListener("input", () => validateJsonField(choresEl));
+  }
+  const portfolioEl = gTxt("cfg-portfolio");
+  if (portfolioEl) {
+    portfolioEl.addEventListener("input", () => validateJsonField(portfolioEl));
+  }
+
+  // Ctrl+S saves from within config panel (works even when inputs are focused)
+  overlay()?.addEventListener("keydown", (e: Event) => {
+    const ke = e as KeyboardEvent;
+    if (ke.ctrlKey && ke.key === "s") {
+      ke.preventDefault();
+      document.getElementById("cfg-save-btn")?.click();
+    }
+  });
 
   diagLog("[config-panel] initialized");
 }
