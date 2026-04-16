@@ -110,3 +110,28 @@ describe("fetchViaWorker", () => {
     );
   });
 });
+
+// -- resetWorkerEnabledCache (Sprint 7 / v7.5) ----------------------------------
+
+import { resetWorkerEnabledCache as resetCache } from "@/core/constants";
+
+describe("resetWorkerEnabledCache", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    resetCache();
+  });
+
+  it("forces re-evaluation of isWorkerEnabled after reset", () => {
+    // First call caches the result
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    const first = isWorkerEnabled();
+    expect(first).toBe(true);
+
+    // Without reset: stubbing onLine would not change the static cache
+    // After reset: re-evaluates protocol + URL; onLine is always live
+    resetCache();
+    vi.stubGlobal("navigator", { ...navigator, onLine: false });
+    const second = isWorkerEnabled();
+    expect(second).toBe(false);
+  });
+});

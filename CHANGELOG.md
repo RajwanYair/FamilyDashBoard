@@ -5,6 +5,76 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.5.0] — 2026-05-11
+
+> **1762 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `e1fd6ab`)
+
+### Sprint 1 — Worker Middleware Layer
+
+- **CORS middleware**: `worker/src/middleware/cors.ts` — `isPreflight()` / `handlePreflight()` (204 + headers)
+- **Rate-limit middleware**: `worker/src/middleware/rate-limit.ts` — 120 req/min sliding window per IP, 429 response
+- **Request logger**: `worker/src/middleware/log.ts` — structured console log for `wrangler tail`
+- **Worker pipeline**: `index.ts` wired as `preflight → rate-limit → route → log`
+- **CORS module refactor**: routes import from middleware, no inline CORS_HEADERS duplication
+
+### Sprint 2 — Worker Validation Helpers
+
+- **`ValidationError` class**: `worker/src/utils/validation.ts` with typed `param` field
+- **Validation helpers**: `requireLat/Lon/Year/GeoId/Symbol/HttpsUrl/Param` with 400 error bodies
+- **Route hardening**: `data.ts` and `feeds.ts` refactored to use validation helpers; consistent `{error,param}` shape
+
+### Sprint 3 — ESLint Rule Expansion
+
+- **`no-misused-promises`**: `checksVoidReturn.attributes: false` — catches forgotten `await` in event handlers
+- **`require-await`**: Flags async functions with no `await` — fixed `loadMotivation()` (was bodyless async)
+
+### Sprint 4 — Documentation
+
+- **`CONTRIBUTING.md`**: Full setup/dev/test/PR guide with architecture overview
+- **`worker/README.md`**: API reference for all 10 worker routes (params, errors, cache TTLs, rate limiting)
+- **Issue templates**: `bug_report.md` and `feature_request.md` in `.github/ISSUE_TEMPLATE/`
+- **ROADMAP.md**: v7.4 row added to Version History table
+
+### Sprint 5 — Static Fallbacks + Stale Cache Utility
+
+- **`fetchWithStale<T>()`**: `src/core/fetch.ts` utility — fresh → stale optimistic → fetch fresh → error keeps stale/fallback
+- **`DAF_STATIC_FALLBACK`**: Exported constant from `hebrew-cal.ts`; shown in `loadDafYomi` when both cache and network fail
+
+### Sprint 6 — Build Flags + Prod Hardening
+
+- **`__BUILD_TIME__`**: ISO timestamp injected by Vite at build time; shown in diagnostics overlay
+- **`__USE_PROXIES__`**: Boolean env flag (`VITE_NO_PROXIES` disables proxy chain)
+- **`scripts/check-bundle-size.mjs`**: CI guard — JS ≤ 100 KB gzip, CSS ≤ 25 KB gzip; exits 1 on violation
+- **`check:bundle` script**: Added to `package.json`
+
+### Sprint 7 — Worker-First Cards
+
+- **Weather card**: `fetchJSON` → `fetchJSONWithWorker` (worker proxy, fallback to direct)
+- **Currency card**: `fetchJSON` → `fetchJSONWithWorker`
+- **Alerts card**: Tries `WORKER_BASE_URL/api/alerts` first, falls back to direct + proxy chain
+- **`isWorkerEnabled()` caching**: Caches static conditions (`protocol` + URL length); `navigator.onLine` re-checked each call
+- **`resetWorkerEnabledCache()`**: Exported for tests and network-change scenarios
+
+### Sprint 8 — UI Polish
+
+- **Toast progress bar**: `::after` shrink animation; `--toast-dur` CSS custom property drives duration
+- **Toast `.visible` fix**: CSS now defines `#toast.visible` (was only `.toast-show`)
+- **Refresh age display**: `updateRefreshAge()` appends `(Nm)` to refresh stamp after 1 min; runs on 60s interval
+- **`--dimmer-warm-color`**: Design token in `tokens.css`; night-dimmer uses `setProperty` instead of hardcoded `#8B4513`
+
+### Sprint 9 — Card Improvements
+
+- **Tasks completion %**: Badge now shows `N / M ✓ (XX%)` in both render paths
+- **Holiday countdown**: `renderHoliday()` now shows Gregorian date + proximity colouring (red ≤ 7d, amber ≤ 30d)
+
+### Sprint 10 — Tests + Release
+
+- **`fetchWithStale` tests**: 4 cases covering fresh hit, stale+fetch, fallback-on-failure, optimistic fallback
+- **`DAF_STATIC_FALLBACK` tests**: Type and pattern validation for the fallback constant
+- **`resetWorkerEnabledCache` test**: Verifies cache reset re-evaluates after stub changes
+
+---
+
 ## [7.4.0] — 2026-04-16
 
 > **1755 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `d3ebc66`)

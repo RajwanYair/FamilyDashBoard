@@ -661,3 +661,58 @@ describe("Fetch — fetchWithRetry (v7.4)", () => {
     ).rejects.toThrow();
   });
 });
+
+// -- fetchWithStale (Sprint 5 / v7.5) -----------------------------------------
+
+import { fetchWithStale } from "@/core/fetch";
+import * as cacheModule from "@/core/cache";
+
+vi.mock("@/core/cache");
+
+describe("fetchWithStale", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("calls onData with fresh cache hit (isStale=false), skips fetcher", async () => {
+    vi.mocked(cacheModule.cGet).mockReturnValue({ v: 1 });
+    const fetcher = vi.fn();
+    const onData = vi.fn();
+    await fetchWithStale({ cacheKey: "k", ttlMs: 1000, fetcher, onData });
+    expect(onData).toHaveBeenCalledWith({ v: 1 }, false);
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("shows stale first then fresh on cache miss + fetch succeeds", async () => {
+    vi.mocked(cacheModule.cGet).mockReturnValue(null);
+    vi.mocked(cacheModule.cGetStale).mockReturnValue({ stale: true });
+    vi.mocked(cacheModule.cSet).mockReturnValue(undefined);
+    const fetcher = vi.fn().mockResolvedValue({ fresh: true });
+    const onData = vi.fn();
+    await fetchWithStale({ cacheKey: "k", ttlMs: 1000, fetcher, onData });
+    expect(onData).toHaveBeenNthCalledWith(1, { stale: true }, true);
+    expect(onData).toHaveBeenNthCalledWith(2, { fresh: true }, false);
+    expect(cacheModule.cSet).toHaveBeenCalledWith("k", { fresh: true });
+  });
+
+  it("shows staticFallback when both cache and fetcher fail", async () => {
+    vi.mocked(cacheModule.cGet).mockReturnValue(null);
+    vi.mocked(cacheModule.cGetStale).mockReturnValue(null);
+    vi.mocked(cacheModule.cSet).mockReturnValue(undefined);
+    const fetcher = vi.fn().mockRejectedValue(new Error("network fail"));
+    const onData = vi.fn();
+    await fetchWithStale({ cacheKey: "k", ttlMs: 1000, fetcher, onData, staticFallback: { fallback: true } });
+    expect(onData).toHaveBeenCalledWith({ fallback: true }, true);
+  });
+
+  it("shows staticFallback optimistically then fresh on success", async () => {
+    vi.mocked(cacheModule.cGet).mockReturnValue(null);
+    vi.mocked(cacheModule.cGetStale).mockReturnValue(null);
+    vi.mocked(cacheModule.cSet).mockReturnValue(undefined);
+    const fetcher = vi.fn().mockResolvedValue({ fresh: true });
+    const onData = vi.fn();
+    await fetchWithStale({ cacheKey: "k", ttlMs: 1000, fetcher, onData, staticFallback: { fallback: true } });
+    expect(onData).toHaveBeenNthCalledWith(1, { fallback: true }, true);
+    expect(onData).toHaveBeenNthCalledWith(2, { fresh: true }, false);
+  });
+});

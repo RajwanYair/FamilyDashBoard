@@ -8,6 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   initHebrewCalCard,
   computeMoonPhase,
+  DAF_STATIC_FALLBACK,
   renderMoonPhase,
   renderZmanim,
   renderNextCalEvent,
@@ -2168,5 +2169,20 @@ describe("Hebrew Calendar — renderNextCalEvent dedup via _lastSpecialNames.som
     // The event row should be hidden (duplicate detected via _lastSpecialNames.some())
     const row = document.getElementById("hc-event-row");
     expect(row?.style.display).toBe("none");
+  });
+});
+
+// -- DAF_STATIC_FALLBACK constant (Sprint 5 / v7.5) ---------------------------
+
+describe("DAF_STATIC_FALLBACK constant", () => {
+  it("is an object with ref and heRef string fields", () => {
+    expect(typeof DAF_STATIC_FALLBACK).toBe("object");
+    expect(typeof DAF_STATIC_FALLBACK.ref).toBe("string");
+    expect(typeof DAF_STATIC_FALLBACK.heRef).toBe("string");
+    expect(DAF_STATIC_FALLBACK.ref.length).toBeGreaterThan(0);
+    expect(DAF_STATIC_FALLBACK.heRef.length).toBeGreaterThan(0);
+  });
+  it("ref matches tractate-page pattern", () => {
+    expect(DAF_STATIC_FALLBACK.ref).toMatch(/\w+\s+\d+[ab]/);
   });
 });
