@@ -154,6 +154,12 @@ let _countdownInterval: ReturnType<typeof setInterval> | null = null;
 let _dafSefariaUrl = "";
 let _parashaSefariaName = "";
 
+/** Static fallback shown when Sefaria is unreachable and no cache exists. */
+export const DAF_STATIC_FALLBACK = {
+  ref: "Yoma 2a",
+  heRef: "יומא ב׳",
+} as const;
+
 // ── School vacation keywords (Hebrew + English) ──
 const SCHOOL_VACATION_TITLES = [
   "Passover",
@@ -398,8 +404,7 @@ async function loadDafYomi(): Promise<void> {
   const stale = cGetStale<{ ref: string; heRef: string }>(key);
   if (stale !== null) renderDaf(stale);
 
-  try {
-    const d = await fetchJSONWithWorker<{
+  try {    const d = await fetchJSONWithWorker<{
       calendar_items: Array<{
         title: { he: string; en: string };
         ref: string;
@@ -429,6 +434,8 @@ async function loadDafYomi(): Promise<void> {
     );
   } catch {
     diagLog("[hebrew-cal] Daf Yomi fetch failed");
+    // Show static fallback if no stale data was shown
+    if (stale === null) renderDaf(DAF_STATIC_FALLBACK);
   }
 }
 

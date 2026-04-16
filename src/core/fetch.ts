@@ -256,3 +256,46 @@ export async function fetchWithRetry<T = unknown>(
 
   throw lastErr;
 }
+
+/**
+ * Fetch with automatic stale-cache fallback.
+ *
+ * Pattern:
+ *   1. Check fresh cache → return immediately if hit.
+ *   2. Return stale cache immediately (optimistic display) while re-fetching.
+ *   3. Fetch fresh data and update cache + render.
+ *   4. On fetch failure, the stale data (or staticFallback) is already shown.
+ *
+ * @param cacheKey      localStorage cache key (without prefix)
+ * @param ttlMs         Cache TTL in milliseconds
+ * @param fetcher       Async function that returns fresh data
+ * @param onData        Callback called with fresh/stale/fallback data
+ * @param staticFallback Optional static value shown when both cache and network fail
+ */
+export async function fetchWithStale<T>(opts: {
+  cacheKey: string;
+  ttlMs: number;
+  fetcher: () => Promise<T>;
+  onData: (data: T, isStale: boolean) => void;
+  staticFallback?: T;
+}): Promise<void> {
+  const { cacheKey, ttlMs, fetcher, onData, staticFallback } = opts;
+  const fresh = (await import("./cache")).cGet<T>(cacheKey, ttlMs);
+  if (fresh !== null) {
+    onData(fresh, false);
+    return;
+  }
+  const stale = (await import("./cache")).cGetStale<T>(cacheKey);
+  if (stale !== null) onData(stale, true);
+  else if (staticFallback !== undefined) onData(staticFallback, true);
+
+  try {
+    const data = await fetcher();
+    (await import("./cache")).cSet(cacheKey, data);
+    onData(data, false);
+  } catch {
+    diagLog(`[fetch] fetchWithStale miss: ${cacheKey}`);
+    if (stale === null && staticFallback !== undefined)
+      onData(staticFallback, true);
+  }
+}
