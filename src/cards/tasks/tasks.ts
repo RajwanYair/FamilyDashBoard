@@ -128,6 +128,15 @@ export function isOverdue(dueDateStr: string): boolean {
 }
 
 /**
+ * Sprint 47: Returns true when `dueDateStr` is exactly today.
+ */
+export function isDueToday(dueDateStr: string): boolean {
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  return dueDateStr === todayStr;
+}
+
+/**
  * Format a `YYYY-MM-DD` due-date string to a short Hebrew-locale string.
  */
 export function formatTaskDueDate(dueDateStr: string): string {
@@ -170,6 +179,7 @@ export function renderTasksCard(): void {
   checkDailyReset();
   const chores = loadChores();
   const doneMap = loadDoneMap();
+  const cfg = loadConfig();
 
   // F8 (v7.3): Render person filter chips
   renderFilterChips(chores);
@@ -198,10 +208,13 @@ export function renderTasksCard(): void {
   }
 
   for (const [person, items] of byPerson) {
-    const personHdr = document.createElement("div");
-    personHdr.className = "tasks-person";
-    personHdr.textContent = person;
-    fragment.appendChild(personHdr);
+    // Sprint 47: person headers gated by tasksShowCategories config
+    if (cfg.tasksShowCategories) {
+      const personHdr = document.createElement("div");
+      personHdr.className = "tasks-person";
+      personHdr.textContent = person;
+      fragment.appendChild(personHdr);
+    }
 
     for (const item of items) {
       const fp = fingerprint(item);
@@ -264,12 +277,14 @@ export function renderTasksCard(): void {
         row.appendChild(badge);
       }
 
-      // Due date chip + overdue class
+      // Due date chip + overdue / due-today class
       if (dueDate) {
         const overdue = isOverdue(dueDate);
+        const dueToday = !overdue && isDueToday(dueDate);
         if (overdue) row.classList.add("overdue");
+        if (dueToday) row.classList.add("due-today");
         const chip = document.createElement("span");
-        chip.className = `tasks-due${overdue ? " tasks-due-overdue" : ""}`;
+        chip.className = `tasks-due${overdue ? " tasks-due-overdue" : dueToday ? " tasks-due-today" : ""}`;
         chip.textContent = `📅 ${formatTaskDueDate(dueDate)}`;
         row.appendChild(chip);
       }

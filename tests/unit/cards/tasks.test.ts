@@ -11,6 +11,7 @@ import {
   parseTaskPriority,
   parseTaskDueDate,
   isOverdue,
+  isDueToday,
   formatTaskDueDate,
   taskCompletionRatio,
 } from "@/cards/tasks/tasks";
@@ -1049,5 +1050,129 @@ describe("Tasks — taskCompletionRatio", () => {
     const r = taskCompletionRatio([], {});
     expect(r.total).toBe(0);
     expect(r.pct).toBe(0);
+  });
+});
+
+// ── Sprint 47: isDueToday ───────────────────────────────────────────────────
+
+describe("Tasks — isDueToday (Sprint 47)", () => {
+  it("returns true for today's date string", () => {
+    const today = new Date();
+    const s = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    expect(isDueToday(s)).toBe(true);
+  });
+
+  it("returns false for a past date", () => {
+    expect(isDueToday("2000-01-01")).toBe(false);
+  });
+
+  it("returns false for a future date", () => {
+    expect(isDueToday("2099-12-31")).toBe(false);
+  });
+
+  it("returns false for empty string", () => {
+    expect(isDueToday("")).toBe(false);
+  });
+});
+
+// ── Sprint 47: due-today CSS class ──────────────────────────────────────────
+
+describe("Tasks — due-today class on row (Sprint 47)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  it("adds due-today class to row when chore is due today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 5, 15, 12, 0, 0)); // 2025-06-15
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "מטאטא @2025-06-15" }]),
+    );
+    localStorage.setItem(
+      "dash_tasks_reset_date",
+      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`,
+    );
+    renderTasksCard();
+    const row = document.querySelector(".tasks-row");
+    expect(row?.classList.contains("due-today")).toBe(true);
+    expect(row?.classList.contains("overdue")).toBe(false);
+  });
+
+  it("adds overdue class (not due-today) to row when chore was yesterday", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 5, 16, 12, 0, 0)); // 2025-06-16, chore due 2025-06-15
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "מטאטא @2025-06-15" }]),
+    );
+    localStorage.setItem(
+      "dash_tasks_reset_date",
+      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`,
+    );
+    renderTasksCard();
+    const row = document.querySelector(".tasks-row");
+    expect(row?.classList.contains("overdue")).toBe(true);
+    expect(row?.classList.contains("due-today")).toBe(false);
+  });
+
+  it("chip has tasks-due-today class when due today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 5, 15, 12, 0, 0));
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "עמרי", chore: "מטאטא @2025-06-15" }]),
+    );
+    localStorage.setItem(
+      "dash_tasks_reset_date",
+      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`,
+    );
+    renderTasksCard();
+    const chip = document.querySelector(".tasks-due");
+    expect(chip?.classList.contains("tasks-due-today")).toBe(true);
+    expect(chip?.classList.contains("tasks-due-overdue")).toBe(false);
+  });
+});
+
+// ── Sprint 47: tasksShowCategories config gate ──────────────────────────────
+
+describe("Tasks — tasksShowCategories config gate (Sprint 47)", () => {
+  const chores = [
+    { person: "עמרי", chore: "מטאטא" },
+    { person: "ריבה", chore: "בישול" },
+  ];
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("hides person headers when tasksShowCategories is false", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ tasksShowCategories: false, configVersion: 3 }),
+    );
+    renderTasksCard();
+    const headers = document.querySelectorAll(".tasks-person");
+    expect(headers.length).toBe(0);
+  });
+
+  it("shows person headers when tasksShowCategories is true", () => {
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ tasksShowCategories: true, configVersion: 3 }),
+    );
+    renderTasksCard();
+    const headers = document.querySelectorAll(".tasks-person");
+    expect(headers.length).toBe(2);
   });
 });

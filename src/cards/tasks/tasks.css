@@ -174,7 +174,19 @@
   font-weight: 700;
 }
 
+/* Sprint 47: task due today — yellow warning styling */
+.tasks-due.tasks-due-today {
+  color: var(--warning, #fbbf24);
+  font-weight: 700;
+}
+
 .tasks-row.overdue {
   background: color-mix(in srgb, var(--danger, #f87171) 8%, transparent);
   border-inline-start: 3px solid var(--danger, #f87171);
+}
+
+/* Sprint 47: task due today gets a yellow highlight */
+.tasks-row.due-today {
+  background: color-mix(in srgb, var(--warning, #fbbf24) 8%, transparent);
+  border-inline-start: 3px solid var(--warning, #fbbf24);
 }
