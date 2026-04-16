@@ -4,9 +4,9 @@
  *   WORKER_BASE_URL, isWorkerEnabled (src/core/constants.ts)
  */
 
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fetchViaWorker } from "@/core/fetch";
-import { WORKER_BASE_URL, isWorkerEnabled } from "@/core/constants";
+import { WORKER_BASE_URL, isWorkerEnabled, resetWorkerEnabledCache } from "@/core/constants";
 
 // ── WORKER_BASE_URL + isWorkerEnabled ─────────────────────────────────────
 
@@ -22,6 +22,9 @@ describe("WORKER_BASE_URL constant", () => {
 });
 
 describe("isWorkerEnabled", () => {
+  beforeEach(() => {
+    resetWorkerEnabledCache();
+  });
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -40,6 +43,9 @@ describe("isWorkerEnabled", () => {
 // ── fetchViaWorker ─────────────────────────────────────────────────────────
 
 describe("fetchViaWorker", () => {
+  beforeEach(() => {
+    resetWorkerEnabledCache();
+  });
   afterEach(() => {
     vi.restoreAllMocks();
   });

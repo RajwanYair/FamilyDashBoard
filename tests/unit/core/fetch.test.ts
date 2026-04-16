@@ -355,11 +355,14 @@ describe("runConcurrent", () => {
 });
 
 import { fetchViaWorker, fetchJSONWithWorker } from "@/core/fetch";
-import { WORKER_BASE_URL } from "@/core/constants";
+import { WORKER_BASE_URL, resetWorkerEnabledCache } from "@/core/constants";
 
 // \u2500\u2500 fetchViaWorker \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 describe("fetchViaWorker", () => {
+  beforeEach(() => {
+    resetWorkerEnabledCache();
+  });
   afterEach(() => {
     vi.restoreAllMocks();
   });

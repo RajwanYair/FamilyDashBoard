@@ -29,13 +29,23 @@ export const WORKER_BASE_URL = "https://fdb.rajwanyair.workers.dev";
  * a local file:// origin — the worker's CORS policy only allows the production
  * domain so attempting it from file:// triggers an 8s timeout per request).
  * Cards that support worker-first fetch check this before using direct/proxy.
+ *
+ * The static conditions (URL + protocol) are cached for the session.
+ * navigator.onLine is re-checked on every call so network changes are honoured.
  */
+let _workerStaticOk: boolean | null = null;
 export function isWorkerEnabled(): boolean {
-  return (
-    WORKER_BASE_URL.length > 0 &&
-    navigator.onLine &&
-    window.location.protocol !== "file:"
-  );
+  if (_workerStaticOk === null) {
+    _workerStaticOk =
+      WORKER_BASE_URL.length > 0 &&
+      window.location.protocol !== "file:";
+  }
+  return _workerStaticOk && navigator.onLine;
+}
+
+/** Reset the cached isWorkerEnabled static result (useful in tests). */
+export function resetWorkerEnabledCache(): void {
+  _workerStaticOk = null;
 }
 
 // ── API Endpoints (will migrate to Cloudflare Worker in Phase 4) ──

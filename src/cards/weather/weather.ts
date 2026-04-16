@@ -12,7 +12,7 @@ import { diagLog } from "../../core/diag";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { setSync } from "../../core/sync";
 import { loadConfig, saveConfig } from "../../core/config";
-import { fetchJSON } from "../../core/fetch";
+import { fetchJSONWithWorker } from "../../core/fetch";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -204,7 +204,7 @@ async function fetchWeather(): Promise<WeatherResponse> {
   const lat = _activeLat;
   const lon = _activeLon;
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
-  return fetchJSON<WeatherResponse>(url);
+  return fetchJSONWithWorker<WeatherResponse>(url);
 }
 
 export function renderWeather(d: WeatherResponse): void {

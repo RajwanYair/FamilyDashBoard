@@ -7,7 +7,7 @@
  * Renders scrolling list of recent alert events.
  */
 
-import { INTERVALS, THREAT_LABELS, API, PROXIES } from "../../core/constants";
+import { INTERVALS, THREAT_LABELS, API, PROXIES, WORKER_BASE_URL, isWorkerEnabled } from "../../core/constants";
 import { cSet, cGetStale } from "../../core/cache";
 import {
   setSync,
@@ -108,8 +108,25 @@ function scheduleAlerts(): void {
   _timer = setTimeout(() => void loadAlerts(), interval);
 }
 
-// ── Fetch alerts (direct + proxy chain) ──
+// ── Fetch alerts (worker-first, then direct + proxy chain) ──
 async function fetchAlerts(): Promise<AlertEvent[]> {
+  // Worker-first: avoids CORS + uses edge cache
+  if (isWorkerEnabled()) {
+    try {
+      const res = await fetch(`${WORKER_BASE_URL}/api/alerts`);
+      if (res.ok) {
+        const data = (await res.json()) as AlertEvent[];
+        if (Array.isArray(data) && data.length) {
+          diagLog("[alerts] worker OK");
+          return data;
+        }
+      }
+    } catch {
+      diagLog("[alerts] worker failed, falling back to direct");
+    }
+  }
+
+  // Fallback: direct + proxy chain
   const sources: Array<{ url: string; isAllOrigins: boolean }> = [
     { url: API.ALERTS, isAllOrigins: false },
     ...PROXIES.map((p) => ({
