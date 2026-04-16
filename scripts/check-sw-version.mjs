@@ -30,15 +30,21 @@ if (!cacheNameMatch) {
 }
 
 const actualCacheName = cacheNameMatch[1];
-if (actualCacheName !== expectedCacheName) {
+// Accept either the exact version OR the build-time placeholder (used in source sw.js).
+const placeholder = "familydashboard-v__APP_VERSION__";
+if (actualCacheName !== expectedCacheName && actualCacheName !== placeholder) {
   console.error(
     `❌  SW version mismatch!\n` +
     `    package.json version : ${appVersion}\n` +
-    `    expected CACHE_NAME  : ${expectedCacheName}\n` +
+    `    expected CACHE_NAME  : ${expectedCacheName} (or placeholder)\n` +
     `    actual   CACHE_NAME  : ${actualCacheName}\n` +
-    `\n    Fix: update CACHE_NAME in sw.js to "${expectedCacheName}"`
+    `\n    Fix: update CACHE_NAME in sw.js to "${expectedCacheName}" or use the __APP_VERSION__ placeholder`
   );
   process.exit(1);
 }
 
-console.log(`✅  SW version matches package.json: v${appVersion}`);
+if (actualCacheName === placeholder) {
+  console.log(`✅  SW version: using __APP_VERSION__ placeholder — will resolve to v${appVersion} at build time`);
+} else {
+  console.log(`✅  SW version matches package.json: v${appVersion}`);
+}

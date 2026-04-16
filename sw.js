@@ -17,8 +17,8 @@
  * v7.1.2: Markdown lint fix, 1574 tests/39 suites
  * v7.2.0: F5 CLEAR_API_CACHE handler, precipitation chip, alert volume, warm tint, reset-all, cache-age chip, tasks quick-add, countdown 2nd event, news filter chips, L-key warm tint */
 
-const CACHE_NAME = "familydashboard-v7.3.0";
-const CACHE_NAME_API = "familydashboard-api-v7.3.0";
+const CACHE_NAME = "familydashboard-v__APP_VERSION__";
+const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // F111: include sw.js itself in app shell pre-cache
 const APP_SHELL = [
   "./BestDashBoard.html",

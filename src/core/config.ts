@@ -11,6 +11,7 @@ import {
   isValidTheme,
   isValidScreenMode,
   isValidTempUnit,
+  isValidFontScale,
 } from "../types/config";
 import { diagLog } from "./diag";
 
@@ -44,6 +45,7 @@ function sanitize(cfg: DashboardConfig): DashboardConfig {
   if (!isValidTheme(cfg.theme)) cfg.theme = DEFAULT_CONFIG.theme;
   if (!isValidScreenMode(cfg.screenMode)) cfg.screenMode = DEFAULT_CONFIG.screenMode;
   if (!isValidTempUnit(cfg.tempUnit)) cfg.tempUnit = DEFAULT_CONFIG.tempUnit;
+  if (!isValidFontScale(cfg.fontScale)) cfg.fontScale = DEFAULT_CONFIG.fontScale;
   return cfg;
 }
 

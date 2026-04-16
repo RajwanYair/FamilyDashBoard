@@ -1,8 +1,16 @@
 import { defineConfig, type Plugin } from "vite";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const tempBase = join(tmpdir(), "fdb-dev");
+
+// Read app version once at config time so all plugins share it.
+const appVersion: string = (
+  JSON.parse(readFileSync(resolve(__dirname, "package.json"), "utf-8")) as {
+    version: string;
+  }
+).version;
 
 /**
  * Detect if this is a local (file://) build by checking --base ./ on the
@@ -14,7 +22,25 @@ const isLocalBuild = (() => {
 })();
 
 /**
- * Remove crossorigin attributes so the built app loads from file:// URLs.
+ * After every production build: copy sw.js → dist/sw.js and replace
+ * the __APP_VERSION__ placeholder with the real version from package.json.
+ * Also copies manifest.json and icon.svg which are not in src/public/.
+ */
+const injectSwVersion: Plugin = {
+  name: "inject-sw-version",
+  apply: "build",
+  closeBundle() {
+    // sw.js
+    const swSrc = readFileSync(resolve(__dirname, "sw.js"), "utf-8");
+    const swOut = swSrc.replace(/__APP_VERSION__/g, appVersion);
+    writeFileSync(resolve(__dirname, "dist", "sw.js"), swOut);
+    // root-level manifest.json (PWA)
+    writeFileSync(
+      resolve(__dirname, "dist", "manifest.json"),
+      readFileSync(resolve(__dirname, "manifest.json"), "utf-8"),
+    );
+  },
+};
  * Chrome blocks crossorigin CORS fetches on file:// origins.
  *
  * For LOCAL builds (--base ./) two additional transforms are applied:
@@ -52,7 +78,11 @@ export default defineConfig({
   root: "src",
   base: "/FamilyDashBoard/",
   cacheDir: join(tempBase, ".vite"),
-  plugins: [removeCrossOrigin],
+  plugins: [removeCrossOrigin, injectSwVersion],
+
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
+  },
 
   build: {
     outDir: resolve(__dirname, "dist"),
@@ -122,7 +152,7 @@ export default defineConfig({
   // helper snippets which rolldown replaces with {} correctly.
   ...(isLocalBuild
     ? {
-        define: { "import.meta": "{}" },
+        define: { "import.meta": "{}", __APP_VERSION__: JSON.stringify(appVersion) },
       }
     : {}),
 

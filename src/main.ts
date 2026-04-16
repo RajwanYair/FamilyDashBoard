@@ -69,7 +69,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 // ── Version ──
-export const VERSION = "7.2.0";
+export const VERSION = __APP_VERSION__;
 
 /**
  * Apply card size overrides from config to DOM elements.

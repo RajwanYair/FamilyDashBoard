@@ -131,3 +131,8 @@ export function isValidScreenMode(v: unknown): v is DashboardConfig["screenMode"
 export function isValidTempUnit(v: unknown): v is DashboardConfig["tempUnit"] {
   return typeof v === "string" && ["C", "F"].includes(v);
 }
+
+/** Type guard: checks if a number is a valid font scale (0.5–2.0 in 0.1 steps). */
+export function isValidFontScale(v: unknown): v is number {
+  return typeof v === "number" && isFinite(v) && v >= 0.5 && v <= 2.0;
+}

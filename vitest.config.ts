@@ -1,8 +1,15 @@
 import { defineConfig } from "vitest/config";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
+import { readFileSync } from "node:fs";
 
 const tempBase = join(tmpdir(), "fdb-dev");
+
+const appVersion: string = (
+  JSON.parse(readFileSync(resolve(__dirname, "package.json"), "utf-8")) as {
+    version: string;
+  }
+).version;
 
 /**
  * Vitest configuration — separate from vite.config.ts so test-only settings
@@ -13,6 +20,9 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "src"),
     },
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
   },
   cacheDir: join(tempBase, ".vitest"),
   test: {
