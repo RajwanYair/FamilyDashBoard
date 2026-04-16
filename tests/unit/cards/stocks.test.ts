@@ -19,6 +19,11 @@ import {
   renderStocksShell,
   applyHiddenStocks,
   initStocksCard,
+  formatVolume,
+  priceInRange52w,
+  sectorEmoji,
+  portfolioChange,
+  marketStatusLabel,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear } from "@/core/cache";
@@ -2141,5 +2146,121 @@ describe("Stocks — updateStockSummary counts stk-down stocks (line 557 else-if
     const summaryEl = document.getElementById("stk-summary");
     // Summary contains יורדות count (dn > 0)
     expect(summaryEl?.textContent ?? "").toContain("יורדות");
+  });
+});
+
+// ── Sprint 25: formatVolume ───────────────────────────────────────────────────
+
+describe("Stocks — formatVolume", () => {
+  it("formats billions with B suffix", () => {
+    expect(formatVolume(2_500_000_000)).toBe("2.5B");
+  });
+
+  it("formats millions with M suffix", () => {
+    expect(formatVolume(1_234_567)).toBe("1.2M");
+  });
+
+  it("formats thousands with K suffix", () => {
+    expect(formatVolume(9_500)).toBe("10K");
+  });
+
+  it("returns raw number below 1000", () => {
+    expect(formatVolume(999)).toBe("999");
+  });
+
+  it("formats exactly 1 billion", () => {
+    expect(formatVolume(1_000_000_000)).toBe("1.0B");
+  });
+});
+
+// ── Sprint 25: priceInRange52w ────────────────────────────────────────────────
+
+describe("Stocks — priceInRange52w", () => {
+  it("returns 0 when price equals low", () => {
+    expect(priceInRange52w(100, 100, 200)).toBe(0);
+  });
+
+  it("returns 1 when price equals high", () => {
+    expect(priceInRange52w(200, 100, 200)).toBe(1);
+  });
+
+  it("returns 0.5 when price is midpoint", () => {
+    expect(priceInRange52w(150, 100, 200)).toBe(0.5);
+  });
+
+  it("clamps to 0 when price is below low", () => {
+    expect(priceInRange52w(50, 100, 200)).toBe(0);
+  });
+
+  it("clamps to 1 when price is above high", () => {
+    expect(priceInRange52w(300, 100, 200)).toBe(1);
+  });
+
+  it("returns null when high equals low", () => {
+    expect(priceInRange52w(150, 100, 100)).toBeNull();
+  });
+});
+
+// ── Sprint 25: sectorEmoji ────────────────────────────────────────────────────
+
+describe("Stocks — sectorEmoji", () => {
+  it("returns 🍎 for AAPL", () => {
+    expect(sectorEmoji("AAPL")).toBe("🍎");
+  });
+
+  it("returns 🏦 for JPM", () => {
+    expect(sectorEmoji("JPM")).toBe("🏦");
+  });
+
+  it("returns ₿ for BTC-USD", () => {
+    expect(sectorEmoji("BTC-USD")).toBe("₿");
+  });
+
+  it("returns 📈 fallback for unknown symbols", () => {
+    expect(sectorEmoji("UNKNOWN")).toBe("📈");
+  });
+
+  it("is case-insensitive", () => {
+    expect(sectorEmoji("aapl")).toBe("🍎");
+  });
+});
+
+// ── Sprint 25: portfolioChange ────────────────────────────────────────────────
+
+describe("Stocks — portfolioChange", () => {
+  it("returns null for empty quotes array", () => {
+    expect(portfolioChange([])).toBeNull();
+  });
+
+  it("returns 0 when prices unchanged", () => {
+    expect(portfolioChange([{ prev: 100, cur: 100 }])).toBe(0);
+  });
+
+  it("returns +10% when price increases by 10%", () => {
+    const r = portfolioChange([{ prev: 100, cur: 110 }]);
+    expect(r).toBeCloseTo(10, 1);
+  });
+
+  it("returns -5% for a loss scenario", () => {
+    const r = portfolioChange([
+      { prev: 100, cur: 95 },
+      { prev: 200, cur: 190 },
+    ]);
+    // totalPrev=300, totalCur=285, change=-5%
+    expect(r).toBeCloseTo(-5, 1);
+  });
+
+  it("returns null when all prev prices are 0", () => {
+    expect(portfolioChange([{ prev: 0, cur: 100 }])).toBeNull();
+  });
+});
+
+// ── Sprint 25: marketStatusLabel ─────────────────────────────────────────────
+
+describe("Stocks — marketStatusLabel", () => {
+  it("returns a non-empty Hebrew string", () => {
+    const label = marketStatusLabel();
+    expect(typeof label).toBe("string");
+    expect(label.length).toBeGreaterThan(0);
   });
 });

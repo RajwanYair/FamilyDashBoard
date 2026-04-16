@@ -42,6 +42,79 @@ export function fmtPrice(price: number, sym: string): string {
   return price.toFixed(4);
 }
 
+/**
+ * Format a trading volume number with K/M/B suffix.
+ * e.g. 1_234_567 → "1.2M"
+ */
+export function formatVolume(vol: number): string {
+  if (vol >= 1_000_000_000) return `${(vol / 1_000_000_000).toFixed(1)}B`;
+  if (vol >= 1_000_000) return `${(vol / 1_000_000).toFixed(1)}M`;
+  if (vol >= 1_000) return `${(vol / 1_000).toFixed(0)}K`;
+  return String(vol);
+}
+
+/**
+ * Return the position (0–1) of `price` within the 52-week [low, high] range.
+ * Returns null when range data is missing or low === high.
+ */
+export function priceInRange52w(
+  price: number,
+  low52: number,
+  high52: number,
+): number | null {
+  if (low52 == null || high52 == null || high52 <= low52) return null;
+  return Math.max(0, Math.min(1, (price - low52) / (high52 - low52)));
+}
+
+/** Map of well-known stock symbols to display emoji by sector. */
+const SECTOR_EMOJI: Record<string, string> = {
+  AAPL: "🍎", MSFT: "🪟", GOOGL: "🔍", GOOG: "🔍", META: "📘",
+  AMZN: "📦", NVDA: "🎮", TSLA: "⚡", AMD: "💻", INTC: "🔵",
+  JPM: "🏦", BAC: "🏦", GS: "🏦", MS: "🏦", WFC: "🏦",
+  XOM: "🛢", CVX: "🛢", COP: "🛢",
+  JNJ: "💊", PFE: "💊", ABBV: "💊", MRK: "💊",
+  DIS: "🏰", NFLX: "🎬", SPOT: "🎵",
+  "BTC-USD": "₿", "ETH-USD": "⟠",
+  SPY: "📊", QQQ: "📈", "^VIX": "📉", "^GSPC": "📊",
+};
+
+/**
+ * Return a sector emoji for a given stock symbol.
+ * Falls back to "📈" for unknown symbols.
+ */
+export function sectorEmoji(sym: string): string {
+  return SECTOR_EMOJI[sym.toUpperCase()] ?? "📈";
+}
+
+/**
+ * Compute the aggregate portfolio % change across all provided quote pairs.
+ * Each entry is { prev, cur }. Returns null when list is empty.
+ */
+export function portfolioChange(
+  quotes: Array<{ prev: number; cur: number }>,
+): number | null {
+  if (!quotes.length) return null;
+  const totalPrev = quotes.reduce((s, q) => s + q.prev, 0);
+  if (totalPrev === 0) return null;
+  const totalCur = quotes.reduce((s, q) => s + q.cur, 0);
+  return ((totalCur - totalPrev) / totalPrev) * 100;
+}
+
+/**
+ * Return a Hebrew label for the current market status.
+ * (Re-exports from getMarketStatus, adds Hebrew text.)
+ */
+export function marketStatusLabel(): string {
+  const status = getMarketStatus();
+  const labels: Record<MarketStatus, string> = {
+    pre:    "טרום-שוק",
+    open:   "שוק פתוח ✅",
+    after:  "אחרי-שוק",
+    closed: "שוק סגור",
+  };
+  return labels[status];
+}
+
 export function isMarketOpen(): boolean {
   const now = new Date();
   const nyHour = parseInt(
