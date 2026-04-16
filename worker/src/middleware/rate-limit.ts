@@ -8,7 +8,7 @@
  * replace the Map with a Cloudflare KV or Durable Object counter.
  */
 
-const MAX_REQUESTS_PER_WINDOW = 120;
+export const MAX_REQUESTS_PER_WINDOW = 120;
 const WINDOW_MS = 60_000; // 1 minute
 
 interface WindowEntry {
@@ -39,6 +39,17 @@ export function isRateLimited(ip: string): boolean {
   return false;
 }
 
+/**
+ * Return how many requests this IP has remaining in their current window.
+ * Returns MAX if no window exists yet (fresh IP).
+ */
+export function getRemainingRequests(ip: string): number {
+  const now = Date.now();
+  const entry = ipWindows.get(ip);
+  if (!entry || now - entry.windowStart > WINDOW_MS) return MAX_REQUESTS_PER_WINDOW;
+  return Math.max(0, MAX_REQUESTS_PER_WINDOW - entry.count);
+}
+
 /** Get the calling IP from CF-Connecting-IP or X-Forwarded-For headers. */
 export function getClientIp(request: Request): string {
   return (
@@ -56,6 +67,12 @@ export function rateLimitResponse(): Response {
       "Content-Type": "application/json",
       "Retry-After": "60",
       "X-RateLimit-Limit": String(MAX_REQUESTS_PER_WINDOW),
+      "X-RateLimit-Remaining": "0",
     },
   });
+}
+
+/** Clear all rate-limit windows (used in tests). */
+export function clearRateLimitState(): void {
+  ipWindows.clear();
 }

@@ -12,13 +12,14 @@
  *   GET /api/alerts                       → Tzeva Adom history
  *   GET /api/calendar?url=X              → Google Calendar ICS proxy
  *   GET /api/sefaria/calendar             → Sefaria calendars (Daf Yomi)
+ *   GET /api/sefaria/text?ref=X           → Sefaria individual text lookup
  */
 
 import { jsonResponse } from "./utils/response";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
-import { handleStocks, handleNews, handleAlerts, handleCalendar, handleSefariaCalendar } from "./routes/feeds";
+import { handleStocks, handleNews, handleAlerts, handleCalendar, handleSefariaCalendar, handleSefariaText } from "./routes/feeds";
 import { isPreflight, handlePreflight } from "./middleware/cors";
-import { isRateLimited, getClientIp, rateLimitResponse } from "./middleware/rate-limit";
+import { isRateLimited, getClientIp, rateLimitResponse, getRemainingRequests, MAX_REQUESTS_PER_WINDOW } from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
 
 export interface Env {
@@ -52,13 +53,26 @@ export default {
       else if (path === "/api/alerts") response = await handleAlerts();
       else if (path === "/api/calendar") response = await handleCalendar(url);
       else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar();
+      else if (path === "/api/sefaria/text") response = await handleSefariaText(url);
       else response = jsonResponse({ error: "Not found" }, 404);
     } catch {
       response = jsonResponse({ error: "Internal error" }, 500);
     }
 
-    logRequest(request, response, startMs, ip);
-    return response;
+    // Inject rate-limit info headers so clients can track their quota
+    const remaining = getRemainingRequests(ip);
+    const headers = new Headers(response.headers);
+    headers.set("X-RateLimit-Limit", String(MAX_REQUESTS_PER_WINDOW));
+    headers.set("X-RateLimit-Remaining", String(remaining));
+
+    const finalResponse = new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+
+    logRequest(request, finalResponse, startMs, ip);
+    return finalResponse;
   },
 };
 

@@ -82,3 +82,21 @@ export async function handleSefariaCalendar(): Promise<Response> {
   const res = await fetch("https://www.sefaria.org/api/calendars");
   return proxyResponse(res, 86400); // 24 h
 }
+
+/**
+ * Proxy an individual Sefaria text by reference.
+ * GET /api/sefaria/text?ref=Berakhot.2a.1
+ */
+export async function handleSefariaText(url: URL): Promise<Response> {
+  const ref = url.searchParams.get("ref");
+  if (!ref || ref.trim() === "") {
+    return jsonResponse({ error: "Missing required parameter: ref", param: "ref" }, 400);
+  }
+  // Allow only safe characters in a Sefaria ref (letters, digits, space, period, colon, underscore, hyphen)
+  if (!/^[\w\s.:_\-,()]{1,120}$/.test(ref)) {
+    return jsonResponse({ error: "Invalid ref format", param: "ref" }, 400);
+  }
+  const encoded = encodeURIComponent(ref.trim());
+  const res = await fetch(`https://www.sefaria.org/api/v3/texts/${encoded}?context=0&pad=0`);
+  return proxyResponse(res, 86400); // 24 h — text content is stable
+}
