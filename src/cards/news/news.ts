@@ -439,6 +439,7 @@ export function renderNews(items: NewsItem[]): void {
   if (!elRssScroll) return;
 
   _lastItems = items;
+  const cfg = loadConfig();
 
   // In bookmark mode show only bookmarked items as a static list (no clone loop).
   const baseItems = _bkmMode
@@ -490,6 +491,16 @@ export function renderNews(items: NewsItem[]): void {
       const sourceEl = document.createElement("span");
       sourceEl.className = "rss-source";
       sourceEl.textContent = item.source;
+      // Sprint 48: gate source display on cfg.newsShowSource
+      if (!cfg.newsShowSource) sourceEl.hidden = true;
+
+      // Sprint 48: breaking news badge
+      if (!isClone && isBreaking(item.title, item.pubDate)) {
+        const breakingBadge = document.createElement("span");
+        breakingBadge.className = "news-breaking-badge";
+        breakingBadge.textContent = "🔴 מבזק";
+        div.appendChild(breakingBadge);
+      }
 
       const titleEl = document.createElement("a");
       titleEl.className = "rss-title";

@@ -1869,3 +1869,104 @@ describe("News — sanitizeNewsTitle", () => {
     expect(sanitizeNewsTitle("Plain title")).toBe("Plain title");
   });
 });
+
+// ── Sprint 48: newsShowSource config gate ─────────────────────────────────
+
+describe("News — newsShowSource config gate (Sprint 48)", () => {
+  const makeItem = (title = "כותרת בדיקה", source = "Ynet") => ({
+    title,
+    link: "https://ynet.co.il/test",
+    pubDate: "",
+    source,
+  });
+
+  function setupNewsDOM(): void {
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    localStorage.removeItem("dash_v2_config");
+    cacheDom();
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("renders .rss-source by default (newsShowSource=true)", () => {
+    setupNewsDOM();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ newsShowSource: true, configVersion: 3 }),
+    );
+    renderNews([makeItem()]);
+    const source = document.querySelector(".rss-source");
+    expect(source).not.toBeNull();
+    expect((source as HTMLElement).hidden).toBe(false);
+  });
+
+  it("hides .rss-source when newsShowSource=false", () => {
+    setupNewsDOM();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ newsShowSource: false, configVersion: 3 }),
+    );
+    renderNews([makeItem()]);
+    const source = document.querySelector(".rss-source");
+    expect(source).not.toBeNull();
+    expect((source as HTMLElement).hidden).toBe(true);
+  });
+});
+
+// ── Sprint 48: breaking news badge ───────────────────────────────────────
+
+describe("News — breaking news badge (Sprint 48)", () => {
+  function setupNewsDOM(): void {
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    localStorage.removeItem("dash_v2_config");
+    cacheDom();
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  it("renders breaking badge for item with breaking keyword in title", () => {
+    setupNewsDOM();
+    renderNews([{
+      title: "בזק: מתקפה קשה",
+      link: "https://ynet.co.il",
+      pubDate: new Date().toUTCString(),
+      source: "Ynet",
+    }]);
+    const badge = document.querySelector(".news-breaking-badge");
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent).toContain("מבזק");
+  });
+
+  it("does not render breaking badge for regular items", () => {
+    setupNewsDOM();
+    renderNews([{
+      title: "ידיעה רגילה על השבוע",
+      link: "https://ynet.co.il",
+      pubDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toUTCString(),
+      source: "Ynet",
+    }]);
+    const badge = document.querySelector(".news-breaking-badge");
+    expect(badge).toBeNull();
+  });
+
+  it("renders breaking badge for very recent items (< 30 min)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
+    setupNewsDOM();
+    renderNews([{
+      title: "ידיעה חדשה ביותר",
+      link: "https://ynet.co.il",
+      pubDate: new Date("2025-06-15T11:45:00Z").toUTCString(),
+      source: "Ynet",
+    }]);
+    const badge = document.querySelector(".news-breaking-badge");
+    expect(badge).not.toBeNull();
+  });
+});
