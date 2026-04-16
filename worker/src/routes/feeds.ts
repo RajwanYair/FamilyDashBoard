@@ -1,11 +1,18 @@
 import { jsonResponse, proxyResponse, CORS_HEADERS } from "../utils/response";
 import { ALLOWED_NEWS_ORIGINS, ALLOWED_CALENDAR_ORIGINS } from "../utils/allowlists";
+import {
+  ValidationError,
+  validationErrorResponse,
+  requireSymbol,
+  requireHttpsUrl,
+} from "../utils/validation";
 
 export async function handleStocks(url: URL): Promise<Response> {
-  const sym = url.searchParams.get("sym");
-  if (!sym) return jsonResponse({ error: "Missing sym parameter" }, 400);
-  if (!/^[\w.\-^]{1,20}$/.test(sym)) {
-    return jsonResponse({ error: "Invalid symbol" }, 400);
+  let sym: string;
+  try {
+    sym = requireSymbol(url);
+  } catch (err) {
+    return validationErrorResponse(err as ValidationError);
   }
   const encoded = encodeURIComponent(sym);
   const res = await fetch(
@@ -16,23 +23,17 @@ export async function handleStocks(url: URL): Promise<Response> {
 }
 
 export async function handleNews(url: URL): Promise<Response> {
-  const feedUrl = url.searchParams.get("url");
-  if (!feedUrl) return jsonResponse({ error: "Missing url parameter" }, 400);
-
   let parsed: URL;
   try {
-    parsed = new URL(feedUrl);
-  } catch {
-    return jsonResponse({ error: "Invalid URL" }, 400);
-  }
-  if (parsed.protocol !== "https:") {
-    return jsonResponse({ error: "Only HTTPS feeds allowed" }, 400);
+    parsed = requireHttpsUrl(url, "url");
+  } catch (err) {
+    return validationErrorResponse(err as ValidationError);
   }
   if (!ALLOWED_NEWS_ORIGINS.some((origin) => parsed.hostname === origin)) {
-    return jsonResponse({ error: "News feed origin not permitted" }, 403);
+    return jsonResponse({ error: "News feed origin not permitted", param: "url" }, 403);
   }
 
-  const res = await fetch(feedUrl, {
+  const res = await fetch(parsed.toString(), {
     headers: { Accept: "application/rss+xml, application/xml, text/xml" },
   });
   return proxyResponse(res, 900); // 15 min
@@ -49,25 +50,19 @@ export async function handleAlerts(): Promise<Response> {
 }
 
 export async function handleCalendar(url: URL): Promise<Response> {
-  const icsUrl = url.searchParams.get("url");
-  if (!icsUrl) return jsonResponse({ error: "Missing url parameter" }, 400);
-
   let parsed: URL;
   try {
-    parsed = new URL(icsUrl);
-  } catch {
-    return jsonResponse({ error: "Invalid URL" }, 400);
-  }
-  if (parsed.protocol !== "https:") {
-    return jsonResponse({ error: "Only HTTPS URLs allowed" }, 400);
+    parsed = requireHttpsUrl(url, "url");
+  } catch (err) {
+    return validationErrorResponse(err as ValidationError);
   }
   if (
     !ALLOWED_CALENDAR_ORIGINS.some((origin) => parsed.hostname.endsWith(origin))
   ) {
-    return jsonResponse({ error: "Calendar origin not permitted" }, 403);
+    return jsonResponse({ error: "Calendar origin not permitted", param: "url" }, 403);
   }
 
-  const res = await fetch(icsUrl);
+  const res = await fetch(parsed.toString());
   if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
   const text = await res.text();
   if (!text.includes("BEGIN:VCALENDAR")) {
