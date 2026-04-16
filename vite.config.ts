@@ -41,6 +41,8 @@ const injectSwVersion: Plugin = {
     );
   },
 };
+
+/**
  * Chrome blocks crossorigin CORS fetches on file:// origins.
  *
  * For LOCAL builds (--base ./) two additional transforms are applied:

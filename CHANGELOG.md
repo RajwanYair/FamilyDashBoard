@@ -5,6 +5,76 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.6.0] — 2026-06-14
+
+> **1850 tests / 45 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `98c4184`)
+
+### Sprint 11 — Worker OpenAPI + Sefaria Route
+
+- **OpenAPI spec**: `worker/src/routes/openapi.ts` — `handleOpenApi()` serves the spec at `GET /api/openapi`
+- **`/api/sefaria/text`**: New worker route returning Daf Yomi text from Sefaria API
+- **Rate-limit headers**: `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on all responses
+- **Worker unit tests**: 51 tests covering all 11 worker routes
+
+### Sprint 12 — CSS Co-location
+
+- **`currency/currency.css`**: Per-card stylesheet with `@layer components` rules extracted from `sprints.css`
+- **`alerts/alerts.css`**: Same pattern for alerts card
+- **`motivation/motivation.css`**: Same pattern for motivation card
+
+### Sprint 13 — Integration Tests
+
+- **`config-save.test.ts`** (7 tests): config round-trip for all fields
+- **`sync-dots.test.ts`** (6 tests): sync dot state transitions
+- **`cache-stale.test.ts`** (6 tests): TTL and stale cache behavior
+- **`theme-switch.test.ts`** (8 tests): `applyTheme` body class mutations
+- **`backoff-sequence.test.ts`** (6 tests): failure/success backoff sequencing
+
+### Sprint 14 — Card Improvements
+
+- **Calendar `event-soon`**: Events within 60 minutes get amber highlight + border via `.event-soon` CSS class
+- **Hebrew-cal `zman-next`**: Next upcoming zman gets amber outline; `nextItem.classList.add("zman-next")`
+- **Stocks `data-stale`**: Stale cached rows get `data-stale="true"` attribute; removed on fresh fetch
+- **Tasks keyboard nav**: ArrowUp/ArrowDown moves focus between task rows (`tabIndex=0`)
+
+### Sprint 15 — Accessibility + ARIA
+
+- **`role="timer"` on `#clock`**: Screen readers announce time updates
+- **`aria-live="polite"` on `#wx-forecast` and `#stocks-body`**: Live region announcements
+- **`aria-expanded` on collapse buttons**: Set by `initCardCollapse()`, toggled by `doToggle()`
+- **`role="status"` on sync dots**: Set by `registerSyncDot()`; `aria-label` updated by `setSync()`
+
+### Sprint 16 — Config Panel Improvements
+
+- **Auto-focus**: First text input auto-focuses when config panel opens (50ms delay)
+- **Dirty indicator**: Input/change events set gear button to `⚙️*`; cleared on save/close
+- **Import toast**: Shows `"✅ ייבאו N שדות הגדרה"` after successful import
+- **JSON live validation**: `cfg-chores` and `cfg-portfolio` textareas get red outline on invalid JSON
+- **Ctrl+S shortcut**: Submits config panel without mouse
+
+### Sprint 17 — Diagnostics Monitoring
+
+- **`getFailedPanes()`**: Exported from `sync.ts`; returns panes with `>0` backoff failures
+- **`renderStats()`**: Added to diag overlay — shows localStorage KB, worker status, failed panes, version, build time
+- **Auto-refresh**: Diag overlay refreshes stats every 5 seconds; timer cleared on close
+
+### Sprint 18 — Card Enhancements
+
+- **Alerts page title**: `document.title` updated with `⚠️ (N)` prefix when unread count `> 0`
+- **Alerts badge click**: Clicking the badge clears the unread count and hides the badge
+- **Stale stocks CSS**: `[data-stale="true"] .stk-price/.stk-chg` dimmed (opacity 0.5, italic); `⏱` suffix
+- **Zman tooltip**: `zman-next` item gets `title="בעוד N דק׳"` showing minutes until the next zman
+- **News scroll reset**: `elRssScroll.scrollTop = 0` on every fresh render
+
+### Sprint 19 — Test Coverage Expansion
+
+- **Alerts tests** (+3): `clearUnreadAlerts`, badge hide, `document.title` mutation
+- **Diag overlay tests** (+3): `renderStats` populates `#diag-panes`, auto-refresh timer cleanup
+- **Maximize tests** (+3): `initCardCollapse` `aria-expanded` initial + toggle behavior
+- **Config panel tests** (+2): dirty indicator set on input, cleared on close
+
+---
+
 ## [7.5.0] — 2026-05-11
 
 > **1762 tests / 39 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `e1fd6ab`)
