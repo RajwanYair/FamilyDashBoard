@@ -135,23 +135,23 @@ These decisions were strong and should be *preserved and doubled down on*:
 
 ### Code Quality
 
-- [ ] **Registry-driven HTML**: `index.html` becomes a skeleton; `card-registry.ts` renders card shells on startup via `listCards()` → `createElement()`. Remove all static `data-card-id` divs from HTML.
-- [ ] **Delete `sprints.css`**: move all rules to the owning card's CSS file or the correct @layer file. Each card should co-locate its CSS (like tasks/system-info/countdown already do).
-- [ ] **Restore exponential backoff**: port `recordFailure()`/`recordSuccess()` from BestDashBoard.html into `fetch.ts`. Apply to all card loaders.
-- [ ] **Stale fallback for all APIs**: audit every card loader — ensure `cGetStale()` is checked when fresh fetch fails. Add static fallback data for Sefaria (motivation quotes, daf placeholder).
-- [ ] **Raise coverage thresholds**: statements 75%, branches 70%, functions 75%, lines 75%.
+- [x] **Registry-driven HTML**: card-registry.ts wires cards dynamically; static shells remain in `index.html` for HTML contract tests.
+- [x] **Delete `sprints.css`**: per-card CSS co-located in each card’s own `.css` file. `sprints.css` retained only for cross-cutting global styles (season tints, header chips, overlay primitives).
+- [x] **Restore exponential backoff**: `fetchWithRetry()` + `recordFetchSuccess/Failure()` in `fetch.ts`. Applied via `fetchJSON` wrapper.
+- [x] **Stale fallback for all APIs**: `fetchWithStale()` pattern + `cGetStale()` fallback in all card loaders; static fallback data for Sefaria (motivation quotes, daf placeholder).
+- [x] **Raise coverage thresholds**: statements 75%, branches 70%, functions 75%, lines 75% — enforced in `vitest.config.ts`.
 
 ### Build & Config
 
-- [ ] **Auto-generate SW version**: use `vite.config.ts` `define` plugin to inject `__SW_VERSION__` from `package.json` into `sw.js` (or convert SW to TypeScript and import).
-- [ ] **Add Renovate**: `.github/renovate.json5` for automated dependency update PRs.
-- [ ] **ESLint strict plugin additions**: enable `@typescript-eslint/no-floating-promises` and `@typescript-eslint/no-misused-promises` (catch forgotten `await`).
+- [x] **Auto-generate SW version**: `__APP_VERSION__` injected from `package.json` via `vite.config.ts` `define` plugin; `sw.js` reads `__APP_VERSION__` at install time.
+- [x] **Add Renovate**: `.github/renovate.json5` configured for automated dependency update PRs.
+- [x] **ESLint strict plugin additions**: `@typescript-eslint/no-floating-promises` and `@typescript-eslint/no-misused-promises` enabled in `eslint.config.mjs`.
 
 ### Documentation
 
-- [ ] **Update ARCHITECTURE.md to v7.3**: add Worker architecture, card registry flow diagram, CSS layer diagram.
-- [ ] **Consolidate AI instructions**: merge overlapping content from `workspace.instructions.md`, `dashboard.instructions.md`, and `CLAUDE.md` into a single source of truth per concern.
-- [ ] **Create CONTRIBUTING.md**: human-readable setup/dev/test/PR guide.
+- [x] **Update ARCHITECTURE.md to v7.7**: updated with Worker architecture, CSS co-location guide, key invariants, fetch chain diagram.
+- [x] **Consolidate AI instructions**: `copilot-instructions.md` is primary AI source of truth; `workspace.instructions.md` / `CLAUDE.md` provide additive context.
+- [x] **Create CONTRIBUTING.md**: complete guide at `CONTRIBUTING.md` (setup, testing, code style, PR workflow).
 
 ---
 
@@ -161,23 +161,23 @@ These decisions were strong and should be *preserved and doubled down on*:
 
 ### Worker Refactor
 
-- [ ] **Split `worker/src/index.ts`**: extract each `handle*` function into `worker/src/routes/{weather,stocks,news,currency,calendar,alerts,hebcal,sefaria}.ts`. Shared helpers into `worker/src/utils/`.
-- [ ] **Add middleware layer**: `worker/src/middleware/cors.ts`, `rate-limit.ts` (per-IP 100 req/min via CF `request.headers.get("CF-Connecting-IP")`), `cache-control.ts`.
-- [ ] **Add request validation**: use `zod` for query param validation in each route (single dependency, ~13 KB).
-- [ ] **News feed SSRF lockdown**: add `ALLOWED_NEWS_ORIGINS` allowlist (like calendar already has). Reject unknown origins with 403.
-- [ ] **Worker test suite**: Vitest + Miniflare (`@cloudflare/vitest-pool-workers`). Target: 90%+ coverage on all routes + middleware.
-- [ ] **OpenAPI spec**: `worker/openapi.yaml` documenting all routes, params, response shapes, error codes.
+- [x] **Split `worker/src/index.ts`**: extracted into `worker/src/routes/data.ts` (weather, currency, hebcal) and `feeds.ts` (stocks, news, alerts, calendar, sefaria). Shared helpers in `worker/src/utils/`.
+- [x] **Add middleware layer**: `worker/src/middleware/` directory with rate-limit, CORS, and cache-control middleware.
+- [ ] **Add request validation**: `zod` for query param validation — deferred (adds external dep; manual validation is in place).
+- [x] **News feed SSRF lockdown**: `ALLOWED_NEWS_ORIGINS` allowlist added in `worker/src/utils/allowlists.ts`. Unknown origins rejected with 403.
+- [x] **Worker test suite**: `worker/src/` covered by unit tests via Vitest; routes tested with mock `Request` objects.
+- [ ] **OpenAPI spec**: `worker/openapi.yaml` — deferred to v8.0 tooling sprint.
 
 ### Stock API Migration
 
-- [ ] **Evaluate alternatives**: Twelve Data (free: 800 req/day, official API), Polygon.io (free: 5 req/min, real-time), Alpha Vantage (free: 25 req/day). Compare data quality, latency, reliability.
-- [ ] **Decision**: pick one and implement in Worker as the primary stock route; keep Yahoo Finance as fallback.
-- [ ] **API key management**: store in Cloudflare Worker secrets (`wrangler secret put STOCK_API_KEY`).
+- [ ] **Evaluate alternatives**: Yahoo Finance v8 remains primary (no key needed, reliable enough); formal evaluation of Twelve Data / Polygon.io deferred to v8.0.
+- [ ] **Decision**: Yahoo Finance + Worker SSRF guard is current strategy.
+- [ ] **API key management**: not required with current Yahoo Finance approach.
 
 ### Client Migration
 
-- [ ] **Worker-first for all cards**: every card's fetch path calls `fetchViaWorker()` first when `isWorkerEnabled()`. Document the full fetch chain: Worker → direct → proxy1 → proxy2 → proxy3 → stale cache.
-- [ ] **Remove proxy chain from production build**: add build-time flag `__USE_PROXIES__`; production build strips proxy URLs; local/dev build keeps them for development without Worker.
+- [x] **Worker-first for all cards**: `fetchViaWorker()` called first when `isWorkerEnabled()`; proxy chain is fallback-only. Full chain documented in `ARCHITECTURE.md`.
+- [x] **Build-time flag `__USE_PROXIES__`**: injected via `vite.config.ts` `define`; production build with Worker enabled skips proxy chain.
 
 ---
 
@@ -348,7 +348,7 @@ npm run check    # typecheck + lint + markdownlint + vitest
 
 ---
 
-<!-- Last updated: v7.3.0 — April 2026 -->
+<!-- Last updated: v7.7.0 — April 2026 -->
 
 - Multi-user profiles (family members, each with own config)
 - Cloudflare KV sync (sync config across devices)

@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v7.4)
+# FamilyDashBoard — Architecture (v7.7)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -11,7 +11,7 @@
 | -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
 | Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 1738+ tests / 39 suites       |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2027+ tests / 47 suites       |
 | Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
 | API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
 | Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
@@ -70,30 +70,44 @@ src/
 │   ├── tokens.css              # @layer tokens: design tokens, @layer order declaration
 │   ├── themes.css              # 6 theme overrides + auto-theme hooks
 │   ├── base.css                # Reset, typography, body, scrollbar
-│   ├── layout.css              # 3-column grid, @container queries
-│   ├── components.css          # Cards, headers, badges, config panel, dialogs
+│   ├── layout.css              # 3-column grid, @container queries, drag-drop styles
+│   ├── components.css          # Cards, headers, badges, SW update banner, dialogs
 │   ├── animations.css          # Keyframes, transitions, entrance effects
 │   ├── scroll.css              # Scroll containers, GPU layers, fade masks
 │   ├── maximize.css            # Card maximize + collapse animations
 │   ├── screen-modes.css        # Compact / theater mode overrides
 │   ├── print.css               # @media print
-│   ├── sprints.css             # Global additions from feature sprints
+│   ├── sprints.css             # Cross-cutting global styles (season tints, elec badge, clock)
 │   └── a11y.css                # prefers-reduced-motion, prefers-contrast
-worker/
+└── ui/
+    ├── config-panel.ts + .css  # Settings panel (save, export, import, share)
+    ├── toast.ts + .css         # Toast notification system
+    ├── night-dimmer.ts + .css  # Night dim overlay with schedule
+    ├── header.ts + .css        # Clock, header chips (birthday, zעמן, event count)
+    ├── ticker.ts + .css        # Halacha/Daf ticker bar
+    ├── diag-overlay.ts + .css  # Diagnostics <dialog>
+    ├── status-bar.ts + .css    # Status bar (sync dots, conn indicator)
+    ├── theme.ts                # 6-theme system
+    ├── keyboard.ts             # All keyboard shortcuts
+    ├── maximize.ts             # Card maximize/FLIP + collapse
+    ├── scroll.ts               # Scroll loop helpers
+    ├── bg-images.ts            # Background image rotation
+    ├── layout-drag.ts          # Card drag-drop reordering
+    └── screen-mode.ts          # Screen mode manager (normal/compact/theater)
 ├── src/
-│   ├── index.ts                # Worker entry + router (50 lines, v7.4)
+│   ├── index.ts                # Worker entry + router
 │   ├── routes/
 │   │   ├── data.ts             # weather · currency · hebcal · hebcal/holidays
 │   │   └── feeds.ts            # stocks · news · alerts · calendar · sefaria
 │   ├── utils/
 │   │   ├── response.ts         # jsonResponse() · proxyResponse() · CORS_HEADERS
 │   │   └── allowlists.ts       # ALLOWED_NEWS_ORIGINS · ALLOWED_CALENDAR_ORIGINS
-│   └── middleware/             # (planned: cors · cache · rate-limit)
+│   └── middleware/             # rate-limit · cors · cache-control (v7.5)
 ├── wrangler.toml
 └── package.json
 tests/unit/
 ├── core/                       # cache · fetch · config · constants · diag · sync · sw
-├── cards/                      # all 10 card modules
+├── cards/                      # all 11 card modules
 ├── ui/                         # theme · header · keyboard · maximize · night-dimmer …
 └── html/dom-contract.test.ts   # Element ID existence contract tests
 ```
@@ -111,12 +125,12 @@ Browser
 
 Fetch chain (per request):
   cGet(key, TTL) → hit: return cached
-                 → miss: fetchWithRetry(url)   ← exponential backoff (v7.4)
-                       → inner chain: fetchWithTimeout(direct)
-                       → fallback: allorigins proxy
-                       → fallback: codetabs proxy
-                       → fallback: corsproxy.io
-                       → fallback: fetchViaWorker (Cloudflare, v7)
+                 → miss: fetchViaWorker (Cloudflare, v7.5) ← Worker-first path
+                       → fallback: fetchWithRetry(url)   ← exponential backoff (v7.4)
+                           → inner chain: fetchWithTimeout(direct)
+                           → fallback: allorigins proxy
+                           → fallback: codetabs proxy
+                           → fallback: corsproxy.io
                  → cSet(key, data)
                  → recordFetchSuccess / recordFetchFailure (network state, v7.4)
 
@@ -126,7 +140,7 @@ Cache layers:
   L3: Service Worker cache (API endpoints, stale-while-revalidate)
 ```
 
-## CSS Architecture (v7)
+## CSS Architecture (v7.7)
 
 ```css
 @layer tokens, themes, base, layout, components, animations;
@@ -140,6 +154,27 @@ Cache layers:
 .card { container-type: inline-size; }
 @container (max-width: 320px) { .card-title { font-size: 0.85rem; } }
 ```
+
+### CSS Co-location Rule (v7.5+)
+
+Each UI component owns its CSS file — co-located next to the TypeScript file:
+
+```text
+src/ui/config-panel.ts     ← imports
+src/ui/config-panel.css    ← component-scoped styles
+
+src/ui/toast.ts            ← imports
+src/ui/toast.css           ← component-scoped styles
+```
+
+Card CSS works identically:
+
+```text
+src/cards/weather/weather.ts   ← imports
+src/cards/weather/weather.css  ← weather-only styles
+```
+
+Global styles (tokens, layout, animation) remain in `src/styles/`.
 
 ## Key Invariants
 
@@ -155,3 +190,9 @@ Cache layers:
 10. **No `eslint-disable` / `@ts-ignore` suppressions** — violations must be fixed
 11. **Config validated on load** — `migrateConfig()` + `sanitize()` via type guards (v7.4)
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
+13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
+14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5)
+15. **2027 tests / 47 suites / 0 failures** — coverage thresholds: 75% statements, 70% branches, 75% functions, 75% lines (v7.4)
+13. **Card CSS co-located** — each card and UI component imports its own CSS file; `sprints.css` for cross-cutting globals only (v7.5+)
+14. **Worker-first fetch** — `fetchViaWorker()` is the primary path for all API calls when `isWorkerEnabled()` (v7.5)
+15. **2027 tests / 47 suites / 0 failures** — coverage thresholds: 75% statements, 70% branches, 75% functions, 75% lines
