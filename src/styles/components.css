@@ -96,6 +96,8 @@ dialog.diag-overlay::backdrop { background: transparent; }
 .diag-row .status.err { color: #f87171; }
 .diag-row .status.pending { color: #fbbf24; }
 .diag-log { margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: #94a3b8; max-height: 120px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+.diag-stats { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px; color: #94a3b8; padding: 4px 0 6px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.diag-stats b { color: var(--text-primary); }
 
 /* ── News ── */
 .news-body { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }

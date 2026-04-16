@@ -8,6 +8,8 @@
 
 import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
+import { getFailedPanes } from "../core/sync";
+import { isWorkerEnabled } from "../core/constants";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -48,6 +50,49 @@ function renderLog(): void {
   el.appendChild(frag);
 }
 
+// ── Render diag stats panel ──
+function renderStats(): void {
+  const panes = document.getElementById("diag-panes");
+  if (!panes) return;
+
+  // localStorage usage
+  let lsBytes = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i) ?? "";
+      lsBytes += k.length + (localStorage.getItem(k)?.length ?? 0);
+    }
+  } catch { /* quota error */ }
+  const lsKB = (lsBytes / 1024).toFixed(1);
+
+  // Failed panes backoff
+  const failed = getFailedPanes();
+  const failedText =
+    failed.length === 0
+      ? "אין כשלים"
+      : failed.map((f) => `${f.key}(×${f.delay})`).join(", ");
+
+  // Worker status
+  const workerStatus = isWorkerEnabled() ? "✅ פעיל" : "❌ כבוי";
+
+  // Build info
+  const version =
+    typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "?";
+  const buildTime =
+    typeof __BUILD_TIME__ !== "undefined" ? __BUILD_TIME__ : "?";
+
+  panes.innerHTML = "";
+  const html = `
+    <div class="diag-stats">
+      <span>🗄️ LocalStorage: <b>${lsKB} KB</b></span>
+      <span>🌐 Worker: <b>${workerStatus}</b></span>
+      <span>⚠️ כשלים: <b>${failedText}</b></span>
+      <span>🏷️ v${version}</span>
+      <span>🕒 Build: ${buildTime.slice(0, 10)}</span>
+    </div>`;
+  panes.innerHTML = html;
+}
+
 // ── Copy log to clipboard ──
 export function copyDiagLog(): void {
   const entries = getDiagEntries();
@@ -68,17 +113,29 @@ export function copyDiagLog(): void {
 
 // ── Public API ──
 
+let _refreshTimer: ReturnType<typeof setInterval> | null = null;
+
 export function openDiagOverlay(): void {
   const ov = overlay();
   if (!ov) return;
   renderLog();
+  renderStats();
   ov.show(); // non-modal: positioned in corner
+  // Auto-refresh log + stats every 5 seconds while open
+  _refreshTimer = setInterval(() => {
+    renderLog();
+    renderStats();
+  }, 5000);
   diagLog("[diag] Overlay opened");
 }
 
 export function closeDiagOverlay(): void {
   const ov = overlay();
   if (ov?.open) ov.close();
+  if (_refreshTimer !== null) {
+    clearInterval(_refreshTimer);
+    _refreshTimer = null;
+  }
 }
 
 export function toggleDiagOverlay(): void {

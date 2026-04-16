@@ -73,6 +73,15 @@ export function getBackoffDelay(key: string): number {
 }
 
 /**
+ * Returns all panes that have at least one failure logged.
+ */
+export function getFailedPanes(): Array<{ key: string; delay: number }> {
+  return Array.from(backoff.entries())
+    .filter(([, n]) => n > 0)
+    .map(([key, n]) => ({ key, delay: Math.pow(2, n) }));
+}
+
+/**
  * Clear all registered sync dots (for testing isolation).
  */
 export function clearSyncDots(): void {
