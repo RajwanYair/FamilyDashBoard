@@ -3,6 +3,7 @@
  *
  * fetchWithTimeout: AbortController-based timeout wrapper.
  * fetchJSON: fetch with CORS proxy fallback chain + diagnostic logging.
+ * fetchJSONDeduped: deduplicates concurrent requests for the same URL.
  * raceProxies: Promise.any() across all proxies for fastest response.
  * runConcurrent: CPU-aware task pool limiter.
  */
@@ -69,7 +70,10 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
     try {
       const proxyUrl = p + encodeURIComponent(url);
       const r = await fetchWithTimeout(proxyUrl, 12_000);
-      if (!r.ok) continue;
+      if (!r.ok) {
+        diagLog(`fetchJSON ${pName} HTTP ${r.status}: ${short}`);
+        continue;
+      }
 
       if (p.includes("allorigins")) {
         const wrapper = (await r.json()) as { contents: string };
@@ -81,8 +85,9 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
       diagLog(`fetchJSON ${pName} OK: ${short}`);
       recordFetchSuccess();
       return (await r.json()) as T;
-    } catch {
-      diagLog(`fetchJSON ${pName} FAIL: ${short}`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      diagLog(`fetchJSON ${pName} FAIL (${msg.slice(0, 60)}): ${short}`);
     }
   }
 
@@ -123,6 +128,40 @@ export async function fetchJSONWithWorker<T = unknown>(url: string): Promise<T> 
   const workerResult = await fetchViaWorker<T>(url);
   if (workerResult !== null) return workerResult;
   return fetchJSON<T>(url);
+}
+
+// ── Request deduplication ─────────────────────────────────────────────────────
+
+/**
+ * Map of in-flight requests keyed by URL.
+ * Multiple callers asking for the same URL while one is pending
+ * will all await the same Promise instead of launching duplicate HTTP requests.
+ */
+const _inflightRequests = new Map<string, Promise<unknown>>();
+
+/**
+ * Deduplicated fetchJSON: if a request for `url` is already in-flight,
+ * returns the existing Promise instead of starting a new one.
+ *
+ * Use this on any loader that might be called concurrently (e.g., on
+ * page-restore + setInterval firing at the same time).
+ */
+export async function fetchJSONDeduped<T = unknown>(url: string): Promise<T> {
+  const existing = _inflightRequests.get(url);
+  if (existing !== undefined) {
+    diagLog(`[fetch] dedup reuse: ${url.slice(0, 60)}`);
+    return existing as Promise<T>;
+  }
+  const p = fetchJSON<T>(url).finally(() => {
+    _inflightRequests.delete(url);
+  });
+  _inflightRequests.set(url, p as Promise<unknown>);
+  return p;
+}
+
+/** Returns the number of currently in-flight deduplicated requests. */
+export function getInflightCount(): number {
+  return _inflightRequests.size;
 }
 
 /**
@@ -190,6 +229,44 @@ export function releaseLock(name: string): void {
   fetchLocks.delete(name);
 }
 
+/** Clear all fetch locks (useful in tests or on page unload). */
+export function clearFetchLocks(): void {
+  fetchLocks.clear();
+}
+
+// ── Network quality tier ──────────────────────────────────────────────────────
+
+export type NetworkQualityTier = "ok" | "slow" | "bad" | "unknown";
+
+/**
+ * Returns a rough network quality tier based on the Network Information API
+ * (`navigator.connection`) when available, or falls back to the consecutive
+ * failure streak tracked by `recordFetchFailure`.
+ */
+export function getNetworkQualityTier(): NetworkQualityTier {
+  if (_consecutiveFailures >= 3) return "bad";
+  if (_consecutiveFailures >= 1) return "slow";
+
+  // Use Network Information API when available (Chrome/Android)
+  const nav = navigator as Navigator & {
+    connection?: { effectiveType?: string; downlink?: number; rtt?: number };
+  };
+  const conn = nav.connection;
+  if (conn) {
+    const etype = conn.effectiveType ?? "";
+    if (etype === "4g" || (conn.downlink !== undefined && conn.downlink > 1)) return "ok";
+    if (etype === "3g" || etype === "2g") return "slow";
+    if (etype === "slow-2g") return "bad";
+    if (conn.rtt !== undefined) {
+      if (conn.rtt < 150) return "ok";
+      if (conn.rtt < 600) return "slow";
+      return "bad";
+    }
+  }
+
+  return _consecutiveFailures === 0 ? "ok" : "unknown";
+}
+
 // ── Network failure tracking ──────────────────────────────────────────────────
 /** Number of consecutive proxy-chain failures across all cards. */
 let _consecutiveFailures = 0;
@@ -243,9 +320,13 @@ export async function fetchWithRetry<T = unknown>(
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      return await fetchJSON<T>(url);
+      const result = await fetchJSON<T>(url);
+      // fetchJSON already calls recordFetchSuccess on proxy success,
+      // but ensure it's called here too in case of direct success path.
+      return result;
     } catch (err) {
       lastErr = err;
+      recordFetchFailure();
       if (attempt < maxAttempts) {
         const delay = baseDelayMs * Math.pow(2, attempt - 1);
         diagLog(`fetchWithRetry attempt ${attempt}/${maxAttempts} failed, retry in ${delay}ms`);
