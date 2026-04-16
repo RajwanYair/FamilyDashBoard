@@ -8,19 +8,28 @@ argument-hint: "New version number, e.g. 7.2.0"
 
 ## Version Bump Locations
 
-Update ALL of these (search current version string, e.g. `7.1.1`):
+Update ALL of these (search current version string, e.g. `7.9.0`):
 
-| # | File | What to update |
-|---|------|---------------|
-| 1 | `package.json` | `"version"` field |
-| 2 | `sw.js` | `CACHE_NAME` / `APP_VERSION` string |
-| 3 | `CHANGELOG.md` | New section at top (move [Unreleased] to version + date) |
-| 4 | `README.md` | Version badge + test count badge |
-| 5 | `.github/copilot-instructions.md` | Header version + test count |
-| 6 | `.github/instructions/workspace.instructions.md` | Version + test count |
-| 7 | `.github/assets/*.svg` | Version + test count in banner/architecture SVGs |
+| # | File | Field / location | Notes |
+|---|------|-----------------|-------|
+| 1 | `package.json` | `"version"` field | Single source of truth for `__APP_VERSION__` |
+| 2 | `sw.js` | Comment header version string | e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z` |
+| 3 | `CHANGELOG.md` | New `## [X.Y.Z]` section at top; test count line | Move `[Unreleased]` → versioned section |
+| 4 | `README.md` | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge | Lines ~22-23 |
+| 5 | `CLAUDE.md` | Header `v7.X.Y`, test count (×2), suite count | Lines 1, 17, 48 |
+| 6 | `.github/copilot-instructions.md` | Header version + test count | Lines 1, 6 |
+| 7 | `.github/instructions/workspace.instructions.md` | Header version + test count | Line 6 |
+| 8 | `ARCHITECTURE.md` | Test count in stack table + constraint list | Lines ~14, ~195 |
+| 9 | `.github/assets/banner.svg` | Version string + test count in footer text | Line ~34 |
+| 10 | `.github/assets/architecture.svg` | Version (×3: title, sw.js label, footer) + test count | Lines ~15, 25, 124, 142 |
+| 11 | `.github/assets/preview.svg` | `Dashboard vX.Y.Z` footer text | Line ~156 |
+| 12 | `.github/assets/data-sources.svg` | `Data Sources… — vX.Y.Z` title | Line ~9 |
+| 13 | `.github/assets/roadmap.svg` | Test count progression line | Line ~90 |
+| 14 | `ROADMAP.md` | New row in the version history table | Bottom of the released versions table |
+| 15 | `.github/skills/release/SKILL.md` | Verification line test count | `All N+ tests / M+ suites` |
 
 > `BestDashBoard.html` is legacy/archived — do NOT update its version.
+> `ROADMAP.md` comment `<!-- Last updated: vX.Y.Z -->` at the bottom should also be bumped.
 
 ## CHANGELOG Format
 
