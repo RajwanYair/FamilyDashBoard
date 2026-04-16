@@ -35,6 +35,7 @@
 | v7.1.x    | ✅ Released | → 1686 Vitest / 39 suites  | Countdown card, drag-drop layout, ticker speed, V/W/L/1/2/3 keys, unified CI |
 | v7.2      | ✅ Released | 1706 Vitest / 39 suites    | Precipitation chip, alert volume, warm tint, reset-all, cache staleness, tasks quick-add, countdown 2nd event, news filter chips |
 | **v7.3**  | ✅ Released | **1723 Vitest / 39 suites** | Diag clear, storage estimate, remove-done tasks, live theme preview, SW version chip, motivation auto-advance, person filter chips, RTT tile, dynamic help |
+| **v7.4**  | ✅ Released | **1755 Vitest / 39 suites** | Coverage thresholds, Renovate, configVersion, migrateConfig, SW auto-version, isValidFontScale, worker SSRF allowlist, worker route split, sprints.css @layer, fetchWithRetry, network state tracker, ESLint strict rules |
 
 ---
 
