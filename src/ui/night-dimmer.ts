@@ -49,8 +49,12 @@ function applyDim(): void {
   if (dimActive) {
     dimEl.style.opacity = String(dimLevel / 100);
     dimEl.style.display = "block";
-    // F3 (v7.2): Apply warm amber tint via CSS filter
-    dimEl.style.backgroundColor = _warmTint ? "#8B4513" : "";
+    // Apply warm amber tint via CSS custom property
+    if (_warmTint) {
+      dimEl.style.setProperty("background-color", "var(--dimmer-warm-color)");
+    } else {
+      dimEl.style.removeProperty("background-color");
+    }
     dimEl.style.filter = _warmTint ? "none" : "";
     dimEl.classList.toggle("warm-tint", _warmTint);
   } else {

@@ -13,6 +13,11 @@ export function showToast(message: string, durationMs = 3000): void {
     toastEl = document.getElementById("toast");
   if (!toastEl) return;
 
+  // Restart the progress bar animation by toggling the class off/on
+  toastEl.classList.remove("visible");
+  toastEl.style.setProperty("--toast-dur", `${durationMs / 1000}s`);
+  // Force reflow so the animation restarts cleanly
+  void toastEl.offsetWidth;
   toastEl.textContent = message;
   toastEl.classList.add("visible");
 

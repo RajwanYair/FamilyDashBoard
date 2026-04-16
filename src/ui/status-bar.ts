@@ -56,9 +56,12 @@ function renderVersionBadge(): void {
 }
 
 // ── Refresh Timestamp ──
+let _lastRefreshMs = 0;
+
 export function stampRefresh(): void {
   if (!elRefreshStamp) return;
-  const now = new Date();
+  _lastRefreshMs = Date.now();
+  const now = new Date(_lastRefreshMs);
   elRefreshStamp.textContent =
     "רענון: " +
     now.toLocaleTimeString("he-IL", {
@@ -66,6 +69,20 @@ export function stampRefresh(): void {
       minute: "2-digit",
       timeZone: "Asia/Jerusalem",
     });
+}
+
+/** Update the refresh stamp to show relative age ("3m ago"). Called every minute. */
+export function updateRefreshAge(): void {
+  if (!elRefreshStamp || _lastRefreshMs === 0) return;
+  const mins = Math.floor((Date.now() - _lastRefreshMs) / 60_000);
+  if (mins < 1) return; // still fresh — no age suffix needed
+  const now = new Date(_lastRefreshMs);
+  const timeStr = now.toLocaleTimeString("he-IL", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jerusalem",
+  });
+  elRefreshStamp.textContent = `רענון: ${timeStr} (${mins}m)`;
 }
 
 // ── Uptime counter ──
@@ -129,8 +146,11 @@ export function initStatusBar(): void {
   updateConnIndicator();
   updateFontScaleIndicator();
 
-  // Uptime ticks every 60 s
-  setInterval(updateUptime, 60_000);
+  // Uptime ticks every 60 s; also refresh the "N min ago" stamp
+  setInterval(() => {
+    updateUptime();
+    updateRefreshAge();
+  }, 60_000);
 
   // F6 (v7.2): Cache staleness chip — update every 60 s
   const updateCacheAge = (): void => {

@@ -34,6 +34,9 @@
     --bg-gradient-3: rgba(184,154,223,0.04);
     --news-font-scale: 1;
 
+    /* ── Night Dimmer ── */
+    --dimmer-warm-color: #8B4513;
+
     /* ── Spacing Scale ── */
     --space-1: 4px;
     --space-2: 8px;

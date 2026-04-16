@@ -127,9 +127,11 @@ body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwar
 /* F120: Dashboard URL share button */
 #cfg-share-btn { font-size: 0.82em; background: var(--bg-card-inner); color: var(--text-primary); }
 
-/* F121: Toast notification */
-#toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg-card); border: 1px solid var(--accent-border); color: var(--text-primary); padding: 9px 20px; border-radius: 12px; font-size: 0.9em; box-shadow: 0 4px 16px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; z-index: 9999; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; }
-#toast.toast-show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* F121: Toast notification + progress bar */
+#toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg-card); border: 1px solid var(--accent-border); color: var(--text-primary); padding: 9px 20px 13px; border-radius: 12px; font-size: 0.9em; box-shadow: 0 4px 16px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; z-index: 9999; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; overflow: hidden; }
+#toast.toast-show, #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast::after { content: ""; position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: var(--accent); transform-origin: left; animation: toast-progress var(--toast-dur, 3s) linear forwards; }
+@keyframes toast-progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
 /* F122: UV pill color levels */
 .uv-pill { display: inline-block; padding: 0 5px; border-radius: 6px; font-size: 0.75em; font-weight: 700; color: #fff; }
