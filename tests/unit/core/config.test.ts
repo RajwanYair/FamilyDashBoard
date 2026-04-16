@@ -197,22 +197,30 @@ describe("Config — loadConfigFromHash non-object parsed value (line 70)", () =
   });
 });
 
-// ── Sprint 1 (v7.4): migrateConfig + type guards + configVersion ──────────────
+// ── Sprint 1 (v7.4) + v7.8 config v2: migrateConfig + type guards + configVersion ──
 
 describe("Config — migrateConfig (v7.4)", () => {
-  it("adds configVersion=1 when version is missing", () => {
+  it("migrates to configVersion=2 when version is missing (v0→v1→v2)", () => {
     const result = migrateConfig({ theme: "blue" });
-    expect(result.configVersion).toBe(1);
+    expect(result.configVersion).toBe(2);
   });
 
-  it("adds configVersion=1 when version is 0", () => {
+  it("migrates to configVersion=2 when version is 0", () => {
     const result = migrateConfig({ configVersion: 0 });
-    expect(result.configVersion).toBe(1);
+    expect(result.configVersion).toBe(2);
   });
 
-  it("does not modify config already at version 1", () => {
+  it("migrates version 1 to version 2, adding v2 fields", () => {
     const result = migrateConfig({ configVersion: 1, theme: "rose" as const });
-    expect(result.configVersion).toBe(1);
+    expect(result.configVersion).toBe(2);
+    expect(result.theme).toBe("rose");
+    expect(result.newsMaxItems).toBe(5);
+    expect(result.weatherShowDetails).toBe(true);
+  });
+
+  it("does not modify config already at current version", () => {
+    const result = migrateConfig({ configVersion: 2, theme: "rose" as const });
+    expect(result.configVersion).toBe(2);
     expect(result.theme).toBe("rose");
   });
 
@@ -285,8 +293,8 @@ describe("Config — isValidFontScale (v7.4)", () => {
 });
 
 describe("Config — configVersion sanity (v7.4)", () => {
-  it("DEFAULT_CONFIG has configVersion 1", () => {
-    expect(DEFAULT_CONFIG.configVersion).toBe(1);
+  it("DEFAULT_CONFIG has configVersion 2", () => {
+    expect(DEFAULT_CONFIG.configVersion).toBe(2);
   });
 
   it("CONFIG_VERSION constant matches DEFAULT_CONFIG", () => {

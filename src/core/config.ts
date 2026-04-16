@@ -12,6 +12,11 @@ import {
   isValidScreenMode,
   isValidTempUnit,
   isValidFontScale,
+  isValidAlertVolume,
+  isValidNightDimLevel,
+  isValidNewsMaxItems,
+  isValidTickerSpeed,
+  isValidHour,
 } from "../types/config";
 import { diagLog } from "./diag";
 
@@ -32,7 +37,19 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v0 → v1");
   }
 
-  // Future: v1 → v2, v2 → v3, etc.
+  // v1 → v2: added newsMaxItems, weatherShowDetails, tasksShowDone,
+  //           stocksShowPortfolio, nightDimScheduleEnabled/StartHour/EndHour
+  if (version < 2) {
+    cfg.newsMaxItems = DEFAULT_CONFIG.newsMaxItems;
+    cfg.weatherShowDetails = DEFAULT_CONFIG.weatherShowDetails;
+    cfg.tasksShowDone = DEFAULT_CONFIG.tasksShowDone;
+    cfg.stocksShowPortfolio = DEFAULT_CONFIG.stocksShowPortfolio;
+    cfg.nightDimScheduleEnabled = DEFAULT_CONFIG.nightDimScheduleEnabled;
+    cfg.nightDimStartHour = DEFAULT_CONFIG.nightDimStartHour;
+    cfg.nightDimEndHour = DEFAULT_CONFIG.nightDimEndHour;
+    cfg.configVersion = 2;
+    diagLog("[config] migrated v1 → v2");
+  }
 
   return cfg;
 }
@@ -46,6 +63,12 @@ function sanitize(cfg: DashboardConfig): DashboardConfig {
   if (!isValidScreenMode(cfg.screenMode)) cfg.screenMode = DEFAULT_CONFIG.screenMode;
   if (!isValidTempUnit(cfg.tempUnit)) cfg.tempUnit = DEFAULT_CONFIG.tempUnit;
   if (!isValidFontScale(cfg.fontScale)) cfg.fontScale = DEFAULT_CONFIG.fontScale;
+  if (!isValidAlertVolume(cfg.alertVolume)) cfg.alertVolume = DEFAULT_CONFIG.alertVolume;
+  if (!isValidNightDimLevel(cfg.nightDimLevel)) cfg.nightDimLevel = DEFAULT_CONFIG.nightDimLevel;
+  if (!isValidNewsMaxItems(cfg.newsMaxItems)) cfg.newsMaxItems = DEFAULT_CONFIG.newsMaxItems;
+  if (!isValidTickerSpeed(cfg.tickerSpeed)) cfg.tickerSpeed = DEFAULT_CONFIG.tickerSpeed;
+  if (!isValidHour(cfg.nightDimStartHour)) cfg.nightDimStartHour = DEFAULT_CONFIG.nightDimStartHour;
+  if (!isValidHour(cfg.nightDimEndHour)) cfg.nightDimEndHour = DEFAULT_CONFIG.nightDimEndHour;
   return cfg;
 }
 
@@ -101,6 +124,26 @@ export function updateConfig<K extends keyof DashboardConfig>(
 export function shareConfigHash(config: DashboardConfig): string {
   const json = JSON.stringify(config);
   return "#cfg=" + btoa(unescape(encodeURIComponent(json)));
+}
+
+/**
+ * Reset config to defaults and persist. Returns the fresh default config.
+ */
+export function resetConfig(): DashboardConfig {
+  const fresh = { ...DEFAULT_CONFIG };
+  saveConfig(fresh);
+  diagLog("[config] reset to defaults");
+  return fresh;
+}
+
+/**
+ * Dispatch a 'configchange' CustomEvent on document after any config save.
+ * Cards and UI modules can listen to keep themselves in sync.
+ */
+export function dispatchConfigChange(config: DashboardConfig): void {
+  document.dispatchEvent(
+    new CustomEvent<DashboardConfig>("configchange", { detail: config }),
+  );
 }
 
 /**

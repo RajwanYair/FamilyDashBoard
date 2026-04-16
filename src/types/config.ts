@@ -65,6 +65,23 @@ export interface DashboardConfig {
    * Increment each time the config shape changes in a breaking way.
    */
   configVersion: number;
+
+  // ── Config v2 additions (v7.8) ──
+
+  /** Max news items shown per feed (default: 5; range 1–10). */
+  newsMaxItems: number;
+  /** Show humidity / UV / moon details in weather card (default: true). */
+  weatherShowDetails: boolean;
+  /** Show "done" tasks in the tasks card (default: true). */
+  tasksShowDone: boolean;
+  /** Show portfolio P&L summary row in stocks card (default: true). */
+  stocksShowPortfolio: boolean;
+  /** Night dimmer schedule enabled (default: false). */
+  nightDimScheduleEnabled: boolean;
+  /** Night dimmer auto-start hour 0–23 (default: 22). */
+  nightDimStartHour: number;
+  /** Night dimmer auto-end hour 0–23 (default: 7). */
+  nightDimEndHour: number;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -108,11 +125,20 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard2Time: "18:00",
   countdownCard2DoneMsg: "🎉 מזל טוב!",
   motivationInterval: 0,
-  configVersion: 1,
+  configVersion: 2,
+
+  // Config v2 defaults
+  newsMaxItems: 5,
+  weatherShowDetails: true,
+  tasksShowDone: true,
+  stocksShowPortfolio: true,
+  nightDimScheduleEnabled: false,
+  nightDimStartHour: 22,
+  nightDimEndHour: 7,
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 1;
+export const CONFIG_VERSION = 2;
 
 /** Type guard: checks if a string is a valid theme name. */
 export function isValidTheme(v: unknown): v is DashboardConfig["theme"] {
@@ -135,4 +161,29 @@ export function isValidTempUnit(v: unknown): v is DashboardConfig["tempUnit"] {
 /** Type guard: checks if a number is a valid font scale (0.5–2.0 in 0.1 steps). */
 export function isValidFontScale(v: unknown): v is number {
   return typeof v === "number" && isFinite(v) && v >= 0.5 && v <= 2.0;
+}
+
+/** Type guard: checks if a number is a valid alert volume (0–100). */
+export function isValidAlertVolume(v: unknown): v is number {
+  return typeof v === "number" && isFinite(v) && v >= 0 && v <= 100;
+}
+
+/** Type guard: checks if a number is a valid night dim level (0–100). */
+export function isValidNightDimLevel(v: unknown): v is number {
+  return typeof v === "number" && isFinite(v) && v >= 0 && v <= 100;
+}
+
+/** Type guard: checks if a number is a valid news max items (1–10). */
+export function isValidNewsMaxItems(v: unknown): v is number {
+  return typeof v === "number" && isFinite(v) && v >= 1 && v <= 10;
+}
+
+/** Type guard: checks if a number is a valid ticker speed (1–5). */
+export function isValidTickerSpeed(v: unknown): v is number {
+  return typeof v === "number" && isFinite(v) && v >= 1 && v <= 5;
+}
+
+/** Type guard: checks a dim hour (0–23). */
+export function isValidHour(v: unknown): v is number {
+  return typeof v === "number" && isFinite(v) && v >= 0 && v <= 23;
 }
