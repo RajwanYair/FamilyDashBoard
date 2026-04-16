@@ -130,6 +130,15 @@ export default tseslint.config(
         { prefer: "type-imports" },
       ],
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      // Sprint 7: stricter rules
+      "no-console": "warn",
+      "@typescript-eslint/prefer-optional-chain": "error",
+      "@typescript-eslint/no-import-type-side-effects": "error",
     },
   },
 

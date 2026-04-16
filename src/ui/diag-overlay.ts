@@ -13,7 +13,7 @@ let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
 
 function overlay(): HTMLDialogElement | null {
-  if (!overlayEl || !overlayEl.isConnected)
+  if (!overlayEl?.isConnected)
     overlayEl = document.getElementById(
       "diag-overlay",
     ) as HTMLDialogElement | null;
@@ -21,7 +21,7 @@ function overlay(): HTMLDialogElement | null {
 }
 
 function logContainer(): HTMLElement | null {
-  if (!logEl || !logEl.isConnected) logEl = document.getElementById("diag-log");
+  if (!logEl?.isConnected) logEl = document.getElementById("diag-log");
   return logEl;
 }
 

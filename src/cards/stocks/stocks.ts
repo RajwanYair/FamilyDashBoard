@@ -121,10 +121,10 @@ let _marketBadgeEl: HTMLElement | null = null;
 let _statusMarketChip: HTMLElement | null = null;
 
 export function updateMarketBadge(): void {
-  if (!_marketBadgeEl || !_marketBadgeEl.isConnected) {
+  if (!_marketBadgeEl?.isConnected) {
     _marketBadgeEl = document.getElementById("market-badge");
   }
-  if (!_statusMarketChip || !_statusMarketChip.isConnected) {
+  if (!_statusMarketChip?.isConnected) {
     _statusMarketChip = document.getElementById("status-market-chip");
   }
 

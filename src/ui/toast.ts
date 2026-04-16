@@ -9,7 +9,7 @@ let hideTimer: ReturnType<typeof setTimeout> | null = null;
  * Show a brief toast message.
  */
 export function showToast(message: string, durationMs = 3000): void {
-  if (!toastEl || !toastEl.isConnected)
+  if (!toastEl?.isConnected)
     toastEl = document.getElementById("toast");
   if (!toastEl) return;
 

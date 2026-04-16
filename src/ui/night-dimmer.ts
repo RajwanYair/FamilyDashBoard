@@ -42,7 +42,7 @@ export function setDimLevel(level: number): void {
 }
 
 function applyDim(): void {
-  if (!dimEl || !dimEl.isConnected)
+  if (!dimEl?.isConnected)
     dimEl = document.getElementById("night-dim");
   if (!dimEl) return;
 

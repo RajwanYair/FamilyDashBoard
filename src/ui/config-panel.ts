@@ -483,11 +483,11 @@ function collectForm(): DashboardConfig {
   if (cdCardTitleEl) c.countdownCardTitle = cdCardTitleEl.value.trim();
 
   const cdCardDateEl = g("cfg-cd-card-date");
-  if (cdCardDateEl && cdCardDateEl.value)
+  if (cdCardDateEl?.value)
     c.countdownCardDate = cdCardDateEl.value;
 
   const cdCardTimeEl = g("cfg-cd-card-time");
-  if (cdCardTimeEl && cdCardTimeEl.value)
+  if (cdCardTimeEl?.value)
     c.countdownCardTime = cdCardTimeEl.value;
 
   const cdCardDoneMsgEl = g("cfg-cd-card-done-msg");
