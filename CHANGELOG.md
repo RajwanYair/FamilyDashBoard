@@ -5,6 +5,83 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.7.0] — 2026-06-14
+
+> **2027 tests / 47 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `5a3b937`)
+
+### Sprint 21 — Runtime API Type Guards
+
+- **`isWeatherResponse()`**: validate Open-Meteo shape before rendering
+- **`isNewsItem()`**: validate RSS/feed item structure
+- **`isCurrencyResponse()`**: validate ECB currency payload
+- **`isAlertEvent()`**: filter malformed Home Front Command events
+- **`createCardLoader` validate param**: optional 4th arg wires type guard into the cache loader
+
+### Sprint 22 — Weather UX Improvements
+
+- **`humidityLabel(rh)`**: comfort label ("יבש/נוח/לח/מאוד לח") shown in humidity tile
+- **`moonPhase(date)`**: synodic phase glyph + Hebrew name in sunrise/sunset row
+- **`precipSummaryLabel(pp)`**: today's rain likelihood text in precip tile
+- **`LS_CHART_MODE`**: hourly chart view persisted across refreshes
+
+### Sprint 23 — Countdown Enhancements
+
+- **`urgencyClass(days)`**: applies `cd-urgent-pulse`/`cd-urgent-amber` CSS to countdown
+- **`hebrewDayOfWeek(date)`**: Hebrew day-of-week string
+- **`daysLabel(days)`**: "היום! 🎉" / "מחר" / "N ימים" for any countdown
+- **`advanceAnnualDate(dateStr)`**: auto-advance past annual dates to next occurrence
+- **Countdown CSS**: `@keyframes cd-pulse` + urgency tier classes
+
+### Sprint 24 — Tasks Improvements
+
+- **`parseTaskPriority(chore)`**: parse `[H]/[M]/[L]` prefix → badge classes
+- **`parseTaskDueDate(chore)`**: parse `@YYYY-MM-DD` suffix → due date chip
+- **`isOverdue(dueDateStr)`**: boolean check for past due dates
+- **`formatTaskDueDate(dueDateStr)`**: Hebrew-locale date string
+- **`taskCompletionRatio(chores, doneMap)`**: `{done, total, pct}` progress
+- **Tasks CSS**: priority badge + overdue tint + due-date chip styles
+
+### Sprint 25 — Stocks Enhancements
+
+- **`formatVolume(vol)`**: K/M/B suffix volume formatting
+- **`priceInRange52w(price, low, high)`**: 0–1 position in 52-week range
+- **`sectorEmoji(sym)`**: emoji by sector for 30+ ticker symbols
+- **`portfolioChange(quotes)`**: aggregate portfolio % change
+- **`marketStatusLabel()`**: Hebrew market status string
+
+### Sprint 26 — News Card Improvements
+
+- **`readingTimeMinutes(text)`**: estimate reading time at 200 wpm
+- **`isBreaking(title, pubDate)`**: detect breaking news by keyword or recency (<30 min)
+- **`newsSourceDomain(url)`**: extract clean domain from article URL
+- **`sanitizeNewsTitle(title, maxLen)`**: strip HTML entities + truncate
+
+### Sprint 27 — Hebrew-Cal Enhancements
+
+- **`isShabbat(candlesMs?, havdalaMs?)`**: detect current Shabbat window; fallback heuristic
+- **`nextHolidayName(items, now?)`**: find next upcoming holiday Hebrew name
+- **`hebrewMonthName(date?)`**: current Hebrew month via `Intl.DateTimeFormat`
+- **`getParashat(items)`**: extract weekly parasha name from Hebcal items
+- **`zmanimTimeLabel(isoOrTime)`**: format zmanim timestamp to 24h display
+
+### Sprint 28 — System-Info Expansion
+
+- **`getConnectionInfo()`**: read `navigator.connection.effectiveType` safely
+- **`getViewportSize()`**: return `{width, height, dpr}` from `window`
+- **`formatBytes(bytes)`**: format byte counts to B/KB/MB/GB
+- **`getPageLoadTime()`**: elapsed ms since module capture
+- **`categorizeDevice()`**: classify tv/desktop/tablet/mobile by viewport width
+
+### Sprint 29 — Integration & Quality Utilities
+
+- **`debounce<T>(fn, wait)`**: trailing-edge debounce with timer reset — `src/core/utils.ts`
+- **`throttle<T>(fn, wait)`**: leading-edge throttle with window suppression — `src/core/utils.ts`
+- **`clamp(value, min, max)`**: numeric range clamping — `src/core/utils.ts`
+- **`cacheStats()`**: expose hit/miss counts + hitRate from `cGet` calls
+- **`resetCacheStats()`**: reset stats counters (test helper)
+
+---
+
 ## [7.6.0] — 2026-06-14
 
 > **1850 tests / 45 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `98c4184`)

@@ -209,7 +209,7 @@ export function isAlertEvent(v: unknown): v is AlertEvent {
   return v["alerts"].every(
     (a) =>
       isObj(a) &&
-      Array.isArray((a as Record<string, unknown>)["cities"]) &&
-      typeof (a as Record<string, unknown>)["time"] === "number",
+      Array.isArray(a["cities"]) &&
+      typeof a["time"] === "number",
   );
 }
