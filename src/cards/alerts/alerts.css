@@ -1,0 +1,53 @@
+/* ── Alerts Card Styles ── */
+
+@layer components {
+  /* F116: Unread alerts badge count */
+  .alerts-badge {
+    font-size: 0.55em;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: var(--negative);
+    color: #fff;
+    font-weight: 700;
+    display: none;
+    margin-left: 5px;
+    min-width: 1.4em;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .alerts-badge.visible {
+    display: inline-block;
+  }
+
+  /* Alert row layout */
+  .alert-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+  .alert-row:last-child {
+    border-bottom: none;
+  }
+  .alert-row.alert-new {
+    background: rgba(239, 68, 68, 0.1);
+  }
+  .alert-time {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .alert-area {
+    color: var(--text-primary);
+    font-weight: 600;
+    flex: 1;
+  }
+  .alert-threat {
+    font-size: 0.7em;
+    color: var(--warning);
+  }
+} /* end @layer components */

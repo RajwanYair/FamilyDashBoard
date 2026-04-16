@@ -1,0 +1,50 @@
+/* ── Motivation Card Styles ── */
+
+@layer components {
+  /* F135: Motivation share button */
+  #moti-share-btn {
+    font-size: 0.62em;
+    padding: 1px 7px;
+    border-radius: 5px;
+    background: var(--bg-card-inner);
+    color: var(--text-muted);
+    border: 1px solid var(--accent-border);
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 6px;
+  }
+  #moti-share-btn:hover {
+    color: var(--accent);
+  }
+
+  /* F146: Moti next-quote button */
+  #moti-next-btn {
+    font-size: 0.62em;
+    padding: 1px 7px;
+    border-radius: 5px;
+    background: var(--bg-card-inner);
+    color: var(--text-muted);
+    border: 1px solid var(--accent-border);
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 3px;
+    margin-right: 4px;
+  }
+  #moti-next-btn:hover {
+    color: var(--accent);
+  }
+
+  /* Quote text */
+  .moti-text {
+    font-size: 1.15em;
+    line-height: 1.7;
+    color: var(--text-primary);
+    text-align: center;
+  }
+  .moti-author {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 4px;
+  }
+} /* end @layer components */

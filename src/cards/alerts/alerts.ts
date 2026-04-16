@@ -8,6 +8,7 @@
  */
 
 import { INTERVALS, THREAT_LABELS, API, PROXIES, WORKER_BASE_URL, isWorkerEnabled } from "../../core/constants";
+import "./alerts.css";
 import { cSet, cGetStale } from "../../core/cache";
 import {
   setSync,

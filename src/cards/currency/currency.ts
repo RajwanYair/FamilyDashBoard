@@ -8,6 +8,7 @@
  */
 
 import { createCardLoader, scheduleCard } from "../base-card";
+import "./currency.css";
 import { INTERVALS, CUR_TILES, API } from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker } from "../../core/fetch";

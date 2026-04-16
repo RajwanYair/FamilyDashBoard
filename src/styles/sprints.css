@@ -48,8 +48,7 @@ body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
 /* F37: Today-event count badge */
 #header-event-count { display: none; font-size: 0.6em; background: var(--accent); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; margin-right: 4px; }
 
-/* F38: Currency Sparkline */
-.cur-spark { width: 60px; height: 22px; display: block; }
+/* Currency sparkline — see src/cards/currency/currency.css */
 
 /* F40: Connectivity indicator */
 #conn-indicator { font-size: 0.72em; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
@@ -114,8 +113,7 @@ body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwar
 /* F114: Notification permission bell chip */
 #notif-bell { font-size: 0.68em; background: rgba(251,191,36,0.16); color: var(--warning); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: pointer; animation: pulse 2s infinite; }
 
-/* F116: Unread alerts badge count */
-.alerts-badge { font-size: 0.55em; padding: 1px 5px; border-radius: 8px; background: var(--negative); color: #fff; font-weight: 700; display: none; margin-left: 5px; min-width: 1.4em; text-align: center; vertical-align: middle; }
+/* Alerts badge — see src/cards/alerts/alerts.css */
 
 /* F119: Config panel section tabs */
 .cfg-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -141,16 +139,12 @@ body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwar
 .uv-pill.uv-vhigh { background: #ef4444; }
 .uv-pill.uv-extreme { background: #a855f7; }
 
-/* F135: Motivation share button */
-#moti-share-btn { font-size: 0.62em; padding: 1px 7px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; margin-top: 6px; }
-#moti-share-btn:hover { color: var(--accent); }
+/* Motivation buttons — see src/cards/motivation/motivation.css */
 
 /* F139: Custom countdown chip */
 #header-countdown { font-size: 0.68em; background: rgba(192,132,252,0.14); color: var(--purple); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: default; font-weight: 600; }
 
-/* F146: Moti next-quote button */
-#moti-next-btn { font-size: 0.62em; padding: 1px 7px; border-radius: 5px; background: var(--bg-card-inner); color: var(--text-muted); border: 1px solid var(--accent-border); cursor: pointer; font-family: inherit; margin-top: 3px; margin-right: 4px; }
-#moti-next-btn:hover { color: var(--accent); }
+/* Motivation next button — see src/cards/motivation/motivation.css */
 #print-datetime { display: none; }
 
 /* F150: Help overlay 2-column grid */

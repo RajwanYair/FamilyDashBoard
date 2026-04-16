@@ -5,6 +5,7 @@
  */
 
 import { INTERVALS } from "../../core/constants";
+import "./motivation.css";
 import { scheduleCard } from "../base-card";
 import { setSync } from "../../core/sync";
 import { diagLog } from "../../core/diag";
