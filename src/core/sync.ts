@@ -64,3 +64,10 @@ export function getBackoffDelay(key: string): number {
   const failures = backoff.get(key) ?? 0;
   return Math.pow(2, failures);
 }
+
+/**
+ * Clear all registered sync dots (for testing isolation).
+ */
+export function clearSyncDots(): void {
+  syncDots.clear();
+}
