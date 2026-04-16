@@ -82,6 +82,8 @@ export default defineConfig({
 
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __USE_PROXIES__: JSON.stringify(!process.env["VITE_NO_PROXIES"]),
   },
 
   build: {

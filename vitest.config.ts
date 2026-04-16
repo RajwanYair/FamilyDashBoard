@@ -23,6 +23,8 @@ export default defineConfig({
   },
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
+    __BUILD_TIME__: JSON.stringify("test-build"),
+    __USE_PROXIES__: JSON.stringify(true),
   },
   cacheDir: join(tempBase, ".vitest"),
   test: {

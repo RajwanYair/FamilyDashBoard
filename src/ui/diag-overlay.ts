@@ -119,4 +119,15 @@ export function initDiagOverlay(): void {
   }
 
   diagLog("[diag] Overlay initialized");
+
+  // Stamp build time into the overlay header (if the element exists)
+  const buildEl = document.getElementById("diag-build-time");
+  if (buildEl) {
+    try {
+      const ts = new Date(__BUILD_TIME__);
+      buildEl.textContent = `Build: ${ts.toLocaleDateString("he-IL")} ${ts.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}`;
+    } catch {
+      buildEl.textContent = `Build: ${__BUILD_TIME__}`;
+    }
+  }
 }
