@@ -10,8 +10,10 @@ import {
   shareConfigHash,
   loadConfigFromHash,
   migrateConfig,
+  resetConfig,
+  dispatchConfigChange,
 } from "@/core/config";
-import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, isValidFontScale, CONFIG_VERSION } from "@/types/config";
+import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, isValidFontScale, CONFIG_VERSION, isValidAlertVolume, isValidNightDimLevel, isValidNewsMaxItems, isValidTickerSpeed, isValidHour } from "@/types/config";
 
 describe("Config — loadConfig", () => {
   it("returns defaults when localStorage is empty", () => {
@@ -317,5 +319,141 @@ describe("Config — configVersion sanity (v7.4)", () => {
     localStorage.setItem("dash_v2_config", JSON.stringify({ tempUnit: "K" }));
     const cfg = loadConfig();
     expect(cfg.tempUnit).toBe(DEFAULT_CONFIG.tempUnit);
+  });
+});
+
+// ── Sprint 33 (v7.8): resetConfig + dispatchConfigChange ─────────────────────
+
+describe("Config — resetConfig (Sprint 33)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns a config equal to DEFAULT_CONFIG", () => {
+    // First set something non-default
+    saveConfig({ ...DEFAULT_CONFIG, theme: "amber", tempUnit: "F" });
+    const reset = resetConfig();
+    expect(reset.theme).toBe(DEFAULT_CONFIG.theme);
+    expect(reset.tempUnit).toBe(DEFAULT_CONFIG.tempUnit);
+  });
+
+  it("persists the reset config to localStorage", () => {
+    saveConfig({ ...DEFAULT_CONFIG, theme: "rose" });
+    resetConfig();
+    const reloaded = loadConfig();
+    expect(reloaded.theme).toBe(DEFAULT_CONFIG.theme);
+  });
+
+  it("returns an object with all required config keys", () => {
+    const reset = resetConfig();
+    expect(reset).toHaveProperty("theme");
+    expect(reset).toHaveProperty("tempUnit");
+    expect(reset).toHaveProperty("screenMode");
+    expect(reset).toHaveProperty("configVersion");
+    expect(reset.configVersion).toBe(CONFIG_VERSION);
+  });
+});
+
+describe("Config — dispatchConfigChange (Sprint 33)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("fires a 'configchange' CustomEvent on document", () => {
+    const listener = vi.fn();
+    document.addEventListener("configchange", listener);
+    dispatchConfigChange(DEFAULT_CONFIG);
+    document.removeEventListener("configchange", listener);
+    expect(listener).toHaveBeenCalledOnce();
+  });
+
+  it("passes the config as event.detail", () => {
+    let received: unknown = null;
+    const listener = (e: Event) => {
+      received = (e as CustomEvent).detail;
+    };
+    document.addEventListener("configchange", listener);
+    dispatchConfigChange({ ...DEFAULT_CONFIG, theme: "matrix" });
+    document.removeEventListener("configchange", listener);
+    expect((received as typeof DEFAULT_CONFIG | null)?.theme).toBe("matrix");
+  });
+});
+
+// ── Sprint 33 (v7.8): New type guards ─────────────────────────────────────────
+
+describe("Config — isValidAlertVolume (Sprint 33)", () => {
+  it("accepts 0–100", () => {
+    expect(isValidAlertVolume(0)).toBe(true);
+    expect(isValidAlertVolume(50)).toBe(true);
+    expect(isValidAlertVolume(100)).toBe(true);
+  });
+
+  it("rejects out-of-range and non-numeric values", () => {
+    expect(isValidAlertVolume(-1)).toBe(false);
+    expect(isValidAlertVolume(101)).toBe(false);
+    expect(isValidAlertVolume("50")).toBe(false);
+    expect(isValidAlertVolume(null)).toBe(false);
+    expect(isValidAlertVolume(NaN)).toBe(false);
+  });
+});
+
+describe("Config — isValidNightDimLevel (Sprint 33)", () => {
+  it("accepts 0–100", () => {
+    expect(isValidNightDimLevel(0)).toBe(true);
+    expect(isValidNightDimLevel(55)).toBe(true);
+    expect(isValidNightDimLevel(100)).toBe(true);
+  });
+
+  it("rejects out-of-range and non-numeric values", () => {
+    expect(isValidNightDimLevel(-1)).toBe(false);
+    expect(isValidNightDimLevel(101)).toBe(false);
+    expect(isValidNightDimLevel("55")).toBe(false);
+    expect(isValidNightDimLevel(undefined)).toBe(false);
+  });
+});
+
+describe("Config — isValidNewsMaxItems (Sprint 33)", () => {
+  it("accepts 1–10", () => {
+    expect(isValidNewsMaxItems(1)).toBe(true);
+    expect(isValidNewsMaxItems(5)).toBe(true);
+    expect(isValidNewsMaxItems(10)).toBe(true);
+  });
+
+  it("rejects 0, 11, and non-numeric values", () => {
+    expect(isValidNewsMaxItems(0)).toBe(false);
+    expect(isValidNewsMaxItems(11)).toBe(false);
+    expect(isValidNewsMaxItems("5")).toBe(false);
+    expect(isValidNewsMaxItems(null)).toBe(false);
+  });
+});
+
+describe("Config — isValidTickerSpeed (Sprint 33)", () => {
+  it("accepts 1–5", () => {
+    expect(isValidTickerSpeed(1)).toBe(true);
+    expect(isValidTickerSpeed(3)).toBe(true);
+    expect(isValidTickerSpeed(5)).toBe(true);
+  });
+
+  it("rejects 0, 6, and non-numeric values", () => {
+    expect(isValidTickerSpeed(0)).toBe(false);
+    expect(isValidTickerSpeed(6)).toBe(false);
+    expect(isValidTickerSpeed("3")).toBe(false);
+    expect(isValidTickerSpeed(NaN)).toBe(false);
+  });
+});
+
+describe("Config — isValidHour (Sprint 33)", () => {
+  it("accepts 0–23", () => {
+    expect(isValidHour(0)).toBe(true);
+    expect(isValidHour(12)).toBe(true);
+    expect(isValidHour(23)).toBe(true);
+  });
+
+  it("rejects -1, 24, and non-numeric values", () => {
+    expect(isValidHour(-1)).toBe(false);
+    expect(isValidHour(24)).toBe(false);
+    expect(isValidHour("12")).toBe(false);
+    expect(isValidHour(null)).toBe(false);
+    expect(isValidHour(1.5)).toBe(false);
   });
 });

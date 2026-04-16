@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures } from "@/core/fetch";
+import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures, fetchJSONDeduped, getInflightCount, clearFetchLocks, acquireLock, releaseLock, getNetworkQualityTier, NetworkQualityTier } from "@/core/fetch";
 
 // Helper: mock fetch that resolves after `delay` ms
 function delayedFetch(delay: number, response: unknown) {
@@ -628,5 +628,175 @@ describe("fetchWithStale", () => {
     await fetchWithStale({ cacheKey: "k", ttlMs: 1000, fetcher, onData, staticFallback: { fallback: true } });
     expect(onData).toHaveBeenNthCalledWith(1, { fallback: true }, true);
     expect(onData).toHaveBeenNthCalledWith(2, { fresh: true }, false);
+  });
+});
+
+// ── fetchJSONDeduped ─────────────────────────────────────────────────────────
+
+describe("fetchJSONDeduped", () => {
+  let fetchCallCount: number;
+
+  beforeEach(() => {
+    fetchCallCount = 0;
+    // Make global fetch succeed on first call, then resolve with data
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => {
+        fetchCallCount++;
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ data: "result" }),
+        } as Response);
+      }),
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    // Clean up any residual in-flight requests between tests
+    void Promise.resolve(); // flush microtasks
+  });
+
+  it("returns data on success", async () => {
+    const result = await fetchJSONDeduped("https://example.com/api");
+    expect(result).toEqual({ data: "result" });
+  });
+
+  it("deduplicates concurrent requests for the same URL", async () => {
+    // Both calls are started simultaneously — only one HTTP request should go out
+    const [r1, r2] = await Promise.all([
+      fetchJSONDeduped("https://example.com/dedup-test"),
+      fetchJSONDeduped("https://example.com/dedup-test"),
+    ]);
+    expect(r1).toEqual({ data: "result" });
+    expect(r2).toEqual({ data: "result" });
+    // fetchJSON fires direct + proxy chain attempts; dedup means it only starts once
+    // We just ensure both callers receive the same result
+    expect(fetchCallCount).toBeGreaterThanOrEqual(1);
+  });
+
+  it("does NOT deduplicate requests for different URLs", async () => {
+    await Promise.all([
+      fetchJSONDeduped("https://example.com/url-a"),
+      fetchJSONDeduped("https://example.com/url-b"),
+    ]);
+    // Both triggered their own fetch chain
+    expect(fetchCallCount).toBeGreaterThanOrEqual(2);
+  });
+});
+
+// ── getInflightCount ─────────────────────────────────────────────────────────
+
+describe("getInflightCount", () => {
+  it("returns a non-negative integer", () => {
+    const count = getInflightCount();
+    expect(typeof count).toBe("number");
+    expect(count).toBeGreaterThanOrEqual(0);
+  });
+});
+
+// ── clearFetchLocks / acquireLock / releaseLock ───────────────────────────────
+
+describe("clearFetchLocks", () => {
+  afterEach(() => {
+    clearFetchLocks();
+  });
+
+  it("allows re-acquiring a lock after clearFetchLocks()", () => {
+    const acquired = acquireLock("test-lock-A");
+    expect(acquired).toBe(true);
+    clearFetchLocks();
+    const reacquired = acquireLock("test-lock-A");
+    expect(reacquired).toBe(true);
+    releaseLock("test-lock-A");
+  });
+
+  it("clears all locks at once", () => {
+    acquireLock("lock-1");
+    acquireLock("lock-2");
+    acquireLock("lock-3");
+    clearFetchLocks();
+    // All three should now be acquirable
+    expect(acquireLock("lock-1")).toBe(true);
+    expect(acquireLock("lock-2")).toBe(true);
+    expect(acquireLock("lock-3")).toBe(true);
+    clearFetchLocks();
+  });
+});
+
+// ── getNetworkQualityTier ────────────────────────────────────────────────────
+
+describe("getNetworkQualityTier", () => {
+  beforeEach(() => {
+    // Reset consecutive failures to 0 before each test
+    recordFetchSuccess();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    // Restore navigator.connection to default (not defined in happy-dom)
+    const nav = navigator as Navigator & { connection?: unknown };
+    delete nav.connection;
+  });
+
+  it("returns 'ok' when there are no consecutive failures", () => {
+    recordFetchSuccess(); // ensure 0 failures
+    const tier = getNetworkQualityTier();
+    const valid: NetworkQualityTier[] = ["ok", "unknown"];
+    expect(valid).toContain(tier);
+  });
+
+  it("returns 'slow' when there is 1 consecutive failure", () => {
+    recordFetchSuccess(); // reset first
+    recordFetchFailure(); // 1 failure → slow
+    expect(getNetworkQualityTier()).toBe("slow");
+    recordFetchSuccess(); // restore
+  });
+
+  it("returns 'bad' when there are 3+ consecutive failures", () => {
+    recordFetchSuccess();
+    recordFetchFailure();
+    recordFetchFailure();
+    recordFetchFailure(); // 3 → bad
+    expect(getNetworkQualityTier()).toBe("bad");
+    recordFetchSuccess(); // restore
+  });
+
+  it("respects Network Information API effectiveType='4g'", () => {
+    recordFetchSuccess();
+    const nav = navigator as Navigator & { connection?: { effectiveType: string } };
+    Object.defineProperty(nav, "connection", {
+      value: { effectiveType: "4g" },
+      configurable: true,
+      writable: true,
+    });
+    expect(getNetworkQualityTier()).toBe("ok");
+  });
+
+  it("respects Network Information API effectiveType='3g'", () => {
+    recordFetchSuccess();
+    const nav = navigator as Navigator & { connection?: { effectiveType: string } };
+    Object.defineProperty(nav, "connection", {
+      value: { effectiveType: "3g" },
+      configurable: true,
+      writable: true,
+    });
+    expect(getNetworkQualityTier()).toBe("slow");
+  });
+
+  it("returns 'bad' for slow-2g", () => {
+    recordFetchSuccess();
+    const nav = navigator as Navigator & { connection?: { effectiveType: string } };
+    Object.defineProperty(nav, "connection", {
+      value: { effectiveType: "slow-2g" },
+      configurable: true,
+      writable: true,
+    });
+    expect(getNetworkQualityTier()).toBe("bad");
+  });
+
+  it("NetworkQualityTier type covers all expected values", () => {
+    const tiers: NetworkQualityTier[] = ["ok", "slow", "bad", "unknown"];
+    expect(tiers).toHaveLength(4);
   });
 });

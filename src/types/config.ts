@@ -185,5 +185,5 @@ export function isValidTickerSpeed(v: unknown): v is number {
 
 /** Type guard: checks a dim hour (0–23). */
 export function isValidHour(v: unknown): v is number {
-  return typeof v === "number" && isFinite(v) && v >= 0 && v <= 23;
+  return typeof v === "number" && Number.isInteger(v) && v >= 0 && v <= 23;
 }
