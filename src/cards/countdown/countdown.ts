@@ -106,6 +106,53 @@ function pad(n: number): string {
   return String(n).padStart(2, "0");
 }
 
+/**
+ * Return a CSS urgency class based on days remaining.
+ *  - "cd-urgent-pulse" → ≤ 1 day (pulsing animation)
+ *  - "cd-urgent-amber" → ≤ 7 days (amber highlight)
+ *  - ""               → otherwise
+ */
+export function urgencyClass(days: number): string {
+  if (days <= 1) return "cd-urgent-pulse";
+  if (days <= 7) return "cd-urgent-amber";
+  return "";
+}
+
+/**
+ * Return the Hebrew day-of-week name for a given Date.
+ * e.g. "יום ראשון", "יום שישי"
+ */
+export function hebrewDayOfWeek(date: Date): string {
+  return date.toLocaleDateString("he-IL", { weekday: "long" });
+}
+
+/**
+ * Return a Hebrew display string for days remaining.
+ * Shows "היום! 🎉" when days = 0, "מחר" when 1, "N ימים" otherwise.
+ */
+export function daysLabel(days: number): string {
+  if (days === 0) return "היום! 🎉";
+  if (days === 1) return "מחר";
+  return `${days} ימים`;
+}
+
+/**
+ * When `annual` is true and the target date is in the past,
+ * advance it to the same month/day in the next upcoming year.
+ * Returns the updated YYYY-MM-DD string.
+ */
+export function advanceAnnualDate(dateStr: string): string {
+  const parts = dateStr.split("-");
+  if (parts.length < 3) return dateStr;
+  let year = parseInt(parts[0] ?? "2024", 10);
+  const month = parts[1] ?? "01";
+  const day = parts[2] ?? "01";
+  while (new Date(`${year}-${month}-${day}T00:00:00`).getTime() < Date.now()) {
+    year += 1;
+  }
+  return `${year}-${month}-${day}`;
+}
+
 // ── Tick ─────────────────────────────────────────────────────────────────────
 
 export function tick(): void {
@@ -155,6 +202,10 @@ export function tick(): void {
             ? `⏳ עוד ${days} ימים!`
             : "";
   }
+
+  // Urgency CSS class on the days element
+  const urg = urgencyClass(days);
+  daysEl.className = urg ? `cd-num ${urg}` : "cd-num";
 
   // Progress bar — show when a start date is configured
   const cfg = loadConfig();

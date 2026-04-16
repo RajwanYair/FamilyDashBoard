@@ -17,6 +17,10 @@ import {
   getCountdownDoneMsg,
   getDaysSince,
   computeProgress,
+  urgencyClass,
+  hebrewDayOfWeek,
+  daysLabel,
+  advanceAnnualDate,
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
 import type { DashboardConfig } from "@/types/config";
@@ -479,5 +483,90 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
       countdownCard2DoneMsg: "done",
     } as DashboardConfig);
     expect(() => tick2()).not.toThrow();
+  });
+});
+
+// ── Sprint 23: urgencyClass ──────────────────────────────────────────────────
+
+describe("Countdown — urgencyClass", () => {
+  it("returns 'cd-urgent-pulse' when days = 0", () => {
+    expect(urgencyClass(0)).toBe("cd-urgent-pulse");
+  });
+
+  it("returns 'cd-urgent-pulse' when days = 1", () => {
+    expect(urgencyClass(1)).toBe("cd-urgent-pulse");
+  });
+
+  it("returns 'cd-urgent-amber' when days = 2", () => {
+    expect(urgencyClass(2)).toBe("cd-urgent-amber");
+  });
+
+  it("returns 'cd-urgent-amber' when days = 7", () => {
+    expect(urgencyClass(7)).toBe("cd-urgent-amber");
+  });
+
+  it("returns empty string when days = 8", () => {
+    expect(urgencyClass(8)).toBe("");
+  });
+
+  it("returns empty string for large day counts", () => {
+    expect(urgencyClass(100)).toBe("");
+  });
+});
+
+// ── Sprint 23: hebrewDayOfWeek ────────────────────────────────────────────────
+
+describe("Countdown — hebrewDayOfWeek", () => {
+  it("returns a non-empty Hebrew string", () => {
+    const name = hebrewDayOfWeek(new Date("2024-01-07")); // Sunday
+    expect(typeof name).toBe("string");
+    expect(name.length).toBeGreaterThan(0);
+  });
+
+  it("returns a different name for different days", () => {
+    const sun = hebrewDayOfWeek(new Date("2024-01-07")); // Sunday
+    const mon = hebrewDayOfWeek(new Date("2024-01-08")); // Monday
+    expect(sun).not.toBe(mon);
+  });
+});
+
+// ── Sprint 23: daysLabel ─────────────────────────────────────────────────────
+
+describe("Countdown — daysLabel", () => {
+  it("returns 'היום! 🎉' when days = 0", () => {
+    expect(daysLabel(0)).toBe("היום! 🎉");
+  });
+
+  it("returns 'מחר' when days = 1", () => {
+    expect(daysLabel(1)).toBe("מחר");
+  });
+
+  it("returns 'N ימים' for other counts", () => {
+    expect(daysLabel(5)).toBe("5 ימים");
+    expect(daysLabel(30)).toBe("30 ימים");
+  });
+});
+
+// ── Sprint 23: advanceAnnualDate ─────────────────────────────────────────────
+
+describe("Countdown — advanceAnnualDate", () => {
+  it("returns the same date string when date is in the future", () => {
+    const futureDate = "2099-12-31";
+    expect(advanceAnnualDate(futureDate)).toBe(futureDate);
+  });
+
+  it("advances a past date to next occurrence", () => {
+    const pastDate = "2000-06-15";
+    const result = advanceAnnualDate(pastDate);
+    const resultDate = new Date(result);
+    expect(resultDate.getTime()).toBeGreaterThan(Date.now());
+    // Verify same month and day
+    const parts = result.split("-");
+    expect(parts[1]).toBe("06");
+    expect(parts[2]).toBe("15");
+  });
+
+  it("returns the input unchanged for invalid date strings", () => {
+    expect(advanceAnnualDate("bad")).toBe("bad");
   });
 });

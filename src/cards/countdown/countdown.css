@@ -84,3 +84,18 @@
   transition: width 1s linear;
   width: 0%;
 }
+
+/* Urgency tiers (Sprint 23) */
+.cd-num.cd-urgent-amber {
+  color: #f59e0b !important;
+}
+
+@keyframes cd-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.05); }
+}
+
+.cd-num.cd-urgent-pulse {
+  color: var(--danger, #f87171) !important;
+  animation: cd-pulse 1s ease-in-out infinite;
+}
