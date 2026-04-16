@@ -246,17 +246,39 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
 
   const h = upcoming[0];
   if (!h || !els.holiday) return;
+  const holidayDate = new Date(h.date);
   const days = Math.ceil(
-    (new Date(h.date).getTime() - now.getTime()) / 86_400_000,
+    (holidayDate.getTime() - now.getTime()) / 86_400_000,
   );
   const name = h.hebrew ?? h.title;
   _lastHolidayName = name;
-  els.holiday.textContent =
-    days <= 0
-      ? name
-      : days === 1
-        ? `מחר: ${name}`
-        : `${name} — בעוד ${days} ימים`;
+
+  // Format Gregorian date for the holiday (day + short month)
+  const gregDate = holidayDate.toLocaleDateString("he-IL", {
+    day: "numeric",
+    month: "short",
+    timeZone: "Asia/Jerusalem",
+  });
+
+  let label: string;
+  if (days <= 0) {
+    label = name;
+  } else if (days === 1) {
+    label = `מחר: ${name}`;
+  } else {
+    label = `${name} — ${gregDate} (בעוד ${days} ימים)`;
+  }
+  els.holiday.textContent = label;
+
+  // Proximity colouring: red ≤ 7 days, amber ≤ 30 days, default otherwise
+  els.holiday.dataset["days"] = String(days);
+  els.holiday.style.color =
+    days <= 7
+      ? "var(--negative)"
+      : days <= 30
+        ? "var(--warning)"
+        : "";
+
   if (els.holidayRow) els.holidayRow.style.display = "";
 
   // School vacation: show if any major holiday started in the last 7 days

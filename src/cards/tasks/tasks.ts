@@ -155,7 +155,8 @@ export function renderTasksCard(): void {
         const badge = document.getElementById("tasks-pending-badge");
         const doneMsg = document.getElementById("tasks-all-done-msg");
         if (badge) {
-          badge.textContent = `${done2} / ${total2} ✓`;
+          const pct2 = total2 > 0 ? Math.round((done2 / total2) * 100) : 0;
+          badge.textContent = `${done2} / ${total2} ✓ (${pct2}%)`;
           badge.style.display = total2 > 0 ? "" : "none";
         }
         if (doneMsg) {
@@ -182,7 +183,8 @@ export function renderTasksCard(): void {
   const pending = chores.filter((item) => !doneMap[fingerprint(item)]).length;
   const done = total - pending;
   if (badge) {
-    badge.textContent = `${done} / ${total} ✓`;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    badge.textContent = `${done} / ${total} ✓ (${pct}%)`;
     badge.style.display = total > 0 ? "" : "none";
   }
   if (doneMsg) {

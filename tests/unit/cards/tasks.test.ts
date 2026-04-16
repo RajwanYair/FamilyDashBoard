@@ -561,8 +561,8 @@ describe("Tasks — tasks-pending-badge", () => {
     );
     renderTasksCard();
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    // Badge shows "2 / 2 ✓" when all done — stays visible
-    expect(badge.textContent).toBe("2 / 2 ✓");
+    // Badge shows '2 / 2 ✓ (100%)' when all done — stays visible
+    expect(badge.textContent).toBe("2 / 2 ✓ (100%)");
     expect(badge.style.display).not.toBe("none");
   });
 
@@ -681,8 +681,8 @@ describe("Tasks — badge hides + doneMsg shows when last task checked via check
     cb.checked = true;
     cb.dispatchEvent(new Event("change"));
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    // Badge shows "1 / 1 ✓" when all tasks done (not hidden)
-    expect(badge.textContent).toBe("1 / 1 ✓");
+    // Badge shows "1 / 1 ✓ (100%)" when all tasks done (not hidden)
+    expect(badge.textContent).toBe("1 / 1 ✓ (100%)");
     expect(badge.style.display).not.toBe("none");
   });
 
@@ -727,11 +727,11 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
     ]));
     renderTasksCard();
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    expect(badge.textContent).toBe("0 / 2 ✓");
+    expect(badge.textContent).toBe("0 / 2 ✓ (0%)");
     expect(badge.style.display).not.toBe("none");
   });
 
-  it("badge shows '1 / 2 ✓' after checking one of two tasks", () => {
+  it("badge shows '1 / 2 ✓ (50%)' after checking one of two tasks", () => {
     document.body.innerHTML = `
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
@@ -745,10 +745,10 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
     cbs[0].checked = true;
     cbs[0].dispatchEvent(new Event("change"));
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    expect(badge.textContent).toBe("1 / 2 ✓");
+    expect(badge.textContent).toBe("1 / 2 ✓ (50%)");
   });
 
-  it("badge shows '2 / 2 ✓' after all tasks are done", () => {
+  it("badge shows '2 / 2 ✓ (100%)' after all tasks are done", () => {
     document.body.innerHTML = `
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
@@ -764,7 +764,7 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
     cbs[1].checked = true;
     cbs[1].dispatchEvent(new Event("change"));
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    expect(badge.textContent).toBe("2 / 2 ✓");
+    expect(badge.textContent).toBe("2 / 2 ✓ (100%)");
   });
 });
 
@@ -793,11 +793,11 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
     ]));
     renderTasksCard();
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    expect(badge.textContent).toBe("0 / 2 ✓");
+    expect(badge.textContent).toBe("0 / 2 ✓ (0%)");
     expect(badge.style.display).not.toBe("none");
   });
 
-  it("badge shows '1 / 2 ✓' after checking one of two tasks", () => {
+  it("badge shows '1 / 2 ✓ (50%)' after checking one of two tasks", () => {
     document.body.innerHTML = `
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
@@ -811,10 +811,10 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
     cbs[0].checked = true;
     cbs[0].dispatchEvent(new Event("change"));
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    expect(badge.textContent).toBe("1 / 2 ✓");
+    expect(badge.textContent).toBe("1 / 2 ✓ (50%)");
   });
 
-  it("badge shows '2 / 2 ✓' after all tasks are done", () => {
+  it("badge shows '2 / 2 ✓ (100%)' after all tasks are done", () => {
     document.body.innerHTML = `
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
@@ -830,7 +830,7 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
     cbs[1].checked = true;
     cbs[1].dispatchEvent(new Event("change"));
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
-    expect(badge.textContent).toBe("2 / 2 ✓");
+    expect(badge.textContent).toBe("2 / 2 ✓ (100%)");
   });
 });
 
