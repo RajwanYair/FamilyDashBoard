@@ -23,11 +23,14 @@ export interface CardOptions {
 /**
  * Wrap a card loader with standard patterns:
  * visibility check, lock, cache check, sync indicators.
+ * If `validate` is provided, fresh API data is validated before
+ * rendering; invalid payloads fall back to stale cache and log a warning.
  */
 export function createCardLoader<T>(
   opts: CardOptions,
   fetchData: () => Promise<T>,
   renderData: (data: T) => void,
+  validate?: (data: unknown) => data is T,
 ): () => Promise<void> {
   return async function load(): Promise<void> {
     if (!isPageVisible() || !acquireLock(opts.id)) return;
@@ -48,6 +51,13 @@ export function createCardLoader<T>(
 
     try {
       const data = await fetchData();
+      // Runtime validation gate — reject malformed API responses
+      if (validate && !validate(data)) {
+        diagLog(`[${opts.id}] API response failed validation — using stale cache`);
+        setSync(opts.id, stale ? "ok" : "error");
+        recordFailure(opts.id);
+        return;
+      }
       cSet(opts.id, data);
       renderData(data);
       setSync(opts.id, "ok");

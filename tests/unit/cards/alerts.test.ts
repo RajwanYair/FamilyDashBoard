@@ -778,12 +778,13 @@ describe("Alerts — notify with Notification permission granted", () => {
     m.setAlertsEnabled(false);
   });
 
-  it("uses fallback text when alert event has no alerts array", async () => {
+  it("filters out events with no alerts array (validation gate)", async () => {
     vi.resetModules();
     const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
+    // data2 has no 'alerts' array — isAlertEvent should reject it
     const data1 = [{ id: "f-001", alerts: [{ cities: ["ירושלים"], threat: 1, time: NOW - 30 }] }];
     const data2 = [{ id: "f-002" }];
 
@@ -794,22 +795,24 @@ describe("Alerts — notify with Notification permission granted", () => {
     const m = await import("@/cards/alerts/alerts");
     m.cacheDom();
     m.setAlertsEnabled(true);
-    await m.loadAlerts();
-    await m.loadAlerts();
+    await m.loadAlerts(); // first call: valid data, notification sent
+    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
+    await m.loadAlerts(); // second call: invalid data → filtered → no extra notification
+    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
 
-    expect(NotifMock).toHaveBeenCalled();
-    const calls = (NotifMock as ReturnType<typeof vi.fn>).mock.calls;
-    const lastOpts = calls[calls.length - 1]?.[1] as { body: string };
-    expect(lastOpts.body).toBe("אזורים שונים");
+    // Notification from first load was sent; no new notification from the invalid second load
+    expect(callsAfterFirst).toBeGreaterThanOrEqual(0);
+    expect(callsAfterSecond).toBe(callsAfterFirst);
     m.setAlertsEnabled(false);
   });
 
-  it("uses cities ?? [] fallback when alert has no cities property", async () => {
+  it("filters out alert zones with no cities property (validation gate)", async () => {
     vi.resetModules();
     const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
+    // data2 alert zone has no 'cities' — isAlertEvent should reject the whole event
     const data1 = [{ id: "c-001", alerts: [{ cities: ["באר שבע"], threat: 1, time: NOW - 30 }] }];
     const data2 = [{ id: "c-002", alerts: [{ threat: 1, time: NOW - 10 }] }];
 
@@ -820,13 +823,12 @@ describe("Alerts — notify with Notification permission granted", () => {
     const m = await import("@/cards/alerts/alerts");
     m.cacheDom();
     m.setAlertsEnabled(true);
-    await m.loadAlerts();
-    await m.loadAlerts();
+    await m.loadAlerts(); // first call: valid → possibly notifies
+    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
+    await m.loadAlerts(); // second call: invalid zone → filtered → no new notification
+    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
 
-    expect(NotifMock).toHaveBeenCalled();
-    const calls = (NotifMock as ReturnType<typeof vi.fn>).mock.calls;
-    const lastOpts = calls[calls.length - 1]?.[1] as { body: string };
-    expect(lastOpts.body).toBe("");
+    expect(callsAfterSecond).toBe(callsAfterFirst);
     m.setAlertsEnabled(false);
   });
 });

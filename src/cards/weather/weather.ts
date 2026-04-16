@@ -8,6 +8,7 @@ import { createCardLoader, scheduleCard } from "../base-card";
 import "./weather.css";
 import { INTERVALS, WX_CODES, WX_EMOJI } from "../../core/constants";
 import type { WeatherResponse } from "../../types/api";
+import { isWeatherResponse } from "../../types/api";
 import { diagLog } from "../../core/diag";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { setSync } from "../../core/sync";
@@ -361,6 +362,7 @@ const loadWeather = createCardLoader<WeatherResponse>(
   { id: "wx", ttl: 900_000, interval: INTERVALS.WEATHER },
   fetchWeather,
   renderWeather,
+  isWeatherResponse,
 );
 
 export function initWeatherCard(): void {

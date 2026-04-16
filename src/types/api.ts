@@ -150,3 +150,66 @@ export interface CalendarEvent {
   icsIndex: number;
   category?: string;
 }
+
+// ── Runtime type guards ───────────────────────────────────────────────────────
+
+function isObj(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+function isNumArr(v: unknown): v is number[] {
+  return Array.isArray(v) && v.every((x) => typeof x === "number" || x === null);
+}
+function isStrArr(v: unknown): v is string[] {
+  return Array.isArray(v) && v.every((x) => typeof x === "string");
+}
+
+/**
+ * Validates that `v` has the shape of a WeatherResponse.
+ * Returns false for any missing or wrong-type required field.
+ */
+export function isWeatherResponse(v: unknown): v is WeatherResponse {
+  if (!isObj(v)) return false;
+  const cur = v["current"];
+  if (!isObj(cur)) return false;
+  const numFields: (keyof WeatherResponse["current"])[] = [
+    "temperature_2m", "relative_humidity_2m", "weather_code",
+    "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m",
+    "apparent_temperature", "uv_index", "dew_point_2m",
+  ];
+  if (numFields.some((f) => typeof cur[f] !== "number")) return false;
+  const hourly = v["hourly"];
+  if (!isObj(hourly) || !isStrArr(hourly["time"]) || !isNumArr(hourly["temperature_2m"])) return false;
+  const daily = v["daily"];
+  if (!isObj(daily) || !isStrArr(daily["time"]) || !isNumArr(daily["temperature_2m_max"])) return false;
+  return true;
+}
+
+/**
+ * Validates that `v` has the shape of a NewsItem.
+ */
+export function isNewsItem(v: unknown): v is NewsItem {
+  if (!isObj(v)) return false;
+  return typeof v["title"] === "string" && typeof v["link"] === "string" && typeof v["source"] === "string";
+}
+
+/**
+ * Validates that `v` has the shape of a CurrencyResponse.
+ */
+export function isCurrencyResponse(v: unknown): v is CurrencyResponse {
+  if (!isObj(v)) return false;
+  return isObj(v["rates"]) && typeof v["base_code"] === "string";
+}
+
+/**
+ * Validates that `v` has the shape of an AlertEvent array item.
+ */
+export function isAlertEvent(v: unknown): v is AlertEvent {
+  if (!isObj(v)) return false;
+  if (!Array.isArray(v["alerts"])) return false;
+  return v["alerts"].every(
+    (a) =>
+      isObj(a) &&
+      Array.isArray((a as Record<string, unknown>)["cities"]) &&
+      typeof (a as Record<string, unknown>)["time"] === "number",
+  );
+}

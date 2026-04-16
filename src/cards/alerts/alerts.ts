@@ -19,6 +19,7 @@ import {
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
 import type { AlertEvent, AlertsResponse } from "../../types/api";
+import { isAlertEvent } from "../../types/api";
 
 // ── State ──
 let _enabled = true;
@@ -315,20 +316,25 @@ export async function loadAlerts(): Promise<void> {
 
   try {
     const data = await fetchAlerts();
-    if (data.length) {
-      const newTopId = data[0]?.id ?? null;
+    // Runtime validation: discard any structurally invalid events
+    const validData = data.filter(isAlertEvent);
+    if (validData.length !== data.length) {
+      diagLog(`[alerts] Discarded ${data.length - validData.length} invalid event(s)`);
+    }
+    if (validData.length) {
+      const newTopId = validData[0]?.id ?? null;
       const isNew = _lastAlertId !== null && newTopId !== _lastAlertId;
       _lastAlertId = newTopId;
-      if (isNew) notify(data);
+      if (isNew) notify(validData);
 
-      cSet(key, data);
-      renderAlerts(data, isNew);
+      cSet(key, validData);
+      renderAlerts(validData, isNew);
       setSync("alerts", "ok");
       syncBurst("alerts");
       recordSuccess("alerts");
 
       const now = Date.now() / 1000;
-      _haveActive = data.some((ev) =>
+      _haveActive = validData.some((ev) =>
         ev.alerts?.some((a) => now - a.time < 600),
       );
     } else {
