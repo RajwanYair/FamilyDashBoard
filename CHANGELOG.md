@@ -5,6 +5,65 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.9.0] — 2025-06-15
+
+> **2182 tests / 51 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `d2ef433`)
+
+### Sprint 39 — Runtime Error Tracking
+
+- **`src/core/diag.ts`**: `initErrorTracking()` captures unhandled errors and rejections, stores up to 20 entries in `_errorLog`, exposed via `getErrorLog()`; `getErrorSummary()` returns compact diagnostic string
+
+### Sprint 40 — Bundle CI Fix
+
+- **`.github/workflows/ci.yml`**: bundle size gate uses `exit 1` (was `::warning::`) on violation; single unified workflow replacing deprecated `ci-v6.yml`
+
+### Sprint 41 — Web Vitals in Diagnostics
+
+- **`src/core/diag.ts`**: `initWebVitals()` observes `largest-contentful-paint`, `first-input`, `layout-shift` via PerformanceObserver; stores up to 5 entries; `getWebVitalsSummary()` returns formatted string; wired into diagnostics overlay
+
+### Sprint 42 — Config v3 Per-Card Settings
+
+- **`src/types/config.ts`**: 7 new boolean fields (`weatherShowHourly`, `weatherShowWind`, `weatherShowSunrise`, `stocksGroupBySector`, `tasksShowCategories`, `newsShowSource`, `sysInfoShowRtt`); `CONFIG_VERSION` 2→3
+- **`src/core/config.ts`**: v2→v3 migration block + sanitization for all 7 new fields
+- **`src/ui/config-panel.ts`**: 5 new `<select>` rows wired to populate/collect
+
+### Sprint 43 — IndexedDB Cache Tier
+
+- **`src/core/idb-cache.ts`** (new): async IDB wrapper — `idbGet<T>`, `idbSet`, `idbDel`, `idbClear`, `idbKeys`, `isIdbAvailable`, `_resetIdb`; graceful fallback when IDB unavailable
+
+### Sprint 44 — SW TypeScript Types
+
+- **`src/core/sw-constants.ts`** (new): typed SW message unions, `SW_MSG_SKIP_WAITING`, `SW_MSG_VERSION_ACTIVATED`, `isVersionActivatedMsg()`, `isSkipWaitingMsg()`, `postMessageToSW()`
+- **`src/core/sw-register.ts`**: uses typed constants and guards; bug fixed (extra `postMessageToSW` call removed)
+
+### Sprint 45 — Accessibility Phase 2
+
+- **`src/index.html`**: `role="tablist/tab/tabpanel"` + `aria-selected/controls` on config tabs
+- **`src/ui/config-panel.ts`**: `initTabKeyboard()` — Arrow/Home/End navigation; `switchCfgTab()` updates `aria-selected`
+- **`src/core/sync.ts`**: `setSync()` sets `aria-busy` on nearest `.card` ancestor
+- **`src/main.ts`**: `aria-label` on all `.card-collapse-btn` at init
+
+### Sprint 46 — Weather Hourly Strip
+
+- **`src/cards/weather/weather.ts`**: `renderHourlyStrip()` shows next 6 hours as tiles (time, emoji, temp, precip%); gated by `cfg.weatherShowHourly`
+- **`src/cards/weather/weather.css`**: `.wx-hourly-strip` + `.wx-h-tile` responsive tile styles
+
+### Sprint 47 — Tasks Enhancements
+
+- **`src/cards/tasks/tasks.ts`**: `isDueToday()` export; `.due-today` CSS class on row + chip; `tasksShowCategories` gates person group headers
+- **`src/cards/tasks/tasks.css`**: `.tasks-due-today` + `.tasks-row.due-today` yellow warning styling
+
+### Sprint 48 — News Enhancements
+
+- **`src/cards/news/news.ts`**: `.rss-source` hidden when `cfg.newsShowSource = false`; pulsing `.news-breaking-badge` for `isBreaking()` items
+- **`src/cards/news/news.css`**: `.news-breaking-badge` + `newsBreakingPulse` animation
+
+### Sprint 49 — Stocks Enhancements
+
+- **`src/cards/stocks/stocks.ts`**: `renderStocksShell()` gates `.stk-sector-hdr` on `cfg.stocksGroupBySector`; flat list when `false`
+
+---
+
 ## [7.8.0] — 2025-01-30
 
 > **2056 tests / 47 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `5b8aa62`)
