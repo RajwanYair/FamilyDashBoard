@@ -1348,3 +1348,53 @@ describe("Alerts — setAlertVolume / getAlertVolume (F2 v7.2)", () => {
     expect(getAlertVolume()).toBe(100);
   });
 });
+
+// ── Sprint 19: clearUnreadAlerts + document.title badge ──────────────────────
+
+describe("Alerts — clearUnreadAlerts resets badge and document.title", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.resetModules();
+    document.title = "FamilyDashBoard";
+  });
+
+  it("clearUnreadAlerts hides badge and clears unread count", async () => {
+    vi.resetModules();
+    const { renderAlerts: ra, clearUnreadAlerts: cua, cacheDom: cd } =
+      await import("@/cards/alerts/alerts");
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge" style="display:none">0</div>`;
+    cd();
+    const nowTs = Math.floor(Date.now() / 1000);
+    const ev: AlertEvent = { id: "s19a", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 5 }] };
+    // Accumulate 2 unread
+    ra([ev], true);
+    ra([ev], true);
+    const badge = document.getElementById("alerts-badge")!;
+    expect(Number(badge.textContent)).toBeGreaterThanOrEqual(2);
+    // Now clear
+    cua();
+    expect(badge.textContent).toBe("0");
+    expect(badge.style.display).toBe("none");
+  });
+
+  it("clearUnreadAlerts without badge element does not throw", async () => {
+    vi.resetModules();
+    const { clearUnreadAlerts: cua, cacheDom: cd } = await import("@/cards/alerts/alerts");
+    document.body.innerHTML = `<div id="alerts-scroll"></div>`;
+    cd(); // elBadge = null
+    expect(() => cua()).not.toThrow();
+  });
+
+  it("renderAlerts with highlightNew=true updates document.title with unread count", async () => {
+    vi.resetModules();
+    document.title = "FamilyDashBoard";
+    const { renderAlerts: ra, cacheDom: cd } = await import("@/cards/alerts/alerts");
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge" style="display:none">0</div>`;
+    cd();
+    const nowTs = Math.floor(Date.now() / 1000);
+    const ev: AlertEvent = { id: "s19b", alerts: [{ cities: ["חיפה"], threat: 1, time: nowTs - 3 }] };
+    ra([ev], true);
+    // Title should contain the unread count
+    expect(document.title).toMatch(/\(\d+\)/);
+  });
+});

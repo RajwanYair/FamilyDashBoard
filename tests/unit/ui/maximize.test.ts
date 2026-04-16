@@ -701,3 +701,57 @@ describe("Maximize — aria-expanded accessibility (v7.1.7)", () => {
     expect(card.getAttribute("aria-expanded")).toBe("false");
   });
 });
+
+// ── Sprint 19: aria-expanded on collapse buttons ─────────────────────────────
+
+describe("Maximize — initCardCollapse aria-expanded on collapse buttons (Sprint 19)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("sets aria-expanded='true' on collapse button when card starts expanded", async () => {
+    vi.resetModules();
+    const m = await import("@/ui/maximize");
+    document.body.innerHTML = `
+      <div class="card" id="s19-card">
+        <button class="card-collapse-btn">▼</button>
+        <div class="card-body"></div>
+      </div>`;
+    m.initCardCollapse();
+    const btn = document.querySelector<HTMLElement>(".card-collapse-btn")!;
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("sets aria-expanded='false' on collapse button when card is pre-collapsed", async () => {
+    vi.resetModules();
+    localStorage.setItem("dash_v2_collapsed_cards", JSON.stringify(["s19-c2"]));
+    const m = await import("@/ui/maximize");
+    document.body.innerHTML = `
+      <div class="card" id="s19-c2">
+        <button class="card-collapse-btn">▼</button>
+        <div class="card-body"></div>
+      </div>`;
+    m.initCardCollapse();
+    const btn = document.querySelector<HTMLElement>(".card-collapse-btn")!;
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("toggles aria-expanded when collapse button is clicked", async () => {
+    vi.resetModules();
+    const m = await import("@/ui/maximize");
+    document.body.innerHTML = `
+      <div class="card" id="s19-c3">
+        <button class="card-collapse-btn">▼</button>
+        <div class="card-body"></div>
+      </div>`;
+    m.initCardCollapse();
+    const btn = document.querySelector<HTMLElement>(".card-collapse-btn")!;
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+    btn.click();
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+    btn.click();
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+  });
+});

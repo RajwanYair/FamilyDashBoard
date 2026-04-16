@@ -1326,3 +1326,52 @@ describe("Config Panel — dim-level and font-scale slider live preview", () => 
     expect(document.getElementById("cfg-font-scale-val")?.textContent).toBe("120%");
   });
 });
+
+// ── Sprint 19: dirty indicator + closeConfigPanel clears dirty ────────────────
+
+describe("Config Panel — dirty indicator (Sprint 19)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+    vi.useRealTimers();
+  });
+
+  it("input event marks the gear button as dirty (shows ⚙️*)", async () => {
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <button id="cfg-gear-btn">⚙️</button>
+        <button id="cfg-save-btn">שמור</button>
+        <button id="cfg-close-btn">×</button>
+        <input id="cfg-family-name" type="text" value="" />
+      </div>`;
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const gearBtn = document.getElementById("cfg-gear-btn")!;
+    const input = document.getElementById("cfg-family-name") as HTMLInputElement;
+    input.value = "משפחת כהן";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(gearBtn.textContent).toContain("*");
+  });
+
+  it("closeConfigPanel clears dirty indicator (removes * from gear button)", async () => {
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <button id="cfg-gear-btn">⚙️</button>
+        <button id="cfg-save-btn">שמור</button>
+        <button id="cfg-close-btn">×</button>
+        <input id="cfg-family-name" type="text" value="" />
+      </div>`;
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const gearBtn = document.getElementById("cfg-gear-btn")!;
+    const input = document.getElementById("cfg-family-name") as HTMLInputElement;
+    input.value = "שינוי";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(gearBtn.textContent).toContain("*");
+    mod.closeConfigPanel();
+    expect(gearBtn.textContent).not.toContain("*");
+  });
+});

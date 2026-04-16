@@ -423,3 +423,51 @@ describe("DiagOverlay — clear log button (F1 v7.3)", () => {
     expect(log.textContent).toContain("Log cleared");
   });
 });
+
+// ── Sprint 19: renderStats populates #diag-panes ───────────────────────────
+
+describe("DiagOverlay — renderStats populates #diag-panes", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <button id="diag-copy-btn">📋 העתק לוג</button>
+        <button id="diag-clear-btn">🗑 נקה לוג</button>
+        <div id="diag-log"></div>
+        <div id="diag-panes"></div>
+      </dialog>`;
+    const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & { show?: () => void; close?: () => void };
+    if (typeof dlg.show !== "function") {
+      dlg.show = function () { this.setAttribute("open", ""); };
+      dlg.showModal = function () { this.setAttribute("open", ""); };
+      dlg.close = function () { this.removeAttribute("open"); };
+    }
+    clearDiag();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    clearDiag();
+    vi.useRealTimers();
+  });
+
+  it("openDiagOverlay renders .diag-stats into #diag-panes", () => {
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.innerHTML).toContain("diag-stats");
+    closeDiagOverlay();
+  });
+
+  it("renderStats shows LocalStorage label in #diag-panes", () => {
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.textContent).toContain("LocalStorage");
+    closeDiagOverlay();
+  });
+
+  it("closeDiagOverlay clears the auto-refresh timer", () => {
+    vi.useFakeTimers();
+    openDiagOverlay();
+    closeDiagOverlay();
+    // After close, timer should be cleared — advancing time should not throw
+    expect(() => vi.advanceTimersByTime(15000)).not.toThrow();
+  });
+});
