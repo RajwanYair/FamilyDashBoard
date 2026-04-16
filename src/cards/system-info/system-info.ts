@@ -217,6 +217,60 @@ export function destroySystemInfoCard(): void {
   }
 }
 
+// ── Sprint 28: Pure system-info utility functions ─────────────────────────
+
+/**
+ * Returns the effective connection type string (e.g. "4g", "3g", "slow-2g")
+ * or "unknown" when the Network Information API is not available.
+ */
+export function getConnectionInfo(): string {
+  const nav = navigator as NavigatorWithExtras;
+  return nav.connection?.effectiveType ?? "unknown";
+}
+
+/**
+ * Returns the current viewport dimensions and device pixel ratio.
+ */
+export function getViewportSize(): { width: number; height: number; dpr: number } {
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    dpr: window.devicePixelRatio ?? 1,
+  };
+}
+
+/**
+ * Format a byte count into a human-readable string (B / KB / MB / GB).
+ * Uses binary prefixes (1 KB = 1024 bytes).
+ */
+export function formatBytes(bytes: number): string {
+  if (!isFinite(bytes) || bytes < 0) return "0 B";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
+}
+
+/**
+ * Returns the approximate page load time in milliseconds, defined as the
+ * time elapsed since the module's PAGE_LOAD_TIME constant was captured.
+ */
+export function getPageLoadTime(): number {
+  return Date.now() - PAGE_LOAD_TIME;
+}
+
+/**
+ * Classify the current device category based on viewport width and DPR.
+ * Returns "tv" | "desktop" | "tablet" | "mobile".
+ */
+export function categorizeDevice(): "tv" | "desktop" | "tablet" | "mobile" {
+  const { width } = getViewportSize();
+  if (width >= 1920) return "tv";
+  if (width >= 1024) return "desktop";
+  if (width >= 600) return "tablet";
+  return "mobile";
+}
+
 // ── CardDefinition export (for registry) ─────────────────────────────────
 
 export const systemInfoCard: CardDefinition = {

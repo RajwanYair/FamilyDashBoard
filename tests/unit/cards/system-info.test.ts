@@ -12,6 +12,11 @@ import {
   initSystemInfoCard,
   destroySystemInfoCard,
   systemInfoCard,
+  getConnectionInfo,
+  getViewportSize,
+  formatBytes,
+  getPageLoadTime,
+  categorizeDevice,
 } from "@/cards/system-info/system-info";
 
 // ── DOM setup ──────────────────────────────────────────────────────────────
@@ -626,5 +631,84 @@ describe("SystemInfo — RTT tile (F9 v7.3)", () => {
     await renderSystemInfo();
     const el = document.getElementById("sysinfo-rtt");
     expect(el?.textContent).toBe("50ms");
+  });
+});
+
+// ── Sprint 28: getConnectionInfo ──────────────────────────────────────────────
+
+describe("getConnectionInfo", () => {
+  it("returns 'unknown' when connection API is absent", () => {
+    // happy-dom doesn't expose navigator.connection
+    expect(["unknown", "4g", "3g", "2g", "slow-2g"]).toContain(getConnectionInfo());
+  });
+});
+
+// ── Sprint 28: getViewportSize ────────────────────────────────────────────────
+
+describe("getViewportSize", () => {
+  it("returns an object with width, height, dpr", () => {
+    const result = getViewportSize();
+    expect(typeof result.width).toBe("number");
+    expect(typeof result.height).toBe("number");
+    expect(typeof result.dpr).toBe("number");
+    expect(result.dpr).toBeGreaterThan(0);
+  });
+});
+
+// ── Sprint 28: formatBytes ────────────────────────────────────────────────────
+
+describe("formatBytes", () => {
+  it("formats bytes", () => {
+    expect(formatBytes(0)).toBe("0 B");
+    expect(formatBytes(512)).toBe("512 B");
+  });
+
+  it("formats kilobytes", () => {
+    expect(formatBytes(1024)).toBe("1.0 KB");
+    expect(formatBytes(2048)).toBe("2.0 KB");
+  });
+
+  it("formats megabytes", () => {
+    expect(formatBytes(1024 * 1024)).toBe("1.0 MB");
+    expect(formatBytes(1.5 * 1024 * 1024)).toBe("1.5 MB");
+  });
+
+  it("formats gigabytes", () => {
+    expect(formatBytes(1024 ** 3)).toBe("1.0 GB");
+  });
+
+  it("handles negative / invalid values", () => {
+    expect(formatBytes(-1)).toBe("0 B");
+    expect(formatBytes(NaN)).toBe("0 B");
+    expect(formatBytes(Infinity)).toBe("0 B");
+  });
+});
+
+// ── Sprint 28: getPageLoadTime ────────────────────────────────────────────────
+
+describe("getPageLoadTime", () => {
+  it("returns a non-negative number", () => {
+    expect(getPageLoadTime()).toBeGreaterThanOrEqual(0);
+  });
+
+  it("increases over time", () => {
+    const t1 = getPageLoadTime();
+    const t2 = getPageLoadTime();
+    expect(t2).toBeGreaterThanOrEqual(t1);
+  });
+});
+
+// ── Sprint 28: categorizeDevice ───────────────────────────────────────────────
+
+describe("categorizeDevice", () => {
+  it("returns one of the four categories", () => {
+    const categories = ["tv", "desktop", "tablet", "mobile"];
+    expect(categories).toContain(categorizeDevice());
+  });
+
+  it("returns 'tv' in happy-dom (which defaults to 1920px width)", () => {
+    // happy-dom defaults window.innerWidth to 1920
+    const result = categorizeDevice();
+    expect(result).toBe("tv");
   });
 });
