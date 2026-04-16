@@ -5,6 +5,12 @@
  */
 
 import { diagLog } from "./diag";
+import {
+  SW_MSG_SKIP_WAITING,
+  SW_MSG_VERSION_ACTIVATED,
+  isVersionActivatedMsg,
+  postMessageToSW,
+} from "./sw-constants";
 
 let swRegistration: ServiceWorkerRegistration | null = null;
 
@@ -83,7 +89,10 @@ export async function registerSW(): Promise<void> {
     navigator.serviceWorker.addEventListener(
       "message",
       (event: MessageEvent) => {
-        if (event.data?.type === "VERSION_ACTIVATED") {
+        if (isVersionActivatedMsg(event.data)) {
+          diagLog(`[sw] Activated version: ${event.data.version}`);
+        } else if (event.data?.type === SW_MSG_VERSION_ACTIVATED) {
+          // Fallback for non-typed payloads (legacy SW)
           diagLog(`[sw] Activated version: ${String(event.data.version)}`);
         }
       },
@@ -99,7 +108,8 @@ export async function registerSW(): Promise<void> {
 export function swSkipWaiting(): void {
   const waiting = swRegistration?.waiting;
   if (!waiting) return;
-  waiting.postMessage({ type: "SKIP_WAITING" });
+  waiting.postMessage({ type: SW_MSG_SKIP_WAITING });
+  postMessageToSW({ type: SW_MSG_SKIP_WAITING });
 }
 
 /**
