@@ -18,6 +18,71 @@ import type { CurrencyResponse } from "../../types/api";
 let _prevRates: Record<string, number> = {};
 let _lastFetchTime: Date | null = null;
 
+// ── Sprint 24: 7-day rate history ─────────────────────────────────────────────
+
+const CUR_HISTORY_KEY = "dash_v2_cur_history";
+const CUR_HISTORY_MAX_DAYS = 7;
+
+interface CurHistoryEntry {
+  date: string; // YYYY-MM-DD
+  rates: Record<string, number>; // raw rates (ILS-based, same format as API)
+}
+
+/** Load the currency rate history from localStorage (up to 7 entries). */
+export function loadCurrencyHistory(): CurHistoryEntry[] {
+  try {
+    const raw = localStorage.getItem(CUR_HISTORY_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as CurHistoryEntry[];
+  } catch {
+    return [];
+  }
+}
+
+/** Store today's rates snapshot into the 7-day rolling history. */
+export function storeCurrencyHistory(rates: Record<string, number>): void {
+  const today = new Date().toISOString().slice(0, 10);
+  let history = loadCurrencyHistory();
+  // Replace today's entry if already present, or append
+  history = history.filter((e) => e.date !== today);
+  history.push({ date: today, rates });
+  // Keep only the last 7 entries
+  if (history.length > CUR_HISTORY_MAX_DAYS) {
+    history = history.slice(-CUR_HISTORY_MAX_DAYS);
+  }
+  try {
+    localStorage.setItem(CUR_HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    /* quota */
+  }
+}
+
+/**
+ * Compute the 7-day percentage change for a given currency key.
+ * Returns null when insufficient history is available.
+ * @param key  Currency key (e.g. "USD", "EUR", "XAU")
+ * @param history  Loaded history array
+ */
+export function get7DayTrend(
+  key: string,
+  history: CurHistoryEntry[],
+): { pct: number; arrow: "↑" | "↓" | "→" } | null {
+  if (history.length < 2) return null;
+  // Find the oldest available entry (≤ 7 days ago)
+  const oldest = history[0];
+  const newest = history[history.length - 1];
+  if (!oldest || !newest) return null;
+  const oldRate = oldest.rates[key];
+  const newRate = newest.rates[key];
+  if (!oldRate || !newRate || oldRate === 0) return null;
+  // To ILS per foreign unit
+  const oldVal = 1 / oldRate;
+  const newVal = 1 / newRate;
+  const pct = ((newVal - oldVal) / oldVal) * 100;
+  const arrow: "↑" | "↓" | "→" = Math.abs(pct) < 0.1 ? "→" : pct > 0 ? "↑" : "↓";
+  return { pct, arrow };
+}
+
 /** Format a past date as a relative Hebrew label (e.g. "לפני 5 דק׳"). */
 export function formatRelativeTime(date: Date): string {
   const diffMs = Date.now() - date.getTime();
@@ -104,6 +169,10 @@ export async function fetchCurrency(): Promise<Record<string, number>> {
 
 // ── Render currency tiles ──
 export function renderCurrency(rates: Record<string, number>): void {
+  // Sprint 24: persist today's snapshot before rendering
+  storeCurrencyHistory(rates);
+  const history = loadCurrencyHistory();
+
   for (const tile of CUR_TILES) {
     const elMap = TILE_EL_MAP[tile.key];
     if (!elMap) continue;
@@ -132,6 +201,7 @@ export function renderCurrency(rates: Record<string, number>): void {
     // Change indicator vs. previous fetch
     if (chgEl) {
       const prevRaw = _prevRates[tile.key];
+      let sessionChangeShown = false;
       if (prevRaw && rawRate && val !== null) {
         const prevVal = 1 / prevRaw;
         const diff =
@@ -143,12 +213,20 @@ export function renderCurrency(rates: Record<string, number>): void {
         if (Math.abs(diff) > threshold) {
           chgEl.textContent = `${diff > 0 ? "▲" : "▼"} ${Math.abs(tile.precision === 0 ? diff : parseFloat(diff.toFixed(tile.precision)))}`;
           chgEl.className = `cur-chg ${diff > 0 ? "positive" : "negative"}`;
+          sessionChangeShown = true;
+        }
+      }
+      if (!sessionChangeShown) {
+        // Sprint 24: show 7-day trend when no intra-session change
+        const trend = get7DayTrend(tile.key, history);
+        if (trend) {
+          const sign = trend.pct >= 0 ? "+" : "";
+          chgEl.textContent = `7d ${trend.arrow} ${sign}${trend.pct.toFixed(1)}%`;
+          chgEl.className = `cur-chg ${trend.pct > 0.1 ? "positive" : trend.pct < -0.1 ? "negative" : ""}`;
         } else {
           chgEl.textContent = "";
           chgEl.className = "cur-chg";
         }
-      } else {
-        chgEl.textContent = "";
       }
     }
   }

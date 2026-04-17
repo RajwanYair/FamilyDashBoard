@@ -10,6 +10,9 @@ import {
   renderCurrency,
   cacheDom,
   formatRelativeTime,
+  loadCurrencyHistory,
+  storeCurrencyHistory,
+  get7DayTrend,
 } from "@/cards/currency/currency";
 
 const MOCK_RATES: Record<string, number> = {
@@ -395,5 +398,94 @@ describe("Currency — renderCurrency updates last-fetch chip", () => {
     renderCurrency(MOCK_RATES);
     const chip = document.getElementById("cur-last-fetch")!;
     expect(chip.title).toContain("עדכון אחרון");
+  });
+});
+
+// ── Sprint 24: 7-day rate history ────────────────────────────────────────────
+
+describe("Currency — storeCurrencyHistory / loadCurrencyHistory (Sprint 24)", () => {
+  beforeEach(() => {
+    localStorage.removeItem("dash_v2_cur_history");
+  });
+  afterEach(() => {
+    localStorage.removeItem("dash_v2_cur_history");
+  });
+
+  it("loadCurrencyHistory returns [] when nothing stored", () => {
+    expect(loadCurrencyHistory()).toEqual([]);
+  });
+
+  it("storeCurrencyHistory stores today's entry", () => {
+    storeCurrencyHistory(MOCK_RATES);
+    const history = loadCurrencyHistory();
+    expect(history).toHaveLength(1);
+    expect(history[0]?.rates).toEqual(MOCK_RATES);
+  });
+
+  it("storeCurrencyHistory replaces the same-day entry", () => {
+    storeCurrencyHistory(MOCK_RATES);
+    storeCurrencyHistory({ ...MOCK_RATES, USD: 0.28 });
+    const history = loadCurrencyHistory();
+    expect(history).toHaveLength(1);
+    expect(history[0]?.rates.USD).toBe(0.28);
+  });
+
+  it("keeps a rolling 7-entry history", () => {
+    for (let d = 1; d <= 10; d++) {
+      const dateStr = `2024-01-${String(d).padStart(2, "0")}`;
+      const stored = JSON.parse(localStorage.getItem("dash_v2_cur_history") ?? "[]") as Array<{date: string; rates: Record<string, number>}>;
+      stored.push({ date: dateStr, rates: { ...MOCK_RATES } });
+      if (stored.length > 7) stored.splice(0, stored.length - 7);
+      localStorage.setItem("dash_v2_cur_history", JSON.stringify(stored));
+    }
+    const history = loadCurrencyHistory();
+    expect(history.length).toBeLessThanOrEqual(7);
+  });
+});
+
+describe("Currency — get7DayTrend (Sprint 24)", () => {
+  it("returns null when history has fewer than 2 entries", () => {
+    expect(get7DayTrend("USD", [])).toBeNull();
+    expect(get7DayTrend("USD", [{ date: "2024-01-01", rates: { USD: 0.27 } }])).toBeNull();
+  });
+
+  it("returns '↑' and positive pct when rate went up (ILS/USD increased)", () => {
+    const history = [
+      { date: "2024-01-01", rates: { USD: 0.28 } }, // 1/0.28 ≈ 3.57 ILS
+      { date: "2024-01-07", rates: { USD: 0.26 } }, // 1/0.26 ≈ 3.85 ILS  ← ILS more expensive
+    ];
+    const result = get7DayTrend("USD", history);
+    expect(result).not.toBeNull();
+    expect(result?.arrow).toBe("↑");
+    expect(result?.pct).toBeGreaterThan(0);
+  });
+
+  it("returns '↓' and negative pct when rate went down", () => {
+    const history = [
+      { date: "2024-01-01", rates: { USD: 0.26 } }, // 1/0.26 ≈ 3.85 ILS
+      { date: "2024-01-07", rates: { USD: 0.28 } }, // 1/0.28 ≈ 3.57 ILS  ← ILS cheaper
+    ];
+    const result = get7DayTrend("USD", history);
+    expect(result).not.toBeNull();
+    expect(result?.arrow).toBe("↓");
+    expect(result?.pct).toBeLessThan(0);
+  });
+
+  it("returns '→' when change is negligible (< 0.1%)", () => {
+    const rate = 0.2667;
+    const history = [
+      { date: "2024-01-01", rates: { USD: rate } },
+      { date: "2024-01-07", rates: { USD: rate * 1.0005 } }, // 0.05% change
+    ];
+    const result = get7DayTrend("USD", history);
+    expect(result?.arrow).toBe("→");
+  });
+
+  it("returns null when key is missing from history", () => {
+    const history = [
+      { date: "2024-01-01", rates: { EUR: 0.24 } },
+      { date: "2024-01-07", rates: { EUR: 0.25 } },
+    ];
+    expect(get7DayTrend("USD", history)).toBeNull();
   });
 });
