@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.8.0
+/* FamilyDashBoard ServiceWorker — v7.10.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
  * F113: SW posts NETWORK_BACK message to clients on network recovery
@@ -17,13 +17,14 @@
  * v7.1.2: Markdown lint fix, 1574 tests/39 suites
  * v7.2.0: F5 CLEAR_API_CACHE handler, precipitation chip, alert volume, warm tint, reset-all, cache-age chip, tasks quick-add, countdown 2nd event, news filter chips, L-key warm tint
  * v7.7.0: 50-sprint session — type guards, weather UX, countdown, tasks, news, stocks, Hebrew cal, runtime API guards
- * v7.8.0: Sprint 31–38 — ARIA a11y, CSS co-location, config v2, fetch dedup+quality tier, night dim schedule, cache diag */
+ * v7.8.0: Sprint 31–38 — ARIA a11y, CSS co-location, config v2, fetch dedup+quality tier, night dim schedule, cache diag
+ * v7.10.0: v7.10 quality gate — APP_SHELL updated (index.html replaces BestDashBoard.html), IDB L2 cache, priority init */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
 const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
-// F111: include sw.js itself in app shell pre-cache
+// v7.10: APP_SHELL updated — BestDashBoard.html removed, index.html added
 const APP_SHELL = [
-  "./BestDashBoard.html",
+  "./index.html",
   "./manifest.json",
   "./sw.js",
   "./icon.svg",

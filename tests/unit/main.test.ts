@@ -8,7 +8,12 @@ import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 
 // ── Mock ALL modules that init() imports ──
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
-vi.mock("@/core/cache", () => ({ cEvict: vi.fn() }));
+vi.mock("@/core/cache", () => ({
+  cEvict: vi.fn(),
+  hydrateFromIdb: vi.fn().mockResolvedValue(0),
+  migrateLocalStorageToIdb: vi.fn().mockResolvedValue(0),
+  cEvictIdb: vi.fn().mockResolvedValue(0),
+}));
 vi.mock("@/core/idle", () => ({ initVisibility: vi.fn() }));
 vi.mock("@/core/sw-register", () => ({
   registerSW: vi.fn().mockResolvedValue(undefined),

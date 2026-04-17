@@ -12,6 +12,7 @@ import {
   idbDel,
   idbClear,
   idbKeys,
+  idbGetEntry,
   isIdbAvailable,
   _resetIdb,
 } from "../../../src/core/idb-cache";
@@ -359,5 +360,37 @@ describe("IDB Cache — idbKeys", () => {
     await idbClear();
     const keys = await idbKeys();
     expect(keys).toEqual([]);
+  });
+});
+
+// ── Sprint 50: idbGetEntry ────────────────────────────────────────────────────
+
+describe("IDB Cache — idbGetEntry", () => {
+  it("returns data and ts for a stored entry", async () => {
+    const before = Date.now();
+    await idbSet("entry-key", { v: 99 });
+    const entry = await idbGetEntry<{ v: number }>("entry-key");
+    expect(entry).not.toBeNull();
+    expect(entry?.data).toEqual({ v: 99 });
+    expect(entry?.ts).toBeGreaterThanOrEqual(before);
+  });
+
+  it("returns null for a missing key", async () => {
+    const result = await idbGetEntry("ghost");
+    expect(result).toBeNull();
+  });
+
+  it("returns null when indexedDB is unavailable", async () => {
+    vi.stubGlobal("indexedDB", undefined);
+    _resetIdb();
+    const result = await idbGetEntry("any");
+    expect(result).toBeNull();
+  });
+
+  it("returned ts is a valid timestamp", async () => {
+    await idbSet("ts-check", "hello");
+    const entry = await idbGetEntry("ts-check");
+    expect(typeof entry?.ts).toBe("number");
+    expect(entry!.ts).toBeGreaterThan(1_000_000_000_000); // > year 2001
   });
 });

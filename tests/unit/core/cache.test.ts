@@ -3,7 +3,18 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { cGet, cSet, cGetStale, cEvict, cClear, getOldestCacheAgeMinutes, cacheStats, resetCacheStats } from "@/core/cache";
+import {
+  cGet,
+  cSet,
+  cGetStale,
+  cEvict,
+  cClear,
+  getOldestCacheAgeMinutes,
+  cacheStats,
+  resetCacheStats,
+  hydrateFromIdb,
+  migrateLocalStorageToIdb,
+} from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
   beforeEach(() => {
@@ -367,5 +378,55 @@ describe("cacheStats", () => {
     const stats = cacheStats();
     expect(stats.hits).toBe(0);
     expect(stats.misses).toBe(0);
+  });
+});
+
+// ── Sprint 50+51: hydrateFromIdb + migrateLocalStorageToIdb ─────────────────
+
+describe("hydrateFromIdb", () => {
+  beforeEach(() => { cClear(); });
+
+  it("returns 0 gracefully when IDB is unavailable (happy-dom fallback)", async () => {
+    // happy-dom has no real IDB; hydrateFromIdb should return 0 without throwing
+    const count = await hydrateFromIdb();
+    expect(typeof count).toBe("number");
+    expect(count).toBeGreaterThanOrEqual(0);
+  });
+
+  it("does not throw on repeated calls", async () => {
+    await expect(hydrateFromIdb()).resolves.toBeGreaterThanOrEqual(0);
+    await expect(hydrateFromIdb()).resolves.toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe("migrateLocalStorageToIdb", () => {
+  afterEach(() => {
+    cClear();
+    localStorage.clear();
+  });
+
+  it("returns 0 when no dash_v2_ entries exist", async () => {
+    const count = await migrateLocalStorageToIdb();
+    expect(count).toBe(0);
+  });
+
+  it("returns 0 on second call (migration flag set)", async () => {
+    // Set the flag directly
+    localStorage.setItem("dash_v2_idb_migrated", "1");
+    const count = await migrateLocalStorageToIdb();
+    expect(count).toBe(0);
+  });
+
+  it("skips entries without ts field", async () => {
+    localStorage.setItem("dash_v2_no-ts", JSON.stringify({ data: "x" }));
+    // Should not throw; 0 entries migrated (malformed)
+    const count = await migrateLocalStorageToIdb();
+    // ts is missing → skipped; no flag written since entries.length=0
+    expect(count).toBe(0);
+  });
+
+  it("does not throw when localStorage has corrupt entries", async () => {
+    localStorage.setItem("dash_v2_bad-json", "{{invalid");
+    await expect(migrateLocalStorageToIdb()).resolves.toBeGreaterThanOrEqual(0);
   });
 });

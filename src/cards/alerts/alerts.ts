@@ -137,12 +137,12 @@ async function fetchAlerts(): Promise<AlertEvent[]> {
       if (res.ok) {
         const data = (await res.json()) as AlertEvent[];
         if (Array.isArray(data) && data.length) {
-          diagLog("[alerts] worker OK");
+          diagLog("FDB-019: [alerts] worker OK");
           return data;
         }
       }
     } catch {
-      diagLog("[alerts] worker failed, falling back to direct");
+      diagLog("FDB-020: [alerts] worker failed, falling back to direct");
     }
   }
 
@@ -343,7 +343,7 @@ export async function loadAlerts(): Promise<void> {
       recordFailure("alerts");
     }
   } catch (err) {
-    diagLog(`[alerts] Error: ${String(err)}`);
+      diagLog(`FDB-021: [alerts] Error: ${String(err)}`);
     setSync("alerts", stale ? "ok" : "error");
     recordFailure("alerts");
   }
@@ -374,5 +374,5 @@ export function setAlertsRealtime(on: boolean): void {
 export function initAlertsCard(): void {
   cacheDom();
   void loadAlerts();
-  diagLog("[alerts] Initialized");
+  diagLog("FDB-022: [alerts] Initialized");
 }

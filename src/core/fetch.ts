@@ -46,7 +46,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
   try {
     const r = await fetchWithTimeout(url);
     if (r.ok) {
-      diagLog(`fetchJSON direct OK: ${short}`);
+      diagLog(`FDB-011: fetchJSON direct OK: ${short}`);
       recordFetchSuccess();
       return (await r.json()) as T;
     }
@@ -71,23 +71,23 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
       const proxyUrl = p + encodeURIComponent(url);
       const r = await fetchWithTimeout(proxyUrl, 12_000);
       if (!r.ok) {
-        diagLog(`fetchJSON ${pName} HTTP ${r.status}: ${short}`);
+        diagLog(`FDB-012: fetchJSON ${pName} HTTP ${r.status}: ${short}`);
         continue;
       }
 
       if (p.includes("allorigins")) {
         const wrapper = (await r.json()) as { contents: string };
-        diagLog(`fetchJSON ${pName} OK: ${short}`);
+        diagLog(`FDB-013: fetchJSON ${pName} OK: ${short}`);
         recordFetchSuccess();
         return JSON.parse(wrapper.contents) as T;
       }
 
-      diagLog(`fetchJSON ${pName} OK: ${short}`);
+      diagLog(`FDB-013: fetchJSON ${pName} OK: ${short}`);
       recordFetchSuccess();
       return (await r.json()) as T;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      diagLog(`fetchJSON ${pName} FAIL (${msg.slice(0, 60)}): ${short}`);
+      diagLog(`FDB-014: fetchJSON ${pName} FAIL (${msg.slice(0, 60)}): ${short}`);
     }
   }
 
@@ -109,13 +109,13 @@ export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null
   try {
     const r = await fetchWithTimeout(workerUrl, FETCH_TIMEOUT_MS);
     if (!r.ok) {
-      diagLog(`fetchViaWorker HTTP ${r.status}: ${short}`);
+      diagLog(`FDB-015: fetchViaWorker HTTP ${r.status}: ${short}`);
       return null;
     }
-    diagLog(`fetchViaWorker OK: ${short}`);
+    diagLog(`FDB-016: fetchViaWorker OK: ${short}`);
     return (await r.json()) as T;
   } catch {
-    diagLog(`fetchViaWorker FAIL: ${short}`);
+    diagLog(`FDB-017: fetchViaWorker FAIL: ${short}`);
     return null;
   }
 }
@@ -149,7 +149,7 @@ const _inflightRequests = new Map<string, Promise<unknown>>();
 export async function fetchJSONDeduped<T = unknown>(url: string): Promise<T> {
   const existing = _inflightRequests.get(url);
   if (existing !== undefined) {
-    diagLog(`[fetch] dedup reuse: ${url.slice(0, 60)}`);
+      diagLog(`FDB-018: [fetch] dedup reuse: ${url.slice(0, 60)}`);
     return existing as Promise<T>;
   }
   const p = fetchJSON<T>(url).finally(() => {

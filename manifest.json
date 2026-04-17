@@ -4,7 +4,7 @@
     "description": "Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, live weather/news/stocks/calendar.",
     "display": "standalone",
     "display_override": ["window-controls-overlay", "standalone"],
-    "start_url": "./BestDashBoard.html",
+    "start_url": "./index.html",
     "scope": "./",
     "background_color": "#060b14",
     "theme_color": "#060b14",
@@ -20,7 +20,7 @@
     "shortcuts": [
         {
             "name": "לוח משפחתי",
-            "url": "./BestDashBoard.html",
+            "url": "./index.html",
             "description": "פתח לוח הבקרה המשפחתי"
         }
     ]

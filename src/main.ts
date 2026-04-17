@@ -23,7 +23,12 @@ import "./cards/countdown/countdown.css";
 
 // ── Core ──
 import { diagLog } from "./core/diag";
-import { cEvict } from "./core/cache";
+import {
+  cEvict,
+  hydrateFromIdb,
+  migrateLocalStorageToIdb,
+  cEvictIdb,
+} from "./core/cache";
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
@@ -154,10 +159,18 @@ export function applySeasonClass(): void {
  * Application initialization.
  */
 export function init(): void {
-  diagLog(`[init] FamilyDashBoard v${VERSION} starting...`);
+  diagLog(`[init] FDB-001: FamilyDashBoard v${VERSION} starting...`);
 
-  // Core setup
+  // Core setup — evict stale LS entries and hydrate memory cache from IDB
   cEvict();
+  void hydrateFromIdb().then((n) => {
+    if (n > 0) diagLog(`[cache] FDB-004: hydrated ${n} entries from IDB`);
+  });
+  // One-time LS→IDB migration; evict stale IDB entries
+  void migrateLocalStorageToIdb().then((n) => {
+    if (n > 0) diagLog(`[cache] FDB-005: migrated ${n} entries LS→IDB`);
+  });
+  void cEvictIdb();
   applySeasonClass();
   initVisibility();
 
@@ -249,22 +262,28 @@ export function init(): void {
   registerKey("h", "עזרה", _toggleHelp);
   registerKey("?", "עזרה", _toggleHelp);
   registerKey("d", "אבחון", toggleDiagOverlay);
-  registerKey("v", "ניהול כרטיסיות", () => { openConfigPanel(); switchCfgTab("cards"); });
+  registerKey("v", "ניהול כרטיסיות", () => {
+    openConfigPanel();
+    switchCfgTab("cards");
+  });
   registerKey("l", "גוון חם לדימר לילה", () => setWarmTint(!isWarmTint()));
   registerKey("escape", "סגור כל חלון", closeAllOverlays);
 
-  // Cards — non-blocking, parallel load
+  // Cards — priority-based init: high-value visible cards first (v7.10)
+  // HIGH priority: user-visible, time-sensitive data
   initWeatherCard();
   initNewsCard();
-  initStocksCard();
-  initCurrencyCard();
   initAlertsCard();
-  initMotivationCard();
   initHebrewCalCard();
   initCalendarCard();
+  // NORMAL priority: financial data + tasks
+  initStocksCard();
+  initCurrencyCard();
   initTasksCard();
-  initSystemInfoCard();
   initCountdownCard();
+  // LOW priority: ambient / decorative content
+  initMotivationCard();
+  initSystemInfoCard();
   initTicker();
 
   // ── URL hash config import: #cfg=<base64> overrides localStorage config ──
@@ -279,7 +298,7 @@ export function init(): void {
         "",
         window.location.pathname + window.location.search,
       );
-      diagLog("[init] Config imported from URL hash");
+      diagLog("[init] FDB-007: config imported from URL hash");
     }
   }
 
@@ -336,7 +355,7 @@ export function init(): void {
   window.addEventListener("offline", () => {
     _wenOffline = true;
     showToast("❌ אין חיבור לאינטרנט", 5000);
-    diagLog("[init] Network offline");
+    diagLog("[init] FDB-008: network offline");
   });
   window.addEventListener("online", () => {
     if (_wenOffline) {
@@ -344,7 +363,7 @@ export function init(): void {
       showToast("🌐 החיבור חזר — מרענן נתונים...", 2500);
       setTimeout(() => window.location.reload(), 2500);
     }
-    diagLog("[init] Network online");
+    diagLog("[init] FDB-009: network reconnected");
   });
   // Also listen to SW NETWORK_BACK broadcast
   if ("serviceWorker" in navigator) {
@@ -357,7 +376,7 @@ export function init(): void {
     });
   }
 
-  diagLog(`[init] Dashboard initialized`);
+  diagLog(`[init] FDB-010: dashboard initialized`);
 }
 
 

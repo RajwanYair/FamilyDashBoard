@@ -171,6 +171,33 @@ export async function idbKeys(): Promise<string[]> {
 }
 
 /**
+ * Retrieve a full IDB entry including its timestamp (for cache hydration).
+ * Returns null on miss or error.
+ * @param key - Cache key
+ */
+export async function idbGetEntry<T = unknown>(
+  key: string,
+): Promise<{ data: T; ts: number } | null> {
+  const db = await openDB();
+  if (!db) return null;
+
+  return new Promise<{ data: T; ts: number } | null>((resolve) => {
+    try {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const req = tx.objectStore(STORE_NAME).get(key);
+      req.onsuccess = () => {
+        const entry = req.result as IdbEntry | undefined;
+        if (!entry) return resolve(null);
+        resolve({ data: entry.data as T, ts: entry.ts });
+      };
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+/**
  * Check whether IDB is available in the current environment.
  */
 export function isIdbAvailable(): boolean {

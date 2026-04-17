@@ -34,8 +34,8 @@ describe("ServiceWorker — APP_SHELL", () => {
     expect(swSource).toMatch(/APP_SHELL\s*=/);
   });
 
-  it("APP_SHELL includes BestDashBoard.html", () => {
-    expect(swSource).toContain("BestDashBoard.html");
+  it("APP_SHELL includes index.html (v7.10: replaced BestDashBoard.html)", () => {
+    expect(swSource).toContain("./index.html");
   });
 
   it("APP_SHELL includes manifest.json", () => {
