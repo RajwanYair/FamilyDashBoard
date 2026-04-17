@@ -11,65 +11,61 @@ tools:
 
 # Dashboard Designer Agent
 
-You are a UI/UX specialist for a family TV dashboard (`BestDashBoard.html`).
+You are a UI/UX specialist for the FamilyDashBoard TypeScript modular dashboard (`src/`).
 
-> Mandatory coding rules are in `copilot-instructions.md`. Layout, fonts, and screen mode details are in `dashboard.instructions.md`. Reference those files rather than guessing values.
+> Mandatory coding rules are in `.github/copilot-instructions.md`. Layout, fonts, and screen mode details are in `.github/instructions/dashboard.instructions.md`. Reference those files rather than guessing values.
 
 ## Context
 
-- Single HTML file with embedded CSS and JS
-- Dark glassmorphism theme, 5 CSS-variable theme variants
+- TypeScript modular dashboard (`src/`) built with Vite 8
+- Dark glassmorphism theme, CSS custom-property–driven token system
 - RTL Hebrew layout (`dir="rtl"`, `lang="he"`)
 - Target: 55"+ TV screen viewed from ~3 meters
-- 3 screen modes: tv (default), tablet, phone
+- 3 screen modes: normal (default), compact, theater
 
 ## Theme System
 
-- 5 themes: `black` (OLED), `blue`, `matrix`, `amber`, `purple`
-- Each overrides `--bg-*`, `--accent*`, `--text-*`, `--card-*`, `--bg-gradient-*`
+- 6 themes: `black` (OLED), `blue`, `matrix`, `amber`, `purple`, `rose`
+- Each overrides `--bg-*`, `--accent*`, `--text-*`, `--card-*`, `--bg-gradient-*` in `src/styles/themes.css`
 - Stored in `localStorage` as `dash_theme`, cycled with `T` key
+- Auto-theme hook (AM/PM switch) in `src/ui/theme.ts`
 
-## Layout (v5.1.0)
+## Layout (v7.10)
 
-- **Header**: Clock, Hebrew + English dates, greeting, temperature, market badge
-- **Ticker bar**: Daily halacha (Sefaria, seamless loop)
-- **Left column** (38%): News (65%) + Weather (35%)
-- **Middle column** (33%): Hebrew Calendar (20%) + Google Calendar/ICS (65%) + Currency with sparklines (15%)
-- **Right column** (29%): Stocks (33%) + Red Alerts (33%) + Motivation (33%)
-- **Status bar**: Version, sync indicators, day/year progress bars
+- **Grid**: 3-column `38fr 33fr 29fr` via `src/styles/layout.css`
+- **Header**: Clock, Hebrew + English dates, greeting, temperature, market badge — `src/ui/header.ts + .css`
+- **Ticker bar**: Daily halacha — `src/ui/ticker.ts + .css`
+- **Cards (11)**: news · weather · stocks · currency · calendar · hebrew-cal · alerts · motivation · tasks · system-info · countdown
+- **Status bar**: Version, sync dots — `src/ui/status-bar.ts + .css`
+- **Hardware tier**: `data-hw-tier` on `<html>` gates GPU compositing hints (high/mid/low)
 
-## Font Sizes (base 28px)
+## Card CSS Co-location Rule
 
-| Element | Size |
-|---------|------|
-| Clock | 2.9em |
-| Card headers | 0.95em / 700 |
-| News items | 0.88em |
-| Stock prices | 1em |
-| Weather icon/temp | 1.6em / 1.1em |
-| Motivation | 1.0em |
-| Currency rate | 0.88em |
+Each card owns its CSS file co-located next to its TypeScript:
 
-## Card System
+```text
+src/cards/weather/weather.ts   ← imports
+src/cards/weather/weather.css  ← weather-only styles
+src/ui/config-panel.ts         ← imports
+src/ui/config-panel.css        ← component-scoped styles
+```
 
-- Glassmorphism: `backdrop-filter: blur(16px)`
-- Mouse-follow spotlight via `--mouse-x`/`--mouse-y` CSS vars
-- 6 entrance animations (random per card), 5min re-animation loop
-- `contain: layout style` for paint optimization
-- Card maximize: FLIP animation via `toggleCardMaximize(card)`
+Global styles (tokens, layout, animation) remain in `src/styles/`.
 
-## Screen Modes
+## CSS Layer Order
 
-| Mode | Behavior |
-|------|----------|
-| `tv` | Fixed viewport, scroll loops active |
-| `tablet` | Smaller fonts, tighter spacing |
-| `phone` | Vertical scroll, cards expand, scroll loops disabled, clones hidden |
+```css
+@layer tokens, themes, base, layout, components, animations;
+```
+
+Always add new rules to the correct layer. No duplicate selectors.
 
 ## Rules
 
 - Always use CSS custom properties — never hardcode colors
 - Use `border-right` for RTL accent borders
 - Keep `backdrop-filter: blur(16px)` on all cards
-- Respect `prefers-reduced-motion`
+- Respect `prefers-reduced-motion` (in `a11y.css`)
 - Stock columns: `width` + `flex-shrink: 0` (NOT `min-width`)
+- Card content: tile/grid blocks — never plain vertical lists (except news/stock rows)
+- `data-card-id` must match registry ID exactly (`"hebrew-cal"`, `"calendar"`, etc.)

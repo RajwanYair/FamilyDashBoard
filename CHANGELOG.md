@@ -7,7 +7,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [7.10.0] — 2026-04-17
 
-> **2264 tests / 53 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `02144fa`)
+> **2287 tests / 54 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `2572344`)
+
+### Hardware Adaptive Performance
+
+- **`src/core/hardware.ts`** (new): `getHardwareProfile()` — scores CPU cores + RAM (`navigator.deviceMemory`) + GPU tier (WebGL `WEBGL_debug_renderer_info`) into `"high"` / `"mid"` / `"low"` composite tier; `optimalConcurrency = floor(cores * 0.6)` capped 2–8; `applyHardwareTier()` sets `data-hw-tier` on `<html>` + `--hw-concurrency` CSS custom property at startup
+- **`src/styles/animations.css`**: hardware-adaptive CSS gated on `[data-hw-tier]` — `contain:layout` reflow isolation (high/mid), `will-change:transform` on card rows (high), `content-visibility:auto` on all cards (mid/low), disabled animations + compressed duration tokens on low tier
+- **`src/main.ts`**: `applyHardwareTier()` called before `init()`
+- **`src/ui/diag-overlay.ts`**: hardware profile row shown in diagnostics panel (`D` key)
+- **`tests/unit/core/hardware.test.ts`** (new): 23 tests — CPU defaults, 60% concurrency math, composite tier scoring, profile caching, `formatHardwareProfile`, DOM integration
 
 ### Sprint 1 — SW Cleanup + IDB Async Tier
 

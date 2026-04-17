@@ -46,9 +46,8 @@ function detectGPU(): GPUInfo {
   if (typeof document === "undefined") return unknown;
   try {
     const canvas = document.createElement("canvas");
-    const gl =
-      (canvas.getContext("webgl") as WebGLRenderingContext | null) ??
-      (canvas.getContext("experimental-webgl") as WebGLRenderingContext | null);
+    // WebGL is universally supported in modern browsers; "experimental-webgl" is a 2011 fallback
+    const gl = canvas.getContext("webgl");
     if (!gl) return unknown;
 
     const ext = gl.getExtension("WEBGL_debug_renderer_info");

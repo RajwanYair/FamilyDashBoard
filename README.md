@@ -20,7 +20,7 @@
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-7.10.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-2264_passing-34d399?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-2287_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -93,7 +93,7 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 - **Per-pane independent refresh** — no full-page reloads
 - **Dual-layer cache** (in-memory Map + localStorage) — survives browser restart, 7-day eviction
 - **Stale-while-revalidate** — shows cached data instantly, fetches in background
-- **5 themes** (OLED black, blue, matrix, amber, purple) — press `T` to cycle
+- **6 themes** (OLED black, blue, matrix, amber, purple, rose) — press `T` to cycle
 - **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
 - **6 card entrance animations** — random direction per card, attention loop every 5min
 - **Card maximize** — click any card header to expand it full-screen (FLIP animation), click again or press `Escape` to restore

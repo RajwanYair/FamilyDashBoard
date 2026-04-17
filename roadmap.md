@@ -43,7 +43,7 @@
 | v7.7      | ✅ Released | 2027 Vitest / 47 suites    | Runtime API type guards, weather UX, countdown urgency, tasks priority/due-date, stocks sector emoji, hebrew-cal utils, core utils (debounce/throttle/clamp) |
 | v7.8      | ✅ Released | 2056 Vitest / 47 suites    | Architecture doc update, CSS co-location for UI, config v2 schema, fetch resilience (dedup/network quality), ARIA accessibility, night dim schedule |
 | **v7.9**  | ✅ Released | **2182 Vitest / 51 suites** | Error tracking, web vitals, config v3 per-card settings, IndexedDB cache tier, SW TypeScript types, ARIA tab keyboard nav, weather hourly strip, tasks enhancements, news/stocks enhancements |
-| **v7.10** | ✅ Released | **2264 Vitest / 53 suites** | IDB LRU eviction (50 MB cap), IDB size in diagnostics, ReactiveState store (EventTarget pub/sub), Config v4 namespaced per-card CardConfig, Worker POST /api/errors telemetry, error-reporter.ts client, __USE_PROXIES__ production gate, Worker CI gate, ARCHITECTURE.md v7.10 |
+| **v7.10** | ✅ Released | **2287 Vitest / 54 suites** | IDB LRU eviction (50 MB cap), ReactiveState store, Config v4 namespaced per-card CardConfig, Worker POST /api/errors, error-reporter.ts, __USE_PROXIES__ production gate, hardware-adaptive GPU/CPU tier CSS |
 
 ---
 

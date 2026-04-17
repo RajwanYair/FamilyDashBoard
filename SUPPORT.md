@@ -44,7 +44,7 @@
 
 | Key      | Action                                                            |
 | -------- | ----------------------------------------------------------------- |
-| `T`      | Cycle through 5 themes (OLED black, blue, matrix, amber, purple)  |
+| `T`      | Cycle through 6 themes (OLED black, blue, matrix, amber, purple, rose)  |
 | `D`      | Toggle diagnostic overlay (per-pane status + fetch log)           |
 | `Escape` | Close maximized card                                              |
 

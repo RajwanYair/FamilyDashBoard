@@ -11,7 +11,7 @@
 | -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
 | Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2264+ tests / 53 suites       |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2287+ tests / 54 suites       |
 | Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
 | API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
 | Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
@@ -42,6 +42,7 @@ src/
 │   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize() (v7.4)
 │   ├── sync.ts                 # setSync(id, state) — sync dots + health
 │   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper
+│   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
 │   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED
 ├── ui/
 │   ├── theme.ts                # 6-theme system: dark·ocean·forest·warm·high-contrast·rose
@@ -82,22 +83,7 @@ src/
 │   ├── print.css               # @media print
 │   ├── sprints.css             # Cross-cutting global styles (season tints, elec badge, clock)
 │   └── a11y.css                # prefers-reduced-motion, prefers-contrast
-└── ui/
-    ├── config-panel.ts + .css  # Settings panel (save, export, import, share)
-    ├── toast.ts + .css         # Toast notification system
-    ├── night-dimmer.ts + .css  # Night dim overlay with schedule
-    ├── header.ts + .css        # Clock, header chips (birthday, zעמן, event count)
-    ├── ticker.ts + .css        # Halacha/Daf ticker bar
-    ├── diag-overlay.ts + .css  # Diagnostics <dialog>
-    ├── status-bar.ts + .css    # Status bar (sync dots, conn indicator)
-    ├── theme.ts                # 6-theme system
-    ├── keyboard.ts             # All keyboard shortcuts
-    ├── maximize.ts             # Card maximize/FLIP + collapse
-    ├── scroll.ts               # Scroll loop helpers
-    ├── bg-images.ts            # Background image rotation
-    ├── layout-drag.ts          # Card drag-drop reordering
-    └── screen-mode.ts          # Screen mode manager (normal/compact/theater)
-├── src/
+worker/src/
 │   ├── index.ts                # Worker entry + router
 │   ├── routes/
 │   │   ├── data.ts             # weather · currency · hebcal · hebcal/holidays
@@ -110,7 +96,7 @@ src/
 ├── wrangler.toml
 └── package.json
 tests/unit/
-├── core/                       # cache · fetch · config · constants · diag · sync · sw · state · idb-cache · error-reporter
+├── core/                       # cache · fetch · config · constants · diag · sync · sw · state · idb-cache · error-reporter · hardware
 ├── cards/                      # all 11 card modules
 ├── ui/                         # theme · header · keyboard · maximize · night-dimmer …
 ├── worker/                     # cors · rate-limit · validation · allowlists · response · errors routes
@@ -199,6 +185,6 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **2264 tests / 53 suites / 0 failures** — coverage thresholds: 89% statements, 80% branches, 89% functions, 90% lines (v7.10)
+15. **2287 tests / 54 suites / 0 failures** — coverage thresholds: 89% statements, 80% branches, 89% functions, 90% lines (v7.10)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
