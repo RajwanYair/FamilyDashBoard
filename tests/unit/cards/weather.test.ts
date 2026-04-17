@@ -2091,3 +2091,39 @@ describe("Weather — renderHourlyStrip (Sprint 46)", () => {
     expect(() => renderHourlyStrip(base)).not.toThrow();
   });
 });
+
+// ── Sprint 32: formatCloudCover ────────────────────────────────────────────
+
+import { formatCloudCover } from "@/cards/weather/weather";
+
+describe("Weather — formatCloudCover (Sprint 32)", () => {
+  it("returns 'בהיר' label for 0%", () => {
+    expect(formatCloudCover(0)).toContain("בהיר");
+  });
+
+  it("returns 'בהיר' label for 12%", () => {
+    expect(formatCloudCover(12)).toContain("בהיר");
+  });
+
+  it("returns 'חלקי' label for 13%", () => {
+    expect(formatCloudCover(13)).toContain("חלקי");
+  });
+
+  it("returns 'חלקי' label for 50%", () => {
+    expect(formatCloudCover(50)).toContain("חלקי");
+  });
+
+  it("returns 'מעונן' label for 51%", () => {
+    expect(formatCloudCover(51)).toContain("מעונן");
+  });
+
+  it("returns 'מעונן מאוד' prefix for 85%", () => {
+    const result = formatCloudCover(85);
+    expect(result).toContain("85%");
+    expect(result).toContain("מעונן");
+  });
+
+  it("includes the numeric percentage in output", () => {
+    expect(formatCloudCover(75)).toContain("75%");
+  });
+});

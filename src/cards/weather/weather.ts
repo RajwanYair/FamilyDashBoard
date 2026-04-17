@@ -146,6 +146,7 @@ const el = {
   wxGust: null as HTMLElement | null,
   wxPrecip: null as HTMLElement | null,
   wxHourlyStrip: null as HTMLElement | null,
+  wxCloud: null as HTMLElement | null,
   wxWindTile: null as HTMLElement | null,
   wxRiseTile: null as HTMLElement | null,
 };
@@ -170,6 +171,7 @@ export function cacheDom(): void {
   el.wxGust = document.getElementById("wx-gust");
   el.wxPrecip = document.getElementById("wx-precip");
   el.wxHourlyStrip = document.getElementById("wx-hourly-strip");
+  el.wxCloud = document.getElementById("wx-cloud");
   el.wxWindTile = (el.wxWind?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
 }
@@ -254,6 +256,17 @@ export function precipSummaryLabel(pp: number): string {
   return "אין גשם";
 }
 
+/**
+ * Sprint 32: Return a Hebrew label for a cloud cover percentage.
+ * 0-12% → “בהיר”, 13-50% → “חלקי”, 51-84% → “מעונן”, 85-100% → “מעונן אחיד”.
+ */
+export function formatCloudCover(cc: number): string {
+  if (cc <= 12) return `${cc}% בהיר`;
+  if (cc <= 50) return `${cc}% חלקי`;
+  if (cc <= 84) return `${cc}% מעונן`;
+  return `${cc}% מעונן אחיד`;
+}
+
 /** localStorage key for persisting hourly chart view mode. */
 const LS_CHART_MODE = "dash_wx_chart_mode";
 
@@ -324,7 +337,7 @@ export function renderHourlyStrip(d: WeatherResponse): void {
 async function fetchWeather(): Promise<WeatherResponse> {
   const lat = _activeLat;
   const lon = _activeLon;
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m,cloud_cover&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
   return fetchJSONWithWorker<WeatherResponse>(url);
 }
 
@@ -399,6 +412,12 @@ export function renderWeather(d: WeatherResponse): void {
   if (el.wxPrecip) {
     const pp = d.daily.precipitation_probability_max[0] ?? 0;
     el.wxPrecip.textContent = `${pp}% · ${precipSummaryLabel(pp)}`;
+  }
+
+  // Sprint 32: Cloud cover
+  if (el.wxCloud) {
+    const cc = cur.cloud_cover ?? 0;
+    el.wxCloud.textContent = formatCloudCover(cc);
   }
 
   // Daily forecast

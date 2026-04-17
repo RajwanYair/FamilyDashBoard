@@ -16,6 +16,7 @@ export interface WeatherResponse {
     apparent_temperature: number;
     uv_index: number;
     dew_point_2m: number;
+    cloud_cover?: number;
   };
   hourly: {
     time: string[];
