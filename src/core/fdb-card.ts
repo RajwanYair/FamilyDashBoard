@@ -1,0 +1,134 @@
+/**
+ * FamilyDashBoard v8.0 — FdbCard Base Class
+ *
+ * Vanilla Web Component base class. Cards extend FdbCard and gain:
+ *   - `connectedCallback` / `disconnectedCallback` lifecycle hooks
+ *   - `attributeChangedCallback` for reactive data-* attributes
+ *   - `scheduleRefresh(ttl)` — debounced refresh scheduling
+ *   - `setLoading(bool)` — updates aria-busy on the card element
+ *   - `setError(msg)` — sets aria-label to indicate an error state
+ *
+ * Usage:
+ *   class WeatherCard extends FdbCard {
+ *     static override observedAttributes = [...FdbCard.observedAttributes, 'data-city'];
+ *     override connectedCallback() { super.connectedCallback(); this.load(); }
+ *     private async load() { ... }
+ *   }
+ *   customElements.define('fdb-weather', WeatherCard);
+ *
+ * Zero dependencies. No Shadow DOM — cards use global CSS for TV-scale theming.
+ */
+
+import { diagLog } from "./diag";
+
+/** Attributes monitored on every FdbCard subclass. */
+const BASE_OBSERVED: readonly string[] = Object.freeze([
+  "data-card-id",
+  "data-card-size",
+  "hidden",
+]);
+
+export abstract class FdbCard extends HTMLElement {
+  /** Subclasses extend this list. Always merge with BASE_OBSERVED. */
+  static get observedAttributes(): string[] {
+    return [...BASE_OBSERVED];
+  }
+
+  /** Scheduled refresh timer ID, cleared on disconnect. */
+  private _refreshTimer: ReturnType<typeof setInterval> | null = null;
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
+
+  /**
+   * Called when the element is connected to the DOM.
+   * Subclasses MUST call `super.connectedCallback()` first.
+   */
+  connectedCallback(): void {
+    diagLog(
+      `FDB-059: [fdb-card] connected: ${this.getAttribute("data-card-id") ?? this.tagName}`,
+    );
+  }
+
+  /**
+   * Called when the element is removed from the DOM.
+   * Clears any scheduled refresh timer. Subclasses should call
+   * `super.disconnectedCallback()` to ensure cleanup.
+   */
+  disconnectedCallback(): void {
+    this._clearRefreshTimer();
+    diagLog(
+      `FDB-060: [fdb-card] disconnected: ${this.getAttribute("data-card-id") ?? this.tagName}`,
+    );
+  }
+
+  /**
+   * Called when one of `observedAttributes` changes.
+   * Override in subclasses to react to specific attribute changes.
+   */
+  attributeChangedCallback(
+    name: string,
+    oldValue: string | null,
+    newValue: string | null,
+  ): void {
+    if (oldValue === newValue) return;
+    // Subclasses handle their specific attributes; base class logs only.
+    diagLog(
+      `FDB-061: [fdb-card] attr ${name}: ${String(oldValue)} → ${String(newValue)}`,
+    );
+  }
+
+  // ── Refresh Scheduling ────────────────────────────────────────────────────
+
+  /**
+   * Schedule a periodic refresh interval.
+   * Clears any existing timer first to prevent stacking.
+   * @param callback - The async function to call on each interval
+   * @param intervalMs - Interval duration in milliseconds
+   */
+  scheduleRefresh(callback: () => Promise<void> | void, intervalMs: number): void {
+    this._clearRefreshTimer();
+    this._refreshTimer = setInterval(() => {
+      void Promise.resolve(callback());
+    }, intervalMs);
+  }
+
+  /** Cancel the scheduled refresh timer. */
+  private _clearRefreshTimer(): void {
+    if (this._refreshTimer !== null) {
+      clearInterval(this._refreshTimer);
+      this._refreshTimer = null;
+    }
+  }
+
+  // ── State Helpers ─────────────────────────────────────────────────────────
+
+  /**
+   * Set the loading state. Updates `aria-busy` for accessibility.
+   * @param loading - true while fetching, false when complete
+   */
+  setLoading(loading: boolean): void {
+    this.setAttribute("aria-busy", loading ? "true" : "false");
+  }
+
+  /**
+   * Communicate an error state via `aria-label`.
+   * @param message - Error description. Pass null/empty to clear.
+   */
+  setError(message: string | null): void {
+    if (message) {
+      this.setAttribute("aria-label", `שגיאה: ${message}`);
+    } else {
+      this.removeAttribute("aria-label");
+    }
+  }
+
+  /** Convenience getter — the card's registry ID from `data-card-id`. */
+  get cardId(): string {
+    return this.getAttribute("data-card-id") ?? "";
+  }
+
+  /** Convenience getter — the card's size class from `data-card-size`. */
+  get cardSize(): string {
+    return this.getAttribute("data-card-size") ?? "md";
+  }
+}
