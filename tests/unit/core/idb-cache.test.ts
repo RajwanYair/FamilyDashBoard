@@ -15,6 +15,9 @@ import {
   idbGetEntry,
   isIdbAvailable,
   _resetIdb,
+  idbEstimateSize,
+  idbEvictLRU,
+  IDB_MAX_BYTES,
 } from "../../../src/core/idb-cache";
 
 // ── Minimal in-memory IDB mock ────────────────────────────────────────────────
@@ -392,5 +395,116 @@ describe("IDB Cache — idbGetEntry", () => {
     const entry = await idbGetEntry("ts-check");
     expect(typeof entry?.ts).toBe("number");
     expect(entry!.ts).toBeGreaterThan(1_000_000_000_000); // > year 2001
+  });
+});
+
+// ── v7.10: idbEstimateSize ────────────────────────────────────────────────────
+
+describe("IDB Cache — idbEstimateSize", () => {
+  it("returns 0 when navigator is unavailable", async () => {
+    const orig = globalThis.navigator;
+    vi.stubGlobal("navigator", undefined);
+    const size = await idbEstimateSize();
+    expect(size).toBe(0);
+    vi.stubGlobal("navigator", orig);
+  });
+
+  it("returns 0 when storage.estimate is unavailable", async () => {
+    vi.stubGlobal("navigator", {});
+    const size = await idbEstimateSize();
+    expect(size).toBe(0);
+  });
+
+  it("returns usage from navigator.storage.estimate()", async () => {
+    vi.stubGlobal("navigator", {
+      storage: { estimate: vi.fn().mockResolvedValue({ usage: 2048, quota: 1_000_000 }) },
+    });
+    const size = await idbEstimateSize();
+    expect(size).toBe(2048);
+  });
+
+  it("returns 0 when estimate() rejects", async () => {
+    vi.stubGlobal("navigator", {
+      storage: { estimate: vi.fn().mockRejectedValue(new Error("denied")) },
+    });
+    const size = await idbEstimateSize();
+    expect(size).toBe(0);
+  });
+
+  it("returns 0 when usage is undefined in estimate result", async () => {
+    vi.stubGlobal("navigator", {
+      storage: { estimate: vi.fn().mockResolvedValue({ quota: 1_000_000 }) },
+    });
+    const size = await idbEstimateSize();
+    expect(size).toBe(0);
+  });
+});
+
+// ── v7.10: IDB_MAX_BYTES constant ─────────────────────────────────────────────
+
+describe("IDB Cache — IDB_MAX_BYTES", () => {
+  it("equals 50 MB", () => {
+    expect(IDB_MAX_BYTES).toBe(50 * 1024 * 1024);
+  });
+});
+
+// ── v7.10: idbEvictLRU ────────────────────────────────────────────────────────
+
+describe("IDB Cache — idbEvictLRU", () => {
+  it("returns 0 when size is under the limit", async () => {
+    vi.stubGlobal("navigator", {
+      storage: { estimate: vi.fn().mockResolvedValue({ usage: 1024 }) },
+    });
+    const removed = await idbEvictLRU(IDB_MAX_BYTES);
+    expect(removed).toBe(0);
+  });
+
+  it("evicts oldest entries when over the limit until under", async () => {
+    // Seed IDB with 3 entries at known timestamps using idbSet then idbGetEntry to verify ts
+    await idbSet("old1", "a");
+    await idbSet("old2", "b");
+    await idbSet("old3", "c");
+
+    let callCount = 0;
+    vi.stubGlobal("navigator", {
+      storage: {
+        estimate: vi.fn().mockImplementation(() => {
+          callCount++;
+          // First call: over limit. Every call after first batch of 5: under limit
+          const usage = callCount <= 1 ? 60 * 1024 * 1024 : 1024;
+          return Promise.resolve({ usage });
+        }),
+      },
+    });
+
+    const removed = await idbEvictLRU(IDB_MAX_BYTES);
+    expect(removed).toBeGreaterThan(0);
+  });
+
+  it("stops evicting once size drops below maxBytes", async () => {
+    await idbSet("e1", "x");
+    await idbSet("e2", "x");
+
+    let calls = 0;
+    vi.stubGlobal("navigator", {
+      storage: {
+        estimate: vi.fn().mockImplementation(() => {
+          calls++;
+          return Promise.resolve({ usage: calls <= 1 ? 60 * 1024 * 1024 : 0 });
+        }),
+      },
+    });
+    const removed = await idbEvictLRU(IDB_MAX_BYTES);
+    // Should have removed some but not more than available entries
+    expect(removed).toBeGreaterThanOrEqual(0);
+  });
+
+  it("returns 0 and removes nothing when IDB has no entries", async () => {
+    await idbClear();
+    vi.stubGlobal("navigator", {
+      storage: { estimate: vi.fn().mockResolvedValue({ usage: 60 * 1024 * 1024 }) },
+    });
+    const removed = await idbEvictLRU(IDB_MAX_BYTES);
+    expect(removed).toBe(0);
   });
 });

@@ -15,6 +15,7 @@ import { cacheStats, getOldestCacheAgeMinutes } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core/error-tracker";
 import { getPerfVitals, formatVital, rateVital, hasPerfSupport } from "../core/perf";
+import { idbEstimateSize } from "../core/idb-cache";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -113,6 +114,7 @@ function renderStats(): void {
       <span>🏷️ v${version}</span>
       <span>🕒 Build: ${buildTime.slice(0, 10)}</span>
       ${errCount > 0 ? `<span style="color:var(--negative)">⚠️ שגיאות: <b>${errCount}</b></span>` : "<span style=\"color:var(--positive)\">\u2705 אין שגיאות</span>"}
+      <span id="diag-idb-size">💾 IDB: טוען...</span>
     </div>`;
   // Web Vitals section (Sprint 41)
   const vitalsHtml = hasPerfSupport() ? (() => {
@@ -127,7 +129,15 @@ function renderStats(): void {
     return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">${items.join("")}</div>`;
   })() : "";
 
-  panes.innerHTML += vitalsHtml;  panes.innerHTML = html;
+  panes.innerHTML = html + vitalsHtml;
+
+  // Async IDB size update (v7.10 — non-blocking)
+  void idbEstimateSize().then((bytes) => {
+    const idbEl = document.getElementById("diag-idb-size");
+    if (!idbEl) return;
+    const idbMB = (bytes / (1024 * 1024)).toFixed(2);
+    idbEl.innerHTML = `💾 IDB storage: <b>${idbMB} MB</b>`;
+  });
 }
 
 // ── Copy log to clipboard ──

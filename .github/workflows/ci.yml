@@ -98,10 +98,23 @@ jobs:
           [ "$FAILED" -eq 0 ] && echo "✅ No dangerous patterns found"
           exit $FAILED
 
+  worker-tests:
+    name: Worker Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - name: Worker tests (gate for CF Worker regressions)
+        run: npx vitest run tests/unit/worker/ --reporter=verbose
+
   build:
     name: Production Build + Size
     runs-on: ubuntu-latest
-    needs: [typecheck, lint, unit-tests]
+    needs: [typecheck, lint, unit-tests, worker-tests]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
