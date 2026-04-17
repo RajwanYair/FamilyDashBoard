@@ -6,6 +6,7 @@
  */
 
 import { diagLog } from "../core/diag";
+import { LS_COLLAPSED } from "../core/constants";
 
 let maximizedCard: HTMLElement | null = null;
 
@@ -135,7 +136,7 @@ export function initCardMaximize(): void {
 
 // ── Card Collapse ──
 
-const LS_COLLAPSED = "dash_v2_collapsed_cards";
+// LS_COLLAPSED imported from constants
 
 function loadCollapsedCards(): Set<string> {
   try {

@@ -4,9 +4,7 @@
 
 import "./night-dimmer.css";
 import { diagLog } from "../core/diag";
-
-const LS_DIM_START = "dash_v2_dim_start";
-const LS_DIM_END = "dash_v2_dim_end";
+import { LS_DIM_START, LS_DIM_END } from "../core/constants";
 
 let dimEl: HTMLElement | null = null;
 let dimLevel = 55; // default opacity percentage

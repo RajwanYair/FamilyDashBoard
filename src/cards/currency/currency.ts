@@ -9,7 +9,12 @@
 
 import { createCardLoader, scheduleCard } from "../base-card";
 import "./currency.css";
-import { INTERVALS, CUR_TILES, API } from "../../core/constants";
+import {
+  INTERVALS,
+  CUR_TILES,
+  API,
+  LS_CUR_HISTORY,
+} from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import type { CurrencyResponse } from "../../types/api";
@@ -20,7 +25,7 @@ let _lastFetchTime: Date | null = null;
 
 // ── Sprint 24: 7-day rate history ─────────────────────────────────────────────
 
-const CUR_HISTORY_KEY = "dash_v2_cur_history";
+// LS_CUR_HISTORY imported from constants
 const CUR_HISTORY_MAX_DAYS = 7;
 
 interface CurHistoryEntry {
@@ -31,7 +36,7 @@ interface CurHistoryEntry {
 /** Load the currency rate history from localStorage (up to 7 entries). */
 export function loadCurrencyHistory(): CurHistoryEntry[] {
   try {
-    const raw = localStorage.getItem(CUR_HISTORY_KEY);
+    const raw = localStorage.getItem(LS_CUR_HISTORY);
     if (!raw) return [];
     return JSON.parse(raw) as CurHistoryEntry[];
   } catch {
@@ -51,7 +56,7 @@ export function storeCurrencyHistory(rates: Record<string, number>): void {
     history = history.slice(-CUR_HISTORY_MAX_DAYS);
   }
   try {
-    localStorage.setItem(CUR_HISTORY_KEY, JSON.stringify(history));
+    localStorage.setItem(LS_CUR_HISTORY, JSON.stringify(history));
   } catch {
     /* quota */
   }

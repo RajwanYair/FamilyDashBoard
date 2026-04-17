@@ -9,7 +9,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   getTimeComponents,
-  tick,
+  tick, tick2, tick3,
   initCountdownCard,
   destroyCountdownCard,
   getCountdownTargetDate,
@@ -417,8 +417,6 @@ describe("Countdown — computeProgress", () => {
 });
 // ── F8 (v7.2): tick2 — 2nd event ─────────────────────────────────────────
 
-import { tick2 } from "@/cards/countdown/countdown";
-
 describe("Countdown — tick2 (F8 v7.2)", () => {
   function build2DOM(): void {
     document.body.innerHTML = `
@@ -572,8 +570,6 @@ describe("Countdown — advanceAnnualDate", () => {
 });
 
 // ── Sprint 22: tick3 — 3rd event ─────────────────────────────────────────
-
-import { tick3 } from "@/cards/countdown/countdown";
 
 describe("Countdown — tick3 (Sprint 22)", () => {
   function build3DOM(): void {

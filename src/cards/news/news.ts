@@ -7,7 +7,13 @@
 
 import { createCardLoader, scheduleCard } from "../base-card";
 import "./news.css";
-import { INTERVALS, PROXIES } from "../../core/constants";
+import {
+  INTERVALS,
+  PROXIES,
+  LS_NEWS_VISITED,
+  LS_NEWS_BOOKMARKS,
+  LS_NEWS_FONT,
+} from "../../core/constants";
 import { runConcurrent } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
@@ -130,7 +136,7 @@ export function relativeAge(pubDate: string): string {
 }
 
 // ── Visited articles (session-scoped) ──
-const VISITED_KEY = "dash_visited_news";
+// LS_NEWS_VISITED imported from constants
 let _visited: Set<string> = new Set();
 
 /**
@@ -193,7 +199,7 @@ export function sanitizeNewsTitle(title: string, maxLen = 120): string {
 
 function loadVisited(): void {
   try {
-    const s = sessionStorage.getItem(VISITED_KEY) ?? "[]";
+    const s = sessionStorage.getItem(LS_NEWS_VISITED) ?? "[]";
     _visited = new Set(JSON.parse(s) as string[]);
   } catch {
     _visited = new Set();
@@ -203,7 +209,7 @@ function loadVisited(): void {
 export function markVisited(key: string): void {
   _visited.add(key);
   try {
-    sessionStorage.setItem(VISITED_KEY, JSON.stringify([..._visited]));
+    sessionStorage.setItem(LS_NEWS_VISITED, JSON.stringify([..._visited]));
   } catch {
     /* quota */
   }
@@ -214,7 +220,7 @@ export function isVisited(key: string): boolean {
 }
 
 // ── Bookmarks ──
-const BOOKMARKS_KEY = "dash_bookmarks";
+// LS_NEWS_BOOKMARKS imported from constants
 let _bkmMode = false;
 let _lastItems: NewsItem[] = [];
 let _bookmarks: Set<string> = new Set();
@@ -222,7 +228,7 @@ let _bookmarks: Set<string> = new Set();
 function loadBookmarks(): void {
   try {
     const stored = JSON.parse(
-      localStorage.getItem(BOOKMARKS_KEY) ?? "[]",
+      localStorage.getItem(LS_NEWS_BOOKMARKS) ?? "[]",
     ) as string[];
     _bookmarks = new Set(stored);
   } catch {
@@ -233,7 +239,7 @@ function loadBookmarks(): void {
 
 function saveBookmarks(): void {
   try {
-    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify([..._bookmarks]));
+    localStorage.setItem(LS_NEWS_BOOKMARKS, JSON.stringify([..._bookmarks]));
   } catch {
     /* quota */
   }
@@ -663,7 +669,7 @@ const loadNews = createCardLoader<NewsItem[]>(
 );
 
 // ── News font size ──
-const LS_NEWS_FONT = "dash_v2_news_fontsize";
+// LS_NEWS_FONT imported from constants
 
 /**
  * Apply the user-configured news font size from localStorage.

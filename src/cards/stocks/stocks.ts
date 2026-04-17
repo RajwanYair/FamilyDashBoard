@@ -13,6 +13,8 @@ import {
   STOCK_SYMBOLS,
   STOCK_META,
   API,
+  LS_STOCK_ALERTS,
+  LS_PORTFOLIO,
 } from "../../core/constants";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import {
@@ -68,14 +70,37 @@ export function priceInRange52w(
 
 /** Map of well-known stock symbols to display emoji by sector. */
 const SECTOR_EMOJI: Record<string, string> = {
-  AAPL: "🍎", MSFT: "🪟", GOOGL: "🔍", GOOG: "🔍", META: "📘",
-  AMZN: "📦", NVDA: "🎮", TSLA: "⚡", AMD: "💻", INTC: "🔵",
-  JPM: "🏦", BAC: "🏦", GS: "🏦", MS: "🏦", WFC: "🏦",
-  XOM: "🛢", CVX: "🛢", COP: "🛢",
-  JNJ: "💊", PFE: "💊", ABBV: "💊", MRK: "💊",
-  DIS: "🏰", NFLX: "🎬", SPOT: "🎵",
-  "BTC-USD": "₿", "ETH-USD": "⟠",
-  SPY: "📊", QQQ: "📈", "^VIX": "📉", "^GSPC": "📊",
+  AAPL: "🍎",
+  MSFT: "🪟",
+  GOOGL: "🔍",
+  GOOG: "🔍",
+  META: "📘",
+  AMZN: "📦",
+  NVDA: "🎮",
+  TSLA: "⚡",
+  AMD: "💻",
+  INTC: "🔵",
+  JPM: "🏦",
+  BAC: "🏦",
+  GS: "🏦",
+  MS: "🏦",
+  WFC: "🏦",
+  XOM: "🛢",
+  CVX: "🛢",
+  COP: "🛢",
+  JNJ: "💊",
+  PFE: "💊",
+  ABBV: "💊",
+  MRK: "💊",
+  DIS: "🏰",
+  NFLX: "🎬",
+  SPOT: "🎵",
+  "BTC-USD": "₿",
+  "ETH-USD": "⟠",
+  SPY: "📊",
+  QQQ: "📈",
+  "^VIX": "📉",
+  "^GSPC": "📊",
 };
 
 /**
@@ -107,9 +132,9 @@ export function portfolioChange(
 export function marketStatusLabel(): string {
   const status = getMarketStatus();
   const labels: Record<MarketStatus, string> = {
-    pre:    "טרום-שוק",
-    open:   "שוק פתוח ✅",
-    after:  "אחרי-שוק",
+    pre: "טרום-שוק",
+    open: "שוק פתוח ✅",
+    after: "אחרי-שוק",
     closed: "שוק סגור",
   };
   return labels[status];
@@ -347,12 +372,14 @@ export function renderStocksShell(): void {
   const fragment = document.createDocumentFragment();
   // Sprint 49: gate sector headers on cfg.stocksGroupBySector
   const cfg = loadConfig();
-  if (cfg.stocksGroupBySector) fragment.appendChild(makeSectorHeader("📊 מדדים"));
+  if (cfg.stocksGroupBySector)
+    fragment.appendChild(makeSectorHeader("📊 מדדים"));
   INDEX_SYMBOLS.forEach((s) => {
     const el = makeStockRow(s);
     if (el) fragment.appendChild(el);
   });
-  if (cfg.stocksGroupBySector) fragment.appendChild(makeSectorHeader("📈 מניות"));
+  if (cfg.stocksGroupBySector)
+    fragment.appendChild(makeSectorHeader("📈 מניות"));
   stockSymbols.forEach((s) => {
     const el = makeStockRow(s);
     if (el) fragment.appendChild(el);
@@ -468,7 +495,7 @@ export function renderStock(
   }
 
   // Per-stock portfolio P&L row (F149)
-  const portRaw = localStorage.getItem(PORTFOLIO_LS_KEY);
+  const portRaw = localStorage.getItem(LS_PORTFOLIO);
   if (portRaw && cur != null) {
     try {
       const port = JSON.parse(portRaw) as Record<string, PortfolioEntry>;
@@ -655,7 +682,7 @@ function updateStockSummary(): void {
 }
 
 // ── Stock Price Alerts ──
-const ALERT_LS_KEY = "dash_v2_stock_alerts";
+// LS_STOCK_ALERTS imported from constants
 const _alertedThisSession = new Set<string>();
 
 /** Clear alert dedup Set — exported for testing. */
@@ -670,7 +697,7 @@ export function resetStockAlertSession(): void {
  * Each alert fires at most once per page session.
  */
 export function checkStockAlerts(): void {
-  const raw = localStorage.getItem(ALERT_LS_KEY) ?? "";
+  const raw = localStorage.getItem(LS_STOCK_ALERTS) ?? "";
   if (!raw.trim()) return;
 
   for (const line of raw
@@ -711,7 +738,7 @@ export function checkStockAlerts(): void {
 }
 
 // ── Portfolio P&L (F132 header chip + F149 per-stock row) ──
-const PORTFOLIO_LS_KEY = "dash_v2_portfolio";
+// LS_PORTFOLIO imported from constants
 
 interface PortfolioEntry {
   shares: number;
@@ -724,7 +751,7 @@ interface PortfolioEntry {
  * Format: JSON Record<symbol, {shares, cost}> where cost = cost per share.
  */
 export function renderPortfolioRow(): void {
-  const raw = localStorage.getItem(PORTFOLIO_LS_KEY);
+  const raw = localStorage.getItem(LS_PORTFOLIO);
   if (!raw) return;
 
   let portfolio: Record<string, PortfolioEntry>;

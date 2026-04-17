@@ -7,6 +7,7 @@
  */
 
 import { diagLog } from "../core/diag";
+import { LS_THEME } from "../core/constants";
 
 export const THEMES = [
   "black",
@@ -18,7 +19,7 @@ export const THEMES = [
 ] as const;
 export type ThemeName = (typeof THEMES)[number];
 
-const LS_THEME_KEY = "dash_theme";
+// LS_THEME imported from constants
 
 /**
  * Apply a named theme to the body element.
@@ -31,7 +32,7 @@ export function applyTheme(theme: string): void {
     document.body.classList.remove(...THEMES.map((t) => `theme-${t}`));
     document.body.classList.add(`theme-${valid}`);
     try {
-      localStorage.setItem(LS_THEME_KEY, valid);
+      localStorage.setItem(LS_THEME, valid);
     } catch {
       /* quota exceeded */
     }
@@ -74,7 +75,7 @@ export function currentTheme(): ThemeName {
  * Initialize theme from localStorage and wire the config dropdown.
  */
 export function initTheme(): void {
-  const saved = localStorage.getItem(LS_THEME_KEY) ?? "black";
+  const saved = localStorage.getItem(LS_THEME) ?? "black";
   applyTheme(saved);
 
   const sel = document.getElementById(
@@ -88,7 +89,7 @@ export function initTheme(): void {
   window
     .matchMedia("(prefers-color-scheme: light)")
     .addEventListener("change", (e) => {
-      const hasSaved = !!localStorage.getItem(LS_THEME_KEY);
+      const hasSaved = !!localStorage.getItem(LS_THEME);
       if (!hasSaved) {
         // Light OS → amber; Dark OS → black
         applyTheme(e.matches ? "amber" : "black");

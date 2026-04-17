@@ -11,7 +11,7 @@ import "./ticker.css";
 import { cGet, cGetStale, cSet } from "../core/cache";
 import { fetchWithTimeout } from "../core/fetch";
 import { diagLog } from "../core/diag";
-import { PROXIES, API } from "../core/constants";
+import { PROXIES, API, LS_TICKER_MSG } from "../core/constants";
 import { scheduleCard } from "../cards/base-card";
 
 // ── Types ──
@@ -74,7 +74,6 @@ export function applyTickerSpeed(speed: number): void {
 
 const TICKER_CACHE_KEY = "halacha";
 const TICKER_TTL = 12 * 60 * 60_000; // 12h
-const LS_TICKER_MSG = "dash_v2_ticker_msg";
 
 // ── DOM cache ──
 let elTicker: HTMLElement | null = null;

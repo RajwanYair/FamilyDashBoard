@@ -22,6 +22,8 @@ import {
   humidityLabel,
   moonPhase,
   precipSummaryLabel,
+  renderHourlyStrip,
+  formatCloudCover,
 } from "@/cards/weather/weather";
 import type { WeatherResponse } from "@/types/api";
 
@@ -2000,8 +2002,6 @@ describe("Weather — precipSummaryLabel", () => {
 
 // ── Sprint 46: renderHourlyStrip ─────────────────────────────────────────────
 
-import { renderHourlyStrip } from "@/cards/weather/weather";
-
 function makeHourlyWeather(hourCount = 6): WeatherResponse {
   const now = new Date();
   const times: string[] = [];
@@ -2093,8 +2093,6 @@ describe("Weather — renderHourlyStrip (Sprint 46)", () => {
 });
 
 // ── Sprint 32: formatCloudCover ────────────────────────────────────────────
-
-import { formatCloudCover } from "@/cards/weather/weather";
 
 describe("Weather — formatCloudCover (Sprint 32)", () => {
   it("returns 'בהיר' label for 0%", () => {

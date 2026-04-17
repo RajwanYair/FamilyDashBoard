@@ -6,16 +6,14 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { renderTasksCard, markAllDone, resetDoneToday, removeDoneTasks } from "@/cards/tasks/tasks";
 import {
-  parseTaskPriority,
-  parseTaskDueDate,
-  isOverdue,
-  isDueToday,
-  formatTaskDueDate,
-  taskCompletionRatio,
-  taskPriorityIcon,
+  renderTasksCard, markAllDone, resetDoneToday, removeDoneTasks,
+  initTasksCard, destroyTasksCard, tasksCard,
+  getTasksForToday, countOverdueTasks,
+  parseTaskPriority, parseTaskDueDate, isOverdue, isDueToday,
+  formatTaskDueDate, taskCompletionRatio, taskPriorityIcon,
 } from "@/cards/tasks/tasks";
+import type { ChoreItem } from "@/cards/tasks/tasks";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -237,12 +235,6 @@ describe("Tasks — checkbox change handler", () => {
 
 // ── initTasksCard / destroyTasksCard ────────────────────────────────────────
 
-import {
-  initTasksCard,
-  destroyTasksCard,
-  tasksCard,
-} from "@/cards/tasks/tasks";
-
 describe("Tasks — initTasksCard / destroyTasksCard", () => {
   beforeEach(() => setupDOM());
   afterEach(() => {
@@ -324,8 +316,6 @@ describe("Tasks — invalid JSON in localStorage", () => {
 });
 
 // ── getTasksForToday ─────────────────────────────────────────────────────────
-
-import { getTasksForToday } from "@/cards/tasks/tasks";
 
 describe("Tasks — getTasksForToday", () => {
   afterEach(() => {
@@ -1222,9 +1212,6 @@ describe("Tasks — priority emoji badge in renderTasksCard (Sprint 30)", () => 
 });
 
 // ── Sprint 33: countOverdueTasks ──────────────────────────────────────────
-
-import { countOverdueTasks } from "@/cards/tasks/tasks";
-import type { ChoreItem } from "@/cards/tasks/tasks";
 
 describe("Tasks — countOverdueTasks (Sprint 33)", () => {
   const yesterday = (() => {

@@ -6,7 +6,18 @@
 
 import { createCardLoader, scheduleCard } from "../base-card";
 import "./weather.css";
-import { INTERVALS, WX_CODES, WX_EMOJI } from "../../core/constants";
+import {
+  INTERVALS,
+  WX_CODES,
+  WX_EMOJI,
+  LS_CITY_1,
+  LS_CITY_2,
+  LS_CITY_3,
+  LS_HOME_LAT,
+  LS_HOME_LON,
+  LS_HOME_NAME,
+  LS_WX_CHART_MODE,
+} from "../../core/constants";
 import type { WeatherResponse } from "../../types/api";
 import { isWeatherResponse } from "../../types/api";
 import { diagLog } from "../../core/diag";
@@ -20,9 +31,7 @@ import { state } from "../../core/state";
 let _activeLat = 31.7683;
 let _activeLon = 35.2137;
 
-const LS_CITY_1 = "dash_v2_city_1";
-const LS_CITY_2 = "dash_v2_city_2";
-const LS_CITY_3 = "dash_v2_city_3";
+// LS_CITY_1/2/3 imported from constants
 
 interface CityEntry {
   name: string;
@@ -66,9 +75,9 @@ export function initWeatherCities(): void {
     ".wx-city-tab[data-city='1']",
   );
   if (tab1 && !localStorage.getItem(LS_CITY_1)) {
-    const homeLat = parseFloat(localStorage.getItem("dash_v2_home_lat") ?? "");
-    const homeLon = parseFloat(localStorage.getItem("dash_v2_home_lon") ?? "");
-    const homeName = localStorage.getItem("dash_v2_home_name") ?? "";
+    const homeLat = parseFloat(localStorage.getItem(LS_HOME_LAT) ?? "");
+    const homeLon = parseFloat(localStorage.getItem(LS_HOME_LON) ?? "");
+    const homeName = localStorage.getItem(LS_HOME_NAME) ?? "";
     if (!isNaN(homeLat) && !isNaN(homeLon)) {
       tab1.dataset["lat"] = String(homeLat);
       tab1.dataset["lon"] = String(homeLon);
@@ -268,7 +277,7 @@ export function formatCloudCover(cc: number): string {
 }
 
 /** localStorage key for persisting hourly chart view mode. */
-const LS_CHART_MODE = "dash_wx_chart_mode";
+// LS_WX_CHART_MODE imported from constants
 
 /**
  * Sprint 46: Render the next-6-hours strip from hourly data.
@@ -526,12 +535,15 @@ export function initWeatherCard(): void {
     if (chart) {
       chart.classList.toggle("wx-chart-rain");
       try {
-        localStorage.setItem(LS_CHART_MODE, chart.classList.contains("wx-chart-rain") ? "rain" : "temp");
+        localStorage.setItem(
+          LS_WX_CHART_MODE,
+          chart.classList.contains("wx-chart-rain") ? "rain" : "temp",
+        );
       } catch { /* quota */ }
     }
   });
   // Restore persisted chart mode
-  if (localStorage.getItem(LS_CHART_MODE) === "rain") {
+  if (localStorage.getItem(LS_WX_CHART_MODE) === "rain") {
     document.getElementById("wx-hourly")?.classList.add("wx-chart-rain");
   }
 

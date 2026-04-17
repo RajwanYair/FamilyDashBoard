@@ -14,6 +14,7 @@
 
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
+import { LS_TASKS_DONE, LS_CHORES } from "../../core/constants";
 import type { CardDefinition } from "../../types/card";
 
 export interface ChoreItem {
@@ -21,7 +22,7 @@ export interface ChoreItem {
   chore: string;
 }
 
-const LS_DONE_KEY = "dash_tasks_done";
+// LS_TASKS_DONE and LS_CHORES imported from constants
 // RESET_HOUR default fallback (overridden by config.tasksResetHour at runtime)
 const DEFAULT_RESET_HOUR = 6;
 
@@ -36,7 +37,7 @@ function fingerprint(item: ChoreItem): string {
 
 function loadDoneMap(): Record<string, boolean> {
   try {
-    const raw = localStorage.getItem(LS_DONE_KEY);
+    const raw = localStorage.getItem(LS_TASKS_DONE);
     if (!raw) return {};
     return JSON.parse(raw) as Record<string, boolean>;
   } catch {
@@ -46,7 +47,7 @@ function loadDoneMap(): Record<string, boolean> {
 
 function saveDoneMap(map: Record<string, boolean>): void {
   try {
-    localStorage.setItem(LS_DONE_KEY, JSON.stringify(map));
+    localStorage.setItem(LS_TASKS_DONE, JSON.stringify(map));
   } catch {
     /* quota */
   }
@@ -59,7 +60,7 @@ function checkDailyReset(): void {
   const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
   const resetHour = loadConfig().tasksResetHour ?? DEFAULT_RESET_HOUR;
   if (lastReset !== resetKey && today.getHours() >= resetHour) {
-    localStorage.removeItem(LS_DONE_KEY);
+    localStorage.removeItem(LS_TASKS_DONE);
     try {
       localStorage.setItem("dash_tasks_reset_date", resetKey);
     } catch {
@@ -72,7 +73,7 @@ function checkDailyReset(): void {
 
 function loadChores(): ChoreItem[] {
   try {
-    const raw = localStorage.getItem("dash_chores");
+    const raw = localStorage.getItem(LS_CHORES);
     if (!raw) return [];
     return JSON.parse(raw) as ChoreItem[];
   } catch {
@@ -363,7 +364,7 @@ export function markAllDone(): void {
 
 /** Clear all done-flags for today (manual reset, ignores daily-reset hour). */
 export function resetDoneToday(): void {
-  localStorage.removeItem(LS_DONE_KEY);
+  localStorage.removeItem(LS_TASKS_DONE);
   renderTasksCard();
   diagLog("FDB-050: [tasks] Done flags reset");
 }
@@ -378,11 +379,11 @@ export function removeDoneTasks(): void {
   const remaining = chores.filter((item) => !doneMap[fingerprint(item)]);
   const removed = chores.length - remaining.length;
   try {
-    localStorage.setItem("dash_chores", JSON.stringify(remaining));
+    localStorage.setItem(LS_CHORES, JSON.stringify(remaining));
   } catch {
     /* quota */
   }
-  localStorage.removeItem(LS_DONE_KEY);
+  localStorage.removeItem(LS_TASKS_DONE);
   renderTasksCard();
   diagLog(`FDB-051: [tasks] Removed ${removed} done item(s)`);
 }
@@ -418,7 +419,7 @@ export function addQuickChore(person: string, chore: string): void {
   const current = loadChores();
   current.push({ person: person.trim() || "משפחה", chore: chore.trim() });
   try {
-    localStorage.setItem("dash_chores", JSON.stringify(current));
+    localStorage.setItem(LS_CHORES, JSON.stringify(current));
   } catch {
     /* quota */
   }

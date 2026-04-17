@@ -258,6 +258,29 @@ export const INTERVALS = {
   MOTIVATION: 2 * 60_000,
 } as const;
 
+// ── localStorage Keys (canonical — modules must import, not redefine) ──
+// Shared keys are prefixed dash_v2_ (versioned) or dash_ (legacy)
+export const LS_DIM_START = "dash_v2_dim_start";
+export const LS_DIM_END = "dash_v2_dim_end";
+export const LS_TICKER_MSG = "dash_v2_ticker_msg";
+export const LS_CITY_1 = "dash_v2_city_1";
+export const LS_CITY_2 = "dash_v2_city_2";
+export const LS_CITY_3 = "dash_v2_city_3";
+export const LS_HOME_LAT = "dash_v2_home_lat";
+export const LS_HOME_LON = "dash_v2_home_lon";
+export const LS_HOME_NAME = "dash_v2_home_name";
+export const LS_NEWS_FONT = "dash_v2_news_fontsize";
+export const LS_STOCK_ALERTS = "dash_v2_stock_alerts";
+export const LS_PORTFOLIO = "dash_v2_portfolio";
+export const LS_NEWS_VISITED = "dash_visited_news";
+export const LS_NEWS_BOOKMARKS = "dash_bookmarks";
+export const LS_CUR_HISTORY = "dash_v2_cur_history";
+export const LS_THEME = "dash_theme";
+export const LS_COLLAPSED = "dash_v2_collapsed_cards";
+export const LS_WX_CHART_MODE = "dash_wx_chart_mode";
+export const LS_TASKS_DONE = "dash_tasks_done";
+export const LS_CHORES = "dash_chores";
+
 // ── Threat Labels (Alerts) ──
 export const THREAT_LABELS: Record<number, string> = {
   0: "🚀 ירי רקטות",

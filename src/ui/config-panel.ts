@@ -25,19 +25,13 @@ import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
 import { setMotivationInterval } from "../cards/motivation/motivation";
-// ── Extra localStorage keys (fields not stored in DashboardConfig) ──
-const LS_DIM_START = "dash_v2_dim_start";
-const LS_DIM_END = "dash_v2_dim_end";
-const LS_TICKER_MSG = "dash_v2_ticker_msg";
-const LS_CITY_1 = "dash_v2_city_1";
-const LS_CITY_2 = "dash_v2_city_2";
-const LS_CITY_3 = "dash_v2_city_3";
-const LS_STOCK_ALERTS = "dash_v2_stock_alerts";
-const LS_HOME_LAT = "dash_v2_home_lat";
-const LS_HOME_LON = "dash_v2_home_lon";
-const LS_HOME_NAME = "dash_v2_home_name";
-const LS_NEWS_FONT = "dash_v2_news_fontsize";
-const LS_CHORES = "dash_chores";
+import {
+  LS_DIM_START, LS_DIM_END, LS_TICKER_MSG,
+  LS_CITY_1, LS_CITY_2, LS_CITY_3, LS_STOCK_ALERTS,
+  LS_HOME_LAT, LS_HOME_LON, LS_HOME_NAME,
+  LS_NEWS_FONT, LS_CHORES,
+} from "../core/constants";
+// ── Extra localStorage keys now imported from core/constants ──
 
 // ── Unsaved-changes indicator ──
 let _formDirty = false;
