@@ -404,12 +404,12 @@ async function fetchICS(url: string): Promise<string | null> {
     if (r.ok) {
       const text = await r.text();
       if (text.includes("BEGIN:VCALENDAR")) {
-        diagLog(`[calendar] direct OK (${text.length} bytes)`);
+        diagLog(`FDB-023: [calendar] direct OK (${text.length} bytes)`);
         return text;
       }
     }
   } catch (e) {
-    diagLog(`[calendar] direct ERR: ${String(e)}`);
+    diagLog(`FDB-024: [calendar] direct ERR: ${String(e)}`);
   }
 
   // 2. CORS proxy chain
@@ -426,15 +426,15 @@ async function fetchICS(url: string): Promise<string | null> {
         text = await r.text();
       }
       if (text.includes("BEGIN:VCALENDAR")) {
-        diagLog(`[calendar] proxy ${proxy} OK`);
+        diagLog(`FDB-025: [calendar] proxy ${proxy} OK`);
         return text;
       }
     } catch (e) {
-      diagLog(`[calendar] proxy ${proxy} ERR: ${String(e)}`);
+      diagLog(`FDB-026: [calendar] proxy ${proxy} ERR: ${String(e)}`);
     }
   }
 
-  diagLog(`[calendar] all sources failed for ${url}`);
+  diagLog(`FDB-027: [calendar] all sources failed for ${url}`);
   return null;
 }
 
@@ -488,7 +488,7 @@ async function loadCalendar(): Promise<void> {
       recordFailure("cal");
     }
   } catch (err) {
-    diagLog(`[calendar] loadCalendar error: ${String(err)}`);
+    diagLog(`FDB-028: [calendar] loadCalendar error: ${String(err)}`);
     setSync("cal", "error");
     recordFailure("cal");
   } finally {
@@ -520,5 +520,5 @@ export function initCalendarCard(): void {
   cacheDom();
   void loadCalendar();
   scheduleCard(loadCalendar, INTERVALS.CALENDAR);
-  diagLog("[calendar] Initialized");
+  diagLog("FDB-029: [calendar] Initialized");
 }

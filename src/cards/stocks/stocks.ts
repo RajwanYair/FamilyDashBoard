@@ -560,11 +560,11 @@ async function loadStockSingle(sym: string): Promise<boolean> {
       cSet(key, data);
       renderStock(blk, data, sym);
       delete (blk as HTMLElement).dataset["stale"];
-      diagLog(`[stocks] ${sym} OK`);
+      diagLog(`FDB-044: [stocks] ${sym} OK`);
       return true;
     }
   } catch (err) {
-    diagLog(`[stocks] ${sym} failed: ${String(err)}`);
+    diagLog(`FDB-045: [stocks] ${sym} failed: ${String(err)}`);
     const stale = cGetStale<YahooChartResponse>(key);
     if (!stale) {
       const priceEl = blk.querySelector<HTMLElement>(".stk-price");
@@ -704,7 +704,7 @@ export function checkStockAlerts(): void {
         5000,
       );
       diagLog(
-        `[stocks] alert fired: ${sym} ${String(cur)} ${op} ${String(threshold)}`,
+        `FDB-046: [stocks] alert fired: ${sym} ${String(cur)} ${op} ${String(threshold)}`,
       );
     }
   }
@@ -838,5 +838,5 @@ export function initStocksCard(): void {
     loadAllStocks,
     isMarketOpen() ? INTERVALS.STOCKS_OPEN : INTERVALS.STOCKS_CLOSED,
   );
-  diagLog("[stocks] Initialized");
+  diagLog("FDB-047: [stocks] Initialized");
 }

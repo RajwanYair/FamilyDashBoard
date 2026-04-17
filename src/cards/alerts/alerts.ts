@@ -319,7 +319,7 @@ export async function loadAlerts(): Promise<void> {
     // Runtime validation: discard any structurally invalid events
     const validData = data.filter(isAlertEvent);
     if (validData.length !== data.length) {
-      diagLog(`[alerts] Discarded ${data.length - validData.length} invalid event(s)`);
+      diagLog(`FDB-054: [alerts] Discarded ${data.length - validData.length} invalid event(s)`);
     }
     if (validData.length) {
       const newTopId = validData[0]?.id ?? null;

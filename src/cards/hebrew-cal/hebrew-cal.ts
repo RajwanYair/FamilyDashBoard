@@ -536,7 +536,7 @@ async function loadDafYomi(): Promise<void> {
         : null,
     );
   } catch {
-    diagLog("[hebrew-cal] Daf Yomi fetch failed");
+    diagLog("FDB-034: [hebrew-cal] Daf Yomi fetch failed");
     // Show static fallback if no stale data was shown
     if (stale === null) renderDaf(DAF_STATIC_FALLBACK);
   }
@@ -662,9 +662,9 @@ async function loadHebCal(): Promise<void> {
     }
     // Re-evaluate event row now that holiday/special names are known
     renderNextCalEvent();
-    diagLog("[hebrew-cal] Load complete");
+    diagLog("FDB-035: [hebrew-cal] Load complete");
   } catch (err) {
-    diagLog(`[hebrew-cal] Error: ${String(err)}`);
+    diagLog(`FDB-036: [hebrew-cal] Error: ${String(err)}`);
     setSync("hebcal", "error");
     recordFailure("hebcal");
   }
@@ -796,7 +796,7 @@ async function loadZmanim(): Promise<void> {
       renderZmanim(data.times);
     }
   } catch {
-    diagLog("[hebrew-cal] Zmanim fetch failed");
+    diagLog("FDB-037: [hebrew-cal] Zmanim fetch failed");
   }
 }
 
@@ -900,7 +900,7 @@ export function initHebrewCalCard(): void {
   renderTasksStrip();
   void loadHebCal();
   scheduleCard(loadHebCal, INTERVALS.HEBREW_CAL);
-  diagLog("[hebrew-cal] Initialized");
+  diagLog("FDB-038: [hebrew-cal] Initialized");
 }
 
 /** Render pending family tasks as a compact strip inside the heb-cal card. */

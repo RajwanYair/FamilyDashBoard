@@ -643,7 +643,7 @@ export function renderNews(items: NewsItem[]): void {
     elNewsTicker.textContent = tickerItems.map((i) => i.title).join("  •  ");
   }
 
-  diagLog(`[news] Rendered ${items.length} items`);
+  diagLog(`FDB-042: [news] Rendered ${items.length} items`);
 }
 
 const loadNews = createCardLoader<NewsItem[]>(
@@ -690,5 +690,5 @@ export function initNewsCard(): void {
   renderSourceFilterChips();
   void loadNews();
   scheduleCard(loadNews, INTERVALS.NEWS);
-  diagLog("[news] Initialized");
+  diagLog("FDB-043: [news] Initialized");
 }

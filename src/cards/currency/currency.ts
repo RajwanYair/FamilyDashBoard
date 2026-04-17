@@ -92,7 +92,7 @@ export async function fetchCurrency(): Promise<Record<string, number>> {
     try {
       const json = await fetchJSONWithWorker<CurrencyResponse>(apiUrl);
       if (json.rates && Object.keys(json.rates).length > 0) {
-        diagLog(`[currency] Rates OK from ${apiUrl}`);
+        diagLog(`FDB-031: [currency] Rates OK from ${apiUrl}`);
         return json.rates;
       }
     } catch {
@@ -173,7 +173,7 @@ export function renderCurrency(rates: Record<string, number>): void {
     curEls.body.classList.add("data-fresh");
   }
 
-  diagLog(`[currency] Rendered ${Object.keys(rates).length} rates`);
+  diagLog(`FDB-032: [currency] Rendered ${Object.keys(rates).length} rates`);
 }
 
 const loadCurrency = createCardLoader<Record<string, number>>(
@@ -186,5 +186,5 @@ export function initCurrencyCard(): void {
   cacheDom();
   void loadCurrency();
   scheduleCard(loadCurrency, INTERVALS.CURRENCY);
-  diagLog("[currency] Initialized");
+  diagLog("FDB-033: [currency] Initialized");
 }

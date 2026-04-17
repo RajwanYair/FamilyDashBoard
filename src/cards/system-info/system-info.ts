@@ -195,7 +195,7 @@ export async function renderSystemInfo(): Promise<void> {
     }
   }
 
-  diagLog("[system-info] Rendered");
+  diagLog("FDB-053: [system-info] Rendered");
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────

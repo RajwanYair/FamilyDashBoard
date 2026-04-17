@@ -257,7 +257,7 @@ export function renderTasksCard(): void {
         if (doneMsg) {
           doneMsg.style.display = pending2 === 0 ? "" : "none";
         }
-        diagLog(`[tasks] ${fp} = ${String(cb.checked)}`);
+        diagLog(`FDB-048: [tasks] ${fp} = ${String(cb.checked)}`);
       });
 
       const label = document.createElement("span");
@@ -322,14 +322,14 @@ export function markAllDone(): void {
   for (const item of chores) map[fingerprint(item)] = true;
   saveDoneMap(map);
   renderTasksCard();
-  diagLog("[tasks] All marked done");
+  diagLog("FDB-049: [tasks] All marked done");
 }
 
 /** Clear all done-flags for today (manual reset, ignores daily-reset hour). */
 export function resetDoneToday(): void {
   localStorage.removeItem(LS_DONE_KEY);
   renderTasksCard();
-  diagLog("[tasks] Done flags reset");
+  diagLog("FDB-050: [tasks] Done flags reset");
 }
 
 /**
@@ -348,7 +348,7 @@ export function removeDoneTasks(): void {
   }
   localStorage.removeItem(LS_DONE_KEY);
   renderTasksCard();
-  diagLog(`[tasks] Removed ${removed} done item(s)`);
+  diagLog(`FDB-051: [tasks] Removed ${removed} done item(s)`);
 }
 
 /**
@@ -387,7 +387,7 @@ export function addQuickChore(person: string, chore: string): void {
     /* quota */
   }
   renderTasksCard();
-  diagLog(`[tasks] Quick-added: "${chore}" for ${person}`);
+  diagLog(`FDB-052: [tasks] Quick-added: "${chore}" for ${person}`);
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────

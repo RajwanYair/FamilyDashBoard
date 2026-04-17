@@ -101,7 +101,7 @@ export function toggleTempUnit(): void {
   const fresh = cGet<WeatherResponse>("wx", INTERVALS.WEATHER);
   const data = fresh ?? cGetStale<WeatherResponse>("wx");
   if (data) renderWeather(data);
-  diagLog(`[weather] tempUnit toggled to ${c.tempUnit}`);
+  diagLog(`FDB-055: [weather] tempUnit toggled to ${c.tempUnit}`);
 }
 
 /**
@@ -120,7 +120,7 @@ export async function switchWeatherCity(
     renderWeather(data);
     setSync("wx", "ok");
   } catch (err) {
-    diagLog(`[weather] City switch failed: ${String(err)}`);
+    diagLog(`FDB-056: [weather] City switch failed: ${String(err)}`);
     setSync("wx", "error");
   }
 }
@@ -545,5 +545,5 @@ export function initWeatherCard(): void {
     if (data) renderWeather(data);
   });
 
-  diagLog("[weather] Initialized");
+  diagLog("FDB-057: [weather] Initialized");
 }

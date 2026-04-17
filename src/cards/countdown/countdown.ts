@@ -277,7 +277,7 @@ export function initCountdownCard(): void {
   tick2();
   if (_cdInterval !== null) clearInterval(_cdInterval);
   _cdInterval = setInterval(() => { tick(); tick2(); }, 1000);
-  diagLog("[countdown] Initialized");
+  diagLog("FDB-030: [countdown] Initialized");
 }
 
 export function destroyCountdownCard(): void {

@@ -47,7 +47,7 @@ export function setMotivationInterval(minutes: number): void {
   }
   if (minutes > 0) {
     _motiAutoInterval = setInterval(renderMotivation, minutes * 60_000);
-    diagLog(`[motivation] Auto-advance every ${minutes}min`);
+    diagLog(`FDB-039: [motivation] Auto-advance every ${minutes}min`);
   }
 }
 
@@ -90,7 +90,7 @@ export function shareMotivation(): void {
       showToast("📋 הציטוט הועתק ללוח");
     });
   }
-  diagLog("[motivation] Quote shared");
+  diagLog("FDB-040: [motivation] Quote shared");
 }
 
 async function loadMotivation(): Promise<void> {
@@ -112,5 +112,5 @@ export function initMotivationCard(): void {
   scheduleCard(loadMotivation, INTERVALS.MOTIVATION);
   // F7 (v7.3): Start auto-advance timer if configured
   setMotivationInterval(loadConfig().motivationInterval ?? 0);
-  diagLog("[motivation] Initialized");
+  diagLog("FDB-041: [motivation] Initialized");
 }
