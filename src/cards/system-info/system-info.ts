@@ -47,6 +47,25 @@ type NavigatorWithExtras = Navigator & {
 
 const PAGE_LOAD_TIME = Date.now();
 
+// ── Sprint 29: Pure helpers for JS heap + GPU ──────────────────────────────
+
+/**
+ * Format JS heap usage as "used / limit MB".
+ * Returns "" when inputs are not positive numbers.
+ */
+export function formatHeapMb(usedBytes: number, limitBytes: number): string {
+  if (!usedBytes || !limitBytes) return "";
+  return `${(usedBytes / 1_048_576).toFixed(1)} / ${(limitBytes / 1_048_576).toFixed(0)} MB`;
+}
+
+/**
+ * Shorten a WebGL renderer string to ≤30 chars by trimming after "/" or "(".
+ */
+export function gpuShortName(renderer: string): string {
+  const trimmed = (renderer.split("/")[0] ?? renderer).split("(")[0]?.trim() ?? renderer;
+  return trimmed.slice(0, 30);
+}
+
 // ── Battery helper ─────────────────────────────────────────────────────────
 
 async function getBatteryInfo(): Promise<{
@@ -193,6 +212,29 @@ export async function renderSystemInfo(): Promise<void> {
     } else {
       setText("sysinfo-rtt", "—");
     }
+  }
+
+  // Sprint 29: JS Heap memory (Chrome only — performance.memory)
+  const perfMem = (performance as Performance & {
+    memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number };
+  }).memory;
+  if (perfMem) {
+    setText("sysinfo-heap", formatHeapMb(perfMem.usedJSHeapSize, perfMem.jsHeapSizeLimit));
+  }
+
+  // Sprint 29: GPU renderer via WebGL debug extension
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = (canvas.getContext("webgl") ?? canvas.getContext("experimental-webgl")) as WebGLRenderingContext | null;
+    if (gl) {
+      const dbgInfo = gl.getExtension("WEBGL_debug_renderer_info");
+      if (dbgInfo) {
+        const renderer = gl.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL) as string;
+        setText("sysinfo-gpu", gpuShortName(renderer));
+      }
+    }
+  } catch {
+    // WebGL not available — leave "—"
   }
 
   diagLog("FDB-053: [system-info] Rendered");

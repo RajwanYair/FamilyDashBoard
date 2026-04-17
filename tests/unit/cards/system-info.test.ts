@@ -17,6 +17,8 @@ import {
   formatBytes,
   getPageLoadTime,
   categorizeDevice,
+  formatHeapMb,
+  gpuShortName,
 } from "@/cards/system-info/system-info";
 
 // ── DOM setup ──────────────────────────────────────────────────────────────
@@ -710,5 +712,46 @@ describe("categorizeDevice", () => {
     // happy-dom defaults window.innerWidth to 1920
     const result = categorizeDevice();
     expect(result).toBe("tv");
+  });
+});
+
+// ── Sprint 29: formatHeapMb + gpuShortName ────────────────────────────────
+
+describe("SystemInfo — formatHeapMb (Sprint 29)", () => {
+  it("returns '' for zero inputs", () => {
+    expect(formatHeapMb(0, 0)).toBe("");
+  });
+
+  it("formats bytes to MB correctly", () => {
+    const result = formatHeapMb(52_428_800, 2_147_483_648);
+    expect(result).toBe("50.0 / 2048 MB");
+  });
+
+  it("rounds used to 1 decimal", () => {
+    expect(formatHeapMb(1_572_864, 104_857_600)).toBe("1.5 / 100 MB");
+  });
+
+  it("returns '' when only usedBytes is 0", () => {
+    expect(formatHeapMb(0, 1_048_576)).toBe("");
+  });
+});
+
+describe("SystemInfo — gpuShortName (Sprint 29)", () => {
+  it("trims at slash", () => {
+    expect(gpuShortName("ANGLE (Intel(R) UHD Graphics)")).toBe("ANGLE (Intel(R) UHD Graphics)".split("/")[0]!.split("(")[0]!.trim().slice(0, 30));
+  });
+
+  it("truncates to 30 chars max", () => {
+    const long = "A".repeat(50);
+    expect(gpuShortName(long).length).toBeLessThanOrEqual(30);
+  });
+
+  it("handles simple GPU name without special chars", () => {
+    expect(gpuShortName("GeForce RTX 3080")).toBe("GeForce RTX 3080");
+  });
+
+  it("trims text after open paren", () => {
+    const result = gpuShortName("Intel UHD (some detail)");
+    expect(result).toBe("Intel UHD");
   });
 });
