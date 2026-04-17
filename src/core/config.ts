@@ -17,6 +17,7 @@ import {
   isValidNewsMaxItems,
   isValidTickerSpeed,
   isValidHour,
+  type CardConfig,
 } from "../types/config";
 import { diagLog } from "./diag";
 
@@ -63,6 +64,46 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     cfg.sysInfoShowRtt = DEFAULT_CONFIG.sysInfoShowRtt;
     cfg.configVersion = 3;
     diagLog("[config] migrated v2 → v3");
+  }
+
+  // v3 → v4: introduced namespaced cards record populated from flat per-card props
+  if (version < 4) {
+    const cards: Record<string, CardConfig> = {};
+    cards["weather"] = {
+      settings: {
+        showDetails: cfg.weatherShowDetails ?? DEFAULT_CONFIG.weatherShowDetails,
+        showHourly: cfg.weatherShowHourly ?? DEFAULT_CONFIG.weatherShowHourly,
+        showWind: cfg.weatherShowWind ?? DEFAULT_CONFIG.weatherShowWind,
+        showSunrise: cfg.weatherShowSunrise ?? DEFAULT_CONFIG.weatherShowSunrise,
+      },
+    };
+    cards["news"] = {
+      settings: {
+        maxItems: cfg.newsMaxItems ?? DEFAULT_CONFIG.newsMaxItems,
+        showSource: cfg.newsShowSource ?? DEFAULT_CONFIG.newsShowSource,
+      },
+    };
+    cards["stocks"] = {
+      settings: {
+        showPortfolio: cfg.stocksShowPortfolio ?? DEFAULT_CONFIG.stocksShowPortfolio,
+        groupBySector: cfg.stocksGroupBySector ?? DEFAULT_CONFIG.stocksGroupBySector,
+      },
+    };
+    cards["tasks"] = {
+      settings: {
+        showDone: cfg.tasksShowDone ?? DEFAULT_CONFIG.tasksShowDone,
+        showCategories: cfg.tasksShowCategories ?? DEFAULT_CONFIG.tasksShowCategories,
+        resetHour: cfg.tasksResetHour ?? DEFAULT_CONFIG.tasksResetHour,
+      },
+    };
+    cards["system-info"] = {
+      settings: {
+        showRtt: cfg.sysInfoShowRtt ?? DEFAULT_CONFIG.sysInfoShowRtt,
+      },
+    };
+    cfg.cards = cards;
+    cfg.configVersion = 4;
+    diagLog("[config] migrated v3 → v4");
   }
 
   return cfg;

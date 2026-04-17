@@ -202,27 +202,27 @@ describe("Config — loadConfigFromHash non-object parsed value (line 70)", () =
 // ── Sprint 1 (v7.4) + v7.8 config v2: migrateConfig + type guards + configVersion ──
 
 describe("Config — migrateConfig (v7.4)", () => {
-  it("migrates to configVersion=3 when version is missing (v0→v1→v2→v3)", () => {
+  it("migrates to configVersion=4 when version is missing (v0→v1→v2→v3→v4)", () => {
     const result = migrateConfig({ theme: "blue" });
-    expect(result.configVersion).toBe(3);
+    expect(result.configVersion).toBe(4);
   });
 
-  it("migrates to configVersion=3 when version is 0", () => {
+  it("migrates to configVersion=4 when version is 0", () => {
     const result = migrateConfig({ configVersion: 0 });
-    expect(result.configVersion).toBe(3);
+    expect(result.configVersion).toBe(4);
   });
 
-  it("migrates version 1 to version 3, adding v2+v3 fields", () => {
+  it("migrates version 1 to version 4, adding v2+v3+v4 fields", () => {
     const result = migrateConfig({ configVersion: 1, theme: "rose" as const });
-    expect(result.configVersion).toBe(3);
+    expect(result.configVersion).toBe(4);
     expect(result.theme).toBe("rose");
     expect(result.newsMaxItems).toBe(5);
     expect(result.weatherShowDetails).toBe(true);
   });
 
-  it("does not modify config already at current version (v3)", () => {
+  it("migrates config at v3 to v4", () => {
     const result = migrateConfig({ configVersion: 3, theme: "rose" as const });
-    expect(result.configVersion).toBe(3);
+    expect(result.configVersion).toBe(4);
     expect(result.theme).toBe("rose");
   });
 
@@ -295,8 +295,8 @@ describe("Config — isValidFontScale (v7.4)", () => {
 });
 
 describe("Config — configVersion sanity (v7.4)", () => {
-  it("DEFAULT_CONFIG has configVersion 3", () => {
-    expect(DEFAULT_CONFIG.configVersion).toBe(3);
+  it("DEFAULT_CONFIG has configVersion 4", () => {
+    expect(DEFAULT_CONFIG.configVersion).toBe(4);
   });
 
   it("CONFIG_VERSION constant matches DEFAULT_CONFIG", () => {
@@ -461,9 +461,9 @@ describe("Config — isValidHour (Sprint 33)", () => {
 // ── Sprint 42 (v7.9): Config v3 migration + per-card settings ─────────────────
 
 describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
-  it("migrates v2 config to v3, adding all per-card fields", () => {
+  it("migrates v2 config to v4, adding all per-card fields", () => {
     const result = migrateConfig({ configVersion: 2, theme: "blue" });
-    expect(result.configVersion).toBe(3);
+    expect(result.configVersion).toBe(4);
     expect(result.weatherShowHourly).toBe(true);
     expect(result.weatherShowWind).toBe(true);
     expect(result.weatherShowSunrise).toBe(true);
@@ -473,22 +473,27 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
     expect(result.sysInfoShowRtt).toBe(true);
   });
 
-  it("migrates v0 all the way to v3 in one call", () => {
+  it("migrates v0 all the way to v4 in one call", () => {
     const result = migrateConfig({});
-    expect(result.configVersion).toBe(3);
+    expect(result.configVersion).toBe(4);
     expect(result.weatherShowHourly).toBe(true);
     expect(result.newsMaxItems).toBe(5); // v2 field also present
   });
 
-  it("does not overwrite existing v3 boolean fields when already at v3", () => {
+  it("does not re-run v3 migration for a v3 config, but runs v4 migration", () => {
     const result = migrateConfig({ configVersion: 3, weatherShowHourly: false });
-    expect(result.configVersion).toBe(3);
-    // Migration does not re-run for v3, so pre-existing value is preserved
+    expect(result.configVersion).toBe(4);
+    // weatherShowHourly is preserved from input (v3 migration skipped)
     expect(result.weatherShowHourly).toBe(false);
   });
 
-  it("CONFIG_VERSION constant is 3", () => {
-    expect(CONFIG_VERSION).toBe(3);
+  it("does not modify config already at current version (v4)", () => {
+    const result = migrateConfig({ configVersion: 4, theme: "rose" as const });
+    expect(result.configVersion).toBe(4);
+  });
+
+  it("CONFIG_VERSION constant is 4", () => {
+    expect(CONFIG_VERSION).toBe(4);
   });
 
   it("DEFAULT_CONFIG has all v3 fields with correct defaults", () => {
@@ -499,5 +504,88 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
     expect(DEFAULT_CONFIG.tasksShowCategories).toBe(true);
     expect(DEFAULT_CONFIG.newsShowSource).toBe(true);
     expect(DEFAULT_CONFIG.sysInfoShowRtt).toBe(true);
+  });
+});
+
+// ── v7.10: Config v4 — namespaced cards migration ──────────────────────────────
+
+describe("Config — migrateConfig v3→v4 (v7.10)", () => {
+  it("v3 config gets cards record with 5 card entries", () => {
+    const result = migrateConfig({ configVersion: 3 });
+    expect(result.configVersion).toBe(4);
+    expect(result.cards).toBeDefined();
+    expect(typeof result.cards).toBe("object");
+    expect(result.cards!["weather"]).toBeDefined();
+    expect(result.cards!["news"]).toBeDefined();
+    expect(result.cards!["stocks"]).toBeDefined();
+    expect(result.cards!["tasks"]).toBeDefined();
+    expect(result.cards!["system-info"]).toBeDefined();
+  });
+
+  it("weather card settings are namespaced from flat props", () => {
+    const result = migrateConfig({
+      configVersion: 3,
+      weatherShowDetails: false,
+      weatherShowHourly: false,
+      weatherShowWind: true,
+      weatherShowSunrise: false,
+    });
+    const ws = result.cards!["weather"]?.settings;
+    expect(ws?.["showDetails"]).toBe(false);
+    expect(ws?.["showHourly"]).toBe(false);
+    expect(ws?.["showWind"]).toBe(true);
+    expect(ws?.["showSunrise"]).toBe(false);
+  });
+
+  it("news card settings contain maxItems and showSource", () => {
+    const result = migrateConfig({ configVersion: 3, newsMaxItems: 7, newsShowSource: false });
+    const ns = result.cards!["news"]?.settings;
+    expect(ns?.["maxItems"]).toBe(7);
+    expect(ns?.["showSource"]).toBe(false);
+  });
+
+  it("stocks card settings contain showPortfolio and groupBySector", () => {
+    const result = migrateConfig({ configVersion: 3, stocksShowPortfolio: false, stocksGroupBySector: false });
+    const ss = result.cards!["stocks"]?.settings;
+    expect(ss?.["showPortfolio"]).toBe(false);
+    expect(ss?.["groupBySector"]).toBe(false);
+  });
+
+  it("tasks card settings contain showDone, showCategories, resetHour", () => {
+    const result = migrateConfig({ configVersion: 3, tasksShowDone: false, tasksShowCategories: false, tasksResetHour: 8 });
+    const ts = result.cards!["tasks"]?.settings;
+    expect(ts?.["showDone"]).toBe(false);
+    expect(ts?.["showCategories"]).toBe(false);
+    expect(ts?.["resetHour"]).toBe(8);
+  });
+
+  it("system-info card settings contain showRtt", () => {
+    const result = migrateConfig({ configVersion: 3, sysInfoShowRtt: false });
+    const si = result.cards!["system-info"]?.settings;
+    expect(si?.["showRtt"]).toBe(false);
+  });
+
+  it("v4 config is not re-migrated (cards preserved)", () => {
+    const existing = { configVersion: 4 as const, cards: { weather: { settings: { showDetails: false } } } };
+    const result = migrateConfig(existing);
+    expect(result.configVersion).toBe(4);
+    expect(result.cards!["weather"]?.settings?.["showDetails"]).toBe(false);
+  });
+
+  it("uses defaults for missing per-card props during migration", () => {
+    const result = migrateConfig({ configVersion: 3 });
+    const ws = result.cards!["weather"]?.settings;
+    expect(ws?.["showDetails"]).toBe(true);
+    expect(ws?.["showHourly"]).toBe(true);
+    expect(ws?.["showWind"]).toBe(true);
+    expect(ws?.["showSunrise"]).toBe(true);
+  });
+
+  it("DEFAULT_CONFIG.cards is an empty object", () => {
+    expect(DEFAULT_CONFIG.cards).toEqual({});
+  });
+
+  it("DEFAULT_CONFIG.configVersion is 4", () => {
+    expect(DEFAULT_CONFIG.configVersion).toBe(4);
   });
 });

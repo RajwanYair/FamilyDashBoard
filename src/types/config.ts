@@ -2,6 +2,18 @@
  * FamilyDashBoard v6 — User Config Types
  */
 
+/**
+ * Per-card namespaced settings (Config v4+).
+ * Cards can store any boolean/number/string setting here.
+ * This supplements (and will eventually replace) the flat per-card props on DashboardConfig.
+ */
+export interface CardConfig {
+  /** Optional: card size override. */
+  size?: "sm" | "md" | "lg" | "xl";
+  /** Per-card settings keyed by setting name. */
+  settings?: Record<string, boolean | number | string>;
+}
+
 export interface DashboardConfig {
   theme: "black" | "blue" | "matrix" | "amber" | "purple" | "rose";
   screenMode: "tv" | "tablet" | "phone";
@@ -99,6 +111,14 @@ export interface DashboardConfig {
   newsShowSource: boolean;
   /** System info card: show network RTT tile. Default: true. */
   sysInfoShowRtt: boolean;
+
+  // ── Config v4 additions (v7.10) — namespaced per-card settings ──
+
+  /**
+   * Namespaced per-card settings. Populated by v3→v4 migration.
+   * Keys are card IDs (e.g. "weather", "news", "stocks").
+   */
+  cards: Record<string, CardConfig>;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -142,7 +162,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard2Time: "18:00",
   countdownCard2DoneMsg: "🎉 מזל טוב!",
   motivationInterval: 0,
-  configVersion: 3,
+  configVersion: 4,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -161,10 +181,13 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   tasksShowCategories: true,
   newsShowSource: true,
   sysInfoShowRtt: true,
+
+  // Config v4 defaults
+  cards: {},
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 3;
+export const CONFIG_VERSION = 4;
 
 /** Type guard: checks if a string is a valid theme name. */
 export function isValidTheme(v: unknown): v is DashboardConfig["theme"] {
