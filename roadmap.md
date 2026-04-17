@@ -45,6 +45,7 @@
 | **v7.9**  | ✅ Released | **2182 Vitest / 51 suites** | Error tracking, web vitals, config v3 per-card settings, IndexedDB cache tier, SW TypeScript types, ARIA tab keyboard nav, weather hourly strip, tasks enhancements, news/stocks enhancements |
 | **v7.10** | ✅ Released | **2287 Vitest / 54 suites** | IDB LRU eviction (50 MB cap), ReactiveState store, Config v4 namespaced per-card CardConfig, Worker POST /api/errors, error-reporter.ts, `__USE_PROXIES__` production gate, hardware-adaptive GPU/CPU tier CSS |
 | **v7.11** | ✅ Released | **2332 Vitest / 55 suites** | Config panel 860px 2-col, maximize container queries (11 cards), coverage 90/81/90/92, state→config wiring, FDB error codes 023-061, startup waterfall INIT metric, per-card config accordion, FdbCard Web Component base class, 4 new API type guards |
+| **v7.12** | ✅ Released | **2405 Vitest / 55 suites** | Priority fetch queue (high/normal/low), countdown 3rd event slot, motivation category system (5 categories, 20 quotes), currency 7-day rate history + trend arrows, calendar days-until label, night dimmer idle auto-dim, news reading-time badge, alerts threat icons + age labels, system-info JS heap + GPU tiles, tasks priority emoji icons |
 
 ---
 
@@ -530,4 +531,4 @@ Key architectural decisions and their rationale, for future reference.
 
 ---
 
-<!-- Last updated: v7.11.0 — June 2026 -->
+<!-- Last updated: v7.12.0 — June 2026 -->

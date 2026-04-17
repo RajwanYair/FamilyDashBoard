@@ -328,7 +328,7 @@ export function init(): void {
     cfg.nightDimEndHour ?? 6,
   );
   if ((cfg.nightDimIdleMinutes ?? 0) > 0) {
-    setIdleAutoDimMinutes(cfg.nightDimIdleMinutes!);
+    setIdleAutoDimMinutes(cfg.nightDimIdleMinutes ?? 0);
   }
 
   // ── Apply ticker scroll speed from config ──

@@ -5,6 +5,52 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.12.0] — 2026-06-15
+
+> **2405 tests / 55 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `7c19e1a`)
+
+### Sprint 21 — Priority Fetch Queue
+
+- **`enqueueFetch(fn, priority)`**: high/normal/low priority queue with `_QUEUE_CONCURRENCY = 3` concurrency cap; `getFetchQueueDepth()` + `getFetchQueueRunning()` inspection helpers
+
+### Sprint 22 — Countdown 3rd Event Slot
+
+- **3rd countdown event**: added `countdownCard3Title/Date/Time/DoneMsg` config fields, `tick3()` function, `cd3-section` DOM, and config panel inputs
+
+### Sprint 23 — Motivation Category System
+
+- **`MotivationCategory`**: 5 categories (morning/shabbat/family/success/general), `MOTIVATIONS` expanded to 20 quotes with categories, `setMotivationCategory()` / `getMotivationCategory()` / `getQuotesByCategory()` API
+
+### Sprint 24 — Currency 7-day Rate History
+
+- **`storeCurrencyHistory()`**: rolling 7-day IDB history per currency; `get7DayTrend()` returns `{ pct, arrow }` — `↑`/`↓`/`→` trend shown when no intra-session change
+
+### Sprint 25 — Calendar Days-Until Label
+
+- **`calDaysUntilLabel(date)`**: day headers in the agenda now show `"מחר"` (tomorrow) or `"עוד N ימים"` beside the date
+
+### Sprint 26 — Night Dimmer Idle Auto-Dim
+
+- **`setIdleAutoDimMinutes(n)`**: auto-activates dimmer after N minutes of mouse/keyboard inactivity; `resetIdleTimer()` deactivates on user activity; `nightDimIdleMinutes` config field added
+
+### Sprint 27 — News Reading-Time Badge
+
+- **`readingTimeMinutes(text)`**: wired into `renderNews()` — articles with a description show `~N דק׳` badge estimating reading time at 200 wpm
+
+### Sprint 28 — Alerts Threat Icons + Age Badge
+
+- **`alertThreatIcon(threat)`**: 🔴 rockets · 🟡 aircraft · 🟠 unknown; plus `alertAgeLabel(ageMin)` adds `"לפני Nד׳"` / `"לפני Nש׳"` to each alert row
+
+### Sprint 29 — System-Info JS Heap + GPU Tiles
+
+- **`formatHeapMb(used, limit)`** + **`gpuShortName(renderer)`**: two new sysinfo-tiles — `🧮 Heap JS` and `🎮 GPU` rendered via `performance.memory` and `WEBGL_debug_renderer_info`
+
+### Sprint 30 — Tasks Priority Emoji Icons
+
+- **`taskPriorityIcon(priority)`**: task priority badges upgraded from `!!`/`!`/`·` to `🔴`/`🟡`/`🔵` for better TV readability
+
+---
+
 ## [7.11.0] — 2026-06-12
 
 > **2332 tests / 55 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `b32f9d1`)

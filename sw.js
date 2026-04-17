@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.11.0
+/* FamilyDashBoard ServiceWorker — v7.12.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
  * F113: SW posts NETWORK_BACK message to clients on network recovery
@@ -24,12 +24,7 @@
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
 const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v7.10: APP_SHELL updated — BestDashBoard.html removed, index.html added
-const APP_SHELL = [
-  "./index.html",
-  "./manifest.json",
-  "./sw.js",
-  "./icon.svg",
-];
+const APP_SHELL = ["./index.html", "./manifest.json", "./sw.js", "./icon.svg"];
 
 // F162: API origins to cache for offline fallback (direct APIs + CORS proxies)
 const API_CACHE_ORIGINS = [
