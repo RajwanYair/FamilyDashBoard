@@ -360,3 +360,98 @@ describe("Worker response helpers — proxyResponse", () => {
     expect(res.status).toBe(503);
   });
 });
+
+// ── Worker — POST /api/errors handler ─────────────────────────────────────────
+
+import { handleErrors } from "../../../worker/src/routes/errors";
+
+describe("Worker — handleErrors route", () => {
+  function post(body: unknown): Request {
+    return new Request("https://worker.dev/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  }
+
+  it("returns 204 for a valid single error entry", async () => {
+    const req = post([{ ts: Date.now(), message: "test error" }]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(204);
+  });
+
+  it("returns 204 for multiple valid error entries", async () => {
+    const req = post([
+      { ts: Date.now(), message: "err1", source: "main.ts", lineno: 42 },
+      { ts: Date.now(), message: "err2" },
+    ]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(204);
+  });
+
+  it("returns 405 for GET request", async () => {
+    const req = new Request("https://worker.dev/api/errors", { method: "GET" });
+    const res = await handleErrors(req);
+    expect(res.status).toBe(405);
+  });
+
+  it("returns 400 for non-array body", async () => {
+    const req = post({ ts: Date.now(), message: "not an array" });
+    const res = await handleErrors(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for invalid JSON", async () => {
+    const req = new Request("https://worker.dev/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "not-json{{{",
+    });
+    const res = await handleErrors(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 413 when too many entries sent", async () => {
+    const entries = Array.from({ length: 21 }, (_, i) => ({ ts: i, message: `err${i}` }));
+    const req = post(entries);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(413);
+  });
+
+  it("returns 400 when all entries are invalid shape", async () => {
+    const req = post([{ bad: "entry" }, { also: "bad" }]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("accepts entries with optional source and lineno", async () => {
+    const req = post([{ ts: 1000000000000, message: "m", source: "file.ts", lineno: 10 }]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(204);
+  });
+
+  it("rejects entries where ts is not a number", async () => {
+    const req = post([{ ts: "2025-01-01", message: "bad ts" }]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects entries where message is missing", async () => {
+    const req = post([{ ts: Date.now() }]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("truncates messages longer than 500 characters", async () => {
+    const longMsg = "a".repeat(600);
+    const req = post([{ ts: Date.now(), message: longMsg }]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(204);
+  });
+
+  it("empty array returns 400 (no valid entries)", async () => {
+    const req = post([]);
+    const res = await handleErrors(req);
+    expect(res.status).toBe(400);
+  });
+});
