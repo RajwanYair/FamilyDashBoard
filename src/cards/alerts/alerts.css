@@ -50,6 +50,13 @@
     font-size: 0.7em;
     color: var(--warning);
   }
+  .alert-age {
+    font-size: 0.62em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
 } /* end @layer components */
 
 /* Sprint 11: Maximize — large alerts card layout */

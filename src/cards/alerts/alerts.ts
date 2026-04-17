@@ -173,6 +173,28 @@ async function fetchAlerts(): Promise<AlertEvent[]> {
 }
 
 // ── Build a single alert DOM element ──
+
+/**
+ * Sprint 28: Return a color-coded threat level indicator icon.
+ * threat=0/1 → 🔴 (rockets), threat=5 → 🟡 (hostile aircraft), unknown → 🟠
+ */
+export function alertThreatIcon(threat: number): string {
+  if (threat === 5) return "🟡";
+  if (threat <= 1) return "🔴";
+  return "🟠";
+}
+
+/**
+ * Sprint 28: Return a Hebrew relative-age string for an alert timestamp.
+ * `ageMin` is (now_unix - alert_unix) / 60.
+ */
+export function alertAgeLabel(ageMin: number): string {
+  if (ageMin < 1) return "עכשיו";
+  if (ageMin < 60) return `לפני ${ageMin}ד׳`;
+  const h = Math.floor(ageMin / 60);
+  return `לפני ${h}ש׳`;
+}
+
 export function buildAlertItem(
   ev: AlertEvent,
   now: number,
@@ -218,8 +240,15 @@ export function buildAlertItem(
 
   const thrEl = document.createElement("span");
   thrEl.className = "alert-threat";
-  thrEl.textContent = THREAT_LABELS[threat] ?? "⚠️ התרעה";
+  thrEl.textContent = `${alertThreatIcon(threat)} ${THREAT_LABELS[threat] ?? "⚠️ התרעה"}`;
   metaEl.appendChild(thrEl);
+
+  // Sprint 28: alert age label
+  const ageEl = document.createElement("span");
+  ageEl.className = "alert-age";
+  ageEl.textContent = alertAgeLabel(ageMin);
+  metaEl.appendChild(ageEl);
+
   div.appendChild(metaEl);
 
   return div;

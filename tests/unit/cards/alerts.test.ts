@@ -25,6 +25,8 @@ import {
   loadAlerts,
   cacheDom,
   initAlertsCard,
+  alertThreatIcon,
+  alertAgeLabel,
 } from "@/cards/alerts/alerts";
 import * as idleMod from "@/core/idle";
 import type { AlertEvent } from "@/types/api";
@@ -1398,5 +1400,64 @@ describe("Alerts — clearUnreadAlerts resets badge and document.title", () => {
     ra([ev], true);
     // Title should contain the unread count
     expect(document.title).toMatch(/\(\d+\)/);
+  });
+});
+
+// ── Sprint 28: alertThreatIcon + alertAgeLabel ─────────────────────────────
+
+describe("Alerts — alertThreatIcon (Sprint 28)", () => {
+  it("returns 🔴 for threat 0", () => {
+    expect(alertThreatIcon(0)).toBe("🔴");
+  });
+
+  it("returns 🔴 for threat 1", () => {
+    expect(alertThreatIcon(1)).toBe("🔴");
+  });
+
+  it("returns 🟡 for threat 5 (hostile aircraft)", () => {
+    expect(alertThreatIcon(5)).toBe("🟡");
+  });
+
+  it("returns 🟠 for unknown threat levels", () => {
+    expect(alertThreatIcon(3)).toBe("🟠");
+    expect(alertThreatIcon(99)).toBe("🟠");
+  });
+});
+
+describe("Alerts — alertAgeLabel (Sprint 28)", () => {
+  it("returns 'עכשיו' for age < 1 minute", () => {
+    expect(alertAgeLabel(0)).toBe("עכשיו");
+  });
+
+  it("returns 'לפני Nד׳' for minutes < 60", () => {
+    expect(alertAgeLabel(5)).toBe("לפני 5ד׳");
+    expect(alertAgeLabel(59)).toBe("לפני 59ד׳");
+  });
+
+  it("returns 'לפני Nש׳' for hours >= 1", () => {
+    expect(alertAgeLabel(60)).toBe("לפני 1ש׳");
+    expect(alertAgeLabel(120)).toBe("לפני 2ש׳");
+  });
+});
+
+describe("Alerts — buildAlertItem Sprint 28: threat icon + age badge", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("includes threat icon in the threat span text", () => {
+    const now = Date.now() / 1000;
+    const ev: AlertEvent = { id: "t28a", alerts: [{ cities: ["תל אביב"], threat: 0, time: now - 30 }] };
+    const el = buildAlertItem(ev, now, false, false);
+    expect(el).not.toBeNull();
+    const thrEl = el!.querySelector(".alert-threat");
+    expect(thrEl?.textContent).toMatch(/🔴/);
+  });
+
+  it("includes .alert-age span", () => {
+    const now = Date.now() / 1000;
+    const ev: AlertEvent = { id: "t28b", alerts: [{ cities: ["חיפה"], threat: 1, time: now - 300 }] };
+    const el = buildAlertItem(ev, now, false, false);
+    expect(el!.querySelector(".alert-age")).not.toBeNull();
   });
 });
