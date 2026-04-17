@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v7.7)
+# FamilyDashBoard — Architecture (v7.10)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -11,7 +11,7 @@
 | -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
 | Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2182+ tests / 51 suites       |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2264+ tests / 53 suites       |
 | Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
 | API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
 | Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
@@ -32,8 +32,11 @@ src/
 │   └── card.ts                 # CardDefinition, CardSlot, CardRegistryEntry (v7)
 ├── core/
 │   ├── constants.ts            # URLs, symbols, intervals, WORKER_BASE_URL
-│   ├── cache.ts                # cGet/cSet/cGetStale — in-memory Map + localStorage (dash_v2_*)
-│   ├── fetch.ts                # fetchWithTimeout · proxy chain · fetchViaWorker · fetchWithRetry (backoff) · network state tracker
+│   ├── cache.ts                # cGet/cSet/cGetStale/cGetAsync/cGetStaleAsync — in-memory Map + localStorage (dash_v2_*)
+│   ├── idb-cache.ts            # IDB L3 tier — idbGet/Set/Del/Clear/Keys/GetEntry/EstimateSize/EvictLRU (50 MB LRU cap)
+│   ├── fetch.ts                # fetchWithTimeout · proxy chain · __USE_PROXIES__ gate · fetchViaWorker · fetchWithRetry (backoff) · network state tracker
+│   ├── state.ts                # EventTarget-based reactive pub/sub store — state.get/set/on/off/seedConfig/snapshot
+│   ├── error-reporter.ts       # Debounced client error batching → POST /api/errors (best-effort telemetry)
 │   ├── card-registry.ts        # Map-based card registry, lazy dynamic import() (v7)
 │   ├── diag.ts                 # diagLog() + diagnostic overlay
 │   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize() (v7.4)
@@ -98,7 +101,8 @@ src/
 │   ├── index.ts                # Worker entry + router
 │   ├── routes/
 │   │   ├── data.ts             # weather · currency · hebcal · hebcal/holidays
-│   │   └── feeds.ts            # stocks · news · alerts · calendar · sefaria
+│   │   ├── feeds.ts            # stocks · news · alerts · calendar · sefaria
+│   │   └── errors.ts           # POST /api/errors — client error ingestion (best-effort telemetry)
 │   ├── utils/
 │   │   ├── response.ts         # jsonResponse() · proxyResponse() · CORS_HEADERS
 │   │   └── allowlists.ts       # ALLOWED_NEWS_ORIGINS · ALLOWED_CALENDAR_ORIGINS
@@ -106,9 +110,10 @@ src/
 ├── wrangler.toml
 └── package.json
 tests/unit/
-├── core/                       # cache · fetch · config · constants · diag · sync · sw
+├── core/                       # cache · fetch · config · constants · diag · sync · sw · state · idb-cache · error-reporter
 ├── cards/                      # all 11 card modules
 ├── ui/                         # theme · header · keyboard · maximize · night-dimmer …
+├── worker/                     # cors · rate-limit · validation · allowlists · response · errors routes
 └── html/dom-contract.test.ts   # Element ID existence contract tests
 ```
 
@@ -128,6 +133,7 @@ Fetch chain (per request):
                  → miss: fetchViaWorker (Cloudflare, v7.5) ← Worker-first path
                        → fallback: fetchWithRetry(url)   ← exponential backoff (v7.4)
                            → inner chain: fetchWithTimeout(direct)
+                           → __USE_PROXIES__ gate (v7.10: false in production)
                            → fallback: allorigins proxy
                            → fallback: codetabs proxy
                            → fallback: corsproxy.io
@@ -137,7 +143,8 @@ Fetch chain (per request):
 Cache layers:
   L1: in-memory Map (process lifetime)
   L2: localStorage (dash_v2_*, 7-day eviction)
-  L3: Service Worker cache (API endpoints, stale-while-revalidate)
+  L3: IndexedDB (async, ≤ 50 MB LRU cap via idbEvictLRU, v7.10)
+  L4: Service Worker cache (API endpoints, stale-while-revalidate)
 ```
 
 ## CSS Architecture (v7.7)
@@ -188,8 +195,10 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 8. **0 ESLint errors/warnings** enforced on every commit (CI gate)
 9. **0 TypeScript errors** enforced (`tsc --noEmit` in CI)
 10. **No `eslint-disable` / `@ts-ignore` suppressions** — violations must be fixed
-11. **Config validated on load** — `migrateConfig()` + `sanitize()` via type guards (v7.4)
+11. **Config validated on load** — `migrateConfig()` + `sanitize()` via type guards (v7.4); v4 schema namespaces per-card settings under `cards: Record<string, CardConfig>` (v7.10)
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
-14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5)
-15. **2182 tests / 51 suites / 0 failures** — coverage thresholds: 75% statements, 70% branches, 75% functions, 75% lines (v7.4)
+14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
+15. **2264 tests / 53 suites / 0 failures** — coverage thresholds: 89% statements, 80% branches, 89% functions, 90% lines (v7.10)
+16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
+17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
