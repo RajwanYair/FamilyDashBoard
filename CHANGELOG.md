@@ -5,6 +5,60 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.10.0] — 2026-04-17
+
+> **2264 tests / 53 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `02144fa`)
+
+### Sprint 1 — SW Cleanup + IDB Async Tier
+
+- **`sw.js`**: APP_SHELL now caches `./index.html` (was `BestDashBoard.html`); header bumped to v7.10.0
+- **`manifest.json`**: `start_url` and shortcut URL corrected to `./index.html`
+- **`src/core/cache.ts`**: `cGetAsync<T>` and `cGetStaleAsync<T>` — async IDB L2 cache read helpers
+- **`src/main.ts`**: Card init order reordered by priority (weather/news/alerts first, motivation/sysinfo last)
+- **`diagLog()`** calls: FDB-001..FDB-022 structured error codes across main.ts, fetch.ts, alerts.ts
+
+### Sprint 2 — Coverage Thresholds
+
+- **`vitest.config.ts`**: Thresholds raised from 75/70/75/75 → 89/80/89/90
+- **`tests/unit/core/cache.test.ts`**: +16 tests for `cGetAsync` and `cGetStaleAsync`
+
+### Sprint 3 — Reactive State Store
+
+- **`src/core/state.ts`** (new): EventTarget-based pub/sub state store — `state.get/set/on/off/seedConfig/snapshot`; `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV builds
+- **`tests/unit/core/state.test.ts`** (new): 17 tests
+
+### Sprint 4 — Production Build Flag + Dynamic Import Cleanup
+
+- **`vite.config.ts`**: Callback form — `__USE_PROXIES__ = false` in production (GitHub Pages); `true` in dev/local
+- **`src/core/fetch.ts`**: `__USE_PROXIES__` gate before proxy chain; static imports of `cGet/cSet/cGetStale` (removed dynamic `await import`)
+- **`src/core/cache.ts`**: Static import of `idbDel` (removed dynamic import from `cEvictIdb`)
+
+### Sprints 5+6 — Worker CI Gate + IDB LRU Eviction
+
+- **`.github/workflows/ci.yml`**: `worker-tests` job gates `build` on worker test suite passing
+- **`src/core/idb-cache.ts`**: `idbEstimateSize()` (StorageManager API), `idbEvictLRU(maxBytes)` (LRU eviction), `IDB_MAX_BYTES = 50 MB`
+- **`src/ui/diag-overlay.ts`**: IDB storage size shown async in diagnostics panel; fixed vitals HTML ordering bug
+- **`tests/unit/core/idb-cache.test.ts`**: +16 new tests for size/eviction functions
+
+### Sprint 7 — Config v4 Namespaced Per-Card Settings
+
+- **`src/types/config.ts`**: `CardConfig` interface (`size?`, `settings?: Record<string, boolean|number|string>`); `cards: Record<string, CardConfig>` on `DashboardConfig`; `CONFIG_VERSION` 3→4
+- **`src/core/config.ts`**: v3→v4 migration populates `cards.weather/news/stocks/tasks/system-info` from flat per-card props
+- **`tests/unit/core/config.test.ts`**: Updated v3 assertions to v4; +11 new v4 migration tests
+
+### Sprint 8 — Error Reporter + Worker POST /api/errors
+
+- **`src/core/error-reporter.ts`** (new): `reportErrors()` batches + debounces (5 s) → POST /api/errors; `flushErrorReport()` for immediate flush on page unload
+- **`worker/src/routes/errors.ts`** (new): `POST /api/errors` validates payload (max 20, 500-char messages), logs to CF console, returns 204
+- **`worker/src/utils/response.ts`**: Added POST to CORS Allow-Methods
+- **`worker/src/index.ts`**: Wired POST /api/errors route
+- **`tests/unit/worker/worker.test.ts`**: +12 tests for errors handler (51→63)
+- **`tests/unit/core/error-reporter.test.ts`** (new): 22 tests
+
+### Sprint 9 — ARCHITECTURE.md v7.10
+
+- Updated version header, test counts (2264/53), cache tiers (L3 IDB + L4 SW), new core files, fetch chain __USE_PROXIES__ note, Worker errors route, test directories, and invariants (#16 state, #17 telemetry)
+
 ## [7.9.0] — 2025-06-15
 
 > **2182 tests / 51 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `d2ef433`)
