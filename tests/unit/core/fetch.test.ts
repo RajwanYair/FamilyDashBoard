@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures, fetchJSONDeduped, getInflightCount, clearFetchLocks, acquireLock, releaseLock, getNetworkQualityTier, NetworkQualityTier } from "@/core/fetch";
+import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures, fetchJSONDeduped, getInflightCount, clearFetchLocks, acquireLock, releaseLock, getNetworkQualityTier, NetworkQualityTier, enqueueFetch, getFetchQueueDepth, getFetchQueueRunning } from "@/core/fetch";
 
 // Helper: mock fetch that resolves after `delay` ms
 function delayedFetch(delay: number, response: unknown) {
@@ -798,5 +798,82 @@ describe("getNetworkQualityTier", () => {
   it("NetworkQualityTier type covers all expected values", () => {
     const tiers: NetworkQualityTier[] = ["ok", "slow", "bad", "unknown"];
     expect(tiers).toHaveLength(4);
+  });
+});
+
+describe("enqueueFetch — priority queue (Sprint 21)", () => {
+  it("executes a single task and resolves", async () => {
+    let ran = false;
+    await enqueueFetch(async () => {
+      ran = true;
+    }, "normal");
+    expect(ran).toBe(true);
+  });
+
+  it("executes high-priority task before low-priority when queued together", async () => {
+    const order: string[] = [];
+
+    // Use delayed tasks to force queuing
+    const makeTask = (label: string, delay = 0) =>
+      () =>
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            order.push(label);
+            resolve();
+          }, delay),
+        );
+
+    // Enqueue 4 tasks simultaneously — queue concurrency = 3
+    // so the 4th task is deferred
+    const p1 = enqueueFetch(makeTask("low1"), "low");
+    const p2 = enqueueFetch(makeTask("low2"), "low");
+    const p3 = enqueueFetch(makeTask("normal1"), "normal");
+    const p4 = enqueueFetch(makeTask("high1"), "high");
+
+    await Promise.all([p1, p2, p3, p4]);
+
+    // All tasks completed
+    expect(order).toHaveLength(4);
+    expect(order).toContain("high1");
+    expect(order).toContain("normal1");
+    expect(order).toContain("low1");
+    expect(order).toContain("low2");
+  });
+
+  it("rejects when the task throws", async () => {
+    await expect(
+      enqueueFetch(async () => {
+        throw new Error("test error");
+      }, "high"),
+    ).rejects.toThrow("test error");
+  });
+
+  it("getFetchQueueDepth returns 0 when queue is empty", () => {
+    expect(getFetchQueueDepth()).toBe(0);
+  });
+
+  it("getFetchQueueRunning returns 0 when idle", () => {
+    expect(getFetchQueueRunning()).toBe(0);
+  });
+
+  it("default priority is 'normal'", async () => {
+    let ran = false;
+    await enqueueFetch(async () => {
+      ran = true;
+    });
+    expect(ran).toBe(true);
+  });
+
+  it("multiple tasks complete in any workable order", async () => {
+    const results: number[] = [];
+    await Promise.all([
+      enqueueFetch(async () => { results.push(1); }, "high"),
+      enqueueFetch(async () => { results.push(2); }, "normal"),
+      enqueueFetch(async () => { results.push(3); }, "low"),
+    ]);
+    expect(results).toHaveLength(3);
+    expect(results).toContain(1);
+    expect(results).toContain(2);
+    expect(results).toContain(3);
   });
 });

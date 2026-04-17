@@ -193,6 +193,85 @@ export async function raceProxies(
   return Promise.any(attempts);
 }
 
+// ── Priority fetch queue ──────────────────────────────────────────────────────
+
+/**
+ * Priority levels for the fetch queue.
+ * "high"   → weather, news, alerts   (first 3 slots)
+ * "normal" → stocks, currency, calendar
+ * "low"    → motivation, system-info, countdown, tasks
+ */
+export type FetchPriority = "high" | "normal" | "low";
+
+const _PRIORITY_ORDER: Record<FetchPriority, number> = {
+  high: 0,
+  normal: 1,
+  low: 2,
+};
+
+const _QUEUE_CONCURRENCY = 3;
+
+interface _FetchQueueEntry {
+  fn: () => Promise<void>;
+  priority: FetchPriority;
+  resolve: () => void;
+  reject: (err: unknown) => void;
+}
+
+const _fetchQueue: _FetchQueueEntry[] = [];
+let _queueRunning = 0;
+
+function _drainFetchQueue(): void {
+  while (_queueRunning < _QUEUE_CONCURRENCY && _fetchQueue.length > 0) {
+    _fetchQueue.sort(
+      (a, b) => _PRIORITY_ORDER[a.priority] - _PRIORITY_ORDER[b.priority],
+    );
+    const entry = _fetchQueue.shift();
+    if (!entry) break;
+    _queueRunning++;
+    entry
+      .fn()
+      .then(() => {
+        entry.resolve();
+      })
+      .catch((err: unknown) => {
+        entry.reject(err);
+      })
+      .finally(() => {
+        _queueRunning--;
+        _drainFetchQueue();
+      });
+  }
+}
+
+/**
+ * Enqueue a fetch task with a priority level.
+ * Tasks are executed in priority order (high → normal → low) with a
+ * concurrency cap of `_QUEUE_CONCURRENCY` simultaneous tasks.
+ *
+ * @example
+ *   await enqueueFetch(() => loadWeather(), 'high');
+ */
+export function enqueueFetch(
+  fn: () => Promise<void>,
+  priority: FetchPriority = "normal",
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    _fetchQueue.push({ fn, priority, resolve, reject });
+    _drainFetchQueue();
+  });
+}
+
+/** Returns the number of tasks currently waiting in the priority queue. */
+export function getFetchQueueDepth(): number {
+  return _fetchQueue.length;
+}
+
+/** Returns the number of tasks currently executing from the priority queue. */
+export function getFetchQueueRunning(): number {
+  return _queueRunning;
+}
+
 /**
  * Run tasks with CPU-aware concurrency limit.
  */
