@@ -43,7 +43,8 @@
 | v7.7      | ✅ Released | 2027 Vitest / 47 suites    | Runtime API type guards, weather UX, countdown urgency, tasks priority/due-date, stocks sector emoji, hebrew-cal utils, core utils (debounce/throttle/clamp) |
 | v7.8      | ✅ Released | 2056 Vitest / 47 suites    | Architecture doc update, CSS co-location for UI, config v2 schema, fetch resilience (dedup/network quality), ARIA accessibility, night dim schedule |
 | **v7.9**  | ✅ Released | **2182 Vitest / 51 suites** | Error tracking, web vitals, config v3 per-card settings, IndexedDB cache tier, SW TypeScript types, ARIA tab keyboard nav, weather hourly strip, tasks enhancements, news/stocks enhancements |
-| **v7.10** | ✅ Released | **2287 Vitest / 54 suites** | IDB LRU eviction (50 MB cap), ReactiveState store, Config v4 namespaced per-card CardConfig, Worker POST /api/errors, error-reporter.ts, __USE_PROXIES__ production gate, hardware-adaptive GPU/CPU tier CSS |
+| **v7.10** | ✅ Released | **2287 Vitest / 54 suites** | IDB LRU eviction (50 MB cap), ReactiveState store, Config v4 namespaced per-card CardConfig, Worker POST /api/errors, error-reporter.ts, `__USE_PROXIES__` production gate, hardware-adaptive GPU/CPU tier CSS |
+| **v7.11** | ✅ Released | **2332 Vitest / 55 suites** | Config panel 860px 2-col, maximize container queries (11 cards), coverage 90/81/90/92, state→config wiring, FDB error codes 023-061, startup waterfall INIT metric, per-card config accordion, FdbCard Web Component base class, 4 new API type guards |
 
 ---
 
@@ -529,4 +530,4 @@ Key architectural decisions and their rationale, for future reference.
 
 ---
 
-<!-- Last updated: v7.10.0 — April 2026 -->
+<!-- Last updated: v7.11.0 — June 2026 -->

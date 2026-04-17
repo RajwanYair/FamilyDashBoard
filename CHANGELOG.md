@@ -5,6 +5,47 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.11.0] — 2026-06-12
+
+> **2332 tests / 55 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `b32f9d1`)
+
+### Sprint 10–11 — Config Panel & Maximize Layout
+
+- **Config panel width**: `max-width` raised from 420 px → `min(94vw, 860px)`; 2-column CSS grid for all tabs; input fields widened to 180 px; `max-height` 80 vh → 88 vh
+- **Maximize container queries**: all 11 cards gain `@container card (min-width: 900px)` rules that enlarge internal tiles when a card is maximized (weather, currency, stocks, countdown, motivation, news, tasks, alerts, hebrew-cal, calendar, system-info)
+
+### Sprint 12–14 — Coverage, State & Reactivity
+
+- **Coverage thresholds** raised to 90 / 81 / 90 / 92 (statements / branches / functions / lines) in `vitest.config.ts`
+- **State store wired to config**: `saveConfig()` and `dispatchConfigChange()` now call `state.seedConfig(config)` so UI subscriptions stay in sync without full reloads
+- **Weather reactive subscription**: `initWeatherCard()` subscribes `state.on('config.tempUnit', ...)` to re-render on °C/°F toggle without a manual save-and-reload
+
+### Sprint 15 — Structured Error Codes
+
+- **FDB-023 → FDB-057**: `diagLog()` calls in all 11 card `.ts` files now carry structured error codes — enables faster triage in the diagnostic overlay (`D` key)
+
+### Sprint 16 — Startup Waterfall Timing
+
+- **`perf.ts`**: `markDomReady()` / `markStartupComplete()` added; `PerfVitals.startup` field (ms) tracks DOMContentLoaded → last card init waterfall; rated good ≤ 3 000 ms
+- **Diag overlay**: new **INIT** metric row appears when `D` key is pressed (FDB-058)
+
+### Sprint 17 — Per-Card Config Accordion
+
+- **Config panel Cards tab**: per-card settings moved from Display tab into `<details>` collapsible accordion groups per card (weather / news / stocks / tasks / system-info); 6 previously config-only settings now have UI: `weatherShowDetails`, `newsMaxItems`, `stocksShowPortfolio`, `tasksShowDone`, `tasksShowCategories`, `sysInfoShowRtt`
+
+### Sprint 18 — FdbCard Web Component Base Class
+
+- **`src/core/fdb-card.ts`** (new): `FdbCard extends HTMLElement` — vanilla Web Component base with `connectedCallback`, `disconnectedCallback`, `attributeChangedCallback`, `scheduleRefresh()`, `setLoading()`, `setError()`, `cardId`/`cardSize` getters; zero Shadow DOM (uses global CSS); foundation for v8.0 card migration
+- **`tests/unit/core/fdb-card.test.ts`** (new): 13 tests covering all lifecycle methods and helpers
+
+### Sprint 19 — Enhanced API Type Guards
+
+- **4 new guards** in `src/types/api.ts`: `isYahooChartResponse`, `isHebcalResponse`, `isCoinGeckoResponse`, `isCalendarEvent`
+- **Strengthened guards**: `isNewsItem` now requires `pubDate` string; `isCurrencyResponse` now requires `time_last_update_utc` string
+- **59 tests** in `tests/unit/core/api-validators.test.ts` (was 40)
+
+---
+
 ## [7.10.0] — 2026-04-17
 
 > **2287 tests / 54 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `2572344`)
@@ -65,7 +106,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ### Sprint 9 — ARCHITECTURE.md v7.10
 
-- Updated version header, test counts (2264/53), cache tiers (L3 IDB + L4 SW), new core files, fetch chain __USE_PROXIES__ note, Worker errors route, test directories, and invariants (#16 state, #17 telemetry)
+- Updated version header, test counts (2264/53), cache tiers (L3 IDB + L4 SW), new core files, fetch chain `__USE_PROXIES__` note, Worker errors route, test directories, and invariants (#16 state, #17 telemetry)
 
 ## [7.9.0] — 2025-06-15
 

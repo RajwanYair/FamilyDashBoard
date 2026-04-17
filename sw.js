@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.10.0
+/* FamilyDashBoard ServiceWorker — v7.11.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
  * F113: SW posts NETWORK_BACK message to clients on network recovery
@@ -18,7 +18,8 @@
  * v7.2.0: F5 CLEAR_API_CACHE handler, precipitation chip, alert volume, warm tint, reset-all, cache-age chip, tasks quick-add, countdown 2nd event, news filter chips, L-key warm tint
  * v7.7.0: 50-sprint session — type guards, weather UX, countdown, tasks, news, stocks, Hebrew cal, runtime API guards
  * v7.8.0: Sprint 31–38 — ARIA a11y, CSS co-location, config v2, fetch dedup+quality tier, night dim schedule, cache diag
- * v7.10.0: v7.10 quality gate — APP_SHELL updated (index.html replaces BestDashBoard.html), IDB L2 cache, priority init */
+ * v7.10.0: v7.10 quality gate — APP_SHELL updated (index.html replaces BestDashBoard.html), IDB L2 cache, priority init
+ * v7.11.0: Sprint 10-19 — wider config panel, maximize container queries (11 cards), coverage 90/81/90/92, state→config wiring, FDB error codes 023-061, startup waterfall timing, per-card config accordion, FdbCard base class, 4 new API type guards */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
 const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🤖 Agents — FamilyDashBoard v7.10.0
+# 🤖 Agents — FamilyDashBoard v7.11.0
 
 ![Copilot](https://img.shields.io/badge/GitHub_Copilot-Agents-8b5cf6?style=flat-square&logo=github&logoColor=white)
 ![Modes](https://img.shields.io/badge/Copilot_Modes-5-60a5fa?style=flat-square)
