@@ -11,6 +11,7 @@ import {
   renderCalendar,
   cacheDom,
   initCalendarCard,
+  calDaysUntilLabel,
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
@@ -1197,5 +1198,51 @@ describe("Calendar — loadCalendar outer catch when syncBurst throws (lines 482
     await new Promise<void>((r) => setTimeout(r, 100));
     // No unhandled rejection — outer catch consumed the error
     expect(true).toBe(true);
+  });
+});
+
+// ── Sprint 25: calDaysUntilLabel ─────────────────────────────────────────────
+
+describe("Calendar — calDaysUntilLabel (Sprint 25)", () => {
+  it("returns '' for today", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    const today = new Date("2024-06-10T08:00:00");
+    expect(calDaysUntilLabel(today, now)).toBe("");
+  });
+
+  it("returns 'מחר' for tomorrow", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    const tomorrow = new Date("2024-06-11T09:00:00");
+    expect(calDaysUntilLabel(tomorrow, now)).toBe("מחר");
+  });
+
+  it("returns 'עוד 2 ימים' for 2 days ahead", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    const d = new Date("2024-06-12T09:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("עוד 2 ימים");
+  });
+
+  it("returns 'עוד 7 ימים' for 7 days ahead", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    const d = new Date("2024-06-17T09:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("עוד 7 ימים");
+  });
+
+  it("returns 'עוד 21 ימים' for 21 days ahead", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    const d = new Date("2024-07-01T09:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("עוד 21 ימים");
+  });
+
+  it("returns '' for yesterday (past date)", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    const yesterday = new Date("2024-06-09T09:00:00");
+    expect(calDaysUntilLabel(yesterday, now)).toBe("");
+  });
+
+  it("uses current date when now is not provided", () => {
+    const futureDate = new Date(Date.now() + 2 * 86_400_000 + 3600_000);
+    const result = calDaysUntilLabel(futureDate);
+    expect(result).toMatch(/^עוד \d+ ימים$|^מחר$/);
   });
 });

@@ -148,6 +148,20 @@ export function detectCalCategory(summary: string): string {
   return "default";
 }
 
+/**
+ * Sprint 25: Return a short Hebrew label for how many days until `date`.
+ * Returns "" when `date` is today, "מחר" for tomorrow, "עוד N ימים" otherwise.
+ * Returns "" for past dates (should not appear in agenda, but defensive).
+ */
+export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dateMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diffDays = Math.round((dateMidnight.getTime() - todayMidnight.getTime()) / 86_400_000);
+  if (diffDays <= 0) return "";
+  if (diffDays === 1) return "מחר";
+  return `עוד ${diffDays} ימים`;
+}
+
 // ── Rendering ──
 
 function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
@@ -368,7 +382,10 @@ export function renderCalendar(events: CalendarEvent[]): number {
           month: "long",
           timeZone: "Asia/Jerusalem",
         });
-        hdr.textContent = `${dayHe} · ${dateFmt}`;
+        const daysUntil = calDaysUntilLabel(ev.start, now);
+        hdr.textContent = daysUntil
+          ? `${dayHe} · ${dateFmt} · ${daysUntil}`
+          : `${dayHe} · ${dateFmt}`;
         frag.appendChild(hdr);
       }
       frag.appendChild(renderCalEvent(ev, conflictSet.has(ev)));
