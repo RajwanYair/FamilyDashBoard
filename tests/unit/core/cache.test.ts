@@ -14,6 +14,8 @@ import {
   resetCacheStats,
   hydrateFromIdb,
   migrateLocalStorageToIdb,
+  cGetAsync,
+  cGetStaleAsync,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -428,5 +430,90 @@ describe("migrateLocalStorageToIdb", () => {
   it("does not throw when localStorage has corrupt entries", async () => {
     localStorage.setItem("dash_v2_bad-json", "{{invalid");
     await expect(migrateLocalStorageToIdb()).resolves.toBeGreaterThanOrEqual(0);
+  });
+});
+
+// ── v7.10: cGetAsync / cGetStaleAsync (IDB L2 tier) ──────────────────────────
+
+describe("cGetAsync — IDB L2 tier (v7.10)", () => {
+  beforeEach(() => { cClear(); resetCacheStats(); });
+  afterEach(() => { cClear(); });
+
+  it("returns data from memory (L1) without hitting IDB", async () => {
+    cSet("async-mem", { v: 1 });
+    const result = await cGetAsync<{ v: number }>("async-mem", 60_000);
+    expect(result).toEqual({ v: 1 });
+  });
+
+  it("returns null for completely missing key", async () => {
+    const result = await cGetAsync("async-none", 60_000);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when TTL is 0 (expired)", async () => {
+    cSet("async-ttl", "data");
+    const result = await cGetAsync("async-ttl", 0);
+    expect(result).toBeNull();
+  });
+
+  it("falls through to localStorage when not in memory or IDB", async () => {
+    const ts = Date.now();
+    localStorage.setItem("dash_v2_async-ls", JSON.stringify({ data: "ls-data", ts }));
+    const result = await cGetAsync<string>("async-ls", 60_000);
+    expect(result).toBe("ls-data");
+  });
+
+  it("returns null for corrupted LS entry", async () => {
+    localStorage.setItem("dash_v2_async-corrupt", "{{bad");
+    const result = await cGetAsync("async-corrupt", 60_000);
+    expect(result).toBeNull();
+  });
+
+  it("increments hit counter on memory hit", async () => {
+    cSet("stat-key", 42);
+    await cGetAsync("stat-key", 60_000);
+    const stats = cacheStats();
+    expect(stats.hits).toBe(1);
+  });
+
+  it("increments miss counter on full miss", async () => {
+    await cGetAsync("stat-miss", 60_000);
+    const stats = cacheStats();
+    expect(stats.misses).toBe(1);
+  });
+
+  it("handles array values", async () => {
+    cSet("async-arr", [1, 2, 3]);
+    const result = await cGetAsync<number[]>("async-arr", 60_000);
+    expect(result).toEqual([1, 2, 3]);
+  });
+});
+
+describe("cGetStaleAsync — IDB L2 stale tier (v7.10)", () => {
+  beforeEach(() => { cClear(); });
+  afterEach(() => { cClear(); });
+
+  it("returns stale data from memory regardless of age", async () => {
+    cSet("stale-async-mem", { old: true });
+    const result = await cGetStaleAsync<{ old: boolean }>("stale-async-mem");
+    expect(result).toEqual({ old: true });
+  });
+
+  it("returns null when key never set", async () => {
+    const result = await cGetStaleAsync("stale-async-none");
+    expect(result).toBeNull();
+  });
+
+  it("returns stale data from localStorage when not in memory", async () => {
+    const ts = Date.now() - 999_999_999; // ancient, past any TTL
+    localStorage.setItem("dash_v2_stale-test", JSON.stringify({ data: "ancient", ts }));
+    const result = await cGetStaleAsync<string>("stale-test");
+    expect(result).toBe("ancient");
+  });
+
+  it("handles corrupt LS entry gracefully", async () => {
+    localStorage.setItem("dash_v2_stale-corrupt", "{{bad");
+    const result = await cGetStaleAsync("stale-corrupt");
+    expect(result).toBeNull();
   });
 });
