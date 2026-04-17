@@ -167,4 +167,51 @@ export abstract class FdbCard extends HTMLElement {
   onError(err: Error): void {
     this.setError(err.message);
   }
+
+  // ── Render Helpers (Sprint 54+55) ───────────────────────────────────────── 
+
+  /**
+   * Replace the card's content with a DocumentFragment built from the provided
+   * child nodes or strings (Sprint 54).
+   *
+   * Prefers appending DOM nodes (safe). Passing a plain string sets
+   * `textContent` on a `<p>` wrapper — NEVER use for unsanitized HTML.
+   *
+   * @param target - Element to update (defaults to `this`)
+   * @param nodes  - One or more Node or string values
+   */
+  renderNodes(target: Element, ...nodes: Array<Node | string>): void {
+    target.textContent = "";
+    const frag = document.createDocumentFragment();
+    for (const n of nodes) {
+      if (typeof n === "string") {
+        const p = document.createElement("span");
+        p.textContent = n;
+        frag.appendChild(p);
+      } else {
+        frag.appendChild(n);
+      }
+    }
+    target.appendChild(frag);
+  }
+
+  /**
+   * Run an async data-loading function with automatic loading-state management
+   * (Sprint 55).
+   *
+   * Sets `aria-busy="true"` before calling `fn`, and clears it when `fn`
+   * resolves or rejects. On rejection, delegates to `onError`.
+   *
+   * @param fn - Async loader to execute
+   */
+  async withLoading(fn: () => Promise<void>): Promise<void> {
+    this.setLoading(true);
+    try {
+      await fn();
+    } catch (err) {
+      this.onError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      this.setLoading(false);
+    }
+  }
 }

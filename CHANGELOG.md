@@ -5,6 +5,52 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.15.0] — 2026-06-22
+
+> **2534 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint 51 — Skeleton Primitive
+
+- **`src/cards/base-card.ts`**: `createSkeleton(lines?)` — builds a `<div class="card-skeleton">` with N animated shimmer lines for initial-load placeholder state
+
+### Sprint 52 — Empty-State Primitive
+
+- **`src/cards/base-card.ts`**: `createEmptyState(message)` — builds a `<div class="card-empty">` with icon + safely-escaped message for no-data states (empty feeds, empty task lists, etc.)
+
+### Sprint 53 — Error-State Primitive
+
+- **`src/cards/base-card.ts`**: `createErrorState(message)` — builds a `<div class="card-error" role="alert">` with icon + sanitized message for unrecoverable card failures
+
+### Sprint 54 — FdbCard.renderNodes Helper
+
+- **`src/core/fdb-card.ts`**: `renderNodes(target, ...nodes)` — safely replaces `target` content with a DocumentFragment of Node or string values; strings become `<span textContent>` — no raw innerHTML
+
+### Sprint 55 — FdbCard.withLoading Helper
+
+- **`src/core/fdb-card.ts`**: `withLoading(fn)` — runs async loader with auto `aria-busy` management; delegates errors to `onError`; guarantees loading cleared on both resolve and reject
+
+### Sprint 56 — CardShell Interface
+
+- **`src/types/card.ts`**: `CardShell` interface — describes the minimal DOM anatomy required by every rendered card (`root`, `body`, optional `header`/`footer`)
+
+### Sprint 57 — Night Dimmer Weekday Schedule
+
+- **`src/ui/night-dimmer.ts`**: `autoDimCheckWeekday(startHour, endHour, weekdays?)` — extends schedule support with optional `weekdays[]` restriction (0=Sun…6=Sat); ensures dimmer turns off on non-scheduled days
+
+### Sprint 58 — Config Panel Accordion Grouping Infra
+
+- **`src/types/card.ts`**: `CardConfigField.group?: string` + `groupOpenByDefault?: boolean` — metadata for config panel accordion auto-generation; ungrouped fields render flat
+
+### Sprint 59 — cOr: Null-Coalescing Cache Read
+
+- **`src/core/cache.ts`**: `cOr<T>(key, ttl, fallback)` — returns cached value or calls `fallback()` and stores result; eliminates `cGet(...) ?? computeDefault()` + manual `cSet(...)` boilerplate
+
+### Sprint 60 — Provider Error Classification (FDB-062)
+
+- **`src/core/diag.ts`**: `ProviderErrorKind` union + `classifyProviderError(err, providerId)` — normalizes caught errors into `"network"` / `"parse"` / `"timeout"` / `"upstream"` / `"unknown"` and emits FDB-062 log entry
+
+---
+
 ## [7.14.0] — 2026-06-22
 
 > **2503 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

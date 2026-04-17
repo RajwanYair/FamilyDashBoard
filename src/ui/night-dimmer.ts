@@ -94,6 +94,35 @@ export function autoDimCheck(startHour: number, endHour: number): void {
   }
 }
 
+/**
+ * Check whether the current time falls within the dimming window,
+ * optionally limited to specific weekdays (Sprint 57).
+ *
+ * @param startHour  - Hour to start dimming (0–23)
+ * @param endHour    - Hour to end dimming (0–23)
+ * @param weekdays   - Array of JS weekday numbers (0=Sun…6=Sat) to restrict dimming.
+ *                     Empty or undefined means all days.
+ */
+export function autoDimCheckWeekday(
+  startHour: number,
+  endHour: number,
+  weekdays?: number[],
+): void {
+  if (weekdays && weekdays.length > 0) {
+    const today = new Date().getDay();
+    if (!weekdays.includes(today)) {
+      // Not a scheduled day — ensure dimmer is off
+      if (dimActive) {
+        dimActive = false;
+        applyDim();
+        updateDimIndicator();
+      }
+      return;
+    }
+  }
+  autoDimCheck(startHour, endHour);
+}
+
 export function isDimActive(): boolean {
   return dimActive;
 }

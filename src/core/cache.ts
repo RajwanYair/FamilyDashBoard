@@ -348,6 +348,26 @@ export async function cEvictIdb(): Promise<number> {
 }
 
 /**
+ * Null-coalescing cache read (Sprint 59).
+ *
+ * Returns the fresh cache value if available; otherwise calls `fallback()`
+ * and stores its result before returning it. Useful for synchronous
+ * getters that have a cheap default factory.
+ *
+ * @param key      - Cache key
+ * @param ttl      - Maximum age in milliseconds
+ * @param fallback - Factory called on a cache miss; result is stored
+ * @returns Cached or freshly-computed value
+ */
+export function cOr<T>(key: string, ttl: number, fallback: () => T): T {
+  const hit = cGet<T>(key, ttl);
+  if (hit !== null) return hit;
+  const computed = fallback();
+  cSet(key, computed);
+  return computed;
+}
+
+/**
  * IDB cold-start loader (Sprint 47).
  *
  * Provides a standard pattern for the card page-load phase:

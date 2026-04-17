@@ -17,6 +17,7 @@ import {
   cGetAsync,
   cGetStaleAsync,
   coldStart,
+  cOr,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -555,5 +556,37 @@ describe("coldStart — IDB cold-start helper (Sprint 47)", () => {
     let calls = 0;
     await coldStart("cs-once", 60_000, () => calls++);
     expect(calls).toBe(1);
+  });
+});
+
+// ── Sprint 59: cOr ───────────────────────────────────────────────────────────
+describe("cOr — null-coalescing cache read (Sprint 59)", () => {
+  beforeEach(() => { cClear(); });
+
+  it("returns cached value without calling fallback", () => {
+    cSet("cor-key", 42);
+    let called = false;
+    const result = cOr("cor-key", 60_000, () => { called = true; return 99; });
+    expect(result).toBe(42);
+    expect(called).toBe(false);
+  });
+
+  it("calls fallback on cache miss and stores the result", () => {
+    const result = cOr("cor-miss", 60_000, () => "computed");
+    expect(result).toBe("computed");
+    // Should be cached now
+    expect(cGet("cor-miss", 60_000)).toBe("computed");
+  });
+
+  it("calls fallback when TTL has expired", () => {
+    cSet("cor-expired", "old");
+    const result = cOr("cor-expired", 0, () => "fresh"); // ttl=0 → always miss
+    expect(result).toBe("fresh");
+  });
+
+  it("does not mutate the fallback return value", () => {
+    const obj = { x: 1 };
+    const result = cOr("cor-obj", 60_000, () => obj);
+    expect(result).toBe(obj);
   });
 });

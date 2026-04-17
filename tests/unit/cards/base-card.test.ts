@@ -30,7 +30,7 @@ vi.mock("@/core/cache", () => ({
   cSet: vi.fn(),
 }));
 
-import { createCardLoader, scheduleCard, staleChip } from "@/cards/base-card";
+import { createCardLoader, scheduleCard, staleChip, createSkeleton, createEmptyState, createErrorState } from "@/cards/base-card";
 import * as idleMod from "@/core/idle";
 import * as fetchMod from "@/core/fetch";
 import * as cacheMod from "@/core/cache";
@@ -227,5 +227,79 @@ describe("staleChip (Sprint 48)", () => {
   it("shows plural day form for 2+ days", () => {
     expect(staleChip(2 * 24 * 60 * 60_000)).toBe(`${LFNY} 2 ${DAYN}`);
     expect(staleChip(7 * 24 * 60 * 60_000)).toBe(`${LFNY} 7 ${DAYN}`);
+  });
+});
+
+// ── Sprint 51: createSkeleton ─────────────────────────────────────────────
+describe("createSkeleton (Sprint 51)", () => {
+  it("returns a div with class card-skeleton", () => {
+    const el = createSkeleton();
+    expect(el.tagName).toBe("DIV");
+    expect(el.className).toBe("card-skeleton");
+  });
+
+  it("renders 3 lines by default", () => {
+    const el = createSkeleton();
+    expect(el.querySelectorAll(".card-skeleton__line")).toHaveLength(3);
+  });
+
+  it("renders N lines when specified", () => {
+    const el = createSkeleton(5);
+    expect(el.querySelectorAll(".card-skeleton__line")).toHaveLength(5);
+  });
+
+  it("has aria-hidden=true", () => {
+    const el = createSkeleton();
+    expect(el.getAttribute("aria-hidden")).toBe("true");
+  });
+});
+
+// ── Sprint 52: createEmptyState ───────────────────────────────────────────
+describe("createEmptyState (Sprint 52)", () => {
+  it("returns a div with class card-empty", () => {
+    const el = createEmptyState("No data");
+    expect(el.tagName).toBe("DIV");
+    expect(el.className).toBe("card-empty");
+  });
+
+  it("renders the message safely via textContent", () => {
+    const el = createEmptyState("<script>alert(1)</script>");
+    const msg = el.querySelector(".card-empty__msg");
+    expect(msg?.textContent).toBe("<script>alert(1)</script>");
+    // Ensure no real script element was injected
+    expect(el.querySelector("script")).toBeNull();
+  });
+
+  it("contains an icon and message child", () => {
+    const el = createEmptyState("Empty");
+    expect(el.querySelector(".card-empty__icon")).not.toBeNull();
+    expect(el.querySelector(".card-empty__msg")).not.toBeNull();
+  });
+});
+
+// ── Sprint 53: createErrorState ───────────────────────────────────────────
+describe("createErrorState (Sprint 53)", () => {
+  it("returns a div with class card-error", () => {
+    const el = createErrorState("Failed");
+    expect(el.tagName).toBe("DIV");
+    expect(el.className).toBe("card-error");
+  });
+
+  it("has role=alert for accessibility", () => {
+    const el = createErrorState("Failed");
+    expect(el.getAttribute("role")).toBe("alert");
+  });
+
+  it("renders the error message safely via textContent", () => {
+    const el = createErrorState("<img src=x onerror=alert(1)>");
+    const msg = el.querySelector(".card-error__msg");
+    expect(msg?.textContent).toBe("<img src=x onerror=alert(1)>");
+    expect(el.querySelector("img")).toBeNull();
+  });
+
+  it("contains an icon and message child", () => {
+    const el = createErrorState("Error");
+    expect(el.querySelector(".card-error__icon")).not.toBeNull();
+    expect(el.querySelector(".card-error__msg")).not.toBeNull();
   });
 });

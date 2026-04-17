@@ -41,6 +41,17 @@ export interface CardConfigField {
   placeholder?: string;
   /** Config tab to place this field in. */
   tab?: "display" | "feeds" | "alerts" | "calendar" | "advanced";
+  /**
+   * Accordion group name (Sprint 58).
+   * Fields in the same group are rendered inside a collapsible `<details>`
+   * element in the config panel. Optional; ungrouped fields render flat.
+   */
+  group?: string;
+  /**
+   * Whether the accordion group starts expanded (Sprint 58).
+   * Only applies when `group` is set. Defaults to false (collapsed).
+   */
+  groupOpenByDefault?: boolean;
 }
 
 // ── Card size ──────────────────────────────────────────────────────────────
@@ -160,4 +171,35 @@ export interface CardRegistryEntry {
   titleEn: string;
   /** Lazy loader — returns the full CardDefinition. */
   load: () => Promise<CardDefinition>;
+}
+
+// ── CardShell interface (Sprint 56) ───────────────────────────────────────
+
+/**
+ * CardShell describes the minimal DOM anatomy that every rendered card
+ * must expose (Stream F: Visual System, v7.15).
+ *
+ * All card root elements created by `CardDefinition.render()` or
+ * registry-driven shell creation should implement this shape.
+ *
+ * Not a run-time class — checked via duck-typing or brand property at
+ * key integration points (e.g., diag overlay card list).
+ */
+export interface CardShell {
+  /** The outermost card element. */
+  root: HTMLElement;
+  /**
+   * Content area inside the card frame — the target for data renders.
+   * Typically a `<div class="card__body">` or `<section>`.
+   */
+  body: HTMLElement;
+  /**
+   * Optional header bar — shows title icon, titleHe, and sync dot.
+   * Absent on size "sm" cards that have no title bar.
+   */
+  header?: HTMLElement;
+  /**
+   * Optional footer bar — staleness chip, action buttons.
+   */
+  footer?: HTMLElement;
 }

@@ -51,3 +51,62 @@ export function formatDiagEntry(entry: DiagEntry): string {
   });
   return `[${time}] ${entry.msg}`;
 }
+
+// ── Sprint 60: Provider error normalization ────────────────────────────────
+
+/**
+ * Classify the severity of a provider error (Sprint 60).
+ *
+ * - `"network"` — fetch/network-level failure (offline, DNS, CORS)
+ * - `"parse"`   — response received but JSON/XML parse failed
+ * - `"timeout"` — request exceeded the fetch timeout
+ * - `"upstream"` — upstream API returned a non-OK HTTP status
+ * - `"unknown"`  — unclassified error
+ */
+export type ProviderErrorKind =
+  | "network"
+  | "parse"
+  | "timeout"
+  | "upstream"
+  | "unknown";
+
+/**
+ * Derive a standardized error kind from an arbitrary caught error (Sprint 60).
+ *
+ * Logs the result at FDB-062 diagnostic level.
+ *
+ * @param err        - The caught error
+ * @param providerId - Provider identifier for log context
+ * @returns Normalized error kind
+ */
+export function classifyProviderError(
+  err: unknown,
+  providerId: string,
+): ProviderErrorKind {
+  let kind: ProviderErrorKind = "unknown";
+
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    if (
+      msg.includes("failed to fetch") ||
+      msg.includes("networkerror") ||
+      msg.includes("network request failed") ||
+      msg.includes("cors")
+    ) {
+      kind = "network";
+    } else if (msg.includes("timeout") || msg.includes("aborted")) {
+      kind = "timeout";
+    } else if (
+      msg.includes("json") ||
+      msg.includes("parse") ||
+      msg.includes("syntax")
+    ) {
+      kind = "parse";
+    } else if (msg.includes("http") || msg.includes("status")) {
+      kind = "upstream";
+    }
+  }
+
+  diagLog(`FDB-062: [${providerId}] error kind=${kind} — ${String(err)}`);
+  return kind;
+}

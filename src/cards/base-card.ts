@@ -105,3 +105,75 @@ export function staleChip(ageMs: number): string {
     ? `\u05DC\u05E4\u05E0\u05D9 1 \u05D9\u05D5\u05DD`
     : `\u05DC\u05E4\u05E0\u05D9 ${days} \u05D9\u05DE\u05D9\u05DD`;
 }
+
+// ── Sprint 51-53: Card Shell Primitives ─────────────────────────────────────
+
+/**
+ * Build a skeleton placeholder element for use during initial card load (Sprint 51).
+ *
+ * Renders one or more animated shimmer lines inside a `<div class="card-skeleton">`.
+ * Cards should replace the element once data is ready.
+ *
+ * @param lines - Number of shimmer lines to render (default 3)
+ * @returns Skeleton container element
+ */
+export function createSkeleton(lines = 3): HTMLElement {
+  const el = document.createElement("div");
+  el.className = "card-skeleton";
+  el.setAttribute("aria-hidden", "true");
+  for (let i = 0; i < lines; i++) {
+    const line = document.createElement("div");
+    line.className = "card-skeleton__line";
+    el.appendChild(line);
+  }
+  return el;
+}
+
+/**
+ * Build a standardized empty-state element (Sprint 52).
+ *
+ * Displays a neutral message when a card has no data (e.g. empty news feed,
+ * no upcoming calendar events, no tasks).
+ *
+ * @param message - Display message (use `textContent` — no raw HTML)
+ * @returns Empty-state container element
+ */
+export function createEmptyState(message: string): HTMLElement {
+  const el = document.createElement("div");
+  el.className = "card-empty";
+  const icon = document.createElement("span");
+  icon.className = "card-empty__icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "—";
+  const msg = document.createElement("p");
+  msg.className = "card-empty__msg";
+  msg.textContent = message;
+  el.appendChild(icon);
+  el.appendChild(msg);
+  return el;
+}
+
+/**
+ * Build a standardized error-state element (Sprint 53).
+ *
+ * Displays an error badge for unrecoverable card failures. Intended for
+ * inline use inside a card's content area.
+ *
+ * @param message - Error description (sanitized via `textContent`)
+ * @returns Error-state container element
+ */
+export function createErrorState(message: string): HTMLElement {
+  const el = document.createElement("div");
+  el.className = "card-error";
+  el.setAttribute("role", "alert");
+  const icon = document.createElement("span");
+  icon.className = "card-error__icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "⚠";
+  const msg = document.createElement("p");
+  msg.className = "card-error__msg";
+  msg.textContent = message;
+  el.appendChild(icon);
+  el.appendChild(msg);
+  return el;
+}

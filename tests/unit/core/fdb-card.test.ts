@@ -224,3 +224,68 @@ describe("FdbCard CardRuntime hooks (Sprint 50)", () => {
     document.body.removeChild(card);
   });
 });
+
+// ── Sprint 54: renderNodes ────────────────────────────────────────────────
+describe("FdbCard.renderNodes (Sprint 54)", () => {
+  let card: FdbCard;
+  beforeEach(() => {
+    card = document.createElement("fdb-test-card") as FdbCard;
+    document.body.appendChild(card);
+  });
+  afterEach(() => { if (card.isConnected) document.body.removeChild(card); });
+
+  it("clears target and appends Node children", () => {
+    const target = document.createElement("div");
+    target.textContent = "old";
+    const span = document.createElement("span");
+    span.textContent = "new";
+    card.renderNodes(target, span);
+    expect(target.querySelector("span")?.textContent).toBe("new");
+    expect(target.childNodes.length).toBe(1);
+  });
+
+  it("wraps string arguments in a span", () => {
+    const target = document.createElement("div");
+    card.renderNodes(target, "hello world");
+    expect(target.querySelector("span")?.textContent).toBe("hello world");
+  });
+
+  it("does not inject raw HTML from strings", () => {
+    const target = document.createElement("div");
+    card.renderNodes(target, "<script>evil()</script>");
+    expect(target.querySelector("script")).toBeNull();
+    expect(target.querySelector("span")?.textContent).toBe("<script>evil()</script>");
+  });
+});
+
+// ── Sprint 55: withLoading ────────────────────────────────────────────────
+describe("FdbCard.withLoading (Sprint 55)", () => {
+  let card: FdbCard;
+  beforeEach(() => {
+    card = document.createElement("fdb-test-card") as FdbCard;
+    document.body.appendChild(card);
+  });
+  afterEach(() => { if (card.isConnected) document.body.removeChild(card); });
+
+  it("sets aria-busy=true during fn execution", async () => {
+    let busyDuring = false;
+    await card.withLoading(async () => {
+      busyDuring = card.getAttribute("aria-busy") === "true";
+    });
+    expect(busyDuring).toBe(true);
+  });
+
+  it("clears aria-busy after fn resolves", async () => {
+    await card.withLoading(async () => { /* noop */ });
+    expect(card.getAttribute("aria-busy")).toBe("false");
+  });
+
+  it("calls onError and still clears loading on rejection", async () => {
+    const errors: Error[] = [];
+    card.onError = (e) => errors.push(e);
+    await card.withLoading(async () => { throw new Error("boom"); });
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.message).toBe("boom");
+    expect(card.getAttribute("aria-busy")).toBe("false");
+  });
+});

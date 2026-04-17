@@ -491,3 +491,49 @@ describe("Night dimmer — setWarmTint / isWarmTint (F3 v7.2)", () => {
     expect(isWarmTint()).toBe(false);
   });
 });
+
+// ── Sprint 57: autoDimCheckWeekday ────────────────────────────────────────
+describe("autoDimCheckWeekday (Sprint 57)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.resetModules();
+  });
+
+  it("dims when on a scheduled day inside the window", async () => {
+    // Set time to Wednesday 23:30 (day=3, hour=23)
+    vi.setSystemTime(new Date("2024-01-03T23:30:00"));
+    vi.resetModules();
+    const { autoDimCheckWeekday, isDimActive } = await import("@/ui/night-dimmer");
+    autoDimCheckWeekday(23, 6, [3]); // Wednesday only
+    expect(isDimActive()).toBe(true);
+  });
+
+  it("does not dim when today is not in weekdays list", async () => {
+    // Wednesday (day=3)
+    vi.setSystemTime(new Date("2024-01-03T23:30:00"));
+    vi.resetModules();
+    const { autoDimCheckWeekday, isDimActive } = await import("@/ui/night-dimmer");
+    autoDimCheckWeekday(23, 6, [0, 1, 2]); // Sun Mon Tue only, not Wed
+    expect(isDimActive()).toBe(false);
+  });
+
+  it("dims on all days when weekdays is empty", async () => {
+    vi.setSystemTime(new Date("2024-01-03T23:30:00"));
+    vi.resetModules();
+    const { autoDimCheckWeekday, isDimActive } = await import("@/ui/night-dimmer");
+    autoDimCheckWeekday(23, 6, []);
+    expect(isDimActive()).toBe(true);
+  });
+
+  it("dims on all days when weekdays is undefined", async () => {
+    vi.setSystemTime(new Date("2024-01-03T23:30:00"));
+    vi.resetModules();
+    const { autoDimCheckWeekday, isDimActive } = await import("@/ui/night-dimmer");
+    autoDimCheckWeekday(23, 6);
+    expect(isDimActive()).toBe(true);
+  });
+});

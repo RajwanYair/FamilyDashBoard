@@ -8,6 +8,7 @@ import {
   getDiagEntries,
   clearDiag,
   formatDiagEntry,
+  classifyProviderError,
 } from "@/core/diag";
 
 describe("DiagLog", () => {
@@ -98,5 +99,43 @@ describe("DiagLog", () => {
     const entry = getDiagEntries()[0]!;
     const formatted = formatDiagEntry(entry);
     expect(formatted).toMatch(/\d/); // contains digits (timestamp)
+  });
+});
+
+// ── Sprint 60: classifyProviderError ─────────────────────────────────────
+describe("classifyProviderError (Sprint 60)", () => {
+  beforeEach(() => clearDiag());
+
+  it("classifies network errors", () => {
+    expect(classifyProviderError(new Error("Failed to fetch"), "p")).toBe("network");
+    expect(classifyProviderError(new Error("NetworkError"), "p")).toBe("network");
+    expect(classifyProviderError(new Error("CORS error"), "p")).toBe("network");
+  });
+
+  it("classifies timeout errors", () => {
+    expect(classifyProviderError(new Error("Request timeout"), "p")).toBe("timeout");
+    expect(classifyProviderError(new Error("aborted"), "p")).toBe("timeout");
+  });
+
+  it("classifies parse errors", () => {
+    expect(classifyProviderError(new SyntaxError("JSON parse error"), "p")).toBe("parse");
+    expect(classifyProviderError(new Error("syntax error in response"), "p")).toBe("parse");
+  });
+
+  it("classifies upstream errors", () => {
+    expect(classifyProviderError(new Error("HTTP 503"), "p")).toBe("upstream");
+  });
+
+  it("classifies unknown errors", () => {
+    expect(classifyProviderError(new Error("something else"), "p")).toBe("unknown");
+    expect(classifyProviderError("a string error", "p")).toBe("unknown");
+    expect(classifyProviderError(undefined, "p")).toBe("unknown");
+  });
+
+  it("logs FDB-062 for every call", () => {
+    classifyProviderError(new Error("boom"), "test-provider");
+    const entries = getDiagEntries();
+    expect(entries[0]?.msg).toMatch(/FDB-062/);
+    expect(entries[0]?.msg).toContain("test-provider");
   });
 });
