@@ -182,3 +182,40 @@ export function markStartupComplete(): void {
     diagLog(`FDB-058: [perf] startup waterfall ${String(_vitals.startup)} ms`);
   }).catch(() => { /* swallow in test env */ });
 }
+
+// ── Perf Budget (Sprint 40, v7.13) ────────────────────────────────────────
+
+/** Result of a budget check. */
+export interface PerfBudgetResult {
+  /** Budget limit in ms. */
+  limitMs: number;
+  /** Measured startup time in ms, or null if not yet recorded. */
+  measuredMs: number | null;
+  /** "pass" | "fail" | "pending" */
+  status: "pass" | "fail" | "pending";
+}
+
+/**
+ * Check whether the startup waterfall time is within the given budget.
+ *
+ * Returns `pending` if `markStartupComplete()` has not been called yet.
+ * Returns `pass` if startup <= limitMs.
+ * Returns `fail` if startup > limitMs (logs a FDB-059 warning).
+ *
+ * @param limitMs - Budget in milliseconds (default: 3000ms per product KPI).
+ */
+export function checkPerfBudget(limitMs = 3000): PerfBudgetResult {
+  const measured = _vitals.startup;
+  if (measured === null) {
+    return { limitMs, measuredMs: null, status: "pending" };
+  }
+  const pass = measured <= limitMs;
+  if (!pass) {
+    import("./diag").then(({ diagLog }) => {
+      diagLog(
+        `FDB-059: [perf] budget EXCEEDED — startup ${String(measured)} ms > ${String(limitMs)} ms limit`,
+      );
+    }).catch(() => { /* swallow in test env */ });
+  }
+  return { limitMs, measuredMs: measured, status: pass ? "pass" : "fail" };
+}

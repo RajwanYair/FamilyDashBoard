@@ -231,3 +231,109 @@ export function loadConfigFromHash(hash: string): DashboardConfig | null {
     return null;
   }
 }
+
+// ── Config import validation (Sprint 38, v7.13) ──────────────────────────
+
+/** Result type for config import validation. */
+export interface ConfigImportResult {
+  /** Whether the import was accepted (possibly after migration). */
+  ok: boolean;
+  /** Human-readable message for display in the config panel. */
+  message: string;
+  /** The validated+merged config if ok=true, else null. */
+  config: DashboardConfig | null;
+}
+
+/**
+ * Validate and sanitize a raw object from a config JSON import.
+ *
+ * Checks performed:
+ * 1. Input must be a non-null object.
+ * 2. If configVersion is present, it must be a number ≤ CONFIG_VERSION.
+ * 3. Theme, screenMode, and tempUnit must be valid if present.
+ * 4. Runs migrateConfig() + sanitize() on success.
+ *
+ * This prevents: corrupt files, wrong-app configs, and cross-version confusion.
+ *
+ * @param raw - The parsed JSON value from the import file.
+ */
+export function validateImportedConfig(raw: unknown): ConfigImportResult {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    return { ok: false, message: "קובץ ההגדרות אינו תקין (לא JSON אובייקט)", config: null };
+  }
+  const obj = raw as Record<string, unknown>;
+
+  // Version check — imported config must not be from a future version
+  if ("configVersion" in obj) {
+    const ver = obj["configVersion"];
+    if (typeof ver !== "number") {
+      return { ok: false, message: "גרסת הגדרות לא תקינה", config: null };
+    }
+    if (ver > CONFIG_VERSION) {
+      return {
+        ok: false,
+        message: `גרסת הגדרות ${String(ver)} גבוהה מגרסה נוכחית ${String(CONFIG_VERSION)}`,
+        config: null,
+      };
+    }
+  }
+
+  // Enum sanity check for most critical fields
+  if ("theme" in obj && obj["theme"] !== undefined && !isValidTheme(obj["theme"])) {
+    return { ok: false, message: `ערך עיצוב לא תקין: "${String(obj["theme"])}"`, config: null };
+  }
+  if ("screenMode" in obj && obj["screenMode"] !== undefined && !isValidScreenMode(obj["screenMode"])) {
+    return { ok: false, message: `מצב מסך לא תקין: "${String(obj["screenMode"])}"`, config: null };
+  }
+  if ("tempUnit" in obj && obj["tempUnit"] !== undefined && !isValidTempUnit(obj["tempUnit"])) {
+    return { ok: false, message: `יחידת טמפרטורה לא תקינה: "${String(obj["tempUnit"])}"`, config: null };
+  }
+
+  // Run migration + merge with defaults + sanitize
+  try {
+    const migrated = migrateConfig(obj as Partial<DashboardConfig>);
+    const merged: DashboardConfig = { ...DEFAULT_CONFIG, ...migrated };
+    const clean = sanitize(merged);
+    diagLog("[config] import validated and merged OK");
+    return { ok: true, message: "ההגדרות יובאו בהצלחה", config: clean };
+  } catch {
+    return { ok: false, message: "שגיאה בעיבוד קובץ ההגדרות", config: null };
+  }
+}
+
+// ── Config export enrichment (Sprint 39, v7.13) ───────────────────────────
+
+/** Metadata envelope wrapping an exported config. */
+export interface ConfigExportEnvelope {
+  /** Semantic version of the app at export time (from __APP_VERSION__). */
+  appVersion: string;
+  /** Config schema version number. */
+  configSchemaVersion: number;
+  /** ISO timestamp of when the export was created. */
+  exportedAt: string;
+  /** The full config payload. */
+  config: DashboardConfig;
+}
+
+/**
+ * Build an enriched export envelope for download.
+ * Wraps the config with app version, schema version, and timestamp.
+ * The envelope format is backwards-compatible — old importers can ignore the wrapper
+ * fields and read `config` directly.
+ */
+export function buildExportEnvelope(config: DashboardConfig): ConfigExportEnvelope {
+  return {
+    appVersion:
+      typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "unknown",
+    configSchemaVersion: CONFIG_VERSION,
+    exportedAt: new Date().toISOString(),
+    config,
+  };
+}
+
+/**
+ * Serialize the export envelope to a JSON string suitable for download.
+ */
+export function serializeConfigExport(config: DashboardConfig): string {
+  return JSON.stringify(buildExportEnvelope(config), null, 2);
+}

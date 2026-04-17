@@ -94,6 +94,63 @@ export interface CardDefinition {
   configSchema?: CardConfigField[];
 }
 
+// ── CardRuntime interface ──────────────────────────────────────────────────
+
+/**
+ * CardRuntime — the complete lifecycle contract for a v8 card instance.
+ *
+ * Cards that extend FdbCard implement this interface to indicate they
+ * own their refresh schedule, subscriptions, and cleanup.
+ *
+ * Stream B: Card Architecture Convergence (v7.13).
+ */
+export interface CardRuntime {
+  /** Card's registry ID — matches `data-card-id`. */
+  readonly cardId: string;
+  /** Current size class. */
+  readonly cardSize: CardSize;
+
+  /**
+   * Connect this card to the DOM. Called by connectedCallback.
+   * Must start data loading and schedule refresh.
+   */
+  connect(): void;
+
+  /**
+   * Disconnect this card from the DOM. Called by disconnectedCallback.
+   * Must cancel all intervals and unsubscribe from state events.
+   */
+  disconnect(): void;
+
+  /**
+   * Trigger an immediate data refresh.
+   * May be called externally (e.g., by the config panel on save).
+   */
+  refresh(): Promise<void>;
+
+  /**
+   * Called when a config key this card cares about changes.
+   * Cards subscribe via state.on() and call this handler.
+   * @param key - The config key that changed (e.g. 'config.tempUnit')
+   * @param value - The new value
+   */
+  onConfigChange?(key: string, value: unknown): void;
+
+  /**
+   * Called when cached data becomes stale (age > threshold).
+   * Cards may show a stale indicator or trigger a background refresh.
+   * @param ageMs - How old the cached data is in milliseconds
+   */
+  onStale?(ageMs: number): void;
+
+  /**
+   * Called when a fetch fails after all retries.
+   * Cards may show an error state or degraded UI.
+   * @param err - The error that caused the failure
+   */
+  onError?(err: Error): void;
+}
+
 // ── Card registry entry ────────────────────────────────────────────────────
 
 export interface CardRegistryEntry {

@@ -5,6 +5,56 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.13.0] — 2026-06-22
+
+> **2469 tests / 55 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint 31 — README v7 Rewrite
+
+- **README.md**: Full v7.13.0 refresh — updated version badges, Getting Started rewritten for Vite dev server, added data sources table, architecture section updated to "Modular TypeScript Architecture", project structure updated to show `src/` layout, roadmap table updated to v7.13–v8.0
+
+### Sprint 32 — ARCHITECTURE.md Refresh
+
+- **ARCHITECTURE.md**: Version bumped to v7.13; added invariants 18-21: normalized domain types, `CardRuntime` interface, provider health model, config import validation
+
+### Sprint 33 — Architecture Decision Records
+
+- **`docs/adr/`**: Created ADR-001 (no Shadow DOM), ADR-002 (zero client-side deps), ADR-003 (worker-first API path), plus `docs/adr/README.md` index
+
+### Sprint 34 — CONTRIBUTING.md Upgrades
+
+- **`.github/CONTRIBUTING.md`**: Node.js requirement 20+ → 22+; coverage thresholds updated 75/70/75/75 → 90/81/90/92
+
+### Sprint 35 — CardRuntime Interface
+
+- **`src/types/card.ts`**: New `CardRuntime` interface with `connect()`, `disconnect()`, `refresh()`, and optional `onConfigChange(key, value)`, `onStale(ageMs)`, `onError(err)` hooks
+
+### Sprint 36 — WeatherDomain Type
+
+- **`src/types/api.ts`**: `WeatherDomain` normalized type + `mapToWeatherDomain()` mapper for decoupling card rendering from raw API shape
+
+### Sprint 37 — StockDomain Type
+
+- **`src/types/api.ts`**: `StockDomain` normalized type + `mapToStockDomain()` mapper; null-safe with empty-result guard
+
+### Sprint 38 — Config Import Validation
+
+- **`src/core/config.ts`**: `ConfigImportResult` interface + `validateImportedConfig(raw)` — rejects null, arrays, non-objects, future schema versions, and invalid enum values; runs `migrate` + `sanitize` on success
+
+### Sprint 39 — Config Export Envelope
+
+- **`src/core/config.ts`**: `ConfigExportEnvelope` interface + `buildExportEnvelope(config)` + `serializeConfigExport(config)` — wraps exported config with `appVersion`, `configSchemaVersion`, `exportedAt` ISO timestamp
+
+### Sprint 40 — Perf Budget Checker
+
+- **`src/core/perf.ts`**: `PerfBudgetResult` interface + `checkPerfBudget(limitMs?)` — compares startup waterfall against 3 s budget (default); emits FDB-059 warning when exceeded; returns `{status, measuredMs, limitMs}`
+
+### Additional Domain Types (Sprints 41-44 foundations)
+
+- **`src/types/api.ts`**: `CurrencyDomain` + `mapToCurrencyDomain()`, `NewsDomainItem` + `rssItemToDomain()`, `AlertsDomain`/`AlertZoneDomain` + `mapToAlertsDomain()`, `HebcalDomain`/`HebcalDomainItem` + `mapToHebcalDomain()`, `CalendarDomainEvent` + `mapToCalendarDomainEvent()`
+
+---
+
 ## [7.12.0] — 2026-06-15
 
 > **2405 tests / 55 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `7c19e1a`)

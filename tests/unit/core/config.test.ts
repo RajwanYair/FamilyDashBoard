@@ -12,6 +12,9 @@ import {
   migrateConfig,
   resetConfig,
   dispatchConfigChange,
+  validateImportedConfig,
+  buildExportEnvelope,
+  serializeConfigExport,
 } from "@/core/config";
 import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, isValidFontScale, CONFIG_VERSION, isValidAlertVolume, isValidNightDimLevel, isValidNewsMaxItems, isValidTickerSpeed, isValidHour } from "@/types/config";
 
@@ -587,5 +590,125 @@ describe("Config — migrateConfig v3→v4 (v7.10)", () => {
 
   it("DEFAULT_CONFIG.configVersion is 4", () => {
     expect(DEFAULT_CONFIG.configVersion).toBe(4);
+  });
+});
+
+// ── Sprint 38 (v7.13): validateImportedConfig ─────────────────────────────────
+
+describe("Config — validateImportedConfig (Sprint 38)", () => {
+  it("accepts a valid DEFAULT_CONFIG object", () => {
+    const result = validateImportedConfig({ ...DEFAULT_CONFIG });
+    expect(result.ok).toBe(true);
+    expect(result.config).not.toBeNull();
+  });
+
+  it("accepts a partial config missing optional fields", () => {
+    const result = validateImportedConfig({ theme: "blue", tempUnit: "C" });
+    expect(result.ok).toBe(true);
+    expect(result.config?.theme).toBe("blue");
+  });
+
+  it("rejects null input", () => {
+    const result = validateImportedConfig(null);
+    expect(result.ok).toBe(false);
+    expect(result.config).toBeNull();
+  });
+
+  it("rejects non-object primitive", () => {
+    const result = validateImportedConfig("hello");
+    expect(result.ok).toBe(false);
+    expect(result.config).toBeNull();
+  });
+
+  it("rejects array input", () => {
+    const result = validateImportedConfig([1, 2, 3]);
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects future schema version", () => {
+    const result = validateImportedConfig({ configVersion: 9999 });
+    expect(result.ok).toBe(false);
+    expect(result.message).toContain("9999");
+  });
+
+  it("rejects non-numeric configVersion", () => {
+    const result = validateImportedConfig({ configVersion: "four" });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects invalid theme value", () => {
+    const result = validateImportedConfig({ theme: "neon" });
+    expect(result.ok).toBe(false);
+    expect(result.message).toContain("neon");
+  });
+
+  it("rejects invalid screenMode value", () => {
+    const result = validateImportedConfig({ screenMode: "widescreen" });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects invalid tempUnit value", () => {
+    const result = validateImportedConfig({ tempUnit: "K" });
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok message in Hebrew on success", () => {
+    const result = validateImportedConfig({ theme: "amber" });
+    expect(result.ok).toBe(true);
+    expect(result.message).toContain("בהצלחה");
+  });
+
+  it("migrates older schema version to current on success", () => {
+    const result = validateImportedConfig({ configVersion: 0, theme: "matrix" });
+    expect(result.ok).toBe(true);
+    expect(result.config?.configVersion).toBe(4); // migrated to current
+  });
+
+  it("accepts config at current CONFIG_VERSION", () => {
+    const result = validateImportedConfig({ configVersion: CONFIG_VERSION });
+    expect(result.ok).toBe(true);
+  });
+});
+
+// ── Sprint 39 (v7.13): Config export envelope ────────────────────────────────
+
+describe("Config — buildExportEnvelope (Sprint 39)", () => {
+  it("wraps config with appVersion, configSchemaVersion, exportedAt", () => {
+    const env = buildExportEnvelope(DEFAULT_CONFIG);
+    expect(env.config).toEqual(DEFAULT_CONFIG);
+    expect(typeof env.appVersion).toBe("string");
+    expect(env.configSchemaVersion).toBe(CONFIG_VERSION);
+    expect(typeof env.exportedAt).toBe("string");
+  });
+
+  it("exportedAt is a valid ISO date string", () => {
+    const env = buildExportEnvelope(DEFAULT_CONFIG);
+    expect(() => new Date(env.exportedAt)).not.toThrow();
+    expect(new Date(env.exportedAt).toISOString()).toBe(env.exportedAt);
+  });
+
+  it("configSchemaVersion matches CONFIG_VERSION", () => {
+    const env = buildExportEnvelope(DEFAULT_CONFIG);
+    expect(env.configSchemaVersion).toBe(CONFIG_VERSION);
+  });
+});
+
+describe("Config — serializeConfigExport (Sprint 39)", () => {
+  it("returns a valid JSON string", () => {
+    const json = serializeConfigExport(DEFAULT_CONFIG);
+    expect(() => JSON.parse(json)).not.toThrow();
+  });
+
+  it("parsed JSON contains config and envelope fields", () => {
+    const parsed = JSON.parse(serializeConfigExport(DEFAULT_CONFIG)) as Record<string, unknown>;
+    expect(parsed).toHaveProperty("config");
+    expect(parsed).toHaveProperty("appVersion");
+    expect(parsed).toHaveProperty("configSchemaVersion");
+    expect(parsed).toHaveProperty("exportedAt");
+  });
+
+  it("inner config.theme is preserved", () => {
+    const parsed = JSON.parse(serializeConfigExport({ ...DEFAULT_CONFIG, theme: "rose" })) as { config: { theme: string } };
+    expect(parsed.config.theme).toBe("rose");
   });
 });

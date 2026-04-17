@@ -1,534 +1,760 @@
-# FamilyDashBoard — Roadmap
+# FamilyDashBoard Roadmap
 
-> Always-on family TV dashboard · Hebrew RTL · 1920×1080+ · TypeScript · Vite · Cloudflare Workers
+> Roadmap refresh date: 2026-04-17
+> Current shipped baseline: v7.12.0
+> Current verified baseline: 2424 tests / 55 suites passing locally
 
-![Roadmap timeline](.github/assets/roadmap.svg)
+This roadmap replaces the older sprint-by-sprint backlog with a single decision document that is grounded in the actual state of the repository.
 
----
-
-## Table of Contents
-
-1. [Version History](#version-history)
-2. [Strategic Analysis — What We Got Right](#strategic-analysis--what-we-got-right)
-3. [Critical Reassessment — What Needs Rethinking](#critical-reassessment--what-needs-rethinking)
-4. [Released Milestones](#released-milestones) (v7.4–v7.9)
-5. [v7.10 — Quality Gate & Technical Debt](#v710--quality-gate--technical-debt)
-6. [v8.0 — Component Architecture & Reactive State](#v80--component-architecture--reactive-state)
-7. [v8.1 — Data Layer & Offline-First Persistence](#v81--data-layer--offline-first-persistence)
-8. [v8.2 — Observability, Performance & Visual QA](#v82--observability-performance--visual-qa)
-9. [v9.0 — Multi-Device & Cloud Sync](#v90--multi-device--cloud-sync)
-10. [v10.0 — Smart Integrations & Accessibility](#v100--smart-integrations--accessibility)
-11. [Long-Term Vision](#long-term-vision)
-12. [Decision Log](#decision-log)
-13. [Design Principles](#design-principles)
+The goal is not to keep adding features forever. The goal is to make FamilyDashBoard a best-in-class always-on family command center: fast, reliable, calm, maintainable, observable, and honest in its documentation.
 
 ---
 
-## Version History
+## 1. Product North Star
 
-| Version   | Status     | Tests                      | Highlights |
-| --------- | ---------- | -------------------------- | ---------- |
-| v5.x      | ✅ Archived | 1084 Mocha / 61 suites     | Single-file HTML era (`BestDashBoard.html`) |
-| v6.0      | ✅ Released | 510 Vitest / 29 suites     | Full TypeScript modular rewrite (Vite + TS) |
-| v6.1      | ✅ Released | 574 Vitest / 30 suites     | Birthday chip, bookmarks, market badge, BG rotation |
-| v6.2      | ✅ Released | 849 Vitest / 31 suites     | Portfolio, alerts, weather tabs, news search, 50+ features |
-| v6.3–6.5  | ✅ Released | → 1240 Vitest / 33 suites  | Coverage sprints: cache 100%, base-card 100%, motivation 100% |
-| v7.0      | ✅ Released | 1390 Vitest / 37 suites    | Card registry, tasks/system-info cards, CSS @layer, dialog migration, 6 themes |
-| v7.1.x    | ✅ Released | → 1686 Vitest / 39 suites  | Countdown card, drag-drop layout, ticker speed, V/W/L/1/2/3 keys, unified CI |
-| v7.2      | ✅ Released | 1706 Vitest / 39 suites    | Precipitation chip, alert volume, warm tint, reset-all, cache staleness, tasks quick-add, countdown 2nd event, news filter chips |
-| v7.3      | ✅ Released | 1723 Vitest / 39 suites    | Diag clear, storage estimate, remove-done tasks, live theme preview, SW version chip, motivation auto-advance, person filter chips, RTT tile, dynamic help |
-| v7.4      | ✅ Released | 1755 Vitest / 39 suites    | Coverage thresholds, Renovate, configVersion, migrateConfig, SW auto-version, isValidFontScale, worker SSRF allowlist, worker route split, fetchWithRetry, network state tracker |
-| v7.5      | ✅ Released | 1850 Vitest / 45 suites    | Worker-first migration, Cloudflare Worker routes/middleware split, per-card CSS co-location, integration tests |
-| v7.6      | ✅ Released | 1850 Vitest / 45 suites    | Moon phase, Daf Yomi/Halacha, Psalm of day, Zmanim grid, bookmarks overlay, PWA install prompt, hebrew-cal refactor |
-| v7.7      | ✅ Released | 2027 Vitest / 47 suites    | Runtime API type guards, weather UX, countdown urgency, tasks priority/due-date, stocks sector emoji, hebrew-cal utils, core utils (debounce/throttle/clamp) |
-| v7.8      | ✅ Released | 2056 Vitest / 47 suites    | Architecture doc update, CSS co-location for UI, config v2 schema, fetch resilience (dedup/network quality), ARIA accessibility, night dim schedule |
-| **v7.9**  | ✅ Released | **2182 Vitest / 51 suites** | Error tracking, web vitals, config v3 per-card settings, IndexedDB cache tier, SW TypeScript types, ARIA tab keyboard nav, weather hourly strip, tasks enhancements, news/stocks enhancements |
-| **v7.10** | ✅ Released | **2287 Vitest / 54 suites** | IDB LRU eviction (50 MB cap), ReactiveState store, Config v4 namespaced per-card CardConfig, Worker POST /api/errors, error-reporter.ts, `__USE_PROXIES__` production gate, hardware-adaptive GPU/CPU tier CSS |
-| **v7.11** | ✅ Released | **2332 Vitest / 55 suites** | Config panel 860px 2-col, maximize container queries (11 cards), coverage 90/81/90/92, state→config wiring, FDB error codes 023-061, startup waterfall INIT metric, per-card config accordion, FdbCard Web Component base class, 4 new API type guards |
-| **v7.12** | ✅ Released | **2405 Vitest / 55 suites** | Priority fetch queue (high/normal/low), countdown 3rd event slot, motivation category system (5 categories, 20 quotes), currency 7-day rate history + trend arrows, calendar days-until label, night dimmer idle auto-dim, news reading-time badge, alerts threat icons + age labels, system-info JS heap + GPU tiles, tasks priority emoji icons |
+FamilyDashBoard should become the best-in-class dashboard for a wall-mounted or TV-based household display.
 
----
+That means:
 
-## Strategic Analysis — What We Got Right
+- It loads instantly into useful information, even on poor networks.
+- It never feels brittle or half-stale.
+- It favors readability and calm signal over widget sprawl.
+- It remains simple to deploy as a static frontend with an edge backend.
+- It is documented truthfully, with minimal drift between docs and code.
+- It keeps the client lean and dependency-light without turning that principle into dogma.
 
-These decisions were strong and should be **preserved and doubled down on**:
+### Success Metrics
 
-| Decision | Why It Works | Confidence |
-| -------- | ------------ | ---------- |
-| **Zero runtime dependencies** | No CDN outages, no supply-chain risk, sub-100 KB gzipped JS, instant load. Eliminates an entire class of security vulnerabilities (npm supply chain). | 🟢 Keep |
-| **TypeScript strict mode** | Caught hundreds of bugs during the v5→v6 migration. `noUncheckedIndexedAccess` is especially valuable for API data. `verbatimModuleSyntax` ensures clean import hygiene. | 🟢 Keep |
-| **Vitest + happy-dom** | 2182 tests in ~4 s; `pool=forks` isolates DOM state. Vite-native means zero config overhead. Coverage thresholds (75/70/75/75) enforce discipline. | 🟢 Keep |
-| **CSS @layer architecture** | Eliminated specificity wars. Themes, components, and animations compose cleanly. `color-mix()` tokens reduce duplication to near-zero. | 🟢 Keep |
-| **Vanilla CSS custom properties** | No preprocessor build step; theme switching is instant; 6 themes with zero duplication. Container queries give per-card responsive behavior. | 🟢 Keep |
-| **`cGet`/`cSet`/`cGetStale` dual-layer cache** | Graceful offline: memory → localStorage → SW cache. Stale-while-revalidate keeps the display warm. Cache stats (v7.8) give diagnostic visibility. | 🟢 Keep + extend to IDB |
-| **Proxy fallback chain** | 4-tier fetch (direct → allorigins → codetabs → corsproxy.io → Worker) gives ~99.9% data availability. `fetchWithRetry()` adds exponential backoff (v7.4). | 🟡 Keep but simplify — Worker should be primary, proxies dev-only |
-| **Card registry + lazy import** | Decoupled card lifecycle; new cards don't touch `main.ts` startup; tree-shaking works per-card. `createCardLoader()` standardizes lifecycle. | 🟢 Keep — evolve to Web Components |
-| **`safeLoad()` + `Promise.allSettled`** | One failing card never takes down the whole dashboard. Combined with `fetchWithStale()`, the UI is never empty. | 🟢 Keep |
-| **SW offline fallback** | App shell pre-cache + API cache + offline HTML fallback = dashboard works without network. `VERSION_ACTIVATED` broadcast keeps UI in sync. | 🟡 Keep — rewrite in TypeScript |
-| **Cloudflare Worker** | Edge-deployed, SSRF-hardened, 100K req/day free. Eliminates CORS entirely. Rate limiting (120/min) + allowlists provide security. | 🟢 Keep + evolve (KV, Durable Objects) |
-| **0-warning ESLint + markdownlint** | Enforced consistently; no `eslint-disable`, no `@ts-ignore`; CI gates guard quality. Flat config (v10) is maintainable. | 🟢 Keep |
-| **Hebrew RTL-first design** | `dir=rtl` on `<html>`, logical CSS properties, RTL-aware flex. Serves the target audience without i18n overhead. | 🟢 Keep |
-| **`<dialog>` + `showModal()`** | Native accessibility (ESC close, focus trap, inert backdrop) for free. Every overlay uses this consistently. | 🟢 Keep |
-| **Config versioned migration** | Forward-compatible: v0→v1→v2→v3 migration chain runs automatically. `sanitize()` + type guards protect against corruption. | 🟢 Keep — namespace per card |
-| **Per-card CSS co-location** (v7.5+) | Each card/UI component imports its own `.css` file. Eliminates the monolithic `sprints.css` anti-pattern. | 🟢 Keep — evolve to scoped styles |
-| **`fetchJSONDeduped()`** (v7.8) | Promise-based coalescing prevents duplicate concurrent requests. Simple, zero-dep implementation. | 🟢 Keep |
+We will treat the following as product-level KPIs, not vague aspirations:
+
+| Area | Target |
+| --- | --- |
+| Time to first meaningful content | under 1.5s on a typical always-on desktop-class browser |
+| Empty-card rate after boot | effectively 0 for cached sessions |
+| Upstream outage resilience | stale or fallback content for every network-backed card |
+| Production JS size | controlled by explicit budget and tracked release-to-release |
+| Accessibility | Lighthouse accessibility >= 95 and keyboard-complete overlays |
+| Visual regressions | screenshot coverage across all themes and screen modes |
+| Documentation drift | architecture and README updated in the same release as major structural changes |
 
 ---
 
-## Critical Reassessment — What Needs Rethinking
+## 2. Current Reality
 
-> This section re-evaluates **every major architectural decision** — even ones that seemed clean.
+The project is in a better place than the old roadmap suggests, but the documentation does not reflect that.
 
-### 1. Frontend Architecture
+### What Already Exists
 
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **No component encapsulation** | Each card = exported functions + CSS. No Shadow DOM, no style scoping, no lifecycle boundary | Style leaks are theoretically possible; card testing requires mocking module internals; no way to render a card in isolation | 🟡 Medium | **v8.0**: Adopt native Web Components (`<fdb-weather>`, `<fdb-news>`, etc.). Shadow DOM scopes CSS per card. `connectedCallback`/`disconnectedCallback` replace manual init/cleanup. **No library needed** — vanilla `HTMLElement` subclass fits the zero-dep constraint. |
-| **State scattered in module closures** | `_filterPerson`, `_pageVisible`, `_tempUnit`, etc. are file-scoped `let` vars invisible to DevTools | State changes are invisible; no reactive update mechanism; tests must import internal symbols | 🟡 Medium | **v8.0**: Centralize in a reactive store. **Recommendation: vanilla `EventTarget`-based pub/sub** (zero-dep, ~50 lines). Each card subscribes to its slice. Signals are appealing but add a dependency — revisit when TC39 Signals proposal ships natively. |
-| **HTML is static, not registry-driven** | 11 cards hardcoded in `index.html`; registry exists but doesn't generate DOM | Adding/removing cards requires HTML edits; dead `data-card-id` slots aren't auto-detected | 🟡 Medium | **v8.0**: `card-registry.ts` renders card shells dynamically. `index.html` becomes a skeleton with only `<div id="dashboard">` + header/footer. |
-| **Config is a flat bag** | `DashboardConfig` has 50+ fields, growing every sprint | Hard to validate holistically, hard to version-migrate, card settings bleed across concerns | 🟡 Medium | **v8.1**: Namespace per card: `config.cards.weather.tempUnit`, `config.cards.stocks.hidden`. Flat fields auto-migrated via `migrateV3toV4()`. |
-| **Monolithic `main.ts` init** | All card inits run in parallel with `Promise.allSettled`. No cancellation, no priority, no progressive loading | On slow networks, all 11 cards compete for bandwidth. Visible-first would improve perceived performance | 🟢 Low | **v8.0**: Priority-based init — visible cards first (above fold), then hidden/collapsed. `IntersectionObserver` gates deferred cards. |
-| **No request prioritization** | All fetches enter the same `runConcurrent(4)` pool | Weather and news (user-visible) compete with system-info and motivation (low priority) | 🟢 Low | **v8.0**: Priority queue for fetch pool — `"high"` (weather, news, alerts), `"normal"` (stocks, calendar), `"low"` (motivation, system-info). |
+- TypeScript strict-mode frontend on Vite.
+- Vitest suite with very high coverage and broad module coverage.
+- Cloudflare Worker backend already split into routes and middleware.
+- EventTarget-based state store already exists.
+- FdbCard Web Component base already exists.
+- IndexedDB cache support already exists and is partially wired into startup and async cache flows.
+- Worker tests are already present in CI.
+- Structured diagnostics and error telemetry infrastructure already exist.
 
-### 2. Backend / Worker Architecture
+### What Is Still Misrepresented
 
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **Rate limiting is per-isolate** | In-memory `Map` resets per Cloudflare Worker instance | Scaling defeats rate limiting; coordinated abuse splits across isolates | 🟡 Medium | **v8.1**: Migrate to Cloudflare KV-backed rate limiting (read-after-write consistency is acceptable for rate limits). Or use Durable Objects if real-time accuracy matters. |
-| **No request validation library** | Each route handler does manual `parseInt`/regex; inconsistent error shapes | DRY violation; some edge cases (NaN, empty string) not caught | 🟡 Medium | **v8.0**: Add `zod` (13 KB) for request validation. Single dependency, massive type safety gains. Generates TypeScript types from schemas. **Decision: accept this one dependency** — the security/reliability benefit outweighs the zero-dep purity for the Worker (which is separate from the client). |
-| **No persistent caching strategy** | Worker proxies to upstream APIs on every request; only Cloudflare's default edge cache (5 min TTL) applies | Unnecessary upstream load; API rate limits consumed faster than needed | 🟡 Medium | **v8.1**: Add Cloudflare KV as a server-side cache. Weather cached 15 min, currency 1 h, Hebcal 6 h. Client gets instant responses from KV even if upstream is down. |
-| **SSRF allowlists are hardcoded** | `ALLOWED_NEWS_ORIGINS` and `ALLOWED_CALENDAR_ORIGINS` are const arrays in source | Adding a news source requires a Worker redeploy | 🟢 Low | **v9.0**: Store allowlists in KV; update via admin API. Not urgent — news sources change rarely. |
-| **Worker not tested in CI** | Unit tests exist locally but aren't in the GitHub Actions pipeline | Worker regressions deployed without CI gate | 🟡 Medium | **v7.10**: Add Worker test step to `ci.yml` — `cd worker && npx vitest run`. |
+- README still heavily describes the archived single-file dashboard flow.
+- Older roadmap items still describe already-implemented foundations as future work.
+- Some architectural decisions were proposed too broadly and now need refinement instead of blind execution.
 
-### 3. Data, APIs & External Sources
+### Current Architectural Tension
 
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **Yahoo Finance v8 is unofficial** | Scraping `query1.finance.yahoo.com/v8/finance/chart` — no API key, no SLA, legally gray | Breaks without warning; rate-limited; could be blocked permanently | 🔴 High | **v8.0**: **Primary recommendation: Yahoo Finance v8 through Worker proxy** (current approach, with aggressive caching). **Backup plan**: Evaluate [Twelve Data](https://twelvedata.com/) free tier (800 req/day, 8 symbols) or [Financial Modeling Prep](https://site.financialmodelingprep.com/) (250 req/day). **Decision**: Yahoo Finance via Worker with 15-min KV cache reduces requests to ~96/day for 15 symbols — well within tolerance. Keep proxy as primary; add FMP as automatic fallback. |
-| **CORS proxies still shipped in client** | 3 hardcoded proxies (allorigins, codetabs, corsproxy.io) + custom proxy slot | Proxies are unreliable (weekly outages), security surface, bloat (~1 KB of URLs) | 🟡 Medium | **v8.0**: Production build (`__USE_PROXIES__ = false`) removes proxy chain entirely. Worker is sole data path. Proxies retained only for `file://` local development. |
-| **No API response schema validation** | Raw `as T` casts on all JSON responses; type guards exist for 4 APIs but not all | Malformed API data silently renders garbage; `undefined` runtime crashes | 🟡 Medium | **v8.0**: Zod schemas at the fetch boundary for all 11 data sources. Invalid data → log error + fall back to `cGetStale()`. Generate TypeScript types with `z.infer<>` — eliminate hand-written `api.ts` interfaces. |
-| **Open-Meteo has no paid fallback** | Single free API; no backup weather provider | If Open-Meteo goes down, weather card is blank (stale cache helps but only for hours) | 🟢 Low | **v9.0**: Add [OpenWeatherMap](https://openweathermap.org/api) free tier (1000 req/day) as automatic fallback if Open-Meteo returns 5xx. Not urgent — Open-Meteo has excellent uptime. |
-| **Sefaria API has no fallback** | If Sefaria is down, halacha/daf/psalm tiles are blank | Lost content; no static fallback beyond `cGetStale()` | 🟢 Low | **Already mitigated** (v7.4): `fetchWithStale()` + static fallback quotes. Sufficient for now. |
-| **17 RSS feeds are fetched individually** | Each RSS feed is a separate HTTP request, all via Worker | 17 concurrent requests on each 5-min refresh cycle. Worker handles it but it's chatty | 🟢 Low | **v8.1**: Batch endpoint — Worker aggregates all RSS feeds into one response. Client makes 1 request instead of 17. Reduces client complexity and network overhead. |
-| **Currency API has limited history** | ER-API returns only current rates; 7-day sparkline is built client-side from localStorage history | Losing localStorage (cache clear, new device) loses sparkline history | 🟢 Low | **v8.1**: Store currency history in IDB (persists across cache clears). Or add a Worker endpoint that queries historical rates from a free provider. |
+The codebase is between two eras:
 
-### 4. Cache & Storage
+- The v6/v7 functional-module era: `initX()` functions, static HTML shells, DOM refs by ID, file-scoped mutable state.
+- The v8 foundation era: `FdbCard`, reactive state, richer cache layers, worker-first data flow.
 
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **localStorage approaching 5 MB limit** | ~40 keys + cache entries with 7-day eviction. Heavy cards (news, stocks) store large payloads | On some browsers (Safari/iOS), `dash_v2_*` entries can exceed quota, causing silent write failures | 🟡 Medium | **v8.1**: Promote `idb-cache.ts` (Sprint 43) to primary cache tier. Move all `dash_v2_*` data to IndexedDB. Keep `localStorage` only for config (~2 KB) + small flags. Migration: first load copies LS→IDB, then deletes LS cache keys. |
-| **IDB cache tier exists but isn't wired in** | `idb-cache.ts` has full CRUD API but `cGet`/`cSet` still use localStorage | The IndexedDB investment (Sprint 43) provides no value until the cache layer is integrated | 🟡 Medium | **v7.10**: Wire `idbGet`/`idbSet` into `cGet`/`cSet` as L2 (between memory and localStorage). Priority: memory → IDB → localStorage. Graceful degradation if IDB unavailable. |
-| **No cache invalidation signals** | Caches expire only via TTL or manual `cEvict()` | If an API response changes immediately (e.g., breaking alert), stale data shows for up to TTL duration | 🟢 Low | **v9.0**: SW-mediated cache invalidation — Worker broadcasts `CACHE_INVALIDATE(key)` when it detects data changes. Cards react by re-fetching immediately. |
-| **Cache key collisions with legacy dashboard** | Both `BestDashBoard.html` and the modular app use `dash_v2_*` prefix | Running both in the same browser creates cache corruption | 🟢 Low | Accepted risk — legacy dashboard is archived and unlikely to be used simultaneously. |
-
-### 5. Service Worker
-
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **SW is plain JavaScript** | `sw.js` is 180 lines of vanilla JS; not type-checked, not bundled by Vite | Bugs can't be caught at compile time; no shared constants with main app (only `__APP_VERSION__` injected) | 🟡 Medium | **v8.1**: Convert to `src/sw.ts`. Compile with Vite's `worker` plugin. Import `sw-constants.ts` directly instead of duplicating. Type-check in CI alongside main app. |
-| **No cache size limits** | API cache grows unbounded; only version change triggers full wipe | Long-running devices (always-on TV) accumulate months of stale API responses | 🟡 Medium | **v8.1**: Add cache size limit (50 MB). Implement LRU eviction — when cache exceeds limit, delete oldest entries. |
-| **APP_SHELL still references BestDashBoard.html** | Pre-cache list includes legacy single-file dashboard | Unnecessary bytes in SW cache; confusing for new contributors | 🟢 Low | **v7.10**: Remove `BestDashBoard.html` from APP_SHELL. Add all `dist/assets/*.js` and `dist/assets/*.css` instead. |
-| **No background sync** | SW has no `sync` event handler; failed writes (config export to URL) can't retry | Low impact today (no write operations), but blocks cloud sync in v9.0 | 🟢 Low | **v9.0**: Add `BackgroundSyncManager` for config sync writes. |
-
-### 6. Testing & Quality
-
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **No E2E tests** | `tests/integration/` has 4 lightweight integration tests; no browser-level E2E | Card interactions (config panel ↔ theme ↔ cards), keyboard shortcuts, drag-drop are untested in a real browser | 🟡 Medium | **v8.2**: Playwright tests for 10 critical flows: theme switch, config save/load, card maximize, keyboard shortcuts, night dimmer toggle, drag-drop, alert toggle, PWA install, offline mode, print mode. |
-| **No visual regression tests** | CSS changes verified manually | Theme changes or layout shifts go undetected across 6 themes × 3 screen modes = 18 visual states | 🟡 Medium | **v8.2**: Playwright screenshot comparison for each theme × screen mode. CI fails on pixel diff > 0.5%. |
-| **Coverage thresholds could be higher** | 75% statements / 70% branches / 75% functions / 75% lines | Allows ~25% untested code. Actual coverage is likely 80%+ — thresholds should track reality | 🟢 Low | **v7.10**: Raise to 80/75/80/80. Run coverage report to determine actual numbers and set thresholds 2–3% below actual. |
-| **No mutation testing** | Tests pass but may not catch real logic bugs (e.g., off-by-one in TTL check) | False confidence in test effectiveness | 🟢 Low | **v9.0**: Evaluate Stryker.js for mutation testing on `src/core/` modules (cache, fetch, config). Target 70% mutation score. |
-| **Worker tests not in CI** | Worker tests exist locally but aren't gated in GitHub Actions | Regressions can be deployed to production without test verification | 🟡 Medium | **v7.10**: Add `worker-test` job to `ci.yml`. |
-
-### 7. Build, Deploy & DevOps
-
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **Shared `MyScripts/node_modules`** | All deps installed at parent dir; no lockfile in project. CI uses `install-tools.sh` | Non-standard for contributors; `npm ci` doesn't work in isolation; Renovate can't update deps properly | 🟡 Medium | **v8.0**: Migrate to **npm workspaces** monorepo. `MyScripts/package.json` declares `"workspaces": ["FamilyDashBoard", "FamilyDashBoard/worker"]`. Each project gets its own `package.json` with `devDependencies`. Shared lockfile at root. **Why not Turborepo/Nx?** Overkill for 2 packages. npm workspaces is zero-dep and standard. |
-| **No preview deployments** | Only `main` branch deployed to GitHub Pages | PR changes can't be previewed visually before merge | 🟡 Medium | **v8.2**: Cloudflare Pages for PR preview deploys. GitHub Actions posts preview URL as PR comment. Free tier is sufficient. |
-| **No Lighthouse CI budgets** | Performance/accessibility not tracked over time | Regressions in LCP/CLS/accessibility go unnoticed until someone checks manually | 🟡 Medium | **v8.2**: Add [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) to pipeline. Budgets: LCP < 2.5s, CLS < 0.1, TBT < 200ms, Accessibility ≥ 95. |
-| **Bundle size checked but not tracked** | `check-bundle-size.mjs` runs in CI, but no trend visualization | Can't see if bundle is growing sprint over sprint | 🟢 Low | **v8.2**: Track bundle size in CI artifacts; add `bundlesize` comment to PRs showing diff. |
-| **Vite IIFE build for `file://` is a workaround** | `removeCrossOrigin` plugin strips CSP, converts `type="module"` → plain `<script>`, patches paths | Fragile; any Vite update can break the transform; IIFE build can't tree-shake effectively | 🟢 Low | Accepted trade-off. The `file://` use case (Raspberry Pi without a web server) is real. Keep the plugin but add integration tests that verify the built HTML loads correctly. |
-
-### 8. Documentation & Developer Experience
-
-| Issue | Current State | Impact | Severity | Recommendation |
-| ----- | ------------- | ------ | -------- | -------------- |
-| **Too many instruction files** | `copilot-instructions.md` + `CLAUDE.md` + 4× `.instructions.md` + skills + agents + this roadmap | Rules are duplicated and sometimes contradictory. Maintenance burden scales with sprint count | 🟡 Medium | **v7.10**: Consolidate to 3 files: (1) `CONTRIBUTING.md` (human developers), (2) `copilot-instructions.md` (AI assistants — single source of truth), (3) `CLAUDE.md` (lean pointer to `copilot-instructions.md`). Scoped `.instructions.md` files remain for CI/release-specific rules. Delete overlapping content. |
-| **ARCHITECTURE.md says v7.7** | Doesn't cover v7.8 (fetch resilience, config v2) or v7.9 (IDB, error tracking, web vitals) | Misleading for contributors examining current architecture | 🟢 Low | **v7.10**: Update to v7.9 — add IDB cache tier, error tracking, web vitals sections. |
-| **No OpenAPI spec for Worker** | `worker/openapi.yaml` exists but is incomplete | No external reference for the API contract; clients are loosely coupled to route shapes | 🟢 Low | **v8.0**: Complete OpenAPI 3.1 spec for all 11 Worker routes. Auto-generate with `@hono/zod-openapi` if Hono is adopted (see D12). |
-| **Stale inventory file** | `/memories/repo/fdb-complete-inventory.md` references v5 `BestDashBoard.html` | AI agents get confused about current architecture if they read this first | 🟢 Low | **v7.10**: Archive or delete the v5 inventory. `ARCHITECTURE.md` is the canonical reference. |
-
-### 9. Code Language & Tooling Versions
-
-| Tool | Current | Latest Stable | Assessment |
-| ---- | ------- | ------------- | ---------- |
-| **TypeScript** | 5.9 | 5.9 | ✅ Current. No action needed. |
-| **Vite** | 8 | 8 | ✅ Current. Monitor for Rolldown migration (Vite 8's Rust-based bundler). |
-| **Vitest** | 4 | 4 | ✅ Current. |
-| **ESLint** | 10 | 10 | ✅ Current. Flat config adopted. |
-| **typescript-eslint** | 8 | 8 | ✅ Current. |
-| **Node.js** | ≥22.0.0 | 24 LTS | 🟡 **v8.0**: Bump minimum to `>=22.12.0` (latest 22 LTS). Test Node 24 compatibility. |
-| **Wrangler** | 4.0.0 | 4.x | ✅ Current. |
-| **happy-dom** | (inherited) | latest | ✅ Managed by parent. Renovate handles updates. |
-| **Cloudflare Workers Types** | 4.20250410.0 | latest | ✅ Current. |
+The next roadmap must finish that transition deliberately, not by layering more features onto both models at once.
 
 ---
 
-## Released Milestones
+## 3. Decision Reset
 
-<details>
-<summary><strong>v7.4 — Architecture Hardening</strong> ✅</summary>
+This section rethinks major decisions, including some that looked clean on paper.
 
-- [x] Registry-driven HTML: `card-registry.ts` wires cards dynamically
-- [x] Per-card CSS co-location started (tasks, system-info, countdown)
-- [x] Restored exponential backoff: `fetchWithRetry()` + `recordFetchSuccess/Failure()`
-- [x] Stale fallback for all APIs: `fetchWithStale()` + static fallback data for Sefaria
-- [x] Raised coverage thresholds: 75/70/75/75
-- [x] Auto-generate SW version from `package.json` via Vite `define`
-- [x] Added Renovate for automated dependency updates
-- [x] ESLint strict: `no-floating-promises`, `no-misused-promises`
-- [x] Updated ARCHITECTURE.md, consolidated AI instructions, created CONTRIBUTING.md
+### 3.1 Decisions To Keep
 
-</details>
+| Decision | Keep? | Why |
+| --- | --- | --- |
+| TypeScript-first frontend and worker | Yes | Highest leverage choice in the project. Strongly improves long-lived maintainability. |
+| Static frontend + edge worker backend | Yes | Excellent fit for this product. Low operational complexity, strong performance profile. |
+| Zero or near-zero runtime dependencies on the client | Yes | Good discipline for a TV dashboard. Keeps startup, upgrades, and security simple. |
+| Vite + Vitest | Yes | Fast, stable, already paying off. No reason to churn. |
+| Hebrew RTL-first design | Yes | This is a product differentiator, not an implementation detail. |
+| Worker-first API path | Yes | Better than shipping public proxy chains in production. |
+| Progressive offline-first cache model | Yes | Core to the product experience. |
+| Co-located CSS and strong token usage | Yes | Good direction; continue tightening it. |
 
-<details>
-<summary><strong>v7.5 — Worker-First Migration</strong> ✅</summary>
+### 3.2 Decisions To Reverse Or Narrow
 
-- [x] Split `worker/src/index.ts` into `routes/data.ts` + `routes/feeds.ts`
-- [x] Added middleware layer: rate-limit, CORS, cache-control
-- [x] News feed SSRF lockdown: `ALLOWED_NEWS_ORIGINS` allowlist
-- [x] Worker test suite via Vitest
-- [x] Worker-first fetch: `fetchViaWorker()` primary path when `isWorkerEnabled()`
-- [x] Build-time flag `__USE_PROXIES__` controls proxy chain inclusion
-- [x] Per-card CSS co-location completed for all UI components
-- [x] Integration tests: config-save, sync-dots, cache-stale, theme-switch
+| Previous Direction | New Decision | Why |
+| --- | --- | --- |
+| Full Web Components migration with Shadow DOM everywhere | Use `FdbCard` as an incremental card-instance base, but do not adopt Shadow DOM by default | Shadow DOM complicates global theming, typography, diagnostics, and cross-card layout for this kind of dashboard. The encapsulation win is weaker here than in app-style UIs. |
+| Huge v8 rewrite framing | Move to staged architectural convergence | The foundation already exists. The risk is now fragmentation, not lack of foundations. |
+| Keep adding roadmap sprints as long feature lists | Shift to capability streams with measurable exit criteria | The old roadmap became stale because it tracked ideas rather than decisions and outcomes. |
+| Pure zero-dependency ideology everywhere | Allow narrowly-justified backend and build-time dependencies | The client should stay lean. The worker and tooling can accept high-value dependencies where they reduce risk or duplicated code. |
+| Keep localStorage as an equal cache tier forever | localStorage becomes config-only over time | Large cached payloads belong in IndexedDB, not in persistent string blobs. |
 
-</details>
+### 3.3 Decisions To Explicitly Avoid
 
-<details>
-<summary><strong>v7.6 — Hebrew Calendar Expansion</strong> ✅</summary>
-
-- [x] Moon phase in weather card
-- [x] Daf Yomi, Halacha, Psalm of the Day tiles
-- [x] Zmanim grid (prayer times)
-- [x] Next calendar event chip
-- [x] Bookmarks overlay
-- [x] PWA install prompt
-- [x] Hebrew-cal full refactor
-
-</details>
-
-<details>
-<summary><strong>v7.7 — Runtime Safety & UX Polish</strong> ✅</summary>
-
-- [x] Runtime API type guards: `isWeatherResponse()`, `isNewsItem()`, `isCurrencyResponse()`, `isAlertEvent()`
-- [x] Weather UX: humidity labels, moon phase glyph, precipitation summary
-- [x] Countdown urgency classes, tasks priority/due-date, stocks sector emoji
-- [x] Core utils: `debounce()`, `throttle()`, `clamp()`, `cacheStats()`
-
-</details>
-
-<details>
-<summary><strong>v7.8 — Resilience & Accessibility</strong> ✅</summary>
-
-- [x] CSS co-location for 7 UI components
-- [x] Config v2: 7 new fields, v1→v2 migration, `resetConfig()`, `dispatchConfigChange()`
-- [x] Fetch resilience: `fetchJSONDeduped()`, `getNetworkQualityTier()`, `clearFetchLocks()`
-- [x] ARIA: `:focus-visible` rings, `role="status"` on sync dots, `aria-live` on dynamic content
-- [x] Night dimmer schedule + cache diagnostic stats in overlay
-
-</details>
-
-<details>
-<summary><strong>v7.9 — Deep Instrumentation</strong> ✅</summary>
-
-- [x] Error tracking: `initErrorTracking()`, `getErrorLog()`, `getErrorSummary()`
-- [x] Web Vitals: LCP, FID, CLS via PerformanceObserver in diagnostics
-- [x] Config v3: 7 per-card boolean toggles, v2→v3 migration
-- [x] IndexedDB cache tier: `idb-cache.ts` with full CRUD API
-- [x] SW TypeScript types: `sw-constants.ts` with typed message unions
-- [x] Accessibility phase 2: ARIA tab keyboard navigation
-- [x] Weather hourly strip, tasks due-today, news breaking badge, stocks group toggle
-
-</details>
+- No React or Next.js rewrite. This product does not need a client framework rewrite to become excellent.
+- No auth system unless cloud sync becomes a real shipped feature.
+- No relational database before there is an actual multi-device synchronization requirement.
+- No design-system abstraction layer for its own sake.
+- No backend sprawl. The edge worker should remain the only server-side runtime unless a hard product need emerges.
 
 ---
 
-## v7.10 — Quality Gate & Technical Debt
+## 4. Strategic Product Direction
 
-> Focus: wire in existing unused infrastructure, raise quality bars, eliminate stale artifacts.
+FamilyDashBoard should evolve from a feature-rich dashboard into a product with five strong qualities:
 
-### Cache Integration
+1. Reliable information delivery
+2. Strong information hierarchy
+3. Clean instance-based architecture
+4. Measured performance and visual quality
+5. Truthful documentation and low contributor friction
 
-- [ ] **Wire IDB into cache flow**: `cGet()` checks memory → IDB → localStorage. `cSet()` writes to memory + IDB. localStorage retains only config. Graceful fallback when IDB unavailable.
-- [ ] **Migration on first load**: copy all `dash_v2_*` entries from localStorage → IDB, then delete LS cache keys. Keep `dash_v2_config` in LS for sync startup access.
-- [ ] **`cEvict()` for IDB**: add TTL-based eviction for IDB entries (7-day max age, matching localStorage behavior).
+That means the roadmap should optimize less for feature count and more for:
 
-### Quality
-
-- [ ] **Raise coverage thresholds**: run `npx vitest run --coverage`, read actual numbers, set thresholds to actual minus 3%. Target: 80/75/80/80 minimum.
-- [ ] **Worker tests in CI**: add `worker-test` job to `.github/workflows/ci.yml` — `cd worker && npx vitest run`.
-- [ ] **ESLint import ordering**: add `eslint-plugin-import-x` or `@stylistic/eslint-plugin` for consistent import grouping (builtins → external → internal → relative).
-
-### Cleanup
-
-- [ ] **Remove `BestDashBoard.html` from SW APP_SHELL**: update pre-cache list to include only `index.html`, `manifest.webmanifest`, `icon.svg`.
-- [ ] **Update ARCHITECTURE.md to v7.9**: add IDB cache tier diagram, error tracking, web vitals, config v3.
-- [ ] **Consolidate doc files**: merge overlapping content between `copilot-instructions.md`, `CLAUDE.md`, and `.instructions.md` files. Single source of truth per topic.
-- [ ] **Archive v5 inventory**: delete or archive `/memories/repo/fdb-complete-inventory.md`.
-
-### Minor Improvements
-
-- [ ] **Structured error codes**: `diagLog()` messages get error codes (`FDB-001: fetch timeout`, `FDB-002: cache miss`) for easier debugging.
-- [ ] **`main.ts` init priority**: reorder `safeLoad()` calls — weather, news, alerts first (visible, high-value); system-info, motivation last (low priority).
+- stable provider abstractions
+- instance-based card lifecycle
+- normalized data contracts
+- measured design consistency
+- documented operator workflow
 
 ---
 
-## v8.0 — Component Architecture & Reactive State
+## 5. Frontend Reassessment
 
-> Focus: proper component model, reactive state management, type-safe API boundaries, modern tooling. **This is the biggest architectural shift since v6.0.**
+### 5.1 What Is Good Today
 
-### Web Components Migration
+- Vanilla TS and DOM code are still a good fit.
+- The current CSS token approach and RTL orientation are strong.
+- The dashboard still benefits from explicit, readable imperative code for a TV display.
 
-- [ ] **Card base class**: `FdbCard extends HTMLElement` with `connectedCallback()`, `disconnectedCallback()`, `attributeChangedCallback()`. Shadow DOM for CSS scoping. Slots for header/body/footer.
+### 5.2 What Needs Refactoring
 
-  ```text
-  <fdb-weather data-card-id="weather" data-size="md">
-    #shadow-root
-      <style>@import './weather.css'</style>
-      <div class="card">...</div>
-  </fdb-weather>
-  ```
+#### Card Lifecycle
 
-- [ ] **Migrate all 11 cards**: each card becomes a custom element. `card-registry.ts` maps IDs to element constructors. `document.createElement('fdb-weather')` replaces static HTML.
-- [ ] **Dynamic card rendering**: `index.html` contains only `<div id="dashboard"></div>`. Registry creates card elements on init based on `cardLayout` config.
-- [ ] **Card lifecycle**: `connectedCallback` replaces `init*()` functions. `disconnectedCallback` clears intervals (auto-cleanup). `attributeChangedCallback` for config reactivity.
-- [ ] **Why not Lit or Preact?** Lit adds 5 KB but provides reactive templates. Preact adds 4 KB with JSX. **Decision**: Start with vanilla Web Components. If template verbosity becomes painful after migrating 3 cards, re-evaluate Lit. The zero-dep constraint applies to the client; the Worker already has Wrangler as a dev dependency.
+Current state:
 
-### Reactive State Store
+- Many cards still use `initX()` plus module-level timers and module-level state.
+- `FdbCard` exists but is not the dominant runtime model.
 
-- [ ] **`EventTarget`-based store**: ~50 lines, zero dependencies. `state.get('config.tempUnit')`, `state.set('config.tempUnit', 'F')`, `state.on('config.tempUnit', callback)`.
-- [ ] **State slices**: `config` (persisted), `cache` (ephemeral API data), `ui` (theme, overlay, maximize — transient).
-- [ ] **DevTools integration**: state is inspectable via `window.__FDB_STATE__` in development builds.
-- [ ] **Cards subscribe**: each card's `connectedCallback` subscribes to its config slice. State change → automatic re-render of affected tiles only.
+Target state:
 
-### API Schema Validation
+- Each card becomes an instance-backed element or instance-backed controller.
+- A card owns its refresh schedule, DOM cache, and subscriptions.
+- Card registration creates shells dynamically from a registry, not from duplicated static markup.
 
-- [ ] **Zod schemas for all API responses**: `src/schemas/weather.ts`, `stocks.ts`, `news.ts`, etc. Validation at the fetch boundary. Invalid data → `diagLog()` error + stale cache fallback.
-- [ ] **Generate TypeScript types from schemas**: `z.infer<typeof WeatherResponseSchema>` replaces hand-written `api.ts` interfaces. Single source of truth.
-- [ ] **Worker request validation**: Worker routes validate query params with Zod. Type-safe handlers.
-- [ ] **Why Zod?** 13 KB, zero transitive deps, works in browsers and Workers, generates TS types. Only runtime dependency added to the project — justified by the security and reliability gains at every API boundary.
+Decision:
 
-### Monorepo Migration
+- Migrate toward `FdbCard`-based card instances.
+- Do not force Shadow DOM globally.
+- Keep global theming and layout tokens shared at the document level.
 
-- [ ] **npm workspaces**: `MyScripts/package.json` declares `"workspaces": ["FamilyDashBoard", "FamilyDashBoard/worker"]`.
-- [ ] **Per-project `package.json`**: `FamilyDashBoard/package.json` gets `devDependencies` (vite, vitest, eslint, typescript). `FamilyDashBoard/worker/package.json` gets worker-specific deps (wrangler, @cloudflare/workers-types).
-- [ ] **Shared lockfile**: single `package-lock.json` at `MyScripts/` root. `npm ci` works from root.
-- [ ] **Shared config**: `packages/shared/` for types, constants, schemas used by both client and worker.
+#### State Model
 
-### Proxy Chain Simplification
+Current state:
 
-- [ ] **Production build removes proxy chain**: `__USE_PROXIES__ = false` in production. Worker is the sole data path.
-- [ ] **Dev build retains proxies**: `__USE_PROXIES__ = true` for `file://` and localhost development.
-- [ ] **Dead code elimination**: Vite tree-shakes proxy-related code from production bundle. Estimated savings: ~1–2 KB.
+- Reactive state exists, but much UI logic still depends on local file-scoped mutable variables.
 
-### E2E Test Foundation
+Target state:
 
-- [ ] **Playwright setup**: `playwright.config.ts` with Chromium + Firefox. Tests in `tests/e2e/`.
-- [ ] **10 critical flow tests**: theme switch, config save/load, card maximize, keyboard shortcuts, night dimmer, drag-drop, alert toggle, PWA install, offline mode, print mode.
-- [ ] **CI integration**: Playwright runs in GitHub Actions on every PR.
+- Config state, transient UI state, and per-card display state are explicit and inspectable.
+- Cards subscribe to state and re-render small regions instead of relying on reload-like flows.
 
----
+Decision:
 
-## v8.1 — Data Layer & Offline-First Persistence
+- Keep the EventTarget store.
+- Expand it thoughtfully rather than replacing it.
+- Move module-local state into explicit card-instance state where feasible.
 
-> Focus: robust offline-first data layer, server-side caching, SW modernization.
+#### Rendering Model
 
-### IndexedDB as Primary Cache
+Current state:
 
-- [ ] **Full IDB migration**: `cGet()` → memory → IDB (async) → stale LS (sync fallback). `cSet()` → memory + IDB. localStorage holds only `DashboardConfig` + small flags.
-- [ ] **Migration script**: on first v8.1 load, copies all `dash_v2_*` from LS to IDB, then removes from LS. Toast: "Cache upgraded — offline performance improved."
-- [ ] **Cache size management**: IDB cache capped at 50 MB. LRU eviction when cap reached. Diagnostic overlay shows cache size.
-- [ ] **Structured cache keys**: `idb:weather:jerusalem`, `idb:stocks:AAPL`, `idb:news:ynet` — queryable by card, enabling per-card cache clear.
+- Static HTML still defines card shells.
+- Registry and runtime composition are only partially realized.
 
-### Config v4 — Per-Card Namespacing
+Target state:
 
-- [ ] **Namespaced config**: `config.cards.weather = { tempUnit, cities, showHourly, showWind, showSunrise }`. `config.cards.stocks = { hidden, showPortfolio, groupBySector }`. Etc.
-- [ ] **v3→v4 migration**: flat fields map to their card namespace. `config.tempUnit` → `config.cards.weather.tempUnit`.
-- [ ] **Card-level config UI**: config panel groups settings by card. Each card tab shows only that card's settings.
-- [ ] **Config export/import**: namespaced structure serializes cleanly; enables per-card config sharing.
+- Registry defines the card catalog.
+- Layout config decides what is rendered and where.
+- HTML becomes a small app shell rather than a hardcoded card inventory.
 
-### Server-Side Caching (Worker KV)
+Decision:
 
-- [ ] **Cloudflare KV cache**: Worker stores upstream API responses in KV with TTL. Weather: 15 min. Currency: 1 h. Hebcal: 6 h. Stocks: 5 min (market hours) / 30 min (closed).
-- [ ] **Cache-first strategy**: Worker checks KV before upstream. If KV hit, return immediately (< 5 ms latency). If miss, fetch upstream, store in KV, return.
-- [ ] **KV namespace**: `FDB_CACHE`. Keys: `weather:32.0853:34.7818`, `stocks:AAPL`, `hebcal:281184`.
-- [ ] **Benefit**: Client gets instant responses even during upstream outages. Reduces upstream API consumption by ~90%.
+- Finish registry-driven layout generation.
+- Keep progressive enhancement and plain HTML shell semantics.
 
-### RSS Feed Aggregation
+#### Design Consistency
 
-- [ ] **Batch RSS endpoint**: `GET /api/news/batch` — Worker fetches all 17 RSS feeds in parallel, aggregates into one JSON response. Client makes 1 request per refresh cycle (was 17).
-- [ ] **Server-side dedup**: Worker deduplicates news items by URL across all sources.
-- [ ] **KV-backed RSS cache**: Each feed cached individually in KV (5 min TTL). Batch endpoint assembles from cache — no upstream hit if all feeds are fresh.
+Current state:
 
-### Service Worker TypeScript Rewrite
+- Many cards are visually strong, but the system still has accreted one-off patterns.
 
-- [ ] **`src/sw.ts`**: TypeScript source, compiled by Vite's `worker` plugin. Imports `sw-constants.ts` directly (no `__APP_VERSION__` text replacement).
-- [ ] **Shared types**: SW imports `SWMessage`, `isVersionActivatedMsg()`, `isSkipWaitingMsg()` from `sw-constants.ts` — type-safe message passing.
-- [ ] **Cache size limit**: API cache capped at 50 MB. LRU eviction policy. Log evictions via `diagLog()`.
-- [ ] **Workbox evaluation**: If SW complexity grows beyond 300 lines, evaluate Workbox's `workbox-precaching` + `workbox-strategies`. **Decision**: defer unless complexity justifies it.
+Target state:
+
+- Consistent card shell anatomy.
+- Shared primitives for chips, metric tiles, section headers, skeletons, empty states, stale states, and error states.
+- Improved readability from 3 meters away as the primary design constraint.
+
+Decision:
+
+- Formalize a card-shell design system.
+- Avoid visual novelty that harms legibility on a TV.
 
 ---
 
-## v8.2 — Observability, Performance & Visual QA
+## 6. Backend And Edge Reassessment
 
-> Focus: know when things break before users notice; measure performance continuously; prevent visual regressions.
+The backend is the Cloudflare Worker. That is still the right architecture.
 
-### Lighthouse CI
+### 6.1 What To Keep
 
-- [ ] **`lhci` in GitHub Actions**: run on every PR against the built `dist/` output.
-- [ ] **Budgets**: LCP < 2.5s, CLS < 0.1, TBT < 200ms, Accessibility ≥ 95, Best Practices ≥ 95.
-- [ ] **Trend tracking**: store Lighthouse reports as CI artifacts. Dashboard in GitHub Pages for historical LCP/CLS/accessibility trends.
+- Cloudflare Worker as the single backend runtime.
+- Route split and middleware structure.
+- CORS termination and upstream normalization at the edge.
 
-### Visual Regression Testing
+### 6.2 What To Improve
 
-- [ ] **Playwright screenshots**: 6 themes × 3 screen modes = 18 baseline screenshots. CI fails on pixel diff > 0.5%.
-- [ ] **Update workflow**: `npx playwright test --update-snapshots` regenerates baselines after intentional CSS changes.
-- [ ] **Dark mode contrast check**: automated WCAG AA contrast ratio verification for all 6 themes using a CI script.
+#### Request Validation
 
-### Error Reporting
+Current state:
 
-- [ ] **Lightweight error reporter**: `src/core/error-reporter.ts` — sends error summaries to Worker `POST /api/errors`. Worker stores in KV (last 100 errors per device). **No external service required** — self-hosted.
-- [ ] **Dashboard error view**: admin route `GET /api/errors?familyId=X` returns recent errors. Diagnostic overlay fetches and displays.
-- [ ] **Why not Sentry?** Sentry free tier is excellent (10K events/month), but adds an external dependency and data leaves the family's infrastructure. Self-hosted approach fits the project's philosophy. Re-evaluate if error volume justifies Sentry.
+- Validation is route-specific and largely manual.
 
-### Performance Monitoring
+Decision:
 
-- [ ] **Web Vitals tracking** (in-place): `web-vitals` data (LCP, CLS, INP) already collected via `initWebVitals()` (v7.9 Sprint 41). Wire into error reporter for longitudinal tracking.
-- [ ] **Bundle size CI comment**: PR comment shows bundle size diff. Fail if JS gzipped > 100 KB or CSS gzipped > 25 KB.
-- [ ] **Startup waterfall**: measure time from `DOMContentLoaded` to "all cards rendered" (last card's `setSync(id, 'ok')`). Log in diagnostics + report to Worker.
+- Adopt schema-driven validation for worker inputs and normalized outputs.
+- Recommended approach: Zod in the worker and shared schema packages for client and worker type reuse.
 
-### Preview Deployments
+Why this is worth it:
 
-- [ ] **Cloudflare Pages**: PR branches auto-deploy to `pr-123.fdb.pages.dev`. GitHub Actions posts preview URL as PR comment.
-- [ ] **Teardown**: preview deleted when PR is closed/merged.
+- Stronger safety around upstream data.
+- Cleaner error behavior.
+- Easier OpenAPI generation.
+- Much less ad hoc validation duplication.
 
----
+#### Backend Caching
 
-## v9.0 — Multi-Device & Cloud Sync
+Current state:
 
-> Focus: use the dashboard on multiple screens with shared configuration and state.
+- The client caches aggressively.
+- The worker still does not act as a serious shared cache tier.
 
-### Cloud Sync via Cloudflare KV
+Decision:
 
-- [ ] **Device ID**: UUID generated per device, stored in `localStorage dash_device_id`.
-- [ ] **Family ID**: 6-character code entered once in config. Worker uses `family:{code}` as KV partition key.
-- [ ] **Sync protocol**: on config save → `PUT /api/sync/:familyId` with JSON payload → Worker writes to KV. On load → `GET /api/sync/:familyId` → latest config. Conflict resolution: **last-write-wins with timestamp** (simple, works for family use).
-- [ ] **Selective sync**: sync config + card layout + hidden cards + theme. Do NOT sync cache or transient UI state.
-- [ ] **No auth required**: family code is a shared secret. Acceptable for a family dashboard with no sensitive data. Rate-limited to prevent brute-force enumeration.
+- Introduce KV-backed worker caching for the most expensive or unstable providers.
+- Keep cache TTLs provider-aware.
+- Normalize all cache-control decisions in one backend policy layer.
 
-### Multi-Display Roles
+#### Provider Normalization
 
-- [ ] **Screen roles**: configure each device as:
-  - **"Living Room"** — full dashboard, all cards
-  - **"Kitchen"** — weather + calendar + tasks only
-  - **"Bedroom"** — minimal + permanent night dimmer
-  - **"Custom"** — user-defined card selection
-- [ ] **Role config**: `config.screenRole = "living-room" | "kitchen" | "bedroom" | "custom"`. Roles map to `hiddenCards` presets.
-- [ ] **Sync-aware**: role is per-device (not synced). Card visibility derived from role.
+Current state:
 
-### Real-Time Sync (Stretch Goal)
+- Cards still know too much about provider quirks.
 
-- [ ] **Durable Objects**: Worker uses Durable Objects for WebSocket-based real-time config push. When one device changes theme, all devices update within 1 second.
-- [ ] **Fallback**: if WebSocket unavailable, poll `GET /api/sync/:familyId` every 5 minutes.
-- [ ] **Cost consideration**: Durable Objects have per-request costs. Evaluate if polling is sufficient for the family use case.
+Decision:
+
+- The worker should increasingly return normalized domain responses instead of thin proxied payloads.
+- Client cards should render domain models, not raw upstream API structures.
 
 ---
 
-## v10.0 — Smart Integrations & Accessibility
+## 7. External Sources And API Strategy
 
-> Focus: turn the dashboard into a smart home control surface; full accessibility.
+Best-in-class here means provider abstraction, health awareness, and normalization.
 
-### Voice Control
+### Provider Decision Table
 
-- [ ] **Web Speech API**: Hebrew speech recognition ("מה מזג האוויר?", "הצג חדשות", "עבור לנושא הבא").
-- [ ] **Command mapping**: 10 voice commands → existing keyboard shortcuts. No AI/LLM required — pattern matching on Hebrew keywords.
-- [ ] **Wake word**: "משפחה" (family) or always-listening mode (configurable).
-- [ ] **Privacy**: all processing on-device. No audio sent to any server.
+| Domain | Current Source | Decision | Next Step |
+| --- | --- | --- | --- |
+| Weather | Open-Meteo | Keep as primary | Add normalized worker response and fallback provider evaluation |
+| Stocks | Yahoo Finance unofficial endpoints | Keep only behind abstraction, no more direct dependency leakage | Add provider adapter interface and backup provider path |
+| Currency | ER-API style latest-rate feeds | Keep short-term | Add historical strategy and worker normalization |
+| News | Raw RSS via multiple origins | Keep concept, change transport | Move to worker aggregation and dedupe |
+| Calendar ICS | Remote ICS proxying | Keep | Harden parsing and worker-side validation |
+| Alerts | Tzeva Adom | Keep | Add health and backoff policy plus degraded-state UX |
+| Hebrew calendar | Hebcal | Keep | Normalize server-side where useful |
+| Learning content | Sefaria | Keep | Add stronger stale strategy and response validation |
 
-### Full Accessibility
+### New Provider Principles
 
-- [ ] **Screen reader audit**: NVDA + VoiceOver testing for all 11 cards. Fix all ARIA violations.
-- [ ] **High-contrast theme**: 7th theme designed for low-vision users (WCAG AAA contrast). Black-on-white option.
-- [ ] **Keyboard-only navigation**: Tab order through all interactive elements. Focus visible on every control.
-- [ ] **Reduced motion**: `prefers-reduced-motion` already handled in `a11y.css`. Verify all animations respect it.
-
-### Smart Home Integration
-
-- [ ] **Home Assistant card**: new card showing entity states (lights, temperature sensors, door locks) via HA WebSocket API.
-- [ ] **Direct device control**: toggle Shelly/Tuya switches from dashboard tiles.
-- [ ] **Waze commute tile**: real-time commute ETA from home to configurable destinations.
-- [ ] **Grocery list card**: shared family grocery list with completion sync (via Cloudflare KV).
-
-### AI Briefing (Experimental)
-
-- [ ] **Morning summary**: on-device LLM (via WebLLM or Ollama) generates a Hebrew morning brief combining weather, calendar, and news highlights.
-- [ ] **No cloud AI dependency**: all inference runs locally. No data leaves the device.
-- [ ] **Fallback**: if LLM unavailable, show a structured text summary (no AI) as the default.
+- Every provider must have a normalized internal shape.
+- Every provider must have a fallback or degraded mode story.
+- Every provider must expose TTL, error classification, and stale strategy.
+- Cards should not own provider-specific parsing unless there is a strong reason.
 
 ---
 
-## Long-Term Vision
+## 8. Data, Storage, And Database Direction
 
-### v11.0+ — Platform & Community
+The project does not currently need a traditional database.
 
-- [ ] **Card plugin system**: community-submitted card definitions loaded at runtime. JSON manifest defines card metadata, data source, refresh interval, CSS.
-- [ ] **Internationalization (i18n)**: if community demand exists, add `i18next` with Hebrew as default locale. Support English, Arabic, Russian (common in Israel).
-- [ ] **Mobile companion app**: Capacitor wrapper for iOS/Android push notifications (red alerts, calendar reminders).
-- [ ] **E-ink display support**: high-contrast, minimal-refresh mode for e-ink screens (Kindle, BOOX).
-- [ ] **Open data export**: dashboard data exportable as JSON/CSV for personal analytics.
+That is not a weakness. It is the right decision for the current product stage.
 
----
+### 8.1 Client Storage
 
-## Decision Log
+Decision:
 
-Key architectural decisions and their rationale, for future reference.
+- IndexedDB becomes the primary persistent data cache.
+- localStorage becomes primarily config, tiny flags, and emergency compatibility fallback.
 
-| # | Date | Decision | Alternatives Considered | Rationale | Status |
-| - | ---- | -------- | ----------------------- | --------- | ------ |
-| D1 | 2024 | TypeScript + Vite (no framework) | React, Vue, Svelte, Angular | Zero-dep constraint; Vite gives fast dev + optimal bundle; TS catches bugs at compile time. Framework overhead unjustified for a read-heavy dashboard. | ✅ Validated |
-| D2 | 2024 | Vitest + happy-dom (not jsdom) | Jest, Mocha, jsdom | Vite-native; happy-dom is 2–3× faster than jsdom; `pool=forks` isolates DOM state. | ✅ Validated |
-| D3 | 2024 | Vanilla CSS + @layer (no Tailwind/Sass) | Tailwind, Sass, CSS-in-JS | Zero build overhead; @layer ordering > BEM cascades; CSS custom properties give theme switching for free. | ✅ Validated |
-| D4 | 2024 | Cloudflare Workers (not Vercel/Netlify) | Vercel, Netlify, AWS Lambda | 100K req/day free; edge-deployed; Wrangler CLI; KV + Durable Objects for future sync. | ✅ Validated |
-| D5 | 2024 | PWA + SW (not Electron/Tauri) | Electron, Tauri, native app | Runs in browser tab on TV/Raspberry Pi; PWA gives offline + installable without app store. | ✅ Validated |
-| D6 | 2024 | localStorage + Map (not IndexedDB) | IndexedDB, SQLite via wasm | Simple, sync, sufficient for config + short-lived cache. | 🟡 **Revisiting in v7.10/v8.1** — IDB tier added in v7.9, full migration planned. |
-| D7 | 2024 | No auth / static-only | Firebase Auth, Auth0, Clerk | Local family display, no user accounts, no sensitive writes. Auth adds complexity with zero value. | ✅ Valid until v9.0 (cloud sync may need family-code auth). |
-| D8 | 2024 | Hebrew RTL-first (no i18n) | i18next, multi-language | Target audience is Hebrew-speaking Israeli families. i18n for one language is wasted complexity. | ✅ Valid. Revisit only if international demand emerges. |
-| D9 | 2026-Q2 | **Web Components (vanilla)** for card model | Lit, Preact, Solid, stay vanilla | Shadow DOM gives CSS scoping for free. No dep. Lit evaluated as fallback if template verbosity hurts. | 🕐 Planned for v8.0 |
-| D10 | 2026 | Yahoo Finance via Worker + KV cache | Twelve Data, Polygon.io, FMP, Alpha Vantage | Yahoo v8 through Worker proxy with KV caching reduces to ~96 req/day. FMP as automatic fallback. | 🕐 In progress |
-| D11 | 2026 | Zod for API validation (sole runtime dep) | io-ts, superstruct, Ajv, manual guards | 13 KB, zero transitive deps, generates TS types. Security/reliability gain justifies breaking zero-dep purity for data validation. | 🕐 Planned for v8.0 |
-| D12 | TBD | Worker framework | Stay vanilla, Hono, itty-router | Current vanilla router (switch/case) works for 11 routes. **If routes grow beyond 20**, migrate to Hono (14 KB, built for CF Workers, Zod OpenAPI plugin). Not needed yet. | 🔵 Deferred |
-| D13 | TBD | npm workspaces monorepo | Turborepo, Nx, Lerna, stay shared | npm workspaces is zero-dep and standard. Turborepo/Nx are overkill for 2-3 packages. | 🕐 Planned for v8.0 |
-| D14 | TBD | Client reactive state | Preact Signals, TC39 Signals, MobX, Redux | Vanilla `EventTarget` pub/sub is zero-dep and sufficient. **Re-evaluate** when TC39 Signals ships natively in browsers (earliest 2027). | 🕐 Planned for v8.0 |
+Why:
 
----
+- localStorage is sync, size-limited, and poor for large cached payloads.
+- IndexedDB better matches feed-heavy and history-heavy cards.
 
-## Design Principles
+### 8.2 Edge Storage
 
-| Principle | Rule |
-| --------- | ---- |
-| **Zero client dependencies** | No external JS/CSS libraries or CDNs at runtime. Zod is the sole exception (API boundary validation). |
-| **Hebrew RTL** | Always `dir="rtl"` in HTML; CSS logical properties where possible. |
-| **TV-first** | 1920×1080 primary; readable from 3 m; no hover-only affordances. |
-| **Offline-first** | Three-tier cache (memory + IDB + SW). Dashboard is useful without network. |
-| **0 lint errors** | `npx eslint . --max-warnings 0` must pass on every commit. |
-| **0 TS errors** | `npx tsc -b --noEmit` must pass on every commit. |
-| **No suppressions** | Zero `eslint-disable` / `@ts-ignore` / `@ts-expect-error` allowed. |
-| **Worker-first fetch** | Production: all API calls go through Cloudflare Worker. Proxy chain is dev-only fallback. |
-| **Progressive enhancement** | Cards render with stale data instantly; fresh data replaces when available. Never show an empty card. |
-| **Self-hosted observability** | Error tracking, performance metrics, and health checks use own Worker infrastructure. No third-party telemetry. |
+Decision:
+
+- Cloudflare KV is the first server-side persistence layer to adopt.
+- Durable Objects are reserved for correctness-critical coordination.
+- D1 is deferred until the product truly needs relational queries.
+
+Recommended usage:
+
+- KV: shared cache, provider health snapshots, allowlists, aggregated feed payloads
+- Durable Objects: stronger rate limiting or future collaborative sync coordination
+- D1: only if future cloud sync needs durable queryable user records
+- R2: only if asset snapshots, archives, or export bundles justify it
+
+### 8.3 No Premature Database
+
+The project should not add D1, Postgres, Supabase, or Firebase now just because it feels more complete.
+
+That would increase operational surface area without a current product need.
 
 ---
 
-<!-- Last updated: v7.12.0 — June 2026 -->
+## 9. Documentation Reassessment
+
+This is one of the weakest current areas.
+
+### Problems
+
+- README is stale and still describes the legacy single-file dashboard workflow.
+- Architecture and roadmap have drifted from implementation reality.
+- AI instruction files are useful but spread across too many overlapping sources.
+- Some docs are release- or sprint-shaped instead of role-shaped.
+
+### New Documentation Model
+
+We will organize docs by audience and responsibility:
+
+| Document | Audience | Purpose |
+| --- | --- | --- |
+| README.md | users and first-time contributors | truthful product overview, setup, screenshots, feature summary |
+| ARCHITECTURE.md | developers | current architecture only, no wishlist content |
+| ROADMAP.md | maintainers | decision log plus forward plan |
+| CHANGELOG.md | releases | what changed, release by release |
+| docs/adr/ | maintainers | major architectural decisions and reversals |
+| worker/README.md or API.md | backend contributors | worker routes, validation, cache policy, deployment |
+| CONTRIBUTING.md | human contributors | workflow, quality gates, coding rules |
+
+### Documentation Rule
+
+Any structural change that affects runtime architecture, caching, worker behavior, or setup must update the matching doc in the same release.
+
+---
+
+## 10. Tooling And Language Decisions
+
+### Keep
+
+- TypeScript
+- Vite
+- Vitest
+- ESLint
+- Cloudflare Worker
+- GitHub Actions
+
+### Improve
+
+| Area | Current | Decision |
+| --- | --- | --- |
+| TypeScript version alignment | app on 5.9, worker on 5.8 | Align worker to frontend TS baseline |
+| Node baseline | broad CI matrix | Keep active and next LTS support, but simplify local contributor guidance |
+| API contract generation | partial OpenAPI story | Move to generated or schema-backed API docs |
+| Browser-level QA | no serious E2E or visual regression layer | Add Playwright and screenshot regression |
+| Performance budgets | only partial bundle discipline | Add Lighthouse CI and formal performance budgets |
+
+### Dependency Policy
+
+Client runtime:
+
+- Default to zero new runtime dependencies.
+- Exceptions require explicit justification in an ADR.
+
+Worker and build-time tooling:
+
+- High-value dependencies are allowed when they reduce duplicated risk.
+- Likely candidates: Zod, OpenAPI helpers, Playwright, Lighthouse CI.
+
+---
+
+## 11. Rewrite, Refactor, Enhance: Recommended By Area
+
+### Rewrite Now
+
+- ROADMAP.md
+- README.md
+- architecture-document truth model
+
+### Refactor Incrementally
+
+- card lifecycle onto `FdbCard` instances
+- cache usage toward async-first IDB-aware flows
+- worker output normalization
+- config into namespaced per-card structure
+- card shell and metric tile UI primitives
+- provider adapters and health model
+
+### Enhance Without Rewrite
+
+- diagnostics and telemetry
+- design tokens and card consistency
+- offline behavior and stale-state UX
+- release process and CI reporting
+
+### Explicitly Defer
+
+- full Shadow DOM migration
+- relational database adoption
+- authentication
+- framework rewrite
+
+---
+
+## 12. Roadmap Streams
+
+This roadmap is organized into streams rather than endless micro-sprints.
+
+## Stream A: Truth, Cleanup, And Product Framing
+
+Priority: Immediate
+
+### Goals
+
+- Make docs truthful.
+- Remove roadmap drift.
+- Reduce contributor confusion.
+- Establish the target product definition.
+
+### Deliverables
+
+- Rewrite README to reflect the modular TypeScript app, not the legacy HTML artifact.
+- Update architecture docs to describe the real cache, state, worker, and card layers.
+- Add a small ADR folder for major decisions.
+- Separate legacy archive docs from current product docs.
+
+### Exit Criteria
+
+- A new contributor can understand setup, runtime structure, and deployment from docs alone.
+- No top-level doc describes the wrong architecture.
+
+## Stream B: Card Architecture Convergence
+
+Priority: Very High
+
+### Goals
+
+- Stop living in two card models.
+- Make each card instance self-contained.
+- Enable registry-driven rendering and cleanup.
+
+### Deliverables
+
+- Define a final `CardRuntime` contract around render, connect, disconnect, refresh, and config subscriptions.
+- Promote `FdbCard` from foundation to primary pattern.
+- Migrate the highest-churn cards first: weather, news, stocks, tasks.
+- Replace static shell duplication with registry-created shells.
+- Introduce shared card anatomy primitives.
+
+### Exit Criteria
+
+- New cards no longer require hand-wired static HTML shells.
+- A card can be instantiated, tested, and torn down in isolation.
+- Timers and listeners are owned by instances, not files.
+
+## Stream C: Data Contracts And Provider Abstraction
+
+Priority: Very High
+
+### Goals
+
+- Separate rendering from provider quirks.
+- Improve resilience against external API drift.
+
+### Deliverables
+
+- Add schema-validated normalized response contracts.
+- Build provider adapters for weather, stocks, currency, news, alerts, hebcal, and calendar.
+- Add provider health reporting and degraded-state UX.
+- Move feed aggregation and dedupe to the worker.
+
+### Exit Criteria
+
+- Cards render normalized domain models.
+- A provider swap does not require card rewrites.
+- Invalid upstream data is detected at the boundary.
+
+## Stream D: Storage And Offline Architecture
+
+Priority: High
+
+### Goals
+
+- Make IndexedDB the real persistent cache.
+- Reduce localStorage pressure and sync blocking.
+
+### Deliverables
+
+- Standardize async-first cache usage for network-backed cards.
+- Complete LS-to-IDB migration policy and cleanup.
+- Add worker KV cache for shared edge caching.
+- Add better stale and empty-state rendering conventions.
+
+### Exit Criteria
+
+- Most network-backed cards no longer rely on localStorage as their primary persistent cache.
+- Shared edge cache measurably reduces upstream calls.
+
+## Stream E: Config And Personalization
+
+Priority: High
+
+### Goals
+
+- Stop growing a single flat config bag.
+- Make per-card settings maintainable.
+
+### Deliverables
+
+- Move to namespaced config per card and per UI domain.
+- Refactor config panel around card-specific groups.
+- Add schema-aware import and export validation.
+- Reduce implicit localStorage key coupling.
+
+### Exit Criteria
+
+- Config migrations are localized and understandable.
+- Card settings can evolve independently.
+
+## Stream F: Visual System And UX Quality
+
+Priority: High
+
+### Goals
+
+- Turn a strong-looking dashboard into a coherent system.
+- Improve consistency, density management, and readability.
+
+### Deliverables
+
+- Formal card shell primitives.
+- Shared skeleton, empty, stale, and error patterns.
+- Theme audits across all cards.
+- TV-distance readability audit.
+- Better use of visual hierarchy, fewer noisy one-off badges.
+
+### Exit Criteria
+
+- Cards feel like one product, not eleven separate experiments.
+- Theme and screen mode changes do not create layout surprises.
+
+## Stream G: Testing, Observability, And Performance
+
+Priority: High
+
+### Goals
+
+- Detect regressions early.
+- Measure what matters.
+
+### Deliverables
+
+- Playwright critical-flow suite.
+- Screenshot-based visual regression coverage.
+- Lighthouse CI budgets.
+- Provider health diagnostics and edge cache metrics.
+- Bundle-size trend reporting.
+
+### Exit Criteria
+
+- UI regressions are caught automatically.
+- Performance and accessibility are tracked continuously.
+
+## Stream H: Infrastructure And Release Engineering
+
+Priority: Medium
+
+### Goals
+
+- Make shipping boring and safe.
+
+### Deliverables
+
+- Align package and toolchain versions across app and worker.
+- Simplify contributor install story.
+- Decide whether to keep parent-level install model or move to a workspace model.
+- Add preview deployments if they materially improve review quality.
+
+### Exit Criteria
+
+- Contributor setup is documented and unsurprising.
+- Releases include automated quality reporting and artifact verification.
+
+---
+
+## 13. Release Plan
+
+## v7.13 - Truth And Stabilization Release
+
+Purpose:
+
+- close the documentation gap
+- stabilize current architecture
+- consolidate recently added infrastructure
+
+Must include:
+
+- ROADMAP rewrite
+- README rewrite
+- architecture refresh
+- audit of stale roadmap items vs actual implementation
+- localStorage and cache policy review
+- external-source inventory review
+
+Nice to include:
+
+- first provider decision ADRs
+- first design-system and card-shell audit
+
+## v7.14 - Data Boundary Release
+
+Purpose:
+
+- normalize provider handling
+- harden worker contracts
+
+Must include:
+
+- schema-backed worker validation
+- normalized response contracts for highest-risk providers
+- worker-side news aggregation start
+- stocks provider abstraction start
+
+## v7.15 - Card Runtime Release
+
+Purpose:
+
+- commit to a single card runtime direction
+
+Must include:
+
+- registry-driven shell creation for at least one major slice
+- first production cards on the `FdbCard` instance pattern
+- card-owned refresh and cleanup
+
+## v8.0 - Architecture Convergence Release
+
+Purpose:
+
+- make the current transitional architecture coherent
+
+Required outcomes:
+
+- `FdbCard` or equivalent instance runtime becomes the default
+- config becomes namespaced
+- worker-first normalized data model is established
+- docs, tests, and architecture are aligned
+
+## v8.1 - Offline And Edge Cache Release
+
+Required outcomes:
+
+- IDB-first persistent cache strategy
+- KV-backed worker cache for high-value providers
+- stronger stale-state and degraded-state UX
+
+## v8.2 - Best-In-Class Quality Release
+
+Required outcomes:
+
+- Playwright critical flows
+- visual regression suite
+- Lighthouse CI budgets
+- design consistency audit across all cards
+
+## v9.0 - Optional Cloud Sync Release
+
+This is intentionally optional.
+
+Only pursue it if:
+
+- there is a real multi-device product need
+- local-only configuration becomes a bottleneck
+- the operational and auth tradeoffs are justified
+
+---
+
+## 14. Consolidation Of The Old Roadmap
+
+The old roadmap mixed three kinds of items: already done, partially done, and still valuable. This section consolidates them.
+
+| Old Item | New Status |
+| --- | --- |
+| EventTarget state store | Done. Keep and extend. |
+| FdbCard base class | Done as foundation. Finish adoption, not redesign. |
+| Shadow DOM migration | De-scoped. Use only if a specific card needs hard encapsulation. |
+| Worker tests in CI | Done. Maintain. |
+| IDB cache support | Done in foundation and partial wiring. Finish operational model. |
+| localStorage to IDB migration | Partially done. Complete policy and cleanup. |
+| Dynamic registry-driven layout | Still strategic. Keep. |
+| Config namespacing | Still strategic. Keep. |
+| Proxy removal in production | Partially done. Finish cleanup and transport simplification. |
+| OpenAPI completeness | Still valuable. Keep. |
+| Playwright and visual regression | Still valuable. Keep. |
+| Lighthouse CI | Still valuable. Keep. |
+| Monorepo and workspaces migration | Reconsider, not automatic. Decide based on contributor friction, not aesthetics. |
+| Doc consolidation | Still urgent. Keep and execute soon. |
+
+---
+
+## 15. Architecture Principles Going Forward
+
+All future work should follow these principles:
+
+1. Product truth over roadmap neatness.
+2. Incremental convergence over grand rewrites.
+3. Normalized data contracts over provider leakage.
+4. Instance-owned lifecycle over file-owned mutable state.
+5. TV readability over flashy UI tricks.
+6. Client simplicity over framework fashion.
+7. Edge caching before backend expansion.
+8. Documentation that matches runtime reality.
+9. Observability as a feature, not a debugging afterthought.
+10. No new persistence layer without a clear product reason.
+
+---
+
+## 16. Immediate Next Actions
+
+These are the highest-value actions after this roadmap rewrite:
+
+- Rewrite README.md to reflect the modular TypeScript app and current deployment model.
+- Refresh ARCHITECTURE.md to align with the real v7.12 implementation and this roadmap.
+- Add ADRs for three decisions: no full client framework rewrite, no default Shadow DOM, worker-normalized data model.
+- Audit highest-risk providers: stocks, news, currency.
+- Define the `CardRuntime` migration contract and migrate one card end-to-end before expanding.
+- Create a docs inventory and remove or archive clearly stale legacy guidance.
+
+This is the shortest path toward a best-in-class application without losing the strengths already earned.

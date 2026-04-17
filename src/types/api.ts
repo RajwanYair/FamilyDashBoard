@@ -289,3 +289,304 @@ export function isCalendarEvent(v: unknown): v is CalendarEvent {
     typeof v["icsIndex"] === "number"
   );
 }
+
+// ── Domain types (Sprint 36–44, v7.13) ────────────────────────────────────
+//
+// Normalized internal representations that decouple cards from provider quirks.
+// Cards render domain models; provider-specific parsing lives in mapper functions.
+
+// ── WeatherDomain (Sprint 36) ──
+
+/** Normalized weather state — card renders this, not WeatherResponse directly. */
+export interface WeatherDomain {
+  /** Celsius temperature */
+  tempC: number;
+  /** Celsius feels-like temperature */
+  feelsLikeC: number;
+  /** Relative humidity 0–100 */
+  humidity: number;
+  /** Wind speed km/h */
+  windKph: number;
+  /** Wind direction degrees 0–360 */
+  windDeg: number;
+  /** UV index */
+  uv: number;
+  /** Open-Meteo WMO weather code */
+  weatherCode: number;
+  /** Dew point Celsius */
+  dewPointC: number;
+  /** Hourly forecast (next 12 hours) */
+  hourly: Array<{ time: string; tempC: number; precipPct: number; code: number }>;
+  /** 4-day daily forecast */
+  daily: Array<{
+    date: string;
+    maxC: number;
+    minC: number;
+    code: number;
+    sunrise: string;
+    sunset: string;
+    precipPct: number;
+    uv: number;
+  }>;
+  /** ISO timestamp of when this data was fetched */
+  fetchedAt: string;
+}
+
+/**
+ * Map a raw WeatherResponse to the normalized WeatherDomain.
+ * Safe to call after `isWeatherResponse()` confirms the shape.
+ */
+export function mapToWeatherDomain(r: WeatherResponse): WeatherDomain {
+  const c = r.current;
+  const h = r.hourly;
+  const d = r.daily;
+  const now = new Date();
+  const nowHour = now.getHours();
+  const hourly = h.time
+    .slice(0, 24)
+    .map((t, i) => ({
+      time: t,
+      tempC: h.temperature_2m[i] ?? 0,
+      precipPct: h.precipitation_probability[i] ?? 0,
+      code: h.weather_code[i] ?? 0,
+    }))
+    .filter((_, i) => {
+      const hh = parseInt(h.time[i]?.slice(11, 13) ?? "0", 10);
+      return hh >= nowHour;
+    })
+    .slice(0, 12);
+
+  const daily = d.time.map((date, i) => ({
+    date,
+    maxC: d.temperature_2m_max[i] ?? 0,
+    minC: d.temperature_2m_min[i] ?? 0,
+    code: d.weather_code[i] ?? 0,
+    sunrise: d.sunrise[i] ?? "",
+    sunset: d.sunset[i] ?? "",
+    precipPct: d.precipitation_probability_max[i] ?? 0,
+    uv: d.uv_index_max[i] ?? 0,
+  }));
+
+  return {
+    tempC: c.temperature_2m,
+    feelsLikeC: c.apparent_temperature,
+    humidity: c.relative_humidity_2m,
+    windKph: c.wind_speed_10m,
+    windDeg: c.wind_direction_10m,
+    uv: c.uv_index,
+    weatherCode: c.weather_code,
+    dewPointC: c.dew_point_2m,
+    hourly,
+    daily,
+    fetchedAt: now.toISOString(),
+  };
+}
+
+// ── StocksDomain (Sprint 37) ──
+
+/** Normalized single-stock state. */
+export interface StockDomain {
+  symbol: string;
+  price: number;
+  prevClose: number;
+  /** Absolute price change */
+  change: number;
+  /** Percentage change */
+  changePct: number;
+  currency: string;
+  /** Closing prices from chart (may be sparse/null-filled) */
+  closes: (number | null)[];
+  /** Post-market price if available */
+  postMarketPrice: number | null;
+  /** Post-market change % if available */
+  postMarketChangePct: number | null;
+  /** Pre-market price if available */
+  preMarketPrice: number | null;
+  /** Pre-market change % if available */
+  preMarketChangePct: number | null;
+  /** ISO timestamp of when this data was fetched */
+  fetchedAt: string;
+}
+
+/**
+ * Map a raw YahooChartResponse to a normalized StockDomain.
+ * Returns null if the response is missing required result data.
+ */
+export function mapToStockDomain(symbol: string, r: YahooChartResponse): StockDomain | null {
+  const result = r.chart.result?.[0];
+  if (!result) return null;
+  const meta = result.meta;
+  const closes = result.indicators.quote[0]?.close ?? [];
+  const price = meta.regularMarketPrice;
+  const prev = meta.previousClose;
+  return {
+    symbol,
+    price,
+    prevClose: prev,
+    change: price - prev,
+    changePct: prev !== 0 ? ((price - prev) / prev) * 100 : 0,
+    currency: meta.currency,
+    closes,
+    postMarketPrice: meta.postMarketPrice ?? null,
+    postMarketChangePct: meta.postMarketChangePercent ?? null,
+    preMarketPrice: meta.preMarketPrice ?? null,
+    preMarketChangePct: meta.preMarketChangePercent ?? null,
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+// ── CurrencyDomain (Sprint 42) ──
+
+/** Normalized currency exchange state. */
+export interface CurrencyDomain {
+  /** ISO base currency code (e.g. "USD") */
+  base: string;
+  /** Map of currency code → rate vs base */
+  rates: Record<string, number>;
+  /** ISO timestamp of the last update from provider */
+  updatedAt: string;
+  /** ISO timestamp of when this data was fetched */
+  fetchedAt: string;
+}
+
+/** Map a raw CurrencyResponse to CurrencyDomain. */
+export function mapToCurrencyDomain(r: CurrencyResponse): CurrencyDomain {
+  return {
+    base: r.base_code,
+    rates: { ...r.rates },
+    updatedAt: r.time_last_update_utc,
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+// ── NewsDomain (Sprint 41) ──
+
+/** Normalized single news article. */
+export interface NewsDomainItem {
+  title: string;
+  link: string;
+  /** Description / excerpt — may be empty */
+  description: string;
+  /** ISO date string */
+  pubDate: string;
+  /** Source label (feed name) */
+  source: string;
+  /** Feed index for color coding */
+  feedIndex: number;
+}
+
+/** Map a raw NewsItem to NewsDomainItem. */
+export function rssItemToDomain(item: NewsItem, feedIndex: number): NewsDomainItem {
+  return {
+    title: item.title,
+    link: item.link,
+    description: item.description ?? "",
+    pubDate: item.pubDate,
+    source: item.source,
+    feedIndex,
+  };
+}
+
+// ── AlertsDomain (Sprint 43) ──
+
+/** Normalized single alert zone event. */
+export interface AlertZoneDomain {
+  cities: string[];
+  /** Raw threat code from provider */
+  threat: number;
+  /** Unix timestamp (seconds) */
+  time: number;
+  /** Age in minutes at domain mapping time */
+  ageMin: number;
+}
+
+/** Normalized alert container. */
+export interface AlertsDomain {
+  zones: AlertZoneDomain[];
+  /** Total count in last 24h */
+  count24h: number;
+  fetchedAt: string;
+}
+
+/** Map a raw AlertEvent to AlertsDomain. */
+export function mapToAlertsDomain(ev: AlertEvent): AlertsDomain {
+  const now = Date.now() / 1000;
+  const zones: AlertZoneDomain[] = ev.alerts.map((a) => ({
+    cities: a.cities,
+    threat: a.threat,
+    time: a.time,
+    ageMin: Math.max(0, Math.round((now - a.time) / 60)),
+  }));
+  return {
+    zones,
+    count24h: ev.alerts.length,
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+// ── HebcalDomain (Sprint 44) ──
+
+/** Normalized single Hebcal item. */
+export interface HebcalDomainItem {
+  titleHe: string;
+  titleEn: string;
+  date: string;
+  category: string;
+  subcat?: string;
+  memo?: string;
+}
+
+/** Normalized Hebrew calendar state. */
+export interface HebcalDomain {
+  items: HebcalDomainItem[];
+  /** Candle lighting time if present */
+  candleLighting?: string;
+  /** Havdalah time if present */
+  havdalah?: string;
+  fetchedAt: string;
+}
+
+/** Map a raw HebcalResponse to HebcalDomain. */
+export function mapToHebcalDomain(r: HebcalResponse): HebcalDomain {
+  const candle = r.items.find((i) => i.category === "candles");
+  const havd = r.items.find((i) => i.category === "havdalah");
+  return {
+    items: r.items.map((i) => ({
+      titleHe: i.hebrew,
+      titleEn: i.title,
+      date: i.date,
+      category: i.category,
+      subcat: i.subcat,
+      memo: i.memo,
+    })),
+    candleLighting: candle?.title,
+    havdalah: havd?.title,
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+// ── CalendarDomain (Sprint 76) ──
+
+/** Normalized calendar event for rendering. */
+export interface CalendarDomainEvent {
+  summary: string;
+  start: Date;
+  end: Date;
+  allDay: boolean;
+  description?: string;
+  location?: string;
+  icsIndex: number;
+}
+
+/** Map a CalendarEvent to CalendarDomainEvent (currently 1:1, reserved for future normalization). */
+export function mapToCalendarDomainEvent(e: CalendarEvent): CalendarDomainEvent {
+  return {
+    summary: e.summary,
+    start: e.start,
+    end: e.end,
+    allDay: e.allDay,
+    description: e.description,
+    location: e.location,
+    icsIndex: e.icsIndex,
+  };
+}

@@ -14,6 +14,13 @@ import {
   isHebcalResponse,
   isCoinGeckoResponse,
   isCalendarEvent,
+  mapToWeatherDomain,
+  mapToStockDomain,
+  mapToCurrencyDomain,
+  rssItemToDomain,
+  mapToAlertsDomain,
+  mapToHebcalDomain,
+  mapToCalendarDomainEvent,
 } from "@/types/api";
 import type {
   WeatherResponse, NewsItem, CurrencyResponse, AlertEvent,
@@ -408,5 +415,205 @@ describe("isCalendarEvent", () => {
 
   it("returns false for null", () => {
     expect(isCalendarEvent(null)).toBe(false);
+  });
+});
+
+// ── Domain mappers (Sprints 36-44, v7.13) ────────────────────────────────────
+
+describe("mapToWeatherDomain (Sprint 36)", () => {
+  it("maps tempC, feelsLikeC, humidity, windKph correctly", () => {
+    const wx = makeWeatherResponse();
+    const d = mapToWeatherDomain(wx);
+    expect(d.tempC).toBe(22);
+    expect(d.feelsLikeC).toBe(21);
+    expect(d.humidity).toBe(55);
+    expect(d.windKph).toBe(10);
+  });
+
+  it("maps weatherCode and uv", () => {
+    const d = mapToWeatherDomain(makeWeatherResponse());
+    expect(d.weatherCode).toBe(1);
+    expect(d.uv).toBe(3);
+  });
+
+  it("includes fetchedAt as ISO string", () => {
+    const d = mapToWeatherDomain(makeWeatherResponse());
+    expect(typeof d.fetchedAt).toBe("string");
+    expect(() => new Date(d.fetchedAt)).not.toThrow();
+  });
+
+  it("daily array maps date, maxC, minC, code", () => {
+    const d = mapToWeatherDomain(makeWeatherResponse());
+    const first = d.daily[0];
+    expect(first).toBeDefined();
+    if (first) {
+      expect(first.date).toBe("2024-01-01");
+      expect(first.maxC).toBe(25);
+      expect(first.minC).toBe(15);
+      expect(first.code).toBe(1);
+    }
+  });
+});
+
+function makeDomainStockResponse(): YahooChartResponse {
+  return {
+    chart: {
+      result: [{
+        meta: {
+          regularMarketPrice: 150,
+          previousClose: 145,
+          currency: "USD",
+          regularMarketVolume: 1000000,
+        },
+        indicators: { quote: [{ close: [140, 142, 148, 150] }] },
+      }],
+      error: null,
+    },
+  };
+}
+
+describe("mapToStockDomain (Sprint 37)", () => {
+  it("maps price, prevClose, change, changePct", () => {
+    const d = mapToStockDomain("AAPL", makeDomainStockResponse());
+    expect(d).not.toBeNull();
+    if (d) {
+      expect(d.symbol).toBe("AAPL");
+      expect(d.price).toBe(150);
+      expect(d.prevClose).toBe(145);
+      expect(d.change).toBeCloseTo(5);
+      expect(d.changePct).toBeCloseTo((5 / 145) * 100);
+    }
+  });
+
+  it("returns closes array", () => {
+    const d = mapToStockDomain("AAPL", makeDomainStockResponse());
+    expect(d?.closes).toEqual([140, 142, 148, 150]);
+  });
+
+  it("returns null when result is empty", () => {
+    const empty: YahooChartResponse = { chart: { result: [], error: null } };
+    expect(mapToStockDomain("AAPL", empty)).toBeNull();
+  });
+
+  it("includes fetchedAt timestamp", () => {
+    const d = mapToStockDomain("AAPL", makeDomainStockResponse());
+    expect(typeof d?.fetchedAt).toBe("string");
+  });
+});
+
+describe("mapToCurrencyDomain (Sprint 42)", () => {
+  function makeCurrencyResponse(): CurrencyResponse {
+    return { rates: { ILS: 3.7, EUR: 0.92 }, base_code: "USD", time_last_update_utc: "2024-01-01T00:00:00Z" };
+  }
+
+  it("maps base, rates, updatedAt", () => {
+    const d = mapToCurrencyDomain(makeCurrencyResponse());
+    expect(d.base).toBe("USD");
+    expect(d.rates["ILS"]).toBe(3.7);
+    expect(d.updatedAt).toBe("2024-01-01T00:00:00Z");
+  });
+
+  it("includes fetchedAt", () => {
+    const d = mapToCurrencyDomain(makeCurrencyResponse());
+    expect(typeof d.fetchedAt).toBe("string");
+  });
+});
+
+describe("rssItemToDomain (Sprint 41)", () => {
+  function makeNewsItem(): NewsItem {
+    return { title: "כותרת", link: "https://x.com/1", pubDate: "2024-01-01T10:00:00Z", source: "Ynet", description: "תיאור" };
+  }
+
+  it("maps title, link, source, feedIndex", () => {
+    const d = rssItemToDomain(makeNewsItem(), 2);
+    expect(d.title).toBe("כותרת");
+    expect(d.source).toBe("Ynet");
+    expect(d.feedIndex).toBe(2);
+  });
+
+  it("maps description (optional)", () => {
+    const d = rssItemToDomain(makeNewsItem(), 0);
+    expect(d.description).toBe("תיאור");
+  });
+
+  it("uses empty string for missing description", () => {
+    const item = makeNewsItem();
+    (item as Record<string, unknown>)["description"] = undefined;
+    const d = rssItemToDomain(item, 0);
+    expect(d.description).toBe("");
+  });
+});
+
+describe("mapToAlertsDomain (Sprint 43)", () => {
+  function makeAlertEvent(): AlertEvent {
+    return {
+      alerts: [
+        { cities: ["תל אביב", "גבעתיים"], threat: 1, time: Math.floor(Date.now() / 1000) - 60 },
+        { cities: ["ירושלים"], threat: 2, time: Math.floor(Date.now() / 1000) - 300 },
+      ],
+    };
+  }
+
+  it("maps zones length", () => {
+    const d = mapToAlertsDomain(makeAlertEvent());
+    expect(d.zones).toHaveLength(2);
+  });
+
+  it("maps cities and threat", () => {
+    const d = mapToAlertsDomain(makeAlertEvent());
+    expect(d.zones[0]?.cities).toContain("תל אביב");
+    expect(d.zones[0]?.threat).toBe(1);
+  });
+
+  it("computes ageMin > 0 for old alerts", () => {
+    const d = mapToAlertsDomain(makeAlertEvent());
+    expect(d.zones[0]?.ageMin).toBeGreaterThanOrEqual(1);
+  });
+
+  it("count24h equals number of zones", () => {
+    const d = mapToAlertsDomain(makeAlertEvent());
+    expect(d.count24h).toBe(2);
+  });
+});
+
+describe("mapToHebcalDomain (Sprint 44)", () => {
+  it("maps items to titleHe/titleEn", () => {
+    const r: HebcalResponse = {
+      title: "Hebcal",
+      items: [{ title: "Candle lighting", hebrew: "הדלקת נרות", date: "2024-01-05", category: "candles" }],
+    };
+    const d = mapToHebcalDomain(r);
+    expect(d.items[0]?.titleHe).toBe("הדלקת נרות");
+    expect(d.items[0]?.titleEn).toBe("Candle lighting");
+  });
+
+  it("extracts candleLighting time", () => {
+    const r: HebcalResponse = {
+      title: "Hebcal",
+      items: [{ title: "Candle lighting: 17:30", hebrew: "הדלקת נרות", date: "2024-01-05", category: "candles" }],
+    };
+    const d = mapToHebcalDomain(r);
+    expect(d.candleLighting).toContain("Candle lighting");
+  });
+
+  it("includese fetchedAt", () => {
+    const d = mapToHebcalDomain({ title: "t", items: [] });
+    expect(typeof d.fetchedAt).toBe("string");
+  });
+});
+
+describe("mapToCalendarDomainEvent (Sprint 76)", () => {
+  it("maps all CalendarEvent fields to CalendarDomainEvent", () => {
+    const ce: CalendarEvent = {
+      summary: "Meeting",
+      start: new Date("2024-01-01T09:00:00"),
+      end: new Date("2024-01-01T10:00:00"),
+      allDay: false,
+      icsIndex: 1,
+    };
+    const d = mapToCalendarDomainEvent(ce);
+    expect(d.summary).toBe("Meeting");
+    expect(d.icsIndex).toBe(1);
+    expect(d.allDay).toBe(false);
   });
 });

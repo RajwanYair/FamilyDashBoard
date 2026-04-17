@@ -11,6 +11,9 @@ import {
   hasPerfSupport,
   initPerfObserver,
   _resetPerfObserver,
+  markDomReady,
+  markStartupComplete,
+  checkPerfBudget,
 } from "@/core/perf";
 
 beforeEach(() => {
@@ -106,5 +109,48 @@ describe("initPerfObserver", () => {
       initPerfObserver();
       initPerfObserver();
     }).not.toThrow();
+  });
+});
+
+// ── Sprint 40 (v7.13): checkPerfBudget ────────────────────────────────────────
+
+describe("checkPerfBudget (Sprint 40)", () => {
+  it("returns pending when startup has not been recorded", () => {
+    const result = checkPerfBudget(3000);
+    expect(result.status).toBe("pending");
+    expect(result.measuredMs).toBeNull();
+    expect(result.limitMs).toBe(3000);
+  });
+
+  it("returns pass when startup is within budget", () => {
+    markDomReady();
+    markStartupComplete();
+    const startup = getPerfVitals().startup;
+    if (startup !== null) {
+      const result = checkPerfBudget(startup + 1000); // budget = measured + 1s → always pass
+      expect(result.status).toBe("pass");
+      expect(result.measuredMs).toBe(startup);
+    }
+  });
+
+  it("returns fail when startup exceeds budget", () => {
+    markDomReady();
+    markStartupComplete();
+    const startup = getPerfVitals().startup;
+    if (startup !== null) {
+      // Set budget to 0 → always fail
+      const result = checkPerfBudget(0);
+      expect(result.status).toBe("fail");
+    }
+  });
+
+  it("uses default 3000ms budget when no argument is passed", () => {
+    const result = checkPerfBudget();
+    expect(result.limitMs).toBe(3000);
+  });
+
+  it("returns correct limitMs", () => {
+    const result = checkPerfBudget(5000);
+    expect(result.limitMs).toBe(5000);
   });
 });

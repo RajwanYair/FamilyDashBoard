@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-7.12.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-2405_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-7.13.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-2500%2B_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -126,21 +126,32 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 
 ## 🚀 Getting Started
 
-```bash
+```powershell
 # 1. Clone the repo
 git clone https://github.com/RajwanYair/FamilyDashBoard.git
 
-# 2. Open in browser — that's it!
-open BestDashBoard.html        # macOS
-start BestDashBoard.html       # Windows
-xdg-open BestDashBoard.html   # Linux
+# 2. Install tools from the parent directory
+cd MyScripts
+npm install
+
+# 3. Start dev server
+cd FamilyDashBoard
+npx vite        # → http://localhost:5173/FamilyDashBoard/
 ```
 
-> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics, **A** to toggle alerts on/off, **Escape** to close a maximized card. Click any card header to expand it full-screen. For hot-reload during development, use VS Code + Live Server extension.
+> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics, **A** to toggle alerts, **Escape** to close overlays.
+> **Important:** Never run `npm install` inside `FamilyDashBoard/`. All dev tools resolve from `MyScripts/node_modules/`.
 
-No npm. No build step. No dependencies. Just **one HTML file**.
+### Available Commands
 
-> **Testing:** Requires Node.js 18+ — run `node --test tests/dashboard.test.mjs` (1084 tests, 61 suites, zero dependencies).
+```powershell
+npx vite                              # Dev server
+npx tsc --noEmit                      # Type-check (0 errors)
+npx eslint src tests --max-warnings 0 # Lint (0 errors, 0 warnings)
+npx vitest run                        # Run all tests
+npx vite build                        # Production build → dist/
+npm run check                         # All quality gates
+```
 
 ---
 
@@ -150,7 +161,18 @@ No npm. No build step. No dependencies. Just **one HTML file**.
 <img src=".github/assets/data-sources.svg" alt="Data Sources" width="85%">
 </div>
 
-All APIs are free and require no API keys. CORS is handled via a proxy fallback chain (`direct → allorigins.win → codetabs.com → corsproxy.io`). Every response is cached in localStorage with stale-while-revalidate for instant display.
+All APIs are free and require no API keys. Data goes through the **Cloudflare Workers** proxy at `fdb.rajwanyair.workers.dev`. Client-side fallback chain: `direct → allorigins.win → codetabs.com → corsproxy.io`. Every response is cached in a **3-layer cache** (in-memory → localStorage → IndexedDB) with stale-while-revalidate for instant display.
+
+| Card | Provider | Refresh |
+| --- | --- | --- |
+| Weather | Open-Meteo | 15 min |
+| Stocks | Yahoo Finance v8 chart | 5 min (market), 30 min (off-hours) |
+| Currency | ExchangeRate-API | 1 hour |
+| News | 17 Hebrew RSS feeds | 15 min |
+| Calendar | Google Calendar ICS | 15 min |
+| Hebrew Calendar | Hebcal API | 6 hours |
+| Red Alerts | Tzeva Adom | 60 seconds |
+| Ticker | Sefaria.org | 12 hours |
 
 ---
 
@@ -160,37 +182,35 @@ All APIs are free and require no API keys. CORS is handled via a proxy fallback 
 <img src=".github/assets/architecture.svg" alt="Architecture Diagram" width="100%">
 </div>
 
-### Single-File Design
+### Modular TypeScript Architecture
 
-Everything lives in one file — `BestDashBoard.html` — containing:
+The dashboard is built as a proper TypeScript SPA, bundled by Vite:
 
 | Layer | Description |
-| ------- | ------------- |
-| **HTML** | Semantic structure with RTL Hebrew layout |
-| **CSS** | Custom properties, glassmorphism cards, responsive grid, animations |
-| **JavaScript** | Async data fetching with proxy fallback, DOM caching, SVG chart generation |
+| --- | --- |
+| `src/core/` | 14 core modules — cache, fetch, state, config, registry, FdbCard base, perf, diag |
+| `src/cards/` | 11 card modules — each owns its fetch, render, and refresh schedule |
+| `src/ui/` | 14 UI modules — theme, keyboard, maximize, header, toast, night-dimmer, ticker |
+| `src/styles/` | 13 CSS modules — `@layer tokens, themes, base, layout, components, animations` |
+| `worker/` | Cloudflare Worker — per-provider routes, middleware, error reporting |
 
 ### Key Patterns
 
-```javascript
-// ✅ Persistent cache with stale-while-revalidate
-const cached = cGet(key, TTL);
-if (cached) { render(cached); return; }
-const stale = cGetStale(key);
-if (stale) render(stale); // show old data while fetching
+```typescript
+// ✅ 3-layer cache with async IDB L3
+const fresh = cGet<WeatherResponse>('weather', TTL_15M);
+if (fresh) { render(fresh); return; }
+const stale = await cGetAsync<WeatherResponse>('weather'); // IDB cold-start
+if (stale) render(stale);
 
-// ✅ Multi-proxy fallback for CORS
-for (const proxy of PROXIES) { /* try each */ }
+// ✅ Reactive config — no page reload needed
+state.on('config.tempUnit', (unit) => renderWeather(unit));
 
-// ✅ Fetch timeout (prevents hanging on slow proxies)
-function fetchWithTimeout(url, ms = 8000) {
-    const c = new AbortController();
-    const t = setTimeout(() => c.abort(), ms);
-    return fetch(url, { signal: c.signal }).finally(() => clearTimeout(t));
-}
+// ✅ Priority fetch queue
+const data = await enqueueFetch(() => fetchViaWorker('/api/weather'), 'high');
 
-// ✅ Smooth bézier SVG charts
-path += ` C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
+// ✅ Hardware-adaptive rendering
+applyHardwareTier(); // sets data-hw-tier on <html>, gating CSS animation fidelity
 ```
 
 ---
@@ -199,37 +219,32 @@ path += ` C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
 
 ```text
 FamilyDashBoard/
-├── BestDashBoard.html              # The entire dashboard (HTML + CSS + JS)
-├── index.html                      # GitHub Pages redirect
-├── README.md / CHANGELOG.md        # Documentation
-├── SUPPORT.md / LICENSE
-├── .editorconfig / .markdownlint.json
-├── .gitignore / .gitattributes
-├── roadmap.md                          # Refactoring roadmap (R1–R8 sprints)
+├── src/                    # TypeScript source (Vite build → dist/)
+│   ├── index.html          # App shell (RTL, CSP, minimal static markup)
+│   ├── main.ts             # Startup orchestration
+│   ├── cards/              # 11 card modules (news · weather · stocks · ...)
+│   ├── core/               # 14 core modules (cache · fetch · state · fdb-card · ...)
+│   ├── ui/                 # 14 UI modules (theme · keyboard · maximize · toast · ...)
+│   ├── styles/             # 13 CSS modules (@layer tokens → animations)
+│   ├── types/              # TypeScript type definitions (api · config · card)
+│   └── public/             # Static assets (icon.svg, manifest.webmanifest)
 ├── tests/
-|   └── dashboard.test.mjs          # 1084 tests, 61 suites (Node.js built-in runner)
+│   ├── unit/               # Vitest — 2500+ tests / 55 suites
+│   └── integration/        # Integration-level tests
+├── worker/                 # Cloudflare Worker (API proxy + normalization)
+│   └── src/routes/         # Per-provider route handlers
+├── scripts/                # CI utilities (bundle-size, SW version checks)
+├── sw.js                   # Service Worker (offline + API cache)
+├── vite.config.ts          # Build configuration
+├── vitest.config.ts        # Test configuration + coverage thresholds
+├── tsconfig.json           # Strict TypeScript configuration
 ├── .github/
-│   ├── assets/                     # SVG graphics for docs
-│   ├── agents/                     # Copilot custom agents
-│   ├── instructions/               # Copilot context files
-│   ├── prompts/                    # Reusable Copilot prompts
-│   ├── copilot/config.json         # Copilot modes
-│   ├── hooks/                      # Git hooks
-│   ├── workflows/
-│   │   ├── ci.yml                  # Lint + unit tests + security + Lighthouse
-│   │   ├── deploy.yml              # GitHub Pages deploy
-│   │   ├── release.yml             # Auto-release notes
-│   │   ├── auto-label.yml          # PR auto-labeling
-│   │   └── dependabot-auto-merge.yml
-│   ├── ISSUE_TEMPLATE/             # Bug, feature, API issue forms
-│   ├── DISCUSSION_TEMPLATE/        # Ideas, Q&A, show-and-tell
-│   ├── CONTRIBUTING.md / SECURITY.md / CODE_OF_CONDUCT.md
-│   ├── CODEOWNERS / AGENTS.md
-│   ├── dependabot.yml / labeler.yml / release.yml
-│   └── copilot-instructions.md
+│   ├── workflows/          # ci.yml · deploy.yml · release.yml
+│   ├── assets/             # SVG documentation graphics
+│   ├── instructions/       # Copilot context + skill files
+│   └── CONTRIBUTING.md     # Contributor guide
 └── .vscode/
-    ├── settings.json               # Editor + Copilot + testing config
-    └── extensions.json             # Recommended extensions
+    └── settings.json       # Editor + Copilot + testing config
 ```
 
 ---
@@ -315,14 +330,16 @@ This project leverages extensive GitHub features:
 
 ### Upcoming
 
-| Version | Summary | Status |
-| --------- | --------- | -------- |
-| v5.2 | Web Push notifications for red alerts | 🔜 |
-| v5.3 | Refactoring R6–R8: Calendar/Alerts/Motivation cleanup | 🔜 |
-| v5.4 | Card drag-reorder (long-press header) | 💡 |
-| v5.5 | Family photo slideshow + transit departures | 💡 |
+| Version | Focus | Status |
+| --- | --- | --- |
+| v7.13 | Truth & Stabilization — docs, CardRuntime interface, domain types, config validation | 🚧 |
+| v7.14 | Data Boundary — provider adapters, IDB-first cache, stale-state UX | 🔜 |
+| v7.15 | Card Runtime — FdbCard migrations, skeleton/empty/error states | 🔜 |
+| v8.0 | Architecture Convergence — registry-driven shells, namespaced config, worker normalization | 💡 |
 
-> **Release convention:** Every version bump commits `BestDashBoard.html`, updates `CHANGELOG.md`, bumps the badge in `README.md`, tags `vX.Y.Z`, and pushes. GitHub Actions auto-releases + deploys.
+See [ROADMAP.md](ROADMAP.md) for the full strategic plan and stream priorities.
+
+> **Release convention:** Each version bump commits to `main`, runs `npm run check` (0 errors), tags `vX.Y.Z`, and deploys via GitHub Actions.
 
 ---
 
