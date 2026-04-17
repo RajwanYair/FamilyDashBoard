@@ -16,6 +16,7 @@ import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from 
 import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core/error-tracker";
 import { getPerfVitals, formatVital, rateVital, hasPerfSupport } from "../core/perf";
 import { idbEstimateSize } from "../core/idb-cache";
+import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -129,7 +130,14 @@ function renderStats(): void {
     return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">${items.join("")}</div>`;
   })() : "";
 
-  panes.innerHTML = html + vitalsHtml;
+  // Hardware profile section
+  const hwTier = getHardwareTier();
+  const hwColor = hwTier === "high" ? "var(--positive)" : hwTier === "mid" ? "var(--warning)" : "var(--negative)";
+  const hwHtml = `<div class="diag-stats" style="margin-top:6px;font-size:0.78em;color:var(--text-muted)">
+    🖥️ HW: <span style="color:${hwColor}"><b>${formatHardwareProfile()}</b></span>
+  </div>`;
+
+  panes.innerHTML = html + vitalsHtml + hwHtml;
 
   // Async IDB size update (v7.10 — non-blocking)
   void idbEstimateSize().then((bytes) => {

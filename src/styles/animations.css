@@ -117,6 +117,60 @@ body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition:
 /* ── Precipitation in Forecast ── */
 .wx-fday-rain { font-size: 0.72em; color: var(--accent); margin-top: 1px; }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GPU / CPU ADAPTIVE PERFORMANCE (hardware.ts → data-hw-tier)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   data-hw-tier is set on <html> by applyHardwareTier() at startup.
+   high  → full GPU compositing + all effects
+   mid   → selective GPU hints, most effects on
+   low   → reduced animations, no expensive GPU ops
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Card layout containment (high + mid) — isolates reflow per card ── */
+:is([data-hw-tier="high"], [data-hw-tier="mid"]) .card {
+    contain: layout style;
+}
+
+/* ── GPU compositor layer hints for actively animated elements ── */
+[data-hw-tier="high"] .skeleton {
+    will-change: background-position;
+}
+[data-hw-tier="high"] .wx-fday,
+[data-hw-tier="high"] .stk {
+    will-change: transform;
+}
+[data-hw-tier="high"] .sync-dot {
+    will-change: box-shadow;
+}
+
+/* ── Extend content-visibility to ALL cards on mid/low for off-screen skip ── */
+:is([data-hw-tier="mid"], [data-hw-tier="low"]) .card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 260px;
+}
+
+/* ── Low tier: cut expensive animations and effects ── */
+[data-hw-tier="low"] .card:hover::before {
+    animation: none;
+    background: var(--accent-border);
+}
+[data-hw-tier="low"] .skeleton {
+    animation: none;
+    background: var(--bg-card-inner);
+}
+[data-hw-tier="low"] .hc-countdown.urgent {
+    animation: none;
+}
+[data-hw-tier="low"] .rss-item[data-age="fresh"]::before {
+    animation: none;
+}
+/* Low tier: compress animation durations to near-instant */
+[data-hw-tier="low"] {
+    --duration-fast:   0.05s;
+    --duration-normal: 0.1s;
+    --duration-slow:   0.15s;
+}
+
 
 
 /* ── School Holiday ── */

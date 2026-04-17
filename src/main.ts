@@ -75,6 +75,7 @@ import { initCountdownCard } from "./cards/countdown/countdown";
 
 import { installGlobalErrorHandlers } from "./core/error-tracker";
 import { initPerfObserver } from "./core/perf";
+import { applyHardwareTier } from "./core/hardware";
 
 // ── Version ──
 export const VERSION = __APP_VERSION__;
@@ -82,6 +83,8 @@ export const VERSION = __APP_VERSION__;
 // Install error handlers + perf observer as early as possible (before init)
 installGlobalErrorHandlers();
 initPerfObserver();
+// Detect hardware tier and apply data-hw-tier to <html> for adaptive CSS
+applyHardwareTier();
 
 /**
  * Apply card size overrides from config to DOM elements.
