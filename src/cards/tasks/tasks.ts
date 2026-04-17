@@ -108,6 +108,17 @@ export function parseTaskPriority(chore: string): { priority: TaskPriority; clea
 }
 
 /**
+ * Sprint 30: Return a color emoji icon for a task priority level.
+ * high → 🔴 · medium → 🟡 · low → 🔵 · none → ""
+ */
+export function taskPriorityIcon(priority: TaskPriority): string {
+  if (priority === "high") return "🔴";
+  if (priority === "medium") return "🟡";
+  if (priority === "low") return "🔵";
+  return "";
+}
+
+/**
  * Extract the due date from a chore text that ends with `@YYYY-MM-DD`.
  * Returns `{ dueDate, cleanText }`. `dueDate` is null when absent.
  */
@@ -272,7 +283,8 @@ export function renderTasksCard(): void {
         const badge = document.createElement("span");
         badge.className = `tasks-priority tasks-pri-${priority}`;
         badge.style.color = PRIORITY_COLORS[priority];
-        badge.textContent = priority === "high" ? "!!" : priority === "medium" ? "!" : "·";
+        // Sprint 30: emoji icons for better TV readability
+        badge.textContent = priority === "high" ? "🔴" : priority === "medium" ? "🟡" : "🔵";
         badge.title = priority === "high" ? "עדיפות גבוהה" : priority === "medium" ? "עדיפות בינונית" : "עדיפות נמוכה";
         row.appendChild(badge);
       }

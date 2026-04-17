@@ -14,6 +14,7 @@ import {
   isDueToday,
   formatTaskDueDate,
   taskCompletionRatio,
+  taskPriorityIcon,
 } from "@/cards/tasks/tasks";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -1174,5 +1175,48 @@ describe("Tasks — tasksShowCategories config gate (Sprint 47)", () => {
     renderTasksCard();
     const headers = document.querySelectorAll(".tasks-person");
     expect(headers.length).toBe(2);
+  });
+});
+
+// ── Sprint 30: taskPriorityIcon + emoji badge in render ──────────────────────
+
+describe("Tasks — taskPriorityIcon (Sprint 30)", () => {
+  it("returns 🔴 for high", () => {
+    expect(taskPriorityIcon("high")).toBe("🔴");
+  });
+
+  it("returns 🟡 for medium", () => {
+    expect(taskPriorityIcon("medium")).toBe("🟡");
+  });
+
+  it("returns 🔵 for low", () => {
+    expect(taskPriorityIcon("low")).toBe("🔵");
+  });
+
+  it("returns '' for none", () => {
+    expect(taskPriorityIcon("none")).toBe("");
+  });
+});
+
+describe("Tasks — priority emoji badge in renderTasksCard (Sprint 30)", () => {
+  beforeEach(() => {
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([{ person: "טל", chore: "[H] עבודה דחופה" }]),
+    );
+    document.body.innerHTML =
+      '<div id="tasks-list"></div><div id="tasks-filter-chips"></div>';
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = "";
+  });
+
+  it("renders 🔴 emoji badge for [H] high-priority task", () => {
+    renderTasksCard();
+    const badge = document.querySelector(".tasks-priority.tasks-pri-high");
+    expect(badge).not.toBeNull();
+    expect(badge!.textContent).toBe("🔴");
   });
 });
