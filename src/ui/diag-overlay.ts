@@ -117,15 +117,16 @@ function renderStats(): void {
       ${errCount > 0 ? `<span style="color:var(--negative)">⚠️ שגיאות: <b>${errCount}</b></span>` : "<span style=\"color:var(--positive)\">\u2705 אין שגיאות</span>"}
       <span id="diag-idb-size">💾 IDB: טוען...</span>
     </div>`;
-  // Web Vitals section (Sprint 41)
+  // Web Vitals section (Sprint 41) + startup waterfall (Sprint 16)
   const vitalsHtml = hasPerfSupport() ? (() => {
     const v = getPerfVitals();
     const vitalColor = (r: string): string =>
       r === "good" ? "var(--positive)" : r === "poor" ? "var(--negative)" : "var(--warning)";
     const items: string[] = [];
-    for (const key of ["lcp", "fcp", "ttfb", "inp", "cls"] as const) {
+    for (const key of ["lcp", "fcp", "ttfb", "inp", "cls", "startup"] as const) {
       const rating = rateVital(key, v[key]);
-      items.push(`<span style="color:${vitalColor(rating)}">${key.toUpperCase()}: <b>${formatVital(key, v[key])}</b></span>`);
+      const label = key === "startup" ? "INIT" : key.toUpperCase();
+      items.push(`<span style="color:${vitalColor(rating)}">${label}: <b>${formatVital(key, v[key])}</b></span>`);
     }
     return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">${items.join("")}</div>`;
   })() : "";

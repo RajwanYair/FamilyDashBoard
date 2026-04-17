@@ -75,7 +75,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 import { installGlobalErrorHandlers } from "./core/error-tracker";
-import { initPerfObserver } from "./core/perf";
+import { initPerfObserver, markDomReady, markStartupComplete } from "./core/perf";
 import { applyHardwareTier } from "./core/hardware";
 
 // ── Version ──
@@ -84,6 +84,12 @@ export const VERSION = __APP_VERSION__;
 // Install error handlers + perf observer as early as possible (before init)
 installGlobalErrorHandlers();
 initPerfObserver();
+// Record DOMContentLoaded mark for startup waterfall measurement (v8.2)
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", markDomReady, { once: true });
+} else {
+  markDomReady();
+}
 // Detect hardware tier and apply data-hw-tier to <html> for adaptive CSS
 applyHardwareTier();
 
@@ -293,6 +299,9 @@ export function init(): void {
   initMotivationCard();
   initSystemInfoCard();
   initTicker();
+
+  // Mark startup waterfall completion (v8.2: all card init calls dispatched)
+  markStartupComplete();
 
   // ── URL hash config import: #cfg=<base64> overrides localStorage config ──
   const _urlHash = window.location.hash ?? "";

@@ -20,6 +20,7 @@ export interface PerfVitals {
   inp: number | null;   // ms — Interaction to Next Paint
   fcp: number | null;   // ms — First Contentful Paint
   ttfb: number | null;  // ms — Time to First Byte
+  startup: number | null; // ms — DOMContentLoaded → all cards rendered (waterfall)
 }
 
 const _vitals: PerfVitals = {
@@ -28,6 +29,7 @@ const _vitals: PerfVitals = {
   inp: null,
   fcp: null,
   ttfb: null,
+  startup: null,
 };
 
 let _clsAccumulator = 0;
@@ -58,11 +60,6 @@ export function formatVital(key: keyof PerfVitals, value: number | null): string
     default: return `${Math.round(value)} ms`;
   }
 }
-
-/**
- * Rate a vital value as good / needs-improvement / poor.
- * Thresholds from https://web.dev/vitals/
- */
 export function rateVital(key: keyof PerfVitals, value: number | null): "good" | "needs-improvement" | "poor" | "unknown" {
   if (value === null) return "unknown";
   switch (key) {
@@ -71,6 +68,7 @@ export function rateVital(key: keyof PerfVitals, value: number | null): "good" |
     case "inp": return value <= 200 ? "good" : value <= 500 ? "needs-improvement" : "poor";
     case "fcp": return value <= 1800 ? "good" : value <= 3000 ? "needs-improvement" : "poor";
     case "ttfb": return value <= 800 ? "good" : value <= 1800 ? "needs-improvement" : "poor";
+    case "startup": return value <= 3000 ? "good" : value <= 6000 ? "needs-improvement" : "poor";
   }
 }
 
@@ -154,5 +152,33 @@ export function _resetPerfObserver(): void {
   _vitals.inp = null;
   _vitals.fcp = null;
   _vitals.ttfb = null;
+  _vitals.startup = null;
   _clsAccumulator = 0;
+}
+
+// ── Startup Waterfall ──────────────────────────────────────────────────────────
+
+/**
+ * Record a `DOMContentLoaded` timestamp so `markStartupComplete()` can
+ * compute the full "DomContentLoaded → all cards rendered" waterfall.
+ */
+export function markDomReady(): void {
+  // Store in performance.mark for reliable cross-context reference
+  try { performance.mark("fdb:dom-ready"); } catch { /* Safari < 15 */ }
+}
+
+/**
+ * Call this once all cards have completed their first render cycle
+ * (i.e. after the last `setSync(id, 'ok')` in the init sequence).
+ * Records `startup` waterfall in _vitals and logs via diagLog.
+ */
+export function markStartupComplete(): void {
+  if (_vitals.startup !== null) return; // already measured
+  const domReadyMark = performance.getEntriesByName("fdb:dom-ready")[0];
+  const origin = domReadyMark ? domReadyMark.startTime : 0;
+  _vitals.startup = Math.round(performance.now() - origin);
+  // Import diagLog lazily to avoid top-level circular dep
+  import("./diag").then(({ diagLog }) => {
+    diagLog(`FDB-058: [perf] startup waterfall ${String(_vitals.startup)} ms`);
+  }).catch(() => { /* swallow in test env */ });
 }
