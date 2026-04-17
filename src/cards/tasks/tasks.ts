@@ -157,6 +157,19 @@ export function formatTaskDueDate(dueDateStr: string): string {
 }
 
 /**
+ * Sprint 33: Count chores that have an overdue due-date (@YYYY-MM-DD before today).
+ * Chores without a due-date are not counted.
+ */
+export function countOverdueTasks(chores: ChoreItem[]): number {
+  let count = 0;
+  for (const item of chores) {
+    const { dueDate } = parseTaskDueDate(item.chore);
+    if (dueDate && isOverdue(dueDate)) count++;
+  }
+  return count;
+}
+
+/**
  * Compute the completion ratio for a list of chores + done-map.
  * Returns `{ done, total, pct }` (pct is 0–100, rounded).
  */
@@ -311,6 +324,7 @@ export function renderTasksCard(): void {
   // Update tasks badge: show "done / total" counter + all-done message
   const badge = document.getElementById("tasks-pending-badge");
   const doneMsg = document.getElementById("tasks-all-done-msg");
+  const overdueBadge = document.getElementById("tasks-overdue-badge");
   const total = chores.length;
   const pending = chores.filter((item) => !doneMap[fingerprint(item)]).length;
   const done = total - pending;
@@ -321,6 +335,16 @@ export function renderTasksCard(): void {
   }
   if (doneMsg) {
     doneMsg.style.display = total > 0 && pending === 0 ? "" : "none";
+  }
+  // Sprint 33: Overdue badge
+  if (overdueBadge) {
+    const overdueCount = countOverdueTasks(chores);
+    if (overdueCount > 0) {
+      overdueBadge.textContent = `⚠️ ${overdueCount} באיחור`;
+      overdueBadge.style.display = "";
+    } else {
+      overdueBadge.style.display = "none";
+    }
   }
 }
 

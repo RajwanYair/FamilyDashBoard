@@ -1220,3 +1220,65 @@ describe("Tasks — priority emoji badge in renderTasksCard (Sprint 30)", () => 
     expect(badge!.textContent).toBe("🔴");
   });
 });
+
+// ── Sprint 33: countOverdueTasks ──────────────────────────────────────────
+
+import { countOverdueTasks } from "@/cards/tasks/tasks";
+import type { ChoreItem } from "@/cards/tasks/tasks";
+
+describe("Tasks — countOverdueTasks (Sprint 33)", () => {
+  const yesterday = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  })();
+
+  const tomorrow = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  })();
+
+  it("returns 0 when no chores have due dates", () => {
+    const chores: ChoreItem[] = [
+      { person: "עמרי", chore: "🧹 לנקות" },
+      { person: "ריבה", chore: "🛒 קניות" },
+    ];
+    expect(countOverdueTasks(chores)).toBe(0);
+  });
+
+  it("returns 1 when one chore has a past due date", () => {
+    const chores: ChoreItem[] = [
+      { person: "עמרי", chore: `[H] לנקות @${yesterday}` },
+      { person: "ריבה", chore: "🛒 קניות" },
+    ];
+    expect(countOverdueTasks(chores)).toBe(1);
+  });
+
+  it("returns 0 when due date is in the future", () => {
+    const chores: ChoreItem[] = [
+      { person: "עמרי", chore: `לנקות @${tomorrow}` },
+    ];
+    expect(countOverdueTasks(chores)).toBe(0);
+  });
+
+  it("counts multiple overdue chores correctly", () => {
+    const chores: ChoreItem[] = [
+      { person: "עמרי", chore: `לנקות @${yesterday}` },
+      { person: "ריבה", chore: `קניות @${yesterday}` },
+      { person: "עמרי", chore: "ללא תאריך" },
+    ];
+    expect(countOverdueTasks(chores)).toBe(2);
+  });
+
+  it("returns 0 for an empty chore list", () => {
+    expect(countOverdueTasks([])).toBe(0);
+  });
+
+  it("does not count chores with only a priority prefix (no due date)", () => {
+    const chores: ChoreItem[] = [
+      { person: "עמרי", chore: "[H] משימה דחופה" },
+    ];
+    expect(countOverdueTasks(chores)).toBe(0);
+  });
+});
