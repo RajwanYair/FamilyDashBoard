@@ -48,7 +48,7 @@ import { initStatusBar, stampRefresh } from "./ui/status-bar";
 import { initTicker, applyTickerSpeed } from "./ui/ticker";
 import { initConfigPanel, toggleConfigPanel, openConfigPanel, switchCfgTab } from "./ui/config-panel";
 import { initScreenMode, stepFontScale } from "./ui/screen-mode";
-import { toggleNightDim, initNightDimmer, setWarmTint, isWarmTint } from "./ui/night-dimmer";
+import { toggleNightDim, initNightDimmer, setWarmTint, isWarmTint, setIdleAutoDimMinutes } from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
@@ -327,6 +327,9 @@ export function init(): void {
     cfg.nightDimStartHour ?? 23,
     cfg.nightDimEndHour ?? 6,
   );
+  if ((cfg.nightDimIdleMinutes ?? 0) > 0) {
+    setIdleAutoDimMinutes(cfg.nightDimIdleMinutes!);
+  }
 
   // ── Apply ticker scroll speed from config ──
   applyTickerSpeed(cfg.tickerSpeed ?? 3);

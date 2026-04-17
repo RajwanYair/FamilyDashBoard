@@ -102,6 +102,8 @@ export interface DashboardConfig {
   nightDimStartHour: number;
   /** Night dimmer auto-end hour 0–23 (default: 7). */
   nightDimEndHour: number;
+  /** Night dimmer idle auto-dim: activate after N minutes of inactivity (0 = disabled). */
+  nightDimIdleMinutes: number;
 
   // ── Config v3 additions (v7.9) — per-card settings ──
 
@@ -184,6 +186,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   nightDimScheduleEnabled: false,
   nightDimStartHour: 22,
   nightDimEndHour: 7,
+  nightDimIdleMinutes: 0,
 
   // Config v3 defaults
   weatherShowHourly: true,

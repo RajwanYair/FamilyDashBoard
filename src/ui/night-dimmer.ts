@@ -100,6 +100,65 @@ export function isDimActive(): boolean {
   return dimActive;
 }
 
+// ── Idle Auto-Dim (Sprint 26) ──────────────────────────────────────────────
+
+let _idleMinutes = 0;
+let _idleTimer: ReturnType<typeof setTimeout> | null = null;
+let _idleAutoDimmed = false;
+let _idleListenersAdded = false;
+
+function _armIdleTimer(): void {
+  if (_idleTimer !== null) clearTimeout(_idleTimer);
+  _idleTimer = null;
+  if (_idleMinutes > 0) {
+    _idleTimer = setTimeout(() => {
+      if (!dimActive) {
+        _idleAutoDimmed = true;
+        dimActive = true;
+        applyDim();
+        updateDimIndicator();
+        diagLog(`[dimmer] idle auto-dim after ${_idleMinutes} min`);
+      }
+    }, _idleMinutes * 60_000);
+  }
+}
+
+/**
+ * Reset the idle countdown on any user activity.
+ * If the dimmer was auto-activated by inactivity, it will be turned off.
+ */
+export function resetIdleTimer(): void {
+  if (_idleMinutes <= 0) return;
+  if (_idleAutoDimmed) {
+    _idleAutoDimmed = false;
+    dimActive = false;
+    applyDim();
+    updateDimIndicator();
+  }
+  _armIdleTimer();
+}
+
+/**
+ * Configure idle auto-dim. 0 = disabled.
+ * Sets up document event listeners on first call with minutes > 0.
+ */
+export function setIdleAutoDimMinutes(minutes: number): void {
+  _idleMinutes = Math.max(0, minutes);
+  _armIdleTimer();
+  if (!_idleListenersAdded && _idleMinutes > 0) {
+    _idleListenersAdded = true;
+    const handler = (): void => { resetIdleTimer(); };
+    document.addEventListener("mousemove", handler, { passive: true });
+    document.addEventListener("keydown", handler, { passive: true });
+    document.addEventListener("touchstart", handler, { passive: true });
+  }
+}
+
+/** Return configured idle auto-dim minutes (0 = disabled). */
+export function getIdleAutoDimMinutes(): number {
+  return _idleMinutes;
+}
+
 /**
  * Initialize night dimmer: apply configured level, run immediate check,
  * then re-check every 60 seconds using the provided schedule config.

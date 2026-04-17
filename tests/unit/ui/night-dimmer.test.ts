@@ -362,6 +362,67 @@ describe("Night Dimmer — applyDim returns early when #night-dim absent (line 3
   });
 });
 
+// ── Sprint 26: Idle Auto-Dim ─────────────────────────────────────────────────
+
+describe("Night Dimmer — idle auto-dim (Sprint 26)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML =
+      '<div id="night-dim" style="display:none"></div>' +
+      '<span id="dim-indicator" style="display:none"></span>';
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.resetModules();
+  });
+
+  it("getIdleAutoDimMinutes returns 0 by default", async () => {
+    const { getIdleAutoDimMinutes } = await freshDimmer();
+    expect(getIdleAutoDimMinutes()).toBe(0);
+  });
+
+  it("setIdleAutoDimMinutes clamps negative values to 0", async () => {
+    const { setIdleAutoDimMinutes, getIdleAutoDimMinutes } = await freshDimmer();
+    setIdleAutoDimMinutes(-5);
+    expect(getIdleAutoDimMinutes()).toBe(0);
+  });
+
+  it("activates dimmer after idle timeout elapses", async () => {
+    const { setIdleAutoDimMinutes, isDimActive } = await freshDimmer();
+    setIdleAutoDimMinutes(5);
+    expect(isDimActive()).toBe(false);
+    vi.advanceTimersByTime(5 * 60_000);
+    expect(isDimActive()).toBe(true);
+  });
+
+  it("does NOT activate if dimmer is already manually active", async () => {
+    const { setIdleAutoDimMinutes, toggleNightDim, isDimActive } = await freshDimmer();
+    toggleNightDim(); // manually on
+    expect(isDimActive()).toBe(true);
+    setIdleAutoDimMinutes(5);
+    vi.advanceTimersByTime(5 * 60_000);
+    // still on (was already on — no double-trigger), but the auto dim does not fire
+    expect(isDimActive()).toBe(true);
+  });
+
+  it("resetIdleTimer deactivates idle-auto-dim and re-arms timer", async () => {
+    const { setIdleAutoDimMinutes, resetIdleTimer, isDimActive } = await freshDimmer();
+    setIdleAutoDimMinutes(5);
+    vi.advanceTimersByTime(5 * 60_000); // idle fires
+    expect(isDimActive()).toBe(true);
+    resetIdleTimer(); // user activity
+    expect(isDimActive()).toBe(false);
+  });
+
+  it("resetIdleTimer does nothing when idle minutes is 0", async () => {
+    const { resetIdleTimer, isDimActive } = await freshDimmer();
+    // idleMinutes = 0 by default — resetIdleTimer should be a no-op
+    expect(() => resetIdleTimer()).not.toThrow();
+    expect(isDimActive()).toBe(false);
+  });
+});
+
 // ── Sprint v7.13: updateDimIndicator with #dim-indicator element (lines 48-52) ──
 
 describe("Night Dimmer — updateDimIndicator with chip element", () => {
