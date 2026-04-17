@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.16.0
+/* FamilyDashBoard ServiceWorker — v7.17.0
  * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
  * F112: API network-first with offline cache fallback
  * F113: SW posts NETWORK_BACK message to clients on network recovery

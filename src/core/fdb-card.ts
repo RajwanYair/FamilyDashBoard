@@ -234,4 +234,39 @@ export abstract class FdbCard extends HTMLElement {
       }),
     );
   }
+
+  /**
+   * Set the card's visible title text (Sprint 72).
+   *
+   * Looks for a `[data-card-title]` descendant and safely sets its
+   * `textContent`. If no title element exists, the call is a no-op so
+   * cards without a title bar are unaffected.
+   *
+   * @param text - New title text (plain text, not HTML)
+   */
+  setTitle(text: string): void {
+    const el = this.querySelector<HTMLElement>("[data-card-title]");
+    if (el) el.textContent = text;
+  }
+
+  /**
+   * Show or clear a numeric notification badge on the card header (Sprint 73).
+   *
+   * Looks for a `[data-card-badge]` descendant. When `count > 0` the badge
+   * is made visible with the numeric value. When `count <= 0` the badge is
+   * hidden (aria-hidden + empty text).
+   *
+   * @param count - Badge count; 0 or negative hides the badge
+   */
+  setBadge(count: number): void {
+    const el = this.querySelector<HTMLElement>("[data-card-badge]");
+    if (!el) return;
+    if (count > 0) {
+      el.textContent = String(count);
+      el.removeAttribute("aria-hidden");
+    } else {
+      el.textContent = "";
+      el.setAttribute("aria-hidden", "true");
+    }
+  }
 }

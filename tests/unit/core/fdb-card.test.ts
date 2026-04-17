@@ -326,3 +326,63 @@ describe("FdbCard.emit", () => {
     expect(bubbled).toHaveLength(1);
   });
 });
+
+// ── FdbCard.setTitle (Sprint 72) ───────────────────────────────────────────
+
+describe("FdbCard.setTitle", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    card = new TestCard();
+    document.body.appendChild(card);
+  });
+
+  afterEach(() => { card.remove(); });
+
+  it("sets textContent of [data-card-title] element", () => {
+    const title = document.createElement("span");
+    title.dataset["cardTitle"] = "";
+    card.appendChild(title);
+    card.setTitle("Weather");
+    expect(title.textContent).toBe("Weather");
+  });
+
+  it("is a no-op when no [data-card-title] element exists", () => {
+    expect(() => card.setTitle("Title")).not.toThrow();
+  });
+});
+
+// ── FdbCard.setBadge (Sprint 73) ───────────────────────────────────────────
+
+describe("FdbCard.setBadge", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    card = new TestCard();
+    document.body.appendChild(card);
+  });
+
+  afterEach(() => { card.remove(); });
+
+  it("sets badge text and removes aria-hidden when count > 0", () => {
+    const badge = document.createElement("span");
+    badge.dataset["cardBadge"] = "";
+    card.appendChild(badge);
+    card.setBadge(5);
+    expect(badge.textContent).toBe("5");
+    expect(badge.getAttribute("aria-hidden")).toBeNull();
+  });
+
+  it("clears badge and sets aria-hidden when count is 0", () => {
+    const badge = document.createElement("span");
+    badge.dataset["cardBadge"] = "";
+    card.appendChild(badge);
+    card.setBadge(0);
+    expect(badge.textContent).toBe("");
+    expect(badge.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("is a no-op when no [data-card-badge] element exists", () => {
+    expect(() => card.setBadge(3)).not.toThrow();
+  });
+});

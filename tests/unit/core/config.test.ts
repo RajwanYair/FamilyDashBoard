@@ -15,6 +15,7 @@ import {
   validateImportedConfig,
   buildExportEnvelope,
   serializeConfigExport,
+  readFeatureFlag,
 } from "@/core/config";
 import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, isValidFontScale, CONFIG_VERSION, isValidAlertVolume, isValidNightDimLevel, isValidNewsMaxItems, isValidTickerSpeed, isValidHour } from "@/types/config";
 
@@ -710,6 +711,36 @@ describe("Config — serializeConfigExport (Sprint 39)", () => {
   it("inner config.theme is preserved", () => {
     const parsed = JSON.parse(serializeConfigExport({ ...DEFAULT_CONFIG, theme: "rose" })) as { config: { theme: string } };
     expect(parsed.config.theme).toBe("rose");
+  });
+});
+
+// ── readFeatureFlag (Sprint 76) ────────────────────────────────────────────
+
+describe("Config — readFeatureFlag (Sprint 76)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns default false when flag is absent", () => {
+    expect(readFeatureFlag("nonExistentFlag")).toBe(false);
+  });
+
+  it("returns custom defaultValue when flag is absent", () => {
+    expect(readFeatureFlag("nonExistentFlag", true)).toBe(true);
+  });
+
+  it("returns stored flag value from config", () => {
+    const cfg = loadConfig();
+    cfg.featureFlags["idbCache"] = true;
+    saveConfig(cfg);
+    expect(readFeatureFlag("idbCache")).toBe(true);
+  });
+
+  it("returns false for flag explicitly set to false", () => {
+    const cfg = loadConfig();
+    cfg.featureFlags["workerFetch"] = false;
+    saveConfig(cfg);
+    expect(readFeatureFlag("workerFetch")).toBe(false);
   });
 });
 

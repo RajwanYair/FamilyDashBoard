@@ -5,6 +5,41 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.17.0] — 2026-06-22
+
+> **2571 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint 71 — Worker Error Normalization Helper
+
+- **`worker/src/utils/normalize-error.ts`**: `normalizeWorkerError(err, routeName)` — classifies any thrown value into `FDB-070` / `FDB-071` / `FDB-072` / `FDB-073` with correct HTTP status codes; `errorResponse()` converts to a JSON `Response`
+
+### Sprint 72 — FdbCard.setTitle
+
+- **`src/core/fdb-card.ts`**: `setTitle(text)` — safely sets `[data-card-title]` descendant's `textContent`; no-op on cards without a title bar
+
+### Sprint 73 — FdbCard.setBadge
+
+- **`src/core/fdb-card.ts`**: `setBadge(count)` — shows numeric badge on `[data-card-badge]` when count > 0; clears + sets `aria-hidden="true"` when count ≤ 0
+
+### Sprint 74 — Worker API Documentation
+
+- **`worker/API.md`**: Full route reference — query parameters, cache TTLs, allowed origins, CORS policy, and FDB error codes for all 8 worker routes
+
+### Sprint 75 — Release Report Script
+
+- **`scripts/release-report.mjs`**: Prints Markdown release summary — version, date, commit hash, branch, and CHANGELOG entry for the current version
+
+### Sprint 76 — readFeatureFlag Helper
+
+- **`src/core/config.ts`**: `readFeatureFlag(key, default?)` — reads a feature flag from the persisted config; safe fallback to `defaultValue` (default `false`) when flag is absent or config is corrupt
+
+### Sprint 77 — Version Bump: CLAUDE.md + workspace instructions
+
+- **`CLAUDE.md`**: Updated version reference to v7.17.0 and test count to 2571+
+- **`.github/instructions/workspace.instructions.md`**: Updated test baseline to 2562+ / 56 suites
+
+---
+
 ## [7.16.0] — 2026-06-22
 
 > **2562 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

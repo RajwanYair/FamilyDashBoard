@@ -349,3 +349,26 @@ export function buildExportEnvelope(config: DashboardConfig): ConfigExportEnvelo
 export function serializeConfigExport(config: DashboardConfig): string {
   return JSON.stringify(buildExportEnvelope(config), null, 2);
 }
+
+/**
+ * Read a feature flag from the current config (Sprint 76).
+ *
+ * Feature flags live in `DashboardConfig.featureFlags` (added in config v5).
+ * Reads localStorage config on each call — use sparingly in hot paths.
+ *
+ * @param key          - Feature flag name (e.g. `"workerFetch"`, `"idbCache"`)
+ * @param defaultValue - Fallback if the key is absent (defaults to `false`)
+ * @returns The flag value, or `defaultValue` when the flag is not set
+ *
+ * @example
+ * if (readFeatureFlag("idbCache")) await warmIdbCache();
+ */
+export function readFeatureFlag(key: string, defaultValue = false): boolean {
+  try {
+    const config = loadConfig();
+    const flags = config.featureFlags;
+    return typeof flags[key] === "boolean" ? flags[key] : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
