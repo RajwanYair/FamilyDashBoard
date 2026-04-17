@@ -1,6 +1,7 @@
 /**
  * Tests for runtime API type guards in src/types/api.ts
- * Covers: isWeatherResponse, isNewsItem, isCurrencyResponse, isAlertEvent
+ * Covers: isWeatherResponse, isNewsItem, isCurrencyResponse, isAlertEvent,
+ *         isYahooChartResponse, isHebcalResponse, isCoinGeckoResponse, isCalendarEvent
  */
 
 import { describe, it, expect } from "vitest";
@@ -9,8 +10,15 @@ import {
   isNewsItem,
   isCurrencyResponse,
   isAlertEvent,
+  isYahooChartResponse,
+  isHebcalResponse,
+  isCoinGeckoResponse,
+  isCalendarEvent,
 } from "@/types/api";
-import type { WeatherResponse, NewsItem, CurrencyResponse, AlertEvent } from "@/types/api";
+import type {
+  WeatherResponse, NewsItem, CurrencyResponse, AlertEvent,
+  YahooChartResponse, HebcalResponse, CoinGeckoResponse, CalendarEvent,
+} from "@/types/api";
 
 // ── isWeatherResponse ─────────────────────────────────────────────────────────
 
@@ -122,6 +130,15 @@ describe("isNewsItem", () => {
     expect(isNewsItem(rest)).toBe(false);
   });
 
+  it("returns false when pubDate is missing", () => {
+    const { pubDate: _p, ...rest } = makeNewsItem();
+    expect(isNewsItem(rest)).toBe(false);
+  });
+
+  it("returns false when pubDate is not a string", () => {
+    expect(isNewsItem({ ...makeNewsItem(), pubDate: 1234567890 })).toBe(false);
+  });
+
   it("returns false for null", () => {
     expect(isNewsItem(null)).toBe(false);
   });
@@ -159,6 +176,16 @@ describe("isCurrencyResponse", () => {
     const c = makeCurrencyResponse() as unknown as Record<string, unknown>;
     delete c["base_code"];
     expect(isCurrencyResponse(c)).toBe(false);
+  });
+
+  it("returns false when time_last_update_utc is missing", () => {
+    const c = makeCurrencyResponse() as unknown as Record<string, unknown>;
+    delete c["time_last_update_utc"];
+    expect(isCurrencyResponse(c)).toBe(false);
+  });
+
+  it("returns false when time_last_update_utc is not a string", () => {
+    expect(isCurrencyResponse({ ...makeCurrencyResponse(), time_last_update_utc: 0 })).toBe(false);
   });
 
   it("returns false for null", () => {
@@ -204,5 +231,182 @@ describe("isAlertEvent", () => {
 
   it("returns false for a plain string", () => {
     expect(isAlertEvent("alert")).toBe(false);
+  });
+});
+
+// ── isYahooChartResponse ────────────────────────────────────────────────────
+
+function makeYahooChartResponse(): YahooChartResponse {
+  return {
+    chart: {
+      result: [
+        {
+          meta: {
+            regularMarketPrice: 182.5,
+            previousClose: 180.0,
+            currency: "USD",
+            regularMarketVolume: 1_000_000,
+          },
+          indicators: { quote: [{ close: [180.0, 181.0, 182.5] }] },
+        },
+      ],
+      error: null,
+    },
+  };
+}
+
+describe("isYahooChartResponse", () => {
+  it("returns true for a valid YahooChartResponse", () => {
+    expect(isYahooChartResponse(makeYahooChartResponse())).toBe(true);
+  });
+
+  it("returns false for null", () => {
+    expect(isYahooChartResponse(null)).toBe(false);
+  });
+
+  it("returns false when chart is missing", () => {
+    expect(isYahooChartResponse({})).toBe(false);
+  });
+
+  it("returns false when result is empty array", () => {
+    expect(isYahooChartResponse({ chart: { result: [], error: null } })).toBe(false);
+  });
+
+  it("returns false when meta is missing", () => {
+    const y = makeYahooChartResponse();
+    (y.chart.result[0] as unknown as Record<string, unknown>)["meta"] = undefined;
+    expect(isYahooChartResponse(y)).toBe(false);
+  });
+
+  it("returns false when regularMarketPrice is not a number", () => {
+    const y = makeYahooChartResponse();
+    (y.chart.result[0].meta as unknown as Record<string, unknown>)["regularMarketPrice"] = "high";
+    expect(isYahooChartResponse(y)).toBe(false);
+  });
+
+  it("returns false when currency is not a string", () => {
+    const y = makeYahooChartResponse();
+    (y.chart.result[0].meta as unknown as Record<string, unknown>)["currency"] = 840;
+    expect(isYahooChartResponse(y)).toBe(false);
+  });
+});
+
+// ── isHebcalResponse ─────────────────────────────────────────────────────────
+
+function makeHebcalResponse(): HebcalResponse {
+  return {
+    title: "Hebcal Israel 2024",
+    items: [
+      { title: "שבת שלום", hebrew: "שבת שלום", date: "2024-01-06", category: "parashat" },
+    ],
+  };
+}
+
+describe("isHebcalResponse", () => {
+  it("returns true for a valid HebcalResponse", () => {
+    expect(isHebcalResponse(makeHebcalResponse())).toBe(true);
+  });
+
+  it("returns true for a response with empty items array", () => {
+    expect(isHebcalResponse({ title: "title", items: [] })).toBe(true);
+  });
+
+  it("returns false when title is missing", () => {
+    expect(isHebcalResponse({ items: [] })).toBe(false);
+  });
+
+  it("returns false when items is not an array", () => {
+    expect(isHebcalResponse({ title: "t", items: null })).toBe(false);
+  });
+
+  it("returns false when an item is missing title", () => {
+    expect(isHebcalResponse({ title: "t", items: [{ date: "2024-01-01", category: "holiday" }] })).toBe(false);
+  });
+
+  it("returns false when an item is missing date", () => {
+    expect(isHebcalResponse({ title: "t", items: [{ title: "x", category: "holiday" }] })).toBe(false);
+  });
+
+  it("returns false for null", () => {
+    expect(isHebcalResponse(null)).toBe(false);
+  });
+});
+
+// ── isCoinGeckoResponse ───────────────────────────────────────────────────────
+
+function makeCoinGeckoResponse(): CoinGeckoResponse {
+  return { bitcoin: { usd: 42000, usd_24h_change: 2.5 } };
+}
+
+describe("isCoinGeckoResponse", () => {
+  it("returns true for a valid CoinGeckoResponse", () => {
+    expect(isCoinGeckoResponse(makeCoinGeckoResponse())).toBe(true);
+  });
+
+  it("returns false when bitcoin is missing", () => {
+    expect(isCoinGeckoResponse({})).toBe(false);
+  });
+
+  it("returns false when usd is not a number", () => {
+    expect(isCoinGeckoResponse({ bitcoin: { usd: "high", usd_24h_change: 1 } })).toBe(false);
+  });
+
+  it("returns false when usd_24h_change is missing", () => {
+    expect(isCoinGeckoResponse({ bitcoin: { usd: 42000 } })).toBe(false);
+  });
+
+  it("returns false for null", () => {
+    expect(isCoinGeckoResponse(null)).toBe(false);
+  });
+
+  it("returns false for array", () => {
+    expect(isCoinGeckoResponse([])).toBe(false);
+  });
+});
+
+// ── isCalendarEvent ───────────────────────────────────────────────────────────
+
+function makeCalendarEvent(): CalendarEvent {
+  return {
+    summary: "Parent-Teacher Meeting",
+    start: new Date("2024-03-15T09:00:00"),
+    end: new Date("2024-03-15T10:00:00"),
+    allDay: false,
+    icsIndex: 0,
+  };
+}
+
+describe("isCalendarEvent", () => {
+  it("returns true for a valid CalendarEvent", () => {
+    expect(isCalendarEvent(makeCalendarEvent())).toBe(true);
+  });
+
+  it("returns true with optional fields present", () => {
+    expect(isCalendarEvent({ ...makeCalendarEvent(), location: "School", description: "Bring ID" })).toBe(true);
+  });
+
+  it("returns false when summary is missing", () => {
+    const { summary: _s, ...rest } = makeCalendarEvent();
+    expect(isCalendarEvent(rest)).toBe(false);
+  });
+
+  it("returns false when start is not a Date", () => {
+    expect(isCalendarEvent({ ...makeCalendarEvent(), start: "2024-03-15" })).toBe(false);
+  });
+
+  it("returns false when end is not a Date", () => {
+    expect(isCalendarEvent({ ...makeCalendarEvent(), end: null })).toBe(false);
+  });
+
+  it("returns false when allDay is not a boolean", () => {
+    expect(isCalendarEvent({ ...makeCalendarEvent(), allDay: 0 })).toBe(false);
+  });
+
+  it("returns false when icsIndex is not a number", () => {
+    expect(isCalendarEvent({ ...makeCalendarEvent(), icsIndex: "first" })).toBe(false);
+  });
+
+  it("returns false for null", () => {
+    expect(isCalendarEvent(null)).toBe(false);
   });
 });

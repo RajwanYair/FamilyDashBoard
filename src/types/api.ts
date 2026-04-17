@@ -186,18 +186,29 @@ export function isWeatherResponse(v: unknown): v is WeatherResponse {
 
 /**
  * Validates that `v` has the shape of a NewsItem.
+ * Requires title, link, pubDate, and source strings.
  */
 export function isNewsItem(v: unknown): v is NewsItem {
   if (!isObj(v)) return false;
-  return typeof v["title"] === "string" && typeof v["link"] === "string" && typeof v["source"] === "string";
+  return (
+    typeof v["title"] === "string" &&
+    typeof v["link"] === "string" &&
+    typeof v["pubDate"] === "string" &&
+    typeof v["source"] === "string"
+  );
 }
 
 /**
  * Validates that `v` has the shape of a CurrencyResponse.
+ * Requires rates object, base_code, and time_last_update_utc strings.
  */
 export function isCurrencyResponse(v: unknown): v is CurrencyResponse {
   if (!isObj(v)) return false;
-  return isObj(v["rates"]) && typeof v["base_code"] === "string";
+  return (
+    isObj(v["rates"]) &&
+    typeof v["base_code"] === "string" &&
+    typeof v["time_last_update_utc"] === "string"
+  );
 }
 
 /**
@@ -211,5 +222,69 @@ export function isAlertEvent(v: unknown): v is AlertEvent {
       isObj(a) &&
       Array.isArray(a["cities"]) &&
       typeof a["time"] === "number",
+  );
+}
+
+/**
+ * Validates that `v` has the shape of a YahooChartResponse.
+ * Requires chart.result[0].meta with required price fields.
+ */
+export function isYahooChartResponse(v: unknown): v is YahooChartResponse {
+  if (!isObj(v)) return false;
+  const chart = v["chart"];
+  if (!isObj(chart)) return false;
+  const result = chart["result"];
+  if (!Array.isArray(result) || result.length === 0) return false;
+  const first = result[0];
+  if (!isObj(first)) return false;
+  const meta = first["meta"];
+  if (!isObj(meta)) return false;
+  return (
+    typeof meta["regularMarketPrice"] === "number" &&
+    typeof meta["previousClose"] === "number" &&
+    typeof meta["currency"] === "string"
+  );
+}
+
+/**
+ * Validates that `v` has the shape of a HebcalResponse.
+ * Requires title string and items array.
+ */
+export function isHebcalResponse(v: unknown): v is HebcalResponse {
+  if (!isObj(v)) return false;
+  if (typeof v["title"] !== "string") return false;
+  if (!Array.isArray(v["items"])) return false;
+  return v["items"].every(
+    (item) =>
+      isObj(item) &&
+      typeof item["title"] === "string" &&
+      typeof item["date"] === "string" &&
+      typeof item["category"] === "string",
+  );
+}
+
+/**
+ * Validates that `v` has the shape of a CoinGeckoResponse.
+ * Requires bitcoin.usd and bitcoin.usd_24h_change numbers.
+ */
+export function isCoinGeckoResponse(v: unknown): v is CoinGeckoResponse {
+  if (!isObj(v)) return false;
+  const btc = v["bitcoin"];
+  if (!isObj(btc)) return false;
+  return typeof btc["usd"] === "number" && typeof btc["usd_24h_change"] === "number";
+}
+
+/**
+ * Validates that `v` has the shape of a CalendarEvent.
+ * Requires summary string, start/end Date objects, allDay boolean.
+ */
+export function isCalendarEvent(v: unknown): v is CalendarEvent {
+  if (!isObj(v)) return false;
+  return (
+    typeof v["summary"] === "string" &&
+    v["start"] instanceof Date &&
+    v["end"] instanceof Date &&
+    typeof v["allDay"] === "boolean" &&
+    typeof v["icsIndex"] === "number"
   );
 }
