@@ -20,6 +20,7 @@ import {
   type CardConfig,
 } from "../types/config";
 import { diagLog } from "./diag";
+import { state } from "./state";
 
 const LS_KEY = "dash_v2_config";
 
@@ -137,6 +138,8 @@ function sanitize(cfg: DashboardConfig): DashboardConfig {
 
 /**
  * Load user config from localStorage, merging with defaults.
+ * Does NOT seed the reactive state store — call seedConfig() or saveConfig()
+ * after loading if reactive state sync is needed (e.g., on app init).
  */
 export function loadConfig(): DashboardConfig {
   try {
@@ -159,11 +162,12 @@ export function loadConfig(): DashboardConfig {
 }
 
 /**
- * Save the full config object to localStorage.
+ * Save the full config object to localStorage and sync the reactive state store.
  */
 export function saveConfig(config: DashboardConfig): void {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(config));
+    state.seedConfig(config as unknown as Record<string, unknown>);
   } catch {
     diagLog("[config] Failed to save config");
   }
@@ -202,8 +206,10 @@ export function resetConfig(): DashboardConfig {
 /**
  * Dispatch a 'configchange' CustomEvent on document after any config save.
  * Cards and UI modules can listen to keep themselves in sync.
+ * Also syncs the reactive state store as a canonical state source.
  */
 export function dispatchConfigChange(config: DashboardConfig): void {
+  state.seedConfig(config as unknown as Record<string, unknown>);
   document.dispatchEvent(
     new CustomEvent<DashboardConfig>("configchange", { detail: config }),
   );

@@ -32,6 +32,7 @@ import {
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
+import { state } from "./core/state";
 
 // ── UI ──
 import { initTheme, checkAutoTheme } from "./ui/theme";
@@ -163,6 +164,10 @@ export function applySeasonClass(): void {
  */
 export function init(): void {
   diagLog(`[init] FDB-001: FamilyDashBoard v${VERSION} starting...`);
+
+  // Seed reactive state store with current config on startup (v8.0)
+  const _initCfg = loadConfig();
+  state.seedConfig(_initCfg as unknown as Record<string, unknown>);
 
   // Core setup — evict stale LS entries and hydrate memory cache from IDB
   cEvict();

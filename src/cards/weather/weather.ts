@@ -14,6 +14,7 @@ import { cGet, cGetStale, cSet } from "../../core/cache";
 import { setSync } from "../../core/sync";
 import { loadConfig, saveConfig } from "../../core/config";
 import { fetchJSONWithWorker } from "../../core/fetch";
+import { state } from "../../core/state";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -535,6 +536,13 @@ export function initWeatherCard(): void {
       .forEach((t) => t.classList.remove("active"));
     tab.classList.add("active");
     void switchWeatherCity(lat, lon);
+  });
+
+  // Subscribe to reactive state: re-render when tempUnit changes externally (v8.0)
+  state.on<string>("config.tempUnit", () => {
+    const fresh = cGet<WeatherResponse>("wx", INTERVALS.WEATHER);
+    const data = fresh ?? cGetStale<WeatherResponse>("wx");
+    if (data) renderWeather(data);
   });
 
   diagLog("[weather] Initialized");
