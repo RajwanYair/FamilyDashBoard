@@ -264,3 +264,39 @@ export async function idbEvictLRU(maxBytes = IDB_MAX_BYTES): Promise<number> {
   }
   return removed;
 }
+
+/**
+ * Migrate localStorage keys to IDB (Sprint 49).
+ *
+ * For each key in `keys`:
+ *   - reads the raw stringified value from localStorage
+ *   - attempts JSON.parse (skips the key if it fails)
+ *   - writes the parsed value to IDB under the same key
+ *   - removes the localStorage entry on success
+ *
+ * Silent on errors — individual key failures do not abort the rest.
+ *
+ * @param keys - Array of localStorage key names to migrate
+ * @returns Number of keys successfully migrated
+ */
+export async function migrateLsToIdb(keys: string[]): Promise<number> {
+  let migrated = 0;
+  for (const key of keys) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === null) continue;
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        continue; // skip non-JSON or corrupt entries
+      }
+      await idbSet(key, parsed);
+      localStorage.removeItem(key);
+      migrated++;
+    } catch {
+      // Ignore individual key errors
+    }
+  }
+  return migrated;
+}

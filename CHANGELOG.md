@@ -5,6 +5,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.14.0] — 2026-06-22
+
+> **2503 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint 45 — Provider Health Model
+
+- **`src/core/provider.ts`** (new): `ProviderHealth` interface + `recordProviderSuccess(id)` + `recordProviderFailure(id)` + `getProviderHealth(id)` + `getAllProviderHealth()` — lightweight per-provider health tracking with status `ok`/`degraded`/`down` derived from consecutive failure count
+
+### Sprint 46 — Diag Overlay Provider Health Table
+
+- **`src/ui/diag-overlay.ts`**: `_renderProviderHealth()` function appended to stats section — green/yellow/red icons with success/failure counters and last-ok timestamps for all tracked providers
+
+### Sprint 47 — IDB Cold-Start Helper
+
+- **`src/core/cache.ts`**: `coldStart<T>(key, ttl, render)` — async-first page-load pattern: tries `cGetAsync` (memory + IDB), falls back to `cGetStaleAsync` (any age), calls `render(data)` once on hit; returns data or null
+
+### Sprint 48 — Staleness Chip Helper
+
+- **`src/cards/base-card.ts`**: `staleChip(ageMs)` — short Hebrew-language staleness label (`עכשיו` / `לפני N דק'` / `לפני שעה N` / `לפני N ימים`) for overlay badges and diagnostics
+
+### Sprint 49 — LS-to-IDB Migration Utility
+
+- **`src/core/idb-cache.ts`**: `migrateLsToIdb(keys[])` — migrates JSON-serialized localStorage keys to IDB in one call; removes originals on success; skips missing/corrupt entries; returns migration count
+
+### Sprint 50 — CardRuntime Hooks in FdbCard
+
+- **`src/core/fdb-card.ts`**: `onConfigChange(key, value)`, `onStale(ageMs)`, `onError(err)` lifecycle hooks added to `FdbCard` base — no-op defaults; `onError` defaults to `setError(err.message)`; subclasses override to implement reactive behavior
+
+---
+
 ## [7.13.0] — 2026-06-22
 
 > **2469 tests / 55 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

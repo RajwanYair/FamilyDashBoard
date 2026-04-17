@@ -165,3 +165,62 @@ describe("FdbCard — base class", () => {
     expect(el.lastAttrChange?.name).toBe("data-card-id");
   });
 });
+// ── Sprint 50: CardRuntime hooks ─────────────────────────────────────────────
+describe("FdbCard CardRuntime hooks (Sprint 50)", () => {
+  let el: FdbCard;
+
+  beforeEach(() => {
+    el = document.createElement("fdb-test-card") as FdbCard;
+    document.body.appendChild(el);
+  });
+
+  afterEach(() => {
+    if (el.isConnected) document.body.removeChild(el);
+  });
+
+  it("onConfigChange is a no-op by default", () => {
+    expect(() => el.onConfigChange("theme", "dark")).not.toThrow();
+  });
+
+  it("onStale is a no-op by default", () => {
+    expect(() => el.onStale(60_000)).not.toThrow();
+  });
+
+  it("onError defaults to calling setError with the message", () => {
+    const err = new Error("network failure");
+    el.onError(err);
+    expect(el.getAttribute("aria-label")).toBe("שגיאה: network failure");
+  });
+
+  it("onConfigChange can be overridden in subclass", () => {
+    class ConfigTracker extends FdbCard {
+      calls: Array<{ key: string; value: unknown }> = [];
+      override onConfigChange(key: string, value: unknown): void {
+        this.calls.push({ key, value });
+      }
+    }
+    if (!customElements.get("fdb-config-tracker")) {
+      customElements.define("fdb-config-tracker", ConfigTracker);
+    }
+    const card = document.createElement("fdb-config-tracker") as ConfigTracker;
+    document.body.appendChild(card);
+    card.onConfigChange("location", "Tel Aviv");
+    expect(card.calls).toEqual([{ key: "location", value: "Tel Aviv" }]);
+    document.body.removeChild(card);
+  });
+
+  it("onStale can be overridden in subclass", () => {
+    class StaleTracker extends FdbCard {
+      lastAge: number | null = null;
+      override onStale(ageMs: number): void { this.lastAge = ageMs; }
+    }
+    if (!customElements.get("fdb-stale-tracker")) {
+      customElements.define("fdb-stale-tracker", StaleTracker);
+    }
+    const card = document.createElement("fdb-stale-tracker") as StaleTracker;
+    document.body.appendChild(card);
+    card.onStale(120_000);
+    expect(card.lastAge).toBe(120_000);
+    document.body.removeChild(card);
+  });
+});

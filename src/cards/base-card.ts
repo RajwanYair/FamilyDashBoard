@@ -84,3 +84,24 @@ export function scheduleCard(
     void load();
   }, intervalMs);
 }
+
+/**
+ * Build a short human-readable staleness chip label (Sprint 48).
+ *
+ * Returns a string like "לפני 3 דק'" or "לפני שעה 2".
+ * Use for overlay captions, diagnostics, and stale-state badges.
+ *
+ * @param ageMs - Age of cached data in milliseconds
+ * @returns Hebrew staleness label
+ */
+export function staleChip(ageMs: number): string {
+  const minutes = Math.floor(ageMs / 60_000);
+  if (minutes < 1) return "\u05E2\u05DB\u05E9\u05D9\u05D5";
+  if (minutes < 60) return `\u05DC\u05E4\u05E0\u05D9 ${minutes} \u05D3\u05E7'`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `\u05DC\u05E4\u05E0\u05D9 \u05E9\u05E2\u05D4${hours > 1 ? ` ${hours}` : ""}`;
+  const days = Math.floor(hours / 24);
+  return days === 1
+    ? `\u05DC\u05E4\u05E0\u05D9 1 \u05D9\u05D5\u05DD`
+    : `\u05DC\u05E4\u05E0\u05D9 ${days} \u05D9\u05DE\u05D9\u05DD`;
+}

@@ -346,3 +346,41 @@ export async function cEvictIdb(): Promise<number> {
   }
   return removed;
 }
+
+/**
+ * IDB cold-start loader (Sprint 47).
+ *
+ * Provides a standard pattern for the card page-load phase:
+ *   1. Try IDB/memory async cache first (no network).
+ *   2. If found and non-stale → call `render(data)` directly.
+ *   3. Return the data so the caller can decide whether to skip the fetch.
+ *
+ * This replaces the common `cGet(key, ttl) ?? cGetStale(key)` pattern
+ * with an async-first flow that checks IDB tier L2 before localStorage.
+ *
+ * @param key    - Cache key (same key used with `cSet`)
+ * @param ttl    - Maximum age for a "fresh" hit in milliseconds
+ * @param render - Called synchronously when data is available
+ * @returns The cached data if found (fresh or stale), or null
+ */
+export async function coldStart<T>(
+  key: string,
+  ttl: number,
+  render: (data: T) => void,
+): Promise<T | null> {
+  // Try async-first (IDB L2 + memory L1)
+  const fresh = await cGetAsync<T>(key, ttl);
+  if (fresh !== null) {
+    render(fresh);
+    return fresh;
+  }
+
+  // Stale fallback (any age)
+  const stale = await cGetStaleAsync<T>(key);
+  if (stale !== null) {
+    render(stale);
+    return stale;
+  }
+
+  return null;
+}

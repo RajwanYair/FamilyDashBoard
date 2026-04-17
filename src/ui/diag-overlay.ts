@@ -17,6 +17,7 @@ import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core
 import { getPerfVitals, formatVital, rateVital, hasPerfSupport } from "../core/perf";
 import { idbEstimateSize } from "../core/idb-cache";
 import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
+import { getAllProviderHealth } from "../core/provider";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -138,7 +139,7 @@ function renderStats(): void {
     🖥️ HW: <span style="color:${hwColor}"><b>${formatHardwareProfile()}</b></span>
   </div>`;
 
-  panes.innerHTML = html + vitalsHtml + hwHtml;
+  panes.innerHTML = html + vitalsHtml + hwHtml + _renderProviderHealth();
 
   // Async IDB size update (v7.10 — non-blocking)
   void idbEstimateSize().then((bytes) => {
@@ -147,6 +148,26 @@ function renderStats(): void {
     const idbMB = (bytes / (1024 * 1024)).toFixed(2);
     idbEl.innerHTML = `💾 IDB storage: <b>${idbMB} MB</b>`;
   });
+}
+
+// ── Provider health table (Sprint 46) ──
+function _renderProviderHealth(): string {
+  const providers = getAllProviderHealth();
+  if (providers.length === 0) return "";
+  const statusIcon = (s: string): string =>
+    s === "ok" ? "🟢" : s === "degraded" ? "🟡" : "🔴";
+  const rows = providers
+    .map(
+      (p) =>
+        `<span>${statusIcon(p.status)} <b>${p.id}</b>: ` +
+        `↑${p.successCount} ↓${p.failureCount}` +
+        `${p.consecutiveFails > 0 ? ` (×${p.consecutiveFails})` : ""}` +
+        `${p.lastOkAt ? ` • ok@${p.lastOkAt.slice(11, 16)}` : ""}</span>`,
+    )
+    .join("");
+  return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">
+    🏥 Providers: ${rows}
+  </div>`;
 }
 
 // ── Copy log to clipboard ──

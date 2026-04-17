@@ -18,6 +18,7 @@ import {
   idbEstimateSize,
   idbEvictLRU,
   IDB_MAX_BYTES,
+  migrateLsToIdb,
 } from "../../../src/core/idb-cache";
 
 // ── Minimal in-memory IDB mock ────────────────────────────────────────────────
@@ -506,5 +507,51 @@ describe("IDB Cache — idbEvictLRU", () => {
     });
     const removed = await idbEvictLRU(IDB_MAX_BYTES);
     expect(removed).toBe(0);
+  });
+});
+// ── Sprint 49: migrateLsToIdb ─────────────────────────────────────────────
+describe("migrateLsToIdb (Sprint 49)", () => {
+  beforeEach(async () => {
+    _resetIdb();
+    await idbClear();
+    localStorage.clear();
+  });
+
+  it("migrates a JSON value from localStorage to IDB", async () => {
+    localStorage.setItem("my-key", JSON.stringify({ v: 1 }));
+    const count = await migrateLsToIdb(["my-key"]);
+    expect(count).toBe(1);
+    // key removed from localStorage
+    expect(localStorage.getItem("my-key")).toBeNull();
+    // value accessible in IDB
+    const result = await idbGet<{ v: number }>("my-key");
+    expect(result).toEqual({ v: 1 });
+  });
+
+  it("skips keys not present in localStorage", async () => {
+    const count = await migrateLsToIdb(["nonexistent"]);
+    expect(count).toBe(0);
+  });
+
+  it("skips keys with non-JSON values", async () => {
+    localStorage.setItem("bad-key", "{{not json");
+    const count = await migrateLsToIdb(["bad-key"]);
+    expect(count).toBe(0);
+    // key left in localStorage (not removed)
+    expect(localStorage.getItem("bad-key")).toBe("{{not json");
+  });
+
+  it("migrates multiple keys in one call", async () => {
+    localStorage.setItem("k1", JSON.stringify("hello"));
+    localStorage.setItem("k2", JSON.stringify(42));
+    const count = await migrateLsToIdb(["k1", "k2"]);
+    expect(count).toBe(2);
+    expect(localStorage.getItem("k1")).toBeNull();
+    expect(localStorage.getItem("k2")).toBeNull();
+  });
+
+  it("returns 0 for empty keys array", async () => {
+    const count = await migrateLsToIdb([]);
+    expect(count).toBe(0);
   });
 });

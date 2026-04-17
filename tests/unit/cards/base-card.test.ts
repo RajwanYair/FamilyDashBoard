@@ -30,7 +30,7 @@ vi.mock("@/core/cache", () => ({
   cSet: vi.fn(),
 }));
 
-import { createCardLoader, scheduleCard } from "@/cards/base-card";
+import { createCardLoader, scheduleCard, staleChip } from "@/cards/base-card";
 import * as idleMod from "@/core/idle";
 import * as fetchMod from "@/core/fetch";
 import * as cacheMod from "@/core/cache";
@@ -182,5 +182,50 @@ describe("Base Card — scheduleCard", () => {
     scheduleCard(load, 500);
     vi.advanceTimersByTime(1600);
     expect(load).toHaveBeenCalledTimes(3);
+  });
+});
+
+// ── Sprint 48: staleChip ──────────────────────────────────────────────────────
+describe("staleChip (Sprint 48)", () => {
+  // U+05E2 U+05DB U+05E9 U+05D9 U+05D5 = עכשיו
+  const NOW = "\u05E2\u05DB\u05E9\u05D9\u05D5";
+  // U+05DC U+05E4 U+05E0 U+05D9 = לפני
+  const LFNY = "\u05DC\u05E4\u05E0\u05D9";
+  // U+05D3 U+05E7 = דק
+  const DQ = "\u05D3\u05E7\u0027";
+  // U+05E9 U+05E2 U+05D4 = שעה
+  const HOUR = "\u05E9\u05E2\u05D4";
+  // U+05D9 U+05D5 U+05DD = יום
+  const DAY1 = "\u05D9\u05D5\u05DD";
+  // U+05D9 U+05DE U+05D9 U+05DD = ימים
+  const DAYN = "\u05D9\u05DE\u05D9\u05DD";
+
+  it("returns NOW string for less than 60s", () => {
+    expect(staleChip(0)).toBe(NOW);
+    expect(staleChip(59_999)).toBe(NOW);
+  });
+
+  it("shows minutes for 1-59 minutes", () => {
+    expect(staleChip(60_000)).toBe(`${LFNY} 1 ${DQ}`);
+    expect(staleChip(3 * 60_000)).toBe(`${LFNY} 3 ${DQ}`);
+    expect(staleChip(59 * 60_000)).toBe(`${LFNY} 59 ${DQ}`);
+  });
+
+  it("shows 1 hour for 60-119 minutes", () => {
+    expect(staleChip(60 * 60_000)).toBe(`${LFNY} ${HOUR}`);
+  });
+
+  it("shows N hours for 2+ hours", () => {
+    expect(staleChip(2 * 60 * 60_000)).toBe(`${LFNY} ${HOUR} 2`);
+    expect(staleChip(5 * 60 * 60_000)).toBe(`${LFNY} ${HOUR} 5`);
+  });
+
+  it("shows single day form for 1 day", () => {
+    expect(staleChip(24 * 60 * 60_000)).toBe(`${LFNY} 1 ${DAY1}`);
+  });
+
+  it("shows plural day form for 2+ days", () => {
+    expect(staleChip(2 * 24 * 60 * 60_000)).toBe(`${LFNY} 2 ${DAYN}`);
+    expect(staleChip(7 * 24 * 60 * 60_000)).toBe(`${LFNY} 7 ${DAYN}`);
   });
 });

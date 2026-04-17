@@ -16,6 +16,7 @@ import {
   migrateLocalStorageToIdb,
   cGetAsync,
   cGetStaleAsync,
+  coldStart,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -515,5 +516,44 @@ describe("cGetStaleAsync — IDB L2 stale tier (v7.10)", () => {
     localStorage.setItem("dash_v2_stale-corrupt", "{{bad");
     const result = await cGetStaleAsync("stale-corrupt");
     expect(result).toBeNull();
+  });
+});
+
+// ── Sprint 47: coldStart ──────────────────────────────────────────────────
+describe("coldStart — IDB cold-start helper (Sprint 47)", () => {
+  beforeEach(() => {
+    cClear();
+  });
+
+  it("calls render with fresh cached data", async () => {
+    cSet("cs-fresh", { v: 42 });
+    const rendered: unknown[] = [];
+    const result = await coldStart<{ v: number }>("cs-fresh", 60_000, (d) => rendered.push(d));
+    expect(result).toEqual({ v: 42 });
+    expect(rendered).toHaveLength(1);
+  });
+
+  it("returns null when no cache entry exists", async () => {
+    const rendered: unknown[] = [];
+    const result = await coldStart("cs-none", 60_000, (d) => rendered.push(d));
+    expect(result).toBeNull();
+    expect(rendered).toHaveLength(0);
+  });
+
+  it("calls render with stale data when beyond TTL", async () => {
+    cSet("cs-stale", { v: 99 });
+    // Force stale by using ttl=0 (always expired)
+    const rendered: unknown[] = [];
+    const result = await coldStart<{ v: number }>("cs-stale", 0, (d) => rendered.push(d));
+    // stale path (cGetStaleAsync ignores TTL)
+    expect(result).toEqual({ v: 99 });
+    expect(rendered).toHaveLength(1);
+  });
+
+  it("does not call render twice", async () => {
+    cSet("cs-once", { v: 1 });
+    let calls = 0;
+    await coldStart("cs-once", 60_000, () => calls++);
+    expect(calls).toBe(1);
   });
 });

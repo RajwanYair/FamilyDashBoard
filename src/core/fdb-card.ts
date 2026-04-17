@@ -131,4 +131,40 @@ export abstract class FdbCard extends HTMLElement {
   get cardSize(): string {
     return this.getAttribute("data-card-size") ?? "md";
   }
+
+  // ── CardRuntime Hooks (Sprint 50) ───────────────────────────────────────── 
+
+  /**
+   * Called when a config key that this card owns changes.
+   * Override to react to individual config field changes without
+   * reloading the full card state. Default implementation is a no-op.
+   *
+   * @param key   - Config field name
+   * @param value - New value (unknown type — cast as needed)
+   */
+  onConfigChange(_key: string, _value: unknown): void {
+    // No-op default. Subclasses override to handle specific keys.
+  }
+
+  /**
+   * Called when cached data has exceeded the card's acceptable stale age.
+   * Override to show a stale badge or trigger a background reload.
+   * Default implementation is a no-op.
+   *
+   * @param ageMs - Age of the stale data in milliseconds
+   */
+  onStale(_ageMs: number): void {
+    // No-op default. Subclasses override to update stale UX.
+  }
+
+  /**
+   * Called when a load attempt fails after all retries.
+   * Override to update error state indicators (chip, aria-label, etc.).
+   * Default implementation delegates to `setError(err.message)`.
+   *
+   * @param err - The error that caused the failure
+   */
+  onError(err: Error): void {
+    this.setError(err.message);
+  }
 }
