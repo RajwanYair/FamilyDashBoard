@@ -16,6 +16,7 @@ import {
   isWorkerEnabled,
 } from "./constants";
 import { diagLog } from "./diag";
+import { cGet, cSet, cGetStale } from "./cache";
 
 /**
  * Fetch with AbortController timeout.
@@ -54,7 +55,14 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
     // Direct failed — try proxies
   }
 
-  // 2. Try each proxy
+  // 2. Try each proxy (only in dev/local builds — gated by __USE_PROXIES__)
+  if (!__USE_PROXIES__) {
+    recordFetchFailure();
+    throw new Error(
+      `Direct fetch failed and proxy chain disabled in production: ${short}`,
+    );
+  }
+
   const customProxy = localStorage.getItem("dash_custom_proxy");
   const proxies = customProxy ? [customProxy, ...PROXIES] : [...PROXIES];
 
@@ -87,7 +95,9 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
       return (await r.json()) as T;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      diagLog(`FDB-014: fetchJSON ${pName} FAIL (${msg.slice(0, 60)}): ${short}`);
+      diagLog(
+        `FDB-014: fetchJSON ${pName} FAIL (${msg.slice(0, 60)}): ${short}`,
+      );
     }
   }
 
@@ -361,18 +371,18 @@ export async function fetchWithStale<T>(opts: {
   staticFallback?: T;
 }): Promise<void> {
   const { cacheKey, ttlMs, fetcher, onData, staticFallback } = opts;
-  const fresh = (await import("./cache")).cGet<T>(cacheKey, ttlMs);
+  const fresh = cGet<T>(cacheKey, ttlMs);
   if (fresh !== null) {
     onData(fresh, false);
     return;
   }
-  const stale = (await import("./cache")).cGetStale<T>(cacheKey);
+  const stale = cGetStale<T>(cacheKey);
   if (stale !== null) onData(stale, true);
   else if (staticFallback !== undefined) onData(staticFallback, true);
 
   try {
     const data = await fetcher();
-    (await import("./cache")).cSet(cacheKey, data);
+    cSet(cacheKey, data);
     onData(data, false);
   } catch {
     diagLog(`[fetch] fetchWithStale miss: ${cacheKey}`);

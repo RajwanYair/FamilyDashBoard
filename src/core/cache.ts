@@ -6,7 +6,7 @@
  */
 
 import { LS_PREFIX, LS_MAX_AGE } from "./constants";
-import { idbSet, idbGetEntry, idbKeys, idbClear } from "./idb-cache";
+import { idbSet, idbGetEntry, idbKeys, idbClear, idbDel } from "./idb-cache";
 
 // ── In-memory layer ──
 interface MemEntry {
@@ -332,7 +332,6 @@ export async function migrateLocalStorageToIdb(): Promise<number> {
  * @returns number of entries removed
  */
 export async function cEvictIdb(): Promise<number> {
-  const { idbDel } = await import("./idb-cache");
   const keys = await idbKeys();
   const now = Date.now();
   let removed = 0;

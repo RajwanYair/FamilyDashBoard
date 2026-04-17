@@ -76,7 +76,7 @@ const removeCrossOrigin: Plugin = {
   },
 };
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   root: "src",
   base: "/FamilyDashBoard/",
   cacheDir: join(tempBase, ".vite"),
@@ -85,7 +85,9 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    __USE_PROXIES__: JSON.stringify(!process.env["VITE_NO_PROXIES"]),
+    // v8.0: production build strips proxy chain (Worker is sole data path).
+    // true = dev server OR file:// local build — proxy fallback retained.
+    __USE_PROXIES__: JSON.stringify(command === "serve" || isLocalBuild),
   },
 
   build: {
@@ -156,7 +158,10 @@ export default defineConfig({
   // helper snippets which rolldown replaces with {} correctly.
   ...(isLocalBuild
     ? {
-        define: { "import.meta": "{}", __APP_VERSION__: JSON.stringify(appVersion) },
+        define: {
+          "import.meta": "{}",
+          __APP_VERSION__: JSON.stringify(appVersion),
+        },
       }
     : {}),
 
@@ -168,4 +173,4 @@ export default defineConfig({
   preview: {
     port: 4173,
   },
-});
+}));
