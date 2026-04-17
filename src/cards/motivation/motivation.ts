@@ -12,26 +12,74 @@ import { diagLog } from "../../core/diag";
 import { showToast } from "../../ui/toast";
 import { loadConfig } from "../../core/config";
 
+/** Sprint 23: Category labels for motivation quotes. */
+export type MotivationCategory = "general" | "morning" | "shabbat" | "family" | "success";
+
+/** Sprint 23: Categorized quotes with `category` field. */
+export interface MotivationQuote {
+  text: string;
+  author: string;
+  category: MotivationCategory;
+}
+
 // Hebrew motivational quotes
-export const MOTIVATIONS: ReadonlyArray<{ text: string; author: string }> = [
-  { text: "הכל מתחיל בצעד אחד קטן.", author: "" },
-  { text: "אל תשפטו את כל השנה על ידי יום אחד בלבד.", author: "" },
-  { text: "גם מסע של אלף מיל מתחיל בצעד אחד.", author: "לאו דזה" },
-  { text: "אין דבר יותר עוצמתי מרוח האדם.", author: "" },
-  { text: "הצלחה זה לעשות את מה שאתה אוהב.", author: "" },
-  { text: "כל יום הוא הזדמנות חדשה.", author: "" },
+export const MOTIVATIONS: ReadonlyArray<MotivationQuote> = [
+  { text: "הכל מתחיל בצעד אחד קטן.", author: "", category: "general" },
+  { text: "אל תשפטו את כל השנה על ידי יום אחד בלבד.", author: "", category: "general" },
+  { text: "גם מסע של אלף מיל מתחיל בצעד אחד.", author: "לאו דזה", category: "general" },
+  { text: "אין דבר יותר עוצמתי מרוח האדם.", author: "", category: "general" },
+  { text: "הצלחה זה לעשות את מה שאתה אוהב.", author: "", category: "success" },
+  { text: "כל יום הוא הזדמנות חדשה.", author: "", category: "morning" },
   {
     text: "הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.",
     author: "אברהם לינקולן",
+    category: "success",
   },
-  { text: "מי שלא מנסה — לא מפסיד ולא מרוויח.", author: "" },
-  { text: "חיים זה מה שקורה כשאתה עסוק בתכניות אחרות.", author: "ג׳ון לנון" },
-  { text: "לא כל מי שמשוטט — אבוד.", author: "ג׳.ר.ר טולקין" },
+  { text: "מי שלא מנסה — לא מפסיד ולא מרוויח.", author: "", category: "general" },
+  { text: "חיים זה מה שקורה כשאתה עסוק בתכניות אחרות.", author: "ג׳ון לנון", category: "general" },
+  { text: "לא כל מי שמשוטט — אבוד.", author: "ג׳.ר.ר טולקין", category: "general" },
+  { text: "בוקר טוב — כל בוקר חדש הוא ברכה.", author: "", category: "morning" },
+  { text: "שבת שלום — הקדש זמן לאהובים.", author: "", category: "shabbat" },
+  { text: "מה שמחזק משפחה הוא האהבה והשמחה.", author: "", category: "family" },
+  { text: "ילדים הם הגן שבו נשמות פורחות.", author: "", category: "family" },
+  { text: "ריחם של פרחים בבוקר — הכל אפשרי.", author: "", category: "morning" },
+  { text: "שבת היא מתנה — היא מזכירה לנו מה חשוב.", author: "", category: "shabbat" },
+  { text: "ההצלחה היא תוצאה של הרגלים יומיומיים.", author: "", category: "success" },
+  { text: "כל מה שאנחנו מחפשים בחוץ — נמצא בפנים.", author: "", category: "general" },
+  { text: "תנו לאהבה להיות המדריך שלכם.", author: "", category: "family" },
+  { text: "אם לא עכשיו — אז מתי?", author: "הלל הזקן", category: "success" },
 ];
 
 let motiIdx = 0;
 let elText: HTMLElement | null = null;
 let elAuthor: HTMLElement | null = null;
+
+/** Sprint 23: Active category filter — null = show all categories. */
+let _activeCategory: MotivationCategory | null = null;
+
+/**
+ * Sprint 23: Returns quotes filtered by category (or all when null).
+ */
+export function getQuotesByCategory(category: MotivationCategory | null): ReadonlyArray<MotivationQuote> {
+  if (category === null) return MOTIVATIONS;
+  return MOTIVATIONS.filter((q) => q.category === category);
+}
+
+/**
+ * Sprint 23: Set the active category filter and restart the index counter.
+ * Pass null to show all categories.
+ */
+export function setMotivationCategory(category: MotivationCategory | null): void {
+  _activeCategory = category;
+  motiIdx = 0;
+  diagLog(`FDB-039b: [motivation] Category set to ${category ?? "all"}`);
+  renderMotivation();
+}
+
+/** Sprint 23: Returns the currently active category filter. */
+export function getMotivationCategory(): MotivationCategory | null {
+  return _activeCategory;
+}
 
 // F7 (v7.3): Auto-advance timer
 let _motiAutoInterval: ReturnType<typeof setInterval> | null = null;
@@ -51,13 +99,16 @@ export function setMotivationInterval(minutes: number): void {
   }
 }
 
-export function getCurrentQuote(): { text: string; author: string } | null {
-  const lastIdx = ((motiIdx - 1) + MOTIVATIONS.length) % MOTIVATIONS.length;
-  return MOTIVATIONS[lastIdx] ?? null;
+export function getCurrentQuote(): MotivationQuote | null {
+  const pool = getQuotesByCategory(_activeCategory);
+  const lastIdx = ((motiIdx - 1) + pool.length) % pool.length;
+  return pool[lastIdx] ?? null;
 }
 
 export function renderMotivation(): void {
-  const m = MOTIVATIONS[motiIdx++ % MOTIVATIONS.length];
+  const pool = getQuotesByCategory(_activeCategory);
+  if (!pool.length) return;
+  const m = pool[motiIdx++ % pool.length];
   if (!m) return;
 
   const card = elText?.closest(".moti-card") as HTMLElement | null;

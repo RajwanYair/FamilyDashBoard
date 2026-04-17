@@ -439,6 +439,94 @@ describe("Motivation — defensive branches when MOTIVATIONS is empty", () => {
   });
 });
 
+// ── Sprint 23: category system ───────────────────────────────────────────────
+
+import {
+  getQuotesByCategory,
+  setMotivationCategory,
+  getMotivationCategory,
+  type MotivationCategory,
+} from "@/cards/motivation/motivation";
+
+describe("Motivation — getQuotesByCategory (Sprint 23)", () => {
+  it("returns all quotes when category is null", () => {
+    const all = getQuotesByCategory(null);
+    expect(all.length).toBe(MOTIVATIONS.length);
+  });
+
+  it("returns only 'morning' quotes when filtered", () => {
+    const filtered = getQuotesByCategory("morning");
+    expect(filtered.length).toBeGreaterThan(0);
+    for (const q of filtered) {
+      expect(q.category).toBe("morning");
+    }
+  });
+
+  it("returns only 'shabbat' quotes when filtered", () => {
+    const filtered = getQuotesByCategory("shabbat");
+    expect(filtered.length).toBeGreaterThan(0);
+    for (const q of filtered) {
+      expect(q.category).toBe("shabbat");
+    }
+  });
+
+  it("returns only 'family' quotes when filtered", () => {
+    const filtered = getQuotesByCategory("family");
+    expect(filtered.length).toBeGreaterThan(0);
+    for (const q of filtered) {
+      expect(q.category).toBe("family");
+    }
+  });
+
+  it("returns only 'success' quotes when filtered", () => {
+    const filtered = getQuotesByCategory("success");
+    expect(filtered.length).toBeGreaterThan(0);
+    for (const q of filtered) {
+      expect(q.category).toBe("success");
+    }
+  });
+
+  it("every quote has a valid category", () => {
+    const validCategories: MotivationCategory[] = ["general", "morning", "shabbat", "family", "success"];
+    for (const q of MOTIVATIONS) {
+      expect(validCategories).toContain(q.category);
+    }
+  });
+});
+
+describe("Motivation — setMotivationCategory / getMotivationCategory (Sprint 23)", () => {
+  afterEach(() => {
+    setMotivationCategory(null); // reset
+    vi.restoreAllMocks();
+  });
+
+  it("getMotivationCategory returns null initially", () => {
+    setMotivationCategory(null);
+    expect(getMotivationCategory()).toBeNull();
+  });
+
+  it("setMotivationCategory updates the active category", () => {
+    setMotivationCategory("morning");
+    expect(getMotivationCategory()).toBe("morning");
+  });
+
+  it("setMotivationCategory resets to null", () => {
+    setMotivationCategory("shabbat");
+    setMotivationCategory(null);
+    expect(getMotivationCategory()).toBeNull();
+  });
+
+  it("renderMotivation uses category filter after setMotivationCategory", () => {
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    setMotivationCategory("morning");
+    const pool = getQuotesByCategory("morning");
+    expect(pool.length).toBeGreaterThan(0);
+    // All morning-filtered quotes should have category 'morning'
+    expect(pool.every((q) => q.category === "morning")).toBe(true);
+    document.body.innerHTML = "";
+  });
+});
+
 // ── F7 (v7.3): setMotivationInterval ────────────────────────────────────────
 
 describe("Motivation — setMotivationInterval (F7 v7.3)", () => {
