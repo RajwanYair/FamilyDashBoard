@@ -265,17 +265,29 @@ function populateForm(): void {
   const motiInterval = g("cfg-moti-interval");
   if (motiInterval) motiInterval.value = String(c.motivationInterval ?? 0);
 
-  // Config v3 (v7.9): per-card boolean settings
+  // Sprint 17: per-card settings (now in Cards tab accordion)
   const wxHourly = g("cfg-weather-hourly") as HTMLSelectElement | null;
   if (wxHourly) wxHourly.value = (c.weatherShowHourly ?? true) ? "on" : "off";
   const wxWind = g("cfg-weather-wind") as HTMLSelectElement | null;
   if (wxWind) wxWind.value = (c.weatherShowWind ?? true) ? "on" : "off";
   const wxSunrise = g("cfg-weather-sunrise") as HTMLSelectElement | null;
   if (wxSunrise) wxSunrise.value = (c.weatherShowSunrise ?? true) ? "on" : "off";
+  const wxDetails = g("cfg-weather-details") as HTMLSelectElement | null;
+  if (wxDetails) wxDetails.value = (c.weatherShowDetails ?? true) ? "on" : "off";
   const newsSource = g("cfg-news-show-source") as HTMLSelectElement | null;
   if (newsSource) newsSource.value = (c.newsShowSource ?? true) ? "on" : "off";
+  const newsMaxItems = g("cfg-news-max-items");
+  if (newsMaxItems) newsMaxItems.value = String(c.newsMaxItems ?? 20);
   const stocksSector = g("cfg-stocks-group-sector") as HTMLSelectElement | null;
   if (stocksSector) stocksSector.value = (c.stocksGroupBySector ?? false) ? "on" : "off";
+  const stocksPortfolio = g("cfg-stocks-show-portfolio") as HTMLSelectElement | null;
+  if (stocksPortfolio) stocksPortfolio.value = (c.stocksShowPortfolio ?? false) ? "on" : "off";
+  const tasksShowDone = g("cfg-tasks-show-done") as HTMLSelectElement | null;
+  if (tasksShowDone) tasksShowDone.value = (c.tasksShowDone ?? true) ? "on" : "off";
+  const tasksShowCats = g("cfg-tasks-show-categories") as HTMLSelectElement | null;
+  if (tasksShowCats) tasksShowCats.value = (c.tasksShowCategories ?? true) ? "on" : "off";
+  const sysInfoRtt = g("cfg-sysinfo-show-rtt") as HTMLSelectElement | null;
+  if (sysInfoRtt) sysInfoRtt.value = (c.sysInfoShowRtt ?? true) ? "on" : "off";
 
   // Cards tab — dynamically build per-card rows
   const cardsList = document.getElementById("cfg-cards-list");
@@ -568,12 +580,19 @@ function collectForm(): DashboardConfig {
     c.motivationInterval = isNaN(mi) ? 0 : Math.max(0, Math.min(60, mi));
   }
 
-  // Config v3 (v7.9): per-card boolean settings
+  // Sprint 17: per-card boolean settings (now in Cards tab)
   c.weatherShowHourly = (g("cfg-weather-hourly") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowWind = (g("cfg-weather-wind") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowSunrise = (g("cfg-weather-sunrise") as HTMLSelectElement | null)?.value !== "off";
+  c.weatherShowDetails = (g("cfg-weather-details") as HTMLSelectElement | null)?.value !== "off";
   c.newsShowSource = (g("cfg-news-show-source") as HTMLSelectElement | null)?.value !== "off";
+  const newsMaxEl = g("cfg-news-max-items");
+  if (newsMaxEl) { const v = parseInt(newsMaxEl.value, 10); if (!isNaN(v)) c.newsMaxItems = Math.min(50, Math.max(5, v)); }
   c.stocksGroupBySector = (g("cfg-stocks-group-sector") as HTMLSelectElement | null)?.value === "on";
+  c.stocksShowPortfolio = (g("cfg-stocks-show-portfolio") as HTMLSelectElement | null)?.value === "on";
+  c.tasksShowDone = (g("cfg-tasks-show-done") as HTMLSelectElement | null)?.value !== "off";
+  c.tasksShowCategories = (g("cfg-tasks-show-categories") as HTMLSelectElement | null)?.value !== "off";
+  c.sysInfoShowRtt = (g("cfg-sysinfo-show-rtt") as HTMLSelectElement | null)?.value !== "off";
 
   return c;
 }

@@ -171,42 +171,7 @@
             <span class="cfg-label">💬 מחזור ציטוטים אוטומטי (דקות, 0=כבוי)</span>
             <input id="cfg-moti-interval" class="cfg-input" type="number" min="0" max="60" step="1" style="width:70px;direction:ltr" placeholder="0" title="4-60 דקות — 0 = ידני בלבד">
           </div>
-          <!-- Config v3 (v7.9): Per-card settings -->
-          <div class="cfg-row">
-            <span class="cfg-label">🌤️ מזג אוויר — תחזית שעתית</span>
-            <select id="cfg-weather-hourly" class="cfg-input" style="width:auto">
-              <option value="on">מופעל</option>
-              <option value="off">כבוי</option>
-            </select>
-          </div>
-          <div class="cfg-row">
-            <span class="cfg-label">🌬️ מזג אוויר — רוח</span>
-            <select id="cfg-weather-wind" class="cfg-input" style="width:auto">
-              <option value="on">מופעל</option>
-              <option value="off">כבוי</option>
-            </select>
-          </div>
-          <div class="cfg-row">
-            <span class="cfg-label">🌅 מזג אוויר — זריחה/שקיעה</span>
-            <select id="cfg-weather-sunrise" class="cfg-input" style="width:auto">
-              <option value="on">מופעל</option>
-              <option value="off">כבוי</option>
-            </select>
-          </div>
-          <div class="cfg-row">
-            <span class="cfg-label">📰 חדשות — מקור/אתר</span>
-            <select id="cfg-news-show-source" class="cfg-input" style="width:auto">
-              <option value="on">מוצג</option>
-              <option value="off">מוסתר</option>
-            </select>
-          </div>
-          <div class="cfg-row">
-            <span class="cfg-label">📈 מניות — קיבוץ לפי ענף</span>
-            <select id="cfg-stocks-group-sector" class="cfg-input" style="width:auto">
-              <option value="off">ללא קיבוץ</option>
-              <option value="on">קיבוץ לפי ענף</option>
-            </select>
-          </div>
+          <!-- Config v3 (v7.9): Per-card settings moved to Cards tab (Sprint 17) -->
         </div>
         <!-- Tab: Calendar -->
         <div class="cfg-section" id="cfg-section-calendar" role="tabpanel" aria-labelledby="" data-tab="calendar">
@@ -298,6 +263,106 @@
           <div class="cfg-row" style="margin-top:8px">
             <button type="button" id="cfg-reset-layout-btn" class="cfg-input" style="cursor:pointer;font-size:0.8em" title="איפוס סדר הכרטיסיות לברירת המחדל המקורית">↩ איפוס סידור כרטיסיות</button>
           </div>
+          <!-- Sprint 17: Per-card settings accordion -->
+          <details class="cfg-percard-details" style="margin-top:12px">
+            <summary class="cfg-percard-summary">🌤️ מזג אוויר</summary>
+            <div class="cfg-percard-body">
+              <div class="cfg-row">
+                <span class="cfg-label">תחזית שעתית</span>
+                <select id="cfg-weather-hourly" class="cfg-input" style="width:auto">
+                  <option value="on">מופעל</option>
+                  <option value="off">כבוי</option>
+                </select>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">רוח</span>
+                <select id="cfg-weather-wind" class="cfg-input" style="width:auto">
+                  <option value="on">מופעל</option>
+                  <option value="off">כבוי</option>
+                </select>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">זריחה/שקיעה</span>
+                <select id="cfg-weather-sunrise" class="cfg-input" style="width:auto">
+                  <option value="on">מופעל</option>
+                  <option value="off">כבוי</option>
+                </select>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">פרטים מורחבים</span>
+                <select id="cfg-weather-details" class="cfg-input" style="width:auto">
+                  <option value="on">מופעל</option>
+                  <option value="off">כבוי</option>
+                </select>
+              </div>
+            </div>
+          </details>
+          <details class="cfg-percard-details">
+            <summary class="cfg-percard-summary">📰 חדשות</summary>
+            <div class="cfg-percard-body">
+              <div class="cfg-row">
+                <span class="cfg-label">הצגת מקור/אתר</span>
+                <select id="cfg-news-show-source" class="cfg-input" style="width:auto">
+                  <option value="on">מוצג</option>
+                  <option value="off">מוסתר</option>
+                </select>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">מקסימום פריטים</span>
+                <input id="cfg-news-max-items" class="cfg-input" type="number" min="5" max="50" step="1" style="width:65px;direction:ltr" placeholder="20">
+              </div>
+            </div>
+          </details>
+          <details class="cfg-percard-details">
+            <summary class="cfg-percard-summary">📈 מניות</summary>
+            <div class="cfg-percard-body">
+              <div class="cfg-row">
+                <span class="cfg-label">קיבוץ לפי ענף</span>
+                <select id="cfg-stocks-group-sector" class="cfg-input" style="width:auto">
+                  <option value="off">ללא קיבוץ</option>
+                  <option value="on">קיבוץ לפי ענף</option>
+                </select>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">הצגת תיק השקעות</span>
+                <select id="cfg-stocks-show-portfolio" class="cfg-input" style="width:auto">
+                  <option value="on">מוצג</option>
+                  <option value="off">מוסתר</option>
+                </select>
+              </div>
+            </div>
+          </details>
+          <details class="cfg-percard-details">
+            <summary class="cfg-percard-summary">✅ משימות</summary>
+            <div class="cfg-percard-body">
+              <div class="cfg-row">
+                <span class="cfg-label">הצגת משימות שהושלמו</span>
+                <select id="cfg-tasks-show-done" class="cfg-input" style="width:auto">
+                  <option value="on">מוצג</option>
+                  <option value="off">מוסתר</option>
+                </select>
+              </div>
+              <div class="cfg-row">
+                <span class="cfg-label">הצגת קטגוריות</span>
+                <select id="cfg-tasks-show-categories" class="cfg-input" style="width:auto">
+                  <option value="on">מוצג</option>
+                  <option value="off">מוסתר</option>
+                </select>
+              </div>
+            </div>
+          </details>
+          <details class="cfg-percard-details">
+            <summary class="cfg-percard-summary">💻 מידע מערכת</summary>
+            <div class="cfg-percard-body">
+              <div class="cfg-row">
+                <span class="cfg-label">זמן תגובה לרשת (RTT)</span>
+                <select id="cfg-sysinfo-show-rtt" class="cfg-input" style="width:auto">
+                  <option value="on">מוצג</option>
+                  <option value="off">מוסתר</option>
+                </select>
+              </div>
+            </div>
+          </details>
         </div>
         <!-- Tab: Advanced -->
         <div class="cfg-section" id="cfg-section-advanced" role="tabpanel" aria-labelledby="" data-tab="advanced">
