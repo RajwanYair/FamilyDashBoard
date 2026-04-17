@@ -1970,3 +1970,57 @@ describe("News — breaking news badge (Sprint 48)", () => {
     expect(badge).not.toBeNull();
   });
 });
+
+// ── Sprint 27: readingTimeMinutes + badge rendering ──────────────────────────
+
+describe("News — readingTimeMinutes (Sprint 27)", () => {
+  it("returns 0 for empty string", () => {
+    expect(readingTimeMinutes("")).toBe(0);
+  });
+
+  it("returns 1 for very short text (< 200 words)", () => {
+    expect(readingTimeMinutes("hello world")).toBe(1);
+  });
+
+  it("returns 1 for exactly 200 words", () => {
+    expect(readingTimeMinutes(Array(200).fill("word").join(" "))).toBe(1);
+  });
+
+  it("returns 2 for 300 words", () => {
+    expect(readingTimeMinutes(Array(300).fill("word").join(" "))).toBe(2);
+  });
+
+  it("returns 5 for 1000 words", () => {
+    expect(readingTimeMinutes(Array(1000).fill("word").join(" "))).toBe(5);
+  });
+});
+
+describe("News — reading-time badge in renderNews (Sprint 27)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    cacheDom();
+  });
+
+  it("shows reading-time badge for items with description", () => {
+    renderNews([{
+      title: "Article with description",
+      link: "https://ynet.co.il",
+      pubDate: "",
+      source: "Ynet",
+      description: Array(250).fill("word").join(" "),
+    }]);
+    const badge = document.querySelector(".news-reading-time");
+    expect(badge).not.toBeNull();
+    expect(badge!.textContent).toMatch(/~\d+ דק׳/);
+  });
+
+  it("does NOT show reading-time badge when description is absent", () => {
+    renderNews([{
+      title: "No desc",
+      link: "https://ynet.co.il",
+      pubDate: "",
+      source: "Ynet",
+    }]);
+    expect(document.querySelector(".news-reading-time")).toBeNull();
+  });
+});

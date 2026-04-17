@@ -553,6 +553,16 @@ export function renderNews(items: NewsItem[]): void {
         }
       }
 
+      // Reading-time badge (Sprint 27) — primary items with description
+      if (!isClone && item.description && item.description.length > 10) {
+        const mins = readingTimeMinutes(item.description);
+        const rtEl = document.createElement("span");
+        rtEl.className = "news-reading-time";
+        rtEl.textContent = `~${mins} דק׳`;
+        rtEl.title = `זמן קריאה משוער: ${mins} דקות`;
+        div.appendChild(rtEl);
+      }
+
       // Inline description expand (F145) — primary items with description only
       if (!isClone && item.description && item.description.length > 10) {
         const descEl = document.createElement("div");

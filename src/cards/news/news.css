@@ -22,6 +22,7 @@
 
 /* Feature 67: News item published age */
 .news-age { font-size: 0.55em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+.news-reading-time { font-size: 0.52em; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; opacity: 0.75; }
 
 /* Feature 73: News source favicon in filter chips */
 .news-chip-favicon { width: 10px; height: 10px; border-radius: 2px; margin-left: 3px; vertical-align: middle; opacity: 0.85; }
