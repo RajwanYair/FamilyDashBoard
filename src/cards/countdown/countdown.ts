@@ -269,9 +269,23 @@ export function tick2(): void {
   if (minsEl) minsEl.textContent = pad(minutes);
   if (secsEl) secsEl.textContent = pad(seconds);
   if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
-}
 
-/** Sprint 22: Tick for the optional 3rd countdown event. */
+  // Progress bar for event 2 — Sprint 31
+  const progressWrap2 = document.getElementById("cd2-progress-wrap");
+  const progressBar2 = document.getElementById("cd2-progress-bar");
+  if (progressWrap2 && progressBar2 && cfg.countdownCard2StartDate) {
+    const startMs = new Date(cfg.countdownCard2StartDate).getTime();
+    const progress = computeProgress(startMs, targetMs);
+    if (progress !== null) {
+      progressWrap2.style.display = "";
+      progressBar2.style.width = `${Math.round(progress * 100)}%`;
+    } else {
+      progressWrap2.style.display = "none";
+    }
+  } else if (progressWrap2) {
+    progressWrap2.style.display = "none";
+  }
+}
 export function tick3(): void {
   const cfg = loadConfig();
   const section = document.getElementById("cd3-section");
@@ -312,6 +326,22 @@ export function tick3(): void {
   if (minsEl) minsEl.textContent = pad(minutes);
   if (secsEl) secsEl.textContent = pad(seconds);
   if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
+
+  // Progress bar for event 3 — Sprint 31
+  const progressWrap3 = document.getElementById("cd3-progress-wrap");
+  const progressBar3 = document.getElementById("cd3-progress-bar");
+  if (progressWrap3 && progressBar3 && cfg.countdownCard3StartDate) {
+    const startMs = new Date(cfg.countdownCard3StartDate).getTime();
+    const progress = computeProgress(startMs, targetMs);
+    if (progress !== null) {
+      progressWrap3.style.display = "";
+      progressBar3.style.width = `${Math.round(progress * 100)}%`;
+    } else {
+      progressWrap3.style.display = "none";
+    }
+  } else if (progressWrap3) {
+    progressWrap3.style.display = "none";
+  }
 }
 
 export function initCountdownCard(): void {

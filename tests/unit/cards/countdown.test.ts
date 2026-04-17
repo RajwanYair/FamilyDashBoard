@@ -653,3 +653,123 @@ describe("Countdown — tick3 (Sprint 22)", () => {
     expect(() => tick3()).not.toThrow();
   });
 });
+
+// ── Sprint 31: CD2 + CD3 progress bars ────────────────────────────────────
+
+describe("Countdown — tick2 progress bar (Sprint 31)", () => {
+  function buildCD2DOM(): void {
+    document.body.innerHTML = `
+      <div id="cd2-section"></div>
+      <div id="cd2-title"></div>
+      <div id="cd2-days"></div><div id="cd2-hours"></div>
+      <div id="cd2-mins"></div><div id="cd2-secs"></div>
+      <div id="cd2-msg"></div>
+      <div id="cd2-progress-wrap" style="display:none"><div id="cd2-progress-bar"></div></div>
+    `;
+  }
+
+  afterEach(() => { document.body.innerHTML = ""; vi.restoreAllMocks(); vi.useRealTimers(); });
+
+  it("shows progress bar when start date is set and event is in the future", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildCD2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2025-12-31", countdownCard2Time: "00:00",
+      countdownCard2Title: "אירוע 2", countdownCard2DoneMsg: "done",
+      countdownCard2StartDate: "2025-01-01",
+    } as DashboardConfig);
+    tick2();
+    expect(document.getElementById("cd2-progress-wrap")?.style.display).toBe("");
+    const bar = document.getElementById("cd2-progress-bar") as HTMLElement;
+    expect(bar.style.width).toMatch(/^\d+%$/);
+  });
+
+  it("hides progress bar when no start date is set", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildCD2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2025-12-31", countdownCard2Time: "00:00",
+      countdownCard2Title: "אירוע 2", countdownCard2DoneMsg: "done",
+      countdownCard2StartDate: "",
+    } as DashboardConfig);
+    tick2();
+    expect(document.getElementById("cd2-progress-wrap")?.style.display).toBe("none");
+  });
+
+  it("shows 50% progress when midpoint is reached", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-07-01T00:00:00")); // midpoint of Jan–Dec
+    buildCD2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2026-01-01", countdownCard2Time: "00:00",
+      countdownCard2Title: "אירוע 2", countdownCard2DoneMsg: "done",
+      countdownCard2StartDate: "2025-01-01",
+    } as DashboardConfig);
+    tick2();
+    const bar = document.getElementById("cd2-progress-bar") as HTMLElement;
+    const pct = parseInt(bar.style.width, 10);
+    expect(pct).toBeGreaterThan(30);
+    expect(pct).toBeLessThan(70);
+  });
+});
+
+describe("Countdown — tick3 progress bar (Sprint 31)", () => {
+  function buildCD3DOM(): void {
+    document.body.innerHTML = `
+      <div id="cd3-section"></div>
+      <div id="cd3-title"></div>
+      <div id="cd3-days"></div><div id="cd3-hours"></div>
+      <div id="cd3-mins"></div><div id="cd3-secs"></div>
+      <div id="cd3-msg"></div>
+      <div id="cd3-progress-wrap" style="display:none"><div id="cd3-progress-bar"></div></div>
+    `;
+  }
+
+  afterEach(() => { document.body.innerHTML = ""; vi.restoreAllMocks(); vi.useRealTimers(); });
+
+  it("shows progress bar when start date is set and event is in the future", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildCD3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "2025-12-31", countdownCard3Time: "00:00",
+      countdownCard3Title: "אירוע 3", countdownCard3DoneMsg: "done",
+      countdownCard3StartDate: "2025-01-01",
+    } as DashboardConfig);
+    tick3();
+    expect(document.getElementById("cd3-progress-wrap")?.style.display).toBe("");
+    const bar = document.getElementById("cd3-progress-bar") as HTMLElement;
+    expect(bar.style.width).toMatch(/^\d+%$/);
+  });
+
+  it("hides progress bar when no start date configured", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildCD3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "2025-12-31", countdownCard3Time: "00:00",
+      countdownCard3Title: "אירוע 3", countdownCard3DoneMsg: "done",
+      countdownCard3StartDate: "",
+    } as DashboardConfig);
+    tick3();
+    expect(document.getElementById("cd3-progress-wrap")?.style.display).toBe("none");
+  });
+
+  it("does not throw when progress DOM absent with start date set", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    document.body.innerHTML = `
+      <div id="cd3-section"></div><div id="cd3-title"></div>
+      <div id="cd3-days"></div><div id="cd3-hours"></div>
+      <div id="cd3-mins"></div><div id="cd3-secs"></div><div id="cd3-msg"></div>
+    `;
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "2025-12-31", countdownCard3Time: "00:00",
+      countdownCard3Title: "Test", countdownCard3DoneMsg: "done",
+      countdownCard3StartDate: "2025-01-01",
+    } as DashboardConfig);
+    expect(() => tick3()).not.toThrow();
+  });
+});
