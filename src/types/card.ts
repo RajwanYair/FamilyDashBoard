@@ -203,3 +203,35 @@ export interface CardShell {
    */
   footer?: HTMLElement;
 }
+
+// ── Card size guards (Sprint 69) ───────────────────────────────────────────
+
+const CARD_SIZES: readonly CardSize[] = ["sm", "md", "lg", "xl"] as const;
+
+/**
+ * Type guard — returns `true` if `value` is a valid `CardSize`.
+ *
+ * Use in config import validation and URL-param parsing where card size
+ * values arrive as raw strings.
+ *
+ * @example
+ * const s = userInput;               // string
+ * if (isValidCardSize(s)) card.size = s;  // s: CardSize
+ */
+export function isValidCardSize(value: unknown): value is CardSize {
+  return typeof value === "string" && (CARD_SIZES as readonly string[]).includes(value);
+}
+
+/**
+ * Assertion — throws `TypeError` if `value` is not a valid `CardSize`.
+ *
+ * @example
+ * assertCardSize(savedConfig.defaultSize);  // now typed as CardSize
+ */
+export function assertCardSize(value: unknown): asserts value is CardSize {
+  if (!isValidCardSize(value)) {
+    throw new TypeError(
+      `Expected CardSize ("sm"|"md"|"lg"|"xl"), got: ${JSON.stringify(value)}`,
+    );
+  }
+}

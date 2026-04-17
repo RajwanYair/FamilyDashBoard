@@ -11,7 +11,9 @@ import {
   getCard,
   listCards,
   loadCard,
+  createShell,
 } from "@/core/card-registry";
+import { isValidCardSize, assertCardSize } from "@/types/card";
 import type { CardDefinition } from "@/types/card";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -232,5 +234,54 @@ describe("Card Registry — loadCard built-in legacy (motivation)", () => {
     const def = await loadCard("motivation");
     expect(def.id).toBe("motivation");
     expect(typeof def.init).toBe("function");
+  });
+});
+
+// ── createShell (Sprint 68) ────────────────────────────────────────────────
+
+describe("createShell", () => {
+  it("returns root <section> with data-card-id", () => {
+    const { root } = createShell("motivation");
+    expect(root.tagName).toBe("SECTION");
+    expect(root.dataset["cardId"]).toBe("motivation");
+  });
+
+  it("returns a body div.card-body inside root", () => {
+    const { root, body } = createShell("motivation");
+    expect(body.className).toBe("card-body");
+    expect(root.contains(body)).toBe(true);
+  });
+
+  it("sets aria-label from registry entry", () => {
+    const { root } = createShell("motivation");
+    expect(root.getAttribute("aria-label")).toBeTruthy();
+  });
+
+  it("throws for unknown card id", () => {
+    expect(() => createShell("__no_such_card__")).toThrow(/not registered/);
+  });
+});
+
+// ── isValidCardSize / assertCardSize (Sprint 69) ───────────────────────────
+
+describe("isValidCardSize", () => {
+  it.each(["sm", "md", "lg", "xl"])("returns true for valid size %s", (s) => {
+    expect(isValidCardSize(s)).toBe(true);
+  });
+
+  it.each(["xs", "xxl", "", "MD", 3, null, undefined])("returns false for %s", (v) => {
+    expect(isValidCardSize(v)).toBe(false);
+  });
+});
+
+describe("assertCardSize", () => {
+  it("does not throw for valid sizes", () => {
+    expect(() => assertCardSize("sm")).not.toThrow();
+    expect(() => assertCardSize("xl")).not.toThrow();
+  });
+
+  it("throws TypeError for invalid value", () => {
+    expect(() => assertCardSize("huge")).toThrow(TypeError);
+    expect(() => assertCardSize(null)).toThrow(TypeError);
   });
 });

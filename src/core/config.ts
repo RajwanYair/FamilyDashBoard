@@ -107,6 +107,18 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v3 → v4");
   }
 
+  // v4 → v5: introduced featureFlags map with default opt-in feature set
+  if (version < 5) {
+    cfg.featureFlags = {
+      ...DEFAULT_CONFIG.featureFlags,
+      ...(typeof (cfg as { featureFlags?: Record<string, boolean> }).featureFlags === "object"
+        ? (cfg as { featureFlags?: Record<string, boolean> }).featureFlags
+        : {}),
+    };
+    cfg.configVersion = 5;
+    diagLog("[config] migrated v4 → v5");
+  }
+
   return cfg;
 }
 

@@ -54,6 +54,30 @@ export async function loadCard(id: string): Promise<CardDefinition> {
   return entry.load();
 }
 
+/**
+ * Build a bare DOM shell for a card by id (Sprint 68).
+ *
+ * Returns a `<section data-card-id="[id]">` with an inner
+ * `<div class="card-body">`.  The registry entry's icon and
+ * `titleHe` are used to populate an accessible `aria-label`.
+ *
+ * Throws if the card id is not registered.
+ *
+ * @param id - Registered card id (e.g. `"weather"`, `"news"`)
+ * @returns `{ root, body }` — minimal CardShell for the card
+ */
+export function createShell(id: string): { root: HTMLElement; body: HTMLElement } {
+  const entry = _registry.get(id);
+  if (!entry) throw new Error(`Card not registered: "${id}"`);
+  const root = document.createElement("section");
+  root.dataset["cardId"] = id;
+  root.setAttribute("aria-label", `${entry.icon} ${entry.titleHe}`);
+  const body = document.createElement("div");
+  body.className = "card-body";
+  root.appendChild(body);
+  return { root, body };
+}
+
 // ── Built-in card registrations ────────────────────────────────────────────
 // Cards added before v7 don't export CardDefinition objects yet.
 // Each adapter wraps the existing initXxxCard() function so the registry

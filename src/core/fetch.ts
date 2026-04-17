@@ -469,3 +469,39 @@ export async function fetchWithStale<T>(opts: {
       onData(staticFallback, true);
   }
 }
+
+/**
+ * Generic retry wrapper for any async operation (Sprint 65).
+ *
+ * Unlike `fetchWithRetry` (which wraps a URL fetch via fetchJSON), this
+ * helper accepts any `() => Promise<T>` callback — useful for wrapping
+ * constructed fetch calls, IDB reads, or third-party adapters.
+ *
+ * Calls `fn` up to `maxAttempts` times with exponential backoff.
+ * Throws the last error when all attempts are exhausted.
+ *
+ * @param fn          - Async function to retry
+ * @param maxAttempts - Maximum number of attempts (default: 3)
+ * @param baseDelayMs - Initial backoff delay in ms (doubles each attempt, default: 500)
+ * @returns The resolved value from the first successful attempt
+ */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxAttempts = 3,
+  baseDelayMs = 500,
+): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (attempt < maxAttempts - 1) {
+        await new Promise<void>((resolve) =>
+          setTimeout(resolve, baseDelayMs * Math.pow(2, attempt)),
+        );
+      }
+    }
+  }
+  throw lastErr;
+}

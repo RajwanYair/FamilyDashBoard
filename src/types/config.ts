@@ -133,6 +133,15 @@ export interface DashboardConfig {
    * Keys are card IDs (e.g. "weather", "news", "stocks").
    */
   cards: Record<string, CardConfig>;
+
+  // ── Config v5 additions (v7.16) — feature flags map ──
+
+  /**
+   * Feature flags map — opt-in features controlled at runtime.
+   * Keys are feature names (e.g. "workerFetch", "idleSchedule").
+   * Populated by v4→v5 migration with sensible defaults.
+   */
+  featureFlags: Record<string, boolean>;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -182,7 +191,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3DoneMsg: "🎉 מזל טוב!",
   countdownCard3StartDate: "",
   motivationInterval: 0,
-  configVersion: 4,
+  configVersion: 5,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -205,10 +214,17 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 
   // Config v4 defaults
   cards: {},
+
+  // Config v5 defaults
+  featureFlags: {
+    workerFetch: true,
+    idleSchedule: true,
+    idbCache: false,
+  },
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 4;
+export const CONFIG_VERSION = 5;
 
 /** Type guard: checks if a string is a valid theme name. */
 export function isValidTheme(v: unknown): v is DashboardConfig["theme"] {

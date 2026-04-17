@@ -1,12 +1,30 @@
 # FamilyDashBoard Roadmap
 
-> Roadmap refresh date: 2026-04-17
-> Current shipped baseline: v7.12.0
-> Current verified baseline: 2424 tests / 55 suites passing locally
+> Roadmap refresh date: 2026-06-22
+> Current shipped baseline: v7.16.0 (in progress)
+> Last committed baseline: v7.15.0 — 2534 tests / 56 suites / 0 failures
 
 This roadmap replaces the older sprint-by-sprint backlog with a single decision document that is grounded in the actual state of the repository.
 
 The goal is not to keep adding features forever. The goal is to make FamilyDashBoard a best-in-class always-on family command center: fast, reliable, calm, maintainable, observable, and honest in its documentation.
+
+---
+
+## Implementation Progress (v7.13–v7.16)
+
+> Last updated: 2026-06-22
+
+| Release | Sprints | Status | Key Deliverables |
+| ------- | ------- | ------ | ---------------- |
+| v7.13.0 | 31–40 | ✅ Shipped | README rewrite, ARCHITECTURE.md, ADRs, CardRuntime, domain types, config validation, perf budget |
+| v7.14.0 | 41–50 | ✅ Shipped | Domain type tests, provider health model, diag table, coldStart, staleChip, migrateLsToIdb, FdbCard hooks |
+| v7.15.0 | 51–60 | ✅ Shipped | createSkeleton/Empty/Error, FdbCard.withLoading/renderNodes, CardShell, cOr, weekday dimmer, FDB-062 |
+| v7.16.0 | 61–70 | 🔄 In Progress | bundle-trend script, config v5 (featureFlags), config accordion renderer, fetchWithRetry, FdbCard.emit, registry createShell, isValidCardSize, ROADMAP update |
+| v7.17.0 | 71–80 | ⏳ Pending | Worker normalization, FdbCard helpers, API.md, release report, CLAUDE.md update, GH release |
+
+**Stream Progress:** Stream A (Truth) ✅ · Stream B (Card Arch) 🔄 · Stream C (Data Contracts) 🔄 · Stream D (Observability) 🔄
+
+---
 
 ---
 

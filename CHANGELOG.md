@@ -5,6 +5,45 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.16.0] — 2026-06-22
+
+> **2562 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint 61 — Bundle Trend Tracker
+
+- **`scripts/bundle-trend.mjs`**: New script — appends gzipped JS+CSS sizes to `scripts/bundle-trend.json` after each build; tracks bundle growth over releases
+
+### Sprint 62 — Config Migration v4→v5
+
+- **`src/types/config.ts`**: Added `featureFlags: Record<string, boolean>` to `DashboardConfig`; `DEFAULT_CONFIG` includes `workerFetch`, `idleSchedule`, `idbCache`; `configVersion` bumped to 5; `CONFIG_VERSION = 5`
+- **`src/core/config.ts`**: Added v4→v5 migration branch — seeds `featureFlags` from defaults, merges any pre-existing flags
+
+### Sprint 63 — Config Panel Accordion Renderer
+
+- **`src/ui/config-panel.ts`**: `buildConfigAccordion(fields, container)` — renders `CardConfigField[]` schema into `<details>/<summary>` accordion groups; flat fields for ungrouped entries; `_buildFieldRow()` private helper
+
+### Sprint 64 — `withRetry` Generic Retry Wrapper
+
+- **`src/core/fetch.ts`**: `withRetry<T>(fn, maxAttempts?, baseDelayMs?)` — generic async retry with exponential backoff; complements the URL-specific `fetchWithRetry(url, …)`
+
+### Sprint 65 — FdbCard.emit Custom Event Helper
+
+- **`src/core/fdb-card.ts`**: `emit<T>(type, detail?)` — dispatches a typed `CustomEvent` that bubbles and is composed; enables inter-card and host-app communication without coupling
+
+### Sprint 66 — Registry `createShell()`
+
+- **`src/core/card-registry.ts`**: `createShell(id)` — builds a `<section data-card-id>` + `<div class="card-body">` shell from the registry entry; throws for unknown ids
+
+### Sprint 67 — `isValidCardSize` / `assertCardSize`
+
+- **`src/types/card.ts`**: `isValidCardSize(value)` type guard + `assertCardSize(value)` assertion — validate raw strings as `CardSize` at import boundaries and config parsing
+
+### Sprint 68 — ROADMAP Progress Table
+
+- **`ROADMAP.md`**: Replaced stale header with current v7.16 snapshot — implementation progress table (v7.13–v7.16), stream status, updated baseline
+
+---
+
 ## [7.15.0] — 2026-06-22
 
 > **2534 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

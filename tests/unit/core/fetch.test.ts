@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures, fetchJSONDeduped, getInflightCount, clearFetchLocks, acquireLock, releaseLock, getNetworkQualityTier, NetworkQualityTier, enqueueFetch, getFetchQueueDepth, getFetchQueueRunning } from "@/core/fetch";
+import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, withRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures, fetchJSONDeduped, getInflightCount, clearFetchLocks, acquireLock, releaseLock, getNetworkQualityTier, NetworkQualityTier, enqueueFetch, getFetchQueueDepth, getFetchQueueRunning } from "@/core/fetch";
 
 // Helper: mock fetch that resolves after `delay` ms
 function delayedFetch(delay: number, response: unknown) {
@@ -875,5 +875,40 @@ describe("enqueueFetch — priority queue (Sprint 21)", () => {
     expect(results).toContain(1);
     expect(results).toContain(2);
     expect(results).toContain(3);
+  });
+});
+
+// ── withRetry (Sprint 65) ──────────────────────────────────────────────────
+
+describe("withRetry", () => {
+  it("returns result immediately on first success", async () => {
+    const fn = vi.fn().mockResolvedValue(42);
+    const result = await withRetry(fn, 3, 0);
+    expect(result).toBe(42);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries up to maxAttempts and returns on eventual success", async () => {
+    let calls = 0;
+    const fn = vi.fn().mockImplementation(async () => {
+      calls++;
+      if (calls < 3) throw new Error("transient");
+      return "ok";
+    });
+    const result = await withRetry(fn, 3, 0);
+    expect(result).toBe("ok");
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+
+  it("throws last error when all attempts fail", async () => {
+    const fn = vi.fn().mockRejectedValue(new Error("permanent"));
+    await expect(withRetry(fn, 2, 0)).rejects.toThrow("permanent");
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not retry if maxAttempts is 1", async () => {
+    const fn = vi.fn().mockRejectedValue(new Error("fail"));
+    await expect(withRetry(fn, 1, 0)).rejects.toThrow("fail");
+    expect(fn).toHaveBeenCalledTimes(1);
   });
 });

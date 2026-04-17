@@ -289,3 +289,40 @@ describe("FdbCard.withLoading (Sprint 55)", () => {
     expect(card.getAttribute("aria-busy")).toBe("false");
   });
 });
+
+// ── FdbCard.emit (Sprint 67) ───────────────────────────────────────────────
+
+describe("FdbCard.emit", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    card = new TestCard();
+    document.body.appendChild(card);
+  });
+
+  afterEach(() => {
+    card.remove();
+  });
+
+  it("dispatches a CustomEvent with the given type", () => {
+    const received: CustomEvent[] = [];
+    card.addEventListener("fdb-test", (e) => received.push(e as CustomEvent));
+    card.emit("fdb-test");
+    expect(received).toHaveLength(1);
+    expect(received[0]?.type).toBe("fdb-test");
+  });
+
+  it("includes detail payload in the event", () => {
+    const received: CustomEvent<{ value: number }>[] = [];
+    card.addEventListener("fdb-value", (e) => received.push(e as CustomEvent<{ value: number }>));
+    card.emit<{ value: number }>("fdb-value", { value: 42 });
+    expect(received[0]?.detail).toEqual({ value: 42 });
+  });
+
+  it("events bubble up the DOM", () => {
+    const bubbled: Event[] = [];
+    document.body.addEventListener("fdb-bubble", (e) => bubbled.push(e));
+    card.emit("fdb-bubble");
+    expect(bubbled).toHaveLength(1);
+  });
+});

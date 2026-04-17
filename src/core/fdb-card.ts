@@ -214,4 +214,24 @@ export abstract class FdbCard extends HTMLElement {
       this.setLoading(false);
     }
   }
+
+  /**
+   * Dispatch a custom DOM event from this card element (Sprint 67).
+   *
+   * Events bubble by default and are composed (cross shadow-DOM boundary).
+   * All FamilyDashBoard cards are non-shadow so `composed` has no effect,
+   * but it is set for forward compatibility.
+   *
+   * @param type   - Event type name (e.g. `"fdb-refresh"`, `"fdb-config-change"`)
+   * @param detail - Optional structured detail payload
+   */
+  emit<T = undefined>(type: string, detail?: T): void {
+    this.dispatchEvent(
+      new CustomEvent<T>(type, {
+        detail: detail as T,
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
 }

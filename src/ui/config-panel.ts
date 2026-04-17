@@ -9,6 +9,7 @@
 import "./config-panel.css";
 import { loadConfig, saveConfig, shareConfigHash } from "../core/config";
 import type { DashboardConfig } from "../types/config";
+import type { CardConfigField } from "../types/card";
 import { listCards } from "../core/card-registry";
 import { applyTheme } from "./theme";
 import { diagLog } from "../core/diag";
@@ -609,6 +610,69 @@ function collectForm(): DashboardConfig {
   c.sysInfoShowRtt = (g("cfg-sysinfo-show-rtt") as HTMLSelectElement | null)?.value !== "off";
 
   return c;
+}
+
+// ── Config accordion renderer (Sprint 64) ─────────────────────────────────
+
+/**
+ * Build a `<fieldset>` or grouped `<details>` accordion fragment from an
+ * array of `CardConfigField` definitions (Sprint 64).
+ *
+ * Fields that share the same `group` string are wrapped in a `<details>`
+ * element with a `<summary>` label. Fields without a `group` are rendered
+ * flat inside the `container`.
+ *
+ * No DOM is actually inserted — callers append the returned fragment
+ * wherever they need it (e.g., inside a config tab `<section>`).
+ *
+ * @param fields    - Card config field schema
+ * @param container - Parent element to append the fragment into
+ */
+export function buildConfigAccordion(
+  fields: CardConfigField[],
+  container: HTMLElement,
+): void {
+  const groupMap = new Map<string, HTMLDetailsElement>();
+
+  for (const field of fields) {
+    if (field.group) {
+      if (!groupMap.has(field.group)) {
+        const details = document.createElement("details");
+        if (field.groupOpenByDefault) details.open = true;
+        const summary = document.createElement("summary");
+        summary.textContent = field.group;
+        details.appendChild(summary);
+        groupMap.set(field.group, details);
+        container.appendChild(details);
+      }
+      groupMap.get(field.group)!.appendChild(_buildFieldRow(field));
+    } else {
+      container.appendChild(_buildFieldRow(field));
+    }
+  }
+}
+
+/** Build a single label+input row for a config field. */
+function _buildFieldRow(field: CardConfigField): HTMLElement {
+  const row = document.createElement("div");
+  row.className = "cfg-row";
+  const label = document.createElement("label");
+  label.textContent = `${field.labelHe} / ${field.labelEn}`;
+  const input = document.createElement("input");
+  input.type = field.type === "boolean" ? "checkbox" : field.type;
+  input.name = field.key;
+  if (typeof field.defaultValue === "boolean") {
+    input.checked = field.defaultValue;
+  } else {
+    input.value = String(field.defaultValue);
+  }
+  if (field.min !== undefined) input.min = String(field.min);
+  if (field.max !== undefined) input.max = String(field.max);
+  if (field.step !== undefined) input.step = String(field.step);
+  if (field.placeholder !== undefined) input.placeholder = field.placeholder;
+  label.appendChild(input);
+  row.appendChild(label);
+  return row;
 }
 
 // ── Public API ──
