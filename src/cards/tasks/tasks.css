@@ -57,6 +57,17 @@
   color: var(--text-muted);
 }
 
+/* Sprint 11: Maximize — large tasks card layout (added before .tasks-cb) */
+@container card (min-width: 900px) {
+  .tasks-list { gap: 8px; padding: 8px 0; }
+  .tasks-row { padding: 8px 14px; font-size: 1.05em; }
+  .tasks-person { font-size: 0.85em; padding: 6px 0 4px; }
+  .tasks-quick-add { padding: 6px 8px; }
+  #tasks-quick-input { font-size: 0.9em; padding: 5px 10px; }
+  .tasks-action-btn { font-size: 0.78em; padding: 5px 12px; }
+  .tasks-filter-bar { padding: 4px 8px; gap: 6px; }
+}
+
 .tasks-cb {
   accent-color: var(--accent);
   width: 16px;

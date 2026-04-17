@@ -79,3 +79,19 @@
   direction: ltr;
   font-variant-numeric: tabular-nums;
 }
+
+/* Sprint 11: Maximize — large system-info layout */
+@container card (min-width: 900px) {
+  .sysinfo-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important; gap: 12px !important; padding: 12px !important; }
+  .sysinfo-tile { padding: 14px 16px !important; }
+  .sysinfo-label { font-size: 0.8em !important; }
+  .sysinfo-val { font-size: 1.1em !important; }
+}
+
+/* Sprint 11: Maximize — large system-info layout */
+@container card (min-width: 900px) {
+  .sysinfo-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important; gap: 12px !important; padding: 12px !important; }
+  .sysinfo-tile { padding: 14px 16px !important; }
+  .sysinfo-label { font-size: 0.8em !important; }
+  .sysinfo-val { font-size: 1.1em !important; }
+}

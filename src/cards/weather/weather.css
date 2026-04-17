@@ -73,3 +73,29 @@
 .wx-h-temp { font-size: 0.72em; font-weight: 600; color: var(--text-primary); }
 .wx-h-precip { font-size: 0.58em; color: #60a5fa; min-height: 0.8em; }
 .wx-h-precip-high { color: var(--warning); font-weight: 600; }
+
+/* Sprint 11: Maximize — expand weather layout for large (≥900px) container */
+@container card (min-width: 900px) {
+  .wx-top-row { gap: 24px; padding: 12px 0; }
+  .wx-current { gap: 16px; flex: 0 0 auto; }
+  .wx-icon { font-size: 3.5em; }
+  .wx-temp-main { font-size: 2.2em; }
+  .wx-minmax { font-size: 0.9em; }
+  .wx-desc { font-size: 0.9em; }
+  .wx-details { grid-template-columns: repeat(7, 1fr); grid-template-rows: 1fr; font-size: 0.82em; flex: 1 1 auto; min-height: 90px; }
+  .wx-detail { padding: 10px 8px; }
+  .wx-detail-label { font-size: 0.85em; }
+  .wx-detail-val { font-size: 1.1em; }
+  .wx-fday { flex-direction: column; align-items: center; padding: 10px 6px; gap: 5px; }
+  .wx-fday-icon { font-size: 1.4em; }
+  .wx-fday-name { font-size: 0.85em; }
+  .wx-fday-temp { font-size: 0.9em; margin-inline-start: 0; }
+  .wx-hourly-strip { gap: 8px; padding: 8px 0 4px; }
+  .wx-h-tile { min-width: 64px; padding: 8px 10px; gap: 3px; }
+  .wx-h-time { font-size: 0.75em; }
+  .wx-h-icon { font-size: 1.3em; }
+  .wx-h-temp { font-size: 0.9em; }
+  .wx-h-precip { font-size: 0.72em; }
+  .wx-city-tab { font-size: 0.72em; padding: 3px 12px; }
+  .wx-hourly-chart { max-height: none; }
+}

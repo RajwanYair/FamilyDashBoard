@@ -151,3 +151,15 @@
   text-align: center;
   cursor: pointer;
 }
+
+/* Sprint 11: Maximize — large Hebrew calendar layout */
+@container card (min-width: 900px) {
+  .hc-row { padding: 6px 0; font-size: 1.05em; }
+  .hc-label { font-size: 0.9em; }
+  .hc-val { font-size: 0.95em; }
+  .hc-saying { font-size: 0.9em; line-height: 1.7; padding: 10px 0; }
+  .hc-halacha-val { max-width: none; font-size: 0.82em; }
+  .hc-psalm-val { max-width: none; font-size: 0.8em; }
+  .hc-moon-val { font-size: 1em; }
+  .zmanim-grid { grid-template-columns: repeat(4, max-content); gap: 6px; }
+}

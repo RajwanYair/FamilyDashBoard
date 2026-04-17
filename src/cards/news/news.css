@@ -77,3 +77,13 @@ body.news-bkm-mode .rss-item:not(.bookmarked) { display: none; }
 /* Sprint 48: Breaking news badge */
 .news-breaking-badge { font-size: 0.58em; font-weight: 800; color: var(--danger, #f87171); flex-shrink: 0; padding: 1px 4px; border-radius: 3px; background: color-mix(in srgb, var(--danger, #f87171) 12%, transparent); border: 1px solid color-mix(in srgb, var(--danger, #f87171) 40%, transparent); animation: newsBreakingPulse 2s ease-in-out infinite; }
 @keyframes newsBreakingPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* Sprint 11: Maximize — large news card layout */
+@container card (min-width: 900px) {
+  .rss-title { font-size: 1.05em !important; }
+  .rss-item { padding: 8px 12px !important; }
+  .news-age { font-size: 0.65em; }
+  .news-filter-chip { font-size: 0.68em; padding: 3px 10px; }
+  .news-search-wrap { padding: 6px 12px; }
+  #news-search { font-size: 0.9em; padding: 5px 12px; }
+}

@@ -43,3 +43,25 @@
 #cal-today-strip { display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 6px; min-height: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
 #cal-today-strip:empty { display: none; }
 .cal-strip-event { font-size: 0.60em; background: var(--bg-card-inner); border-radius: 5px; padding: 2px 6px; color: var(--accent); border-left: 2px solid var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+
+/* Sprint 11: Maximize — large calendar layout */
+@container card (min-width: 900px) {
+  .cal-event { padding: 6px 10px; font-size: 1em; }
+  .cal-event-title { font-size: 1em; }
+  .cal-event-time { font-size: 0.82em; }
+  .cal-event-date { font-size: 0.78em; padding-inline-end: 12px; }
+  .cal-strip-event { font-size: 0.72em; padding: 3px 10px; max-width: 200px; }
+  #cal-today-strip { gap: 8px; padding: 6px 10px; }
+  .cal-agenda { font-size: 1em; }
+}
+
+/* Sprint 11: Maximize — large calendar layout */
+@container card (min-width: 900px) {
+  .cal-event { padding: 6px 10px; font-size: 1em; }
+  .cal-event-title { font-size: 1em; }
+  .cal-event-time { font-size: 0.82em; }
+  .cal-event-date { font-size: 0.78em; padding-inline-end: 12px; }
+  .cal-strip-event { font-size: 0.72em; padding: 3px 10px; max-width: 200px; }
+  #cal-today-strip { gap: 8px; padding: 6px 10px; }
+  .cal-agenda { font-size: 1em; }
+}

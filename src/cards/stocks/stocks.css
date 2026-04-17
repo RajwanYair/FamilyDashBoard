@@ -55,3 +55,20 @@
 
 /* F155: Stocks gainers/losers summary bar */
 #stk-summary { font-size: 0.60em; color: var(--text-muted); text-align: center; padding: 3px 6px; border-top: 1px solid rgba(255,255,255,0.06); letter-spacing: 0.03em; }
+
+/* Sprint 11: Maximize — large stocks card layout */
+@container card (min-width: 900px) {
+  .stk { padding: 8px 16px; gap: 12px; }
+  .stk-info { width: 10em; }
+  .stk-sym { font-size: 1.1em; }
+  .stk-desc { font-size: 0.82em; }
+  .stk-vals { width: 9em; }
+  .stk-price { font-size: 1.1em; }
+  .stk-chg { font-size: 0.9em; }
+  .stk-logo { width: 22px; height: 22px; }
+  .stk-logo img { width: 22px; height: 22px; }
+  .stk-chart { height: 30px; }
+  .stk-ph-spark { width: 56px; height: 16px; }
+  .stk-sector-hdr { font-size: 0.62em; padding: 6px 12px 2px; }
+  .stk-total-row { font-size: 0.8em; padding: 5px 12px; }
+}
