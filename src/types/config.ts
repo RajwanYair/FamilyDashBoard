@@ -70,6 +70,14 @@ export interface DashboardConfig {
   countdownCard2Time: string;
   /** Countdown card 2 — message shown after event passes */
   countdownCard2DoneMsg: string;
+  /** Countdown card 3 — event title */
+  countdownCard3Title: string;
+  /** Countdown card 3 — target date YYYY-MM-DD */
+  countdownCard3Date: string;
+  /** Countdown card 3 — target time HH:MM */
+  countdownCard3Time: string;
+  /** Countdown card 3 — message shown after event passes */
+  countdownCard3DoneMsg: string;
   /** Motivation card — auto-advance interval in minutes (0 = off). */
   motivationInterval: number;
   /**
@@ -161,6 +169,10 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard2Date: "",
   countdownCard2Time: "18:00",
   countdownCard2DoneMsg: "🎉 מזל טוב!",
+  countdownCard3Title: "",
+  countdownCard3Date: "",
+  countdownCard3Time: "18:00",
+  countdownCard3DoneMsg: "🎉 מזל טוב!",
   motivationInterval: 0,
   configVersion: 4,
 

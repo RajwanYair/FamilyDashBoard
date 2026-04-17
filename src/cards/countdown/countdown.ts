@@ -271,12 +271,56 @@ export function tick2(): void {
   if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
 }
 
+/** Sprint 22: Tick for the optional 3rd countdown event. */
+export function tick3(): void {
+  const cfg = loadConfig();
+  const section = document.getElementById("cd3-section");
+  if (!section) return;
+
+  const d3 = cfg.countdownCard3Date;
+  const t3 = cfg.countdownCard3Time || "18:00";
+  if (!d3) {
+    section.style.display = "none";
+    return;
+  }
+
+  const targetMs = new Date(`${d3}T${t3}:00`).getTime();
+  const now = Date.now();
+  const titleEl = document.getElementById("cd3-title");
+  const daysEl = document.getElementById("cd3-days");
+  const hoursEl = document.getElementById("cd3-hours");
+  const minsEl = document.getElementById("cd3-mins");
+  const secsEl = document.getElementById("cd3-secs");
+  const msgEl = document.getElementById("cd3-msg");
+
+  section.style.display = "";
+  if (titleEl) titleEl.textContent = cfg.countdownCard3Title || "אירוע 3";
+
+  if (now >= targetMs) {
+    const daysSince = getDaysSince(targetMs);
+    if (daysEl) daysEl.textContent = String(daysSince);
+    if (hoursEl) hoursEl.textContent = "00";
+    if (minsEl) minsEl.textContent = "00";
+    if (secsEl) secsEl.textContent = "00";
+    if (msgEl) msgEl.textContent = cfg.countdownCard3DoneMsg || "🎉 מזל טוב!";
+    return;
+  }
+
+  const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
+  if (daysEl) daysEl.textContent = String(days);
+  if (hoursEl) hoursEl.textContent = pad(hours);
+  if (minsEl) minsEl.textContent = pad(minutes);
+  if (secsEl) secsEl.textContent = pad(seconds);
+  if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
+}
+
 export function initCountdownCard(): void {
   cacheDom();
   tick();
   tick2();
+  tick3();
   if (_cdInterval !== null) clearInterval(_cdInterval);
-  _cdInterval = setInterval(() => { tick(); tick2(); }, 1000);
+  _cdInterval = setInterval(() => { tick(); tick2(); tick3(); }, 1000);
   diagLog("FDB-030: [countdown] Initialized");
 }
 

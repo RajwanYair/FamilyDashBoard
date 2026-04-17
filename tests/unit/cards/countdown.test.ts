@@ -570,3 +570,86 @@ describe("Countdown — advanceAnnualDate", () => {
     expect(advanceAnnualDate("bad")).toBe("bad");
   });
 });
+
+// ── Sprint 22: tick3 — 3rd event ─────────────────────────────────────────
+
+import { tick3 } from "@/cards/countdown/countdown";
+
+describe("Countdown — tick3 (Sprint 22)", () => {
+  function build3DOM(): void {
+    document.body.innerHTML = `
+      <div id="cd3-section"></div>
+      <div id="cd3-title"></div>
+      <div id="cd3-days"></div>
+      <div id="cd3-hours"></div>
+      <div id="cd3-mins"></div>
+      <div id="cd3-secs"></div>
+      <div id="cd3-msg"></div>
+    `;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("hides #cd3-section when no date is configured", () => {
+    build3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "",
+      countdownCard3Title: "",
+      countdownCard3Time: "18:00",
+      countdownCard3DoneMsg: "🎉",
+    } as DashboardConfig);
+    tick3();
+    expect(document.getElementById("cd3-section")?.style.display).toBe("none");
+  });
+
+  it("shows #cd3-section and renders title when date is set", () => {
+    build3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "2099-12-31",
+      countdownCard3Title: "אירוע שלישי",
+      countdownCard3Time: "18:00",
+      countdownCard3DoneMsg: "🎉",
+    } as DashboardConfig);
+    tick3();
+    expect(document.getElementById("cd3-section")?.style.display).not.toBe("none");
+    expect(document.getElementById("cd3-title")?.textContent).toBe("אירוע שלישי");
+  });
+
+  it("shows done message when event date is in the past", () => {
+    build3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "2000-01-01",
+      countdownCard3Title: "אירוע עבר",
+      countdownCard3Time: "00:00",
+      countdownCard3DoneMsg: "🎉 גמרנו!",
+    } as DashboardConfig);
+    tick3();
+    expect(document.getElementById("cd3-msg")?.textContent).toContain("גמרנו");
+  });
+
+  it("falls back to default title 'אירוע 3' when title is empty", () => {
+    build3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "2099-06-01",
+      countdownCard3Title: "",
+      countdownCard3Time: "10:00",
+      countdownCard3DoneMsg: "",
+    } as DashboardConfig);
+    tick3();
+    expect(document.getElementById("cd3-title")?.textContent).toBe("אירוע 3");
+  });
+
+  it("does not throw when #cd3-section is absent", () => {
+    document.body.innerHTML = "";
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard3Date: "2099-01-01",
+      countdownCard3Title: "Test",
+      countdownCard3Time: "12:00",
+      countdownCard3DoneMsg: "done",
+    } as DashboardConfig);
+    expect(() => tick3()).not.toThrow();
+  });
+});

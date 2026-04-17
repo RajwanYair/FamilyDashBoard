@@ -248,6 +248,16 @@ function populateForm(): void {
   const cd2DoneMsg = g("cfg-cd2-done-msg");
   if (cd2DoneMsg) cd2DoneMsg.value = c.countdownCard2DoneMsg ?? "🎉 מזל טוב!";
 
+  // Sprint 22: 3rd countdown event
+  const cd3Title = g("cfg-cd3-title");
+  if (cd3Title) cd3Title.value = c.countdownCard3Title ?? "";
+  const cd3Date = g("cfg-cd3-date");
+  if (cd3Date) cd3Date.value = c.countdownCard3Date ?? "";
+  const cd3Time = g("cfg-cd3-time");
+  if (cd3Time) cd3Time.value = c.countdownCard3Time ?? "18:00";
+  const cd3DoneMsg = g("cfg-cd3-done-msg");
+  if (cd3DoneMsg) cd3DoneMsg.value = c.countdownCard3DoneMsg ?? "🎉 מזל טוב!";
+
   // Chores / tasks (Advanced tab)
   const choresEl = gTxt("cfg-chores");
   if (choresEl) choresEl.value = localStorage.getItem(LS_CHORES) ?? "";
@@ -546,6 +556,16 @@ function collectForm(): DashboardConfig {
   if (cd2TimeEl) c.countdownCard2Time = cd2TimeEl.value.trim();
   const cd2DoneMsgEl = g("cfg-cd2-done-msg");
   if (cd2DoneMsgEl) c.countdownCard2DoneMsg = cd2DoneMsgEl.value.trim();
+
+  // Sprint 22: 3rd countdown event
+  const cd3TitleEl = g("cfg-cd3-title");
+  if (cd3TitleEl) c.countdownCard3Title = cd3TitleEl.value.trim();
+  const cd3DateEl = g("cfg-cd3-date");
+  if (cd3DateEl) c.countdownCard3Date = cd3DateEl.value.trim();
+  const cd3TimeEl = g("cfg-cd3-time");
+  if (cd3TimeEl) c.countdownCard3Time = cd3TimeEl.value.trim();
+  const cd3DoneMsgEl = g("cfg-cd3-done-msg");
+  if (cd3DoneMsgEl) c.countdownCard3DoneMsg = cd3DoneMsgEl.value.trim();
 
   // Cards tab — hidden cards + sizes
   const hiddenCards: string[] = [];

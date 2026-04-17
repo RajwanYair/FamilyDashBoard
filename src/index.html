@@ -429,6 +429,23 @@
             <span class="cfg-label">⏳ ספירה 2 — הודעת סיום</span>
             <input class="cfg-input" id="cfg-cd2-done-msg" type="text" placeholder="🎉 מזל טוב!" >
           </div>
+          <!-- Sprint 22: Countdown card 3rd event -->
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 3 — שם האירוע</span>
+            <input class="cfg-input" id="cfg-cd3-title" type="text" placeholder="חג / יום הולדת / ..." >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 3 — תאריך</span>
+            <input class="cfg-input" id="cfg-cd3-date" type="date" style="direction:ltr;width:140px" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 3 — שעה</span>
+            <input class="cfg-input" id="cfg-cd3-time" type="time" style="direction:ltr;width:100px" >
+          </div>
+          <div class="cfg-row">
+            <span class="cfg-label">⏳ ספירה 3 — הודעת סיום</span>
+            <input class="cfg-input" id="cfg-cd3-done-msg" type="text" placeholder="🎉 מזל טוב!" >
+          </div>
           <!-- F107: Settings export/import -->
           <!-- Chores / Tasks editor (reads/writes localStorage dash_chores) -->
           <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:4px">
@@ -736,6 +753,17 @@
                     <div class="cd-tile"><span class="cd-num" id="cd2-secs">--</span><span class="cd-unit">שניות</span></div>
                   </div>
                   <div class="cd-msg cd2-msg" id="cd2-msg"></div>
+                </div>
+                <!-- Sprint 22: Third countdown event -->
+                <div class="cd2-section" id="cd3-section" style="display:none;margin-top:10px;border-top:1px solid var(--accent-border);padding-top:8px">
+                  <div class="cd-title cd2-title" id="cd3-title"></div>
+                  <div class="cd-tiles cd2-tiles">
+                    <div class="cd-tile"><span class="cd-num" id="cd3-days">--</span><span class="cd-unit">ימים</span></div>
+                    <div class="cd-tile"><span class="cd-num" id="cd3-hours">--</span><span class="cd-unit">שעות</span></div>
+                    <div class="cd-tile"><span class="cd-num" id="cd3-mins">--</span><span class="cd-unit">דקות</span></div>
+                    <div class="cd-tile"><span class="cd-num" id="cd3-secs">--</span><span class="cd-unit">שניות</span></div>
+                  </div>
+                  <div class="cd-msg cd2-msg" id="cd3-msg"></div>
                 </div>
               </div>
             </section>
