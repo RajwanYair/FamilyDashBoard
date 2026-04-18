@@ -290,4 +290,22 @@ export abstract class FdbCard extends HTMLElement {
   qs<T extends HTMLElement = HTMLElement>(selector: string): T | null {
     return this.querySelector<T>(selector);
   }
+
+  /**
+   * Create an HTML element with optional class and text content (Sprint 80).
+   * Reduces boilerplate in card render methods.
+   * @param tag       - HTML tag name (e.g. "div", "span")
+   * @param className - CSS class(es) to set (space-separated)
+   * @param text      - Optional textContent (safe, no innerHTML)
+   */
+  static createEl<K extends keyof HTMLElementTagNameMap>(
+    tag: K,
+    className?: string,
+    text?: string,
+  ): HTMLElementTagNameMap[K] {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text !== undefined) el.textContent = text;
+    return el;
+  }
 }
