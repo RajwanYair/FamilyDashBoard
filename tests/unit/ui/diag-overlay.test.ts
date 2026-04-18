@@ -14,6 +14,8 @@ import {
   isDiagOverlayOpen,
   initDiagOverlay,
   copyDiagLog,
+  providerStatusIcon,
+  renderProviderHealthHtml,
 } from "@/ui/diag-overlay";
 import { diagLog, clearDiag } from "@/core/diag";
 
@@ -469,5 +471,31 @@ describe("DiagOverlay — renderStats populates #diag-panes", () => {
     closeDiagOverlay();
     // After close, timer should be cleared — advancing time should not throw
     expect(() => vi.advanceTimersByTime(15000)).not.toThrow();
+  });
+});
+
+// ── Sprint 93: providerStatusIcon + renderProviderHealthHtml ────────────
+
+describe("providerStatusIcon (Sprint 93)", () => {
+  it("returns green for ok", () => {
+    expect(providerStatusIcon("ok")).toBe("🟢");
+  });
+
+  it("returns yellow for degraded", () => {
+    expect(providerStatusIcon("degraded")).toBe("🟡");
+  });
+
+  it("returns red for down", () => {
+    expect(providerStatusIcon("down")).toBe("🔴");
+  });
+
+  it("returns red for unknown status", () => {
+    expect(providerStatusIcon("unknown")).toBe("🔴");
+  });
+});
+
+describe("renderProviderHealthHtml (Sprint 93)", () => {
+  it("returns empty string when no providers recorded", () => {
+    expect(renderProviderHealthHtml()).toBe("");
   });
 });

@@ -139,7 +139,7 @@ function renderStats(): void {
     🖥️ HW: <span style="color:${hwColor}"><b>${formatHardwareProfile()}</b></span>
   </div>`;
 
-  panes.innerHTML = html + vitalsHtml + hwHtml + _renderProviderHealth();
+  panes.innerHTML = html + vitalsHtml + hwHtml + renderProviderHealthHtml();
 
   // Async IDB size update (v7.10 — non-blocking)
   void idbEstimateSize().then((bytes) => {
@@ -150,16 +150,26 @@ function renderStats(): void {
   });
 }
 
-// ── Provider health table (Sprint 46) ──
-function _renderProviderHealth(): string {
+// ── Provider health table (Sprint 46, enhanced Sprint 93) ──
+
+/** Map provider status to emoji icon. */
+export function providerStatusIcon(status: string): string {
+  if (status === "ok") return "🟢";
+  if (status === "degraded") return "🟡";
+  return "🔴";
+}
+
+/**
+ * Render a provider health summary as an HTML string (Sprint 93).
+ * Returns empty string when no providers have been recorded.
+ */
+export function renderProviderHealthHtml(): string {
   const providers = getAllProviderHealth();
   if (providers.length === 0) return "";
-  const statusIcon = (s: string): string =>
-    s === "ok" ? "🟢" : s === "degraded" ? "🟡" : "🔴";
   const rows = providers
     .map(
       (p) =>
-        `<span>${statusIcon(p.status)} <b>${p.id}</b>: ` +
+        `<span>${providerStatusIcon(p.status)} <b>${p.id}</b>: ` +
         `↑${p.successCount} ↓${p.failureCount}` +
         `${p.consecutiveFails > 0 ? ` (×${p.consecutiveFails})` : ""}` +
         `${p.lastOkAt ? ` • ok@${p.lastOkAt.slice(11, 16)}` : ""}</span>`,
