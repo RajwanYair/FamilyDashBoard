@@ -1,30 +1,12 @@
 /* FamilyDashBoard ServiceWorker — v7.17.0
- * F111: sw.js added to APP_SHELL pre-cache (full offline shell)
- * F112: API network-first with offline cache fallback
- * F113: SW posts NETWORK_BACK message to clients on network recovery
- * F162: CACHE_NAME bumped to v5.0.0; CORS proxy + stock origins added to API cache
- * F163: icon.svg added to APP_SHELL
- * F166: OFFLINE_RESPONSE fallback for navigation requests with no cache
- * F167: VERSION_ACTIVATED broadcast to all clients on activate
- * v6.0.0: TypeScript modular rewrite release — CACHE_NAME bumped to v6.0.0
- * v6.1.0: Birthday chip, countdown chip, news bookmarks, BG rotation, stock alerts, multi-birthday, multi-BG URLs
- * v6.2.0: CSS co-location, renderStocksShell(), ESLint TS, vitest pool:forks, worker CI deploy
- * v6.5.0: Coverage sprint — cache.ts 100%, base-card.ts 100%, motivation.ts 100%, alerts.ts 91%, calendar.ts 95%, maximize.ts 96%
- * v7.0.0: Card type system, tasks card, system-info, CSS @layer, dialog migration, worker-first fetch, card visibility
- * v7.0.0 (alpha2): Shabbat countdown, Sefaria deep-links, halacha yomit, school vacation indicator, A-key alerts
- * v7.1.0: Drag-and-drop card layout, layout persistence, 1554 tests/38 suites, 0-error lint suite
- * v7.1.1: Countdown card (11th card), fix hebrew-date/favicon/news-overlap, tile layout, CI unified, 1570 tests/39 suites
- * v7.1.2: Markdown lint fix, 1574 tests/39 suites
- * v7.2.0: F5 CLEAR_API_CACHE handler, precipitation chip, alert volume, warm tint, reset-all, cache-age chip, tasks quick-add, countdown 2nd event, news filter chips, L-key warm tint
- * v7.7.0: 50-sprint session — type guards, weather UX, countdown, tasks, news, stocks, Hebrew cal, runtime API guards
- * v7.8.0: Sprint 31–38 — ARIA a11y, CSS co-location, config v2, fetch dedup+quality tier, night dim schedule, cache diag
- * v7.10.0: v7.10 quality gate — APP_SHELL updated (index.html replaces BestDashBoard.html), IDB L2 cache, priority init
- * v7.11.0: Sprint 10-19 — wider config panel, maximize container queries (11 cards), coverage 90/81/90/92, state→config wiring, FDB error codes 023-061, startup waterfall timing, per-card config accordion, FdbCard base class, 4 new API type guards */
+ * APP_SHELL pre-cache · API network-first with offline fallback
+ * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
+ * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
 const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v7.10: APP_SHELL updated — BestDashBoard.html removed, index.html added
-const APP_SHELL = ["./index.html", "./manifest.json", "./sw.js", "./icon.svg"];
+const APP_SHELL = ["./index.html", "./manifest.webmanifest", "./sw.js", "./icon.svg"];
 
 // F162: API origins to cache for offline fallback (direct APIs + CORS proxies)
 const API_CACHE_ORIGINS = [

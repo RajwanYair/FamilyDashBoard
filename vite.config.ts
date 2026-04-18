@@ -24,21 +24,14 @@ const isLocalBuild = (() => {
 /**
  * After every production build: copy sw.js → dist/sw.js and replace
  * the __APP_VERSION__ placeholder with the real version from package.json.
- * Also copies manifest.json and icon.svg which are not in src/public/.
  */
 const injectSwVersion: Plugin = {
   name: "inject-sw-version",
   apply: "build",
   closeBundle() {
-    // sw.js
     const swSrc = readFileSync(resolve(__dirname, "sw.js"), "utf-8");
     const swOut = swSrc.replace(/__APP_VERSION__/g, appVersion);
     writeFileSync(resolve(__dirname, "dist", "sw.js"), swOut);
-    // root-level manifest.json (PWA)
-    writeFileSync(
-      resolve(__dirname, "dist", "manifest.json"),
-      readFileSync(resolve(__dirname, "manifest.json"), "utf-8"),
-    );
   },
 };
 

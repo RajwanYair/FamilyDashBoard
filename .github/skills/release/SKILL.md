@@ -82,7 +82,7 @@ git tag vX.Y.Z
 git push origin main --tags
 ```
 
-`release.yml` auto-creates GitHub Release + attaches dist.zip + sw.js + manifest.json + icon.svg on `v*.*.*` tags.
+`release.yml` auto-creates GitHub Release + attaches dist.zip + sw.js + icon.svg on `v*.*.*` tags.
 
 ## Verification
 

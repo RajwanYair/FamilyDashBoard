@@ -66,5 +66,4 @@ jobs:
           files: |
             dist.zip
             sw.js
-            manifest.json
             icon.svg

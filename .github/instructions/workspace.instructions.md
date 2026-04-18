@@ -35,7 +35,7 @@ src/                        # TypeScript v7 modular source (Vite build)
 src/public/                 # Vite static dir — icon.svg, manifest.webmanifest (NOT src/assets/)
 tests/unit/                 # Vitest unit tests — 2571+ tests / 56 suites
 sw.js                       # ServiceWorker v7.17.0 (offline + API cache)
-manifest.json / icon.svg    # PWA manifest + app icon (root copies)
+icon.svg                    # App icon (root copy; manifest in src/public/)
 BestDashBoard.html          # Legacy dashboard (read-only, preserved)
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer

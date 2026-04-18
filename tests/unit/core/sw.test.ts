@@ -38,8 +38,8 @@ describe("ServiceWorker — APP_SHELL", () => {
     expect(swSource).toContain("./index.html");
   });
 
-  it("APP_SHELL includes manifest.json", () => {
-    expect(swSource).toContain("manifest.json");
+  it("APP_SHELL includes manifest.webmanifest", () => {
+    expect(swSource).toContain("manifest.webmanifest");
   });
 
   it("APP_SHELL includes sw.js itself", () => {

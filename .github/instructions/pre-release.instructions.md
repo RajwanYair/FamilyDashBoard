@@ -132,7 +132,7 @@ git push origin main --tags
 ```
 
 - Tag format: `vMAJOR.MINOR.PATCH` — CI (`release.yml`) auto-creates GitHub Release on push
-- Attach `dist.zip`, `sw.js`, `manifest.json`, `icon.svg` — handled by `release.yml` automatically
+- Attach `dist.zip`, `sw.js`, `icon.svg` — handled by `release.yml` automatically
 - After tag push: verify GitHub Actions `ci.yml` passes on the tag run
 
 ---

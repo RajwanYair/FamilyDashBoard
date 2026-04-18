@@ -21,7 +21,6 @@
         "resolveJsonModule": true,
         "allowImportingTsExtensions": true,
         "noEmit": true,
-        "jsx": "preserve",
         "baseUrl": ".",
         "paths": {
             "@/*": [

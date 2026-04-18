@@ -141,7 +141,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       // Sprint 7: stricter rules
-      "no-console": "warn",
+      "no-console": "error",
       "@typescript-eslint/prefer-optional-chain": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
     },

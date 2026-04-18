@@ -74,7 +74,6 @@ The project is in a better place than the old roadmap suggests, but the document
 
 ### What Is Still Misrepresented
 
-- README still heavily describes the archived single-file dashboard flow.
 - Older roadmap items still describe already-implemented foundations as future work.
 - Some architectural decisions were proposed too broadly and now need refinement instead of blind execution.
 

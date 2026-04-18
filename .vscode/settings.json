@@ -52,11 +52,6 @@
         "html": "html"
     },
 
-    // ── Live Server ──
-    "liveServer.settings.donotShowInfoMsg": true,
-    "liveServer.settings.port": 5501,
-    "liveServer.settings.root": "/",
-
     // ── Git ──
     "git.autofetch": "all",
     "git.autofetchPeriod": 300,
