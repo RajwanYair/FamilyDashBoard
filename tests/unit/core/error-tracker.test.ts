@@ -12,6 +12,7 @@ import {
   formatErrorEntry,
   installGlobalErrorHandlers,
   _resetInstalledFlag,
+  errorRate,
 } from "@/core/error-tracker";
 
 beforeEach(() => {
@@ -122,5 +123,19 @@ describe("installGlobalErrorHandlers", () => {
     const errorCalls = addSpy.mock.calls.filter(([ev]) => ev === "error" || ev === "unhandledrejection");
     expect(errorCalls.length).toBeLessThanOrEqual(4); // at most 2 per call
     addSpy.mockRestore();
+  });
+});
+// ── Sprint 125: errorRate tests ───────────────────────────────────────────────
+
+describe("errorRate", () => {
+  it("returns 0 with no errors", () => {
+    expect(errorRate()).toBe(0);
+  });
+
+  it("returns a positive number after recording errors", () => {
+    recordError("err1");
+    recordError("err2");
+    // Rate is errors / minutes since first error; since both in same ms, returns count
+    expect(errorRate()).toBeGreaterThanOrEqual(2);
   });
 });

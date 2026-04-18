@@ -98,3 +98,17 @@ export function installGlobalErrorHandlers(): void {
 export function _resetInstalledFlag(): void {
   _installed = false;
 }
+
+// ── Sprint 125: Error rate calculation ───────────────────────────────────────
+
+/**
+ * Calculate the error rate: errors per minute since the first recorded error.
+ * Returns 0 if no errors exist.
+ */
+export function errorRate(): number {
+  if (_buffer.length === 0) return 0;
+  const oldest = _buffer[0].ts;
+  const spanMs = Date.now() - oldest;
+  if (spanMs <= 0) return _buffer.length; // all errors in same instant
+  return _buffer.length / (spanMs / 60_000);
+}
