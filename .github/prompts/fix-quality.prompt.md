@@ -5,7 +5,7 @@ description: "Fix linting issues, accessibility problems, security warnings, and
 
 # Fix Quality Issues
 
-Scan and fix quality issues in `BestDashBoard.html`:
+Scan and fix quality issues in the TypeScript modular dashboard (`src/`):
 
 ## Fix Categories
 

@@ -72,6 +72,5 @@ Add `'sync-<id>'` to the `syncDots` array in "HTML Structure" suite.
 ## Verification
 
 ```bash
-node --check BestDashBoard.html
-node --test tests/dashboard.test.mjs
+npx vitest run
 ```

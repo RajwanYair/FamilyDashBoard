@@ -30,7 +30,7 @@ Closes #
 - [ ] Responsive layout verified (desktop, tablet, mobile)
 - [ ] All API sections load correctly (news ticker, news card, weather, stocks, calendar, currency, motivation)
 - [ ] No console errors
-- [ ] Unit tests pass: `node --test tests/dashboard.test.mjs`
+- [ ] Unit tests pass: `npx vitest run`
 
 ## Quality Checklist
 

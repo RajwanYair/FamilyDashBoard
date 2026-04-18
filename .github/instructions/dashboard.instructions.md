@@ -3,14 +3,14 @@ applyTo: "**/*.html"
 description: "Use when: editing the dashboard HTML file. Coding standards for HTML/CSS/JS, API patterns, layout, and DOM caching."
 ---
 
-# Dashboard HTML Instructions — v7.0
+# Dashboard HTML Instructions — v7.17
 
 > Coding rules are in `copilot-instructions.md`. This file covers layout, patterns, and constants specific to the TypeScript modular dashboard (`src/`) and the archived `BestDashBoard.html`.
 
 ## CSS Specifics
 
 - Variables: `--bg-primary`, `--bg-card`, `--accent`, `--text-primary`, `--text-secondary`, `--positive`, `--negative`, `--warning`, `--purple`, `--pink`, `--orange`, `--cyan`, `--border-radius`, `--card-border`, `--card-shadow`
-- 6 themes: `dark` · `ocean` · `forest` · `warm` · `high-contrast` · `rose` (set via `data-theme` attribute)
+- 6 themes: `black` · `blue` · `matrix` · `amber` · `purple` · `rose` (set via `data-theme` attribute)
 - Glassmorphism: `backdrop-filter: blur(16px)` on cards
 - CSS layers: `@layer tokens, themes, base, layout, components, animations`
 - CSS containment: `contain: layout style` on `.card`, `contain: content` on pane bodies

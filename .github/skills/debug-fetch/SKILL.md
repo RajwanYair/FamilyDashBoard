@@ -57,10 +57,10 @@ fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://<url>'
 ## Step 6 — Verify
 
 ```bash
-node --test tests/dashboard.test.mjs
+npx vitest run
 ```
 
-If a URL or constant changed, update the corresponding regex in `tests/dashboard.test.mjs`.
+If a URL or constant changed, update the corresponding test in `tests/unit/`.
 
 ## Quick Cheatsheet
 
@@ -71,5 +71,5 @@ If a URL or constant changed, update the corresponding regex in `tests/dashboard
 4. DevTools > Console -> manually fetch URL
 5. DevTools > Local Storage -> delete stale cache
 6. Fix URL / proxy / parse
-7. node --test
+7. npx vitest run
 ```

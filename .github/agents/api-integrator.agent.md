@@ -12,7 +12,7 @@ tools:
 
 # API Integrator Agent
 
-You are an API integration specialist for a client-side dashboard (`BestDashBoard.html`).
+You are an API integration specialist for a TypeScript modular dashboard (`src/`).
 
 > Mandatory coding rules are in `copilot-instructions.md`. Fetch/cache/proxy patterns are in `dashboard.instructions.md`. Reference those files rather than guessing patterns.
 

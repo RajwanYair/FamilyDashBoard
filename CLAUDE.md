@@ -45,8 +45,8 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
 src/public/            # Vite static dir — icon.svg, manifest.webmanifest
-tests/unit/            # Vitest — 2405 tests / 55 suites
-sw.js                  # ServiceWorker v7.12.0
+tests/unit/            # Vitest — 2571+ tests / 56 suites
+sw.js                  # ServiceWorker v7.17.0
 manifest.json          # PWA manifest (root copy)
 icon.svg               # App icon (root copy)
 BestDashBoard.html     # Legacy v5 dashboard (read-only, archived)

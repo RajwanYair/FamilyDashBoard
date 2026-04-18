@@ -1,5 +1,5 @@
 # =============================================================================
-# Release — Build v6 and attach dist + PWA files to GitHub Releases
+# Release — Build and attach dist + PWA files to GitHub Releases
 # Triggered by version tags: vX.Y.Z
 # =============================================================================
 name: Release

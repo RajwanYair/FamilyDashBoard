@@ -53,11 +53,11 @@
 ### Running Tests Locally
 
 ```bash
-node --test tests/dashboard.test.mjs
-# 342 tests, 44 suites, zero dependencies
+npx vitest run
+# 2571+ tests, 56 suites, zero failures
 ```
 
-Requires **Node.js 18+**.
+Requires **Node.js 22+**.
 
 ### Live Demo
 

@@ -1,7 +1,7 @@
 {
     "name": "רגואן Family Dashboard",
     "short_name": "Dashboard",
-    "description": "Single-file, zero-dependency family dashboard for always-on TV display. Hebrew RTL, 5 dark themes, live weather/news/stocks/calendar.",
+    "description": "Family TV Dashboard — Hebrew RTL, 6 dark themes, live weather/news/stocks/calendar.",
     "display": "standalone",
     "display_override": ["window-controls-overlay", "standalone"],
     "start_url": "./index.html",

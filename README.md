@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-7.13.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-2500%2B_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-7.17.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-2571%2B_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -229,7 +229,7 @@ FamilyDashBoard/
 │   ├── types/              # TypeScript type definitions (api · config · card)
 │   └── public/             # Static assets (icon.svg, manifest.webmanifest)
 ├── tests/
-│   ├── unit/               # Vitest — 2500+ tests / 55 suites
+│   ├── unit/               # Vitest — 2571+ tests / 56 suites
 │   └── integration/        # Integration-level tests
 ├── worker/                 # Cloudflare Worker (API proxy + normalization)
 │   └── src/routes/         # Per-provider route handlers
@@ -306,7 +306,7 @@ This project leverages extensive GitHub features:
 
 ## 🗺️ Roadmap
 
-> Each release ships `BestDashBoard.html` attached to the GitHub Release and live on GitHub Pages. No build artifacts — the HTML file IS the deliverable.
+> Each release tags `vX.Y.Z`, builds via Vite, and deploys to GitHub Pages. The `dist/` folder is the deliverable.
 
 ### Completed
 
@@ -332,10 +332,12 @@ This project leverages extensive GitHub features:
 
 | Version | Focus | Status |
 | --- | --- | --- |
-| v7.13 | Truth & Stabilization — docs, CardRuntime interface, domain types, config validation | 🚧 |
-| v7.14 | Data Boundary — provider adapters, IDB-first cache, stale-state UX | 🔜 |
-| v7.15 | Card Runtime — FdbCard migrations, skeleton/empty/error states | 🔜 |
-| v8.0 | Architecture Convergence — registry-driven shells, namespaced config, worker normalization | 💡 |
+| v7.13 | Truth & Stabilization — docs, CardRuntime interface, domain types, config validation | ✅ |
+| v7.14 | Data Boundary — provider adapters, IDB-first cache, stale-state UX | ✅ |
+| v7.15 | Card Shell Primitives — skeleton/empty/error states, FdbCard.withLoading | ✅ |
+| v7.16 | Config v5 + Observability — featureFlags, config accordion, fetchWithRetry | ✅ |
+| v7.17 | Worker Normalization — FdbCard helpers, release tooling, doc updates | ✅ |
+| v8.0 | Architecture Convergence — registry-driven shells, namespaced config | 💡 |
 
 See [ROADMAP.md](ROADMAP.md) for the full strategic plan and stream priorities.
 

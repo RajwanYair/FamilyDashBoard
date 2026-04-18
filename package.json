@@ -18,6 +18,8 @@
         "typecheck": "tsc -b --noEmit",
         "check": "npm run typecheck && npm run lint && npm run lint:md && npm run check:sw && npm run test",
         "check:bundle": "node scripts/check-bundle-size.mjs",
+        "bundle:trend": "node scripts/bundle-trend.mjs",
+        "release:report": "node scripts/release-report.mjs",
         "audit": "npm audit --audit-level=high",
         "check:sw": "node scripts/check-sw-version.mjs"
     },
