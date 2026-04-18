@@ -11,6 +11,7 @@ import { setSync } from "../../core/sync";
 import { diagLog } from "../../core/diag";
 import { showToast } from "../../ui/toast";
 import { loadConfig } from "../../core/config";
+import type { CardConfigField } from "../../types/card";
 
 /** Sprint 23: Category labels for motivation quotes. */
 export type MotivationCategory = "general" | "morning" | "shabbat" | "family" | "success";
@@ -165,3 +166,20 @@ export function initMotivationCard(): void {
   setMotivationInterval(loadConfig().motivationInterval ?? 0);
   diagLog("FDB-041: [motivation] Initialized");
 }
+
+// ── Sprint 83: configSchema ────────────────────────────────────────────────
+
+export const motivationConfigSchema: CardConfigField[] = [
+  {
+    key: "motivationInterval",
+    labelHe: "החלפה אוטומטית (דקות, 0=כבוי)",
+    labelEn: "Auto-advance interval (min, 0=off)",
+    type: "range",
+    defaultValue: 0,
+    min: 0,
+    max: 60,
+    step: 5,
+    tab: "display",
+    group: "motivation",
+  },
+];

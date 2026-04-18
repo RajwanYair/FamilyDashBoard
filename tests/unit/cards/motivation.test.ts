@@ -11,6 +11,7 @@ import {
   renderMotivation,
   setContent,
   setMotivationInterval,
+  motivationConfigSchema,
 } from "@/cards/motivation/motivation";
 
 describe("Motivation — MOTIVATIONS array", () => {
@@ -555,5 +556,31 @@ describe("Motivation — setMotivationInterval (F7 v7.3)", () => {
     setMotivationInterval(3);
     setMotivationInterval(5);
     expect(clearSpy).toHaveBeenCalled();
+  });
+});
+
+// ── Sprint 83: configSchema ─────────────────────────────────────────────
+
+describe("Motivation — configSchema (Sprint 83)", () => {
+  it("is a non-empty array", () => {
+    expect(Array.isArray(motivationConfigSchema)).toBe(true);
+    expect(motivationConfigSchema.length).toBeGreaterThan(0);
+  });
+
+  it("includes motivationInterval field", () => {
+    const field = motivationConfigSchema.find(f => f.key === "motivationInterval");
+    expect(field).toBeDefined();
+    expect(field!.type).toBe("range");
+    expect(field!.defaultValue).toBe(0);
+  });
+
+  it("all fields have required properties", () => {
+    for (const f of motivationConfigSchema) {
+      expect(f.key).toBeTruthy();
+      expect(f.labelHe).toBeTruthy();
+      expect(f.labelEn).toBeTruthy();
+      expect(f.type).toBeTruthy();
+      expect(f.defaultValue).toBeDefined();
+    }
   });
 });

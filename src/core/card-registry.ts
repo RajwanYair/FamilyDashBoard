@@ -250,7 +250,7 @@ registerCard({
   titleHe: "השראה",
   titleEn: "Motivation",
   load: async (): Promise<CardDefinition> => {
-    const { initMotivationCard } =
+    const { initMotivationCard, motivationConfigSchema } =
       await import("@/cards/motivation/motivation");
     return legacyAdapter(
       "motivation",
@@ -261,6 +261,7 @@ registerCard({
       2,
       33,
       initMotivationCard,
+      motivationConfigSchema,
     );
   },
 });
