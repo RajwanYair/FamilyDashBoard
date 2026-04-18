@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
 > Roadmap refresh date: 2026-06-22
-> Current shipped baseline: v7.17.0
-> Last committed baseline: v7.17.0 — 2571 tests / 56 suites / 0 failures
+> Current shipped baseline: v7.18.0
+> Last committed baseline: v7.18.0 — 2853 tests / 73 suites / 0 failures
 
 This roadmap replaces the older sprint-by-sprint backlog with a single decision document that is grounded in the actual state of the repository.
 
@@ -12,7 +12,7 @@ The goal is not to keep adding features forever. The goal is to make FamilyDashB
 
 ## Implementation Progress (v7.13–v7.16)
 
-> Last updated: 2026-06-22
+> Last updated: 2025-07-14
 
 | Release | Sprints | Status | Key Deliverables |
 | ------- | ------- | ------ | ---------------- |
@@ -21,6 +21,7 @@ The goal is not to keep adding features forever. The goal is to make FamilyDashB
 | v7.15.0 | 51–60 | ✅ Shipped | createSkeleton/Empty/Error, FdbCard.withLoading/renderNodes, CardShell, cOr, weekday dimmer, FDB-062 |
 | v7.16.0 | 61–70 | ✅ Shipped | bundle-trend script, config v5 (featureFlags), config accordion renderer, fetchWithRetry, FdbCard.emit, registry createShell, isValidCardSize, ROADMAP update |
 | v7.17.0 | 71–77 | ✅ Shipped | Worker normalization, FdbCard helpers, API.md, release report, CLAUDE.md update, GH release |
+| v7.18.0 | 78–127 | ✅ Shipped | Provider adapters, typed card config, config auto-renderer, CSS card anatomy, theme audit, cache dashboard, offline banner, perf budgets, 50 sprints |
 
 **Stream Progress:** Stream A (Truth) ✅ · Stream B (Card Arch) ✅ · Stream C (Data Contracts) ✅ · Stream D (Observability) ✅
 

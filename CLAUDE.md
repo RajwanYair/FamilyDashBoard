@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v7.17.0
+# CLAUDE.md — FamilyDashBoard v7.18.0
 
 > Context file for Claude Code / Claude agents.
 > **Canonical rules live in `.github/copilot-instructions.md`** — this file is a lean entry point.
@@ -7,7 +7,7 @@
 
 - **Stack**: TypeScript 5.9 + Vite 8 + Vitest 4 (happy-dom) · ESLint 10 · 0 errors / 0 warnings
 - **Install**: `npm install` from parent `MyScripts/` — never here. No local `package-lock.json`.
-- **Tests**: `npx vitest run` — 2571+ tests / 56 suites / 0 failures
+- **Tests**: `npx vitest run` — 2853+ tests / 73 suites / 0 failures
 - **Lint**: `npx eslint src tests --max-warnings 0`
 - **Build**: `npx vite build` (Pages) · `npx vite build --base ./` (local file://)
 - **All checks**: `npm run check`
@@ -26,8 +26,8 @@
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
 src/public/            # Vite static dir — icon.svg, manifest.webmanifest
-tests/unit/            # Vitest — 2571+ tests / 56 suites
-sw.js                  # ServiceWorker v7.17.0
+tests/unit/            # Vitest — 2853+ tests / 73 suites
+sw.js                  # ServiceWorker v7.18.0
 BestDashBoard.html     # Legacy v5 dashboard (read-only, archived)
 ```
 

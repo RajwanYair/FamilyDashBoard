@@ -86,4 +86,4 @@ git push origin main --tags
 
 ## Verification
 
-All **2571+ tests / 56+ suites** must pass with 0 failures before tagging.
+All **2853+ tests / 73+ suites** must pass with 0 failures before tagging.

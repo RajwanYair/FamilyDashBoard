@@ -12,7 +12,7 @@
  *   loadCard(id)                — dynamically import + return CardDefinition
  */
 
-import type { CardDefinition, CardRegistryEntry } from "@/types/card";
+import type { CardDefinition, CardRegistryEntry, CardConfigField } from "@/types/card";
 
 // ── Internal registry map ──────────────────────────────────────────────────
 
@@ -93,7 +93,7 @@ function legacyAdapter(
   order: number,
   flexGrow: number,
   initFn: () => void,
-  configSchema?: import("../types/card").CardConfigField[],
+  configSchema?: CardConfigField[],
 ): CardDefinition {
   return {
     id,

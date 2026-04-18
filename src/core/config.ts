@@ -123,20 +123,20 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     const cards: Record<string, CardConfig> = cfg.cards ?? {};
 
     // Weather: pull in tempUnit, homeCity
-    const wSettings = (cards["weather"]?.settings ?? {}) as Record<string, boolean | number | string>;
+    const wSettings = (cards["weather"]?.settings ?? {});
     if (cfg.tempUnit && !wSettings["tempUnit"]) wSettings["tempUnit"] = cfg.tempUnit;
     if (cfg.homeCity && !wSettings["homeCity"]) wSettings["homeCity"] = cfg.homeCity;
     cards["weather"] = { ...cards["weather"], settings: wSettings };
 
     // Motivation: pull in motivationInterval
-    const mSettings = (cards["motivation"]?.settings ?? {}) as Record<string, boolean | number | string>;
+    const mSettings = (cards["motivation"]?.settings ?? {});
     if (typeof cfg.motivationInterval === "number" && !("interval" in mSettings)) {
       mSettings["interval"] = cfg.motivationInterval;
     }
     cards["motivation"] = { ...cards["motivation"], settings: mSettings };
 
     // Countdown: pull in countdownCard* flat props
-    const cSettings = (cards["countdown"]?.settings ?? {}) as Record<string, boolean | number | string>;
+    const cSettings = (cards["countdown"]?.settings ?? {});
     if (cfg.countdownCardTitle && !cSettings["title"]) cSettings["title"] = cfg.countdownCardTitle;
     if (cfg.countdownCardDate && !cSettings["date"]) cSettings["date"] = cfg.countdownCardDate;
     if (cfg.countdownCardTime && !cSettings["time"]) cSettings["time"] = cfg.countdownCardTime;
@@ -414,7 +414,7 @@ export function validateExportPayload(envelope: unknown): ConfigExportValidation
   }
   if (typeof env["exportedAt"] !== "string" || !env["exportedAt"]) {
     errors.push("Missing or invalid exportedAt timestamp");
-  } else if (isNaN(Date.parse(env["exportedAt"] as string))) {
+  } else if (isNaN(Date.parse(env["exportedAt"]))) {
     errors.push("exportedAt is not a valid ISO date");
   }
   if (typeof env["config"] !== "object" || env["config"] === null || Array.isArray(env["config"])) {
@@ -479,8 +479,8 @@ export function diffConfigs(
   ]) as Set<keyof DashboardConfig>;
 
   for (const key of allKeys) {
-    const va = (a as Record<string, unknown>)[key as string];
-    const vb = (b as Record<string, unknown>)[key as string];
+    const va = (a as unknown as Record<string, unknown>)[key as string];
+    const vb = (b as unknown as Record<string, unknown>)[key as string];
     if (JSON.stringify(va) !== JSON.stringify(vb)) {
       diffs.push({ key: key as string, oldValue: va, newValue: vb });
     }

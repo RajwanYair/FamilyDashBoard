@@ -107,7 +107,9 @@ export function _resetInstalledFlag(): void {
  */
 export function errorRate(): number {
   if (_buffer.length === 0) return 0;
-  const oldest = _buffer[0].ts;
+  const first = _buffer[0];
+  if (!first) return 0;
+  const oldest = first.ts;
   const spanMs = Date.now() - oldest;
   if (spanMs <= 0) return _buffer.length; // all errors in same instant
   return _buffer.length / (spanMs / 60_000);

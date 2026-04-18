@@ -5,6 +5,41 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.18.0] — 2025-07-14
+
+> **2853 tests / 73 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprints 93–127 — Core Infrastructure, Observability & Polish
+
+- **`renderProviderHealthHtml()` + `providerStatusIcon()`** (Sprint 93): exported from diag-overlay for reuse
+- **`classifyFetchError()`** (Sprint 94): categorizes fetch errors as timeout/network/http-error/invalid-json/cors/unknown
+- **`cAge()`** (Sprint 95): returns age in ms of a cache entry
+- **`getBackoffMs()` + `shouldBackoff()`** (Sprint 96): exponential backoff policy for providers
+- **News RSS adapter** (Sprint 97): `createNewsAdapter()` with dedup + sort
+- **Typed per-card config** (Sprint 98): `CardConfigMap` + 7 typed config interfaces
+- **Config migration v5→v6** (Sprint 99): moves flat per-card props into `cards` namespace
+- **Config auto-renderer** (Sprint 100): `renderConfigField()`, `renderConfigFields()`, `readConfigValues()`
+- **`validateExportPayload()`** (Sprint 101): validates config export envelope
+- **Envelope-aware import** (Sprint 102): `validateImportedConfig()` auto-unwraps envelope
+- **`diffConfigs()`** (Sprint 103): shallow config comparison
+- **`resetCardConfig()`** (Sprint 104): per-card settings reset
+- **`auditLocalStorageKeys()` + `removeOrphanedLsKeys()`** (Sprint 105): LS key hygiene
+- **`filterConfigFields()`** (Sprint 107): search/filter config fields by label
+- **CSS card anatomy** (Sprints 108–112): `.card__header/.card__body/.card__footer`, `.stale-chip`, `.card-error`, `.card-empty`, `.metric-tile`
+- **Theme audit** (Sprint 113): 84-test suite verifying all 6 themes define required CSS variables
+- **Print stylesheet improvements** (Sprint 114): card anatomy, metric tiles, tables, `@page` margins
+- **TV-distance readability** (Sprint 115): min font sizes for card anatomy in TV mode
+- **Maximize animation** (Sprint 116): backdrop overlay + minimize snap-back transition
+- **Scroll-snap** (Sprint 117): phone mode scroll-snap for single-column layout
+- **`cDelete()`** (Sprint 119): explicit single-key cache removal from all layers
+- **`idbEvictStale()`** (Sprint 120): time-based IDB cleanup (7-day threshold)
+- **`cacheDashboard()`** (Sprint 121): full cache stats snapshot (mem + LS entry counts)
+- **Offline banner** (Sprint 122): wires `#offline-banner` show/hide on connectivity events
+- **Diag cache stats** (Sprint 123): diag overlay shows mem + LS entry counts
+- **`checkAllVitalBudgets()`** (Sprint 124): per-vital performance budget with Google thresholds
+- **`errorRate()`** (Sprint 125): errors per minute calculation
+- **Health snapshot integration test** (Sprint 126): cache + errors + vitals combined test
+
 ## [7.17.0] — 2026-06-22
 
 > **2571 tests / 56 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
