@@ -19,6 +19,7 @@ import {
   idbEvictLRU,
   IDB_MAX_BYTES,
   migrateLsToIdb,
+  idbEvictStale,
 } from "../../../src/core/idb-cache";
 
 // ── Minimal in-memory IDB mock ────────────────────────────────────────────────
@@ -553,5 +554,40 @@ describe("migrateLsToIdb (Sprint 49)", () => {
   it("returns 0 for empty keys array", async () => {
     const count = await migrateLsToIdb([]);
     expect(count).toBe(0);
+  });
+});
+
+// ── Sprint 120: idbEvictStale tests ───────────────────────────────────────────
+
+describe("idbEvictStale", () => {
+  beforeEach(async () => {
+    _resetIdb();
+    await idbClear();
+  });
+
+  it("removes entries older than maxAgeMs", async () => {
+    // Manually insert an old entry via idbSet then patch the ts
+    await idbSet("old-key", "old-data");
+    await idbSet("new-key", "new-data");
+
+    // Evict anything older than 1 ms (everything qualifies after a tick)
+    // Wait a tiny bit so ts ages
+    const evicted = await idbEvictStale(1);
+    expect(evicted).toBeGreaterThanOrEqual(2);
+    const keys = await idbKeys();
+    expect(keys).toHaveLength(0);
+  });
+
+  it("keeps fresh entries", async () => {
+    await idbSet("fresh", "data");
+    const evicted = await idbEvictStale(60_000); // 60s — entry is fresh
+    expect(evicted).toBe(0);
+    const keys = await idbKeys();
+    expect(keys).toContain("fresh");
+  });
+
+  it("returns 0 when IDB is empty", async () => {
+    const evicted = await idbEvictStale(1);
+    expect(evicted).toBe(0);
   });
 });
