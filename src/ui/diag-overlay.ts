@@ -11,7 +11,7 @@ import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
 import { getFailedPanes } from "../core/sync";
 import { isWorkerEnabled } from "../core/constants";
-import { cacheStats, getOldestCacheAgeMinutes } from "../core/cache";
+import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core/error-tracker";
 import { getPerfVitals, formatVital, rateVital, hasPerfSupport } from "../core/perf";
@@ -83,8 +83,9 @@ function renderStats(): void {
   // Worker status
   const workerStatus = isWorkerEnabled() ? "✅ פעיל" : "❌ כבוי";
 
-  // Cache stats (Sprint 37)
+  // Cache stats (Sprint 37 + Sprint 123: full dashboard)
   const cs = cacheStats();
+  const cd = cacheDashboard();
   const hitPct = cs.hitRate.toFixed(0);
   const oldestAge = getOldestCacheAgeMinutes();
   const cacheAgeStr = oldestAge > 0 ? `${oldestAge}m` : "N/A";
@@ -110,7 +111,7 @@ function renderStats(): void {
       <span>🗄️ LocalStorage: <b>${lsKB} KB</b></span>
       <span>🌐 Worker: <b>${workerStatus}</b></span>
       <span>⚠️ כשלים: <b>${failedText}</b></span>
-      <span>📦 Cache: <b>${cs.hits}↑ / ${cs.misses}↓ (${hitPct}%)</b></span>
+      <span>📦 Cache: <b>${cs.hits}↑ / ${cs.misses}↓ (${hitPct}%)</b> · mem:${cd.memEntries} ls:${cd.lsEntries}</span>
       <span>🕰️ ותק מטמון: <b>${cacheAgeStr}</b></span>
       <span>${networkIcon} רשת: <b>${networkTier}${networkOffline}</b>${consecutiveFails > 0 ? ` (×${consecutiveFails})` : ""}</span>
       <span>🏷️ v${version}</span>
