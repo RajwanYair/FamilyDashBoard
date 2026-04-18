@@ -200,6 +200,36 @@ export abstract class FdbCard extends HTMLElement {
     // No-op default. Subclasses override to react to page becoming hidden.
   }
 
+  /**
+   * Show or hide a stale-data indicator chip on the card (Sprint 85).
+   *
+   * When `ageMs > 0`, a `<span class="stale-chip">` is inserted (or
+   * updated) as the first child of the card. When `ageMs <= 0` any
+   * existing chip is removed.
+   *
+   * The chip text shows the age in human-readable form (e.g. "5 דק׳").
+   * @param ageMs - Stale age in milliseconds (0 = not stale / clear)
+   */
+  staleChip(ageMs: number): void {
+    const existing = this.querySelector<HTMLElement>(".stale-chip");
+    if (ageMs <= 0) {
+      if (existing) existing.remove();
+      return;
+    }
+    const mins = Math.round(ageMs / 60_000);
+    const label =
+      mins < 1 ? "< 1 דק׳" : mins < 60 ? `${mins} דק׳` : `${Math.round(mins / 60)} שע׳`;
+    if (existing) {
+      existing.textContent = `⏳ ${label}`;
+    } else {
+      const chip = document.createElement("span");
+      chip.className = "stale-chip";
+      chip.setAttribute("aria-label", `נתונים מיושנים: ${label}`);
+      chip.textContent = `⏳ ${label}`;
+      this.prepend(chip);
+    }
+  }
+
   // ── Render Helpers (Sprint 54+55) ─────────────────────────────────────────
 
   /**

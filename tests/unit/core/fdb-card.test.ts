@@ -551,3 +551,53 @@ describe("FdbCard — onVisible / onHidden (Sprint 84)", () => {
     expect(() => card.onHidden()).not.toThrow();
   });
 });
+
+// ── staleChip (Sprint 85) ──────────────────────────────────────────────────
+
+describe("FdbCard — staleChip (Sprint 85)", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    card = document.createElement("fdb-test-card") as TestCard;
+    document.body.appendChild(card);
+  });
+
+  it("inserts a stale chip when ageMs > 0", () => {
+    card.staleChip(300_000); // 5 minutes
+    const chip = card.querySelector(".stale-chip");
+    expect(chip).not.toBeNull();
+    expect(chip!.textContent).toContain("5 דק׳");
+  });
+
+  it("updates existing chip text on subsequent calls", () => {
+    card.staleChip(300_000);
+    card.staleChip(600_000); // 10 minutes
+    const chips = card.querySelectorAll(".stale-chip");
+    expect(chips).toHaveLength(1);
+    expect(chips[0]!.textContent).toContain("10 דק׳");
+  });
+
+  it("removes the chip when ageMs <= 0", () => {
+    card.staleChip(300_000);
+    card.staleChip(0);
+    expect(card.querySelector(".stale-chip")).toBeNull();
+  });
+
+  it("shows hours for large stale ages", () => {
+    card.staleChip(7_200_000); // 2 hours
+    const chip = card.querySelector(".stale-chip");
+    expect(chip!.textContent).toContain("2 שע׳");
+  });
+
+  it("shows '< 1 דק׳' for very short ages", () => {
+    card.staleChip(30_000); // 30 seconds
+    const chip = card.querySelector(".stale-chip");
+    expect(chip!.textContent).toContain("1 דק׳");
+  });
+
+  it("is a no-op when clearing non-existent chip", () => {
+    expect(() => card.staleChip(0)).not.toThrow();
+    expect(card.querySelector(".stale-chip")).toBeNull();
+  });
+});
