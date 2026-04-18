@@ -104,3 +104,44 @@ export function getAllProviderHealth(): ProviderHealth[] {
 export function _resetProviderHealth(): void {
   _health.clear();
 }
+
+// ── Sprint 96: Backoff policy ────────────────────────────────────────────
+
+/**
+ * Compute the recommended backoff delay in milliseconds for a provider.
+ *
+ * Returns 0 when no backoff is needed (status === "ok").
+ * Uses capped exponential backoff: `baseMs * 2^(consecutiveFails - 1)`,
+ * capped at `maxMs`.
+ *
+ * @param id     Provider identifier
+ * @param baseMs Base delay (default 2 000 ms)
+ * @param maxMs  Maximum delay cap (default 60 000 ms = 1 min)
+ */
+export function getBackoffMs(
+  id: string,
+  baseMs = 2_000,
+  maxMs = 60_000,
+): number {
+  const h = _ensure(id);
+  if (h.consecutiveFails === 0) return 0;
+  return Math.min(baseMs * Math.pow(2, h.consecutiveFails - 1), maxMs);
+}
+
+/**
+ * Returns `true` when a provider should skip fetching due to backoff.
+ * Compares the time since the last failure against `getBackoffMs()`.
+ *
+ * NOTE: Requires the caller to pass the timestamp of the last attempt.
+ * If no timestamp is available, default to allowing the fetch.
+ */
+export function shouldBackoff(
+  id: string,
+  lastAttemptMs: number,
+  baseMs = 2_000,
+  maxMs = 60_000,
+): boolean {
+  const delay = getBackoffMs(id, baseMs, maxMs);
+  if (delay === 0) return false;
+  return Date.now() - lastAttemptMs < delay;
+}

@@ -10,6 +10,8 @@ import {
   getProviderHealth,
   getAllProviderHealth,
   _resetProviderHealth,
+  getBackoffMs,
+  shouldBackoff,
 } from "@/core/provider";
 
 beforeEach(() => {
@@ -123,5 +125,57 @@ describe("_resetProviderHealth", () => {
     recordProviderFailure("b");
     _resetProviderHealth();
     expect(getAllProviderHealth()).toHaveLength(0);
+  });
+});
+
+// ── Sprint 96: Backoff policy ──────────────────────────────────────────────
+
+describe("getBackoffMs (Sprint 96)", () => {
+  it("returns 0 when no failures", () => {
+    recordProviderSuccess("bo");
+    expect(getBackoffMs("bo")).toBe(0);
+  });
+
+  it("returns baseMs after 1 failure", () => {
+    recordProviderFailure("bo");
+    expect(getBackoffMs("bo", 2000)).toBe(2000);
+  });
+
+  it("doubles for each consecutive failure", () => {
+    recordProviderFailure("bo");
+    recordProviderFailure("bo");
+    expect(getBackoffMs("bo", 2000)).toBe(4000);
+    recordProviderFailure("bo");
+    expect(getBackoffMs("bo", 2000)).toBe(8000);
+  });
+
+  it("caps at maxMs", () => {
+    for (let i = 0; i < 20; i++) recordProviderFailure("bo");
+    expect(getBackoffMs("bo", 2000, 60_000)).toBe(60_000);
+  });
+
+  it("resets to 0 after success", () => {
+    recordProviderFailure("bo");
+    recordProviderFailure("bo");
+    recordProviderSuccess("bo");
+    expect(getBackoffMs("bo")).toBe(0);
+  });
+});
+
+describe("shouldBackoff (Sprint 96)", () => {
+  it("returns false when no failures", () => {
+    expect(shouldBackoff("sb", Date.now())).toBe(false);
+  });
+
+  it("returns true within backoff window", () => {
+    recordProviderFailure("sb");
+    // Last attempt was just now, backoff = 2s
+    expect(shouldBackoff("sb", Date.now(), 2000)).toBe(true);
+  });
+
+  it("returns false after backoff window elapsed", () => {
+    recordProviderFailure("sb");
+    // Last attempt was 10s ago, backoff = 2s
+    expect(shouldBackoff("sb", Date.now() - 10_000, 2000)).toBe(false);
   });
 });
