@@ -488,3 +488,22 @@ export function diffConfigs(
 
   return diffs;
 }
+
+// ── Sprint 104: Per-card config reset ────────────────────────────────────
+
+/**
+ * Reset settings for a single card to defaults.
+ * Removes the card's entry from `config.cards[cardId]` and saves.
+ * Does NOT reset global config — only the namespaced card settings.
+ *
+ * @param cardId Card identifier (e.g. "weather", "news")
+ * @returns true if the card had settings that were reset
+ */
+export function resetCardConfig(cardId: string): boolean {
+  const config = loadConfig();
+  if (!config.cards[cardId]) return false;
+  delete config.cards[cardId];
+  saveConfig(config);
+  diagLog(`[config] reset card settings: ${cardId}`);
+  return true;
+}
