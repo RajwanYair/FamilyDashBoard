@@ -12,6 +12,7 @@ import { diagLog } from "../../core/diag";
 import { MS_PER_DAY } from "../../core/constants";
 import { decomposeDuration, pad2 } from "../../core/utils";
 import type { DurationParts } from "../../core/utils";
+import type { CardConfigField } from "../../types/card";
 
 // ── Config-driven helpers ─────────────────────────────────────────────────────
 
@@ -323,3 +324,21 @@ export function destroyCountdownCard(): void {
     _cdInterval = null;
   }
 }
+
+// ── Sprint 82: configSchema ────────────────────────────────────────────────
+
+export const countdownConfigSchema: CardConfigField[] = [
+  { key: "countdownCardTitle", labelHe: "כותרת אירוע", labelEn: "Event Title", type: "text", defaultValue: "חתונת אליאור וטובה", tab: "calendar", group: "countdown" },
+  { key: "countdownCardDate", labelHe: "תאריך יעד", labelEn: "Target Date", type: "date", defaultValue: "2026-05-07", tab: "calendar", group: "countdown" },
+  { key: "countdownCardTime", labelHe: "שעת יעד", labelEn: "Target Time", type: "text", defaultValue: "18:00", placeholder: "HH:MM", tab: "calendar", group: "countdown" },
+  { key: "countdownCardDoneMsg", labelHe: "הודעת סיום", labelEn: "Done Message", type: "text", defaultValue: "🎉 מזל טוב לאליאור ולטובה!", tab: "calendar", group: "countdown" },
+  { key: "countdownCardStartDate", labelHe: "תאריך התחלה (פס התקדמות)", labelEn: "Start Date (progress bar)", type: "date", defaultValue: "", tab: "calendar", group: "countdown" },
+  { key: "countdownCard2Title", labelHe: "אירוע 2 — כותרת", labelEn: "Event 2 — Title", type: "text", defaultValue: "", tab: "calendar", group: "countdown-2" },
+  { key: "countdownCard2Date", labelHe: "אירוע 2 — תאריך", labelEn: "Event 2 — Date", type: "date", defaultValue: "", tab: "calendar", group: "countdown-2" },
+  { key: "countdownCard2Time", labelHe: "אירוע 2 — שעה", labelEn: "Event 2 — Time", type: "text", defaultValue: "", placeholder: "HH:MM", tab: "calendar", group: "countdown-2" },
+  { key: "countdownCard2DoneMsg", labelHe: "אירוע 2 — הודעת סיום", labelEn: "Event 2 — Done Msg", type: "text", defaultValue: "", tab: "calendar", group: "countdown-2" },
+  { key: "countdownCard3Title", labelHe: "אירוע 3 — כותרת", labelEn: "Event 3 — Title", type: "text", defaultValue: "", tab: "calendar", group: "countdown-3" },
+  { key: "countdownCard3Date", labelHe: "אירוע 3 — תאריך", labelEn: "Event 3 — Date", type: "date", defaultValue: "", tab: "calendar", group: "countdown-3" },
+  { key: "countdownCard3Time", labelHe: "אירוע 3 — שעה", labelEn: "Event 3 — Time", type: "text", defaultValue: "", placeholder: "HH:MM", tab: "calendar", group: "countdown-3" },
+  { key: "countdownCard3DoneMsg", labelHe: "אירוע 3 — הודעת סיום", labelEn: "Event 3 — Done Msg", type: "text", defaultValue: "", tab: "calendar", group: "countdown-3" },
+];

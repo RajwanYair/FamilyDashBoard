@@ -21,6 +21,7 @@ import {
   hebrewDayOfWeek,
   daysLabel,
   advanceAnnualDate,
+  countdownConfigSchema,
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
 import type { DashboardConfig } from "@/types/config";
@@ -767,5 +768,38 @@ describe("Countdown — tick3 progress bar (Sprint 31)", () => {
       countdownCard3StartDate: "2025-01-01",
     } as DashboardConfig);
     expect(() => tick3()).not.toThrow();
+  });
+});
+
+// ── Sprint 82: configSchema ─────────────────────────────────────────────
+
+describe("Countdown — configSchema (Sprint 82)", () => {
+  it("is a non-empty array", () => {
+    expect(Array.isArray(countdownConfigSchema)).toBe(true);
+    expect(countdownConfigSchema.length).toBeGreaterThan(0);
+  });
+
+  it("includes primary event fields", () => {
+    const keys = countdownConfigSchema.map(f => f.key);
+    expect(keys).toContain("countdownCardTitle");
+    expect(keys).toContain("countdownCardDate");
+    expect(keys).toContain("countdownCardTime");
+    expect(keys).toContain("countdownCardDoneMsg");
+  });
+
+  it("includes event 2 and event 3 fields", () => {
+    const keys = countdownConfigSchema.map(f => f.key);
+    expect(keys).toContain("countdownCard2Title");
+    expect(keys).toContain("countdownCard3Title");
+  });
+
+  it("all fields have required properties", () => {
+    for (const f of countdownConfigSchema) {
+      expect(f.key).toBeTruthy();
+      expect(f.labelHe).toBeTruthy();
+      expect(f.labelEn).toBeTruthy();
+      expect(f.type).toBeTruthy();
+      expect(f.defaultValue).toBeDefined();
+    }
   });
 });

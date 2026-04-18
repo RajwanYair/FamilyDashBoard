@@ -93,6 +93,7 @@ function legacyAdapter(
   order: number,
   flexGrow: number,
   initFn: () => void,
+  configSchema?: import("../types/card").CardConfigField[],
 ): CardDefinition {
   return {
     id,
@@ -108,6 +109,7 @@ function legacyAdapter(
       );
     },
     init: initFn,
+    ...(configSchema ? { configSchema } : {}),
   };
 }
 
@@ -291,7 +293,7 @@ registerCard({
   titleHe: "ספירה לאחור",
   titleEn: "Countdown",
   load: async (): Promise<CardDefinition> => {
-    const { initCountdownCard } = await import(
+    const { initCountdownCard, countdownConfigSchema } = await import(
       "@/cards/countdown/countdown"
     );
     return legacyAdapter(
@@ -303,6 +305,7 @@ registerCard({
       3,
       12,
       initCountdownCard,
+      countdownConfigSchema,
     );
   },
 });
