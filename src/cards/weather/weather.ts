@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Weather Card
+ * FamilyDashBoard v7 — Weather Card
  *
  * Open-Meteo integration: current conditions, hourly chart, 7-day forecast.
  */

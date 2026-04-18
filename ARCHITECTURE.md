@@ -37,12 +37,18 @@ src/
 │   ├── fetch.ts                # fetchWithTimeout · proxy chain · __USE_PROXIES__ gate · fetchViaWorker · fetchWithRetry (backoff) · network state tracker
 │   ├── state.ts                # EventTarget-based reactive pub/sub store — state.get/set/on/off/seedConfig/snapshot
 │   ├── error-reporter.ts       # Debounced client error batching → POST /api/errors (best-effort telemetry)
+│   ├── error-tracker.ts        # Window error/unhandledrejection listeners, error bucketing
 │   ├── card-registry.ts        # Map-based card registry, lazy dynamic import() (v7)
+│   ├── fdb-card.ts             # FdbCard base class implementing CardRuntime interface (v7.13)
 │   ├── diag.ts                 # diagLog() + diagnostic overlay
 │   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize() (v7.4)
 │   ├── sync.ts                 # setSync(id, state) — sync dots + health
 │   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper
+│   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers
+│   ├── provider.ts             # Per-provider health tracking: success/failure counts (v7.14)
+│   ├── utils.ts                # Shared utility functions (formatters, helpers)
 │   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
+│   ├── sw-constants.ts         # SW version/cache name constants shared between sw.js and src/
 │   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED
 ├── ui/
 │   ├── theme.ts                # 6-theme system: black·blue·matrix·amber·purple·rose
@@ -57,6 +63,7 @@ src/
 │   ├── config-panel.ts         # Settings panel (save, export, import, shareSettings)
 │   ├── diag-overlay.ts         # Diagnostics <dialog> (migrated from <div>, v7)
 │   ├── screen-mode.ts          # Screen mode manager (normal/compact/theater)
+│   ├── layout-drag.ts          # Drag-and-drop card reordering with localStorage persistence
 │   └── toast.ts                # Toast notification system
 ├── cards/
 │   ├── base-card.ts            # createCardLoader() + scheduleCard() — shared lifecycle
@@ -69,6 +76,7 @@ src/
 │   ├── alerts/alerts.ts        # Tzeva Adom (Red Alert), realtime mode
 │   ├── motivation/motivation.ts # Rotating quotes with share
 │   ├── tasks/tasks.ts          # Family chore board (v7, localStorage, daily reset)
+│   ├── countdown/countdown.ts  # Countdown timers to user-defined events (v7.1)
 │   └── system-info/system-info.ts # Battery, network, timing, browser info (v7)
 ├── styles/
 │   ├── tokens.css              # @layer tokens: design tokens, @layer order declaration

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Idle Scheduler & Page Visibility
+ * FamilyDashBoard v7 — Idle Scheduler & Page Visibility
  */
 
 import { WAKE_REFRESH_MS } from "./constants";

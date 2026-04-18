@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Stocks Card
+ * FamilyDashBoard v7 — Stocks Card
  *
  * Yahoo Finance v8 chart API. Bare URL (no query params) to avoid
  * allorigins 522 timeouts. BTC-USD uses CoinGecko fallback (CORS-enabled).

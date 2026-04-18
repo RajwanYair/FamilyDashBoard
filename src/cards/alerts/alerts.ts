@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Alerts Card (צבע אדום / Tzeva Adom)
+ * FamilyDashBoard v7 — Alerts Card (צבע אדום / Tzeva Adom)
  *
  * Polls the Tzeva Adom alert history API with adaptive intervals:
  *   60s when alerts active, 5min when idle.

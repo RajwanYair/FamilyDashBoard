@@ -14,7 +14,7 @@ Legacy single-file dashboard (`BestDashBoard.html`) is preserved but inactive.
 - ESLint 10 + typescript-eslint 8 (0 errors · 0 warnings · no suppressions)
 - **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 - No local `package-lock.json` or `devDependencies` in this project
-- Tests: `npx vitest run` (2562+ tests, 56 suites, 0 failures)
+- Tests: `npx vitest run` (2571+ tests, 56 suites, 0 failures)
 - SW: `sw.js` v7.17.0 (offline + API cache)
 
 ## Key Rules

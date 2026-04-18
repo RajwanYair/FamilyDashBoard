@@ -14,7 +14,7 @@
 
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
-import { LS_TASKS_DONE, LS_CHORES } from "../../core/constants";
+import { LS_TASKS_DONE, LS_TASKS_RESET, LS_CHORES } from "../../core/constants";
 import type { CardDefinition } from "../../types/card";
 
 export interface ChoreItem {
@@ -55,14 +55,14 @@ function saveDoneMap(map: Record<string, boolean>): void {
 
 /** Check if the stored done-state needs a daily reset. */
 function checkDailyReset(): void {
-  const lastReset = localStorage.getItem("dash_tasks_reset_date");
+  const lastReset = localStorage.getItem(LS_TASKS_RESET);
   const today = new Date();
   const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
   const resetHour = loadConfig().tasksResetHour ?? DEFAULT_RESET_HOUR;
   if (lastReset !== resetKey && today.getHours() >= resetHour) {
     localStorage.removeItem(LS_TASKS_DONE);
     try {
-      localStorage.setItem("dash_tasks_reset_date", resetKey);
+      localStorage.setItem(LS_TASKS_RESET, resetKey);
     } catch {
       /* quota */
     }

@@ -7,17 +7,9 @@
  */
 
 import { diagLog } from "../core/diag";
-import { LS_THEME } from "../core/constants";
-
-export const THEMES = [
-  "black",
-  "blue",
-  "matrix",
-  "amber",
-  "purple",
-  "rose",
-] as const;
-export type ThemeName = (typeof THEMES)[number];
+import { LS_THEME, THEMES, type ThemeName } from "../core/constants";
+export type { ThemeName } from "../core/constants";
+export { THEMES } from "../core/constants";
 
 // LS_THEME imported from constants
 

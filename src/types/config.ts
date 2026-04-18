@@ -1,6 +1,9 @@
 /**
- * FamilyDashBoard v6 — User Config Types
+ * FamilyDashBoard v7 — User Config Types
  */
+
+import { THEMES, SCREEN_MODES } from "../core/constants";
+import type { ThemeName, ScreenModeName } from "../core/constants";
 
 /**
  * Per-card namespaced settings (Config v4+).
@@ -15,8 +18,8 @@ export interface CardConfig {
 }
 
 export interface DashboardConfig {
-  theme: "black" | "blue" | "matrix" | "amber" | "purple" | "rose";
-  screenMode: "tv" | "tablet" | "phone";
+  theme: ThemeName;
+  screenMode: ScreenModeName;
   tempUnit: "C" | "F";
   fontScale: number;
   alertsEnabled: boolean;
@@ -227,16 +230,16 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 export const CONFIG_VERSION = 5;
 
 /** Type guard: checks if a string is a valid theme name. */
-export function isValidTheme(v: unknown): v is DashboardConfig["theme"] {
+export function isValidTheme(v: unknown): v is ThemeName {
   return (
     typeof v === "string" &&
-    ["black", "blue", "matrix", "amber", "purple", "rose"].includes(v)
+    (THEMES as readonly string[]).includes(v)
   );
 }
 
 /** Type guard: checks if a string is a valid screen mode. */
-export function isValidScreenMode(v: unknown): v is DashboardConfig["screenMode"] {
-  return typeof v === "string" && ["tv", "tablet", "phone"].includes(v);
+export function isValidScreenMode(v: unknown): v is ScreenModeName {
+  return typeof v === "string" && (SCREEN_MODES as readonly string[]).includes(v);
 }
 
 /** Type guard: checks if a string is a valid temperature unit. */

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — News Card
+ * FamilyDashBoard v7 — News Card
  *
  * Aggregates multiple Hebrew RSS feeds, deduplicates, sorts by date,
  * and renders a scrolling news strip with category detection.

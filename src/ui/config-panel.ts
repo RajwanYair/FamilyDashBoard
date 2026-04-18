@@ -30,7 +30,7 @@ import {
   LS_DIM_START, LS_DIM_END, LS_TICKER_MSG,
   LS_CITY_1, LS_CITY_2, LS_CITY_3, LS_STOCK_ALERTS,
   LS_HOME_LAT, LS_HOME_LON, LS_HOME_NAME,
-  LS_NEWS_FONT, LS_CHORES,
+  LS_NEWS_FONT, LS_CHORES, LS_PORTFOLIO,
 } from "../core/constants";
 // ── Extra localStorage keys now imported from core/constants ──
 
@@ -260,7 +260,7 @@ function populateForm(): void {
   // Portfolio editor (Advanced tab)
   const portfolioEl = gTxt("cfg-portfolio");
   if (portfolioEl)
-    portfolioEl.value = localStorage.getItem("dash_v2_portfolio") ?? "";
+    portfolioEl.value = localStorage.getItem(LS_PORTFOLIO) ?? "";
 
   // Tasks reset hour (Advanced tab)
   const resetHourEl = g("cfg-tasks-reset-hour");
@@ -868,11 +868,11 @@ export function initConfigPanel(): void {
     if (portfolioEl) {
       const raw = portfolioEl.value.trim();
       if (raw === "") {
-        localStorage.removeItem("dash_v2_portfolio");
+        localStorage.removeItem(LS_PORTFOLIO);
       } else {
         try {
           JSON.parse(raw);
-          localStorage.setItem("dash_v2_portfolio", raw);
+          localStorage.setItem(LS_PORTFOLIO, raw);
           renderPortfolioRow();
         } catch {
           showToast("⚠️ JSON תיק השקעות לא תקין — לא נשמר", 3500);

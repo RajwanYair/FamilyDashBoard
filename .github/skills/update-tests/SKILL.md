@@ -10,7 +10,7 @@ argument-hint: "Describe what changed: new card name, changed CSS property, upda
 
 - **Runner**: Vitest 4 + happy-dom (zero real browser)
 - **Location**: `tests/unit/` — one file per source file
-- **Current**: ~1390 tests / 37 suites
+- **Current**: 2571+ tests / 56 suites
 - **Baseline command**: `npx vitest run` (must exit 0, 0 failures)
 - **Coverage**: `npx vitest run --coverage` → target ≥95% per file
 
@@ -45,14 +45,46 @@ npx vitest run --reporter=verbose                 # see each test name
 | `src/cards/alerts/alerts.ts` | `tests/unit/cards/alerts.test.ts` |
 | `src/cards/stocks/stocks.ts` | `tests/unit/cards/stocks.test.ts` |
 | `src/cards/hebrew-cal/hebrew-cal.ts` | `tests/unit/cards/hebrew-cal.test.ts` |
+| `src/cards/currency/currency.ts` | `tests/unit/cards/currency.test.ts` |
+| `src/cards/motivation/motivation.ts` | `tests/unit/cards/motivation.test.ts` |
+| `src/cards/tasks/tasks.ts` | `tests/unit/cards/tasks.test.ts` |
+| `src/cards/countdown/countdown.ts` | `tests/unit/cards/countdown.test.ts` |
+| `src/cards/system-info/system-info.ts` | `tests/unit/cards/system-info.test.ts` |
+| `src/cards/base-card.ts` | `tests/unit/cards/base-card.test.ts` |
 | `src/ui/ticker.ts` | `tests/unit/ui/ticker.test.ts` |
 | `src/ui/header.ts` | `tests/unit/ui/header.test.ts` |
 | `src/ui/config-panel.ts` | `tests/unit/ui/config-panel.test.ts` |
 | `src/ui/maximize.ts` | `tests/unit/ui/maximize.test.ts` |
 | `src/ui/night-dimmer.ts` | `tests/unit/ui/night-dimmer.test.ts` |
+| `src/ui/theme.ts` | `tests/unit/ui/theme.test.ts` |
+| `src/ui/toast.ts` | `tests/unit/ui/toast.test.ts` |
+| `src/ui/bg-images.ts` | `tests/unit/ui/bg-images.test.ts` |
+| `src/ui/keyboard.ts` | `tests/unit/ui/keyboard.test.ts` |
+| `src/ui/scroll.ts` | `tests/unit/ui/scroll.test.ts` |
+| `src/ui/screen-mode.ts` | `tests/unit/ui/screen-mode.test.ts` |
+| `src/ui/status-bar.ts` | `tests/unit/ui/status-bar.test.ts` |
+| `src/ui/layout-drag.ts` | `tests/unit/ui/layout-drag.test.ts` |
+| `src/ui/diag-overlay.ts` | `tests/unit/ui/diag-overlay.test.ts` |
 | `src/core/cache.ts` | `tests/unit/core/cache.test.ts` |
+| `src/core/idb-cache.ts` | `tests/unit/core/idb-cache.test.ts` |
 | `src/core/config.ts` | `tests/unit/core/config.test.ts` |
+| `src/core/fetch.ts` | `tests/unit/core/fetch.test.ts` |
 | `src/core/card-registry.ts` | `tests/unit/core/card-registry.test.ts` |
+| `src/core/constants.ts` | `tests/unit/core/constants.test.ts` |
+| `src/core/diag.ts` | `tests/unit/core/diag.test.ts` |
+| `src/core/sync.ts` | `tests/unit/core/sync.test.ts` |
+| `src/core/state.ts` | `tests/unit/core/state.test.ts` |
+| `src/core/hardware.ts` | `tests/unit/core/hardware.test.ts` |
+| `src/core/idle.ts` | `tests/unit/core/idle.test.ts` |
+| `src/core/perf.ts` | `tests/unit/core/perf.test.ts` |
+| `src/core/provider.ts` | `tests/unit/core/provider.test.ts` |
+| `src/core/utils.ts` | `tests/unit/core/utils.test.ts` |
+| `src/core/error-reporter.ts` | `tests/unit/core/error-reporter.test.ts` |
+| `src/core/error-tracker.ts` | `tests/unit/core/error-tracker.test.ts` |
+| `src/core/fdb-card.ts` | `tests/unit/core/fdb-card.test.ts` |
+| `src/core/sw-constants.ts` | `tests/unit/core/sw-constants.test.ts` |
+| `src/index.html` | `tests/unit/html/dom-contract.test.ts` |
+| `worker/src/` | `tests/unit/worker/worker.test.ts` |
 
 ## Adding Tests for a New Card
 

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Fetch Helpers
+ * FamilyDashBoard v7 — Fetch Helpers
  *
  * fetchWithTimeout: AbortController-based timeout wrapper.
  * fetchJSON: fetch with CORS proxy fallback chain + diagnostic logging.
@@ -13,6 +13,7 @@ import {
   FETCH_TIMEOUT_MS,
   MAX_CONCURRENT,
   WORKER_BASE_URL,
+  LS_CUSTOM_PROXY,
   isWorkerEnabled,
 } from "./constants";
 import { diagLog } from "./diag";
@@ -63,7 +64,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
     );
   }
 
-  const customProxy = localStorage.getItem("dash_custom_proxy");
+  const customProxy = localStorage.getItem(LS_CUSTOM_PROXY);
   const proxies = customProxy ? [customProxy, ...PROXIES] : [...PROXIES];
 
   for (const p of proxies) {

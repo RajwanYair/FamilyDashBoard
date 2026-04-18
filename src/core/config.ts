@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Config (Settings Persistence)
+ * FamilyDashBoard v7 — Config (Settings Persistence)
  *
  * Load/save user settings from localStorage. Share via URL hash.
  */
@@ -21,8 +21,7 @@ import {
 } from "../types/config";
 import { diagLog } from "./diag";
 import { state } from "./state";
-
-const LS_KEY = "dash_v2_config";
+import { LS_CONFIG } from "./constants";
 
 /**
  * Run forward migrations on a raw config object.
@@ -155,7 +154,7 @@ function sanitize(cfg: DashboardConfig): DashboardConfig {
  */
 export function loadConfig(): DashboardConfig {
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    const raw = localStorage.getItem(LS_CONFIG);
     if (!raw) return { ...DEFAULT_CONFIG };
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null)
@@ -178,7 +177,7 @@ export function loadConfig(): DashboardConfig {
  */
 export function saveConfig(config: DashboardConfig): void {
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify(config));
+    localStorage.setItem(LS_CONFIG, JSON.stringify(config));
     state.seedConfig(config as unknown as Record<string, unknown>);
   } catch {
     diagLog("[config] Failed to save config");

@@ -66,7 +66,7 @@ npx vitest run --coverage
 npx vite build
 
 # Build for local file:// access
-npx vite build --mode local
+npx vite build --base ./
 
 # Run everything (full quality gate)
 npm run check
@@ -105,18 +105,12 @@ npx vitest run --coverage
 
 ## Code Style
 
-Follow all rules in `.github/copilot-instructions.md`. Key points:
+Follow all rules in `.github/copilot-instructions.md` — that is the canonical source. Key points:
 
-1. **No external runtime dependencies** — no npm packages in `src/` at runtime
-2. **No raw `innerHTML`** — use `textContent`, or `createTextNode()` for user data
-3. **No hardcoded colors** — always `var(--token-name)`
-4. **Cache all API data** — `cSet(key, data)` after every successful fetch; check `cGet(key, TTL)` first
-5. **Proxy fallback** — use `fetchJSON()` or `fetchJSONWithWorker()`, never bare `fetch()`
-6. **`safeLoad()` wrappers** — every card loader is wrapped with `safeLoad()`
-7. **`if (!_pageVisible) return`** — first line of every async card loader
-8. **DOM refs** — all `getElementById` calls go in `el` objects, not repeated inline
-9. **CSS layers** — new styles go in `@layer components`, new animations in `@layer animations`
-10. **No `eslint-disable`**, no `@ts-ignore`
+1. No external runtime dependencies — zero npm packages at runtime
+2. No `innerHTML` with unsanitized data — use `textContent`
+3. No hardcoded colors — use CSS custom properties
+4. No `eslint-disable` or `@ts-ignore`
 
 ---
 
@@ -140,27 +134,7 @@ Follow all rules in `.github/copilot-instructions.md`. Key points:
 
 ## Architecture Overview
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full diagram. Quick summary:
-
-```text
-src/
-  main.ts             Entry point — registers cards, starts intervals
-  core/               Cache, config, fetch, sync, diagnostics
-  cards/              11 cards — each folder has a loader + optional CSS
-  ui/                 Overlays, header, keyboard, theme, layout
-  styles/             CSS @layer files (tokens → themes → base → layout → components → animations)
-  types/              TypeScript interfaces shared across modules
-worker/
-  src/index.ts        Cloudflare Worker router
-  src/routes/         data.ts (weather/currency/hebcal) + feeds.ts (stocks/news/alerts/calendar)
-  src/middleware/     cors.ts, rate-limit.ts, log.ts
-  src/utils/          response.ts, allowlists.ts, validation.ts
-tests/
-  unit/               Vitest suites — one per source module
-```
-
-**Cards (11 total)**:
-`calendar` · `countdown` · `currency` · `hebrew-cal` · `motivation` · `news` · `stocks` · `tasks` · `system-info` · `weather` · `alerts`
+See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full system diagram and file structure.
 
 ---
 

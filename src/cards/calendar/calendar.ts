@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Google Calendar ICS Card
+ * FamilyDashBoard v7 — Google Calendar ICS Card
  *
  * Fetches up to 3 Google Calendar ICS feeds, parses VEVENT blocks,
  * and renders a 21-day agenda with day headers, category dots, and
@@ -9,7 +9,7 @@
 
 import { scheduleCard } from "../base-card";
 import "./calendar.css";
-import { INTERVALS, PROXIES } from "../../core/constants";
+import { INTERVALS, PROXIES, LS_ICS_URL } from "../../core/constants";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
 import {
@@ -405,10 +405,10 @@ export function renderCalendar(events: CalendarEvent[]): number {
 // ── ICS Fetch ──
 
 function getICSUrls(): string[] {
-  const primary = localStorage.getItem("dash_ics_url") ?? CAL_ICS_DEFAULT;
+  const primary = localStorage.getItem(LS_ICS_URL) ?? CAL_ICS_DEFAULT;
   const urls = [primary];
   for (let i = 2; i <= 3; i++) {
-    const extra = localStorage.getItem(`dash_ics_url_${i}`);
+    const extra = localStorage.getItem(`${LS_ICS_URL}_${i}`);
     if (extra) urls.push(extra);
   }
   return urls;

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Motivation Card
+ * FamilyDashBoard v7 — Motivation Card
  *
  * Static quotes, no network dependency. Rotates with fade animation.
  */

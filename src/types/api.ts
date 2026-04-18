@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — API Response Types
+ * FamilyDashBoard v7 — API Response Types
  *
  * TypeScript interfaces for all external API responses.
  */

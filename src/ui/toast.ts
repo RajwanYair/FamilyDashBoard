@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Toast Notifications
+ * FamilyDashBoard v7 — Toast Notifications
  */
 
 import "./toast.css";

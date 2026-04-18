@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Sync Indicators & Health Tracking
+ * FamilyDashBoard v7 — Sync Indicators & Health Tracking
  *
  * Sync dots show green (ok), yellow (loading), or red (error) per pane.
  * Health tracking uses exponential backoff for failed fetches.

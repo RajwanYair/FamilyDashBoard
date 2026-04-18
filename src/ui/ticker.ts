@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Halacha Ticker
+ * FamilyDashBoard v7 — Halacha Ticker
  *
  * Fetches the daily Halakhah Yomit from Sefaria and renders
  * a seamlessly looped horizontal ticker strip.
@@ -11,7 +11,7 @@ import "./ticker.css";
 import { cGet, cGetStale, cSet } from "../core/cache";
 import { fetchWithTimeout } from "../core/fetch";
 import { diagLog } from "../core/diag";
-import { PROXIES, API, LS_TICKER_MSG } from "../core/constants";
+import { PROXIES, API, LS_TICKER_MSG, INTERVALS } from "../core/constants";
 import { scheduleCard } from "../cards/base-card";
 
 // ── Types ──
@@ -73,7 +73,6 @@ export function applyTickerSpeed(speed: number): void {
 }
 
 const TICKER_CACHE_KEY = "halacha";
-const TICKER_TTL = 12 * 60 * 60_000; // 12h
 
 // ── DOM cache ──
 let elTicker: HTMLElement | null = null;
@@ -211,7 +210,7 @@ async function fetchFromSefaria(url: string): Promise<unknown | null> {
 async function loadHalacha(): Promise<void> {
   if (document.hidden) return;
 
-  const fresh = cGet<HalachaData>(TICKER_CACHE_KEY, TICKER_TTL);
+  const fresh = cGet<HalachaData>(TICKER_CACHE_KEY, INTERVALS.HALACHA);
   if (fresh) {
     renderTicker(fresh);
     return;
@@ -283,6 +282,6 @@ export function getHalachaData(): HalachaData | null {
 export function initTicker(): void {
   cacheDom();
   void loadHalacha();
-  scheduleCard(loadHalacha, TICKER_TTL);
+  scheduleCard(loadHalacha, INTERVALS.HALACHA);
   diagLog("[ticker] Initialized");
 }

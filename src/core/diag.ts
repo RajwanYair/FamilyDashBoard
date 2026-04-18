@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Diagnostic Logger
+ * FamilyDashBoard v7 — Diagnostic Logger
  *
  * Ring buffer for diagnostic messages, displayed in the diagnostic overlay (D key).
  */

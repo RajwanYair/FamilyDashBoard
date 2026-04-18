@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Scroll Helpers
+ * FamilyDashBoard v7 — Scroll Helpers
  *
  * Seamless vertical scroll loops for news, alerts, and stocks panes.
  * GPU-accelerated with translateZ(0) and will-change.

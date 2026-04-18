@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Constants & Configuration
+ * FamilyDashBoard v7 — Constants & Configuration
  *
  * All magic numbers, URLs, symbol lists, and static lookup tables
  * extracted from the monolith for type-safe reuse.
@@ -241,6 +241,10 @@ export const MAX_CONCURRENT = Math.max(
 export const DIAG_BUFFER_SIZE = 80;
 export const DIAG_DISPLAY_LIMIT = 20;
 
+// ── Time Unit Constants ──
+export const MS_PER_MIN = 60_000;
+export const MS_PER_HOUR = 3_600_000;
+
 // ── Refresh Intervals (ms) ──
 export const INTERVALS = {
   CLOCK: 60_000,
@@ -255,6 +259,7 @@ export const INTERVALS = {
   CURRENCY: 60 * 60_000,
   HEBREW_CAL: 6 * 60 * 60_000,
   HALACHA: 12 * 60 * 60_000,
+  DAY: 24 * 60 * 60_000,
   MOTIVATION: 2 * 60_000,
 } as const;
 
@@ -279,7 +284,26 @@ export const LS_THEME = "dash_theme";
 export const LS_COLLAPSED = "dash_v2_collapsed_cards";
 export const LS_WX_CHART_MODE = "dash_wx_chart_mode";
 export const LS_TASKS_DONE = "dash_tasks_done";
+export const LS_TASKS_RESET = "dash_tasks_reset_date";
 export const LS_CHORES = "dash_chores";
+export const LS_CUSTOM_PROXY = "dash_custom_proxy";
+export const LS_ICS_URL = "dash_ics_url";
+export const LS_CONFIG = "dash_v2_config";
+
+// ── Themes (single source of truth for theme names) ──
+export const THEMES = [
+  "black",
+  "blue",
+  "matrix",
+  "amber",
+  "purple",
+  "rose",
+] as const;
+export type ThemeName = (typeof THEMES)[number];
+
+// ── Screen Modes ──
+export const SCREEN_MODES = ["tv", "tablet", "phone"] as const;
+export type ScreenModeName = (typeof SCREEN_MODES)[number];
 
 // ── Threat Labels (Alerts) ──
 export const THREAT_LABELS: Record<number, string> = {

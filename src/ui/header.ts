@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Header (Clock, Greeting, Progress Bars, Chips)
+ * FamilyDashBoard v7 — Header (Clock, Greeting, Progress Bars, Chips)
  */
 
 import "./header.css";

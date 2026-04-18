@@ -47,7 +47,7 @@ fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://<url>'
 
 | Problem | Fix |
 |---------|-----|
-| API URL changed | Update URL constant in `<script>`, grep for old domain |
+| API URL changed | Update URL constant in `src/core/constants.ts`, grep for old domain |
 | Proxy returns HTML | Validate response: `if (text.startsWith('<')) throw new Error('HTML')` |
 | RSS structure changed | Check `<item>`, `<title>`, `<link>` paths in raw feed |
 | Missing timeout | Use `fetchWithTimeout(url, 8000)` not bare `fetch(url)` |

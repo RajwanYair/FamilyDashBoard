@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Hebrew Calendar Card
+ * FamilyDashBoard v7 — Hebrew Calendar Card
  *
  * Fetches candles/havdalah, next holiday, omer count, parasha, and Daf Yomi
  * from the Hebcal API. Also renders a daily motivation saying (from MOTIVATIONS).
@@ -302,7 +302,7 @@ function renderCandlesHavdala(items: HebcalItem[]): void {
 async function loadHoliday(): Promise<void> {
   const now = new Date();
   const key = `holidays-${now.getFullYear()}-${now.getMonth()}`;
-  const fresh = cGet<HebcalResponse>(key, 12 * 60 * 60_000); // 12h TTL
+  const fresh = cGet<HebcalResponse>(key, INTERVALS.HALACHA); // 12h TTL
   const items = fresh?.items;
   if (items) {
     renderHoliday(items, now);
@@ -460,7 +460,7 @@ function renderOmer(item: HebcalItem | null): void {
 async function loadParasha(): Promise<void> {
   const geonameid = getGeonameid();
   const key = `parasha-${new Date().toDateString()}`;
-  const fresh = cGet<HebcalResponse>(key, 24 * 60 * 60_000);
+  const fresh = cGet<HebcalResponse>(key, INTERVALS.DAY);
   if (fresh?.items) {
     renderParasha(fresh.items);
     return;
@@ -499,7 +499,7 @@ function renderParasha(items: HebcalItem[]): void {
 async function loadDafYomi(): Promise<void> {
   const now = new Date();
   const key = `daf-${now.toDateString()}`;
-  const fresh = cGet<{ ref: string; heRef: string }>(key, 24 * 60 * 60_000);
+  const fresh = cGet<{ ref: string; heRef: string }>(key, INTERVALS.DAY);
   if (fresh !== null) {
     renderDaf(fresh);
     return;
@@ -780,7 +780,7 @@ export function renderZmanim(times: Record<string, string>): void {
 async function loadZmanim(): Promise<void> {
   const today = new Date().toISOString().slice(0, 10);
   const key = `zmanim-${today}`;
-  const fresh = cGet<ZmanimResponse>(key, 12 * 60 * 60_000);
+  const fresh = cGet<ZmanimResponse>(key, INTERVALS.HALACHA);
   if (fresh) {
     renderZmanim(fresh.times);
     return;

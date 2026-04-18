@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Service Worker Registration
+ * FamilyDashBoard v7 — Service Worker Registration
  *
  * Register SW, handle SKIP_WAITING message, listen for controllerchange.
  */

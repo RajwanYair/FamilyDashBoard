@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v6 — Night Dimmer Overlay
+ * FamilyDashBoard v7 — Night Dimmer Overlay
  */
 
 import "./night-dimmer.css";
