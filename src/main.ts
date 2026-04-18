@@ -373,12 +373,15 @@ export function init(): void {
 
   // ── Network reconnect: auto-refresh after connectivity loss ──
   let _wenOffline = false;
+  const offlineBanner = document.getElementById("offline-banner");
   window.addEventListener("offline", () => {
     _wenOffline = true;
+    offlineBanner?.classList.add("visible");
     showToast("❌ אין חיבור לאינטרנט", 5000);
     diagLog("[init] FDB-008: network offline");
   });
   window.addEventListener("online", () => {
+    offlineBanner?.classList.remove("visible");
     if (_wenOffline) {
       _wenOffline = false;
       showToast("🌐 החיבור חזר — מרענן נתונים...", 2500);
