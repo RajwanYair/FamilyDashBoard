@@ -380,6 +380,52 @@ export function serializeConfigExport(config: DashboardConfig): string {
   return JSON.stringify(buildExportEnvelope(config), null, 2);
 }
 
+// ── Sprint 101: Config export validation ──────────────────────────────────
+
+export interface ConfigExportValidation {
+  ok: boolean;
+  errors: string[];
+}
+
+/**
+ * Validate an export envelope before download.
+ * Catches structural issues (missing fields, wrong types, invalid version).
+ */
+export function validateExportPayload(envelope: unknown): ConfigExportValidation {
+  const errors: string[] = [];
+  if (typeof envelope !== "object" || envelope === null || Array.isArray(envelope)) {
+    return { ok: false, errors: ["Envelope is not a valid object"] };
+  }
+  const env = envelope as Record<string, unknown>;
+
+  if (typeof env["appVersion"] !== "string" || !env["appVersion"]) {
+    errors.push("Missing or invalid appVersion");
+  }
+  if (typeof env["configSchemaVersion"] !== "number") {
+    errors.push("Missing or invalid configSchemaVersion");
+  } else if (env["configSchemaVersion"] > CONFIG_VERSION) {
+    errors.push(`configSchemaVersion ${String(env["configSchemaVersion"])} exceeds current ${String(CONFIG_VERSION)}`);
+  }
+  if (typeof env["exportedAt"] !== "string" || !env["exportedAt"]) {
+    errors.push("Missing or invalid exportedAt timestamp");
+  } else if (isNaN(Date.parse(env["exportedAt"] as string))) {
+    errors.push("exportedAt is not a valid ISO date");
+  }
+  if (typeof env["config"] !== "object" || env["config"] === null || Array.isArray(env["config"])) {
+    errors.push("Missing or invalid config payload");
+  } else {
+    const cfg = env["config"] as Record<string, unknown>;
+    if (typeof cfg["theme"] === "string" && !isValidTheme(cfg["theme"])) {
+      errors.push(`Invalid theme: "${String(cfg["theme"])}"`);
+    }
+    if (typeof cfg["screenMode"] === "string" && !isValidScreenMode(cfg["screenMode"])) {
+      errors.push(`Invalid screenMode: "${String(cfg["screenMode"])}"`);
+    }
+  }
+
+  return { ok: errors.length === 0, errors };
+}
+
 /**
  * Read a feature flag from the current config (Sprint 76).
  *
