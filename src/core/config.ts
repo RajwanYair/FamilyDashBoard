@@ -507,3 +507,58 @@ export function resetCardConfig(cardId: string): boolean {
   diagLog(`[config] reset card settings: ${cardId}`);
   return true;
 }
+
+// ── Sprint 105: LS key audit ─────────────────────────────────────────────
+
+/**
+ * Set of all known localStorage key prefixes used by the app.
+ * Keys that don't match any of these are considered orphaned.
+ */
+const KNOWN_LS_PREFIXES: readonly string[] = [
+  "dash_v2_",
+  "dash_theme",
+  "dash_visited_news",
+  "dash_bookmarks",
+  "dash_tasks_done",
+  "dash_tasks_reset_date",
+  "dash_chores",
+  "dash_custom_proxy",
+  "dash_ics_url",
+  "dash_wx_chart_mode",
+];
+
+export interface LsAuditResult {
+  known: string[];
+  orphaned: string[];
+  total: number;
+}
+
+/**
+ * Audit localStorage keys — identify known vs orphaned entries.
+ * Orphaned keys are those that don't match any known prefix used by the app.
+ */
+export function auditLocalStorageKeys(): LsAuditResult {
+  const known: string[] = [];
+  const orphaned: string[] = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key) continue;
+    const isKnown = KNOWN_LS_PREFIXES.some((prefix) => key.startsWith(prefix));
+    if (isKnown) known.push(key);
+    else orphaned.push(key);
+  }
+
+  return { known, orphaned, total: localStorage.length };
+}
+
+/**
+ * Remove orphaned localStorage keys that don't match any known prefix.
+ * Returns the count of removed keys.
+ */
+export function removeOrphanedLsKeys(): number {
+  const { orphaned } = auditLocalStorageKeys();
+  for (const key of orphaned) localStorage.removeItem(key);
+  diagLog(`[config] removed ${String(orphaned.length)} orphaned LS keys`);
+  return orphaned.length;
+}
