@@ -219,3 +219,40 @@ export function checkPerfBudget(limitMs = 3000): PerfBudgetResult {
   }
   return { limitMs, measuredMs: measured, status: pass ? "pass" : "fail" };
 }
+
+// ── Sprint 124: Per-vital budget check ───────────────────────────────────────
+
+/** Default budget thresholds (Google "good" thresholds). */
+export const VITAL_BUDGETS: Record<keyof PerfVitals, number> = {
+  lcp: 2500,
+  cls: 0.1,
+  inp: 200,
+  fcp: 1800,
+  ttfb: 800,
+  startup: 3000,
+};
+
+export interface VitalBudgetEntry {
+  key: keyof PerfVitals;
+  budget: number;
+  measured: number | null;
+  status: "pass" | "fail" | "pending";
+}
+
+/**
+ * Check all vitals against their budgets. Returns an array of results.
+ * @param overrides - optional partial override of default thresholds
+ */
+export function checkAllVitalBudgets(
+  overrides?: Partial<Record<keyof PerfVitals, number>>,
+): VitalBudgetEntry[] {
+  const vitals = getPerfVitals();
+  const budgets = { ...VITAL_BUDGETS, ...overrides };
+  const keys = Object.keys(budgets) as Array<keyof PerfVitals>;
+  return keys.map((key) => {
+    const measured = vitals[key];
+    const budget = budgets[key];
+    if (measured === null) return { key, budget, measured, status: "pending" as const };
+    return { key, budget, measured, status: measured <= budget ? "pass" as const : "fail" as const };
+  });
+}

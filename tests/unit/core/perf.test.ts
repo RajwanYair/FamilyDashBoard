@@ -14,6 +14,8 @@ import {
   markDomReady,
   markStartupComplete,
   checkPerfBudget,
+  checkAllVitalBudgets,
+  VITAL_BUDGETS,
 } from "@/core/perf";
 
 beforeEach(() => {
@@ -152,5 +154,31 @@ describe("checkPerfBudget (Sprint 40)", () => {
   it("returns correct limitMs", () => {
     const result = checkPerfBudget(5000);
     expect(result.limitMs).toBe(5000);
+  });
+});
+
+// ── Sprint 124: checkAllVitalBudgets tests ────────────────────────────────────
+
+describe("checkAllVitalBudgets", () => {
+  it("returns pending for all vitals on fresh state", () => {
+    const results = checkAllVitalBudgets();
+    expect(results.length).toBe(6); // lcp, cls, inp, fcp, ttfb, startup
+    for (const r of results) {
+      expect(r.status).toBe("pending");
+    }
+  });
+
+  it("VITAL_BUDGETS has expected default keys", () => {
+    expect(VITAL_BUDGETS.lcp).toBe(2500);
+    expect(VITAL_BUDGETS.cls).toBe(0.1);
+    expect(VITAL_BUDGETS.inp).toBe(200);
+  });
+
+  it("marks startup as pass when within budget", () => {
+    markDomReady();
+    markStartupComplete();
+    const results = checkAllVitalBudgets({ startup: 99999 });
+    const entry = results.find((r) => r.key === "startup");
+    expect(entry?.status).toBe("pass");
   });
 });
