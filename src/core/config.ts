@@ -454,3 +454,37 @@ export function readFeatureFlag(key: string, defaultValue = false): boolean {
     return defaultValue;
   }
 }
+
+// ── Sprint 103: Config diff utility ──────────────────────────────────────
+
+export interface ConfigDiffEntry {
+  key: string;
+  oldValue: unknown;
+  newValue: unknown;
+}
+
+/**
+ * Compare two DashboardConfig objects and return an array of differences.
+ * Only compares top-level keys (shallow diff).
+ * Useful for showing what changed before save, or in diagnostics.
+ */
+export function diffConfigs(
+  a: DashboardConfig,
+  b: DashboardConfig,
+): ConfigDiffEntry[] {
+  const diffs: ConfigDiffEntry[] = [];
+  const allKeys = new Set([
+    ...Object.keys(a),
+    ...Object.keys(b),
+  ]) as Set<keyof DashboardConfig>;
+
+  for (const key of allKeys) {
+    const va = (a as Record<string, unknown>)[key as string];
+    const vb = (b as Record<string, unknown>)[key as string];
+    if (JSON.stringify(va) !== JSON.stringify(vb)) {
+      diffs.push({ key: key as string, oldValue: va, newValue: vb });
+    }
+  }
+
+  return diffs;
+}
