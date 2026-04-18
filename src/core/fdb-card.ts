@@ -37,6 +37,15 @@ export abstract class FdbCard extends HTMLElement {
   /** Scheduled refresh timer ID, cleared on disconnect. */
   private _refreshTimer: ReturnType<typeof setInterval> | null = null;
 
+  /** Bound visibility listener, stored for proper removal (Sprint 84). */
+  private readonly _visListener = (): void => {
+    if (document.hidden) {
+      this.onHidden();
+    } else {
+      this.onVisible();
+    }
+  };
+
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   /**
@@ -44,6 +53,7 @@ export abstract class FdbCard extends HTMLElement {
    * Subclasses MUST call `super.connectedCallback()` first.
    */
   connectedCallback(): void {
+    document.addEventListener("visibilitychange", this._visListener);
     diagLog(
       `FDB-059: [fdb-card] connected: ${this.getAttribute("data-card-id") ?? this.tagName}`,
     );
@@ -56,6 +66,7 @@ export abstract class FdbCard extends HTMLElement {
    */
   disconnectedCallback(): void {
     this._clearRefreshTimer();
+    document.removeEventListener("visibilitychange", this._visListener);
     diagLog(
       `FDB-060: [fdb-card] disconnected: ${this.getAttribute("data-card-id") ?? this.tagName}`,
     );
@@ -169,6 +180,24 @@ export abstract class FdbCard extends HTMLElement {
    */
   onError(err: Error): void {
     this.setError(err.message);
+  }
+
+  /**
+   * Called when the page becomes visible (Sprint 84).
+   * Override to trigger data refresh or resume animations.
+   * Default implementation is a no-op.
+   */
+  onVisible(): void {
+    // No-op default. Subclasses override to react to page becoming visible.
+  }
+
+  /**
+   * Called when the page becomes hidden (Sprint 84).
+   * Override to pause expensive operations or animations.
+   * Default implementation is a no-op.
+   */
+  onHidden(): void {
+    // No-op default. Subclasses override to react to page becoming hidden.
   }
 
   // ── Render Helpers (Sprint 54+55) ─────────────────────────────────────────

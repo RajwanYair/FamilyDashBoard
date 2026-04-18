@@ -508,3 +508,46 @@ describe("FdbCard — createEl", () => {
     expect(input).toBeInstanceOf(HTMLInputElement);
   });
 });
+
+// ── onVisible / onHidden (Sprint 84) ───────────────────────────────────────
+
+describe("FdbCard — onVisible / onHidden (Sprint 84)", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    card = document.createElement("fdb-test-card") as TestCard;
+    document.body.appendChild(card);
+  });
+
+  afterEach(() => {
+    card.remove();
+  });
+
+  it("calls onVisible when page becomes visible", () => {
+    const spy = vi.spyOn(card, "onVisible");
+    Object.defineProperty(document, "hidden", { value: false, configurable: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it("calls onHidden when page becomes hidden", () => {
+    const spy = vi.spyOn(card, "onHidden");
+    Object.defineProperty(document, "hidden", { value: true, configurable: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it("stops listening after disconnectedCallback", () => {
+    const spy = vi.spyOn(card, "onVisible");
+    card.remove(); // triggers disconnectedCallback
+    Object.defineProperty(document, "hidden", { value: false, configurable: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("onVisible and onHidden are no-ops by default", () => {
+    expect(() => card.onVisible()).not.toThrow();
+    expect(() => card.onHidden()).not.toThrow();
+  });
+});
