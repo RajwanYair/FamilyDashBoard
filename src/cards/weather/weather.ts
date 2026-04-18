@@ -27,6 +27,7 @@ import { loadConfig, saveConfig } from "../../core/config";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import { state } from "../../core/state";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
+import type { CardConfigField } from "../../types/card";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -565,3 +566,26 @@ export function initWeatherCard(): void {
 
   diagLog("FDB-057: [weather] Initialized");
 }
+
+// ── Sprint 87: configSchema ────────────────────────────────────────────────
+
+export const weatherConfigSchema: CardConfigField[] = [
+  {
+    key: "tempUnit",
+    labelHe: "יחידת טמפרטורה",
+    labelEn: "Temperature Unit",
+    type: "select",
+    defaultValue: "C",
+    options: [
+      { value: "C", label: "°C" },
+      { value: "F", label: "°F" },
+    ],
+    tab: "display",
+    group: "weather",
+  },
+  { key: "homeCity", labelHe: "עיר ברירת מחדל", labelEn: "Default City", type: "text", defaultValue: "jerusalem", tab: "display", group: "weather" },
+  { key: "weatherShowDetails", labelHe: "הצג פרטים (לחות/UV/ירח)", labelEn: "Show Details (humidity/UV/moon)", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
+  { key: "weatherShowHourly", labelHe: "הצג תחזית שעתית", labelEn: "Show Hourly Forecast", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
+  { key: "weatherShowWind", labelHe: "הצג רוח", labelEn: "Show Wind", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
+  { key: "weatherShowSunrise", labelHe: "הצג זריחה/שקיעה", labelEn: "Show Sunrise/Sunset", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
+];

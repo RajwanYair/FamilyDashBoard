@@ -24,6 +24,7 @@ import {
   precipSummaryLabel,
   renderHourlyStrip,
   formatCloudCover,
+  weatherConfigSchema,
 } from "@/cards/weather/weather";
 import type { WeatherResponse } from "@/types/api";
 
@@ -2123,5 +2124,39 @@ describe("Weather — formatCloudCover (Sprint 32)", () => {
 
   it("includes the numeric percentage in output", () => {
     expect(formatCloudCover(75)).toContain("75%");
+  });
+});
+
+// ── Sprint 87: configSchema ─────────────────────────────────────────────
+
+describe("Weather — configSchema (Sprint 87)", () => {
+  it("is a non-empty array", () => {
+    expect(Array.isArray(weatherConfigSchema)).toBe(true);
+    expect(weatherConfigSchema.length).toBeGreaterThan(0);
+  });
+
+  it("includes tempUnit as select field", () => {
+    const field = weatherConfigSchema.find(f => f.key === "tempUnit");
+    expect(field).toBeDefined();
+    expect(field!.type).toBe("select");
+    expect(field!.options).toHaveLength(2);
+  });
+
+  it("includes weather toggle fields", () => {
+    const keys = weatherConfigSchema.map(f => f.key);
+    expect(keys).toContain("weatherShowDetails");
+    expect(keys).toContain("weatherShowHourly");
+    expect(keys).toContain("weatherShowWind");
+    expect(keys).toContain("weatherShowSunrise");
+  });
+
+  it("all fields have required properties", () => {
+    for (const f of weatherConfigSchema) {
+      expect(f.key).toBeTruthy();
+      expect(f.labelHe).toBeTruthy();
+      expect(f.labelEn).toBeTruthy();
+      expect(f.type).toBeTruthy();
+      expect(f.defaultValue).toBeDefined();
+    }
   });
 });

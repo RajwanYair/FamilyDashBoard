@@ -130,7 +130,7 @@ registerCard({
   titleHe: "מזג אוויר",
   titleEn: "Weather",
   load: async (): Promise<CardDefinition> => {
-    const { initWeatherCard } = await import("@/cards/weather/weather");
+    const { initWeatherCard, weatherConfigSchema } = await import("@/cards/weather/weather");
     return legacyAdapter(
       "weather",
       "🌤",
@@ -140,6 +140,7 @@ registerCard({
       1,
       35,
       initWeatherCard,
+      weatherConfigSchema,
     );
   },
 });
