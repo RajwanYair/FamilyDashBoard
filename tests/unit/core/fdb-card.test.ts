@@ -4,6 +4,11 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { FdbCard } from "@/core/fdb-card";
+import { setSync } from "@/core/sync";
+
+vi.mock("@/core/sync", () => ({
+  setSync: vi.fn(),
+}));
 
 // ── Concrete subclass for testing ──────────────────────────────────────────
 class TestCard extends FdbCard {
@@ -599,5 +604,40 @@ describe("FdbCard — staleChip (Sprint 85)", () => {
   it("is a no-op when clearing non-existent chip", () => {
     expect(() => card.staleChip(0)).not.toThrow();
     expect(card.querySelector(".stale-chip")).toBeNull();
+  });
+});
+
+// ── setSyncState (Sprint 86) ────────────────────────────────────────────
+
+describe("FdbCard — setSyncState (Sprint 86)", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    vi.mocked(setSync).mockClear();
+    document.body.innerHTML = "";
+    card = document.createElement("fdb-test-card") as TestCard;
+    card.setAttribute("data-card-id", "test-card");
+    document.body.appendChild(card);
+  });
+
+  it("delegates to setSync with the card ID", () => {
+    card.setSyncState("ok");
+    expect(setSync).toHaveBeenCalledWith("test-card", "ok");
+  });
+
+  it("passes loading state", () => {
+    card.setSyncState("loading");
+    expect(setSync).toHaveBeenCalledWith("test-card", "loading");
+  });
+
+  it("passes error state", () => {
+    card.setSyncState("error");
+    expect(setSync).toHaveBeenCalledWith("test-card", "error");
+  });
+
+  it("is a no-op when card has no ID", () => {
+    card.removeAttribute("data-card-id");
+    card.setSyncState("ok");
+    expect(setSync).not.toHaveBeenCalled();
   });
 });

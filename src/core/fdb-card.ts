@@ -20,6 +20,7 @@
  */
 
 import { diagLog } from "./diag";
+import { setSync, type SyncState } from "./sync";
 
 /** Attributes monitored on every FdbCard subclass. */
 const BASE_OBSERVED: readonly string[] = Object.freeze([
@@ -366,5 +367,18 @@ export abstract class FdbCard extends HTMLElement {
     if (className) el.className = className;
     if (text !== undefined) el.textContent = text;
     return el;
+  }
+
+  /**
+   * Update the card's sync dot status (Sprint 86).
+   *
+   * Delegates to `setSync(cardId, state)` — if the card has no sync dot
+   * registered for its ID the call is silently ignored.
+   *
+   * @param state - "ok" | "loading" | "error"
+   */
+  setSyncState(state: SyncState): void {
+    const id = this.cardId;
+    if (id) setSync(id, state);
   }
 }
