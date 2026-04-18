@@ -17,6 +17,78 @@ export interface CardConfig {
   settings?: Record<string, boolean | number | string>;
 }
 
+// ── Sprint 98: Typed per-card config namespaces ──────────────────────────
+
+export interface WeatherCardConfig extends CardConfig {
+  settings?: {
+    tempUnit: "C" | "F";
+    homeCity: string;
+    showHourly: boolean;
+    showWind: boolean;
+    showSunrise: boolean;
+    showDetails: boolean;
+  };
+}
+
+export interface NewsCardConfig extends CardConfig {
+  settings?: {
+    maxItems: number;
+    showSource: boolean;
+  };
+}
+
+export interface StocksCardConfig extends CardConfig {
+  settings?: {
+    showPortfolio: boolean;
+    groupBySector: boolean;
+  };
+}
+
+export interface CountdownCardConfig extends CardConfig {
+  settings?: {
+    title: string;
+    date: string;
+    time: string;
+    doneMsg: string;
+    startDate: string;
+  };
+}
+
+export interface TasksCardConfig extends CardConfig {
+  settings?: {
+    showDone: boolean;
+    showCategories: boolean;
+    resetHour: number;
+  };
+}
+
+export interface SystemInfoCardConfig extends CardConfig {
+  settings?: {
+    showRtt: boolean;
+  };
+}
+
+export interface MotivationCardConfig extends CardConfig {
+  settings?: {
+    interval: number;
+  };
+}
+
+/**
+ * Map of card IDs to their typed config interface.
+ * Provides type safety when accessing `config.cards[cardId]`.
+ */
+export interface CardConfigMap {
+  weather: WeatherCardConfig;
+  news: NewsCardConfig;
+  stocks: StocksCardConfig;
+  countdown: CountdownCardConfig;
+  tasks: TasksCardConfig;
+  "system-info": SystemInfoCardConfig;
+  motivation: MotivationCardConfig;
+  [key: string]: CardConfig; // fallback for untyped cards
+}
+
 export interface DashboardConfig {
   theme: ThemeName;
   screenMode: ScreenModeName;

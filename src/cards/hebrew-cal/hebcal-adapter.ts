@@ -35,7 +35,7 @@ export interface HebcalResponse {
 export function createHebcalAdapter(
   geonameid = 281184,
 ): ProviderAdapter<HebcalResponse> {
-  const cacheTtl = INTERVALS.HEBREW;
+  const cacheTtl = INTERVALS.HEBREW_CAL;
 
   return {
     id: PROVIDER_ID,
