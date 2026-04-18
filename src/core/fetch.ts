@@ -506,3 +506,37 @@ export async function withRetry<T>(
   }
   throw lastErr;
 }
+
+// ── Sprint 94: Error classification ──────────────────────────────────────
+
+/**
+ * Known error categories for fetch failures.
+ */
+export type FetchErrorCategory =
+  | "timeout"
+  | "network"
+  | "http-error"
+  | "invalid-json"
+  | "cors"
+  | "unknown";
+
+/**
+ * Classify a thrown error into a FetchErrorCategory.
+ * Useful for diagnostics, retry decisions, and user-facing messages.
+ */
+export function classifyFetchError(err: unknown): FetchErrorCategory {
+  if (err instanceof DOMException && err.name === "AbortError") return "timeout";
+  if (err instanceof TypeError) {
+    const msg = err.message.toLowerCase();
+    if (msg.includes("failed to fetch") || msg.includes("networkerror")) return "network";
+    if (msg.includes("cors") || msg.includes("cross-origin")) return "cors";
+  }
+  if (err instanceof SyntaxError) return "invalid-json";
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    if (msg.includes("timeout") || msg.includes("aborted")) return "timeout";
+    if (msg.includes("network") || msg.includes("offline")) return "network";
+    if (/\b[45]\d{2}\b/.test(msg)) return "http-error";
+  }
+  return "unknown";
+}
