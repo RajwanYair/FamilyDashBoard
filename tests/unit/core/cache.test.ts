@@ -20,6 +20,7 @@ import {
   cOr,
   cAge,
   cDelete,
+  cacheDashboard,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -652,5 +653,38 @@ describe("Cache — cDelete", () => {
     cDelete("remove-me");
     expect(cGet("keep-me", 60_000)).toBe("yes");
     expect(cGet("remove-me", 60_000)).toBeNull();
+  });
+});
+
+// ── Sprint 121: cacheDashboard tests ──────────────────────────────────────────
+
+describe("Cache — cacheDashboard", () => {
+  beforeEach(() => { cClear(); resetCacheStats(); });
+
+  it("returns zero counts on empty cache", () => {
+    const stats = cacheDashboard();
+    expect(stats.memEntries).toBe(0);
+    expect(stats.lsEntries).toBe(0);
+    expect(stats.hits).toBe(0);
+    expect(stats.misses).toBe(0);
+    expect(stats.hitRate).toBe(0);
+  });
+
+  it("counts memory + LS entries after cSet", () => {
+    cSet("a", 1);
+    cSet("b", 2);
+    const stats = cacheDashboard();
+    expect(stats.memEntries).toBe(2);
+    expect(stats.lsEntries).toBe(2);
+  });
+
+  it("reflects hit/miss after cGet calls", () => {
+    cSet("x", 42);
+    cGet("x", 60_000);   // hit
+    cGet("nope", 60_000); // miss
+    const stats = cacheDashboard();
+    expect(stats.hits).toBe(1);
+    expect(stats.misses).toBe(1);
+    expect(stats.hitRate).toBe(0.5);
   });
 });

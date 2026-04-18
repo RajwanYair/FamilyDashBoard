@@ -440,3 +440,32 @@ export function cAge(key: string): number | null {
 
   return null;
 }
+
+// ── Sprint 121: Full cache dashboard stats ───────────────────────────────────
+
+export interface CacheDashboardStats {
+  memEntries: number;
+  lsEntries: number;
+  hits: number;
+  misses: number;
+  hitRate: number;
+}
+
+/**
+ * Collects a snapshot of all cache layers for the diagnostics overlay.
+ * Synchronous (does not query IDB — that requires async).
+ */
+export function cacheDashboard(): CacheDashboardStats {
+  const { hits, misses, hitRate } = cacheStats();
+  let lsCount = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    if (localStorage.key(i)?.startsWith(LS_PREFIX)) lsCount++;
+  }
+  return {
+    memEntries: mem.size,
+    lsEntries: lsCount,
+    hits,
+    misses,
+    hitRate,
+  };
+}
