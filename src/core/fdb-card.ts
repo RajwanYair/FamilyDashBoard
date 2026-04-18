@@ -272,4 +272,13 @@ export abstract class FdbCard extends HTMLElement {
       el.setAttribute("aria-hidden", "true");
     }
   }
+
+  /**
+   * Remove all child nodes from a target element (Sprint 78).
+   * Defaults to `this` (the card root). Safer than setting innerHTML.
+   * @param target - Element to clear (defaults to this)
+   */
+  clearContent(target: Element = this): void {
+    while (target.firstChild) target.firstChild.remove();
+  }
 }

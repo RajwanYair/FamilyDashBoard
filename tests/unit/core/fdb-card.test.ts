@@ -386,3 +386,36 @@ describe("FdbCard.setBadge", () => {
     expect(() => card.setBadge(3)).not.toThrow();
   });
 });
+
+// ── clearContent (Sprint 78) ────────────────────────────────────────────────
+
+describe("FdbCard — clearContent", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    card = document.createElement("fdb-test-card") as TestCard;
+    document.body.appendChild(card);
+  });
+
+  it("removes all child nodes from the card", () => {
+    card.innerHTML = "<p>A</p><p>B</p><span>C</span>";
+    expect(card.childNodes.length).toBe(3);
+    card.clearContent();
+    expect(card.childNodes.length).toBe(0);
+  });
+
+  it("removes children from a specified target element", () => {
+    const div = document.createElement("div");
+    div.innerHTML = "<span>X</span><span>Y</span>";
+    card.appendChild(div);
+    card.clearContent(div);
+    expect(div.childNodes.length).toBe(0);
+    expect(card.contains(div)).toBe(true);
+  });
+
+  it("is a no-op on an already empty element", () => {
+    expect(() => card.clearContent()).not.toThrow();
+    expect(card.childNodes.length).toBe(0);
+  });
+});
