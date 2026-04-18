@@ -85,7 +85,10 @@ export abstract class FdbCard extends HTMLElement {
    * @param callback - The async function to call on each interval
    * @param intervalMs - Interval duration in milliseconds
    */
-  scheduleRefresh(callback: () => Promise<void> | void, intervalMs: number): void {
+  scheduleRefresh(
+    callback: () => Promise<void> | void,
+    intervalMs: number,
+  ): void {
     this._clearRefreshTimer();
     this._refreshTimer = setInterval(() => {
       void Promise.resolve(callback());
@@ -132,7 +135,7 @@ export abstract class FdbCard extends HTMLElement {
     return this.getAttribute("data-card-size") ?? "md";
   }
 
-  // ── CardRuntime Hooks (Sprint 50) ───────────────────────────────────────── 
+  // ── CardRuntime Hooks (Sprint 50) ─────────────────────────────────────────
 
   /**
    * Called when a config key that this card owns changes.
@@ -168,7 +171,7 @@ export abstract class FdbCard extends HTMLElement {
     this.setError(err.message);
   }
 
-  // ── Render Helpers (Sprint 54+55) ───────────────────────────────────────── 
+  // ── Render Helpers (Sprint 54+55) ─────────────────────────────────────────
 
   /**
    * Replace the card's content with a DocumentFragment built from the provided
