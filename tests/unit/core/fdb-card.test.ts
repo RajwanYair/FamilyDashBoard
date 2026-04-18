@@ -419,3 +419,33 @@ describe("FdbCard — clearContent", () => {
     expect(card.childNodes.length).toBe(0);
   });
 });
+
+// ── qs (Sprint 79) ─────────────────────────────────────────────────────────
+
+describe("FdbCard — qs", () => {
+  let card: TestCard;
+
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    card = document.createElement("fdb-test-card") as TestCard;
+    document.body.appendChild(card);
+  });
+
+  it("finds a child element by selector", () => {
+    const span = document.createElement("span");
+    span.className = "target";
+    card.appendChild(span);
+    expect(card.qs(".target")).toBe(span);
+  });
+
+  it("returns null when no match", () => {
+    expect(card.qs(".nonexistent")).toBeNull();
+  });
+
+  it("returns typed element for specific selectors", () => {
+    const input = document.createElement("input");
+    card.appendChild(input);
+    const result = card.qs<HTMLInputElement>("input");
+    expect(result).toBe(input);
+  });
+});

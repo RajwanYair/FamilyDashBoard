@@ -281,4 +281,13 @@ export abstract class FdbCard extends HTMLElement {
   clearContent(target: Element = this): void {
     while (target.firstChild) target.firstChild.remove();
   }
+
+  /**
+   * Type-safe querySelector scoped to this card (Sprint 79).
+   * Returns null if no match found — no casting required by callers.
+   * @param selector - CSS selector string
+   */
+  qs<T extends HTMLElement = HTMLElement>(selector: string): T | null {
+    return this.querySelector<T>(selector);
+  }
 }
