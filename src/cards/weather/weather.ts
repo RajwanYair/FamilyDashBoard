@@ -26,6 +26,7 @@ import { setSync } from "../../core/sync";
 import { loadConfig, saveConfig } from "../../core/config";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import { state } from "../../core/state";
+import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -233,25 +234,11 @@ export function humidityLabel(rh: number): string {
 /**
  * Compute the approximate moon phase for a given date (defaults to today).
  * Returns a tuple of [emoji, Hebrew name].
- * Algorithm: synodic month = 29.53 days; reference new moon 2000-01-06.
+ * Delegates to the shared computeMoonPhase in utils.ts.
  */
 export function moonPhase(date: Date = new Date()): [string, string] {
-  const KNOWN_NEW_MOON_MS = 947182440000; // 2000-01-06T18:14:00Z
-  const SYNODIC_MS = 29.530588853 * 24 * 60 * 60 * 1000;
-  const elapsed = ((date.getTime() - KNOWN_NEW_MOON_MS) % SYNODIC_MS + SYNODIC_MS) % SYNODIC_MS;
-  const phase = elapsed / SYNODIC_MS; // 0–1
-  const phases: [string, string][] = [
-    ["🌑", "מולד"],
-    ["🌒", "סהר גדל"],
-    ["🌓", "רבע ראשון"],
-    ["🌔", "גדל מתמלא"],
-    ["🌕", "מלא"],
-    ["🌖", "קטן מתמלא"],
-    ["🌗", "רבע אחרון"],
-    ["🌘", "סהר קטן"],
-  ];
-  const idx = Math.round(phase * 8) % 8;
-  return phases[idx] ?? ["🌑", "מולד"];
+  const { emoji, label } = _sharedMoonPhase(date);
+  return [emoji, label];
 }
 
 /**

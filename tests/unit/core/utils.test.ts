@@ -1,9 +1,9 @@
 /**
- * Tests for src/core/utils.ts — debounce, throttle, clamp
+ * Tests for src/core/utils.ts — debounce, throttle, clamp, pad2, decomposeDuration, computeMoonPhase
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { debounce, throttle, clamp } from "@/core/utils";
+import { debounce, throttle, clamp, pad2, decomposeDuration, computeMoonPhase } from "@/core/utils";
 
 // ── debounce ──────────────────────────────────────────────────────────────────
 
@@ -107,5 +107,80 @@ describe("clamp", () => {
 
   it("handles negative range", () => {
     expect(clamp(-3, -10, -1)).toBe(-3);
+  });
+});
+
+// ── pad2 ──────────────────────────────────────────────────────────────────────
+
+describe("pad2", () => {
+  it("pads single digit to 2 chars", () => {
+    expect(pad2(0)).toBe("00");
+    expect(pad2(5)).toBe("05");
+    expect(pad2(9)).toBe("09");
+  });
+
+  it("does not pad double-digit numbers", () => {
+    expect(pad2(10)).toBe("10");
+    expect(pad2(59)).toBe("59");
+  });
+
+  it("handles triple-digit numbers", () => {
+    expect(pad2(100)).toBe("100");
+  });
+});
+
+// ── decomposeDuration ─────────────────────────────────────────────────────────
+
+describe("decomposeDuration", () => {
+  it("decomposes 0 ms", () => {
+    expect(decomposeDuration(0)).toEqual({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  });
+
+  it("decomposes 90_061_000 ms (1d 1h 1m 1s)", () => {
+    const ms = (86_400 + 3_600 + 60 + 1) * 1000;
+    expect(decomposeDuration(ms)).toEqual({ days: 1, hours: 1, minutes: 1, seconds: 1 });
+  });
+
+  it("decomposes partial seconds (floor)", () => {
+    expect(decomposeDuration(1_500)).toEqual({ days: 0, hours: 0, minutes: 0, seconds: 1 });
+  });
+
+  it("clamps negative to zero", () => {
+    expect(decomposeDuration(-5000)).toEqual({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  });
+
+  it("decomposes 3661 seconds", () => {
+    expect(decomposeDuration(3_661_000)).toEqual({ days: 0, hours: 1, minutes: 1, seconds: 1 });
+  });
+});
+
+// ── computeMoonPhase ──────────────────────────────────────────────────────────
+
+describe("computeMoonPhase", () => {
+  it("returns new moon for reference date (2000-01-06T18:14:00Z)", () => {
+    const result = computeMoonPhase(new Date("2000-01-06T18:14:00Z"));
+    expect(result.emoji).toBe("🌑");
+    expect(result.label).toBe("ירח חדש");
+  });
+
+  it("returns full moon for known full moon date (2025-03-14)", () => {
+    const result = computeMoonPhase(new Date("2025-03-14T12:00:00Z"));
+    expect(result.emoji).toBe("🌕");
+  });
+
+  it("returns first quarter on day ~7 after new moon", () => {
+    const result = computeMoonPhase(new Date("2025-04-05T12:00:00Z"));
+    expect(result.emoji).toBe("🌓");
+  });
+
+  it("returns an emoji and label for any date", () => {
+    const result = computeMoonPhase(new Date());
+    expect(result.emoji).toMatch(/^[\u{1F311}-\u{1F318}]$/u);
+    expect(result.label.length).toBeGreaterThan(1);
+  });
+
+  it("defaults to today when no argument is passed", () => {
+    const result = computeMoonPhase();
+    expect(result.emoji).toMatch(/^[\u{1F311}-\u{1F318}]$/u);
   });
 });

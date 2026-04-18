@@ -1959,7 +1959,7 @@ describe("Weather — moonPhase", () => {
     // 2000-01-06 is the reference new moon
     const [emoji, name] = moonPhase(new Date("2000-01-06T18:14:00Z"));
     expect(emoji).toBe("🌑");
-    expect(name).toBe("מולד");
+    expect(name).toBe("ירח חדש");
   });
 
   it("returns full moon emoji for approximately half synodic period later", () => {

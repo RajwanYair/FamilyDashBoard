@@ -26,6 +26,7 @@ import {
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { getTasksForToday } from "../tasks/tasks";
+import { decomposeDuration, pad2, computeMoonPhase } from "../../core/utils";
 import type { HebcalResponse, HebcalItem } from "../../types/api";
 
 // ── Sprint 27: Pure Hebrew-cal utility functions ───────────────────────────
@@ -590,12 +591,8 @@ function renderHalacha(
 // ── Shabbat Countdown ──
 export function formatCountdown(ms: number): string {
   if (ms <= 0) return "00:00";
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  const pad = (n: number): string => String(n).padStart(2, "0");
-  return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+  const { hours: h, minutes: m, seconds: s } = decomposeDuration(ms);
+  return h > 0 ? `${pad2(h)}:${pad2(m)}:${pad2(s)}` : `${pad2(m)}:${pad2(s)}`;
 }
 
 function tickCountdown(): void {
@@ -675,26 +672,8 @@ async function loadHebCal(): Promise<void> {
 
 // ── Moon phase ──
 
-/**
- * Compute the lunar phase for the given date using synodic month math.
- * Returns an emoji + Hebrew label.
- */
-export function computeMoonPhase(date: Date): { emoji: string; label: string } {
-  const SYNODIC = 29.530588853;
-  const REF = new Date("2000-01-06T18:14:00Z").getTime();
-  const elapsed = (date.getTime() - REF) / MS_PER_DAY;
-  const phase = ((elapsed % SYNODIC) + SYNODIC) % SYNODIC;
-  const frac = phase / SYNODIC;
-  if (frac < 0.0625) return { emoji: "🌑", label: "ירח חדש" };
-  if (frac < 0.1875) return { emoji: "🌒", label: "ירח גדל" };
-  if (frac < 0.3125) return { emoji: "🌓", label: "רבע ראשון" };
-  if (frac < 0.4375) return { emoji: "🌔", label: "ירח כמעט מלא" };
-  if (frac < 0.5625) return { emoji: "🌕", label: "ירח מלא" };
-  if (frac < 0.6875) return { emoji: "🌖", label: "ירח פוחת" };
-  if (frac < 0.8125) return { emoji: "🌗", label: "רבע אחרון" };
-  if (frac < 0.9375) return { emoji: "🌘", label: "ירח דועך" };
-  return { emoji: "🌑", label: "ירח חדש" };
-}
+// Re-export shared computeMoonPhase for backward compatibility
+export { computeMoonPhase };
 
 export function renderMoonPhase(): void {
   const moonEl = els.moonEl ?? document.getElementById("hc-moon");

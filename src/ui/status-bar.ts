@@ -16,6 +16,7 @@ import { registerSyncDot } from "../core/sync";
 import { diagLog } from "../core/diag";
 import { getOldestCacheAgeMinutes } from "../core/cache";
 import { MS_PER_MIN } from "../core/constants";
+import { decomposeDuration } from "../core/utils";
 
 // ── Sync Pane Definitions ──
 // Each pane name maps to an HTML element ID for its sync indicator.
@@ -91,9 +92,7 @@ export function updateRefreshAge(): void {
 
 // ── Uptime counter ──
 function formatUptime(ms: number): string {
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
+  const { hours: h, minutes: m } = decomposeDuration(ms);
   if (h > 0) return `⏱ ${h}h ${m}m`;
   return `⏱ ${m}m`;
 }

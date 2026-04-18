@@ -13,8 +13,8 @@
  */
 
 import { diagLog } from "../../core/diag";
-import { MS_PER_HOUR, MS_PER_MIN } from "../../core/constants";
 import { loadConfig } from "../../core/config";
+import { decomposeDuration, pad2 } from "../../core/utils";
 import type { CardDefinition } from "../../types/card";
 
 // ── Types for non-standard browser APIs ──────────────────────────────────
@@ -133,10 +133,8 @@ export async function renderSystemInfo(): Promise<void> {
 
   // Uptime — formatted as HH:MM:SS
   const upMs = Date.now() - PAGE_LOAD_TIME;
-  const upHh = Math.floor(upMs / MS_PER_HOUR);
-  const upMm = Math.floor((upMs % MS_PER_HOUR) / MS_PER_MIN);
-  const upSs = Math.floor((upMs % MS_PER_MIN) / 1_000);
-  const upStr = `${String(upHh).padStart(2, "0")}:${String(upMm).padStart(2, "0")}:${String(upSs).padStart(2, "0")}`;
+  const { hours: upHh, minutes: upMm, seconds: upSs } = decomposeDuration(upMs);
+  const upStr = `${pad2(upHh)}:${pad2(upMm)}:${pad2(upSs)}`;
   setText("sysinfo-uptime", upStr);
 
   // Page load timing

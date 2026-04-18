@@ -34,19 +34,26 @@ import {
 } from "../core/constants";
 // ── Extra localStorage keys now imported from core/constants ──
 
+// ── DOM ref cache for repeatedly-accessed elements ──
+const cfgEls: Record<string, HTMLElement | null> = {};
+function el(id: string): HTMLElement | null {
+  if (!(id in cfgEls)) cfgEls[id] = document.getElementById(id);
+  return cfgEls[id] ?? null;
+}
+
 // ── Unsaved-changes indicator ──
 let _formDirty = false;
 
 function markDirty(): void {
   if (_formDirty) return;
   _formDirty = true;
-  const gear = document.getElementById("cfg-gear-btn");
+  const gear = el("cfg-gear-btn");
   if (gear) gear.textContent = "⚙️*";
 }
 
 function clearDirty(): void {
   _formDirty = false;
-  const gear = document.getElementById("cfg-gear-btn");
+  const gear = el("cfg-gear-btn");
   if (gear) gear.textContent = "⚙️";
 }
 
@@ -111,32 +118,32 @@ function populateForm(): void {
   const newsFont = g("cfg-news-fontsize");
   if (newsFont) {
     newsFont.value = localStorage.getItem(LS_NEWS_FONT) ?? "100";
-    const val = document.getElementById("cfg-news-fontsize-val");
-    if (val) val.textContent = `${newsFont.value}%`;
+    const nfVal = el("cfg-news-fontsize-val");
+    if (nfVal) nfVal.textContent = `${newsFont.value}%`;
   }
 
   // Night dimmer intensity
   const dimLevel = g("cfg-dim-level");
   if (dimLevel) {
     dimLevel.value = String(c.nightDimLevel);
-    const val = document.getElementById("cfg-dim-level-val");
-    if (val) val.textContent = `${c.nightDimLevel}%`;
+    const dlVal = el("cfg-dim-level-val");
+    if (dlVal) dlVal.textContent = `${c.nightDimLevel}%`;
   }
 
   // Font scale
   const fontScale = g("cfg-font-scale");
   if (fontScale) {
     fontScale.value = String(Math.round(c.fontScale * 100));
-    const val = document.getElementById("cfg-font-scale-val");
-    if (val) val.textContent = `${Math.round(c.fontScale * 100)}%`;
+    const fsVal = el("cfg-font-scale-val");
+    if (fsVal) fsVal.textContent = `${Math.round(c.fontScale * 100)}%`;
   }
 
   // Ticker speed
   const tickerSpeedEl = g("cfg-ticker-speed");
   if (tickerSpeedEl) {
     tickerSpeedEl.value = String(c.tickerSpeed ?? 3);
-    const tickerSpeedVal = document.getElementById("cfg-ticker-speed-val");
-    if (tickerSpeedVal) tickerSpeedVal.textContent = String(c.tickerSpeed ?? 3);
+    const tsVal = el("cfg-ticker-speed-val");
+    if (tsVal) tsVal.textContent = String(c.tickerSpeed ?? 3);
   }
 
   // Calendar tab
@@ -187,9 +194,9 @@ function populateForm(): void {
 
   // F2 (v7.2): Alert volume slider
   const alertVolSlider = g("cfg-alert-volume");
-  const alertVolVal = document.getElementById("cfg-alert-volume-val");
+  const avVal = el("cfg-alert-volume-val");
   if (alertVolSlider) alertVolSlider.value = String(c.alertVolume ?? 18);
-  if (alertVolVal) alertVolVal.textContent = `${c.alertVolume ?? 18}%`;
+  if (avVal) avVal.textContent = `${c.alertVolume ?? 18}%`;
 
   const alertRealtime = g("cfg-alert-realtime");
   if (alertRealtime) alertRealtime.value = c.realtimeAlerts ? "on" : "off";
@@ -835,7 +842,7 @@ export function initConfigPanel(): void {
   }
 
   // Save button
-  document.getElementById("cfg-save-btn")?.addEventListener("click", () => {
+  el("cfg-save-btn")?.addEventListener("click", () => {
     const c = collectForm();
     saveConfig(c);
     applyTheme(c.theme);
@@ -914,7 +921,7 @@ export function initConfigPanel(): void {
 
   // Font size slider live preview
   const newsFont = g("cfg-news-fontsize");
-  const newsFontVal = document.getElementById("cfg-news-fontsize-val");
+  const newsFontVal = el("cfg-news-fontsize-val");
   if (newsFont && newsFontVal) {
     newsFont.addEventListener("input", () => {
       newsFontVal.textContent = `${newsFont.value}%`;
@@ -923,7 +930,7 @@ export function initConfigPanel(): void {
 
   // Night dimmer level slider live preview
   const dimLevelSlider = g("cfg-dim-level");
-  const dimLevelValEl = document.getElementById("cfg-dim-level-val");
+  const dimLevelValEl = el("cfg-dim-level-val");
   if (dimLevelSlider && dimLevelValEl) {
     dimLevelSlider.addEventListener("input", () => {
       dimLevelValEl.textContent = `${dimLevelSlider.value}%`;
@@ -932,7 +939,7 @@ export function initConfigPanel(): void {
 
   // Font scale slider live preview + apply
   const fontScaleSlider = g("cfg-font-scale");
-  const fontScaleValEl = document.getElementById("cfg-font-scale-val");
+  const fontScaleValEl = el("cfg-font-scale-val");
   if (fontScaleSlider && fontScaleValEl) {
     fontScaleSlider.addEventListener("input", () => {
       fontScaleValEl.textContent = `${fontScaleSlider.value}%`;
@@ -941,7 +948,7 @@ export function initConfigPanel(): void {
 
   // Ticker speed slider live preview
   const tickerSpeedSlider = g("cfg-ticker-speed");
-  const tickerSpeedValEl = document.getElementById("cfg-ticker-speed-val");
+  const tickerSpeedValEl = el("cfg-ticker-speed-val");
   if (tickerSpeedSlider && tickerSpeedValEl) {
     tickerSpeedSlider.addEventListener("input", () => {
       tickerSpeedValEl.textContent = tickerSpeedSlider.value;
@@ -978,7 +985,7 @@ export function initConfigPanel(): void {
 
   // F2 (v7.2): Alert volume live preview
   const alertVolSliderInit = g("cfg-alert-volume");
-  const alertVolValInit = document.getElementById("cfg-alert-volume-val");
+  const alertVolValInit = el("cfg-alert-volume-val");
   if (alertVolSliderInit && alertVolValInit) {
     alertVolSliderInit.addEventListener("input", () => {
       alertVolValInit.textContent = `${alertVolSliderInit.value}%`;
@@ -1019,7 +1026,7 @@ export function initConfigPanel(): void {
     const ke = e as KeyboardEvent;
     if (ke.ctrlKey && ke.key === "s") {
       ke.preventDefault();
-      document.getElementById("cfg-save-btn")?.click();
+      el("cfg-save-btn")?.click();
     }
   });
 

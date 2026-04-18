@@ -10,6 +10,8 @@ import "./countdown.css";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
 import { MS_PER_DAY } from "../../core/constants";
+import { decomposeDuration, pad2 } from "../../core/utils";
+import type { DurationParts } from "../../core/utils";
 
 // ── Config-driven helpers ─────────────────────────────────────────────────────
 
@@ -69,22 +71,10 @@ function cacheDom(): void {
 
 // ── Time helpers ────────────────────────────────────────────────────────────
 
-export interface TimeComponents {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
+export type TimeComponents = DurationParts;
 
 export function getTimeComponents(targetMs: number): TimeComponents {
-  const diff = Math.max(0, targetMs - Date.now());
-  const totalSecs = Math.floor(diff / 1000);
-  return {
-    days: Math.floor(totalSecs / 86400),
-    hours: Math.floor((totalSecs % 86400) / 3600),
-    minutes: Math.floor((totalSecs % 3600) / 60),
-    seconds: totalSecs % 60,
-  };
+  return decomposeDuration(Math.max(0, targetMs - Date.now()));
 }
 
 /** Returns the number of whole days that have elapsed since `targetMs`. */
@@ -103,9 +93,7 @@ export function computeProgress(startMs: number, targetMs: number): number | nul
   return Math.max(0, Math.min(1, elapsed / total));
 }
 
-function pad(n: number): string {
-  return String(n).padStart(2, "0");
-}
+
 
 /**
  * Return a CSS urgency class based on days remaining.
@@ -190,9 +178,9 @@ export function tick(): void {
   const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
   if (titleEl) titleEl.textContent = getCountdownTitle();
   daysEl.textContent = String(days);
-  if (hoursEl) hoursEl.textContent = pad(hours);
-  if (minsEl) minsEl.textContent = pad(minutes);
-  if (secsEl) secsEl.textContent = pad(seconds);
+  if (hoursEl) hoursEl.textContent = pad2(hours);
+  if (minsEl) minsEl.textContent = pad2(minutes);
+  if (secsEl) secsEl.textContent = pad2(seconds);
   if (msgEl) {
     msgEl.textContent =
       days === 0
@@ -271,9 +259,9 @@ function tickSecondary(
 
   const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
   if (daysEl) daysEl.textContent = String(days);
-  if (hoursEl) hoursEl.textContent = pad(hours);
-  if (minsEl) minsEl.textContent = pad(minutes);
-  if (secsEl) secsEl.textContent = pad(seconds);
+  if (hoursEl) hoursEl.textContent = pad2(hours);
+  if (minsEl) minsEl.textContent = pad2(minutes);
+  if (secsEl) secsEl.textContent = pad2(seconds);
   if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
 
   const progressWrap = document.getElementById(`${prefix}-progress-wrap`);
