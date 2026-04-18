@@ -404,3 +404,30 @@ export async function coldStart<T>(
 
   return null;
 }
+
+// ── Sprint 95: Cache age helper ──────────────────────────────────────────
+
+/**
+ * Returns the age in milliseconds of a cached entry, or `null` if not found.
+ * Checks in-memory cache first, then localStorage.
+ * Does NOT check TTL — it simply measures elapsed time since the entry was stored.
+ */
+export function cAge(key: string): number | null {
+  const now = Date.now();
+
+  // In-memory
+  const entry = mem.get(key);
+  if (entry) return now - entry.ts;
+
+  // localStorage
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { ts?: number };
+    if (typeof parsed.ts === "number") return now - parsed.ts;
+  } catch {
+    // Corrupted entry
+  }
+
+  return null;
+}

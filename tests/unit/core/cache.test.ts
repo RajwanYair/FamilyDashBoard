@@ -18,6 +18,7 @@ import {
   cGetStaleAsync,
   coldStart,
   cOr,
+  cAge,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -588,5 +589,41 @@ describe("cOr — null-coalescing cache read (Sprint 59)", () => {
     const obj = { x: 1 };
     const result = cOr("cor-obj", 60_000, () => obj);
     expect(result).toBe(obj);
+  });
+});
+
+// ── Sprint 95: cAge ──────────────────────────────────────────────────────────
+
+describe("cAge (Sprint 95)", () => {
+  beforeEach(() => {
+    cClear();
+  });
+
+  it("returns null for missing key", () => {
+    expect(cAge("no-such-key")).toBeNull();
+  });
+
+  it("returns small positive number for recently stored key", () => {
+    cSet("age-test", { v: 1 });
+    const age = cAge("age-test");
+    expect(age).not.toBeNull();
+    expect(age!).toBeGreaterThanOrEqual(0);
+    expect(age!).toBeLessThan(1000); // should be < 1 second old
+  });
+
+  it("returns age from localStorage when not in memory", () => {
+    cSet("age-ls", "data");
+    cClear(); // clears in-memory
+    // Re-seed localStorage only:
+    localStorage.setItem("dash_v2_age-ls", JSON.stringify({ data: "data", ts: Date.now() - 5000 }));
+    const age = cAge("age-ls");
+    expect(age).not.toBeNull();
+    expect(age!).toBeGreaterThanOrEqual(4900);
+    expect(age!).toBeLessThan(6000);
+  });
+
+  it("returns null for corrupted localStorage entry", () => {
+    localStorage.setItem("dash_v2_corrupt-age", "not-json!!!");
+    expect(cAge("corrupt-age")).toBeNull();
   });
 });
