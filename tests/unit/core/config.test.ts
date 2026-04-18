@@ -208,17 +208,17 @@ describe("Config — loadConfigFromHash non-object parsed value (line 70)", () =
 describe("Config — migrateConfig (v7.4)", () => {
   it("migrates to configVersion=5 when version is missing (v0→v1→v2→v3→v4→v5)", () => {
     const result = migrateConfig({ theme: "blue" });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
   });
 
   it("migrates to configVersion=5 when version is 0", () => {
     const result = migrateConfig({ configVersion: 0 });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
   });
 
   it("migrates version 1 to version 5, adding v2+v3+v4+v5 fields", () => {
     const result = migrateConfig({ configVersion: 1, theme: "rose" as const });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
     expect(result.theme).toBe("rose");
     expect(result.newsMaxItems).toBe(5);
     expect(result.weatherShowDetails).toBe(true);
@@ -226,7 +226,7 @@ describe("Config — migrateConfig (v7.4)", () => {
 
   it("migrates config at v3 to v5", () => {
     const result = migrateConfig({ configVersion: 3, theme: "rose" as const });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
     expect(result.theme).toBe("rose");
   });
 
@@ -300,7 +300,7 @@ describe("Config — isValidFontScale (v7.4)", () => {
 
 describe("Config — configVersion sanity (v7.4)", () => {
   it("DEFAULT_CONFIG has configVersion 5", () => {
-    expect(DEFAULT_CONFIG.configVersion).toBe(5);
+    expect(DEFAULT_CONFIG.configVersion).toBe(6);
   });
 
   it("CONFIG_VERSION constant matches DEFAULT_CONFIG", () => {
@@ -467,7 +467,7 @@ describe("Config — isValidHour (Sprint 33)", () => {
 describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
   it("migrates v2 config to v5, adding all per-card fields", () => {
     const result = migrateConfig({ configVersion: 2, theme: "blue" });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
     expect(result.weatherShowHourly).toBe(true);
     expect(result.weatherShowWind).toBe(true);
     expect(result.weatherShowSunrise).toBe(true);
@@ -479,25 +479,25 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
 
   it("migrates v0 all the way to v5 in one call", () => {
     const result = migrateConfig({});
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
     expect(result.weatherShowHourly).toBe(true);
     expect(result.newsMaxItems).toBe(5); // v2 field also present
   });
 
   it("does not re-run v3 migration for a v3 config, but runs v4+v5 migration", () => {
     const result = migrateConfig({ configVersion: 3, weatherShowHourly: false });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
     // weatherShowHourly is preserved from input (v3 migration skipped)
     expect(result.weatherShowHourly).toBe(false);
   });
 
   it("does not modify config already at current version (v5)", () => {
     const result = migrateConfig({ configVersion: 5, theme: "rose" as const } as Parameters<typeof migrateConfig>[0]);
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
   });
 
   it("CONFIG_VERSION constant is 5", () => {
-    expect(CONFIG_VERSION).toBe(5);
+    expect(CONFIG_VERSION).toBe(6);
   });
 
   it("DEFAULT_CONFIG has all v3 fields with correct defaults", () => {
@@ -516,7 +516,7 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
 describe("Config — migrateConfig v3→v4 (v7.10)", () => {
   it("v3 config gets cards record with 5 card entries", () => {
     const result = migrateConfig({ configVersion: 3 });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
     expect(result.cards).toBeDefined();
     expect(typeof result.cards).toBe("object");
     expect(result.cards!["weather"]).toBeDefined();
@@ -572,7 +572,7 @@ describe("Config — migrateConfig v3→v4 (v7.10)", () => {
   it("v4 config is not re-migrated (cards preserved)", () => {
     const existing = { configVersion: 4 as const, cards: { weather: { settings: { showDetails: false } } } };
     const result = migrateConfig(existing);
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
     expect(result.cards!["weather"]?.settings?.["showDetails"]).toBe(false);
   });
 
@@ -590,7 +590,7 @@ describe("Config — migrateConfig v3→v4 (v7.10)", () => {
   });
 
   it("DEFAULT_CONFIG.configVersion is 5", () => {
-    expect(DEFAULT_CONFIG.configVersion).toBe(5);
+    expect(DEFAULT_CONFIG.configVersion).toBe(6);
   });
 });
 
@@ -662,7 +662,7 @@ describe("Config — validateImportedConfig (Sprint 38)", () => {
   it("migrates older schema version to current on success", () => {
     const result = validateImportedConfig({ configVersion: 0, theme: "matrix" });
     expect(result.ok).toBe(true);
-    expect(result.config?.configVersion).toBe(5); // migrated to current
+    expect(result.config?.configVersion).toBe(6); // migrated to current
   });
 
   it("accepts config at current CONFIG_VERSION", () => {
@@ -749,7 +749,7 @@ describe("Config — readFeatureFlag (Sprint 76)", () => {
 describe("Config — migrateConfig v4→v5 (Sprint 62)", () => {
   it("bumps configVersion to 5 when migrating from v4", () => {
     const result = migrateConfig({ configVersion: 4 });
-    expect(result.configVersion).toBe(5);
+    expect(result.configVersion).toBe(6);
   });
 
   it("populates featureFlags with default values", () => {
@@ -770,5 +770,54 @@ describe("Config — migrateConfig v4→v5 (Sprint 62)", () => {
     const result = migrateConfig({ configVersion: 5, featureFlags: { workerFetch: false } } as Parameters<typeof migrateConfig>[0]);
     // featureFlags should remain as-is (not overwritten)
     expect(result.featureFlags?.["workerFetch"]).toBe(false);
+  });
+});
+
+// ── Sprint 99: v5→v6 migration ──────────────────────────────────────────
+
+describe("migrateConfig v5→v6 (Sprint 99)", () => {
+  it("copies tempUnit into cards.weather.settings", () => {
+    const result = migrateConfig({ configVersion: 5, tempUnit: "F" } as Parameters<typeof migrateConfig>[0]);
+    expect(result.configVersion).toBe(6);
+    expect((result.cards?.["weather"]?.settings as Record<string, unknown>)?.["tempUnit"]).toBe("F");
+  });
+
+  it("copies homeCity into cards.weather.settings", () => {
+    const result = migrateConfig({ configVersion: 5, homeCity: "tel-aviv" } as Parameters<typeof migrateConfig>[0]);
+    expect((result.cards?.["weather"]?.settings as Record<string, unknown>)?.["homeCity"]).toBe("tel-aviv");
+  });
+
+  it("copies motivationInterval into cards.motivation.settings", () => {
+    const result = migrateConfig({ configVersion: 5, motivationInterval: 15 } as Parameters<typeof migrateConfig>[0]);
+    expect((result.cards?.["motivation"]?.settings as Record<string, unknown>)?.["interval"]).toBe(15);
+  });
+
+  it("copies countdownCard* props into cards.countdown.settings", () => {
+    const result = migrateConfig({
+      configVersion: 5,
+      countdownCardTitle: "My Event",
+      countdownCardDate: "2026-01-01",
+      countdownCardTime: "20:00",
+    } as Parameters<typeof migrateConfig>[0]);
+    const s = result.cards?.["countdown"]?.settings as Record<string, unknown> | undefined;
+    expect(s?.["title"]).toBe("My Event");
+    expect(s?.["date"]).toBe("2026-01-01");
+    expect(s?.["time"]).toBe("20:00");
+  });
+
+  it("preserves existing cards namespace entries from v4→v5", () => {
+    const result = migrateConfig({
+      configVersion: 5,
+      cards: { weather: { settings: { showDetails: true } } },
+      tempUnit: "F",
+    } as Parameters<typeof migrateConfig>[0]);
+    const s = result.cards?.["weather"]?.settings as Record<string, unknown> | undefined;
+    expect(s?.["showDetails"]).toBe(true);
+    expect(s?.["tempUnit"]).toBe("F");
+  });
+
+  it("does not re-run v6 migration for configVersion 6", () => {
+    const result = migrateConfig({ configVersion: 6 } as Parameters<typeof migrateConfig>[0]);
+    expect(result.configVersion).toBe(6);
   });
 });

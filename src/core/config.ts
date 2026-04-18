@@ -118,6 +118,37 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v4 → v5");
   }
 
+  // v5 → v6: move remaining flat per-card props into cards namespace (Sprint 99)
+  if (version < 6) {
+    const cards: Record<string, CardConfig> = cfg.cards ?? {};
+
+    // Weather: pull in tempUnit, homeCity
+    const wSettings = (cards["weather"]?.settings ?? {}) as Record<string, boolean | number | string>;
+    if (cfg.tempUnit && !wSettings["tempUnit"]) wSettings["tempUnit"] = cfg.tempUnit;
+    if (cfg.homeCity && !wSettings["homeCity"]) wSettings["homeCity"] = cfg.homeCity;
+    cards["weather"] = { ...cards["weather"], settings: wSettings };
+
+    // Motivation: pull in motivationInterval
+    const mSettings = (cards["motivation"]?.settings ?? {}) as Record<string, boolean | number | string>;
+    if (typeof cfg.motivationInterval === "number" && !("interval" in mSettings)) {
+      mSettings["interval"] = cfg.motivationInterval;
+    }
+    cards["motivation"] = { ...cards["motivation"], settings: mSettings };
+
+    // Countdown: pull in countdownCard* flat props
+    const cSettings = (cards["countdown"]?.settings ?? {}) as Record<string, boolean | number | string>;
+    if (cfg.countdownCardTitle && !cSettings["title"]) cSettings["title"] = cfg.countdownCardTitle;
+    if (cfg.countdownCardDate && !cSettings["date"]) cSettings["date"] = cfg.countdownCardDate;
+    if (cfg.countdownCardTime && !cSettings["time"]) cSettings["time"] = cfg.countdownCardTime;
+    if (cfg.countdownCardDoneMsg && !cSettings["doneMsg"]) cSettings["doneMsg"] = cfg.countdownCardDoneMsg;
+    if (cfg.countdownCardStartDate && !cSettings["startDate"]) cSettings["startDate"] = cfg.countdownCardStartDate;
+    cards["countdown"] = { ...cards["countdown"], settings: cSettings };
+
+    cfg.cards = cards;
+    cfg.configVersion = 6;
+    diagLog("[config] migrated v5 → v6");
+  }
+
   return cfg;
 }
 
