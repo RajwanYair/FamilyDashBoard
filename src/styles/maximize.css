@@ -70,6 +70,28 @@
 /* News: let scroll container fill the full expanded height */
 .card.maximized .news-body { max-height: 100%; }
 
+/* Sprint 116: Maximize backdrop overlay */
+.maximize-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 899;
+    background: rgba(0, 0, 0, 0);
+    pointer-events: none;
+    transition: background 0.4s ease;
+}
+.maximize-backdrop.active {
+    background: rgba(0, 0, 0, 0.55);
+    pointer-events: auto;
+}
+
+/* Sprint 116: Minimize transition — reverse ease-out for snap-back feel */
+.card.minimizing {
+    transition: top 0.35s cubic-bezier(0.5, 0, 0.75, 0),
+                left 0.35s cubic-bezier(0.5, 0, 0.75, 0),
+                width 0.35s cubic-bezier(0.5, 0, 0.75, 0),
+                height 0.35s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
 /* ── Accessibility: Reduced Motion (R1.9) ── */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
