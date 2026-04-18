@@ -111,6 +111,37 @@ export function readConfigValues(
   return values;
 }
 
+// ── Sprint 107: Config field search/filter ───────────────────────────────
+
+/**
+ * Filter visible config fields in a container by search query.
+ * Hides `.cfg-field` elements whose label text doesn't match the query.
+ * Also hides empty `<details>` groups when all their children are hidden.
+ *
+ * @param container  The element rendered by `renderConfigFields()`
+ * @param query      Search term (case-insensitive). Empty string shows all.
+ */
+export function filterConfigFields(container: HTMLElement, query: string): void {
+  const q = query.trim().toLowerCase();
+  const fields = container.querySelectorAll<HTMLElement>(".cfg-field");
+
+  for (const field of fields) {
+    const label = field.querySelector("label");
+    const text = (label?.textContent ?? "").toLowerCase();
+    const visible = q === "" || text.includes(q);
+    field.style.display = visible ? "" : "none";
+  }
+
+  // Hide <details> groups where all children are hidden
+  const groups = container.querySelectorAll<HTMLDetailsElement>("details");
+  for (const group of groups) {
+    const visibleChildren = group.querySelectorAll<HTMLElement>(
+      ".cfg-field:not([style*='display: none'])",
+    );
+    group.style.display = visibleChildren.length > 0 || q === "" ? "" : "none";
+  }
+}
+
 // ── Internal: create the appropriate input element ──
 
 function _createControl(

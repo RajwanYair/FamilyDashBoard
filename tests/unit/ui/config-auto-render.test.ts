@@ -6,6 +6,7 @@ import {
   renderConfigField,
   renderConfigFields,
   readConfigValues,
+  filterConfigFields,
 } from "@/ui/config-auto-render";
 import type { CardConfigField } from "@/types/card";
 
@@ -160,5 +161,50 @@ describe("readConfigValues (Sprint 100)", () => {
     const vals = readConfigValues(container);
     expect(vals["count"]).toBe(10);
     expect(vals["unit"]).toBe("F");
+  });
+});
+
+// ── Sprint 107: filterConfigFields ──────────────────────────────────────
+
+describe("filterConfigFields (Sprint 107)", () => {
+  it("hides fields that don't match the query", () => {
+    const container = document.createElement("div");
+    const fields: CardConfigField[] = [
+      { key: "city", labelHe: "עיר", labelEn: "City", type: "text", defaultValue: "" },
+      { key: "wind", labelHe: "רוח", labelEn: "Wind", type: "boolean", defaultValue: true },
+    ];
+    renderConfigFields(fields, {}, container);
+    filterConfigFields(container, "רוח");
+
+    const divs = container.querySelectorAll<HTMLElement>(".cfg-field");
+    expect(divs[0].style.display).toBe("none");
+    expect(divs[1].style.display).toBe("");
+  });
+
+  it("shows all fields when query is empty", () => {
+    const container = document.createElement("div");
+    const fields: CardConfigField[] = [
+      { key: "a", labelHe: "אלפא", labelEn: "Alpha", type: "text", defaultValue: "" },
+      { key: "b", labelHe: "בטא", labelEn: "Beta", type: "text", defaultValue: "" },
+    ];
+    renderConfigFields(fields, {}, container);
+    filterConfigFields(container, "אלפא");
+    filterConfigFields(container, "");
+
+    const divs = container.querySelectorAll<HTMLElement>(".cfg-field");
+    expect(divs[0].style.display).toBe("");
+    expect(divs[1].style.display).toBe("");
+  });
+
+  it("hides details group when all children hidden", () => {
+    const container = document.createElement("div");
+    const fields: CardConfigField[] = [
+      { key: "x", labelHe: "שדה", labelEn: "Field", type: "text", defaultValue: "", group: "Advanced" },
+    ];
+    renderConfigFields(fields, {}, container);
+    filterConfigFields(container, "nomatch");
+
+    const details = container.querySelector<HTMLDetailsElement>("details");
+    expect(details?.style.display).toBe("none");
   });
 });
