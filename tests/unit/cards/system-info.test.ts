@@ -755,3 +755,29 @@ describe("SystemInfo — gpuShortName (Sprint 29)", () => {
     expect(result).toBe("Intel UHD");
   });
 });
+
+// ── Sprint 81: configSchema ─────────────────────────────────────────────
+
+describe("SystemInfo — configSchema (Sprint 81)", () => {
+  it("has a configSchema array", () => {
+    expect(systemInfoCard.configSchema).toBeDefined();
+    expect(Array.isArray(systemInfoCard.configSchema)).toBe(true);
+  });
+
+  it("includes sysInfoShowRtt field", () => {
+    const field = systemInfoCard.configSchema!.find(f => f.key === "sysInfoShowRtt");
+    expect(field).toBeDefined();
+    expect(field!.type).toBe("boolean");
+    expect(field!.defaultValue).toBe(true);
+  });
+
+  it("all fields have required properties", () => {
+    for (const f of systemInfoCard.configSchema!) {
+      expect(f.key).toBeTruthy();
+      expect(f.labelHe).toBeTruthy();
+      expect(f.labelEn).toBeTruthy();
+      expect(f.type).toBeTruthy();
+      expect(f.defaultValue).toBeDefined();
+    }
+  });
+});

@@ -328,6 +328,17 @@ export const systemInfoCard: CardDefinition = {
   titleEn: "System Info",
   defaultSlot: { col: 2, order: 4, flexGrow: 14, hidden: false },
   defaultSize: "sm",
+  configSchema: [
+    {
+      key: "sysInfoShowRtt",
+      labelHe: "הצג RTT רשת",
+      labelEn: "Show Network RTT",
+      type: "boolean",
+      defaultValue: true,
+      tab: "display",
+      group: "system-info",
+    },
+  ],
   render(): HTMLElement {
     const section = document.createElement("section");
     section.className = "card";
