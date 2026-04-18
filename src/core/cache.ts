@@ -237,6 +237,15 @@ export function cClear(): void {
   void idbClear();
 }
 
+// ── Sprint 119: explicit single-key cache removal ────────────────────────────
+
+/** Remove a single cache key from all layers (memory, localStorage, IDB). */
+export function cDelete(key: string): void {
+  mem.delete(key);
+  try { localStorage.removeItem(LS_PREFIX + key); } catch { /* quota / security */ }
+  void idbDel(key);
+}
+
 /** F6 (v7.2): Returns age in minutes of the oldest dash_v2_ cache entry. 0 if none found. */
 export function getOldestCacheAgeMinutes(): number {
   let oldest = Date.now();

@@ -19,6 +19,7 @@ import {
   coldStart,
   cOr,
   cAge,
+  cDelete,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -625,5 +626,31 @@ describe("cAge (Sprint 95)", () => {
   it("returns null for corrupted localStorage entry", () => {
     localStorage.setItem("dash_v2_corrupt-age", "not-json!!!");
     expect(cAge("corrupt-age")).toBeNull();
+  });
+});
+
+// ── Sprint 119: cDelete tests ─────────────────────────────────────────────────
+
+describe("Cache — cDelete", () => {
+  beforeEach(() => cClear());
+
+  it("removes a key from memory and localStorage", () => {
+    cSet("del-test", { v: 1 });
+    expect(cGet("del-test", 60_000)).toEqual({ v: 1 });
+    cDelete("del-test");
+    expect(cGet("del-test", 60_000)).toBeNull();
+    expect(localStorage.getItem("dash_v2_del-test")).toBeNull();
+  });
+
+  it("does not throw for non-existent key", () => {
+    expect(() => cDelete("no-such-key")).not.toThrow();
+  });
+
+  it("only removes the target key, not others", () => {
+    cSet("keep-me", "yes");
+    cSet("remove-me", "no");
+    cDelete("remove-me");
+    expect(cGet("keep-me", 60_000)).toBe("yes");
+    expect(cGet("remove-me", 60_000)).toBeNull();
   });
 });
