@@ -18,4 +18,27 @@
     .time-section { background: #f5f5f5 !important; border: 1px solid #ccc !important; }
     a { color: #000 !important; text-decoration: underline; }
     #print-datetime { display: block !important; font-size: 0.75em; color: #666; padding: 2px 8px; }
+
+    /* Sprint 114: Print improvements */
+    /* Card anatomy for print */
+    .card__header { background: #f0f0f0 !important; color: #222 !important; border-bottom: 1px solid #ddd !important; padding: 4px 8px !important; }
+    .card__body { padding: 6px 8px !important; }
+    .card__footer { border-top: 1px solid #ddd !important; padding: 2px 8px !important; opacity: 1 !important; }
+
+    /* Metric tiles — B&W with visible borders */
+    .metric-tile { border: 1px solid #bbb !important; background: #fafafa !important; padding: 4px !important; }
+    .metric-tile__value { color: #000 !important; }
+    .metric-tile__label { color: #444 !important; }
+
+    /* Stale/error indicators — visible in print */
+    .stale-chip { background: #fff3cd !important; color: #664d03 !important; border: 1px solid #ffecb5 !important; }
+    .card-error { color: #842029 !important; }
+
+    /* Tables — full visible borders for readability */
+    table { border-collapse: collapse !important; width: 100% !important; }
+    th, td { border: 1px solid #ccc !important; padding: 3px 6px !important; text-align: start !important; }
+    th { background: #f0f0f0 !important; font-weight: bold !important; }
+
+    /* Page margins and header */
+    @page { margin: 1.5cm; }
 }
