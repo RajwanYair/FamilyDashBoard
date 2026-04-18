@@ -4,7 +4,7 @@
  * Static quotes, no network dependency. Rotates with fade animation.
  */
 
-import { INTERVALS } from "../../core/constants";
+import { INTERVALS, MS_PER_MIN } from "../../core/constants";
 import "./motivation.css";
 import { scheduleCard } from "../base-card";
 import { setSync } from "../../core/sync";
@@ -94,7 +94,7 @@ export function setMotivationInterval(minutes: number): void {
     _motiAutoInterval = null;
   }
   if (minutes > 0) {
-    _motiAutoInterval = setInterval(renderMotivation, minutes * 60_000);
+    _motiAutoInterval = setInterval(renderMotivation, minutes * MS_PER_MIN);
     diagLog(`FDB-039: [motivation] Auto-advance every ${minutes}min`);
   }
 }

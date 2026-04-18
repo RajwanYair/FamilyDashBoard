@@ -7,8 +7,9 @@
 
 import { loadConfig } from "../core/config";
 import { diagLog } from "../core/diag";
+import { MS_PER_MIN } from "../core/constants";
 
-export const BG_INTERVAL_MS = 30 * 60_000; // 30 minutes
+export const BG_INTERVAL_MS = 30 * MS_PER_MIN; // 30 minutes
 
 let _layerA: HTMLDivElement | null = null;
 let _layerB: HTMLDivElement | null = null;

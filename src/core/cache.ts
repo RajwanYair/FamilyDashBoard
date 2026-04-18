@@ -5,7 +5,7 @@
  * All keys are prefixed with `dash_v2_` for namespace isolation.
  */
 
-import { LS_PREFIX, LS_MAX_AGE } from "./constants";
+import { LS_PREFIX, LS_MAX_AGE, MS_PER_MIN } from "./constants";
 import { idbSet, idbGetEntry, idbKeys, idbClear, idbDel } from "./idb-cache";
 
 // ── In-memory layer ──
@@ -258,7 +258,7 @@ export function getOldestCacheAgeMinutes(): number {
   }
   if (!found) return 0;
   const ageMs = Date.now() - oldest;
-  return ageMs < 0 ? 0 : Math.floor(ageMs / 60_000);
+  return ageMs < 0 ? 0 : Math.floor(ageMs / MS_PER_MIN);
 }
 
 // ── Sprint 29: cache statistics ───────────────────────────────────────────────

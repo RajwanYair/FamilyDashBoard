@@ -10,6 +10,7 @@ import { isPageVisible } from "../core/idle";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../core/sync";
 import { acquireLock, releaseLock } from "../core/fetch";
 import { diagLog } from "../core/diag";
+import { MS_PER_MIN } from "../core/constants";
 
 export interface CardOptions {
   /** Unique card identifier (used for cache key, sync dot, fetch lock). */
@@ -95,7 +96,7 @@ export function scheduleCard(
  * @returns Hebrew staleness label
  */
 export function staleChip(ageMs: number): string {
-  const minutes = Math.floor(ageMs / 60_000);
+  const minutes = Math.floor(ageMs / MS_PER_MIN);
   if (minutes < 1) return "\u05E2\u05DB\u05E9\u05D9\u05D5";
   if (minutes < 60) return `\u05DC\u05E4\u05E0\u05D9 ${minutes} \u05D3\u05E7'`;
   const hours = Math.floor(minutes / 60);

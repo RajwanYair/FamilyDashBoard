@@ -8,7 +8,13 @@
 
 import { scheduleCard } from "../base-card";
 import "./hebrew-cal.css";
-import { INTERVALS, API } from "../../core/constants";
+import {
+  INTERVALS,
+  API,
+  MS_PER_DAY,
+  MS_PER_HOUR,
+  MS_PER_MIN,
+} from "../../core/constants";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import {
@@ -71,7 +77,9 @@ export function nextHolidayName(
  * using the `Intl.DateTimeFormat` Hebrew calendar extension.
  */
 export function hebrewMonthName(date: Date = new Date()): string {
-  return new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "long" }).format(date);
+  return new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "long" }).format(
+    date,
+  );
 }
 
 /**
@@ -328,9 +336,7 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
   const h = upcoming[0];
   if (!h || !els.holiday) return;
   const holidayDate = new Date(h.date);
-  const days = Math.ceil(
-    (holidayDate.getTime() - now.getTime()) / 86_400_000,
-  );
+  const days = Math.ceil((holidayDate.getTime() - now.getTime()) / MS_PER_DAY);
   const name = h.hebrew ?? h.title;
   _lastHolidayName = name;
 
@@ -354,11 +360,7 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
   // Proximity colouring: red ≤ 7 days, amber ≤ 30 days, default otherwise
   els.holiday.dataset["days"] = String(days);
   els.holiday.style.color =
-    days <= 7
-      ? "var(--negative)"
-      : days <= 30
-        ? "var(--warning)"
-        : "";
+    days <= 7 ? "var(--negative)" : days <= 30 ? "var(--warning)" : "";
 
   if (els.holidayRow) els.holidayRow.style.display = "";
 
@@ -371,7 +373,7 @@ function renderSchool(items: HebcalItem[], now: Date): void {
   const vacationItem = items.find((i) => {
     if (i.category !== "holiday") return false;
     const d = new Date(i.date);
-    const diffDays = (d.getTime() - now.getTime()) / 86_400_000;
+    const diffDays = (d.getTime() - now.getTime()) / MS_PER_DAY;
     // Show if this holiday started 0-7 days ago (we're in the vacation window)
     if (diffDays < -7 || diffDays > 0) return false;
     const lc = (i.hebrew ?? i.title).toLowerCase();
@@ -401,13 +403,13 @@ async function loadOmer(): Promise<void> {
     10,
   );
   const afterSunset = ilHour >= 20;
-  const omerDate = afterSunset ? new Date(now.getTime() + 86_400_000) : now;
+  const omerDate = afterSunset ? new Date(now.getTime() + MS_PER_DAY) : now;
   const yr = omerDate.getFullYear();
   const mo = omerDate.getMonth() + 1;
   const dy = omerDate.getDate();
   const key = `omer-${yr}-${mo}-${dy}`;
 
-  const fresh = cGet<HebcalItem>(key, 86_400_000);
+  const fresh = cGet<HebcalItem>(key, MS_PER_DAY);
   if (fresh !== null) {
     renderOmer(fresh);
     return;
@@ -507,7 +509,8 @@ async function loadDafYomi(): Promise<void> {
   const stale = cGetStale<{ ref: string; heRef: string }>(key);
   if (stale !== null) renderDaf(stale);
 
-  try {    const d = await fetchJSONWithWorker<{
+  try {
+    const d = await fetchJSONWithWorker<{
       calendar_items: Array<{
         title: { he: string; en: string };
         ref: string;
@@ -610,7 +613,7 @@ function tickCountdown(): void {
   // Friday or within 6 hours of candles: show candles countdown
   if (_candlesTime && _candlesTime.getTime() > now) {
     const ms = _candlesTime.getTime() - now;
-    if (ms <= 6 * 3_600_000 || dow === 5) {
+    if (ms <= 6 * MS_PER_HOUR || dow === 5) {
       el.textContent = `כניסה בעוד ${formatCountdown(ms)}`;
       row.style.display = "";
       return;
@@ -679,7 +682,7 @@ async function loadHebCal(): Promise<void> {
 export function computeMoonPhase(date: Date): { emoji: string; label: string } {
   const SYNODIC = 29.530588853;
   const REF = new Date("2000-01-06T18:14:00Z").getTime();
-  const elapsed = (date.getTime() - REF) / 86_400_000;
+  const elapsed = (date.getTime() - REF) / MS_PER_DAY;
   const phase = ((elapsed % SYNODIC) + SYNODIC) % SYNODIC;
   const frac = phase / SYNODIC;
   if (frac < 0.0625) return { emoji: "🌑", label: "ירח חדש" };
@@ -754,7 +757,7 @@ export function renderZmanim(times: Record<string, string>): void {
   }
   if (nextItem) {
     nextItem.classList.add("zman-next");
-    const minsUntil = Math.round((nextTime - now) / 60_000);
+    const minsUntil = Math.round((nextTime - now) / MS_PER_MIN);
     nextItem.title = `בעוד ${minsUntil} דק׳`;
   }
   grid.innerHTML = "";
@@ -861,7 +864,7 @@ export function renderNextCalEvent(): void {
     eventRow.style.display = "none";
     return;
   }
-  const daysUntil = Math.ceil((next.start.getTime() - now) / 86_400_000);
+  const daysUntil = Math.ceil((next.start.getTime() - now) / MS_PER_DAY);
   const when =
     daysUntil <= 0 ? "היום" : daysUntil === 1 ? "מחר" : `בעוד ${daysUntil} ימ׳`;
   eventEl.textContent = `${summary} (${when})`;

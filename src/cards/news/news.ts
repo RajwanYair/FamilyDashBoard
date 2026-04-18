@@ -13,6 +13,7 @@ import {
   LS_NEWS_VISITED,
   LS_NEWS_BOOKMARKS,
   LS_NEWS_FONT,
+  MS_PER_HOUR,
 } from "../../core/constants";
 import { runConcurrent } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
@@ -126,7 +127,7 @@ export function relativeAge(pubDate: string): string {
   if (!pubDate) return "";
   const d = new Date(pubDate);
   if (isNaN(d.getTime())) return "";
-  const h = Math.floor((Date.now() - d.getTime()) / 3_600_000);
+  const h = Math.floor((Date.now() - d.getTime()) / MS_PER_HOUR);
   if (h < 0) return "";
   if (h < 1) return "עכשיו";
   if (h < 24) return `לפני ${h}ש׳`;
@@ -487,7 +488,7 @@ export function renderNews(items: NewsItem[]): void {
       // Stale age tinting (F136) — primary items only
       if (!isClone && item.pubDate) {
         const ageH = Math.floor(
-          (Date.now() - new Date(item.pubDate).getTime()) / 3_600_000,
+          (Date.now() - new Date(item.pubDate).getTime()) / MS_PER_HOUR,
         );
         if (ageH >= 24) div.classList.add("stale-old");
         else if (ageH >= 12) div.classList.add("stale-day");

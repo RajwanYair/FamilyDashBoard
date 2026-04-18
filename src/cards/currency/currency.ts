@@ -14,6 +14,7 @@ import {
   CUR_TILES,
   API,
   LS_CUR_HISTORY,
+  MS_PER_MIN,
 } from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker } from "../../core/fetch";
@@ -91,7 +92,7 @@ export function get7DayTrend(
 /** Format a past date as a relative Hebrew label (e.g. "לפני 5 דק׳"). */
 export function formatRelativeTime(date: Date): string {
   const diffMs = Date.now() - date.getTime();
-  const diffMin = Math.floor(diffMs / 60_000);
+  const diffMin = Math.floor(diffMs / MS_PER_MIN);
   if (diffMin < 1) return "עכשיו";
   if (diffMin < 60) return `לפני ${diffMin} דק׳`;
   const diffH = Math.floor(diffMin / 60);

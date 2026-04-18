@@ -5,14 +5,19 @@
  * extracted from the monolith for type-safe reuse.
  */
 
+// ── Time Unit Constants ──
+export const MS_PER_MIN = 60_000;
+export const MS_PER_HOUR = 3_600_000;
+export const MS_PER_DAY = 86_400_000;
+
 // ── Cache ──
-export const CACHE_TTL = 5 * 60_000; // 5 minutes
+export const CACHE_TTL = 5 * MS_PER_MIN; // 5 minutes
 export const LS_PREFIX = "dash_v2_";
-export const LS_MAX_AGE = 7 * 86_400_000; // 7 days
+export const LS_MAX_AGE = 7 * MS_PER_DAY; // 7 days
 
 // ── Fetch ──
 export const FETCH_TIMEOUT_MS = 8_000;
-export const WAKE_REFRESH_MS = 30 * 60 * 1_000; // 30 minutes
+export const WAKE_REFRESH_MS = 30 * MS_PER_MIN; // 30 minutes
 
 export const PROXIES: readonly string[] = [
   "https://api.allorigins.win/get?url=",
@@ -241,26 +246,22 @@ export const MAX_CONCURRENT = Math.max(
 export const DIAG_BUFFER_SIZE = 80;
 export const DIAG_DISPLAY_LIMIT = 20;
 
-// ── Time Unit Constants ──
-export const MS_PER_MIN = 60_000;
-export const MS_PER_HOUR = 3_600_000;
-
 // ── Refresh Intervals (ms) ──
 export const INTERVALS = {
-  CLOCK: 60_000,
-  ALERTS_ACTIVE: 60_000,
-  ALERTS_IDLE: 5 * 60_000,
-  MARKET_BADGE: 60_000,
-  NEWS: 15 * 60_000,
-  STOCKS_OPEN: 5 * 60_000,
-  STOCKS_CLOSED: 30 * 60_000,
-  CALENDAR: 15 * 60_000,
-  WEATHER: 30 * 60_000,
-  CURRENCY: 60 * 60_000,
-  HEBREW_CAL: 6 * 60 * 60_000,
-  HALACHA: 12 * 60 * 60_000,
-  DAY: 24 * 60 * 60_000,
-  MOTIVATION: 2 * 60_000,
+  CLOCK: MS_PER_MIN,
+  ALERTS_ACTIVE: MS_PER_MIN,
+  ALERTS_IDLE: 5 * MS_PER_MIN,
+  MARKET_BADGE: MS_PER_MIN,
+  NEWS: 15 * MS_PER_MIN,
+  STOCKS_OPEN: 5 * MS_PER_MIN,
+  STOCKS_CLOSED: 30 * MS_PER_MIN,
+  CALENDAR: 15 * MS_PER_MIN,
+  WEATHER: 30 * MS_PER_MIN,
+  CURRENCY: MS_PER_HOUR,
+  HEBREW_CAL: 6 * MS_PER_HOUR,
+  HALACHA: 12 * MS_PER_HOUR,
+  DAY: MS_PER_DAY,
+  MOTIVATION: 2 * MS_PER_MIN,
 } as const;
 
 // ── localStorage Keys (canonical — modules must import, not redefine) ──

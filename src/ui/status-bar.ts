@@ -15,6 +15,7 @@ import "./status-bar.css";
 import { registerSyncDot } from "../core/sync";
 import { diagLog } from "../core/diag";
 import { getOldestCacheAgeMinutes } from "../core/cache";
+import { MS_PER_MIN } from "../core/constants";
 
 // ── Sync Pane Definitions ──
 // Each pane name maps to an HTML element ID for its sync indicator.
@@ -77,7 +78,7 @@ export function stampRefresh(): void {
 /** Update the refresh stamp to show relative age ("3m ago"). Called every minute. */
 export function updateRefreshAge(): void {
   if (!elRefreshStamp || _lastRefreshMs === 0) return;
-  const mins = Math.floor((Date.now() - _lastRefreshMs) / 60_000);
+  const mins = Math.floor((Date.now() - _lastRefreshMs) / MS_PER_MIN);
   if (mins < 1) return; // still fresh — no age suffix needed
   const now = new Date(_lastRefreshMs);
   const timeStr = now.toLocaleTimeString("he-IL", {
@@ -153,7 +154,7 @@ export function initStatusBar(): void {
   setInterval(() => {
     updateUptime();
     updateRefreshAge();
-  }, 60_000);
+  }, MS_PER_MIN);
 
   // F6 (v7.2): Cache staleness chip — update every 60 s
   const updateCacheAge = (): void => {
@@ -162,7 +163,7 @@ export function initStatusBar(): void {
     elCacheAge.textContent = mins > 0 ? `⏱ ${mins}m` : "";
   };
   updateCacheAge();
-  setInterval(updateCacheAge, 60_000);
+  setInterval(updateCacheAge, MS_PER_MIN);
 
   // Listen for connectivity changes
   window.addEventListener("online", () => {

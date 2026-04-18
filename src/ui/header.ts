@@ -5,6 +5,7 @@
 import "./header.css";
 import { loadConfig } from "../core/config";
 import { diagLog } from "../core/diag";
+import { MS_PER_DAY, INTERVALS } from "../core/constants";
 
 // ── DOM cache ──
 let elClock: HTMLElement | null = null;
@@ -74,7 +75,9 @@ export function updateBirthdayChip(): void {
   for (const { name, month, day } of birthdays) {
     const bdayThisYear = new Date(today.getFullYear(), month - 1, day);
     const bday = bdayThisYear >= today ? bdayThisYear : new Date(today.getFullYear() + 1, month - 1, day);
-    const daysAway = Math.round((bday.getTime() - today.getTime()) / 86_400_000);
+    const daysAway = Math.round(
+      (bday.getTime() - today.getTime()) / MS_PER_DAY,
+    );
     if (daysAway <= 14 && (!nearest || daysAway < nearest.daysAway)) {
       nearest = { name, daysAway };
     }
@@ -117,7 +120,7 @@ export function updateCountdownChip(): void {
     return;
   }
 
-  const days = Math.round(msAway / 86_400_000);
+  const days = Math.round(msAway / MS_PER_DAY);
   elCountdownChip.textContent =
     days === 0 ? `🎉 ${countdownLabel} — היום!` : `⏳ ${countdownLabel}: ${days} ימים`;
   elCountdownChip.hidden = false;
@@ -220,6 +223,6 @@ export function initHeader(): void {
   clockShowSeconds = cfg.clockSeconds ?? false;
 
   tickClock();
-  setInterval(tickClock, 60_000);
+  setInterval(tickClock, INTERVALS.CLOCK);
   diagLog("[header] Initialized");
 }

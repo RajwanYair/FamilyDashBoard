@@ -9,7 +9,13 @@
 
 import { scheduleCard } from "../base-card";
 import "./calendar.css";
-import { INTERVALS, PROXIES, LS_ICS_URL } from "../../core/constants";
+import {
+  INTERVALS,
+  PROXIES,
+  LS_ICS_URL,
+  MS_PER_DAY,
+  MS_PER_MIN,
+} from "../../core/constants";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
 import {
@@ -156,7 +162,9 @@ export function detectCalCategory(summary: string): string {
 export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dateMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const diffDays = Math.round((dateMidnight.getTime() - todayMidnight.getTime()) / 86_400_000);
+  const diffDays = Math.round(
+    (dateMidnight.getTime() - todayMidnight.getTime()) / MS_PER_DAY,
+  );
   if (diffDays <= 0) return "";
   if (diffDays === 1) return "מחר";
   return `עוד ${diffDays} ימים`;
@@ -187,7 +195,9 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
       minute: "2-digit",
       timeZone: "Asia/Jerusalem",
     });
-    const durMin = Math.round((ev.end.getTime() - ev.start.getTime()) / 60_000);
+    const durMin = Math.round(
+      (ev.end.getTime() - ev.start.getTime()) / MS_PER_MIN,
+    );
     if (durMin > 0 && ev.end > ev.start) {
       const endStr = ev.end.toLocaleTimeString("he-IL", {
         hour: "2-digit",
@@ -235,14 +245,14 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
 function renderCalCountdown(upcoming: CalendarEvent[], now: Date): void {
   if (!els.countdown) return;
   const next7 = upcoming.filter(
-    (e) => e.start > now && e.start.getTime() - now.getTime() < 7 * 86_400_000,
+    (e) => e.start > now && e.start.getTime() - now.getTime() < 7 * MS_PER_DAY,
   );
   const ev = next7[0];
   if (!ev) {
     els.countdown.style.display = "none";
     return;
   }
-  const days = Math.ceil((ev.start.getTime() - now.getTime()) / 86_400_000);
+  const days = Math.ceil((ev.start.getTime() - now.getTime()) / MS_PER_DAY);
   const label = days <= 0 ? "היום" : days === 1 ? "מחר" : `עוד ${days} ימים`;
   els.countdown.textContent = `${label}: ${ev.summary.substring(0, 20)}`;
   els.countdown.style.display = "";
@@ -323,7 +333,7 @@ function updateTodayEventCount(events: CalendarEvent[]): void {
   if (!hdrEl) return;
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);
-  const todayEnd = new Date(todayMidnight.getTime() + 86_400_000);
+  const todayEnd = new Date(todayMidnight.getTime() + MS_PER_DAY);
   const count = events.filter(
     (e) => e.start >= todayMidnight && e.start < todayEnd,
   ).length;
@@ -336,7 +346,7 @@ export function renderCalendar(events: CalendarEvent[]): number {
   renderTodayStrip(events);
 
   const now = new Date();
-  const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * 86_400_000);
+  const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * MS_PER_DAY);
   const todayMidnight = new Date(
     now.getFullYear(),
     now.getMonth(),

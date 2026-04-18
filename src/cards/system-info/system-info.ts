@@ -13,6 +13,7 @@
  */
 
 import { diagLog } from "../../core/diag";
+import { MS_PER_HOUR, MS_PER_MIN } from "../../core/constants";
 import { loadConfig } from "../../core/config";
 import type { CardDefinition } from "../../types/card";
 
@@ -132,9 +133,9 @@ export async function renderSystemInfo(): Promise<void> {
 
   // Uptime — formatted as HH:MM:SS
   const upMs = Date.now() - PAGE_LOAD_TIME;
-  const upHh = Math.floor(upMs / 3_600_000);
-  const upMm = Math.floor((upMs % 3_600_000) / 60_000);
-  const upSs = Math.floor((upMs % 60_000) / 1_000);
+  const upHh = Math.floor(upMs / MS_PER_HOUR);
+  const upMm = Math.floor((upMs % MS_PER_HOUR) / MS_PER_MIN);
+  const upSs = Math.floor((upMs % MS_PER_MIN) / 1_000);
   const upStr = `${String(upHh).padStart(2, "0")}:${String(upMm).padStart(2, "0")}:${String(upSs).padStart(2, "0")}`;
   setText("sysinfo-uptime", upStr);
 

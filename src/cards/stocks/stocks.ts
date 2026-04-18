@@ -858,8 +858,8 @@ export function initStocksCard(): void {
   updateMarketBadge();
   updateMarketCountdown();
   // Refresh badge and countdown every minute so they stay accurate
-  setInterval(updateMarketBadge, 60_000);
-  setInterval(updateMarketCountdown, 60_000);
+  setInterval(updateMarketBadge, INTERVALS.MARKET_BADGE);
+  setInterval(updateMarketCountdown, INTERVALS.MARKET_BADGE);
   void loadAllStocks();
   scheduleCard(
     loadAllStocks,

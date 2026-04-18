@@ -9,6 +9,7 @@
 import "./countdown.css";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
+import { MS_PER_DAY } from "../../core/constants";
 
 // ── Config-driven helpers ─────────────────────────────────────────────────────
 
@@ -88,7 +89,7 @@ export function getTimeComponents(targetMs: number): TimeComponents {
 
 /** Returns the number of whole days that have elapsed since `targetMs`. */
 export function getDaysSince(targetMs: number): number {
-  return Math.max(0, Math.floor((Date.now() - targetMs) / 86_400_000));
+  return Math.max(0, Math.floor((Date.now() - targetMs) / MS_PER_DAY));
 }
 
 /**
@@ -228,120 +229,94 @@ export function tick(): void {
 
 // ── Init / Destroy ───────────────────────────────────────────────────────────
 
+/** Shared logic for secondary countdown slots (events 2 & 3). */
+function tickSecondary(
+  prefix: string,
+  sectionId: string,
+  date: string | undefined,
+  time: string,
+  title: string,
+  doneMsg: string,
+  startDate: string | undefined,
+): void {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+
+  if (!date) {
+    section.style.display = "none";
+    return;
+  }
+
+  const targetMs = new Date(`${date}T${time}:00`).getTime();
+  const now = Date.now();
+  const titleEl = document.getElementById(`${prefix}-title`);
+  const daysEl = document.getElementById(`${prefix}-days`);
+  const hoursEl = document.getElementById(`${prefix}-hours`);
+  const minsEl = document.getElementById(`${prefix}-mins`);
+  const secsEl = document.getElementById(`${prefix}-secs`);
+  const msgEl = document.getElementById(`${prefix}-msg`);
+
+  section.style.display = "";
+  if (titleEl) titleEl.textContent = title;
+
+  if (now >= targetMs) {
+    const daysSince = getDaysSince(targetMs);
+    if (daysEl) daysEl.textContent = String(daysSince);
+    if (hoursEl) hoursEl.textContent = "00";
+    if (minsEl) minsEl.textContent = "00";
+    if (secsEl) secsEl.textContent = "00";
+    if (msgEl) msgEl.textContent = doneMsg;
+    return;
+  }
+
+  const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
+  if (daysEl) daysEl.textContent = String(days);
+  if (hoursEl) hoursEl.textContent = pad(hours);
+  if (minsEl) minsEl.textContent = pad(minutes);
+  if (secsEl) secsEl.textContent = pad(seconds);
+  if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
+
+  const progressWrap = document.getElementById(`${prefix}-progress-wrap`);
+  const progressBar = document.getElementById(`${prefix}-progress-bar`);
+  if (progressWrap && progressBar && startDate) {
+    const startMs = new Date(startDate).getTime();
+    const progress = computeProgress(startMs, targetMs);
+    if (progress !== null) {
+      progressWrap.style.display = "";
+      progressBar.style.width = `${Math.round(progress * 100)}%`;
+    } else {
+      progressWrap.style.display = "none";
+    }
+  } else if (progressWrap) {
+    progressWrap.style.display = "none";
+  }
+}
+
 /** F8 (v7.2): Tick for the optional 2nd countdown event. */
 export function tick2(): void {
   const cfg = loadConfig();
-  const section = document.getElementById("cd2-section");
-  if (!section) return;
-
-  const d2 = cfg.countdownCard2Date;
-  const t2 = cfg.countdownCard2Time || "18:00";
-  if (!d2) {
-    section.style.display = "none";
-    return;
-  }
-
-  const targetMs = new Date(`${d2}T${t2}:00`).getTime();
-  const now = Date.now();
-  const titleEl = document.getElementById("cd2-title");
-  const daysEl = document.getElementById("cd2-days");
-  const hoursEl = document.getElementById("cd2-hours");
-  const minsEl = document.getElementById("cd2-mins");
-  const secsEl = document.getElementById("cd2-secs");
-  const msgEl = document.getElementById("cd2-msg");
-
-  section.style.display = "";
-  if (titleEl) titleEl.textContent = cfg.countdownCard2Title || "אירוע 2";
-
-  if (now >= targetMs) {
-    const daysSince = getDaysSince(targetMs);
-    if (daysEl) daysEl.textContent = String(daysSince);
-    if (hoursEl) hoursEl.textContent = "00";
-    if (minsEl) minsEl.textContent = "00";
-    if (secsEl) secsEl.textContent = "00";
-    if (msgEl) msgEl.textContent = cfg.countdownCard2DoneMsg || "🎉 מזל טוב!";
-    return;
-  }
-
-  const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
-  if (daysEl) daysEl.textContent = String(days);
-  if (hoursEl) hoursEl.textContent = pad(hours);
-  if (minsEl) minsEl.textContent = pad(minutes);
-  if (secsEl) secsEl.textContent = pad(seconds);
-  if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
-
-  // Progress bar for event 2 — Sprint 31
-  const progressWrap2 = document.getElementById("cd2-progress-wrap");
-  const progressBar2 = document.getElementById("cd2-progress-bar");
-  if (progressWrap2 && progressBar2 && cfg.countdownCard2StartDate) {
-    const startMs = new Date(cfg.countdownCard2StartDate).getTime();
-    const progress = computeProgress(startMs, targetMs);
-    if (progress !== null) {
-      progressWrap2.style.display = "";
-      progressBar2.style.width = `${Math.round(progress * 100)}%`;
-    } else {
-      progressWrap2.style.display = "none";
-    }
-  } else if (progressWrap2) {
-    progressWrap2.style.display = "none";
-  }
+  tickSecondary(
+    "cd2",
+    "cd2-section",
+    cfg.countdownCard2Date,
+    cfg.countdownCard2Time || "18:00",
+    cfg.countdownCard2Title || "אירוע 2",
+    cfg.countdownCard2DoneMsg || "🎉 מזל טוב!",
+    cfg.countdownCard2StartDate,
+  );
 }
+
 export function tick3(): void {
   const cfg = loadConfig();
-  const section = document.getElementById("cd3-section");
-  if (!section) return;
-
-  const d3 = cfg.countdownCard3Date;
-  const t3 = cfg.countdownCard3Time || "18:00";
-  if (!d3) {
-    section.style.display = "none";
-    return;
-  }
-
-  const targetMs = new Date(`${d3}T${t3}:00`).getTime();
-  const now = Date.now();
-  const titleEl = document.getElementById("cd3-title");
-  const daysEl = document.getElementById("cd3-days");
-  const hoursEl = document.getElementById("cd3-hours");
-  const minsEl = document.getElementById("cd3-mins");
-  const secsEl = document.getElementById("cd3-secs");
-  const msgEl = document.getElementById("cd3-msg");
-
-  section.style.display = "";
-  if (titleEl) titleEl.textContent = cfg.countdownCard3Title || "אירוע 3";
-
-  if (now >= targetMs) {
-    const daysSince = getDaysSince(targetMs);
-    if (daysEl) daysEl.textContent = String(daysSince);
-    if (hoursEl) hoursEl.textContent = "00";
-    if (minsEl) minsEl.textContent = "00";
-    if (secsEl) secsEl.textContent = "00";
-    if (msgEl) msgEl.textContent = cfg.countdownCard3DoneMsg || "🎉 מזל טוב!";
-    return;
-  }
-
-  const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
-  if (daysEl) daysEl.textContent = String(days);
-  if (hoursEl) hoursEl.textContent = pad(hours);
-  if (minsEl) minsEl.textContent = pad(minutes);
-  if (secsEl) secsEl.textContent = pad(seconds);
-  if (msgEl) msgEl.textContent = days <= 7 ? `⏳ עוד ${days} ימים!` : "";
-
-  // Progress bar for event 3 — Sprint 31
-  const progressWrap3 = document.getElementById("cd3-progress-wrap");
-  const progressBar3 = document.getElementById("cd3-progress-bar");
-  if (progressWrap3 && progressBar3 && cfg.countdownCard3StartDate) {
-    const startMs = new Date(cfg.countdownCard3StartDate).getTime();
-    const progress = computeProgress(startMs, targetMs);
-    if (progress !== null) {
-      progressWrap3.style.display = "";
-      progressBar3.style.width = `${Math.round(progress * 100)}%`;
-    } else {
-      progressWrap3.style.display = "none";
-    }
-  } else if (progressWrap3) {
-    progressWrap3.style.display = "none";
-  }
+  tickSecondary(
+    "cd3",
+    "cd3-section",
+    cfg.countdownCard3Date,
+    cfg.countdownCard3Time || "18:00",
+    cfg.countdownCard3Title || "אירוע 3",
+    cfg.countdownCard3DoneMsg || "🎉 מזל טוב!",
+    cfg.countdownCard3StartDate,
+  );
 }
 
 export function initCountdownCard(): void {

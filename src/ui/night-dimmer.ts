@@ -4,7 +4,7 @@
 
 import "./night-dimmer.css";
 import { diagLog } from "../core/diag";
-import { LS_DIM_START, LS_DIM_END } from "../core/constants";
+import { LS_DIM_START, LS_DIM_END, MS_PER_MIN } from "../core/constants";
 
 let dimEl: HTMLElement | null = null;
 let dimLevel = 55; // default opacity percentage
@@ -146,7 +146,7 @@ function _armIdleTimer(): void {
         updateDimIndicator();
         diagLog(`[dimmer] idle auto-dim after ${_idleMinutes} min`);
       }
-    }, _idleMinutes * 60_000);
+    }, _idleMinutes * MS_PER_MIN);
   }
 }
 
@@ -223,7 +223,7 @@ export function initNightDimmer(
   setInterval(() => {
     const { start: s, end: e, enabled: en } = readHours();
     if (en) autoDimCheck(s, e);
-  }, 60_000);
+  }, MS_PER_MIN);
 
   diagLog(`[dimmer] schedule ${enabled ? `ON ${start}h–${end}h` : "OFF"} @ ${nightDimLevel}%`);
 }

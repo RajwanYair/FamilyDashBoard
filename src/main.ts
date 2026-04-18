@@ -32,6 +32,7 @@ import {
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
+import { MS_PER_MIN } from "./core/constants";
 import { state } from "./core/state";
 
 // ── UI ──
@@ -357,7 +358,7 @@ export function init(): void {
     checkAutoTheme(c.autoTheme, c.theme);
   };
   runAutoTheme();
-  setInterval(runAutoTheme, 5 * 60_000);
+  setInterval(runAutoTheme, 5 * MS_PER_MIN);
 
   // Wire notification bell (replaces inline onclick="requestNotifPermission()")
   document.getElementById("notif-bell")?.addEventListener("click", () => {
