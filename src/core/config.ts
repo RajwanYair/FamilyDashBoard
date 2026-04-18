@@ -303,7 +303,13 @@ export function validateImportedConfig(raw: unknown): ConfigImportResult {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     return { ok: false, message: "קובץ ההגדרות אינו תקין (לא JSON אובייקט)", config: null };
   }
-  const obj = raw as Record<string, unknown>;
+  let obj = raw as Record<string, unknown>;
+
+  // Sprint 102: unwrap ConfigExportEnvelope if detected
+  if ("config" in obj && typeof obj["config"] === "object" && obj["config"] !== null && "appVersion" in obj) {
+    diagLog("[config] detected export envelope — unwrapping");
+    obj = obj["config"] as Record<string, unknown>;
+  }
 
   // Version check — imported config must not be from a future version
   if ("configVersion" in obj) {

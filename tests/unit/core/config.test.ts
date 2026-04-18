@@ -821,3 +821,34 @@ describe("migrateConfig v5→v6 (Sprint 99)", () => {
     expect(result.configVersion).toBe(6);
   });
 });
+
+// ── Sprint 102: envelope-aware import ────────────────────────────────────────
+
+describe("validateImportedConfig envelope unwrap (Sprint 102)", () => {
+  it("unwraps a ConfigExportEnvelope and returns valid config", () => {
+    const envelope = {
+      appVersion: "7.17.0",
+      configSchemaVersion: CONFIG_VERSION,
+      exportedAt: new Date().toISOString(),
+      config: { ...DEFAULT_CONFIG, theme: "amber" },
+    };
+    const result = validateImportedConfig(envelope);
+    expect(result.ok).toBe(true);
+    expect(result.config?.theme).toBe("amber");
+  });
+
+  it("still accepts a raw config (no envelope)", () => {
+    const result = validateImportedConfig({ theme: "blue", tempUnit: "C" });
+    expect(result.ok).toBe(true);
+    expect(result.config?.theme).toBe("blue");
+  });
+
+  it("rejects envelope with invalid inner config", () => {
+    const envelope = {
+      appVersion: "7.17.0",
+      config: { theme: "neon" },
+    };
+    const result = validateImportedConfig(envelope);
+    expect(result.ok).toBe(false);
+  });
+});
