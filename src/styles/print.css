@@ -41,4 +41,16 @@
 
     /* Page margins and header */
     @page { margin: 1.5cm; }
+
+    /* Sprint 156: Print footer with dashboard URL */
+    body::after {
+        content: "FamilyDashBoard — " attr(data-print-url);
+        display: block !important;
+        text-align: center;
+        font-size: 0.7em;
+        color: #999;
+        padding-top: 1em;
+        border-top: 1px solid #ddd;
+        margin-top: 1em;
+    }
 }

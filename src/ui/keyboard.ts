@@ -39,7 +39,10 @@ export function getKeyboardActions(): readonly KeyboardAction[] {
 export function initKeyboard(): void {
   // Built-in: theme cycle
   registerKey("t", "מחזור ערכות נושא", cycleTheme);
-  registerKey("p", "הדפסה", () => window.print());
+  registerKey("p", "הדפסה", () => {
+    document.body.dataset["printUrl"] = location.href;
+    window.print();
+  });
 
   // The global keydown dispatcher
   document.addEventListener("keydown", (e: KeyboardEvent) => {
