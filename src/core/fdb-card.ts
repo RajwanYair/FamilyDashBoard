@@ -381,4 +381,108 @@ export abstract class FdbCard extends HTMLElement {
     const id = this.cardId;
     if (id) setSync(id, state);
   }
+
+  // ── Render Primitives (Sprint 130–133) ──────────────────────────────────
+
+  /**
+   * Create a metric tile element (Sprint 130).
+   *
+   * Returns a `<div class="metric-tile">` with label, value, and optional unit.
+   * Use inside card body for structured data display (e.g. temperature, rate).
+   *
+   * @param label  Hebrew/English label text
+   * @param value  Display value (number or string)
+   * @param unit   Optional unit suffix (e.g. "°C", "%")
+   */
+  static renderMetricTile(label: string, value: string | number, unit?: string): HTMLElement {
+    const tile = document.createElement("div");
+    tile.className = "metric-tile";
+
+    const lbl = document.createElement("span");
+    lbl.className = "metric-tile__label";
+    lbl.textContent = label;
+    tile.appendChild(lbl);
+
+    const val = document.createElement("span");
+    val.className = "metric-tile__value";
+    val.textContent = unit ? `${String(value)}${unit}` : String(value);
+    tile.appendChild(val);
+
+    return tile;
+  }
+
+  /**
+   * Create an empty state element (Sprint 131).
+   *
+   * Returns a `<div class="card-empty">` with icon and message.
+   * Use when a card has no data to display (e.g. no events, no tasks).
+   *
+   * @param message  Hebrew message to display
+   * @param icon     Optional emoji icon (default: "📭")
+   */
+  static renderEmpty(message: string, icon = "📭"): HTMLElement {
+    const el = document.createElement("div");
+    el.className = "card-empty";
+
+    const ico = document.createElement("span");
+    ico.className = "card-empty__icon";
+    ico.textContent = icon;
+    el.appendChild(ico);
+
+    const msg = document.createElement("span");
+    msg.className = "card-empty__msg";
+    msg.textContent = message;
+    el.appendChild(msg);
+
+    return el;
+  }
+
+  /**
+   * Create an error state element (Sprint 132).
+   *
+   * Returns a `<div class="card-error" role="alert">` with icon and message.
+   * Use when a card fails to load data after all retries.
+   *
+   * @param message  Hebrew error message to display
+   * @param icon     Optional emoji icon (default: "⚠️")
+   */
+  static renderError(message: string, icon = "⚠️"): HTMLElement {
+    const el = document.createElement("div");
+    el.className = "card-error";
+    el.setAttribute("role", "alert");
+
+    const ico = document.createElement("span");
+    ico.className = "card-error__icon";
+    ico.textContent = icon;
+    el.appendChild(ico);
+
+    const msg = document.createElement("span");
+    msg.className = "card-error__msg";
+    msg.textContent = message;
+    el.appendChild(msg);
+
+    return el;
+  }
+
+  /**
+   * Create a skeleton loader element (Sprint 133).
+   *
+   * Returns a `<div class="card-skeleton">` with N shimmer lines.
+   * Use as placeholder content while data is loading.
+   *
+   * @param lines  Number of skeleton lines (default: 3)
+   */
+  static renderSkeleton(lines = 3): HTMLElement {
+    const el = document.createElement("div");
+    el.className = "card-skeleton";
+    el.setAttribute("aria-hidden", "true");
+
+    for (let i = 0; i < lines; i++) {
+      const line = document.createElement("div");
+      line.className = "skeleton";
+      el.appendChild(line);
+    }
+
+    return el;
+  }
 }

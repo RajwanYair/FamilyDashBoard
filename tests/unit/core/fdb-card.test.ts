@@ -641,3 +641,73 @@ describe("FdbCard — setSyncState (Sprint 86)", () => {
     expect(setSync).not.toHaveBeenCalled();
   });
 });
+
+// ── Sprint 130: renderMetricTile ──────────────────────────────────────────
+describe("FdbCard.renderMetricTile (Sprint 130)", () => {
+  it("creates a .metric-tile with label and value", () => {
+    const tile = FdbCard.renderMetricTile("טמפרטורה", "25", "°C");
+    expect(tile.className).toBe("metric-tile");
+    const label = tile.querySelector(".metric-tile__label");
+    expect(label?.textContent).toBe("טמפרטורה");
+    const value = tile.querySelector(".metric-tile__value");
+    expect(value?.textContent).toBe("25°C");
+  });
+
+  it("renders without unit suffix when unit omitted", () => {
+    const tile = FdbCard.renderMetricTile("מחיר", "150.5");
+    const value = tile.querySelector(".metric-tile__value");
+    expect(value?.textContent).toBe("150.5");
+  });
+
+  it("accepts numeric values", () => {
+    const tile = FdbCard.renderMetricTile("ערך", 42, "%");
+    const value = tile.querySelector(".metric-tile__value");
+    expect(value?.textContent).toBe("42%");
+  });
+});
+
+// ── Sprint 131: renderEmpty ───────────────────────────────────────────────
+describe("FdbCard.renderEmpty (Sprint 131)", () => {
+  it("creates a .card-empty with default icon", () => {
+    const el = FdbCard.renderEmpty("אין אירועים");
+    expect(el.className).toBe("card-empty");
+    expect(el.querySelector(".card-empty__icon")?.textContent).toBe("📭");
+    expect(el.querySelector(".card-empty__msg")?.textContent).toBe("אין אירועים");
+  });
+
+  it("accepts custom icon", () => {
+    const el = FdbCard.renderEmpty("אין משימות", "✅");
+    expect(el.querySelector(".card-empty__icon")?.textContent).toBe("✅");
+  });
+});
+
+// ── Sprint 132: renderError ───────────────────────────────────────────────
+describe("FdbCard.renderError (Sprint 132)", () => {
+  it("creates a .card-error with role=alert", () => {
+    const el = FdbCard.renderError("שגיאת רשת");
+    expect(el.className).toBe("card-error");
+    expect(el.getAttribute("role")).toBe("alert");
+    expect(el.querySelector(".card-error__icon")?.textContent).toBe("⚠️");
+    expect(el.querySelector(".card-error__msg")?.textContent).toBe("שגיאת רשת");
+  });
+
+  it("accepts custom icon", () => {
+    const el = FdbCard.renderError("תקלה", "🔴");
+    expect(el.querySelector(".card-error__icon")?.textContent).toBe("🔴");
+  });
+});
+
+// ── Sprint 133: renderSkeleton ────────────────────────────────────────────
+describe("FdbCard.renderSkeleton (Sprint 133)", () => {
+  it("creates a .card-skeleton with 3 lines by default", () => {
+    const el = FdbCard.renderSkeleton();
+    expect(el.className).toBe("card-skeleton");
+    expect(el.getAttribute("aria-hidden")).toBe("true");
+    expect(el.querySelectorAll(".skeleton")).toHaveLength(3);
+  });
+
+  it("accepts custom line count", () => {
+    const el = FdbCard.renderSkeleton(5);
+    expect(el.querySelectorAll(".skeleton")).toHaveLength(5);
+  });
+});
