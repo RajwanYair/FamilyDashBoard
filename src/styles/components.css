@@ -377,6 +377,28 @@ select.cfg-input { cursor: pointer; }
   font-size: 0.72em;
   font-weight: 500;
   white-space: nowrap;
+  position: absolute;
+  top: 0.3em;
+  inset-inline-end: 0.5em;
+  cursor: help;
+  z-index: 2;
+  transition: opacity 0.2s ease;
+}
+.stale-chip:hover {
+  opacity: 0.8;
+}
+.stale-chip[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  inset-inline-end: 0;
+  padding: 0.3em 0.6em;
+  border-radius: var(--radius-sm, 4px);
+  background: var(--surface-2, #333);
+  color: var(--text-primary, #fff);
+  font-size: 0.85em;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* ═══════════════════════════════════════════════════════
