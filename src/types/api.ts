@@ -590,3 +590,156 @@ export function mapToCalendarDomainEvent(e: CalendarEvent): CalendarDomainEvent 
     icsIndex: e.icsIndex,
   };
 }
+
+// ── Worker Normalized Response Types (Stream W, v7.21) ────────────────────────
+//
+// These types describe what the FamilyDashBoard Cloudflare Worker returns after
+// normalizing upstream API responses (ADR-006). All worker endpoints wrap their
+// payload in WorkerResponse<T>, adding cache-staleness and provider metadata.
+//
+// Consumers: cards that use fetchJSONWithWorker<T>() check isWorkerEnabled()
+// and fall back to direct proxy fetch if the Worker is unavailable.
+
+/**
+ * Generic envelope returned by every Worker endpoint.
+ * `stale` = true when the Worker is serving from its own cache (upstream down).
+ */
+export interface WorkerResponse<T> {
+  /** Normalized payload. */
+  data: T;
+  /** True if the Worker is serving stale cached data (upstream unreachable). */
+  stale: boolean;
+  /** Unix timestamp (ms) of when the Worker fetched / cached this data. */
+  timestamp: number;
+  /** Identifier of the upstream provider that served this response. */
+  provider: string;
+}
+
+// ── Normalized Weather (Worker output) ───────────────────────────────────────
+
+/** Condensed current conditions as returned by the Worker /weather endpoint. */
+export interface NormalizedCurrentWeather {
+  /** Temperature in Celsius. */
+  tempC: number;
+  /** Feels-like temperature in Celsius. */
+  feelsLikeC: number;
+  /** Relative humidity 0–100. */
+  humidity: number;
+  /** Wind speed in km/h. */
+  windKph: number;
+  /** Wind direction in degrees (0–360). */
+  windDeg: number;
+  /** UV index. */
+  uvIndex: number;
+  /** WMO weather code. */
+  weatherCode: number;
+}
+
+/** Single daily forecast slot as returned by the Worker /weather endpoint. */
+export interface NormalizedDailyForecast {
+  /** ISO date string "YYYY-MM-DD". */
+  date: string;
+  /** Max temperature Celsius. */
+  maxC: number;
+  /** Min temperature Celsius. */
+  minC: number;
+  /** WMO weather code for the day. */
+  weatherCode: number;
+  /** Precipitation probability 0–100. */
+  precipProbability: number;
+  /** Sunrise ISO time string. */
+  sunrise: string;
+  /** Sunset ISO time string. */
+  sunset: string;
+}
+
+/** Full weather payload from Worker /weather endpoint. */
+export interface NormalizedWeatherData {
+  current: NormalizedCurrentWeather;
+  daily: NormalizedDailyForecast[];
+  hourly: Array<{ time: string; tempC: number; precipPct: number; code: number }>;
+}
+
+// ── Normalized Stock (Worker output) ─────────────────────────────────────────
+
+/** Single stock as returned by the Worker /stocks endpoint. */
+export interface NormalizedStock {
+  symbol: string;
+  price: number;
+  /** Absolute price change vs previous close. */
+  change: number;
+  /** Percentage change vs previous close. */
+  changePercent: number;
+  currency: string;
+  previousClose: number;
+  fiftyTwoWeekLow?: number;
+  fiftyTwoWeekHigh?: number;
+  /** Post-market price (if available). */
+  postMarketPrice?: number;
+  /** Pre-market price (if available). */
+  preMarketPrice?: number;
+}
+
+// ── Normalized Currency (Worker output) ──────────────────────────────────────
+
+/** Currency rates payload from Worker /currency endpoint. */
+export interface NormalizedCurrencyRates {
+  /** ISO base currency code, e.g. "USD". */
+  base: string;
+  /** Map of ISO currency code → exchange rate vs base. */
+  rates: Record<string, number>;
+  /** ISO string of when the upstream provider last updated the rates. */
+  updatedAt: string;
+}
+
+// ── Normalized News (Worker output) ──────────────────────────────────────────
+
+/** Single news article from Worker /news endpoint. */
+export interface NormalizedNewsItem {
+  title: string;
+  /** Canonical article URL. */
+  url: string;
+  /** ISO date string. */
+  pubDate: string;
+  /** Feed / publication name. */
+  source: string;
+  /** Optional section or topic tag. */
+  category?: string;
+  /** Short excerpt / description. */
+  description?: string;
+}
+
+// ── Normalized Alert (Worker output) ─────────────────────────────────────────
+
+/** Single alert event from Worker /alerts endpoint. */
+export interface NormalizedAlertEvent {
+  /** Stable ID for deduplication (provider-assigned or synthetic). */
+  id: string;
+  /** Short Hebrew or English description of the threat. */
+  title: string;
+  /** Affected cities / areas. */
+  areas: string[];
+  /** ISO timestamp of when the alert was issued. */
+  timestamp: string;
+  /** False once the event is older than the active window. */
+  active: boolean;
+}
+
+// ── Runtime guard for WorkerResponse envelope ─────────────────────────────────
+
+/**
+ * Returns true if `v` has the shape of a WorkerResponse envelope.
+ * Does NOT validate the inner `data` payload — callers should do that
+ * separately with a domain-specific guard.
+ */
+export function isWorkerResponse(v: unknown): v is WorkerResponse<unknown> {
+  if (typeof v !== "object" || v === null) return false;
+  const r = v as Record<string, unknown>;
+  return (
+    "data" in r &&
+    typeof r["stale"] === "boolean" &&
+    typeof r["timestamp"] === "number" &&
+    typeof r["provider"] === "string"
+  );
+}
+
