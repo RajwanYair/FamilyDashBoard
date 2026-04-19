@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v7.17)
+# FamilyDashBoard — Architecture (v7.19)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -44,8 +44,8 @@ src/
 │   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize() (v7.4)
 │   ├── sync.ts                 # setSync(id, state) — sync dots + health
 │   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper
-│   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers
-│   ├── provider.ts             # Per-provider health tracking: success/failure counts (v7.14)
+│   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers + card init timing (v7.19)
+│   ├── provider.ts             # Per-provider health tracking: success/failure counts + latency histogram (v7.19)
 │   ├── utils.ts                # Shared utility functions (formatters, helpers)
 │   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
 │   ├── sw-constants.ts         # SW version/cache name constants shared between sw.js and src/
@@ -198,5 +198,8 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)
 19. **CardRuntime interface** — `src/types/card.ts` defines `CardRuntime` contract (render/connect/disconnect/refresh/onConfigChange); `FdbCard` base class implements foundation (v7.13)
-20. **Provider health model** — `src/core/provider.ts` tracks per-provider success/failure counts; `getProviderHealth(id)` exposed in diagnostic overlay (v7.14)
+20. **Provider health model** — `src/core/provider.ts` tracks per-provider success/failure counts + latency histogram; `getProviderHealth(id)` exposed in diagnostic overlay (v7.14, extended v7.19)
 21. **Config import validation** — `validateImportedConfig(raw)` in `src/core/config.ts` guards against malformed or mismatched schema versions on import (v7.13)
+22. **Per-card configSchema** — Each card exports a `CardConfigField[]` schema; `buildConfigAccordion()` auto-renders the config panel UI; per-card reset buttons (v7.19, ADR-004)
+23. **Config dirty tracking** — `closeConfigPanel()` warns on unsaved changes; second close discards (v7.19)
+24. **Observability suite** — Card init timing (`recordCardInitTime`), startup waterfall in diag overlay, perf JSON export, error rate trending sparkline, network quality history (v7.19)
