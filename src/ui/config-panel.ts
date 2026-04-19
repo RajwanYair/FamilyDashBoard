@@ -632,6 +632,26 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
       wrapper.className = "cfg-card-schema";
       wrapper.dataset["cardId"] = entry.id;
       buildConfigAccordion(def.configSchema, wrapper);
+
+      // Sprint 147: per-card config reset button
+      const resetBtn = document.createElement("button");
+      resetBtn.type = "button";
+      resetBtn.className = "cfg-card-reset-btn";
+      resetBtn.textContent = "↩ איפוס";
+      resetBtn.addEventListener("click", () => {
+        for (const field of def.configSchema!) {
+          const input = wrapper.querySelector<HTMLInputElement>(`[name="${field.key}"]`);
+          if (!input) continue;
+          if (typeof field.defaultValue === "boolean") {
+            input.checked = field.defaultValue;
+          } else {
+            input.value = String(field.defaultValue);
+          }
+        }
+        markDirty();
+      });
+      wrapper.appendChild(resetBtn);
+
       container.appendChild(wrapper);
     } catch {
       // Card not yet loaded — skip silently
