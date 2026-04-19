@@ -232,6 +232,25 @@ export const VITAL_BUDGETS: Record<keyof PerfVitals, number> = {
   startup: 3000,
 };
 
+// ── Sprint 158: Per-card init timing ─────────────────────────────────────────
+
+const _cardTimings: Map<string, number> = new Map();
+
+/**
+ * Record the init duration for a card (in ms).
+ * Called after each card's `init()` completes.
+ */
+export function recordCardInitTime(cardId: string, durationMs: number): void {
+  _cardTimings.set(cardId, Math.round(durationMs * 100) / 100);
+}
+
+/**
+ * Return all recorded per-card init durations.
+ */
+export function getCardTimings(): ReadonlyMap<string, number> {
+  return _cardTimings;
+}
+
 export interface VitalBudgetEntry {
   key: keyof PerfVitals;
   budget: number;

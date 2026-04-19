@@ -76,7 +76,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 import { installGlobalErrorHandlers } from "./core/error-tracker";
-import { initPerfObserver, markDomReady, markStartupComplete } from "./core/perf";
+import { initPerfObserver, markDomReady, markStartupComplete, recordCardInitTime } from "./core/perf";
 import { applyHardwareTier } from "./core/hardware";
 
 // ── Version ──
@@ -285,20 +285,26 @@ export function init(): void {
   registerKey("escape", "סגור כל חלון", closeAllOverlays);
 
   // Cards — priority-based init: high-value visible cards first (v7.10)
+  // Sprint 158: wrap each init with timing
+  const timedInit = (id: string, fn: () => void): void => {
+    const t0 = performance.now();
+    fn();
+    recordCardInitTime(id, performance.now() - t0);
+  };
   // HIGH priority: user-visible, time-sensitive data
-  initWeatherCard();
-  initNewsCard();
-  initAlertsCard();
-  initHebrewCalCard();
-  initCalendarCard();
+  timedInit("weather", initWeatherCard);
+  timedInit("news", initNewsCard);
+  timedInit("alerts", initAlertsCard);
+  timedInit("hebrew-cal", initHebrewCalCard);
+  timedInit("calendar", initCalendarCard);
   // NORMAL priority: financial data + tasks
-  initStocksCard();
-  initCurrencyCard();
-  initTasksCard();
-  initCountdownCard();
+  timedInit("stocks", initStocksCard);
+  timedInit("currency", initCurrencyCard);
+  timedInit("tasks", initTasksCard);
+  timedInit("countdown", initCountdownCard);
   // LOW priority: ambient / decorative content
-  initMotivationCard();
-  initSystemInfoCard();
+  timedInit("motivation", initMotivationCard);
+  timedInit("system-info", initSystemInfoCard);
   initTicker();
 
   // Mark startup waterfall completion (v8.2: all card init calls dispatched)
