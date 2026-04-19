@@ -125,3 +125,26 @@ if (typeof window !== "undefined" && import.meta.env.DEV) {
   (window as typeof window & { __FDB_STATE__?: FdbStateStore })
     .__FDB_STATE__ = state;
 }
+
+// ── Test isolation helper ─────────────────────────────────────────────────────
+
+/**
+ * Reset the singleton store to a clean, empty baseline.
+ * **For use in Vitest tests only.** Clears all three slices so that each
+ * test starts from a pristine state without needing `vi.resetModules()`.
+ *
+ * Because FdbStateStore extends EventTarget there is no built-in "clear"
+ * method. We replace the internal slice data in place so existing module
+ * references to `state` still point to the same object.
+ *
+ * @example
+ *   import { _resetForTest } from "@/core/state";
+ *   afterEach(_resetForTest);
+ */
+export function _resetForTest(): void {
+  // Access private _data via type assertion (test-only pattern)
+  const store = state as unknown as { _data: { config: Record<string, unknown>; cache: Record<string, unknown>; ui: Record<string, unknown> } };
+  store._data.config = {};
+  store._data.cache = {};
+  store._data.ui = {};
+}

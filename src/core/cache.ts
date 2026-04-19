@@ -458,6 +458,34 @@ export function cAge(key: string): number | null {
   return null;
 }
 
+// ── Test isolation helper ─────────────────────────────────────────────────────
+
+/**
+ * Reset all cache state to a clean baseline.
+ * **For use in Vitest tests only.** Clears the in-memory Map, all
+ * `dash_v2_*` localStorage keys, and the stats counters so that each
+ * test starts from a pristine cache state without needing
+ * `vi.resetModules()`.
+ *
+ * @example
+ *   import { _resetForTest } from "@/core/cache";
+ *   afterEach(_resetForTest);
+ */
+export function _resetForTest(): void {
+  mem.clear();
+  // Remove all dash_v2_ localStorage entries
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k?.startsWith(LS_PREFIX)) keysToRemove.push(k);
+  }
+  for (const k of keysToRemove) localStorage.removeItem(k);
+  // Reset stats
+  _cacheHits = 0;
+  _cacheMisses = 0;
+  _lastHitLayer = "none";
+}
+
 // ── Sprint 121: Full cache dashboard stats ───────────────────────────────────
 
 export interface CacheDashboardStats {
