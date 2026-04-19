@@ -184,6 +184,19 @@ describe("Header — initHeader", () => {
     const hebrewGreetings = ["בוקר", "צהריים", "ערב", "לילה"];
     expect(hebrewGreetings.some((g) => greeting.includes(g))).toBe(true);
   });
+
+  it("greeting switches to English when interface language is en", async () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ interfaceLanguage: "en", familyName: "Rajwan" }),
+    );
+    buildHeaderDOM();
+    const mod = await freshHdr();
+    mod.initHeader();
+    const greeting = document.getElementById("greeting")?.textContent ?? "";
+    const englishGreetings = ["Good morning", "Good afternoon", "Good evening", "Good night"];
+    expect(englishGreetings.some((g) => greeting.includes(g))).toBe(true);
+  });
 });
 
 // ── updateBirthdayChip ──

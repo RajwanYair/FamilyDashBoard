@@ -69,6 +69,12 @@
         "json": true
     },
     "chat.agent.enabled": true,
+    "chat.useCustomizationsInParentRepositories": true,
+    "chat.mcp.autoStart": true,
+    "chat.tools.terminal.backgroundNotifications": true,
+    "chat.tools.confirmationCarousel.enabled": true,
+    "github.copilot.chat.agentDebugLog.fileLogging.enabled": true,
+    "jsts-chat-features.skills.enabled": true,
     "chat.instructionFilesLocations": {
         ".github/instructions": true,
         ".github/copilot-instructions.md": true

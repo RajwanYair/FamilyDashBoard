@@ -26,7 +26,7 @@ Review the TypeScript source files in `src/` for the following:
 
 - [ ] RTL layout intact (`dir="rtl"`)
 - [ ] CSS custom properties used — no hardcoded colors
-- [ ] 6 themes covered: dark · ocean · forest · warm · high-contrast · rose
+- [ ] 6 themes covered: black · blue · matrix · amber · purple · rose
 - [ ] Font sizes readable on TV from 3m distance
 - [ ] New CSS rules in correct `@layer` (tokens → themes → base → layout → components → animations)
 - [ ] No duplicate CSS selectors

@@ -90,6 +90,13 @@
         <!-- Tab: Display -->
         <div class="cfg-section active" id="cfg-section-display" role="tabpanel" aria-labelledby="" data-tab="display">
           <div class="cfg-row">
+            <span class="cfg-label">🌐 שפת ממשק</span>
+            <select id="cfg-interface-language" class="cfg-input" title="בחר שפת ממשק">
+              <option value="he">עברית</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="cfg-row">
             <span class="cfg-label">�️ מצב מסך</span>
             <select id="screen-mode-select" class="cfg-input" title="בחר מצב תצוגה — TV = קבוע, Tablet = קטן, Phone = גלילה">
               <option value="tv">📺 טלוויזיה (TV)</option>
@@ -546,7 +553,7 @@
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
             <section class="card" data-card-id="news" aria-label="News">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> חדשות <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> <span id="card-title-news">חדשות</span> <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
@@ -621,7 +628,7 @@
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
             <section class="card" data-card-id="hebrew-cal" aria-label="Hebrew Calendar">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> לוח עברי</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> <span id="card-title-hebrew-cal">לוח עברי</span></div>
               <div class="hebcal-body" id="hebcal-body">
                 <!-- Main content column (right side in RTL) -->
                 <div class="hc-main-col">
@@ -665,7 +672,7 @@
               </div>
             </section>
             <section class="card" data-card-id="calendar" aria-label="Calendar" style="position:relative">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> לוח שנה משפחתי <span id="cal-countdown"></span></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
                 <!-- F154: Today's upcoming events strip -->
                 <div id="cal-today-strip" class="cal-today-strip"></div>
@@ -676,7 +683,7 @@
               </div>
             </section>
             <section class="card" data-card-id="currency" aria-label="Currency">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cur" role="status" aria-label="מצב סנכרון מטבעות" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">🪙</span> שערי מטבע</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cur" role="status" aria-label="מצב סנכרון מטבעות" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">🪙</span> <span id="card-title-currency">שערי מטבע</span></div>
               <div class="currency-body" id="currency-body" aria-live="polite" aria-label="שערי מטבע" role="region">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="curUsd">--</div><div class="cur-chg" id="curUsdChg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
                 <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="curEur">--</div><div class="cur-chg" id="curEurChg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
@@ -693,7 +700,7 @@
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
             <section class="card" data-card-id="stocks" aria-label="Stocks">
-            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" role="status" aria-label="מצב סנכרון מניות" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> מניות <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
+            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" role="status" aria-label="מצב סנכרון מניות" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> <span id="card-title-stocks">מניות</span> <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body" aria-live="polite" aria-label="נתוני מניות">
                   <!-- Stock rows are rendered dynamically by initStocksCard() in stocks.ts -->
@@ -711,7 +718,7 @@
               <div id="stk-mkt-countdown"></div>
             </section>
             <section class="card" data-card-id="alerts" aria-label="Red Alerts">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" role="status" aria-label="מצב סנכרון התראות" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span>צבע אדום</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" role="status" aria-label="מצב סנכרון התראות" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span><span id="card-title-alerts">צבע אדום</span></div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll" aria-live="assertive" aria-label="התרעות צבע אדום" role="log">
                   <div class="alert-count">טוען התרעות...</div>
@@ -719,7 +726,7 @@
               </div>
             </section>
             <section class="card" data-card-id="motivation" aria-label="Motivation">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">✨</span> מוטיבציה</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">✨</span> <span id="card-title-motivation">מוטיבציה</span></div>
               <div class="moti-body">
                 <div class="moti-card">
                   <div class="moti-text" id="moti-text" aria-live="polite">טוען השראה...</div>
@@ -732,7 +739,7 @@
             </section>
             <!-- Countdown card -->
             <section class="card" data-card-id="countdown" aria-label="Countdown">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">💍</span> ספירה לאחור</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">💍</span> <span id="card-title-countdown">ספירה לאחור</span></div>
               <div class="countdown-body">
                 <div class="cd-title" id="cd-wedding-title">חתונת אליאור וטובה</div>
                 <div class="cd-tiles">
@@ -768,8 +775,10 @@
                   <div class="cd-msg cd2-msg" id="cd3-msg"></div>
                   <div class="cd-progress-wrap" id="cd3-progress-wrap" style="display:none"><div class="cd-progress-bar" id="cd3-progress-bar"></div></div>
                 </div>
+              </div>
+            </section>
             <section class="card" data-card-id="tasks" aria-label="Tasks">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge green">✅</span> משימות <span id="tasks-pending-badge" style="display:none;font-size:0.65em;background:var(--warning);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle"></span><span id="tasks-overdue-badge" style="display:none;font-size:0.65em;background:var(--negative,#f87171);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle" title="משימות באיחור"></span></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge green">✅</span> <span id="card-title-tasks">משימות</span> <span id="tasks-pending-badge" style="display:none;font-size:0.65em;background:var(--warning);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle"></span><span id="tasks-overdue-badge" style="display:none;font-size:0.65em;background:var(--negative,#f87171);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle" title="משימות באיחור"></span></div>
               <div class="tasks-body">
                 <div class="tasks-actions">
                   <button type="button" id="tasks-mark-all-btn" class="tasks-action-btn" title="סמן הכל כבוצע">✅ סמן הכל</button>
@@ -792,7 +801,7 @@
             </section>
             <!-- System Info card -->
             <section class="card" data-card-id="system-info" aria-label="System Info">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge cyan">🖥</span> מצב מערכת</div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge cyan">🖥</span> <span id="card-title-system-info">מצב מערכת</span></div>
               <div class="sysinfo-grid" id="sysinfo-body">
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-online">—</span><span class="sysinfo-tile-label">🛰️ מצב</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-battery">—</span><span class="sysinfo-tile-label">🔋 סוללה</span></div>

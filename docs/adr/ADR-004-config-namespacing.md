@@ -1,8 +1,8 @@
 # ADR-004: Per-Card Config Namespacing Strategy
 
-**Date:** 2026-05-30  
-**Status:** Accepted  
-**Deciders:** Project maintainer  
+**Date:** 2026-05-30
+**Status:** Accepted
+**Deciders:** Project maintainer
 
 ---
 

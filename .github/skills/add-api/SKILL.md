@@ -129,6 +129,7 @@ describe("<Name> Card", () => {
 ## Step 6 — Constants
 
 Add to `src/core/constants.ts`:
+
 - API URL in `API` object (if new endpoint)
 - Refresh interval in `INTERVALS` object
 - Any new localStorage keys as `LS_*` constants

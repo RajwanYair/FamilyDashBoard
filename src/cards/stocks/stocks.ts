@@ -32,6 +32,7 @@ import {
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
+import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
@@ -127,16 +128,15 @@ export function portfolioChange(
 }
 
 /**
- * Return a Hebrew label for the current market status.
- * (Re-exports from getMarketStatus, adds Hebrew text.)
+ * Return a localized label for the current market status.
  */
 export function marketStatusLabel(): string {
   const status = getMarketStatus();
   const labels: Record<MarketStatus, string> = {
-    pre: "טרום-שוק",
-    open: "שוק פתוח ✅",
-    after: "אחרי-שוק",
-    closed: "שוק סגור",
+    pre: document.documentElement.lang === "en" ? "Pre-market" : "טרום-שוק",
+    open: document.documentElement.lang === "en" ? "Market Open ✅" : "שוק פתוח ✅",
+    after: document.documentElement.lang === "en" ? "After-hours" : "אחרי-שוק",
+    closed: document.documentElement.lang === "en" ? "Market Closed" : "שוק סגור",
   };
   return labels[status];
 }
@@ -235,10 +235,10 @@ export function updateMarketBadge(): void {
       : "";
 
   const labels: Record<MarketStatus, string> = {
-    open: `🟢 פתוח${countdown}`,
-    pre: `🟡 פרה${countdown}`,
-    after: `🟠 אח"מ${countdown}`,
-    closed: "🔴 סגור",
+    open: t("marketOpen", { countdown }),
+    pre: t("marketPre", { countdown }),
+    after: t("marketAfter", { countdown }),
+    closed: t("marketClosed"),
   };
   const label = labels[status];
 

@@ -1,5 +1,10 @@
 {
   "servers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "description": "Official GitHub MCP server for pull requests, issues, workflows, and repository context in Copilot chat."
+    },
     "fetch": {
       "type": "stdio",
       "command": "npx",

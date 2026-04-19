@@ -571,7 +571,10 @@ describe("idbEvictStale", () => {
     await idbSet("new-key", "new-data");
 
     // Evict anything older than 1 ms (everything qualifies after a tick)
-    // Wait a tiny bit so ts ages
+    // Wait long enough to avoid same-millisecond timestamp collisions.
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 5);
+    });
     const evicted = await idbEvictStale(1);
     expect(evicted).toBeGreaterThanOrEqual(2);
     const keys = await idbKeys();

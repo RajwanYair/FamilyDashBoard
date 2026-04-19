@@ -1,13 +1,13 @@
-# CLAUDE.md — FamilyDashBoard v7.19.0
+# CLAUDE.md — FamilyDashBoard v7.19.1
 
 > Context file for Claude Code / Claude agents.
 > **Canonical rules live in `.github/copilot-instructions.md`** — this file is a lean entry point.
 
 ## Quick Reference
 
-- **Stack**: TypeScript 5.9 + Vite 8 + Vitest 4 (happy-dom) · ESLint 10 · 0 errors / 0 warnings
+- **Stack**: See `.github/instructions/workspace.instructions.md` for the current versioned toolchain summary
 - **Install**: `npm install` from parent `MyScripts/` — never here. No local `package-lock.json`.
-- **Tests**: `npx vitest run` — 2931+ tests / 79 suites / 0 failures
+- **Tests**: `npx vitest run` — current counts live in `.github/instructions/workspace.instructions.md`
 - **Lint**: `npx eslint src tests --max-warnings 0`
 - **Build**: `npx vite build` (Pages) · `npx vite build --base ./` (local file://)
 - **All checks**: `npm run check`
@@ -26,12 +26,13 @@
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
 src/public/            # Vite static dir — icon.svg, manifest.webmanifest
-tests/unit/            # Vitest — 2931+ tests / 79 suites
-sw.js                  # ServiceWorker v7.19.0
+tests/unit/            # Vitest — 2958+ tests / 80 suites
+sw.js                  # ServiceWorker v7.19.1
 BestDashBoard.html     # Legacy v5 dashboard (read-only, archived)
 ```
 
 For full rules, gotchas, architecture, and naming conventions see:
+
 - **Rules & Naming**: `.github/copilot-instructions.md`
 - **Architecture**: `ARCHITECTURE.md`
 - **File details**: `.github/instructions/workspace.instructions.md`

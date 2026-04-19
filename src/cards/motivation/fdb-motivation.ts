@@ -8,6 +8,7 @@
 import { FdbCard } from "../../core/fdb-card";
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
+import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import { INTERVALS, MS_PER_MIN } from "../../core/constants";
 import {
@@ -25,7 +26,7 @@ export class FdbMotivationCard extends FdbCard {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    const { body } = this.buildShell("✨", "מוטיבציה");
+    const { body } = this.buildShell("✨", "מוטיבציה", "Motivation");
 
     // Build inner DOM
     const motiCard = document.createElement("div");
@@ -34,18 +35,26 @@ export class FdbMotivationCard extends FdbCard {
     this._elText = document.createElement("div");
     this._elText.className = "moti-text";
     this._elText.setAttribute("aria-live", "polite");
-    this._elText.textContent = "טוען השראה...";
+    this._elText.textContent = t("refreshing");
     motiCard.appendChild(this._elText);
 
     this._elAuthor = document.createElement("div");
     this._elAuthor.className = "moti-author";
     motiCard.appendChild(this._elAuthor);
 
-    const nextBtn = FdbCard.createEl("button", "moti-btn", "⏭ הבא");
+    const nextBtn = FdbCard.createEl(
+      "button",
+      "moti-btn",
+      document.documentElement.lang === "en" ? "⏭ Next" : "⏭ הבא",
+    );
     nextBtn.type = "button";
     nextBtn.addEventListener("click", () => this.nextQuote());
 
-    const shareBtn = FdbCard.createEl("button", "moti-btn", "📤 שתף");
+    const shareBtn = FdbCard.createEl(
+      "button",
+      "moti-btn",
+      document.documentElement.lang === "en" ? "📤 Share" : "📤 שתף",
+    );
     shareBtn.type = "button";
     shareBtn.addEventListener("click", () => this.shareQuote());
 
@@ -107,7 +116,7 @@ export class FdbMotivationCard extends FdbCard {
       void navigator.share({ text });
     } else {
       void navigator.clipboard.writeText(text).then(() => {
-        showToast("📋 הציטוט הועתק ללוח");
+        showToast(t("quoteCopied"));
       });
     }
     diagLog("FDB-064: [fdb-motivation] Quote shared");

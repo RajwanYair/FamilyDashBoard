@@ -1,11 +1,18 @@
 <div align="center">
 
-# 🤖 Agents — FamilyDashBoard v7.17.0
+# 🤖 Agents — FamilyDashBoard v7.19.1
 
 ![Copilot](https://img.shields.io/badge/GitHub_Copilot-Agents-8b5cf6?style=flat-square&logo=github&logoColor=white)
 ![Modes](https://img.shields.io/badge/Copilot_Modes-5-60a5fa?style=flat-square)
 
 </div>
+
+## Workspace Integration
+
+- VS Code 1.116+ recommended: Copilot is built in, prompt files and hooks are first-class, and MCP servers can be managed from the Chat Customizations editor.
+- Workspace MCP servers: `github`, `fetch`, `filesystem`
+- Workspace hooks: post-edit reminder injects RTL/CSS/TV-readability context after edits
+- Recommended companion extensions: GitHub Actions, Pull Requests, GitLens, PowerShell, ESLint, Stylelint, Markdownlint
 
 ## Custom Agents
 
@@ -34,6 +41,7 @@ API integration specialist — CORS proxy fallback, dual-layer cache (`cGet`/`cS
 | `/code-review` | Security + UI + API + performance audit |
 | `/add-section` | Scaffold a new dashboard widget/card |
 | `/fix-quality` | Auto-fix linting, security, a11y issues |
+| `/modernize-tooling` | Refresh VS Code, Copilot, CI, MCP, hook, and version configuration |
 
 ## Skills (`/` in chat — auto-loaded when relevant)
 

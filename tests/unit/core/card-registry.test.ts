@@ -240,6 +240,10 @@ describe("Card Registry — loadCard built-in legacy (motivation)", () => {
 // ── createShell (Sprint 68, enhanced Sprint 134) ─────────────────────────
 
 describe("createShell", () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it("returns root <section> with data-card-id and .card class", () => {
     const { root } = createShell("motivation");
     expect(root.tagName).toBe("SECTION");
@@ -278,6 +282,18 @@ describe("createShell", () => {
     const { footer } = createShell("motivation");
     expect(footer).toBeDefined();
     expect(footer!.className).toBe("card__footer");
+  });
+
+  it("localizes shell title in English mode", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ interfaceLanguage: "en" }),
+    );
+    const { header, root } = createShell("motivation");
+    expect(header?.querySelector("[data-card-title]")?.textContent).toContain(
+      "Motivation",
+    );
+    expect(root.getAttribute("aria-label")).toContain("Motivation");
   });
 
   it("header → body → footer order in DOM (Sprint 134)", () => {

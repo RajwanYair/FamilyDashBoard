@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.19.1] — 2026-04-19
+
+> **2958 tests / 80 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+- **Tooling modernization**: refreshed VS Code, Copilot, MCP, CI, and shared toolchain integration for the current workspace and parent-install model
+- **Bilingual interface foundation**: added centralized interface-language config, shared i18n helpers, and Hebrew/English UI wiring for config, header, card titles, and key toasts
+- **Config and test stabilization**: preserved language during config migration, hardened i18n defaults for partial mocks, and expanded regression coverage for config, header, card registry, and i18n
+
 ## [7.19.0] — 2025-07-17
 
 > **2931 tests / 79 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

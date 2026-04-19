@@ -11,21 +11,14 @@ import { loadConfig, saveConfig, shareConfigHash } from "../core/config";
 import type { DashboardConfig } from "../types/config";
 import type { CardConfigField } from "../types/card";
 import { listCards, loadCard } from "../core/card-registry";
+import { applyInterfaceLanguage, getLocalizedCardTitle, t } from "../core/i18n";
 import { applyTheme } from "./theme";
 import { diagLog } from "../core/diag";
 import { showToast } from "./toast";
-import { setAlertsRealtime, setAlertVolume } from "../cards/alerts/alerts";
 import { setClockSeconds } from "./header";
-import { initWeatherCities } from "../cards/weather/weather";
-import { applyHiddenStocks, renderPortfolioRow } from "../cards/stocks/stocks";
-import { applyNewsFontSize } from "../cards/news/news";
-import { initCountdownCard } from "../cards/countdown/countdown";
-import { resetLayout } from "./layout-drag";
-import { renderTasksCard } from "../cards/tasks/tasks";
 import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
-import { setMotivationInterval } from "../cards/motivation/motivation";
 import {
   LS_DIM_START, LS_DIM_END, LS_TICKER_MSG,
   LS_CITY_1, LS_CITY_2, LS_CITY_3, LS_STOCK_ALERTS,
@@ -37,8 +30,11 @@ import {
 // ── DOM ref cache for repeatedly-accessed elements ──
 const cfgEls: Record<string, HTMLElement | null> = {};
 function el(id: string): HTMLElement | null {
-  if (!(id in cfgEls)) cfgEls[id] = document.getElementById(id);
-  return cfgEls[id] ?? null;
+  const cached = cfgEls[id];
+  if (cached?.isConnected) return cached;
+  const next = document.getElementById(id);
+  cfgEls[id] = next;
+  return next;
 }
 
 // ── Unsaved-changes indicator ──
@@ -58,9 +54,18 @@ function clearDirty(): void {
 }
 
 let overlayEl: HTMLElement | null = null;
+let cardConfigSchemaDefsPromise: Promise<CardConfigSchemaDef[]> | null = null;
+let cardConfigSchemaInjectRun = 0;
+
+interface CardConfigSchemaDef {
+  id: string;
+  fields: CardConfigField[];
+}
 
 function overlay(): HTMLElement | null {
-  if (!overlayEl) overlayEl = document.getElementById("config-overlay");
+  if (!overlayEl?.isConnected) {
+    overlayEl = document.getElementById("config-overlay");
+  }
   return overlayEl;
 }
 
@@ -76,11 +81,78 @@ function gTxt(id: string): HTMLTextAreaElement | null {
   return document.getElementById(id) as HTMLTextAreaElement | null;
 }
 
+async function getCardConfigSchemaDefs(): Promise<CardConfigSchemaDef[]> {
+  if (!cardConfigSchemaDefsPromise) {
+    cardConfigSchemaDefsPromise = Promise.all(
+      listCards().map(async (entry) => {
+        try {
+          const def = await loadCard(entry.id);
+          return def.configSchema?.length
+            ? { id: entry.id, fields: def.configSchema }
+            : null;
+        } catch {
+          return null;
+        }
+      }),
+    ).then((defs) =>
+      defs.filter((def): def is CardConfigSchemaDef => def !== null),
+    );
+  }
+
+  return cardConfigSchemaDefsPromise;
+}
+
+async function applySavedConfigSideEffects(
+  config: DashboardConfig,
+  refreshTasks: boolean,
+  refreshPortfolio: boolean,
+): Promise<void> {
+  try {
+    const [
+      alertsMod,
+      weatherMod,
+      stocksMod,
+      newsMod,
+      countdownMod,
+      motivationMod,
+    ] = await Promise.all([
+      import("../cards/alerts/alerts"),
+      import("../cards/weather/weather"),
+      import("../cards/stocks/stocks"),
+      import("../cards/news/news"),
+      import("../cards/countdown/countdown"),
+      import("../cards/motivation/motivation"),
+    ]);
+
+    alertsMod.setAlertsRealtime(config.realtimeAlerts);
+    alertsMod.setAlertVolume(config.alertVolume ?? 18);
+    weatherMod.initWeatherCities();
+    stocksMod.applyHiddenStocks();
+    newsMod.applyNewsFontSize();
+    countdownMod.initCountdownCard();
+    motivationMod.setMotivationInterval(config.motivationInterval ?? 0);
+
+    if (refreshTasks) {
+      const tasksMod = await import("../cards/tasks/tasks");
+      tasksMod.renderTasksCard();
+    }
+
+    if (refreshPortfolio) {
+      stocksMod.renderPortfolioRow();
+    }
+  } catch (error) {
+    diagLog(`[config-panel] delayed side effects failed: ${String(error)}`);
+  }
+}
+
 // ── Populate form from config ──
 function populateForm(): void {
   const c = loadConfig();
 
   // Display tab
+  const interfaceLanguageEl = gSel("cfg-interface-language");
+  if (interfaceLanguageEl) interfaceLanguageEl.value = c.interfaceLanguage;
+
   const modeEl = gSel("screen-mode-select");
   if (modeEl) modeEl.value = c.screenMode;
 
@@ -306,7 +378,13 @@ function populateForm(): void {
   if (cardsList) {
     cardsList.innerHTML = "";
     const frag = document.createDocumentFragment();
-    for (const entry of listCards()) {
+    const entries = [...listCards()].sort((a, b) =>
+      getLocalizedCardTitle(a, c.interfaceLanguage).localeCompare(
+        getLocalizedCardTitle(b, c.interfaceLanguage),
+        c.interfaceLanguage === "en" ? "en" : "he",
+      ),
+    );
+    for (const entry of entries) {
       const row = document.createElement("div");
       row.className = "cfg-row cfg-card-row";
 
@@ -319,7 +397,7 @@ function populateForm(): void {
       cb.dataset["cardId"] = entry.id;
       cb.checked = !c.hiddenCards.includes(entry.id);
       const span = document.createElement("span");
-      span.textContent = `${entry.icon} ${entry.titleHe}`;
+      span.textContent = getLocalizedCardTitle(entry, c.interfaceLanguage, true);
       lbl.appendChild(cb);
       lbl.appendChild(span);
 
@@ -328,16 +406,16 @@ function populateForm(): void {
       sizeDiv.className = "cfg-card-size-wrap";
       const sizeLbl = document.createElement("span");
       sizeLbl.className = "cfg-label";
-      sizeLbl.textContent = "גודל:";
+      sizeLbl.textContent = t("cardSizeLabel", undefined, c.interfaceLanguage);
       const sel = document.createElement("select");
       sel.className = "cfg-input cfg-card-size-sel";
       sel.dataset["cardId"] = entry.id;
       sel.style.cssText = "width:70px;font-size:0.75em;padding:1px 3px";
       for (const [val, lText] of [
-        ["sm", "קטן"],
-        ["md", "בינוני"],
-        ["lg", "גדול"],
-        ["xl", "ענק"],
+        ["sm", c.interfaceLanguage === "en" ? "Small" : "קטן"],
+        ["md", c.interfaceLanguage === "en" ? "Medium" : "בינוני"],
+        ["lg", c.interfaceLanguage === "en" ? "Large" : "גדול"],
+        ["xl", c.interfaceLanguage === "en" ? "XL" : "ענק"],
       ] as const) {
         const opt = document.createElement("option");
         opt.value = val;
@@ -356,6 +434,8 @@ function populateForm(): void {
     // Sprint 142: inject per-card configSchema fields
     void injectCardConfigSchemas(cardsList);
   }
+
+  applyInterfaceLanguage(c.interfaceLanguage);
 }
 
 // ── Collect form values into config ──
@@ -363,6 +443,14 @@ function collectForm(): DashboardConfig {
   const c = loadConfig();
 
   // Display
+  const interfaceLanguageEl = gSel("cfg-interface-language");
+  if (
+    interfaceLanguageEl &&
+    (interfaceLanguageEl.value === "he" || interfaceLanguageEl.value === "en")
+  ) {
+    c.interfaceLanguage = interfaceLanguageEl.value;
+  }
+
   const modeEl = gSel("screen-mode-select");
   if (modeEl) c.screenMode = modeEl.value as DashboardConfig["screenMode"];
 
@@ -624,14 +712,18 @@ function collectForm(): DashboardConfig {
 // ── Sprint 142: auto-inject card configSchema fields into Cards tab ────────
 
 async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
-  for (const entry of listCards()) {
+  const runId = String(++cardConfigSchemaInjectRun);
+  container.dataset["schemaRunId"] = runId;
+  const defs = await getCardConfigSchemaDefs();
+  if (!container.isConnected || container.dataset["schemaRunId"] !== runId)
+    return;
+
+  for (const def of defs) {
     try {
-      const def = await loadCard(entry.id);
-      if (!def.configSchema?.length) continue;
       const wrapper = document.createElement("div");
       wrapper.className = "cfg-card-schema";
-      wrapper.dataset["cardId"] = entry.id;
-      buildConfigAccordion(def.configSchema, wrapper);
+      wrapper.dataset["cardId"] = def.id;
+      buildConfigAccordion(def.fields, wrapper);
 
       // Sprint 147: per-card config reset button
       const resetBtn = document.createElement("button");
@@ -639,8 +731,10 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
       resetBtn.className = "cfg-card-reset-btn";
       resetBtn.textContent = "↩ איפוס";
       resetBtn.addEventListener("click", () => {
-        for (const field of def.configSchema!) {
-          const input = wrapper.querySelector<HTMLInputElement>(`[name="${field.key}"]`);
+        for (const field of def.fields) {
+          const input = wrapper.querySelector<HTMLInputElement>(
+            `[name="${field.key}"]`,
+          );
           if (!input) continue;
           if (typeof field.defaultValue === "boolean") {
             input.checked = field.defaultValue;
@@ -747,7 +841,7 @@ export function openConfigPanel(): void {
 
 export function closeConfigPanel(): void {
   if (_formDirty) {
-    showToast("⚠️ יש שינויים שלא נשמרו — לחץ שמור או סגור שוב", 3000);
+    showToast(t("settingsUnsavedChanges"), 3000);
     _formDirty = false; // allow second close without warning
     return;
   }
@@ -799,11 +893,11 @@ export function importSettings(): void {
           populateForm();
           clearDirty();
           const fieldCount = Object.keys(parsed as Record<string, unknown>).length;
-          showToast(`✅ ייבאו ${fieldCount} שדות הגדרה`);
+          showToast(t("settingsImported", { count: fieldCount }));
           diagLog("[config-panel] imported settings");
         }
       } catch {
-        showToast("⚠️ ייבוא נכשל — קובץ JSON לא תקין", 4000);
+        showToast(t("settingsImportFailed"), 4000);
         diagLog("[config-panel] import failed: invalid JSON");
       }
     };
@@ -817,7 +911,7 @@ export function shareSettings(): void {
   const hash = shareConfigHash(c);
   const url = window.location.href.split("#")[0] + hash;
   void navigator.clipboard.writeText(url).then(() => {
-    showToast("🔗 קישור ההגדרות הועתק ללוח");
+    showToast(t("settingsLinkCopied"));
   });
   diagLog("[config-panel] share link copied");
 }
@@ -889,20 +983,18 @@ export function initConfigPanel(): void {
   // Save button
   el("cfg-save-btn")?.addEventListener("click", () => {
     const c = collectForm();
+    let refreshTasks = false;
+    let refreshPortfolio = false;
+
     saveConfig(c);
+    applyInterfaceLanguage(c.interfaceLanguage);
     applyTheme(c.theme);
-    setAlertsRealtime(c.realtimeAlerts);
-    setAlertVolume(c.alertVolume ?? 18);
     setWarmTint(c.dimWarmTint ?? false);
     setClockSeconds(c.clockSeconds);
-    initWeatherCities();
-    applyHiddenStocks();
-    applyNewsFontSize();
     applyFontScale(c.fontScale);
     applyTickerSpeed(c.tickerSpeed ?? 3);
     setDimLevel(c.nightDimLevel);
     updateDimIndicator();
-    initCountdownCard();
     // Save chores JSON to localStorage and refresh tasks card
     const choresEl = gTxt("cfg-chores");
     if (choresEl) {
@@ -910,9 +1002,9 @@ export function initConfigPanel(): void {
       try {
         JSON.parse(raw || "[]");
         localStorage.setItem(LS_CHORES, raw || "[]");
-        renderTasksCard();
+        refreshTasks = true;
       } catch {
-        showToast("⚠️ JSON משימות לא תקין — לא נשמר", 3500);
+        showToast(t("settingsChoresInvalid"), 3500);
       }
     }
     // Save portfolio JSON to localStorage
@@ -925,9 +1017,9 @@ export function initConfigPanel(): void {
         try {
           JSON.parse(raw);
           localStorage.setItem(LS_PORTFOLIO, raw);
-          renderPortfolioRow();
+          refreshPortfolio = true;
         } catch {
-          showToast("⚠️ JSON תיק השקעות לא תקין — לא נשמר", 3500);
+          showToast(t("settingsPortfolioInvalid"), 3500);
         }
       }
     }
@@ -944,9 +1036,8 @@ export function initConfigPanel(): void {
     closeConfigPanel();
     clearDirty();
     diagLog("[config-panel] settings saved");
-    showToast("✅ הגדרות נשמרו בהצלחה");
-    // F7 (v7.3): Apply motivation interval from updated config
-    setMotivationInterval(c.motivationInterval ?? 0);
+    showToast(t("settingsSaved"));
+    void applySavedConfigSideEffects(c, refreshTasks, refreshPortfolio);
   });
 
   // Close button
@@ -1023,9 +1114,15 @@ export function initConfigPanel(): void {
   document
     .getElementById("cfg-reset-layout-btn")
     ?.addEventListener("click", () => {
-      resetLayout();
-      showToast("↩ סידור הכרטיסיות אופס — טען מחדש להחלה");
-      diagLog("[config-panel] layout reset");
+      void import("./layout-drag")
+        .then(({ resetLayout }) => {
+          resetLayout();
+          showToast(t("settingsLayoutReset"));
+          diagLog("[config-panel] layout reset");
+        })
+        .catch((error: unknown) => {
+          diagLog(`[config-panel] layout reset failed: ${String(error)}`);
+        });
     });
 
   // F2 (v7.2): Alert volume live preview

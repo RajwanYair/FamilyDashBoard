@@ -2,8 +2,12 @@
  * FamilyDashBoard v7 — User Config Types
  */
 
-import { THEMES, SCREEN_MODES } from "../core/constants";
-import type { ThemeName, ScreenModeName } from "../core/constants";
+import { THEMES, SCREEN_MODES, INTERFACE_LANGUAGES } from "../core/constants";
+import type {
+  ThemeName,
+  ScreenModeName,
+  InterfaceLanguage,
+} from "../core/constants";
 
 /**
  * Per-card namespaced settings (Config v4+).
@@ -90,6 +94,7 @@ export interface CardConfigMap {
 }
 
 export interface DashboardConfig {
+  interfaceLanguage: InterfaceLanguage;
   theme: ThemeName;
   screenMode: ScreenModeName;
   tempUnit: "C" | "F";
@@ -222,6 +227,7 @@ export interface DashboardConfig {
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
+  interfaceLanguage: "he",
   theme: "black",
   screenMode: "tv",
   tempUnit: "C",
@@ -269,7 +275,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3DoneMsg: "🎉 מזל טוב!",
   countdownCard3StartDate: "",
   motivationInterval: 0,
-  configVersion: 7,
+  configVersion: 8,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -302,7 +308,15 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 7;
+export const CONFIG_VERSION = 8;
+
+/** Type guard: checks if a string is a valid interface language. */
+export function isValidInterfaceLanguage(v: unknown): v is InterfaceLanguage {
+  return (
+    typeof v === "string" &&
+    (INTERFACE_LANGUAGES as readonly string[]).includes(v)
+  );
+}
 
 /** Type guard: checks if a string is a valid theme name. */
 export function isValidTheme(v: unknown): v is ThemeName {

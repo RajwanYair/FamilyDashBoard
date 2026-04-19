@@ -2,18 +2,25 @@
 # Auto-merge minor Dependabot PRs after CI passes
 # =============================================================================
 name: Dependabot Auto-Merge
+run-name: Dependabot Auto-Merge · #${{ github.event.pull_request.number }}
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   auto-merge:
     name: Auto-merge Dependabot
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.actor == 'dependabot[bot]'
     steps:
       - name: Fetch Dependabot metadata

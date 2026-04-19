@@ -5,8 +5,9 @@
         "esbenp.prettier-vscode",
         "stylelint.vscode-stylelint",
         "DavidAnson.vscode-markdownlint",
-        // TypeScript / JavaScript
-        "ms-vscode.vscode-typescript-next",
+        // Core platform tooling
+        "ms-vscode.powershell",
+        "GitHub.vscode-github-actions",
         // Git & GitHub
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github",

@@ -6,6 +6,7 @@ import "./header.css";
 import { loadConfig } from "../core/config";
 import { diagLog } from "../core/diag";
 import { MS_PER_DAY, INTERVALS } from "../core/constants";
+import { getInterfaceLanguage, t } from "../core/i18n";
 
 // ── DOM cache ──
 let elClock: HTMLElement | null = null;
@@ -20,21 +21,26 @@ let elElecBadge: HTMLElement | null = null;
 let clockShowSeconds = false;
 
 /**
- * Get time-of-day greeting in Hebrew.
+ * Get time-of-day greeting in the active interface language.
  */
 function getGreeting(): string {
   const cfg = loadConfig();
   const familyName = cfg.familyName || "רגואן";
   const members = cfg.members ?? [];
+  const language = getInterfaceLanguage();
   const h = new Date().getHours();
   const idx = (new Date().getDate() - 1) % Math.max(members.length, 1);
   const greetPerson = members.length > 0 ? members[idx] : null;
-  const suffix = greetPerson ? `${greetPerson}!` : `למשפחת ${familyName}!`;
+  const suffix = greetPerson
+    ? `${greetPerson}!`
+    : language === "en"
+      ? `${familyName} family!`
+      : `למשפחת ${familyName}!`;
 
-  if (h >= 5 && h < 12) return `🌅 בוקר טוב ${suffix}`;
-  if (h >= 12 && h < 17) return "☀️ צהריים טובים!";
-  if (h >= 17 && h < 21) return `🌆 ערב טוב ${suffix}`;
-  return "🌙 לילה טוב!";
+  if (h >= 5 && h < 12) return t("goodMorning", { suffix });
+  if (h >= 12 && h < 17) return t("goodNoon");
+  if (h >= 17 && h < 21) return t("goodEvening", { suffix });
+  return t("goodNight");
 }
 
 /**
@@ -86,8 +92,11 @@ export function updateBirthdayChip(): void {
   if (nearest) {
     const label =
       nearest.daysAway === 0
-        ? `🎂 יום הולדת — ${nearest.name}!`
-        : `🎂 ${nearest.name} בעוד ${nearest.daysAway} ימים`;
+        ? t("birthdayToday", { name: nearest.name })
+        : t("birthdayInDays", {
+            name: nearest.name,
+            days: nearest.daysAway,
+          });
     elBirthdayChip.textContent = label;
     elBirthdayChip.hidden = false;
   } else {
@@ -122,7 +131,9 @@ export function updateCountdownChip(): void {
 
   const days = Math.round(msAway / MS_PER_DAY);
   elCountdownChip.textContent =
-    days === 0 ? `🎉 ${countdownLabel} — היום!` : `⏳ ${countdownLabel}: ${days} ימים`;
+    days === 0
+      ? t("countdownToday", { label: countdownLabel })
+      : t("countdownInDays", { label: countdownLabel, days });
   elCountdownChip.hidden = false;
 }
 
@@ -160,8 +171,8 @@ export function tickClock(): void {
         timeZone: "Asia/Jerusalem",
       };
 
-  const t = now.toLocaleTimeString("he-IL", fmtOpts);
-  if (elClock && elClock.textContent !== t) elClock.textContent = t;
+  const timeText = now.toLocaleTimeString("he-IL", fmtOpts);
+  if (elClock && elClock.textContent !== timeText) elClock.textContent = timeText;
 
   const d = now.toLocaleDateString("en-US", {
     weekday: "long",

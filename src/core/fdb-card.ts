@@ -23,6 +23,7 @@ import { diagLog } from "./diag";
 import { setSync, type SyncState } from "./sync";
 import { cGet, cGetStale, cSet } from "./cache";
 import { isPageVisible } from "./idle";
+import { getInterfaceLanguage } from "./i18n";
 
 /** Attributes monitored on every FdbCard subclass. */
 const BASE_OBSERVED: readonly string[] = Object.freeze([
@@ -456,8 +457,9 @@ export abstract class FdbCard extends HTMLElement {
    *
    * @param icon    Emoji icon for the header
    * @param titleHe Hebrew title text
+   * @param titleEn English title text
    */
-  buildShell(icon: string, titleHe: string): {
+  buildShell(icon: string, titleHe: string, titleEn = titleHe): {
     header: HTMLElement;
     body: HTMLElement;
     footer: HTMLElement;
@@ -476,11 +478,13 @@ export abstract class FdbCard extends HTMLElement {
 
     const header = document.createElement("header");
     header.className = "card__header";
+    const language = getInterfaceLanguage();
+    const title = language === "en" ? titleEn : titleHe;
 
     const titleSpan = document.createElement("span");
     titleSpan.className = "card__title";
     titleSpan.setAttribute("data-card-title", "");
-    titleSpan.textContent = `${icon} ${titleHe}`;
+    titleSpan.textContent = `${icon} ${title}`;
     header.appendChild(titleSpan);
 
     const syncDot = document.createElement("span");

@@ -1,12 +1,11 @@
-[
-    {
-        "event": "PostToolUse",
-        "tools": ["replace_string_in_file", "create_file", "multi_replace_string_in_file"],
-        "steps": [
+{
+    "hooks": {
+        "PostToolUse": [
             {
                 "type": "command",
-                "command": "echo 'Reminder: verify RTL layout, CSS variables, and font readability'"
+                "command": "printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS variables, and TV font readability after edits.\"}}'",
+                "windows": "Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS variables, and TV font readability after edits.\"}}'"
             }
         ]
     }
-]
+}

@@ -9,6 +9,7 @@ import "./motivation.css";
 import { scheduleCard } from "../base-card";
 import { setSync } from "../../core/sync";
 import { diagLog } from "../../core/diag";
+import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import { loadConfig } from "../../core/config";
 import type { CardConfigField } from "../../types/card";
@@ -139,7 +140,7 @@ export function shareMotivation(): void {
     void navigator.share({ text });
   } else {
     void navigator.clipboard.writeText(text).then(() => {
-      showToast("📋 הציטוט הועתק ללוח");
+      showToast(t("quoteCopied"));
     });
   }
   diagLog("FDB-040: [motivation] Quote shared");

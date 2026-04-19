@@ -8,6 +8,7 @@ import type { DashboardConfig } from "../types/config";
 import {
   DEFAULT_CONFIG,
   CONFIG_VERSION,
+  isValidInterfaceLanguage,
   isValidTheme,
   isValidScreenMode,
   isValidTempUnit,
@@ -171,6 +172,15 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v6 → v7");
   }
 
+  // v7 → v8: introduced interfaceLanguage for bilingual UI.
+  if (version < 8) {
+    cfg.interfaceLanguage = isValidInterfaceLanguage(cfg.interfaceLanguage)
+      ? cfg.interfaceLanguage
+      : DEFAULT_CONFIG.interfaceLanguage;
+    cfg.configVersion = 8;
+    diagLog("[config] migrated v7 → v8");
+  }
+
   return cfg;
 }
 
@@ -179,6 +189,9 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
  * from old formats are replaced with defaults rather than crashing.
  */
 function sanitize(cfg: DashboardConfig): DashboardConfig {
+  if (!isValidInterfaceLanguage(cfg.interfaceLanguage)) {
+    cfg.interfaceLanguage = DEFAULT_CONFIG.interfaceLanguage;
+  }
   if (!isValidTheme(cfg.theme)) cfg.theme = DEFAULT_CONFIG.theme;
   if (!isValidScreenMode(cfg.screenMode)) cfg.screenMode = DEFAULT_CONFIG.screenMode;
   if (!isValidTempUnit(cfg.tempUnit)) cfg.tempUnit = DEFAULT_CONFIG.tempUnit;

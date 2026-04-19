@@ -66,6 +66,55 @@
             "problemMatcher": ["$tsc"]
         },
         {
+            "label": "📝 Markdownlint: Docs",
+            "type": "shell",
+            "command": "npm run lint:md",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "📦 Bundle Size Check",
+            "type": "shell",
+            "command": "npm run check:bundle",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔒 npm Audit (high+)",
+            "type": "shell",
+            "command": "npm run audit",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "☁️ Worker: Type Check",
+            "type": "shell",
+            "command": "npm run typecheck",
+            "options": {
+                "cwd": "${workspaceFolder}/worker"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [
+                "$tsc"
+            ]
+        },
+        {
             "label": "🚀 Dev Server",
             "type": "shell",
             "command": "npx vite",

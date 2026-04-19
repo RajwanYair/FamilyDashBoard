@@ -32,6 +32,7 @@ import {
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
+import { applyInterfaceLanguage, t } from "./core/i18n";
 import { MS_PER_MIN } from "./core/constants";
 import { state } from "./core/state";
 
@@ -175,6 +176,7 @@ export function init(): void {
   // Seed reactive state store with current config on startup (v8.0)
   const _initCfg = loadConfig();
   state.seedConfig(_initCfg as unknown as Record<string, unknown>);
+  applyInterfaceLanguage(_initCfg.interfaceLanguage);
 
   // Core setup — evict stale LS entries and hydrate memory cache from IDB
   cEvict();
@@ -212,21 +214,21 @@ export function init(): void {
     });
 
   // ── Additional keyboard shortcuts ──
-  registerKey("s", "הגדרות", toggleConfigPanel);
-  registerKey("n", "דימר לילה", toggleNightDim);
-  registerKey("c", "שניות", toggleClockSeconds);
-  registerKey("+", "הגדל גופן", () => stepFontScale(1));
-  registerKey("=", "הגדל גופן", () => stepFontScale(1)); // + without shift
-  registerKey("-", "הקטן גופן", () => stepFontScale(-1));
-  registerKey("f", "מסך מלא", () => {
+  registerKey("s", document.documentElement.lang === "en" ? "Settings" : "הגדרות", toggleConfigPanel);
+  registerKey("n", document.documentElement.lang === "en" ? "Night dimmer" : "דימר לילה", toggleNightDim);
+  registerKey("c", document.documentElement.lang === "en" ? "Seconds" : "שניות", toggleClockSeconds);
+  registerKey("+", document.documentElement.lang === "en" ? "Increase font" : "הגדל גופן", () => stepFontScale(1));
+  registerKey("=", document.documentElement.lang === "en" ? "Increase font" : "הגדל גופן", () => stepFontScale(1)); // + without shift
+  registerKey("-", document.documentElement.lang === "en" ? "Decrease font" : "הקטן גופן", () => stepFontScale(-1));
+  registerKey("f", document.documentElement.lang === "en" ? "Fullscreen" : "מסך מלא", () => {
     if (!document.fullscreenElement)
       void document.documentElement.requestFullscreen();
     else void document.exitFullscreen();
   });
-  registerKey("b", "מועדפים", () => toggleBookmarkMode());
-  registerKey("m", "ציטוט הבא", () => renderMotivation());
-  registerKey("r", "רענון נתונים", () => window.location.reload());
-  registerKey("w", "מעבר °C/°F", () => toggleTempUnit());
+  registerKey("b", document.documentElement.lang === "en" ? "Bookmarks" : "מועדפים", () => toggleBookmarkMode());
+  registerKey("m", document.documentElement.lang === "en" ? "Next quote" : "ציטוט הבא", () => renderMotivation());
+  registerKey("r", document.documentElement.lang === "en" ? "Refresh data" : "רענון נתונים", () => window.location.reload());
+  registerKey("w", document.documentElement.lang === "en" ? "Toggle °C/°F" : "מעבר °C/°F", () => toggleTempUnit());
   registerKey("1", "עיר מזג אוויר 1", () =>
     document
       .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']")
@@ -242,10 +244,10 @@ export function init(): void {
       .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='3']")
       ?.click(),
   );
-  registerKey("a", "התרעות צבע אדום", () => {
+  registerKey("a", document.documentElement.lang === "en" ? "Red alerts" : "התרעות צבע אדום", () => {
     toggleAlerts();
     showToast(
-      isAlertsEnabled() ? "✅ התרעות פעילות" : "❌ התרעות הושבתו",
+      isAlertsEnabled() ? t("alertsEnabled") : t("alertsDisabled"),
       2500,
     );
   });
@@ -266,7 +268,9 @@ export function init(): void {
           const hdr = document.createElement("div");
           hdr.style.cssText =
             "font-weight:700;margin-bottom:4px;color:var(--accent)";
-          hdr.textContent = `⌨ ${String(actions.length)} קיצורים רשומים`;
+          hdr.textContent = document.documentElement.lang === "en"
+            ? `⌨ ${String(actions.length)} registered shortcuts`
+            : `⌨ ${String(actions.length)} קיצורים רשומים`;
           frag.appendChild(hdr);
           dynamicEl.replaceChildren(frag);
         }
@@ -274,15 +278,15 @@ export function init(): void {
       dlg.showModal();
     }
   };
-  registerKey("h", "עזרה", _toggleHelp);
-  registerKey("?", "עזרה", _toggleHelp);
-  registerKey("d", "אבחון", toggleDiagOverlay);
-  registerKey("v", "ניהול כרטיסיות", () => {
+  registerKey("h", document.documentElement.lang === "en" ? "Help" : "עזרה", _toggleHelp);
+  registerKey("?", document.documentElement.lang === "en" ? "Help" : "עזרה", _toggleHelp);
+  registerKey("d", document.documentElement.lang === "en" ? "Diagnostics" : "אבחון", toggleDiagOverlay);
+  registerKey("v", document.documentElement.lang === "en" ? "Card management" : "ניהול כרטיסיות", () => {
     openConfigPanel();
     switchCfgTab("cards");
   });
-  registerKey("l", "גוון חם לדימר לילה", () => setWarmTint(!isWarmTint()));
-  registerKey("escape", "סגור כל חלון", closeAllOverlays);
+  registerKey("l", document.documentElement.lang === "en" ? "Warm night tint" : "גוון חם לדימר לילה", () => setWarmTint(!isWarmTint()));
+  registerKey("escape", document.documentElement.lang === "en" ? "Close overlays" : "סגור כל חלון", closeAllOverlays);
 
   // Cards — priority-based init: high-value visible cards first (v7.10)
   // Sprint 158: wrap each init with timing
@@ -383,14 +387,14 @@ export function init(): void {
   window.addEventListener("offline", () => {
     _wenOffline = true;
     offlineBanner?.classList.add("visible");
-    showToast("❌ אין חיבור לאינטרנט", 5000);
+    showToast(t("offlineToast"), 5000);
     diagLog("[init] FDB-008: network offline");
   });
   window.addEventListener("online", () => {
     offlineBanner?.classList.remove("visible");
     if (_wenOffline) {
       _wenOffline = false;
-      showToast("🌐 החיבור חזר — מרענן נתונים...", 2500);
+      showToast(t("onlineRefreshing"), 2500);
       setTimeout(() => window.location.reload(), 2500);
     }
     diagLog("[init] FDB-009: network reconnected");
@@ -400,7 +404,7 @@ export function init(): void {
     navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
       const data = e.data as { type?: string };
       if (data?.type === "NETWORK_BACK" && !_wenOffline) {
-        showToast("🌐 החיבור חזר — מרענן נתונים...", 2500);
+        showToast(t("onlineRefreshing"), 2500);
         setTimeout(() => window.location.reload(), 2500);
       }
     });

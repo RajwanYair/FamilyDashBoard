@@ -21,10 +21,9 @@
         "resolveJsonModule": true,
         "allowImportingTsExtensions": true,
         "noEmit": true,
-        "baseUrl": ".",
         "paths": {
             "@/*": [
-                "src/*"
+                "./src/*"
             ]
         }
     },

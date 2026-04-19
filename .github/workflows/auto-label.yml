@@ -2,6 +2,7 @@
 # Auto-label PRs based on files changed
 # =============================================================================
 name: Auto Label PR
+run-name: Auto Label · #${{ github.event.pull_request.number }}
 
 on:
   pull_request:
@@ -15,7 +16,8 @@ jobs:
   label:
     name: Label PR
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/labeler@v5
+      - uses: actions/labeler@v6
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}

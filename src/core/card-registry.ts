@@ -12,7 +12,14 @@
  *   loadCard(id)                — dynamically import + return CardDefinition
  */
 
-import type { CardDefinition, CardRegistryEntry, CardConfigField, CardShell } from "@/types/card";
+import type {
+  CardDefinition,
+  CardRegistryEntry,
+  CardConfigField,
+  CardShell,
+  FdbCardDefinition,
+} from "@/types/card";
+import { getLocalizedCardTitle, getInterfaceLanguage } from "@/core/i18n";
 
 // ── Internal registry map ──────────────────────────────────────────────────
 
@@ -69,11 +76,14 @@ export async function loadCard(id: string): Promise<CardDefinition> {
 export function createShell(id: string): CardShell {
   const entry = _registry.get(id);
   if (!entry) throw new Error(`Card not registered: "${id}"`);
+  const language = getInterfaceLanguage();
+  const localizedTitle = getLocalizedCardTitle(entry, language);
+  const localizedTitleWithIcon = getLocalizedCardTitle(entry, language, true);
 
   const root = document.createElement("section");
   root.dataset["cardId"] = id;
   root.className = "card";
-  root.setAttribute("aria-label", `${entry.icon} ${entry.titleHe}`);
+  root.setAttribute("aria-label", localizedTitleWithIcon);
 
   // Header: icon + title + sync dot
   const header = document.createElement("header");
@@ -82,7 +92,7 @@ export function createShell(id: string): CardShell {
   const titleSpan = document.createElement("span");
   titleSpan.className = "card__title";
   titleSpan.setAttribute("data-card-title", "");
-  titleSpan.textContent = `${entry.icon} ${entry.titleHe}`;
+  titleSpan.textContent = `${entry.icon} ${localizedTitle}`;
   header.appendChild(titleSpan);
 
   const syncDot = document.createElement("span");
@@ -283,10 +293,15 @@ registerCard({
   icon: "💡",
   titleHe: "השראה",
   titleEn: "Motivation",
-  load: async (): Promise<CardDefinition> => {
-    const { initMotivationCard, motivationConfigSchema } =
-      await import("@/cards/motivation/motivation");
-    return legacyAdapter(
+  load: async (): Promise<FdbCardDefinition> => {
+    const [
+      { initMotivationCard, motivationConfigSchema },
+      { FdbMotivationCard },
+    ] = await Promise.all([
+      import("@/cards/motivation/motivation"),
+      import("@/cards/motivation/fdb-motivation"),
+    ]);
+    const def = legacyAdapter(
       "motivation",
       "💡",
       "השראה",
@@ -297,6 +312,11 @@ registerCard({
       initMotivationCard,
       motivationConfigSchema,
     );
+    return {
+      ...def,
+      elementClass: FdbMotivationCard,
+      tagName: "fdb-motivation",
+    };
   },
 });
 

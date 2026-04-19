@@ -16,14 +16,14 @@ set -euo pipefail
 echo "→ Installing CI toolchain…"
 
 npm install --no-save --no-package-lock \
-  "typescript@^5.9.3" \
+  "typescript@^6.0.3" \
   "vite@^8.0.8" \
   "vitest@^4.1.4" \
   "@vitest/coverage-v8@^4.1.4" \
-  "eslint@^10.2.0" \
-  "typescript-eslint@^8.31.0" \
+  "eslint@^10.2.1" \
+  "typescript-eslint@^8.58.2" \
   "@eslint/js@^10.2.0" \
-  "happy-dom@^20.8.9" \
-  "markdownlint-cli2@^0.17.0"
+  "happy-dom@^20.9.0" \
+  "markdownlint-cli2@^0.22.0"
 
 echo "✅ CI toolchain installed"
