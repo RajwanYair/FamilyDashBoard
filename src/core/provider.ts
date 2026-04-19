@@ -103,6 +103,41 @@ export function getAllProviderHealth(): ProviderHealth[] {
  */
 export function _resetProviderHealth(): void {
   _health.clear();
+  _latencyHistory.clear();
+}
+
+// ── Sprint 163: API response time histogram per provider ─────────────────
+
+const LATENCY_MAX_SAMPLES = 20;
+const _latencyHistory = new Map<string, number[]>();
+
+/**
+ * Record a response time sample for a provider.
+ * @param id - Provider identifier
+ * @param ms - Response time in milliseconds
+ */
+export function recordProviderLatency(id: string, ms: number): void {
+  let samples = _latencyHistory.get(id);
+  if (!samples) {
+    samples = [];
+    _latencyHistory.set(id, samples);
+  }
+  samples.push(Math.round(ms * 10) / 10);
+  if (samples.length > LATENCY_MAX_SAMPLES) samples.shift();
+}
+
+/**
+ * Get latency history for a provider.
+ */
+export function getProviderLatency(id: string): readonly number[] {
+  return _latencyHistory.get(id) ?? [];
+}
+
+/**
+ * Get all provider latency histories.
+ */
+export function getAllProviderLatencies(): ReadonlyMap<string, readonly number[]> {
+  return _latencyHistory;
 }
 
 // ── Sprint 96: Backoff policy ────────────────────────────────────────────
