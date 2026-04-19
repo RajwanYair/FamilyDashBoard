@@ -419,6 +419,35 @@ select.cfg-input { cursor: pointer; }
 .card-error .card-error__msg { opacity: 0.8; }
 
 /* ═══════════════════════════════════════════════════════
+   Sprint 150: Retry Button Component
+   ═══════════════════════════════════════════════════════ */
+.card-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.35em 0.8em;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: var(--radius-sm, 4px);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  font-size: 0.78em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.card-retry-btn:hover {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: var(--accent);
+}
+.card-retry-btn:active {
+  transform: scale(0.96);
+}
+.card-retry-btn::before {
+  content: "🔄";
+  font-size: 1.1em;
+}
+
+/* ═══════════════════════════════════════════════════════
    Sprint 111: Shared Empty State
    ═══════════════════════════════════════════════════════ */
 .card-empty {
