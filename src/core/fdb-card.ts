@@ -21,6 +21,8 @@
 
 import { diagLog } from "./diag";
 import { setSync, type SyncState } from "./sync";
+import { cGet, cGetStale, cSet } from "./cache";
+import { isPageVisible } from "./idle";
 
 /** Attributes monitored on every FdbCard subclass. */
 const BASE_OBSERVED: readonly string[] = Object.freeze([
@@ -383,6 +385,67 @@ export abstract class FdbCard extends HTMLElement {
   }
 
   // ── Render Primitives (Sprint 130–133) ──────────────────────────────────
+
+  // ── Sprint 183: Card Shell Builder ──────────────────────────────────────
+
+  // ── Sprint 184: Data loading template ─────────────────────────────────
+
+  /**
+   * Template method: fetch fresh data for this card.
+   * Subclasses override to implement their specific fetch logic.
+   * Returns null to indicate "no data available" (not an error).
+   */
+  protected fetchCardData(): Promise<unknown> {
+    return Promise.resolve(null);
+  }
+
+  /**
+   * Template method: render data into the card body.
+   * Subclasses override to paint their specific UI.
+   */
+  protected renderCardData(_data: unknown): void {
+    // No-op default — subclasses override.
+  }
+
+  /**
+   * Standard data-loading cycle with cache + sync integration.
+   * Cards call this from connectedCallback or scheduleRefresh.
+   * Uses cGet/cSet for caching, setSync for status dots.
+   *
+   * @param cacheKey  Cache key for cGet/cSet
+   * @param ttl       Cache TTL in milliseconds
+   */
+  protected async loadData(cacheKey: string, ttl: number): Promise<void> {
+    if (!isPageVisible()) return;
+    this.setSyncState("loading");
+
+    // Cache check
+    const fresh = cGet(cacheKey, ttl);
+    if (fresh !== null) {
+      this.renderCardData(fresh);
+      this.setSyncState("ok");
+      return;
+    }
+
+    // Stale fallback
+    const stale = cGetStale(cacheKey);
+    if (stale !== null) this.renderCardData(stale);
+
+    try {
+      const data = await this.fetchCardData();
+      if (data !== null) {
+        cSet(cacheKey, data);
+        this.renderCardData(data);
+        this.setSyncState("ok");
+      } else {
+        this.setSyncState(stale !== null ? "ok" : "error");
+      }
+    } catch (err) {
+      diagLog(`FDB-062: [${this.cardId}] loadData failed: ${String(err)}`);
+      this.onError(err instanceof Error ? err : new Error(String(err)));
+      this.setSyncState(stale !== null ? "ok" : "error");
+    }
+  }
 
   // ── Sprint 183: Card Shell Builder ──────────────────────────────────────
 
