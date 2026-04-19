@@ -325,9 +325,29 @@ registerCard({
   icon: "✅",
   titleHe: "משימות",
   titleEn: "Tasks",
-  load: async (): Promise<CardDefinition> => {
-    const m = await import("@/cards/tasks/tasks");
-    return m.tasksCard;
+  load: async (): Promise<FdbCardDefinition> => {
+    const [{ tasksCard }, { FdbTasksCard }] = await Promise.all([
+      import("@/cards/tasks/tasks"),
+      import("@/cards/tasks/fdb-tasks"),
+    ]);
+
+    return {
+      ...tasksCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-tasks");
+        element.setAttribute("data-card-id", "tasks");
+        element.setAttribute("data-card-size", tasksCard.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      destroy(): void {
+        // Lifecycle is owned by the custom element's disconnect() hook.
+      },
+      elementClass: FdbTasksCard,
+      tagName: "fdb-tasks",
+    };
   },
 });
 

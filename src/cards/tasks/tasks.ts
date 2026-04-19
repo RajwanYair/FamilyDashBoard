@@ -431,22 +431,42 @@ export function addQuickChore(person: string, chore: string): void {
 
 let _tasksInterval: number | null = null;
 
+function bindOnce(
+  element: HTMLElement | null,
+  eventName: string,
+  marker: string,
+  handler: EventListener,
+): void {
+  if (!element || element.dataset[marker] === "1") return;
+  element.addEventListener(eventName, handler);
+  element.dataset[marker] = "1";
+}
+
 export function initTasksCard(): void {
   renderTasksCard();
   if (_tasksInterval) clearInterval(_tasksInterval);
   // Re-render every hour (catches daily reset if dashboard is always on)
   _tasksInterval = window.setInterval(renderTasksCard, 60 * 60 * 1_000);
 
-  document
-    .getElementById("tasks-mark-all-btn")
-    ?.addEventListener("click", markAllDone);
-  document
-    .getElementById("tasks-reset-btn")
-    ?.addEventListener("click", resetDoneToday);
+  bindOnce(
+    document.getElementById("tasks-mark-all-btn"),
+    "click",
+    "fdbTasksClickBound",
+    markAllDone as EventListener,
+  );
+  bindOnce(
+    document.getElementById("tasks-reset-btn"),
+    "click",
+    "fdbTasksClickBound",
+    resetDoneToday as EventListener,
+  );
   // F3 (v7.3): Remove done tasks button
-  document
-    .getElementById("tasks-remove-done-btn")
-    ?.addEventListener("click", removeDoneTasks);
+  bindOnce(
+    document.getElementById("tasks-remove-done-btn"),
+    "click",
+    "fdbTasksClickBound",
+    removeDoneTasks as EventListener,
+  );
 
   // F7 (v7.2): Quick-add task
   const quickInput = document.getElementById(
@@ -457,17 +477,17 @@ export function initTasksCard(): void {
   ) as HTMLInputElement | null;
   const quickBtn = document.getElementById("tasks-quick-add-btn");
   if (quickBtn && quickInput) {
-    quickBtn.addEventListener("click", () => {
+    bindOnce(quickBtn, "click", "fdbTasksClickBound", (() => {
       const chore = quickInput.value.trim();
       const person = quickPerson?.value.trim() || "משפחה";
       if (!chore) return;
       addQuickChore(person, chore);
       quickInput.value = "";
       if (quickPerson) quickPerson.value = "";
-    });
-    quickInput.addEventListener("keydown", (e: KeyboardEvent) => {
-      if (e.key === "Enter") quickBtn.click();
-    });
+    }) as EventListener);
+    bindOnce(quickInput, "keydown", "fdbTasksKeydownBound", ((e: Event) => {
+      if ((e as KeyboardEvent).key === "Enter") quickBtn.click();
+    }) as EventListener);
   }
 }
 

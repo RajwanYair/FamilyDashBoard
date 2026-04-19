@@ -134,12 +134,15 @@ describe("Card Registry — loadCard built-in (tasks)", () => {
     expect(def.id).toBe("tasks");
     expect(typeof def.render).toBe("function");
     expect(typeof def.init).toBe("function");
+    expect("tagName" in def).toBe(true);
+    expect("elementClass" in def).toBe(true);
   });
 
-  it("tasks render() returns an HTMLElement", async () => {
+  it("tasks render() returns the custom element host", async () => {
     const def = await loadCard("tasks");
     const el = def.render();
     expect(el).toBeInstanceOf(HTMLElement);
+    expect(el.tagName).toBe("FDB-TASKS");
   });
 });
 
