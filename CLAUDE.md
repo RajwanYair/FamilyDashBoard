@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v7.19.1
+# CLAUDE.md — FamilyDashBoard v7.20.0
 
 > Context file for Claude Code / Claude agents.
 > **Canonical rules live in `.github/copilot-instructions.md`** — this file is a lean entry point.
@@ -26,8 +26,8 @@
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
 src/public/            # Vite static dir — icon.svg, manifest.webmanifest
-tests/unit/            # Vitest — 2958+ tests / 80 suites
-sw.js                  # ServiceWorker v7.19.1
+tests/unit/            # Vitest — 2998+ tests / 86 suites
+sw.js                  # ServiceWorker v7.20.0
 BestDashBoard.html     # Legacy v5 dashboard (read-only, archived)
 ```
 

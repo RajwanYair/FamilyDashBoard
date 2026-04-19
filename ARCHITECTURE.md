@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v7.19.1)
+# FamilyDashBoard — Architecture (v7.20.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README
 | -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
 | Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2958+ tests / 80 suites       |
+| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 2998+ tests / 86 suites       |
 | Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
 | API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
 | Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
@@ -195,7 +195,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **2958+ tests / 80 suites / 0 failures** — coverage thresholds: 90% statements, 81% branches, 90% functions, 92% lines (v7.19.1)
+15. **2998+ tests / 86 suites / 0 failures** — coverage thresholds: 90% statements, 81% branches, 90% functions, 92% lines (v7.20.0)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)

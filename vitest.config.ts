@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
 import { readFileSync } from "node:fs";
+import { sharedVitestTestConfig } from "../tooling/vitest/base.mjs";
 
 const tempBase = join(tmpdir(), "fdb-dev");
 
@@ -19,6 +20,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
+      "@tests": resolve(__dirname, "tests/unit"),
     },
   },
   define: {
@@ -28,18 +30,8 @@ export default defineConfig({
   },
   cacheDir: join(tempBase, ".vitest"),
   test: {
-    environment: "happy-dom",
     include: ["tests/**/*.test.ts"],
-    globals: true,
-
-    // Isolate each test file in its own worker to prevent DOM state leakage
-    // between suites (fixes the intermittent full-suite hang).
-    pool: "forks",
-    maxForks: 4,
-
-    // Generous timeouts for SW + fetch tests
-    testTimeout: 10000,
-    hookTimeout: 10000,
+    ...sharedVitestTestConfig,
 
     setupFiles: ["tests/setup.ts"],
 

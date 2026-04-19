@@ -1,0 +1,1 @@
+a8213ac refactor: centralize provider adapter flow

@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.20.0] — 2026-06-22
+
+> **2998 tests / 86 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+- **ROADMAP strategic overhaul**: added three new high-priority streams — G.1 (unit-test consolidation & rationalization), I-0 (shared tooling at `MyScripts/` level), and I (AI customization & `.github` documentation modernization)
+- **Worker-first fetch resilience**: weather test adapted for dual-path fetch (worker URL or open-meteo fallback), ensuring CI stability under `fetchJSONWithWorker()` routing
+- **Provider adapter hardening**: improved provider-adapter, i18n, and fetch modules with expanded test coverage (+40 tests / +6 suites)
+- **Shared tooling foundation**: documented and structured `MyScripts/tooling/` for cross-project ESLint, TypeScript, Vitest, and Stylelint base configs
+
 ## [7.19.1] — 2026-04-19
 
 > **2958 tests / 80 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

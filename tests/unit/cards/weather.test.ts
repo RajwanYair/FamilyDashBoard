@@ -279,7 +279,7 @@ describe("Weather — initWeatherCard fetch integration", () => {
     localStorage.clear();
   });
 
-  it("calls fetch with open-meteo URL", async () => {
+  it("calls fetch with weather URL (worker-first or open-meteo fallback)", async () => {
     const { initWeatherCard } = await import("@/cards/weather/weather");
     initWeatherCard();
     await vi.waitFor(() => {
@@ -287,7 +287,9 @@ describe("Weather — initWeatherCard fetch integration", () => {
       if (!called) throw new Error("fetch not called yet");
     });
     const url = String(vi.mocked(fetch).mock.calls[0]?.[0] ?? "");
-    expect(url).toContain("open-meteo.com");
+    expect(url.includes("open-meteo.com") || url.includes("/api/weather")).toBe(
+      true,
+    );
   });
 
   it("destroyWeatherCard does not throw after init", async () => {

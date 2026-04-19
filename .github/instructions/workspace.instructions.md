@@ -3,12 +3,12 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v7.19.1
+# FamilyDashBoard — v7.20.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`.
-> **Tests**: 2958+ / 80 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Tests**: 2998+ / 86 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
 
 ## Shell / Terminal
 
@@ -33,14 +33,35 @@ TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL · Z
 ```text
 src/                        # TypeScript v7 modular source (Vite build)
 src/public/                 # Vite static dir — icon.svg, manifest.webmanifest (NOT src/assets/)
-tests/unit/                 # Vitest unit tests — 2958+ tests / 80 suites
-sw.js                       # ServiceWorker v7.19.1 (offline + API cache)
+tests/unit/                 # Vitest unit tests — 2998+ tests / 86 suites
+sw.js                       # ServiceWorker v7.20.0 (offline + API cache)
 icon.svg                    # App icon (root copy; manifest in src/public/)
 BestDashBoard.html          # Legacy dashboard (read-only, preserved)
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer
+.github/copilot/            # Copilot repo config + MCP/server guidance docs
 .github/assets/             # SVG docs graphics
 ```
+
+## AI Customizations
+
+| Type | Location | Notes |
+|---|---|---|
+| Repository instructions | `.github/copilot-instructions.md` | Canonical coding rules |
+| Agent-wide instructions | `AGENTS.md` | AI customization map for the repo |
+| File-scoped instructions | `.github/instructions/*.instructions.md` | Applied by file pattern or task relevance |
+| Prompt files | `.github/prompts/*.prompt.md` | Reusable slash commands |
+| Custom agents | `.github/agents/*.agent.md` | Specialist personas for API and UI work |
+| Skills | `.github/skills/*/SKILL.md` | Repeatable checklists |
+| MCP guidance | `.github/copilot/MCP_SERVERS.md` | How to configure shared versus repo-specific MCP servers |
+
+## Shared Tooling
+
+Common reusable tooling can live in the parent `MyScripts/tooling/` directory.
+
+- Put shared ESLint, TypeScript base, Stylelint, and Vitest base config there.
+- Keep repository-specific aliases, include patterns, setup files, coverage settings, and path assumptions here in the workspace.
+- When moving config upward, document the split so other repositories can reuse it safely.
 
 ## Cards (11 total)
 

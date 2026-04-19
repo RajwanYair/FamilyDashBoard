@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.19.1
+/* FamilyDashBoard ServiceWorker — v7.20.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * See CHANGELOG.md for full version history. */
@@ -6,7 +6,12 @@
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
 const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v7.10: APP_SHELL updated — BestDashBoard.html removed, index.html added
-const APP_SHELL = ["./index.html", "./manifest.webmanifest", "./sw.js", "./icon.svg"];
+const APP_SHELL = [
+  "./index.html",
+  "./manifest.webmanifest",
+  "./sw.js",
+  "./icon.svg",
+];
 
 // F162: API origins to cache for offline fallback (direct APIs + CORS proxies)
 const API_CACHE_ORIGINS = [

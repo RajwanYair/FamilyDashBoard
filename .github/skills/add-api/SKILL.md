@@ -8,6 +8,8 @@ argument-hint: "Describe the new data source: name, URL, what it returns, desire
 
 > Coding rules (cache, fetch, proxy, security) are in `copilot-instructions.md` and `dashboard.instructions.md`. This skill covers the step-by-step integration checklist.
 
+Use this skill when the task is not just "make a fetch work", but "ship a complete, maintainable data flow".
+
 ## Step 1 — Plan
 
 | Decision | Value |
@@ -15,7 +17,7 @@ argument-hint: "Describe the new data source: name, URL, what it returns, desire
 | Card ID | kebab-case slug used in `data-card-id`, registry, sync dots |
 | Cache key | Short unique string passed to `cGet`/`cSet` (e.g. `"weather"`, `"parasha"`) |
 | Cache TTL | Use existing `INTERVALS.*` constant from `src/core/constants.ts`, or add a new one |
-| Fetch method | `fetchJSONWithWorker<T>()` (preferred) or `fetchWithTimeout()` for non-JSON |
+| Fetch method | `fetchJSONWithWorker<T>()` or the current worker-backed helper when available; `fetchWithTimeout()` only when a worker route does not fit |
 | Refresh interval | Match to TTL — pass to `scheduleCard()` |
 
 ## Step 2 — Create Card Module
@@ -72,6 +74,8 @@ export const <name>Card: CardDefinition = {
 };
 ```
 
+If the payload needs normalization, create or extend an adapter rather than mixing parsing, rendering, and transport logic in one function.
+
 ## Step 3 — Register Card
 
 In `src/core/card-registry.ts`, add to the registry:
@@ -82,6 +86,8 @@ registerCard({
   loader: () => import("../cards/<name>/<name>"),
 });
 ```
+
+If the card exposes configuration, also update the relevant config types, defaults, and any form bindings.
 
 ## Step 4 — HTML Markup
 
@@ -98,6 +104,8 @@ Add inside `src/index.html` in the appropriate column:
   </div>
 </section>
 ```
+
+If the card needs a card-specific stylesheet, co-locate `src/cards/<name>/<name>.css` and import it from the module.
 
 ## Step 5 — Tests
 
@@ -126,6 +134,15 @@ describe("<Name> Card", () => {
 });
 ```
 
+Minimum test coverage for a new integration:
+
+- Fresh cache hit path
+- Stale cache render path
+- Successful fetch path
+- Error or non-OK path
+- Sync indicator behavior for success and failure
+- Any adapter or normalization edge case that could silently regress
+
 ## Step 6 — Constants
 
 Add to `src/core/constants.ts`:
@@ -134,10 +151,21 @@ Add to `src/core/constants.ts`:
 - Refresh interval in `INTERVALS` object
 - Any new localStorage keys as `LS_*` constants
 
-## Verification
+## Step 7 — Verification
 
-```bash
-npx tsc --noEmit          # type-check
-npx eslint src tests --max-warnings 0  # lint
-npx vitest run            # tests
+```powershell
+npx tsc --noEmit
+npx eslint src tests --max-warnings 0
+npx vitest run tests/unit/cards/<name>.test.ts
 ```
+
+Run the full test suite only after the targeted card tests pass.
+
+## Definition Of Done
+
+- Registry wiring is correct
+- DOM IDs exist in `src/index.html`
+- Cache, sync, and diagnostics paths are implemented
+- Fetch path uses the existing platform conventions
+- Focused tests cover the happy path and failure path
+- The card renders without introducing hardcoded colors or invalid IDs

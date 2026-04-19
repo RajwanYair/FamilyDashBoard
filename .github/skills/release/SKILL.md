@@ -6,6 +6,8 @@ argument-hint: "New version number, e.g. 7.2.0"
 
 # Release — FamilyDashBoard
 
+Use this skill only when you are doing an actual versioned release or preparing the repository for one. For general cleanup, use the pre-release instructions without tagging.
+
 ## Version Bump Locations
 
 Update ALL of these (search current version string, e.g. `7.9.0`):
@@ -26,7 +28,7 @@ Update ALL of these (search current version string, e.g. `7.9.0`):
 | 12 | `.github/assets/data-sources.svg` | `Data Sources… — vX.Y.Z` title | Line ~9 |
 | 13 | `.github/assets/roadmap.svg` | Test count progression line | Line ~90 |
 | 14 | `ROADMAP.md` | New row in the version history table | Bottom of the released versions table |
-| 15 | `.github/skills/release/SKILL.md` | Verification line test count | `All N+ tests / M+ suites` |
+| 15 | `.github/skills/release/SKILL.md` | Verification guidance if the baseline changed | Keep it aligned with current repo state |
 
 > `BestDashBoard.html` is legacy/archived — do NOT update its version.
 > `ROADMAP.md` comment `<!-- Last updated: vX.Y.Z -->` at the bottom should also be bumped.
@@ -64,18 +66,24 @@ Validate XML: open in browser or run `Get-Content .github/assets/banner.svg -Raw
 Quick summary (PowerShell):
 
 ```powershell
-npx tsc --noEmit                              # 0 type errors
-npx eslint src tests --max-warnings 0         # 0 errors, 0 warnings, 0 suppressions
+npx tsc --noEmit
+npx eslint src tests --max-warnings 0
 npx markdownlint-cli2 "**/*.md" --ignore node_modules --ignore dist
-npx vitest run                                # all tests pass, 0 failures
-npx vite build                                # clean build, no warnings
+npx vitest run
+npx vite build
 ```
 
 All five must exit 0. No `eslint-disable`, no `@ts-ignore`, no `console.log` in `src/`.
 
+Also verify the workflow docs and release configuration still match reality:
+
+- `.github/workflows/README.md`
+- `.github/release.yml`
+- `.github/workflows/release.yml`
+
 ## Commit & Tag
 
-```bash
+```powershell
 git add -A
 git commit -m "chore: release vX.Y.Z"
 git tag vX.Y.Z
@@ -86,4 +94,4 @@ git push origin main --tags
 
 ## Verification
 
-All **2958+ tests / 80+ suites** must pass with 0 failures before tagging.
+Read `.github/instructions/workspace.instructions.md` before updating any hardcoded test-count or toolchain text. Do not carry forward stale totals from old releases.

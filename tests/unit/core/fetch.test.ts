@@ -355,7 +355,11 @@ describe("runConcurrent", () => {
 });
 
 import { fetchViaWorker, fetchJSONWithWorker } from "@/core/fetch";
-import { WORKER_BASE_URL, resetWorkerEnabledCache } from "@/core/constants";
+import {
+  API,
+  WORKER_BASE_URL,
+  resetWorkerEnabledCache,
+} from "@/core/constants";
 
 // \u2500\u2500 fetchViaWorker \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
@@ -382,14 +386,13 @@ describe("fetchViaWorker", () => {
         json: async () => ({ data: "worker-result" }),
       } as Response),
     );
-    const result = await fetchViaWorker<{ data: string }>(
-      "https://api.example.com",
-    );
+    const result = await fetchViaWorker<{ data: string }>(API.CURRENCY_PRIMARY);
     expect(result).toEqual({ data: "worker-result" });
     // Verify the URL used the worker base
     const calledUrl = (global.fetch as ReturnType<typeof vi.fn>).mock
       .calls[0][0] as string;
     expect(calledUrl).toContain(WORKER_BASE_URL);
+    expect(calledUrl).toContain("/api/currency");
   });
 
   it("returns null when worker returns non-ok status", async () => {
@@ -430,7 +433,7 @@ describe("fetchJSONWithWorker", () => {
       } as Response),
     );
     const result = await fetchJSONWithWorker<{ source: string }>(
-      "https://api.example.com/data",
+      API.CURRENCY_PRIMARY,
     );
     expect(result.source).toBe("worker");
   });
@@ -445,7 +448,7 @@ describe("fetchJSONWithWorker", () => {
       } as Response),
     );
     const result = await fetchJSONWithWorker<{ source: string }>(
-      "https://api.example.com/data",
+      API.CURRENCY_PRIMARY,
     );
     expect(result.source).toBe("direct");
   });
@@ -485,8 +488,7 @@ describe("fetchViaWorker — url > 60 chars truncation (line 99 TRUE branch)", (
     const longUrl = "https://api.example.com/very/long/path/that/exceeds/sixty/chars?param=value";
     expect(longUrl.length).toBeGreaterThan(60);
     const result = await fetchViaWorker<{ result: string }>(longUrl);
-    // Worker was called (result is non-null from mock), or null if worker disabled
-    expect(result === null || result.result === "ok").toBe(true);
+    expect(result).toBeNull();
   });
 });
 

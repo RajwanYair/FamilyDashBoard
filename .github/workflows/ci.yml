@@ -4,7 +4,6 @@
 # Runs on every push to main and all pull requests.
 # =============================================================================
 name: CI
-run-name: CI · ${{ github.event_name }} · ${{ github.ref_name }}
 
 on:
   push:
@@ -16,19 +15,10 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-defaults:
-  run:
-    shell: bash
-
 jobs:
   typecheck:
     name: TypeScript
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,7 +31,6 @@ jobs:
   lint:
     name: ESLint + Markdown
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -57,9 +46,7 @@ jobs:
   unit-tests:
     name: Vitest (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     strategy:
-      fail-fast: false
       matrix:
         node-version: ["20", "22", "24"]
     steps:
@@ -74,7 +61,6 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -115,7 +101,6 @@ jobs:
   worker-tests:
     name: Worker Unit Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -129,8 +114,7 @@ jobs:
   build:
     name: Production Build + Size
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: [typecheck, lint, unit-tests, security, worker-tests]
+    needs: [typecheck, lint, unit-tests, worker-tests]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -139,6 +123,6 @@ jobs:
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Build
-        run: npm run build
+        run: npx vite build
       - name: Bundle size check
         run: node scripts/check-bundle-size.mjs

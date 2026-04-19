@@ -6,7 +6,12 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fetchViaWorker } from "@/core/fetch";
-import { WORKER_BASE_URL, isWorkerEnabled, resetWorkerEnabledCache } from "@/core/constants";
+import {
+  API,
+  WORKER_BASE_URL,
+  isWorkerEnabled,
+  resetWorkerEnabledCache,
+} from "@/core/constants";
 
 // ── WORKER_BASE_URL + isWorkerEnabled ─────────────────────────────────────
 
@@ -65,15 +70,13 @@ describe("fetchViaWorker", () => {
         json: async () => ({ data: "worker-result" }),
       } as Response),
     );
-    const result = await fetchViaWorker<{ data: string }>(
-      "https://api.example.com",
-    );
+    const result = await fetchViaWorker<{ data: string }>(API.CURRENCY_PRIMARY);
     expect(result).toEqual({ data: "worker-result" });
     // Verify the URL used the worker base
     const calledUrl = (global.fetch as ReturnType<typeof vi.fn>).mock
       .calls[0][0] as string;
     expect(calledUrl).toContain(WORKER_BASE_URL);
-    expect(calledUrl).toContain("/proxy?url=");
+    expect(calledUrl).toContain("/api/currency");
   });
 
   it("returns null when worker returns non-ok status", async () => {
@@ -103,11 +106,20 @@ describe("fetchViaWorker", () => {
       json: async () => ({}),
     } as Response);
     vi.stubGlobal("fetch", mockFetch);
-    await fetchViaWorker("https://api.example.com/data?foo=bar&baz=1");
+    await fetchViaWorker(`${API.YAHOO_CHART}${encodeURIComponent("AAPL")}`);
     const calledUrl = mockFetch.mock.calls[0][0] as string;
-    expect(calledUrl).toContain(
-      encodeURIComponent("https://api.example.com/data?foo=bar&baz=1"),
-    );
+    expect(calledUrl).toContain("/api/stocks?sym=AAPL");
+  });
+
+  it("returns null when no worker route mapping exists", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    const mockFetch = vi.fn();
+    vi.stubGlobal("fetch", mockFetch);
+
+    const result = await fetchViaWorker("https://api.example.com/data?foo=bar");
+
+    expect(result).toBeNull();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });
 

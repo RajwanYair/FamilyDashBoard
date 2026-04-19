@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-7.19.1-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-2958%2B_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-7.20.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-2998%2B_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)

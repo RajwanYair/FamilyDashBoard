@@ -1,0 +1,172 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.4 [39m[90mC:/Users/ryair/OneDrive - Intel Corporation/Documents/MyScripts/FamilyDashBoard[39m
+
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts [2m([22m[2m63 tests[22m[2m)[22m[33m 2209[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/bg-images.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 5113[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m accepts a valid HTTPS URL [33m 3823[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m does not throw when called multiple times [33m 354[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts [2m([22m[2m63 tests[22m[2m)[22m[33m 2071[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows network effectiveType and downlink when connection is available [33m 398[2mms[22m[39m
+ [31mΓ¥»[39m tests/unit/ui/status-bar.test.ts [2m([22m[2m29 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 16057[2mms[22m[39m
+[31m     [31m├ù[31m sets textContent on #version-badge[39m[33m 10598[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m sets textContent on #refresh-stamp [33m 3164[2mms[22m[39m
+     [32mΓ£ô[39m does not throw when sync dot elements are absent[32m 160[2mms[22m[39m
+     [32mΓ£ô[39m updates #refresh-stamp with current time[32m 41[2mms[22m[39m
+     [32mΓ£ô[39m updates stamp on repeated calls[32m 35[2mms[22m[39m
+     [32mΓ£ô[39m does not throw when refresh-stamp element is absent[32m 94[2mms[22m[39m
+     [32mΓ£ô[39m version badge starts with 'v'[32m 203[2mms[22m[39m
+     [32mΓ£ô[39m version badge contains at least one digit[32m 201[2mms[22m[39m
+     [32mΓ£ô[39m version badge matches semver-like pattern[32m 141[2mms[22m[39m
+     [32mΓ£ô[39m refresh stamp contains time separator ':'[32m 6[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m refresh stamp contains the Hebrew prefix [33m 448[2mms[22m[39m
+     [32mΓ£ô[39m initStatusBar does not throw on second call[32m 7[2mms[22m[39m
+     [32mΓ£ô[39m all sync dots remain in DOM after initStatusBar[32m 198[2mms[22m[39m
+     [32mΓ£ô[39m registers present dots and logs for missing ones[32m 171[2mms[22m[39m
+     [32mΓ£ô[39m handles completely empty DOM without throwing[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m handles missing version-badge element[32m 8[2mms[22m[39m
+     [32mΓ£ô[39m handles missing refresh-stamp element[32m 100[2mms[22m[39m
+     [32mΓ£ô[39m uptime-display shows ΓÅ▒ symbol[32m 16[2mms[22m[39m
+     [32mΓ£ô[39m uptime-display shows minutes[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m does not throw when uptime-display is absent[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m shows ≡ƒƒó when navigator.onLine is true[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m shows ≡ƒö┤ when navigator.onLine is false[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m does not throw when conn-indicator is absent[32m 29[2mms[22m[39m
+     [32mΓ£ô[39m shows empty string at default 100% scale[32m 39[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows percentage when scale differs from 100% [33m 337[2mms[22m[39m
+     [32mΓ£ô[39m does not throw when font-scale-indicator is absent[32m 8[2mms[22m[39m
+     [32mΓ£ô[39m fires updateConnIndicator when window 'online' event dispatched[32m 6[2mms[22m[39m
+     [32mΓ£ô[39m fires updateConnIndicator when window 'offline' event dispatched[32m 7[2mms[22m[39m
+     [32mΓ£ô[39m online then offline toggles indicator correctly[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts [2m([22m[2m52 tests[22m[2m)[22m[33m 8133[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m sets textContent on #clock [33m 4508[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m does not throw [33m 526[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts [2m([22m[2m45 tests[22m[2m)[22m[33m 6227[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads the tasks CardDefinition via dynamic import [33m 319[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads news card and legacyAdapter render() falls back to createElement [33m 303[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads weather card via dynamic import [33m 367[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads hebrew-cal card via dynamic import [33m 440[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads calendar card via dynamic import [33m 825[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads currency card via dynamic import [33m 1972[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads stocks card via dynamic import [33m 949[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts [2m([22m[2m68 tests[22m[2m)[22m[33m 11527[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m openConfigPanel adds visible class [33m 6148[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m activates the target tab button [33m 342[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m populates cfg-cards-list with card registry entries [33m 784[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m collectForm reads hidden card checkboxes and applies on save [33m 314[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idle.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/state.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/diag-overlay.test.ts [2m([22m[2m35 tests[22m[2m)[22m[33m 585[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/html/dom-contract.test.ts [2m([22m[2m91 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/i18n.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 103[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts [2m([22m[2m162 tests[22m[2m)[22m[33m 2435[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts [2m([22m[2m183 tests[22m[2m)[22m[33m 3707[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m clears init timers without throwing [33m 311[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/calendar.test.ts [2m([22m[2m67 tests[22m[2m)[22m[33m 1469[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-news.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts [2m([22m[2m92 tests[22m[2m)[22m[33m 1276[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/countdown.test.ts [2m([22m[2m60 tests[22m[2m)[22m[32m 255[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts [2m([22m[2m139 tests[22m[2m)[22m[33m 1514[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/main.test.ts [2m([22m[2m100 tests[22m[2m)[22m[33m 1100[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts [2m([22m[2m179 tests[22m[2m)[22m[33m 2052[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/maximize.test.ts [2m([22m[2m46 tests[22m[2m)[22m[33m 557[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/base-card.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 153[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/scroll.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 253[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/screen-mode.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-weather.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 238[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-reset-card.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/ticker.test.ts [2m([22m[2m67 tests[22m[2m)[22m[33m 706[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/theme.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 168[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-tracker.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/api-validators.test.ts [2m([22m[2m80 tests[22m[2m)[22m[32m 198[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/utils.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 147[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/motivation.test.ts [2m([22m[2m41 tests[22m[2m)[22m[33m 835[2mms[22m[39m
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > returns 204 for a valid single error entry
+[FDB-error] 2026-04-19T13:50:29.034Z test error
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > returns 204 for multiple valid error entries
+[FDB-error] 2026-04-19T13:50:29.043Z @ main.ts:42 err1
+[FDB-error] 2026-04-19T13:50:29.043Z err2
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > accepts entries with optional source and lineno
+[FDB-error] 2001-09-09T01:46:40.000Z @ file.ts:10 m
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > truncates messages longer than 500 characters
+[FDB-error] 2026-04-19T13:50:29.057Z aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+ [32mΓ£ô[39m tests/unit/worker/worker.test.ts [2m([22m[2m65 tests[22m[2m)[22m[32m 190[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/toast.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/tasks.test.ts [2m([22m[2m96 tests[22m[2m)[22m[33m 775[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-auto-render.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/theme-audit.test.ts [2m([22m[2m84 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebcal-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-reporter.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/fetch.test.ts [2m([22m[2m64 tests[22m[2m)[22m[33m 896[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m executes high-priority task before low-priority when queued together [33m 366[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config.test.ts [2m([22m[2m111 tests[22m[2m)[22m[33m 742[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/night-dimmer.test.ts [2m([22m[2m40 tests[22m[2m)[22m[33m 1492[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m hides chip when dimmer is inactive (line 51-52 FALSE branch) [33m 346[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/fdb-card.test.ts [2m([22m[2m80 tests[22m[2m)[22m[33m 768[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-motivation.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/classify-fetch-error.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-diff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/perf.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/currency.test.ts [2m([22m[2m40 tests[22m[2m)[22m[33m 1145[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/config-save.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/card-config-map.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw-register.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 485[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/cache.test.ts [2m([22m[2m82 tests[22m[2m)[22m[33m 454[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/layout-drag.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 195[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/print.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/keyboard.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/diag.test.ts [2m([22m[2m18 tests[22m[2m)[22m[33m 404[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-tasks.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 376[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/hardware.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/sync-dots.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/config-schemas.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/provider.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw-constants.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-stocks.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/open-meteo-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sync.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 226[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-export-validation.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/constants.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/theme-switch.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-accordion.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/calendar-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/health-snapshot.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/worker-fetch.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/provider-lifecycle.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/cache-stale.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/backoff-sequence.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/config-export-import.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/provider-adapter.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/provider.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/ls-audit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/currency-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 1 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  tests/unit/ui/status-bar.test.ts > Status Bar ΓÇö initStatusBar > sets textContent on #version-badge
+Error: Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
+ Γ¥» tests/unit/ui/status-bar.test.ts:43:3
+     41|   let mod: StatusBarMod;
+     42|
+     43|   beforeEach(async () => {
+       |   ^
+     44|     buildStatusBarDOM();
+     45|     mod = await freshBar();
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/1]ΓÄ»
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m85 passed[39m[22m[90m (86)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m2997 passed[39m[22m[90m (2998)[39m
+[2m   Start at [22m 16:49:12
+[2m   Duration [22m 138.56s[2m (transform 112.25s, setup 5.76s, import 87.49s, tests 78.98s, environment 442.33s)[22m
+

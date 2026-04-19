@@ -22,8 +22,25 @@ export async function handleWeather(url: URL): Promise<Response> {
 }
 
 export async function handleCurrency(): Promise<Response> {
-  const res = await fetch("https://open.er-api.com/v6/latest/USD");
-  return proxyResponse(res, 3600); // 1 h
+  const upstreams = [
+    "https://open.er-api.com/v6/latest/ILS",
+    "https://api.exchangerate-api.com/v4/latest/ILS",
+  ];
+
+  for (const upstream of upstreams) {
+    const res = await fetch(upstream);
+    if (res.ok) {
+      return proxyResponse(res, 3600); // 1 h
+    }
+  }
+
+  return proxyResponse(
+    new Response(JSON.stringify({ error: "Currency upstream unavailable" }), {
+      status: 502,
+      headers: { "Content-Type": "application/json" },
+    }),
+    60,
+  );
 }
 
 export async function handleHebcal(url: URL): Promise<Response> {

@@ -9,6 +9,7 @@
  */
 
 import {
+  API,
   PROXIES,
   FETCH_TIMEOUT_MS,
   MAX_CONCURRENT,
@@ -18,6 +19,69 @@ import {
 } from "./constants";
 import { diagLog } from "./diag";
 import { cGet, cSet, cGetStale } from "./cache";
+
+function buildWorkerRoute(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+
+  if (url === API.CURRENCY_PRIMARY || url === API.CURRENCY_FALLBACK) {
+    return `${WORKER_BASE_URL}/api/currency`;
+  }
+
+  if (
+    parsed.origin === new URL(API.WEATHER).origin &&
+    parsed.pathname === new URL(API.WEATHER).pathname
+  ) {
+    const lat = parsed.searchParams.get("latitude");
+    const lon = parsed.searchParams.get("longitude");
+    if (!lat || !lon) return null;
+    return `${WORKER_BASE_URL}/api/weather?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+  }
+
+  if (url.startsWith(API.YAHOO_CHART)) {
+    const symbol = decodeURIComponent(url.slice(API.YAHOO_CHART.length));
+    if (!symbol) return null;
+    return `${WORKER_BASE_URL}/api/stocks?sym=${encodeURIComponent(symbol)}`;
+  }
+
+  if (url === API.ALERTS) {
+    return `${WORKER_BASE_URL}/api/alerts`;
+  }
+
+  if (
+    parsed.origin === new URL(API.HEBCAL).origin &&
+    parsed.pathname === "/shabbat"
+  ) {
+    const geonameid = parsed.searchParams.get("geonameid");
+    return `${WORKER_BASE_URL}/api/hebcal${geonameid ? `?geonameid=${encodeURIComponent(geonameid)}` : ""}`;
+  }
+
+  if (
+    parsed.origin === new URL(API.HEBCAL).origin &&
+    parsed.pathname === new URL(API.HEBCAL).pathname
+  ) {
+    const year = parsed.searchParams.get("year");
+    return `${WORKER_BASE_URL}/api/hebcal/holidays${year ? `?year=${encodeURIComponent(year)}` : ""}`;
+  }
+
+  if (url === API.SEFARIA_CALENDAR) {
+    return `${WORKER_BASE_URL}/api/sefaria/calendar`;
+  }
+
+  if (url.startsWith(API.SEFARIA_TEXT)) {
+    const ref = decodeURIComponent(
+      url.slice(API.SEFARIA_TEXT.length).split("?")[0] ?? "",
+    );
+    if (!ref) return null;
+    return `${WORKER_BASE_URL}/api/sefaria/text?ref=${encodeURIComponent(ref)}`;
+  }
+
+  return null;
+}
 
 /**
  * Fetch with AbortController timeout.
@@ -107,15 +171,20 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
 }
 
 /**
- * Fetch JSON via the Cloudflare Worker proxy.
- * The worker accepts: GET /proxy?url=<encoded>
- * Returns the original API's JSON (worker unwraps CORS).
+ * Fetch JSON via the Cloudflare Worker typed API routes.
+ * Returns null when the URL has no known worker route mapping.
  *
  * @returns The parsed JSON or null if the worker is unavailable.
  */
 export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null> {
   if (!isWorkerEnabled()) return null;
-  const workerUrl = `${WORKER_BASE_URL}/proxy?url=${encodeURIComponent(url)}`;
+  const workerUrl = buildWorkerRoute(url);
+  if (!workerUrl) {
+    diagLog(
+      `FDB-015A: fetchViaWorker no route: ${url.length > 60 ? url.slice(0, 57) + "..." : url}`,
+    );
+    return null;
+  }
   const short = url.length > 60 ? url.slice(0, 57) + "..." : url;
   try {
     const r = await fetchWithTimeout(workerUrl, FETCH_TIMEOUT_MS);

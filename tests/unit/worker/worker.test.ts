@@ -7,7 +7,7 @@
 
 // ── CORS middleware ───────────────────────────────────────────────────────────
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { isPreflight, handlePreflight } from "../../../worker/src/middleware/cors";
 import {
   isRateLimited,
@@ -364,6 +364,7 @@ describe("Worker response helpers — proxyResponse", () => {
 // ── Worker — POST /api/errors handler ─────────────────────────────────────────
 
 import { handleErrors } from "../../../worker/src/routes/errors";
+import { handleCurrency } from "../../../worker/src/routes/data";
 
 describe("Worker — handleErrors route", () => {
   function post(body: unknown): Request {
@@ -453,5 +454,51 @@ describe("Worker — handleErrors route", () => {
     const req = post([]);
     const res = await handleErrors(req);
     expect(res.status).toBe(400);
+  });
+});
+
+describe("Worker — handleCurrency route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("uses the ILS-based primary upstream", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ rates: { USD: 0.27 } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+
+    const res = await handleCurrency();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://open.er-api.com/v6/latest/ILS",
+    );
+    expect(res.status).toBe(200);
+  });
+
+  it("falls back to the secondary upstream when the primary fails", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response("fail", { status: 502 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ rates: { USD: 0.27 } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+
+    const res = await handleCurrency();
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://open.er-api.com/v6/latest/ILS",
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "https://api.exchangerate-api.com/v4/latest/ILS",
+    );
+    expect(res.status).toBe(200);
   });
 });

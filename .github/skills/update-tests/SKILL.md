@@ -10,13 +10,13 @@ argument-hint: "Describe what changed: new card name, changed CSS property, upda
 
 - **Runner**: Vitest 4 + happy-dom (zero real browser)
 - **Location**: `tests/unit/` — one file per source file
-- **Current**: 2571+ tests / 56 suites
+- **Current baseline**: read `.github/instructions/workspace.instructions.md` or the latest CI report before hardcoding counts in docs
 - **Baseline command**: `npx vitest run` (must exit 0, 0 failures)
 - **Coverage**: `npx vitest run --coverage` → target ≥95% per file
 
 ## How to Run
 
-```bash
+```powershell
 npx vitest run                                    # all tests
 npx vitest run tests/unit/cards/weather.test.ts  # single file
 npx vitest run --coverage                         # with coverage report
@@ -33,6 +33,7 @@ npx vitest run --reporter=verbose                 # see each test name
 6. `cGet()`/`cGetStale()` return `null` (not `undefined`) — check `!== null`
 7. `for (let i = 0; i < 50; i++) await Promise.resolve()` flushes async ticker/loader operations
 8. Append new suites at end of file; do not reorder existing suites
+9. Prefer extracting repeated DOM builders and fixtures before adding more inline `document.body.innerHTML` blocks in large files
 
 ## File Map
 
@@ -165,6 +166,17 @@ vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning = greet with name
 vi.useRealTimers();
 ```
 
+## Performance Guidance
+
+When updating an existing large test file, look for these smells before adding more assertions:
+
+- repeated `document.body.innerHTML` scaffolds
+- repeated `vi.resetModules()` that can be limited to stateful suites only
+- repeated `vi.useFakeTimers()` that can be grouped in a single `describe`
+- duplicated fixtures that belong in `tests/unit/helpers/`
+
+Prefer reducing churn in the big suites rather than adding another one-off fixture block.
+
 ## Fixing Broken Tests
 
 | Symptom | Cause | Fix |
@@ -179,6 +191,6 @@ vi.useRealTimers();
 
 After each Copilot session that adds/fixes tests:
 
-```bash
+```powershell
 git add -A && git commit -m "test(<scope>): <description> — <N> tests, <M> suites"
 ```
