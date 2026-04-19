@@ -4,17 +4,10 @@
  * Implements ProviderAdapter for exchange-rate APIs (ER-API primary, exchangerate-api fallback).
  */
 
-import type { ProviderAdapter, ProviderResult } from "../../types/provider";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import type { ProviderAdapter } from "../../types/provider";
 import { API, INTERVALS } from "../../core/constants";
-import {
-  getProviderHealth,
-  recordProviderFailure,
-  recordProviderSuccess,
-} from "../../core/provider";
 import { fetchJSONWithWorker } from "../../core/fetch";
-import { diagLog } from "../../core/diag";
-import type { ProviderStatus } from "../../core/provider";
+import { createCachedProviderAdapter } from "../../core/provider-adapter";
 
 const PROVIDER_ID = "currency";
 const CACHE_KEY = "cur";
@@ -28,43 +21,25 @@ export interface CurrencyRateResponse {
 export function createCurrencyAdapter(): ProviderAdapter<CurrencyRateResponse> {
   const cacheTtl = INTERVALS.CURRENCY;
 
-  return {
+  return createCachedProviderAdapter({
     id: PROVIDER_ID,
     displayName: "Currency Exchange Rates",
     cacheKey: CACHE_KEY,
     cacheTtl,
-
-    async fetch(): Promise<ProviderResult<CurrencyRateResponse>> {
-      const cached = cGet<CurrencyRateResponse>(CACHE_KEY, cacheTtl);
-      if (cached !== null) {
-        return { ok: true, data: cached };
-      }
-
-      // Try primary, then fallback
+    async fetchFresh(): Promise<CurrencyRateResponse> {
       for (const url of [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK]) {
         try {
           const data = await fetchJSONWithWorker<CurrencyRateResponse>(url);
-          if (!data?.rates || typeof data.rates !== "object") continue;
-          cSet(CACHE_KEY, data);
-          recordProviderSuccess(PROVIDER_ID);
-          diagLog(`FDB-091: [currency] Fetched rates from ${url}`);
-          return { ok: true, data };
+          if (data?.rates && typeof data.rates === "object") {
+            return data;
+          }
         } catch {
-          // Try next URL
+          // Try next URL.
         }
       }
 
-      recordProviderFailure(PROVIDER_ID);
-      const stale = cGetStale<CurrencyRateResponse>(CACHE_KEY);
-      return {
-        ok: false,
-        error: "All currency endpoints failed",
-        stale: stale ?? undefined,
-      };
+      throw new Error("All currency endpoints failed");
     },
-
-    status(): ProviderStatus {
-      return getProviderHealth(PROVIDER_ID).status;
-    },
-  };
+    successLog: () => `FDB-091: [currency] Fetched rates from configured endpoint`,
+  });
 }

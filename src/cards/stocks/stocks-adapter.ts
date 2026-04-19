@@ -5,18 +5,11 @@
  * Fetches a single symbol per call; callers batch multiple symbols.
  */
 
-import type { ProviderAdapter, ProviderResult } from "../../types/provider";
+import type { ProviderAdapter } from "../../types/provider";
 import type { YahooChartResponse } from "../../types/api";
-import { cGet, cGetStale, cSet } from "../../core/cache";
 import { API, INTERVALS } from "../../core/constants";
-import {
-  getProviderHealth,
-  recordProviderFailure,
-  recordProviderSuccess,
-} from "../../core/provider";
 import { fetchJSONWithWorker } from "../../core/fetch";
-import { diagLog } from "../../core/diag";
-import type { ProviderStatus } from "../../core/provider";
+import { createCachedProviderAdapter } from "../../core/provider-adapter";
 
 const PROVIDER_ID = "yahoo-finance";
 
@@ -33,48 +26,26 @@ export function createStocksAdapter(
   const cacheKey = `stk-${symbol}`;
   const cacheTtl = marketOpen ? INTERVALS.STOCKS_OPEN : INTERVALS.STOCKS_CLOSED;
 
-  return {
+  return createCachedProviderAdapter({
     id: PROVIDER_ID,
     displayName: `Yahoo Finance (${symbol})`,
     cacheKey,
     cacheTtl,
+    async fetchFresh(): Promise<YahooChartResponse> {
+      const url = `${API.YAHOO_CHART}${encodeURIComponent(symbol)}`;
+      const data = await fetchJSONWithWorker<YahooChartResponse>(url);
 
-    async fetch(): Promise<ProviderResult<YahooChartResponse>> {
-      const cached = cGet<YahooChartResponse>(cacheKey, cacheTtl);
-      if (cached !== null) {
-        return { ok: true, data: cached };
+      if (
+        !data?.chart?.result?.[0]?.meta ||
+        typeof data.chart.result[0].meta.regularMarketPrice !== "number"
+      ) {
+        throw new Error(`Invalid chart response for ${symbol}`);
       }
 
-      try {
-        const url = `${API.YAHOO_CHART}${encodeURIComponent(symbol)}`;
-        const data = await fetchJSONWithWorker<YahooChartResponse>(url);
-
-        if (
-          !data?.chart?.result?.[0]?.meta ||
-          typeof data.chart.result[0].meta.regularMarketPrice !== "number"
-        ) {
-          throw new Error(`Invalid chart response for ${symbol}`);
-        }
-
-        cSet(cacheKey, data);
-        recordProviderSuccess(PROVIDER_ID);
-        diagLog(`FDB-128: [stocks] Fetched ${symbol}`);
-        return { ok: true, data };
-      } catch (err) {
-        recordProviderFailure(PROVIDER_ID);
-        const stale = cGetStale<YahooChartResponse>(cacheKey);
-        const msg = err instanceof Error ? err.message : String(err);
-        diagLog(`FDB-128: [stocks] Failed ${symbol}: ${msg}`);
-        return {
-          ok: false,
-          error: `Stocks fetch failed for ${symbol}: ${msg}`,
-          stale: stale ?? undefined,
-        };
-      }
+      return data;
     },
-
-    status(): ProviderStatus {
-      return getProviderHealth(PROVIDER_ID).status;
-    },
-  };
+    successLog: () => `FDB-128: [stocks] Fetched ${symbol}`,
+    failureLog: (message) => `FDB-128: [stocks] Failed ${symbol}: ${message}`,
+    failureMessage: (message) => `Stocks fetch failed for ${symbol}: ${message}`,
+  });
 }

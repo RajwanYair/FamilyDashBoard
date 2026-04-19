@@ -546,6 +546,20 @@ describe("Main — init() online/offline handlers", () => {
       );
     expect(reconnectCalls.length).toBe(0);
   });
+
+  it("does not throw when online schedules reload and window.location.reload is missing", () => {
+    init();
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+    });
+    vi.useFakeTimers();
+
+    window.dispatchEvent(new Event("offline"));
+    window.dispatchEvent(new Event("online"));
+
+    expect(() => vi.runAllTimers()).not.toThrow();
+  });
 });
 
 describe("Main — init() notif-bell wiring", () => {

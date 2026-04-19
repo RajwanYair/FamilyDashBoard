@@ -167,6 +167,13 @@ export function applySeasonClass(): void {
   document.body.classList.add(cls);
 }
 
+function requestWindowReload(): void {
+  const reload = window.location?.reload;
+  if (typeof reload === "function") {
+    reload.call(window.location);
+  }
+}
+
 /**
  * Application initialization.
  */
@@ -395,7 +402,7 @@ export function init(): void {
     if (_wenOffline) {
       _wenOffline = false;
       showToast(t("onlineRefreshing"), 2500);
-      setTimeout(() => window.location.reload(), 2500);
+      setTimeout(requestWindowReload, 2500);
     }
     diagLog("[init] FDB-009: network reconnected");
   });
@@ -405,7 +412,7 @@ export function init(): void {
       const data = e.data as { type?: string };
       if (data?.type === "NETWORK_BACK" && !_wenOffline) {
         showToast(t("onlineRefreshing"), 2500);
-        setTimeout(() => window.location.reload(), 2500);
+        setTimeout(requestWindowReload, 2500);
       }
     });
   }
