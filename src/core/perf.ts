@@ -251,6 +251,26 @@ export function getCardTimings(): ReadonlyMap<string, number> {
   return _cardTimings;
 }
 
+// ── Sprint 160: Perf metrics JSON export ─────────────────────────────────────
+
+/**
+ * Download all perf metrics (vitals + card timings) as a JSON file.
+ */
+export function downloadPerfJSON(): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    vitals: getPerfVitals(),
+    cardTimings: Object.fromEntries(_cardTimings),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `fdb-perf-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export interface VitalBudgetEntry {
   key: keyof PerfVitals;
   budget: number;
