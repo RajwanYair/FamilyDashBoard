@@ -114,3 +114,24 @@ export function errorRate(): number {
   if (spanMs <= 0) return _buffer.length; // all errors in same instant
   return _buffer.length / (spanMs / 60_000);
 }
+
+// ── Sprint 161: Error rate trend tracking ────────────────────────────────────
+
+const ERROR_TREND_MAX = 10;
+const _errorTrend: number[] = [];
+
+/**
+ * Sample the current error rate and add to the trend buffer.
+ * Called periodically (e.g., every 60s from a timer).
+ */
+export function sampleErrorTrend(): void {
+  _errorTrend.push(Math.round(errorRate() * 100) / 100);
+  if (_errorTrend.length > ERROR_TREND_MAX) _errorTrend.shift();
+}
+
+/**
+ * Return the last N error rate samples.
+ */
+export function getErrorTrend(): readonly number[] {
+  return _errorTrend;
+}

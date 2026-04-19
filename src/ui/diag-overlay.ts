@@ -13,7 +13,7 @@ import { getFailedPanes } from "../core/sync";
 import { isWorkerEnabled } from "../core/constants";
 import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
-import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core/error-tracker";
+import { getErrors, clearErrors, formatErrorEntry, getErrorCount, getErrorTrend } from "../core/error-tracker";
 import { getPerfVitals, formatVital, rateVital, hasPerfSupport, getCardTimings } from "../core/perf";
 import { idbEstimateSize } from "../core/idb-cache";
 import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
@@ -140,7 +140,7 @@ function renderStats(): void {
     🖥️ HW: <span style="color:${hwColor}"><b>${formatHardwareProfile()}</b></span>
   </div>`;
 
-  panes.innerHTML = html + vitalsHtml + hwHtml + renderCardTimingsHtml() + renderProviderHealthHtml();
+  panes.innerHTML = html + vitalsHtml + hwHtml + renderCardTimingsHtml() + renderErrorTrendHtml() + renderProviderHealthHtml();
 
   // Async IDB size update (v7.10 — non-blocking)
   void idbEstimateSize().then((bytes) => {
@@ -164,6 +164,23 @@ function renderCardTimingsHtml(): string {
   return `<div style="margin-top:6px;font-size:0.75em">
     <b>⏱️ Card Init Timing</b>
     <table style="width:100%;border-collapse:collapse;margin-top:3px">${rows}</table>
+  </div>`;
+}
+
+// ── Sprint 161: error rate trend sparkline ──
+
+function renderErrorTrendHtml(): string {
+  const trend = getErrorTrend();
+  if (trend.length < 2) return "";
+  const max = Math.max(...trend, 1);
+  const bars = trend.map((v) => {
+    const h = Math.max(2, Math.round((v / max) * 24));
+    const color = v === 0 ? "var(--positive)" : v < 1 ? "var(--warning)" : "var(--negative)";
+    return `<span style="display:inline-block;width:8px;height:${String(h)}px;background:${color};border-radius:1px;vertical-align:bottom"></span>`;
+  }).join("");
+  return `<div style="margin-top:6px;font-size:0.75em">
+    <b>📉 Error Rate Trend</b> (err/min)
+    <div style="display:flex;gap:2px;align-items:end;height:28px;margin-top:3px">${bars}</div>
   </div>`;
 }
 
