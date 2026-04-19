@@ -10,7 +10,7 @@ import "./config-panel.css";
 import { loadConfig, saveConfig, shareConfigHash } from "../core/config";
 import type { DashboardConfig } from "../types/config";
 import type { CardConfigField } from "../types/card";
-import { listCards } from "../core/card-registry";
+import { listCards, loadCard } from "../core/card-registry";
 import { applyTheme } from "./theme";
 import { diagLog } from "../core/diag";
 import { showToast } from "./toast";
@@ -353,6 +353,8 @@ function populateForm(): void {
       frag.appendChild(row);
     }
     cardsList.appendChild(frag);
+    // Sprint 142: inject per-card configSchema fields
+    void injectCardConfigSchemas(cardsList);
   }
 }
 
@@ -617,6 +619,24 @@ function collectForm(): DashboardConfig {
   c.sysInfoShowRtt = (g("cfg-sysinfo-show-rtt") as HTMLSelectElement | null)?.value !== "off";
 
   return c;
+}
+
+// ── Sprint 142: auto-inject card configSchema fields into Cards tab ────────
+
+async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
+  for (const entry of listCards()) {
+    try {
+      const def = await loadCard(entry.id);
+      if (!def.configSchema?.length) continue;
+      const wrapper = document.createElement("div");
+      wrapper.className = "cfg-card-schema";
+      wrapper.dataset["cardId"] = entry.id;
+      buildConfigAccordion(def.configSchema, wrapper);
+      container.appendChild(wrapper);
+    } catch {
+      // Card not yet loaded — skip silently
+    }
+  }
 }
 
 // ── Config accordion renderer (Sprint 64) ─────────────────────────────────
