@@ -5,7 +5,7 @@
  * Each card module exports an init function and a load function.
  */
 
-import { cGet, cGetStale, cSet } from "../core/cache";
+import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync } from "../core/cache";
 import { isPageVisible } from "../core/idle";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../core/sync";
 import { acquireLock, releaseLock } from "../core/fetch";
@@ -84,6 +84,59 @@ export function scheduleCard(
   return window.setInterval(() => {
     void load();
   }, intervalMs);
+}
+
+// ── Sprint 180: Async-first card loader ─────────────────────────────────────
+
+/**
+ * Like createCardLoader but uses cGetAsync/cGetStaleAsync
+ * to check IDB (L2) before localStorage (L3).
+ * Preferred for new cards or cards with large payloads.
+ */
+export function createAsyncCardLoader<T>(
+  opts: CardOptions,
+  fetchData: () => Promise<T>,
+  renderData: (data: T) => void,
+  validate?: (data: unknown) => data is T,
+): () => Promise<void> {
+  return async function load(): Promise<void> {
+    if (!isPageVisible() || !acquireLock(opts.id)) return;
+    setSync(opts.id, "loading");
+
+    // Async cache check: memory → IDB → LS
+    const fresh = await cGetAsync<T>(opts.id, opts.ttl);
+    if (fresh !== null) {
+      renderData(fresh);
+      setSync(opts.id, "ok");
+      releaseLock(opts.id);
+      return;
+    }
+
+    // Show stale data while fetching (async: IDB → LS)
+    const stale = await cGetStaleAsync<T>(opts.id);
+    if (stale !== null) renderData(stale);
+
+    try {
+      const data = await fetchData();
+      if (validate && !validate(data)) {
+        diagLog(`[${opts.id}] API response failed validation — using stale cache`);
+        setSync(opts.id, stale !== null ? "ok" : "error");
+        recordFailure(opts.id);
+        return;
+      }
+      cSet(opts.id, data);
+      renderData(data);
+      setSync(opts.id, "ok");
+      syncBurst(opts.id);
+      recordSuccess(opts.id);
+    } catch (err) {
+      diagLog(`[${opts.id}] Load failed: ${String(err)}`);
+      setSync(opts.id, stale !== null ? "ok" : "error");
+      recordFailure(opts.id);
+    } finally {
+      releaseLock(opts.id);
+    }
+  };
 }
 
 /**

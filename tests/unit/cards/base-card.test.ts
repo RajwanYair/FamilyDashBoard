@@ -27,10 +27,12 @@ vi.mock("@/core/diag", () => ({
 vi.mock("@/core/cache", () => ({
   cGet: vi.fn().mockReturnValue(null),
   cGetStale: vi.fn().mockReturnValue(null),
+  cGetAsync: vi.fn().mockResolvedValue(null),
+  cGetStaleAsync: vi.fn().mockResolvedValue(null),
   cSet: vi.fn(),
 }));
 
-import { createCardLoader, scheduleCard, staleChip, createSkeleton, createEmptyState, createErrorState } from "@/cards/base-card";
+import { createCardLoader, createAsyncCardLoader, scheduleCard, staleChip, createSkeleton, createEmptyState, createErrorState } from "@/cards/base-card";
 import * as idleMod from "@/core/idle";
 import * as fetchMod from "@/core/fetch";
 import * as cacheMod from "@/core/cache";
@@ -301,5 +303,79 @@ describe("createErrorState (Sprint 53)", () => {
     const el = createErrorState("Error");
     expect(el.querySelector(".card-error__icon")).not.toBeNull();
     expect(el.querySelector(".card-error__msg")).not.toBeNull();
+  });
+});
+
+// ── Sprint 180: createAsyncCardLoader ────────────────────────────────────────
+
+describe("createAsyncCardLoader", () => {
+  beforeEach(() => {
+    vi.mocked(idleMod.isPageVisible).mockReturnValue(true);
+    vi.mocked(fetchMod.acquireLock).mockReturnValue(true);
+    vi.mocked(cacheMod.cGetAsync).mockResolvedValue(null);
+    vi.mocked(cacheMod.cGetStaleAsync).mockResolvedValue(null);
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it("serves fresh async cache hit without fetching", async () => {
+    vi.mocked(cacheMod.cGetAsync).mockResolvedValue({ v: 1 });
+    const fetchFn = vi.fn<() => Promise<{ v: number }>>();
+    const renderFn = vi.fn();
+    const load = createAsyncCardLoader(OPTS, fetchFn, renderFn);
+    await load();
+    expect(renderFn).toHaveBeenCalledWith({ v: 1 });
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok");
+  });
+
+  it("fetches when async cache misses", async () => {
+    const fetchFn = vi.fn<() => Promise<number>>().mockResolvedValue(42);
+    const renderFn = vi.fn();
+    const load = createAsyncCardLoader(OPTS, fetchFn, renderFn);
+    await load();
+    expect(fetchFn).toHaveBeenCalled();
+    expect(renderFn).toHaveBeenCalledWith(42);
+    expect(cacheMod.cSet).toHaveBeenCalledWith("test-card", 42);
+  });
+
+  it("shows stale data while fetching", async () => {
+    vi.mocked(cacheMod.cGetStaleAsync).mockResolvedValue("old");
+    const fetchFn = vi.fn<() => Promise<string>>().mockResolvedValue("new");
+    const renderFn = vi.fn();
+    const load = createAsyncCardLoader(OPTS, fetchFn, renderFn);
+    await load();
+    expect(renderFn).toHaveBeenCalledWith("old");
+    expect(renderFn).toHaveBeenCalledWith("new");
+  });
+
+  it("falls back to stale on fetch error", async () => {
+    vi.mocked(cacheMod.cGetStaleAsync).mockResolvedValue("stale");
+    const fetchFn = vi.fn<() => Promise<string>>().mockRejectedValue(new Error("fail"));
+    const renderFn = vi.fn();
+    const load = createAsyncCardLoader(OPTS, fetchFn, renderFn);
+    await load();
+    expect(renderFn).toHaveBeenCalledWith("stale");
+    expect(syncMod.setSync).toHaveBeenCalledWith("test-card", "ok");
+  });
+
+  it("skips when page not visible", async () => {
+    vi.mocked(idleMod.isPageVisible).mockReturnValue(false);
+    const fetchFn = vi.fn<() => Promise<number>>();
+    const renderFn = vi.fn();
+    const load = createAsyncCardLoader(OPTS, fetchFn, renderFn);
+    await load();
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(renderFn).not.toHaveBeenCalled();
+  });
+
+  it("rejects invalid data via validate callback", async () => {
+    const fetchFn = vi.fn<() => Promise<unknown>>().mockResolvedValue("bad");
+    const renderFn = vi.fn();
+    const validate = (_d: unknown): _d is number => typeof _d === "number";
+    const load = createAsyncCardLoader(OPTS, fetchFn, renderFn, validate);
+    await load();
+    expect(renderFn).not.toHaveBeenCalled();
+    expect(syncMod.recordFailure).toHaveBeenCalledWith("test-card");
   });
 });
