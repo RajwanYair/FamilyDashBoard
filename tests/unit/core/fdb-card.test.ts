@@ -5,6 +5,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { FdbCard } from "@/core/fdb-card";
 import { setSync } from "@/core/sync";
+import { state } from "@/core/state";
 
 vi.mock("@/core/sync", () => ({
   setSync: vi.fn(),
@@ -25,8 +26,18 @@ class TestCard extends FdbCard {
   }
 
   connectedCount = 0;
+  connectCount = 0;
   disconnectedCount = 0;
+  disconnectHookCount = 0;
   lastAttrChange: { name: string; old: string | null; next: string | null } | null = null;
+
+  override connect(): void {
+    this.connectCount++;
+  }
+
+  override disconnect(): void {
+    this.disconnectHookCount++;
+  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -82,6 +93,7 @@ describe("FdbCard — base class", () => {
     expect(el.connectedCount).toBe(0);
     document.body.appendChild(el);
     expect(el.connectedCount).toBe(1);
+    expect(el.connectCount).toBe(1);
   });
 
   it("disconnectedCallback fires on DOM removal", () => {
@@ -90,6 +102,7 @@ describe("FdbCard — base class", () => {
     expect(el.disconnectedCount).toBe(0);
     document.body.removeChild(el);
     expect(el.disconnectedCount).toBe(1);
+    expect(el.disconnectHookCount).toBe(1);
   });
 
   it("cardId returns data-card-id attribute", () => {
@@ -235,6 +248,82 @@ describe("FdbCard CardRuntime hooks (Sprint 50)", () => {
     card.onStale(120_000);
     expect(card.lastAge).toBe(120_000);
     document.body.removeChild(card);
+  });
+
+  it("refresh resolves by default", async () => {
+    await expect(el.refresh()).resolves.toBeUndefined();
+  });
+});
+
+describe("FdbCard config subscriptions", () => {
+  class ConfigWatchCard extends FdbCard {
+    readonly seen: Array<{ key: string; value: unknown }> = [];
+
+    startWatching(field: string, invokeImmediately = false): void {
+      this.watchConfig(field, invokeImmediately);
+    }
+
+    stopWatching(field: string): void {
+      this.unwatchConfig(field);
+    }
+
+    override onConfigChange(key: string, value: unknown): void {
+      this.seen.push({ key, value });
+    }
+  }
+
+  if (!customElements.get("fdb-config-watch-card")) {
+    customElements.define("fdb-config-watch-card", ConfigWatchCard);
+  }
+
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("watchConfig delivers reactive config updates", () => {
+    const card = document.createElement("fdb-config-watch-card") as ConfigWatchCard;
+    document.body.appendChild(card);
+    card.startWatching("motivationInterval");
+
+    state.set("config.motivationInterval", 9);
+
+    expect(card.seen).toEqual([{ key: "motivationInterval", value: 9 }]);
+  });
+
+  it("watchConfig can invoke the current value immediately", () => {
+    const card = document.createElement("fdb-config-watch-card") as ConfigWatchCard;
+    document.body.appendChild(card);
+    state.set("config.interfaceLanguage", "en");
+
+    card.startWatching("interfaceLanguage", true);
+
+    expect(card.seen).toEqual([{ key: "interfaceLanguage", value: "en" }]);
+  });
+
+  it("disconnect removes config listeners", () => {
+    const card = document.createElement("fdb-config-watch-card") as ConfigWatchCard;
+    document.body.appendChild(card);
+    card.startWatching("theme");
+    card.remove();
+
+    state.set("config.theme", "matrix");
+
+    expect(card.seen).toEqual([]);
+  });
+
+  it("unwatchConfig removes a single listener", () => {
+    const card = document.createElement("fdb-config-watch-card") as ConfigWatchCard;
+    document.body.appendChild(card);
+    card.startWatching("theme");
+    card.stopWatching("theme");
+
+    state.set("config.theme", "amber");
+
+    expect(card.seen).toEqual([]);
   });
 });
 

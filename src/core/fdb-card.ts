@@ -24,6 +24,8 @@ import { setSync, type SyncState } from "./sync";
 import { cGet, cGetStale, cSet } from "./cache";
 import { isPageVisible } from "./idle";
 import { getInterfaceLanguage } from "./i18n";
+import { state } from "./state";
+import { isValidCardSize, type CardRuntime, type CardSize } from "../types/card";
 
 /** Attributes monitored on every FdbCard subclass. */
 const BASE_OBSERVED: readonly string[] = Object.freeze([
@@ -32,7 +34,7 @@ const BASE_OBSERVED: readonly string[] = Object.freeze([
   "hidden",
 ]);
 
-export abstract class FdbCard extends HTMLElement {
+export abstract class FdbCard extends HTMLElement implements CardRuntime {
   /** Subclasses extend this list. Always merge with BASE_OBSERVED. */
   static get observedAttributes(): string[] {
     return [...BASE_OBSERVED];
@@ -40,6 +42,9 @@ export abstract class FdbCard extends HTMLElement {
 
   /** Scheduled refresh timer ID, cleared on disconnect. */
   private _refreshTimer: ReturnType<typeof setInterval> | null = null;
+
+  /** State listeners bound via watchConfig(), cleared on disconnect. */
+  private readonly _configListeners = new Map<string, EventListener>();
 
   /** Bound visibility listener, stored for proper removal (Sprint 84). */
   private readonly _visListener = (): void => {
@@ -61,6 +66,7 @@ export abstract class FdbCard extends HTMLElement {
     diagLog(
       `FDB-059: [fdb-card] connected: ${this.getAttribute("data-card-id") ?? this.tagName}`,
     );
+    this.connect();
   }
 
   /**
@@ -69,6 +75,8 @@ export abstract class FdbCard extends HTMLElement {
    * `super.disconnectedCallback()` to ensure cleanup.
    */
   disconnectedCallback(): void {
+    this.disconnect();
+    this._clearConfigListeners();
     this._clearRefreshTimer();
     document.removeEventListener("visibilitychange", this._visListener);
     diagLog(
@@ -146,8 +154,33 @@ export abstract class FdbCard extends HTMLElement {
   }
 
   /** Convenience getter — the card's size class from `data-card-size`. */
-  get cardSize(): string {
-    return this.getAttribute("data-card-size") ?? "md";
+  get cardSize(): CardSize {
+    const size = this.getAttribute("data-card-size");
+    return isValidCardSize(size) ? size : "md";
+  }
+
+  /**
+   * CardRuntime hook called after the element is connected.
+   * Subclasses override this instead of re-implementing connectedCallback.
+   */
+  connect(): void {
+    // No-op default. Subclasses override.
+  }
+
+  /**
+   * CardRuntime hook called before the element disconnect cleanup runs.
+   * Subclasses override this instead of re-implementing disconnectedCallback.
+   */
+  disconnect(): void {
+    // No-op default. Subclasses override.
+  }
+
+  /**
+   * CardRuntime hook for an immediate manual refresh.
+   * Subclasses override when they support explicit reload triggers.
+   */
+  refresh(): Promise<void> {
+    return Promise.resolve();
   }
 
   // ── CardRuntime Hooks (Sprint 50) ─────────────────────────────────────────
@@ -162,6 +195,46 @@ export abstract class FdbCard extends HTMLElement {
    */
   onConfigChange(_key: string, _value: unknown): void {
     // No-op default. Subclasses override to handle specific keys.
+  }
+
+  /**
+   * Subscribe this card to a config field in the reactive state store.
+   * Registered listeners are automatically removed on disconnect.
+   *
+   * @param field - Config field name without the `config.` prefix
+   * @param invokeImmediately - When true, call onConfigChange with current value now
+   */
+  protected watchConfig(field: string, invokeImmediately = false): void {
+    const key = `config.${field}`;
+    if (this._configListeners.has(key)) return;
+
+    const listener = ((event: Event) => {
+      this.onConfigChange(field, (event as CustomEvent<unknown>).detail);
+    }) as EventListener;
+
+    this._configListeners.set(key, listener);
+    state.addEventListener(key, listener);
+
+    if (invokeImmediately) {
+      this.onConfigChange(field, state.get(key as `config.${string}`));
+    }
+  }
+
+  /** Remove a single config subscription created by watchConfig(). */
+  protected unwatchConfig(field: string): void {
+    const key = `config.${field}`;
+    const listener = this._configListeners.get(key);
+    if (!listener) return;
+
+    state.removeEventListener(key, listener);
+    this._configListeners.delete(key);
+  }
+
+  private _clearConfigListeners(): void {
+    for (const [key, listener] of this._configListeners) {
+      state.removeEventListener(key, listener);
+    }
+    this._configListeners.clear();
   }
 
   /**

@@ -7,7 +7,6 @@
 
 import { FdbCard } from "../../core/fdb-card";
 import { diagLog } from "../../core/diag";
-import { loadConfig } from "../../core/config";
 import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import { INTERVALS, MS_PER_MIN } from "../../core/constants";
@@ -24,9 +23,12 @@ export class FdbMotivationCard extends FdbCard {
   private _elText: HTMLElement | null = null;
   private _elAuthor: HTMLElement | null = null;
 
-  override connectedCallback(): void {
-    super.connectedCallback();
+  override connect(): void {
     const { body } = this.buildShell("✨", "מוטיבציה", "Motivation");
+
+    if (body.childElementCount > 0) {
+      return;
+    }
 
     // Build inner DOM
     const motiCard = document.createElement("div");
@@ -69,22 +71,22 @@ export class FdbMotivationCard extends FdbCard {
     // Initial render + schedule
     this.nextQuote();
     this.scheduleRefresh(() => { this.nextQuote(); }, INTERVALS.MOTIVATION);
-
-    // Auto-advance from config
-    const cfg = loadConfig();
-    const mins = cfg.motivationInterval ?? 0;
-    if (mins > 0) this._setAutoInterval(mins);
+    this.watchConfig("motivationInterval", true);
 
     this.setSyncState("ok");
     diagLog("FDB-063: [fdb-motivation] connected");
   }
 
-  override disconnectedCallback(): void {
-    super.disconnectedCallback();
+  override disconnect(): void {
     if (this._autoTimer !== null) {
       clearInterval(this._autoTimer);
       this._autoTimer = null;
     }
+  }
+
+  override refresh(): Promise<void> {
+    this.nextQuote();
+    return Promise.resolve();
   }
 
   override onConfigChange(key: string, value: unknown): void {
