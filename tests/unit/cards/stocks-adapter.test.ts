@@ -12,10 +12,12 @@ vi.stubGlobal("fetch", vi.fn());
 
 import { createStocksAdapter } from "@/cards/stocks/stocks-adapter";
 import { _resetProviderHealth, getProviderHealth } from "@/core/provider";
+import { cClear } from "@/core/cache";
 
 describe("Stocks Provider Adapter (Sprint 128)", () => {
   beforeEach(() => {
     localStorage.clear();
+    cClear();
     _resetProviderHealth();
     vi.mocked(fetch).mockReset();
   });
