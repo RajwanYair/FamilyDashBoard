@@ -34,6 +34,7 @@ import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { showToast } from "../../ui/toast";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
+import type { CardConfigField } from "../../types/card";
 
 // ── Helpers ──
 export function fmtPrice(price: number, sym: string): string {
@@ -867,3 +868,25 @@ export function initStocksCard(): void {
   );
   diagLog("FDB-047: [stocks] Initialized");
 }
+
+// ── Sprint 136: configSchema ────────────────────────────────────────────────
+
+export const stocksConfigSchema: CardConfigField[] = [
+  {
+    key: "stocksShowPortfolio",
+    labelHe: "הצג תיק השקעות",
+    labelEn: "Show portfolio",
+    type: "boolean",
+    defaultValue: true,
+    group: "תצוגה",
+    groupOpenByDefault: true,
+  },
+  {
+    key: "stocksGroupBySector",
+    labelHe: "קבץ לפי סקטור",
+    labelEn: "Group by sector",
+    type: "boolean",
+    defaultValue: true,
+    group: "תצוגה",
+  },
+];

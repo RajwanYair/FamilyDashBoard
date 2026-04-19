@@ -239,7 +239,7 @@ registerCard({
   titleHe: "מניות",
   titleEn: "Stocks",
   load: async (): Promise<CardDefinition> => {
-    const { initStocksCard } = await import("@/cards/stocks/stocks");
+    const { initStocksCard, stocksConfigSchema } = await import("@/cards/stocks/stocks");
     return legacyAdapter(
       "stocks",
       "📈",
@@ -249,6 +249,7 @@ registerCard({
       0,
       33,
       initStocksCard,
+      stocksConfigSchema,
     );
   },
 });
