@@ -1174,6 +1174,72 @@ describe("Config Panel — collectForm tasksResetHour NaN preserves default", ()
   });
 });
 
+// ── Sprint 171: Config dirty tracking tests ─────────────────────────────
+
+describe("Config Panel — dirty tracking (Sprint 171)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  function setupDirtyDOM(): void {
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <div id="config-panel">
+          <input id="cfg-family-name" type="text" value="Test" />
+          <button id="cfg-save-btn">Save</button>
+          <button id="cfg-close-btn">Close</button>
+          <div id="cfg-cards-list"></div>
+          <div id="toast-container"></div>
+        </div>
+      </div>
+      <button id="cfg-gear-btn">⚙️</button>
+      <input type="file" id="cfg-import-file" style="display:none" />
+    `;
+  }
+
+  it("first close when dirty shows toast instead of closing", async () => {
+    setupDirtyDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    // Trigger input event to set dirty flag
+    const inp = document.getElementById("cfg-family-name") as HTMLInputElement;
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    mod.closeConfigPanel();
+    // Panel should still be visible (toast shown, not closed)
+    expect(
+      document.getElementById("config-overlay")?.classList.contains("visible"),
+    ).toBe(true);
+  });
+
+  it("second close after dirty warning actually closes", async () => {
+    setupDirtyDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const inp = document.getElementById("cfg-family-name") as HTMLInputElement;
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    mod.closeConfigPanel(); // first close: warning
+    mod.closeConfigPanel(); // second close: actual close
+    expect(
+      document.getElementById("config-overlay")?.classList.contains("visible"),
+    ).toBe(false);
+  });
+
+  it("gear button shows * when dirty", async () => {
+    setupDirtyDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    const inp = document.getElementById("cfg-family-name") as HTMLInputElement;
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    const gear = document.getElementById("cfg-gear-btn");
+    expect(gear?.textContent).toContain("*");
+  });
+});
+
 describe("Config Panel — collectForm tasksResetHour > 23 clamps to 23", () => {
   afterEach(() => {
     document.body.innerHTML = "";
@@ -1371,7 +1437,8 @@ describe("Config Panel — dirty indicator (Sprint 19)", () => {
     input.value = "שינוי";
     input.dispatchEvent(new Event("input", { bubbles: true }));
     expect(gearBtn.textContent).toContain("*");
-    mod.closeConfigPanel();
+    mod.closeConfigPanel(); // first close: shows toast warning (Sprint 148)
+    mod.closeConfigPanel(); // second close: actually closes and clears dirty
     expect(gearBtn.textContent).not.toContain("*");
   });
 });
