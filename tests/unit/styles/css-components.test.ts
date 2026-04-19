@@ -112,3 +112,53 @@ describe("Card loading state (Stream F v7.21)", () => {
   });
 });
 
+// ── Stream F (v7.22): shared UI state classes ─────────────────────────────────
+
+describe("Card empty state (Stream F v7.22)", () => {
+  it("defines .card-empty", () => {
+    expect(css).toContain(".card-empty");
+  });
+  it("card-empty uses flex centering", () => {
+    expect(css).toMatch(/\.card-empty\s*\{[^}]*display:\s*flex/s);
+  });
+});
+
+describe("Card error state (Stream F v7.22)", () => {
+  it("defines .card-error", () => {
+    expect(css).toContain(".card-error");
+  });
+  it("card-error uses error color token", () => {
+    expect(css).toMatch(/\.card-error\s*\{[^}]*color:\s*var\(--error/s);
+  });
+  it("defines .card-error::before for icon", () => {
+    expect(css).toContain(".card-error::before");
+  });
+});
+
+describe("Card stale state (Stream F v7.22)", () => {
+  it("defines .card-stale", () => {
+    expect(css).toContain(".card-stale");
+  });
+  it("defines .card-stale__chip", () => {
+    expect(css).toContain(".card-stale__chip");
+  });
+  it("stale chip uses accent color token", () => {
+    expect(css).toMatch(/\.card-stale__chip\s*\{[^}]*color:\s*var\(--accent\)/s);
+  });
+});
+
+describe("Card skeleton state (Stream F v7.22)", () => {
+  it("defines .card-skeleton", () => {
+    expect(css).toContain(".card-skeleton");
+  });
+  it("defines skeleton-shimmer keyframe", () => {
+    expect(css).toContain("@keyframes skeleton-shimmer");
+  });
+  it("skeleton items use shimmer animation", () => {
+    expect(css).toContain("skeleton-shimmer");
+  });
+  it("respects prefers-reduced-motion for skeleton", () => {
+    expect(css).toMatch(/prefers-reduced-motion[\s\S]*card-skeleton/);
+  });
+});
+

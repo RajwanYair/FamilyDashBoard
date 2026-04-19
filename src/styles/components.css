@@ -576,3 +576,104 @@ select.cfg-input { cursor: pointer; }
   }
 }
 
+/* ==========================================================================
+   Shared card UI state classes (Stream F v7.22)
+   Usage:
+     <div class="card-empty">No data available.</div>
+     <div class="card-error" role="alert">Failed to load.</div>
+     <div class="card-stale"><span class="card-stale__chip">⚠ ישן</span></div>
+     <div class="card-skeleton" aria-busy="true"><span></span><span></span><span></span></div>
+   ========================================================================== */
+
+/* ── Empty state ── */
+.card-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5em;
+  opacity: 0.5;
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--text-secondary, var(--text));
+  text-align: center;
+}
+
+/* ── Error state ── */
+.card-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  padding: 1em 1.5em;
+  color: var(--error, #f87171);
+  font-size: 0.85em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.card-error::before {
+  content: "⚠";
+  font-style: normal;
+}
+
+/* ── Stale state banner ── */
+.card-stale {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.25em 0.75em;
+}
+
+.card-stale__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.15em 0.5em;
+  border-radius: 0.25em;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ── Skeleton loader ── */
+.card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1em 1.2em;
+}
+
+.card-skeleton > * {
+  display: block;
+  height: 1em;
+  border-radius: 0.25em;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 10%, transparent) 25%,
+    color-mix(in srgb, var(--accent) 20%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+/* Vary width for visual rhythm */
+.card-skeleton > *:nth-child(2)  { width: 85%; }
+.card-skeleton > *:nth-child(3)  { width: 70%; }
+.card-skeleton > *:nth-child(4)  { width: 90%; }
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-skeleton > * {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
