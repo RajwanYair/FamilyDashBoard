@@ -124,3 +124,18 @@ body.theme-rose {
     --bg-gradient-3: rgba(220,100,140,0.03);
 }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Sprint 153: High Contrast Mode — OS preference override
+   ═══════════════════════════════════════════════════════ */
+@media (prefers-contrast: more) {
+    :root {
+        --text-primary: #ffffff;
+        --text-secondary: #e0e0e0;
+        --text-muted: #c0c0c0;
+        --bg-primary: #000000;
+        --bg-card: rgba(20, 20, 20, 0.95);
+        --card-border: 2px solid rgba(255, 255, 255, 0.4);
+        --accent-border: rgba(255, 255, 255, 0.5);
+    }
+}
