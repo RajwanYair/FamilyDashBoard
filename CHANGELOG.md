@@ -5,6 +5,47 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.19.0] — 2025-07-17
+
+> **2931 tests / 79 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprints 128–177 — Config System, Observability, Visual Polish & Testing
+
+- **Stocks provider adapter** (Sprint 128): `createStocksAdapter(symbol)` with market-dependent TTL
+- **Calendar provider adapter** (Sprint 129): `createCalendarAdapter(icsUrl)` with ICS validation
+- **FdbCard render helpers** (Sprints 130–133): `renderMetricTile()`, `renderEmpty()`, `renderError()`, `renderSkeleton()`
+- **Enhanced `createShell()`** (Sprint 134): returns full `CardShell` with header/title/sync-dot/body/footer
+- **Per-card `configSchema` exports** (Sprints 135–140): news, stocks, currency, alerts, calendar, hebrew-cal
+- **Config accordion auto-renderer** (Sprints 141–142): `injectCardConfigSchemas()` dynamically loads card schemas
+- **Config v6→v7 migration** (Sprint 143): moves alerts/calendar flat props into `cards` namespace
+- **Per-card reset buttons** (Sprint 147): resets all inputs to `defaultValue` per card
+- **Config dirty tracking** (Sprint 148): first close when dirty warns; second close discards
+- **Stale chip CSS enhancement** (Sprint 149): positioned absolute with hover tooltip
+- **Retry button CSS** (Sprint 150): accent-colored `.card-retry-btn` with 🔄 icon
+- **Card badge pulse** (Sprint 151): `.card-badge-new` pulsing dot for new data
+- **High contrast tokens** (Sprint 153): `@media (prefers-contrast: more)` overrides
+- **Card enter/leave animations** (Sprint 154): `card-enter` + `card-leave` keyframes with reduced-motion guard
+- **Scroll shadow indicators** (Sprint 155): sticky gradient shadows for `.card__body` overflow
+- **Print URL footer** (Sprint 156): `body::after` shows dashboard URL in print media
+- **Night mode smoothing** (Sprint 157): `brightness(0.85)` transition with reduced-motion fallback
+- **Card init timing** (Sprint 158): `recordCardInitTime()` + `timedInit()` wrapper in main.ts
+- **Startup waterfall** (Sprint 159): per-card init timing table in diagnostic overlay
+- **Perf JSON export** (Sprint 160): `downloadPerfJSON()` exports vitals + card timings as JSON
+- **Error rate trending** (Sprint 161): sparkline bar chart in diag overlay
+- **Network quality history** (Sprint 162): `sampleNetworkQuality()` tracks last 10 samples
+- **Provider latency histogram** (Sprint 163): `recordProviderLatency()` + per-provider latency history
+- **30 configSchema completeness tests** (Sprint 168): validates shape/uniqueness/types for 6 cards
+- **Config accordion tests** (Sprint 169): grouping, open-by-default, flat fields
+- **Provider latency tests** (Sprint 170): 5 tests for FIFO cap, reset, multi-provider
+- **Config dirty tracking tests** (Sprint 171): toast-on-dirty, second-close, gear indicator
+- **Animation CSS tests** (Sprint 172): badge pulse, card enter/leave keyframes
+- **Config round-trip integration** (Sprint 173): `shareConfigHash → loadConfigFromHash` + resetConfig
+- **Provider lifecycle integration** (Sprint 174): success → latency → failure → backoff → recovery
+- **ADR-004** (Sprint 175): per-card config namespacing strategy
+- **ARCHITECTURE.md v7.19 refresh** (Sprint 176): updated module descriptions, new invariants
+
+---
+
 ## [7.18.0] — 2025-07-14
 
 > **2853 tests / 73 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v7.18.0
+/* FamilyDashBoard ServiceWorker — v7.19.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * See CHANGELOG.md for full version history. */
