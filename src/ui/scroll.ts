@@ -85,3 +85,25 @@ export function stopScroll(container: HTMLElement): void {
   container.style.animation = "none";
   container.querySelectorAll(".clone").forEach((el) => el.remove());
 }
+
+// ── Sprint 155: scroll shadow indicator wiring ──────────────────────────────
+
+/**
+ * Observe `.card__body` elements and toggle `.scroll-top` / `.scroll-bottom`
+ * classes to drive the CSS scroll shadow gradients.
+ */
+export function initScrollShadows(): void {
+  const bodies = document.querySelectorAll<HTMLElement>(".card__body");
+  bodies.forEach((body) => {
+    const update = (): void => {
+      body.classList.toggle("scroll-top", body.scrollTop > 4);
+      body.classList.toggle(
+        "scroll-bottom",
+        body.scrollTop + body.clientHeight < body.scrollHeight - 4,
+      );
+    };
+    body.addEventListener("scroll", update, { passive: true });
+    update();
+  });
+  diagLog(`[scroll] shadow observers on ${String(bodies.length)} card bodies`);
+}

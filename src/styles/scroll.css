@@ -33,6 +33,36 @@ body.mode-phone .card {
     scroll-margin-top: var(--space-2, 8px);
 }
 
+/* ═══════════════════════════════════════════════════════
+   Sprint 155: Scroll Shadow Indicators
+   ═══════════════════════════════════════════════════════ */
+.card__body {
+    position: relative;
+    overflow-y: auto;
+}
+.card__body::before,
+.card__body::after {
+    content: "";
+    position: sticky;
+    left: 0;
+    right: 0;
+    height: 12px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.card__body::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--bg-card, #1a1a2e), transparent);
+}
+.card__body::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg-card, #1a1a2e), transparent);
+}
+.card__body.scroll-top::before { opacity: 1; }
+.card__body.scroll-bottom::after { opacity: 1; }
+
 
 
 /* ── Animated Gradient Border on Card Focus/Hover ── */
