@@ -28,6 +28,7 @@ import { loadConfig } from "../../core/config";
 import { getTasksForToday } from "../tasks/tasks";
 import { decomposeDuration, pad2, computeMoonPhase } from "../../core/utils";
 import type { HebcalResponse, HebcalItem } from "../../types/api";
+import type { CardConfigField } from "../../types/card";
 
 // ── Sprint 27: Pure Hebrew-cal utility functions ───────────────────────────
 
@@ -905,3 +906,17 @@ function renderTasksStrip(): void {
   strip.appendChild(frag);
   strip.style.display = "";
 }
+
+// ── Sprint 140: configSchema ────────────────────────────────────────────────
+
+export const hebrewCalConfigSchema: CardConfigField[] = [
+  {
+    key: "geonameid",
+    labelHe: "מיקום (GeoName ID)",
+    labelEn: "Location (GeoName ID)",
+    type: "text",
+    defaultValue: "281184",
+    group: "מיקום",
+    groupOpenByDefault: true,
+  },
+];

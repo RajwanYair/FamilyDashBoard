@@ -179,7 +179,7 @@ registerCard({
   titleHe: "לוח עברי",
   titleEn: "Hebrew Calendar",
   load: async (): Promise<CardDefinition> => {
-    const { initHebrewCalCard } = await import("@/cards/hebrew-cal/hebrew-cal");
+    const { initHebrewCalCard, hebrewCalConfigSchema } = await import("@/cards/hebrew-cal/hebrew-cal");
     return legacyAdapter(
       "hebrew-cal",
       "✡️",
@@ -189,6 +189,7 @@ registerCard({
       0,
       20,
       initHebrewCalCard,
+      hebrewCalConfigSchema,
     );
   },
 });
