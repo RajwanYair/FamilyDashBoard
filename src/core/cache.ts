@@ -54,18 +54,20 @@ export function cGet<T = unknown>(key: string, ttl: number): T | null {
   const entry = mem.get(key);
   if (entry && now - entry.ts < ttl) {
     _recordCacheHit();
+    _setHitLayer("mem");
     return entry.data as T;
   }
 
   // Fall back to localStorage
   try {
     const raw = localStorage.getItem(LS_PREFIX + key);
-    if (!raw) { _recordCacheMiss(); return null; }
+    if (!raw) { _recordCacheMiss(); _setHitLayer("none"); return null; }
     const parsed = JSON.parse(raw) as { data: T; ts: number };
     if (now - parsed.ts < ttl) {
       // Promote to in-memory for speed
       mem.set(key, { data: parsed.data, ts: parsed.ts });
       _recordCacheHit();
+      _setHitLayer("ls");
       return parsed.data;
     }
   } catch {
@@ -73,6 +75,7 @@ export function cGet<T = unknown>(key: string, ttl: number): T | null {
   }
 
   _recordCacheMiss();
+  _setHitLayer("none");
   return null;
 }
 
@@ -112,6 +115,7 @@ export async function cGetAsync<T = unknown>(
   const entry = mem.get(key);
   if (entry && now - entry.ts < ttl) {
     _recordCacheHit();
+    _setHitLayer("mem");
     return entry.data as T;
   }
 
@@ -121,6 +125,7 @@ export async function cGetAsync<T = unknown>(
     // Promote to memory for future sync access
     mem.set(key, { data: idbEntry.data, ts: idbEntry.ts });
     _recordCacheHit();
+    _setHitLayer("idb");
     return idbEntry.data;
   }
 
@@ -132,6 +137,7 @@ export async function cGetAsync<T = unknown>(
       if (now - parsed.ts < ttl) {
         mem.set(key, { data: parsed.data, ts: parsed.ts });
         _recordCacheHit();
+        _setHitLayer("ls");
         return parsed.data;
       }
     }
@@ -140,6 +146,7 @@ export async function cGetAsync<T = unknown>(
   }
 
   _recordCacheMiss();
+  _setHitLayer("none");
   return null;
 }
 
@@ -275,10 +282,19 @@ export function getOldestCacheAgeMinutes(): number {
 let _cacheHits = 0;
 let _cacheMisses = 0;
 
+/** Sprint 181: Track which layer served the last hit. */
+export type CacheLayer = "mem" | "ls" | "idb" | "none";
+let _lastHitLayer: CacheLayer = "none";
+
 /** Increment hit counter (called internally by cGet). */
 export function _recordCacheHit(): void { _cacheHits++; }
 /** Increment miss counter (called internally by cGet). */
 export function _recordCacheMiss(): void { _cacheMisses++; }
+
+/** Sprint 181: Record which tier served a hit. */
+export function _setHitLayer(layer: CacheLayer): void { _lastHitLayer = layer; }
+/** Sprint 181: Returns the layer that served the most recent hit. */
+export function lastHitLayer(): CacheLayer { return _lastHitLayer; }
 
 /** Returns current cache hit/miss counts and hit rate. */
 export function cacheStats(): { hits: number; misses: number; hitRate: number } {
@@ -294,6 +310,7 @@ export function cacheStats(): { hits: number; misses: number; hitRate: number } 
 export function resetCacheStats(): void {
   _cacheHits = 0;
   _cacheMisses = 0;
+  _lastHitLayer = "none";
 }
 
 // ── Sprint 51: IDB migration + IDB eviction ───────────────────────────────────

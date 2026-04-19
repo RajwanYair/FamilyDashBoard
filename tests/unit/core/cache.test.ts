@@ -22,6 +22,7 @@ import {
   cDelete,
   cacheDashboard,
   cacheInventory,
+  lastHitLayer,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -724,5 +725,37 @@ describe("Cache — cacheInventory", () => {
     expect(inv.hits).toBe(1);
     expect(inv.misses).toBe(1);
     expect(inv.hitRate).toBe(0.5);
+  });
+});
+
+// ── Sprint 181: lastHitLayer ────────────────────────────────────────────────
+
+describe("Cache — lastHitLayer", () => {
+  beforeEach(() => { cClear(); resetCacheStats(); });
+
+  it("returns 'none' before any read", () => {
+    expect(lastHitLayer()).toBe("none");
+  });
+
+  it("returns 'mem' when served from in-memory cache", () => {
+    cSet("k", "val");
+    cGet("k", 60_000); // first read promotes from LS → mem
+    cGet("k", 60_000); // second read from mem
+    expect(lastHitLayer()).toBe("mem");
+  });
+
+  it("returns 'ls' on first read from localStorage", () => {
+    // Write only to LS (bypass mem by clearing after set)
+    cSet("k", "val");
+    cClear();
+    // restore LS directly
+    localStorage.setItem("dash_v2_k", JSON.stringify({ data: "val", ts: Date.now() }));
+    cGet("k", 60_000);
+    expect(lastHitLayer()).toBe("ls");
+  });
+
+  it("returns 'none' on cache miss", () => {
+    cGet("missing", 60_000);
+    expect(lastHitLayer()).toBe("none");
   });
 });
