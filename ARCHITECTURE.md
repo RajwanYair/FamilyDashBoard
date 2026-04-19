@@ -3,6 +3,8 @@
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
 
+Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README.md), and [docs/adr/README.md](docs/adr/README.md). The archived `BestDashBoard.html` artifact is not part of the current runtime architecture.
+
 ![Architecture diagram](.github/assets/architecture.svg)
 
 ## Stack

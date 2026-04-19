@@ -31,7 +31,7 @@
 **A zero-dependency TypeScript family dashboard for always-on TV display.**<br/>
 Dark glassmorphism · 6 themes · Hebrew RTL · 11 cards · Per-pane smart refresh · Drag-and-drop layout · Diagnostic overlay
 
-[Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#%EF%B8%8F-architecture) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
+[Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#%EF%B8%8F-architecture) · [Docs](docs/README.md) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
 
 </div>
 
@@ -44,6 +44,7 @@ Dark glassmorphism · 6 themes · Hebrew RTL · 11 cards · Per-pane smart refre
 </div>
 
 > The dashboard runs full-screen on a 55" TV in the living room with **per-pane smart refresh** (no full-page reloads). Designed for comfortable reading from 3 meters away.
+> Canonical product docs live in [docs/README.md](docs/README.md). The archived [BestDashBoard.html](BestDashBoard.html) file is preserved for legacy reference only and is not the current app runtime.
 
 ---
 
@@ -182,6 +183,8 @@ All APIs are free and require no API keys. Data goes through the **Cloudflare Wo
 <img src=".github/assets/architecture.svg" alt="Architecture Diagram" width="100%">
 </div>
 
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full architecture guide and [docs/adr/README.md](docs/adr/README.md) for accepted architecture decisions.
+
 ### Modular TypeScript Architecture
 
 The dashboard is built as a proper TypeScript SPA, bundled by Vite:
@@ -273,7 +276,7 @@ Cards use `backdrop-filter: blur(16px)` for the glassmorphism effect. All animat
 ## 🏷️ Topics & Keywords
 
 `dashboard` `family-dashboard` `tv-display` `smart-home` `hebrew` `rtl` `israel`
-`glassmorphism` `single-file` `zero-dependencies` `vanilla-javascript` `html5` `css3`
+`typescript` `vite` `zero-dependencies` `pwa` `cloudflare-workers` `css3`
 `weather` `stocks` `news-reader` `dark-theme` `real-time` `github-pages` `open-source`
 
 > These topics are set on the [GitHub repository](https://github.com/RajwanYair/FamilyDashBoard) for discoverability.
