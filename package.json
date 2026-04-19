@@ -2,6 +2,26 @@
     "name": "familydashboard",
     "version": "7.20.0",
     "description": "Family TV Dashboard — Hebrew RTL, TypeScript, Vite, Cloudflare Workers",
+    "author": "Reuven Airhar",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ryair/FamilyDashBoard.git"
+    },
+    "homepage": "https://ryair.github.io/FamilyDashBoard/",
+    "bugs": {
+        "url": "https://github.com/ryair/FamilyDashBoard/issues"
+    },
+    "keywords": [
+        "dashboard",
+        "family",
+        "hebrew",
+        "rtl",
+        "typescript",
+        "vite",
+        "pwa",
+        "cloudflare-workers"
+    ],
     "type": "module",
     "private": true,
     "scripts": {
