@@ -384,6 +384,61 @@ export abstract class FdbCard extends HTMLElement {
 
   // ── Render Primitives (Sprint 130–133) ──────────────────────────────────
 
+  // ── Sprint 183: Card Shell Builder ──────────────────────────────────────
+
+  /**
+   * Build the standard card shell inside this element.
+   * Creates header (icon + title + sync dot), body, and footer.
+   * Idempotent — skips if shell already built.
+   *
+   * @param icon    Emoji icon for the header
+   * @param titleHe Hebrew title text
+   */
+  buildShell(icon: string, titleHe: string): {
+    header: HTMLElement;
+    body: HTMLElement;
+    footer: HTMLElement;
+  } {
+    // Prevent duplicates
+    let body = this.querySelector<HTMLElement>(".card__body");
+    if (body) {
+      return {
+        header: this.querySelector<HTMLElement>(".card__header")!,
+        body,
+        footer: this.querySelector<HTMLElement>(".card__footer")!,
+      };
+    }
+
+    this.classList.add("card");
+
+    const header = document.createElement("header");
+    header.className = "card__header";
+
+    const titleSpan = document.createElement("span");
+    titleSpan.className = "card__title";
+    titleSpan.setAttribute("data-card-title", "");
+    titleSpan.textContent = `${icon} ${titleHe}`;
+    header.appendChild(titleSpan);
+
+    const syncDot = document.createElement("span");
+    syncDot.className = "sync-dot";
+    syncDot.id = `sync-${this.cardId}`;
+    syncDot.setAttribute("aria-hidden", "true");
+    header.appendChild(syncDot);
+
+    this.appendChild(header);
+
+    body = document.createElement("div");
+    body.className = "card__body";
+    this.appendChild(body);
+
+    const footer = document.createElement("footer");
+    footer.className = "card__footer";
+    this.appendChild(footer);
+
+    return { header, body, footer };
+  }
+
   /**
    * Create a metric tile element (Sprint 130).
    *
