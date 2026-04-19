@@ -469,3 +469,47 @@ export function cacheDashboard(): CacheDashboardStats {
     hitRate,
   };
 }
+
+// ── Sprint 178: Async cache inventory ─────────────────────────────────────
+
+export interface CacheInventory {
+  memEntries: number;
+  lsEntries: number;
+  idbEntries: number;
+  lsBytes: number;
+  hits: number;
+  misses: number;
+  hitRate: number;
+  oldestAgeMin: number;
+}
+
+/**
+ * Async full-inventory of all three cache tiers.
+ * Use in diag overlay or health checks where async is acceptable.
+ */
+export async function cacheInventory(): Promise<CacheInventory> {
+  const { hits, misses, hitRate } = cacheStats();
+  let lsCount = 0;
+  let lsBytes = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k?.startsWith(LS_PREFIX)) continue;
+    lsCount++;
+    lsBytes += k.length + (localStorage.getItem(k)?.length ?? 0);
+  }
+  let idbCount = 0;
+  try {
+    const keys = await idbKeys();
+    idbCount = keys.length;
+  } catch { /* IDB unavailable */ }
+  return {
+    memEntries: mem.size,
+    lsEntries: lsCount,
+    idbEntries: idbCount,
+    lsBytes,
+    hits,
+    misses,
+    hitRate,
+    oldestAgeMin: getOldestCacheAgeMinutes(),
+  };
+}

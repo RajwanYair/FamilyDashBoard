@@ -21,6 +21,7 @@ import {
   cAge,
   cDelete,
   cacheDashboard,
+  cacheInventory,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -686,5 +687,42 @@ describe("Cache — cacheDashboard", () => {
     expect(stats.hits).toBe(1);
     expect(stats.misses).toBe(1);
     expect(stats.hitRate).toBe(0.5);
+  });
+});
+
+// ── Sprint 178: cacheInventory ──────────────────────────────────────────────
+
+describe("Cache — cacheInventory", () => {
+  beforeEach(() => { cClear(); resetCacheStats(); });
+
+  it("returns zero counts on empty cache", async () => {
+    const inv = await cacheInventory();
+    expect(inv.memEntries).toBe(0);
+    expect(inv.lsEntries).toBe(0);
+    expect(inv.idbEntries).toBe(0);
+    expect(inv.lsBytes).toBe(0);
+    expect(inv.hits).toBe(0);
+    expect(inv.misses).toBe(0);
+    expect(inv.hitRate).toBe(0);
+    expect(inv.oldestAgeMin).toBe(0);
+  });
+
+  it("counts all tiers after cSet", async () => {
+    cSet("a", { x: 1 });
+    cSet("b", { y: 2 });
+    const inv = await cacheInventory();
+    expect(inv.memEntries).toBe(2);
+    expect(inv.lsEntries).toBe(2);
+    expect(inv.lsBytes).toBeGreaterThan(0);
+  });
+
+  it("tracks hit/miss stats", async () => {
+    cSet("z", 99);
+    cGet("z", 60_000);      // hit
+    cGet("nope", 60_000);   // miss
+    const inv = await cacheInventory();
+    expect(inv.hits).toBe(1);
+    expect(inv.misses).toBe(1);
+    expect(inv.hitRate).toBe(0.5);
   });
 });
