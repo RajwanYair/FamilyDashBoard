@@ -12,6 +12,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Cancel any in-progress CI run for the same branch/PR on new pushes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -19,6 +24,9 @@ jobs:
   typecheck:
     name: TypeScript
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,6 +39,9 @@ jobs:
   lint:
     name: ESLint + Markdown
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,11 +52,14 @@ jobs:
       - name: ESLint (0 warnings allowed)
         run: npx eslint src tests --max-warnings 0
       - name: Markdownlint
-        run: npx markdownlint-cli2 "**/*.md"
+        run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**"
 
   unit-tests:
     name: Vitest (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     strategy:
       matrix:
         node-version: ["20", "22", "24"]
@@ -61,6 +75,9 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -101,6 +118,9 @@ jobs:
   worker-tests:
     name: Worker Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -114,6 +134,9 @@ jobs:
   build:
     name: Production Build + Size
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     needs: [typecheck, lint, unit-tests, worker-tests]
     steps:
       - uses: actions/checkout@v4
