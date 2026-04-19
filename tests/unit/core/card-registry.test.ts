@@ -167,20 +167,17 @@ describe("Card Registry — loadCard built-in legacy (news — legacyAdapter)", 
   it("loads news card and legacyAdapter render() falls back to createElement", async () => {
     const def = await loadCard("news");
     expect(def.id).toBe("news");
-    // No [data-card-id="news"] in DOM → falls back to createElement
     const el = def.render() as HTMLElement;
     expect(el).toBeInstanceOf(HTMLElement);
-    expect(el.tagName).toBe("SECTION");
+    expect(el.tagName).toBe("FDB-NEWS");
+    expect("tagName" in def).toBe(true);
+    expect("elementClass" in def).toBe(true);
   });
 
-  it("legacyAdapter render() returns existing DOM element when present", async () => {
+  it("renders the news custom element host", async () => {
     const def = await loadCard("news");
-    const section = document.createElement("section");
-    section.dataset.cardId = "news";
-    document.body.appendChild(section);
     const el = def.render();
-    expect(el).toBe(section);
-    document.body.removeChild(section);
+    expect(el.tagName).toBe("FDB-NEWS");
   });
 });
 

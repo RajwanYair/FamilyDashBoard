@@ -16,6 +16,7 @@ import {
   applyNewsFontSize,
   getSearchQuery,
   initNewsCard,
+  destroyNewsCard,
   fetchFeed,
   toggleBookmarkMode,
   markVisited,
@@ -26,6 +27,7 @@ import {
   isBreaking,
   newsSourceDomain,
   sanitizeNewsTitle,
+  newsCard,
 } from "@/cards/news/news";
 
 describe("News — detectCategory", () => {
@@ -230,6 +232,27 @@ describe("News — initNewsCard", () => {
     vi.resetModules();
     const { initNewsCard } = await import("@/cards/news/news");
     expect(() => initNewsCard()).not.toThrow();
+  });
+
+  it("destroyNewsCard does not throw after init", async () => {
+    vi.resetModules();
+    const { initNewsCard, destroyNewsCard } = await import("@/cards/news/news");
+    initNewsCard();
+    expect(() => destroyNewsCard()).not.toThrow();
+  });
+});
+
+describe("News — newsCard CardDefinition", () => {
+  it("exposes the registry shape for news", () => {
+    expect(newsCard.id).toBe("news");
+    expect(newsCard.icon).toBe("📰");
+    expect(newsCard.defaultSlot.col).toBe(0);
+  });
+
+  it("render returns a card host element", () => {
+    const el = newsCard.render();
+    expect(el.tagName).toBe("SECTION");
+    expect((el as HTMLElement).dataset.cardId).toBe("news");
   });
 });
 

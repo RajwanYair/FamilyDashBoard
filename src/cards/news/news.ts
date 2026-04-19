@@ -19,7 +19,7 @@ import { runConcurrent } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
 import type { NewsItem } from "../../types/api";
-import type { CardConfigField } from "../../types/card";
+import type { CardConfigField, CardDefinition } from "../../types/card";
 
 // ── Feed definitions ──
 export interface NewsFeed {
@@ -67,6 +67,7 @@ let elSearchInput: HTMLInputElement | null = null;
 let elSearchClear: HTMLElement | null = null;
 let elSearchCount: HTMLElement | null = null;
 let elNewsCount: HTMLElement | null = null;
+let _newsRefreshInterval: number | null = null;
 
 // ── Search ──
 let _searchQuery = "";
@@ -664,11 +665,22 @@ export function renderNews(items: NewsItem[]): void {
   diagLog(`FDB-042: [news] Rendered ${items.length} items`);
 }
 
-const loadNews = createCardLoader<NewsItem[]>(
+export const loadNews = createCardLoader<NewsItem[]>(
   { id: "news", ttl: INTERVALS.NEWS, interval: INTERVALS.NEWS },
   fetchAllNews,
   renderNews,
 );
+
+function bindOnce(
+  element: HTMLElement | null,
+  eventName: string,
+  marker: string,
+  handler: EventListener,
+): void {
+  if (!element || element.dataset[marker] === "1") return;
+  element.addEventListener(eventName, handler);
+  element.dataset[marker] = "1";
+}
 
 // ── News font size ──
 // LS_NEWS_FONT imported from constants
@@ -688,16 +700,16 @@ export function applyNewsFontSize(): void {
 // ── News search ──
 function initNewsSearch(): void {
   if (!elSearchInput) return;
-  elSearchInput.addEventListener("input", () => {
+  bindOnce(elSearchInput, "input", "fdbNewsInputBound", (() => {
     _searchQuery = elSearchInput!.value;
     renderNews(_lastItems);
-  });
+  }) as EventListener);
   if (elSearchClear) {
-    elSearchClear.addEventListener("click", () => {
+    bindOnce(elSearchClear, "click", "fdbNewsClickBound", (() => {
       _searchQuery = "";
       if (elSearchInput) elSearchInput.value = "";
       renderNews(_lastItems);
-    });
+    }) as EventListener);
   }
 }
 
@@ -707,8 +719,16 @@ export function initNewsCard(): void {
   initNewsSearch();
   renderSourceFilterChips();
   void loadNews();
-  scheduleCard(loadNews, INTERVALS.NEWS);
+  if (_newsRefreshInterval !== null) clearInterval(_newsRefreshInterval);
+  _newsRefreshInterval = scheduleCard(loadNews, INTERVALS.NEWS);
   diagLog("FDB-043: [news] Initialized");
+}
+
+export function destroyNewsCard(): void {
+  if (_newsRefreshInterval !== null) {
+    clearInterval(_newsRefreshInterval);
+    _newsRefreshInterval = null;
+  }
 }
 
 // ── Sprint 135: configSchema ────────────────────────────────────────────────
@@ -735,3 +755,22 @@ export const newsConfigSchema: CardConfigField[] = [
     group: "תצוגה",
   },
 ];
+
+export const newsCard: CardDefinition = {
+  id: "news",
+  icon: "📰",
+  titleHe: "חדשות",
+  titleEn: "News",
+  defaultSlot: { col: 0, order: 0, flexGrow: 65, hidden: false },
+  defaultSize: "md",
+  render(): HTMLElement {
+    const section = document.createElement("section");
+    section.className = "card";
+    section.dataset.cardId = "news";
+    section.setAttribute("aria-label", "News");
+    return section;
+  },
+  init: initNewsCard,
+  destroy: destroyNewsCard,
+  configSchema: newsConfigSchema,
+};

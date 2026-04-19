@@ -156,9 +156,29 @@ registerCard({
   icon: "📰",
   titleHe: "חדשות",
   titleEn: "News",
-  load: async (): Promise<CardDefinition> => {
-    const { initNewsCard, newsConfigSchema } = await import("@/cards/news/news");
-    return legacyAdapter("news", "📰", "חדשות", "News", 0, 0, 65, initNewsCard, newsConfigSchema);
+  load: async (): Promise<FdbCardDefinition> => {
+    const [{ newsCard }, { FdbNewsCard }] = await Promise.all([
+      import("@/cards/news/news"),
+      import("@/cards/news/fdb-news"),
+    ]);
+
+    return {
+      ...newsCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-news");
+        element.setAttribute("data-card-id", "news");
+        element.setAttribute("data-card-size", newsCard.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      destroy(): void {
+        // Lifecycle is owned by the custom element's disconnect() hook.
+      },
+      elementClass: FdbNewsCard,
+      tagName: "fdb-news",
+    };
   },
 });
 
