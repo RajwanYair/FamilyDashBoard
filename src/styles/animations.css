@@ -195,6 +195,26 @@ body.shabbat-mode #shabbat-mode-banner { display: block; }
 .help-row:last-child { border-bottom: none; }
 
 /* ═══════════════════════════════════════════════════════
+   Sprint 151: Card Badge Pulse — new data indicator
+   ═══════════════════════════════════════════════════════ */
+.card-badge-new {
+  position: absolute;
+  top: 0.3em;
+  inset-inline-start: 0.5em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: badge-pulse 1.5s ease-in-out 3;
+  pointer-events: none;
+  z-index: 3;
+}
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════════════════
    View Transitions API — theme switch + card collapse
    ═══════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: no-preference) {
