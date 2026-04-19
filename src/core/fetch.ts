@@ -391,6 +391,27 @@ export function getConsecutiveFailures(): number {
   return _consecutiveFailures;
 }
 
+// ── Sprint 162: Network quality history tracking ──────────────────────────────
+
+const NET_HISTORY_MAX = 10;
+const _netQualityHistory: Array<{ ts: number; tier: NetworkQualityTier }> = [];
+
+/**
+ * Sample current network quality tier and record to history.
+ * Best called on a periodic timer (e.g., every 60s).
+ */
+export function sampleNetworkQuality(): void {
+  _netQualityHistory.push({ ts: Date.now(), tier: getNetworkQualityTier() });
+  if (_netQualityHistory.length > NET_HISTORY_MAX) _netQualityHistory.shift();
+}
+
+/**
+ * Return last N network quality samples.
+ */
+export function getNetworkQualityHistory(): ReadonlyArray<{ ts: number; tier: NetworkQualityTier }> {
+  return _netQualityHistory;
+}
+
 /**
  * Fetch JSON with exponential backoff retries.
  *
