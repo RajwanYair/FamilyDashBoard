@@ -5,6 +5,20 @@
  * Shared constants ensure string literals are never duplicated.
  */
 
+// ── Cache name constants (Stream SW, v7.21) ───────────────────────────────────
+
+/**
+ * Base SW cache name — matches the `CACHE_NAME` prefix in `sw.js`.
+ * Used by the client to communicate which cache to expect or purge.
+ */
+export const CACHE_NAME = "familydashboard-v" as const;
+
+/**
+ * localStorage key used to persist the last-activated SW version.
+ * Written by the SW after activation; read by the diagnostics overlay.
+ */
+export const SW_VERSION_KEY = "__fdb_sw_version__" as const;
+
 // ── Message type constants ────────────────────────────────────────────────────
 
 /** Tell the waiting SW to activate immediately. */

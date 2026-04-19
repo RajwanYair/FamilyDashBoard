@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
 > Roadmap refresh date: 2026-04-19
-> Current shipped baseline: v7.20.0
-> Last committed baseline: v7.20.0 — 2998 tests / 86 suites / 0 failures
+> Current shipped baseline: v7.21.0
+> Last committed baseline: v7.21.0 — 3003+ tests / 87 suites / 0 failures
 
 This document is the single decision log and forward plan for FamilyDashBoard. It rethinks every major architectural, tooling, and product decision from first principles — including decisions that previously looked clean — and sets an explicit direction for reaching best-in-class quality as an always-on family information display.
 
@@ -180,6 +180,7 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 | v7.19.0 | Per-card configSchema, config dirty tracking, observability suite, provider latency |
 | v7.19.1 | Tooling modernization, bilingual interface, config migration hardening |
 | v7.20.0 | ROADMAP strategic overhaul, worker-first fetch resilience, provider adapter hardening, shared tooling foundation |
+| v7.21.0 | Shared test helpers, normalized worker types, node-ts-app tooling, instruction files, .nvmrc, agent/prompts, card audit, loading CSS, SW constants |
 
 **Completed Streams:** A (Truth) · B (Card Architecture) · C (Data Contracts) · D (Observability)
 

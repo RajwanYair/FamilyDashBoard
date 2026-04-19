@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [7.21.0] — 2026-07-07
+
+> **3003+ tests / 87 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+- **Stream G.1 — Shared test helpers**: `tests/unit/helpers/` (dom, mocks, timers, index) + `@tests` alias in vitest.config.ts
+- **Stream G.1 — Test isolation exports**: `_resetForTest()` in `cache.ts` and `state.ts` for clean per-test state
+- **Stream W — Normalized worker types**: `WorkerResponse<T>` envelope + `NormalizedWeatherData`, `NormalizedStock`, `NormalizedCurrencyRates`, `NormalizedNewsItem`, `NormalizedAlertEvent` in `types/api.ts`
+- **Stream I-0 — Node tooling presets**: `node-ts-app.mjs`, `base-node.json`, `happy-dom.mjs`, `node.mjs` at `MyScripts/tooling/`
+- **Stream I — Instruction files**: `.github/instructions/typescript.instructions.md` + `tests.instructions.md`
+- **Stream J — Dev environment**: `.nvmrc` (Node 22), `package.json` author/repo/homepage/bugs/keywords, `.vscode/launch.json` (4 debug configs)
+- **Stream I — AI automation**: `quality-reviewer.agent.md` + `test-coverage.prompt.md`, `debug-card.prompt.md`, `release-check.prompt.md`
+- **Stream B2 — Card architecture audit**: `docs/card-architecture-audit.md` tracking FdbCard migration status (5/11 migrated)
+- **Stream F — Card loading state**: `.card-loading`, `.card__body`, `.card__footer`, `@keyframes card-spin` in `components.css` + CSS existence tests
+- **Stream SW — SW constants**: `CACHE_NAME` and `SW_VERSION_KEY` typed constants in `src/core/sw-constants.ts`
+
 ## [7.20.0] — 2026-06-22
 
 > **2998 tests / 86 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

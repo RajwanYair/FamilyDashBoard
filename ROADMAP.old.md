@@ -1255,7 +1255,7 @@ Close the simplest gaps first — these require no design decisions:
 | Issue templates | Audit all `.yml` forms against GitHub's current YAML form schema: `type`, `id`, `attributes`, `validations` fields; add `type: checkboxes` where useful; verify dropdown `options` syntax |
 | Discussion templates | Verify `labels` and `body` array syntax matches latest spec |
 | `CONTRIBUTING.md` | Add "Prerequisites" section (Node version, parent install, VS Code extensions); add "Running Checks" section pointing to `tasks.json` tasks |
-| `SECURITY.md` | Add supported-versions table: `| Version | Supported |`; add responsible disclosure timeline |
+| `SECURITY.md` | Add supported-versions table: `\| Version \| Supported \|`; add responsible disclosure timeline |
 | `CODE_OF_CONDUCT.md` | Verify Contributor Covenant version is 2.1 (latest); update enforcement contact if needed |
 | `dependabot.yml` | Add `groups:` for bundled minor updates (GitHub's grouped updates feature); verify `registries` config if private packages exist |
 | `labeler.yml` | Audit all path globs against current `src/` directory structure; add labels for `worker/**`, `tests/**`, `docs/**` if missing |
