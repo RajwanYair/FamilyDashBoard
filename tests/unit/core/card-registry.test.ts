@@ -186,6 +186,15 @@ describe("Card Registry — loadCard built-in legacy (weather)", () => {
     const def = await loadCard("weather");
     expect(def.id).toBe("weather");
     expect(typeof def.init).toBe("function");
+    expect("tagName" in def).toBe(true);
+    expect("elementClass" in def).toBe(true);
+  });
+
+  it("renders weather as the custom element host", async () => {
+    const def = await loadCard("weather");
+    const el = def.render();
+    expect(el).toBeInstanceOf(HTMLElement);
+    expect(el.tagName).toBe("FDB-WEATHER");
   });
 });
 

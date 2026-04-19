@@ -19,12 +19,14 @@ import {
   toggleTempUnit,
   switchWeatherCity,
   initWeatherCard,
+  destroyWeatherCard,
   humidityLabel,
   moonPhase,
   precipSummaryLabel,
   renderHourlyStrip,
   formatCloudCover,
   weatherConfigSchema,
+  weatherCard,
 } from "@/cards/weather/weather";
 import type { WeatherResponse } from "@/types/api";
 
@@ -286,6 +288,26 @@ describe("Weather — initWeatherCard fetch integration", () => {
     });
     const url = String(vi.mocked(fetch).mock.calls[0]?.[0] ?? "");
     expect(url).toContain("open-meteo.com");
+  });
+
+  it("destroyWeatherCard does not throw after init", async () => {
+    const { initWeatherCard, destroyWeatherCard } = await import("@/cards/weather/weather");
+    initWeatherCard();
+    expect(() => destroyWeatherCard()).not.toThrow();
+  });
+});
+
+describe("Weather — weatherCard CardDefinition", () => {
+  it("exposes the registry shape for weather", () => {
+    expect(weatherCard.id).toBe("weather");
+    expect(weatherCard.icon).toBe("🌤");
+    expect(weatherCard.defaultSlot.col).toBe(0);
+  });
+
+  it("render returns a card host element", () => {
+    const el = weatherCard.render();
+    expect(el.tagName).toBe("SECTION");
+    expect((el as HTMLElement).dataset.cardId).toBe("weather");
   });
 });
 

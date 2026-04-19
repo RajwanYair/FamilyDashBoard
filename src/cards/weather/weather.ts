@@ -27,7 +27,7 @@ import { loadConfig, saveConfig } from "../../core/config";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import { state } from "../../core/state";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
-import type { CardConfigField } from "../../types/card";
+import type { CardConfigField, CardDefinition } from "../../types/card";
 
 // ── City state ──
 let _activeLat = 31.7683;
@@ -161,6 +161,9 @@ const el = {
   wxWindTile: null as HTMLElement | null,
   wxRiseTile: null as HTMLElement | null,
 };
+
+let _weatherRefreshInterval: number | null = null;
+let _tempUnitSubscribed = false;
 
 export function cacheDom(): void {
   el.topTemp = document.getElementById("top-temp");
@@ -511,14 +514,26 @@ const loadWeather = createCardLoader<WeatherResponse>(
   isWeatherResponse,
 );
 
+function bindOnce(
+  element: HTMLElement | null,
+  eventName: string,
+  marker: string,
+  handler: EventListener,
+): void {
+  if (!element || element.dataset[marker] === "1") return;
+  element.addEventListener(eventName, handler);
+  element.dataset[marker] = "1";
+}
+
 export function initWeatherCard(): void {
   cacheDom();
   initWeatherCities(); // Apply configured cities from localStorage
   void loadWeather();
-  scheduleCard(loadWeather, INTERVALS.WEATHER);
+  if (_weatherRefreshInterval !== null) clearInterval(_weatherRefreshInterval);
+  _weatherRefreshInterval = scheduleCard(loadWeather, INTERVALS.WEATHER);
 
   // Wire chart toggle button — persist view mode to localStorage
-  document.getElementById("wx-chart-toggle")?.addEventListener("click", () => {
+  bindOnce(document.getElementById("wx-chart-toggle"), "click", "fdbWxClickBound", (() => {
     const chart = document.getElementById("wx-hourly");
     if (chart) {
       chart.classList.toggle("wx-chart-rain");
@@ -529,19 +544,22 @@ export function initWeatherCard(): void {
         );
       } catch { /* quota */ }
     }
-  });
+  }) as EventListener);
   // Restore persisted chart mode
   if (localStorage.getItem(LS_WX_CHART_MODE) === "rain") {
     document.getElementById("wx-hourly")?.classList.add("wx-chart-rain");
   }
 
   // Wire temperature unit toggle (°C ↔ °F)
-  document
-    .getElementById("wx-temp")
-    ?.addEventListener("click", () => toggleTempUnit());
+  bindOnce(
+    document.getElementById("wx-temp"),
+    "click",
+    "fdbWxClickBound",
+    (() => toggleTempUnit()) as EventListener,
+  );
 
   // Wire city tab clicks
-  document.getElementById("wx-city-tabs")?.addEventListener("click", (e) => {
+  bindOnce(document.getElementById("wx-city-tabs"), "click", "fdbWxClickBound", ((e: Event) => {
     const tab = (e.target as HTMLElement).closest<HTMLButtonElement>(
       ".wx-city-tab",
     );
@@ -549,22 +567,31 @@ export function initWeatherCard(): void {
     const lat = parseFloat(tab.dataset["lat"] ?? "");
     const lon = parseFloat(tab.dataset["lon"] ?? "");
     if (isNaN(lat) || isNaN(lon)) return;
-    // Update active state
     document
       .querySelectorAll(".wx-city-tab")
       .forEach((t) => t.classList.remove("active"));
     tab.classList.add("active");
     void switchWeatherCity(lat, lon);
-  });
+  }) as EventListener);
 
   // Subscribe to reactive state: re-render when tempUnit changes externally (v8.0)
-  state.on<string>("config.tempUnit", () => {
-    const fresh = cGet<WeatherResponse>("wx", INTERVALS.WEATHER);
-    const data = fresh ?? cGetStale<WeatherResponse>("wx");
-    if (data) renderWeather(data);
-  });
+  if (!_tempUnitSubscribed) {
+    _tempUnitSubscribed = true;
+    state.on<string>("config.tempUnit", () => {
+      const fresh = cGet<WeatherResponse>("wx", INTERVALS.WEATHER);
+      const data = fresh ?? cGetStale<WeatherResponse>("wx");
+      if (data) renderWeather(data);
+    });
+  }
 
   diagLog("FDB-057: [weather] Initialized");
+}
+
+export function destroyWeatherCard(): void {
+  if (_weatherRefreshInterval !== null) {
+    clearInterval(_weatherRefreshInterval);
+    _weatherRefreshInterval = null;
+  }
 }
 
 // ── Sprint 87: configSchema ────────────────────────────────────────────────
@@ -589,3 +616,22 @@ export const weatherConfigSchema: CardConfigField[] = [
   { key: "weatherShowWind", labelHe: "הצג רוח", labelEn: "Show Wind", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
   { key: "weatherShowSunrise", labelHe: "הצג זריחה/שקיעה", labelEn: "Show Sunrise/Sunset", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
 ];
+
+export const weatherCard: CardDefinition = {
+  id: "weather",
+  icon: "🌤",
+  titleHe: "מזג אוויר",
+  titleEn: "Weather",
+  defaultSlot: { col: 0, order: 1, flexGrow: 35, hidden: false },
+  defaultSize: "md",
+  render(): HTMLElement {
+    const section = document.createElement("section");
+    section.className = "card";
+    section.dataset.cardId = "weather";
+    section.setAttribute("aria-label", "Weather");
+    return section;
+  },
+  init: initWeatherCard,
+  destroy: destroyWeatherCard,
+  configSchema: weatherConfigSchema,
+};

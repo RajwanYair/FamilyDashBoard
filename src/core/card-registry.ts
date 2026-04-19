@@ -187,19 +187,29 @@ registerCard({
   icon: "🌤",
   titleHe: "מזג אוויר",
   titleEn: "Weather",
-  load: async (): Promise<CardDefinition> => {
-    const { initWeatherCard, weatherConfigSchema } = await import("@/cards/weather/weather");
-    return legacyAdapter(
-      "weather",
-      "🌤",
-      "מזג אוויר",
-      "Weather",
-      0,
-      1,
-      35,
-      initWeatherCard,
-      weatherConfigSchema,
-    );
+  load: async (): Promise<FdbCardDefinition> => {
+    const [{ weatherCard }, { FdbWeatherCard }] = await Promise.all([
+      import("@/cards/weather/weather"),
+      import("@/cards/weather/fdb-weather"),
+    ]);
+
+    return {
+      ...weatherCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-weather");
+        element.setAttribute("data-card-id", "weather");
+        element.setAttribute("data-card-size", weatherCard.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      destroy(): void {
+        // Lifecycle is owned by the custom element's disconnect() hook.
+      },
+      elementClass: FdbWeatherCard,
+      tagName: "fdb-weather",
+    };
   },
 });
 
