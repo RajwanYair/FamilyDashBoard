@@ -147,8 +147,8 @@ registerCard({
   titleHe: "חדשות",
   titleEn: "News",
   load: async (): Promise<CardDefinition> => {
-    const { initNewsCard } = await import("@/cards/news/news");
-    return legacyAdapter("news", "📰", "חדשות", "News", 0, 0, 65, initNewsCard);
+    const { initNewsCard, newsConfigSchema } = await import("@/cards/news/news");
+    return legacyAdapter("news", "📰", "חדשות", "News", 0, 0, 65, initNewsCard, newsConfigSchema);
   },
 });
 

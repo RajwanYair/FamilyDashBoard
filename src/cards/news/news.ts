@@ -19,6 +19,7 @@ import { runConcurrent } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
 import type { NewsItem } from "../../types/api";
+import type { CardConfigField } from "../../types/card";
 
 // ── Feed definitions ──
 export interface NewsFeed {
@@ -709,3 +710,28 @@ export function initNewsCard(): void {
   scheduleCard(loadNews, INTERVALS.NEWS);
   diagLog("FDB-043: [news] Initialized");
 }
+
+// ── Sprint 135: configSchema ────────────────────────────────────────────────
+
+export const newsConfigSchema: CardConfigField[] = [
+  {
+    key: "newsMaxItems",
+    labelHe: "כמות כתבות מקסימלית",
+    labelEn: "Max news items",
+    type: "range",
+    defaultValue: 5,
+    min: 1,
+    max: 10,
+    step: 1,
+    group: "תצוגה",
+    groupOpenByDefault: true,
+  },
+  {
+    key: "newsShowSource",
+    labelHe: "הצג מקור כתבה",
+    labelEn: "Show article source",
+    type: "boolean",
+    defaultValue: true,
+    group: "תצוגה",
+  },
+];
