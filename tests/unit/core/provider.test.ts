@@ -12,6 +12,9 @@ import {
   _resetProviderHealth,
   getBackoffMs,
   shouldBackoff,
+  recordProviderLatency,
+  getProviderLatency,
+  getAllProviderLatencies,
 } from "@/core/provider";
 
 beforeEach(() => {
@@ -177,5 +180,42 @@ describe("shouldBackoff (Sprint 96)", () => {
     recordProviderFailure("sb");
     // Last attempt was 10s ago, backoff = 2s
     expect(shouldBackoff("sb", Date.now() - 10_000, 2000)).toBe(false);
+  });
+});
+
+// ── Sprint 170: Provider latency histogram ─────────────────────────────────
+
+describe("recordProviderLatency (Sprint 170)", () => {
+  it("records latency samples", () => {
+    recordProviderLatency("p1", 120.456);
+    recordProviderLatency("p1", 85.2);
+    const hist = getProviderLatency("p1");
+    expect(hist).toEqual([120.5, 85.2]);
+  });
+
+  it("returns empty array for unknown provider", () => {
+    expect(getProviderLatency("unknown")).toEqual([]);
+  });
+
+  it("caps at 20 samples (FIFO)", () => {
+    for (let i = 0; i < 25; i++) recordProviderLatency("p2", i * 10);
+    const hist = getProviderLatency("p2");
+    expect(hist.length).toBe(20);
+    expect(hist[0]).toBe(50); // first 5 shifted out
+  });
+
+  it("getAllProviderLatencies returns all providers", () => {
+    recordProviderLatency("a", 100);
+    recordProviderLatency("b", 200);
+    const all = getAllProviderLatencies();
+    expect(all.size).toBe(2);
+    expect(all.get("a")).toEqual([100]);
+    expect(all.get("b")).toEqual([200]);
+  });
+
+  it("reset clears latency history", () => {
+    recordProviderLatency("c", 50);
+    _resetProviderHealth();
+    expect(getProviderLatency("c")).toEqual([]);
   });
 });
