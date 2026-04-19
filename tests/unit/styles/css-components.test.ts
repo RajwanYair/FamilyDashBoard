@@ -60,3 +60,34 @@ describe("Metric tile (Sprint 112)", () => {
     expect(css).toContain(".metric-tile__label");
   });
 });
+
+// ── Sprint 172: Animation CSS tests ────────────────────────────────────
+
+const animCss = readFileSync(
+  resolve(__dirname, "../../../src/styles/animations.css"),
+  "utf-8",
+);
+
+describe("Card badge pulse animation (Sprint 172)", () => {
+  it("defines .card-badge-new class", () => {
+    expect(animCss).toContain(".card-badge-new");
+  });
+  it("defines badge-pulse keyframes", () => {
+    expect(animCss).toContain("@keyframes badge-pulse");
+  });
+  it("badge uses pointer-events: none", () => {
+    expect(animCss).toContain("pointer-events: none");
+  });
+});
+
+describe("Card enter/leave animations (Sprint 172)", () => {
+  it("defines card-enter keyframes", () => {
+    expect(animCss).toContain("@keyframes card-enter");
+  });
+  it("defines card-leave keyframes", () => {
+    expect(animCss).toContain("@keyframes card-leave");
+  });
+  it("defines .card--hiding class", () => {
+    expect(animCss).toContain(".card.card--hiding");
+  });
+});
