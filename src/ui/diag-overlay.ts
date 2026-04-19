@@ -11,7 +11,7 @@ import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
 import { getFailedPanes } from "../core/sync";
 import { isWorkerEnabled } from "../core/constants";
-import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard } from "../core/cache";
+import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard, cacheInventory } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 import { getErrors, clearErrors, formatErrorEntry, getErrorCount, getErrorTrend } from "../core/error-tracker";
 import { getPerfVitals, formatVital, rateVital, hasPerfSupport, getCardTimings } from "../core/perf";
@@ -142,12 +142,12 @@ function renderStats(): void {
 
   panes.innerHTML = html + vitalsHtml + hwHtml + renderCardTimingsHtml() + renderErrorTrendHtml() + renderProviderHealthHtml();
 
-  // Async IDB size update (v7.10 — non-blocking)
-  void idbEstimateSize().then((bytes) => {
+  // Async IDB size + inventory update (v7.10 — non-blocking, Sprint 179 — key count)
+  void Promise.all([idbEstimateSize(), cacheInventory()]).then(([bytes, inv]) => {
     const idbEl = document.getElementById("diag-idb-size");
     if (!idbEl) return;
     const idbMB = (bytes / (1024 * 1024)).toFixed(2);
-    idbEl.innerHTML = `💾 IDB storage: <b>${idbMB} MB</b>`;
+    idbEl.innerHTML = `💾 IDB: <b>${idbMB} MB</b> · ${String(inv.idbEntries)} keys · LS ${(inv.lsBytes / 1024).toFixed(1)} KB`;
   });
 }
 
