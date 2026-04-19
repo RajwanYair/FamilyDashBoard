@@ -149,6 +149,28 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v5 → v6");
   }
 
+  // v6 → v7: move alerts flat props into cards.alerts.settings (Sprint 143)
+  if (version < 7) {
+    const cards: Record<string, CardConfig> = cfg.cards ?? {};
+
+    // Alerts: pull in alertsEnabled, alertSound, realtimeAlerts, alertVolume
+    const aSettings = (cards["alerts"]?.settings ?? {});
+    if (cfg.alertsEnabled !== undefined && !("enabled" in aSettings)) aSettings["enabled"] = cfg.alertsEnabled;
+    if (cfg.alertSound !== undefined && !("sound" in aSettings)) aSettings["sound"] = cfg.alertSound;
+    if (cfg.realtimeAlerts !== undefined && !("realtime" in aSettings)) aSettings["realtime"] = cfg.realtimeAlerts;
+    if (cfg.alertVolume !== undefined && !("volume" in aSettings)) aSettings["volume"] = cfg.alertVolume;
+    cards["alerts"] = { ...cards["alerts"], settings: aSettings };
+
+    // Calendar: pull in calendarDaysAhead if present
+    const calSettings = (cards["calendar"]?.settings ?? {});
+    if (cfg.calendarDaysAhead !== undefined && !("daysAhead" in calSettings)) calSettings["daysAhead"] = cfg.calendarDaysAhead;
+    cards["calendar"] = { ...cards["calendar"], settings: calSettings };
+
+    cfg.cards = cards;
+    cfg.configVersion = 7;
+    diagLog("[config] migrated v6 → v7");
+  }
+
   return cfg;
 }
 

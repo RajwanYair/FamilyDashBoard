@@ -104,6 +104,8 @@ export interface DashboardConfig {
   homeCity: string;
   geonameid: string;
   calendarUrls: string[];
+  /** Number of days ahead to display in calendar (default: 21; range 7–60). */
+  calendarDaysAhead: number;
   disabledFeeds: string[];
   hiddenStocks: string[];
   customProxy: string;
@@ -234,6 +236,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   homeCity: "jerusalem",
   geonameid: "281184",
   calendarUrls: [],
+  calendarDaysAhead: 21,
   disabledFeeds: [],
   hiddenStocks: [],
   customProxy: "",
@@ -299,7 +302,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 6;
+export const CONFIG_VERSION = 7;
 
 /** Type guard: checks if a string is a valid theme name. */
 export function isValidTheme(v: unknown): v is ThemeName {
