@@ -219,7 +219,7 @@ registerCard({
   titleHe: "מטבעות",
   titleEn: "Currency",
   load: async (): Promise<CardDefinition> => {
-    const { initCurrencyCard } = await import("@/cards/currency/currency");
+    const { initCurrencyCard, currencyConfigSchema } = await import("@/cards/currency/currency");
     return legacyAdapter(
       "currency",
       "💱",
@@ -229,6 +229,7 @@ registerCard({
       2,
       15,
       initCurrencyCard,
+      currencyConfigSchema,
     );
   },
 });

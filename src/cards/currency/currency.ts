@@ -19,6 +19,7 @@ import {
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import type { CurrencyResponse } from "../../types/api";
+import type { CardConfigField } from "../../types/card";
 
 // ── State ──
 let _prevRates: Record<string, number> = {};
@@ -272,3 +273,20 @@ export function initCurrencyCard(): void {
   scheduleCard(loadCurrency, INTERVALS.CURRENCY);
   diagLog("FDB-033: [currency] Initialized");
 }
+
+// ── Sprint 137: configSchema ────────────────────────────────────────────────
+
+export const currencyConfigSchema: CardConfigField[] = [
+  {
+    key: "currencyDecimals",
+    labelHe: "ספרות אחרי נקודה",
+    labelEn: "Decimal places",
+    type: "range",
+    defaultValue: 2,
+    min: 0,
+    max: 4,
+    step: 1,
+    group: "תצוגה",
+    groupOpenByDefault: true,
+  },
+];
