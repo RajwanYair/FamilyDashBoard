@@ -20,6 +20,7 @@ import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
 import type { AlertEvent, AlertsResponse } from "../../types/api";
 import { isAlertEvent } from "../../types/api";
+import type { CardConfigField } from "../../types/card";
 
 // ── State ──
 let _enabled = true;
@@ -405,3 +406,44 @@ export function initAlertsCard(): void {
   void loadAlerts();
   diagLog("FDB-022: [alerts] Initialized");
 }
+
+// ── Sprint 138: configSchema ────────────────────────────────────────────────
+
+export const alertsConfigSchema: CardConfigField[] = [
+  {
+    key: "alertsEnabled",
+    labelHe: "התראות פעילות",
+    labelEn: "Alerts enabled",
+    type: "boolean",
+    defaultValue: true,
+    group: "כללי",
+    groupOpenByDefault: true,
+  },
+  {
+    key: "alertSound",
+    labelHe: "צליל התראה",
+    labelEn: "Alert sound",
+    type: "boolean",
+    defaultValue: true,
+    group: "כללי",
+  },
+  {
+    key: "alertVolume",
+    labelHe: "עוצמת צליל",
+    labelEn: "Alert volume",
+    type: "range",
+    defaultValue: 18,
+    min: 0,
+    max: 100,
+    step: 1,
+    group: "כללי",
+  },
+  {
+    key: "realtimeAlerts",
+    labelHe: "מצב זמן-אמת",
+    labelEn: "Realtime mode",
+    type: "boolean",
+    defaultValue: false,
+    group: "כללי",
+  },
+];

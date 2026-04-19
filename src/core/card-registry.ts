@@ -261,7 +261,7 @@ registerCard({
   titleHe: "התראות",
   titleEn: "Alerts",
   load: async (): Promise<CardDefinition> => {
-    const { initAlertsCard } = await import("@/cards/alerts/alerts");
+    const { initAlertsCard, alertsConfigSchema } = await import("@/cards/alerts/alerts");
     return legacyAdapter(
       "alerts",
       "🚨",
@@ -271,6 +271,7 @@ registerCard({
       1,
       33,
       initAlertsCard,
+      alertsConfigSchema,
     );
   },
 });
