@@ -269,7 +269,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3DoneMsg: "🎉 מזל טוב!",
   countdownCard3StartDate: "",
   motivationInterval: 0,
-  configVersion: 6,
+  configVersion: 7,
 
   // Config v2 defaults
   newsMaxItems: 5,
