@@ -27,6 +27,7 @@ import {
 import { diagLog } from "../../core/diag";
 import { acquireLock, releaseLock } from "../../core/fetch";
 import type { CalendarEvent } from "../../types/api";
+import type { CardConfigField } from "../../types/card";
 
 // ── Constants ──
 const CAL_DAYS_AHEAD = 21;
@@ -549,3 +550,20 @@ export function initCalendarCard(): void {
   scheduleCard(loadCalendar, INTERVALS.CALENDAR);
   diagLog("FDB-029: [calendar] Initialized");
 }
+
+// ── Sprint 139: configSchema ────────────────────────────────────────────────
+
+export const calendarConfigSchema: CardConfigField[] = [
+  {
+    key: "calendarDaysAhead",
+    labelHe: "ימים קדימה",
+    labelEn: "Days ahead",
+    type: "range",
+    defaultValue: 21,
+    min: 7,
+    max: 60,
+    step: 7,
+    group: "תצוגה",
+    groupOpenByDefault: true,
+  },
+];

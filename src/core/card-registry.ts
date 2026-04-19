@@ -199,7 +199,7 @@ registerCard({
   titleHe: "יומן",
   titleEn: "Calendar",
   load: async (): Promise<CardDefinition> => {
-    const { initCalendarCard } = await import("@/cards/calendar/calendar");
+    const { initCalendarCard, calendarConfigSchema } = await import("@/cards/calendar/calendar");
     return legacyAdapter(
       "calendar",
       "📅",
@@ -209,6 +209,7 @@ registerCard({
       1,
       65,
       initCalendarCard,
+      calendarConfigSchema,
     );
   },
 });
