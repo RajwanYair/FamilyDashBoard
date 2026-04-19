@@ -11,7 +11,7 @@ import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
 import { getFailedPanes } from "../core/sync";
 import { isWorkerEnabled } from "../core/constants";
-import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard, cacheInventory } from "../core/cache";
+import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard, cacheInventory, lastHitLayer } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 import { getErrors, clearErrors, formatErrorEntry, getErrorCount, getErrorTrend } from "../core/error-tracker";
 import { getPerfVitals, formatVital, rateVital, hasPerfSupport, getCardTimings } from "../core/perf";
@@ -111,7 +111,7 @@ function renderStats(): void {
       <span>🗄️ LocalStorage: <b>${lsKB} KB</b></span>
       <span>🌐 Worker: <b>${workerStatus}</b></span>
       <span>⚠️ כשלים: <b>${failedText}</b></span>
-      <span>📦 Cache: <b>${cs.hits}↑ / ${cs.misses}↓ (${hitPct}%)</b> · mem:${cd.memEntries} ls:${cd.lsEntries}</span>
+      <span>📦 Cache: <b>${cs.hits}↑ / ${cs.misses}↓ (${hitPct}%)</b> · mem:${cd.memEntries} ls:${cd.lsEntries} · last:${lastHitLayer()}</span>
       <span>🕰️ ותק מטמון: <b>${cacheAgeStr}</b></span>
       <span>${networkIcon} רשת: <b>${networkTier}${networkOffline}</b>${consecutiveFails > 0 ? ` (×${consecutiveFails})` : ""}</span>
       <span>🏷️ v${version}</span>
