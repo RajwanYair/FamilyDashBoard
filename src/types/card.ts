@@ -235,3 +235,23 @@ export function assertCardSize(value: unknown): asserts value is CardSize {
     );
   }
 }
+
+// ── Sprint 185: FdbCardDefinition ─────────────────────────────────────────
+
+import type { FdbCard } from "../core/fdb-card";
+
+/**
+ * Bridge type: a CardDefinition backed by an FdbCard custom element.
+ *
+ * Used in the card registry to support both legacy initXxxCard() adapters
+ * and new FdbCard subclasses in the same `registerCard()` catalog.
+ *
+ * The `elementClass` field carries the custom element constructor so the
+ * registry can define it and create instances.
+ */
+export interface FdbCardDefinition extends CardDefinition {
+  /** The FdbCard subclass constructor — used by `customElements.define()`. */
+  elementClass: typeof FdbCard;
+  /** Custom element tag name (e.g. "fdb-motivation"). */
+  tagName: string;
+}
