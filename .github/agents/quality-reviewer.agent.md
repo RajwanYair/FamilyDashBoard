@@ -85,7 +85,7 @@ Use this agent when:
 
 ## Report Format
 
-```
+```text
 ## Quality Report — <scope> — <date>
 
 ### Type Check      ✅ / ❌

@@ -22,7 +22,7 @@ Confirm `7.X.Y` appears consistently in ALL of:
 
 ## 2. Type Check
 
-```
+```sh
 npx tsc --noEmit
 ```
 
@@ -30,7 +30,7 @@ Expected: **0 errors**
 
 ## 3. Lint
 
-```
+```sh
 npx eslint src tests --max-warnings 0
 ```
 
@@ -40,7 +40,7 @@ No `@ts-ignore`, `eslint-disable`, or `// @ts-expect-error` in committed source.
 
 ## 4. Markdown Lint
 
-```
+```sh
 npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"
 ```
 
@@ -48,7 +48,7 @@ Expected: **0 errors**
 
 ## 5. Tests
 
-```
+```sh
 npx vitest run
 ```
 
@@ -56,7 +56,7 @@ Expected: **0 failures**
 
 ## 6. Build
 
-```
+```sh
 npm run build
 ```
 
@@ -64,7 +64,7 @@ Expected: **0 errors · dist/ generated**
 
 ## 7. Bundle Size
 
-```
+```sh
 npm run check:bundle
 ```
 
@@ -72,7 +72,7 @@ Expected: **below threshold** (exits 0)
 
 ## 8. SW Version
 
-```
+```sh
 npm run check:sw
 ```
 
@@ -86,7 +86,7 @@ All GitHub issues assigned to the milestone must be **closed** with a commit has
 
 Only after all 9 gates are green:
 
-```
+```sh
 git tag v7.X.Y
 git push origin v7.X.Y
 gh release create v7.X.Y --generate-notes
