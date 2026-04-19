@@ -229,6 +229,26 @@ body.shabbat-mode #shabbat-mode-banner { display: block; }
   @keyframes vt-fade-in { from { opacity: 0; } }
 }
 
+/* ═══════════════════════════════════════════════════════
+   Sprint 154: Card Show/Hide Transition
+   ═══════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    animation: card-enter 0.35s ease-out both;
+  }
+  @keyframes card-enter {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .card.card--hiding {
+    animation: card-leave 0.25s ease-in forwards;
+  }
+  @keyframes card-leave {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(0.95); }
+  }
+}
+
 /* Disable VT animations when user prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
