@@ -194,3 +194,29 @@ After each Copilot session that adds/fixes tests:
 ```powershell
 git add -A && git commit -m "test(<scope>): <description> — <N> tests, <M> suites"
 ```
+
+## Verification
+
+Run these commands; all must exit 0 before merging or committing:
+
+```powershell
+npx tsc --noEmit
+npx eslint src tests --max-warnings 0
+npx vitest run
+```
+
+Check targeted file first to get fast feedback:
+
+```powershell
+npx vitest run tests/unit/cards/<name>.test.ts --reporter=verbose
+```
+
+Coverage gate (after adding new tests):
+
+```powershell
+npx vitest run --coverage
+```
+
+Expected: ≥90% statements · ≥81% branches · ≥90% functions · ≥92% lines per file.
+Zero `vi.resetModules()` calls except in files that actually need module-level
+state reset (see file count in `.github/instructions/workspace.instructions.md`).

@@ -156,10 +156,17 @@ Add to `src/core/constants.ts`:
 ```powershell
 npx tsc --noEmit
 npx eslint src tests --max-warnings 0
-npx vitest run tests/unit/cards/<name>.test.ts
+npx vitest run tests/unit/cards/<name>.test.ts --reporter=verbose
 ```
 
-Run the full test suite only after the targeted card tests pass.
+Run the full test suite only after the targeted card tests pass:
+
+```powershell
+npx vitest run
+```
+
+Expected: 0 type errors · 0 lint errors/warnings · 0 test failures.
+New card must have at minimum: fresh-cache path · stale-cache path · fetch-success path · fetch-error path.
 
 ## Definition Of Done
 

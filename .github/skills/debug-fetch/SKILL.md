@@ -88,3 +88,21 @@ If a URL or constant changed, update the corresponding test in `tests/unit/`.
 - Sync state distinguishes stale versus hard failure
 - The fetch path is consistent with the current worker/proxy architecture
 - At least one targeted unit test covers the repaired branch
+
+## Verification
+
+Run these commands; all must exit 0 before closing the session:
+
+```powershell
+npx tsc --noEmit
+npx eslint src tests --max-warnings 0
+npx vitest run
+```
+
+If a constants URL or adapter changed, run the focused test first:
+
+```powershell
+npx vitest run tests/unit/cards/<name>.test.ts --reporter=verbose
+```
+
+Expected: 0 type errors · 0 lint errors · 0 test failures.

@@ -94,4 +94,20 @@ git push origin main --tags
 
 ## Verification
 
-Read `.github/instructions/workspace.instructions.md` before updating any hardcoded test-count or toolchain text. Do not carry forward stale totals from old releases.
+Run the full pre-release gate in order; every command must exit 0:
+
+```powershell
+npx tsc --noEmit
+npx eslint src tests --max-warnings 0
+npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**"
+npx vitest run
+npm run build
+node scripts/check-bundle-size.mjs
+node scripts/check-sw-version.mjs
+```
+
+Zero tolerance: 0 type errors · 0 lint errors/warnings · 0 markdownlint errors ·
+0 test failures · JS gzip ≤ 100 KB · CSS gzip ≤ 25 KB · SW version matches `package.json`.
+
+Read `.github/instructions/workspace.instructions.md` before updating any
+hardcoded test-count or toolchain text. Do not carry forward stale totals.
