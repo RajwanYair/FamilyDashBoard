@@ -9,6 +9,14 @@ import { setSync } from "@/core/sync";
 vi.mock("@/core/sync", () => ({
   setSync: vi.fn(),
 }));
+vi.mock("@/core/cache", () => ({
+  cGet: vi.fn().mockReturnValue(null),
+  cGetStale: vi.fn().mockReturnValue(null),
+  cSet: vi.fn(),
+}));
+vi.mock("@/core/idle", () => ({
+  isPageVisible: vi.fn().mockReturnValue(true),
+}));
 
 // ── Concrete subclass for testing ──────────────────────────────────────────
 class TestCard extends FdbCard {
@@ -709,5 +717,115 @@ describe("FdbCard.renderSkeleton (Sprint 133)", () => {
   it("accepts custom line count", () => {
     const el = FdbCard.renderSkeleton(5);
     expect(el.querySelectorAll(".skeleton")).toHaveLength(5);
+  });
+});
+
+// ── Sprint 186: buildShell ───────────────────────────────────────────────
+
+describe("FdbCard.buildShell (Sprint 183)", () => {
+  it("creates header, body, footer inside the card", () => {
+    const card = document.createElement("fdb-test-card") as TestCard;
+    card.setAttribute("data-card-id", "test");
+    document.body.appendChild(card);
+
+    const { header, body, footer } = card.buildShell("📋", "בדיקה");
+    expect(header.className).toBe("card__header");
+    expect(body.className).toBe("card__body");
+    expect(footer.className).toBe("card__footer");
+    expect(card.classList.contains("card")).toBe(true);
+    expect(header.querySelector(".card__title")?.textContent).toBe("📋 בדיקה");
+    expect(header.querySelector(".sync-dot")?.id).toBe("sync-test");
+  });
+
+  it("is idempotent — second call returns same elements", () => {
+    const card = document.createElement("fdb-test-card") as TestCard;
+    card.setAttribute("data-card-id", "test2");
+    document.body.appendChild(card);
+
+    const first = card.buildShell("⭐", "ראשון");
+    const second = card.buildShell("⭐", "ראשון");
+    expect(first.body).toBe(second.body);
+    expect(first.header).toBe(second.header);
+    expect(card.querySelectorAll(".card__body")).toHaveLength(1);
+  });
+});
+
+// ── Sprint 186: loadData tests ──────────────────────────────────────────
+
+import * as cacheMod from "@/core/cache";
+import * as idleMod from "@/core/idle";
+
+class DataTestCard extends FdbCard {
+  fetchResult: unknown = { v: 1 };
+  renderCalls: unknown[] = [];
+
+  protected override async fetchCardData(): Promise<unknown> {
+    return this.fetchResult;
+  }
+
+  protected override renderCardData(data: unknown): void {
+    this.renderCalls.push(data);
+  }
+}
+
+if (!customElements.get("fdb-data-test")) {
+  customElements.define("fdb-data-test", DataTestCard);
+}
+
+describe("FdbCard.loadData (Sprint 184)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(idleMod.isPageVisible).mockReturnValue(true);
+    vi.mocked(cacheMod.cGet).mockReturnValue(null);
+    vi.mocked(cacheMod.cGetStale).mockReturnValue(null);
+    vi.mocked(cacheMod.cSet).mockClear();
+    vi.mocked(setSync).mockClear();
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  it("fetches and renders when cache misses", async () => {
+    const card = document.createElement("fdb-data-test") as DataTestCard;
+    card.setAttribute("data-card-id", "dt");
+    document.body.appendChild(card);
+
+    await card["loadData"]("dt", 60_000);
+    expect(card.renderCalls).toContainEqual({ v: 1 });
+    expect(cacheMod.cSet).toHaveBeenCalledWith("dt", { v: 1 });
+    expect(setSync).toHaveBeenCalledWith("dt", "ok");
+  });
+
+  it("serves from cache without fetching", async () => {
+    vi.mocked(cacheMod.cGet).mockReturnValue({ cached: true });
+    const card = document.createElement("fdb-data-test") as DataTestCard;
+    card.setAttribute("data-card-id", "dt2");
+    card.fetchResult = "should not reach";
+    document.body.appendChild(card);
+
+    await card["loadData"]("dt2", 60_000);
+    expect(card.renderCalls).toContainEqual({ cached: true });
+    expect(cacheMod.cSet).not.toHaveBeenCalled();
+  });
+
+  it("skips when page not visible", async () => {
+    vi.mocked(idleMod.isPageVisible).mockReturnValue(false);
+    const card = document.createElement("fdb-data-test") as DataTestCard;
+    card.setAttribute("data-card-id", "dt3");
+    document.body.appendChild(card);
+
+    await card["loadData"]("dt3", 60_000);
+    expect(card.renderCalls).toHaveLength(0);
+  });
+
+  it("falls back to stale data on fetch error", async () => {
+    vi.mocked(cacheMod.cGetStale).mockReturnValue("stale-data");
+    const card = document.createElement("fdb-data-test") as DataTestCard;
+    card.setAttribute("data-card-id", "dt4");
+    document.body.appendChild(card);
+
+    // Override fetchCardData to throw
+    card["fetchCardData"] = async () => { throw new Error("net"); };
+    await card["loadData"]("dt4", 60_000);
+    expect(card.renderCalls).toContainEqual("stale-data");
+    expect(setSync).toHaveBeenCalledWith("dt4", "ok");
   });
 });
