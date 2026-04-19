@@ -426,9 +426,9 @@ select.cfg-input { cursor: pointer; }
   align-items: center;
   gap: 0.35em;
   padding: 0.35em 0.8em;
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border: 1px solid color-mix(in sRGB, var(--accent) 40%, transparent);
   border-radius: var(--radius-sm, 4px);
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  background: color-mix(in sRGB, var(--accent) 10%, transparent);
   color: var(--accent);
   font-size: 0.78em;
   font-weight: 500;
@@ -436,7 +436,7 @@ select.cfg-input { cursor: pointer; }
   transition: background 0.2s, border-color 0.2s;
 }
 .card-retry-btn:hover {
-  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  background: color-mix(in sRGB, var(--accent) 20%, transparent);
   border-color: var(--accent);
 }
 .card-retry-btn:active {
@@ -490,3 +490,89 @@ select.cfg-input { cursor: pointer; }
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* ═══════════════════════════════════════════════════════
+   Stream F (v7.21): Card Anatomy — formal body/footer zones
+   ═══════════════════════════════════════════════════════
+   card__body  — scrollable content area inside a card
+   card__footer — fixed bottom bar (timestamps, stale chip, retry)
+
+   These classes are optional additions — legacy cards use .card-body
+   and .card-footer directly via the layout layer. New FdbCard subclasses
+   should use card__body / card__footer for semantic clarity.
+   ═══════════════════════════════════════════════════════ */
+
+.card__body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.card__footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.3em 0.6em;
+  font-size: 0.75em;
+  opacity: 0.7;
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+}
+
+/* ═══════════════════════════════════════════════════════
+   Stream F (v7.21): Card Loading State
+   ═══════════════════════════════════════════════════════
+   .card-loading — overlay spinner shown while a card fetches data.
+
+   Sits in the components layer (sibling of .card-error and .card-empty).
+   Controlled via aria-busy on the card element or by toggling this class
+   on .card__body.
+
+   Usage:
+     <div class="card-loading" aria-live="polite" aria-label="Loading…">
+       <span class="card-loading__spinner" aria-hidden="true"></span>
+       <span class="card-loading__label">…</span>
+     </div>
+   ═══════════════════════════════════════════════════════ */
+
+.card-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  padding: 1.5em;
+  text-align: center;
+  font-size: 0.85em;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.5));
+}
+
+.card-loading__spinner {
+  display: block;
+  width: 1.6em;
+  height: 1.6em;
+  border: 2px solid color-mix(in sRGB, var(--accent) 20%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: card-spin 0.8s linear infinite;
+}
+
+.card-loading__label {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+@keyframes card-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Reduced motion: replace spinner with a simple pulse */
+@media (prefers-reduced-motion: reduce) {
+  .card-loading__spinner {
+    animation: none;
+    border-color: var(--accent);
+    opacity: 0.6;
+  }
+}
+

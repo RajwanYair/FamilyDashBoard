@@ -1,7 +1,7 @@
 # Card Architecture Audit — FamilyDashBoard v7.21.0
 
-> **Date**: 2026-04-19  
-> **Scope**: All 11 registered cards in `src/cards/`  
+> **Date**: 2026-04-19
+> **Scope**: All 11 registered cards in `src/cards/`
 > **Goal**: Track migration from `initX()` file-scoped pattern → `FdbCard` Web Component subclass
 
 ## Architecture Patterns

@@ -91,3 +91,24 @@ describe("Card enter/leave animations (Sprint 172)", () => {
     expect(animCss).toContain(".card.card--hiding");
   });
 });
+
+// ── Stream F (v7.21): card-loading state ─────────────────────────────────────
+
+describe("Card loading state (Stream F v7.21)", () => {
+  it("defines .card-loading", () => {
+    expect(css).toContain(".card-loading");
+  });
+  it("defines .card-loading__spinner", () => {
+    expect(css).toContain(".card-loading__spinner");
+  });
+  it("defines .card-loading__label", () => {
+    expect(css).toContain(".card-loading__label");
+  });
+  it("defines card-spin keyframe", () => {
+    expect(css).toContain("@keyframes card-spin");
+  });
+  it("respects prefers-reduced-motion for spinner", () => {
+    expect(css).toContain("prefers-reduced-motion");
+  });
+});
+
