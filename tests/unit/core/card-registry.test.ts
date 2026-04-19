@@ -221,6 +221,15 @@ describe("Card Registry — loadCard built-in legacy (stocks)", () => {
     const def = await loadCard("stocks");
     expect(def.id).toBe("stocks");
     expect(typeof def.init).toBe("function");
+    expect("tagName" in def).toBe(true);
+    expect("elementClass" in def).toBe(true);
+  });
+
+  it("renders stocks as the custom element host", async () => {
+    const def = await loadCard("stocks");
+    const el = def.render();
+    expect(el).toBeInstanceOf(HTMLElement);
+    expect(el.tagName).toBe("FDB-STOCKS");
   });
 });
 

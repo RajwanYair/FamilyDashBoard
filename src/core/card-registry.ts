@@ -251,19 +251,29 @@ registerCard({
   icon: "📈",
   titleHe: "מניות",
   titleEn: "Stocks",
-  load: async (): Promise<CardDefinition> => {
-    const { initStocksCard, stocksConfigSchema } = await import("@/cards/stocks/stocks");
-    return legacyAdapter(
-      "stocks",
-      "📈",
-      "מניות",
-      "Stocks",
-      2,
-      0,
-      33,
-      initStocksCard,
-      stocksConfigSchema,
-    );
+  load: async (): Promise<FdbCardDefinition> => {
+    const [{ stocksCard }, { FdbStocksCard }] = await Promise.all([
+      import("@/cards/stocks/stocks"),
+      import("@/cards/stocks/fdb-stocks"),
+    ]);
+
+    return {
+      ...stocksCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-stocks");
+        element.setAttribute("data-card-id", "stocks");
+        element.setAttribute("data-card-size", stocksCard.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      destroy(): void {
+        // Lifecycle is owned by the custom element's disconnect() hook.
+      },
+      elementClass: FdbStocksCard,
+      tagName: "fdb-stocks",
+    };
   },
 });
 

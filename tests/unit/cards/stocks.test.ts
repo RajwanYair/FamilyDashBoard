@@ -19,11 +19,13 @@ import {
   renderStocksShell,
   applyHiddenStocks,
   initStocksCard,
+  destroyStocksCard,
   formatVolume,
   priceInRange52w,
   sectorEmoji,
   portfolioChange,
   marketStatusLabel,
+  stocksCard,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear } from "@/core/cache";
@@ -229,6 +231,39 @@ describe("Stocks — getMarketStatus (v6.1)", () => {
   it("returns a valid status string", () => {
     const valid = ["pre", "open", "after", "closed"];
     expect(valid).toContain(getMarketStatus());
+  });
+});
+
+describe("Stocks — destroyStocksCard", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    document.body.innerHTML = "";
+  });
+
+  it("clears init timers without throwing", () => {
+    vi.useFakeTimers();
+    document.body.innerHTML = `
+      <div id="stocks-body"></div>
+      <span id="market-badge"></span>
+      <div id="stk-mkt-countdown"></div>
+    `;
+    initStocksCard();
+
+    expect(() => destroyStocksCard()).not.toThrow();
+  });
+});
+
+describe("Stocks — stocksCard CardDefinition", () => {
+  it("exposes the registry shape for stocks", () => {
+    expect(stocksCard.id).toBe("stocks");
+    expect(stocksCard.icon).toBe("📈");
+    expect(stocksCard.defaultSlot.col).toBe(2);
+  });
+
+  it("render returns a card host element", () => {
+    const el = stocksCard.render();
+    expect(el.tagName).toBe("SECTION");
+    expect((el as HTMLElement).dataset.cardId).toBe("stocks");
   });
 });
 

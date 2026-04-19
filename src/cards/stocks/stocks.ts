@@ -35,7 +35,7 @@ import { loadConfig } from "../../core/config";
 import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
-import type { CardConfigField } from "../../types/card";
+import type { CardConfigField, CardDefinition } from "../../types/card";
 
 // ── Helpers ──
 export function fmtPrice(price: number, sym: string): string {
@@ -218,6 +218,9 @@ export function getMinutesToNextTransition(): number {
 
 let _marketBadgeEl: HTMLElement | null = null;
 let _statusMarketChip: HTMLElement | null = null;
+let _marketBadgeInterval: number | null = null;
+let _marketCountdownInterval: number | null = null;
+let _stocksRefreshInterval: number | null = null;
 
 export function updateMarketBadge(): void {
   if (!_marketBadgeEl?.isConnected) {
@@ -606,7 +609,7 @@ async function loadStockSingle(sym: string): Promise<boolean> {
 }
 
 // ── Load all stocks ──
-async function loadAllStocks(): Promise<void> {
+export async function loadAllStocks(): Promise<void> {
   if (!isPageVisible() || !acquireLock("stocks")) return;
   setSync("stocks", "loading");
 
@@ -858,15 +861,39 @@ export function initStocksCard(): void {
   applyHiddenStocks();
   updateMarketBadge();
   updateMarketCountdown();
+  if (_marketBadgeInterval !== null) clearInterval(_marketBadgeInterval);
+  if (_marketCountdownInterval !== null) clearInterval(_marketCountdownInterval);
+  if (_stocksRefreshInterval !== null) clearInterval(_stocksRefreshInterval);
   // Refresh badge and countdown every minute so they stay accurate
-  setInterval(updateMarketBadge, INTERVALS.MARKET_BADGE);
-  setInterval(updateMarketCountdown, INTERVALS.MARKET_BADGE);
+  _marketBadgeInterval = window.setInterval(
+    updateMarketBadge,
+    INTERVALS.MARKET_BADGE,
+  );
+  _marketCountdownInterval = window.setInterval(
+    updateMarketCountdown,
+    INTERVALS.MARKET_BADGE,
+  );
   void loadAllStocks();
-  scheduleCard(
+  _stocksRefreshInterval = scheduleCard(
     loadAllStocks,
     isMarketOpen() ? INTERVALS.STOCKS_OPEN : INTERVALS.STOCKS_CLOSED,
   );
   diagLog("FDB-047: [stocks] Initialized");
+}
+
+export function destroyStocksCard(): void {
+  if (_marketBadgeInterval !== null) {
+    clearInterval(_marketBadgeInterval);
+    _marketBadgeInterval = null;
+  }
+  if (_marketCountdownInterval !== null) {
+    clearInterval(_marketCountdownInterval);
+    _marketCountdownInterval = null;
+  }
+  if (_stocksRefreshInterval !== null) {
+    clearInterval(_stocksRefreshInterval);
+    _stocksRefreshInterval = null;
+  }
 }
 
 // ── Sprint 136: configSchema ────────────────────────────────────────────────
@@ -890,3 +917,22 @@ export const stocksConfigSchema: CardConfigField[] = [
     group: "תצוגה",
   },
 ];
+
+export const stocksCard: CardDefinition = {
+  id: "stocks",
+  icon: "📈",
+  titleHe: "מניות",
+  titleEn: "Stocks",
+  defaultSlot: { col: 2, order: 0, flexGrow: 33, hidden: false },
+  defaultSize: "md",
+  render(): HTMLElement {
+    const section = document.createElement("section");
+    section.className = "card";
+    section.dataset.cardId = "stocks";
+    section.setAttribute("aria-label", "Stocks");
+    return section;
+  },
+  init: initStocksCard,
+  destroy: destroyStocksCard,
+  configSchema: stocksConfigSchema,
+};
