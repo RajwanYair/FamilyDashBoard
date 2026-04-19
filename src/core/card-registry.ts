@@ -12,7 +12,7 @@
  *   loadCard(id)                — dynamically import + return CardDefinition
  */
 
-import type { CardDefinition, CardRegistryEntry, CardConfigField } from "@/types/card";
+import type { CardDefinition, CardRegistryEntry, CardConfigField, CardShell } from "@/types/card";
 
 // ── Internal registry map ──────────────────────────────────────────────────
 
@@ -64,18 +64,46 @@ export async function loadCard(id: string): Promise<CardDefinition> {
  * Throws if the card id is not registered.
  *
  * @param id - Registered card id (e.g. `"weather"`, `"news"`)
- * @returns `{ root, body }` — minimal CardShell for the card
+ * @returns CardShell with root, body, header, and footer elements
  */
-export function createShell(id: string): { root: HTMLElement; body: HTMLElement } {
+export function createShell(id: string): CardShell {
   const entry = _registry.get(id);
   if (!entry) throw new Error(`Card not registered: "${id}"`);
+
   const root = document.createElement("section");
   root.dataset["cardId"] = id;
+  root.className = "card";
   root.setAttribute("aria-label", `${entry.icon} ${entry.titleHe}`);
+
+  // Header: icon + title + sync dot
+  const header = document.createElement("header");
+  header.className = "card__header";
+
+  const titleSpan = document.createElement("span");
+  titleSpan.className = "card__title";
+  titleSpan.setAttribute("data-card-title", "");
+  titleSpan.textContent = `${entry.icon} ${entry.titleHe}`;
+  header.appendChild(titleSpan);
+
+  const syncDot = document.createElement("span");
+  syncDot.className = "sync-dot";
+  syncDot.id = `sync-${id}`;
+  syncDot.setAttribute("aria-hidden", "true");
+  header.appendChild(syncDot);
+
+  root.appendChild(header);
+
+  // Body: main content area
   const body = document.createElement("div");
-  body.className = "card-body";
+  body.className = "card__body";
   root.appendChild(body);
-  return { root, body };
+
+  // Footer: stale chip slot + actions
+  const footer = document.createElement("footer");
+  footer.className = "card__footer";
+  root.appendChild(footer);
+
+  return { root, body, header, footer };
 }
 
 // ── Built-in card registrations ────────────────────────────────────────────

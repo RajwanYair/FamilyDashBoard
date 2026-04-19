@@ -237,18 +237,19 @@ describe("Card Registry — loadCard built-in legacy (motivation)", () => {
   });
 });
 
-// ── createShell (Sprint 68) ────────────────────────────────────────────────
+// ── createShell (Sprint 68, enhanced Sprint 134) ─────────────────────────
 
 describe("createShell", () => {
-  it("returns root <section> with data-card-id", () => {
+  it("returns root <section> with data-card-id and .card class", () => {
     const { root } = createShell("motivation");
     expect(root.tagName).toBe("SECTION");
     expect(root.dataset["cardId"]).toBe("motivation");
+    expect(root.className).toBe("card");
   });
 
-  it("returns a body div.card-body inside root", () => {
+  it("returns a body div.card__body inside root", () => {
     const { root, body } = createShell("motivation");
-    expect(body.className).toBe("card-body");
+    expect(body.className).toBe("card__body");
     expect(root.contains(body)).toBe(true);
   });
 
@@ -259,6 +260,32 @@ describe("createShell", () => {
 
   it("throws for unknown card id", () => {
     expect(() => createShell("__no_such_card__")).toThrow(/not registered/);
+  });
+
+  it("returns header with title and sync dot (Sprint 134)", () => {
+    const { header } = createShell("motivation");
+    expect(header).toBeDefined();
+    expect(header!.className).toBe("card__header");
+    const title = header!.querySelector("[data-card-title]");
+    expect(title).toBeTruthy();
+    expect(title!.textContent).toContain("💡");
+    const syncDot = header!.querySelector(".sync-dot");
+    expect(syncDot).toBeTruthy();
+    expect(syncDot!.id).toBe("sync-motivation");
+  });
+
+  it("returns footer element (Sprint 134)", () => {
+    const { footer } = createShell("motivation");
+    expect(footer).toBeDefined();
+    expect(footer!.className).toBe("card__footer");
+  });
+
+  it("header → body → footer order in DOM (Sprint 134)", () => {
+    const { root, header, body, footer } = createShell("motivation");
+    const children = Array.from(root.children);
+    expect(children[0]).toBe(header);
+    expect(children[1]).toBe(body);
+    expect(children[2]).toBe(footer);
   });
 });
 
