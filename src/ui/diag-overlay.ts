@@ -14,7 +14,7 @@ import { isWorkerEnabled } from "../core/constants";
 import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard } from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 import { getErrors, clearErrors, formatErrorEntry, getErrorCount } from "../core/error-tracker";
-import { getPerfVitals, formatVital, rateVital, hasPerfSupport } from "../core/perf";
+import { getPerfVitals, formatVital, rateVital, hasPerfSupport, getCardTimings } from "../core/perf";
 import { idbEstimateSize } from "../core/idb-cache";
 import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
 import { getAllProviderHealth } from "../core/provider";
@@ -140,7 +140,7 @@ function renderStats(): void {
     🖥️ HW: <span style="color:${hwColor}"><b>${formatHardwareProfile()}</b></span>
   </div>`;
 
-  panes.innerHTML = html + vitalsHtml + hwHtml + renderProviderHealthHtml();
+  panes.innerHTML = html + vitalsHtml + hwHtml + renderCardTimingsHtml() + renderProviderHealthHtml();
 
   // Async IDB size update (v7.10 — non-blocking)
   void idbEstimateSize().then((bytes) => {
@@ -149,6 +149,22 @@ function renderStats(): void {
     const idbMB = (bytes / (1024 * 1024)).toFixed(2);
     idbEl.innerHTML = `💾 IDB storage: <b>${idbMB} MB</b>`;
   });
+}
+
+// ── Sprint 159: card init timing breakdown ──
+
+function renderCardTimingsHtml(): string {
+  const timings = getCardTimings();
+  if (timings.size === 0) return "";
+  const sorted = [...timings.entries()].sort((a, b) => b[1] - a[1]);
+  const rows = sorted.map(([id, ms]) => {
+    const color = ms < 5 ? "var(--positive)" : ms < 20 ? "var(--warning)" : "var(--negative)";
+    return `<tr><td>${id}</td><td style="color:${color};text-align:end"><b>${ms.toFixed(1)}ms</b></td></tr>`;
+  }).join("");
+  return `<div style="margin-top:6px;font-size:0.75em">
+    <b>⏱️ Card Init Timing</b>
+    <table style="width:100%;border-collapse:collapse;margin-top:3px">${rows}</table>
+  </div>`;
 }
 
 // ── Provider health table (Sprint 46, enhanced Sprint 93) ──
