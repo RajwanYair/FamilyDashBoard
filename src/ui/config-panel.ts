@@ -746,6 +746,11 @@ export function openConfigPanel(): void {
 }
 
 export function closeConfigPanel(): void {
+  if (_formDirty) {
+    showToast("⚠️ יש שינויים שלא נשמרו — לחץ שמור או סגור שוב", 3000);
+    _formDirty = false; // allow second close without warning
+    return;
+  }
   overlay()?.classList.remove("visible");
   clearDirty();
 }
