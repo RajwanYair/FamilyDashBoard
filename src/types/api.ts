@@ -743,3 +743,90 @@ export function isWorkerResponse(v: unknown): v is WorkerResponse<unknown> {
   );
 }
 
+// ── Domain type guards (Stream W, v7.22) ──────────────────────────────────────
+
+/**
+ * Returns true if `v` is a valid NormalizedWeatherData payload.
+ * Checks that `current` has numeric temperature fields and `daily` is an array.
+ */
+export function isNormalizedWeatherData(v: unknown): v is NormalizedWeatherData {
+  if (typeof v !== "object" || v === null) return false;
+  const r = v as Record<string, unknown>;
+  if (typeof r["current"] !== "object" || r["current"] === null) return false;
+  const c = r["current"] as Record<string, unknown>;
+  return (
+    typeof c["tempC"] === "number" &&
+    typeof c["feelsLikeC"] === "number" &&
+    typeof c["humidity"] === "number" &&
+    typeof c["windKph"] === "number" &&
+    Array.isArray(r["daily"]) &&
+    Array.isArray(r["hourly"])
+  );
+}
+
+/**
+ * Returns true if `v` is a valid NormalizedStock.
+ * Checks that symbol is a non-empty string and price/change fields are numbers.
+ */
+export function isNormalizedStock(v: unknown): v is NormalizedStock {
+  if (typeof v !== "object" || v === null) return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r["symbol"] === "string" &&
+    r["symbol"].length > 0 &&
+    typeof r["price"] === "number" &&
+    typeof r["change"] === "number" &&
+    typeof r["changePercent"] === "number" &&
+    typeof r["currency"] === "string" &&
+    typeof r["previousClose"] === "number"
+  );
+}
+
+/**
+ * Returns true if `v` is a valid NormalizedCurrencyRates payload.
+ * Checks that base is a non-empty string, rates is a non-empty object, and updatedAt is a string.
+ */
+export function isNormalizedCurrencyRates(v: unknown): v is NormalizedCurrencyRates {
+  if (typeof v !== "object" || v === null) return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r["base"] === "string" &&
+    r["base"].length > 0 &&
+    typeof r["rates"] === "object" &&
+    r["rates"] !== null &&
+    !Array.isArray(r["rates"]) &&
+    typeof r["updatedAt"] === "string"
+  );
+}
+
+/**
+ * Returns true if `v` is a valid NormalizedNewsItem.
+ * Checks required string fields title, url, pubDate, source.
+ */
+export function isNormalizedNewsItem(v: unknown): v is NormalizedNewsItem {
+  if (typeof v !== "object" || v === null) return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r["title"] === "string" &&
+    typeof r["url"] === "string" &&
+    typeof r["pubDate"] === "string" &&
+    typeof r["source"] === "string"
+  );
+}
+
+/**
+ * Returns true if `v` is a valid NormalizedAlertEvent.
+ * Checks required fields id, title, areas (array), timestamp, active (boolean).
+ */
+export function isNormalizedAlertEvent(v: unknown): v is NormalizedAlertEvent {
+  if (typeof v !== "object" || v === null) return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r["id"] === "string" &&
+    typeof r["title"] === "string" &&
+    Array.isArray(r["areas"]) &&
+    typeof r["timestamp"] === "string" &&
+    typeof r["active"] === "boolean"
+  );
+}
+

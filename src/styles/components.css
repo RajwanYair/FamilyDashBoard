@@ -630,7 +630,7 @@ select.cfg-input { cursor: pointer; }
   gap: 0.3em;
   padding: 0.15em 0.5em;
   border-radius: 0.25em;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  background: color-mix(in sRGB, var(--accent) 15%, transparent);
   color: var(--accent);
   font-size: 0.7em;
   font-weight: 700;
@@ -652,9 +652,9 @@ select.cfg-input { cursor: pointer; }
   border-radius: 0.25em;
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--accent) 10%, transparent) 25%,
-    color-mix(in srgb, var(--accent) 20%, transparent) 50%,
-    color-mix(in srgb, var(--accent) 10%, transparent) 75%
+    color-mix(in sRGB, var(--accent) 10%, transparent) 25%,
+    color-mix(in sRGB, var(--accent) 20%, transparent) 50%,
+    color-mix(in sRGB, var(--accent) 10%, transparent) 75%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
