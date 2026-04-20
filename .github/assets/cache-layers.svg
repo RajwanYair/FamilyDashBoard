@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13">
+  <rect width="860" height="400" rx="12" fill="#0f172a"/>
+
+  <!-- Title -->
+  <text x="430" y="30" fill="#94a3b8" font-size="14" text-anchor="middle" font-weight="bold">FamilyDashBoard — Cache Layers</text>
+
+  <!-- Layer 1: Memory (L1) -->
+  <rect x="60" y="55" width="740" height="72" rx="10" fill="#1e293b" stroke="#6366f1" stroke-width="2"/>
+  <text x="100" y="82" fill="#a5b4fc" font-weight="bold" font-size="14">L1 — In-Memory Map</text>
+  <text x="100" y="102" fill="#64748b" font-size="12">cacheMap: Map&lt;string, {data, ts}&gt; · TTL-checked on cGet() · cleared on page reload</text>
+  <text x="710" y="82" fill="#6366f1" font-size="11" text-anchor="middle">⚡ ~0ms</text>
+  <text x="710" y="102" fill="#475569" font-size="11" text-anchor="middle">in-process</text>
+
+  <!-- Layer 2: localStorage -->
+  <rect x="60" y="155" width="740" height="72" rx="10" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+  <text x="100" y="182" fill="#6ee7b7" font-weight="bold" font-size="14">L2 — localStorage</text>
+  <text x="100" y="202" fill="#64748b" font-size="12">dash_v2_* keys · JSON-serialized · survives page reload · 5 MB limit</text>
+  <text x="710" y="182" fill="#10b981" font-size="11" text-anchor="middle">⚡ &lt;1ms</text>
+  <text x="710" y="202" fill="#475569" font-size="11" text-anchor="middle">sync read</text>
+
+  <!-- Layer 3: IndexedDB (IDB) -->
+  <rect x="60" y="255" width="740" height="72" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+  <text x="100" y="282" fill="#fcd34d" font-weight="bold" font-size="14">L3 — IndexedDB (idb-cache.ts)</text>
+  <text x="100" y="302" fill="#64748b" font-size="12">fdb-cache store · async get/set · large payloads · survives hard reload · no size limit</text>
+  <text x="710" y="282" fill="#f59e0b" font-size="11" text-anchor="middle">~5–20ms</text>
+  <text x="710" y="302" fill="#475569" font-size="11" text-anchor="middle">async</text>
+
+  <!-- Layer 4: SW Cache -->
+  <rect x="60" y="340" width="740" height="44" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="100" y="360" fill="#c4b5fd" font-weight="bold" font-size="13">SW — Service Worker Cache (sw.js)</text>
+  <text x="100" y="376" fill="#64748b" font-size="11">static assets only · cache-first strategy · no API data · versioned by CACHE_NAME</text>
+  <text x="710" y="368" fill="#8b5cf6" font-size="11" text-anchor="middle">offline</text>
+
+  <!-- Flow arrows -->
+  <line x1="430" y1="127" x2="430" y2="153" stroke="#475569" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="430" y1="227" x2="430" y2="253" stroke="#475569" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="430" y1="327" x2="430" y2="338" stroke="#475569" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- Hit / Miss labels -->
+  <text x="445" y="143" fill="#475569" font-size="11">miss → promote to L1 on hit</text>
+  <text x="445" y="243" fill="#475569" font-size="11">miss → promote to L2 on hit</text>
+
+  <!-- cGet / cSet legend -->
+  <text x="60" y="396" fill="#475569" font-size="11">cGet(key, ttl) — checks L1 → L2 → IDB in order · cSet(key, data) — writes L1 + L2</text>
+
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#475569"/>
+    </marker>
+  </defs>
+</svg>
