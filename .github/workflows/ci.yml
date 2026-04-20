@@ -149,3 +149,5 @@ jobs:
         run: npx vite build
       - name: Bundle size check
         run: node scripts/check-bundle-size.mjs
+      - name: SW version check
+        run: node scripts/check-sw-version.mjs
