@@ -3,7 +3,7 @@ applyTo: "tests/**"
 description: "Use when: writing or reviewing test files under tests/. Vitest patterns, mock conventions, and FamilyDashBoard test rules."
 ---
 
-# Test Instructions — FamilyDashBoard v8.5.0
+# Test Instructions — FamilyDashBoard v8.7.0
 
 > Apply these rules to every file under `tests/`. See `copilot-instructions.md` for cross-cutting project rules.
 
@@ -57,6 +57,10 @@ import {
 - `cGet()` and `cGetStale()` return `null` (not `undefined`) on miss — check `!== null`
 - Mock return value for a cache hit: `vi.mocked(cGet).mockReturnValue(fixture)`
 - Mock return value for a cache miss: `vi.mocked(cGet).mockReturnValue(null)` (this is the default from `makeCacheMocks()`)
+- For async cache (`cGetAsync` / `cGetStaleAsync`): mock with `vi.fn().mockResolvedValue(fixture)` for hits, `vi.fn().mockResolvedValue(null)` for misses
+- For async cache writes (`cSetAsync`): mock with `vi.fn().mockResolvedValue(undefined)`
+- After calling a function that uses async cache, drain microtasks: `for (let i = 0; i < 20; i++) await Promise.resolve()`
+- Async cache mock factory: include both sync and async variants in `vi.mock("@/core/cache", () => ({ cGet: vi.fn().mockReturnValue(null), cGetStale: vi.fn().mockReturnValue(null), cSet: vi.fn(), cGetAsync: vi.fn().mockResolvedValue(null), cGetStaleAsync: vi.fn().mockResolvedValue(null), cSetAsync: vi.fn().mockResolvedValue(undefined) }))`
 
 ## DOM Tests
 

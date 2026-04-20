@@ -3,7 +3,7 @@ applyTo: "src/**/*.ts"
 description: "Use when: writing or reviewing TypeScript source files in src/. Rules for types, async, modules, and FamilyDashBoard conventions."
 ---
 
-# TypeScript Instructions — FamilyDashBoard v8.5.0
+# TypeScript Instructions — FamilyDashBoard v8.7.0
 
 > Apply these rules to every `.ts` file under `src/`. Rules in `copilot-instructions.md` take precedence for cross-cutting concerns.
 
@@ -66,7 +66,10 @@ description: "Use when: writing or reviewing TypeScript source files in src/. Ru
 ## Cache & State Access
 
 - Dual-layer cache: in-memory `Map` (fast) + `localStorage` (persistent) + IDB (L2 async)
-- All API data: `cSet`/`cGet`/`cGetStale` — never write to `localStorage` directly from a card
+- All API data: `cSet`/`cGet`/`cGetStale` for sync reads; `cSetAsync`/`cGetAsync`/`cGetStaleAsync` for async IDB writes
+- Card loaders use `await cGetAsync(key, ttl)` for fresh reads, `await cGetStaleAsync(key)` for stale reads, `await cSetAsync(key, data)` for writes
+- `cGetAsync()` / `cGetStaleAsync()` return `null` (not `undefined`) on cache miss — check `!== null`
+- Never write to `localStorage` directly from a card — always use the cache API
 - Reactive state singleton: `state.get()` / `state.set()` / `state.on()` — no global variables for UI state
 - `state._resetForTest()` / `cache._resetForTest()` in test `afterEach` — not `vi.resetModules()`
 
