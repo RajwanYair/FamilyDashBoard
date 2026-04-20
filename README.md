@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-8.5.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-3087_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-8.6.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-3143_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -253,7 +253,7 @@ FamilyDashBoard/
 │   ├── types/              # TypeScript type definitions (api · config · card)
 │   └── public/             # Static assets (icon.svg, manifest.webmanifest)
 ├── tests/
-│   ├── unit/               # Vitest — 2958+ tests / 80 suites
+│   ├── unit/               # Vitest — 3143+ tests / 94 suites
 │   └── integration/        # Integration-level tests
 ├── worker/                 # Cloudflare Worker (API proxy + normalization)
 │   └── src/routes/         # Per-provider route handlers

@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v8.5.0
+/* FamilyDashBoard ServiceWorker — v8.6.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * See CHANGELOG.md for full version history. */
@@ -7,6 +7,7 @@ const CACHE_NAME = "familydashboard-v__APP_VERSION__";
 const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v7.10: APP_SHELL updated — BestDashBoard.html removed, index.html added
 // v8.5.0: Stream SW.1 — auto-precache manifest extends APP_SHELL at install
+// v8.6.0: Stream SW.2 — background sync error queue (_queueErrorReport, _flushErrorQueue)
 const APP_SHELL = [
   "./index.html",
   "./manifest.webmanifest",
@@ -22,7 +23,9 @@ const APP_SHELL = [
  */
 async function _loadPrecacheManifest() {
   try {
-    const resp = await fetch("./sw-precache-manifest.json", { cache: "no-store" });
+    const resp = await fetch("./sw-precache-manifest.json", {
+      cache: "no-store",
+    });
     if (!resp.ok) return APP_SHELL;
     /** @type {unknown} */
     const data = await resp.json();
@@ -91,7 +94,7 @@ const OFFLINE_HTML = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta chars
 self.addEventListener("install", (event) => {
   event.waitUntil(
     _loadPrecacheManifest().then((urls) =>
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(urls))
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(urls)),
     ),
     // Note: skipWaiting() is triggered by the page via postMessage({type:'SKIP_WAITING'})
     // so the user is notified before the SW activates (F101).
@@ -250,10 +253,15 @@ const ERROR_POST_URL = "https://fdb.rajwanyair.workers.dev/api/errors";
 async function _queueErrorReport(payload) {
   try {
     const cache = await caches.open(ERROR_QUEUE_CACHE);
-    const key = new Request(`/fdb-error-queue/${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    await cache.put(key, new Response(JSON.stringify(payload), {
-      headers: { "Content-Type": "application/json" },
-    }));
+    const key = new Request(
+      `/fdb-error-queue/${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    await cache.put(
+      key,
+      new Response(JSON.stringify(payload), {
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
   } catch {
     // Non-fatal: if queue fails we lose the report but never crash the SW
   }

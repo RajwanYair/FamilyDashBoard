@@ -5,6 +5,54 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.6.0] — 2025-07-20
+
+> **3143 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Stream W.3 — HebCal Worker KV Stale Fallback
+
+- **`worker/src/routes/data.ts`**: `handleHebcal` and `handleHebcalHolidays` read KV stale data on upstream failure; on fresh response writes to KV for next stale read
+
+### Stream D2.3 — Stocks `cSetAsync`
+
+- **`src/cards/stocks/stocks.ts`**: `loadStockSingle` migrated to `cSetAsync` for IDB-persistent stock price cache; removes synchronous `cSet` blocking the render loop
+
+### Stream E.2 — Config Import Schema Validation
+
+- **`src/ui/config-panel.ts`**: `importSettings()` validates `configVersion` is a positive integer before saving; rejects malformed imports with user-visible error
+
+### Stream W.4 — Worker Alerts `workerEnvelope`
+
+- **`worker/src/routes/feeds.ts`**: `handleAlerts` uses `workerEnvelope(data, "tzevaadom", false, 60)` for normalized Tzeva Adom response aligned with `WorkerResponse<T>` contract
+
+### Stream F.2 — CSS Deduplication + Shared Card States
+
+- **`src/styles/components.css`**: Removed duplicate Sprint 110 `.card-error` and Sprint 111 `.card-empty` blocks; canonical `.card-skeleton`, `.card-stale`, `.card-stale__chip` definitions co-located with merge comments
+
+### Stream J.3 — ADR-011 Worker Normalization Contract
+
+- **`docs/adr/ADR-011-worker-normalization-contract.md`**: New ADR documenting the `WorkerResponse<T>` envelope contract, versioning strategy, and migration guide for all worker routes
+
+### Stream I.3 — SKILL.md Verification Sections
+
+- **`.github/skills/add-api/SKILL.md`**: Added machine-verifiable `## Verification` checklist with pass/fail criteria for each step of the add-API workflow
+
+### Stream SW.2 — Background Sync Error Queue
+
+- **`sw.js`**: Added `_queueErrorReport(payload)` (stores failed POSTs to Cache API), `_flushErrorQueue()` (drains queue on reconnect), `QUEUE_ERROR_REPORT` message handler, and `"error-report"` Background Sync event listener
+
+### Stream D2.4 — Motivation Card `createAsyncCardLoader` Migration
+
+- **`src/cards/motivation/motivation.ts`**: Exports `loadMotivation = createAsyncCardLoader<MotivationQuote>(...)` for IDB-backed scheduled refreshes; `initMotivationCard()` renders synchronously on first call then delegates to `scheduleCard(loadMotivation, ...)`
+
+### Stream J.4 — tsconfig Deprecated Options Audit
+
+- **`worker/tsconfig.json`**: Removed `noUnusedLocals`, `noUnusedParameters`, `noUncheckedIndexedAccess` (all inherited from `base-node.json`)
+- **`tooling/tsconfig/base-typescript.json`**: Removed `isolatedModules` (implied by `verbatimModuleSyntax`) and `forceConsistentCasingInFileNames` (TS 5.4+ always-on default)
+- **`tooling/tsconfig/base-node.json`**: Removed `allowSyntheticDefaultImports` (implied by `esModuleInterop`)
+
+---
+
 ## [8.5.0] — 2026-07-10
 
 > **3129 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
