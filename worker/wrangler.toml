@@ -8,3 +8,10 @@ ENVIRONMENT = "production"
 # Cache API responses at the edge
 [cache]
 default_ttl = 300  # 5 minutes
+
+# KV namespace for stale-fallback cache (Stream W.2)
+# Create via: wrangler kv:namespace create CACHE_KV
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "PLACEHOLDER_KV_ID"
+preview_id = "PLACEHOLDER_KV_PREVIEW_ID"

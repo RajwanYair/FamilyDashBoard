@@ -26,10 +26,12 @@ import { logRequest } from "./middleware/log";
 
 export interface Env {
   ENVIRONMENT: string;
+  /** KV namespace for stale-fallback cache (Stream W.2). */
+  CACHE_KV: KVNamespace;
 }
 
 export default {
-  async fetch(request: Request, _env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const startMs = Date.now();
 
     // CORS preflight
@@ -46,8 +48,8 @@ export default {
     try {
       if (path === "/health")
         response = jsonResponse({ ok: true, status: "healthy", ts: Date.now() });
-      else if (path === "/api/weather") response = await handleWeather(url);
-      else if (path === "/api/currency") response = await handleCurrency();
+      else if (path === "/api/weather") response = await handleWeather(url, env);
+      else if (path === "/api/currency") response = await handleCurrency(env);
       else if (path === "/api/hebcal") response = await handleHebcal(url);
       else if (path === "/api/hebcal/holidays") response = await handleHebcalHolidays(url);
       else if (path === "/api/stocks") response = await handleStocks(url);
