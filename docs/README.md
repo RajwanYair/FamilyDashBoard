@@ -30,6 +30,15 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [../SUPPORT.md](../SUPPORT.md)                                                                             | Support and operator guidance                      |
 | [../SECURITY.md](../SECURITY.md)                                                                           | Security policy                                    |
 
+## Technical Guides
+
+| File | Purpose |
+|---|---|
+| [adding-a-card.md](adding-a-card.md) | Step-by-step guide for adding a new card |
+| [deployment.md](deployment.md) | GitHub Pages and Cloudflare Pages deployment |
+| [data-sources.md](data-sources.md) | All external APIs, worker routes, cache keys, and failure modes |
+| [card-architecture-audit.md](card-architecture-audit.md) | Card migration audit: FdbCard adoption status |
+
 ## Documentation Rules
 
 - Top-level docs must describe the modular TypeScript app, not the archived single-file dashboard.
