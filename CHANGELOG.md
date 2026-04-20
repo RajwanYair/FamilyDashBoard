@@ -5,6 +5,42 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.7.0] — 2026-04-20
+
+> **3153 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Stream D2.5 — Calendar + Hebrew-Cal Async IDB Cache
+
+- **`src/cards/calendar/calendar.ts`**: `loadCalendar()` + `fetchICSWithCache()` migrated to `cGetAsync`/`cGetStaleAsync`/`cSetAsync`; `loadExtraEventsFromCache()` uses `cGetStale` (correct stale-read pattern)
+- **`src/cards/hebrew-cal/hebrew-cal.ts`**: All 6 loaders (`loadCandlesHavdala`, `loadHoliday`, `loadOmer`, `loadParasha`, `loadDafYomi`, `loadZmanim`) migrated to async IDB cache
+- **`tests/unit/cards/hebrew-cal.test.ts`**: Mock factory updated to include `cGetAsync`/`cGetStaleAsync`/`cSetAsync`; 19 describe blocks updated to async patterns with microtask drain
+
+### Stream D2.6 — Alerts Async IDB Cache
+
+- **`src/cards/alerts/alerts.ts`**: `loadAlerts()` write migrated from `cSet` to `await cSetAsync`
+- **`tests/unit/cards/alerts.test.ts`**: Catch-block tests updated to spy on `cSetAsync` (reject) instead of `cSet` (throw)
+
+### Stream W.5 — Stocks Zod Schema + Worker Validation
+
+- **`worker/src/utils/schemas.ts`**: `StocksChartSchema` — validates Yahoo Finance v8 chart shape (meta.regularMarketPrice, currency, symbol) via `StocksChartMetaSchema`/`StocksChartResultSchema`
+- **`worker/src/routes/feeds.ts`**: `handleStocks` validates upstream response against `StocksChartSchema`; returns HTTP 502 on shape mismatch; no longer relies on `proxyResponse` (body consumed by validation)
+- **`tests/unit/worker/worker.test.ts`**: 10 new tests — 6 schema tests + 4 `handleStocks` route tests
+
+### Stream F.3 — CSS Theme Token Audit
+
+- **`src/styles/themes.css`**: All 6 themes (black, blue, matrix, amber, purple, rose) now explicitly define `--positive`, `--negative`, `--warning`; `theme-black` also gains `--text-muted: #7a6e60`
+
+### Stream I.4 — Instruction Files v8.7.0
+
+- **`.github/instructions/typescript.instructions.md`**: Updated to v8.7.0; Cache & State Access section documents `cGetAsync`/`cGetStaleAsync`/`cSetAsync` async patterns
+- **`.github/instructions/tests.instructions.md`**: Updated to v8.7.0; Cache Test Rules section documents async mock patterns and 20-tick microtask drain
+
+### Stream W.6 — Worker OpenAPI Completeness
+
+- **`worker/openapi.yaml`**: Version bumped to 8.7.0; `POST /api/errors` spec added (204 success, 400/405/413/429 errors with full requestBody schema); `GET /api/stocks` gains `502` response for Zod validation failures
+
+---
+
 ## [8.6.0] — 2025-07-20
 
 > **3143 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

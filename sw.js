@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v8.6.0
+/* FamilyDashBoard ServiceWorker — v8.7.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * See CHANGELOG.md for full version history. */
@@ -8,6 +8,7 @@ const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v7.10: APP_SHELL updated — BestDashBoard.html removed, index.html added
 // v8.5.0: Stream SW.1 — auto-precache manifest extends APP_SHELL at install
 // v8.6.0: Stream SW.2 — background sync error queue (_queueErrorReport, _flushErrorQueue)
+// v8.7.0: Stream D2.5/D2.6 — calendar/hebrew-cal/alerts async IDB cache; W.5 Stocks Zod schema; F.3 theme token audit
 const APP_SHELL = [
   "./index.html",
   "./manifest.webmanifest",
