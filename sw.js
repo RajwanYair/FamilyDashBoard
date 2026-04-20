@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v8.4.0
+/* FamilyDashBoard ServiceWorker — v8.5.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * See CHANGELOG.md for full version history. */
@@ -6,12 +6,31 @@
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
 const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v7.10: APP_SHELL updated — BestDashBoard.html removed, index.html added
+// v8.5.0: Stream SW.1 — auto-precache manifest extends APP_SHELL at install
 const APP_SHELL = [
   "./index.html",
   "./manifest.webmanifest",
   "./sw.js",
   "./icon.svg",
 ];
+
+/**
+ * Stream SW.1: Load the auto-generated precache manifest produced by
+ * `scripts/generate-precache.mjs` after each Vite build.
+ * Falls back silently to the static APP_SHELL if unavailable (dev mode / first install).
+ * @returns {Promise<string[]>}
+ */
+async function _loadPrecacheManifest() {
+  try {
+    const resp = await fetch("./sw-precache-manifest.json", { cache: "no-store" });
+    if (!resp.ok) return APP_SHELL;
+    /** @type {unknown} */
+    const data = await resp.json();
+    return Array.isArray(data) && data.length > 0 ? data : APP_SHELL;
+  } catch {
+    return APP_SHELL;
+  }
+}
 
 // F162: API origins to cache for offline fallback (direct APIs + CORS proxies)
 const API_CACHE_ORIGINS = [
@@ -71,7 +90,9 @@ const OFFLINE_HTML = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta chars
 // ── Install: pre-cache the app shell ──────────────────────────────────────
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)),
+    _loadPrecacheManifest().then((urls) =>
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(urls))
+    ),
     // Note: skipWaiting() is triggered by the page via postMessage({type:'SKIP_WAITING'})
     // so the user is notified before the SW activates (F101).
   );

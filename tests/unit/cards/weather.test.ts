@@ -2148,7 +2148,7 @@ describe("Weather — loadWeather uses createAsyncCardLoader (Stream D2.2)", () 
 
   it("loadWeather returns a Promise when page is hidden", async () => {
     const { initWeatherCard, weatherCard: wc } = await import("@/cards/weather/weather");
-    void initWeatherCard, wc; // loaded but not invoked — just check import
+    void initWeatherCard; void wc; // loaded but not invoked — just check import
     // Confirm the card loader pattern is present via init existence
     expect(typeof wc.init).toBe("function");
   });
