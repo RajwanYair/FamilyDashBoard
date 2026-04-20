@@ -550,6 +550,94 @@ describe("Worker — handleCurrency route", () => {
   });
 });
 
+// ── Worker — handleHebcal + handleHebcalHolidays routes (Stream W.3) ─────────
+
+import { handleHebcal, handleHebcalHolidays } from "../../../worker/src/routes/data";
+
+describe("Worker — handleHebcal route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 200 with workerEnvelope on valid upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ items: [{ date: "2024-01-05", title: "Candles", category: "candles", hebrew: "" }] }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+    );
+    const url = new URL("https://worker.dev/api/hebcal?geonameid=293397");
+    const res = await handleHebcal(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { provider: string };
+    expect(body.provider).toBe("hebcal");
+  });
+
+  it("returns 400 when geonameid is non-numeric", async () => {
+    const url = new URL("https://worker.dev/api/hebcal?geonameid=abc!!");
+    const res = await handleHebcal(url, mockEnv);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns KV stale on upstream error", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("bad gateway", { status: 502 }),
+    );
+    const kvGet = vi.fn().mockResolvedValue(
+      JSON.stringify({ items: [{ date: "2024-01-05", title: "Candles", category: "candles", hebrew: "" }], _stale: true }),
+    );
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+    };
+    const url = new URL("https://worker.dev/api/hebcal?geonameid=293397");
+    const res = await handleHebcal(url, envWithKv);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe("Worker — handleHebcalHolidays route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 200 with workerEnvelope on valid upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ items: [{ date: "2024-01-05", title: "Rosh Hashana", category: "holiday", hebrew: "" }] }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+    );
+    const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
+    const res = await handleHebcalHolidays(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { provider: string };
+    expect(body.provider).toBe("hebcal");
+  });
+
+  it("returns 400 when year is out of range", async () => {
+    const url = new URL("https://worker.dev/api/hebcal/holidays?year=1999");
+    const res = await handleHebcalHolidays(url, mockEnv);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns KV stale on upstream error", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("bad gateway", { status: 502 }),
+    );
+    const kvGet = vi.fn().mockResolvedValue(
+      JSON.stringify({ items: [{ date: "2024-01-05", title: "Rosh Hashana", category: "holiday", hebrew: "" }] }),
+    );
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+    };
+    const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
+    const res = await handleHebcalHolidays(url, envWithKv);
+    expect(res.status).toBe(200);
+  });
+});
+
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
 import {

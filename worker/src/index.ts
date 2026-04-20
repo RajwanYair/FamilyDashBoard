@@ -50,8 +50,8 @@ export default {
         response = jsonResponse({ ok: true, status: "healthy", ts: Date.now() });
       else if (path === "/api/weather") response = await handleWeather(url, env);
       else if (path === "/api/currency") response = await handleCurrency(env);
-      else if (path === "/api/hebcal") response = await handleHebcal(url);
-      else if (path === "/api/hebcal/holidays") response = await handleHebcalHolidays(url);
+      else if (path === "/api/hebcal") response = await handleHebcal(url, env);
+      else if (path === "/api/hebcal/holidays") response = await handleHebcalHolidays(url, env);
       else if (path === "/api/stocks") response = await handleStocks(url);
       else if (path === "/api/news") response = await handleNews(url);
       else if (path === "/api/alerts") response = await handleAlerts();

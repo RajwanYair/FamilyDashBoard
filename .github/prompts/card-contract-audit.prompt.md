@@ -28,22 +28,22 @@ Audit all 11 registered cards for a specific interface contract and fix any gaps
 
 ### A) `configSchema` (Stream E.1)
 
-Every `CardDefinition` must have `configSchema: CardConfigField[]`.  
+Every `CardDefinition` must have `configSchema: CardConfigField[]`.
 Check: `grep -r "configSchema" src/cards/`
 
 ### B) `destroy()` lifecycle
 
-Every card that sets intervals or event listeners must export `destroy()`.  
+Every card that sets intervals or event listeners must export `destroy()`.
 Check: search for `setInterval` / `addEventListener` without corresponding `clearInterval` / `removeEventListener`.
 
 ### C) `data-card-id` matching registry ID
 
-Every `<section data-card-id="X">` must use the canonical ID from `card-registry.ts`.  
+Every `<section data-card-id="X">` must use the canonical ID from `card-registry.ts`.
 Forbidden aliases: `hcal`, `cal`, `moti`, `wx`, `curr`.
 
 ### D) `createAsyncCardLoader` (Stream D2)
 
-Cards with network fetches should use `createAsyncCardLoader` (not `createCardLoader`).  
+Cards with network fetches should use `createAsyncCardLoader` (not `createCardLoader`).
 Check: `grep -r "createCardLoader" src/cards/`
 
 ## Steps

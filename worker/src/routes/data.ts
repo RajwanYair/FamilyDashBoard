@@ -111,40 +111,58 @@ export async function handleCurrency(env: Env): Promise<Response> {
   );
 }
 
-export async function handleHebcal(url: URL): Promise<Response> {
+export async function handleHebcal(url: URL, env: Env): Promise<Response> {
   let geonameid: string;
   try {
     geonameid = requireGeoId(url);
   } catch (err) {
     return validationErrorResponse(err as ValidationError);
   }
+  const kvKey = `hebcal:${geonameid}`;
   const res = await fetch(
     `https://www.hebcal.com/shabbat?cfg=json&geonameid=${geonameid}&M=on`,
   );
-  if (!res.ok) return proxyResponse(res, 60);
+  if (!res.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "hebcal-kv-stale", true, 60);
+    return proxyResponse(res, 60);
+  }
   const data: unknown = await res.json();
   const parsed = safeParse(HebcalSchema, data);
   if (!parsed.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "hebcal-kv-stale", true, 60);
     return jsonResponse({ error: "Upstream shape mismatch", detail: parsed.error }, 502);
   }
+  // Write to KV for future stale fallback (6 h TTL)
+  void kvPut(env.CACHE_KV, kvKey, parsed.data, 21600);
   return workerEnvelope(parsed.data, "hebcal", false, 21600); // 6 h
 }
 
-export async function handleHebcalHolidays(url: URL): Promise<Response> {
+export async function handleHebcalHolidays(url: URL, env: Env): Promise<Response> {
   let yearNum: number;
   try {
     yearNum = requireYear(url);
   } catch (err) {
     return validationErrorResponse(err as ValidationError);
   }
+  const kvKey = `hebcal-holidays:${yearNum}`;
   const res = await fetch(
     `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&year=${yearNum}&month=x`,
   );
-  if (!res.ok) return proxyResponse(res, 60);
+  if (!res.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "hebcal-holidays-kv-stale", true, 60);
+    return proxyResponse(res, 60);
+  }
   const data: unknown = await res.json();
   const parsed = safeParse(HebcalHolidaysSchema, data);
   if (!parsed.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "hebcal-holidays-kv-stale", true, 60);
     return jsonResponse({ error: "Upstream shape mismatch", detail: parsed.error }, 502);
   }
+  // Write to KV for future stale fallback (12 h TTL)
+  void kvPut(env.CACHE_KV, kvKey, parsed.data, 43200);
   return workerEnvelope(parsed.data, "hebcal", false, 43200); // 12 h
 }

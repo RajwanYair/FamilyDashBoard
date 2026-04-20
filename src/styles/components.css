@@ -701,29 +701,29 @@ select.cfg-input { cursor: pointer; }
   font-size: 0.72em;
   font-weight: 700;
   line-height: 1.4;
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  background: color-mix(in sRGB, var(--accent) 18%, transparent);
   color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border: 1px solid color-mix(in sRGB, var(--accent) 35%, transparent);
   white-space: nowrap;
   letter-spacing: 0.2px;
 }
 
 .card__badge--positive {
-  background: color-mix(in srgb, var(--positive) 18%, transparent);
+  background: color-mix(in sRGB, var(--positive) 18%, transparent);
   color: var(--positive);
-  border-color: color-mix(in srgb, var(--positive) 35%, transparent);
+  border-color: color-mix(in sRGB, var(--positive) 35%, transparent);
 }
 
 .card__badge--negative {
-  background: color-mix(in srgb, var(--negative) 18%, transparent);
+  background: color-mix(in sRGB, var(--negative) 18%, transparent);
   color: var(--negative);
-  border-color: color-mix(in srgb, var(--negative) 35%, transparent);
+  border-color: color-mix(in sRGB, var(--negative) 35%, transparent);
 }
 
 .card__badge--neutral {
-  background: color-mix(in srgb, var(--text) 10%, transparent);
+  background: color-mix(in sRGB, var(--text) 10%, transparent);
   color: var(--text-secondary, color-mix(in srgb, var(--text) 60%, transparent));
-  border-color: color-mix(in srgb, var(--text) 20%, transparent);
+  border-color: color-mix(in sRGB, var(--text) 20%, transparent);
 }
 
 /* ── Data tile grid container (rule 25: always use tiles, not line lists) ── */
@@ -735,8 +735,8 @@ select.cfg-input { cursor: pointer; }
 
 /* ── Individual data tile ── */
 .card__tile {
-  background: color-mix(in srgb, var(--accent) 6%, var(--bg-card));
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  background: color-mix(in sRGB, var(--accent) 6%, var(--bg-card));
+  border: 1px solid color-mix(in sRGB, var(--accent) 20%, transparent);
   border-radius: var(--radius-sm, 6px);
   padding: 0.45em 0.65em;
   display: flex;
