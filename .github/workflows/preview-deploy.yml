@@ -1,0 +1,105 @@
+name: Preview Deploy
+
+# Deploy a Cloudflare Pages preview for every PR so reviewers can inspect
+# the built dashboard before merging. Posts the preview URL as a PR comment.
+#
+# Required repository secrets (set in Settings → Secrets → Actions):
+#   CF_API_TOKEN   — Cloudflare API token with Pages:Edit permission
+#   CF_ACCOUNT_ID  — Cloudflare account ID (numeric string)
+#
+# The Cloudflare Pages project name is read from CF_PAGES_PROJECT (defaults
+# to "familydashboard") — set as a repository variable if your project name
+# differs.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build & Deploy Preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
+
+      - name: Install dependencies (parent tooling)
+        run: npm ci
+        working-directory: ..
+
+      - name: Build (GitHub Pages base)
+        run: npx vite build
+        working-directory: ${{ github.workspace }}
+        env:
+          NODE_ENV: production
+
+      - name: Deploy to Cloudflare Pages (preview)
+        id: cf-deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: >
+            pages deploy dist
+            --project-name=${{ vars.CF_PAGES_PROJECT || 'familydashboard' }}
+            --branch=pr-${{ github.event.pull_request.number }}
+            --commit-message="PR #${{ github.event.pull_request.number }} preview"
+
+      - name: Post preview URL comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployUrl = '${{ steps.cf-deploy.outputs.deployment-url }}';
+            const prNumber = context.payload.pull_request.number;
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+            const body = [
+              '## Preview Deploy',
+              '',
+              `✅ Preview available at: **${deployUrl}**`,
+              '',
+              `Built from commit \`${sha}\` on branch \`${{ github.head_ref }}\`.`,
+              '',
+              '_This comment is updated on every new push to this PR._',
+            ].join('\n');
+
+            // Find existing bot comment and update it, or create a new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find(
+              c => c.user?.type === 'Bot' && c.body?.includes('## Preview Deploy')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
