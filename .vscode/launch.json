@@ -56,6 +56,49 @@
         "group": "dev",
         "order": 2
       }
+    },
+    {
+      "name": "🐛 Vitest: Debug (breakpoints)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vitest",
+        "run",
+        "--inspect-brk",
+        "--pool=forks",
+        "--poolOptions.forks.singleFork=true"
+      ],
+      "cwd": "${workspaceFolder}",
+      "port": 9229,
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "presentation": {
+        "group": "test",
+        "order": 3
+      }
+    },
+    {
+      "name": "🐛 Vitest: Debug Current File",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vitest",
+        "run",
+        "${relativeFile}",
+        "--inspect-brk",
+        "--pool=forks",
+        "--poolOptions.forks.singleFork=true"
+      ],
+      "cwd": "${workspaceFolder}",
+      "port": 9229,
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "presentation": {
+        "group": "test",
+        "order": 4
+      }
     }
   ]
 }
