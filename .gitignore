@@ -17,6 +17,19 @@ coverage/
 dist/
 tsconfig.tsbuildinfo
 
+# Test / CI artifacts
+vitest-report.json
+final-vitest-report.json
+test-results.json
+vitest_output.txt
+test_results.txt
+tsc_output.txt
+
+# Debug logs (transient)
+git_out.txt
+log.txt
+status.txt
+
 # Misc
 *.log
 *.bak
