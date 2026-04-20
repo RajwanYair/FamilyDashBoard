@@ -151,3 +151,26 @@ jobs:
         run: node scripts/check-bundle-size.mjs
       - name: SW version check
         run: node scripts/check-sw-version.mjs
+
+  lighthouse:
+    name: Lighthouse CI (Accessibility + Performance)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - name: Install Lighthouse CI
+        run: npm install --no-save @lhci/cli@0.14.x
+      - name: Build for Lighthouse
+        run: npx vite build
+      - name: Run Lighthouse CI
+        run: npx lhci autorun || true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
