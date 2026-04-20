@@ -1,6 +1,6 @@
-# Card Architecture Audit — FamilyDashBoard v8.2.0
+# Card Architecture Audit — FamilyDashBoard v8.3.0
 
-> **Date**: 2026-04-19
+> **Date**: 2026-04-20
 > **Scope**: All 11 registered cards in `src/cards/`
 > **Goal**: Track migration from `initX()` file-scoped pattern → `FdbCard` Web Component subclass
 
@@ -17,7 +17,7 @@
 |------|-------------|--------------|--------------|--------|
 | Alerts | `alerts` | `alerts/alerts.ts` | — | ⏳ Legacy |
 | Calendar | `calendar` | `calendar/calendar.ts` | — | ⏳ Legacy |
-| Countdown | `countdown` | `countdown/countdown.ts` | — | ⏳ Legacy |
+| Countdown | `countdown` | `countdown/countdown.ts` | `countdown/fdb-countdown.ts` | ✅ Migrated |
 | Currency | `currency` | `currency/currency.ts` | — | ⏳ Legacy |
 | Hebrew Calendar | `hebrew-cal` | `hebrew-cal/hebrew-cal.ts` | — | ⏳ Legacy |
 | Motivation | `motivation` | `motivation/motivation.ts` | `motivation/fdb-motivation.ts` | ✅ Migrated |
@@ -27,7 +27,7 @@
 | Tasks | `tasks` | `tasks/tasks.ts` | `tasks/fdb-tasks.ts` | ✅ Migrated |
 | Weather | `weather` | `weather/weather.ts` | `weather/fdb-weather.ts` | ✅ Migrated |
 
-**5 / 11 migrated** · **6 / 11 remaining**
+**6 / 11 migrated** · **5 / 11 remaining**
 
 ## Migration Priority
 
