@@ -1,4 +1,4 @@
-import { jsonResponse, proxyResponse, CORS_HEADERS } from "../utils/response";
+import { jsonResponse, proxyResponse, workerEnvelope, CORS_HEADERS } from "../utils/response";
 import { ALLOWED_NEWS_ORIGINS, ALLOWED_CALENDAR_ORIGINS } from "../utils/allowlists";
 import {
   ValidationError,
@@ -46,7 +46,9 @@ export async function handleAlerts(): Promise<Response> {
       Accept: "application/json",
     },
   });
-  return proxyResponse(res, 60); // 1 min
+  if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  const data: unknown = await res.json();
+  return workerEnvelope(data, "tzevaadom", false, 60); // 1 min
 }
 
 export async function handleCalendar(url: URL): Promise<Response> {

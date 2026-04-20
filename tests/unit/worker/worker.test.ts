@@ -638,6 +638,36 @@ describe("Worker — handleHebcalHolidays route", () => {
   });
 });
 
+// ── Worker — handleAlerts route (Stream W.4) ──────────────────────────────────
+
+import { handleAlerts } from "../../../worker/src/routes/feeds";
+
+describe("Worker — handleAlerts route", () => {
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it("returns 200 with workerEnvelope when upstream succeeds", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify([{ id: "a1", area: "Tel Aviv" }]), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const res = await handleAlerts();
+    expect(res.status).toBe(200);
+    const body = await res.json() as { provider: string; data: unknown[] };
+    expect(body.provider).toBe("tzevaadom");
+    expect(Array.isArray(body.data)).toBe(true);
+  });
+
+  it("returns 502 when upstream fails", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("bad gateway", { status: 502 }),
+    );
+    const res = await handleAlerts();
+    expect(res.status).toBe(502);
+  });
+});
+
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
 import {
