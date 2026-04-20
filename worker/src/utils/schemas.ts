@@ -117,6 +117,21 @@ export const StocksChartSchema = z
   })
   .passthrough();
 
+// ── Crypto / CoinGecko ───────────────────────────────────────────────────────
+
+export const CoinGeckoPriceSchema = z
+  .object({
+    usd: z.number(),
+    usd_24h_change: z.number().optional(),
+  })
+  .passthrough();
+
+export const CoinGeckoSchema = z
+  .object({
+    bitcoin: CoinGeckoPriceSchema,
+  })
+  .passthrough();
+
 // ── Helper ────────────────────────────────────────────────────────────────────
 
 /** Parse `data` against `schema`. Returns `{ ok: true, data }` or `{ ok: false, error }`. */

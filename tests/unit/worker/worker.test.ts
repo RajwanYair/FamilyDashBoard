@@ -640,7 +640,7 @@ describe("Worker — handleHebcalHolidays route", () => {
 
 // ── Worker — handleAlerts route (Stream W.4) ──────────────────────────────────
 
-import { handleAlerts, handleStocks } from "../../../worker/src/routes/feeds";
+import { handleAlerts, handleStocks, handleCrypto } from "../../../worker/src/routes/feeds";
 
 describe("Worker — handleAlerts route", () => {
   afterEach(() => { vi.restoreAllMocks(); });
@@ -676,6 +676,7 @@ import {
   HebcalSchema,
   HebcalHolidaysSchema,
   StocksChartSchema,
+  CoinGeckoSchema,
   safeParse,
 } from "../../../worker/src/utils/schemas";
 
@@ -896,6 +897,91 @@ describe("Worker — handleStocks route", () => {
     );
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
     const res = await handleStocks(url);
+    expect(res.status).toBe(502);
+    const body = await res.json() as { error: string };
+    expect(body.error).toContain("schema invalid");
+  });
+});
+
+// ── Zod schemas — CoinGeckoSchema (Stream W.7) ──────────────────────────────
+
+const VALID_CRYPTO = {
+  bitcoin: { usd: 65000, usd_24h_change: 2.3 },
+};
+
+describe("Zod schemas — CoinGeckoSchema", () => {
+  it("accepts valid CoinGecko bitcoin price response", () => {
+    const result = safeParse(CoinGeckoSchema, VALID_CRYPTO);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.data.bitcoin.usd).toBe(65000);
+  });
+
+  it("accepts response without optional usd_24h_change", () => {
+    const result = safeParse(CoinGeckoSchema, { bitcoin: { usd: 50000 } });
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects missing bitcoin key", () => {
+    const result = safeParse(CoinGeckoSchema, { ethereum: { usd: 3000 } });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects non-number usd value", () => {
+    const result = safeParse(CoinGeckoSchema, { bitcoin: { usd: "sixty-five thousand" } });
+    expect(result.ok).toBe(false);
+  });
+
+  it("passes through unknown extra fields", () => {
+    const result = safeParse(CoinGeckoSchema, { bitcoin: { usd: 65000, eur: 60000 } });
+    expect(result.ok).toBe(true);
+  });
+});
+
+// ── Worker — handleCrypto route (Stream W.7) ──────────────────────────────────
+
+describe("Worker — handleCrypto route", () => {
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it("returns 200 JSON with valid CoinGecko bitcoin data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify(VALID_CRYPTO), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin&vs_currencies=usd");
+    const res = await handleCrypto(url);
+    expect(res.status).toBe(200);
+    const body = await res.json() as typeof VALID_CRYPTO;
+    expect(body.bitcoin.usd).toBe(65000);
+  });
+
+  it("returns 400 for non-bitcoin ids", async () => {
+    const url = new URL("https://worker.example.com/api/crypto?ids=ethereum");
+    const res = await handleCrypto(url);
+    expect(res.status).toBe(400);
+    const body = await res.json() as { error: string };
+    expect(body.error).toContain("bitcoin");
+  });
+
+  it("returns 502 when upstream returns non-ok status", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("rate limited", { status: 429 }),
+    );
+    const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
+    const res = await handleCrypto(url);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns 502 when upstream data fails Zod schema validation", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ ethereum: { usd: 3000 } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
+    const res = await handleCrypto(url);
     expect(res.status).toBe(502);
     const body = await res.json() as { error: string };
     expect(body.error).toContain("schema invalid");

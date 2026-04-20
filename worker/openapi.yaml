@@ -294,6 +294,56 @@ paths:
         "429":
           $ref: "#/components/responses/RateLimitError"
 
+  /api/crypto:
+    get:
+      tags: [data]
+      summary: CoinGecko Bitcoin price (validated proxy)
+      description: Proxies the CoinGecko simple/price endpoint for Bitcoin USD. Validates response schema and returns 502 on mismatch.
+      operationId: getCrypto
+      parameters:
+        - name: ids
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [bitcoin]
+            default: bitcoin
+          description: Coin identifier (only bitcoin supported)
+        - name: vs_currencies
+          in: query
+          required: false
+          schema:
+            type: string
+            default: usd
+          description: Target currency (usd)
+      responses:
+        "200":
+          description: CoinGecko bitcoin price (validated + re-serialized)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bitcoin:
+                    type: object
+                    properties:
+                      usd:
+                        type: number
+                        example: 65000
+                      usd_24h_change:
+                        type: number
+                        example: 2.3
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "502":
+          description: Upstream error or schema validation failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
   /api/errors:
     post:
       tags: [health]

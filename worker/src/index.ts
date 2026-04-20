@@ -13,12 +13,13 @@
  *   GET /api/calendar?url=X              → Google Calendar ICS proxy
  *   GET /api/sefaria/calendar             → Sefaria calendars (Daf Yomi)
  *   GET /api/sefaria/text?ref=X           → Sefaria individual text lookup
+ *   GET /api/crypto?ids=bitcoin          → CoinGecko Bitcoin price (validated)
  *   POST /api/errors                      → Client error ingestion (best-effort telemetry)
  */
 
 import { jsonResponse } from "./utils/response";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
-import { handleStocks, handleNews, handleAlerts, handleCalendar, handleSefariaCalendar, handleSefariaText } from "./routes/feeds";
+import { handleStocks, handleNews, handleAlerts, handleCalendar, handleSefariaCalendar, handleSefariaText, handleCrypto } from "./routes/feeds";
 import { handleErrors } from "./routes/errors";
 import { isPreflight, handlePreflight } from "./middleware/cors";
 import { isRateLimited, getClientIp, rateLimitResponse, getRemainingRequests, MAX_REQUESTS_PER_WINDOW } from "./middleware/rate-limit";
@@ -58,6 +59,7 @@ export default {
       else if (path === "/api/calendar") response = await handleCalendar(url);
       else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar();
       else if (path === "/api/sefaria/text") response = await handleSefariaText(url);
+      else if (path === "/api/crypto") response = await handleCrypto(url);
       else if (path === "/api/errors") response = await handleErrors(request);
       else response = jsonResponse({ error: "Not found" }, 404);
     } catch {

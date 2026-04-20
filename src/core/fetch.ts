@@ -80,6 +80,12 @@ function buildWorkerRoute(url: string): string | null {
     return `${WORKER_BASE_URL}/api/sefaria/text?ref=${encodeURIComponent(ref)}`;
   }
 
+  if (parsed.hostname === "api.coingecko.com") {
+    const ids = parsed.searchParams.get("ids") ?? "bitcoin";
+    const vs = parsed.searchParams.get("vs_currencies") ?? "usd";
+    return `${WORKER_BASE_URL}/api/crypto?ids=${encodeURIComponent(ids)}&vs_currencies=${encodeURIComponent(vs)}`;
+  }
+
   return null;
 }
 

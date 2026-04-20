@@ -6,7 +6,7 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../utils/validation";
-import { safeParse, StocksChartSchema } from "../utils/schemas";
+import { safeParse, StocksChartSchema, CoinGeckoSchema } from "../utils/schemas";
 
 export async function handleStocks(url: URL): Promise<Response> {
   let sym: string;
@@ -115,4 +115,39 @@ export async function handleSefariaText(url: URL): Promise<Response> {
   const encoded = encodeURIComponent(ref.trim());
   const res = await fetch(`https://www.sefaria.org/api/v3/texts/${encoded}?context=0&pad=0`);
   return proxyResponse(res, 86400); // 24 h — text content is stable
+}
+
+/**
+ * Proxy CoinGecko Bitcoin price data.
+ * GET /api/crypto?ids=bitcoin&vs_currencies=usd
+ * Returns CoinGecko simple/price JSON, validated with CoinGeckoSchema.
+ */
+export async function handleCrypto(url: URL): Promise<Response> {
+  const ids = url.searchParams.get("ids") ?? "bitcoin";
+  const vsCurrencies = url.searchParams.get("vs_currencies") ?? "usd";
+
+  // Only permit bitcoin to prevent abuse
+  if (ids !== "bitcoin") {
+    return jsonResponse({ error: "Only bitcoin is supported", param: "ids" }, 400);
+  }
+
+  const upstream = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(ids)}&vs_currencies=${encodeURIComponent(vsCurrencies)}&include_24hr_change=true`,
+    { headers: { "User-Agent": "FamilyDashBoard/8.0", Accept: "application/json" } },
+  );
+  if (!upstream.ok) return jsonResponse({ error: `Upstream ${upstream.status}` }, 502);
+
+  const data: unknown = await upstream.json();
+  const validated = safeParse(CoinGeckoSchema, data);
+  if (!validated.ok) {
+    return jsonResponse({ error: "Upstream crypto schema invalid", detail: validated.error }, 502);
+  }
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=300",
+      ...CORS_HEADERS,
+    },
+  });
 }
