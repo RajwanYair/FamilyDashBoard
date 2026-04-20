@@ -184,3 +184,23 @@ export const motivationConfigSchema: CardConfigField[] = [
     group: "motivation",
   },
 ];
+
+// ── Test isolation (Stream G.1) ───────────────────────────────────────────────
+
+/**
+ * Reset all module-level mutable state to defaults.
+ * Use in `beforeEach` instead of `vi.resetModules()` to avoid costly
+ * module re-evaluation.
+ *
+ * @internal — test use only
+ */
+export function _resetMotivationForTest(): void {
+  motiIdx = 0;
+  elText = null;
+  elAuthor = null;
+  _activeCategory = null;
+  if (_motiAutoInterval !== null) {
+    clearInterval(_motiAutoInterval);
+    _motiAutoInterval = null;
+  }
+}

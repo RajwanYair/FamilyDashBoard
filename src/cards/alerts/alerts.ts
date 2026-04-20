@@ -447,3 +447,28 @@ export const alertsConfigSchema: CardConfigField[] = [
     group: "כללי",
   },
 ];
+
+// ── Test isolation (Stream G.1) ───────────────────────────────────────────────
+
+/**
+ * Reset all module-level mutable state to defaults.
+ * Call this in `beforeEach` instead of `vi.resetModules()` to avoid costly
+ * module re-evaluation in tests.
+ *
+ * @internal — test use only
+ */
+export function _resetAlertsForTest(): void {
+  _enabled = true;
+  _lastAlertId = null;
+  _haveActive = false;
+  _unread = 0;
+  if (_timer !== null) {
+    clearTimeout(_timer);
+    _timer = null;
+  }
+  _realtimeMode = false;
+  _beepVolume = 18;
+  elScroll = null;
+  elBadge = null;
+  document.title = "FamilyDashBoard";
+}

@@ -774,3 +774,31 @@ export const newsCard: CardDefinition = {
   destroy: destroyNewsCard,
   configSchema: newsConfigSchema,
 };
+
+// ── Test isolation (Stream G.1) ───────────────────────────────────────────────
+
+/**
+ * Reset all module-level mutable state to defaults.
+ * Use in `beforeEach` instead of `vi.resetModules()` to avoid costly
+ * module re-evaluation.
+ *
+ * @internal — test use only
+ */
+export function _resetNewsForTest(): void {
+  if (_newsRefreshInterval !== null) {
+    clearInterval(_newsRefreshInterval);
+    _newsRefreshInterval = null;
+  }
+  _searchQuery = "";
+  _visited = new Set();
+  _bkmMode = false;
+  _lastItems = [];
+  _bookmarks = new Set();
+  elRssScroll = null;
+  elNewsTicker = null;
+  elBkmPill = null;
+  elSearchInput = null;
+  elSearchClear = null;
+  elSearchCount = null;
+  elNewsCount = null;
+}

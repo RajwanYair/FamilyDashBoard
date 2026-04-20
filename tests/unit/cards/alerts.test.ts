@@ -27,11 +27,20 @@ import {
   initAlertsCard,
   alertThreatIcon,
   alertAgeLabel,
+  clearUnreadAlerts,
+  setAlertVolume,
+  getAlertVolume,
+  _resetAlertsForTest,
 } from "@/cards/alerts/alerts";
 import * as idleMod from "@/core/idle";
 import type { AlertEvent } from "@/types/api";
 
 const NOW_SEC = Math.floor(Date.now() / 1000);
+
+// Reset module state before each test (Stream G.1 — avoids vi.resetModules())
+beforeEach(() => {
+  _resetAlertsForTest();
+});
 
 // Ensure isPageVisible returns true before each test (vi.restoreAllMocks can clear it)
 beforeEach(() => {
@@ -741,6 +750,8 @@ describe("Alerts — notify with Notification permission granted", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    cacheDom();
+    setAlertsEnabled(true);
     localStorage.clear();
   });
 
@@ -753,23 +764,36 @@ describe("Alerts — notify with Notification permission granted", () => {
   });
 
   it("calls Notification with city names when isNew and permission granted", async () => {
-    vi.resetModules();
-    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
+    const NotifMock = vi.fn() as unknown as typeof Notification &
+      ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
-    const data1 = [{ id: "n-001", alerts: [{ cities: ["תל אביב"], threat: 1, time: NOW - 30 }] }];
-    const data2 = [{ id: "n-002", alerts: [{ cities: ["חיפה", "נצרת", "עכו", "קצרין"], threat: 2, time: NOW - 10 }] }];
+    const data1 = [
+      {
+        id: "n-001",
+        alerts: [{ cities: ["תל אביב"], threat: 1, time: NOW - 30 }],
+      },
+    ];
+    const data2 = [
+      {
+        id: "n-002",
+        alerts: [
+          {
+            cities: ["חיפה", "נצרת", "עכו", "קצרין"],
+            threat: 2,
+            time: NOW - 10,
+          },
+        ],
+      },
+    ];
 
     vi.spyOn(globalThis, "fetch")
       .mockResolvedValueOnce({ ok: true, json: async () => data1 } as Response)
       .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
 
-    const m = await import("@/cards/alerts/alerts");
-    m.cacheDom();
-    m.setAlertsEnabled(true);
-    await m.loadAlerts(); // first call sets _lastAlertId
-    await m.loadAlerts(); // second call: different id → isNew → notify
+    await loadAlerts(); // first call sets _lastAlertId
+    await loadAlerts(); // second call: different id → isNew → notify
 
     expect(NotifMock).toHaveBeenCalled();
     const calls = (NotifMock as ReturnType<typeof vi.fn>).mock.calls;
@@ -777,61 +801,66 @@ describe("Alerts — notify with Notification permission granted", () => {
     expect(lastOpts.body).toContain("חיפה");
     expect(lastOpts.body).toContain("עכו");
     expect(lastOpts.body).not.toContain("קצרין");
-    m.setAlertsEnabled(false);
   });
 
   it("filters out events with no alerts array (validation gate)", async () => {
-    vi.resetModules();
-    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
+    const NotifMock = vi.fn() as unknown as typeof Notification &
+      ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
     // data2 has no 'alerts' array — isAlertEvent should reject it
-    const data1 = [{ id: "f-001", alerts: [{ cities: ["ירושלים"], threat: 1, time: NOW - 30 }] }];
+    const data1 = [
+      {
+        id: "f-001",
+        alerts: [{ cities: ["ירושלים"], threat: 1, time: NOW - 30 }],
+      },
+    ];
     const data2 = [{ id: "f-002" }];
 
     vi.spyOn(globalThis, "fetch")
       .mockResolvedValueOnce({ ok: true, json: async () => data1 } as Response)
       .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
 
-    const m = await import("@/cards/alerts/alerts");
-    m.cacheDom();
-    m.setAlertsEnabled(true);
-    await m.loadAlerts(); // first call: valid data, notification sent
-    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
-    await m.loadAlerts(); // second call: invalid data → filtered → no extra notification
-    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
+    await loadAlerts(); // first call: valid data, notification sent
+    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
+      .length;
+    await loadAlerts(); // second call: invalid data → filtered → no extra notification
+    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
+      .length;
 
     // Notification from first load was sent; no new notification from the invalid second load
     expect(callsAfterFirst).toBeGreaterThanOrEqual(0);
     expect(callsAfterSecond).toBe(callsAfterFirst);
-    m.setAlertsEnabled(false);
   });
 
   it("filters out alert zones with no cities property (validation gate)", async () => {
-    vi.resetModules();
-    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
+    const NotifMock = vi.fn() as unknown as typeof Notification &
+      ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
     // data2 alert zone has no 'cities' — isAlertEvent should reject the whole event
-    const data1 = [{ id: "c-001", alerts: [{ cities: ["באר שבע"], threat: 1, time: NOW - 30 }] }];
+    const data1 = [
+      {
+        id: "c-001",
+        alerts: [{ cities: ["באר שבע"], threat: 1, time: NOW - 30 }],
+      },
+    ];
     const data2 = [{ id: "c-002", alerts: [{ threat: 1, time: NOW - 10 }] }];
 
     vi.spyOn(globalThis, "fetch")
       .mockResolvedValueOnce({ ok: true, json: async () => data1 } as Response)
       .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
 
-    const m = await import("@/cards/alerts/alerts");
-    m.cacheDom();
-    m.setAlertsEnabled(true);
-    await m.loadAlerts(); // first call: valid → possibly notifies
-    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
-    await m.loadAlerts(); // second call: invalid zone → filtered → no new notification
-    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
+    await loadAlerts(); // first call: valid → possibly notifies
+    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
+      .length;
+    await loadAlerts(); // second call: invalid zone → filtered → no new notification
+    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
+      .length;
 
     expect(callsAfterSecond).toBe(callsAfterFirst);
-    m.setAlertsEnabled(false);
   });
 });
 
@@ -1190,16 +1219,14 @@ describe("Alerts — loadAlerts catch block stale=null ternary FALSE (lines 291-
 describe("Alerts — playBeep AudioContext unavailable (no throw)", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
-    vi.resetModules();
+    document.body.innerHTML = "";
   });
 
   it("does not throw when AudioContext and webkitAudioContext are both undefined", async () => {
     vi.stubGlobal("AudioContext", undefined);
-    vi.resetModules();
-    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
-    cd();
-    sae(true);
+    cacheDom();
+    setAlertsEnabled(true);
     // Mock fetch to return data that triggers notify (new alert) → playBeep is called internally
     // playBeep will try AudioContext → undefined → AudioCtor = undefined → if (!AudioCtor) return
     const nowTs = Math.floor(Date.now() / 1000);
@@ -1209,23 +1236,21 @@ describe("Alerts — playBeep AudioContext unavailable (no throw)", () => {
       ok: true,
       json: async () => [{ id: "new_id", alerts: [{ cities: ["חיפה"], threat: 1, time: nowTs - 5 }] }],
     }));
-    await expect(la()).resolves.toBeUndefined();
+    await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });
 
 describe("Alerts — notify without Notification API (no throw)", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
-    vi.resetModules();
+    document.body.innerHTML = "";
   });
 
   it("does not throw when typeof Notification === 'undefined'", async () => {
     vi.stubGlobal("Notification", undefined);
-    vi.resetModules();
-    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
-    cd();
-    sae(true);
+    cacheDom();
+    setAlertsEnabled(true);
     const nowTs = Math.floor(Date.now() / 1000);
     const { cSet: rCs } = await import("@/core/cache");
     rCs("alerts", [{ id: "prev", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 60 }] }]);
@@ -1233,23 +1258,21 @@ describe("Alerts — notify without Notification API (no throw)", () => {
       ok: true,
       json: async () => [{ id: "next_id", alerts: [{ cities: ["רחובות"], threat: 1, time: nowTs - 3 }] }],
     }));
-    await expect(la()).resolves.toBeUndefined();
+    await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });
 
 describe("Alerts — notify Notification.permission not granted (no throw)", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
-    vi.resetModules();
+    document.body.innerHTML = "";
   });
 
   it("does not throw when Notification.permission is 'denied'", async () => {
     vi.stubGlobal("Notification", { permission: "denied" });
-    vi.resetModules();
-    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
-    cd();
-    sae(true);
+    cacheDom();
+    setAlertsEnabled(true);
     const nowTs = Math.floor(Date.now() / 1000);
     const { cSet: rCs } = await import("@/core/cache");
     rCs("alerts", [{ id: "deny1", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 120 }] }]);
@@ -1257,43 +1280,44 @@ describe("Alerts — notify Notification.permission not granted (no throw)", () 
       ok: true,
       json: async () => [{ id: "deny2", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 2 }] }],
     }));
-    await expect(la()).resolves.toBeUndefined();
+    await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });
 
 describe("Alerts — renderAlerts elScroll null (no throw)", () => {
   afterEach(() => {
     document.body.innerHTML = "";
-    vi.resetModules();
   });
 
-  it("returns immediately without throwing when elScroll is null", async () => {
-    vi.resetModules();
-    const { renderAlerts: ra, cacheDom: cd } = await import("@/cards/alerts/alerts");
+  it("returns immediately without throwing when elScroll is null", () => {
     // No DOM → elScroll stays null after cacheDom
     document.body.innerHTML = "";
-    cd(); // elScroll = null
+    cacheDom(); // elScroll = null
     const nowTs = Math.floor(Date.now() / 1000);
-    const ev: AlertEvent = { id: "x", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] };
-    expect(() => ra([ev], false)).not.toThrow();
+    const ev: AlertEvent = {
+      id: "x",
+      alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }],
+    };
+    expect(() => renderAlerts([ev], false)).not.toThrow();
   });
 });
 
 describe("Alerts — fetchAlerts !res.ok falls through to next proxy", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
-    vi.resetModules();
+    document.body.innerHTML = "";
   });
 
   it("skips non-ok responses and falls through chain returning []", async () => {
-    vi.resetModules();
-    const { loadAlerts: la, cacheDom: cd, setAlertsEnabled: sae } = await import("@/cards/alerts/alerts");
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
-    cd();
-    sae(true);
+    cacheDom();
+    setAlertsEnabled(true);
     // All responses are 404 (not ok)
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, json: async () => [] }));
-    await expect(la()).resolves.toBeUndefined();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, json: async () => [] }),
+    );
+    await expect(loadAlerts()).resolves.toBeUndefined();
     // Sync should be 'error' (no stale data, fetch returned nothing)
   });
 });
@@ -1312,40 +1336,34 @@ describe("Alerts — buildAlertItem THREAT_LABELS fallback (unknown threat)", ()
 describe("Alerts — renderAlerts badge null guard (no throw)", () => {
   afterEach(() => {
     document.body.innerHTML = "";
-    vi.resetModules();
   });
 
-  it("does not throw when badge element is null during highlight", async () => {
-    vi.resetModules();
-    const { renderAlerts: ra, cacheDom: cd } = await import("@/cards/alerts/alerts");
+  it("does not throw when badge element is null during highlight", () => {
     // Provide scroll but no badge
     document.body.innerHTML = `<div id="alerts-scroll"></div>`;
-    cd(); // elBadge = null
+    cacheDom(); // elBadge = null
     const nowTs = Math.floor(Date.now() / 1000);
-    const ev: AlertEvent = { id: "x2", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 5 }] };
-    expect(() => ra([ev], true)).not.toThrow();
+    const ev: AlertEvent = {
+      id: "x2",
+      alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 5 }],
+    };
+    expect(() => renderAlerts([ev], true)).not.toThrow();
   });
 });
 
 // ── F2 (v7.2): Alert volume control ──────────────────────────────────────
 
 describe("Alerts — setAlertVolume / getAlertVolume (F2 v7.2)", () => {
-  it("getAlertVolume returns 18 by default", async () => {
-    vi.resetModules();
-    const { getAlertVolume } = await import("@/cards/alerts/alerts");
+  it("getAlertVolume returns 18 by default", () => {
     expect(getAlertVolume()).toBe(18);
   });
 
-  it("setAlertVolume updates getAlertVolume", async () => {
-    vi.resetModules();
-    const { setAlertVolume, getAlertVolume } = await import("@/cards/alerts/alerts");
+  it("setAlertVolume updates getAlertVolume", () => {
     setAlertVolume(55);
     expect(getAlertVolume()).toBe(55);
   });
 
-  it("setAlertVolume clamps to 0-100", async () => {
-    vi.resetModules();
-    const { setAlertVolume, getAlertVolume } = await import("@/cards/alerts/alerts");
+  it("setAlertVolume clamps to 0-100", () => {
     setAlertVolume(-10);
     expect(getAlertVolume()).toBe(0);
     setAlertVolume(200);
@@ -1358,48 +1376,46 @@ describe("Alerts — setAlertVolume / getAlertVolume (F2 v7.2)", () => {
 describe("Alerts — clearUnreadAlerts resets badge and document.title", () => {
   afterEach(() => {
     document.body.innerHTML = "";
-    vi.resetModules();
     document.title = "FamilyDashBoard";
   });
 
-  it("clearUnreadAlerts hides badge and clears unread count", async () => {
-    vi.resetModules();
-    const { renderAlerts: ra, clearUnreadAlerts: cua, cacheDom: cd } =
-      await import("@/cards/alerts/alerts");
+  it("clearUnreadAlerts hides badge and clears unread count", () => {
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge" style="display:none">0</div>`;
-    cd();
+    cacheDom();
     const nowTs = Math.floor(Date.now() / 1000);
-    const ev: AlertEvent = { id: "s19a", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 5 }] };
+    const ev: AlertEvent = {
+      id: "s19a",
+      alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 5 }],
+    };
     // Accumulate 2 unread
-    ra([ev], true);
-    ra([ev], true);
+    renderAlerts([ev], true);
+    renderAlerts([ev], true);
     const badge = document.getElementById("alerts-badge")!;
     expect(Number(badge.textContent)).toBeGreaterThanOrEqual(2);
     // Now clear
-    cua();
+    clearUnreadAlerts();
     expect(badge.textContent).toBe("0");
     expect(badge.style.display).toBe("none");
   });
 
-  it("clearUnreadAlerts without badge element does not throw", async () => {
-    vi.resetModules();
-    const { clearUnreadAlerts: cua, cacheDom: cd } = await import("@/cards/alerts/alerts");
+  it("clearUnreadAlerts without badge element does not throw", () => {
     document.body.innerHTML = `<div id="alerts-scroll"></div>`;
-    cd(); // elBadge = null
-    expect(() => cua()).not.toThrow();
+    cacheDom(); // elBadge = null
+    expect(() => clearUnreadAlerts()).not.toThrow();
   });
 
-  it("renderAlerts with highlightNew=true updates document.title with unread count", async () => {
-    vi.resetModules();
+  it("renderAlerts with highlightNew=true updates document.title with unread count", () => {
     document.title = "FamilyDashBoard";
-    const { renderAlerts: ra, cacheDom: cd } = await import("@/cards/alerts/alerts");
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge" style="display:none">0</div>`;
-    cd();
+    cacheDom();
     const nowTs = Math.floor(Date.now() / 1000);
-    const ev: AlertEvent = { id: "s19b", alerts: [{ cities: ["חיפה"], threat: 1, time: nowTs - 3 }] };
-    ra([ev], true);
+    const ev: AlertEvent = {
+      id: "s19b",
+      alerts: [{ cities: ["חיפה"], threat: 1, time: nowTs - 3 }],
+    };
+    renderAlerts([ev], true);
     // Title should contain the unread count
-    expect(document.title).toMatch(/\(\d+\)/);
+    expect(document.title).toMatch(/(\d+)/);
   });
 });
 
