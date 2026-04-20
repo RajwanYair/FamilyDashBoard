@@ -18,10 +18,11 @@ const appVersion: string = (
  */
 export default defineConfig({
   resolve: {
-    alias: {
-      "@": resolve(__dirname, "src"),
-      "@tests": resolve(__dirname, "tests/unit"),
-    },
+    alias: [
+      { find: "@tests/helpers", replacement: resolve(__dirname, "tests/helpers/index.ts") },
+      { find: "@tests", replacement: resolve(__dirname, "tests/unit") },
+      { find: "@", replacement: resolve(__dirname, "src") },
+    ],
   },
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
