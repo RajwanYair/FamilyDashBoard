@@ -25,6 +25,12 @@ vitest_output.txt
 test_results.txt
 tsc_output.txt
 
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # Debug logs (transient)
 git_out.txt
 log.txt

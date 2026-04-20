@@ -26,6 +26,8 @@
     "private": true,
     "scripts": {
         "dev": "vite",
+        "test:e2e": "playwright test",
+        "test:e2e:ui": "playwright test --ui",
         "build": "tsc -b && vite build",
         "build:local": "tsc -b && vite build --base ./",
         "preview": "vite preview",
