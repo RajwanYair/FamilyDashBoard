@@ -10,3 +10,6 @@
 | [ADR-004](ADR-004-config-namespacing.md) | Per-Card Config Namespacing Strategy           | 2026-05-30 | Accepted |
 | [ADR-005](ADR-005-no-client-framework-rewrite.md) | No Full Client Framework Rewrite      | 2026-04-19 | Accepted |
 | [ADR-006](ADR-006-worker-normalized-data-model.md) | Worker-Normalized Data Model         | 2026-04-19 | Accepted |
+| [ADR-007](ADR-007-news-aggregation.md)             | News Aggregation Strategy            | 2026-07-10 | Accepted |
+| [ADR-008](ADR-008-css-layer-governance.md)         | CSS Layer Governance                 | 2026-07-10 | Accepted |
+| [ADR-009](ADR-009-config-schema-evolution.md)      | Config Schema Evolution              | 2026-07-10 | Accepted |
