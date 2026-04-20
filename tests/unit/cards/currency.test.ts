@@ -13,6 +13,8 @@ import {
   loadCurrencyHistory,
   storeCurrencyHistory,
   get7DayTrend,
+  initCurrencyCard,
+  _resetCurrencyForTest,
 } from "@/cards/currency/currency";
 
 const MOCK_RATES: Record<string, number> = {
@@ -155,6 +157,7 @@ describe("Currency — initCurrencyCard", () => {
       <div id="curSilverChg"></div>
       <div id="currency-body"></div>
     `;
+    _resetCurrencyForTest();
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -167,20 +170,17 @@ describe("Currency — initCurrencyCard", () => {
   });
 
   afterEach(() => {
+    _resetCurrencyForTest();
     document.body.innerHTML = "";
     vi.restoreAllMocks();
   });
 
-  it("does not throw with full DOM", async () => {
-    vi.resetModules();
-    const { initCurrencyCard } = await import("@/cards/currency/currency");
+  it("does not throw with full DOM", () => {
     expect(() => initCurrencyCard()).not.toThrow();
   });
 
-  it("does not throw with empty DOM", async () => {
+  it("does not throw with empty DOM", () => {
     document.body.innerHTML = "";
-    vi.resetModules();
-    const { initCurrencyCard } = await import("@/cards/currency/currency");
     expect(() => initCurrencyCard()).not.toThrow();
   });
 });

@@ -290,3 +290,23 @@ export const currencyConfigSchema: CardConfigField[] = [
     groupOpenByDefault: true,
   },
 ];
+
+/** Reset module-level state (for tests only). */
+export function _resetCurrencyForTest(): void {
+  _prevRates = {};
+  _lastFetchTime = null;
+  curEls = {
+    usd: null,
+    eur: null,
+    gbp: null,
+    gold: null,
+    silver: null,
+    usdChg: null,
+    eurChg: null,
+    gbpChg: null,
+    goldChg: null,
+    silverChg: null,
+    body: null,
+    lastFetch: null,
+  };
+}

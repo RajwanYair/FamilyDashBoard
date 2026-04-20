@@ -12,6 +12,11 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { setupConfigPanelTestDOM } from "../helpers/config-panel-dom";
+import {
+  shareSettings,
+  exportSettings,
+  importSettings,
+} from "@/ui/config-panel";
 
 type CfgMod = {
   openConfigPanel: () => void;
@@ -294,22 +299,19 @@ describe("Config Panel — shareSettings", () => {
     document.body.innerHTML = "";
     localStorage.clear();
     vi.restoreAllMocks();
-    vi.resetModules();
   });
 
-  it("does not throw when clipboard API is available", async () => {
+  it("does not throw when clipboard API is available", () => {
     document.body.innerHTML = `<div id="toast-container"></div>`;
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText: vi.fn().mockResolvedValue(undefined) },
       writable: true,
       configurable: true,
     });
-    vi.resetModules();
-    const { shareSettings } = await import("@/ui/config-panel");
     expect(() => shareSettings()).not.toThrow();
   });
 
-  it("calls clipboard.writeText with a URL", async () => {
+  it("calls clipboard.writeText with a URL", () => {
     document.body.innerHTML = `<div id="toast-container"></div>`;
     const mockWrite = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
@@ -317,8 +319,6 @@ describe("Config Panel — shareSettings", () => {
       writable: true,
       configurable: true,
     });
-    vi.resetModules();
-    const { shareSettings } = await import("@/ui/config-panel");
     shareSettings();
     expect(mockWrite).toHaveBeenCalledWith(expect.stringContaining("http"));
   });
@@ -331,52 +331,43 @@ describe("Config Panel — exportSettings", () => {
     document.body.innerHTML = "";
     localStorage.clear();
     vi.restoreAllMocks();
-    vi.resetModules();
   });
 
-  it("does not throw when called", async () => {
+  it("does not throw when called", () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-    vi.resetModules();
-    const { exportSettings } = await import("@/ui/config-panel");
     expect(() => exportSettings()).not.toThrow();
   });
 
-  it("calls URL.createObjectURL with a Blob", async () => {
+  it("calls URL.createObjectURL with a Blob", () => {
     const blobSpy = vi
       .spyOn(URL, "createObjectURL")
       .mockReturnValue("blob:test");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-    vi.resetModules();
-    const { exportSettings } = await import("@/ui/config-panel");
     exportSettings();
     expect(blobSpy).toHaveBeenCalledOnce();
     const blobArg = blobSpy.mock.calls[0]?.[0];
     expect(blobArg).toBeInstanceOf(Blob);
   });
 
-  it("calls URL.revokeObjectURL to clean up", async () => {
+  it("calls URL.revokeObjectURL to clean up", () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     const revokeSpy = vi
       .spyOn(URL, "revokeObjectURL")
       .mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-    vi.resetModules();
-    const { exportSettings } = await import("@/ui/config-panel");
     exportSettings();
     expect(revokeSpy).toHaveBeenCalledWith("blob:test");
   });
 
-  it("triggers anchor click to download the file", async () => {
+  it("triggers anchor click to download the file", () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     const clickSpy = vi
       .spyOn(HTMLAnchorElement.prototype, "click")
       .mockImplementation(() => {});
-    vi.resetModules();
-    const { exportSettings } = await import("@/ui/config-panel");
     exportSettings();
     expect(clickSpy).toHaveBeenCalledOnce();
   });
@@ -389,20 +380,16 @@ describe("Config Panel — importSettings", () => {
     document.body.innerHTML = "";
     localStorage.clear();
     vi.restoreAllMocks();
-    vi.resetModules();
+    vi.unstubAllGlobals();
   });
 
-  it("does not throw when cfg-import-file element is absent", async () => {
+  it("does not throw when cfg-import-file element is absent", () => {
     document.body.innerHTML = "";
-    vi.resetModules();
-    const { importSettings } = await import("@/ui/config-panel");
     expect(() => importSettings()).not.toThrow();
   });
 
-  it("calls click() on the file input", async () => {
+  it("calls click() on the file input", () => {
     document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    vi.resetModules();
-    const { importSettings } = await import("@/ui/config-panel");
     const input = document.getElementById(
       "cfg-import-file",
     ) as HTMLInputElement;
@@ -411,10 +398,8 @@ describe("Config Panel — importSettings", () => {
     expect(clickSpy).toHaveBeenCalledOnce();
   });
 
-  it("saves config when FileReader.onload fires with valid JSON", async () => {
+  it("saves config when FileReader.onload fires with valid JSON", () => {
     document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    vi.resetModules();
-    const { importSettings } = await import("@/ui/config-panel");
     const input = document.getElementById(
       "cfg-import-file",
     ) as HTMLInputElement;
@@ -425,7 +410,7 @@ describe("Config Panel — importSettings", () => {
     class MockFileReader {
       onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
       result: string | ArrayBuffer | null = null;
-      readAsText(file: Blob): void {
+      readAsText(_file: Blob): void {
         this.result = '{"familyName":"טסט"}';
         if (this.onload) {
           this.onload({
@@ -448,18 +433,14 @@ describe("Config Panel — importSettings", () => {
     });
     input.onchange?.(new Event("change"));
 
-    vi.unstubAllGlobals();
-
     const saved = JSON.parse(
       localStorage.getItem("dash_v2_config") ?? "{}",
     ) as { familyName?: string };
     expect(saved.familyName).toBe("טסט");
   });
 
-  it("handles invalid JSON in FileReader without throwing", async () => {
+  it("handles invalid JSON in FileReader without throwing", () => {
     document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    vi.resetModules();
-    const { importSettings } = await import("@/ui/config-panel");
     const input = document.getElementById(
       "cfg-import-file",
     ) as HTMLInputElement;
@@ -489,8 +470,6 @@ describe("Config Panel — importSettings", () => {
       configurable: true,
     });
     expect(() => input.onchange?.(new Event("change"))).not.toThrow();
-
-    vi.unstubAllGlobals();
   });
 });
 

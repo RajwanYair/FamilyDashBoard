@@ -144,40 +144,35 @@ describe("raceProxies", () => {
 });
 
 describe("fetch — acquireLock / releaseLock", () => {
+  beforeEach(() => {
+    clearFetchLocks();
+  });
+
   afterEach(() => {
+    clearFetchLocks();
     vi.restoreAllMocks();
   });
 
-  it("acquireLock returns true the first time", async () => {
-    vi.resetModules();
-    const { acquireLock } = await import("@/core/fetch");
+  it("acquireLock returns true the first time", () => {
     expect(acquireLock("lock-1")).toBe(true);
   });
 
-  it("acquireLock returns false when lock is already held", async () => {
-    vi.resetModules();
-    const { acquireLock } = await import("@/core/fetch");
+  it("acquireLock returns false when lock is already held", () => {
     acquireLock("lock-2");
     expect(acquireLock("lock-2")).toBe(false);
   });
 
-  it("releaseLock allows re-acquisition", async () => {
-    vi.resetModules();
-    const { acquireLock, releaseLock } = await import("@/core/fetch");
+  it("releaseLock allows re-acquisition", () => {
     acquireLock("lock-3");
     releaseLock("lock-3");
     expect(acquireLock("lock-3")).toBe(true);
   });
 
-  it("releaseLock on unknown key does not throw", async () => {
-    vi.resetModules();
-    const { releaseLock } = await import("@/core/fetch");
+  it("releaseLock on unknown key does not throw", () => {
     expect(() => releaseLock("nobody")).not.toThrow();
   });
 
-  it("different lock names are independent", async () => {
-    vi.resetModules();
-    const { acquireLock, releaseLock } = await import("@/core/fetch");
+  it("different lock names are independent", () => {
     acquireLock("lock-x");
     expect(acquireLock("lock-y")).toBe(true);
     releaseLock("lock-x");
