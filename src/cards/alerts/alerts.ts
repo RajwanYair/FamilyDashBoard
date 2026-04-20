@@ -9,7 +9,7 @@
 
 import { INTERVALS, THREAT_LABELS, API, PROXIES, WORKER_BASE_URL, isWorkerEnabled } from "../../core/constants";
 import "./alerts.css";
-import { cSet, cGetStale } from "../../core/cache";
+import { cGetStale, cSetAsync } from "../../core/cache";
 import {
   setSync,
   syncBurst,
@@ -357,7 +357,7 @@ export async function loadAlerts(): Promise<void> {
       _lastAlertId = newTopId;
       if (isNew) notify(validData);
 
-      cSet(key, validData);
+      await cSetAsync(key, validData);
       renderAlerts(validData, isNew);
       setSync("alerts", "ok");
       syncBurst("alerts");

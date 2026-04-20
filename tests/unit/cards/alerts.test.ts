@@ -725,13 +725,13 @@ describe("Alerts — loadAlerts catch block with stale data", () => {
     localStorage.clear();
   });
 
-  it("catch block runs when cSet throws during data processing", async () => {
-    // Mock cSet to throw, which is called inside the try block
+  it("catch block runs when cSetAsync throws during data processing", async () => {
+    // Mock cSetAsync to reject, which is called inside the try block
     const cacheMod = await import("@/core/cache");
-    vi.spyOn(cacheMod, "cSet").mockImplementation(() => {
-      throw new Error("quota exceeded");
+    vi.spyOn(cacheMod, "cSetAsync").mockImplementation(() => {
+      return Promise.reject(new Error("quota exceeded"));
     });
-    // Fetch returns valid data so the try block gets far enough to call cSet
+    // Fetch returns valid data so the try block gets far enough to call cSetAsync
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [
@@ -739,7 +739,7 @@ describe("Alerts — loadAlerts catch block with stale data", () => {
       ],
     } as Response);
     await expect(loadAlerts()).resolves.not.toThrow();
-    vi.mocked(cacheMod.cSet).mockRestore();
+    vi.mocked(cacheMod.cSetAsync).mockRestore();
   });
 });
 // ── Sprint: notify() with Notification permission ──────────────────────────
@@ -1109,9 +1109,9 @@ describe("Alerts — loadAlerts else block when fetch returns empty array (lines
   });
 });
 
-// ── loadAlerts catch block via cSet throw (lines 291-295) ────────────────────
+// ── loadAlerts catch block via cSetAsync reject (lines 291-295) ────────────────────
 
-describe("Alerts — loadAlerts catch block when cSet throws (lines 291-295)", () => {
+describe("Alerts — loadAlerts catch block when cSetAsync rejects (lines 291-295)", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.unstubAllGlobals();
@@ -1120,20 +1120,20 @@ describe("Alerts — loadAlerts catch block when cSet throws (lines 291-295)", (
     setAlertsEnabled(true);
   });
 
-  it("hits catch block when cSet throws after valid data received (lines 291-295)", async () => {
+  it("hits catch block when cSetAsync rejects after valid data received (lines 291-295)", async () => {
     vi.useFakeTimers();
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
     cacheDom();
     const nowTs = Math.floor(Date.now() / 1000);
-    // fetch returns valid alert data (data.length > 0) → then cSet throws → outer catch fires
+    // fetch returns valid alert data (data.length > 0) → then cSetAsync rejects → outer catch fires
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: true,
       json: async () => [{ id: "z1", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] }],
     }));
-    // Spy on cSet from the real cache module to throw when called
+    // Spy on cSetAsync from the real cache module to reject when called
     const cacheModule = await import("@/core/cache");
-    vi.spyOn(cacheModule, "cSet").mockImplementationOnce(() => {
-      throw new Error("forced cSet throw for catch coverage");
+    vi.spyOn(cacheModule, "cSetAsync").mockImplementationOnce(() => {
+      return Promise.reject(new Error("forced cSetAsync reject for catch coverage"));
     });
     // Should resolve (catch handles error) rather than reject
     await expect(loadAlerts()).resolves.toBeUndefined();
@@ -1196,7 +1196,7 @@ describe("Alerts — loadAlerts catch block stale=null ternary FALSE (lines 291-
     setAlertsEnabled(true);
   });
 
-  it("takes stale?'ok':'error' FALSE path in catch when cache empty + cSet throws (lines 291-293)", async () => {
+  it("takes stale?'ok':'error' FALSE path in catch when cache empty + cSetAsync rejects (lines 291-293)", async () => {
     const cacheModule = await import("@/core/cache");
     cacheModule.cClear(); // stale = null → ternary takes 'error'
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
@@ -1207,8 +1207,8 @@ describe("Alerts — loadAlerts catch block stale=null ternary FALSE (lines 291-
       ok: true,
       json: async () => [{ id: "c1", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 10 }] }],
     }));
-    vi.spyOn(cacheModule, "cSet").mockImplementationOnce(() => {
-      throw new Error("forced cSet throw for catch stale=null coverage");
+    vi.spyOn(cacheModule, "cSetAsync").mockImplementationOnce(() => {
+      return Promise.reject(new Error("forced cSetAsync reject for catch stale=null coverage"));
     });
     await expect(loadAlerts()).resolves.toBeUndefined();
   });
