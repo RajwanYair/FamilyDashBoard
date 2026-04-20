@@ -37,3 +37,37 @@ export async function proxyResponse(
     },
   });
 }
+
+/**
+ * Wrap parsed upstream data in a WorkerResponse<T> envelope and return as JSON.
+ *
+ * The envelope mirrors the `WorkerResponse<T>` interface in `src/types/api.ts`.
+ * Cards that call `fetchJSONWithWorker<T>()` + `isWorkerEnabled()` depend on
+ * this shape being present.
+ *
+ * @param data     - Normalized payload (already parsed from upstream JSON)
+ * @param provider - Upstream origin label, e.g. "open-meteo" or "open.er-api.com"
+ * @param stale    - True when serving from Worker cache (upstream unreachable)
+ * @param cacheTtl - Cache-Control max-age in seconds
+ */
+export function workerEnvelope<T>(
+  data: T,
+  provider: string,
+  stale: boolean,
+  cacheTtl: number,
+): Response {
+  const envelope = {
+    data,
+    stale,
+    timestamp: Date.now(),
+    provider,
+  };
+  return new Response(JSON.stringify(envelope), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": `public, max-age=${cacheTtl}`,
+      ...CORS_HEADERS,
+    },
+  });
+}

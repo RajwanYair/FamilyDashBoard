@@ -29,7 +29,7 @@ import {
   requireHttpsUrl,
 } from "../../../worker/src/utils/validation";
 import { ALLOWED_NEWS_ORIGINS, ALLOWED_CALENDAR_ORIGINS } from "../../../worker/src/utils/allowlists";
-import { jsonResponse, proxyResponse } from "../../../worker/src/utils/response";
+import { jsonResponse, proxyResponse, workerEnvelope } from "../../../worker/src/utils/response";
 
 // ── CORS middleware tests ─────────────────────────────────────────────────────
 
@@ -358,6 +358,40 @@ describe("Worker response helpers — proxyResponse", () => {
     const upstream = new Response("fail", { status: 503 });
     const res = await proxyResponse(upstream, 60);
     expect(res.status).toBe(503);
+  });
+});
+
+describe("Worker response helpers — workerEnvelope", () => {
+  it("wraps data in WorkerResponse envelope", async () => {
+    const data = { rates: { USD: 0.27 } };
+    const res = workerEnvelope(data, "open.er-api.com", false, 3600);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      data: unknown;
+      stale: boolean;
+      timestamp: number;
+      provider: string;
+    };
+    expect(body.data).toEqual(data);
+    expect(body.stale).toBe(false);
+    expect(body.provider).toBe("open.er-api.com");
+    expect(typeof body.timestamp).toBe("number");
+  });
+
+  it("sets Cache-Control header with correct max-age", async () => {
+    const res = workerEnvelope({}, "test", false, 1800);
+    expect(res.headers.get("Cache-Control")).toContain("max-age=1800");
+  });
+
+  it("marks stale=true when serving from cache", async () => {
+    const res = workerEnvelope({ error: "unavailable" }, "none", true, 60);
+    const body = (await res.json()) as { stale: boolean };
+    expect(body.stale).toBe(true);
+  });
+
+  it("includes CORS headers", () => {
+    const res = workerEnvelope({}, "test", false, 60);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 });
 

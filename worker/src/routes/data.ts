@@ -1,4 +1,4 @@
-import { proxyResponse } from "../utils/response";
+import { proxyResponse, workerEnvelope } from "../utils/response";
 import {
   ValidationError,
   validationErrorResponse,
@@ -18,27 +18,32 @@ export async function handleWeather(url: URL): Promise<Response> {
   }
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latNum}&longitude=${lonNum}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
   const res = await fetch(weatherUrl);
-  return proxyResponse(res, 1800); // 30 min
+  if (!res.ok) {
+    // Upstream error — fall through to raw proxy so SW stale-cache kicks in
+    return proxyResponse(res, 60);
+  }
+  const data: unknown = await res.json();
+  return workerEnvelope(data, "open-meteo", false, 1800); // 30 min
 }
 
 export async function handleCurrency(): Promise<Response> {
-  const upstreams = [
-    "https://open.er-api.com/v6/latest/ILS",
-    "https://api.exchangerate-api.com/v4/latest/ILS",
+  const upstreams: Array<{ url: string; provider: string }> = [
+    { url: "https://open.er-api.com/v6/latest/ILS", provider: "open.er-api.com" },
+    { url: "https://api.exchangerate-api.com/v4/latest/ILS", provider: "exchangerate-api.com" },
   ];
 
-  for (const upstream of upstreams) {
-    const res = await fetch(upstream);
+  for (const { url, provider } of upstreams) {
+    const res = await fetch(url);
     if (res.ok) {
-      return proxyResponse(res, 3600); // 1 h
+      const data: unknown = await res.json();
+      return workerEnvelope(data, provider, false, 3600); // 1 h
     }
   }
 
-  return proxyResponse(
-    new Response(JSON.stringify({ error: "Currency upstream unavailable" }), {
-      status: 502,
-      headers: { "Content-Type": "application/json" },
-    }),
+  return workerEnvelope(
+    { error: "Currency upstream unavailable" },
+    "none",
+    true,
     60,
   );
 }
@@ -53,7 +58,9 @@ export async function handleHebcal(url: URL): Promise<Response> {
   const res = await fetch(
     `https://www.hebcal.com/shabbat?cfg=json&geonameid=${geonameid}&M=on`,
   );
-  return proxyResponse(res, 21600); // 6 h
+  if (!res.ok) return proxyResponse(res, 60);
+  const data: unknown = await res.json();
+  return workerEnvelope(data, "hebcal", false, 21600); // 6 h
 }
 
 export async function handleHebcalHolidays(url: URL): Promise<Response> {
@@ -66,5 +73,7 @@ export async function handleHebcalHolidays(url: URL): Promise<Response> {
   const res = await fetch(
     `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&year=${yearNum}&month=x`,
   );
-  return proxyResponse(res, 43200); // 12 h
+  if (!res.ok) return proxyResponse(res, 60);
+  const data: unknown = await res.json();
+  return workerEnvelope(data, "hebcal", false, 43200); // 12 h
 }
