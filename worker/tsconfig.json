@@ -1,12 +1,14 @@
 {
+  "extends": "../../tooling/tsconfig/base-node.json",
   "compilerOptions": {
-    "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "bundler",
     "lib": ["ES2022"],
     "types": ["@cloudflare/workers-types"],
-    "strict": true,
-    "noEmit": true
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src/**/*.ts"]
 }
