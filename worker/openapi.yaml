@@ -5,7 +5,7 @@ info:
     Cloudflare Worker API proxy for the FamilyDashBoard dashboard.
     All routes enforce CORS (any origin), per-IP rate limiting (120 req/min),
     and SSRF allowlists on URL parameters.
-  version: "7.5.0"
+  version: "8.7.0"
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard
@@ -114,9 +114,15 @@ paths:
           example: AAPL
       responses:
         "200":
-          description: Yahoo Finance v8 chart response (proxied verbatim)
+          description: Yahoo Finance v8 chart response (validated + re-serialized)
         "400":
           $ref: "#/components/responses/ValidationError"
+        "502":
+          description: Upstream error or schema validation failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "429":
           $ref: "#/components/responses/RateLimitError"
 
@@ -285,6 +291,60 @@ paths:
           description: Sefaria text JSON (proxied verbatim)
         "400":
           $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
+  /api/errors:
+    post:
+      tags: [health]
+      summary: Client error ingestion (best-effort telemetry)
+      description: |
+        Accepts an array of client-side error entries from the dashboard.
+        Entries are logged to Worker console (CF Logpush / live tail).
+        No persistence. Rate-limited by shared middleware.
+      operationId: postErrors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 20
+              items:
+                type: object
+                required: [ts, message]
+                properties:
+                  ts:
+                    type: integer
+                    description: Unix timestamp (ms)
+                    example: 1714000000000
+                  message:
+                    type: string
+                    maxLength: 500
+                    example: "TypeError: Cannot read properties of null"
+                  source:
+                    type: string
+                    example: "src/cards/weather/weather.ts"
+                  lineno:
+                    type: integer
+                    example: 42
+      responses:
+        "204":
+          description: Errors accepted (no content)
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "405":
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "413":
+          description: Too many error entries (max 20)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "429":
           $ref: "#/components/responses/RateLimitError"
 
