@@ -1,0 +1,1000 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.4 [39m[90mC:/Users/ryair/OneDrive - Intel Corporation/Documents/MyScripts/FamilyDashBoard[39m
+
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCSS card-shell anatomy (Sprint 108)[2m > [22mdefines .card__header[32m 115[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCSS card-shell anatomy (Sprint 108)[2m > [22mdefines .card__body[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCSS card-shell anatomy (Sprint 108)[2m > [22mdefines .card__footer[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCSS card-shell anatomy (Sprint 108)[2m > [22mdefines .card__title[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mShared stale-chip (Sprint 109)[2m > [22mdefines .stale-chip[32m 64[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mShared error state (Sprint 110)[2m > [22mdefines .card-error[32m 1[2mms[22m[39m
+ [31m├ù[39m tests/unit/styles/css-components.test.ts[2m > [22mShared error state (Sprint 110)[2m > [22mdefines .card-error__icon[32m 297[2mms[22m[39m
+[31m   ΓåÆ expected '/* Card Components */\n/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓÇª' to contain '.card-error__icon'[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mShared empty state (Sprint 111)[2m > [22mdefines .card-empty[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mMetric tile (Sprint 112)[2m > [22mdefines .metric-tile[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mMetric tile (Sprint 112)[2m > [22mdefines .metric-tile__value[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mMetric tile (Sprint 112)[2m > [22mdefines .metric-tile__label[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard badge pulse animation (Sprint 172)[2m > [22mdefines .card-badge-new class[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard badge pulse animation (Sprint 172)[2m > [22mdefines badge-pulse keyframes[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard badge pulse animation (Sprint 172)[2m > [22mbadge uses pointer-events: none[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard enter/leave animations (Sprint 172)[2m > [22mdefines card-enter keyframes[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard enter/leave animations (Sprint 172)[2m > [22mdefines card-leave keyframes[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard enter/leave animations (Sprint 172)[2m > [22mdefines .card--hiding class[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard loading state (Stream F v7.21)[2m > [22mdefines .card-loading[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard loading state (Stream F v7.21)[2m > [22mdefines .card-loading__spinner[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard loading state (Stream F v7.21)[2m > [22mdefines .card-loading__label[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard loading state (Stream F v7.21)[2m > [22mdefines card-spin keyframe[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard loading state (Stream F v7.21)[2m > [22mrespects prefers-reduced-motion for spinner[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard empty state (Stream F v7.22)[2m > [22mdefines .card-empty[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard empty state (Stream F v7.22)[2m > [22mcard-empty uses flex centering[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard error state (Stream F v7.22)[2m > [22mdefines .card-error[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard error state (Stream F v7.22)[2m > [22mcard-error uses error color token[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard error state (Stream F v7.22)[2m > [22mdefines .card-error::before for icon[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard stale state (Stream F v7.22)[2m > [22mdefines .card-stale[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard stale state (Stream F v7.22)[2m > [22mdefines .card-stale__chip[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard stale state (Stream F v7.22)[2m > [22mstale chip uses accent color token[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard skeleton state (Stream F v7.22)[2m > [22mdefines .card-skeleton[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard skeleton state (Stream F v7.22)[2m > [22mdefines skeleton-shimmer keyframe[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard skeleton state (Stream F v7.22)[2m > [22mskeleton items use shimmer animation[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts[2m > [22mCard skeleton state (Stream F v7.22)[2m > [22mrespects prefers-reduced-motion for skeleton[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22msets textContent on #clock[33m 1585[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(5400, ^GSPC) ΓåÆ 5,400[32m 65[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(195.12, AAPL) ΓåÆ 195.12[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(0.0031, XYZ) ΓåÆ 0.0031[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(18.5, ^VIX) ΓåÆ 18.50[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(1000, SPY) ΓåÆ 1,000[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(10, SPY) ΓåÆ 10.00[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(9.9999, SPY) ΓåÆ 9.9999[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(999.99, SPY) ΓåÆ 999.99[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(9.5, ^VIX) ΓåÆ 9.50[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mfmtPrice(0, XYZ) ΓåÆ 0.0000[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mformats BTC (large) without decimals[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö fmtPrice[2m > [22mreturns string type[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22msets textContent on #eng-date[32m 72[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22msets textContent on #greeting[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22msets day-bar width to a percentage string[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22msets year-bar width to a percentage string[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22mday-bar width is between 0% and 100%[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö registerCard / getCard[2m > [22mregisters and retrieves a card entry by id[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö registerCard / getCard[2m > [22moverwrites previous registration with same id[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö registerCard / getCard[2m > [22mreturns undefined for unregistered id[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö listCards[2m > [22mreturns an array of all registered entries[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö listCards[2m > [22mincludes built-in cards (news, weather, stocks)[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö listCards[2m > [22mincludes new v7 cards (tasks, system-info)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö listCards[2m > [22mreturns a sorted array (not the internal Map order)[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard[2m > [22mthrows for unregistered card id[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard[2m > [22mresolves for a registered card with a working loader[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22myear-bar width is between 0% and 100%[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö tickClock[2m > [22mdoes not throw when elements are absent[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö toggleClockSeconds[2m > [22mdoes not throw[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö toggleClockSeconds[2m > [22madds seconds to clock text after enabling[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö toggleClockSeconds[2m > [22mtoggling twice restores no-seconds format[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-06T17:00:00Z ΓåÆ false (Saturday)[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-07T17:00:00Z ΓåÆ false (Sunday)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-08T15:00:00Z ΓåÆ true (Monday 10:00 ET)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-08T11:00:00Z ΓåÆ false (Monday 06:00 ET (before open))[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-08T22:00:00Z ΓåÆ false (Monday 17:00 ET (after close))[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-08T14:30:00Z ΓåÆ true (Monday 9:30 ET (open boundary))[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-08T14:29:00Z ΓåÆ false (Monday 9:29 ET (just before open))[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-08T20:59:00Z ΓåÆ true (Monday 15:59 ET (just before close))[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-08T21:00:00Z ΓåÆ false (Monday 16:00 ET (close boundary))[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mat 2024-01-12T17:00:00Z ΓåÆ true (Friday 12:00 ET)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö isMarketOpen[2m > [22mreturns a boolean[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-06T17:00:00Z ΓåÆ closed (Saturday)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-07T17:00:00Z ΓåÆ closed (Sunday)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-08T11:00:00Z ΓåÆ pre (Mon 6:00 ET (pre-market))[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-08T15:00:00Z ΓåÆ open (Mon 10:00 ET (market hours))[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-08T22:00:00Z ΓåÆ after (Mon 17:00 ET (after-hours))[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-09T02:00:00Z ΓåÆ closed (Mon 21:00 ET (post after-hours))[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-08T14:30:00Z ΓåÆ open (Mon 9:30 ET (open boundary))[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-08T14:29:00Z ΓåÆ pre (Mon 9:29 ET (just before open))[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mat 2024-01-08T21:00:00Z ΓåÆ after (Mon 16:00 ET (close boundary))[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMarketStatus (v6.1)[2m > [22mreturns a valid status string[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö built-in entry shapes[2m > [22mevery built-in entry has required fields[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö initHeader[2m > [22mdoes not throw with full DOM[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö initHeader[2m > [22mdoes not throw with empty DOM[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö initHeader[2m > [22mreads clockSeconds from saved config[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö initHeader[2m > [22mgreeting contains Hebrew text[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö destroyStocksCard[2m > [22mclears init timers without throwing[32m 171[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö stocksCard CardDefinition[2m > [22mexposes the registry shape for stocks[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö stocksCard CardDefinition[2m > [22mrender returns a card host element[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMinutesToNextTransition (v6.1)[2m > [22mat 2024-01-06T17:00:00Z ΓåÆ 0 min (weekends)[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMinutesToNextTransition (v6.1)[2m > [22mat 2024-01-08T11:00:00Z ΓåÆ 210 min (pre-market (6:00 ET ΓåÆ 9:30 ET))[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMinutesToNextTransition (v6.1)[2m > [22mat 2024-01-08T15:00:00Z ΓåÆ 360 min (market hours (10:00 ET ΓåÆ 16:00 ET))[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMinutesToNextTransition (v6.1)[2m > [22mat 2024-01-08T22:00:00Z ΓåÆ 180 min (after-hours (17:00 ET ΓåÆ 20:00 ET))[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMinutesToNextTransition (v6.1)[2m > [22mreturns a non-negative number[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketBadge (v6.1)[2m > [22mdoes nothing when badge element is absent[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö initHeader[2m > [22mgreeting switches to English when interface language is en[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip[2m > [22mhides chip when no birthdays configured[32m 44[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketBadge (v6.1)[2m > [22msets textContent on the badge element[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketBadge (v6.1)[2m > [22msets market-badge--open class when open[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketBadge (v6.1)[2m > [22msets market-badge--closed class on weekends[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketBadge (v6.1)[2m > [22malso updates #status-market-chip when present (lines 151-152)[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketBadge (v6.1)[2m > [22msets correct label on #status-market-chip when market is pre (lines 151-152)[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mdoes nothing when alert config is empty[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mdoes nothing when symbol is not in cache[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mfires toast when > threshold is crossed[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mdoes not fire when > threshold is not met[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö isIdbAvailable[2m > [22mreturns true when indexedDB is defined[32m 42[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö isIdbAvailable[2m > [22mreturns false when indexedDB is undefined[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toDisplayTemp[2m > [22mshows Celsius by default[32m 58[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toDisplayTemp[2m > [22mshows Fahrenheit when config tempUnit is F[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip[2m > [22mshows chip when a birthday is within 14 days[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip[2m > [22mshows today message when birthday is today[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip[2m > [22mhides chip when birthday is 15+ days away[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip[2m > [22mpicks the nearest birthday when multiple configured[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mfires toast when < threshold is crossed[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mdoes not fire when < threshold is not met[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mfires toast for >= at exact threshold[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mdoes not fire toast twice (session dedup)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mignores invalid line format[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts (v6.1)[2m > [22mtoast message contains direction label[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks[2m > [22mdoes not throw with no hidden stocks configured[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks[2m > [22mhides a configured symbol[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks[2m > [22mleaves other symbols visible when hiding one[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks[2m > [22mhides multiple symbols at once[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks[2m > [22mun-hides a symbol when removed from hiddenStocks[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks[2m > [22mis case-insensitive for symbol matching[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks[2m > [22mdoes not throw when stocks-body is not in DOM[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock relative volume badge[2m > [22madds stk-vol-xhigh badge when ratio >= 2[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock relative volume badge[2m > [22madds stk-vol-high badge when 1.5 <= ratio < 2[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock relative volume badge[2m > [22mno badge when ratio < 1.5[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock relative volume badge[2m > [22mno badge when averageDailyVolume10Day is missing[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock relative volume badge[2m > [22mno badge when volume is 0[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mstores and retrieves a value[32m 62[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns null for a missing key[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns null when TTL is exceeded[32m 50[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toDisplayTemp[2m > [22mconverts 100┬░C to 212┬░F[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toDisplayTemp[2m > [22mrounds fractional Celsius values[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2arrow[2m > [22mdeg2arrow(0) ΓåÆ Γåô[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2arrow[2m > [22mdeg2arrow(90) ΓåÆ ΓåÉ[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2arrow[2m > [22mdeg2arrow(180) ΓåÆ Γåæ[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2arrow[2m > [22mdeg2arrow(270) ΓåÆ ΓåÆ[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2arrow[2m > [22mdeg2arrow(45) ΓåÆ ΓåÖ[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2arrow[2m > [22mdeg2arrow(360) ΓåÆ Γåô[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(0) ΓåÆ ╫ô╫│[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(90) ΓåÆ ╫₧╫│[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(180) ΓåÆ ╫ª╫│[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(270) ΓåÆ ╫₧╫│╫æ╫│[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(45) ΓåÆ ╫ô╫│-╫₧╫│[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(135) ΓåÆ ╫ª╫│-╫₧╫│[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(225) ΓåÆ ╫ª╫│-╫₧╫│╫æ╫│[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(315) ΓåÆ ╫ô╫│-╫₧╫│╫æ╫│[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö deg2hebrewDir[2m > [22mdeg2hebrewDir(360) ΓåÆ ╫ô╫│[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip[2m > [22mdoes not throw when chip element is absent[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateCountdownChip[2m > [22mhides chip when no countdownDate configured[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateCountdownChip[2m > [22mhides chip when countdownLabel is missing[32m 38[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateCountdownChip[2m > [22mshows chip with label and days for a future date[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateCountdownChip[2m > [22mshows today message when countdownDate is today[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö Card initialization smoke test[2m > [22minitHebrewCalCard does not throw[32m 254[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mexpected DOM element IDs are present[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-candles is an HTMLElement[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-havdala is an HTMLElement[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-holiday-row is initially hidden[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-special-row is initially hidden[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-omer-row is initially hidden[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-parasha-row is initially hidden[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-daf-row is initially hidden[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock relative volume badge[2m > [22mremoves previous badge before rendering new one[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow (F132)[2m > [22mno-ops when portfolio key is missing[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow (F132)[2m > [22mno-ops when portfolio JSON is malformed[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow (F132)[2m > [22mno-ops when no prices are cached[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow (F132)[2m > [22mshows total-row and sets total-val on gain[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow (F132)[2m > [22mapplies pl-gain class on gain to header chip[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow (F132)[2m > [22mapplies pl-loss class on loss[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow (F132)[2m > [22mdoes not throw when DOM elements are absent[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns data when TTL has not elapsed[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22moverwrites an existing entry[32m 65[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mstores complex nested objects[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in (tasks)[2m > [22mloads the tasks CardDefinition via dynamic import[33m 471[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in (tasks)[2m > [22mtasks render() returns the custom element host[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mrenders temperature in Celsius[32m 106[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mrenders top-temp chip[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mrenders humidity percentage with comfort label[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mrenders wind speed with arrow[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mrenders UV index with label[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mrenders UV extreme for index > 10[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mrenders daily min/max[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateCountdownChip[2m > [22mhides chip when countdownDate is in the past[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateCountdownChip[2m > [22mdoes not throw when chip element is absent[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö setClockSeconds[2m > [22menables seconds ΓÇö clock shows HH:MM:SS format[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö setClockSeconds[2m > [22mdisables seconds ΓÇö clock shows HH:MM format[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö setClockSeconds[2m > [22mdoes not throw when called without DOM[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock per-stock P&L row (F149)[2m > [22mrenders stk-pos-pnl with gain class when in profit[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock per-stock P&L row (F149)[2m > [22mrenders stk-pos-pnl with loss class when at a loss[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock per-stock P&L row (F149)[2m > [22mdoes not render stk-pos-pnl when portfolio entry absent[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown (F68)[2m > [22mshows open state with mkt-open class during market hours (Mon 10:00 ET)[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown (F68)[2m > [22mshows closed state when market is closed (Saturday)[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown (F68)[2m > [22mshows pre-market text during pre-market hours (Mon 06:00 ET)[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns null when indexedDB is unavailable[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22midbSet resolves silently when indexedDB is unavailable[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbDel[2m > [22mdeletes an existing entry[32m 42[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbDel[2m > [22mdoes not throw when deleting a non-existent key[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-candles is empty initially[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-havdala is empty initially[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-holiday is empty initially[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-daf is empty initially[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-saying is empty initially[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö DOM element IDs exist after init[2m > [22mhc-parasha is empty initially[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö initHebrewCalCard robustness[2m > [22mdoes not throw with empty DOM[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö initHebrewCalCard robustness[2m > [22mdoes not throw with only candles/havdala elements[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö initHebrewCalCard robustness[2m > [22mdoes not throw when row elements are missing[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö computeMoonPhase[2m > [22mreturns an emoji and a label[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö computeMoonPhase[2m > [22mon 2025-03-14T12:00:00Z ΓåÆ ≡ƒîò (full moon)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö computeMoonPhase[2m > [22mon 2025-03-29T12:00:00Z ΓåÆ ≡ƒîæ (new moon)[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö computeMoonPhase[2m > [22mon 2025-04-05T12:00:00Z ΓåÆ ≡ƒîô (first quarter (~7d after new moon))[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö computeMoonPhase[2m > [22mdifferent dates produce different phases[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderMoonPhase[2m > [22msets text content on #hc-moon[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderMoonPhase[2m > [22mshows #hc-moon-row after render[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderMoonPhase[2m > [22mdoes not throw when no DOM present[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderZmanim[2m > [22mshows zmanim-section after render[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather + cacheDom[2m > [22mpopulates forecast day elements[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard fetch integration[2m > [22mcalls fetch with weather URL (worker-first or open-meteo fallback)[32m 81[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateElecBadge (electricity peak hours)[2m > [22madds peak-on class during weekday peak hours (18:00 SunΓÇôThu)[32m 59[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateElecBadge (electricity peak hours)[2m > [22mremoves peak-on class outside peak hours (10:00)[32m 38[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbClear[2m > [22mremoves all entries[32m 89[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbClear[2m > [22mresolves silently when indexedDB is unavailable[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderZmanim[2m > [22mcreates .zman-item elements for matching keys[32m 58[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderZmanim[2m > [22mskips keys not in ZMANIM_DISPLAY[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderZmanim[2m > [22mdoes not throw when no DOM present[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent[2m > [22mhides row when no cal-ics cache[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent[2m > [22mshows next event from ICS cache[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent[2m > [22mhides row when ICS has no future events[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent[2m > [22mdoes not throw when no DOM present[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö getPsalmOfDay[2m > [22mweekday 0 ΓåÆ psalm 24[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö getPsalmOfDay[2m > [22mweekday 1 ΓåÆ psalm 48[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö getPsalmOfDay[2m > [22mweekday 2 ΓåÆ psalm 82[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö getPsalmOfDay[2m > [22mweekday 3 ΓåÆ psalm 94[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö getPsalmOfDay[2m > [22mweekday 4 ΓåÆ psalm 81[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö getPsalmOfDay[2m > [22mweekday 5 ΓåÆ psalm 93[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö getPsalmOfDay[2m > [22mweekday 6 ΓåÆ psalm 92[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderPsalmOfDay[2m > [22msets textContent of #hc-psalm element[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderPsalmOfDay[2m > [22mshows #hc-psalm-row after render[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderPsalmOfDay[2m > [22mdoes not throw when DOM elements are absent[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderPsalmOfDay[2m > [22mpsalm text includes the correct number for today[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard fetch integration[2m > [22mdestroyWeatherCard does not throw after init[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö weatherCard CardDefinition[2m > [22mexposes the registry shape for weather[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö weatherCard CardDefinition[2m > [22mrender returns a card host element[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö parseCityEntry[2m > [22mparses valid name|lat|lon string[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö parseCityEntry[2m > [22mtrims whitespace from name[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö parseCityEntry[2m > [22mreturns null for too few parts[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö parseCityEntry[2m > [22mreturns null when lat is not a number[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö parseCityEntry[2m > [22mreturns null when lon is not a number[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö parseCityEntry[2m > [22mreturns null for empty string[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö parseCityEntry[2m > [22mhandles empty name gracefully[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities[2m > [22mdoes not throw with no LS keys[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities[2m > [22mupdates tab text from LS_CITY_1[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities[2m > [22mupdates tab data-lat/data-lon from LS_CITY_2[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities[2m > [22mignores invalid LS entry without throwing[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities[2m > [22mdoes not throw when no city tabs in DOM[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in (system-info)[2m > [22mloads the system-info CardDefinition via dynamic import[32m 178[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown (F68)[2m > [22mshows after-hours text after close (Mon 17:00 ET)[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown (F68)[2m > [22mdoes not throw when #stk-mkt-countdown is absent[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock after/pre-market price (F137)[2m > [22mrenders .stk-after-price when postMarketPrice is set[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock after/pre-market price (F137)[2m > [22mrenders .stk-after-price when preMarketPrice is set[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock after/pre-market price (F137)[2m > [22mremoves existing .stk-after-price when no ext price is present[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock after/pre-market price (F137)[2m > [22mcontains '╫É╫ù╫ö' label for post-market price[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock after/pre-market price (F137)[2m > [22mcontains '╫ÿ╫¿╫ò╫¥' label for pre-market price[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mis a no-op when #stocks-body is absent[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbKeys[2m > [22mreturns all stored keys[32m 64[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbKeys[2m > [22mreturns an empty array when the store is empty[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbKeys[2m > [22mreturns an empty array when indexedDB is unavailable[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö isIdbAvailable[2m > [22mreturns a boolean[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mstores and retrieves a value[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns null for a missing key[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateElecBadge (electricity peak hours)[2m > [22mno peak-on on Saturday (weekend)[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateElecBadge (electricity peak hours)[2m > [22mno peak-on on Friday (weekend)[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateElecBadge (electricity peak hours)[2m > [22mpeak on Thursday 21:59 (last peak minute)[32m 51[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderCandlesHavdala via cached cGet[2m > [22msets hc-candles text from cached Shabbat items[32m 48[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderCandlesHavdala via cached cGet[2m > [22msets hc-havdala text from cached Shabbat items[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderCandlesHavdala via cached cGet[2m > [22muses '--' when candles item is absent[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHoliday via cached cGet[2m > [22msets hc-holiday text and shows hc-holiday-row[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHoliday via cached cGet[2m > [22mshows hc-holiday-row after rendering upcoming holiday[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHoliday via cached cGet[2m > [22mdoes not change holiday when no holiday items[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderOmer + renderParasha + renderDaf via cached cGet[2m > [22msets hc-omer text and shows hc-omer-row from omer cache[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderOmer + renderParasha + renderDaf via cached cGet[2m > [22msets hc-parasha text and shows hc-parasha-row from parasha cache[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderOmer + renderParasha + renderDaf via cached cGet[2m > [22msets hc-daf text and shows hc-daf-row from daf cache[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities[2m > [22muses home city coords for tab 1 when LS_CITY_1 is not set[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities[2m > [22mdoes not use home coords when LS_CITY_1 is already set[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mpopulates #stocks-body with content[32m 89[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mcreates exactly 2 sector header elements[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22msector headers use correct Hebrew labels[32m 48[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns null when TTL is exceeded[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns data when TTL has not elapsed[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22moverwrites an existing entry[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateElecBadge (electricity peak hours)[2m > [22mno peak at 22:00 (after peak ends)[32m 56[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateElecBadge (electricity peak hours)[2m > [22mdoes not throw when #elec-badge is absent[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö greeting with members config[2m > [22mmorning greeting includes a member name when members configured[32m 70[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö greeting with members config[2m > [22mevening greeting includes a member name[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö greeting with members config[2m > [22mfalls back to family name when members array is empty[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderOmer + renderParasha + renderDaf via cached cGet[2m > [22mrenderOmer with null item hides omer-row[32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderOmer + renderParasha + renderDaf via cached cGet[2m > [22mrenderDaf with null item hides daf-row[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö holiday day count variants[2m > [22mshows '╫₧╫ù╫¿' when holiday is 1 day away[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö holiday day count variants[2m > [22mshows holiday name directly when days <= 0[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadCandlesHavdala fetch path[2m > [22mfetches and renders candles when cache is empty[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toggleTempUnit[2m > [22mdoes not throw when no cached weather[32m 86[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toggleTempUnit[2m > [22mtoggles tempUnit from C to F in config[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toggleTempUnit[2m > [22mtoggles tempUnit from F back to C[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mreturns clear sky for code 0[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(1) ΓåÆ cls=sky-partly[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(2) ΓåÆ cls=sky-partly[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(3) ΓåÆ cls=sky-cloudy[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(45) ΓåÆ cls=sky-cloudy[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(61) ΓåÆ cls=sky-rain[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(71) ΓåÆ cls=sky-snow[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(80) ΓåÆ cls=sky-shower[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö getSkyCategory[2m > [22mgetSkyCategory(95) ΓåÆ cls=sky-storm[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sky condition pill in renderWeather[2m > [22msets textContent on #wx-sky-pill for clear sky (code 0)[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sky condition pill in renderWeather[2m > [22madds sky-rain class for rainy code[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mcreates one .stk row per STOCK_SYMBOLS entry[32m 65[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mevery STOCK_SYMBOL has a matching [data-symbol] row[32m 62[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö getGreeting with members configured[2m > [22muses greetPerson name in suffix when members array is non-empty[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö getGreeting with members configured[2m > [22mfalls back to familyName when members is empty array[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö getGreeting with members configured[2m > [22mhandles undefined members key in config (uses ?? [] default)[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip next-year birthday path[2m > [22mhandles birthday that already passed this year ΓÇö uses next-year date[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö updateBirthdayChip next-year birthday path[2m > [22mbirthday within 14 days AND second birthday farther ΓÇö shows first[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö getGreeting noon branch[2m > [22mreturns noon greeting between 12:00 and 16:59[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö getGreeting noon branch[2m > [22mreturns evening greeting between 17:00 and 20:59[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadCandlesHavdala fetch path[2m > [22mcaches fetched shabbat data via cSet[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadCandlesHavdala fetch path[2m > [22mrenders '--' when fetchJSON returns no items[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadCandlesHavdala fetch path[2m > [22muses stale data and then updates from fetch[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadHoliday fetch path[2m > [22mfetches and renders holiday when cache empty[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadHoliday fetch path[2m > [22mshows stale holiday before fetch completes[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mstores complex nested objects[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbDel[2m > [22mdeletes an existing entry[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbDel[2m > [22mdoes not throw when deleting a non-existent key[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sky condition pill in renderWeather[2m > [22madds sky-storm class for thunderstorm code 95[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sky condition pill in renderWeather[2m > [22mdoes not throw when #wx-sky-pill is absent[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill in renderWeather[2m > [22mrenders uv-pill span with uv-low class for UV 1[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill in renderWeather[2m > [22mrenders uv-mod for UV 4[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill in renderWeather[2m > [22mrenders uv-high for UV 6[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill in renderWeather[2m > [22mrenders uv-vhigh for UV 9[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mBTC-USD row uses CoinGecko logo URL[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mnon-crypto rows use Google favicon URL[32m 44[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22muses STOCK_META display symbol when meta.sym is set[32m 49[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö getGreeting noon branch[2m > [22mreturns night greeting after 21:00[32m 53[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö getGreeting noon branch[2m > [22mreturns morning greeting for member at index-based rotation[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö cfg.members null ?? [] fallback (line 25)[2m > [22mfalls back to empty members array when config has members: null (line 25)[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts[2m > [22mHeader ΓÇö cfg.clockSeconds ?? false fallback (line 209)[2m > [22muses false when clockSeconds key is absent from saved config (line 209)[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadOmer fetch path[2m > [22mfetches and renders omer when cache empty[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadOmer fetch path[2m > [22mrenders special items from omer fetch[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadOmer fetch path[2m > [22msets omer to empty when no omer item in response[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadParasha fetch path[2m > [22mfetches and renders parasha[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadDafYomi fetch path[2m > [22mfetches daf yomi from Sefaria calendar[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadDafYomi fetch path[2m > [22mhides daf row when no daf yomi found in calendar[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadDafYomi fetch path[2m > [22mhandles fetchJSON error gracefully for daf[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbClear[2m > [22mremoves all entries[32m 83[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbKeys[2m > [22mreturns all stored keys[32m 64[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill in renderWeather[2m > [22mrenders uv-extreme for UV 11[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipitation bar in forecast (F56)[2m > [22mappends wx-precip-bar inside forecast day when precipitation > 0[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipitation bar in forecast (F56)[2m > [22msets fill width proportional to precipitation %[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipitation bar in forecast (F56)[2m > [22mdoes not append precip bar when precipitation is 0[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipitation bar in forecast (F56)[2m > [22mcaps fill width at 100% for precipitation >= 100[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö weekly summary (F148)[2m > [22msets wx-week-summary text after rendering[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö weekly summary (F148)[2m > [22mcontains temperature range with em-dash[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mfalls back to symbol string when meta.sym is absent[32m 38[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22meach row starts with skeleton price placeholder[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStocksShell[2m > [22mTA35 row is present in the output[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMinutesToNextTransition extra branches[2m > [22mreturns 0 after market after-hours end (Mon 9 PM ET = nyMins >= 1200)[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö getMinutesToNextTransition extra branches[2m > [22mreturns minutes to pre-market start when before 4 AM ET (midnight = 240 min away)[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock negative trend[2m > [22madds stk-down class when price fell[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock negative trend[2m > [22mstk-chg shows down arrow when price fell[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock negative trend[2m > [22madds neutral class when price change < 0.1%[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock negative trend[2m > [22mshows bullet symbol for neutral change[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock negative trend[2m > [22mshows dash for non-finite price change[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock negative trend[2m > [22mapplies neutral trend color when change is zero[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadZmanim fetch path[2m > [22mfetches and renders zmanim[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadZmanim fetch path[2m > [22muses stale zmanim then updates from fetch[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent with ICS data[2m > [22mshows next event with future ICS date[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent with ICS data[2m > [22mshows '╫₧╫ù╫¿' for tomorrow event[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent with ICS data[2m > [22mhides row when ICS contains only past events[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent with ICS data[2m > [22mhandles ICS with escaped characters[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderOmer via initHebrewCalCard (empty display)[2m > [22msets empty text when omer item has no hebrew and no title[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderOmer via initHebrewCalCard (empty display)[2m > [22mrenders omer with hebrew text when available[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbKeys[2m > [22mreturns an empty array when the store is empty[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö isIdbAvailable[2m > [22mreturns true when indexedDB exists in the environment[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mstores and retrieves a value[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns null for a missing key[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö weekly summary (F148)[2m > [22mshows correct min from daily data (min of mins for days 1-7 = 9┬░C)[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö weekly summary (F148)[2m > [22mshows correct max from daily data (max of maxes for days 1-7 = 26┬░C)[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö feels-like display (F26)[2m > [22msets #wx-feels textContent to apparent temperature[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadHebCal catch block via sync cGet throw[2m > [22mcatches synchronous error from cGet inside loadCandlesHavdala[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadZmanim fresh cache path[2m > [22mrenders zmanim directly from fresh cGet (skips fetch)[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mformats exactly 0 ms as 00:00[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mformats negative ms as 00:00[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mformats 90 seconds as 01:30[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mformats 59:59 correctly without hours[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mformats 1 hour as 01:00:00[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mformats 1h 2m 3s as 01:02:03[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mreturns MM:SS format (2 colon-separated parts, no hours) for 59m 59s[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö formatCountdown[2m > [22mreturns HH:MM:SS (with hours) for 60 minutes[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns null when TTL is exceeded[32m 40[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mreturns data when TTL has not elapsed[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (news ΓÇö legacyAdapter)[2m > [22mloads news card and legacyAdapter render() falls back to createElement[33m 667[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (news ΓÇö legacyAdapter)[2m > [22mrenders the news custom element host[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö feels-like display (F26)[2m > [22mupdates #wx-feels when apparent_temperature differs from air temp[32m 52[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö feels-like display (F26)[2m > [22mrounds apparent temperature to nearest integer[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö feels-like display (F26)[2m > [22mdoes not throw when #wx-feels is absent[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sunrise/sunset in renderWeather[2m > [22mrenders sunset time in #wx-rise[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock 52-week range bar[2m > [22msets stk-range-fill width to 50% when price is exactly midpoint[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock 52-week range bar[2m > [22mclamps stk-range-fill to 0% at 52-week low[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock 52-week range bar[2m > [22mclamps stk-range-fill to 100% at 52-week high[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock 52-week range bar[2m > [22mdoes not throw when high <= low (degenerate range)[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard[2m > [22mdoes not throw with full DOM[32m 68[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard[2m > [22mdoes not throw with empty DOM[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö startCountdown[2m > [22mdoes not throw when called[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö startCountdown[2m > [22mcan be called multiple times without error[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent (full DOM)[2m > [22mhides hc-event-row when no ICS cached[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent (full DOM)[2m > [22mdoes not throw with full DOM present[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22moverwrites an existing entry[32m 90[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbSet / idbGet[2m > [22mstores complex nested objects[32m 63[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sunrise/sunset in renderWeather[2m > [22mdoes not throw when sunset is invalid[32m 55[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard DOM wiring[2m > [22mchart toggle button toggles wx-chart-rain class[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard DOM wiring[2m > [22mcity tab click switches active tab[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard[2m > [22mpopulates stocks-body after init[32m 122[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown[2m > [22msets countdown text when element is present[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown[2m > [22mdoes not throw when element is missing[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown[2m > [22mshows '╫⌐╫ò╫º ╫í╫Æ╫ò╫¿' on weekend[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown[2m > [22mshows '╫ñ╫¬╫ò╫ù' during market hours[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown[2m > [22mshows '╫ñ╫¿╫ö' during pre-market hours[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mdoes nothing when ALERT_LS_KEY is empty[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (weather)[2m > [22mloads weather card via dynamic import[32m 132[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (weather)[2m > [22mrenders weather as the custom element host[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderTasksStrip via initHebrewCalCard[2m > [22mhides hc-tasks-strip when no chores configured[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderTasksStrip via initHebrewCalCard[2m > [22mshows hc-tasks-strip when chores are present[32m 42[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent isDuplicate via _lastHolidayName (lines 736-739)[2m > [22mhides event row when ICS summary matches the active holiday name[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent isDuplicate via _lastHolidayName (lines 736-739)[2m > [22mshows event row when ICS summary does NOT match holiday name[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard DOM wiring[2m > [22mignores city tab click with invalid lat/lon[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö switchWeatherCity[2m > [22mupdates weather data after city switch[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö switchWeatherCity[2m > [22mhandles fetch error gracefully[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill high/very-high branches[2m > [22mUV high (6-7) shows '╫Æ╫æ╫ò╫ö'[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mfires toast when price > threshold[32m 52[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mfires toast for < operator[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mfires toast for >= operator[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mfires toast for <= operator[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mdoes not fire when condition is not met[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mfires only once per session for the same alert[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mignores malformed alert lines[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö checkStockAlerts[2m > [22mhandles multi-line alerts[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow[2m > [22mdoes nothing when no portfolio in localStorage[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow[2m > [22mdoes nothing with invalid JSON[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow[2m > [22mcomputes and displays portfolio P&L with gain[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow[2m > [22mdisplays loss styling when cost > current value[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow[2m > [22mskips symbols with no cached price[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow[2m > [22mskips entries with shares <= 0[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbDel[2m > [22mdeletes an existing entry[32m 86[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbDel[2m > [22mdoes not throw when deleting a non-existent key[32m 44[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (hebrew-cal)[2m > [22mloads hebrew-cal card via dynamic import[32m 134[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderSchool vacation detection (lines 254-270)[2m > [22mshows school vacation row when a holiday started within 7 days (vacationItem found)[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderSchool vacation detection (lines 254-270)[2m > [22mhides school row when no vacation holiday is within the [-7, 0] window[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderSchool vacation detection (lines 254-270)[2m > [22mhides school row when title does not match any SCHOOL_VACATION_TITLES keyword[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö tickCountdown Saturday and Friday paths[2m > [22mshows havdala countdown on Saturday when havdalaTime is set and in future[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö tickCountdown Saturday and Friday paths[2m > [22mshows candles countdown on Friday when candlesTime is set and in future[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö tickCountdown Saturday and Friday paths[2m > [22mhides countdown row when neither candles nor havdala are set[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent isDuplicate via _lastHolidayName (correct key)[2m > [22mhides event row when ICS summary matches _lastHolidayName set by loadHoliday[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill high/very-high branches[2m > [22mUV very high (8-10) shows '╫Æ╫æ╫ò╫ö ╫₧╫É╫ò╫ô'[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö UV pill high/very-high branches[2m > [22mUV low (0-2) shows '╫á╫₧╫ò╫Ü'[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sunrise/sunset in renderWeather[2m > [22mrenders sunset time in #wx-rise[32m 67[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent isDuplicate via _lastHolidayName (correct key)[2m > [22mshows event row when ICS summary does not match _lastHolidayName[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderDaf dafLink row wiring (full DOM)[2m > [22mshows daf-link-row and wires onclick when daf item has url field[32m 75[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbClear[2m > [22mremoves all entries[32m 117[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö sunrise/sunset in renderWeather[2m > [22mdoes not throw when sunset is invalid[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard DOM wiring[2m > [22mchart toggle button toggles wx-chart-rain class[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard DOM wiring[2m > [22mcity tab click switches active tab[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCard DOM wiring[2m > [22mignores city tab click with invalid lat/lon[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö switchWeatherCity[2m > [22mupdates weather data after city switch[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö switchWeatherCity[2m > [22mhandles fetch error gracefully[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö chart toggle without #wx-hourly (null chart branch)[2m > [22mchart toggle click does not throw when #wx-hourly is absent[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö city tab click on non-tab element[2m > [22mignores click on non-.wx-city-tab element inside tabs container[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö inline coverage: renderWeather weekly summary (line 297)[2m > [22mexecutes domEmoji line when rendering with daily weather_code data[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö inline coverage: renderWeather sunrise/sunset (line 304)[2m > [22mexecutes sunset line when el.wxRise and d.daily.sunset are set[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö inline coverage: renderWeather sunrise/sunset (line 304)[2m > [22mskips sunset text when sunset[0] is null ΓåÆ ?? '' fallback (line 302)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö inline coverage: city tab click handler (line 353)[2m > [22mreaches const lon line when clicking on .wx-city-tab with lat/lon data[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities home city fallback[2m > [22mapplies home city coords when LS_CITY_1 not set[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities home city fallback[2m > [22mdoes not apply home city when LS_CITY_1 is set[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities home city fallback[2m > [22mdoes not apply home city when coords are NaN[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather with null DOM elements[2m > [22mdoes not throw when all optional DOM elements are absent[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather with null DOM elements[2m > [22mrenders partial DOM ΓÇö only wx-temp present[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö wx-temp click toggles temp unit[2m > [22mclicking wx-temp fires toggleTempUnit and persists F[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö wx-temp click toggles temp unit[2m > [22mdouble-clicking wx-temp toggles back to C[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather defensive branches[2m > [22mskips sunrise rendering when sunset string is invalid[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather defensive branches[2m > [22mskips min/max rendering when daily temp arrays are missing[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderDaf dafLink row wiring (full DOM)[2m > [22mshows daf-link-row and builds ref URL when daf item has no url field[32m 48[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderDaf dafLink row wiring (full DOM)[2m > [22mhides daf-link-row and daf-row when daf item is null (via full DOM)[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHalacha null / url wiring paths[2m > [22mhides halacha-row when DafYomi response has no halachaYomit entry[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHalacha null / url wiring paths[2m > [22mshows halacha-row and wires onclick when halachaYomit has url[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather defensive branches[2m > [22mtoggleTempUnit re-renders from stale cache when fresh is null[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities active tab coord sync[2m > [22msyncs _activeLat/_activeLon from active tab with valid coords[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities active tab coord sync[2m > [22mskips active tab coord sync when lat/lon are invalid (NaN)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather without daily data[2m > [22mrenderWeather with null daily does not throw[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather without daily data[2m > [22mrenderWeather weekly summary with unknown weather code ΓåÆ emoji fallback (line 295)[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather without daily data[2m > [22mrenderWeather weekly summary with all-null weather codes ΓåÆ codes[0]??0 fallback (line 287)[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather without daily data[2m > [22mrenderWeather city tab click with invalid lat/lon returns early[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather WX_EMOJI fallback for unknown weather_code (line 209)[2m > [22msets wxIcon to '≡ƒîí∩╕Å' when weather_code is not in WX_EMOJI map (line 209 ?? branch)[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather forecast wc ?? 0 and WX_EMOJI ?? '≡ƒîí∩╕Å' (lines 251-252)[2m > [22muses wc=0 via ?? 0 for null weather_code entry (line 251) and emoji fallback for code 10 (line 252)[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö city tab click missing data-lon triggers ?? '' fallback (line 351)[2m > [22mlon ?? '' fires when .wx-city-tab has no data-lon attribute (line 351 ?? '' branch)[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö initWeatherCities active tab with no data-lat fires ?? '' (line 82)[2m > [22mtriggers ?? '' fallback when active tab has no data-lat attribute (line 82 right branch)[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toggleTempUnit with fresh cache (line 100 ?? left branch)[2m > [22muses fresh cache directly when cGet returns non-null (line 100 ?? LEFT branch / line 101 TRUE branch)[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbKeys[2m > [22mreturns all stored keys[32m 124[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbKeys[2m > [22mreturns an empty array when the store is empty[32m 48[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbGetEntry[2m > [22mreturns data and ts for a stored entry[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mfetchJSON success ΓåÆ renders stock + calls recordSuccess[33m 326[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderParasha parasha-link wiring (full DOM)[2m > [22mshows parasha-link-row when parasha item has title and link elements exist in DOM[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderDaf dafLink.onclick body (line 452)[2m > [22mcalls window.open with sefaria URL when dafLink.onclick is invoked[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHalacha halacha.onclick body (line 471)[2m > [22mcalls window.open with halacha URL when halacha element is clicked[32m 55[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö dew point rendering[2m > [22mrenders dew point in Celsius[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö dew point rendering[2m > [22mrenders dew point correctly in Fahrenheit[32m 45[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö dew point rendering[2m > [22mshows wind gust when significantly higher than sustained wind[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö dew point rendering[2m > [22mhides wind gust when close to sustained wind[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather with null wxDew (no #wx-dew element)[2m > [22mdoes not throw when wx-dew element is absent[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbGetEntry[2m > [22mreturns null for a missing key[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbGetEntry[2m > [22mreturns null when indexedDB is unavailable[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbGetEntry[2m > [22mreturned ts is a valid timestamp[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEstimateSize[2m > [22mreturns 0 when navigator is unavailable[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEstimateSize[2m > [22mreturns 0 when storage.estimate is unavailable[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEstimateSize[2m > [22mreturns usage from navigator.storage.estimate()[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEstimateSize[2m > [22mreturns 0 when estimate() rejects[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEstimateSize[2m > [22mreturns 0 when usage is undefined in estimate result[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö IDB_MAX_BYTES[2m > [22mequals 50 MB[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEvictLRU[2m > [22mreturns 0 when size is under the limit[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (calendar)[2m > [22mloads calendar card via dynamic import[33m 463[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö parashaLink.onclick body calls window.open (line 380)[2m > [22mcalls window.open when parashaLink.onclick is invoked (line 380 onclick body)[32m 40[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderZmanim rAF maxW > 0 sets gridTemplateColumns (line 651)[2m > [22msets grid.style.gridTemplateColumns when cells have positive width (line 651 TRUE branch)[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHoliday h.title fallback (line 247)[2m > [22muses h.title when h.hebrew is absent, covering h.hebrew ?? h.title FALSE branch[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö loadOmer specialRow hidden when all specials duped (line 332)[2m > [22msets specialRow display='none' when all special holiday names equal _lastHolidayName (covers line 332)[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderHoliday sort comparator with 2+ holidays (line 239)[2m > [22msort comparator is executed when 2+ future holidays are present (line 239)[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mHebrew Calendar ΓÇö renderNextCalEvent dedup via _lastSpecialNames.some() (line 736)[2m > [22m_lastSpecialNames.some() callback executes when a special name is in the ICS (line 736)[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mDAF_STATIC_FALLBACK constant[2m > [22mis an object with ref and heRef string fields[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mDAF_STATIC_FALLBACK constant[2m > [22mref matches tractate-page pattern[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22misShabbat[2m > [22mreturns true when within candles-to-havdala window[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather with null wxDew (no #wx-dew element)[2m > [22mdoes not throw when wx-gust element is absent[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö toggleTempUnit no-cache path (neither fresh nor stale)[2m > [22msaves config and does not call renderWeather when cache is empty[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderWeather wx-sky-pill null guard[2m > [22mdoes not throw when wx-sky-pill element is absent[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö weekly summary '╫⌐╫₧╫⌐╫Ö' label (all-clear week)[2m > [22mshows 'ΓÿÇ∩╕Å' emoji when all forecast days are clear (code 0)[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö humidityLabel[2m > [22mreturns '╫Ö╫æ╫⌐' for rh < 30[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö humidityLabel[2m > [22mreturns '╫á╫ò╫ù' for rh 30ΓÇô49[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö humidityLabel[2m > [22mreturns '╫£╫ù' for rh 50ΓÇô69[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö humidityLabel[2m > [22mreturns '╫₧╫É╫ò╫ô ╫£╫ù' for rh >= 70[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö moonPhase[2m > [22mreturns a tuple [emoji, hebrewName][32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö moonPhase[2m > [22mreturns new moon values for known new moon date[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö moonPhase[2m > [22mreturns full moon emoji for approximately half synodic period later[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö moonPhase[2m > [22muses today's date when no argument is passed[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipSummaryLabel[2m > [22mreturns '╫É╫Ö╫ƒ ╫Æ╫⌐╫¥' for pp < 10[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipSummaryLabel[2m > [22mreturns '╫í╫Ö╫¢╫ò╫Ö ╫á╫₧╫ò╫Ü' for pp 10ΓÇô39[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipSummaryLabel[2m > [22mreturns '╫Ö╫Ö╫¬╫¢╫ƒ ╫Æ╫⌐╫¥' for pp 40ΓÇô69[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö precipSummaryLabel[2m > [22mreturns '╫¢╫á╫¿╫É╫ö ╫Æ╫⌐╫¥' for pp >= 70[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22mrenders 6 tiles when weatherShowHourly is true[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22mhides the strip when weatherShowHourly is false[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mfetchJSON failure ΓåÆ sets sync error when all fail[32m 97[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22misShabbat[2m > [22mreturns false when before candles time[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22misShabbat[2m > [22mreturns false when after havdala time[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22misShabbat[2m > [22muses day heuristic when no times given ΓÇö Saturday is Shabbat[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mnextHolidayName[2m > [22mreturns null for empty items[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mnextHolidayName[2m > [22mreturns null when no holiday items[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mnextHolidayName[2m > [22mreturns next upcoming holiday hebrew name[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mnextHolidayName[2m > [22mskips past holidays[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mhebrewMonthName[2m > [22mreturns a non-empty string[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mhebrewMonthName[2m > [22mreturns string for known Nisan month date[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mgetParashat[2m > [22mreturns null for empty array[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mgetParashat[2m > [22mreturns russian translation when no hebrew[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mgetParashat[2m > [22mreturns hebrew name when available[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mgetParashat[2m > [22mignores non-parashat items[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mzmanimTimeLabel[2m > [22mreturns '--' for empty string[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mzmanimTimeLabel[2m > [22mreturns '--' for invalid date[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mzmanimTimeLabel[2m > [22mreturns HH:MM as-is when already in that format[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts[2m > [22mzmanimTimeLabel[2m > [22mparses ISO date-time and returns HH:MM[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö open/close/toggle[2m > [22mopenConfigPanel adds visible class[33m 306[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22mrenders time labels on tiles[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22mrenders temperature on each tile[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22mshows precip% only when > 0[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22madds wx-h-precip-high class when precip >= 50[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22mdoes not throw when strip element is missing[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö renderHourlyStrip (Sprint 46)[2m > [22mdoes not throw with empty hourly data[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö formatCloudCover (Sprint 32)[2m > [22mreturns '╫æ╫ö╫Ö╫¿' label for 0%[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö formatCloudCover (Sprint 32)[2m > [22mreturns '╫æ╫ö╫Ö╫¿' label for 12%[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö formatCloudCover (Sprint 32)[2m > [22mreturns '╫ù╫£╫º╫Ö' label for 13%[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö formatCloudCover (Sprint 32)[2m > [22mreturns '╫ù╫£╫º╫Ö' label for 50%[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö formatCloudCover (Sprint 32)[2m > [22mreturns '╫₧╫ó╫ò╫á╫ƒ' label for 51%[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö formatCloudCover (Sprint 32)[2m > [22mreturns '╫₧╫ó╫ò╫á╫ƒ ╫₧╫É╫ò╫ô' prefix for 85%[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö formatCloudCover (Sprint 32)[2m > [22mincludes the numeric percentage in output[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö configSchema (Sprint 87)[2m > [22mis a non-empty array[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö configSchema (Sprint 87)[2m > [22mincludes tempUnit as select field[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö configSchema (Sprint 87)[2m > [22mincludes weather toggle fields[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö configSchema (Sprint 87)[2m > [22mall fields have required properties[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEvictLRU[2m > [22mevicts oldest entries when over the limit until under[32m 172[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEvictLRU[2m > [22mstops evicting once size drops below maxBytes[32m 85[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mCoinGecko BTC-USD fallback path[32m 212[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö open/close/toggle[2m > [22mcloseConfigPanel removes visible class[32m 120[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö open/close/toggle[2m > [22mtoggleConfigPanel opens when closed[32m 91[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö loadWeather uses createAsyncCardLoader (Stream D2.2)[2m > [22mweatherCard init is a function[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö loadWeather uses createAsyncCardLoader (Stream D2.2)[2m > [22mweatherCard destroy is a function[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö loadWeather uses createAsyncCardLoader (Stream D2.2)[2m > [22mweatherCard id is "weather"[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts[2m > [22mWeather ΓÇö loadWeather uses createAsyncCardLoader (Stream D2.2)[2m > [22mloadWeather returns a Promise when page is hidden[32m 68[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mIDB Cache ΓÇö idbEvictLRU[2m > [22mreturns 0 and removes nothing when IDB has no entries[32m 67[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mmigrateLsToIdb (Sprint 49)[2m > [22mmigrates a JSON value from localStorage to IDB[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mmigrateLsToIdb (Sprint 49)[2m > [22mskips keys not present in localStorage[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö open/close/toggle[2m > [22mtoggleConfigPanel closes when open[32m 92[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mmigrateLsToIdb (Sprint 49)[2m > [22mskips keys with non-JSON values[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö open/close/toggle[2m > [22misConfigPanelOpen returns correct state[32m 51[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mmigrateLsToIdb (Sprint 49)[2m > [22mmigrates multiple keys in one call[32m 94[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22mmigrateLsToIdb (Sprint 49)[2m > [22mreturns 0 for empty keys array[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (currency)[2m > [22mloads currency card via dynamic import[33m 499[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mskips when page not visible[32m 115[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mskips when lock not acquired[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö open/close/toggle[2m > [22mdoes not throw when overlay element is absent[32m 157[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö switchCfgTab[2m > [22mactivates the target section[32m 70[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mserves cached data and skips fetch when all fresh[33m 316[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (stocks)[2m > [22mloads stocks card via dynamic import[32m 157[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (stocks)[2m > [22mrenders stocks as the custom element host[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22midbEvictStale[2m > [22mremoves entries older than maxAgeMs[32m 218[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö switchCfgTab[2m > [22mdeactivates the previously active section[32m 51[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mupdateStockSummary counts gainers/losers after load[32m 100[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mloadStockSingle sets N/A when fetch fails and no stale[32m 54[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard full integration (loadAllStocks path)[2m > [22mupdateStockSummary clears text when stocks-body has no .stk children[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö logo img error handler (line 217)[2m > [22mhides logo img when error event fires[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22midbEvictStale[2m > [22mkeeps fresh entries[32m 133[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts[2m > [22midbEvictStale[2m > [22mreturns 0 when IDB is empty[32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö switchCfgTab[2m > [22mactivates the target tab button[32m 130[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö switchCfgTab[2m > [22mdeactivates other tab buttons[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketCountdown h>0 time format (line 704)[2m > [22mcovers the time format ternary by running at two different market open times[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö applyHiddenStocks dataset ?? fallback (line 733)[2m > [22mhandles .stk element with no data-symbol attribute via ?? fallback[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard closed market interval (line 749)[2m > [22muses STOCKS_CLOSED interval when market is closed[32m 88[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates theme select from config[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates screen-mode select from config[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (alerts)[2m > [22mloads alerts card via dynamic import[33m 396[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö initStocksCard market-open interval (line 749 TRUE branch)[2m > [22muses STOCKS_OPEN interval when market is open (NYSE weekday 14:30-21:00 UTC)[32m 105[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow totalCost=0 branch (line 664)[2m > [22muses 0 for pnlPct when totalCost is 0 (line 664 FALSE branch)[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateMarketBadge countdown empty string on Saturday (line 130)[2m > [22mshows closed badge with empty countdown on Saturday (line 130 FALSE mins=0)[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates interface language from config[32m 151[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates temp unit from config[32m 65[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mCard Registry ΓÇö loadCard built-in legacy (motivation)[2m > [22mloads motivation card via dynamic import[32m 130[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22mreturns root <section> with data-card-id and .card class[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22mreturns a body div.card__body inside root[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22msets aria-label from registry entry[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22mthrows for unknown card id[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateStockSummary flat++ branch (line 558)[2m > [22mcounts flat stocks when no stk-up/stk-down class present (line 558 flat++)[32m 170[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderPortfolioRow entry.cost undefined ΓåÆ ?? 0 (line 657)[2m > [22muses 0 for cost when entry.cost field is absent (line 657 ?? 0 branch)[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates family name from config[32m 67[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates members from config[32m 83[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22mreturns header with title and sync dot (Sprint 134)[32m 65[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22mreturns footer element (Sprint 134)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22mlocalizes shell title in English mode[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22mcreateShell[2m > [22mheader ΓåÆ body ΓåÆ footer order in DOM (Sprint 134)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns true for valid size sm[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns true for valid size md[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns true for valid size lg[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns true for valid size xl[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns false for xs[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns false for xxl[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns false for [32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns false for MD[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns false for 3[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns false for null[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22misValidCardSize[2m > [22mreturns false for undefined[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22massertCardSize[2m > [22mdoes not throw for valid sizes[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts[2m > [22massertCardSize[2m > [22mthrows TypeError for invalid value[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö renderStock second render removes existing .stk-after-price (line 411)[2m > [22msecond renderStock call removes .stk-after-price created by first call (line 411 non-null ?.remove())[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates countdown card title from config[32m 75[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö loadAllStocks partial failure sets sync ok (line 530 FALSE branch)[2m > [22msets sync to 'ok' when some symbols were cached and uncached all failed (line 530 FALSE branch)[32m 166[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö updateStockSummary counts stk-down stocks (line 557 else-if branch)[2m > [22mcounts stocks with stk-down class in summary (line 557 else-if dn++ branch)[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö formatVolume[2m > [22mformatVolume(2500000000) ΓåÆ 2.5B[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö formatVolume[2m > [22mformatVolume(1234567) ΓåÆ 1.2M[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö formatVolume[2m > [22mformatVolume(9500) ΓåÆ 10K[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö formatVolume[2m > [22mformatVolume(999) ΓåÆ 999[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö formatVolume[2m > [22mformatVolume(1000000000) ΓåÆ 1.0B[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö priceInRange52w[2m > [22mpriceInRange52w(100, 100, 200) ΓåÆ 0[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö priceInRange52w[2m > [22mpriceInRange52w(200, 100, 200) ΓåÆ 1[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö priceInRange52w[2m > [22mpriceInRange52w(150, 100, 200) ΓåÆ 0.5[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö priceInRange52w[2m > [22mpriceInRange52w(50, 100, 200) ΓåÆ 0[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö priceInRange52w[2m > [22mpriceInRange52w(300, 100, 200) ΓåÆ 1[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö priceInRange52w[2m > [22mreturns null when high equals low[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö sectorEmoji[2m > [22msectorEmoji(AAPL) ΓåÆ ≡ƒìÄ[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö sectorEmoji[2m > [22msectorEmoji(JPM) ΓåÆ ≡ƒÅª[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö sectorEmoji[2m > [22msectorEmoji(BTC-USD) ΓåÆ Γé┐[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö sectorEmoji[2m > [22msectorEmoji(UNKNOWN) ΓåÆ ≡ƒôê[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö sectorEmoji[2m > [22msectorEmoji(aapl) ΓåÆ ≡ƒìÄ[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö portfolioChange[2m > [22mreturns null for empty quotes array[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö portfolioChange[2m > [22mreturns 0 when prices unchanged[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö portfolioChange[2m > [22mreturns +10% when price increases by 10%[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö portfolioChange[2m > [22mreturns -5% for a loss scenario[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö portfolioChange[2m > [22mreturns null when all prev prices are 0[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö marketStatusLabel[2m > [22mreturns a non-empty Hebrew string[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm (via openConfigPanel)[2m > [22mpopulates countdown card date from config[32m 87[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö stocksGroupBySector config gate (Sprint 49)[2m > [22mshows 2 sector headers when stocksGroupBySector=true[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö stocksGroupBySector config gate (Sprint 49)[2m > [22mshows 0 sector headers when stocksGroupBySector=false[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö stocksGroupBySector config gate (Sprint 49)[2m > [22mstill renders all stock rows when stocksGroupBySector=false[32m 50[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts[2m > [22mStocks ΓÇö cSetAsync (Stream D2.3)[2m > [22mcSetAsync is exported from cache and stores data retrievable by cGetStale[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel wiring[2m > [22mgear button opens the panel on click[32m 146[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel wiring[2m > [22mclose button hides the panel[32m 68[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel wiring[2m > [22msave button closes the panel and persists config[33m 349[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel wiring[2m > [22mtab buttons switch active tab on click[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö shareSettings[2m > [22mdoes not throw when clipboard API is available[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö shareSettings[2m > [22mcalls clipboard.writeText with a URL[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö exportSettings[2m > [22mdoes not throw when called[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö exportSettings[2m > [22mcalls URL.createObjectURL with a Blob[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö exportSettings[2m > [22mcalls URL.revokeObjectURL to clean up[32m 52[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö exportSettings[2m > [22mtriggers anchor click to download the file[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö importSettings[2m > [22mdoes not throw when cfg-import-file element is absent[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö importSettings[2m > [22mcalls click() on the file input[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö importSettings[2m > [22msaves config when FileReader.onload fires with valid JSON[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö importSettings[2m > [22mrejects import when configVersion is missing[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö importSettings[2m > [22mrejects import when configVersion is not a positive integer[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö importSettings[2m > [22mhandles invalid JSON in FileReader without throwing[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö share button wiring[2m > [22mclicking #cfg-share-btn copies share link to clipboard[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö font size slider live preview[2m > [22mupdates font size display on slider input event[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm without fontsize val element[2m > [22mopens config panel without #cfg-news-fontsize-val element[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm with non-empty birthdays[2m > [22mpopulates birthday textarea when config has birthdays[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm with minimal DOM[2m > [22msave button works with stripped-down DOM (no form inputs)[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm with minimal DOM[2m > [22mcollectForm handles partial form ΓÇö some inputs present, others absent[32m 159[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm with minimal DOM[2m > [22mcollectForm ignores invalid birthday lines[32m 86[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm with minimal DOM[2m > [22mcollectForm tempUnit rejects invalid value[32m 77[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö cards tab visibility and sizes[2m > [22mpopulates cfg-cards-list with card registry entries[33m 606[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö cards tab visibility and sizes[2m > [22mcollectForm reads hidden card checkboxes and applies on save[33m 709[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö cards tab visibility and sizes[2m > [22mcollectForm reads card size selects and applies on save[33m 420[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo online status[2m > [22mshows online indicator when navigator.onLine is true[32m 215[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo online status[2m > [22mshows offline indicator when navigator.onLine is false[32m 52[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo battery[2m > [22mshows battery percentage when Battery API available[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö font size slider live preview[2m > [22mupdates cfg-news-fontsize-val when slider input fires[32m 265[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo battery[2m > [22mshows charging indicator when battery is charging[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo battery[2m > [22mshows low battery icon at or below 20%[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo battery[2m > [22mshows medium battery icon between 21ΓÇô50%[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo battery[2m > [22mshows em-dash when Battery API is unavailable[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo battery[2m > [22mshows em-dash when getBattery() rejects[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo network[2m > [22mshows network effectiveType and downlink when connection is available[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo network[2m > [22mshows em-dash when network connection is unavailable[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö font size slider live preview[2m > [22mwires cfg-export-btn to call exportSettings without throwing[32m 122[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo network[2m > [22mshows em-dash when connection object has no fields[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo uptime and timing[2m > [22mrenders uptime in H:MM format[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo uptime and timing[2m > [22mrenders page load time when PerformanceNavigationTiming is available[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo uptime and timing[2m > [22mshows em-dash for page load when loadEventEnd is zero[32m 55[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo uptime and timing[2m > [22mdoes not throw when navigation entries are empty[32m 50[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo browser/UA[2m > [22mshows browser from userAgentData brands when available[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo browser/UA[2m > [22mfalls back to userAgentData.platform when all brands are filtered[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö renderSystemInfo browser/UA[2m > [22mfalls back to navigator.userAgent parse when userAgentData absent[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö initSystemInfoCard[2m > [22mdoes not throw when called[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö destroySystemInfoCard[2m > [22mdoes not throw when called without init[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö destroySystemInfoCard[2m > [22mdoes not throw after initSystemInfoCard[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö online/offline event handlers[2m > [22mupdates sysinfo-online to connected on 'online' event[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö online/offline event handlers[2m > [22mupdates sysinfo-online to disconnected on 'offline' event[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö systemInfoCard CardDefinition[2m > [22mhas correct id[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö systemInfoCard CardDefinition[2m > [22mhas correct icon[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö font size slider live preview[2m > [22mwires cfg-import-btn without throwing on empty file[32m 149[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel overlay and tab branch coverage[2m > [22mcovers if(ov) false branch when config-overlay is absent[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö systemInfoCard CardDefinition[2m > [22mrender() returns a section element with data-card-id[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö systemInfoCard CardDefinition[2m > [22mrender() contains sysinfo-body element[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö setText null-element guard (line 72)[2m > [22mdoes not throw when some sysinfo DOM elements are missing[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö UA string no-match fallback path (line 155)[2m > [22mrenders em-dash when userAgent has no known browser token[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö UA string no-match fallback path (line 155)[2m > [22mrenders browser name when userAgent matches Chrome pattern[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö initSystemInfoCard interval cleared on second call (line 155)[2m > [22mcalls clearInterval when _sysInfoInterval is already set (line 155 TRUE branch)[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö sysinfo-memory tile (Sprint v7.12)[2m > [22mshows 'X GB' when navigator.deviceMemory is defined[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel overlay and tab branch coverage[2m > [22mfires overlay background click to close panel (e.target === ov)[32m 216[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö sysinfo-memory tile (Sprint v7.12)[2m > [22mshows 'ΓÇö' when navigator.deviceMemory is undefined[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö sysinfo-cpu tile (Sprint v7.12)[2m > [22mshows '├ùN ╫£╫Ö╫æ╫ò╫¬' when hardwareConcurrency > 0[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö sysinfo-cpu tile (Sprint v7.12)[2m > [22mshows 'ΓÇö' when hardwareConcurrency is 0[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö sysinfo-viewport tile (Sprint v7.12)[2m > [22mrenders 'WxH' without DPR suffix when devicePixelRatio is 1[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö sysinfo-viewport tile (Sprint v7.12)[2m > [22mrenders 'WxH @2x' when devicePixelRatio is 2[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö storage estimate (F2 v7.3)[2m > [22mdisplays storage usage when StorageManager is available[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö storage estimate (F2 v7.3)[2m > [22mshows ΓÇö when storage throws[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel overlay and tab branch coverage[2m > [22mdoes NOT close panel when click target is a child element (e.target !== ov)[32m 128[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö RTT tile (F9 v7.3)[2m > [22mdisplays RTT from Connection API when available[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö RTT tile (F9 v7.3)[2m > [22mfalls back to navigation timing when Connection API is absent[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mgetConnectionInfo[2m > [22mreturns 'unknown' when connection API is absent[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mgetViewportSize[2m > [22mreturns an object with width, height, dpr[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mformatBytes[2m > [22mformats bytes[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mformatBytes[2m > [22mformats kilobytes[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mformatBytes[2m > [22mformats megabytes[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mformatBytes[2m > [22mformats gigabytes[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mformatBytes[2m > [22mhandles negative / invalid values[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mgetPageLoadTime[2m > [22mreturns a non-negative number[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mgetPageLoadTime[2m > [22mincreases over time[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mcategorizeDevice[2m > [22mreturns one of the four categories[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mcategorizeDevice[2m > [22mreturns 'tv' in happy-dom (which defaults to 1920px width)[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö formatHeapMb (Sprint 29)[2m > [22mreturns '' for zero inputs[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö formatHeapMb (Sprint 29)[2m > [22mformats bytes to MB correctly[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö formatHeapMb (Sprint 29)[2m > [22mrounds used to 1 decimal[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö formatHeapMb (Sprint 29)[2m > [22mreturns '' when only usedBytes is 0[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö gpuShortName (Sprint 29)[2m > [22mtrims at slash[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö gpuShortName (Sprint 29)[2m > [22mtruncates to 30 chars max[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö gpuShortName (Sprint 29)[2m > [22mhandles simple GPU name without special chars[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö gpuShortName (Sprint 29)[2m > [22mtrims text after open paren[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö configSchema (Sprint 81)[2m > [22mhas a configSchema array[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö configSchema (Sprint 81)[2m > [22mincludes sysInfoShowRtt field[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts[2m > [22mSystemInfo ΓÇö configSchema (Sprint 81)[2m > [22mall fields have required properties[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö initConfigPanel overlay and tab branch coverage[2m > [22mtab button with empty data-tab skips switchCfgTab (if(tab) false branch)[32m 107[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö importSettings no-file early return (line 434)[2m > [22mfile input onchange returns early when no file is selected (line 434 TRUE branch)[32m 95[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm disabledFeeds split (line 303)[2m > [22msplits cfg-feeds-disabled comma-value into disabledFeeds array (line 303)[32m 238[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö isConfigPanelOpen ?? false when overlay is null (line 409)[2m > [22mreturns false via ?? false when config-overlay not in DOM (line 409)[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö applyConfig sets [data-card-size] on matching card element (line 507)[2m > [22msets data-card-size attribute on card element when cardSizes config has matching id (line 507)[32m 160[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm invalid portfolio JSON shows toast[2m > [22mpreserves previous portfolio when textarea contains invalid JSON[32m 186[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm tasksResetHour NaN preserves default[2m > [22mkeeps tasksResetHour at default (6) when input value is NaN[32m 121[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö dirty tracking (Sprint 171)[2m > [22mfirst close when dirty shows toast instead of closing[32m 73[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö dirty tracking (Sprint 171)[2m > [22msecond close after dirty warning actually closes[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö dirty tracking (Sprint 171)[2m > [22mgear button shows * when dirty[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm tasksResetHour > 23 clamps to 23[2m > [22mstores tasksResetHour = 23 when input value is 30[32m 91[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm countdown card fields persist[2m > [22msaves countdown card title + date + time + doneMsg from form[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm cfg-clock-seconds (Sprint v7.12)[2m > [22mpopulates cfg-clock-seconds as 'on' when clockSeconds is true[32m 170[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö populateForm cfg-clock-seconds (Sprint v7.12)[2m > [22mpopulates cfg-clock-seconds as 'off' when clockSeconds is false[32m 90[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm cfg-clock-seconds (Sprint v7.12)[2m > [22msaves clockSeconds = true when cfg-clock-seconds value is 'on'[32m 93[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö initStatusBar[2m > [22msets textContent on #version-badge[33m 546[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö initStatusBar[2m > [22msets textContent on #refresh-stamp[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö initStatusBar[2m > [22mdoes not throw when sync dot elements are absent[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö stampRefresh[2m > [22mupdates #refresh-stamp with current time[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö stampRefresh[2m > [22mupdates stamp on repeated calls[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö stampRefresh[2m > [22mdoes not throw when refresh-stamp element is absent[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects security keywords[32m 40[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects politics keywords[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects economy keywords[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects sport keywords[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects tech keywords[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mreturns null for unrecognized text[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mhandles empty string[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects army/weapons keyword (╫á╫⌐╫º)[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects war (╫£╫ù╫Ö╫₧╫ö)[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects terror (╫ÿ╫¿╫ò╫¿)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects coalition (╫º╫ò╫É╫£╫Ö╫ª╫Ö╫ö)[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects elections (╫æ╫ù╫Ö╫¿╫ò╫¬)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects Olympics (╫É╫ò╫£╫Ö╫₧╫ñ╫Ö╫É╫ô)[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects startup (╫í╫ÿ╫É╫¿╫ÿ╫É╫ñ)[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mdetects AI keyword (AI)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mreturns null for a single space[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö detectCategory[2m > [22mhandles very long title without throwing[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö NEWS_FEEDS[2m > [22mhas at least 10 feeds[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö NEWS_FEEDS[2m > [22meach feed has url and src[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö NEWS_FEEDS[2m > [22mall URLs are https[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö NEWS_FEEDS[2m > [22mall src fields are non-empty strings[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö NEWS_FEEDS[2m > [22mall url fields are non-empty strings[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö NEWS_FEEDS[2m > [22mURLs do not contain spaces[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö fetchFeed[2m > [22mreturns parsed news items from mock RSS[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö fetchFeed[2m > [22mreturns empty array when fetch rejects[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö initNewsCard[2m > [22mdoes not throw when called with DOM[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö initNewsCard[2m > [22mdoes not throw when called without DOM[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö initNewsCard[2m > [22mdestroyNewsCard does not throw after init[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö newsCard CardDefinition[2m > [22mexposes the registry shape for news[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö version badge format[2m > [22mversion badge starts with 'v'[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö version badge format[2m > [22mversion badge contains at least one digit[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö version badge format[2m > [22mversion badge matches semver-like pattern[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö version badge format[2m > [22mrefresh stamp contains time separator ':'[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö collectForm cfg-clock-seconds (Sprint v7.12)[2m > [22msaves clockSeconds = false when cfg-clock-seconds value is 'off'[32m 62[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö dim-level and font-scale slider live preview[2m > [22mslider input events update the matching display value spans[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö newsCard CardDefinition[2m > [22mrender returns a card host element[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö getBookmarkKey[2m > [22mreturns first 60 chars of title[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö getBookmarkKey[2m > [22mreturns trimmed short title unchanged[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö getBookmarkKey[2m > [22mhandles empty string[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmark[2m > [22madds a key to bookmarks on first toggle[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmark[2m > [22mremoves a key from bookmarks on second toggle[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmark[2m > [22mpersists bookmarks to localStorage[32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmarkMode[2m > [22mstarts in normal mode (not bookmark mode)[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmarkMode[2m > [22mtoggleBookmarkMode flips the mode to true[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö version badge format[2m > [22mrefresh stamp contains the Hebrew prefix[32m 75[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö version badge format[2m > [22minitStatusBar does not throw on second call[32m 85[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö dirty indicator (Sprint 19)[2m > [22minput event marks the gear button as dirty (shows ΓÜÖ∩╕Å*)[32m 141[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts[2m > [22mConfig Panel ΓÇö dirty indicator (Sprint 19)[2m > [22mcloseConfigPanel clears dirty indicator (removes * from gear button)[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmarkMode[2m > [22mtoggleBookmarkMode flips back to false on second call[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmarkMode[2m > [22mshows #news-bkm-pill when bookmark mode enabled[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmarkMode[2m > [22mhides #news-bkm-pill when bookmark mode disabled[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö toggleBookmarkMode[2m > [22mdoes not throw when #news-bkm-pill is absent[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize[2m > [22mdoes not throw when LS key is absent[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize[2m > [22mapplies configured font size to #rss-scroll[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize[2m > [22mdoes not apply when value is out of range (< 50)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize[2m > [22mdoes not apply when value is out of range (> 200)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize[2m > [22mdoes not throw when #rss-scroll is absent[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö filterBySearch[2m > [22mreturns all items when query is empty[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö filterBySearch[2m > [22mfilters by title match[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö filterBySearch[2m > [22mfilters by source match (case-insensitive)[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö filterBySearch[2m > [22mreturns empty array when no items match[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö filterBySearch[2m > [22mtrims whitespace-only query and returns all items[32m 0[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö visited articles[2m > [22misVisited returns false before marking[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö visited articles[2m > [22mmarkVisited sets isVisited to true[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö visited articles[2m > [22mmarkVisited does not affect other keys[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö visited articles[2m > [22mmarkVisited persists to sessionStorage[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö visited articles[2m > [22mmultiple markVisited calls accumulate[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö news count badge (#news-count)[2m > [22mbadge is empty before any news is loaded[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö news count badge (#news-count)[2m > [22minitNewsCard does not throw with count badge in DOM[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22mwraps matched text in mark.rss-highlight[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22mleaves non-matching text as plain text nodes[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22mis case-insensitive[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22mhighlights multiple occurrences[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22mhandles query at the start of title[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22mhandles query at the end of title[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22mclears previous children before highlighting[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22msets plain text with no marks when query not found[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö highlightTitle[2m > [22msets plain text when query is empty string (no infinite loop)[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö relativeAge (F67)[2m > [22mreturns empty string for missing pubDate[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö relativeAge (F67)[2m > [22mreturns empty string for invalid date string[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö relativeAge (F67)[2m > [22mreturns "╫ó╫¢╫⌐╫Ö╫ò" for date less than 1 hour ago[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö relativeAge (F67)[2m > [22mreturns hours string for 3 hours ago[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö relativeAge (F67)[2m > [22mreturns "╫É╫¬╫₧╫ò╫£" for date 25 hours ago[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö relativeAge (F67)[2m > [22mreturns days string for 48 hours ago[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö relativeAge (F67)[2m > [22mreturns empty string for future date[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews description expand (F145)[2m > [22mrenders .news-desc when item has description longer than 10 chars[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö version badge format[2m > [22mall sync dots remain in DOM after initStatusBar[32m 54[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö registerSyncDots partial DOM[2m > [22mregisters present dots and logs for missing ones[32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö registerSyncDots partial DOM[2m > [22mhandles completely empty DOM without throwing[32m 14[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö registerSyncDots partial DOM[2m > [22mhandles missing version-badge element[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö registerSyncDots partial DOM[2m > [22mhandles missing refresh-stamp element[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateUptime[2m > [22muptime-display shows ΓÅ▒ symbol[32m 11[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews description expand (F145)[2m > [22mdoes not render .news-desc when description is absent[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews description expand (F145)[2m > [22mdoes not render .news-desc when description is 10 chars or fewer[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews description expand (F145)[2m > [22mtoggles .expanded class on rss-item when title anchor clicked[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews copy button (F57)[2m > [22mrenders .news-copy button for primary items when clipboard is available[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews copy button (F57)[2m > [22monly creates one .news-copy button (not on clone)[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews copy button (F57)[2m > [22mcalls writeText with title and link on click[32m 9[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews copy button (F57)[2m > [22mshows 'Γ£ô' and adds .copied class after click[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateUptime[2m > [22muptime-display shows minutes[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateUptime[2m > [22mdoes not throw when uptime-display is absent[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateConnIndicator[2m > [22mshows ≡ƒƒó when navigator.onLine is true[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateConnIndicator[2m > [22mshows ≡ƒö┤ when navigator.onLine is false[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews share button (F62)[2m > [22mrenders .news-share button when navigator.share and link are present[32m 38[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews share button (F62)[2m > [22mdoes not render .news-share when item has no link[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews share button (F62)[2m > [22mcalls navigator.share with title and url on click[32m 54[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö fetchFeed DOMParser item parsing[2m > [22mparses title/link/pubDate/description from mock DOMParser[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö fetchFeed DOMParser item parsing[2m > [22mskips item when title is missing[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateConnIndicator[2m > [22mdoes not throw when conn-indicator is absent[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mnews count badge shows item count when elNewsCount is present[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mnews count badge is empty when no items[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mticker shows titles when elNewsTicker is present[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mticker is not updated when items list is empty[32m 7[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mstale-old class applied for item 25h old[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mstale-day class applied for item 14h old[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mstale-half class applied for item 8h old[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mage badge (.news-age) appears for item with recent pubDate[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews extra DOM paths (static import)[2m > [22mno stale class for item with empty pubDate[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateFontScaleIndicator[2m > [22mshows empty string at default 100% scale[32m 122[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateFontScaleIndicator[2m > [22mshows percentage when scale differs from 100%[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö updateFontScaleIndicator[2m > [22mdoes not throw when font-scale-indicator is absent[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews search-query paths (static import)[2m > [22mhighlight marks appear when search query matches item title[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews search-query paths (static import)[2m > [22msearch count badge shows filtered/total when query is active[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö online/offline events update conn-indicator[2m > [22mfires updateConnIndicator when window 'online' event dispatched[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö online/offline events update conn-indicator[2m > [22mfires updateConnIndicator when window 'offline' event dispatched[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts[2m > [22mStatus Bar ΓÇö online/offline events update conn-indicator[2m > [22monline then offline toggles indicator correctly[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews search-query paths (static import)[2m > [22mgetSearchQuery returns the current search value[32m 78[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews search-query paths (static import)[2m > [22msearch clear button resets query to empty[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize via static import[2m > [22msets fontSize% on #rss-scroll when valid value and element cached[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize via static import[2m > [22mdoes not throw when LS value is valid but elRssScroll is null[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö applyNewsFontSize via static import[2m > [22mdoes not apply when value is NaN[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews copy button extra paths (static import)[2m > [22mcopies title only when item has no link (else branch, L461)[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews copy button extra paths (static import)[2m > [22mresets copy button state after 1500ms timeout (L468-469)[32m 73[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews bookmark mode paths (static import)[2m > [22mbookmark button click handler fires without throwing (L416-418)[32m 139[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews bookmark mode paths (static import)[2m > [22mbookmark mode shows only bookmarked items (L337)[32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews bookmark mode paths (static import)[2m > [22mRAF sets animation=none when bookmark mode is active (L503-505)[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö storage catch paths (static import)[2m > [22mcacheDom handles sessionStorage.getItem throw gracefully (L141-142)[32m 50[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö storage catch paths (static import)[2m > [22mmarkVisited handles sessionStorage.setItem throw gracefully (L151)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö storage catch paths (static import)[2m > [22mcacheDom handles localStorage.getItem throw gracefully (L171-172)[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö storage catch paths (static import)[2m > [22mtoggleBookmark handles localStorage.setItem throw gracefully (L180)[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö loadVisited catch (corrupted sessionStorage)[2m > [22mrecovers when sessionStorage has invalid JSON for visited[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö saveBookmarks quota exceeded (line 151)[2m > [22mdoes not throw when localStorage.setItem fails during toggleBookmark[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö markVisited sessionStorage quota catch[2m > [22mdoes not throw when sessionStorage.setItem throws[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö markVisited sessionStorage quota catch[2m > [22mmarkVisited still records the key in memory even if storage fails[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö fetchAllNews deduplication via renderNews[2m > [22mrenderNews with duplicate titles de-dupes display[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö fetchAllNews deduplication via renderNews[2m > [22mrenderNews handles items with null pubDate gracefully[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö loadVisited sessionStorage catch[2m > [22mhandles corrupt sessionStorage visited data without throwing[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22mreturns null for event with no alerts[32m 82[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22mreturns HTMLElement for valid event[33m 369[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22mincludes 'past' class for old alert (>10min)[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22mincludes 'active' class for recent alert (<10min)[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22madds 'new-alert' class when highlightNew is true[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22madds 'clone' class when isClone is true[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22mdisplays city names in the element[32m 3[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö buildAlertItem[2m > [22mtruncates long city list (>5 cities) with count[32m 2[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö renderAlerts[2m > [22mpopulates scroll container with events[32m 270[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö renderAlerts[2m > [22mshows badge when highlightNew is true[33m 414[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö renderAlerts[2m > [22mhandles empty array without throwing[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö setAlertsEnabled[2m > [22mdoes not throw when called with false[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö setAlertsEnabled[2m > [22mdoes not throw when called with true[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö setAlertsRealtime[2m > [22mdoes not throw when enabling realtime mode[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö setAlertsRealtime[2m > [22mdoes not throw when disabling realtime mode[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö setAlertsRealtime[2m > [22maccepts boolean toggle without error[32m 1[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö fetchAllNews sort and dedup path[2m > [22mexercises sort comparator and dedup when fetch returns multi-item RSS[33m 446[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö loadVisited catch path via fresh module (line 141)[2m > [22mresets _visited to empty Set when sessionStorage has invalid JSON (line 141)[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö loadVisited catch using correct VISITED_KEY (line 141)[2m > [22msets _visited to empty Set when dash_visited_news has invalid JSON (line 141 catch)[32m 13[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö loadBookmarks with existing localStorage value (line 167 ?? left branch)[2m > [22muses stored bookmarks when localStorage has dash_bookmarks (line 167 non-null branch)[33m 468[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö renderAlerts counter text[2m > [22mcounter text shows 24h alert count[32m 178[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö renderAlerts counter text[2m > [22mactive event within 10min creates live-dot in counter[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderNews rAF early-return when elRssScroll null (line 501)[2m > [22mrAF returns early when elRssScroll becomes null before rAF fires (line 501)[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö initNewsSearch clear button click (lines 557-560)[2m > [22mclicking #news-search-clear clears the search query (lines 557-560)[32m 10[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö renderAlerts counter text[2m > [22mpast-only events do not create live-dot[32m 88[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts[2m > [22mAlerts ΓÇö renderAlerts counter text[2m > [22mempty array shows '╫É╫Ö╫ƒ ╫ö╫¬╫¿╫ó╫ò╫¬' message[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderSourceFilterChips (F9 v7.2)[2m > [22mpopulates #news-filter-bar with one chip per NEWS_FEEDS entry[32m 96[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderSourceFilterChips (F9 v7.2)[2m > [22meach chip has correct data-src attribute[32m 99[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö renderSourceFilterChips (F9 v7.2)[2m > [22mdoes not throw when #news-filter-bar is absent[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö readingTimeMinutes[2m > [22mreturns 0 for empty string[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts[2m > [22mNews ΓÇö readingTimeMinutes[2m > [22mreturns 1 for fewer than 200 words[32m 12[2mms[22m[39m

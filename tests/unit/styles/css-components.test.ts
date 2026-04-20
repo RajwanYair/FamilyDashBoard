@@ -38,8 +38,8 @@ describe("Shared error state (Sprint 110)", () => {
   it("defines .card-error", () => {
     expect(css).toContain(".card-error");
   });
-  it("defines .card-error__icon", () => {
-    expect(css).toContain(".card-error__icon");
+  it("card-error icon is rendered via ::before pseudo-element (Stream F v7.22)", () => {
+    expect(css).toContain(".card-error::before");
   });
 });
 

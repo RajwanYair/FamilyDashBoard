@@ -234,3 +234,74 @@ self.addEventListener("fetch", (event) => {
     ),
   );
 });
+
+// ── Stream SW.2: Background sync — error report queue ────────────────────────
+// Error payloads that failed to POST are stored in the Cache API keyed by
+// a synthetic request URL. On the next sync event the SW retries all queued
+// payloads and removes successfully delivered ones.
+
+const ERROR_QUEUE_CACHE = "fdb-error-queue-v1";
+const ERROR_POST_URL = "https://fdb.rajwanyair.workers.dev/api/errors";
+
+/**
+ * Queue an error-report payload for background-sync retry.
+ * Called via postMessage({ type: "QUEUE_ERROR_REPORT", payload: [...] }).
+ */
+async function _queueErrorReport(payload) {
+  try {
+    const cache = await caches.open(ERROR_QUEUE_CACHE);
+    const key = new Request(`/fdb-error-queue/${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    await cache.put(key, new Response(JSON.stringify(payload), {
+      headers: { "Content-Type": "application/json" },
+    }));
+  } catch {
+    // Non-fatal: if queue fails we lose the report but never crash the SW
+  }
+}
+
+/**
+ * Flush all queued error reports to the worker endpoint.
+ * Successful deliveries are removed from the queue.
+ */
+async function _flushErrorQueue() {
+  let cache;
+  try {
+    cache = await caches.open(ERROR_QUEUE_CACHE);
+  } catch {
+    return;
+  }
+  const keys = await cache.keys();
+  await Promise.all(
+    keys.map(async (req) => {
+      const res = await cache.match(req);
+      if (!res) return;
+      const body = await res.text();
+      try {
+        const response = await fetch(ERROR_POST_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+        if (response.ok || response.status === 204) {
+          await cache.delete(req);
+        }
+      } catch {
+        // Keep in queue for the next sync attempt
+      }
+    }),
+  );
+}
+
+// Handle QUEUE_ERROR_REPORT message from the page
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "QUEUE_ERROR_REPORT" && event.data.payload) {
+    event.waitUntil(_queueErrorReport(event.data.payload));
+  }
+});
+
+// Background Sync: retry queued error reports when connectivity recovers
+self.addEventListener("sync", (event) => {
+  if (event.tag === "error-report") {
+    event.waitUntil(_flushErrorQueue());
+  }
+});
