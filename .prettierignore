@@ -1,0 +1,23 @@
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+
+# Generated files
+tsconfig.tsbuildinfo
+*.log
+
+# Test artifacts
+test-results/
+playwright-report/
+blob-report/
+
+# SVG documentation assets (hand-crafted, not auto-formatted)
+.github/assets/*.svg
+
+# Legacy archive
+BestDashBoard.html

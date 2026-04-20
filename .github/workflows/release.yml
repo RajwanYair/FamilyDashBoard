@@ -53,6 +53,13 @@ jobs:
       - name: Package dist
         run: zip -r dist.zip dist/ -x "dist/**/*.map"
 
+      - name: Generate checksums
+        run: |
+          sha256sum dist.zip > dist.zip.sha256
+          sha256sum sw.js >> dist.zip.sha256 || true
+          sha256sum icon.svg >> dist.zip.sha256 || true
+          cat dist.zip.sha256
+
       - name: Generate changelog
         id: changelog
         run: |
@@ -79,6 +86,7 @@ jobs:
             To self-host: extract `dist.zip` and serve the `dist/` folder from any static host.
           files: |
             dist.zip
+            dist.zip.sha256
             sw.js
             icon.svg
 

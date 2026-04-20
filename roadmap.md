@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
 > Roadmap refresh date: 2026-07-10
-> Current shipped baseline: v8.8.0
-> Last committed baseline: v8.8.0 — 3205 tests / 95 suites / 0 failures
+> Current shipped baseline: v8.9.0
+> Last committed baseline: v8.9.0 — 3205 tests / 95 suites / 0 failures
 
 This document is the single decision log and forward plan for FamilyDashBoard. It rethinks every major architectural, tooling, and product decision from first principles — including decisions that previously looked clean — and sets an explicit direction for reaching best-in-class quality as an always-on family information display.
 
@@ -190,9 +190,37 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 | v8.6.0 | Stream W.3 HebCal KV stale fallback; Stream D2.3 stocks cSetAsync; Stream E.2 config import schema validation; Stream W.4 alerts workerEnvelope; Stream F.2 CSS dedup + card-skeleton/card-stale; Stream J.3 ADR-011 worker normalization contract; Stream I.3 SKILL.md verification sections; Stream SW.2 background sync error queue; Stream D2.4 motivation createAsyncCardLoader; Stream J.4 tsconfig deprecated options audit |
 | v8.7.0 | Stream D2.5 countdown createAsyncCardLoader; Stream W.5 Zod worker weather validation; Stream W.6 Zod worker alerts/HebCal validation; Stream D2.6 tasks+news+system-info createAsyncCardLoader; Stream I.4 instruction file improvements; Stream SW.3 sw.ts source maps + sourceMappingURL |
 | v8.8.0 | Stream W.7 Bitcoin /api/crypto worker route; Stream W.8 NewsRssSchema Zod RSS/Atom validation; Stream D2.7 provider adapters cSetAsync; Stream docs.1 data-sources.md reference; Stream F.5 theme completeness (4 semantic tokens); Stream D2.8 localStorage discipline audit; Stream ADR-012 async adapter pattern; Stream SW.4 sw.ts TypeScript migration; Stream I.5 instruction file improvements |
+| v8.9.0 | **Sprint 8.9.0 — Consolidation & Quality Audit**: 20-task external audit verifying web-only scope, build system, project structure, utility deduplication, warnings-as-errors, CI/CD, release automation, .vscode/.github hygiene, Dependabot, README, CHANGELOG, diagrams, config files, documentation. New: `.prettierrc.json` + `.prettierignore` (explicit formatting config), 3 Mermaid diagrams (cache layers, CSS layer stack, SW lifecycle), `.gitignore` hardening (`.mypy_cache/`, `*.old`), `sw.js` version fix, ROADMAP sprint section |
 
-**Completed Streams:** A (Truth) · B (Card Architecture) · **B2 ✅** (11/11 FdbCard migrations) · C (Data Contracts) · D (Observability) · **G.1 ✅** (3205 tests / 95 suites) · **G.2 ✅** (Playwright E2E + Lighthouse) · **SW ✅** (per-origin TTL) · **SW.1 ✅** (auto-precache manifest) · **SW.2 ✅** (background sync error queue) · **SW.4 ✅** (sw.ts TypeScript migration) · **W ✅** (worker Zod validation) · **W.2 ✅** (KV stale fallback) · **W.3 ✅** (HebCal KV stale) · **W.4 ✅** (alerts workerEnvelope) · **W.7 ✅** (Bitcoin /api/crypto) · **W.8 ✅** (NewsRssSchema) · **H ✅** (Quick Start + preview deploy) · **D2 ✅** (IDB-async stale cache) · **D2.2 ✅** (news+weather createAsyncCardLoader) · **D2.3 ✅** (stocks cSetAsync) · **D2.4 ✅** (motivation createAsyncCardLoader) · **D2.5 ✅** (countdown) · **D2.6 ✅** (tasks+news+system-info) · **D2.7 ✅** (provider adapters cSetAsync) · **D2.8 ✅** (localStorage discipline audit) · **E.1 ✅** (all 11 cards configSchema) · **E.2 ✅** (config import schema validation) · **F.1 ✅** (card shell anatomy CSS) · **F.2 ✅** (CSS dedup + card-skeleton/stale) · **F.5 ✅** (theme completeness 4 tokens) · **I.2 ✅** (3 Copilot prompts) · **I.3 ✅** (SKILL.md verification) · **I.5 ✅** (instruction updates) · **ADR-012 ✅** (async adapter pattern) · **docs.1 ✅** (data-sources.md) · **J.3 ✅** (ADR-011) · **J.4 ✅** (tsconfig audit)
+**Completed Streams:** A (Truth) · B (Card Architecture) · **B2 ✅** (11/11 FdbCard migrations) · C (Data Contracts) · D (Observability) · **G.1 ✅** (3205 tests / 95 suites) · **G.2 ✅** (Playwright E2E + Lighthouse) · **SW ✅** (per-origin TTL) · **SW.1 ✅** (auto-precache manifest) · **SW.2 ✅** (background sync error queue) · **SW.4 ✅** (sw.ts TypeScript migration) · **W ✅** (worker Zod validation) · **W.2 ✅** (KV stale fallback) · **W.3 ✅** (HebCal KV stale) · **W.4 ✅** (alerts workerEnvelope) · **W.7 ✅** (Bitcoin /api/crypto) · **W.8 ✅** (NewsRssSchema) · **H ✅** (Quick Start + preview deploy) · **D2 ✅** (IDB-async stale cache) · **D2.2 ✅** (news+weather createAsyncCardLoader) · **D2.3 ✅** (stocks cSetAsync) · **D2.4 ✅** (motivation createAsyncCardLoader) · **D2.5 ✅** (countdown) · **D2.6 ✅** (tasks+news+system-info) · **D2.7 ✅** (provider adapters cSetAsync) · **D2.8 ✅** (localStorage discipline audit) · **E.1 ✅** (all 11 cards configSchema) · **E.2 ✅** (config import schema validation) · **F.1 ✅** (card shell anatomy CSS) · **F.2 ✅** (CSS dedup + card-skeleton/stale) · **F.5 ✅** (theme completeness 4 tokens) · **I.2 ✅** (3 Copilot prompts) · **I.3 ✅** (SKILL.md verification) · **I.5 ✅** (instruction updates) · **ADR-012 ✅** (async adapter pattern) · **docs.1 ✅** (data-sources.md) · **J.3 ✅** (ADR-011) · **J.4 ✅** (tsconfig audit) · **Sprint 8.9.0 ✅** (20-task consolidation audit)
 **Partially Complete:** I (api-integrator ✅, quality-reviewer ✅, dashboard-designer ✅, I-0.2 ✅, I-0.3 ✅) · J (package.json URLs ✅, SLSA ✅, ADRs ✅, tasks ✅, docs ✅, Actions hardening ✅, J.2 ✅)
+
+### Sprint 8.9.0 — Consolidation & Quality Audit ✅ COMPLETE
+
+External 20-task audit evaluating the project against web-project best practices. 11 tasks were already fully satisfied by v8.8.0 infrastructure; 9 required targeted improvements.
+
+| # | Task | Status | Evidence / Deliverable |
+|---|------|--------|----------------------|
+| 1 | Inventory & delete non-web code paths | ✅ Already satisfied | No desktop/mobile/backend scaffolding exists; `.mypy_cache/` added to `.gitignore` |
+| 2 | Remove Python scripts/steps | ✅ Already satisfied | Zero Python in project; `.mypy_cache/` + `__pycache__/` gitignored |
+| 3 | Define architecture in ARCHITECTURE.md | ✅ Enhanced | Existing comprehensive doc + 3 new Mermaid diagrams (cache layers, CSS stack, SW lifecycle) |
+| 4 | Standardize build system | ✅ Already satisfied | npm + Vite 8, parent `MyScripts/` install, documented in README |
+| 5 | Establish clean project structure | ✅ Already satisfied | `src/`, `tests/`, `docs/`, `.github/`, `worker/`, `scripts/` — no unused dirs |
+| 6 | Deduplicate utilities | ✅ Already satisfied | Single implementations in `src/core/` (cache, fetch, config, sync, diag, utils) |
+| 7 | Enforce warnings as errors | ✅ Already satisfied | `--max-warnings 0`, TS strict, CI fails on warnings |
+| 8 | Fix all warnings | ✅ Fixed | 0 warnings; `sw.js` stale version header fixed (v8.7.0 → v8.9.0) |
+| 9 | Formatting and linting standards | ✅ Enhanced | ESLint + Stylelint existed; added `.prettierrc.json` + `.prettierignore` |
+| 10 | GitHub Actions CI | ✅ Already satisfied | typecheck → lint → test → security → build → lighthouse |
+| 11 | GitHub Actions Release workflow | ✅ Already satisfied | dist.zip + checksums + SLSA attestation on `v*` tags |
+| 12 | .vscode workspace standards | ✅ Already satisfied | settings.json + extensions.json + tasks.json + launch.json (6 debug configs) |
+| 13 | .github hygiene | ✅ Already satisfied | Issue templates (4), PR template, CODEOWNERS, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT |
+| 14 | Dependabot | ✅ Already satisfied | npm + github-actions in `.github/dependabot.yml` |
+| 15 | Update README | ✅ Already satisfied | Comprehensive with badges, features, data sources, getting started |
+| 16 | Update CHANGELOG | ✅ Done | v8.9.0 section added with sprint summary |
+| 17 | Update diagrams | ✅ Enhanced | 3 new Mermaid diagrams + 10 existing SVGs in `.github/assets/` |
+| 18 | Remove redundant configs | ✅ Already satisfied | 0 redundancy — each config serves a distinct tool |
+| 19 | Consolidate documentation | ✅ Verified | All internal links verified; no broken refs; no duplicate content |
+| 20 | Final consolidation pass | ✅ Done | `.gitignore` hardened, dead files audited, footprint report in CHANGELOG |
 
 ---
 

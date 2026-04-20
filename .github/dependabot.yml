@@ -13,3 +13,35 @@ updates:
       - "dependencies"
       - "ci"
     open-pull-requests-limit: 5
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Asia/Jerusalem"
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5
+    # Note: devDependencies live in the parent MyScripts/ directory.
+    # This entry covers the root package.json scripts/engines fields only.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/worker"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Asia/Jerusalem"
+    commit-message:
+      prefix: "chore(worker-deps)"
+    labels:
+      - "dependencies"
+      - "worker"
+    open-pull-requests-limit: 3

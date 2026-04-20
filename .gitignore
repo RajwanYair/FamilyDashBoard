@@ -41,8 +41,13 @@ git_out.txt
 log.txt
 status.txt
 
+# Python (not used — guard against stray caches)
+.mypy_cache/
+__pycache__/
+
 # Misc
 *.log
 *.bak
 *.tmp
+*.old
 .extracted.*

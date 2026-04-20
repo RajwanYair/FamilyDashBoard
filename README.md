@@ -19,7 +19,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-8.8.0-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-8.9.0-a78bfa?style=flat-square)
 ![Tests](https://img.shields.io/badge/Vitest-3205_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
@@ -142,7 +142,7 @@ to a large TV.
 
 > **Note:** Some browsers restrict `file://` access for service-worker features.
 > For full offline support, serve the folder via a local server:
-> `npx serve dist` or `python -m http.server` from the unzipped folder.
+> `npx serve dist` from the unzipped folder.
 
 ---
 

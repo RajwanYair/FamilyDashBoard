@@ -5,6 +5,50 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.9.0] — 2026-04-20
+
+> **3205 tests / 95 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Sprint 8.9.0 — Consolidation & Quality Audit (20 Tasks)
+
+External 20-task audit evaluating the project against web-project best practices. 11 tasks already satisfied by v8.8.0; 9 addressed with targeted improvements.
+
+- **`.prettierrc.json` + `.prettierignore`**: Explicit Prettier config matching EditorConfig rules (2-space indent, LF, 100-char print width, JSON 4-space override); `.prettierignore` excludes build artifacts, SVGs, and legacy files
+- **ARCHITECTURE.md Mermaid diagrams**: 3 new inline diagrams — cache layer architecture (L1→L2→L3→L4→KV), CSS `@layer` cascade stack (tokens→themes→base→layout→components→animations), Service Worker lifecycle (install→activate→fetch handler states)
+- **`.gitignore` hardening**: Added `.mypy_cache/`, `__pycache__/`, `*.old` globs (Python cache dirs not relevant to this TS project; `*.old` completes the `*.bak`/`*.tmp` triad)
+- **`sw.js` version fix**: Stale header updated from v8.7.0 → v8.9.0 to match `sw.ts` source
+- **ROADMAP.md sprint section**: 20-task checklist with status, evidence, and deliverables for each task; version history table updated
+- **GitHub Issues**: #72–#77 created and closed for sprint tracking
+
+### Audit Results — Pre-Satisfied (11/20 tasks required no changes)
+
+| Task | Infrastructure |
+|------|---------------|
+| Build system (task 4) | npm + Vite 8, parent `MyScripts/` install |
+| Utility deduplication (task 6) | Single implementations in `src/core/` |
+| Warnings as errors (task 7) | `--max-warnings 0`, TS strict, CI fails on warnings |
+| Fix all warnings (task 8) | 0 across typecheck + lint + build |
+| CI (task 10) | typecheck → lint → test → security → build → lighthouse |
+| Release workflow (task 11) | dist.zip + checksums + SLSA attestation |
+| .vscode (task 12) | settings + extensions + tasks + launch (6 debug configs) |
+| .github hygiene (task 13) | 4 issue templates, PR template, CODEOWNERS, CONTRIBUTING, SECURITY |
+| Dependabot (task 14) | npm + github-actions configured |
+| README (task 15) | Comprehensive with badges, features, getting started |
+| Redundant configs (task 18) | 0 redundancy found |
+
+### Footprint Summary
+
+| Item | Before | After |
+|------|--------|-------|
+| `.gitignore` entries | 42 | 46 (+4 globs) |
+| Root config files | 17 | 19 (+`.prettierrc.json`, `.prettierignore`) |
+| ARCHITECTURE.md Mermaid diagrams | 1 | 4 (+3 new) |
+| SVG documentation assets | 10 | 10 (unchanged) |
+| Dead files removed | — | `.mypy_cache/` gitignored |
+| sw.js version drift | v8.7.0 (stale) | v8.9.0 (aligned) |
+
+---
+
 ## [8.8.0] — 2026-04-20
 
 > **3205 tests / 95 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

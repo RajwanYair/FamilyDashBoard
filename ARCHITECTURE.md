@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v8.8.0)
+# FamilyDashBoard — Architecture (v8.9.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -50,7 +50,7 @@ src/
 │   ├── provider.ts             # Per-provider health tracking: success/failure counts + latency histogram (v7.19)
 │   ├── utils.ts                # Shared utility functions (formatters, helpers)
 │   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
-│   ├── sw-constants.ts         # SW version/cache name constants shared between sw.js and src/
+│   ├── sw-constants.ts         # SW version/cache name constants shared between sw.ts and src/
 │   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED
 ├── ui/
 │   ├── theme.ts                # 6-theme system: black·blue·matrix·amber·purple·rose
@@ -119,7 +119,7 @@ tests/unit/
 Browser
  ├─ main.ts ─── safeLoad(each card) ──► Promise.allSettled
  │               └── setInterval per card (TTL-based refresh)
- ├─ sw.js ────── APP_SHELL pre-cache ─► offline HTML fallback
+ ├─ sw.ts → dist/sw.js ── APP_SHELL pre-cache ─► offline HTML fallback
  │               └── API cache (7 origins, 7-day TTL stale-while-revalidate)
  └─ card-registry.ts (v7)
      └── dynamic import() per card ──► lazy load + init
@@ -141,6 +141,109 @@ Cache layers:
   L2: localStorage (dash_v2_*, 7-day eviction)
   L3: IndexedDB (async, ≤ 50 MB LRU cap via idbEvictLRU, v7.10)
   L4: Service Worker cache (API endpoints, stale-while-revalidate)
+```
+
+## Data Flow — Mermaid Overview
+
+```mermaid
+flowchart TD
+    Browser["Browser\n(src/main.ts)"] -->|"safeLoad() cards"| Cards["11 Cards\n(cards/*.ts)"]
+    Cards -->|"cGet(key,TTL) hit"| CacheL1["L1 Memory Cache\n(in-memory Map)"]
+    Cards -->|"cGet miss"| FetchChain
+
+    subgraph FetchChain["Fetch Chain"]
+        direction TB
+        FVW["fetchViaWorker()\n(Worker-first)"] -->|"200 OK"| ParseData["Parse + cSet"]
+        FVW -->|"fail/disabled"| FWR["fetchWithRetry()\n(exponential backoff)"]
+        FWR -->|"fail"| Proxies["Proxy chain\n(allorigins / codetabs)"]:::faded
+    end
+
+    FVW -->|"HTTPS"| Worker["Cloudflare Worker\n(worker/src/index.ts)"]
+    Worker -->|"Zod validation"| Upstream["Upstream APIs\n(Open-Meteo · Hebcal · Yahoo\nER-API · CoinGecko · RSS)"]
+    Worker -->|"KV stale fallback"| CFKV["Cloudflare KV"]
+
+    ParseData -->|"cSet"| CacheL1
+    ParseData -->|"cSetAsync"| CacheL2["L2 localStorage\n(dash_v2_*)"]
+    ParseData -->|"cSetAsync (IDB)"| CacheL3["L3 IndexedDB\n(≤50 MB LRU)"]
+
+    SW["sw.ts → dist/sw.js\n(ServiceWorker)"] -.->|"API cache\nstale-while-revalidate"| CacheL4["L4 SW Cache\n(7 origins)"]
+    Browser -.->|"register"| SW
+
+    Browser -->|"keyboard / config"| UI["UI Modules\n(theme · keyboard · diag)"]
+    Browser -->|"config r/w"| State["state.ts\n(EventTarget store)"]
+
+    classDef faded opacity:0.55;
+```
+
+### Cache Layer Architecture
+
+```mermaid
+flowchart LR
+    subgraph Client["Client (Browser)"]
+        direction LR
+        L1["L1 — Memory Map\n(process lifetime)"]
+        L2["L2 — localStorage\n(dash_v2_*, 7-day eviction)"]
+        L3["L3 — IndexedDB\n(async, ≤50 MB LRU)"]
+    end
+
+    subgraph Edge["Edge (Cloudflare)"]
+        L4["L4 — SW Cache\n(7 origins,\nstale-while-revalidate)"]
+        KV["Cloudflare KV\n(stale fallback)"]
+    end
+
+    Card["Card Loader"] -->|"cGet(key, TTL)"| L1
+    L1 -->|"miss"| L2
+    L2 -->|"miss"| L3
+    L3 -->|"miss"| Fetch["fetchViaWorker()"]
+    Fetch --> L4
+    L4 -->|"miss"| KV
+
+    Fetch -->|"response"| Write["cSet + cSetAsync"]
+    Write --> L1
+    Write --> L2
+    Write --> L3
+```
+
+### CSS Layer Stack
+
+```mermaid
+block-beta
+    columns 1
+    block:layers["@layer declaration order (tokens.css)"]
+        A["tokens\n(design tokens,\ncustom properties)"]
+        B["themes\n(6 theme overrides:\nblack·blue·matrix\namber·purple·rose)"]
+        C["base\n(reset, typography,\nbody, scrollbar)"]
+        D["layout\n(3-col grid,\n@container queries,\ndrag-drop)"]
+        E["components\n(cards, headers,\nbadges, dialogs)"]
+        F["animations\n(keyframes,\ntransitions,\nentrance effects)"]
+    end
+
+    style A fill:#2d2d2d,color:#fbbf24
+    style B fill:#2d2d2d,color:#a78bfa
+    style C fill:#2d2d2d,color:#60a5fa
+    style D fill:#2d2d2d,color:#34d399
+    style E fill:#2d2d2d,color:#f87171
+    style F fill:#2d2d2d,color:#fb923c
+```
+
+### Service Worker Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Installing : navigator.serviceWorker.register()
+    Installing --> Waiting : install event\n(APP_SHELL pre-cached)
+    Waiting --> Activating : SKIP_WAITING message\nfrom client
+    Activating --> Active : activate event\n(old caches purged,\nVERSION_ACTIVATED broadcast)
+
+    state Active {
+        [*] --> FetchHandler
+        FetchHandler --> AppShell : HTML/CSS/JS request\n(cache-first)
+        FetchHandler --> ApiCache : API request\n(network-first + 7-day stale)
+        FetchHandler --> PassThrough : Other request\n(network only)
+        ApiCache --> StaleFallback : network failure\n(serve stale if available)
+    }
+
+    Active --> [*] : new version detected\n(cycle restarts)
 ```
 
 ## CSS Architecture (v7.7)
@@ -195,7 +298,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **3143 tests / 94 suites / 0 failures** — coverage thresholds: 90% statements, 81% branches, 90% functions, 92% lines (v8.6.0)
+15. **3205 tests / 95 suites / 0 failures** — coverage thresholds: 90% statements, 81% branches, 90% functions, 92% lines (v8.9.0)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)

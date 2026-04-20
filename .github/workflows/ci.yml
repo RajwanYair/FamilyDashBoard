@@ -1,6 +1,6 @@
 # =============================================================================
 # CI — FamilyDashBoard v8 — Unified quality gate
-# Typecheck · ESLint · Markdownlint · Vitest (Node 20/22/24) · Security · Build
+# Typecheck · ESLint · Markdownlint · Vitest (Node 20/22) · Security · Build
 # Runs on every push to main and all pull requests.
 # =============================================================================
 name: CI
@@ -35,6 +35,10 @@ jobs:
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - run: npx tsc --noEmit
+      - name: SW typecheck
+        run: npx tsc --project tsconfig.sw.json --noEmit
+      - name: Worker typecheck
+        run: npx tsc --project worker/tsconfig.json --noEmit
 
   lint:
     name: ESLint + Markdown
@@ -52,7 +56,7 @@ jobs:
       - name: ESLint (0 warnings allowed)
         run: npx eslint src tests --max-warnings 0
       - name: Markdownlint
-        run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**"
+        run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**" "#**/dist/**"
 
   unit-tests:
     name: Vitest (Node ${{ matrix.node-version }})
