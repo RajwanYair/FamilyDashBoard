@@ -3,7 +3,7 @@ applyTo: "tests/**"
 description: "Use when: writing or reviewing test files under tests/. Vitest patterns, mock conventions, and FamilyDashBoard test rules."
 ---
 
-# Test Instructions — FamilyDashBoard v8.7.0
+# Test Instructions — FamilyDashBoard v8.8.0
 
 > Apply these rules to every file under `tests/`. See `copilot-instructions.md` for cross-cutting project rules.
 
@@ -108,3 +108,14 @@ it("refreshes after 5 minutes", async () => {
 | Lines      | 92%       |
 
 Run `npx vitest run --coverage` to check. CI enforces these thresholds; PRs that lower them will fail.
+
+## Worker Route Tests (Stream W.5–W.8)
+
+- Worker tests live in `tests/unit/worker/worker.test.ts` — they run in Node (no Miniflare)
+- Use `vi.spyOn(globalThis, "fetch")` to mock upstream calls (not `vi.mock`)
+- Restore mocks in `afterEach(() => { vi.restoreAllMocks(); })`
+- For Zod schema tests: use `safeParse(Schema, data)` directly and check `.ok === true/false`
+- For route handler tests: call `handleFoo(url)` directly and assert `res.status`
+- URLs in `handleNews` tests must use an origin from `ALLOWED_NEWS_ORIGINS` (e.g. `rss.ynet.co.il`)
+- NewsRssSchema: valid RSS requires `<channel>` + `<item>`; valid Atom requires `<feed>` + `<entry>`
+- Worker typecheck (separate from main tscheck): `npx tsc --project worker/tsconfig.json --noEmit`

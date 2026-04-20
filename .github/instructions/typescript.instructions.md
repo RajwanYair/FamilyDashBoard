@@ -3,7 +3,7 @@ applyTo: "src/**/*.ts"
 description: "Use when: writing or reviewing TypeScript source files in src/. Rules for types, async, modules, and FamilyDashBoard conventions."
 ---
 
-# TypeScript Instructions — FamilyDashBoard v8.7.0
+# TypeScript Instructions — FamilyDashBoard v8.8.0
 
 > Apply these rules to every `.ts` file under `src/`. Rules in `copilot-instructions.md` take precedence for cross-cutting concerns.
 
@@ -80,3 +80,22 @@ description: "Use when: writing or reviewing TypeScript source files in src/. Ru
 - No `self.skipWaiting()` in SW install handler — only via `SKIP_WAITING` message
 - No external JS/CSS libraries — zero runtime dependencies
 - No `devDependencies` in `FamilyDashBoard/package.json` — all go in `MyScripts/package.json`
+
+## Service Worker (sw.ts — Stream SW.4)
+
+- **Canonical source**: `sw.ts` — compiled to `dist/sw.js` via `scripts/build-sw.mjs` during `vite build`
+- **Typed global**: `const sw = self as unknown as ServiceWorkerGlobalScope;` — use `sw.*` everywhere (not `self.*`)
+- **Version injection**: `declare const __APP_VERSION__: string;` at top — never hardcode a version string in sw.ts
+- **SyncEvent**: declared inline — `interface SyncEvent extends ExtendableEvent { readonly tag: string; readonly lastChance: boolean; }`
+- **tsconfig**: `tsconfig.sw.json` uses `lib: ["ES2020","WebWorker"]` — run `npm run typecheck:sw` to verify
+- **Build script**: `node scripts/build-sw.mjs <version>` — uses TypeScript `transpileModule` from parent `node_modules`
+- Never use `esbuild` directly — it is embedded in Vite and not available as a standalone package in this monorepo
+
+## Worker Zod Schemas (worker/src/utils/schemas.ts — Streams W.5–W.8)
+
+- All worker route handlers validate upstream responses with `safeParse(Schema, data)` before forwarding
+- Schema naming: `FooBarSchema` — Zod `z.object({...}).passthrough()` for JSON; `z.string().refine(...)` for text
+- `safeParse()` returns `{ ok: true, data }` or `{ ok: false, error }` — never throws
+- Return HTTP 502 with `{ error: "...", detail: validated.error }` when validation fails
+- News/RSS: use `NewsRssSchema` (structural XML marker check: `<channel>+<item>` or `<feed>+<entry>`)
+- Worker typecheck: `npx tsc --project worker/tsconfig.json --noEmit`
