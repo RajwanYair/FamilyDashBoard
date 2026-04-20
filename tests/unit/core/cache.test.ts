@@ -23,6 +23,7 @@ import {
   cacheDashboard,
   cacheInventory,
   lastHitLayer,
+  cSetAsync,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -757,5 +758,43 @@ describe("Cache — lastHitLayer", () => {
   it("returns 'none' on cache miss", () => {
     cGet("missing", 60_000);
     expect(lastHitLayer()).toBe("none");
+  });
+});
+
+// ── cSetAsync ─────────────────────────────────────────────────────────────────
+
+describe("Cache — cSetAsync", () => {
+  beforeEach(() => { cClear(); });
+
+  it("stores data readable via synchronous cGet", async () => {
+    await cSetAsync("asyncKey", { hello: "world" });
+    const result = cGet<{ hello: string }>("asyncKey", 60_000);
+    expect(result).toEqual({ hello: "world" });
+  });
+
+  it("stores data readable via cGetAsync after write", async () => {
+    await cSetAsync("asyncKey2", [1, 2, 3]);
+    const result = await cGetAsync<number[]>("asyncKey2", 60_000);
+    expect(result).toEqual([1, 2, 3]);
+  });
+
+  it("overwrites an existing cached value", async () => {
+    cSet("overwrite", "old");
+    await cSetAsync("overwrite", "new");
+    expect(cGet("overwrite", 60_000)).toBe("new");
+  });
+
+  it("resolves as Promise<void>", async () => {
+    const result = cSetAsync("promiseKey", 42);
+    expect(result).toBeInstanceOf(Promise);
+    await expect(result).resolves.toBeUndefined();
+  });
+
+  it("persists to localStorage", async () => {
+    await cSetAsync("lsKey", { persisted: true });
+    const raw = localStorage.getItem("dash_v2_lsKey");
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw!) as { data: { persisted: boolean }; ts: number };
+    expect(parsed.data.persisted).toBe(true);
   });
 });

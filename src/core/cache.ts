@@ -203,6 +203,32 @@ export function cSet(key: string, data: unknown): void {
 }
 
 /**
+ * Async version of cSet that awaits the IDB write before returning.
+ * Use in async card loaders (createAsyncCardLoader) when you need to
+ * confirm persistence before signalling sync-ok to the user.
+ * @param key  - Cache key
+ * @param data - Data to store
+ */
+export async function cSetAsync(key: string, data: unknown): Promise<void> {
+  const ts = Date.now();
+  mem.set(key, { data, ts });
+
+  // Await the IDB write (unlike cSet which fire-and-forgets)
+  await idbSet(key, data);
+
+  try {
+    localStorage.setItem(LS_PREFIX + key, JSON.stringify({ data, ts }));
+  } catch {
+    cEvict();
+    try {
+      localStorage.setItem(LS_PREFIX + key, JSON.stringify({ data, ts }));
+    } catch {
+      // Still full — IDB + memory cache still works
+    }
+  }
+}
+
+/**
  * Hydrate the in-memory cache from IDB on startup.
  * Reads all non-stale IDB entries into memory so subsequent synchronous
  * cGet() calls find them without a round-trip to localStorage.

@@ -7,7 +7,7 @@
  * Falls back to exchangerate-api.com if primary fails.
  */
 
-import { createCardLoader, scheduleCard } from "../base-card";
+import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import "./currency.css";
 import {
   INTERVALS,
@@ -261,7 +261,7 @@ export function renderCurrency(rates: Record<string, number>): void {
   diagLog(`FDB-032: [currency] Rendered ${Object.keys(rates).length} rates`);
 }
 
-const loadCurrency = createCardLoader<Record<string, number>>(
+const loadCurrency = createAsyncCardLoader<Record<string, number>>(
   { id: "cur", ttl: INTERVALS.CURRENCY, interval: INTERVALS.CURRENCY },
   fetchCurrency,
   renderCurrency,

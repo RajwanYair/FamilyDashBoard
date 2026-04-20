@@ -5,7 +5,14 @@
  * Each card module exports an init function and a load function.
  */
 
-import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync } from "../core/cache";
+import {
+  cGet,
+  cGetStale,
+  cSet,
+  cSetAsync,
+  cGetAsync,
+  cGetStaleAsync,
+} from "../core/cache";
 import { isPageVisible } from "../core/idle";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../core/sync";
 import { acquireLock, releaseLock } from "../core/fetch";
@@ -124,7 +131,7 @@ export function createAsyncCardLoader<T>(
         recordFailure(opts.id);
         return;
       }
-      cSet(opts.id, data);
+      await cSetAsync(opts.id, data);
       renderData(data);
       setSync(opts.id, "ok");
       syncBurst(opts.id);
