@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
 > Roadmap refresh date: 2026-07-10
-> Current shipped baseline: v8.1.0
-> Last committed baseline: v8.1.0 — 3080 tests / 88 suites / 0 failures
+> Current shipped baseline: v8.2.0
+> Last committed baseline: v8.2.0 — 3080 tests / 88 suites / 0 failures
 
 This document is the single decision log and forward plan for FamilyDashBoard. It rethinks every major architectural, tooling, and product decision from first principles — including decisions that previously looked clean — and sets an explicit direction for reaching best-in-class quality as an always-on family information display.
 

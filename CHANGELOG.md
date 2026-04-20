@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.2.0] — 2026-04-20
+
+> **3080 tests / 88 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `b88d7e8`)
+
+### Stream G.1 — Test Consolidation
+
+- **`_resetForTest()` pattern established**: added to `bg-images`, `motivation`, `news`, `currency`, `fetch` modules; `vi.resetModules()` reduced from 186 to ≤11 (all remaining are legitimate module-init-path tests)
+- **Stream G.1 complete**: 3080 tests / 88 suites · 0 failures — exit criteria met
+
+### Stream I — AI Customization
+
+- **quality-reviewer agent modernized**: added Key Context Files table, failure playbook, Mocking Conventions section, `check:bundle` quality gate
+
+### Docs and Environment
+
+- **CONTRIBUTING.md**: added PowerShell-only terminal table; `_resetForTest()` pattern guideline
+- **SVG architecture diagrams**: `ci-cd.svg` (pipeline diagram) + `cache-layers.svg` (4-layer cache diagram)
+- **Workflows README**: added permissions matrix, secrets inventory, concurrency policy
+
 ---
 
 ## [8.1.0] — 2026-07-10
