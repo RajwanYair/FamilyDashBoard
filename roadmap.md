@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
-> Roadmap refresh date: 2026-04-19
-> Current shipped baseline: v7.21.0
-> Last committed baseline: v7.21.0 — 3003+ tests / 87 suites / 0 failures
+> Roadmap refresh date: 2026-04-20
+> Current shipped baseline: v8.0.0
+> Last committed baseline: v8.0.0 — 3053+ tests / 87 suites / 0 failures
 
 This document is the single decision log and forward plan for FamilyDashBoard. It rethinks every major architectural, tooling, and product decision from first principles — including decisions that previously looked clean — and sets an explicit direction for reaching best-in-class quality as an always-on family information display.
 
@@ -22,7 +22,7 @@ Before making internal decisions, we studied five top-tier open-source dashboard
 | **CSS** | Vanilla CSS `@layer` tokens | Tailwind CSS | SCSS + themes | SCSS + themes | Mantine component CSS |
 | **Backend** | Cloudflare Worker (edge) | Node.js proxied API | Express + Node | None (static YAML) | Node.js + Drizzle ORM |
 | **Database** | None (IDB + localStorage) | None (YAML config) | None (YAML / cloud KV) | None (YAML) | SQLite via Drizzle |
-| **Test suite** | 2998+ tests / Vitest | Vitest | Vitest (recent) | None | Vitest |
+| **Test suite** | 3053+ tests / Vitest | Vitest | Vitest (recent) | None | Vitest |
 | **TypeScript** | 100% strict TS 5.9 | JavaScript 99% | Vue 68% / JS 22% | Vue 86% / JS 5% | TypeScript 98% |
 | **Runtime deps** | Zero | react, next, tailwind, etc. | vue, axios, etc. | vue, lodash, etc. | next, mantine, trpc, drizzle |
 | **Themes** | 6 dark themes | CSS variables + custom | 50+ built-in | Custom YAML themes | Mantine theming |
@@ -135,7 +135,7 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 
 | Decision | Current | Verdict | Rationale |
 | --- | --- | --- | --- |
-| Vitest + happy-dom | 2998+ tests, 86 suites | **Keep, consolidate** | Test count is high but run time is too slow (~45 s). Consolidate per Stream G.1. |
+| Vitest + happy-dom | 3053+ tests, 87 suites | **Keep, consolidate** | Test count is high but run time is too slow (~45 s). Consolidate per Stream G.1. |
 | No E2E tests | None | **Add Playwright** | The biggest quality gap. Screenshot regression across 6 themes x 3 screen modes = 18 baseline images. |
 | No Lighthouse CI | None | **Add** | Accessibility and performance budgets should be CI-enforced. |
 | Coverage thresholds | 90/81/90/92 | **Keep** | Already strong. Raise branches to 85 after consolidation. |
@@ -181,6 +181,7 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 | v7.19.1 | Tooling modernization, bilingual interface, config migration hardening |
 | v7.20.0 | ROADMAP strategic overhaul, worker-first fetch resilience, provider adapter hardening, shared tooling foundation |
 | v7.21.0 | Shared test helpers, normalized worker types, node-ts-app tooling, instruction files, .nvmrc, agent/prompts, card audit, loading CSS, SW constants |
+| v8.0.0 | Production readiness: test consolidation (it.each), dead file cleanup, config modernization, hardened .gitignore, full version bump across 15 files |
 
 **Completed Streams:** A (Truth) · B (Card Architecture) · C (Data Contracts) · D (Observability)
 
@@ -194,7 +195,7 @@ Streams are ordered by priority. Each has measurable exit criteria.
 
 Priority: **Critical — Execute First**
 
-The test suite has 2998+ tests but takes ~45 s. The biggest drag is 186 `vi.resetModules()` calls and 300+ raw DOM rebuilds.
+The test suite has 3053+ tests but takes ~45 s. The biggest drag is 186 `vi.resetModules()` calls and 300+ raw DOM rebuilds.
 
 #### Action Plan
 

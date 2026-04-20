@@ -92,7 +92,6 @@ describe("isNormalizedWeatherData", () => {
     );
   });
   it("rejects when hourly is missing", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { hourly: _h, ...noHourly } = validWeather;
     expect(isNormalizedWeatherData(noHourly)).toBe(false);
   });
@@ -135,7 +134,6 @@ describe("isNormalizedStock", () => {
     expect(isNormalizedStock({ ...validStock, price: "178.5" })).toBe(false);
   });
   it("rejects missing changePercent", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { changePercent: _cp, ...noPercent } = validStock;
     expect(isNormalizedStock(noPercent)).toBe(false);
   });
@@ -168,7 +166,6 @@ describe("isNormalizedCurrencyRates", () => {
     );
   });
   it("rejects missing updatedAt", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { updatedAt: _u, ...noUpdate } = validRates;
     expect(isNormalizedCurrencyRates(noUpdate)).toBe(false);
   });
@@ -200,12 +197,10 @@ describe("isNormalizedNewsItem", () => {
     ).toBe(true);
   });
   it("rejects missing url", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { url: _u, ...noUrl } = validNews;
     expect(isNormalizedNewsItem(noUrl)).toBe(false);
   });
   it("rejects missing source", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { source: _s, ...noSrc } = validNews;
     expect(isNormalizedNewsItem(noSrc)).toBe(false);
   });
@@ -248,7 +243,6 @@ describe("isNormalizedAlertEvent", () => {
     );
   });
   it("rejects missing id", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _i, ...noId } = validAlert;
     expect(isNormalizedAlertEvent(noId)).toBe(false);
   });

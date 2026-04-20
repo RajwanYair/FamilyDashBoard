@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.0.0] — 2026-04-20
+
+> **3053+ tests / 87 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Production Readiness Release
+
+- **Test consolidation**: Converted repetitive `it()` blocks into parameterized `it.each()` tables across stocks, hebrew-cal, and weather test suites (~227 lines removed, same assertions preserved)
+- **Dead file cleanup**: Removed 10 stale tracked files (debug logs, old reports, superseded roadmap, build artifacts)
+- **Hardened .gitignore**: Added patterns for test artifacts, debug logs, and build outputs to prevent future tracking
+- **Config modernization**: Added SVG and TypeScript patterns to `.gitattributes` for consistent line-ending normalization
+- **Version bump**: All 15 version-bearing files updated per pre-release checklist
+- **SVG documentation assets**: Updated version and test counts in all `.github/assets/` diagrams
+
 ## [7.21.0] — 2026-07-07
 
 > **3003+ tests / 87 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

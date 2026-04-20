@@ -1,5 +1,5 @@
 # =============================================================================
-# CI — FamilyDashBoard v7 — Unified quality gate
+# CI — FamilyDashBoard v8 — Unified quality gate
 # Typecheck · ESLint · Markdownlint · Vitest (Node 20/22/24) · Security · Build
 # Runs on every push to main and all pull requests.
 # =============================================================================
