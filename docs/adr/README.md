@@ -13,3 +13,6 @@
 | [ADR-007](ADR-007-news-aggregation.md)             | News Aggregation Strategy            | 2026-07-10 | Accepted |
 | [ADR-008](ADR-008-css-layer-governance.md)         | CSS Layer Governance                 | 2026-07-10 | Accepted |
 | [ADR-009](ADR-009-config-schema-evolution.md)      | Config Schema Evolution              | 2026-07-10 | Accepted |
+| [ADR-010](ADR-010-idb-async-stale-cache.md)        | IDB-Async Stale Cache Pattern        | 2026-07-10 | Accepted |
+| [ADR-011](ADR-011-worker-normalization-contract.md) | Worker Response Envelope Contract   | 2026-07-11 | Accepted |
+| [ADR-012](ADR-012-async-provider-adapter.md)       | Async Provider Adapter Pattern       | 2026-07-11 | Accepted |
