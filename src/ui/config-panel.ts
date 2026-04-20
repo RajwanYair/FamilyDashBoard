@@ -888,14 +888,24 @@ export function importSettings(): void {
       try {
         const text = e.target?.result as string;
         const parsed: unknown = JSON.parse(text);
-        if (typeof parsed === "object" && parsed !== null) {
-          saveConfig(parsed as DashboardConfig);
-          populateForm();
-          clearDirty();
-          const fieldCount = Object.keys(parsed as Record<string, unknown>).length;
-          showToast(t("settingsImported", { count: fieldCount }));
-          diagLog("[config-panel] imported settings");
+        if (typeof parsed !== "object" || parsed === null) {
+          showToast(t("settingsImportFailed"), 4000);
+          diagLog("[config-panel] import failed: not an object");
+          return;
         }
+        const cfg = parsed as Record<string, unknown>;
+        // Schema validation: configVersion must be a positive integer
+        if (typeof cfg["configVersion"] !== "number" || !Number.isInteger(cfg["configVersion"]) || (cfg["configVersion"] as number) < 1) {
+          showToast(t("settingsImportFailed"), 4000);
+          diagLog("[config-panel] import failed: missing or invalid configVersion");
+          return;
+        }
+        saveConfig(cfg as DashboardConfig);
+        populateForm();
+        clearDirty();
+        const fieldCount = Object.keys(cfg).length;
+        showToast(t("settingsImported", { count: fieldCount }));
+        diagLog("[config-panel] imported settings");
       } catch {
         showToast(t("settingsImportFailed"), 4000);
         diagLog("[config-panel] import failed: invalid JSON");

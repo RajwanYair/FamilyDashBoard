@@ -411,7 +411,7 @@ describe("Config Panel — importSettings", () => {
       onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
       result: string | ArrayBuffer | null = null;
       readAsText(_file: Blob): void {
-        this.result = '{"familyName":"טסט"}';
+        this.result = '{"familyName":"טסט","configVersion":1}';
         if (this.onload) {
           this.onload({
             target: this as unknown as FileReader,
@@ -424,7 +424,7 @@ describe("Config Panel — importSettings", () => {
     importSettings();
 
     // Simulate file selection and onchange fire
-    const mockFile = new File(['{"familyName":"טסט"}'], "cfg.json", {
+    const mockFile = new File(['{"familyName":"טסט","configVersion":1}'], "cfg.json", {
       type: "application/json",
     });
     Object.defineProperty(input, "files", {
@@ -437,6 +437,47 @@ describe("Config Panel — importSettings", () => {
       localStorage.getItem("dash_v2_config") ?? "{}",
     ) as { familyName?: string };
     expect(saved.familyName).toBe("טסט");
+  });
+
+  it("rejects import when configVersion is missing", () => {
+    document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
+    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
+    vi.spyOn(input, "click").mockImplementation(() => {});
+    class MissingVersionReader {
+      onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      result: string | ArrayBuffer | null = null;
+      readAsText(): void {
+        this.result = '{"familyName":"test"}';
+        if (this.onload) this.onload({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+      }
+    }
+    vi.stubGlobal("FileReader", MissingVersionReader);
+    importSettings();
+    const mockFile = new File(['{"familyName":"test"}'], "cfg.json", { type: "application/json" });
+    Object.defineProperty(input, "files", { value: { 0: mockFile, length: 1 }, configurable: true });
+    input.onchange?.(new Event("change"));
+    // config should NOT be overwritten with bad import
+    expect(localStorage.getItem("dash_v2_config")).toBeNull();
+  });
+
+  it("rejects import when configVersion is not a positive integer", () => {
+    document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
+    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
+    vi.spyOn(input, "click").mockImplementation(() => {});
+    class BadVersionReader {
+      onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      result: string | ArrayBuffer | null = null;
+      readAsText(): void {
+        this.result = '{"familyName":"test","configVersion":0}';
+        if (this.onload) this.onload({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+      }
+    }
+    vi.stubGlobal("FileReader", BadVersionReader);
+    importSettings();
+    const mockFile = new File(['{"familyName":"test","configVersion":0}'], "cfg.json", { type: "application/json" });
+    Object.defineProperty(input, "files", { value: { 0: mockFile, length: 1 }, configurable: true });
+    input.onchange?.(new Event("change"));
+    expect(localStorage.getItem("dash_v2_config")).toBeNull();
   });
 
   it("handles invalid JSON in FileReader without throwing", () => {
