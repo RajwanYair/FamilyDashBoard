@@ -5,7 +5,7 @@
  * and renders a scrolling news strip with category detection.
  */
 
-import { createCardLoader, scheduleCard } from "../base-card";
+import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import "./news.css";
 import {
   INTERVALS,
@@ -665,7 +665,7 @@ export function renderNews(items: NewsItem[]): void {
   diagLog(`FDB-042: [news] Rendered ${items.length} items`);
 }
 
-export const loadNews = createCardLoader<NewsItem[]>(
+export const loadNews = createAsyncCardLoader<NewsItem[]>(
   { id: "news", ttl: INTERVALS.NEWS, interval: INTERVALS.NEWS },
   fetchAllNews,
   renderNews,

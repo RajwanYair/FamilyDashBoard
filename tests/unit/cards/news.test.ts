@@ -2008,3 +2008,32 @@ describe("News — reading-time badge in renderNews (Sprint 27)", () => {
     expect(document.querySelector(".news-reading-time")).toBeNull();
   });
 });
+
+// ── Stream D2.2: createAsyncCardLoader migration ─────────────────────────────
+
+describe("News — loadNews uses createAsyncCardLoader (Stream D2.2)", () => {
+  it("loadNews is a function (async loader)", async () => {
+    const { loadNews } = await import("@/cards/news/news");
+    expect(typeof loadNews).toBe("function");
+  });
+
+  it("loadNews returns a Promise when invoked", async () => {
+    const { loadNews } = await import("@/cards/news/news");
+    // page visible mock
+    Object.defineProperty(document, "visibilityState", {
+      value: "hidden",
+      configurable: true,
+    });
+    const result = loadNews();
+    expect(result).toBeInstanceOf(Promise);
+    Object.defineProperty(document, "visibilityState", {
+      value: "visible",
+      configurable: true,
+    });
+  });
+
+  it("newsCard.id is \"news\"", async () => {
+    const { newsCard } = await import("@/cards/news/news");
+    expect(newsCard.id).toBe("news");
+  });
+});

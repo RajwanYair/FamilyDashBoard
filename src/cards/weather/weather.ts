@@ -4,7 +4,7 @@
  * Open-Meteo integration: current conditions, hourly chart, 7-day forecast.
  */
 
-import { createCardLoader, scheduleCard } from "../base-card";
+import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import "./weather.css";
 import {
   INTERVALS,
@@ -507,7 +507,7 @@ export function renderWeather(d: WeatherResponse): void {
   renderHourlyStrip(d);
 }
 
-const loadWeather = createCardLoader<WeatherResponse>(
+const loadWeather = createAsyncCardLoader<WeatherResponse>(
   { id: "wx", ttl: 900_000, interval: INTERVALS.WEATHER },
   fetchWeather,
   renderWeather,
