@@ -6,7 +6,7 @@
  */
 
 import type { ProviderAdapter, ProviderResult } from "../../types/provider";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import { cGet, cGetStale, cSetAsync } from "../../core/cache";
 import { INTERVALS } from "../../core/constants";
 import {
   getProviderHealth,
@@ -54,7 +54,7 @@ export function createCalendarAdapter(
         if (!text.includes("BEGIN:VCALENDAR")) {
           throw new Error("Response is not valid ICS");
         }
-        cSet(cacheKey, text);
+        await cSetAsync(cacheKey, text);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-129: [calendar] Fetched ICS #${feedIndex}`);
         return { ok: true, data: text };

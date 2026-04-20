@@ -8,7 +8,7 @@ import { createHebcalAdapter } from "@/cards/hebrew-cal/hebcal-adapter";
 vi.mock("@/core/cache", () => ({
   cGet: vi.fn().mockReturnValue(null),
   cGetStale: vi.fn().mockReturnValue(null),
-  cSet: vi.fn(),
+  cSetAsync: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock("@/core/provider", () => ({
   getProviderHealth: vi.fn().mockReturnValue({ status: "ok" }),

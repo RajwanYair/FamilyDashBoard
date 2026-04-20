@@ -5,7 +5,7 @@
  */
 
 import type { ProviderAdapter, ProviderResult } from "../../types/provider";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import { cGet, cGetStale, cSetAsync } from "../../core/cache";
 import { API, INTERVALS } from "../../core/constants";
 import {
   getProviderHealth,
@@ -49,7 +49,7 @@ export function createAlertsAdapter(): ProviderAdapter<AlertsResponse> {
           const stale = cGetStale<AlertsResponse>(CACHE_KEY);
           return { ok: false, error: "Invalid response — expected array", stale: stale ?? undefined };
         }
-        cSet(CACHE_KEY, data);
+        await cSetAsync(CACHE_KEY, data);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-092: [alerts] Fetched ${data.length} alert items`);
         return { ok: true, data };

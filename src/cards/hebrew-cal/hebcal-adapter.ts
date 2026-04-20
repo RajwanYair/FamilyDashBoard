@@ -5,7 +5,7 @@
  */
 
 import type { ProviderAdapter, ProviderResult } from "../../types/provider";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import { cGet, cGetStale, cSetAsync } from "../../core/cache";
 import { API, INTERVALS } from "../../core/constants";
 import {
   getProviderHealth,
@@ -59,7 +59,7 @@ export function createHebcalAdapter(
           const stale = cGetStale<HebcalResponse>(CACHE_KEY);
           return { ok: false, error: "Invalid response shape", stale: stale ?? undefined };
         }
-        cSet(CACHE_KEY, data);
+        await cSetAsync(CACHE_KEY, data);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-090: [hebcal] Fetched ${data.items.length} items`);
         return { ok: true, data };

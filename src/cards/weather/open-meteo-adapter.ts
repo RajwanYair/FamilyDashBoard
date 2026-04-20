@@ -7,7 +7,7 @@
 import type { ProviderAdapter, ProviderResult } from "../../types/provider";
 import type { WeatherResponse } from "../../types/api";
 import { isWeatherResponse } from "../../types/api";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import { cGet, cGetStale, cSetAsync } from "../../core/cache";
 import { INTERVALS } from "../../core/constants";
 import {
   getProviderHealth,
@@ -54,7 +54,7 @@ export function createOpenMeteoAdapter(
           const stale = cGetStale<WeatherResponse>(CACHE_KEY);
           return { ok: false, error: "Invalid response shape", stale: stale ?? undefined };
         }
-        cSet(CACHE_KEY, data);
+        await cSetAsync(CACHE_KEY, data);
         recordProviderSuccess(PROVIDER_ID);
         diagLog(`FDB-089: [open-meteo] Fetched weather for ${lat},${lon}`);
         return { ok: true, data };
