@@ -13,6 +13,8 @@
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",
         "mhutchie.git-graph",
+        // Testing
+        "vitest.explorer",
         // HTML / CSS
         "ecmel.vscode-html-css",
         "formulahendry.auto-rename-tag",

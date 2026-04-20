@@ -18,6 +18,23 @@
             "problemMatcher": []
         },
         {
+            "label": "🔬 Vitest: Watch Mode",
+            "type": "shell",
+            "command": "npx vitest",
+            "group": "test",
+            "isBackground": true,
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔬 Vitest: Current File",
+            "type": "shell",
+            "command": "npx vitest run ${relativeFile}",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
             "label": "📊 Vitest: Coverage Report",
             "type": "shell",
             "command": "npx vitest run --coverage",
