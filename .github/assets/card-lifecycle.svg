@@ -2,7 +2,7 @@
   <rect width="900" height="420" fill="#0f172a" rx="12"/>
 
   <!-- Title -->
-  <text x="450" y="32" font-family="Segoe UI,system-ui" font-size="17" font-weight="700" fill="#60a5fa" text-anchor="middle">Card Lifecycle — FamilyDashBoard v8.3.0</text>
+  <text x="450" y="32" font-family="Segoe UI,system-ui" font-size="17" font-weight="700" fill="#60a5fa" text-anchor="middle">Card Lifecycle — FamilyDashBoard v8.4.0</text>
   <text x="450" y="50" font-family="Segoe UI,system-ui" font-size="10" fill="#64748b" text-anchor="middle">State machine for all 11 data cards · scheduleCard() manages the refresh loop</text>
 
   <!-- ── States ── -->

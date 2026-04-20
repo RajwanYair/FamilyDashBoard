@@ -5,6 +5,51 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.4.0] — 2026-04-20
+
+> **3122 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Stream B2 — FdbCard Migration Complete (11 / 11)
+
+- **`src/cards/system-info/fdb-system-info.ts`**: new `FdbSystemInfoCard` custom element
+- **`src/cards/currency/fdb-currency.ts`**: new `FdbCurrencyCard` custom element
+- **`src/cards/hebrew-cal/fdb-hebrew-cal.ts`**: new `FdbHebrewCalCard` custom element
+- **`src/cards/calendar/fdb-calendar.ts`**: new `FdbCalendarCard` custom element
+- **`src/cards/alerts/fdb-alerts.ts`**: new `FdbAlertsCard` custom element
+- Added `destroyCurrencyCard()`, `destroyHebrewCalCard()`, `destroyCalendarCard()`, `destroyAlertsCard()` to respective modules
+- All 5 registered in `card-registry.ts` as `FdbCardDefinition` with `Promise.all` import pattern
+- 15 new unit tests (3 per card)
+- **`docs/card-architecture-audit.md`**: 11 / 11 migrated — Stream B2 ✅ COMPLETE
+
+### Stream G.2 — Playwright Critical Flows + Lighthouse CI
+
+- **`tests/e2e/critical-flows.spec.ts`**: 12 tests — config panel (S-key / Escape), diagnostics overlay (D-key), help overlay (?-key), keyboard shortcuts (T/+/-), status bar checks
+- **`.lighthouserc.json`**: Lighthouse CI config — accessibility ≥ 0.85, performance ≥ 0.80
+- **`.github/workflows/ci.yml`**: new `lighthouse` job after `build` — runs `lhci autorun` on preview server
+
+### Stream W — Worker Zod Validation
+
+- **`worker/src/utils/schemas.ts`**: Zod schemas for `WeatherSchema`, `CurrencySchema`, `HebcalSchema`, `HebcalHolidaysSchema` + `safeParse()` helper
+- All 4 data route handlers (`handleWeather`, `handleCurrency`, `handleHebcal`, `handleHebcalHolidays`) now validate upstream JSON before wrapping in `WorkerResponse` envelope — return HTTP 502 on shape mismatch
+- `worker/package.json`: added `zod: ^3.24.0` as runtime dependency
+- 19 new Zod schema tests in `tests/unit/worker/worker.test.ts`
+
+### Stream D2 — IDB-Async Stale Cache
+
+- **`src/core/cache.ts`**: new `cSetAsync()` — awaitable IDB write, exported
+- **`src/cards/base-card.ts`**: `createAsyncCardLoader` now uses `cSetAsync` instead of `cSet`
+- **`src/cards/currency/currency.ts`**: migrated from `createCardLoader` → `createAsyncCardLoader` (first D2 adopter)
+- **`docs/adr/ADR-010-idb-async-stale-cache.md`**: storage tier policy, migration phases, rejected alternatives
+- 5 new `cSetAsync` tests in `tests/unit/core/cache.test.ts`
+
+### Stream J — Actions Hardening + Debug Configs
+
+- All GitHub Actions workflows now have explicit per-job `permissions` blocks
+- `auto-label.yml`: added `concurrency` group to prevent parallel label runs
+- **`.vscode/launch.json`**: 2 new debug configurations — `🐛 Vitest: Debug (breakpoints)` and `🐛 Vitest: Debug Current File` using `--inspect-brk` + `--pool=forks`
+
+---
+
 ## [8.3.0] — 2026-04-20
 
 > **3087 tests / 89 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
