@@ -6,11 +6,11 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ryair/FamilyDashBoard.git"
+        "url": "https://github.com/RajwanYair/FamilyDashBoard.git"
     },
-    "homepage": "https://ryair.github.io/FamilyDashBoard/",
+    "homepage": "https://RajwanYair.github.io/FamilyDashBoard/",
     "bugs": {
-        "url": "https://github.com/ryair/FamilyDashBoard/issues"
+        "url": "https://github.com/RajwanYair/FamilyDashBoard/issues"
     },
     "keywords": [
         "dashboard",
