@@ -6,7 +6,12 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../utils/validation";
-import { safeParse, StocksChartSchema, CoinGeckoSchema } from "../utils/schemas";
+import {
+  safeParse,
+  StocksChartSchema,
+  CoinGeckoSchema,
+  NewsRssSchema,
+} from "../utils/schemas";
 
 export async function handleStocks(url: URL): Promise<Response> {
   let sym: string;
@@ -50,7 +55,26 @@ export async function handleNews(url: URL): Promise<Response> {
   const res = await fetch(parsed.toString(), {
     headers: { Accept: "application/rss+xml, application/xml, text/xml" },
   });
-  return proxyResponse(res, 900); // 15 min
+  if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  const text = await res.text();
+  const validated = safeParse(NewsRssSchema, text);
+  if (!validated.ok) {
+    return jsonResponse(
+      {
+        error: "Upstream news response is not valid RSS/Atom",
+        detail: validated.error,
+      },
+      502,
+    );
+  }
+  return new Response(text, {
+    status: 200,
+    headers: {
+      "Content-Type": res.headers.get("Content-Type") ?? "application/rss+xml",
+      "Cache-Control": "public, max-age=900",
+      ...CORS_HEADERS,
+    },
+  });
 }
 
 export async function handleAlerts(): Promise<Response> {

@@ -640,7 +640,12 @@ describe("Worker — handleHebcalHolidays route", () => {
 
 // ── Worker — handleAlerts route (Stream W.4) ──────────────────────────────────
 
-import { handleAlerts, handleStocks, handleCrypto } from "../../../worker/src/routes/feeds";
+import {
+  handleAlerts,
+  handleStocks,
+  handleCrypto,
+  handleNews,
+} from "../../../worker/src/routes/feeds";
 
 describe("Worker — handleAlerts route", () => {
   afterEach(() => { vi.restoreAllMocks(); });
@@ -677,6 +682,7 @@ import {
   HebcalHolidaysSchema,
   StocksChartSchema,
   CoinGeckoSchema,
+  NewsRssSchema,
   safeParse,
 } from "../../../worker/src/utils/schemas";
 
@@ -985,5 +991,140 @@ describe("Worker — handleCrypto route", () => {
     expect(res.status).toBe(502);
     const body = await res.json() as { error: string };
     expect(body.error).toContain("schema invalid");
+  });
+});
+
+// ── Zod schemas — NewsRssSchema (Stream W.8) ──────────────────────────────────
+
+const VALID_RSS_2 = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Test Feed</title>
+    <link>https://example.com</link>
+    <item><title>Article 1</title></item>
+    <item><title>Article 2</title></item>
+  </channel>
+</rss>`;
+
+const VALID_ATOM = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Test Atom Feed</title>
+  <entry><title>Post 1</title></entry>
+  <entry><title>Post 2</title></entry>
+</feed>`;
+
+describe("Zod schemas — NewsRssSchema", () => {
+  it("accepts valid RSS 2.0 with <channel> and <item>", () => {
+    const result = safeParse(NewsRssSchema, VALID_RSS_2);
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts valid Atom 1.0 with <feed> and <entry>", () => {
+    const result = safeParse(NewsRssSchema, VALID_ATOM);
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts minimal feed with XML declaration, <channel> and <item>", () => {
+    const result = safeParse(NewsRssSchema, "<?xml version=\"1.0\"?><rss><channel><item/></channel></rss>");
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects empty string", () => {
+    const result = safeParse(NewsRssSchema, "");
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects plain JSON (not XML)", () => {
+    const result = safeParse(NewsRssSchema, JSON.stringify({ title: "not rss" }));
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects HTML that is not a feed", () => {
+    const result = safeParse(NewsRssSchema, "<html><body><p>Not a feed</p></body></html>");
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects RSS without <item> (empty channel)", () => {
+    const result = safeParse(NewsRssSchema, "<rss><channel><title>No items</title></channel></rss>");
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects Atom without <entry> (empty feed)", () => {
+    const result = safeParse(NewsRssSchema, "<feed><title>No entries</title></feed>");
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects non-string input", () => {
+    const result = safeParse(NewsRssSchema, 42);
+    expect(result.ok).toBe(false);
+  });
+});
+
+// ── Worker — handleNews route (Stream W.8) ────────────────────────────────────
+
+describe("Worker — handleNews route", () => {
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it("returns 200 with RSS text for valid RSS 2.0 upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(VALID_RSS_2, {
+        status: 200,
+        headers: { "Content-Type": "application/rss+xml" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
+    const res = await handleNews(url);
+    expect(res.status).toBe(200);
+    const text = await res.text();
+    expect(text).toContain("<channel");
+  });
+
+  it("returns 200 with Atom text for valid Atom upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(VALID_ATOM, {
+        status: 200,
+        headers: { "Content-Type": "application/atom+xml" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
+    const res = await handleNews(url);
+    expect(res.status).toBe(200);
+    const text = await res.text();
+    expect(text).toContain("<feed");
+  });
+
+  it("returns 502 when upstream returns non-ok status", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("rate limited", { status: 429 }),
+    );
+    const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
+    const res = await handleNews(url);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns 502 when upstream returns non-RSS content", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("<html><body>Error page</body></html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
+    const res = await handleNews(url);
+    expect(res.status).toBe(502);
+    const body = await res.json() as { error: string };
+    expect(body.error).toContain("not valid RSS");
+  });
+
+  it("returns 403 for disallowed origin", async () => {
+    const url = new URL("https://worker.example.com/api/news?url=https://evil.example.com/feed.xml");
+    const res = await handleNews(url);
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 400 for missing url param", async () => {
+    const url = new URL("https://worker.example.com/api/news");
+    const res = await handleNews(url);
+    expect(res.status).toBe(400);
   });
 });

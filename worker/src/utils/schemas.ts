@@ -117,6 +117,26 @@ export const StocksChartSchema = z
   })
   .passthrough();
 
+// ── News / RSS ────────────────────────────────────────────────────────────────
+
+/**
+ * Structural validation for RSS 2.0 and Atom 1.0 feed XML.
+ * The worker proxies RSS feeds as raw XML — this schema validates that the
+ * response body contains the expected root elements before forwarding it.
+ * Uses z.string().refine() because Zod has no XML parser; we check markers.
+ */
+export const NewsRssSchema = z.string().refine(
+  (text) =>
+    // RSS 2.0 must have <channel> and at least one <item>
+    (text.includes("<channel") && text.includes("<item")) ||
+    // Atom 1.0 must have <feed and at least one <entry
+    (text.includes("<feed") && text.includes("<entry")),
+  {
+    message:
+      "Response is not a valid RSS 2.0 or Atom 1.0 feed (missing <channel>/<item> or <feed>/<entry>)",
+  },
+);
+
 // ── Crypto / CoinGecko ───────────────────────────────────────────────────────
 
 export const CoinGeckoPriceSchema = z
