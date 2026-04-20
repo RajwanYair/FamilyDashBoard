@@ -100,6 +100,22 @@ npx vitest run --coverage
 - Use `vi.stubGlobal` / `vi.fn()` for mocks — not global mutation
 - Clean up with `afterEach(() => { vi.restoreAllMocks(); })`
 - Never import `localStorage` — stub it via `vi.stubGlobal`
+- **Prefer `_resetForTest()` over `vi.resetModules()`** — if the module under test has mutable module-level state, export a `_reset*ForTest()` function and call it in `beforeEach`/`afterEach`. Only use `vi.resetModules()` when you need to test module-scope initialization behavior (e.g., setting corrupt `sessionStorage` before the first import).
+
+---
+
+## Terminal: PowerShell Only
+
+All terminal commands in this project use **PowerShell syntax**. Unix shell commands are not supported in the dev environment.
+
+| Forbidden | Use instead |
+|-----------|-------------|
+| `&&` | `;` (chain commands) |
+| `grep` | `Select-String` |
+| `cat`, `head`, `tail` | `Get-Content`, `Select-Object -First N`, `Select-Object -Last N` |
+| `find` | `Get-ChildItem` |
+| `ls`, `rm`, `cp`, `mv` | `Get-ChildItem`, `Remove-Item`, `Copy-Item`, `Move-Item` |
+| `export VAR=value` | `$env:VAR = "value"` |
 
 ---
 
