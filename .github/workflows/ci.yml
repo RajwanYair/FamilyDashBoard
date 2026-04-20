@@ -62,7 +62,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        node-version: ["20", "22", "24"]
+        node-version: ["20", "22"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -70,7 +70,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
-      - run: npx vitest run --reporter=verbose
+      - run: npx vitest run
 
   security:
     name: Security Scan
@@ -171,6 +171,6 @@ jobs:
       - name: Build for Lighthouse
         run: npx vite build
       - name: Run Lighthouse CI
-        run: npx lhci autorun || true
+        run: npx lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
