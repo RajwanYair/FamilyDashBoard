@@ -2,104 +2,98 @@
  * Tests for src/ui/bg-images.ts
  *
  * Covers: isValidBgUrl, initBgImages (DOM layer creation, config), rotateBgImage.
+ * Uses _resetForTest() instead of vi.resetModules() (Stream G.1).
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  isValidBgUrl,
+  initBgImages,
+  rotateBgImage,
+  BG_INTERVAL_MS,
+  _resetForTest,
+} from "@/ui/bg-images";
+
+// ── isValidBgUrl ──────────────────────────────────────────────────────────────
 
 describe("BgImages — isValidBgUrl", () => {
-  it("accepts a valid HTTPS URL", async () => {
-    vi.resetModules();
-    const { isValidBgUrl } = await import("@/ui/bg-images");
+  it("accepts a valid HTTPS URL", () => {
     expect(isValidBgUrl("https://example.com/photo.jpg")).toBe(true);
   });
 
-  it("rejects an HTTP URL", async () => {
-    vi.resetModules();
-    const { isValidBgUrl } = await import("@/ui/bg-images");
+  it("rejects an HTTP URL", () => {
     expect(isValidBgUrl("http://example.com/photo.jpg")).toBe(false);
   });
 
-  it("rejects a data: URI", async () => {
-    vi.resetModules();
-    const { isValidBgUrl } = await import("@/ui/bg-images");
+  it("rejects a data: URI", () => {
     expect(isValidBgUrl("data:image/png;base64,abc")).toBe(false);
   });
 
-  it("rejects an empty string", async () => {
-    vi.resetModules();
-    const { isValidBgUrl } = await import("@/ui/bg-images");
+  it("rejects an empty string", () => {
     expect(isValidBgUrl("")).toBe(false);
   });
 
-  it("rejects a relative path", async () => {
-    vi.resetModules();
-    const { isValidBgUrl } = await import("@/ui/bg-images");
+  it("rejects a relative path", () => {
     expect(isValidBgUrl("/images/bg.jpg")).toBe(false);
   });
 
-  it("accepts an HTTPS URL with query params", async () => {
-    vi.resetModules();
-    const { isValidBgUrl } = await import("@/ui/bg-images");
+  it("accepts an HTTPS URL with query params", () => {
     expect(isValidBgUrl("https://images.unsplash.com/photo?w=1920&q=80")).toBe(
       true,
     );
   });
 });
 
+// ── initBgImages ──────────────────────────────────────────────────────────────
+
 describe("BgImages — initBgImages", () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = "";
+    _resetForTest();
   });
 
   afterEach(() => {
+    _resetForTest();
     document.body.innerHTML = "";
     localStorage.clear();
     vi.restoreAllMocks();
   });
 
-  it("is a no-op when bgImages is empty", async () => {
-    vi.resetModules();
-    const { initBgImages } = await import("@/ui/bg-images");
+  it("is a no-op when bgImages is empty", () => {
     initBgImages();
     expect(document.getElementById("bg-layer-a")).toBeNull();
     expect(document.getElementById("bg-layer-b")).toBeNull();
   });
 
-  it("creates two layers when bgImages has valid URLs", async () => {
+  it("creates two layers when bgImages has valid URLs", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
         bgImages: ["https://example.com/a.jpg", "https://example.com/b.jpg"],
       }),
     );
-    vi.resetModules();
-    const { initBgImages } = await import("@/ui/bg-images");
     initBgImages();
     expect(document.getElementById("bg-layer-a")).not.toBeNull();
     expect(document.getElementById("bg-layer-b")).not.toBeNull();
   });
 
-  it("is a no-op when all bgImages are invalid (non-HTTPS)", async () => {
+  it("is a no-op when all bgImages are invalid (non-HTTPS)", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
         bgImages: ["http://insecure.com/a.jpg", "/local/image.jpg"],
       }),
     );
-    vi.resetModules();
-    const { initBgImages } = await import("@/ui/bg-images");
     initBgImages();
     expect(document.getElementById("bg-layer-a")).toBeNull();
   });
 
-  it("layer-a starts with opacity 0.35, layer-b starts with opacity 0", async () => {
+  it("layer-a starts with opacity 0.35, layer-b starts with opacity 0", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({ bgImages: ["https://example.com/a.jpg"] }),
     );
-    vi.resetModules();
-    const { initBgImages } = await import("@/ui/bg-images");
     initBgImages();
     const layerA = document.getElementById("bg-layer-a") as HTMLElement;
     const layerB = document.getElementById("bg-layer-b") as HTMLElement;
@@ -107,7 +101,7 @@ describe("BgImages — initBgImages", () => {
     expect(layerB.style.opacity).toBe("0");
   });
 
-  it("filters out invalid URLs, uses only HTTPS ones", async () => {
+  it("filters out invalid URLs, uses only HTTPS ones", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
@@ -117,26 +111,20 @@ describe("BgImages — initBgImages", () => {
         ],
       }),
     );
-    vi.resetModules();
-    const { initBgImages } = await import("@/ui/bg-images");
     initBgImages();
     const layerA = document.getElementById("bg-layer-a") as HTMLElement;
     expect(layerA.style.backgroundImage).toContain("good.jpg");
   });
 
-  it("BG_INTERVAL_MS equals 30 minutes", async () => {
-    vi.resetModules();
-    const { BG_INTERVAL_MS } = await import("@/ui/bg-images");
+  it("BG_INTERVAL_MS equals 30 minutes", () => {
     expect(BG_INTERVAL_MS).toBe(30 * 60 * 1000);
   });
 
-  it("does not throw when called multiple times", async () => {
+  it("does not throw when called multiple times", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({ bgImages: ["https://example.com/a.jpg"] }),
     );
-    vi.resetModules();
-    const { initBgImages } = await import("@/ui/bg-images");
     expect(() => {
       initBgImages();
       initBgImages();
@@ -144,40 +132,38 @@ describe("BgImages — initBgImages", () => {
   });
 });
 
+// ── rotateBgImage ─────────────────────────────────────────────────────────────
+
 describe("BgImages — rotateBgImage", () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = "";
+    _resetForTest();
   });
 
   afterEach(() => {
+    _resetForTest();
     document.body.innerHTML = "";
     localStorage.clear();
     vi.restoreAllMocks();
   });
 
-  it("does not throw when layers are not initialized", async () => {
-    vi.resetModules();
-    const { rotateBgImage } = await import("@/ui/bg-images");
+  it("does not throw when layers are not initialized", () => {
     expect(() => rotateBgImage()).not.toThrow();
   });
 
-  it("does not throw when bgImages is empty", async () => {
-    vi.resetModules();
-    const { rotateBgImage } = await import("@/ui/bg-images");
+  it("does not throw when bgImages is empty", () => {
     expect(() => rotateBgImage()).not.toThrow();
   });
 
-  it("returns early when config has valid images but layers are null (no init)", async () => {
+  it("returns early when config has valid images but layers are null (no init)", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
         bgImages: ["https://a.com/a.jpg", "https://b.com/b.jpg"],
       }),
     );
-    vi.resetModules();
-    const { rotateBgImage } = await import("@/ui/bg-images");
-    // _layerA and _layerB are null — should hit !_layerA branch on line 35
+    // _layerA and _layerB are null — should hit !_layerA branch
     expect(() => rotateBgImage()).not.toThrow();
     expect(document.getElementById("bg-layer-a")).toBeNull();
   });
@@ -201,25 +187,25 @@ describe("BgImages — rotateBgImage Image.onload crossfade", () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = "";
+    _resetForTest();
     vi.stubGlobal("Image", SyncImage);
   });
 
   afterEach(() => {
+    _resetForTest();
     document.body.innerHTML = "";
     localStorage.clear();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
-  it("sets layerB opacity to 0.35 and layerA to 0 after crossfade", async () => {
+  it("sets layerB opacity to 0.35 and layerA to 0 after crossfade", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
         bgImages: ["https://a.com/a.jpg", "https://b.com/b.jpg"],
       }),
     );
-    vi.resetModules();
-    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
     initBgImages();
 
     rotateBgImage();
@@ -230,15 +216,13 @@ describe("BgImages — rotateBgImage Image.onload crossfade", () => {
     expect(layerA.style.opacity).toBe("0");
   });
 
-  it("sets layerB backgroundImage to the next URL after crossfade", async () => {
+  it("sets layerB backgroundImage to the next URL after crossfade", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
         bgImages: ["https://a.com/first.jpg", "https://b.com/second.jpg"],
       }),
     );
-    vi.resetModules();
-    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
     initBgImages();
 
     rotateBgImage();
@@ -247,15 +231,13 @@ describe("BgImages — rotateBgImage Image.onload crossfade", () => {
     expect(layerB.style.backgroundImage).toContain("second.jpg");
   });
 
-  it("wraps _currentIdx back to 0 after all images shown", async () => {
+  it("wraps _currentIdx back to 0 after all images shown", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
         bgImages: ["https://a.com/a.jpg", "https://b.com/b.jpg"],
       }),
     );
-    vi.resetModules();
-    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
     initBgImages();
 
     // Rotate twice — should wrap back
@@ -265,12 +247,12 @@ describe("BgImages — rotateBgImage Image.onload crossfade", () => {
     expect(document.getElementById("bg-layer-a")).not.toBeNull();
   });
 
-  it("does not throw when Image.onload fires but layers were cleared", async () => {
+  it("does not throw when Image.onload fires but layers were cleared", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
     );
-    // Override SyncImage so onload fires but layers are gone
+    // Override so onload fires but layers are gone (simulates layer destruction)
     class DelayedImage {
       onload: (() => void) | null = null;
       private _src = "";
@@ -279,29 +261,34 @@ describe("BgImages — rotateBgImage Image.onload crossfade", () => {
       }
       set src(v: string) {
         this._src = v;
-        // Clear the DOM before firing onload (simulates layer destruction)
         document.body.innerHTML = "";
         if (this.onload) this.onload();
       }
     }
     vi.stubGlobal("Image", DelayedImage);
-    vi.resetModules();
-    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
     initBgImages();
     expect(() => rotateBgImage()).not.toThrow();
   });
 });
-// ── rotateBgImage img.onload crossfade (lines 38-44) ─────────────────
+
+// ── rotateBgImage img.onload crossfade branch ─────────────────────────────────
 
 describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = "";
+    _resetForTest();
+  });
+
   afterEach(() => {
+    _resetForTest();
     document.body.innerHTML = "";
     localStorage.clear();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
-  it("crossfades layers and swaps references when onload fires", async () => {
+  it("crossfades layers and swaps references when onload fires", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
@@ -309,7 +296,6 @@ describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
       }),
     );
 
-    // Use synchronous Image so onload fires immediately on src assignment
     class SyncImage {
       onload: (() => void) | null = null;
       private _src = "";
@@ -321,8 +307,6 @@ describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
     }
     vi.stubGlobal("Image", SyncImage);
 
-    vi.resetModules();
-    const { initBgImages, rotateBgImage } = await import("@/ui/bg-images");
     initBgImages();
 
     const layerA = document.getElementById("bg-layer-a") as HTMLDivElement;
@@ -330,31 +314,24 @@ describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
     expect(layerA).not.toBeNull();
     expect(layerB).not.toBeNull();
 
-    // rotateBgImage → picks nextUrl → creates Image → onload → crossfade
     rotateBgImage();
 
-    // After crossfade: old layerB should have the next image's background
-    // and opacity should be set to 0.35 (the "visible" layer)
     expect(layerB.style.backgroundImage).toContain("b.com");
     expect(layerB.style.opacity).toBe("0.35");
     expect(layerA.style.opacity).toBe("0");
   });
 
-  it("rotateBgImage returns early when validImages is empty (no config)", async () => {
+  it("rotateBgImage returns early when validImages is empty (no config)", () => {
     localStorage.setItem("dash_v2_config", JSON.stringify({ bgImages: [] }));
-    vi.resetModules();
-    const { rotateBgImage } = await import("@/ui/bg-images");
     // Layers are null (no initBgImages called) → early return
     expect(() => rotateBgImage()).not.toThrow();
   });
 
-  it("rotateBgImage returns early when layers are null and images exist", async () => {
+  it("rotateBgImage returns early when layers are null and images exist", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
     );
-    vi.resetModules();
-    const { rotateBgImage } = await import("@/ui/bg-images");
     // initBgImages NOT called → _layerA and _layerB are null → early return
     expect(() => rotateBgImage()).not.toThrow();
   });

@@ -96,3 +96,17 @@ export function initBgImages(): void {
 
   diagLog(`[bg-images] Initialized with ${validImages.length} image(s)`);
 }
+
+/**
+ * Reset all module-level state to its initial values.
+ * **For tests only** — call in `afterEach` instead of `vi.resetModules()`.
+ *
+ * @internal
+ */
+export function _resetForTest(): void {
+  if (_intervalId !== null) clearInterval(_intervalId);
+  _intervalId = null;
+  _layerA = null;
+  _layerB = null;
+  _currentIdx = 0;
+}
