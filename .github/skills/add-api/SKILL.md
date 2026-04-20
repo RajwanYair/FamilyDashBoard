@@ -176,3 +176,25 @@ New card must have at minimum: fresh-cache path · stale-cache path · fetch-suc
 - Fetch path uses the existing platform conventions
 - Focused tests cover the happy path and failure path
 - The card renders without introducing hardcoded colors or invalid IDs
+
+## Verification
+
+Run these commands in order. All must exit 0.
+
+```powershell
+npx tsc --noEmit
+npx eslint src tests --max-warnings 0
+npx vitest run tests/unit/cards/<name>.test.ts --reporter=verbose
+npx vitest run
+```
+
+Checklist before closing the task:
+
+- [ ] `npx tsc --noEmit` — 0 errors
+- [ ] `npx eslint src tests --max-warnings 0` — 0 errors, 0 warnings
+- [ ] Targeted card tests pass with verbose output confirming all describe/it blocks
+- [ ] Full suite passes — test count increased (not decreased) vs. baseline
+- [ ] `data-card-id` attribute matches the registry ID exactly
+- [ ] No hardcoded colors in the new `.css` file (use `var(--accent)` etc.)
+- [ ] No `innerHTML` with unsanitized data in the new card module
+- [ ] New card appears in `listCards()` return value
