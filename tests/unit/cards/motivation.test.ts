@@ -15,6 +15,7 @@ import {
   initMotivationCard,
   getCurrentQuote,
   shareMotivation,
+  loadMotivation,
   _resetMotivationForTest,
 } from "@/cards/motivation/motivation";
 
@@ -552,5 +553,40 @@ describe("Motivation — configSchema (Sprint 83)", () => {
       expect(f.type).toBeTruthy();
       expect(f.defaultValue).toBeDefined();
     }
+  });
+});
+
+// ── Stream D2.4: createAsyncCardLoader migration ──────────────────────────────
+
+describe("Motivation — loadMotivation uses createAsyncCardLoader (Stream D2.4)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="moti-text"></div>
+      <div id="moti-author"></div>
+    `;
+    _resetMotivationForTest();
+  });
+
+  afterEach(() => {
+    _resetMotivationForTest();
+    document.body.innerHTML = "";
+  });
+
+  it("loadMotivation is exported and is a function", () => {
+    expect(typeof loadMotivation).toBe("function");
+  });
+
+  it("loadMotivation returns a Promise when invoked", async () => {
+    initMotivationCard();
+    const result = loadMotivation();
+    expect(result).toBeInstanceOf(Promise);
+    await result;
+  });
+
+  it("loadMotivation renders a quote into the DOM", async () => {
+    initMotivationCard();
+    await loadMotivation();
+    const text = document.getElementById("moti-text")?.textContent ?? "";
+    expect(MOTIVATIONS.some((m) => m.text === text)).toBe(true);
   });
 });

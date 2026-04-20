@@ -6,7 +6,7 @@
 
 import { INTERVALS, MS_PER_MIN } from "../../core/constants";
 import "./motivation.css";
-import { scheduleCard } from "../base-card";
+import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import { setSync } from "../../core/sync";
 import { diagLog } from "../../core/diag";
 import { t } from "../../core/i18n";
@@ -107,12 +107,11 @@ export function getCurrentQuote(): MotivationQuote | null {
   return pool[lastIdx] ?? null;
 }
 
-export function renderMotivation(): void {
-  const pool = getQuotesByCategory(_activeCategory);
-  if (!pool.length) return;
-  const m = pool[motiIdx++ % pool.length];
-  if (!m) return;
-
+/**
+ * Render a specific quote with fade animation.
+ * Used by both renderMotivation (user-triggered) and the async loader.
+ */
+function renderMotivationQuote(m: MotivationQuote): void {
   const card = elText?.closest(".moti-card") as HTMLElement | null;
   if (card) {
     card.style.transition = "opacity 0.5s ease";
@@ -124,8 +123,33 @@ export function renderMotivation(): void {
   } else {
     setContent(m);
   }
+}
+
+export function renderMotivation(): void {
+  const pool = getQuotesByCategory(_activeCategory);
+  if (!pool.length) return;
+  const m = pool[motiIdx++ % pool.length];
+  if (!m) return;
+  renderMotivationQuote(m);
   setSync("moti", "ok");
 }
+
+/**
+ * Stream D2.4: Async fetch for the createAsyncCardLoader lifecycle.
+ * Picks the next quote from the active category pool.
+ */
+async function fetchMotivation(): Promise<MotivationQuote> {
+  const pool = getQuotesByCategory(_activeCategory);
+  const m = pool[motiIdx++ % Math.max(pool.length, 1)];
+  return Promise.resolve(m ?? MOTIVATIONS[0]!);
+}
+
+/** Stream D2.4: Standard async card loader with visibility + lock lifecycle. */
+export const loadMotivation = createAsyncCardLoader<MotivationQuote>(
+  { id: "moti", ttl: INTERVALS.MOTIVATION, interval: INTERVALS.MOTIVATION },
+  fetchMotivation,
+  renderMotivationQuote,
+);
 
 export function setContent(m: { text: string; author: string }): void {
   if (elText) elText.textContent = m.text;
@@ -146,10 +170,6 @@ export function shareMotivation(): void {
   diagLog("FDB-040: [motivation] Quote shared");
 }
 
-async function loadMotivation(): Promise<void> {
-  await Promise.resolve(renderMotivation());
-}
-
 export function initMotivationCard(): void {
   elText = document.getElementById("moti-text");
   elAuthor = document.getElementById("moti-author");
@@ -161,7 +181,10 @@ export function initMotivationCard(): void {
     shareMotivation();
   });
 
-  void loadMotivation();
+  // Synchronous initial render — no async overhead for first display
+  renderMotivation();
+  // Stream D2.4: use createAsyncCardLoader for all scheduled refreshes
+  // (adds visibility + lock checks, consistent with other cards)
   scheduleCard(loadMotivation, INTERVALS.MOTIVATION);
   // F7 (v7.3): Start auto-advance timer if configured
   setMotivationInterval(loadConfig().motivationInterval ?? 0);
