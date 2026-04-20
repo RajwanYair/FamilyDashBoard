@@ -1,7 +1,8 @@
 import { defineConfig, type Plugin } from "vite";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { execSync } from "node:child_process";
 
 const tempBase = join(tmpdir(), "fdb-dev");
 
@@ -22,16 +23,18 @@ const isLocalBuild = (() => {
 })();
 
 /**
- * After every production build: copy sw.js → dist/sw.js and replace
- * the __APP_VERSION__ placeholder with the real version from package.json.
+ * Stream SW.4: Compile sw.ts → dist/sw.js via scripts/build-sw.mjs.
+ * TypeScript's transpileModule strips type annotations; the script injects __APP_VERSION__.
+ * This avoids a direct dependency on esbuild (not available as a standalone package in Vite 8).
  */
 const injectSwVersion: Plugin = {
   name: "inject-sw-version",
   apply: "build",
   closeBundle() {
-    const swSrc = readFileSync(resolve(__dirname, "sw.js"), "utf-8");
-    const swOut = swSrc.replace(/__APP_VERSION__/g, appVersion);
-    writeFileSync(resolve(__dirname, "dist", "sw.js"), swOut);
+    execSync(`node scripts/build-sw.mjs ${appVersion}`, {
+      cwd: resolve(__dirname),
+      stdio: "inherit",
+    });
   },
 };
 
