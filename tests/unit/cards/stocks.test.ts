@@ -28,7 +28,7 @@ import {
   stocksCard,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
-import { cSet, cGetStale, cClear } from "@/core/cache";
+import { cSet, cGetStale, cClear, cSetAsync } from "@/core/cache";
 import type { YahooChartResponse } from "@/types/api";
 
 vi.mock("@/ui/toast", () => ({ showToast: vi.fn() }));
@@ -1621,7 +1621,7 @@ describe("Stocks — initStocksCard full integration (loadAllStocks path)", () =
   it("updateStockSummary counts gainers/losers after load", async () => {
     vi.mocked(fetchJSONWithWorker).mockResolvedValue(makeYahooResp(150, 148)); // positive
     initStocksCard();
-    for (let i = 0; i < 50; i++) await Promise.resolve();
+    for (let i = 0; i < 200; i++) await Promise.resolve(); // extra ticks for cSetAsync IDB await
     const summary = document.getElementById("stk-summary");
     expect(summary?.textContent).toContain("עולות");
   });
@@ -2205,5 +2205,17 @@ describe("Stocks — stocksGroupBySector config gate (Sprint 49)", () => {
     renderStocksShell();
     const rows = document.querySelectorAll(".stk");
     expect(rows.length).toBe(STOCK_SYMBOLS.length);
+  });
+});
+
+// ── Stream D2.3 — cSetAsync used in loadStockSingle ──────────────────────────
+
+describe("Stocks — cSetAsync (Stream D2.3)", () => {
+  it("cSetAsync is exported from cache and stores data retrievable by cGetStale", async () => {
+    const key = "stk-D23-TEST";
+    const payload = { chart: { result: [{ meta: { regularMarketPrice: 42 } }] } };
+    await cSetAsync(key, payload);
+    const stale = cGetStale(key);
+    expect(stale).not.toBeNull();
   });
 });

@@ -16,7 +16,7 @@ import {
   LS_STOCK_ALERTS,
   LS_PORTFOLIO,
 } from "../../core/constants";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import { cGet, cGetStale, cSetAsync } from "../../core/cache";
 import {
   fetchJSONWithWorker,
   runConcurrent,
@@ -588,7 +588,7 @@ async function loadStockSingle(sym: string): Promise<boolean> {
   try {
     const data = await fetchStock(sym);
     if (data.chart?.result?.[0]) {
-      cSet(key, data);
+      await cSetAsync(key, data);
       renderStock(blk, data, sym);
       delete (blk as HTMLElement).dataset["stale"];
       diagLog(`FDB-044: [stocks] ${sym} OK`);
