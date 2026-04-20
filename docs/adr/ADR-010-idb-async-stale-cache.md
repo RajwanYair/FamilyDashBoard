@@ -14,6 +14,7 @@ Card loaders used `cGet()` (memory + localStorage only) for the hot-path read, s
 was only useful as a warm-up source at startup (`hydrateFromIdb()`).
 
 Two gaps remain:
+
 1. **Read**: `cGet` skips IDB during card load, so large payloads evicted from localStorage
    (5 MB limit) were lost until the next network fetch.
 2. **Write**: `cSet` does not await the IDB write, so the app cannot confirm persistence
@@ -65,14 +66,17 @@ The **first adopter** is the currency card (`src/cards/currency/currency.ts`).
 ## Consequences
 
 **Positive**:
+
 - Large payloads survive localStorage quota errors
 - App can confirm persistence before sync-ok indicator
 - Offline recovery is more reliable (IDB survives browser restart)
 
 **Negative**:
+
 - Async card loaders add a micro-delay on first read (IDB open + get)
 - `hydrateFromIdb()` at startup remains important for sync `cGet` callers
 
 **Rejected alternatives**:
+
 - Replace localStorage entirely with IDB — rejected because config reads (LS keys)
   must remain synchronous at init time before the async IDB layer is open.

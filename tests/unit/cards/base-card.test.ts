@@ -30,6 +30,7 @@ vi.mock("@/core/cache", () => ({
   cGetAsync: vi.fn().mockResolvedValue(null),
   cGetStaleAsync: vi.fn().mockResolvedValue(null),
   cSet: vi.fn(),
+  cSetAsync: vi.fn().mockResolvedValue(undefined),
 }));
 
 import { createCardLoader, createAsyncCardLoader, scheduleCard, staleChip, createSkeleton, createEmptyState, createErrorState } from "@/cards/base-card";
@@ -336,7 +337,7 @@ describe("createAsyncCardLoader", () => {
     await load();
     expect(fetchFn).toHaveBeenCalled();
     expect(renderFn).toHaveBeenCalledWith(42);
-    expect(cacheMod.cSet).toHaveBeenCalledWith("test-card", 42);
+    expect(cacheMod.cSetAsync).toHaveBeenCalledWith("test-card", 42);
   });
 
   it("shows stale data while fetching", async () => {
