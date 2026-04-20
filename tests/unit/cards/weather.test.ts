@@ -102,67 +102,32 @@ describe("Weather — toDisplayTemp", () => {
 
 // ── deg2arrow ──
 describe("Weather — deg2arrow", () => {
-  it("0° (N) → ↓", () => {
-    expect(deg2arrow(0)).toBe("↓");
-  });
-
-  it("90° (E) → ←", () => {
-    expect(deg2arrow(90)).toBe("←");
-  });
-
-  it("180° (S) → ↑", () => {
-    expect(deg2arrow(180)).toBe("↑");
-  });
-
-  it("270° (W) → →", () => {
-    expect(deg2arrow(270)).toBe("→");
-  });
-
-  it("45° (NE) → ↙", () => {
-    expect(deg2arrow(45)).toBe("↙");
-  });
-
-  it("360° wraps to ↓", () => {
-    expect(deg2arrow(360)).toBe("↓");
+  it.each([
+    [0, "↓"],
+    [90, "←"],
+    [180, "↑"],
+    [270, "→"],
+    [45, "↙"],
+    [360, "↓"],
+  ] as const)("deg2arrow(%d) → %s", (deg, expected) => {
+    expect(deg2arrow(deg)).toBe(expected);
   });
 });
 
 // ── deg2hebrewDir ──
 describe("Weather — deg2hebrewDir", () => {
-  it("0° (N wind from N) → ד׳", () => {
-    expect(deg2hebrewDir(0)).toBe("ד׳");
-  });
-
-  it("90° (E) → מ׳", () => {
-    expect(deg2hebrewDir(90)).toBe("מ׳");
-  });
-
-  it("180° (S) → צ׳", () => {
-    expect(deg2hebrewDir(180)).toBe("צ׳");
-  });
-
-  it("270° (W) → מ׳ב׳", () => {
-    expect(deg2hebrewDir(270)).toBe("מ׳ב׳");
-  });
-
-  it("45° (NE) → ד׳-מ׳", () => {
-    expect(deg2hebrewDir(45)).toBe("ד׳-מ׳");
-  });
-
-  it("135° (SE) → צ׳-מ׳", () => {
-    expect(deg2hebrewDir(135)).toBe("צ׳-מ׳");
-  });
-
-  it("225° (SW) → צ׳-מ׳ב׳", () => {
-    expect(deg2hebrewDir(225)).toBe("צ׳-מ׳ב׳");
-  });
-
-  it("315° (NW) → ד׳-מ׳ב׳", () => {
-    expect(deg2hebrewDir(315)).toBe("ד׳-מ׳ב׳");
-  });
-
-  it("360° wraps to ד׳", () => {
-    expect(deg2hebrewDir(360)).toBe("ד׳");
+  it.each([
+    [0, "ד׳"],
+    [90, "מ׳"],
+    [180, "צ׳"],
+    [270, "מ׳ב׳"],
+    [45, "ד׳-מ׳"],
+    [135, "צ׳-מ׳"],
+    [225, "צ׳-מ׳ב׳"],
+    [315, "ד׳-מ׳ב׳"],
+    [360, "ד׳"],
+  ] as const)("deg2hebrewDir(%d) → %s", (deg, expected) => {
+    expect(deg2hebrewDir(deg)).toBe(expected);
   });
 });
 
@@ -514,36 +479,17 @@ describe("Weather — getSkyCategory", () => {
     expect(cls).toBe("sky-clear");
   });
 
-  it("returns partly cloudy for code 1", () => {
-    expect(getSkyCategory(1).cls).toBe("sky-partly");
-  });
-
-  it("returns partly cloudy for code 2", () => {
-    expect(getSkyCategory(2).cls).toBe("sky-partly");
-  });
-
-  it("returns cloudy for code 3", () => {
-    expect(getSkyCategory(3).cls).toBe("sky-cloudy");
-  });
-
-  it("returns cloudy for fog code 45", () => {
-    expect(getSkyCategory(45).cls).toBe("sky-cloudy");
-  });
-
-  it("returns rain for code 61", () => {
-    expect(getSkyCategory(61).cls).toBe("sky-rain");
-  });
-
-  it("returns snow for code 71", () => {
-    expect(getSkyCategory(71).cls).toBe("sky-snow");
-  });
-
-  it("returns shower for code 80", () => {
-    expect(getSkyCategory(80).cls).toBe("sky-shower");
-  });
-
-  it("returns storm for code 95", () => {
-    expect(getSkyCategory(95).cls).toBe("sky-storm");
+  it.each([
+    [1, "sky-partly"],
+    [2, "sky-partly"],
+    [3, "sky-cloudy"],
+    [45, "sky-cloudy"],
+    [61, "sky-rain"],
+    [71, "sky-snow"],
+    [80, "sky-shower"],
+    [95, "sky-storm"],
+  ] as const)("getSkyCategory(%d) → cls=%s", (code, expected) => {
+    expect(getSkyCategory(code).cls).toBe(expected);
   });
 });
 

@@ -118,61 +118,33 @@ describe("Hebrew Calendar — DOM element IDs exist after init", () => {
     }
   });
 
-  it("hc-candles is an HTMLElement", () => {
-    expect(document.getElementById("hc-candles")).toBeInstanceOf(HTMLElement);
-  });
+  it.each(["hc-candles", "hc-havdala"])(
+    "%s is an HTMLElement",
+    (id) => {
+      expect(document.getElementById(id)).toBeInstanceOf(HTMLElement);
+    },
+  );
 
-  it("hc-havdala is an HTMLElement", () => {
-    expect(document.getElementById("hc-havdala")).toBeInstanceOf(HTMLElement);
-  });
-
-  it("hc-holiday-row is initially hidden", () => {
-    const row = document.getElementById("hc-holiday-row") as HTMLElement;
+  it.each([
+    "hc-holiday-row",
+    "hc-special-row",
+    "hc-omer-row",
+    "hc-parasha-row",
+    "hc-daf-row",
+  ])("%s is initially hidden", (id) => {
+    const row = document.getElementById(id) as HTMLElement;
     expect(row.style.display).toBe("none");
   });
 
-  it("hc-special-row is initially hidden", () => {
-    const row = document.getElementById("hc-special-row") as HTMLElement;
-    expect(row.style.display).toBe("none");
-  });
-
-  it("hc-omer-row is initially hidden", () => {
-    const row = document.getElementById("hc-omer-row") as HTMLElement;
-    expect(row.style.display).toBe("none");
-  });
-
-  it("hc-parasha-row is initially hidden", () => {
-    const row = document.getElementById("hc-parasha-row") as HTMLElement;
-    expect(row.style.display).toBe("none");
-  });
-
-  it("hc-daf-row is initially hidden", () => {
-    const row = document.getElementById("hc-daf-row") as HTMLElement;
-    expect(row.style.display).toBe("none");
-  });
-
-  it("hc-candles is empty initially", () => {
-    expect(document.getElementById("hc-candles")?.textContent).toBe("");
-  });
-
-  it("hc-havdala is empty initially", () => {
-    expect(document.getElementById("hc-havdala")?.textContent).toBe("");
-  });
-
-  it("hc-holiday is empty initially", () => {
-    expect(document.getElementById("hc-holiday")?.textContent).toBe("");
-  });
-
-  it("hc-daf is empty initially", () => {
-    expect(document.getElementById("hc-daf")?.textContent).toBe("");
-  });
-
-  it("hc-saying is empty initially", () => {
-    expect(document.getElementById("hc-saying")?.textContent).toBe("");
-  });
-
-  it("hc-parasha is empty initially", () => {
-    expect(document.getElementById("hc-parasha")?.textContent).toBe("");
+  it.each([
+    "hc-candles",
+    "hc-havdala",
+    "hc-holiday",
+    "hc-daf",
+    "hc-saying",
+    "hc-parasha",
+  ])("%s is empty initially", (id) => {
+    expect(document.getElementById(id)?.textContent).toBe("");
   });
 });
 
@@ -218,25 +190,18 @@ describe("Hebrew Calendar — computeMoonPhase", () => {
     expect(label.length).toBeGreaterThan(1);
   });
 
-  it("returns full moon emoji on known full moon date (2025-03-14)", () => {
-    const { emoji } = computeMoonPhase(new Date("2025-03-14T12:00:00Z"));
-    expect(emoji).toBe("🌕");
-  });
-
-  it("returns new moon emoji on known new moon date (2025-03-29)", () => {
-    const { emoji } = computeMoonPhase(new Date("2025-03-29T12:00:00Z"));
-    expect(emoji).toBe("🌑");
-  });
-
-  it("first quarter emoji on day ~7 after new moon", () => {
-    // 2025-04-05: ~7 days after 2025-03-29 new moon
-    const { emoji } = computeMoonPhase(new Date("2025-04-05T12:00:00Z"));
-    expect(emoji).toBe("🌓");
+  it.each([
+    ["2025-03-14T12:00:00Z", "🌕", "full moon"],
+    ["2025-03-29T12:00:00Z", "🌑", "new moon"],
+    ["2025-04-05T12:00:00Z", "🌓", "first quarter (~7d after new moon)"],
+  ] as const)("on %s → %s (%s)", (date, expected) => {
+    const { emoji } = computeMoonPhase(new Date(date));
+    expect(emoji).toBe(expected);
   });
 
   it("different dates produce different phases", () => {
-    const p1 = computeMoonPhase(new Date("2025-03-14T00:00:00Z")); // full moon
-    const p2 = computeMoonPhase(new Date("2025-03-29T00:00:00Z")); // new moon
+    const p1 = computeMoonPhase(new Date("2025-03-14T00:00:00Z"));
+    const p2 = computeMoonPhase(new Date("2025-03-29T00:00:00Z"));
     expect(p1.emoji).not.toBe(p2.emoji);
   });
 });

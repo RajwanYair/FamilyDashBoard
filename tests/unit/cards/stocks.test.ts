@@ -63,53 +63,27 @@ import { setSync, recordSuccess, recordFailure } from "@/core/sync";
 import { isPageVisible } from "@/core/idle";
 
 describe("Stocks — fmtPrice", () => {
-  it("formats large prices with no decimals", () => {
-    expect(fmtPrice(5400, "^GSPC")).toBe("5,400");
-  });
-
-  it("formats mid-range prices with 2 decimals", () => {
-    expect(fmtPrice(195.12, "AAPL")).toBe("195.12");
-  });
-
-  it("formats small prices with 4 decimals", () => {
-    expect(fmtPrice(0.0031, "XYZ")).toBe("0.0031");
-  });
-
-  it("formats VIX with 2 decimals", () => {
-    expect(fmtPrice(18.5, "^VIX")).toBe("18.50");
+  it.each([
+    [5400, "^GSPC", "5,400"],
+    [195.12, "AAPL", "195.12"],
+    [0.0031, "XYZ", "0.0031"],
+    [18.5, "^VIX", "18.50"],
+    [1000, "SPY", "1,000"],
+    [10.0, "SPY", "10.00"],
+    [9.9999, "SPY", "9.9999"],
+    [999.99, "SPY", "999.99"],
+    [9.5, "^VIX", "9.50"],
+    [0, "XYZ", "0.0000"],
+  ] as const)("fmtPrice(%s, %s) → %s", (price, sym, expected) => {
+    expect(fmtPrice(price, sym)).toBe(expected);
   });
 
   it("formats BTC (large) without decimals", () => {
-    const result = fmtPrice(65000, "BTC-USD");
-    expect(result).toMatch(/^65,000/);
-  });
-
-  it("formats exactly 1000 with no decimals", () => {
-    expect(fmtPrice(1000, "SPY")).toBe("1,000");
-  });
-
-  it("formats exactly 10 with 2 decimals", () => {
-    expect(fmtPrice(10.0, "SPY")).toBe("10.00");
-  });
-
-  it("formats price just below 10 with 4 decimals", () => {
-    expect(fmtPrice(9.9999, "SPY")).toBe("9.9999");
-  });
-
-  it("formats price just below 1000 with 2 decimals", () => {
-    expect(fmtPrice(999.99, "SPY")).toBe("999.99");
-  });
-
-  it("formats VIX small value with 2 decimals", () => {
-    expect(fmtPrice(9.5, "^VIX")).toBe("9.50");
+    expect(fmtPrice(65000, "BTC-USD")).toMatch(/^65,000/);
   });
 
   it("returns string type", () => {
     expect(typeof fmtPrice(100, "TEST")).toBe("string");
-  });
-
-  it("formats zero as 4 decimals", () => {
-    expect(fmtPrice(0, "XYZ")).toBe("0.0000");
   });
 });
 
@@ -118,58 +92,20 @@ describe("Stocks — isMarketOpen", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns false on Saturday (day=6)", () => {
-    // Saturday 12:00 New York
-    vi.setSystemTime(new Date("2024-01-06T17:00:00Z")); // Sat 12:00 ET (UTC-5)
-    expect(isMarketOpen()).toBe(false);
-  });
-
-  it("returns false on Sunday (day=0)", () => {
-    vi.setSystemTime(new Date("2024-01-07T17:00:00Z")); // Sun 12:00 ET
-    expect(isMarketOpen()).toBe(false);
-  });
-
-  it("returns true during market hours (Monday 10:00 ET)", () => {
-    // Monday 10:00 ET = Monday 15:00 UTC
-    vi.setSystemTime(new Date("2024-01-08T15:00:00Z"));
-    expect(isMarketOpen()).toBe(true);
-  });
-
-  it("returns false before market open (Monday 06:00 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T11:00:00Z")); // 06:00 ET
-    expect(isMarketOpen()).toBe(false);
-  });
-
-  it("returns false after market close (Monday 17:00 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T22:00:00Z")); // 17:00 ET
-    expect(isMarketOpen()).toBe(false);
-  });
-
-  it("returns true at 9:30 ET (market open boundary)", () => {
-    // Monday 9:30 ET = 14:30 UTC (UTC-5 in January)
-    vi.setSystemTime(new Date("2024-01-08T14:30:00Z"));
-    expect(isMarketOpen()).toBe(true);
-  });
-
-  it("returns false at 9:29 ET (just before open)", () => {
-    vi.setSystemTime(new Date("2024-01-08T14:29:00Z")); // 9:29 ET
-    expect(isMarketOpen()).toBe(false);
-  });
-
-  it("returns true at 15:59 ET (just before close)", () => {
-    vi.setSystemTime(new Date("2024-01-08T20:59:00Z")); // 15:59 ET
-    expect(isMarketOpen()).toBe(true);
-  });
-
-  it("returns false at 16:00 ET (market close boundary)", () => {
-    vi.setSystemTime(new Date("2024-01-08T21:00:00Z")); // 16:00 ET
-    expect(isMarketOpen()).toBe(false);
-  });
-
-  it("returns true on Friday during market hours", () => {
-    // Friday 2024-01-12, 12:00 ET = 17:00 UTC
-    vi.setSystemTime(new Date("2024-01-12T17:00:00Z"));
-    expect(isMarketOpen()).toBe(true);
+  it.each([
+    ["2024-01-06T17:00:00Z", false, "Saturday"],
+    ["2024-01-07T17:00:00Z", false, "Sunday"],
+    ["2024-01-08T15:00:00Z", true, "Monday 10:00 ET"],
+    ["2024-01-08T11:00:00Z", false, "Monday 06:00 ET (before open)"],
+    ["2024-01-08T22:00:00Z", false, "Monday 17:00 ET (after close)"],
+    ["2024-01-08T14:30:00Z", true, "Monday 9:30 ET (open boundary)"],
+    ["2024-01-08T14:29:00Z", false, "Monday 9:29 ET (just before open)"],
+    ["2024-01-08T20:59:00Z", true, "Monday 15:59 ET (just before close)"],
+    ["2024-01-08T21:00:00Z", false, "Monday 16:00 ET (close boundary)"],
+    ["2024-01-12T17:00:00Z", true, "Friday 12:00 ET"],
+  ] as const)("at %s → %s (%s)", (time, expected) => {
+    vi.setSystemTime(new Date(time));
+    expect(isMarketOpen()).toBe(expected);
   });
 
   it("returns a boolean", () => {
@@ -183,49 +119,19 @@ describe("Stocks — getMarketStatus (v6.1)", () => {
     vi.useRealTimers();
   });
 
-  it("returns 'closed' on Saturday", () => {
-    vi.setSystemTime(new Date("2024-01-06T17:00:00Z")); // Sat 12:00 ET
-    expect(getMarketStatus()).toBe("closed");
-  });
-
-  it("returns 'closed' on Sunday", () => {
-    vi.setSystemTime(new Date("2024-01-07T17:00:00Z")); // Sun 12:00 ET
-    expect(getMarketStatus()).toBe("closed");
-  });
-
-  it("returns 'pre' during pre-market (Mon 6:00 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T11:00:00Z")); // Mon 6:00 ET (UTC-5)
-    expect(getMarketStatus()).toBe("pre");
-  });
-
-  it("returns 'open' during market hours (Mon 10:00 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T15:00:00Z")); // Mon 10:00 ET
-    expect(getMarketStatus()).toBe("open");
-  });
-
-  it("returns 'after' during after-hours (Mon 17:00 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T22:00:00Z")); // Mon 17:00 ET
-    expect(getMarketStatus()).toBe("after");
-  });
-
-  it("returns 'closed' after after-hours end (Mon 21:00 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-09T02:00:00Z")); // Mon 21:00 ET (next day UTC)
-    expect(getMarketStatus()).toBe("closed");
-  });
-
-  it("returns 'open' at exact open boundary (9:30 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T14:30:00Z")); // Mon 9:30 ET
-    expect(getMarketStatus()).toBe("open");
-  });
-
-  it("returns 'pre' just before open (9:29 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T14:29:00Z")); // Mon 9:29 ET
-    expect(getMarketStatus()).toBe("pre");
-  });
-
-  it("returns 'after' at exact close boundary (16:00 ET)", () => {
-    vi.setSystemTime(new Date("2024-01-08T21:00:00Z")); // Mon 16:00 ET
-    expect(getMarketStatus()).toBe("after");
+  it.each([
+    ["2024-01-06T17:00:00Z", "closed", "Saturday"],
+    ["2024-01-07T17:00:00Z", "closed", "Sunday"],
+    ["2024-01-08T11:00:00Z", "pre", "Mon 6:00 ET (pre-market)"],
+    ["2024-01-08T15:00:00Z", "open", "Mon 10:00 ET (market hours)"],
+    ["2024-01-08T22:00:00Z", "after", "Mon 17:00 ET (after-hours)"],
+    ["2024-01-09T02:00:00Z", "closed", "Mon 21:00 ET (post after-hours)"],
+    ["2024-01-08T14:30:00Z", "open", "Mon 9:30 ET (open boundary)"],
+    ["2024-01-08T14:29:00Z", "pre", "Mon 9:29 ET (just before open)"],
+    ["2024-01-08T21:00:00Z", "after", "Mon 16:00 ET (close boundary)"],
+  ] as const)("at %s → %s (%s)", (time, expected) => {
+    vi.setSystemTime(new Date(time));
+    expect(getMarketStatus()).toBe(expected);
   });
 
   it("returns a valid status string", () => {
@@ -273,28 +179,14 @@ describe("Stocks — getMinutesToNextTransition (v6.1)", () => {
     vi.useRealTimers();
   });
 
-  it("returns 0 on weekends", () => {
-    vi.setSystemTime(new Date("2024-01-06T17:00:00Z")); // Saturday
-    expect(getMinutesToNextTransition()).toBe(0);
-  });
-
-  it("returns positive number during pre-market", () => {
-    vi.setSystemTime(new Date("2024-01-08T11:00:00Z")); // Mon 6:00 ET
-    const mins = getMinutesToNextTransition();
-    expect(mins).toBeGreaterThan(0); // 3.5 hours to open
-    expect(mins).toBe(210); // 9:30 - 6:00 = 3h30m = 210 min
-  });
-
-  it("returns positive number during market hours", () => {
-    vi.setSystemTime(new Date("2024-01-08T15:00:00Z")); // Mon 10:00 ET
-    const mins = getMinutesToNextTransition();
-    expect(mins).toBe(360); // 16:00 - 10:00 = 6h = 360 min
-  });
-
-  it("returns positive number during after-hours", () => {
-    vi.setSystemTime(new Date("2024-01-08T22:00:00Z")); // Mon 17:00 ET
-    const mins = getMinutesToNextTransition();
-    expect(mins).toBe(180); // 20:00 - 17:00 = 3h = 180 min
+  it.each([
+    ["2024-01-06T17:00:00Z", 0, "weekends"],
+    ["2024-01-08T11:00:00Z", 210, "pre-market (6:00 ET → 9:30 ET)"],
+    ["2024-01-08T15:00:00Z", 360, "market hours (10:00 ET → 16:00 ET)"],
+    ["2024-01-08T22:00:00Z", 180, "after-hours (17:00 ET → 20:00 ET)"],
+  ] as const)("at %s → %d min (%s)", (time, expected) => {
+    vi.setSystemTime(new Date(time));
+    expect(getMinutesToNextTransition()).toBe(expected);
   });
 
   it("returns a non-negative number", () => {
@@ -2187,48 +2079,28 @@ describe("Stocks — updateStockSummary counts stk-down stocks (line 557 else-if
 // ── Sprint 25: formatVolume ───────────────────────────────────────────────────
 
 describe("Stocks — formatVolume", () => {
-  it("formats billions with B suffix", () => {
-    expect(formatVolume(2_500_000_000)).toBe("2.5B");
-  });
-
-  it("formats millions with M suffix", () => {
-    expect(formatVolume(1_234_567)).toBe("1.2M");
-  });
-
-  it("formats thousands with K suffix", () => {
-    expect(formatVolume(9_500)).toBe("10K");
-  });
-
-  it("returns raw number below 1000", () => {
-    expect(formatVolume(999)).toBe("999");
-  });
-
-  it("formats exactly 1 billion", () => {
-    expect(formatVolume(1_000_000_000)).toBe("1.0B");
+  it.each([
+    [2_500_000_000, "2.5B"],
+    [1_234_567, "1.2M"],
+    [9_500, "10K"],
+    [999, "999"],
+    [1_000_000_000, "1.0B"],
+  ] as const)("formatVolume(%d) → %s", (input, expected) => {
+    expect(formatVolume(input)).toBe(expected);
   });
 });
 
 // ── Sprint 25: priceInRange52w ────────────────────────────────────────────────
 
 describe("Stocks — priceInRange52w", () => {
-  it("returns 0 when price equals low", () => {
-    expect(priceInRange52w(100, 100, 200)).toBe(0);
-  });
-
-  it("returns 1 when price equals high", () => {
-    expect(priceInRange52w(200, 100, 200)).toBe(1);
-  });
-
-  it("returns 0.5 when price is midpoint", () => {
-    expect(priceInRange52w(150, 100, 200)).toBe(0.5);
-  });
-
-  it("clamps to 0 when price is below low", () => {
-    expect(priceInRange52w(50, 100, 200)).toBe(0);
-  });
-
-  it("clamps to 1 when price is above high", () => {
-    expect(priceInRange52w(300, 100, 200)).toBe(1);
+  it.each([
+    [100, 100, 200, 0],
+    [200, 100, 200, 1],
+    [150, 100, 200, 0.5],
+    [50, 100, 200, 0],
+    [300, 100, 200, 1],
+  ] as const)("priceInRange52w(%d, %d, %d) → %d", (price, low, high, expected) => {
+    expect(priceInRange52w(price, low, high)).toBe(expected);
   });
 
   it("returns null when high equals low", () => {
@@ -2239,24 +2111,14 @@ describe("Stocks — priceInRange52w", () => {
 // ── Sprint 25: sectorEmoji ────────────────────────────────────────────────────
 
 describe("Stocks — sectorEmoji", () => {
-  it("returns 🍎 for AAPL", () => {
-    expect(sectorEmoji("AAPL")).toBe("🍎");
-  });
-
-  it("returns 🏦 for JPM", () => {
-    expect(sectorEmoji("JPM")).toBe("🏦");
-  });
-
-  it("returns ₿ for BTC-USD", () => {
-    expect(sectorEmoji("BTC-USD")).toBe("₿");
-  });
-
-  it("returns 📈 fallback for unknown symbols", () => {
-    expect(sectorEmoji("UNKNOWN")).toBe("📈");
-  });
-
-  it("is case-insensitive", () => {
-    expect(sectorEmoji("aapl")).toBe("🍎");
+  it.each([
+    ["AAPL", "🍎"],
+    ["JPM", "🏦"],
+    ["BTC-USD", "₿"],
+    ["UNKNOWN", "📈"],
+    ["aapl", "🍎"],
+  ] as const)("sectorEmoji(%s) → %s", (sym, expected) => {
+    expect(sectorEmoji(sym)).toBe(expected);
   });
 });
 
