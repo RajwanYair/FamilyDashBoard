@@ -23,7 +23,12 @@ final-vitest-report.json
 test-results.json
 vitest_output.txt
 test_results.txt
+test_errors.txt
+test_summary.txt
+vitest_results.txt
 tsc_output.txt
+output.txt
+run_output.txt
 
 # Playwright
 test-results/
