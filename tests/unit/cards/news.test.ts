@@ -28,6 +28,11 @@ import {
   newsSourceDomain,
   sanitizeNewsTitle,
   newsCard,
+  filterBySearch,
+  getBookmarkKey,
+  getBookmarks,
+  isBookmarkMode,
+  _resetNewsForTest,
 } from "@/cards/news/news";
 
 describe("News — detectCategory", () => {
@@ -207,6 +212,7 @@ describe("News — initNewsCard", () => {
       <div id="news-search-input"></div>
       <div id="sync-news" class="sync-dot"></div>
     `;
+    _resetNewsForTest();
     // Use a never-resolving mock: prevents void loadNews() from completing
     // after the test ends and the real fetch is restored.
     vi.stubGlobal(
@@ -216,27 +222,22 @@ describe("News — initNewsCard", () => {
   });
 
   afterEach(() => {
+    _resetNewsForTest();
     document.body.innerHTML = "";
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
-  it("does not throw when called with DOM", async () => {
-    vi.resetModules();
-    const { initNewsCard } = await import("@/cards/news/news");
+  it("does not throw when called with DOM", () => {
     expect(() => initNewsCard()).not.toThrow();
   });
 
-  it("does not throw when called without DOM", async () => {
+  it("does not throw when called without DOM", () => {
     document.body.innerHTML = "";
-    vi.resetModules();
-    const { initNewsCard } = await import("@/cards/news/news");
     expect(() => initNewsCard()).not.toThrow();
   });
 
-  it("destroyNewsCard does not throw after init", async () => {
-    vi.resetModules();
-    const { initNewsCard, destroyNewsCard } = await import("@/cards/news/news");
+  it("destroyNewsCard does not throw after init", () => {
     initNewsCard();
     expect(() => destroyNewsCard()).not.toThrow();
   });
@@ -259,22 +260,16 @@ describe("News — newsCard CardDefinition", () => {
 // ── News Bookmarks ──
 
 describe("News — getBookmarkKey", () => {
-  it("returns first 60 chars of title", async () => {
-    vi.resetModules();
-    const { getBookmarkKey } = await import("@/cards/news/news");
+  it("returns first 60 chars of title", () => {
     const title = "א".repeat(80);
     expect(getBookmarkKey(title)).toBe("א".repeat(60));
   });
 
-  it("returns trimmed short title unchanged", async () => {
-    vi.resetModules();
-    const { getBookmarkKey } = await import("@/cards/news/news");
+  it("returns trimmed short title unchanged", () => {
     expect(getBookmarkKey("  שלום  ")).toBe("שלום");
   });
 
-  it("handles empty string", async () => {
-    vi.resetModules();
-    const { getBookmarkKey } = await import("@/cards/news/news");
+  it("handles empty string", () => {
     expect(getBookmarkKey("")).toBe("");
   });
 });
@@ -283,31 +278,28 @@ describe("News — toggleBookmark", () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = `<div id="rss-scroll"></div><span id="news-bkm-pill"></span>`;
+    _resetNewsForTest();
+    cacheDom();
   });
 
   afterEach(() => {
+    _resetNewsForTest();
     document.body.innerHTML = "";
     localStorage.clear();
   });
 
-  it("adds a key to bookmarks on first toggle", async () => {
-    vi.resetModules();
-    const { toggleBookmark, getBookmarks } = await import("@/cards/news/news");
+  it("adds a key to bookmarks on first toggle", () => {
     toggleBookmark("test-key");
     expect(getBookmarks().has("test-key")).toBe(true);
   });
 
-  it("removes a key from bookmarks on second toggle", async () => {
-    vi.resetModules();
-    const { toggleBookmark, getBookmarks } = await import("@/cards/news/news");
+  it("removes a key from bookmarks on second toggle", () => {
     toggleBookmark("test-key");
     toggleBookmark("test-key");
     expect(getBookmarks().has("test-key")).toBe(false);
   });
 
-  it("persists bookmarks to localStorage", async () => {
-    vi.resetModules();
-    const { toggleBookmark } = await import("@/cards/news/news");
+  it("persists bookmarks to localStorage", () => {
     toggleBookmark("saved-key");
     const stored = JSON.parse(
       localStorage.getItem("dash_bookmarks") ?? "[]",
@@ -320,57 +312,47 @@ describe("News — toggleBookmarkMode", () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = `<div id="rss-scroll"></div><span id="news-bkm-pill"></span>`;
+    _resetNewsForTest();
+    cacheDom();
   });
 
   afterEach(() => {
+    _resetNewsForTest();
     document.body.innerHTML = "";
     localStorage.clear();
   });
 
-  it("starts in normal mode (not bookmark mode)", async () => {
-    vi.resetModules();
-    const { isBookmarkMode } = await import("@/cards/news/news");
+  it("starts in normal mode (not bookmark mode)", () => {
     expect(isBookmarkMode()).toBe(false);
   });
 
-  it("toggleBookmarkMode flips the mode to true", async () => {
-    vi.resetModules();
-    const { toggleBookmarkMode, isBookmarkMode } =
-      await import("@/cards/news/news");
+  it("toggleBookmarkMode flips the mode to true", () => {
     toggleBookmarkMode();
     expect(isBookmarkMode()).toBe(true);
   });
 
-  it("toggleBookmarkMode flips back to false on second call", async () => {
-    vi.resetModules();
-    const { toggleBookmarkMode, isBookmarkMode } =
-      await import("@/cards/news/news");
+  it("toggleBookmarkMode flips back to false on second call", () => {
     toggleBookmarkMode();
     toggleBookmarkMode();
     expect(isBookmarkMode()).toBe(false);
   });
 
-  it("shows #news-bkm-pill when bookmark mode enabled", async () => {
-    vi.resetModules();
-    const { toggleBookmarkMode } = await import("@/cards/news/news");
+  it("shows #news-bkm-pill when bookmark mode enabled", () => {
     toggleBookmarkMode();
     const pill = document.getElementById("news-bkm-pill") as HTMLElement;
     expect(pill.hidden).toBe(false);
   });
 
-  it("hides #news-bkm-pill when bookmark mode disabled", async () => {
-    vi.resetModules();
-    const { toggleBookmarkMode } = await import("@/cards/news/news");
+  it("hides #news-bkm-pill when bookmark mode disabled", () => {
     toggleBookmarkMode(); // enable
     toggleBookmarkMode(); // disable
     const pill = document.getElementById("news-bkm-pill") as HTMLElement;
     expect(pill.hidden).toBe(true);
   });
 
-  it("does not throw when #news-bkm-pill is absent", async () => {
+  it("does not throw when #news-bkm-pill is absent", () => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
-    vi.resetModules();
-    const { toggleBookmarkMode } = await import("@/cards/news/news");
+    cacheDom();
     expect(() => toggleBookmarkMode()).not.toThrow();
   });
 });
@@ -379,51 +361,48 @@ describe("News — toggleBookmarkMode", () => {
 
 describe("News — applyNewsFontSize", () => {
   afterEach(() => {
+    _resetNewsForTest();
     document.body.innerHTML = "";
     localStorage.clear();
-    vi.resetModules();
   });
 
-  it("does not throw when LS key is absent", async () => {
+  it("does not throw when LS key is absent", () => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
-    const { applyNewsFontSize } = await import("@/cards/news/news");
+    cacheDom();
     expect(() => applyNewsFontSize()).not.toThrow();
   });
 
-  it("applies configured font size to #rss-scroll", async () => {
+  it("applies configured font size to #rss-scroll", () => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    _resetNewsForTest();
     localStorage.setItem("dash_v2_news_fontsize", "120");
-    const { initNewsCard } = await import("@/cards/news/news");
     initNewsCard();
     const el = document.getElementById("rss-scroll") as HTMLElement;
     expect(el.style.fontSize).toBe("120%");
   });
 
-  it("does not apply when value is out of range (< 50)", async () => {
+  it("does not apply when value is out of range (< 50)", () => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    cacheDom();
     localStorage.setItem("dash_v2_news_fontsize", "10");
-    vi.resetModules();
-    const { applyNewsFontSize } = await import("@/cards/news/news");
     applyNewsFontSize();
     const el = document.getElementById("rss-scroll") as HTMLElement;
     expect(el.style.fontSize).toBe("");
   });
 
-  it("does not apply when value is out of range (> 200)", async () => {
+  it("does not apply when value is out of range (> 200)", () => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    cacheDom();
     localStorage.setItem("dash_v2_news_fontsize", "300");
-    vi.resetModules();
-    const { applyNewsFontSize } = await import("@/cards/news/news");
     applyNewsFontSize();
     const el = document.getElementById("rss-scroll") as HTMLElement;
     expect(el.style.fontSize).toBe("");
   });
 
-  it("does not throw when #rss-scroll is absent", async () => {
+  it("does not throw when #rss-scroll is absent", () => {
     document.body.innerHTML = "<div></div>";
+    cacheDom();
     localStorage.setItem("dash_v2_news_fontsize", "115");
-    vi.resetModules();
-    const { applyNewsFontSize } = await import("@/cards/news/news");
     expect(() => applyNewsFontSize()).not.toThrow();
   });
 });
@@ -431,9 +410,7 @@ describe("News — applyNewsFontSize", () => {
 // ── filterBySearch ──
 
 describe("News — filterBySearch", () => {
-  it("returns all items when query is empty", async () => {
-    vi.resetModules();
-    const { filterBySearch } = await import("@/cards/news/news");
+  it("returns all items when query is empty", () => {
     const items = [
       {
         title: "כותרת ראשונה",
@@ -453,9 +430,7 @@ describe("News — filterBySearch", () => {
     expect(filterBySearch(items, "")).toHaveLength(2);
   });
 
-  it("filters by title match", async () => {
-    vi.resetModules();
-    const { filterBySearch } = await import("@/cards/news/news");
+  it("filters by title match", () => {
     const items = [
       {
         title: "ביטחון בצפון",
@@ -477,9 +452,7 @@ describe("News — filterBySearch", () => {
     expect(result[0]!.title).toBe("ביטחון בצפון");
   });
 
-  it("filters by source match (case-insensitive)", async () => {
-    vi.resetModules();
-    const { filterBySearch } = await import("@/cards/news/news");
+  it("filters by source match (case-insensitive)", () => {
     const items = [
       {
         title: "כותרת",
@@ -501,9 +474,7 @@ describe("News — filterBySearch", () => {
     expect(result[0]!.source).toBe("Ynet");
   });
 
-  it("returns empty array when no items match", async () => {
-    vi.resetModules();
-    const { filterBySearch } = await import("@/cards/news/news");
+  it("returns empty array when no items match", () => {
     const items = [
       {
         title: "כותרת",
@@ -516,9 +487,7 @@ describe("News — filterBySearch", () => {
     expect(filterBySearch(items, "nomatch123")).toHaveLength(0);
   });
 
-  it("trims whitespace-only query and returns all items", async () => {
-    vi.resetModules();
-    const { filterBySearch } = await import("@/cards/news/news");
+  it("trims whitespace-only query and returns all items", () => {
     const items = [
       {
         title: "כותרת",
@@ -536,37 +505,32 @@ describe("News — filterBySearch", () => {
 
 describe("News — visited articles", () => {
   beforeEach(() => {
+    document.body.innerHTML = `<div id="rss-scroll"></div>`;
+    sessionStorage.clear();
+    _resetNewsForTest();
+    cacheDom();
+  });
+  afterEach(() => {
+    _resetNewsForTest();
     document.body.innerHTML = "";
     sessionStorage.clear();
   });
-  afterEach(() => {
-    sessionStorage.clear();
-    vi.resetModules();
-  });
 
-  it("isVisited returns false before marking", async () => {
-    vi.resetModules();
-    const { isVisited } = await import("@/cards/news/news");
+  it("isVisited returns false before marking", () => {
     expect(isVisited("some-key")).toBe(false);
   });
 
-  it("markVisited sets isVisited to true", async () => {
-    vi.resetModules();
-    const { markVisited, isVisited } = await import("@/cards/news/news");
+  it("markVisited sets isVisited to true", () => {
     markVisited("test-article-key");
     expect(isVisited("test-article-key")).toBe(true);
   });
 
-  it("markVisited does not affect other keys", async () => {
-    vi.resetModules();
-    const { markVisited, isVisited } = await import("@/cards/news/news");
+  it("markVisited does not affect other keys", () => {
     markVisited("key-a");
     expect(isVisited("key-b")).toBe(false);
   });
 
-  it("markVisited persists to sessionStorage", async () => {
-    vi.resetModules();
-    const { markVisited } = await import("@/cards/news/news");
+  it("markVisited persists to sessionStorage", () => {
     markVisited("persistent-key");
     const stored = JSON.parse(
       sessionStorage.getItem("dash_visited_news") ?? "[]",
@@ -574,9 +538,7 @@ describe("News — visited articles", () => {
     expect(stored).toContain("persistent-key");
   });
 
-  it("multiple markVisited calls accumulate", async () => {
-    vi.resetModules();
-    const { markVisited, isVisited } = await import("@/cards/news/news");
+  it("multiple markVisited calls accumulate", () => {
     markVisited("k1");
     markVisited("k2");
     expect(isVisited("k1")).toBe(true);
@@ -588,14 +550,14 @@ describe("News — visited articles", () => {
 
 describe("News — news count badge (#news-count)", () => {
   beforeEach(() => {
-    vi.resetModules();
+    _resetNewsForTest();
     sessionStorage.clear();
   });
 
   afterEach(() => {
+    _resetNewsForTest();
     document.body.innerHTML = "";
     sessionStorage.clear();
-    vi.resetModules();
   });
 
   it("badge is empty before any news is loaded", () => {
@@ -604,7 +566,7 @@ describe("News — news count badge (#news-count)", () => {
     expect(badge.textContent).toBe("");
   });
 
-  it("initNewsCard does not throw with count badge in DOM", async () => {
+  it("initNewsCard does not throw with count badge in DOM", () => {
     document.body.innerHTML = `
       <div id="rss-scroll"></div>
       <div id="news-ticker"></div>
@@ -613,8 +575,7 @@ describe("News — news count badge (#news-count)", () => {
       <button id="news-search-clear"></button>
       <span id="news-count"></span>
     `;
-    vi.resetModules();
-    const { initNewsCard } = await import("@/cards/news/news");
+    cacheDom();
     expect(() => initNewsCard()).not.toThrow();
   });
 });
