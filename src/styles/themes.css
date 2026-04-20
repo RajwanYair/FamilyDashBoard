@@ -16,6 +16,10 @@ body.theme-black {
     --bg-gradient-1: rgba(212,160,83,0.03);
     --bg-gradient-2: rgba(106,191,123,0.02);
     --bg-gradient-3: rgba(184,154,223,0.02);
+    --text-muted: #7a6e60;
+    --positive: #6abf7b;
+    --negative: #e07070;
+    --warning: #f0c040;
 }
 
 /* ── Theme: Ocean Blue ── */
@@ -36,6 +40,9 @@ body.theme-blue {
     --bg-gradient-2: rgba(76,201,224,0.04);
     --bg-gradient-3: rgba(136,152,216,0.04);
     --card-border: 1px solid rgba(91,168,212,0.15);
+    --positive: #58c47a;
+    --negative: #e07070;
+    --warning: #e8c040;
 }
 
 /* ── Theme: Forest Green ── */
@@ -57,6 +64,9 @@ body.theme-matrix {
     --bg-gradient-1: rgba(106,191,123,0.06);
     --bg-gradient-2: rgba(92,191,175,0.04);
     --bg-gradient-3: rgba(152,184,160,0.03);
+    --positive: #6abf7b;
+    --negative: #e07070;
+    --warning: #c8c040;
 }
 
 /* ── Theme: Amber Glow ── */
@@ -78,6 +88,9 @@ body.theme-amber {
     --bg-gradient-1: rgba(232,160,64,0.06);
     --bg-gradient-2: rgba(220,140,50,0.04);
     --bg-gradient-3: rgba(200,160,80,0.03);
+    --positive: #70bf80;
+    --negative: #e07060;
+    --warning: #e8b030;
 }
 
 /* ── Theme: Purple Dusk ── */
@@ -99,6 +112,9 @@ body.theme-purple {
     --bg-gradient-1: rgba(184,154,223,0.06);
     --bg-gradient-2: rgba(160,120,200,0.04);
     --bg-gradient-3: rgba(200,100,160,0.03);
+    --positive: #70bf80;
+    --negative: #e07070;
+    --warning: #d4c040;
 }
 
 /* ── Theme: Rose Night ── */
@@ -117,6 +133,7 @@ body.theme-rose {
     --purple: #d08898;
     --positive: #7abf8a;
     --negative: #e08080;
+    --warning: #f0b840;
     --card-border: 1px solid rgba(212,112,144,0.15);
     --card-shadow: 0 4px 20px rgba(0,0,0,0.48);
     --bg-gradient-1: rgba(212,112,144,0.06);
