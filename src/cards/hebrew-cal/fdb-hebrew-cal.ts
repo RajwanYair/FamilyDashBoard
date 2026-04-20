@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8.4.0 — Hebrew Calendar Card (FdbCard subclass)
+ * FamilyDashBoard v8.5.0 — Hebrew Calendar Card (FdbCard subclass)
  *
  * Stream B2: FdbCard migration for the hebrew-cal card.
  * Network-backed: Hebcal API for zmanim, holidays, and parasha.

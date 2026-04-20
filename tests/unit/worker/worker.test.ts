@@ -399,6 +399,19 @@ describe("Worker response helpers — workerEnvelope", () => {
 
 import { handleErrors } from "../../../worker/src/routes/errors";
 import { handleCurrency } from "../../../worker/src/routes/data";
+import type { Env } from "../../../worker/src/index";
+
+/** Minimal mock Env with a no-op KV namespace for unit tests (Stream W.2). */
+const mockEnv: Env = {
+  ENVIRONMENT: "test",
+  CACHE_KV: {
+    get: async () => null,
+    put: async () => undefined,
+    delete: async () => undefined,
+    list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
+    getWithMetadata: async () => ({ value: null, metadata: null }),
+  } as unknown as KVNamespace,
+};
 
 describe("Worker — handleErrors route", () => {
   function post(body: unknown): Request {
@@ -504,7 +517,7 @@ describe("Worker — handleCurrency route", () => {
       }),
     );
 
-    const res = await handleCurrency();
+    const res = await handleCurrency(mockEnv);
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://open.er-api.com/v6/latest/ILS",
@@ -523,7 +536,7 @@ describe("Worker — handleCurrency route", () => {
         }),
       );
 
-    const res = await handleCurrency();
+    const res = await handleCurrency(mockEnv);
 
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,

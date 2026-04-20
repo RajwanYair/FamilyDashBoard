@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
 > Roadmap refresh date: 2026-07-10
-> Current shipped baseline: v8.4.0
-> Last committed baseline: v8.4.0 — 3122 tests / 94 suites / 0 failures
+> Current shipped baseline: v8.5.0
+> Last committed baseline: v8.5.0 — 3129 tests / 94 suites / 0 failures
 
 This document is the single decision log and forward plan for FamilyDashBoard. It rethinks every major architectural, tooling, and product decision from first principles — including decisions that previously looked clean — and sets an explicit direction for reaching best-in-class quality as an always-on family information display.
 
@@ -186,9 +186,10 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 | v8.2.0 | Stream G.1 `vi.resetModules()` elimination (bg-images, motivation, news, currency, fetch, config-panel — 80+ calls removed); `_resetForTest()` pattern established; SVG architecture diagrams (ci-cd, cache-layers); quality-reviewer modernized (context table, failure playbook); CONTRIBUTING.md PowerShell table; workflows README permissions matrix + secrets inventory + concurrency policy |
 | v8.3.0 | Stream G.2 Playwright E2E config + smoke suite; Stream SW per-origin API cache TTL (CACHE_TTL_BY_ORIGIN); Stream I dashboard-designer agent — error playbook + verification; Stream W worker WorkerResponse<T> envelope (workerEnvelope helper + 4 tests); Stream H README Quick Start + Cloudflare Pages preview deploy workflow; Stream B2 FdbCountdown FdbCard migration (fdb-countdown.ts + 3 tests); card-lifecycle.svg + theme-cascade.svg docs; CHANGELOG/badge fixes for v8.2.0 |
 | v8.4.0 | Stream B2 COMPLETE: FdbCard migration for system-info, currency, hebrew-cal, calendar, alerts (11/11) + destroy lifecycle; Stream G.2 critical-flow Playwright tests + Lighthouse CI; Stream W Zod upstream validation in worker (schemas.ts + 19 tests); Stream D2 cSetAsync + createAsyncCardLoader + ADR-010; Stream J GitHub Actions hardening (per-job permissions, concurrency) + 2 Vitest breakpoint debug configs |
+| v8.5.0 | Stream D2.2 news+weather to createAsyncCardLoader; Stream I-0.2 worker tsconfig base extension; Stream G.2.3 visual regression baselines (18 screenshots, 6 themes) + Lighthouse 95/90; Stream J.2 Playwright debug config + VR tasks; Stream SW.1 auto-precache manifest + postbuild hook; Stream W.2 worker KV stale fallback; Stream E.1 tasksConfigSchema (all 11 cards); Stream F.1 card shell anatomy CSS; Stream I.2 3 new Copilot prompt files |
 
-**Completed Streams:** A (Truth) · B (Card Architecture) · **B2 ✅** (11/11 FdbCard migrations) · C (Data Contracts) · D (Observability) · **G.1 ✅** (3080 tests / 88 suites) · **G.2 ✅** (Playwright E2E + Lighthouse) · **SW ✅** (per-origin TTL) · **W ✅** (worker Zod validation) · **H ✅** (Quick Start + preview deploy) · **D2 ✅** (IDB-async stale cache)
-**Partially Complete:** I (api-integrator ✅, quality-reviewer ✅, dashboard-designer ✅) · J (package.json URLs ✅, SLSA ✅, ADRs ✅, tasks ✅, docs ✅, Actions hardening ✅)
+**Completed Streams:** A (Truth) · B (Card Architecture) · **B2 ✅** (11/11 FdbCard migrations) · C (Data Contracts) · D (Observability) · **G.1 ✅** (3080 tests / 88 suites) · **G.2 ✅** (Playwright E2E + Lighthouse) · **SW ✅** (per-origin TTL) · **SW.1 ✅** (auto-precache manifest) · **W ✅** (worker Zod validation) · **W.2 ✅** (KV stale fallback) · **H ✅** (Quick Start + preview deploy) · **D2 ✅** (IDB-async stale cache) · **D2.2 ✅** (news+weather createAsyncCardLoader) · **E.1 ✅** (all 11 cards configSchema) · **F.1 ✅** (card shell anatomy CSS) · **I.2 ✅** (3 Copilot prompts)
+**Partially Complete:** I (api-integrator ✅, quality-reviewer ✅, dashboard-designer ✅, I-0.2 ✅, I-0.3 ✅) · J (package.json URLs ✅, SLSA ✅, ADRs ✅, tasks ✅, docs ✅, Actions hardening ✅, J.2 ✅)
 
 ---
 

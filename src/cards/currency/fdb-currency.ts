@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8.4.0 — Currency Card (FdbCard subclass)
+ * FamilyDashBoard v8.5.0 — Currency Card (FdbCard subclass)
  *
  * Stream B2: FdbCard migration for the currency card.
  * Network-backed: exchange rates + gold/silver from ER-API.

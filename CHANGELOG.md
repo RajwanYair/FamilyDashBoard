@@ -5,6 +5,57 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.5.0] — 2026-07-10
+
+> **3129 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Stream D2.2 — createAsyncCardLoader Adoption
+
+- **`src/cards/news/news.ts`** and **`src/cards/weather/weather.ts`**: migrated to `createAsyncCardLoader` — unified loader lifecycle with `_pageVisible` guard, `safeLoad`, and `cSetAsync` writes
+
+### Stream I-0.2 — Worker tsconfig Base Extension
+
+- **`worker/tsconfig.json`**: now extends `../../tooling/tsconfig/base-node.json`; overrides `module: ES2022`, `moduleResolution: bundler`, `lib: ["ES2022"]`, `types: ["@cloudflare/workers-types"]`
+
+### Stream G.2.3 — Visual Regression Baselines + Lighthouse Tightening
+
+- **`tests/e2e/visual-regression.spec.ts`**: 18 screenshot tests (6 themes × 3 screen modes) + 6 theme-class assertions; `maxDiffPixelRatio: 0.02`
+- **`.lighthouserc.json`**: accessibility 0.85 → 0.95 (error), performance 0.80 → 0.90 (error), best-practices 0.85 → 0.90 (warn)
+
+### Stream J.2 — Playwright Debug Config
+
+- **`.vscode/launch.json`**: 7th debug config `🎭 Playwright: Debug E2E Tests` (PWDEBUG=1)
+- **`.vscode/tasks.json`**: 3 new Playwright tasks (E2E, Visual Regression, Update Snapshots)
+
+### Stream SW.1 — Auto-Precache Manifest
+
+- **`scripts/generate-precache.mjs`**: post-build script that reads `dist/assets/` hashed files + static shell URLs → writes `dist/sw-precache-manifest.json`
+- **`package.json`**: `"postbuild"` hook runs `generate-precache.mjs`
+- **`sw.js`**: version bump to v8.5.0; `_loadPrecacheManifest()` fetches JSON manifest at install time instead of hardcoded URL list
+
+### Stream W.2 — Worker KV Stale Fallback
+
+- **`worker/src/routes/data.ts`**: `handleWeather(url, env)` and `handleCurrency(env)` — KV stale read/write with `kvGetStale` / `kvPut` helpers; on upstream failure returns cached data with `stale: true`
+- **`worker/src/index.ts`**: `Env` interface adds `CACHE_KV: KVNamespace`; route calls pass `env`
+- **`worker/wrangler.toml`**: `[[kv_namespaces]]` binding `CACHE_KV`
+- **`tests/unit/worker/worker.test.ts`**: `mockEnv` with stub `CACHE_KV` — all 84 worker tests pass
+
+### Stream E.1 — Card Config Schemas
+
+- **`src/cards/tasks/tasks.ts`**: `tasksConfigSchema: CardConfigField[]` — 4 fields (`tasksResetHour`, `tasksShowDone`, `tasksShowCategories`, `dash_chores`); all 11 cards now have `configSchema`
+
+### Stream F.1 — Card Shell Anatomy CSS
+
+- **`src/styles/components.css`**: 141 lines of BEM anatomy classes: `.card__header`, `.card__body`, `.card__footer`, `.card__title`, `.card__meta`, `.card__badge` (+ `--positive`/`--negative`/`--neutral` modifiers), `.card__grid`, `.card__tile`, `.card__tile-label`, `.card__tile-value`
+
+### Stream I.2 — Copilot Prompt Files
+
+- **`.github/prompts/worker-debug.prompt.md`**: KV/Zod/envelope debugging workflow
+- **`.github/prompts/card-contract-audit.prompt.md`**: 11-card contract audit table template
+- **`.github/prompts/version-bump.prompt.md`**: consistent version bump checklist
+
+---
+
 ## [8.4.0] — 2026-04-20
 
 > **3122 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

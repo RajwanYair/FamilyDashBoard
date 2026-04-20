@@ -1,4 +1,4 @@
-# Card Architecture Audit — FamilyDashBoard v8.4.0
+# Card Architecture Audit — FamilyDashBoard v8.5.0
 
 > **Date**: 2026-04-20
 > **Scope**: All 11 registered cards in `src/cards/`
