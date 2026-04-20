@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v8.2.0
+/* FamilyDashBoard ServiceWorker — v8.3.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * See CHANGELOG.md for full version history. */
@@ -156,7 +156,9 @@ self.addEventListener("fetch", (event) => {
                 return h;
               })(),
             });
-            caches.open(CACHE_NAME_API).then((c) => c.put(event.request, stamped));
+            caches
+              .open(CACHE_NAME_API)
+              .then((c) => c.put(event.request, stamped));
           }
           return response;
         })
@@ -168,7 +170,9 @@ self.addEventListener("fetch", (event) => {
             .then((cached) => {
               // Stream SW: honour per-origin TTL — evict stale cached responses
               if (cached && !_isFresh(cached, url.hostname)) {
-                caches.open(CACHE_NAME_API).then((c) => c.delete(event.request));
+                caches
+                  .open(CACHE_NAME_API)
+                  .then((c) => c.delete(event.request));
                 return Response.error();
               }
               return cached || Response.error();

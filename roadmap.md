@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
 > Roadmap refresh date: 2026-07-10
-> Current shipped baseline: v8.2.0
-> Last committed baseline: v8.2.0 — 3080 tests / 88 suites / 0 failures
+> Current shipped baseline: v8.3.0
+> Last committed baseline: v8.3.0 — 3087 tests / 89 suites / 0 failures
 
 This document is the single decision log and forward plan for FamilyDashBoard. It rethinks every major architectural, tooling, and product decision from first principles — including decisions that previously looked clean — and sets an explicit direction for reaching best-in-class quality as an always-on family information display.
 
@@ -184,9 +184,10 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 | v8.0.0 | Production readiness: test consolidation (it.each), dead file cleanup, config modernization, hardened .gitignore, full version bump across 15 files |
 | v8.1.0 | Stream G.1 shared helpers (tests/helpers/); CI hardening (SW check + SLSA); ADR-007/008/009; docs/adding-a-card.md + deployment.md; release-report gate checks; api-integrator agent modernization; useFakeTimers audit (all 50+ legitimate); .vscode Vitest tasks + extensions |
 | v8.2.0 | Stream G.1 `vi.resetModules()` elimination (bg-images, motivation, news, currency, fetch, config-panel — 80+ calls removed); `_resetForTest()` pattern established; SVG architecture diagrams (ci-cd, cache-layers); quality-reviewer modernized (context table, failure playbook); CONTRIBUTING.md PowerShell table; workflows README permissions matrix + secrets inventory + concurrency policy |
+| v8.3.0 | Stream G.2 Playwright E2E config + smoke suite; Stream SW per-origin API cache TTL (CACHE_TTL_BY_ORIGIN); Stream I dashboard-designer agent — error playbook + verification; Stream W worker WorkerResponse<T> envelope (workerEnvelope helper + 4 tests); Stream H README Quick Start + Cloudflare Pages preview deploy workflow; Stream B2 FdbCountdown FdbCard migration (fdb-countdown.ts + 3 tests); card-lifecycle.svg + theme-cascade.svg docs; CHANGELOG/badge fixes for v8.2.0 |
 
-**Completed Streams:** A (Truth) · B (Card Architecture) · C (Data Contracts) · D (Observability) · **G.1 ✅** (3080 tests / 88 suites · ≤11 remaining `vi.resetModules()` · 62 s → under target)
-**Partially Complete:** I (api-integrator ✅, quality-reviewer ✅) · J (package.json URLs ✅, SLSA ✅, ADRs ✅, tasks ✅, docs ✅)
+**Completed Streams:** A (Truth) · B (Card Architecture) · C (Data Contracts) · D (Observability) · **G.1 ✅** (3080 tests / 88 suites) · **G.2 ✅** (Playwright E2E) · **SW ✅** (per-origin TTL) · **W ✅** (worker envelope) · **H ✅** (Quick Start + preview deploy)
+**Partially Complete:** I (api-integrator ✅, quality-reviewer ✅, dashboard-designer ✅) · J (package.json URLs ✅, SLSA ✅, ADRs ✅, tasks ✅, docs ✅) · B2 (countdown ✅, 5 remaining)
 
 ---
 

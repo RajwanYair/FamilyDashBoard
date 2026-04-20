@@ -5,6 +5,49 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.3.0] — 2026-04-20
+
+> **3087 tests / 89 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Stream G.2 — Playwright E2E Setup
+
+- **`playwright.config.ts`**: Chromium-only, 1920×1080, `he-IL` locale, dev server on port 5173, retries=2 in CI
+- **`tests/e2e/smoke.spec.ts`**: 7 smoke tests — page title, RTL dir attribute, card headers visible, main grid present, load <5 s, meta/manifest presence, T-key theme cycling
+- **`package.json`**: added `test:e2e` and `test:e2e:ui` scripts
+- **`.gitignore`**: added `test-results/`, `playwright-report/`, `blob-report/`, `.playwright/`
+
+### Stream SW — Per-Origin API Cache TTL
+
+- **`src/core/sw-constants.ts`**: added `CACHE_TTL_BY_ORIGIN` typed record mapping API hostnames → TTL seconds; `CACHE_TTL_DEFAULT_S = 3600`
+- **`sw.js`**: added `_ttlForOrigin()` helper + `_isFresh()` check; fetch handler now stamps `x-sw-cached-at` header and evicts stale cached responses by origin TTL (5 min for stocks/crypto, 30 min for weather/FX, 6 h for Hebcal/Sefaria)
+
+### Stream I — Agent Modernization
+
+- **`.github/agents/dashboard-designer.agent.md`**: added Error Playbook table (8 entries), expanded context file references (tokens/themes/components/layout/animations/a11y), added edit tools (`replace_string_in_file`, `multi_replace_string_in_file`, `create_file`), second handoff to `quality-reviewer`, three-step Verification section with dom-contract and theme-audit coverage
+
+### Stream W — Worker Response Envelope
+
+- **`worker/src/utils/response.ts`**: added `workerEnvelope<T>()` helper that wraps parsed upstream data in `WorkerResponse<T>` envelope (`data`, `stale`, `timestamp`, `provider`) with `Cache-Control` and CORS headers
+- **`worker/src/routes/data.ts`**: weather, currency, hebcal, and hebcal-holidays routes now return `workerEnvelope()` instead of raw `proxyResponse()`; upstream failures fall back to `proxyResponse()` for SW stale-cache compatibility
+- **4 new tests** in `tests/unit/worker/worker.test.ts` — `workerEnvelope` describe block (69 total)
+
+### Stream H — Developer Experience
+
+- **`README.md`**: added "Quick Start — Download and Run" section with 4-step no-install instructions (download dist.zip → open index.html); development setup in dedicated `### 🛠️ Development Setup` subsection
+- **`.github/workflows/preview-deploy.yml`**: Cloudflare Pages preview deploy on PR open/sync/reopen; posts preview URL comment (upserts on re-push); uses `CF_API_TOKEN` + `CF_ACCOUNT_ID` secrets; `permissions: pull-requests:write, contents:read`
+
+### Stream B2 — Card Architecture Migration
+
+- **`src/cards/countdown/fdb-countdown.ts`**: `FdbCountdownCard extends FdbCard` — delegates to `initCountdownCard()`/`destroyCountdownCard()` + 1-second tick interval; registered as `fdb-countdown` custom element
+- **`docs/card-architecture-audit.md`**: updated to v8.3.0; countdown marked ✅ Migrated; counter updated to **6 / 11 migrated**
+- **3 new tests** in `tests/unit/cards/fdb-countdown.test.ts`
+
+### Documentation & Assets
+
+- **`.github/assets/card-lifecycle.svg`**: new — card state machine (unregistered → connecting → connected → refreshing → disconnected) with error/stale branches
+- **`.github/assets/theme-cascade.svg`**: new — CSS `@layer` cascade + 6 theme override illustration
+- All 10 SVG assets bumped to v8.3.0 version labels
+
 ## [8.2.0] — 2026-04-20
 
 > **3080 tests / 88 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint (commit `b88d7e8`)

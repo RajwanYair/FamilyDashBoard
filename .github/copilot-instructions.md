@@ -1,4 +1,4 @@
-# GitHub Copilot Instructions — FamilyDashBoard v8.2.0
+# GitHub Copilot Instructions — FamilyDashBoard v8.3.0
 
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · Vite 8 + TS 5.9 + Vitest 4
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
