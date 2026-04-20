@@ -7,12 +7,20 @@ tools:
   - grep_search
   - semantic_search
   - get_errors
+  - replace_string_in_file
+  - multi_replace_string_in_file
+  - create_file
   - run_in_terminal
+  - file_search
 user-invocable: true
 handoffs:
   - label: Polish Card UX
     agent: dashboard-designer
     prompt: Refine the card presentation, density, hierarchy, and RTL readability for the API-backed feature above.
+    send: false
+  - label: Review Quality
+    agent: quality-reviewer
+    prompt: Review the new or changed API integration for test coverage, lint compliance, and security issues.
     send: false
 ---
 
@@ -40,11 +48,24 @@ Use this agent when the task is primarily about one of the following:
 
 ## Default Workflow
 
-1. Read the source module, adapter, and tests before proposing changes.
-2. Identify whether the path should be worker-first, proxy-first, or direct-only.
-3. Confirm cache key, TTL, sync indicator ID, diagnostics behavior, and visibility guard.
+1. Read the source module (`src/cards/<name>/index.ts`), adapter (`src/core/provider-adapter.ts`), and existing tests before proposing changes.
+2. Identify whether the path should be worker-first (`fetchJSONWithWorker`), proxy-first, or direct-only.
+3. Confirm cache key, TTL, sync indicator ID, diagnostics behavior, and `_pageVisible` guard.
 4. Make the smallest change that fixes the real failure mode or completes the integration.
-5. Validate with targeted tests first, then wider checks only when needed.
+5. Validate with targeted tests first (`npx vitest run tests/unit/cards/<name>/`), then run full suite only when needed.
+6. Commit after every complete integration or fix with a descriptive message.
+
+## Common Failure Patterns
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Card shows stale data forever | `cGet` returning non-null too long — TTL too high | Lower CACHE_TTL or call `cSet` with fresh data |
+| Network error not shown in diag | Missing `diagLog()` in catch block | Add `diagLog(\`${CARD_ID}: error\`, err)` |
+| Sync dot stuck on loading | `setSync(id, 'ok')` not called on success | Add call after render |
+| CORS error in console | Direct fetch bypasses proxy chain | Wrap with `fetchWithTimeout` via `PROXIES` |
+| Worker fetch returns stale | Worker cache TTL too high or key mismatch | Check Worker route cache headers |
+| Card renders on hidden tab | Missing `if (!_pageVisible) return;` guard | Add guard at top of loader |
+| `cGet` returns `undefined` instead of `null` | Wrong null check: `!== undefined` | Change to `!== null` (rule 22) |
 
 ## Architecture Rules
 
@@ -101,9 +122,23 @@ Use PowerShell commands in this repository:
 npx tsc --noEmit
 npx eslint src tests --max-warnings 0
 npx vitest run tests/unit/cards/<name>.test.ts
+npx vitest run   # full suite — confirm 3080+ tests
 ```
 
 Escalate to broader test coverage only after the focused path is green.
+
+## Key Context Files
+
+| File | Purpose |
+|------|---------|
+| `src/core/cache.ts` | `cGet` / `cSet` / `cGetStale` implementations |
+| `src/core/fetch.ts` | `fetchWithTimeout`, `fetchJSONWithWorker`, proxy chain |
+| `src/core/sync.ts` | `setSync(id, state)` |
+| `src/core/diag.ts` | `diagLog()` |
+| `src/core/card-registry.ts` | `registerCard()` / `getCard()` |
+| `src/types/api.ts` | Shared data models (NewsItem, WeatherData, etc.) |
+| `src/types/config.ts` | `DashboardConfig` + `DEFAULT_CONFIG` |
+| `tests/helpers/index.ts` | `createMockFetch`, `createMockCache`, `createMockConfig` |
 
 ## Skills To Pull In
 
