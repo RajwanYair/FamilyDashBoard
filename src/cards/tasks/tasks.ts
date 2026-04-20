@@ -15,7 +15,7 @@
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { LS_TASKS_DONE, LS_TASKS_RESET, LS_CHORES } from "../../core/constants";
-import type { CardDefinition } from "../../types/card";
+import type { CardDefinition, CardConfigField } from "../../types/card";
 
 export interface ChoreItem {
   person: string;
@@ -498,6 +498,51 @@ export function destroyTasksCard(): void {
   }
 }
 
+// ── Stream E.1: configSchema ─────────────────────────────────────────────────
+
+export const tasksConfigSchema: CardConfigField[] = [
+  {
+    key: "tasksResetHour",
+    labelHe: "שעת איפוס יומי (0–23)",
+    labelEn: "Daily reset hour (0–23)",
+    type: "number",
+    defaultValue: 6,
+    min: 0,
+    max: 23,
+    step: 1,
+    tab: "display",
+    group: "tasks",
+  },
+  {
+    key: "tasksShowDone",
+    labelHe: "הצג משימות שבוצעו",
+    labelEn: "Show completed tasks",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "tasks",
+  },
+  {
+    key: "tasksShowCategories",
+    labelHe: "הצג קטגוריות",
+    labelEn: "Show task categories",
+    type: "boolean",
+    defaultValue: false,
+    tab: "display",
+    group: "tasks",
+  },
+  {
+    key: "dash_chores",
+    labelHe: "רשימת משימות (JSON)",
+    labelEn: "Chores list (JSON)",
+    type: "textarea",
+    defaultValue: "[]",
+    placeholder: '[{"person":"משפחה","chore":"🧹 לנקות"}]',
+    tab: "advanced",
+    group: "tasks",
+  },
+];
+
 // ── CardDefinition export (for registry) ─────────────────────────────────
 
 export const tasksCard: CardDefinition = {
@@ -517,4 +562,5 @@ export const tasksCard: CardDefinition = {
   },
   init: initTasksCard,
   destroy: destroyTasksCard,
+  configSchema: tasksConfigSchema,
 };
