@@ -99,6 +99,28 @@
         "group": "test",
         "order": 4
       }
+    },
+    {
+      "name": "🎭 Playwright: Debug E2E Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "playwright",
+        "test",
+        "--project=chromium",
+        "--debug"
+      ],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "env": {
+        "PWDEBUG": "1"
+      },
+      "presentation": {
+        "group": "test",
+        "order": 5
+      }
     }
   ]
 }

@@ -24,7 +24,21 @@
             "group": "test",
             "isBackground": true,
             "presentation": { "reveal": "always", "panel": "dedicated" },
-            "problemMatcher": []
+            "problemMatcher": [
+                {
+                    "owner": "vitest",
+                    "pattern": {
+                        "regexp": "^\\s*FAIL\\s+(.+)$",
+                        "file": 1,
+                        "message": 0
+                    },
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "^.*RERUN.*$",
+                        "endsPattern": "^.*(Tests|passed|failed).*$"
+                    }
+                }
+            ]
         },
         {
             "label": "🔬 Vitest: Current File",
@@ -138,6 +152,30 @@
             "group": "build",
             "isBackground": true,
             "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        },
+        {
+            "label": "🎭 Playwright: E2E Tests",
+            "type": "shell",
+            "command": "npx playwright test",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "🎭 Playwright: Visual Regression",
+            "type": "shell",
+            "command": "npx playwright test tests/e2e/visual-regression.spec.ts",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "🎭 Playwright: Update Snapshots",
+            "type": "shell",
+            "command": "npx playwright test tests/e2e/visual-regression.spec.ts --update-snapshots",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "shared" },
             "problemMatcher": []
         }
     ]
