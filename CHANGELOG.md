@@ -5,6 +5,64 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [8.8.0] — 2026-04-20
+
+> **3205 tests / 95 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Stream W.7 — Bitcoin Worker Route (/api/crypto)
+
+- **`worker/src/routes/feeds.ts`**: `handleCrypto()` — new CoinGecko `/api/crypto` route with `?ids=bitcoin&vs_currencies=usd` validation
+- **`worker/src/utils/schemas.ts`**: `CoinGeckoPriceSchema` + `CoinGeckoSchema` Zod validation
+- **`tests/unit/worker/worker.test.ts`**: 9 new tests (schema + route handler)
+
+### Stream W.8 — Worker News RSS Zod Schema
+
+- **`worker/src/utils/schemas.ts`**: `NewsRssSchema` — structural RSS/Atom validation (`<channel>+<item>` or `<feed>+<entry>`)
+- **`worker/src/routes/feeds.ts`**: `handleNews()` now validates upstream XML with `NewsRssSchema`; returns HTTP 502 on invalid feed; explicit 502 on non-OK upstream (was silent pass-through)
+- **`tests/unit/worker/worker.test.ts`**: 15 new tests (9 schema + 6 route handler)
+
+### Stream D2.7 — Provider Adapters cSetAsync
+
+- **`src/core/provider-adapter.ts`** + 4 adapters (weather, alerts, hebcal, calendar): migrated from `cSet` to `await cSetAsync` for IDB-persistent cache writes
+- **`docs/adr/ADR-012-async-provider-adapter.md`**: Documents migration pattern and test convention
+
+### Stream docs.1 — Data Sources Reference
+
+- **`docs/data-sources.md`**: New reference covering all 11+ data providers (Open-Meteo, ER-API, Yahoo Finance, CoinGecko, RSS, Hebcal, ICS, Tzeva Adom, Sefaria, local)
+
+### Stream F.5 — Theme Completeness Test (4 semantic tokens)
+
+- **`tests/unit/styles/theme-audit.test.ts`**: Extended with `--positive`, `--negative`, `--warning`, `--text-muted` — 6 themes × 17 props = 108 tests (was 90)
+
+### Stream D2.8 — localStorage Discipline Audit Test
+
+- **`tests/unit/core/ls-discipline.test.ts`**: 4 tests verifying `LS_PREFIX` sanity, no raw `dash_v2_` writes outside cache.ts, no inline strings in cards, every `LS_*` constant is used
+
+### Stream ADR.12 — ADR-012 Async Provider Adapter Pattern
+
+- **`docs/adr/ADR-012-async-provider-adapter.md`**: New ADR documenting the async adapter migration and test convention
+- **`docs/adr/README.md`**: Added ADR-010, ADR-011, ADR-012 rows
+
+### Stream SW.4 — Service Worker TypeScript Migration
+
+- **`sw.ts`**: New TypeScript canonical source (compiled to `dist/sw.js` at build time)
+- **`tsconfig.sw.json`**: Dedicated tsconfig with `lib: ["ES2020","WebWorker"]`
+- **`scripts/build-sw.mjs`**: Compilation script using TypeScript `transpileModule` from parent node_modules
+- **`vite.config.ts`**: `injectSwVersion` plugin now calls `build-sw.mjs` instead of `esbuild`
+- **`package.json`**: Added `typecheck:sw` script; updated `check` to include it
+
+### Stream I.5 — Instruction File Updates
+
+- **`.github/instructions/typescript.instructions.md`**: Updated to v8.8.0; added SW.4 sw.ts patterns + Worker Zod schema conventions
+- **`.github/instructions/tests.instructions.md`**: Updated to v8.8.0; added Worker Route Tests section (W.5–W.8 patterns)
+
+### CI + Cleanup
+
+- **`.github/workflows/ci.yml`**: Reduced test matrix from Node 20/22/24 to 20/22 (Node 24 not LTS); fixed Lighthouse gate (`|| true` removed)
+- **`.gitignore`**: Extended to cover `test_errors.txt`, `test_summary.txt`, `vitest_results.txt`, `output.txt`, `run_output.txt`
+
+---
+
 ## [8.7.0] — 2026-04-20
 
 > **3153 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

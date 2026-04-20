@@ -1,4 +1,0 @@
-markdownlint-cli2 v0.22.0 (markdownlint v0.40.0)
-Finding: **/*.md !**/node_modules/** !**/coverage/**
-Linting: 53 file(s)
-Summary: 0 error(s)
