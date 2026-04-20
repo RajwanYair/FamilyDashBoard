@@ -29,6 +29,39 @@ const API_CACHE_ORIGINS = [
   "sefaria.org",
 ];
 
+// Stream SW: per-origin TTL (seconds). Default: 3600 s (1 h).
+// Mirrors CACHE_TTL_BY_ORIGIN in src/core/sw-constants.ts.
+const CACHE_TTL_BY_ORIGIN = {
+  "query1.finance.yahoo.com": 300,
+  "api.coingecko.com": 300,
+  "api.open-meteo.com": 1800,
+  "open.er-api.com": 1800,
+  "exchangerate-api.com": 1800,
+  "www.hebcal.com": 21600,
+  "sefaria.org": 21600,
+  "tzevaadom.co.il": 21600,
+  "api.allorigins.win": 600,
+  "api.codetabs.com": 600,
+  "corsproxy.io": 600,
+};
+const CACHE_TTL_DEFAULT_S = 3600;
+
+/** Return the TTL in seconds for the given hostname. */
+function _ttlForOrigin(hostname) {
+  for (const [origin, ttl] of Object.entries(CACHE_TTL_BY_ORIGIN)) {
+    if (hostname.endsWith(origin)) return ttl;
+  }
+  return CACHE_TTL_DEFAULT_S;
+}
+
+/** Return true if the cached Response is still within its per-origin TTL. */
+function _isFresh(response, hostname) {
+  const dateHeader = response.headers.get("x-sw-cached-at");
+  if (!dateHeader) return true; // no timestamp — treat as fresh to avoid over-invalidation
+  const age = (Date.now() - parseInt(dateHeader, 10)) / 1000;
+  return age < _ttlForOrigin(hostname);
+}
+
 // F113: track network failure state to detect recovery
 let _networkWasDown = false;
 
@@ -102,7 +135,7 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
 
-  // F112: API origins — network-first with offline cache fallback
+  // F112: API origins — network-first with offline cache fallback + per-origin TTL
   if (API_CACHE_ORIGINS.some((o) => url.hostname.endsWith(o))) {
     event.respondWith(
       fetch(event.request)
@@ -113,10 +146,17 @@ self.addEventListener("fetch", (event) => {
               _networkWasDown = false;
               _notifyNetworkBack();
             }
-            const clone = response.clone();
-            caches
-              .open(CACHE_NAME_API)
-              .then((c) => c.put(event.request, clone));
+            // Stream SW: stamp cache timestamp for TTL enforcement
+            const stamped = new Response(response.clone().body, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: (() => {
+                const h = new Headers(response.headers);
+                h.set("x-sw-cached-at", String(Date.now()));
+                return h;
+              })(),
+            });
+            caches.open(CACHE_NAME_API).then((c) => c.put(event.request, stamped));
           }
           return response;
         })
@@ -125,7 +165,14 @@ self.addEventListener("fetch", (event) => {
           return caches
             .open(CACHE_NAME_API)
             .then((c) => c.match(event.request))
-            .then((cached) => cached || Response.error());
+            .then((cached) => {
+              // Stream SW: honour per-origin TTL — evict stale cached responses
+              if (cached && !_isFresh(cached, url.hostname)) {
+                caches.open(CACHE_NAME_API).then((c) => c.delete(event.request));
+                return Response.error();
+              }
+              return cached || Response.error();
+            });
         }),
     );
     return;
