@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="900" height="420">
+  <rect width="900" height="420" fill="#0f172a" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="32" font-family="Segoe UI,system-ui" font-size="17" font-weight="700" fill="#60a5fa" text-anchor="middle">Card Lifecycle — FamilyDashBoard v8.2.0</text>
+  <text x="450" y="50" font-family="Segoe UI,system-ui" font-size="10" fill="#64748b" text-anchor="middle">State machine for all 11 data cards · scheduleCard() manages the refresh loop</text>
+
+  <!-- ── States ── -->
+  <!-- INIT -->
+  <rect x="30" y="80" width="110" height="50" rx="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  <text x="85" y="101" font-family="Segoe UI" font-size="11" font-weight="700" fill="#94a3b8" text-anchor="middle">INIT</text>
+  <text x="85" y="117" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">registerCard()</text>
+  <text x="85" y="129" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">scheduleCard()</text>
+
+  <!-- LOADING -->
+  <rect x="200" y="80" width="120" height="50" rx="10" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="260" y="101" font-family="Segoe UI" font-size="11" font-weight="700" fill="#93c5fd" text-anchor="middle">LOADING</text>
+  <text x="260" y="117" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">setSync(id, "syncing")</text>
+  <text x="260" y="129" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">skeleton shown</text>
+
+  <!-- LOADED -->
+  <rect x="390" y="80" width="120" height="50" rx="10" fill="#052e16" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="450" y="101" font-family="Segoe UI" font-size="11" font-weight="700" fill="#86efac" text-anchor="middle">LOADED</text>
+  <text x="450" y="117" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">setSync(id, "success")</text>
+  <text x="450" y="129" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">cSet(key, data)</text>
+
+  <!-- STALE -->
+  <rect x="390" y="200" width="120" height="50" rx="10" fill="#422006" stroke="#f97316" stroke-width="1.5"/>
+  <text x="450" y="221" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fdba74" text-anchor="middle">STALE</text>
+  <text x="450" y="237" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">setSync(id, "stale")</text>
+  <text x="450" y="249" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">cGetStale() rendered</text>
+
+  <!-- ERROR -->
+  <rect x="200" y="200" width="120" height="50" rx="10" fill="#3f1212" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="260" y="221" font-family="Segoe UI" font-size="11" font-weight="700" fill="#fca5a5" text-anchor="middle">ERROR</text>
+  <text x="260" y="237" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">setSync(id, "error")</text>
+  <text x="260" y="249" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">card-error shown</text>
+
+  <!-- REFRESH -->
+  <rect x="580" y="80" width="130" height="50" rx="10" fill="#1a1f2e" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="645" y="101" font-family="Segoe UI" font-size="11" font-weight="700" fill="#c4b5fd" text-anchor="middle">SCHEDULED</text>
+  <text x="645" y="117" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">setInterval(load, TTL)</text>
+  <text x="645" y="129" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">page-visibility guard</text>
+
+  <!-- OFFLINE -->
+  <rect x="580" y="200" width="130" height="50" rx="10" fill="#1c1917" stroke="#78716c" stroke-width="1.5"/>
+  <text x="645" y="221" font-family="Segoe UI" font-size="11" font-weight="700" fill="#a8a29e" text-anchor="middle">OFFLINE</text>
+  <text x="645" y="237" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">SW cache fallback</text>
+  <text x="645" y="249" font-family="Segoe UI" font-size="9" fill="#64748b" text-anchor="middle">NETWORK_BACK msg</text>
+
+  <!-- ── Arrows ── -->
+  <!-- INIT → LOADING -->
+  <line x1="140" y1="105" x2="198" y2="105" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="170" y="99" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">load()</text>
+
+  <!-- LOADING → LOADED -->
+  <line x1="320" y1="105" x2="388" y2="105" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arrgr)"/>
+  <text x="354" y="99" font-family="Segoe UI" font-size="8" fill="#86efac" text-anchor="middle">fetch OK</text>
+
+  <!-- LOADED → SCHEDULED -->
+  <line x1="510" y1="105" x2="578" y2="105" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrpu)"/>
+  <text x="544" y="99" font-family="Segoe UI" font-size="8" fill="#c4b5fd" text-anchor="middle">scheduleCard</text>
+
+  <!-- SCHEDULED → LOADING (loop arrow) -->
+  <path d="M 645 80 Q 645 55 450 55 Q 310 55 260 79" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#arr)"/>
+  <text x="450" y="50" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">interval tick</text>
+
+  <!-- LOADING → ERROR -->
+  <line x1="260" y1="130" x2="260" y2="198" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrrd)"/>
+  <text x="247" y="167" font-family="Segoe UI" font-size="8" fill="#fca5a5" text-anchor="end">fetch ERR</text>
+  <text x="247" y="178" font-family="Segoe UI" font-size="8" fill="#fca5a5" text-anchor="end">no stale</text>
+
+  <!-- LOADING → STALE (diagonal) -->
+  <line x1="320" y1="130" x2="390" y2="200" stroke="#f97316" stroke-width="1.5" marker-end="url(#arror)"/>
+  <text x="370" y="170" font-family="Segoe UI" font-size="8" fill="#fdba74" text-anchor="middle">ERR + stale</text>
+
+  <!-- STALE → SCHEDULED -->
+  <line x1="510" y1="225" x2="578" y2="225" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#arrpu)"/>
+  <text x="544" y="218" font-family="Segoe UI" font-size="8" fill="#c4b5fd" text-anchor="middle">retry</text>
+
+  <!-- ERROR → SCHEDULED -->
+  <line x1="320" y1="225" x2="388" y2="225" stroke="#64748b" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr)"/>
+  <text x="354" y="218" font-family="Segoe UI" font-size="8" fill="#64748b" text-anchor="middle">retry</text>
+
+  <!-- OFFLINE → STALE -->
+  <line x1="645" y1="250" x2="645" y2="310" stroke="#78716c" stroke-width="1" stroke-dasharray="4 2"/>
+  <line x1="645" y1="310" x2="510" y2="310" stroke="#78716c" stroke-width="1" stroke-dasharray="4 2"/>
+  <line x1="510" y1="310" x2="510" y2="250" stroke="#78716c" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr)"/>
+  <text x="580" y="325" font-family="Segoe UI" font-size="8" fill="#a8a29e" text-anchor="middle">online restored</text>
+
+  <!-- ── Cache layer note ── -->
+  <rect x="30" y="285" width="330" height="90" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="195" y="305" font-family="Segoe UI" font-size="10" font-weight="700" fill="#60a5fa" text-anchor="middle">Cache Read Priority</text>
+  <text x="50" y="322" font-family="Segoe UI" font-size="9" fill="#94a3b8">L1  mem Map      — sub-ms, volatile</text>
+  <text x="50" y="337" font-family="Segoe UI" font-size="9" fill="#94a3b8">L2  IndexedDB     — async, 7-day TTL</text>
+  <text x="50" y="352" font-family="Segoe UI" font-size="9" fill="#94a3b8">L3  localStorage  — sync fallback, 7-day evict</text>
+  <text x="50" y="367" font-family="Segoe UI" font-size="9" fill="#94a3b8">L4  SW Cache      — offline navigation fallback</text>
+
+  <!-- ── defs ── -->
+  <defs>
+    <marker id="arr"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#475569"/></marker>
+    <marker id="arrgr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#22c55e"/></marker>
+    <marker id="arrrd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ef4444"/></marker>
+    <marker id="arror" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f97316"/></marker>
+    <marker id="arrpu" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#a78bfa"/></marker>
+  </defs>
+</svg>
