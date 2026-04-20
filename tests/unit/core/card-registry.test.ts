@@ -128,34 +128,19 @@ describe("Card Registry — built-in entry shapes", () => {
 
 // ── loadCard with built-in cards (covers load lambdas + legacyAdapter) ──────
 
-describe("Card Registry — loadCard built-in (tasks)", () => {
-  it("loads the tasks CardDefinition via dynamic import", async () => {
-    const def = await loadCard("tasks");
-    expect(def.id).toBe("tasks");
-    expect(typeof def.render).toBe("function");
-    expect(typeof def.init).toBe("function");
-    expect("tagName" in def).toBe(true);
-    expect("elementClass" in def).toBe(true);
-  });
+// Cards that expose a custom-element tag (tagName + elementClass on def)
+const ceCards = [
+  ["tasks", "FDB-TASKS"],
+  ["system-info", "FDB-SYSTEM-INFO"],
+  ["news", "FDB-NEWS"],
+  ["weather", "FDB-WEATHER"],
+  ["stocks", "FDB-STOCKS"],
+] as const;
 
-  it("tasks render() returns the custom element host", async () => {
-    const def = await loadCard("tasks");
-    const el = def.render();
-    expect(el).toBeInstanceOf(HTMLElement);
-    expect(el.tagName).toBe("FDB-TASKS");
-  });
-});
+// Cards that use legacyAdapter without render-tag assertions
+const legacyOnlyCards = ["hebrew-cal", "calendar", "currency", "alerts", "motivation"] as const;
 
-describe("Card Registry — loadCard built-in (system-info)", () => {
-  it("loads the system-info CardDefinition via dynamic import", async () => {
-    const def = await loadCard("system-info");
-    expect(def.id).toBe("system-info");
-    expect(typeof def.render).toBe("function");
-    expect(typeof def.init).toBe("function");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (news — legacyAdapter)", () => {
+describe("Card Registry — loadCard (parameterized)", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });
@@ -164,95 +149,27 @@ describe("Card Registry — loadCard built-in legacy (news — legacyAdapter)", 
     document.body.innerHTML = "";
   });
 
-  it("loads news card and legacyAdapter render() falls back to createElement", async () => {
-    const def = await loadCard("news");
-    expect(def.id).toBe("news");
-    const el = def.render() as HTMLElement;
-    expect(el).toBeInstanceOf(HTMLElement);
-    expect(el.tagName).toBe("FDB-NEWS");
-    expect("tagName" in def).toBe(true);
-    expect("elementClass" in def).toBe(true);
-  });
+  it.each([...ceCards.map(([id]) => id), ...legacyOnlyCards])(
+    "loads %s CardDefinition via dynamic import",
+    async (cardId) => {
+      const def = await loadCard(cardId);
+      expect(def.id).toBe(cardId);
+      expect(typeof def.init).toBe("function");
+      expect(typeof def.render).toBe("function");
+    },
+  );
 
-  it("renders the news custom element host", async () => {
-    const def = await loadCard("news");
-    const el = def.render();
-    expect(el.tagName).toBe("FDB-NEWS");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (weather)", () => {
-  it("loads weather card via dynamic import", async () => {
-    const def = await loadCard("weather");
-    expect(def.id).toBe("weather");
-    expect(typeof def.init).toBe("function");
-    expect("tagName" in def).toBe(true);
-    expect("elementClass" in def).toBe(true);
-  });
-
-  it("renders weather as the custom element host", async () => {
-    const def = await loadCard("weather");
-    const el = def.render();
-    expect(el).toBeInstanceOf(HTMLElement);
-    expect(el.tagName).toBe("FDB-WEATHER");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (hebrew-cal)", () => {
-  it("loads hebrew-cal card via dynamic import", async () => {
-    const def = await loadCard("hebrew-cal");
-    expect(def.id).toBe("hebrew-cal");
-    expect(typeof def.init).toBe("function");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (calendar)", () => {
-  it("loads calendar card via dynamic import", async () => {
-    const def = await loadCard("calendar");
-    expect(def.id).toBe("calendar");
-    expect(typeof def.init).toBe("function");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (currency)", () => {
-  it("loads currency card via dynamic import", async () => {
-    const def = await loadCard("currency");
-    expect(def.id).toBe("currency");
-    expect(typeof def.init).toBe("function");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (stocks)", () => {
-  it("loads stocks card via dynamic import", async () => {
-    const def = await loadCard("stocks");
-    expect(def.id).toBe("stocks");
-    expect(typeof def.init).toBe("function");
-    expect("tagName" in def).toBe(true);
-    expect("elementClass" in def).toBe(true);
-  });
-
-  it("renders stocks as the custom element host", async () => {
-    const def = await loadCard("stocks");
-    const el = def.render();
-    expect(el).toBeInstanceOf(HTMLElement);
-    expect(el.tagName).toBe("FDB-STOCKS");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (alerts)", () => {
-  it("loads alerts card via dynamic import", async () => {
-    const def = await loadCard("alerts");
-    expect(def.id).toBe("alerts");
-    expect(typeof def.init).toBe("function");
-  });
-});
-
-describe("Card Registry — loadCard built-in legacy (motivation)", () => {
-  it("loads motivation card via dynamic import", async () => {
-    const def = await loadCard("motivation");
-    expect(def.id).toBe("motivation");
-    expect(typeof def.init).toBe("function");
-  });
+  it.each(ceCards)(
+    "%s render() returns <%s> custom element host",
+    async (cardId, expectedTag) => {
+      const def = await loadCard(cardId);
+      expect("tagName" in def).toBe(true);
+      expect("elementClass" in def).toBe(true);
+      const el = def.render();
+      expect(el).toBeInstanceOf(HTMLElement);
+      expect(el.tagName).toBe(expectedTag);
+    },
+  );
 });
 
 // ── createShell (Sprint 68, enhanced Sprint 134) ─────────────────────────
