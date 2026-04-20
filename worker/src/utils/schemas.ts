@@ -90,6 +90,33 @@ export const HebcalHolidaysSchema = z
   })
   .passthrough();
 
+// ── Stocks (Yahoo Finance chart) ─────────────────────────────────────────────
+
+export const StocksChartMetaSchema = z
+  .object({
+    regularMarketPrice: z.number(),
+    currency: z.string(),
+    symbol: z.string(),
+  })
+  .passthrough();
+
+export const StocksChartResultSchema = z
+  .object({
+    meta: StocksChartMetaSchema,
+  })
+  .passthrough();
+
+export const StocksChartSchema = z
+  .object({
+    chart: z
+      .object({
+        result: z.array(StocksChartResultSchema).min(1),
+        error: z.null().optional(),
+      })
+      .passthrough(),
+  })
+  .passthrough();
+
 // ── Helper ────────────────────────────────────────────────────────────────────
 
 /** Parse `data` against `schema`. Returns `{ ok: true, data }` or `{ ok: false, error }`. */

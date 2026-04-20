@@ -640,7 +640,7 @@ describe("Worker — handleHebcalHolidays route", () => {
 
 // ── Worker — handleAlerts route (Stream W.4) ──────────────────────────────────
 
-import { handleAlerts } from "../../../worker/src/routes/feeds";
+import { handleAlerts, handleStocks } from "../../../worker/src/routes/feeds";
 
 describe("Worker — handleAlerts route", () => {
   afterEach(() => { vi.restoreAllMocks(); });
@@ -675,6 +675,7 @@ import {
   CurrencySchema,
   HebcalSchema,
   HebcalHolidaysSchema,
+  StocksChartSchema,
   safeParse,
 } from "../../../worker/src/utils/schemas";
 
@@ -794,5 +795,109 @@ describe("Zod schemas — HebcalHolidaysSchema", () => {
   it("rejects missing items", () => {
     const result = safeParse(HebcalHolidaysSchema, {});
     expect(result.ok).toBe(false);
+  });
+});
+
+// ── Zod schemas — StocksChartSchema (Stream W.5) ─────────────────────────────
+
+const VALID_STOCKS = {
+  chart: {
+    result: [
+      {
+        meta: { regularMarketPrice: 182.5, currency: "USD", symbol: "AAPL" },
+        timestamps: [1700000000],
+      },
+    ],
+    error: null,
+  },
+};
+
+describe("Zod schemas — StocksChartSchema", () => {
+  it("accepts a valid Yahoo Finance chart response", () => {
+    const result = safeParse(StocksChartSchema, VALID_STOCKS);
+    expect(result.ok).toBe(true);
+  });
+
+  it("passes through extra fields in meta", () => {
+    const data = {
+      chart: {
+        result: [{ meta: { regularMarketPrice: 100, currency: "USD", symbol: "TSLA", extraField: true } }],
+        error: null,
+      },
+    };
+    const result = safeParse(StocksChartSchema, data);
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects missing chart.result", () => {
+    const result = safeParse(StocksChartSchema, { chart: { error: null } });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("result");
+  });
+
+  it("rejects empty chart.result array", () => {
+    const result = safeParse(StocksChartSchema, { chart: { result: [], error: null } });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects meta missing regularMarketPrice", () => {
+    const bad = { chart: { result: [{ meta: { currency: "USD", symbol: "X" } }], error: null } };
+    const result = safeParse(StocksChartSchema, bad);
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects meta with non-number regularMarketPrice", () => {
+    const bad = { chart: { result: [{ meta: { regularMarketPrice: "not-a-number", currency: "USD", symbol: "X" } }], error: null } };
+    const result = safeParse(StocksChartSchema, bad);
+    expect(result.ok).toBe(false);
+  });
+});
+
+// ── Worker — handleStocks route (Stream W.5) ──────────────────────────────────
+
+describe("Worker — handleStocks route", () => {
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it("returns 200 JSON with valid upstream stocks data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify(VALID_STOCKS), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url);
+    expect(res.status).toBe(200);
+    const body = await res.json() as typeof VALID_STOCKS;
+    expect(body.chart.result[0]?.meta.symbol).toBe("AAPL");
+  });
+
+  it("returns 400 for missing sym param", async () => {
+    const url = new URL("https://worker.example.com/api/stocks");
+    const res = await handleStocks(url);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 502 when upstream returns non-ok status", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("bad gateway", { status: 503 }),
+    );
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns 502 when upstream data fails Zod schema validation", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ chart: { result: [], error: null } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url);
+    expect(res.status).toBe(502);
+    const body = await res.json() as { error: string };
+    expect(body.error).toContain("schema invalid");
   });
 });

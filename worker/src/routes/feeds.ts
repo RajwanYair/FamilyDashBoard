@@ -6,6 +6,7 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../utils/validation";
+import { safeParse, StocksChartSchema } from "../utils/schemas";
 
 export async function handleStocks(url: URL): Promise<Response> {
   let sym: string;
@@ -15,11 +16,24 @@ export async function handleStocks(url: URL): Promise<Response> {
     return validationErrorResponse(err as ValidationError);
   }
   const encoded = encodeURIComponent(sym);
-  const res = await fetch(
+  const upstream = await fetch(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1d&range=1d`,
     { headers: { "User-Agent": "FamilyDashBoard/6.0" } },
   );
-  return proxyResponse(res, 300); // 5 min
+  if (!upstream.ok) return jsonResponse({ error: `Upstream ${upstream.status}` }, 502);
+  const data: unknown = await upstream.json();
+  const validated = safeParse(StocksChartSchema, data);
+  if (!validated.ok) {
+    return jsonResponse({ error: "Upstream stocks schema invalid", detail: validated.error }, 502);
+  }
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=300",
+      ...CORS_HEADERS,
+    },
+  });
 }
 
 export async function handleNews(url: URL): Promise<Response> {
