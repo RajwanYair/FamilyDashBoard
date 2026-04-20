@@ -402,21 +402,8 @@ select.cfg-input { cursor: pointer; }
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 110: Shared Error State
+   Sprint 110 → merged into Stream F v7.22 card-error definition
    ═══════════════════════════════════════════════════════ */
-.card-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  padding: 1em;
-  text-align: center;
-  color: var(--error, #ef4444);
-  font-size: 0.85em;
-}
-.card-error .card-error__icon { font-size: 1.8em; }
-.card-error .card-error__msg { opacity: 0.8; }
 
 /* ═══════════════════════════════════════════════════════
    Sprint 150: Retry Button Component
@@ -448,20 +435,8 @@ select.cfg-input { cursor: pointer; }
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 111: Shared Empty State
+   Sprint 111 → merged into Stream F v7.22 card-empty definition
    ═══════════════════════════════════════════════════════ */
-.card-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  padding: 1.5em;
-  text-align: center;
-  opacity: 0.6;
-  font-size: 0.85em;
-}
-.card-empty .card-empty__icon { font-size: 2em; opacity: 0.5; }
 
 /* ═══════════════════════════════════════════════════════
    Sprint 112: Metric Tile
