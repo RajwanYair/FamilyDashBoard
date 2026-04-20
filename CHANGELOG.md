@@ -5,6 +5,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+---
+
+## [8.1.0] — 2026-07-10
+
+> **3080 tests / 88 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Tooling, CI, Documentation and Quality Sprint
+
+- **Stream G.1 — Shared test helpers**: `tests/helpers/index.ts` — `createCardDOM`, `cleanupDOM`, `appendToDOM`, `withFakeTimers`, `createMockFetch`, `createFailingFetch`, `createMockCache`, `createMockConfig`, `getElement`, `getDomElement`; 27 new tests in `tests/unit/core/test-helpers.test.ts`
+- **Stream G.1 — useFakeTimers audit**: audited all 50+ `vi.useFakeTimers()` calls — confirmed all paired with `setSystemTime` or `advanceTimersByTime`; no removals needed
+- **Stream G.1 — Vitest alias fix**: converted `resolve.alias` from object to ordered array so `@tests/helpers` resolves before `@tests`
+- **Stream J — Package.json URLs**: corrected `repository.url`, `homepage`, and `bugs.url` from `ryair` to `RajwanYair`
+- **Stream J — CI hardening**: added `node scripts/check-sw-version.mjs` to the `build` CI job; added SLSA build provenance attestation (`actions/attest-build-provenance@v2`) to `release.yml` with `id-token: write` + `attestations: write` permissions
+- **Stream J — ADRs**: added ADR-007 (News Aggregation Strategy), ADR-008 (CSS Layer Governance), ADR-009 (Config Schema Evolution) with updated `docs/adr/README.md`
+- **Stream J — Documentation**: added `docs/adding-a-card.md` (10-step contributor guide) and `docs/deployment.md` (GitHub Pages, self-host, nginx, Worker, offline mode, troubleshooting)
+- **Stream J — release-report.mjs**: rewritten with quality gate pass/fail table (tsc + eslint + vitest + bundle + SW version); `--no-gates` flag for fast mode; exits 1 on any gate failure
+- **Stream I — api-integrator agent**: added `replace_string_in_file`, `multi_replace_string_in_file`, `create_file`, `file_search` tools; second handoff to `quality-reviewer`; Common Failure Patterns table; Key Context Files table; updated verification with 3080+ test count
+- **Stream J — .vscode tasks**: added "Vitest: Watch Mode" and "Vitest: Current File" tasks; added `vitest.explorer` extension recommendation
+
 ## [8.0.0] — 2026-04-20
 
 > **3053+ tests / 87 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

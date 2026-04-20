@@ -1,8 +1,8 @@
 # FamilyDashBoard Roadmap
 
-> Roadmap refresh date: 2026-04-20
-> Current shipped baseline: v8.0.0
-> Last committed baseline: v8.0.0 — 3053+ tests / 87 suites / 0 failures
+> Roadmap refresh date: 2026-07-10
+> Current shipped baseline: v8.1.0
+> Last committed baseline: v8.1.0 — 3080 tests / 88 suites / 0 failures
 
 This document is the single decision log and forward plan for FamilyDashBoard. It rethinks every major architectural, tooling, and product decision from first principles — including decisions that previously looked clean — and sets an explicit direction for reaching best-in-class quality as an always-on family information display.
 
@@ -182,8 +182,10 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 | v7.20.0 | ROADMAP strategic overhaul, worker-first fetch resilience, provider adapter hardening, shared tooling foundation |
 | v7.21.0 | Shared test helpers, normalized worker types, node-ts-app tooling, instruction files, .nvmrc, agent/prompts, card audit, loading CSS, SW constants |
 | v8.0.0 | Production readiness: test consolidation (it.each), dead file cleanup, config modernization, hardened .gitignore, full version bump across 15 files |
+| v8.1.0 | Stream G.1 shared helpers (tests/helpers/); CI hardening (SW check + SLSA); ADR-007/008/009; docs/adding-a-card.md + deployment.md; release-report gate checks; api-integrator agent modernization; useFakeTimers audit (all 50+ legitimate); .vscode Vitest tasks + extensions |
 
 **Completed Streams:** A (Truth) · B (Card Architecture) · C (Data Contracts) · D (Observability)
+**Partially Complete:** G.1 (shared helpers ✅, resetModules reduction pending) · I (api-integrator modernized ✅, quality-reviewer pending) · J (package.json URLs ✅, SLSA ✅, ADRs ✅, tasks ✅)
 
 ---
 
