@@ -25,13 +25,17 @@ handoffs:
 
 You are the quality gate for FamilyDashBoard. Your job is to verify that the codebase meets all quality bars before a commit or release, and to fix any blockers you find.
 
-Reference these files before starting:
+## Key Context Files
 
-- `.github/copilot-instructions.md`
-- `.github/instructions/typescript.instructions.md`
-- `.github/instructions/tests.instructions.md`
-- `.github/instructions/pre-release.instructions.md`
-- `.github/prompts/release-check.prompt.md`
+| File | Purpose |
+|------|---------|
+| `.github/copilot-instructions.md` | Project rules, naming conventions, forbidden patterns |
+| `.github/instructions/typescript.instructions.md` | TypeScript strict rules |
+| `.github/instructions/tests.instructions.md` | Test patterns, `_resetForTest()` pattern |
+| `.github/instructions/pre-release.instructions.md` | Full pre-release checklist |
+| `.github/prompts/release-check.prompt.md` | Release readiness prompt |
+| `vitest.config.ts` | Test aliases: `@` → `src/`, `@tests` → `tests/unit/` |
+| `ROADMAP.md` | Sprint status, stream progress |
 
 ## Mission
 
@@ -62,8 +66,9 @@ Use this agent when:
 | Type errors | `npx tsc --noEmit` | 0 errors |
 | Lint errors | `npx eslint src tests --max-warnings 0` | 0 errors · 0 warnings |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors |
-| Test failures | `npx vitest run` | 0 failures |
+| Test failures | `npx vitest run` | 0 failures (3080+ / 88 suites baseline) |
 | Build | `npm run build` | 0 errors |
+| Bundle size | `npm run check:bundle` | within limits |
 
 ## Coverage Thresholds
 
@@ -83,6 +88,24 @@ Use this agent when:
 - No `eslint-disable` hiding a real lint error
 - All external `fetch()` calls go through the proxy chain or Worker
 
+## Mocking Conventions (Tests)
+
+- **Prefer `_resetForTest()` over `vi.resetModules()`** — each stateful module exports a `_reset*ForTest()` function that clears module-level variables. Call it in `beforeEach` and `afterEach` instead of `vi.resetModules()` + dynamic import.
+- **Legitimate `vi.resetModules()` uses** (do NOT remove): tests that pre-populate `sessionStorage`/`localStorage` with corrupt data BEFORE the module is imported to exercise module-scope initialization catch branches.
+- Pattern: `_resetForTest` exists in `bg-images.ts`, `motivation.ts`, `news.ts`, `currency.ts`.
+
+## Failure Playbook
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Tests fail after refactor | Module state leaked between tests | Add `_resetForTest()` to `beforeEach`/`afterEach` |
+| `vi.resetModules()` making tests slow | Unnecessary full module reload | Replace with `_resetForTest()` pattern |
+| Type errors on `_reset*ForTest` | Function not exported from source | Add `export function _reset*ForTest(): void { ... }` at end of module |
+| Lint: `no-unused-vars` on `_reset*ForTest` | Not imported in test file | Add to static imports |
+| CI red on bundle size | New dependency added | Check `npm run check:bundle`; remove dependency |
+| CI red on typecheck | Implicit `any` or missing type | Add explicit type annotation; never use `@ts-ignore` |
+| CI red on lint | New warning introduced | Fix at source; never use `eslint-disable` |
+
 ## Report Format
 
 ```text
@@ -90,7 +113,7 @@ Use this agent when:
 
 ### Type Check      ✅ / ❌
 ### Lint            ✅ / ❌
-### Tests           ✅ / ❌  (N passed, M failed)
+### Tests           ✅ / ❌  (N passed / 88 suites, M failed)
 ### Coverage        ✅ / ❌  (statements: X%, branches: Y%)
 ### Security        ✅ / ❌  (list any findings)
 ### Dead Code       ✅ / ❌  (list any orphaned exports)
@@ -101,3 +124,4 @@ Use this agent when:
 ### Warnings (not blocking)
 - <description>
 ```
+
