@@ -15,7 +15,12 @@ import {
   MS_PER_HOUR,
   MS_PER_MIN,
 } from "../../core/constants";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import {
+  cGetStale,
+  cGetAsync,
+  cGetStaleAsync,
+  cSetAsync,
+} from "../../core/cache";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import {
   setSync,
@@ -276,19 +281,19 @@ const SCHOOL_VACATION_TITLES = [
 async function loadCandlesHavdala(): Promise<void> {
   const geonameid = getGeonameid();
   const key = `shabbat-${new Date().toDateString()}`;
-  const fresh = cGet<HebcalResponse>(key, INTERVALS.HEBREW_CAL);
-  if (fresh) {
+  const fresh = await cGetAsync<HebcalResponse>(key, INTERVALS.HEBREW_CAL);
+  if (fresh !== null) {
     renderCandlesHavdala(fresh.items);
     return;
   }
-  const stale = cGetStale<HebcalResponse>(key);
-  if (stale) renderCandlesHavdala(stale.items);
+  const stale = await cGetStaleAsync<HebcalResponse>(key);
+  if (stale !== null) renderCandlesHavdala(stale.items);
 
   const d = await fetchJSONWithWorker<HebcalResponse>(
     `${API.HEBCAL}/shabbat?cfg=json&geonameid=${geonameid}&M=on`,
   );
   if (d.items) {
-    cSet(key, d);
+    await cSetAsync(key, d);
     renderCandlesHavdala(d.items);
   }
 }
@@ -313,20 +318,20 @@ function renderCandlesHavdala(items: HebcalItem[]): void {
 async function loadHoliday(): Promise<void> {
   const now = new Date();
   const key = `holidays-${now.getFullYear()}-${now.getMonth()}`;
-  const fresh = cGet<HebcalResponse>(key, INTERVALS.HALACHA); // 12h TTL
+  const fresh = await cGetAsync<HebcalResponse>(key, INTERVALS.HALACHA); // 12h TTL
   const items = fresh?.items;
   if (items) {
     renderHoliday(items, now);
     return;
   }
-  const stale = cGetStale<HebcalResponse>(key);
+  const stale = await cGetStaleAsync<HebcalResponse>(key);
   if (stale?.items) renderHoliday(stale.items, now);
 
   const d = await fetchJSONWithWorker<HebcalResponse>(
     `${API.HEBCAL}?v=1&cfg=json&maj=on&min=on&year=${now.getFullYear()}&month=x`,
   );
   if (d.items) {
-    cSet(key, d);
+    await cSetAsync(key, d);
     renderHoliday(d.items, now);
   }
 }
@@ -412,12 +417,12 @@ async function loadOmer(): Promise<void> {
   const dy = omerDate.getDate();
   const key = `omer-${yr}-${mo}-${dy}`;
 
-  const fresh = cGet<HebcalItem>(key, MS_PER_DAY);
+  const fresh = await cGetAsync<HebcalItem>(key, MS_PER_DAY);
   if (fresh !== null) {
     renderOmer(fresh);
     return;
   }
-  const stale = cGetStale<HebcalItem>(key);
+  const stale = await cGetStaleAsync<HebcalItem>(key);
   if (stale !== null) renderOmer(stale);
 
   const d = await fetchJSONWithWorker<HebcalResponse>(
@@ -426,7 +431,7 @@ async function loadOmer(): Promise<void> {
   const item = d.items?.find((i) => i.category === "omer") ?? null;
   // Only cache positive omer results — never cache null, so a failed/off-season
   // fetch doesn't permanently suppress the row until the key expires.
-  if (item !== null) cSet(key, item);
+  if (item !== null) await cSetAsync(key, item);
   renderOmer(item);
 
   // Also render special items (Hanukkah, special holidays) — skip if duplicate of holiday row
@@ -465,19 +470,19 @@ function renderOmer(item: HebcalItem | null): void {
 async function loadParasha(): Promise<void> {
   const geonameid = getGeonameid();
   const key = `parasha-${new Date().toDateString()}`;
-  const fresh = cGet<HebcalResponse>(key, INTERVALS.DAY);
+  const fresh = await cGetAsync<HebcalResponse>(key, INTERVALS.DAY);
   if (fresh?.items) {
     renderParasha(fresh.items);
     return;
   }
-  const stale = cGetStale<HebcalResponse>(key);
+  const stale = await cGetStaleAsync<HebcalResponse>(key);
   if (stale?.items) renderParasha(stale.items);
 
   const d = await fetchJSONWithWorker<HebcalResponse>(
     `${API.HEBCAL}/shabbat?cfg=json&geonameid=${geonameid}&M=on&ss=on`,
   );
   if (d.items) {
-    cSet(key, d);
+    await cSetAsync(key, d);
     renderParasha(d.items);
   }
 }
@@ -504,12 +509,15 @@ function renderParasha(items: HebcalItem[]): void {
 async function loadDafYomi(): Promise<void> {
   const now = new Date();
   const key = `daf-${now.toDateString()}`;
-  const fresh = cGet<{ ref: string; heRef: string }>(key, INTERVALS.DAY);
+  const fresh = await cGetAsync<{ ref: string; heRef: string }>(
+    key,
+    INTERVALS.DAY,
+  );
   if (fresh !== null) {
     renderDaf(fresh);
     return;
   }
-  const stale = cGetStale<{ ref: string; heRef: string }>(key);
+  const stale = await cGetStaleAsync<{ ref: string; heRef: string }>(key);
   if (stale !== null) renderDaf(stale);
 
   try {
@@ -526,7 +534,7 @@ async function loadDafYomi(): Promise<void> {
     const item = daf
       ? { ref: daf.ref, heRef: daf.title.he, url: daf.url }
       : null;
-    cSet(key, item);
+    await cSetAsync(key, item);
     renderDaf(item);
     // Also extract Halacha Yomit from the same response (no extra network call)
     const halachaItem = d.calendar_items?.find((i) =>
@@ -764,19 +772,19 @@ export function renderZmanim(times: Record<string, string>): void {
 async function loadZmanim(): Promise<void> {
   const today = new Date().toISOString().slice(0, 10);
   const key = `zmanim-${today}`;
-  const fresh = cGet<ZmanimResponse>(key, INTERVALS.HALACHA);
+  const fresh = await cGetAsync<ZmanimResponse>(key, INTERVALS.HALACHA);
   if (fresh) {
     renderZmanim(fresh.times);
     return;
   }
-  const stale = cGetStale<ZmanimResponse>(key);
+  const stale = await cGetStaleAsync<ZmanimResponse>(key);
   if (stale) renderZmanim(stale.times);
   const geonameid = getGeonameid();
   const url = `${API.ZMANIM}?cfg=json&geonameid=${geonameid}&date=${today}&tzid=Asia%2FJerusalem`;
   try {
     const data = await fetchJSONWithWorker<ZmanimResponse>(url);
     if (data?.times) {
-      cSet(key, data);
+      await cSetAsync(key, data);
       renderZmanim(data.times);
     }
   } catch {

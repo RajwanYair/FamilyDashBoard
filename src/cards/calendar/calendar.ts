@@ -16,7 +16,12 @@ import {
   MS_PER_DAY,
   MS_PER_MIN,
 } from "../../core/constants";
-import { cGet, cGetStale, cSet } from "../../core/cache";
+import {
+  cGetStale,
+  cGetAsync,
+  cGetStaleAsync,
+  cSetAsync,
+} from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
 import {
   setSync,
@@ -475,9 +480,9 @@ async function loadCalendar(): Promise<void> {
   const urls = getICSUrls();
   const key0 = "cal-ics";
 
-  // Serve from fresh cache first
-  const fresh = cGet<string>(key0, INTERVALS.CALENDAR);
-  if (fresh) {
+  // Serve from fresh async cache first (memory → IDB → LS)
+  const fresh = await cGetAsync<string>(key0, INTERVALS.CALENDAR);
+  if (fresh !== null) {
     const events = [...parseICS(fresh, 0), ...loadExtraEventsFromCache(urls)];
     renderCalendar(events);
     setSync("cal", "ok");
@@ -486,8 +491,8 @@ async function loadCalendar(): Promise<void> {
   }
 
   // Use stale while revalidating
-  const staleText = cGetStale<string>(key0);
-  if (staleText) {
+  const staleText = await cGetStaleAsync<string>(key0);
+  if (staleText !== null) {
     const events = [
       ...parseICS(staleText, 0),
       ...loadExtraEventsFromCache(urls),
@@ -540,7 +545,7 @@ async function fetchICSWithCache(
   const key = idx === 0 ? "cal-ics" : `cal-ics-${idx}`;
   const text = await fetchICS(url);
   if (!text) return [];
-  cSet(key, text);
+  await cSetAsync(key, text);
   return parseICS(text, idx);
 }
 

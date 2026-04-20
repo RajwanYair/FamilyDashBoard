@@ -22,7 +22,7 @@ import {
   getParashat,
   zmanimTimeLabel,
 } from "@/cards/hebrew-cal/hebrew-cal";
-import { cGet, cGetStale, cSet } from "@/core/cache";
+import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
 
 vi.mock("@/core/cache", () => ({
@@ -30,6 +30,9 @@ vi.mock("@/core/cache", () => ({
   cGetStale: vi.fn().mockReturnValue(null),
   cSet: vi.fn(),
   cClear: vi.fn(),
+  cGetAsync: vi.fn().mockResolvedValue(null),
+  cGetStaleAsync: vi.fn().mockResolvedValue(null),
+  cSetAsync: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("@/cards/base-card", () => ({
@@ -472,38 +475,38 @@ function buildFullDom(): void {
 describe("Hebrew Calendar — renderCandlesHavdala via cached cGet", () => {
   beforeEach(() => {
     buildFullDom();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("shabbat-"))
-        return { items: MOCK_HEBCAL_ITEMS };
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(key.startsWith("shabbat-") ? { items: MOCK_HEBCAL_ITEMS } : null),
+    );
   });
 
   afterEach(() => {
     document.body.innerHTML = "";
-    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     vi.clearAllMocks();
   });
 
-  it("sets hc-candles text from cached Shabbat items", () => {
+  it("sets hc-candles text from cached Shabbat items", async () => {
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const el = document.getElementById("hc-candles");
     expect(el?.textContent).not.toBe("");
     expect(el?.classList.contains("skeleton")).toBe(false);
   });
 
-  it("sets hc-havdala text from cached Shabbat items", () => {
+  it("sets hc-havdala text from cached Shabbat items", async () => {
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const el = document.getElementById("hc-havdala");
     expect(el?.textContent).not.toBe("");
   });
 
-  it("uses '--' when candles item is absent", () => {
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("shabbat-")) return { items: [] };
-      return null;
-    });
+  it("uses '--' when candles item is absent", async () => {
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(key.startsWith("shabbat-") ? { items: [] } : null),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-candles")?.textContent).toBe("--");
   });
 });
@@ -511,42 +514,43 @@ describe("Hebrew Calendar — renderCandlesHavdala via cached cGet", () => {
 describe("Hebrew Calendar — renderHoliday via cached cGet", () => {
   beforeEach(() => {
     buildFullDom();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-"))
-        return { items: MOCK_HEBCAL_ITEMS };
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(key.startsWith("holidays-") ? { items: MOCK_HEBCAL_ITEMS } : null),
+    );
   });
 
   afterEach(() => {
     document.body.innerHTML = "";
-    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     vi.clearAllMocks();
   });
 
-  it("sets hc-holiday text and shows hc-holiday-row", () => {
+  it("sets hc-holiday text and shows hc-holiday-row", async () => {
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const el = document.getElementById("hc-holiday");
     expect(el?.textContent).not.toBe("");
     expect(el?.textContent).toContain("חג עתידי");
   });
 
-  it("shows hc-holiday-row after rendering upcoming holiday", () => {
+  it("shows hc-holiday-row after rendering upcoming holiday", async () => {
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-holiday-row")?.style.display).not.toBe(
       "none",
     );
   });
 
-  it("does not change holiday when no holiday items", () => {
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-"))
-        return {
-          items: [{ category: "candles", title: "x", date: MOCK_CANDLE_DATE }],
-        };
-      return null;
-    });
+  it("does not change holiday when no holiday items", async () => {
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("holidays-")
+          ? { items: [{ category: "candles", title: "x", date: MOCK_CANDLE_DATE }] }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     // No holiday item → holiday element stays empty, no throw
     expect(() => initHebrewCalCard()).not.toThrow();
   });
@@ -555,23 +559,23 @@ describe("Hebrew Calendar — renderHoliday via cached cGet", () => {
 describe("Hebrew Calendar — renderOmer + renderParasha + renderDaf via cached cGet", () => {
   beforeEach(() => {
     buildFullDom();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      const k = key as string;
-      if (k.startsWith("omer-")) return MOCK_OMER_ITEM;
-      if (k.startsWith("parasha-")) return { items: MOCK_HEBCAL_ITEMS };
-      if (k.startsWith("daf-")) return MOCK_DAF_ITEM;
-      return null;
+    vi.mocked(cGetAsync).mockImplementation((key: string) => {
+      if (key.startsWith("omer-")) return Promise.resolve(MOCK_OMER_ITEM);
+      if (key.startsWith("parasha-")) return Promise.resolve({ items: MOCK_HEBCAL_ITEMS });
+      if (key.startsWith("daf-")) return Promise.resolve(MOCK_DAF_ITEM);
+      return Promise.resolve(null);
     });
   });
 
   afterEach(() => {
     document.body.innerHTML = "";
-    vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     vi.clearAllMocks();
   });
 
-  it("sets hc-omer text and shows hc-omer-row from omer cache", () => {
+  it("sets hc-omer text and shows hc-omer-row from omer cache", async () => {
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const el = document.getElementById("hc-omer");
     expect(el?.textContent).toContain("ה׳ בעומר");
     expect(document.getElementById("hc-omer-row")?.style.display).not.toBe(
@@ -579,8 +583,9 @@ describe("Hebrew Calendar — renderOmer + renderParasha + renderDaf via cached 
     );
   });
 
-  it("sets hc-parasha text and shows hc-parasha-row from parasha cache", () => {
+  it("sets hc-parasha text and shows hc-parasha-row from parasha cache", async () => {
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-parasha")?.textContent).toContain(
       "מצורע",
     );
@@ -589,31 +594,26 @@ describe("Hebrew Calendar — renderOmer + renderParasha + renderDaf via cached 
     );
   });
 
-  it("sets hc-daf text and shows hc-daf-row from daf cache", () => {
+  it("sets hc-daf text and shows hc-daf-row from daf cache", async () => {
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-daf")?.textContent).toContain("סוכה");
     expect(document.getElementById("hc-daf-row")?.style.display).not.toBe(
       "none",
     );
   });
 
-  it("renderOmer with null item hides omer-row", () => {
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("omer-")) return null;
-      return null;
-    });
+  it("renderOmer with null item hides omer-row", async () => {
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     initHebrewCalCard();
-    // omer cache returns null → renderOmer(null) → hides row
-    // (row may stay hidden since null omer hides it)
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(() => initHebrewCalCard()).not.toThrow();
   });
 
-  it("renderDaf with null item hides daf-row", () => {
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("daf-")) return null;
-      return null;
-    });
+  it("renderDaf with null item hides daf-row", async () => {
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(() => initHebrewCalCard()).not.toThrow();
   });
 });
@@ -626,54 +626,41 @@ describe("Hebrew Calendar — holiday day count variants", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     vi.clearAllMocks();
   });
 
-  it("shows 'מחר' when holiday is 1 day away", () => {
+  it("shows 'מחר' when holiday is 1 day away", async () => {
     buildFullDom();
     const tomorrow = new Date(Date.now() + 86_400_000).toISOString();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-")) {
-        return {
-          items: [
-            {
-              category: "holiday",
-              title: "Tomorrow Fest",
-              hebrew: "חג מחר",
-              date: tomorrow,
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("holidays-")
+          ? { items: [{ category: "holiday", title: "Tomorrow Fest", hebrew: "חג מחר", date: tomorrow }] }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-holiday")?.textContent).toContain("מחר");
   });
 
-  it("shows holiday name directly when days <= 0", () => {
+  it("shows holiday name directly when days <= 0", async () => {
     // Freeze time so holiday date == now exactly (days = 0, passes >= filter)
     const fixedTime = new Date("2024-01-01T12:00:00.000Z");
     vi.useFakeTimers();
     vi.setSystemTime(fixedTime);
     buildFullDom();
     const nowIso = new Date().toISOString(); // "2024-01-01T12:00:00.000Z"
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-")) {
-        return {
-          items: [
-            {
-              category: "holiday",
-              title: "Today Fest",
-              hebrew: "חג היום",
-              date: nowIso,
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("holidays-")
+          ? { items: [{ category: "holiday", title: "Today Fest", hebrew: "חג היום", date: nowIso }] }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     vi.useRealTimers();
     expect(document.getElementById("hc-holiday")?.textContent).not.toBe("");
   });
@@ -717,7 +704,7 @@ describe("Hebrew Calendar — loadCandlesHavdala fetch path", () => {
     expect(document.getElementById("hc-candles")?.textContent).not.toBe("--");
   });
 
-  it("caches fetched shabbat data via cSet", async () => {
+  it("caches fetched shabbat data via cSetAsync", async () => {
     vi.mocked(fetchJSONWithWorker).mockResolvedValue({
       items: [
         {
@@ -730,7 +717,7 @@ describe("Hebrew Calendar — loadCandlesHavdala fetch path", () => {
     });
     initHebrewCalCard();
     for (let i = 0; i < 20; i++) await Promise.resolve();
-    expect(cSet).toHaveBeenCalledWith(
+    expect(cSetAsync).toHaveBeenCalledWith(
       expect.stringContaining("shabbat-"),
       expect.objectContaining({ items: expect.any(Array) }),
     );
@@ -744,19 +731,13 @@ describe("Hebrew Calendar — loadCandlesHavdala fetch path", () => {
   });
 
   it("uses stale data and then updates from fetch", async () => {
-    vi.mocked(cGetStale).mockImplementation((key: string) => {
-      if ((key as string).startsWith("shabbat-"))
-        return {
-          items: [
-            {
-              category: "candles",
-              title: "Stale Candle",
-              date: "2099-01-01T17:00:00+02:00",
-            },
-          ],
-        };
-      return null;
-    });
+    vi.mocked(cGetStaleAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("shabbat-")
+          ? { items: [{ category: "candles", title: "Stale Candle", date: "2099-01-01T17:00:00+02:00" }] }
+          : null,
+      ),
+    );
     vi.mocked(fetchJSONWithWorker).mockResolvedValue({
       items: [
         {
@@ -799,20 +780,13 @@ describe("Hebrew Calendar — loadHoliday fetch path", () => {
 
   it("shows stale holiday before fetch completes", async () => {
     const future = new Date(Date.now() + 3 * 86_400_000).toISOString();
-    vi.mocked(cGetStale).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-"))
-        return {
-          items: [
-            {
-              category: "holiday",
-              title: "Stale",
-              hebrew: "חג ישן",
-              date: future,
-            },
-          ],
-        };
-      return null;
-    });
+    vi.mocked(cGetStaleAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("holidays-")
+          ? { items: [{ category: "holiday", title: "Stale", hebrew: "חג ישן", date: future }] }
+          : null,
+      ),
+    );
     vi.mocked(fetchJSONWithWorker).mockResolvedValue({
       items: [
         { category: "holiday", title: "Fresh", hebrew: "חג חדש", date: future },
@@ -1002,11 +976,11 @@ describe("Hebrew Calendar — loadZmanim fetch path", () => {
   });
 
   it("uses stale zmanim then updates from fetch", async () => {
-    vi.mocked(cGetStale).mockImplementation((key: string) => {
-      if ((key as string).startsWith("zmanim-"))
-        return { times: { sunrise: "2024-04-14T06:15:00+03:00" } };
-      return null;
-    });
+    vi.mocked(cGetStaleAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("zmanim-") ? { times: { sunrise: "2024-04-14T06:15:00+03:00" } } : null,
+      ),
+    );
     vi.mocked(fetchJSONWithWorker).mockResolvedValue({
       times: {
         sunrise: "2024-04-14T06:20:00+03:00",
@@ -1107,11 +1081,9 @@ describe("Hebrew Calendar — renderOmer via initHebrewCalCard (empty display)",
   });
 
   it("sets empty text when omer item has no hebrew and no title", async () => {
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("omer-"))
-        return { category: "omer", title: "", hebrew: "" };
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(key.startsWith("omer-") ? { category: "omer", title: "", hebrew: "" } : null),
+    );
     initHebrewCalCard();
     for (let i = 0; i < 20; i++) await Promise.resolve();
     const omer = document.getElementById("hc-omer")!;
@@ -1120,11 +1092,9 @@ describe("Hebrew Calendar — renderOmer via initHebrewCalCard (empty display)",
   });
 
   it("renders omer with hebrew text when available", async () => {
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("omer-"))
-        return { category: "omer", title: "Day 33", hebrew: "ל״ג בעומר" };
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(key.startsWith("omer-") ? { category: "omer", title: "Day 33", hebrew: "ל״ג בעומר" } : null),
+    );
     initHebrewCalCard();
     for (let i = 0; i < 20; i++) await Promise.resolve();
     const omer = document.getElementById("hc-omer")!;
@@ -1174,21 +1144,17 @@ describe("Hebrew Calendar — loadZmanim fresh cache path", () => {
     vi.clearAllMocks();
   });
 
-  it("renders zmanim directly from fresh cGet (skips fetch)", () => {
+  it("renders zmanim directly from fresh cGetAsync (skips fetch)", async () => {
     const today = new Date().toISOString().slice(0, 10);
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string) === `zmanim-${today}`) {
-        return {
-          times: {
-            sunrise: "2024-04-14T06:15:00+03:00",
-            sunset: "2024-04-14T19:15:00+03:00",
-          },
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key === `zmanim-${today}`
+          ? { times: { sunrise: "2024-04-14T06:15:00+03:00", sunset: "2024-04-14T19:15:00+03:00" } }
+          : null,
+      ),
+    );
     initHebrewCalCard();
-    // renderZmanim is called synchronously inside the fresh-cache branch
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const grid = document.getElementById("zmanim-grid")!;
     expect(grid.children.length).toBeGreaterThan(0);
     expect(document.getElementById("zmanim-section")!.style.display).toBe("");
@@ -1388,34 +1354,24 @@ describe("Hebrew Calendar — renderSchool vacation detection (lines 254-270)", 
     vi.clearAllMocks();
   });
 
-  it("shows school vacation row when a holiday started within 7 days (vacationItem found)", () => {
+  it("shows school vacation row when a holiday started within 7 days (vacationItem found)", async () => {
     setupDom();
     const tomorrow = new Date(Date.now() + 86_400_000).toISOString();
     const threeDaysAgo = new Date(Date.now() - 3 * 86_400_000).toISOString();
-    // Cache returns two items: one upcoming (required for renderHoliday to proceed)
-    // and one recent vacation matching SCHOOL_VACATION_TITLES
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-")) {
-        return {
-          items: [
-            {
-              category: "holiday",
-              title: "Future Festival",
-              hebrew: "חג עתידי",
-              date: tomorrow,
-            },
-            {
-              category: "holiday",
-              title: "Passover",
-              hebrew: "פסח",
-              date: threeDaysAgo,
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("holidays-")
+          ? {
+              items: [
+                { category: "holiday", title: "Future Festival", hebrew: "חג עתידי", date: tomorrow },
+                { category: "holiday", title: "Passover", hebrew: "פסח", date: threeDaysAgo },
+              ],
+            }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-school")?.textContent).toBe("פסח");
     expect(document.getElementById("hc-school-row")?.style.display).toBe("");
   });
@@ -1492,61 +1448,48 @@ describe("Hebrew Calendar — tickCountdown Saturday and Friday paths", () => {
     document.body.innerHTML = "";
     vi.useRealTimers();
     vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     vi.clearAllMocks();
   });
 
-  it("shows havdala countdown on Saturday when havdalaTime is set and in future", () => {
+  it("shows havdala countdown on Saturday when havdalaTime is set and in future", async () => {
     setupDom();
     vi.useFakeTimers();
     // Set to a known Saturday (2024-01-06 UTC = Saturday)
     const saturday = new Date("2024-01-06T16:00:00.000Z"); // 18:00 IL time
     vi.setSystemTime(saturday);
     const futureHavdala = new Date(saturday.getTime() + 2 * 3_600_000); // 2h from now
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("shabbat-")) {
-        return {
-          items: [
-            {
-              category: "havdalah",
-              date: futureHavdala.toISOString(),
-              title: "Havdalah",
-              hebrew: "הבדלה",
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("shabbat-")
+          ? { items: [{ category: "havdalah", date: futureHavdala.toISOString(), title: "Havdalah", hebrew: "הבדלה" }] }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const row = document.getElementById("hc-countdown-row");
     const el = document.getElementById("hc-countdown");
     expect(row?.style.display).toBe("");
     expect(el?.textContent).toContain("הבדלה בעוד");
   });
 
-  it("shows candles countdown on Friday when candlesTime is set and in future", () => {
+  it("shows candles countdown on Friday when candlesTime is set and in future", async () => {
     setupDom();
     vi.useFakeTimers();
     // Set to a known Friday (2024-01-05 UTC = Friday)
     const friday = new Date("2024-01-05T15:00:00.000Z"); // 17:00 IL time
     vi.setSystemTime(friday);
     const futureCandles = new Date(friday.getTime() + 2 * 3_600_000); // 2h from now
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("shabbat-")) {
-        return {
-          items: [
-            {
-              category: "candles",
-              date: futureCandles.toISOString(),
-              title: "Candle lighting",
-              hebrew: "הדלקת נרות",
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("shabbat-")
+          ? { items: [{ category: "candles", date: futureCandles.toISOString(), title: "Candle lighting", hebrew: "הדלקת נרות" }] }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const row = document.getElementById("hc-countdown-row");
     const el = document.getElementById("hc-countdown");
     expect(row?.style.display).toBe("");
@@ -1573,27 +1516,29 @@ describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayNam
     vi.clearAllMocks();
   });
 
-  it("hides event row when ICS summary matches _lastHolidayName set by loadHoliday", () => {
+  it("hides event row when ICS summary matches _lastHolidayName set by loadHoliday", async () => {
     setupDom();
     const farFuture = new Date(Date.now() + 7 * 86_400_000).toISOString();
     // Use a fixed far-future UTC datetime to avoid timezone edge cases in DTSTART parsing
     const dtStr = "21000101T120000Z";
     // Use the CORRECT key prefix 'holidays-' (not 'holiday-')
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-")) {
-        return {
-          items: [
-            {
-              category: "holiday",
-              title: "Passover",
-              hebrew: "פסח",
-              date: farFuture,
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    // loadHoliday now uses cGetAsync (async), so mock cGetAsync
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        (key as string).startsWith("holidays-")
+          ? {
+              items: [
+                {
+                  category: "holiday",
+                  title: "Passover",
+                  hebrew: "פסח",
+                  date: farFuture,
+                },
+              ],
+            }
+          : null,
+      ),
+    );
     const ics = [
       "BEGIN:VCALENDAR",
       "BEGIN:VEVENT",
@@ -1605,36 +1550,37 @@ describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayNam
     vi.mocked(cGetStale).mockImplementation((key: string) =>
       key === "cal-ics" ? ics : null,
     );
-    // initHebrewCalCard() fires loadHebCal() which synchronously runs loadHoliday()
-    // (cache hit path) → sets _lastHolidayName = "פסח" before any await suspends
     initHebrewCalCard();
-    // Now _lastHolidayName = "פסח"; call renderNextCalEvent explicitly
+    // Drain microtasks so loadHoliday (async) sets _lastHolidayName = "פסח"
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     renderNextCalEvent();
     expect(document.getElementById("hc-event-row")?.style.display).toBe(
       "none",
     );
   });
 
-  it("shows event row when ICS summary does not match _lastHolidayName", () => {
+  it("shows event row when ICS summary does not match _lastHolidayName", async () => {
     setupDom();
     const farFuture = new Date(Date.now() + 7 * 86_400_000).toISOString();
     // Fixed far-future UTC datetime avoids timezone edge cases
     const dtStr = "21000101T120000Z";
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-")) {
-        return {
-          items: [
-            {
-              category: "holiday",
-              title: "Rosh Hashana",
-              hebrew: "ראש השנה",
-              date: farFuture,
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    // loadHoliday now uses cGetAsync (async), so mock cGetAsync
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        (key as string).startsWith("holidays-")
+          ? {
+              items: [
+                {
+                  category: "holiday",
+                  title: "Rosh Hashana",
+                  hebrew: "ראש השנה",
+                  date: farFuture,
+                },
+              ],
+            }
+          : null,
+      ),
+    );
     const ics = [
       "BEGIN:VCALENDAR",
       "BEGIN:VEVENT",
@@ -1647,6 +1593,8 @@ describe("Hebrew Calendar — renderNextCalEvent isDuplicate via _lastHolidayNam
       key === "cal-ics" ? ics : null,
     );
     initHebrewCalCard();
+    // Drain microtasks so loadHoliday (async) sets _lastHolidayName
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     renderNextCalEvent();
     expect(document.getElementById("hc-event-row")?.style.display).toBe("");
   });
@@ -1658,48 +1606,45 @@ describe("Hebrew Calendar — renderDaf dafLink row wiring (full DOM)", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.mocked(cGet).mockReturnValue(null);
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     vi.clearAllMocks();
   });
 
-  it("shows daf-link-row and wires onclick when daf item has url field", () => {
+  it("shows daf-link-row and wires onclick when daf item has url field", async () => {
     setupDom();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("daf-")) {
-        return {
-          ref: "Sukkah.2a",
-          heRef: "מסכת סוכה דף ב׳ עמוד א׳",
-          url: "Sukkah.2a",
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("daf-")
+          ? { ref: "Sukkah.2a", heRef: "מסכת סוכה דף ב׳ עמוד א׳", url: "Sukkah.2a" }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const dafLinkRow = document.getElementById("hc-daf-link-row");
     const dafLink = document.getElementById("hc-daf-link");
     expect(dafLinkRow?.style.display).toBe("");
     expect(dafLink?.onclick).not.toBeNull();
   });
 
-  it("shows daf-link-row and builds ref URL when daf item has no url field", () => {
+  it("shows daf-link-row and builds ref URL when daf item has no url field", async () => {
     setupDom();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("daf-")) {
-        return { ref: "Sukkah 12a", heRef: "סוכה י״ב" };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("daf-") ? { ref: "Sukkah 12a", heRef: "סוכה י״ב" } : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     const dafLinkRow = document.getElementById("hc-daf-link-row");
     expect(dafLinkRow?.style.display).toBe("");
   });
 
-  it("hides daf-link-row and daf-row when daf item is null (via full DOM)", () => {
+  it("hides daf-link-row and daf-row when daf item is null (via full DOM)", async () => {
     setupDom();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("daf-")) return null;
-      return null;
-    });
+    vi.mocked(cGetAsync).mockResolvedValue(null);
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-daf-row")?.style.display).toBe("none");
     expect(document.getElementById("hc-daf-link-row")?.style.display).toBe(
       "none",
@@ -1772,24 +1717,17 @@ describe("Hebrew Calendar — renderParasha parasha-link wiring (full DOM)", () 
     vi.clearAllMocks();
   });
 
-  it("shows parasha-link-row when parasha item has title and link elements exist in DOM", () => {
+  it("shows parasha-link-row when parasha item has title and link elements exist in DOM", async () => {
     setupDom();
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).startsWith("parasha-")) {
-        return {
-          items: [
-            {
-              category: "parashat",
-              title: "Metzora",
-              hebrew: "מצורע",
-              date: new Date(Date.now() + 86_400_000).toISOString(),
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("parasha-")
+          ? { items: [{ category: "parashat", title: "Metzora", hebrew: "מצורע", date: new Date(Date.now() + 86_400_000).toISOString() }] }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-parasha-link-row")?.style.display).toBe(
       "",
     );
@@ -1905,23 +1843,16 @@ describe("Hebrew Calendar — parashaLink.onclick body calls window.open (line 3
     vi.clearAllMocks();
   });
 
-  it("calls window.open when parashaLink.onclick is invoked (line 380 onclick body)", async () => {
+  it("calls window.open with sefaria URL when parashaLink.onclick is invoked (line 380 onclick body)", async () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    // Return parasha data from cGet so loadParasha wires the onclick
-    vi.mocked(cGet).mockImplementation((key: string) => {
-      if ((key as string).includes("parasha")) {
-        return {
-          items: [{
-            category: "parashat",
-            title: "Metzora",
-            hebrew: "מצורע",
-            date: new Date(Date.now() + 86_400_000).toISOString(),
-          }],
-        };
-      }
-      return null;
-    });
-    // acquireLock is mocked to false → loadHebCal won't fire, but cGet intercept covers parasha
+    // Return parasha data from cGetAsync so loadParasha wires the onclick
+    vi.mocked(cGetAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.includes("parasha")
+          ? { items: [{ category: "parashat", title: "Metzora", hebrew: "מצורע", date: new Date(Date.now() + 86_400_000).toISOString() }] }
+          : null,
+      ),
+    );
     initHebrewCalCard();
     for (let i = 0; i < 20; i++) await Promise.resolve();
 
@@ -1989,26 +1920,28 @@ describe("Hebrew Calendar — renderHoliday h.title fallback (line 247)", () => 
     vi.clearAllMocks();
   });
 
-  it("uses h.title when h.hebrew is absent, covering h.hebrew ?? h.title FALSE branch", () => {
+  it("uses h.title when h.hebrew is absent, covering h.hebrew ?? h.title FALSE branch", async () => {
     setupDom();
     vi.mocked(cGet).mockReturnValue(null);
-    // Stale data returns a holiday item with NO hebrew field → forces ?? h.title branch
-    vi.mocked(cGetStale).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-")) {
-        return {
-          items: [
-            {
-              category: "holiday",
-              title: "Pesach",
-              // intentionally omit 'hebrew' to hit the ?? h.title branch
-              date: new Date(Date.now() + 86_400_000 * 5).toISOString(),
-            },
-          ],
-        };
-      }
-      return null;
-    });
+    // Stale async data returns a holiday item with NO hebrew field → forces ?? h.title branch
+    vi.mocked(cGetStaleAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("holidays-")
+          ? {
+              items: [
+                {
+                  category: "holiday",
+                  title: "Pesach",
+                  // intentionally omit 'hebrew' to hit the ?? h.title branch
+                  date: new Date(Date.now() + 86_400_000 * 5).toISOString(),
+                },
+              ],
+            }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     expect(document.getElementById("hc-holiday")?.textContent).toContain("Pesach");
   });
 });
@@ -2066,22 +1999,24 @@ describe("Hebrew Calendar — renderHoliday sort comparator with 2+ holidays (li
     setupDom();
     vi.mocked(cGet).mockReturnValue(null);
     vi.mocked(cGetStale).mockReturnValue(null);
-    // Return 2 future holidays via stale cache so renderHoliday is called with 2+ items
+    // Return 2 future holidays via stale async cache so renderHoliday is called with 2+ items
     // → .sort() comparator (line 239) is actually invoked to compare 2 elements
     const farFuture1 = new Date(Date.now() + 86_400_000 * 5).toISOString(); // 5 days away
     const farFuture2 = new Date(Date.now() + 86_400_000 * 10).toISOString(); // 10 days away
-    vi.mocked(cGetStale).mockImplementation((key: string) => {
-      if ((key as string).startsWith("holidays-")) {
-        return {
-          items: [
-            { category: "holiday", hebrew: "פסח", title: "Passover", date: farFuture2 },
-            { category: "holiday", hebrew: "שבועות", title: "Shavuot", date: farFuture1 },
-          ],
-        };
-      }
-      return null;
-    });
+    vi.mocked(cGetStaleAsync).mockImplementation((key: string) =>
+      Promise.resolve(
+        key.startsWith("holidays-")
+          ? {
+              items: [
+                { category: "holiday", hebrew: "פסח", title: "Passover", date: farFuture2 },
+                { category: "holiday", hebrew: "שבועות", title: "Shavuot", date: farFuture1 },
+              ],
+            }
+          : null,
+      ),
+    );
     initHebrewCalCard();
+    for (let i = 0; i < 20; i++) await Promise.resolve();
     // renderHoliday receives 2 future holidays → .sort() comparator fires for ordering
     // The closer holiday (farFuture1=5days) comes first after sorting
     expect(document.getElementById("hc-holiday")?.textContent).toContain("שבועות");
