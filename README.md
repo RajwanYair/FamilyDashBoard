@@ -127,6 +127,27 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 
 ## 🚀 Getting Started
 
+### ⚡ Quick Start — Download and Run (No Setup Required)
+
+No Node.js, no terminal, no build step needed.
+
+1. Go to the [**latest release**](https://github.com/RajwanYair/FamilyDashBoard/releases/latest)
+2. Download **`dist.zip`** from the Assets section
+3. Unzip the archive anywhere on your computer
+4. Open **`index.html`** in Chrome, Edge, or Firefox
+
+The dashboard runs entirely from local files — no server required. For the
+best experience, open in **full-screen mode** (F11) and connect your display
+to a large TV.
+
+> **Note:** Some browsers restrict `file://` access for service-worker features.
+> For full offline support, serve the folder via a local server:
+> `npx serve dist` or `python -m http.server` from the unzipped folder.
+
+---
+
+### 🛠️ Development Setup
+
 ```powershell
 # 1. Clone the repo
 git clone https://github.com/RajwanYair/FamilyDashBoard.git
