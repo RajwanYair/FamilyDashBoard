@@ -1,4 +1,4 @@
-# Card Architecture Audit — FamilyDashBoard v8.3.0
+# Card Architecture Audit — FamilyDashBoard v8.4.0
 
 > **Date**: 2026-04-20
 > **Scope**: All 11 registered cards in `src/cards/`
@@ -15,19 +15,19 @@
 
 | Card | Registry ID | initX() file | FdbCard file | Status |
 |------|-------------|--------------|--------------|--------|
-| Alerts | `alerts` | `alerts/alerts.ts` | — | ⏳ Legacy |
-| Calendar | `calendar` | `calendar/calendar.ts` | — | ⏳ Legacy |
+| Alerts | `alerts` | `alerts/alerts.ts` | `alerts/fdb-alerts.ts` | ✅ Migrated |
+| Calendar | `calendar` | `calendar/calendar.ts` | `calendar/fdb-calendar.ts` | ✅ Migrated |
 | Countdown | `countdown` | `countdown/countdown.ts` | `countdown/fdb-countdown.ts` | ✅ Migrated |
-| Currency | `currency` | `currency/currency.ts` | — | ⏳ Legacy |
-| Hebrew Calendar | `hebrew-cal` | `hebrew-cal/hebrew-cal.ts` | — | ⏳ Legacy |
+| Currency | `currency` | `currency/currency.ts` | `currency/fdb-currency.ts` | ✅ Migrated |
+| Hebrew Calendar | `hebrew-cal` | `hebrew-cal/hebrew-cal.ts` | `hebrew-cal/fdb-hebrew-cal.ts` | ✅ Migrated |
 | Motivation | `motivation` | `motivation/motivation.ts` | `motivation/fdb-motivation.ts` | ✅ Migrated |
 | News | `news` | `news/news.ts` | `news/fdb-news.ts` | ✅ Migrated |
 | Stocks | `stocks` | `stocks/stocks.ts` | `stocks/fdb-stocks.ts` | ✅ Migrated |
-| System Info | `system-info` | `system-info/system-info.ts` | — | ⏳ Legacy |
+| System Info | `system-info` | `system-info/system-info.ts` | `system-info/fdb-system-info.ts` | ✅ Migrated |
 | Tasks | `tasks` | `tasks/tasks.ts` | `tasks/fdb-tasks.ts` | ✅ Migrated |
 | Weather | `weather` | `weather/weather.ts` | `weather/fdb-weather.ts` | ✅ Migrated |
 
-**6 / 11 migrated** · **5 / 11 remaining**
+**11 / 11 migrated** · **Stream B2 ✅ COMPLETE**
 
 ## Migration Priority
 

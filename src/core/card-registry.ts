@@ -218,9 +218,15 @@ registerCard({
   icon: "✡️",
   titleHe: "לוח עברי",
   titleEn: "Hebrew Calendar",
-  load: async (): Promise<CardDefinition> => {
-    const { initHebrewCalCard, hebrewCalConfigSchema } = await import("@/cards/hebrew-cal/hebrew-cal");
-    return legacyAdapter(
+  load: async (): Promise<FdbCardDefinition> => {
+    const [
+      { initHebrewCalCard, hebrewCalConfigSchema, destroyHebrewCalCard },
+      { FdbHebrewCalCard },
+    ] = await Promise.all([
+      import("@/cards/hebrew-cal/hebrew-cal"),
+      import("@/cards/hebrew-cal/fdb-hebrew-cal"),
+    ]);
+    const def = legacyAdapter(
       "hebrew-cal",
       "✡️",
       "לוח עברי",
@@ -231,6 +237,21 @@ registerCard({
       initHebrewCalCard,
       hebrewCalConfigSchema,
     );
+    return {
+      ...def,
+      destroy: destroyHebrewCalCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-hebrew-cal");
+        element.setAttribute("data-card-id", "hebrew-cal");
+        element.setAttribute("data-card-size", def.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      elementClass: FdbHebrewCalCard,
+      tagName: "fdb-hebrew-cal",
+    };
   },
 });
 
@@ -239,9 +260,15 @@ registerCard({
   icon: "📅",
   titleHe: "יומן",
   titleEn: "Calendar",
-  load: async (): Promise<CardDefinition> => {
-    const { initCalendarCard, calendarConfigSchema } = await import("@/cards/calendar/calendar");
-    return legacyAdapter(
+  load: async (): Promise<FdbCardDefinition> => {
+    const [
+      { initCalendarCard, calendarConfigSchema, destroyCalendarCard },
+      { FdbCalendarCard },
+    ] = await Promise.all([
+      import("@/cards/calendar/calendar"),
+      import("@/cards/calendar/fdb-calendar"),
+    ]);
+    const def = legacyAdapter(
       "calendar",
       "📅",
       "יומן",
@@ -252,6 +279,21 @@ registerCard({
       initCalendarCard,
       calendarConfigSchema,
     );
+    return {
+      ...def,
+      destroy: destroyCalendarCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-calendar");
+        element.setAttribute("data-card-id", "calendar");
+        element.setAttribute("data-card-size", def.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      elementClass: FdbCalendarCard,
+      tagName: "fdb-calendar",
+    };
   },
 });
 
@@ -260,9 +302,15 @@ registerCard({
   icon: "💱",
   titleHe: "מטבעות",
   titleEn: "Currency",
-  load: async (): Promise<CardDefinition> => {
-    const { initCurrencyCard, currencyConfigSchema } = await import("@/cards/currency/currency");
-    return legacyAdapter(
+  load: async (): Promise<FdbCardDefinition> => {
+    const [
+      { initCurrencyCard, currencyConfigSchema, destroyCurrencyCard },
+      { FdbCurrencyCard },
+    ] = await Promise.all([
+      import("@/cards/currency/currency"),
+      import("@/cards/currency/fdb-currency"),
+    ]);
+    const def = legacyAdapter(
       "currency",
       "💱",
       "מטבעות",
@@ -273,6 +321,21 @@ registerCard({
       initCurrencyCard,
       currencyConfigSchema,
     );
+    return {
+      ...def,
+      destroy: destroyCurrencyCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-currency");
+        element.setAttribute("data-card-id", "currency");
+        element.setAttribute("data-card-size", def.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      elementClass: FdbCurrencyCard,
+      tagName: "fdb-currency",
+    };
   },
 });
 
@@ -312,9 +375,15 @@ registerCard({
   icon: "🚨",
   titleHe: "התראות",
   titleEn: "Alerts",
-  load: async (): Promise<CardDefinition> => {
-    const { initAlertsCard, alertsConfigSchema } = await import("@/cards/alerts/alerts");
-    return legacyAdapter(
+  load: async (): Promise<FdbCardDefinition> => {
+    const [
+      { initAlertsCard, alertsConfigSchema, destroyAlertsCard },
+      { FdbAlertsCard },
+    ] = await Promise.all([
+      import("@/cards/alerts/alerts"),
+      import("@/cards/alerts/fdb-alerts"),
+    ]);
+    const def = legacyAdapter(
       "alerts",
       "🚨",
       "התראות",
@@ -325,6 +394,21 @@ registerCard({
       initAlertsCard,
       alertsConfigSchema,
     );
+    return {
+      ...def,
+      destroy: destroyAlertsCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-alerts");
+        element.setAttribute("data-card-id", "alerts");
+        element.setAttribute("data-card-size", def.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      elementClass: FdbAlertsCard,
+      tagName: "fdb-alerts",
+    };
   },
 });
 
@@ -396,9 +480,28 @@ registerCard({
   icon: "🖥",
   titleHe: "מצב מערכת",
   titleEn: "System Info",
-  load: async (): Promise<CardDefinition> => {
-    const m = await import("@/cards/system-info/system-info");
-    return m.systemInfoCard;
+  load: async (): Promise<FdbCardDefinition> => {
+    const [{ systemInfoCard }, { FdbSystemInfoCard }] = await Promise.all([
+      import("@/cards/system-info/system-info"),
+      import("@/cards/system-info/fdb-system-info"),
+    ]);
+    return {
+      ...systemInfoCard,
+      render(): HTMLElement {
+        const element = document.createElement("fdb-system-info");
+        element.setAttribute("data-card-id", "system-info");
+        element.setAttribute("data-card-size", systemInfoCard.defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle is owned by the custom element's connect() hook.
+      },
+      destroy(): void {
+        // Lifecycle is owned by the custom element's disconnect() hook.
+      },
+      elementClass: FdbSystemInfoCard,
+      tagName: "fdb-system-info",
+    };
   },
 });
 

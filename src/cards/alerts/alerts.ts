@@ -407,6 +407,13 @@ export function initAlertsCard(): void {
   diagLog("FDB-022: [alerts] Initialized");
 }
 
+export function destroyAlertsCard(): void {
+  if (_timer !== null) {
+    clearTimeout(_timer);
+    _timer = null;
+  }
+}
+
 // ── Sprint 138: configSchema ────────────────────────────────────────────────
 
 export const alertsConfigSchema: CardConfigField[] = [

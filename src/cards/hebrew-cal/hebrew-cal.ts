@@ -240,6 +240,7 @@ let _lastSpecialNames: string[] = [];
 let _candlesTime: Date | null = null;
 let _havdalaTime: Date | null = null;
 let _countdownInterval: ReturnType<typeof setInterval> | null = null;
+let _hebCalScheduleId: number | null = null;
 
 // ── Sefaria link refs ──
 let _dafSefariaUrl = "";
@@ -882,8 +883,19 @@ export function initHebrewCalCard(): void {
   renderPsalmOfDay();
   renderTasksStrip();
   void loadHebCal();
-  scheduleCard(loadHebCal, INTERVALS.HEBREW_CAL);
+  _hebCalScheduleId = scheduleCard(loadHebCal, INTERVALS.HEBREW_CAL);
   diagLog("FDB-038: [hebrew-cal] Initialized");
+}
+
+export function destroyHebrewCalCard(): void {
+  if (_hebCalScheduleId !== null) {
+    clearInterval(_hebCalScheduleId);
+    _hebCalScheduleId = null;
+  }
+  if (_countdownInterval !== null) {
+    clearInterval(_countdownInterval);
+    _countdownInterval = null;
+  }
 }
 
 /** Render pending family tasks as a compact strip inside the heb-cal card. */

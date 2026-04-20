@@ -267,11 +267,20 @@ const loadCurrency = createCardLoader<Record<string, number>>(
   renderCurrency,
 );
 
+let _curScheduleId: number | null = null;
+
 export function initCurrencyCard(): void {
   cacheDom();
   void loadCurrency();
-  scheduleCard(loadCurrency, INTERVALS.CURRENCY);
+  _curScheduleId = scheduleCard(loadCurrency, INTERVALS.CURRENCY);
   diagLog("FDB-033: [currency] Initialized");
+}
+
+export function destroyCurrencyCard(): void {
+  if (_curScheduleId !== null) {
+    clearInterval(_curScheduleId);
+    _curScheduleId = null;
+  }
 }
 
 // ── Sprint 137: configSchema ────────────────────────────────────────────────

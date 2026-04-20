@@ -544,11 +544,20 @@ async function fetchICSWithCache(
   return parseICS(text, idx);
 }
 
+let _calScheduleId: number | null = null;
+
 export function initCalendarCard(): void {
   cacheDom();
   void loadCalendar();
-  scheduleCard(loadCalendar, INTERVALS.CALENDAR);
+  _calScheduleId = scheduleCard(loadCalendar, INTERVALS.CALENDAR);
   diagLog("FDB-029: [calendar] Initialized");
+}
+
+export function destroyCalendarCard(): void {
+  if (_calScheduleId !== null) {
+    clearInterval(_calScheduleId);
+    _calScheduleId = null;
+  }
 }
 
 // ── Sprint 139: configSchema ────────────────────────────────────────────────
