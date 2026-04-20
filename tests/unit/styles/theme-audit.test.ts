@@ -26,6 +26,11 @@ const REQUIRED_PROPS = [
   "--bg-gradient-1",
   "--bg-gradient-2",
   "--bg-gradient-3",
+  // Semantic status tokens — required for stock/weather colouring
+  "--positive",
+  "--negative",
+  "--warning",
+  "--text-muted",
 ];
 
 function extractThemeBlock(theme: string): string {
