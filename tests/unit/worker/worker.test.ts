@@ -536,3 +536,132 @@ describe("Worker — handleCurrency route", () => {
     expect(res.status).toBe(200);
   });
 });
+
+// ── Zod schemas ───────────────────────────────────────────────────────────────
+
+import {
+  WeatherSchema,
+  CurrencySchema,
+  HebcalSchema,
+  HebcalHolidaysSchema,
+  safeParse,
+} from "../../../worker/src/utils/schemas";
+
+describe("Zod schemas — safeParse helper", () => {
+  it("returns ok:true for valid data", () => {
+    const result = safeParse(CurrencySchema, { rates: { USD: 0.27, EUR: 0.25 } });
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.data.rates.USD).toBe(0.27);
+  });
+
+  it("returns ok:false with error string for invalid data", () => {
+    const result = safeParse(CurrencySchema, { rates: "not an object" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeTruthy();
+  });
+
+  it("passes through extra fields not in schema", () => {
+    const result = safeParse(CurrencySchema, { rates: { USD: 0.27 }, extra: "field" });
+    expect(result.ok).toBe(true);
+  });
+});
+
+describe("Zod schemas — WeatherSchema", () => {
+  const validWeather = {
+    current: {
+      temperature_2m: 22,
+      apparent_temperature: 20,
+      weather_code: 1,
+      wind_speed_10m: 10,
+      wind_direction_10m: 180,
+      relative_humidity_2m: 55,
+      uv_index: 3,
+    },
+    hourly: {
+      temperature_2m: [22, 23],
+      precipitation_probability: [10, 20],
+      weather_code: [1, 2],
+    },
+    daily: {
+      temperature_2m_max: [25],
+      temperature_2m_min: [18],
+      weather_code: [1],
+      sunrise: ["2024-01-01T06:00"],
+      sunset: ["2024-01-01T18:00"],
+      precipitation_probability_max: [20],
+      uv_index_max: [5],
+    },
+  };
+
+  it("accepts valid Open-Meteo response", () => {
+    const result = safeParse(WeatherSchema, validWeather);
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects response missing current.temperature_2m", () => {
+    const bad = { ...validWeather, current: { weather_code: 1 } };
+    const result = safeParse(WeatherSchema, bad);
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects response missing daily arrays", () => {
+    const bad = { current: validWeather.current, hourly: validWeather.hourly, daily: {} };
+    const result = safeParse(WeatherSchema, bad);
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe("Zod schemas — CurrencySchema", () => {
+  it("accepts valid ER-API response", () => {
+    const result = safeParse(CurrencySchema, { rates: { USD: 0.27, EUR: 0.25, GBP: 0.21 } });
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects missing rates field", () => {
+    const result = safeParse(CurrencySchema, { base: "ILS" });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects rates with non-number values", () => {
+    const result = safeParse(CurrencySchema, { rates: { USD: "not-a-number" } });
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe("Zod schemas — HebcalSchema", () => {
+  const validItem = { title: "Candle lighting", date: "2024-01-05T17:00", category: "candles" };
+
+  it("accepts valid Hebcal shabbat response", () => {
+    const result = safeParse(HebcalSchema, { items: [validItem] });
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts empty items array", () => {
+    const result = safeParse(HebcalSchema, { items: [] });
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects missing items field", () => {
+    const result = safeParse(HebcalSchema, { title: "Shabbat" });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects item missing required title field", () => {
+    const result = safeParse(HebcalSchema, { items: [{ date: "2024-01-05", category: "candles" }] });
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe("Zod schemas — HebcalHolidaysSchema", () => {
+  const validItem = { title: "Rosh Hashana", date: "2024-10-02", category: "major" };
+
+  it("accepts valid Hebcal holidays response", () => {
+    const result = safeParse(HebcalHolidaysSchema, { items: [validItem] });
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects missing items", () => {
+    const result = safeParse(HebcalHolidaysSchema, {});
+    expect(result.ok).toBe(false);
+  });
+});

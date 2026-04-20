@@ -1,4 +1,4 @@
-import { proxyResponse, workerEnvelope } from "../utils/response";
+import { jsonResponse, proxyResponse, workerEnvelope } from "../utils/response";
 import {
   ValidationError,
   validationErrorResponse,
@@ -7,6 +7,13 @@ import {
   requireGeoId,
   requireYear,
 } from "../utils/validation";
+import {
+  WeatherSchema,
+  CurrencySchema,
+  HebcalSchema,
+  HebcalHolidaysSchema,
+  safeParse,
+} from "../utils/schemas";
 
 export async function handleWeather(url: URL): Promise<Response> {
   let latNum: number, lonNum: number;
@@ -23,7 +30,11 @@ export async function handleWeather(url: URL): Promise<Response> {
     return proxyResponse(res, 60);
   }
   const data: unknown = await res.json();
-  return workerEnvelope(data, "open-meteo", false, 1800); // 30 min
+  const parsed = safeParse(WeatherSchema, data);
+  if (!parsed.ok) {
+    return jsonResponse({ error: "Upstream shape mismatch", detail: parsed.error }, 502);
+  }
+  return workerEnvelope(parsed.data, "open-meteo", false, 1800); // 30 min
 }
 
 export async function handleCurrency(): Promise<Response> {
@@ -36,7 +47,8 @@ export async function handleCurrency(): Promise<Response> {
     const res = await fetch(url);
     if (res.ok) {
       const data: unknown = await res.json();
-      return workerEnvelope(data, provider, false, 3600); // 1 h
+      const parsed = safeParse(CurrencySchema, data);
+      if (parsed.ok) return workerEnvelope(parsed.data, provider, false, 3600); // 1 h
     }
   }
 
@@ -60,7 +72,11 @@ export async function handleHebcal(url: URL): Promise<Response> {
   );
   if (!res.ok) return proxyResponse(res, 60);
   const data: unknown = await res.json();
-  return workerEnvelope(data, "hebcal", false, 21600); // 6 h
+  const parsed = safeParse(HebcalSchema, data);
+  if (!parsed.ok) {
+    return jsonResponse({ error: "Upstream shape mismatch", detail: parsed.error }, 502);
+  }
+  return workerEnvelope(parsed.data, "hebcal", false, 21600); // 6 h
 }
 
 export async function handleHebcalHolidays(url: URL): Promise<Response> {
@@ -75,5 +91,9 @@ export async function handleHebcalHolidays(url: URL): Promise<Response> {
   );
   if (!res.ok) return proxyResponse(res, 60);
   const data: unknown = await res.json();
-  return workerEnvelope(data, "hebcal", false, 43200); // 12 h
+  const parsed = safeParse(HebcalHolidaysSchema, data);
+  if (!parsed.ok) {
+    return jsonResponse({ error: "Upstream shape mismatch", detail: parsed.error }, 502);
+  }
+  return workerEnvelope(parsed.data, "hebcal", false, 43200); // 12 h
 }
