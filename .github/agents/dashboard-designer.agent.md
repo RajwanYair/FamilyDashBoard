@@ -5,13 +5,21 @@ argument-hint: "Describe the card, section, overlay, theme, or layout behavior t
 tools:
   - read_file
   - grep_search
+  - file_search
   - semantic_search
   - get_errors
+  - replace_string_in_file
+  - multi_replace_string_in_file
+  - create_file
 user-invocable: true
 handoffs:
   - label: Implement Data Wiring
     agent: api-integrator
     prompt: Wire the UI above to the correct data source, caching path, and diagnostics behavior.
+    send: false
+  - label: Quality Review
+    agent: quality-reviewer
+    prompt: Review the CSS + TypeScript changes above for correctness, test coverage, and design-system compliance.
     send: false
 ---
 
@@ -24,6 +32,12 @@ Reference these files before making assumptions:
 - `.github/copilot-instructions.md`
 - `.github/instructions/workspace.instructions.md`
 - `.github/instructions/dashboard.instructions.md`
+- `src/styles/tokens.css` — all CSS custom property definitions
+- `src/styles/themes.css` — per-theme token overrides (6 themes)
+- `src/styles/components.css` — shared card/chip/badge primitives
+- `src/styles/layout.css` — grid, column, and breakpoint rules
+- `src/styles/animations.css` — keyframe and transition definitions
+- `src/styles/a11y.css` — reduced-motion, focus, and accessibility rules
 
 ## Mission
 
@@ -105,13 +119,42 @@ Always add new rules to the correct layer. No duplicate selectors.
 - If a component state changes, describe empty, loading, stale, and error readability.
 - If new markup is required, keep IDs and hooks consistent with existing TS modules.
 
+## Error Playbook
+
+Common failures and how to resolve them:
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Color not reflecting theme | Wrong token name or missing override | `grep_search` for the token in `tokens.css`; check `themes.css` for all 6 overrides |
+| RTL layout breaks (text runs wrong way, margins flip) | Missing `direction: rtl` cascade or logical-property mismatch | Check that the element inherits `dir="rtl"` from `<html>`; use `margin-inline-*` not `margin-left/right` |
+| Theme not applying to a card | Body selector missing `body.theme-<name>` override | Check `themes.css` — all theme overrides must be on `body.theme-<name>` not `:root.theme-<name>` |
+| `backdrop-filter` ignored on low-end device | Hardware tier guard | Check `data-hw-tier="low"` on `<html>`; low-tier CSS disables backdrop-filter in `components.css` |
+| New CSS selector has no effect | Wrong layer or duplicate selector | Check `@layer` order; grep for duplicate selectors in the same file before adding |
+| `data-card-id` mismatch breaks hide/show | Alias used instead of registry ID | Use exact registry ID: `"hebrew-cal"`, `"calendar"`, `"motivation"` — not `hcal`, `cal`, `moti` |
+| Card body is a plain list | Layout convention violation | Wrap data points in `display: grid; grid-template-columns: repeat(auto-fit, minmax(Xpx, 1fr))` tiles |
+| Animation flickers in theater mode | Missing `prefers-reduced-motion` guard | Add `@media (prefers-reduced-motion: reduce)` override in `a11y.css` |
+
 ## Verification
 
-Use PowerShell commands in this repository:
+After every CSS or TypeScript change, run **all three** steps:
 
 ```powershell
+# 1. Type check — zero errors required
+npx tsc --noEmit
+
+# 2. Lint — zero errors, zero warnings required
 npx eslint src tests --max-warnings 0
+
+# 3. Relevant unit tests (adjust path to the changed card/component)
 npx vitest run tests/unit/ui/<name>.test.ts
+npx vitest run tests/unit/styles/
 ```
 
-If the change affects card structure or IDs, ensure the DOM contract and related unit tests still reflect the rendered markup.
+If the change affects card structure or IDs, also run:
+
+```powershell
+npx vitest run tests/unit/html/dom-contract.test.ts
+npx vitest run tests/unit/styles/theme-audit.test.ts
+```
+
+Confirm: 0 TypeScript errors · 0 lint errors · 0 lint warnings · 0 test failures before handing off.
