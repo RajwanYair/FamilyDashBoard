@@ -67,3 +67,64 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 - If you add or remove a workflow, update this README and `.github/AGENTS.md`.
 - If you add a secret or environment requirement, document it here and in the relevant workflow comments.
 - Do not silently change action major versions or the Node support matrix without documenting why.
+
+---
+
+## Permissions Matrix
+
+| Workflow | contents | pages | id-token | deployments | pull-requests |
+|----------|----------|-------|----------|-------------|---------------|
+| `ci.yml` | read | — | — | — | — |
+| `deploy.yml` | read | write | write | — | — |
+| `release.yml` | write | — | — | write | — |
+| `deploy-worker.yml` | read | — | — | — | — |
+| `auto-label.yml` | read | — | — | — | write |
+| `dependabot-auto-merge.yml` | write | — | — | — | write |
+
+> Principle: **least privilege**. Only grant the minimum permissions required for the workflow to function.
+> The `id-token: write` on `deploy.yml` is required for OIDC authentication with GitHub Pages.
+
+---
+
+## Secrets Inventory
+
+| Secret | Used by | Purpose |
+|--------|---------|---------|
+| `CF_API_TOKEN` | `deploy-worker.yml` | Cloudflare API token for Worker deployment via Wrangler |
+| `CF_ACCOUNT_ID` | `deploy-worker.yml` | Cloudflare account identifier |
+| _(none others)_ | all others | Workflows use `GITHUB_TOKEN` (auto-provisioned) only |
+
+> If you add a new secret, document it here and in the workflow that uses it.
+> Never commit secrets as plaintext. Never log secret values.
+
+---
+
+## Concurrency Policy
+
+All push/PR-triggered workflows use `concurrency` to cancel stale runs:
+
+```yaml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+```
+
+- `ci.yml` — cancel older runs on the same branch. PRs always run to completion.
+- `deploy.yml` — cancel older deploys. Only one Pages deploy active at a time.
+- `release.yml` — **no cancel** (`cancel-in-progress: false`). Tag builds must always complete.
+- `deploy-worker.yml` — cancel older worker deploys on same branch.
+
+---
+
+## Action Version Policy
+
+| Action | Pinned version | Notes |
+|--------|---------------|-------|
+| `actions/checkout` | `v4` | Do NOT use v5+ (does not exist yet) |
+| `actions/setup-node` | `v4` | Do NOT use v5+ (does not exist yet) |
+| `actions/upload-pages-artifact` | `v3` | Stable Pages API |
+| `actions/deploy-pages` | `v4` | Stable Pages deploy |
+| `actions/upload-artifact` | `v4` | |
+| `actions/download-artifact` | `v4` | |
+
+> Update action versions only when there is a clear need. Document the reason in the commit message.
