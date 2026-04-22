@@ -24,6 +24,8 @@ import {
   cacheInventory,
   lastHitLayer,
   cSetAsync,
+  cEvictIdb,
+  _resetForTest,
 } from "@/core/cache";
 
 describe("Cache — cSet / cGet", () => {
@@ -822,5 +824,69 @@ describe("Cache — cSetAsync", () => {
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw!) as { data: { persisted: boolean }; ts: number };
     expect(parsed.data.persisted).toBe(true);
+  });
+});
+
+// ── cEvictIdb ────────────────────────────────────────────────────────────────
+
+describe("Cache — cEvictIdb", () => {
+  beforeEach(() => {
+    cClear();
+  });
+
+  it("returns 0 when IDB is empty (happy-dom fallback)", async () => {
+    const removed = await cEvictIdb();
+    expect(typeof removed).toBe("number");
+    expect(removed).toBeGreaterThanOrEqual(0);
+  });
+
+  it("does not throw on repeated calls", async () => {
+    await expect(cEvictIdb()).resolves.toBeGreaterThanOrEqual(0);
+    await expect(cEvictIdb()).resolves.toBeGreaterThanOrEqual(0);
+  });
+});
+
+// ── _resetForTest ────────────────────────────────────────────────────────────
+
+describe("Cache — _resetForTest", () => {
+  it("clears in-memory entries set before call", () => {
+    cSet("rft-key-1", "value1");
+    cSet("rft-key-2", 42);
+    expect(cGet("rft-key-1", 60_000)).toBe("value1");
+    _resetForTest();
+    expect(cGet("rft-key-1", 60_000)).toBeNull();
+    expect(cGet("rft-key-2", 60_000)).toBeNull();
+  });
+
+  it("removes all dash_v2_ localStorage entries", () => {
+    cSet("rft-ls-a", "aaa");
+    cSet("rft-ls-b", "bbb");
+    expect(localStorage.getItem("dash_v2_rft-ls-a")).not.toBeNull();
+    _resetForTest();
+    expect(localStorage.getItem("dash_v2_rft-ls-a")).toBeNull();
+    expect(localStorage.getItem("dash_v2_rft-ls-b")).toBeNull();
+  });
+
+  it("resets stats counters to zero", () => {
+    cSet("rft-stat", 1);
+    cGet("rft-stat", 60_000); // hit
+    cGet("rft-miss", 60_000); // miss
+    _resetForTest();
+    const stats = cacheStats();
+    expect(stats.hits).toBe(0);
+    expect(stats.misses).toBe(0);
+  });
+
+  it("leaves non-dash_v2_ localStorage entries intact", () => {
+    localStorage.setItem("other-key", "should-stay");
+    cSet("rft-only", "x");
+    _resetForTest();
+    expect(localStorage.getItem("other-key")).toBe("should-stay");
+    localStorage.removeItem("other-key");
+  });
+
+  it("can be called when cache is already empty", () => {
+    cClear();
+    expect(() => _resetForTest()).not.toThrow();
   });
 });

@@ -823,3 +823,74 @@ describe("Countdown — configSchema (Sprint 82)", () => {
     }
   });
 });
+
+// ── tick() primary progress bar (lines 201-211) ──────────────────────────────
+
+describe("Countdown — tick() primary progress bar", () => {
+  function buildProgressDOM(): void {
+    document.body.innerHTML = `
+      <div id="cd-wedding-title"></div>
+      <div id="cd-days"></div>
+      <div id="cd-hours"></div>
+      <div id="cd-mins"></div>
+      <div id="cd-secs"></div>
+      <div id="cd-msg"></div>
+      <div id="cd-progress-wrap" style="display:none"><div id="cd-progress-bar"></div></div>
+    `;
+  }
+
+  afterEach(() => {
+    destroyCountdownCard();
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("shows progress bar and sets width when startDate is configured (lines 202-205)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildProgressDOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2025-12-31",
+      countdownCardTime: "00:00",
+      countdownCardTitle: "Test",
+      countdownCardDoneMsg: "done",
+      countdownCardStartDate: "2025-01-01",
+    } as DashboardConfig);
+    tick();
+    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("");
+    const bar = document.getElementById("cd-progress-bar") as HTMLElement;
+    expect(bar.style.width).toMatch(/^\d+%$/);
+  });
+
+  it("hides progress wrap when no startDate is configured (line 210-211)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildProgressDOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2025-12-31",
+      countdownCardTime: "00:00",
+      countdownCardTitle: "Test",
+      countdownCardDoneMsg: "done",
+      countdownCardStartDate: "",
+    } as DashboardConfig);
+    tick();
+    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");
+  });
+
+  it("hides progress wrap when computeProgress returns null (startMs >= targetMs, line 206-208)", () => {
+    vi.useFakeTimers();
+    // Set now to be after the target date so start > target
+    vi.setSystemTime(new Date("2025-12-31T00:00:00"));
+    buildProgressDOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2025-01-01",
+      countdownCardTime: "00:00",
+      countdownCardTitle: "Test",
+      countdownCardDoneMsg: "done",
+      countdownCardStartDate: "2025-12-01", // start > target → computeProgress returns null
+    } as DashboardConfig);
+    tick();
+    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");
+  });
+});

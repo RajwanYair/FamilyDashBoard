@@ -755,3 +755,57 @@ describe("SystemInfo — configSchema (Sprint 81)", () => {
     }
   });
 });
+
+// ── categorizeDevice — additional width branches ──────────────────────────────
+
+describe("categorizeDevice — width branches", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    Object.defineProperty(window, "innerWidth", { value: 1920, configurable: true });
+  });
+
+  it("returns 'desktop' when innerWidth is 1280", () => {
+    Object.defineProperty(window, "innerWidth", { value: 1280, configurable: true });
+    expect(categorizeDevice()).toBe("desktop");
+  });
+
+  it("returns 'tablet' when innerWidth is 768", () => {
+    Object.defineProperty(window, "innerWidth", { value: 768, configurable: true });
+    expect(categorizeDevice()).toBe("tablet");
+  });
+
+  it("returns 'mobile' when innerWidth is 375", () => {
+    Object.defineProperty(window, "innerWidth", { value: 375, configurable: true });
+    expect(categorizeDevice()).toBe("mobile");
+  });
+});
+
+// ── RTT tile sysinfo-tile visibility (line 187) ───────────────────────────────
+
+describe("SystemInfo — rttTile display toggle (line 187)", () => {
+  function buildRttTileDOM(): void {
+    document.body.innerHTML = `
+      <div id="sysinfo-online"></div>
+      <div id="sysinfo-battery"></div>
+      <div id="sysinfo-net"></div>
+      <div id="sysinfo-uptime"></div>
+      <div id="sysinfo-load"></div>
+      <div id="sysinfo-browser"></div>
+      <div class="sysinfo-tile"><div id="sysinfo-rtt"></div></div>
+    `;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("shows rttTile when sysInfoShowRtt is true (default config)", async () => {
+    buildRttTileDOM();
+    const tile = document.querySelector(".sysinfo-tile") as HTMLElement;
+    // loadConfig default has sysInfoShowRtt: true → tile display should be ""
+    await renderSystemInfo();
+    expect(tile.style.display).toBe("");
+  });
+});

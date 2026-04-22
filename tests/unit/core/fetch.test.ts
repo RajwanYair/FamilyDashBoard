@@ -26,6 +26,8 @@ import {
   enqueueFetch,
   getFetchQueueDepth,
   getFetchQueueRunning,
+  sampleNetworkQuality,
+  getNetworkQualityHistory,
 } from "@/core/fetch";
 
 // Helper: mock fetch that resolves after `delay` ms
@@ -891,5 +893,78 @@ describe("withRetry", () => {
     const fn = vi.fn().mockRejectedValue(new Error("fail"));
     await expect(withRetry(fn, 1, 0)).rejects.toThrow("fail");
     expect(fn).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ── Sprint 162: sampleNetworkQuality / getNetworkQualityHistory ───────────────
+
+describe("sampleNetworkQuality + getNetworkQualityHistory (Sprint 162)", () => {
+  beforeEach(() => {
+    // Reset failure streak so getNetworkQualityTier() returns "ok"
+    recordFetchSuccess();
+  });
+
+  it("getNetworkQualityHistory returns an array", () => {
+    const history = getNetworkQualityHistory();
+    expect(Array.isArray(history)).toBe(true);
+  });
+
+  it("sampleNetworkQuality appends an entry to history", () => {
+    const before = getNetworkQualityHistory().length;
+    sampleNetworkQuality();
+    const after = getNetworkQualityHistory().length;
+    expect(after).toBeGreaterThan(before);
+  });
+
+  it("each history entry has ts (number) and tier", () => {
+    sampleNetworkQuality();
+    const last = getNetworkQualityHistory().at(-1);
+    expect(last).toBeDefined();
+    expect(typeof last!.ts).toBe("number");
+    expect(["ok", "slow", "bad", "unknown"]).toContain(last!.tier);
+  });
+
+  it("history is capped at 10 entries after many samples", () => {
+    for (let i = 0; i < 15; i++) {
+      sampleNetworkQuality();
+    }
+    expect(getNetworkQualityHistory().length).toBeLessThanOrEqual(10);
+  });
+});
+
+// ── getNetworkQualityTier — rtt branches ──────────────────────────────────────
+
+describe("getNetworkQualityTier — navigator.connection rtt branches", () => {
+  afterEach(() => {
+    // Clean up: remove the stubbed connection property
+    Object.defineProperty(navigator, "connection", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+    recordFetchSuccess(); // reset failure streak
+  });
+
+  function stubConnection(conn: { effectiveType?: string; downlink?: number; rtt?: number }) {
+    Object.defineProperty(navigator, "connection", {
+      value: conn,
+      writable: true,
+      configurable: true,
+    });
+  }
+
+  it("returns 'ok' when rtt < 150", () => {
+    stubConnection({ rtt: 100 });
+    expect(getNetworkQualityTier()).toBe("ok");
+  });
+
+  it("returns 'slow' when 150 <= rtt < 600", () => {
+    stubConnection({ rtt: 300 });
+    expect(getNetworkQualityTier()).toBe("slow");
+  });
+
+  it("returns 'bad' when rtt >= 600", () => {
+    stubConnection({ rtt: 800 });
+    expect(getNetworkQualityTier()).toBe("bad");
   });
 });

@@ -1,7 +1,7 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> Roadmap refresh date: 2026-04-22
-> Shipped baseline: **v10.0.0** — 3193 tests / 94 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
+> Roadmap refresh date: 2026-05-18
+> Shipped baseline: **v11.0.0** — 3249 tests / 98 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
 > This document reopens every major architecture decision — including those that previously looked clean — and sets the explicit path to best-in-class as an always-on family information display.
 
 ---
