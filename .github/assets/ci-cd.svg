@@ -19,7 +19,7 @@
   <rect x="300" y="55" width="140" height="86" rx="8" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
   <text x="370" y="82" fill="#a5b4fc" text-anchor="middle" font-weight="bold">unit-tests</text>
   <text x="370" y="99" fill="#64748b" text-anchor="middle" font-size="11">Node 20 / 22 / 24</text>
-  <text x="370" y="116" fill="#64748b" text-anchor="middle" font-size="11">3080+ tests · 88 suites</text>
+  <text x="370" y="116" fill="#64748b" text-anchor="middle" font-size="11">3193 tests · 94 suites</text>
   <text x="370" y="133" fill="#64748b" text-anchor="middle" font-size="11">vitest run</text>
 
   <!-- security -->
