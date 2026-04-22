@@ -1,8 +1,8 @@
 # ADR-018 — CSP + COOP/COEP/CORP Security Posture
 
-**Date:** 2026-04-22  
-**Status:** Accepted  
-**Deciders:** Reuven Airhar  
+**Date:** 2026-04-22
+**Status:** Accepted
+**Deciders:** Reuven Airhar
 **Tags:** security, csp, headers, privacy
 
 ---

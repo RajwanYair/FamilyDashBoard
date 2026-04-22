@@ -1,8 +1,8 @@
 # ADR-017 — Lightning CSS Adoption at Build Time
 
-**Date:** 2026-04-22  
-**Status:** Accepted  
-**Deciders:** Reuven Airhar  
+**Date:** 2026-04-22
+**Status:** Accepted
+**Deciders:** Reuven Airhar
 **Tags:** build, css, performance
 
 ---

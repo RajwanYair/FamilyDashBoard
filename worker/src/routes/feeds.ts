@@ -1,5 +1,9 @@
 import { jsonResponse, proxyResponse, workerEnvelope, CORS_HEADERS } from "../utils/response";
-import { ALLOWED_NEWS_ORIGINS, ALLOWED_CALENDAR_ORIGINS } from "../utils/allowlists";
+import {
+  ALLOWED_NEWS_ORIGINS,
+  ALLOWED_CALENDAR_ORIGINS,
+  NEWS_FEED_URLS,
+} from "../utils/allowlists";
 import {
   ValidationError,
   validationErrorResponse,
@@ -8,6 +12,7 @@ import {
 } from "../utils/validation";
 import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema } from "../utils/schemas";
 import { kvGetStale, kvPut } from "../utils/kv";
+import { parseRss } from "../utils/rss-parser";
 import type { Env } from "../types";
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
@@ -81,6 +86,72 @@ export async function handleNews(url: URL): Promise<Response> {
       ...CORS_HEADERS,
     },
   });
+}
+
+/**
+ * Aggregate all curated RSS feeds into a single normalised JSON array.
+ * GET /api/news/aggregate
+ *
+ * Fetches all NEWS_FEED_URLS in parallel (Promise.allSettled),
+ * deduplicates by first 40 chars of title, sorts by date (newest first),
+ * caps at 100 items, and caches in KV for 15 min.
+ */
+export async function handleNewsAggregate(env: Env): Promise<Response> {
+  const KV_KEY = "news:aggregate";
+  const TTL = 900; // 15 min
+
+  type NewsAggItem = {
+    title: string;
+    link: string;
+    pubDate: string;
+    source: string;
+    description?: string;
+  };
+
+  // Fetch all feeds in parallel
+  const results = await Promise.allSettled(
+    NEWS_FEED_URLS.map(async ({ url, src }) => {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "FamilyDashBoard/11.0", Accept: "application/rss+xml, text/xml, application/xml" },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) return [] as NewsAggItem[];
+      const text = await res.text();
+      return parseRss(text, src, 25) as NewsAggItem[];
+    }),
+  );
+
+  const allItems: NewsAggItem[] = [];
+  for (const r of results) {
+    if (r.status === "fulfilled") allItems.push(...r.value);
+  }
+
+  // Deduplicate by first 40 chars of title
+  const seen = new Set<string>();
+  const unique = allItems.filter((item) => {
+    const key = item.title.trim().substring(0, 40).toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  // Sort newest-first (items without a valid date go to end)
+  unique.sort((a, b) => {
+    const da = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+    const db = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+    return db - da;
+  });
+
+  const payload = unique.slice(0, 100);
+
+  if (payload.length === 0) {
+    const stale = await kvGetStale(env.CACHE_KV, KV_KEY);
+    if (stale) return workerEnvelope(stale, "news-agg-kv-stale", true, 60);
+    return jsonResponse({ error: "All news feeds failed" }, 502);
+  }
+
+  void kvPut(env.CACHE_KV, KV_KEY, payload, TTL);
+  return workerEnvelope(payload, "news-agg", false, TTL);
 }
 
 export async function handleAlerts(env: Env): Promise<Response> {

@@ -9,6 +9,7 @@
  *   GET /api/hebcal/holidays?year=X       → Hebcal holiday list
  *   GET /api/stocks?sym=X                 → Yahoo Finance v8 chart
  *   GET /api/news?url=X                   → RSS feed proxy (allowlisted origins)
+ *   GET /api/news/aggregate               → Aggregate all 16 curated RSS feeds
  *   GET /api/alerts                       → Tzeva Adom history
  *   GET /api/calendar?url=X              → Google Calendar ICS proxy
  *   GET /api/sefaria/calendar             → Sefaria calendars (Daf Yomi)
@@ -22,6 +23,7 @@ import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } fro
 import {
   handleStocks,
   handleNews,
+  handleNewsAggregate,
   handleAlerts,
   handleCalendar,
   handleSefariaCalendar,
@@ -65,6 +67,7 @@ export default {
       else if (path === "/api/hebcal") response = await handleHebcal(url, env);
       else if (path === "/api/hebcal/holidays") response = await handleHebcalHolidays(url, env);
       else if (path === "/api/stocks") response = await handleStocks(url, env);
+      else if (path === "/api/news/aggregate") response = await handleNewsAggregate(env);
       else if (path === "/api/news") response = await handleNews(url);
       else if (path === "/api/alerts") response = await handleAlerts(env);
       else if (path === "/api/calendar") response = await handleCalendar(url);

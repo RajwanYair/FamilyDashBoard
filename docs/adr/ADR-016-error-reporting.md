@@ -1,8 +1,8 @@
 # ADR-016 — Error Reporting Contract & KV Storage Model
 
-**Date:** 2026-04-22  
-**Status:** Accepted  
-**Deciders:** Reuven Airhar  
+**Date:** 2026-04-22
+**Status:** Accepted
+**Deciders:** Reuven Airhar
 **Tags:** observability, worker, error-tracking
 
 ---
