@@ -384,6 +384,201 @@ Exit: installable PWA passes Chrome install checklist; iOS add-to-home-screen ex
 
 ---
 
+### 4.11 Stream V11-CARD-VIDEO — Video News Card (`video-news`)
+
+Priority: **High — target v11.1** · Owner card: new 12th card in the registry · First integration: **C14 live stream** from `https://www.c14.co.il/live`.
+
+Introduces the first **video-content card** to the dashboard. Unlike the 11 existing data cards, this one renders a live media stream — so the design must solve autoplay policy, mute-by-default, HLS fallback, CSP implications, and graceful offline degradation without breaking the rest of the dashboard.
+
+#### Product Goals
+
+- A **muted, auto-playing, low-interaction live news window** visible from 3 m on the wall-display
+- **Channel-selectable** in v11.1 (C14 first; i24news, Now14, Arutz 7 live as follow-ups — all Israeli news channels with public live streams)
+- **Zero impact** on the rest of the dashboard when the stream is unreachable (graceful fall-back to a still image + "stream unavailable" state)
+- **User-controlled** audio via `M` keyboard shortcut (mute toggle) and `V` shortcut (channel switch); no audio by default
+- Respects `prefers-reduced-motion` (pause video when user prefers reduced motion; show a still frame instead)
+
+#### Research Phase — Source Discovery (v11.1-sprint-1)
+
+C14 embeds its player on `/live` via Next.js. The actual stream URL must be discovered — it is **not** a simple iframe copy-paste. Research deliverables:
+
+| Task                                                         | Output                                                                                                                  |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Inspect `https://www.c14.co.il/live` in DevTools Network tab | Document whether it is YouTube Live iframe, Kaltura, JW Player, Brightcove, or native HLS `.m3u8`                       |
+| Capture manifest / embed URL                                 | Record the stream URL, its `referer` / `origin` requirements, any auth token, expiry behaviour                          |
+| Verify CORS policy                                           | If HLS, note whether `Access-Control-Allow-Origin` permits `https://rajwanyair.github.io`                               |
+| Evaluate `<iframe>` embed vs direct `<video>` playback       | Decide integration mode (see §Integration Modes below)                                                                  |
+| Check Terms of Service                                       | Confirm re-embedding on a private family display is within C14 ToS (personal/non-commercial use is typically permitted) |
+| Rate-limit and abuse risk                                    | Note hot-link protection, geographic blocks, expected refresh cadence                                                   |
+
+**Security constraint:** any decision must not relax our strict-CSP posture being introduced in v11.0 (Stream V11-SEC). The new card contributes a new `connect-src` / `media-src` / `frame-src` entry, which is explicitly allow-listed in `index.html` meta-CSP and documented in `docs/security.md`.
+
+#### Integration Modes (decision tree)
+
+| Mode                                         | When to choose                                                                      | Pros                                                                                 | Cons                                                                                                                                                                 |
+| -------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. Native `<video>` + HLS**                | The `.m3u8` stream is CORS-permitted OR the worker can proxy it                     | Zero runtime dep; full autoplay/mute control; lightest bundle; muted poster possible | Requires HLS playback; Safari does HLS natively, Chrome/Firefox need a JS player                                                                                     |
+| **B. Worker-proxied HLS (`/api/video/c14`)** | CORS blocks direct playback                                                         | Works for any HLS source; our standard adapter pattern; KV-cacheable manifests       | Adds worker egress bandwidth; Cloudflare free tier allows 10 GB/day egress which is plenty                                                                           |
+| **C. `<iframe>` embed of provider player**   | The provider publishes an official embed (e.g. YouTube Live `/embed/<id>`)          | Zero integration cost; provider handles player logic and ads                         | Breaks our zero-runtime-dep rule indirectly (provider loads ~500 KB player code); CSP needs `frame-src <provider>`; RTL chrome leaks; no mute control across origins |
+| **D. Vendored HLS player (`hls.js`)**        | Native `<video>` + HLS insufficient (Chrome/Firefox playback on non-Safari clients) | Full control over autoplay/mute/recovery; mature library; ~30 KB gzip                | First client-side runtime dep — requires ADR-019 + mitigation (vendor, not npm)                                                                                      |
+
+**Recommended default: Mode A → fallback Mode B → last resort Mode C.** Mode D only if Mode A+B cannot deliver on Chromium. If Mode D is required, vendor `hls.js` into `src/vendor/hls.min.js` (not an npm dep) and document as a justified exception in an ADR.
+
+#### Architecture
+
+```text
+src/cards/video-news/
+├── fdb-video-news.ts            # FdbCard subclass
+├── video-news.ts                # Channel switcher, player wiring, mute/unmute, error state
+├── video-news.css               # Aspect-ratio box, poster, overlay controls, RTL caption strip
+├── video-news-adapter.ts        # Per-channel provider: returns normalised StreamDescriptor
+└── __tests__/                   # Unit tests (via tests/unit/cards/video-news.test.ts)
+
+src/types/api.ts
+  + interface StreamDescriptor {
+      id: 'c14' | 'i24' | 'now14' | 'arutz7';
+      title: string;                 // he+en
+      mode: 'hls' | 'iframe' | 'worker-hls';
+      url: string;                   // Playback URL OR iframe src OR worker route
+      poster?: string;               // Fallback still image
+      refererRequired?: boolean;
+      cspHosts: {                    // Contributed to global CSP allowlist
+        connect?: string[];
+        media?: string[];
+        frame?: string[];
+      };
+    }
+
+worker/src/routes/video.ts         # Only if Mode B selected
+  /api/video/c14/manifest.m3u8    # Proxies + rewrites HLS manifest (fixes segment URLs)
+  /api/video/c14/segment/*        # Proxies individual TS segments; sets Cache-Control
+  KV: video:c14:healthcheck       # Last successful ping + timestamp
+```
+
+#### Card Configuration Schema (joins existing config panel)
+
+```typescript
+// types/config.ts additions
+interface VideoNewsConfig {
+  enabled: boolean; // Default: false (opt-in)
+  channel: "c14" | "i24" | "now14" | "arutz7"; // Default: 'c14'
+  autoplay: boolean; // Default: true
+  defaultMuted: boolean; // Default: true (browser autoplay policy)
+  showOverlay: boolean; // Default: true (RTL caption strip with channel name + time)
+  pauseOnReducedMotion: boolean; // Default: true (WCAG)
+  pauseAtNight: boolean; // Default: true (respects night-dimmer schedule)
+}
+```
+
+#### Service Worker & Cache Policy
+
+- **Stream manifests** (`.m3u8`): `no-store` (always fresh) — add `video.c14.co.il` (or actual manifest host) to `API_CACHE_ORIGINS` in `sw.ts` with `ttl = 0`
+- **Stream segments** (`.ts` / `.mp4`): `no-store` (SW must never cache media segments — they expire in seconds and would balloon the cache)
+- **Poster image**: `cache: 'stale-while-revalidate'` with 24 h TTL
+- **Worker route (if Mode B)**: `/api/video/*` routes return `Cache-Control: no-store`; KV only stores health-check metadata, not media bytes
+
+#### Performance Budget
+
+| Metric                                      | Target                                                         |
+| ------------------------------------------- | -------------------------------------------------------------- |
+| Added JS (gzip) if Mode A                   | < 3 KB                                                         |
+| Added JS (gzip) if Mode D (vendored hls.js) | < 35 KB                                                        |
+| CPU while video is playing                  | < 15 % on Raspberry Pi 4 (our reference wall-display hardware) |
+| Network (1080p30 HLS)                       | ~3–5 Mb/s sustained; acceptable for home Wi-Fi                 |
+| Fall-back latency when stream dies          | < 5 s to poster + "stream unavailable" state                   |
+
+#### Accessibility & UX
+
+- `<video>` has `aria-label="C14 live news broadcast — muted"` (updates on channel switch)
+- Mute toggle button is a real `<button>` with `aria-pressed`; visible focus ring
+- `M` keyboard shortcut: toggle mute; `V`: cycle channel; both announced in `docs/keyboard.md`
+- When `prefers-reduced-motion: reduce` is set: video is paused, poster shown, `aria-live` region announces "video paused, reduced-motion preference active"
+- Closed captions: enable where the stream provides them (WebVTT via HLS `SUBTITLES` rendition)
+
+#### Security (CSP integration)
+
+`index.html` meta-CSP additions (v11.0-SEC already introduces the base policy; this card extends it):
+
+```html
+<meta
+  http-equiv="Content-Security-Policy"
+  content="
+    default-src 'self';
+    connect-src 'self' https://fdb.rajwanyair.workers.dev
+                <c14-manifest-host>           <!-- populated from StreamDescriptor.cspHosts.connect -->
+                <c14-segment-host>;
+    media-src   'self' <c14-segment-host> blob:;
+    frame-src   'none';                       <!-- stays 'none' unless Mode C is chosen -->
+    img-src     'self' data: https:;
+    script-src  'self';
+    style-src   'self' 'unsafe-inline';       <!-- existing -->
+  "
+/>
+```
+
+`docs/security.md` gains a dedicated "Video streams" section documenting the allow-list and the opt-in nature of the card.
+
+#### Error States & Degraded UX
+
+| State                        | UI                                                                                                              |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Stream unreachable           | Poster image + "שידור לא זמין · נסיון חוזר בעוד 30 שניות" overlay; exponential back-off (30 s → 2 min → 10 min) |
+| Manifest parse failure       | Same fallback; `diagLog('video-news', { err, channel })` for diagnostics overlay                                |
+| CORS block in DevTools       | Switch to worker-proxied mode (Mode B) on next refresh; cache health flag in KV so all clients learn            |
+| Autoplay blocked by browser  | Show a single large **▶** overlay — single click starts playback; state remembered for the session              |
+| `navigator.onLine === false` | Show poster + "אין חיבור לאינטרנט"; no refresh attempts while offline                                           |
+| Night-dimmer active          | If `pauseAtNight=true`: pause video, dim poster; resume at `dim_end`                                            |
+
+#### Test Plan
+
+| Layer             | Coverage                                                                                                                                                   |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit              | Adapter returns correct `StreamDescriptor` per channel; reducer logic for mute/channel state                                                               |
+| Unit (card)       | `video-news.test.ts`: mount, unmount, destroy, config-change reactions, mute toggle, error state rendering                                                 |
+| Integration       | `tests/integration/video-stream.test.ts`: simulated HLS 404 triggers fallback UI within 5 s                                                                |
+| Worker            | `worker/src/routes/video.test.ts`: manifest rewrite correctness, segment pass-through, KV health flag                                                      |
+| Playwright E2E    | Card mounts, poster shown, channel switch keyboard shortcut, mute toggle — no audio leakage                                                                |
+| Visual regression | New baselines: 6 themes × 3 screen modes × (playing / paused / error) = 54 screenshots (use a fixture `<video>` source — do NOT record live traffic in CI) |
+| Lighthouse        | No regression in Lighthouse performance budget with card enabled                                                                                           |
+
+#### Sprint Breakdown
+
+| Sprint                                    | Deliverable                                                                                           |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **v11.1-sprint-1** (Research)             | DevTools investigation of `c14.co.il/live`; mode decision (A/B/C/D); ADR-019 recorded                 |
+| **v11.1-sprint-2** (Scaffold)             | `src/cards/video-news/` skeleton; `StreamDescriptor` type; registry entry; disabled-by-default config |
+| **v11.1-sprint-3** (Mode A/B integration) | HLS playback working for C14 in dev + production; worker route `/api/video/c14/*` if Mode B           |
+| **v11.1-sprint-4** (CSP + security)       | Meta-CSP extended; `docs/security.md` section added; ADR-019 cross-references ADR-018                 |
+| **v11.1-sprint-5** (UX polish)            | Mute toggle, channel switcher, keyboard shortcuts `M` / `V`, reduced-motion pause, error states       |
+| **v11.1-sprint-6** (Tests)                | Unit + integration + Playwright + VR baselines; Lighthouse budget re-validated                        |
+| **v11.1-sprint-7** (Additional channels)  | i24news, Now14, Arutz 7 behind the same `StreamDescriptor` contract — only if ToS + CORS pass         |
+
+#### Exit Criteria (v11.1 ships when all true)
+
+- [ ] `video-news` card rendered, registered, configurable via the UI config panel
+- [ ] C14 live stream plays muted in Chrome + Edge + Safari + Firefox on cached load
+- [ ] Card reaches error-state within 5 s when the stream is killed; recovers within 30 s when it returns
+- [ ] `M` mutes/unmutes; `V` cycles channel; both announced to screen readers
+- [ ] `prefers-reduced-motion` pauses playback and shows a poster
+- [ ] Strict CSP remains in force; new hosts are documented in `docs/security.md` and ADR-019
+- [ ] Bundle-size growth: < 3 KB gzip for Mode A, < 35 KB gzip for Mode D
+- [ ] 54 new visual regression baselines committed and green
+- [ ] Lighthouse performance ≥ 93 with card enabled (budget: no more than 2 points below the baseline of 95)
+- [ ] No regression in any of the existing 11 cards' tests
+- [ ] Docs: `docs/adding-a-card.md` updated with the video-card variant; new `docs/video-cards.md` covers CSP, channel schema, and how to add channel #5
+- [ ] ADR-019 "Video content card — provider integration modes and CSP implications" committed
+
+#### Open Questions (to resolve in Research sprint)
+
+1. Does C14 publish a stable HLS manifest, or is the player proprietary (Kaltura / Brightcove / internal)?
+2. Is CORS `Access-Control-Allow-Origin: *` present on their manifest? If not, is worker-proxying acceptable under their ToS?
+3. Does the stream require an auth token or bearer that rotates? If so, who regenerates it — the worker?
+4. Is the channel georestricted? Our primary audience is inside Israel, so this is low risk.
+5. Is there an ad-roll in the live stream? If so, do we mute through it, skip it, or accept it as-is (passively displayed ads are tolerable on a family TV dashboard)?
+6. Is an official embed (e.g. YouTube Live mirror) available that we would prefer for simplicity? Worth a check before committing to direct HLS.
+
+---
+
 ## 5. Release Plan
 
 ### 5.1 v11.0 — Security, Observability & Data Rigour (target: mid-2026)
@@ -399,7 +594,17 @@ Exit: installable PWA passes Chrome install checklist; iOS add-to-home-screen ex
 - Vitest run-time < 30 s
 - Coverage 92 / 85 / 92 / 94
 
-### 5.2 v12.0 — Foundation Refresh & Cross-Project Harmonisation
+### 5.2 v11.1 — Video News Card (C14 + channel framework) (target: after v11.0 ships)
+
+**Ship gates:** all exit criteria in §4.11 met.
+
+- `video-news` card live with C14 working in Chrome + Edge + Safari + Firefox
+- CSP allow-list extended and documented in `docs/security.md`
+- ADR-019 committed (provider integration modes + CSP implications)
+- 54 new visual regression baselines; no perf regression vs v11.0 baseline
+- If hls.js vendored: committed under `src/vendor/` with SHA-pinned source notes
+
+### 5.3 v12.0 — Foundation Refresh & Cross-Project Harmonisation
 
 - Bundler re-eval (Rolldown / Rspack / stay on Vite)
 - Zero-dep worker experiment (Zod → type guards)
@@ -408,7 +613,7 @@ Exit: installable PWA passes Chrome install checklist; iOS add-to-home-screen ex
 - Conventional Commits + automated CHANGELOG
 - SLSA Level 3 hermetic build evaluation
 
-### 5.3 v13.0 — Optional Product Evolution
+### 5.4 v13.0 — Optional Product Evolution
 
 Only the candidates from §4.10 that pass their gate. Product-first, not feature-first.
 
@@ -448,6 +653,14 @@ Execute in this order. Each becomes a v11.x sprint.
 10. **v11.0-DX-2** — Coverage raise to 92/85/92/94; property-based tests for cache + config + ICS
 
 Release v11.0 when all 10 are green.
+
+**Immediately after v11.0:**
+
+11. **v11.1-VIDEO-1** — Research sprint: decode C14 live stream from `c14.co.il/live`; pick integration mode (A/B/C/D); write ADR-019 (see §4.11)
+12. **v11.1-VIDEO-2** — Implement `video-news` card end-to-end (C14 only), including CSP extension, tests, and 54 VR baselines
+13. **v11.1-VIDEO-3** — Add i24news / Now14 / Arutz 7 behind the same `StreamDescriptor` contract (only if ToS + CORS pass)
+
+Release v11.1 when all §4.11 exit criteria are green.
 
 ---
 
