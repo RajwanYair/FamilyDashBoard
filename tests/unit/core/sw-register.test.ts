@@ -285,14 +285,16 @@ describe("SW Register — controllerchange triggers reload", () => {
     vi.restoreAllMocks();
   });
 
-  it("calls window.location.reload() when controllerchange fires", async () => {
+  it("does NOT reload on controllerchange when controller was null at startup (first install)", async () => {
+    // hadController = false (no prior SW) → clients.claim() fires controllerchange
+    // → must NOT reload to avoid a reload loop on first visit.
     const navListeners: Record<string, (...args: unknown[]) => void> = {};
     const reg = makeRegistration();
     vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         register: vi.fn().mockResolvedValue(reg),
-        controller: null,
+        controller: null, // no prior SW
         getRegistrations: vi.fn().mockResolvedValue([]),
         addEventListener: vi.fn((evt: string, handler: (...args: unknown[]) => void) => {
           navListeners[evt] = handler;
@@ -312,10 +314,45 @@ describe("SW Register — controllerchange triggers reload", () => {
     const mod = await freshMod();
     await mod.registerSW();
 
-    // Fire the controllerchange handler → covers lines 54-57
     expect(navListeners["controllerchange"]).toBeDefined();
     navListeners["controllerchange"]!();
-    expect(reloadSpy).toHaveBeenCalled();
+    // First-install claim must NOT trigger a page reload
+    expect(reloadSpy).not.toHaveBeenCalled();
+  });
+
+  it("reloads on controllerchange when a controller already existed at startup (SW upgrade)", async () => {
+    // hadController = true (existing SW active) → user clicked update banner →
+    // skipWaiting → new SW activates → controllerchange → reload is correct here.
+    const navListeners: Record<string, (...args: unknown[]) => void> = {};
+    const reg = makeRegistration();
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        register: vi.fn().mockResolvedValue(reg),
+        controller: { postMessage: vi.fn() } as unknown as ServiceWorker, // prior SW exists
+        getRegistrations: vi.fn().mockResolvedValue([]),
+        addEventListener: vi.fn((evt: string, handler: (...args: unknown[]) => void) => {
+          navListeners[evt] = handler;
+        }),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    const reloadSpy = vi.fn();
+    Object.defineProperty(window, "location", {
+      value: { ...window.location, reload: reloadSpy },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    expect(navListeners["controllerchange"]).toBeDefined();
+    navListeners["controllerchange"]!();
+    // SW upgrade must reload so the new version takes over
+    expect(reloadSpy).toHaveBeenCalledOnce();
   });
 });
 
@@ -718,7 +755,10 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
     expect(registerSpy).toHaveBeenCalledOnce();
   });
 
-  it("deletes old caches that don't start with the familydashboard-v prefix", async () => {
+  it("does not touch Cache Storage — stale-cache cleanup is owned by the SW activate handler", async () => {
+    // Page-side cache deletion was removed because it incorrectly deleted
+    // familydashboard-api-v* caches (API cache prefix != shell cache prefix).
+    // The SW activate handler is the single source of truth for cache cleanup.
     const deleteSpy = vi.fn().mockResolvedValue(true);
     const cachesMock = {
       keys: vi
@@ -726,8 +766,8 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
         .mockResolvedValue([
           "some-other-app-cache",
           "workbox-precache-v2",
-          "familydashboard-v7.1.6-shell",
-          "familydashboard-v10.0.0-shell",
+          "familydashboard-api-v11.0.0",
+          "familydashboard-v10.0.0",
         ]),
       delete: deleteSpy,
     };
@@ -758,10 +798,7 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
     const mod = await freshMod();
     await mod.registerSW();
 
-    // Should delete non-familydashboard caches; must NOT delete any familydashboard-v* cache
-    expect(deleteSpy).toHaveBeenCalledWith("some-other-app-cache");
-    expect(deleteSpy).toHaveBeenCalledWith("workbox-precache-v2");
-    expect(deleteSpy).not.toHaveBeenCalledWith("familydashboard-v7.1.6-shell");
-    expect(deleteSpy).not.toHaveBeenCalledWith("familydashboard-v10.0.0-shell");
+    // registerSW must NOT delete any caches — the SW activate handler owns this
+    expect(deleteSpy).not.toHaveBeenCalled();
   });
 });

@@ -6,7 +6,6 @@
 
 import { diagLog } from "./diag";
 import {
-  CACHE_NAME,
   SW_MSG_SKIP_WAITING,
   SW_MSG_VERSION_ACTIVATED,
   isVersionActivatedMsg,
@@ -30,6 +29,13 @@ export async function registerSW(): Promise<void> {
     return;
   }
 
+  // Capture controller state synchronously BEFORE any async operations.
+  // On first install the controller is null; clients.claim() in the SW
+  // activate handler fires controllerchange (null→SW) which must NOT
+  // trigger a reload — that would cause an infinite loop on first visit.
+  // Only reload when a controller already existed (i.e. this is an upgrade).
+  const hadController = !!navigator.serviceWorker.controller;
+
   try {
     // Unregister any stale service workers (e.g. old v5 SW still installed)
     // before registering the current one. This silently evicts legacy SWs
@@ -46,18 +52,13 @@ export async function registerSW(): Promise<void> {
       }
     }
 
-    // Delete any caches from old versions that don't match the current prefix.
-    // Uses the CACHE_NAME constant ("familydashboard-v") so this stays correct
-    // across major version bumps without needing a manual string update.
-    if ("caches" in window) {
-      const cacheNames = await caches.keys();
-      for (const name of cacheNames) {
-        if (!name.startsWith(CACHE_NAME)) {
-          diagLog(`[sw] Deleting stale cache: ${name}`);
-          await caches.delete(name);
-        }
-      }
-    }
+    // NOTE: Stale-cache cleanup is intentionally NOT done here.
+    // The SW activate handler already owns this responsibility — it keeps
+    // exactly CACHE_NAME and CACHE_NAME_API and deletes everything else.
+    // Doing it on the page side too was incorrect: the page-side check used
+    // CACHE_NAME ("familydashboard-v") as the prefix, which does NOT match
+    // "familydashboard-api-v*", causing the API cache to be wiped on every
+    // page load and forcing all cards to re-fetch from network each visit.
 
     swRegistration = await navigator.serviceWorker.register("/FamilyDashBoard/sw.js", {
       scope: "/FamilyDashBoard/",
@@ -76,10 +77,16 @@ export async function registerSW(): Promise<void> {
       });
     });
 
-    // Listen for controller change (another tab activated a new SW)
+    // Listen for controller change (another tab activated a new SW).
+    // Guard: only reload if a controller already existed before registration
+    // started (hadController captured synchronously above). On first install
+    // the SW calls clients.claim() which fires controllerchange (null→SW);
+    // without this guard that would cause a reload loop on every first visit.
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       diagLog("[sw] Controller changed — reloading");
-      window.location.reload();
+      if (hadController) {
+        window.location.reload();
+      }
     });
 
     // Listen for VERSION_ACTIVATED broadcast from SW
