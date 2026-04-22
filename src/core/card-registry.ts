@@ -20,6 +20,7 @@ import type {
   FdbCardDefinition,
 } from "@/types/card";
 import { getLocalizedCardTitle, getInterfaceLanguage } from "@/core/i18n";
+import { diagLog } from "@/core/diag";
 
 // ── Internal registry map ──────────────────────────────────────────────────
 
@@ -112,6 +113,46 @@ export function createShell(id: string): CardShell {
   root.appendChild(footer);
 
   return { root, body, header, footer };
+}
+
+/**
+ * Auto-mount shells for any registered card that is NOT already present in the DOM.
+ *
+ * This enables new cards to be added to the registry without editing `index.html`.
+ * Each unmounted card with a `defaultSlot` gets a `createShell()` wrapper appended
+ * to the target grid column.  Cards with `defaultSlot.hidden === true` start hidden.
+ *
+ * Legacy cards (the 11 pre-v7 cards already hard-coded in `index.html`) are skipped
+ * because `querySelector("[data-card-id=...]")` finds them first.
+ *
+ * Call this once from `main.ts` before card initialisation.
+ */
+export function mountRegisteredCards(): void {
+  const cols: (HTMLElement | null)[] = [
+    document.querySelector<HTMLElement>(".grid-col-left"),
+    document.querySelector<HTMLElement>(".grid-col-mid"),
+    document.querySelector<HTMLElement>(".grid-col-right"),
+  ];
+
+  for (const entry of listCards()) {
+    // Already in the DOM — nothing to do
+    if (document.querySelector(`[data-card-id="${entry.id}"]`)) continue;
+
+    const slot = entry.defaultSlot;
+    if (!slot) continue;
+
+    const col = cols[slot.col];
+    if (!col) continue;
+
+    const shell = createShell(entry.id);
+    // Cards that default to hidden start with display:none
+    if (slot.hidden) shell.root.style.display = "none";
+    // Honour configured flex-grow weight
+    shell.root.style.flexGrow = String(slot.flexGrow);
+
+    col.appendChild(shell.root);
+    diagLog(`[registry] auto-mounted shell for "${entry.id}" in col ${slot.col}`);
+  }
 }
 
 // ── Built-in card registrations ────────────────────────────────────────────
@@ -516,6 +557,7 @@ registerCard({
   icon: "📺",
   titleHe: "ערוץ חדשות",
   titleEn: "Video News",
+  defaultSlot: { col: 1, order: 5, flexGrow: 25, hidden: true },
   load: async (): Promise<FdbCardDefinition> => {
     const [, { FdbVideoNewsCard }] = await Promise.all([
       import("@/cards/video-news/video-news"),

@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { registerCard, getCard, listCards, loadCard, createShell } from "@/core/card-registry";
+import { registerCard, getCard, listCards, loadCard, createShell, mountRegisteredCards } from "@/core/card-registry";
 import { isValidCardSize, assertCardSize } from "@/types/card";
 import type { CardDefinition } from "@/types/card";
 
@@ -245,5 +245,110 @@ describe("assertCardSize", () => {
   it("throws TypeError for invalid value", () => {
     expect(() => assertCardSize("huge")).toThrow(TypeError);
     expect(() => assertCardSize(null)).toThrow(TypeError);
+  });
+});
+
+// ── mountRegisteredCards ─────────────────────────────────────────────────
+
+describe("mountRegisteredCards", () => {
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    // Build a minimal dashboard grid
+    container = document.createElement("div");
+    const left = document.createElement("div");
+    left.className = "grid-col-left";
+    const mid = document.createElement("div");
+    mid.className = "grid-col-mid";
+    const right = document.createElement("div");
+    right.className = "grid-col-right";
+    container.appendChild(left);
+    container.appendChild(mid);
+    container.appendChild(right);
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    container.remove();
+    // Clean up any test card registrations (built-ins remain)
+    const existing = document.querySelectorAll("[data-card-id]");
+    existing.forEach((el) => el.remove());
+  });
+
+  it("does not throw when grid columns are absent", () => {
+    document.body.innerHTML = ""; // no columns
+    expect(() => mountRegisteredCards()).not.toThrow();
+  });
+
+  it("mounts a card with defaultSlot when absent from the DOM", () => {
+    const id = `test-mount-${Date.now()}`;
+    registerCard({
+      id,
+      icon: "🔬",
+      titleHe: "בדיקה",
+      titleEn: "Mount Test",
+      defaultSlot: { col: 0, order: 0, flexGrow: 20, hidden: false },
+      load: vi.fn().mockResolvedValue({ id, icon: "🔬", titleHe: "בדיקה", titleEn: "Mount Test", defaultSlot: { col: 0, order: 0, flexGrow: 20 }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+    });
+
+    mountRegisteredCards();
+
+    const mounted = document.querySelector(`[data-card-id="${id}"]`);
+    expect(mounted).not.toBeNull();
+    expect(mounted?.closest(".grid-col-left")).not.toBeNull();
+  });
+
+  it("starts hidden when defaultSlot.hidden is true", () => {
+    const id = `test-hidden-${Date.now()}`;
+    registerCard({
+      id,
+      icon: "🙈",
+      titleHe: "מוסתר",
+      titleEn: "Hidden Test",
+      defaultSlot: { col: 1, order: 0, flexGrow: 25, hidden: true },
+      load: vi.fn().mockResolvedValue({ id, icon: "🙈", titleHe: "מוסתר", titleEn: "Hidden Test", defaultSlot: { col: 1, order: 0, flexGrow: 25, hidden: true }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+    });
+
+    mountRegisteredCards();
+
+    const mounted = document.querySelector<HTMLElement>(`[data-card-id="${id}"]`);
+    expect(mounted).not.toBeNull();
+    expect(mounted!.style.display).toBe("none");
+  });
+
+  it("does not mount a card that is already in the DOM", () => {
+    const id = `test-skip-${Date.now()}`;
+    const existing = document.createElement("section");
+    existing.setAttribute("data-card-id", id);
+    document.querySelector(".grid-col-right")!.appendChild(existing);
+
+    registerCard({
+      id,
+      icon: "✅",
+      titleHe: "קיים",
+      titleEn: "Already There",
+      defaultSlot: { col: 0, order: 0, flexGrow: 20, hidden: false },
+      load: vi.fn().mockResolvedValue({ id, icon: "✅", titleHe: "קיים", titleEn: "Already There", defaultSlot: { col: 0, order: 0, flexGrow: 20 }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+    });
+
+    mountRegisteredCards();
+
+    // Should still be only one element with this id
+    expect(document.querySelectorAll(`[data-card-id="${id}"]`).length).toBe(1);
+  });
+
+  it("does not mount a card with no defaultSlot", () => {
+    const id = `test-noslot-${Date.now()}`;
+    registerCard({
+      id,
+      icon: "❓",
+      titleHe: "ללא סלוט",
+      titleEn: "No Slot",
+      load: vi.fn().mockResolvedValue({ id, icon: "❓", titleHe: "ללא סלוט", titleEn: "No Slot", defaultSlot: { col: 0, order: 0, flexGrow: 20 }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+    });
+
+    mountRegisteredCards();
+
+    expect(document.querySelector(`[data-card-id="${id}"]`)).toBeNull();
   });
 });

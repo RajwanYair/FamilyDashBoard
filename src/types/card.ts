@@ -169,6 +169,16 @@ export interface CardRegistryEntry {
   icon: string;
   titleHe: string;
   titleEn: string;
+  /**
+   * Optional default slot for registry-driven DOM auto-mounting.
+   * When set, `mountRegisteredCards()` will create a shell for this card
+   * if it is not already present in the HTML.
+   * `col`: grid column index (0=left, 1=mid, 2=right)
+   * `order`: approximate order within the column
+   * `flexGrow`: flex-grow weight for the column
+   * `hidden`: true = starts display:none (opt-in card)
+   */
+  defaultSlot?: { col: 0 | 1 | 2; order: number; flexGrow: number; hidden?: boolean };
   /** Lazy loader — returns the full CardDefinition. */
   load: () => Promise<CardDefinition>;
 }
