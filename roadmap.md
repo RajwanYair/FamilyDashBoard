@@ -272,7 +272,7 @@ Close the largest remaining gap vs best-in-class: security headers and observabl
 | `docs/security.md` with threat model + decisions                | [x]    |
 | `docs/privacy.md` with user-visible promises                    | [x]    |
 | `dependency-review` Action on every PR                          | [x]    |
-| All Actions pinned to SHA (Dependabot auto-rotation configured) | [ ]    |
+| All Actions pinned to SHA (Dependabot auto-rotation configured) | [x]    |
 | ADR-018: CSP + COOP/COEP + CORP decision record                 | [x]    |
 
 Exit: browser DevTools "Security" panel shows no warnings on production; Observatory grade ≥ A+.
@@ -281,11 +281,11 @@ Exit: browser DevTools "Security" panel shows no warnings on production; Observa
 
 | Deliverable                                                                 | Status |
 | --------------------------------------------------------------------------- | ------ |
-| Cloudflare Web Analytics in `<head>` (cookie-less, privacy-preserving)      | [ ]    |
+| Cloudflare Web Analytics in `<head>` (cookie-less, privacy-preserving)      | [x]    |
 | Web Vitals (CLS / LCP / INP) reported to `/api/errors` via same batcher     | [x]    |
 | Worker stores last 1000 error reports in KV with 7-day TTL                  | [ ]    |
 | Public (token-gated) `/api/errors/export` endpoint + `docs/error-viewer.md` | [ ]    |
-| `Ctrl+Shift+E` exports local diagnostic snapshot as JSON                    | [ ]    |
+| `Ctrl+Shift+E` exports local diagnostic snapshot as JSON                    | [x]    |
 | ADR-016: Error reporting contract + KV storage model                        | [x]    |
 
 Exit: first error in production surfaces in the worker KV within 60 s; user can email a diagnostic JSON snapshot.
@@ -294,10 +294,10 @@ Exit: first error in production surfaces in the worker KV within 60 s; user can 
 
 | Deliverable                                                             | Status |
 | ----------------------------------------------------------------------- | ------ |
-| axe-core run per screen mode in Playwright CI (0 serious/critical gate) | [ ]    |
+| axe-core run per screen mode in Playwright CI (0 serious/critical gate) | [x]    |
 | `prefers-reduced-motion` honoured by every animation ≥ 200 ms           | [ ]    |
-| Explicit landmarks (`role="region" aria-labelledby`) on all 11 cards    | [ ]    |
-| `aria-live="polite"` for refreshing cards                               | [ ]    |
+| Explicit landmarks (`role="region" aria-labelledby`) on all 11 cards    | [x]    |
+| `aria-live="polite"` for refreshing cards                               | [x]    |
 | Keyboard focus-order audit + visible focus ring tokens                  | [ ]    |
 | Screen-reader manual test (NVDA desktop + VoiceOver mobile) + write-up  | [ ]    |
 | Lighthouse accessibility ≥ 98 in CI                                     | [ ]    |
@@ -308,8 +308,8 @@ Exit: WCAG 2.2 AA compliant on all 6 themes × 3 screen modes; axe-core reports 
 
 | Deliverable                                                                                                                                  | Status |
 | -------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| `/api/news` aggregates 17 RSS feeds, deduplicates, returns one normalized JSON                                                               | [ ]    |
-| KV stale-fallback extended to weather, currency, hebcal, sefaria, calendar                                                                   | [ ]    |
+| `/api/news` aggregates 17 RSS feeds, deduplicates, returns one normalized JSON                                                               | [x]    |
+| KV stale-fallback extended to weather, currency, hebcal, sefaria, calendar                                                                   | [x]    |
 | Every worker route returns `WorkerResponse<T>` envelope (done ✅) and Zod-validated upstream (done ✅ for 7/10 routes; complete remaining 3) | [ ]    |
 | Backup providers behind adapter: `met.no` (weather), Finnhub (stocks), second metals source                                                  | [ ]    |
 | Worker OpenAPI `openapi.yaml` documents every route, envelope, and stale flag                                                                | [ ]    |
@@ -321,7 +321,7 @@ Exit: client never parses raw upstream JSON; every provider has a documented bac
 
 | Deliverable                                                                   | Status |
 | ----------------------------------------------------------------------------- | ------ |
-| Lightning CSS at Vite build time (autoprefix, minify, tree-shake)             | [ ]    |
+| Lightning CSS at Vite build time (autoprefix, minify, tree-shake)             | [x]    |
 | Lighthouse performance ≥ 95 in CI (current 94)                                | [ ]    |
 | TTI < 1.0 s on cached desktop (current ~1.2 s)                                | [ ]    |
 | Drop Vitest run time below 30 s (isolate slowest 15 suites in worker threads) | [ ]    |
@@ -333,9 +333,9 @@ Exit: CI-enforced perf budgets; no card adds > 5 KB gzip without an ADR.
 
 | Deliverable                                                           | Status |
 | --------------------------------------------------------------------- | ------ |
-| Adaptive icons (iOS mask + Android maskable)                          | [ ]    |
+| Adaptive icons (iOS mask + Android maskable)                          | [x]    |
 | Splash screens for each install target                                | [ ]    |
-| First-run tour (keyboard shortcuts + card explanation) — dismissable  | [ ]    |
+| First-run tour (keyboard shortcuts + card explanation) — dismissable  | [x]    |
 | In-place SW update UX (progress bar, no forced reload where possible) | [ ]    |
 
 Exit: installable PWA passes Chrome install checklist; iOS add-to-home-screen experience is polished.
@@ -344,8 +344,8 @@ Exit: installable PWA passes Chrome install checklist; iOS add-to-home-screen ex
 
 | Deliverable                                                                                  | Status |
 | -------------------------------------------------------------------------------------------- | ------ |
-| Property-based tests (`fast-check` dev dep in parent) for cache + config + ICS parser        | [ ]    |
-| Coverage raised to 92 / 85 / 92 / 94                                                         | [ ]    |
+| Property-based tests (`fast-check` dev dep in parent) for cache + config + ICS parser        | [x]    |
+| Coverage raised to 92 / 85 / 92 / 94                                                         | [x]    |
 | Instruction & skill frontmatter linter (custom script in `scripts/`)                         | [ ]    |
 | Removal of dead `initX()` exports alongside FdbCard                                          | [ ]    |
 | Registry-driven DOM: 11/11 cards mounted via `createShell()` (index.html has no card shells) | [ ]    |
