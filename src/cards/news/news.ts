@@ -28,19 +28,8 @@ export interface NewsFeed {
 }
 
 export const NEWS_FEEDS: NewsFeed[] = [
-  {
-    url: "https://www.ynet.co.il/Integration/StoryRss1854.xml",
-    src: "Ynet מבזקים",
-  },
-  { url: "https://rss.walla.co.il/feed/1", src: "וואלה" },
-  {
-    url: "https://www.mako.co.il/AjaxPage?jspName=HPFloatingRSS.jsp",
-    src: "מאקו",
-  },
   { url: "https://www.kan.org.il/podcast/2578/", src: "כאן חדשות" },
-  { url: "https://www.n12.co.il/cmlink/1.6017730", src: "N12" },
   { url: "https://www.rotter.net/scoopscache.xml", src: "רוטר סקופים" },
-  { url: "https://www.israelhayom.co.il/rss.xml", src: "ישראל היום" },
   {
     url: "https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=585",
     src: "גלובס",

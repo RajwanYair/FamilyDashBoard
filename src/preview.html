@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>🔬 FDB Card Preview [DEV]</title>
+    <script type="module" src="/preview.ts"></script>
+  </head>
+  <body class="theme-black">
+    <div id="preview-root">
+      <nav id="preview-toolbar" aria-label="Card preview controls"></nav>
+      <div id="preview-layout">
+        <main id="preview-mount" aria-label="Card preview area"></main>
+        <aside id="preview-settings-panel" hidden aria-label="Card settings">
+          <div id="preview-settings-header">
+            <span>⚙️ Settings</span>
+          </div>
+          <div id="preview-settings-body"></div>
+        </aside>
+        <aside id="preview-diag-panel" aria-label="Diagnostic log">
+          <div id="preview-diag-header">
+            <span>📋 Diag Log</span>
+          </div>
+          <div id="preview-diag-entries"></div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>
