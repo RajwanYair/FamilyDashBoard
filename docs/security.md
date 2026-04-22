@@ -149,7 +149,47 @@ No secrets are committed to the repository. GitHub native secret scanning is ena
 
 ---
 
-## 10. Responsible Disclosure
+## 10. Video Streams (video-news card — opt-in)
+
+The `video-news` card is **disabled by default** (`hidden: true` in the card registry).
+When enabled, it plays a live HLS stream inside a `<video>` element.
+
+### CSP extension when video-news is enabled
+
+The current base CSP sets `media-src 'none'`.  When the card is enabled and stream
+URLs are confirmed (pending research sprint v11.1-sprint-1), the following extensions
+will be required:
+
+| Directive    | Current value           | Extended value (video-news enabled)                              |
+| ------------ | ----------------------- | ---------------------------------------------------------------- |
+| `connect-src`| `'self' <worker-base>`  | `+ <hls-manifest-host>` (exact host from `StreamDescriptor.cspHosts.connect`) |
+| `media-src`  | `'none'`                | `'self' blob: <hls-segment-host>` (exact host from `StreamDescriptor.cspHosts.media`) |
+| `frame-src`  | `https://calendar.google.com` | Stays unchanged unless Mode C (iframe embed) is chosen |
+
+The exact hosts are documented in `docs/adr/ADR-019-video-card-csp.md` and will be
+locked in before the card ships to production. All hosts must be explicit — no wildcards.
+
+### Integration modes (ADR-019)
+
+| Mode | Description                              | CSP delta       |
+| ---- | ---------------------------------------- | --------------- |
+| A    | Native `<video>` + HLS (CORS-open stream) | `connect-src` + `media-src` + `blob:` |
+| B    | Worker-proxied HLS manifest + segments  | `connect-src` worker only (no external host) |
+| C    | `<iframe>` embed (last resort)           | `frame-src` + embed host |
+| D    | Vendored `hls.js` + Mode A              | Same as Mode A + < 35 KB bundle growth |
+
+Mode B is the most restrictive CSP option because all external requests are routed
+through the Cloudflare Worker, which is already in the `connect-src` allowlist.
+
+### Terms of Service notice
+
+The video-news card will only be enabled for channels where the operator's Terms of Service
+permit direct embedding or where an official embed URL is provided. Channels that explicitly
+prohibit third-party embedding will not be supported.
+
+---
+
+## 11. Responsible Disclosure
 
 This is a private household project. If you find a security issue, please open a GitHub issue
 or email the author directly. There is no bug bounty program.

@@ -1,4 +1,4 @@
-# Adding a New Card to FamilyDashBoard
+﻿# Adding a New Card to FamilyDashBoard
 
 This guide walks through every step needed to add a fully functional card to the
 dashboard. Follow the steps in order — each builds on the previous.
@@ -208,3 +208,74 @@ node scripts/check-sw-version.mjs
 ```
 
 All must pass with 0 errors, 0 warnings, 0 test failures before committing.
+
+---
+
+## Video-Card Variant
+
+Cards that display a live video stream follow a distinct pattern from data-polling cards.
+Use this section alongside the standard steps above.
+
+### Key differences
+
+| Aspect           | Data card                            | Video-card                                          |
+| ---------------- | ------------------------------------ | --------------------------------------------------- |
+| DOM element      | `<article>` with tile grid           | `<article>` wrapping `<video>` + overlay            |
+| Data fetching    | `cGet` / `cSet` / `fetchWithTimeout` | `StreamDescriptor` from `video-news-adapter.ts`     |
+| State            | `cGet()` / `cSet()` cache            | Module-level `_muted`, `_activeChannel`, retry state |
+| Refresh          | Polling interval                     | HLS manifest (no-store); `onerror` retry with back-off |
+| CSP              | `connect-src` only                   | `connect-src` + `media-src` + `blob:`               |
+| Autoplay         | N/A                                  | Always `muted` by default; play-prompt overlay on block |
+| Reduced motion   | N/A                                  | Pause + show poster on `prefers-reduced-motion: reduce` |
+| Testing          | Unit + integration                   | Unit (adapter) + integration (404 fallback) + Playwright |
+
+### `StreamDescriptor` type
+
+Every channel is described by a `StreamDescriptor` (see `src/types/stream.ts`):
+
+```typescript
+interface StreamDescriptor {
+  id:       VideoChannelId;   // "c14" | "i24" | "now14" | "arutz7"
+  url:      string;           // HLS manifest URL (or "" if pending)
+  mode:     "hls-native" | "hls-worker" | "hls-js" | "iframe";
+  titleHe:  string;           // Hebrew channel name
+  poster:   string;           // Poster image URL (shown while loading)
+  cspHosts: { connect: string[]; media: string[] }; // hosts for CSP extension
+}
+```
+
+Implement `getStreamDescriptor(id)` in a `*-adapter.ts` file alongside the card.
+
+### Accessibility requirements
+
+- `<video aria-label="<channel> שידור חי — מושתק">` — update on channel switch
+- Mute button: `<button aria-pressed="true|false">` — announce state change
+- Keyboard shortcuts `M` (mute) and `V` (cycle channel) documented in `docs/keyboard.md`
+- `prefers-reduced-motion`: pause video + show poster + `aria-live` announcement
+
+### CSP documentation requirement
+
+Before the card ships:
+
+1. Add all stream hosts to the `connect-src` / `media-src` allow-list in `src/index.html`
+2. Document the new hosts in `docs/security.md` (see the "Video Streams" section)
+3. Cross-reference ADR-019 in the card's source file header comment
+
+### Registration
+
+Register with `hidden: true` so the card is opt-in:
+
+```typescript
+registerCard({
+  id: "my-video-card",
+  tagName: "fdb-my-video-card",
+  defaultSlot: { col: 1, order: 99, flexGrow: 25, hidden: true },
+});
+```
+
+### See also
+
+- `src/cards/video-news/` — reference implementation
+- `docs/adr/ADR-019-video-card-csp.md` — CSP + provider integration modes
+- `docs/security.md#10-video-streams` — host allow-list documentation
+- `docs/keyboard.md` — `M` / `V` keyboard shortcuts

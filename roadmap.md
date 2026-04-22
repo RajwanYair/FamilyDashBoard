@@ -560,12 +560,12 @@ interface VideoNewsConfig {
 - [ ] Card reaches error-state within 5 s when the stream is killed; recovers within 30 s when it returns
 - [ ] `M` mutes/unmutes; `V` cycles channel; both announced to screen readers
 - [ ] `prefers-reduced-motion` pauses playback and shows a poster
-- [ ] Strict CSP remains in force; new hosts are documented in `docs/security.md` and ADR-019
+- [x] Strict CSP remains in force; new hosts are documented in `docs/security.md` and ADR-019
 - [ ] Bundle-size growth: < 3 KB gzip for Mode A, < 35 KB gzip for Mode D
 - [ ] 54 new visual regression baselines committed and green
 - [ ] Lighthouse performance ≥ 93 with card enabled (budget: no more than 2 points below the baseline of 95)
 - [ ] No regression in any of the existing 11 cards' tests
-- [ ] Docs: `docs/adding-a-card.md` updated with the video-card variant; new `docs/video-cards.md` covers CSP, channel schema, and how to add channel #5
+- [x] Docs: `docs/adding-a-card.md` updated with the video-card variant; new `docs/video-cards.md` covers CSP, channel schema, and how to add channel #5
 - [ ] ADR-019 "Video content card — provider integration modes and CSP implications" committed
 
 #### Open Questions (to resolve in Research sprint)
