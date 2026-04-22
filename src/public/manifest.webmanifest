@@ -30,6 +30,13 @@
   ],
   "screenshots": [
     {
+      "src": "./splash.svg",
+      "sizes": "1920x1080",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "לוח הבקרה המשפחתי — תצוגת TV מלאה"
+    },
+    {
       "src": "./screenshot-wide.svg",
       "sizes": "1280x800",
       "type": "image/svg+xml",

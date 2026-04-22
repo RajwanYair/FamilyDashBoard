@@ -149,8 +149,7 @@ describe("withErrorBoundary — async error", () => {
 
   it("handles non-Error thrown values (string)", async () => {
     const fn = withErrorBoundary("str-card", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw "string error";
+      throw "string error"; // intentional non-Error throw to test boundary robustness
     });
     const result = await fn();
     expect(result).toBeUndefined();

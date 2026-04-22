@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#060b14"/>
+      <stop offset="100%" stop-color="#0d1a2e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="accent-h" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Full background -->
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+
+  <!-- Subtle grid pattern -->
+  <line x1="480" y1="120" x2="480" y2="960" stroke="#1a2a4a" stroke-width="1" opacity="0.4"/>
+  <line x1="960" y1="120" x2="960" y2="960" stroke="#1a2a4a" stroke-width="1" opacity="0.4"/>
+  <line x1="1440" y1="120" x2="1440" y2="960" stroke="#1a2a4a" stroke-width="1" opacity="0.4"/>
+  <line x1="120" y1="360" x2="1800" y2="360" stroke="#1a2a4a" stroke-width="1" opacity="0.4"/>
+  <line x1="120" y1="720" x2="1800" y2="720" stroke="#1a2a4a" stroke-width="1" opacity="0.4"/>
+
+  <!-- Calendar tile -->
+  <rect x="120" y="160" width="380" height="320" rx="20" fill="#0f2240"/>
+  <rect x="148" y="196" width="280" height="20" rx="10" fill="url(#accent)" opacity="0.9"/>
+  <rect x="148" y="232" width="200" height="12" rx="6" fill="#60a5fa" opacity="0.5"/>
+  <rect x="148" y="258" width="240" height="12" rx="6" fill="#60a5fa" opacity="0.5"/>
+  <rect x="148" y="284" width="170" height="12" rx="6" fill="#60a5fa" opacity="0.4"/>
+  <rect x="148" y="310" width="215" height="12" rx="6" fill="#60a5fa" opacity="0.4"/>
+  <rect x="148" y="336" width="150" height="12" rx="6" fill="#60a5fa" opacity="0.3"/>
+  <rect x="148" y="362" width="190" height="12" rx="6" fill="#60a5fa" opacity="0.3"/>
+  <rect x="148" y="388" width="130" height="12" rx="6" fill="#60a5fa" opacity="0.25"/>
+  <rect x="148" y="414" width="170" height="12" rx="6" fill="#60a5fa" opacity="0.25"/>
+
+  <!-- Weather tile -->
+  <rect x="540" y="160" width="380" height="320" rx="20" fill="#0f2240"/>
+  <circle cx="658" cy="296" r="64" fill="#fbbf24" opacity="0.9"/>
+  <circle cx="736" cy="336" r="52" fill="#dbeafe" opacity="0.8"/>
+  <circle cx="698" cy="354" r="44" fill="#eff6ff" opacity="0.85"/>
+  <rect x="570" y="382" width="200" height="18" rx="9" fill="#dbeafe" opacity="0.6"/>
+  <rect x="570" y="412" width="140" height="12" rx="6" fill="#dbeafe" opacity="0.35"/>
+  <rect x="570" y="436" width="160" height="12" rx="6" fill="#dbeafe" opacity="0.35"/>
+
+  <!-- Stocks tile -->
+  <rect x="960" y="160" width="380" height="320" rx="20" fill="#0f2240"/>
+  <rect x="988" y="196" width="160" height="16" rx="8" fill="#34d399" opacity="0.8"/>
+  <rect x="988" y="224" width="100" height="10" rx="5" fill="#34d399" opacity="0.4"/>
+  <polyline
+    points="988,440 1052,392 1116,408 1180,356 1244,374 1308,330"
+    fill="none" stroke="#34d399" stroke-width="8"
+    stroke-linejoin="round" stroke-linecap="round"/>
+  <polyline
+    points="988,440 1040,424 1092,432 1144,418 1196,428 1248,410 1308,404"
+    fill="none" stroke="#60a5fa" stroke-width="5" opacity="0.5"
+    stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- News tile -->
+  <rect x="1380" y="160" width="420" height="320" rx="20" fill="#0f2240"/>
+  <rect x="1408" y="200" width="360" height="18" rx="9" fill="url(#accent)" opacity="0.9"/>
+  <rect x="1408" y="232" width="290" height="11" rx="5" fill="#60a5fa" opacity="0.55"/>
+  <rect x="1408" y="254" width="320" height="11" rx="5" fill="#60a5fa" opacity="0.55"/>
+  <rect x="1408" y="290" width="360" height="18" rx="9" fill="url(#accent)" opacity="0.85"/>
+  <rect x="1408" y="322" width="260" height="11" rx="5" fill="#60a5fa" opacity="0.5"/>
+  <rect x="1408" y="344" width="300" height="11" rx="5" fill="#60a5fa" opacity="0.5"/>
+  <rect x="1408" y="380" width="360" height="18" rx="9" fill="url(#accent)" opacity="0.8"/>
+  <rect x="1408" y="412" width="240" height="11" rx="5" fill="#60a5fa" opacity="0.45"/>
+  <rect x="1408" y="434" width="280" height="11" rx="5" fill="#60a5fa" opacity="0.45"/>
+
+  <!-- Bottom row — smaller tiles -->
+  <!-- Alerts tile -->
+  <rect x="120" y="540" width="240" height="160" rx="16" fill="#0f2240"/>
+  <circle cx="236" cy="620" r="40" fill="#ef4444" opacity="0.15"/>
+  <rect x="148" y="560" width="120" height="12" rx="6" fill="#ef4444" opacity="0.7"/>
+  <rect x="148" y="586" width="180" height="10" rx="5" fill="#ef4444" opacity="0.35"/>
+  <rect x="148" y="608" width="160" height="10" rx="5" fill="#ef4444" opacity="0.3"/>
+  <rect x="148" y="650" width="140" height="10" rx="5" fill="#60a5fa" opacity="0.4"/>
+  <rect x="148" y="672" width="160" height="10" rx="5" fill="#60a5fa" opacity="0.4"/>
+
+  <!-- Currency tile -->
+  <rect x="400" y="540" width="240" height="160" rx="16" fill="#0f2240"/>
+  <rect x="428" y="560" width="80" height="12" rx="6" fill="#fbbf24" opacity="0.8"/>
+  <rect x="428" y="586" width="180" height="10" rx="5" fill="#fbbf24" opacity="0.4"/>
+  <rect x="428" y="608" width="140" height="10" rx="5" fill="#60a5fa" opacity="0.4"/>
+  <rect x="428" y="630" width="160" height="10" rx="5" fill="#60a5fa" opacity="0.35"/>
+  <rect x="428" y="652" width="120" height="10" rx="5" fill="#fbbf24" opacity="0.35"/>
+  <rect x="428" y="674" width="150" height="10" rx="5" fill="#60a5fa" opacity="0.3"/>
+
+  <!-- Tasks tile -->
+  <rect x="680" y="540" width="240" height="160" rx="16" fill="#0f2240"/>
+  <rect x="708" y="560" width="100" height="12" rx="6" fill="url(#accent)" opacity="0.8"/>
+  <rect x="708" y="588" width="12" height="12" rx="3" fill="#34d399" opacity="0.8"/>
+  <rect x="728" y="590" width="148" height="10" rx="5" fill="#dbeafe" opacity="0.6"/>
+  <rect x="708" y="614" width="12" height="12" rx="3" fill="#34d399" opacity="0.8"/>
+  <rect x="728" y="616" width="120" height="10" rx="5" fill="#dbeafe" opacity="0.5"/>
+  <rect x="708" y="640" width="12" height="12" rx="3" fill="#60a5fa" opacity="0.5"/>
+  <rect x="728" y="642" width="140" height="10" rx="5" fill="#dbeafe" opacity="0.45"/>
+  <rect x="708" y="666" width="12" height="12" rx="3" fill="#60a5fa" opacity="0.4"/>
+  <rect x="728" y="668" width="100" height="10" rx="5" fill="#dbeafe" opacity="0.4"/>
+
+  <!-- Hebrew calendar tile -->
+  <rect x="960" y="540" width="240" height="160" rx="16" fill="#0f2240"/>
+  <rect x="988" y="560" width="140" height="14" rx="7" fill="#fbbf24" opacity="0.75"/>
+  <rect x="988" y="590" width="170" height="10" rx="5" fill="#fbbf24" opacity="0.4"/>
+  <rect x="988" y="612" width="140" height="10" rx="5" fill="#60a5fa" opacity="0.45"/>
+  <rect x="988" y="634" width="190" height="10" rx="5" fill="#60a5fa" opacity="0.4"/>
+  <rect x="988" y="656" width="130" height="10" rx="5" fill="#fbbf24" opacity="0.3"/>
+  <rect x="988" y="678" width="160" height="10" rx="5" fill="#60a5fa" opacity="0.3"/>
+
+  <!-- Countdown tile -->
+  <rect x="1240" y="540" width="240" height="160" rx="16" fill="#0f2240"/>
+  <rect x="1268" y="560" width="100" height="12" rx="6" fill="url(#accent)" opacity="0.8"/>
+  <text x="1360" y="648" font-family="sans-serif" font-size="48" font-weight="700"
+        fill="#3b82f6" opacity="0.8" text-anchor="middle">42</text>
+  <rect x="1268" y="672" width="160" height="10" rx="5" fill="#60a5fa" opacity="0.4"/>
+
+  <!-- System info tile -->
+  <rect x="1520" y="540" width="280" height="160" rx="16" fill="#0f2240"/>
+  <rect x="1548" y="560" width="120" height="12" rx="6" fill="url(#accent)" opacity="0.7"/>
+  <rect x="1548" y="586" width="200" height="10" rx="5" fill="#34d399" opacity="0.5"/>
+  <rect x="1548" y="604" width="160" height="8" rx="4" fill="#34d399" opacity="0.35"/>
+  <rect x="1548" y="622" width="200" height="10" rx="5" fill="#60a5fa" opacity="0.5"/>
+  <rect x="1548" y="640" width="140" height="8" rx="4" fill="#60a5fa" opacity="0.35"/>
+  <rect x="1548" y="658" width="200" height="10" rx="5" fill="#fbbf24" opacity="0.45"/>
+  <rect x="1548" y="676" width="110" height="8" rx="4" fill="#fbbf24" opacity="0.3"/>
+
+  <!-- App title — centered at bottom -->
+  <text x="960" y="870"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="52"
+        font-weight="700"
+        fill="url(#accent)"
+        text-anchor="middle"
+        opacity="0.95">FamilyDashBoard</text>
+  <text x="960" y="930"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="26"
+        fill="#60a5fa"
+        text-anchor="middle"
+        opacity="0.65">לוח בקרה משפחתי</text>
+
+  <!-- Bottom accent line -->
+  <rect x="640" y="958" width="640" height="4" rx="2" fill="url(#accent-h)" opacity="0.6"/>
+</svg>

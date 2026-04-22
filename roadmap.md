@@ -334,7 +334,7 @@ Exit: CI-enforced perf budgets; no card adds > 5 KB gzip without an ADR.
 | Deliverable                                                           | Status |
 | --------------------------------------------------------------------- | ------ |
 | Adaptive icons (iOS mask + Android maskable)                          | [x]    |
-| Splash screens for each install target                                | [ ]    |
+| Splash screens for each install target                                | [x]    |
 | First-run tour (keyboard shortcuts + card explanation) — dismissable  | [x]    |
 | In-place SW update UX (progress bar, no forced reload where possible) | [x]    |
 
