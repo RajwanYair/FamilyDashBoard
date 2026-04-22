@@ -79,6 +79,7 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 import { installGlobalErrorHandlers } from "./core/error-tracker";
+import { withErrorBoundary } from "./core/error-boundary";
 import {
   initPerfObserver,
   markDomReady,
@@ -370,11 +371,12 @@ export function init(): void {
   );
 
   // Cards — priority-based init: high-value visible cards first (v7.10)
-  // Sprint 158: wrap each init with timing
+  // Sprint 158: wrap each init with timing; error-boundary catches init failures
   const timedInit = (id: string, fn: () => void): void => {
     const t0 = performance.now();
-    fn();
-    recordCardInitTime(id, performance.now() - t0);
+    void withErrorBoundary(id, fn)().then(() => {
+      recordCardInitTime(id, performance.now() - t0);
+    });
   };
   // HIGH priority: user-visible, time-sensitive data
   timedInit("weather", initWeatherCard);
