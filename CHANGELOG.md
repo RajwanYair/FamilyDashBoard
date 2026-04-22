@@ -5,6 +5,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [11.2.0] — 2026-04-22
+
+> **3265 tests / 98 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Accessibility
+
+- **Sprint 1 (A11y)**: Honour `prefers-reduced-motion` for all animations — `@media (prefers-reduced-motion: reduce)` blocks added to `animations.css`, `base.css`, `components.css`
+- **Sprint 2 (A11y)**: Focus-ring CSS custom property tokens — `--focus-outline-width/color/offset` and card/button/input variants added to `tokens.css`; all hardcoded `outline` values in `a11y.css` replaced with tokens
+
+### Performance
+
+- **Sprint 3 (Perf)**: Bundle growth regression guard — `check-bundle-size.mjs` now exits 1 if JS or CSS gzip grows >10% vs last baseline in `bundle-trend.json`
+- **Sprint 5 (Perf)**: Dynamic CPU-scaled fork count in Vitest pool — `tooling/vitest/base.mjs` exports `sharedVitestPoolConfig` with `availableParallelism()`-based `maxForks`/`minForks`
+
+### PWA
+
+- **Sprint 4 (PWA)**: PWA install splash screenshots — `manifest.webmanifest` gains `screenshots` array with wide (1280×800) and narrow (390×844) SVG placeholders
+- **Sprint 8 (PWA)**: SW update progress UX — banner now shows `downloading → installing → ready` states; reload button hidden until update is installed; `showUpdateBannerState()` replaces old `showUpdateBanner()`
+
+### Worker Resilience
+
+- **Sprint 6 (Worker)**: Zod validation for alerts, sefaria/calendar, sefaria/text routes — warn-but-don't-block pattern; schema types added in `worker/src/utils/schemas.ts`
+- **Sprint 9 (Worker)**: Backup provider stubs — met.no fallback for weather (Open-Meteo primary → KV stale → met.no); Finnhub fallback for stocks (Yahoo primary → KV stale → Finnhub); `FINNHUB_API_KEY` optional env var
+
+---
+
 ## [11.0.1] — 2026-04-22
 
 > **3265 tests / 98 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier

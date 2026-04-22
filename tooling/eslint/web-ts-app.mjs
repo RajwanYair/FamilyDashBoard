@@ -200,6 +200,8 @@ export function createWebTsAppEslintConfig({
           caches: "readonly",
           fetch: "readonly",
           Response: "readonly",
+          Headers: "readonly",
+          Request: "readonly",
           URL: "readonly",
           clients: "readonly",
           addEventListener: "readonly",
