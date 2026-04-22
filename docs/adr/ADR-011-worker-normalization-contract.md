@@ -71,6 +71,7 @@ must succeed; otherwise the route falls back to KV stale data.
 ### Normalisation
 
 Each item is mapped to:
+
 ```ts
 interface NewsItem {
   title:       string;   // HTML-entity-decoded

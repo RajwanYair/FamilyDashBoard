@@ -153,4 +153,5 @@ The test uses the `wcag22aa` ruleset and fails the suite on any violation.
 
 - [`src/ui/keyboard.ts`](../src/ui/keyboard.ts) — keyboard registry & dispatcher
 - [`tests/e2e/accessibility.spec.ts`](../tests/e2e/accessibility.spec.ts) — axe-core tests
+- [`docs/screen-reader.md`](screen-reader.md) — NVDA + VoiceOver manual test protocol & findings
 - [ADR-018: CSP + COOP/COEP](adr/ADR-018-csp-coop-coep.md) — security headers

@@ -299,7 +299,7 @@ Exit: first error in production surfaces in the worker KV within 60 s; user can 
 | Explicit landmarks (`role="region" aria-labelledby`) on all 11 cards    | [x]    |
 | `aria-live="polite"` for refreshing cards                               | [x]    |
 | Keyboard focus-order audit + visible focus ring tokens                  | [x]    |
-| Screen-reader manual test (NVDA desktop + VoiceOver mobile) + write-up  | [ ]    |
+| Screen-reader manual test (NVDA desktop + VoiceOver mobile) + write-up  | [x]    |
 | Lighthouse accessibility ≥ 98 in CI                                     | [ ]    |
 
 Exit: WCAG 2.2 AA compliant on all 6 themes × 3 screen modes; axe-core reports 0 serious/critical.

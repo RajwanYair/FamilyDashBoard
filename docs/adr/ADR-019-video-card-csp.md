@@ -24,7 +24,7 @@ existing data cards, a live stream:
 
 ### Integration Mode Preference
 
-```
+```text
 Mode A (native <video> + HLS) ──preferred──► Mode B (worker-proxied HLS)
                                                │
                                                └──► Mode D (vendored hls.js)
@@ -63,7 +63,7 @@ Content-Security-Policy **only when the card is enabled**.
 
 Planned CSP additions when video-news is enabled (exact hosts TBD after research):
 
-```
+```text
 connect-src: 'self'  <worker-base>  <manifest-host>
 media-src:   'self'  blob:          <segment-host>
 frame-src:   'none'                 (stays 'none' unless Mode C)

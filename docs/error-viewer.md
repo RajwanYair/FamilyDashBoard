@@ -25,7 +25,7 @@ FamilyDashBoard runs a two-tier error pipeline:
 
 ### Endpoint
 
-```
+```text
 GET https://fdb.rajwanyair.workers.dev/api/errors/export?token=<TOKEN>
 ```
 
