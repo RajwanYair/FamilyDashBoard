@@ -347,7 +347,7 @@ Exit: installable PWA passes Chrome install checklist; iOS add-to-home-screen ex
 | Property-based tests (`fast-check` dev dep in parent) for cache + config + ICS parser        | [x]    |
 | Coverage raised to 92 / 85 / 92 / 94                                                         | [x]    |
 | Instruction & skill frontmatter linter (custom script in `scripts/`)                         | [x]    |
-| Removal of dead `initX()` exports alongside FdbCard                                          | [ ]    |
+| Removal of dead `initX()` exports alongside FdbCard                                          | [~]    |
 | Registry-driven DOM: new cards auto-mount via `mountRegisteredCards()` (`video-news` done); legacy 11 cards still in index.html | [~]    |
 | ADR-017: Lightning CSS adoption                                                              | [x]    |
 
