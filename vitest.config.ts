@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
 import { readFileSync } from "node:fs";
-import { sharedVitestTestConfig } from "./tooling/vitest/base.mjs";
+import { sharedVitestTestConfig, sharedVitestPoolConfig } from "./tooling/vitest/base.mjs";
 
 const tempBase = join(tmpdir(), "fdb-dev");
 
@@ -17,6 +17,8 @@ const appVersion: string = (
  * don't bleed into the production build and vice versa.
  */
 export default defineConfig({
+  // Vitest 4: pool and poolOptions must be top-level (not under test:)
+  ...sharedVitestPoolConfig,
   resolve: {
     alias: [
       { find: "@tests/helpers", replacement: resolve(__dirname, "tests/helpers/index.ts") },

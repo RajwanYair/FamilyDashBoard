@@ -14,7 +14,7 @@
 .card :focus-visible {
   outline-color: var(--focus-outline-color-card);
   outline-width: var(--focus-outline-width-card);
-  box-shadow: 0 0 0 var(--focus-shadow-spread) color-mix(in srgb, var(--focus-outline-color-card) 35%, transparent);
+  box-shadow: 0 0 0 var(--focus-shadow-spread) color-mix(in sRGB, var(--focus-outline-color-card) 35%, transparent);
 }
 
 /* Icon buttons and pill chips */

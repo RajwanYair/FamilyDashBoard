@@ -103,6 +103,11 @@ body.slideshow-fade::after {
 #sw-update-banner.visible {
   display: flex;
 }
+/* Downloading / installing states: muted amber to signal in-progress */
+#sw-update-banner[data-sw-state="downloading"],
+#sw-update-banner[data-sw-state="installing"] {
+  background: #f59e0b;
+}
 #sw-update-reload-btn {
   background: rgba(0, 0, 0, 0.18);
   color: inherit;
@@ -112,6 +117,16 @@ body.slideshow-fade::after {
   cursor: pointer;
   font-size: 0.9em;
   font-weight: 700;
+}
+@media (prefers-reduced-motion: no-preference) {
+  #sw-update-banner[data-sw-state="downloading"] #sw-update-status,
+  #sw-update-banner[data-sw-state="installing"] #sw-update-status {
+    animation: swPulse 1.4s ease-in-out infinite;
+  }
+}
+@keyframes swPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
 }
 
 /* F122: UV pill color levels */

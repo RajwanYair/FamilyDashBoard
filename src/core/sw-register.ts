@@ -70,9 +70,11 @@ export async function registerSW(): Promise<void> {
       if (!installing) return;
 
       installing.addEventListener("statechange", () => {
-        if (installing.state === "installed" && navigator.serviceWorker.controller) {
+        if (installing.state === "installing") {
+          showUpdateBannerState("installing");
+        } else if (installing.state === "installed" && navigator.serviceWorker.controller) {
           diagLog("[sw] New version available");
-          showUpdateBanner();
+          showUpdateBannerState("ready");
         }
       });
     });
@@ -113,12 +115,38 @@ export function swSkipWaiting(): void {
 }
 
 /**
- * Show the SW update banner (wired to DOM in main.ts).
+ * Show the SW update banner with a specific progress state.
+ *   downloading — SW fetch in progress (updatefound fired)
+ *   installing  — SW installing assets
+ *   ready       — SW installed, waiting to activate; show reload button
  */
-function showUpdateBanner(): void {
+function showUpdateBannerState(state: "downloading" | "installing" | "ready"): void {
   const banner = document.getElementById("sw-update-banner");
-  if (banner) banner.classList.add("visible");
-  // Wire reload button (replaces inline onclick="swUpdateReload()")
-  const reloadBtn = document.getElementById("sw-update-reload-btn");
-  if (reloadBtn) reloadBtn.addEventListener("click", swSkipWaiting, { once: true });
+  if (!banner) return;
+
+  const statusEl = document.getElementById("sw-update-status");
+  const reloadBtn = document.getElementById("sw-update-reload-btn") as HTMLButtonElement | null;
+
+  const labels: Record<string, string> = {
+    downloading: "🔄 מוריד עדכון...",
+    installing: "⚙️ מתקין עדכון...",
+    ready: "🆕 גרסה חדשה מוכנה",
+  };
+
+  if (statusEl) statusEl.textContent = labels[state] ?? "🆕 גרסה חדשה מוכנה";
+  if (reloadBtn) reloadBtn.hidden = state !== "ready";
+
+  banner.classList.add("visible");
+  if (state === "ready") {
+    banner.setAttribute("data-sw-state", "ready");
+    // Wire reload button only once
+    if (reloadBtn && !reloadBtn.dataset["wired"]) {
+      reloadBtn.addEventListener("click", swSkipWaiting, { once: true });
+      reloadBtn.dataset["wired"] = "1";
+    }
+  } else {
+    banner.setAttribute("data-sw-state", state);
+  }
 }
+
+
