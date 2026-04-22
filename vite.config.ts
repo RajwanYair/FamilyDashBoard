@@ -78,6 +78,19 @@ export default defineConfig(({ command }) => ({
   cacheDir: join(tempBase, ".vite"),
   plugins: [removeCrossOrigin, injectSwVersion],
 
+  // v11.0-PERF-1: Use Lightning CSS for faster, smaller CSS builds.
+  // Targets modern evergreen browsers that support all dashboard CSS features.
+  css: {
+    transformer: "lightningcss" as const,
+    lightningcss: {
+      targets: {
+        chrome: 110 << 16,
+        firefox: 115 << 16,
+        safari: (16 << 16) | (4 << 8),
+      },
+    },
+  },
+
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
