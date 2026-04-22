@@ -184,3 +184,22 @@ jobs:
         run: npx lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    # Only run on pull requests — this action compares base vs head snapshots
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Fail on any high or critical severity vulnerability in new deps
+          fail-on-severity: high
+          # Comment on the PR with a summary of added/removed dependencies
+          comment-summary-in-pr: always

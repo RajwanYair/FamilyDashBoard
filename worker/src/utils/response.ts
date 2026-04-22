@@ -7,8 +7,10 @@ export const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Max-Age": "86400",
   "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+  "Cross-Origin-Resource-Policy": "cross-origin",
 };
 
 /** Serialize data as JSON with CORS headers. */

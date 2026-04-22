@@ -1,0 +1,22 @@
+/*
+ * FamilyDashBoard — intended HTTP response headers
+ *
+ * These headers are enforced by Cloudflare Pages, Netlify, and Vercel.
+ * GitHub Pages (current deployment target) does NOT support custom headers.
+ *
+ * See ADR-018 for the full rationale.
+ * See docs/security.md for the security model.
+ *
+ * To activate: deploy to Cloudflare Pages with this file in the output directory
+ * (Vite `publicDir: 'src/public'` already copies public/ → dist/, so adding
+ * this file to dist/ via a postbuild script would activate it on Cloudflare Pages).
+ */
+
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Resource-Policy: same-site
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()

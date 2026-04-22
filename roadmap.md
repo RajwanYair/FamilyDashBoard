@@ -267,13 +267,13 @@ Close the largest remaining gap vs best-in-class: security headers and observabl
 
 | Deliverable                                                     | Status |
 | --------------------------------------------------------------- | ------ |
-| Strict CSP meta tag + HTTP header via Pages                     | [ ]    |
-| COOP / COEP / CORP headers                                      | [ ]    |
-| `docs/security.md` with threat model + decisions                | [ ]    |
-| `docs/privacy.md` with user-visible promises                    | [ ]    |
-| `dependency-review` Action on every PR                          | [ ]    |
+| Strict CSP meta tag + HTTP header via Pages                     | [x]    |
+| COOP / COEP / CORP headers                                      | [x]    |
+| `docs/security.md` with threat model + decisions                | [x]    |
+| `docs/privacy.md` with user-visible promises                    | [x]    |
+| `dependency-review` Action on every PR                          | [x]    |
 | All Actions pinned to SHA (Dependabot auto-rotation configured) | [ ]    |
-| ADR-018: CSP + COOP/COEP + CORP decision record                 | [ ]    |
+| ADR-018: CSP + COOP/COEP + CORP decision record                 | [x]    |
 
 Exit: browser DevTools "Security" panel shows no warnings on production; Observatory grade ≥ A+.
 
