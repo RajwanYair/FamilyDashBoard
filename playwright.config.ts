@@ -21,7 +21,7 @@ export default defineConfig({
   reporter: process.env["CI"] ? "github" : "list",
 
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     // 1920×1080 — TV resolution target
@@ -38,7 +38,7 @@ export default defineConfig({
 
   webServer: {
     command: "npx vite",
-    url: "http://localhost:5173",
+    url: "http://localhost:3000/FamilyDashBoard/",
     reuseExistingServer: !process.env["CI"],
     timeout: 30_000,
     stdout: "ignore",

@@ -626,7 +626,7 @@
                 <!-- F128: Hourly chart view toggle -->
                 <button type="button" id="wx-chart-toggle" title="החלף תצוגה">🌡️ טמפ׳</button>
                 <!-- Sprint 46: Next-6-hours strip -->
-                <div id="wx-hourly-strip" class="wx-hourly-strip" aria-label="תחזית שעתית"></div>
+                <div id="wx-hourly-strip" class="wx-hourly-strip" role="list" aria-label="תחזית שעתית"></div>
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                 <!-- Feature 32: Extreme weather alert banner -->
                 <div id="wx-alert-banner"></div>
@@ -722,7 +722,7 @@
             <section class="card" role="region" data-card-id="stocks" aria-labelledby="card-title-stocks">
             <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" role="status" aria-label="מצב סנכרון מניות" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> <span id="card-title-stocks">מניות</span> <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
               <div class="stocks-body">
-                <div class="stocks-scroll" id="stocks-body" aria-live="polite" aria-label="נתוני מניות">
+                <div class="stocks-scroll" id="stocks-body" role="list" aria-live="polite" aria-label="נתוני מניות">
                   <!-- Stock rows are rendered dynamically by initStocksCard() in stocks.ts -->
                 </div>
               </div>
@@ -822,7 +822,7 @@
             <!-- System Info card -->
             <section class="card" role="region" data-card-id="system-info" aria-labelledby="card-title-system-info">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge cyan">🖥</span> <span id="card-title-system-info">מצב מערכת</span><span class="card-mini-info" id="mini-system-info"></span></div>
-              <div class="sysinfo-grid" id="sysinfo-body" aria-live="polite" aria-label="נתוני מערכת">
+              <div class="sysinfo-grid" id="sysinfo-body" tabindex="0" aria-live="polite" aria-label="נתוני מערכת">
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-online">—</span><span class="sysinfo-tile-label">🛰️ מצב</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-battery">—</span><span class="sysinfo-tile-label">🔋 סוללה</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-net">—</span><span class="sysinfo-tile-label">📶 רשת</span></div>

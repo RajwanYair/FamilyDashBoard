@@ -47,7 +47,7 @@ export class FdbWeatherCard extends FdbCard {
           </div>
         </div>
         <button type="button" id="wx-chart-toggle" title="החלף תצוגה">🌡️ טמפ׳</button>
-        <div id="wx-hourly-strip" class="wx-hourly-strip" aria-label="תחזית שעתית"></div>
+        <div id="wx-hourly-strip" class="wx-hourly-strip" role="list" aria-label="תחזית שעתית"></div>
         <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
         <div id="wx-alert-banner"></div>
         <div id="wx-week-summary"></div>

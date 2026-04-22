@@ -14,7 +14,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("FamilyDashBoard — Config Panel", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".card-header, [data-card-id]", {
       timeout: 10_000,
     });
@@ -42,7 +42,7 @@ test.describe("FamilyDashBoard — Config Panel", () => {
 
 test.describe("FamilyDashBoard — Diagnostics Overlay", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".card-header, [data-card-id]", {
       timeout: 10_000,
     });
@@ -67,7 +67,7 @@ test.describe("FamilyDashBoard — Diagnostics Overlay", () => {
 
 test.describe("FamilyDashBoard — Help Overlay", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".card-header, [data-card-id]", {
       timeout: 10_000,
     });
@@ -92,7 +92,7 @@ test.describe("FamilyDashBoard — Help Overlay", () => {
 
 test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".card-header, [data-card-id]", {
       timeout: 10_000,
     });
@@ -103,6 +103,8 @@ test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
       () => document.documentElement.dataset["theme"] ?? document.body.className,
     );
     await page.keyboard.press("t");
+    // Wait for View Transition callback to run
+    await page.waitForTimeout(500);
     const after = await page.evaluate(
       () => document.documentElement.dataset["theme"] ?? document.body.className,
     );
@@ -148,7 +150,7 @@ test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
 
 test.describe("FamilyDashBoard — Status Bar", () => {
   test("version badge is present and non-empty", async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".card-header, [data-card-id]", {
       timeout: 10_000,
     });
@@ -162,7 +164,7 @@ test.describe("FamilyDashBoard — Status Bar", () => {
   });
 
   test("sync dots container is present", async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".card-header, [data-card-id]", {
       timeout: 10_000,
     });

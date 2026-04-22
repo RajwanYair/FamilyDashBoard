@@ -18,14 +18,21 @@ test.describe("FamilyDashBoard — Accessibility (axe-core WCAG 2.2 AA)", () => 
   test.beforeEach(async ({ page }) => {
     // Suppress uncaught errors from live API calls in test env
     page.on("pageerror", () => {});
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
   });
 
   for (const mode of SCREEN_MODES) {
     test(`screen mode: ${mode} — 0 critical/serious violations`, async ({ page }) => {
-      // Switch screen mode via the select or localStorage
+      // Switch screen mode by updating the config JSON stored under dash_v2_config
       await page.evaluate((m: string) => {
-        localStorage.setItem("dash_v2_screen_mode", m);
+        try {
+          const raw = localStorage.getItem("dash_v2_config");
+          const config = (raw ? JSON.parse(raw) : {}) as Record<string, unknown>;
+          config["screenMode"] = m;
+          localStorage.setItem("dash_v2_config", JSON.stringify(config));
+        } catch {
+          /* ignore quota errors */
+        }
       }, mode);
       await page.reload({ waitUntil: "domcontentloaded" });
 

@@ -35,7 +35,13 @@ export function applyTheme(theme: string): void {
   };
 
   if ("startViewTransition" in document) {
-    void document.startViewTransition(doApply);
+    const vt = document.startViewTransition(doApply);
+    vt.ready.catch(() => {
+      /* transition was skipped — benign */
+    });
+    vt.finished.catch(() => {
+      /* transition was skipped — benign */
+    });
   } else {
     doApply();
   }

@@ -289,7 +289,7 @@ export function renderStocksShell(): void {
     const row = document.createElement("div");
     row.className = "stk";
     row.dataset.symbol = symbol;
-    row.setAttribute("role", "row");
+    row.setAttribute("role", "listitem");
     row.setAttribute("aria-label", `${meta.he ?? displaySym} — ${displaySym}`);
 
     const logoDiv = document.createElement("div");
