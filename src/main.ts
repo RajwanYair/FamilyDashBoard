@@ -86,6 +86,7 @@ import {
 } from "./core/perf";
 import { applyHardwareTier } from "./core/hardware";
 import { scheduleVitalsReport, flushVitalsReport } from "./core/vitals-reporter";
+import { initTour } from "./core/first-run-tour";
 
 // ── Version ──
 export const VERSION = __APP_VERSION__;
@@ -107,6 +108,8 @@ scheduleVitalsReport();
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") flushVitalsReport();
 });
+// Show first-run tour on first visit (v11.0-PWA-1)
+initTour();
 
 /**
  * Apply card size overrides from config to DOM elements.

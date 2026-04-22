@@ -41,6 +41,20 @@
     </div>
     <!-- Feature 101: SW Update notification banner -->
     <div id="sw-update-banner" title="גרסה חדשה של הדשבורד זמינה להתקנה">🆕 גרסה חדשה זמינה — <button type="button" id="sw-update-reload-btn" title="לחץ לעדכון מיידי">↻ עדכן עכשיו</button></div>
+    <!-- Sprint 8 (v11.0-PWA-1): First-run welcome tour dialog -->
+    <dialog id="tour-overlay" aria-labelledby="tour-dialog-title" aria-modal="true">
+      <div class="tour-inner">
+        <h2 id="tour-dialog-title">👋 ברוך הבא ל-FamilyDashBoard</h2>
+        <p class="tour-subtitle">כמה קיצורי מקלדת שכדאי לדעת</p>
+        <div class="tour-keys" role="list">
+          <div class="tour-key-row" role="listitem"><span>T</span><span>החלפת ערכת נושא</span></div>
+          <div class="tour-key-row" role="listitem"><span>R</span><span>רענון כל הנתונים</span></div>
+          <div class="tour-key-row" role="listitem"><span>S</span><span>פתיחת הגדרות</span></div>
+          <div class="tour-key-row" role="listitem"><span>? / H</span><span>עזרה מלאה</span></div>
+        </div>
+        <button type="button" id="tour-dismiss-btn" class="tour-dismiss-btn">הבנתי! נתחיל</button>
+      </div>
+    </dialog>
     <dialog id="help-overlay" aria-labelledby="help-dialog-title">
       <div id="help-panel">
         <h2 id="help-dialog-title">⌨️ קיצורי מקלדת</h2>

@@ -34,6 +34,15 @@ describe("DOM Contract — SW update banner", () => {
   it("has #sw-update-reload-btn", () => expect(hasId("sw-update-reload-btn")).toBe(true));
 });
 
+describe("DOM Contract — First-run tour (v11.0-PWA-1)", () => {
+  it("has #tour-overlay dialog element", () => expect(hasId("tour-overlay")).toBe(true));
+  it("has #tour-dialog-title for aria-labelledby", () => expect(hasId("tour-dialog-title")).toBe(true));
+  it("has #tour-dismiss-btn", () => expect(hasId("tour-dismiss-btn")).toBe(true));
+  it("tour-overlay has aria-labelledby=tour-dialog-title", () => {
+    expect(html).toContain('aria-labelledby="tour-dialog-title"');
+  });
+});
+
 describe("DOM Contract — Header elements", () => {
   it("has #clock", () => expect(hasId("clock")).toBe(true));
   it("has #eng-date", () => expect(hasId("eng-date")).toBe(true));
