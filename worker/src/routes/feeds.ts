@@ -1,4 +1,4 @@
-import { jsonResponse, proxyResponse, workerEnvelope, CORS_HEADERS } from "../utils/response";
+import { jsonResponse, workerEnvelope, CORS_HEADERS } from "../utils/response";
 import {
   ALLOWED_NEWS_ORIGINS,
   ALLOWED_CALENDAR_ORIGINS,
@@ -173,7 +173,7 @@ export async function handleAlerts(env: Env): Promise<Response> {
   return workerEnvelope(data, "tzevaadom", false, 60); // 1 min
 }
 
-export async function handleCalendar(url: URL): Promise<Response> {
+export async function handleCalendar(url: URL, env: Env): Promise<Response> {
   let parsed: URL;
   try {
     parsed = requireHttpsUrl(url, "url");
@@ -184,12 +184,29 @@ export async function handleCalendar(url: URL): Promise<Response> {
     return jsonResponse({ error: "Calendar origin not permitted", param: "url" }, 403);
   }
 
+  // KV key: cap to 80 chars to stay within KV key limits
+  const kvKey = `calendar:${parsed.hostname}${parsed.pathname}`.slice(0, 80);
   const res = await fetch(parsed.toString());
-  if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  if (!res.ok) {
+    const stale = await kvGetStale<{ ics: string }>(env.CACHE_KV, kvKey);
+    if (stale?.ics) {
+      return new Response(stale.ics, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/calendar; charset=utf-8",
+          "Cache-Control": "public, max-age=900",
+          "X-Cache": "kv-stale",
+          ...CORS_HEADERS,
+        },
+      });
+    }
+    return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  }
   const text = await res.text();
   if (!text.includes("BEGIN:VCALENDAR")) {
     return jsonResponse({ error: "Not a valid ICS response" }, 502);
   }
+  void kvPut(env.CACHE_KV, kvKey, { ics: text }, 900);
   return new Response(text, {
     status: 200,
     headers: {
@@ -200,16 +217,31 @@ export async function handleCalendar(url: URL): Promise<Response> {
   });
 }
 
-export async function handleSefariaCalendar(): Promise<Response> {
+export async function handleSefariaCalendar(env: Env): Promise<Response> {
+  const kvKey = "sefaria:calendar";
   const res = await fetch("https://www.sefaria.org/api/calendars");
-  return proxyResponse(res, 86400); // 24 h
+  if (!res.ok) {
+    const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
+    if (stale) return jsonResponse(stale, 200);
+    return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  }
+  const data: unknown = await res.json();
+  void kvPut(env.CACHE_KV, kvKey, data, 86400);
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=86400",
+      ...CORS_HEADERS,
+    },
+  });
 }
 
 /**
  * Proxy an individual Sefaria text by reference.
  * GET /api/sefaria/text?ref=Berakhot.2a.1
  */
-export async function handleSefariaText(url: URL): Promise<Response> {
+export async function handleSefariaText(url: URL, env: Env): Promise<Response> {
   const ref = url.searchParams.get("ref");
   if (!ref || ref.trim() === "") {
     return jsonResponse({ error: "Missing required parameter: ref", param: "ref" }, 400);
@@ -218,9 +250,24 @@ export async function handleSefariaText(url: URL): Promise<Response> {
   if (!/^[\w\s.:_\-,()]{1,120}$/.test(ref)) {
     return jsonResponse({ error: "Invalid ref format", param: "ref" }, 400);
   }
+  const kvKey = `sefaria:text:${encodeURIComponent(ref.trim()).slice(0, 50)}`;
   const encoded = encodeURIComponent(ref.trim());
   const res = await fetch(`https://www.sefaria.org/api/v3/texts/${encoded}?context=0&pad=0`);
-  return proxyResponse(res, 86400); // 24 h — text content is stable
+  if (!res.ok) {
+    const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
+    if (stale) return jsonResponse(stale, 200);
+    return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  }
+  const data: unknown = await res.json();
+  void kvPut(env.CACHE_KV, kvKey, data, 86400);
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=86400",
+      ...CORS_HEADERS,
+    },
+  });
 }
 
 /**

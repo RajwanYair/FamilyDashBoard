@@ -70,9 +70,9 @@ export default {
       else if (path === "/api/news/aggregate") response = await handleNewsAggregate(env);
       else if (path === "/api/news") response = await handleNews(url);
       else if (path === "/api/alerts") response = await handleAlerts(env);
-      else if (path === "/api/calendar") response = await handleCalendar(url);
-      else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar();
-      else if (path === "/api/sefaria/text") response = await handleSefariaText(url);
+      else if (path === "/api/calendar") response = await handleCalendar(url, env);
+      else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar(env);
+      else if (path === "/api/sefaria/text") response = await handleSefariaText(url, env);
       else if (path === "/api/crypto") response = await handleCrypto(url, env);
       else if (path === "/api/errors") response = await handleErrors(request);
       else response = jsonResponse({ error: "Not found" }, 404);
