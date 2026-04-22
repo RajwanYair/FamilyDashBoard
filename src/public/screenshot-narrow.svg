@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+  <rect width="390" height="844" fill="#060b14"/>
+  <rect x="8" y="8" width="374" height="48" rx="8" fill="#0d1825"/>
+  <text x="195" y="40" font-family="sans-serif" font-size="16" font-weight="700"
+        fill="#d4a053" text-anchor="middle">Family Dashboard</text>
+  <!-- Stacked card preview -->
+  <rect x="8" y="66" width="374" height="180" rx="10" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="8" y="256" width="374" height="180" rx="10" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="8" y="446" width="374" height="180" rx="10" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="8" y="636" width="374" height="180" rx="10" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+</svg>

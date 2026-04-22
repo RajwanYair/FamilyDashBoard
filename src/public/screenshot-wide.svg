@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800">
+  <rect width="1280" height="800" fill="#060b14"/>
+  <rect x="10" y="10" width="1260" height="54" rx="8" fill="#0d1825"/>
+  <text x="640" y="46" font-family="sans-serif" font-size="26" font-weight="700"
+        fill="#d4a053" text-anchor="middle">רגואן Family Dashboard</text>
+  <!-- Card grid preview -->
+  <rect x="10" y="74" width="476" height="350" rx="12" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="496" y="74" width="400" height="350" rx="12" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="906" y="74" width="364" height="350" rx="12" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="10" y="434" width="476" height="356" rx="12" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="496" y="434" width="400" height="356" rx="12" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+  <rect x="906" y="434" width="364" height="356" rx="12" fill="#0d1825" stroke="#d4a05326" stroke-width="1"/>
+</svg>
