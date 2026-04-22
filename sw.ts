@@ -1,7 +1,9 @@
-/* FamilyDashBoard ServiceWorker — v9.1.0
+/* FamilyDashBoard ServiceWorker — v9.2.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * Stream SW.4: Migrated from sw.js to sw.ts (TypeScript + WebWorker lib)
+ * v9.2.0: Worker KV stale fallback (stocks/crypto/alerts), CSS tile-grid tokens,
+ *         shared tooling presets, ADR-013/014/015, openapi.yaml v9.2.0
  * See CHANGELOG.md for full version history. */
 
 // TypeScript's webworker lib declares `self` as `WorkerGlobalScope & typeof

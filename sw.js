@@ -1,6 +1,8 @@
-/* FamilyDashBoard ServiceWorker — v9.1.0
+/* FamilyDashBoard ServiceWorker — v9.2.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
+ * v9.2.0: Worker KV stale fallback (stocks/crypto/alerts), CSS tile-grid tokens,
+ *         shared tooling presets, ADR-013/014/015, openapi.yaml v9.2.0
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
@@ -9,6 +11,8 @@ const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v8.5.0: Stream SW.1 — auto-precache manifest extends APP_SHELL at install
 // v8.6.0: Stream SW.2 — background sync error queue (_queueErrorReport, _flushErrorQueue)
 // v8.7.0: Stream D2.5/D2.6 — calendar/hebrew-cal/alerts async IDB cache; W.5 Stocks Zod schema; F.3 theme token audit
+// v9.1.0: Stream SW.4 — migrated to sw.ts; TypeScript source with strict type checks
+// v9.2.0: Worker KV stale fallback (W.9); CSS tile-grid + --card-min-height (F.3); shared tooling presets (I)
 const APP_SHELL = ["./index.html", "./manifest.webmanifest", "./sw.js", "./icon.svg"];
 
 /**
