@@ -20,9 +20,9 @@ npm install --no-save --no-package-lock \
   "vite@^8.0.8" \
   "vitest@^4.1.4" \
   "@vitest/coverage-v8@^4.1.4" \
-  "eslint@^10.2.1" \
+  "eslint@^10.0.1" \
   "typescript-eslint@^8.58.2" \
-  "@eslint/js@^10.2.0" \
+  "@eslint/js@^10.0.1" \
   "happy-dom@^20.9.0" \
   "markdownlint-cli2@^0.22.0"
 
