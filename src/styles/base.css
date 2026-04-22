@@ -260,3 +260,23 @@ body::before {
   line-height: 1;
   filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
 }
+
+/* ── prefers-reduced-motion overrides for base.css animations ── */
+@media (prefers-reduced-motion: reduce) {
+  /* Ambient background gradient shift */
+  body::before {
+    animation: none;
+  }
+  /* Greeting text gradient shift */
+  .greeting {
+    animation: none;
+    background-position: 0% 50%;
+  }
+  /* Halacha ticker — stop scrolling; content remains readable */
+  .ticker-content {
+    animation: none;
+    /* Allow horizontal scroll so all items remain accessible */
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+}

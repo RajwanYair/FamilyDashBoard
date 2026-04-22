@@ -1734,3 +1734,44 @@ select.cfg-input {
 }
 
 /* Enforce minimum card height on all cards for TV readability */
+
+/* ── prefers-reduced-motion overrides for components.css animations ── */
+@media (prefers-reduced-motion: reduce) {
+  /* Card entrance animation */
+  .card {
+    animation: none;
+  }
+  /* Sync-dot syncing pulse */
+  .sync-dot.syncing {
+    animation: none;
+    opacity: 0.7;
+  }
+  /* Data-refresh inset glow */
+  .data-fresh {
+    animation: none;
+  }
+  /* News auto-scroll */
+  .rss-scroll {
+    animation: none;
+    overflow-y: auto;
+  }
+  /* Alerts auto-scroll */
+  .alerts-scroll {
+    animation: none;
+    overflow-y: auto;
+  }
+  /* Active alert pulsing glow */
+  .alert-item.active {
+    animation: none;
+    box-shadow: 0 0 6px var(--negative-glow);
+  }
+  /* New-alert entrance flash */
+  .alert-item.new-alert {
+    animation: none;
+  }
+  /* Live-alert blinking dot */
+  .alert-live-dot {
+    animation: none;
+    opacity: 0.7;
+  }
+}

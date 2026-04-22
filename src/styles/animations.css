@@ -582,3 +582,31 @@ body.shabbat-mode #shabbat-mode-banner {
 [data-hw-tier="low"] .card--refreshed {
   animation: none;
 }
+
+/* ═══════════════════════════════════════════════════════
+   prefers-reduced-motion — disable all motion for users
+   who request reduced animation (WCAG 2.1 SC 2.3.3)
+   ═══════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  /* Decorative animated gradient border on card hover */
+  .card:hover::before {
+    animation: none;
+  }
+  /* News-item freshness blink dot */
+  .rss-item[data-age="fresh"]::before {
+    animation: none;
+  }
+  /* Loading skeleton shimmer */
+  .skeleton {
+    animation: none;
+    background: var(--bg-card-inner);
+  }
+  /* Sync-burst ring after a successful fetch */
+  .sync-dot.just-synced {
+    animation: none;
+  }
+  /* Shabbat countdown urgent pulse */
+  .hc-countdown.urgent {
+    animation: none;
+  }
+}
