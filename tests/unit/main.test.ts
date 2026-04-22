@@ -308,10 +308,17 @@ describe("Main — init() card initialization", () => {
       autoTheme: false,
       theme: "warm-dark",
     } as ReturnType<typeof loadConfig>);
+    // Stub requestIdleCallback to run callback synchronously so deferred LOW-priority
+    // card inits (motivation, system-info, ticker) execute during the test.
+    vi.stubGlobal("requestIdleCallback", (cb: IdleRequestCallback) => {
+      cb({ didTimeout: false, timeRemaining: () => 50 });
+      return 0;
+    });
     document.body.innerHTML = "";
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     document.body.className = "";
   });
 
@@ -371,10 +378,16 @@ describe("Main — init() config-based setup", () => {
       autoTheme: true,
       theme: "ocean-blue",
     } as ReturnType<typeof loadConfig>);
+    // Stub requestIdleCallback so auto-theme setup (deferred) runs synchronously.
+    vi.stubGlobal("requestIdleCallback", (cb: IdleRequestCallback) => {
+      cb({ didTimeout: false, timeRemaining: () => 50 });
+      return 0;
+    });
     document.body.innerHTML = "";
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     document.body.className = "";
   });
 
@@ -954,10 +967,16 @@ describe("Main — init() tasks and system-info cards", () => {
       autoTheme: false,
       theme: "warm-dark",
     } as ReturnType<typeof loadConfig>);
+    // Stub requestIdleCallback so deferred system-info init runs synchronously.
+    vi.stubGlobal("requestIdleCallback", (cb: IdleRequestCallback) => {
+      cb({ didTimeout: false, timeRemaining: () => 50 });
+      return 0;
+    });
     document.body.innerHTML = "";
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     document.body.className = "";
   });
 

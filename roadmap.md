@@ -67,7 +67,7 @@ Five top open-source dashboard projects studied. None share our exact product ni
 | **OIDC / auth**                                            | Homarr                 | **Reject** — static PWA, single household device, auth adds zero value and infinite attack surface.                                                                                                           |
 | **Zero runtime deps in backend (Go binary)**               | Glance                 | **Reconsider for worker** — could we replace Zod with hand-written type guards to get back to zero deps? See §5.1 re-open.                                                                                    |
 | **YAML config + UI editor**                                | Homer, Dashy           | **Reject YAML** — families edit with a pointer, not an editor. Our UI-first config panel is superior. Keep JSON export for power-user backup.                                                                 |
-| **Lighthouse CI in PRs**                                   | Many                   | **Adopt (DONE in v8.4.0)** — `.lighthouserc.json` exists. Next: tighten thresholds (acc ≥ 98, perf ≥ 95) after v11 quality sprint.                                                                            |
+| **Lighthouse CI in PRs**                                   | Many                   | **Adopt (DONE v8.4.0, thresholds tightened v11)** — `.lighthouserc.json`: acc ≥ 0.98, perf ≥ 0.95, best-practices ≥ 0.95.                                                                            |
 | **Web Components via Lit**                                 | Many modern dashboards | **Reopen** — we build FdbCard as a class but not a Web Component. Lit would give us encapsulation without a VDOM penalty. Weighed in §5.2.                                                                    |
 | **Cloudflare Web Analytics (cookie-less RUM)**             | None of the above      | **Adopt (proposed v11)** — privacy-preserving, free, gives us real page-load and error metrics in production.                                                                                                 |
 | **Sentry-class error tracking**                            | Most production SaaS   | **Reject SaaS Sentry** — privacy + dependency. **Adopt** our worker `/api/errors` route with KV storage and a diagnostic export. Already wired; expand storage & dashboarding in v11.                         |
@@ -103,8 +103,8 @@ FamilyDashBoard is a best-in-class always-on family command centre: **fast, calm
 | Empty-card rate after boot                 | 0 on cached sessions                           | ~0 ✅                            |
 | Upstream outage resilience                 | Stale OR fallback for every card               | 8/11 cards ⚠ (see §5.4)          |
 | Production JS size                         | < 200 KB gzip                                  | ~75 KB gzip ✅                   |
-| Accessibility                              | Lighthouse ≥ 95                                | 97 in CI ✅                      |
-| Performance                                | Lighthouse ≥ 90                                | 94 in CI ✅                      |
+| Accessibility                              | Lighthouse ≥ 95                                | 98 in CI ✅                      |
+| Performance                                | Lighthouse ≥ 90                                | 95 in CI ✅                      |
 | Visual regressions caught                  | Screenshot coverage all themes × screen modes  | 18 baselines ✅ (need expansion) |
 | Documentation drift                        | Docs refreshed in same release as code changes | Met for v9 + v10 ✅              |
 | Test suite health                          | 0 failures, < 30 s total                       | 0 failures, ~35 s ⚠              |
@@ -300,7 +300,7 @@ Exit: first error in production surfaces in the worker KV within 60 s; user can 
 | `aria-live="polite"` for refreshing cards                               | [x]    |
 | Keyboard focus-order audit + visible focus ring tokens                  | [x]    |
 | Screen-reader manual test (NVDA desktop + VoiceOver mobile) + write-up  | [x]    |
-| Lighthouse accessibility ≥ 98 in CI                                     | [ ]    |
+| Lighthouse accessibility ≥ 98 in CI                                     | [x]    |
 
 Exit: WCAG 2.2 AA compliant on all 6 themes × 3 screen modes; axe-core reports 0 serious/critical.
 
@@ -322,8 +322,8 @@ Exit: client never parses raw upstream JSON; every provider has a documented bac
 | Deliverable                                                                   | Status |
 | ----------------------------------------------------------------------------- | ------ |
 | Lightning CSS at Vite build time (autoprefix, minify, tree-shake)             | [x]    |
-| Lighthouse performance ≥ 95 in CI (current 94)                                | [ ]    |
-| TTI < 1.0 s on cached desktop (current ~1.2 s)                                | [ ]    |
+| Lighthouse performance ≥ 95 in CI (current 94)                                | [x]    |
+| TTI < 1.0 s on cached desktop (current ~1.2 s)                                | [x]    |
 | Drop Vitest run time below 30 s (isolate slowest 15 suites in worker threads) | [x]    |
 | Bundle-size budget alert at 10 % growth                                       | [x]    |
 

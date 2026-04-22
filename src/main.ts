@@ -392,10 +392,18 @@ export function init(): void {
   timedInit("currency", initCurrencyCard);
   timedInit("tasks", initTasksCard);
   timedInit("countdown", initCountdownCard);
-  // LOW priority: ambient / decorative content
-  timedInit("motivation", initMotivationCard);
-  timedInit("system-info", initSystemInfoCard);
-  initTicker();
+  // LOW priority: ambient / decorative — deferred to reduce TTI (V11-PERF)
+  // Use requestIdleCallback when available so the main thread is free for interaction first.
+  const _lowPriorityInit = (): void => {
+    timedInit("motivation", initMotivationCard);
+    timedInit("system-info", initSystemInfoCard);
+    initTicker();
+  };
+  if (typeof requestIdleCallback !== "undefined") {
+    requestIdleCallback(_lowPriorityInit, { timeout: 2000 });
+  } else {
+    setTimeout(_lowPriorityInit, 200);
+  }
 
   // Mark startup waterfall completion (v8.2: all card init calls dispatched)
   markStartupComplete();
@@ -413,7 +421,7 @@ export function init(): void {
   }
 
   // ── Night dimmer auto-schedule (uses config v2 schedule fields) ──
-  const cfg = loadConfig();
+  const cfg = _initCfg; // reuse config already loaded at init start — avoid second LS read
   initNightDimmer(
     cfg.nightDimLevel,
     cfg.nightDimScheduleEnabled ?? false,
@@ -444,13 +452,20 @@ export function init(): void {
   // ── Apply warm tint from config ──
   if (cfg.dimWarmTint) setWarmTint(true);
 
-  // ── Auto-theme by time of day (runs every 5 minutes) ──
-  const runAutoTheme = (): void => {
-    const c = loadConfig();
-    checkAutoTheme(c.autoTheme, c.theme);
+  // ── Auto-theme by time of day (runs every 5 minutes) — deferred to reduce TTI ──
+  const _autoThemeSetup = (): void => {
+    const runAutoTheme = (): void => {
+      const c = loadConfig();
+      checkAutoTheme(c.autoTheme, c.theme);
+    };
+    runAutoTheme();
+    setInterval(runAutoTheme, 5 * MS_PER_MIN);
   };
-  runAutoTheme();
-  setInterval(runAutoTheme, 5 * MS_PER_MIN);
+  if (typeof requestIdleCallback !== "undefined") {
+    requestIdleCallback(_autoThemeSetup, { timeout: 3000 });
+  } else {
+    setTimeout(_autoThemeSetup, 300);
+  }
 
   // Wire notification bell (replaces inline onclick="requestNotifPermission()")
   document.getElementById("notif-bell")?.addEventListener("click", () => {
