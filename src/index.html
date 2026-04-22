@@ -754,7 +754,7 @@
             <!-- Countdown card -->
             <section class="card" role="region" data-card-id="countdown" aria-labelledby="card-title-countdown">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">💍</span> <span id="card-title-countdown">ספירה לאחור</span><span class="card-mini-info" id="mini-countdown"></span></div>
-              <div class="countdown-body">
+              <div class="countdown-body" aria-live="polite" aria-label="ספירה לאחור">
                 <div class="cd-title" id="cd-wedding-title">חתונת אליאור וטובה</div>
                 <div class="cd-tiles">
                   <div class="cd-tile"><span class="cd-num" id="cd-days">--</span><span class="cd-unit">ימים</span></div>
@@ -808,7 +808,7 @@
                   <input type="text" id="tasks-quick-person" placeholder="שם" style="width:70px" >
                   <button type="button" id="tasks-quick-add-btn" title="הוסף משימה">➕</button>
                 </div>
-                <div class="tasks-list" id="tasks-list"></div>
+                <div class="tasks-list" id="tasks-list" aria-live="polite" aria-label="רשימת משימות"></div>
                 <!-- Celebratory message when all tasks are done -->
                 <div id="tasks-all-done-msg" style="display:none;text-align:center;padding:10px 0;font-size:1.1em;color:var(--success-color,#4caf50)">🎉 כל המשימות הושלמו! כל הכבוד!</div>
               </div>
@@ -816,7 +816,7 @@
             <!-- System Info card -->
             <section class="card" role="region" data-card-id="system-info" aria-labelledby="card-title-system-info">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge cyan">🖥</span> <span id="card-title-system-info">מצב מערכת</span><span class="card-mini-info" id="mini-system-info"></span></div>
-              <div class="sysinfo-grid" id="sysinfo-body">
+              <div class="sysinfo-grid" id="sysinfo-body" aria-live="polite" aria-label="נתוני מערכת">
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-online">—</span><span class="sysinfo-tile-label">🛰️ מצב</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-battery">—</span><span class="sysinfo-tile-label">🔋 סוללה</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-net">—</span><span class="sysinfo-tile-label">📶 רשת</span></div>
