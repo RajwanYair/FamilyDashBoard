@@ -56,6 +56,7 @@ import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
 import { showToast } from "./ui/toast";
+import { initScrollShadows } from "./ui/scroll";
 
 // ── Cards ──
 import { initWeatherCard, toggleTempUnit } from "./cards/weather/weather";
@@ -235,6 +236,7 @@ export function init(): void {
   initStatusBar();
   initConfigPanel();
   initDiagOverlay();
+  initScrollShadows();
 
   // Sprint 45: Add aria-label to icon-only collapse buttons
   document.querySelectorAll<HTMLButtonElement>(".card-collapse-btn").forEach((btn) => {

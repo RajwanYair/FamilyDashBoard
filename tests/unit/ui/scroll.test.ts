@@ -1,7 +1,8 @@
 /**
  * Tests for src/ui/scroll.ts
  *
- * Covers: injectScrollKeyframes, startCloneScroll, startSimpleScroll, stopScroll.
+ * Covers: injectScrollKeyframes, startCloneScroll, startSimpleScroll, stopScroll,
+ *         initScrollShadows.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -10,6 +11,7 @@ import {
   startCloneScroll,
   startSimpleScroll,
   stopScroll,
+  initScrollShadows,
 } from "@/ui/scroll";
 
 // ── injectScrollKeyframes ──
@@ -235,5 +237,67 @@ describe("Scroll — stopScroll", () => {
     container.innerHTML = "";
     container.style.animation = "";
     expect(() => stopScroll(container)).not.toThrow();
+  });
+});
+
+// ── initScrollShadows ──
+
+describe("Scroll — initScrollShadows", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("does not throw with no card bodies in DOM", () => {
+    expect(() => initScrollShadows()).not.toThrow();
+  });
+
+  it("attaches scroll listener to .card__body elements", () => {
+    const body = document.createElement("div");
+    body.className = "card__body";
+    body.style.overflow = "auto";
+    document.body.appendChild(body);
+    expect(() => initScrollShadows()).not.toThrow();
+  });
+
+  it("sets scroll-top class when scrollTop > 4", () => {
+    const body = document.createElement("div");
+    body.className = "card__body";
+    Object.defineProperty(body, "scrollTop", { value: 10, configurable: true });
+    Object.defineProperty(body, "scrollHeight", { value: 500, configurable: true });
+    Object.defineProperty(body, "clientHeight", { value: 200, configurable: true });
+    document.body.appendChild(body);
+    initScrollShadows();
+    expect(body.classList.contains("scroll-top")).toBe(true);
+  });
+
+  it("does not set scroll-top class when scrollTop <= 4", () => {
+    const body = document.createElement("div");
+    body.className = "card__body";
+    Object.defineProperty(body, "scrollTop", { value: 0, configurable: true });
+    Object.defineProperty(body, "scrollHeight", { value: 100, configurable: true });
+    Object.defineProperty(body, "clientHeight", { value: 200, configurable: true });
+    document.body.appendChild(body);
+    initScrollShadows();
+    expect(body.classList.contains("scroll-top")).toBe(false);
+  });
+
+  it("sets scroll-bottom class when content overflows below", () => {
+    const body = document.createElement("div");
+    body.className = "card__body";
+    Object.defineProperty(body, "scrollTop", { value: 0, configurable: true });
+    Object.defineProperty(body, "scrollHeight", { value: 500, configurable: true });
+    Object.defineProperty(body, "clientHeight", { value: 200, configurable: true });
+    document.body.appendChild(body);
+    initScrollShadows();
+    expect(body.classList.contains("scroll-bottom")).toBe(true);
+  });
+
+  it("handles multiple card bodies without error", () => {
+    for (let i = 0; i < 5; i++) {
+      const body = document.createElement("div");
+      body.className = "card__body";
+      document.body.appendChild(body);
+    }
+    expect(() => initScrollShadows()).not.toThrow();
   });
 });
