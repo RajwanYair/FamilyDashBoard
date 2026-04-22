@@ -271,7 +271,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3DoneMsg: "🎉 מזל טוב!",
   countdownCard3StartDate: "",
   motivationInterval: 0,
-  configVersion: 8,
+  configVersion: 9,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -304,7 +304,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 8;
+export const CONFIG_VERSION = 9;
 
 /** Type guard: checks if a string is a valid interface language. */
 export function isValidInterfaceLanguage(v: unknown): v is InterfaceLanguage {

@@ -248,7 +248,8 @@ describe("Config — migrateConfig (v7.4)", () => {
   it("preserves all existing fields during migration", () => {
     const result = migrateConfig({ theme: "matrix" as const, tempUnit: "F" as const });
     expect(result.theme).toBe("matrix");
-    expect(result.tempUnit).toBe("F");
+    // v9 migration resets tempUnit to 'C' (Celsius is the project default)
+    expect(result.tempUnit).toBe("C");
   });
 });
 
@@ -525,7 +526,7 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
   });
 
   it("CONFIG_VERSION constant is 5", () => {
-    expect(CONFIG_VERSION).toBe(8);
+    expect(CONFIG_VERSION).toBe(9);
   });
 
   it("DEFAULT_CONFIG has all v3 fields with correct defaults", () => {
