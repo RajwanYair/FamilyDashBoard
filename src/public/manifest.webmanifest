@@ -1,4 +1,5 @@
 {
+  "id": "/FamilyDashBoard/",
   "name": "רגואן Family Dashboard",
   "short_name": "Dashboard",
   "description": "Family TV Dashboard — Hebrew RTL, 6 dark themes, live weather/news/stocks/calendar.",
@@ -12,6 +13,9 @@
   "lang": "he",
   "dir": "rtl",
   "categories": ["lifestyle", "utilities"],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
   "icons": [
     { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     { "src": "./icon.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "maskable" },
