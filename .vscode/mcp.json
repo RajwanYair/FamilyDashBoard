@@ -15,7 +15,12 @@
             "type": "stdio",
             "command": "npx",
             "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
-            "description": "Scoped read/write access to the FamilyDashBoard workspace. Use for reading BestDashBoard.html, CHANGELOG.md, test files, and GitHub workflow configs."
+            "description": "Scoped read/write access to the FamilyDashBoard workspace. Use for reading CHANGELOG.md, test files, and GitHub workflow configs."
+        },
+        "gitkraken": {
+            "type": "http",
+            "url": "https://mcp.gitkraken.com/mcp",
+            "description": "GitKraken MCP server — git blame, log, diff, branch ops, pull request workflow, and Launchpad issue tracking from Copilot chat."
         }
     }
 }

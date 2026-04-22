@@ -40,6 +40,14 @@ export default defineConfig({
 
     setupFiles: ["tests/setup.ts"],
 
+    // CI: stop on first failure to surface errors quickly without spinning all
+    // 94 suites.  Locally keep bail=0 so watch mode always shows full status.
+    bail: process.env["CI"] ? 1 : 0,
+
+    // CI: annotate failing files as GitHub check annotations.
+    // Locally: default reporter (compact, colour output).
+    reporters: process.env["CI"] ? ["github-actions", "default"] : ["default"],
+
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov", "html"],

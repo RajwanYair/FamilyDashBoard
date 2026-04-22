@@ -54,3 +54,5 @@ __pycache__/
 *.tmp
 *.old
 .extracted.*
+
+.fake
