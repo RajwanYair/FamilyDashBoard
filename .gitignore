@@ -22,6 +22,8 @@ vitest-report.json
 final-vitest-report.json
 test-results.json
 vitest_output.txt
+vitest-output.txt
+vitest-output-full.txt
 vitest_summary.txt
 test_output.txt
 test_results.txt
