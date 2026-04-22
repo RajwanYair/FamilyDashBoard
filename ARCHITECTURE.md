@@ -9,18 +9,21 @@ Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README
 
 ## Stack
 
-| Decision       | Choice                                                                                                  | Rationale                                                     |
-| -------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Build tool     | **Vite 8**                                                                                              | Fast dev server, Rollup bundler, native TS, tree-shaking      |
-| Language       | **TypeScript 6.0.3**                                                                                    | Type safety, type-aware ESLint, strict null checks            |
-| Test framework | **Vitest 4.1.5 + happy-dom 20**                                                                         | Vite-native, real DOM simulation, 3179 tests / 94 suites      |
-| Lint           | **ESLint 10 + typescript-eslint 8**                                                                     | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
-| API proxy      | **Cloudflare Workers**                                                                                  | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
-| Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                |                                                               |
-| CSS approach   | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                             | No preprocessor; cascade-aware; container queries             |
-| Module format  | **ES Modules** native `import`/`export`                                                                 |                                                               |
-| npm model      | Tools installed at parent **`MyScripts/`**; shared configs vendored into `tooling/`; no local lock file | Single-root install for all scripts in the monorepo           |
-| CI             | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed; `tooling/` is self-contained           |                                                               |
+| Decision         | Choice                                                                                                     | Rationale                                                     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
+| Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 3179 tests / 94 suites      |
+| Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
+| API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
+| Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
+| CSS approach     | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                                | No preprocessor; cascade-aware; container queries             |
+| Module format    | **ES Modules** native `import`/`export`                                                                    |                                                               |
+| npm model        | Tools installed at parent **`MyScripts/`**; shared configs vendored into `tooling/`; no local lock file    | Single-root install for all scripts in the monorepo           |
+| CI               | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed; `tooling/` is self-contained              |                                                               |
+| Tooling ESLint   | `tooling/eslint/web-ts-app.mjs` (browser TS) · `node-ts-app.mjs` (Node/Worker) · `js-browser-app.mjs` (JS) | Shared factory functions; project-specific overrides only     |
+| Tooling Vitest   | `tooling/vitest/base.mjs` · `happy-dom.mjs` (DOM) · `node.mjs` (server)                                    | Layered presets; projects extend the relevant preset          |
+| Tooling tsconfig | `tooling/tsconfig/base-typescript.json` (browser/bundler) · `base-node.json` (Node/Worker)                 | All TS projects extend one of these bases                     |
 
 ## File Structure
 
