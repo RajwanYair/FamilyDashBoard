@@ -17,6 +17,8 @@ is inside an `<input>`, `<textarea>`, or `<select>`.
 | `A`         | Toggle alerts pane              | Flashes the Tzeva Adom alert card              |
 | `S`         | Open Settings / Config panel    | `<dialog>` opened via `showModal()`            |
 | `N`         | Toggle night dimmer             | Overlay that reduces screen brightness         |
+| `M`         | Toggle video mute               | Mute / unmute the video-news card audio        |
+| `V`         | Cycle video channel             | Cycle through news channels (C14 → i24 → …)   |
 | `+` / `=`   | Increase font size              | Step +1px on `<html>` font-size                |
 | `-`         | Decrease font size              | Step -1px on `<html>` font-size                |
 | `P`         | Print                           | Opens browser print dialog                     |

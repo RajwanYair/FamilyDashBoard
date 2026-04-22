@@ -1,0 +1,149 @@
+/* ── Video News Card ─────────────────────────────────────────────────────── */
+/* Aspect-ratio video container, overlay controls, RTL caption strip        */
+
+/* ── Container ───────────────────────────────────────────────────────────── */
+
+.video-news {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-2, #111);
+  border-radius: var(--card-radius, 8px);
+  overflow: hidden;
+}
+
+/* ── 16:9 Aspect-Ratio Wrapper ───────────────────────────────────────────── */
+
+.video-news__aspect {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  flex: 1 1 auto;
+  background: #000;
+}
+
+.video-news__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* ── Poster / Error State ─────────────────────────────────────────────────── */
+
+.video-news__error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--text-muted, #999);
+  font-size: 0.85rem;
+  text-align: center;
+  direction: rtl;
+}
+
+.video-news__error[hidden] {
+  display: none;
+}
+
+/* ── Play-prompt (autoplay blocked) ─────────────────────────────────────── */
+
+.video-news--play-prompt .video-news__aspect::after {
+  content: "▶";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.video-news--play-prompt:hover .video-news__aspect::after {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ── Overlay (RTL caption strip) ─────────────────────────────────────────── */
+
+.video-news__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row-reverse; /* RTL */
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  direction: rtl;
+}
+
+.video-news__channel-label {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text, #e2e8f0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Controls ─────────────────────────────────────────────────────────────── */
+
+.video-news__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.video-news__mute-btn,
+.video-news__channel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: var(--text, #e2e8f0);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.video-news__mute-btn:hover,
+.video-news__channel-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.video-news__mute-btn:focus-visible,
+.video-news__channel-btn:focus-visible {
+  outline: 2px solid var(--accent, #4da6ff);
+  outline-offset: 2px;
+}
+
+/* ── Reduced-motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .video-news--play-prompt .video-news__aspect::after {
+    transition: none;
+  }
+
+  .video-news__mute-btn,
+  .video-news__channel-btn {
+    transition: none;
+  }
+}

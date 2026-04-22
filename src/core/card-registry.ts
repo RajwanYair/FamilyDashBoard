@@ -510,3 +510,57 @@ registerCard({
     );
   },
 });
+
+registerCard({
+  id: "video-news",
+  icon: "📺",
+  titleHe: "ערוץ חדשות",
+  titleEn: "Video News",
+  load: async (): Promise<FdbCardDefinition> => {
+    const [, { FdbVideoNewsCard }] = await Promise.all([
+      import("@/cards/video-news/video-news"),
+      import("@/cards/video-news/fdb-video-news"),
+    ]);
+
+    const defaultSize = "lg" as const;
+
+    return {
+      id: "video-news",
+      icon: "📺",
+      titleHe: "ערוץ חדשות",
+      titleEn: "Video News",
+      defaultSlot: { col: 1, order: 5, flexGrow: 25, hidden: true },
+      defaultSize,
+      configSchema: [
+        {
+          key: "video_channel",
+          labelHe: "ערוץ",
+          labelEn: "Channel",
+          type: "select" as const,
+          defaultValue: "c14",
+          options: [
+            { value: "c14", label: "ערוץ 14" },
+            { value: "i24", label: "i24NEWS" },
+            { value: "now14", label: "NOW14" },
+            { value: "arutz7", label: "ערוץ 7" },
+          ],
+          tab: "feeds" as const,
+        },
+      ],
+      render(): HTMLElement {
+        const element = document.createElement("fdb-video-news");
+        element.setAttribute("data-card-id", "video-news");
+        element.setAttribute("data-card-size", defaultSize);
+        return element;
+      },
+      init(): void {
+        // Lifecycle owned by the custom element's connect() hook.
+      },
+      destroy(): void {
+        // Lifecycle owned by the custom element's disconnect() hook.
+      },
+      elementClass: FdbVideoNewsCard,
+      tagName: "fdb-video-news",
+    };
+  },
+});

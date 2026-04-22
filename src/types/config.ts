@@ -74,6 +74,23 @@ export interface MotivationCardConfig extends CardConfig {
   };
 }
 
+export interface VideoNewsCardConfig extends CardConfig {
+  settings?: {
+    /** Channel to display. Default: 'c14' */
+    channel: "c14" | "i24" | "now14" | "arutz7";
+    /** Auto-play on load. Default: true */
+    autoplay: boolean;
+    /** Start muted (required by browser autoplay policy). Default: true */
+    defaultMuted: boolean;
+    /** Show RTL caption overlay with channel name + time. Default: true */
+    showOverlay: boolean;
+    /** Pause video when prefers-reduced-motion is active. Default: true */
+    pauseOnReducedMotion: boolean;
+    /** Pause video during night-dimmer schedule. Default: true */
+    pauseAtNight: boolean;
+  };
+}
+
 /**
  * Map of card IDs to their typed config interface.
  * Provides type safety when accessing `config.cards[cardId]`.
@@ -86,6 +103,7 @@ export interface CardConfigMap {
   tasks: TasksCardConfig;
   "system-info": SystemInfoCardConfig;
   motivation: MotivationCardConfig;
+  "video-news": VideoNewsCardConfig;
   [key: string]: CardConfig; // fallback for untyped cards
 }
 
