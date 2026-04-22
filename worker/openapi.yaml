@@ -5,7 +5,7 @@ info:
     Cloudflare Worker API proxy for the FamilyDashBoard dashboard.
     All routes enforce CORS (any origin), per-IP rate limiting (120 req/min),
     and SSRF allowlists on URL parameters.
-  version: "9.2.0"
+  version: "11.2.0"
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard
@@ -16,7 +16,7 @@ servers:
 
 tags:
   - name: health
-    description: Worker health check
+    description: Worker health check and error telemetry
   - name: weather
     description: Weather data from Open-Meteo
   - name: finance
@@ -219,9 +219,10 @@ paths:
   /api/news:
     get:
       tags: [news]
-      summary: RSS news feed proxy
+      summary: RSS news feed proxy (single feed)
       description: |
         Fetches an RSS/Atom feed from an allowlisted news origin.
+        Validates that the response is a valid RSS 2.0 or Atom 1.0 feed.
         Returns the raw XML. Cached 15 min.
       operationId: getNews
       parameters:
@@ -243,6 +244,42 @@ paths:
           $ref: "#/components/responses/ValidationError"
         "403":
           description: News origin not in allowlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
+  /api/news/aggregate:
+    get:
+      tags: [news]
+      summary: Aggregated news feed (all curated RSS sources)
+      description: |
+        Fetches all 17 curated RSS/Atom feeds in parallel, deduplicates by title,
+        sorts newest-first, and returns up to 100 normalised items as JSON.
+        Results are cached in KV for 15 min (TTL 900 s).
+        On total failure, returns last KV-cached value with `stale: true`.
+        See ADR-007 for the news aggregation strategy.
+      operationId: getNewsAggregate
+      responses:
+        "200":
+          description: |
+            WorkerEnvelope wrapping an array of normalised news items.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/WorkerEnvelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        maxItems: 100
+                        items:
+                          $ref: "#/components/schemas/NewsItem"
+        "502":
+          description: All news feed upstreams failed and no KV stale available
           content:
             application/json:
               schema:
@@ -359,11 +396,15 @@ paths:
   /api/errors:
     post:
       tags: [health]
-      summary: Client error ingestion (best-effort telemetry)
+      summary: Client error ingestion (persisted telemetry)
       description: |
         Accepts an array of client-side error entries from the dashboard.
-        Entries are logged to Worker console (CF Logpush / live tail).
-        No persistence. Rate-limited by shared middleware.
+        Entries are logged to Worker console (CF Logpush / live tail) **and**
+        persisted to Cloudflare KV with a 7-day TTL.
+        KV key format: `errors:YYYY-MM-DD:<8-char-hex-id>`.
+        Daily cap: 1 000 entries/day (counter key: `errors:count:YYYY-MM-DD`).
+        Entries beyond the cap are logged but not stored.
+        Rate-limited by shared middleware.
       operationId: postErrors
       requestBody:
         required: true
@@ -410,7 +451,63 @@ paths:
         "429":
           $ref: "#/components/responses/RateLimitError"
 
-components:
+  /api/errors/export:
+    get:
+      tags: [health]
+      summary: Export today's stored error entries (token-gated)
+      description: |
+        Returns all error entries persisted to KV today (UTC), newest-first.
+        Requires the `ERROR_REPORTING_TOKEN` worker secret via `?token=`.
+        If the secret is not configured, returns `501 Not Implemented`.
+        Entries are returned for the current UTC date.
+      operationId: getErrorsExport
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Matches the `ERROR_REPORTING_TOKEN` worker secret
+      responses:
+        "200":
+          description: Array of error entries for today, newest-first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [ts, message]
+                  properties:
+                    ts:
+                      type: integer
+                      description: Unix timestamp (ms)
+                      example: 1714000000000
+                    message:
+                      type: string
+                      example: "TypeError: Cannot read properties of null"
+                    source:
+                      type: string
+                      example: "src/cards/weather/weather.ts"
+                    lineno:
+                      type: integer
+                      example: 42
+        "401":
+          description: Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "501":
+          description: ERROR_REPORTING_TOKEN not configured on the worker
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
+
   schemas:
     Error:
       type: object
@@ -428,7 +525,7 @@ components:
         Standard wrapper returned by routes that support KV stale fallback.
         When `stale` is `true`, data was served from Cloudflare KV because
         the upstream API was unreachable (see ADR-013).
-      required: [data, provider, stale, ts]
+      required: [data, provider, stale, timestamp]
       properties:
         data:
           description: The actual payload (route-specific shape)
@@ -441,10 +538,37 @@ components:
           type: boolean
           description: True when data was served from KV stale cache
           example: false
-        ts:
+        timestamp:
           type: integer
-          description: Unix timestamp (seconds) when data was fetched
-          example: 1720000000
+          description: Unix timestamp (ms) when data was fetched
+          example: 1720000000000
+    NewsItem:
+      type: object
+      description: A single normalised news article from the aggregate feed
+      required: [title, link, pubDate, source]
+      properties:
+        title:
+          type: string
+          description: Article headline (HTML entities decoded)
+          example: "Cabinet approves 2025 budget"
+        link:
+          type: string
+          format: uri
+          example: "https://www.ynetnews.com/articles/0,7340,L-123456,00.html"
+        pubDate:
+          type: string
+          format: date-time
+          description: ISO 8601 publication time
+          example: "2025-07-01T10:30:00.000Z"
+        description:
+          type: string
+          description: Article summary / first paragraph (plain text)
+          example: "The cabinet unanimously approved the state budget for 2025."
+        source:
+          type: string
+          description: Human-readable publisher name
+          example: "Ynet News"
+
 
   responses:
     ValidationError:
