@@ -5,6 +5,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [11.4.0] — 2026-07-02
+
+> **3303 tests / 100 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### New Features
+
+- **`mountRegisteredCards()`** (Sprint 23): Registry-driven DOM auto-mount. Any card registered with a `defaultSlot` that is absent from `index.html` is automatically mounted at startup. Enables `video-news` (hidden by default) to appear without touching `index.html`. 5 new tests.
+- **Scroll Shadow Indicators** (Sprint 20): `initScrollShadows()` wired into main.ts init — all card bodies now display top/bottom shadow cues when scrollable content overflows. 7 new tests.
+- **Error Boundary Wrapper** (Sprint 22): `withErrorBoundary(cardId, fn)` wraps every card init — catches sync/async errors, renders `.card-error` tile in the card body, logs via `diagLog`, and reports telemetry. Idempotent (dedup). 14 new tests.
+
+### Worker
+
+- **Zod validation for `errors.ts`** (Sprint 24): Replaced manual `isValidEntry()` type guard with `ErrorPayloadSchema` (`z.object`). All 9 worker routes now use Zod for typed input validation.
+
+### Types
+
+- **`CardRegistryEntry.defaultSlot`**: New optional field `{ col: 0|1|2; order: number; flexGrow: number; hidden?: boolean }` on `CardRegistryEntry` — enables synchronous slot discovery before card lazy-load completes.
+
+### Accessibility
+
+- **`prefers-reduced-motion` audit** (Sprint 21): Explicit `animation: none` / `transition: none` entries added to `animations.css` reduce block for badge pulse, number transitions, config panel slide, card entrance/exit animations.
+
+### Roadmap / Housekeeping
+
+- **ROADMAP.md**: 14 completed items marked `[x]` across OBS, A11Y, DATA, PERF, PWA, and DX streams.
+- **copilot-instructions.md**: Test counts updated to 3303 / 100 suites.
+
+---
+
 ## [11.3.0] — 2026-07-01
 
 > **3278 tests / 99 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
