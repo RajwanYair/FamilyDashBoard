@@ -12,7 +12,7 @@ import "./currency.css";
 import { INTERVALS, CUR_TILES, API, LS_CUR_HISTORY, MS_PER_MIN } from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker } from "../../core/fetch";
-import type { CurrencyResponse } from "../../types/api";
+import type { CurrencyResponse, YahooChartResponse } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
 // ── State ──
@@ -151,6 +151,39 @@ export function cacheDom(): void {
   };
 }
 
+// ── Fetch gold & silver from Yahoo Finance (GC=F, SI=F) and inject into rates ──
+// er-api base=ILS: rates["USD"] = USD per ILS → goldIls = goldUsd / rates["USD"]
+// Stored as rate = usdRate / metalUsd so render val = 1/rate = goldIls correctly.
+async function fetchMetalRates(rates: Record<string, number>): Promise<void> {
+  const usdRate = rates["USD"];
+  if (!usdRate || usdRate <= 0) return;
+
+  const [goldResult, silverResult] = await Promise.allSettled([
+    fetchJSONWithWorker<YahooChartResponse>(`${API.YAHOO_CHART}${encodeURIComponent("GC=F")}`),
+    fetchJSONWithWorker<YahooChartResponse>(`${API.YAHOO_CHART}${encodeURIComponent("SI=F")}`),
+  ]);
+
+  if (goldResult.status === "fulfilled") {
+    const price = goldResult.value?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if (typeof price === "number" && price > 0) {
+      rates["XAU"] = usdRate / price;
+      diagLog(`FDB-031b: [currency] Gold OK – $${price.toFixed(2)}`);
+    }
+  } else {
+    diagLog("FDB-031b: [currency] Gold fetch failed");
+  }
+
+  if (silverResult.status === "fulfilled") {
+    const price = silverResult.value?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if (typeof price === "number" && price > 0) {
+      rates["XAG"] = usdRate / price;
+      diagLog(`FDB-031c: [currency] Silver OK – $${price.toFixed(2)}`);
+    }
+  } else {
+    diagLog("FDB-031c: [currency] Silver fetch failed");
+  }
+}
+
 // ── Fetch exchange rates ──
 export async function fetchCurrency(): Promise<Record<string, number>> {
   const apis = [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK] as const;
@@ -159,7 +192,9 @@ export async function fetchCurrency(): Promise<Record<string, number>> {
       const json = await fetchJSONWithWorker<CurrencyResponse>(apiUrl);
       if (json.rates && Object.keys(json.rates).length > 0) {
         diagLog(`FDB-031: [currency] Rates OK from ${apiUrl}`);
-        return json.rates;
+        const rates = { ...json.rates };
+        await fetchMetalRates(rates);
+        return rates;
       }
     } catch {
       continue;
