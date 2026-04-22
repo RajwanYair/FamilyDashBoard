@@ -41,9 +41,9 @@
     </div>
     <!-- Feature 101: SW Update notification banner -->
     <div id="sw-update-banner" title="גרסה חדשה של הדשבורד זמינה להתקנה">🆕 גרסה חדשה זמינה — <button type="button" id="sw-update-reload-btn" title="לחץ לעדכון מיידי">↻ עדכן עכשיו</button></div>
-    <dialog id="help-overlay" aria-label="קיצורי מקלדת">
+    <dialog id="help-overlay" aria-labelledby="help-dialog-title">
       <div id="help-panel">
-        <h2>⌨️ קיצורי מקלדת</h2>
+        <h2 id="help-dialog-title">⌨️ קיצורי מקלדת</h2>
         <div class="help-grid">
           <div class="help-row"><span>מחזור ערכות נושא</span><span class="help-key">T</span></div>
           <div class="help-row"><span>מסך מלא</span><span class="help-key">F</span></div>
@@ -80,15 +80,15 @@
         <h2>⚙️ הגדרות</h2>
         <!-- F119: Config panel section tabs -->
         <div class="cfg-tabs" role="tablist" aria-label="לשוניות הגדרות">
-          <button type="button" class="cfg-tab active" data-tab="display" role="tab" aria-selected="true" aria-controls="cfg-section-display" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
-          <button type="button" class="cfg-tab" data-tab="calendar" role="tab" aria-selected="false" aria-controls="cfg-section-calendar" title="הגדרות לוח: קישור ICS, יום הולדת, זמנים">📅 לוח Calendar</button>
-          <button type="button" class="cfg-tab" data-tab="feeds" role="tab" aria-selected="false" aria-controls="cfg-section-feeds" title="הגדרות עדכונים: ערים, מניות, חדשות">📰 עדכונים Feeds</button>
-          <button type="button" class="cfg-tab" data-tab="alerts-tab" role="tab" aria-selected="false" aria-controls="cfg-section-alerts-tab" title="הגדרות התראות: צבע אדום, התראות מחירי מניה">🚨 התראות Alerts</button>
-          <button type="button" class="cfg-tab" data-tab="cards" role="tab" aria-selected="false" aria-controls="cfg-section-cards" title="הצג/הסתר כרטיסיות ✓ — קביעת גודל כרטיסיה">🃏 כרטיסיות Cards</button>
-          <button type="button" class="cfg-tab" data-tab="advanced" role="tab" aria-selected="false" aria-controls="cfg-section-advanced" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
+          <button type="button" id="cfg-tab-display" class="cfg-tab active" data-tab="display" role="tab" aria-selected="true" aria-controls="cfg-section-display" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
+          <button type="button" id="cfg-tab-calendar" class="cfg-tab" data-tab="calendar" role="tab" aria-selected="false" aria-controls="cfg-section-calendar" title="הגדרות לוח: קישור ICS, יום הולדת, זמנים">📅 לוח Calendar</button>
+          <button type="button" id="cfg-tab-feeds" class="cfg-tab" data-tab="feeds" role="tab" aria-selected="false" aria-controls="cfg-section-feeds" title="הגדרות עדכונים: ערים, מניות, חדשות">📰 עדכונים Feeds</button>
+          <button type="button" id="cfg-tab-alerts-tab" class="cfg-tab" data-tab="alerts-tab" role="tab" aria-selected="false" aria-controls="cfg-section-alerts-tab" title="הגדרות התראות: צבע אדום, התראות מחירי מניה">🚨 התראות Alerts</button>
+          <button type="button" id="cfg-tab-cards" class="cfg-tab" data-tab="cards" role="tab" aria-selected="false" aria-controls="cfg-section-cards" title="הצג/הסתר כרטיסיות ✓ — קביעת גודל כרטיסיה">🃏 כרטיסיות Cards</button>
+          <button type="button" id="cfg-tab-advanced" class="cfg-tab" data-tab="advanced" role="tab" aria-selected="false" aria-controls="cfg-section-advanced" title="הגדרות מתקדמות: קואורדינטות, משימות, ייצוא/ייבוא">⚙️ מתקדם Advanced</button>
         </div>
         <!-- Tab: Display -->
-        <div class="cfg-section active" id="cfg-section-display" role="tabpanel" aria-labelledby="" data-tab="display">
+        <div class="cfg-section active" id="cfg-section-display" role="tabpanel" aria-labelledby="cfg-tab-display" data-tab="display">
           <div class="cfg-row">
             <span class="cfg-label">🌐 שפת ממשק</span>
             <select id="cfg-interface-language" class="cfg-input" title="בחר שפת ממשק">
@@ -181,7 +181,7 @@
           <!-- Config v3 (v7.9): Per-card settings moved to Cards tab (Sprint 17) -->
         </div>
         <!-- Tab: Calendar -->
-        <div class="cfg-section" id="cfg-section-calendar" role="tabpanel" aria-labelledby="" data-tab="calendar">
+        <div class="cfg-section" id="cfg-section-calendar" role="tabpanel" aria-labelledby="cfg-tab-calendar" data-tab="calendar">
           <div class="cfg-row">
             <span class="cfg-label">🎂 ימי הולדת (כל ערך בשורה: שם,חודש,יום)</span>
             <textarea class="cfg-input" id="cfg-birthday" rows="3" placeholder="שרה,3,18&#10;יוסי,11,4"></textarea>
@@ -204,7 +204,7 @@
           </div>
         </div>
         <!-- Tab: Feeds -->
-        <div class="cfg-section" id="cfg-section-feeds" role="tabpanel" aria-labelledby="" data-tab="feeds">
+        <div class="cfg-section" id="cfg-section-feeds" role="tabpanel" aria-labelledby="cfg-tab-feeds" data-tab="feeds">
           <div class="cfg-row">
             <span class="cfg-label">📢 הודעה מיוחדת בטיקר</span>
             <input class="cfg-input" id="cfg-ticker-msg" type="text" placeholder="הודעה למשפחה..." >
@@ -232,7 +232,7 @@
           </div>
         </div>
         <!-- Tab: Alerts -->
-        <div class="cfg-section" id="cfg-section-alerts-tab" role="tabpanel" aria-labelledby="" data-tab="alerts-tab">
+        <div class="cfg-section" id="cfg-section-alerts-tab" role="tabpanel" aria-labelledby="cfg-tab-alerts-tab" data-tab="alerts-tab">
           <div class="cfg-row">
             <span class="cfg-label">🚨 הצגת התראות אדום</span>
             <select id="alerts-toggle" class="cfg-input" title="הפעל או כבה את כרטיס התראות אדום">
@@ -264,7 +264,7 @@
           </div>
         </div>
         <!-- Tab: Cards visibility + size -->
-        <div class="cfg-section" id="cfg-section-cards" role="tabpanel" aria-labelledby="" data-tab="cards">
+        <div class="cfg-section" id="cfg-section-cards" role="tabpanel" aria-labelledby="cfg-tab-cards" data-tab="cards">
           <p style="font-size:0.75em;color:var(--text-muted);margin:0 0 6px">הסתר/הצג כרטיסיות ובחר גודל. גרור כרטיסייה בלוח הראשי לשינוי סדר/עמודה. השינויים נכנסים לתוקף לאחר שמירה.</p>
           <div id="cfg-cards-list" class="cfg-cards-list"></div>
           <div class="cfg-row" style="margin-top:8px">
@@ -372,7 +372,7 @@
           </details>
         </div>
         <!-- Tab: Advanced -->
-        <div class="cfg-section" id="cfg-section-advanced" role="tabpanel" aria-labelledby="" data-tab="advanced">
+        <div class="cfg-section" id="cfg-section-advanced" role="tabpanel" aria-labelledby="cfg-tab-advanced" data-tab="advanced">
           <div class="cfg-row">
             <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
             <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" >

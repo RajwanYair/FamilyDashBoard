@@ -277,4 +277,27 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     const nearbyHtml = html.slice(Math.max(0, tickerIdx - 50), tickerIdx + 80);
     expect(nearbyHtml).toContain('aria-live="polite"');
   });
+
+  // Sprint 7: dialog aria-labelledby + cfg tabpanel aria-labelledby
+  it("help-overlay dialog uses aria-labelledby (not aria-label)", () => {
+    expect(html).toContain('id="help-dialog-title"');
+    expect(html).toContain('aria-labelledby="help-dialog-title"');
+    // must NOT fall back to aria-label on the dialog element
+    expect(html).not.toContain('<dialog id="help-overlay" aria-label=');
+  });
+
+  it("all 6 cfg-tab buttons have IDs matching their data-tab", () => {
+    for (const tab of ["display", "calendar", "feeds", "alerts-tab", "cards", "advanced"]) {
+      expect(html, `cfg-tab-${tab} should have id`).toContain(`id="cfg-tab-${tab}"`);
+    }
+  });
+
+  it("all 6 cfg-section tabpanels reference their tab via aria-labelledby", () => {
+    for (const tab of ["display", "calendar", "feeds", "alerts-tab", "cards", "advanced"]) {
+      expect(
+        html,
+        `cfg-section-${tab} should have aria-labelledby="cfg-tab-${tab}"`,
+      ).toContain(`aria-labelledby="cfg-tab-${tab}"`);
+    }
+  });
 });
