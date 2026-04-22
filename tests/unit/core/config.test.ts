@@ -248,8 +248,9 @@ describe("Config — migrateConfig (v7.4)", () => {
   it("preserves all existing fields during migration", () => {
     const result = migrateConfig({ theme: "matrix" as const, tempUnit: "F" as const });
     expect(result.theme).toBe("matrix");
-    // v9 migration resets tempUnit to 'C' (Celsius is the project default)
-    expect(result.tempUnit).toBe("C");
+    // v9 migration defaults to 'C' only when tempUnit is absent/invalid;
+    // an existing valid 'F' value is preserved (user preference respected).
+    expect(result.tempUnit).toBe("F");
   });
 });
 
