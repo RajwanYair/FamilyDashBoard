@@ -609,4 +609,23 @@ body.shabbat-mode #shabbat-mode-banner {
   .hc-countdown.urgent {
     animation: none;
   }
+  /* Card badge new-data pulse */
+  .card-badge-new {
+    animation: none;
+  }
+  /* Smooth number transition — disable transform+opacity animations */
+  .num-transition {
+    transition: none;
+  }
+  /* Config overlay slide-in — disable under reduced motion */
+  #config-overlay {
+    transition: none !important;
+  }
+  /* Card entrance / exit animations — disable for users who prefer no motion */
+  .card {
+    animation: none !important;
+  }
+  .card.card--hiding {
+    animation: none !important;
+  }
 }
