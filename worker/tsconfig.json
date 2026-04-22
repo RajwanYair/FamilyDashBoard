@@ -1,5 +1,5 @@
 {
-  "extends": "../../tooling/tsconfig/base-node.json",
+  "extends": "../tooling/tsconfig/base-node.json",
   "compilerOptions": {
     "module": "ES2022",
     "moduleResolution": "bundler",
