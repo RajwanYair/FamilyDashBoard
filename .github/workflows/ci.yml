@@ -1,6 +1,6 @@
 # =============================================================================
-# CI — FamilyDashBoard v8 — Unified quality gate
-# Typecheck · ESLint · Markdownlint · Vitest (Node 20/22) · Security · Build
+# CI — FamilyDashBoard v9 — Unified quality gate
+# Typecheck · ESLint · Markdownlint · Vitest (Node 22) · Security · Build
 # Runs on every push to main and all pull requests.
 # =============================================================================
 name: CI
@@ -19,6 +19,11 @@ concurrency:
 
 permissions:
   contents: read
+
+# Opt into Node.js 24 for GitHub Actions JavaScript runtime to suppress
+# Node.js 20 deprecation warnings (default switches to 24 in June 2026).
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   typecheck:
@@ -59,19 +64,16 @@ jobs:
         run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**" "#**/dist/**"
 
   unit-tests:
-    name: Vitest (Node ${{ matrix.node-version }})
+    name: Vitest (Node 22)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
-    strategy:
-      matrix:
-        node-version: ["20", "22"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "22"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - run: npx vitest run
