@@ -191,7 +191,7 @@ describe("Theme — applyTheme edge cases", () => {
   it("uses startViewTransition when available", () => {
     const startVT = vi.fn((cb: () => void) => {
       cb();
-      return { finished: Promise.resolve() };
+      return { ready: Promise.resolve(), finished: Promise.resolve() };
     });
     Object.defineProperty(document, "startViewTransition", {
       value: startVT,
