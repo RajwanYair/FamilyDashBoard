@@ -20,6 +20,10 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@tests/helpers", replacement: resolve(__dirname, "tests/helpers/index.ts") },
+      {
+        find: "@tests/worker-helpers",
+        replacement: resolve(__dirname, "tests/helpers/worker.ts"),
+      },
       { find: "@tests", replacement: resolve(__dirname, "tests/unit") },
       { find: "@", replacement: resolve(__dirname, "src") },
     ],

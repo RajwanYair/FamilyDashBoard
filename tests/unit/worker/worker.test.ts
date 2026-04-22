@@ -403,18 +403,10 @@ describe("Worker response helpers — workerEnvelope", () => {
 import { handleErrors } from "../../../worker/src/routes/errors";
 import { handleCurrency } from "../../../worker/src/routes/data";
 import type { Env } from "../../../worker/src/index";
+import { makeKv, makeWorkerEnv } from "@tests/worker-helpers";
 
 /** Minimal mock Env with a no-op KV namespace for unit tests (Stream W.2). */
-const mockEnv: Env = {
-  ENVIRONMENT: "test",
-  CACHE_KV: {
-    get: async () => null,
-    put: async () => undefined,
-    delete: async () => undefined,
-    list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
-    getWithMetadata: async () => ({ value: null, metadata: null }),
-  } as unknown as KVNamespace,
-};
+const mockEnv: Env = makeWorkerEnv();
 
 describe("Worker — handleErrors route", () => {
   function post(body: unknown): Request {
@@ -1195,19 +1187,6 @@ describe("Worker — handleNews route", () => {
 
 import { kvGetStale, kvPut } from "../../../worker/src/utils/kv";
 
-function makeKv(
-  getImpl: () => Promise<string | null> = () => Promise.resolve(null),
-  putImpl: () => Promise<void> = () => Promise.resolve(),
-): KVNamespace {
-  return {
-    get: getImpl,
-    put: putImpl,
-    delete: async () => undefined,
-    list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
-    getWithMetadata: async () => ({ value: null, metadata: null }),
-  } as unknown as KVNamespace;
-}
-
 describe("KV cache utilities — kvGetStale", () => {
   it("returns null when key is absent", async () => {
     const kv = makeKv(() => Promise.resolve(null));
@@ -1251,5 +1230,45 @@ describe("KV cache utilities — kvPut", () => {
   it("does not throw when kv.put rejects", async () => {
     const kv = makeKv(undefined, () => Promise.reject(new Error("KV write failed")));
     await expect(kvPut(kv, "key", {}, 60)).resolves.not.toThrow();
+  });
+
+  it("stores an array value correctly", async () => {
+    const putSpy = vi.fn().mockResolvedValue(undefined);
+    const kv = makeKv(undefined, putSpy);
+    const data = [{ id: 1 }, { id: 2 }];
+    await kvPut(kv, "list:items", data, 120);
+    expect(putSpy).toHaveBeenCalledWith("list:items", JSON.stringify(data), {
+      expirationTtl: 120,
+    });
+  });
+});
+
+// ── Worker — makeWorkerEnv helper (Stream W.9) ────────────────────────────────
+
+describe("Worker test helper — makeWorkerEnv", () => {
+  it("returns ENVIRONMENT: test by default", () => {
+    const env = makeWorkerEnv();
+    expect(env.ENVIRONMENT).toBe("test");
+  });
+
+  it("CACHE_KV.get returns null by default", async () => {
+    const env = makeWorkerEnv();
+    const result = await env.CACHE_KV.get("any:key");
+    expect(result).toBeNull();
+  });
+
+  it("accepts a KV get override", async () => {
+    const env = makeWorkerEnv({
+      get: vi.fn().mockResolvedValue(JSON.stringify({ ok: true })),
+    } as unknown as Partial<KVNamespace>);
+    const result = await env.CACHE_KV.get("test:key");
+    expect(result).toBe(JSON.stringify({ ok: true }));
+  });
+
+  it("makeKv get override is called with the key", async () => {
+    const getSpy = vi.fn().mockResolvedValue(null);
+    const kv = makeKv(getSpy);
+    await kv.get("stocks:AAPL");
+    expect(getSpy).toHaveBeenCalledWith("stocks:AAPL");
   });
 });
