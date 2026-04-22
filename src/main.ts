@@ -22,7 +22,7 @@ import "./cards/system-info/system-info.css";
 import "./cards/countdown/countdown.css";
 
 // ── Core ──
-import { diagLog } from "./core/diag";
+import { diagLog, getDiagEntries } from "./core/diag";
 import { cEvict, hydrateFromIdb, migrateLocalStorageToIdb, cEvictIdb } from "./core/cache";
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
@@ -333,6 +333,21 @@ export function init(): void {
     document.documentElement.lang === "en" ? "Diagnostics" : "אבחון",
     toggleDiagOverlay,
   );
+  // Ctrl+Shift+E — export diagnostic log as JSON file
+  window.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.shiftKey && e.key === "E") {
+      e.preventDefault();
+      const entries = getDiagEntries(500);
+      const json = JSON.stringify({ exported: new Date().toISOString(), entries }, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `fdb-diag-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  });
   registerKey(
     "v",
     document.documentElement.lang === "en" ? "Card management" : "ניהול כרטיסיות",

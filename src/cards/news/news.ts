@@ -596,10 +596,10 @@ export function renderNews(items: NewsItem[]): void {
   elRssScroll.scrollTop = 0;
   elRssScroll.appendChild(frag);
 
-  // Start scroll animation (pause in bookmark mode)
+  // Start scroll animation (pause in bookmark mode or reduced-motion preference)
   requestAnimationFrame(() => {
     if (!elRssScroll) return;
-    if (_bkmMode) {
+    if (_bkmMode || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       elRssScroll.style.animation = "none";
       return;
     }

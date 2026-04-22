@@ -62,8 +62,8 @@ export function applyTickerSpeed(speed: number): void {
   _speedMultiplier = 30 / baseSec;
   // Update CSS var for the initial load before ticker JS sets inline style
   document.documentElement.style.setProperty("--ticker-duration", `${baseSec}s`);
-  // If ticker is already rendered, update inline duration
-  if (elTicker) {
+  // If ticker is already rendered, update inline duration (skip under reduced motion)
+  if (elTicker && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const w = elTicker.scrollWidth / 2;
     if (w > 0) {
       const base = Math.max(30, w / 140);
@@ -147,6 +147,11 @@ function renderTicker(data: HalachaData): void {
   elTicker.textContent = "";
   elTicker.appendChild(frag);
 
+  // Stop animation when user prefers reduced motion
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    elTicker.style.animationPlayState = "paused";
+    return;
+  }
   // Duration proportional to content width (140px/s reference), scaled by speed
   const w = elTicker.scrollWidth / 2;
   elTicker.style.animationDuration = `${Math.round(Math.max(12, w / 140) / _speedMultiplier)}s`;

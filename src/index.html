@@ -7,7 +7,7 @@
     <meta name="description" content="Family TV Dashboard — Hebrew RTL, 6 dark themes, live data.">
     <meta name="author" content="Yair Rajwan">
     <meta name="theme-color" content="#1a1410">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; connect-src 'self' https://fdb.rajwanyair.workers.dev; font-src 'self'; frame-src https://calendar.google.com; media-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; connect-src 'self' https://fdb.rajwanyair.workers.dev https://api.allorigins.win https://api.codetabs.com https://corsproxy.io https://api.open-meteo.com https://www.hebcal.com https://www.sefaria.org https://open.er-api.com https://api.exchangerate-api.com https://query1.finance.yahoo.com https://api.coingecko.com https://api.tzevaadom.co.il https://calendar.google.com; font-src 'self'; frame-src https://calendar.google.com; media-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests;">
     <link rel="canonical" href="https://rajwanyair.github.io/FamilyDashBoard/">
     <meta property="og:title" content="רגואן Family Dashboard">
     <meta property="og:type" content="website">
@@ -566,7 +566,7 @@
 
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
-            <section class="card" role="region" data-card-id="news" aria-label="News">
+            <section class="card" role="region" data-card-id="news" aria-labelledby="card-title-news">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge blue">📰</span> <span id="card-title-news">חדשות</span> <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
@@ -583,7 +583,7 @@
                 </div>
               </div>
             </section>
-            <section class="card" role="region" data-card-id="weather" aria-label="Weather">
+            <section class="card" role="region" data-card-id="weather" aria-labelledby="wx-city-label">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-wx" role="status" aria-label="מצב סנכרון מזג אוויר" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span><span class="card-mini-info" id="mini-weather"></span></div>
               <div class="weather-body" aria-live="polite" aria-label="נתוני מזג אוויר">
                 <!-- Feature 45: Multi-city tabs -->
@@ -641,7 +641,7 @@
 
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
-            <section class="card" role="region" data-card-id="hebrew-cal" aria-label="Hebrew Calendar">
+            <section class="card" role="region" data-card-id="hebrew-cal" aria-labelledby="card-title-hebrew-cal">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> <span id="card-title-hebrew-cal">לוח עברי</span><span class="card-mini-info" id="mini-hebrew-cal"></span></div>
               <div class="hebcal-body" id="hebcal-body" aria-live="polite" aria-label="לוח עברי ושבת">
                 <!-- Main content column (right side in RTL) -->
@@ -685,7 +685,7 @@
                 </div>
               </div>
             </section>
-            <section class="card" role="region" data-card-id="calendar" aria-label="Calendar" style="position:relative">
+            <section class="card" role="region" data-card-id="calendar" aria-labelledby="card-title-calendar" style="position:relative">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
                 <!-- F154: Today's upcoming events strip -->
@@ -696,7 +696,7 @@
                 <iframe id="cal-iframe" title="Family Calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
               </div>
             </section>
-            <section class="card" role="region" data-card-id="currency" aria-label="Currency">
+            <section class="card" role="region" data-card-id="currency" aria-labelledby="card-title-currency">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cur" role="status" aria-label="מצב סנכרון מטבעות" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">🪙</span> <span id="card-title-currency">שערי מטבע</span><span class="card-mini-info" id="mini-currency"></span></div>
               <div class="currency-body" id="currency-body" aria-live="polite" aria-label="שערי מטבע" role="region">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="curUsd">--</div><div class="cur-chg" id="curUsdChg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
@@ -713,7 +713,7 @@
 
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
-            <section class="card" role="region" data-card-id="stocks" aria-label="Stocks">
+            <section class="card" role="region" data-card-id="stocks" aria-labelledby="card-title-stocks">
             <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-stk" role="status" aria-label="מצב סנכרון מניות" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge orange">📈</span> <span id="card-title-stocks">מניות</span> <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body" aria-live="polite" aria-label="נתוני מניות">
@@ -731,7 +731,7 @@
               <!-- Feature 68: Market open/close countdown -->
               <div id="stk-mkt-countdown"></div>
             </section>
-            <section class="card" role="region" data-card-id="alerts" aria-label="Red Alerts">
+            <section class="card" role="region" data-card-id="alerts" aria-labelledby="card-title-alerts">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" role="status" aria-label="מצב סנכרון התראות" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span><span id="card-title-alerts">צבע אדום</span></div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll" aria-live="assertive" aria-label="התרעות צבע אדום" role="log">
@@ -739,7 +739,7 @@
                 </div>
               </div>
             </section>
-            <section class="card" role="region" data-card-id="motivation" aria-label="Motivation">
+            <section class="card" role="region" data-card-id="motivation" aria-labelledby="card-title-motivation">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">✨</span> <span id="card-title-motivation">מוטיבציה</span><span class="card-mini-info" id="mini-motivation"></span></div>
               <div class="moti-body">
                 <div class="moti-card">
@@ -752,7 +752,7 @@
               </div>
             </section>
             <!-- Countdown card -->
-            <section class="card" role="region" data-card-id="countdown" aria-label="Countdown">
+            <section class="card" role="region" data-card-id="countdown" aria-labelledby="card-title-countdown">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge pink">💍</span> <span id="card-title-countdown">ספירה לאחור</span><span class="card-mini-info" id="mini-countdown"></span></div>
               <div class="countdown-body">
                 <div class="cd-title" id="cd-wedding-title">חתונת אליאור וטובה</div>
@@ -791,7 +791,7 @@
                 </div>
               </div>
             </section>
-            <section class="card" role="region" data-card-id="tasks" aria-label="Tasks">
+            <section class="card" role="region" data-card-id="tasks" aria-labelledby="card-title-tasks">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge green">✅</span> <span id="card-title-tasks">משימות</span> <span id="tasks-pending-badge" style="display:none;font-size:0.65em;background:var(--warning);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle"></span><span id="tasks-overdue-badge" style="display:none;font-size:0.65em;background:var(--negative,#f87171);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle" title="משימות באיחור"></span></div>
               <div class="tasks-body">
                 <div class="tasks-actions">
@@ -814,7 +814,7 @@
               </div>
             </section>
             <!-- System Info card -->
-            <section class="card" role="region" data-card-id="system-info" aria-label="System Info">
+            <section class="card" role="region" data-card-id="system-info" aria-labelledby="card-title-system-info">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><span class="icon-badge cyan">🖥</span> <span id="card-title-system-info">מצב מערכת</span><span class="card-mini-info" id="mini-system-info"></span></div>
               <div class="sysinfo-grid" id="sysinfo-body">
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-online">—</span><span class="sysinfo-tile-label">🛰️ מצב</span></div>

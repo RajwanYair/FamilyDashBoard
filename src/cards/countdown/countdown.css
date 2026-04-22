@@ -44,6 +44,7 @@
   color: var(--accent);
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  direction: ltr;
   transition: color 0.2s;
 }
 

@@ -308,7 +308,11 @@ export function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
   elScroll.innerHTML = "";
   elScroll.appendChild(frag);
 
-  // Scroll animation
+  // Scroll animation — disabled when user prefers reduced motion
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    elScroll.style.animation = "none";
+    return;
+  }
   const h = elScroll.scrollHeight / 2;
   const dur = Math.max(25, recent.length * 4);
   const style =
