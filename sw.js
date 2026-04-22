@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v11.0.0
+/* FamilyDashBoard ServiceWorker — v11.0.1
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v11.0.0: Security hardening, observability, accessibility rigour, property-based tests
+ * v11.0.1: Fix SW controller-change reload loop; fix Vite INEFFECTIVE_DYNAMIC_IMPORT; test coverage improvements
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

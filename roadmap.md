@@ -1,7 +1,7 @@
 # FamilyDashBoard — Strategic Roadmap
 
 > Roadmap refresh date: 2026-05-18
-> Shipped baseline: **v11.0.0** — 3249 tests / 98 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
+> Shipped baseline: **v11.0.1** — 3265 tests / 98 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
 > This document reopens every major architecture decision — including those that previously looked clean — and sets the explicit path to best-in-class as an always-on family information display.
 
 ---
@@ -722,9 +722,11 @@ One line per release. Detailed per-sprint tables are in `CHANGELOG.md`.
 | v9.2.0  | 2026-04-22 | Worker KV stale (W.9) + CSS utilities + ADR-013/014/015 + 4 tooling presets              | 3193 / 94    |
 | v9.3.0  | 2026-04-22 | Sprint 9.3 consolidation + Mermaid flow/sequence + 15-file version bump                  | 3193 / 94    |
 | v10.0.0 | 2026-04-22 | **First major release** — CI bail + GitKraken MCP + `docs/local-dev.md` + legacy cleanup | 3193 / 94    |
+| v11.0.0 | 2026-05-18 | Security · observability · A11Y · property-based tests · 0 runtime deps                  | 3249 / 98    |
+| v11.0.1 | 2026-04-22 | Fix SW reload loop · fix Vite build warning · test coverage improvements                 | 3265 / 98    |
 
-Total: **30 + production sprints**, 0 regressions through v10.0.0.
+Total: **30 + production sprints**, 0 regressions through v11.0.1.
 
 ---
 
-**Roadmap owner:** Reuven Airhar · **Last reviewed:** 2026-04-22 · **Next review:** on v11.0.0 release.
+**Roadmap owner:** Reuven Airhar · **Last reviewed:** 2026-04-22 · **Next review:** on v12.0.0 milestone.

@@ -19,6 +19,7 @@ import { setClockSeconds } from "./header";
 import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
+import { resetLayout } from "./layout-drag";
 import {
   LS_DIM_START,
   LS_DIM_END,
@@ -1093,15 +1094,9 @@ export function initConfigPanel(): void {
 
   // Reset card layout button
   document.getElementById("cfg-reset-layout-btn")?.addEventListener("click", () => {
-    void import("./layout-drag")
-      .then(({ resetLayout }) => {
-        resetLayout();
-        showToast(t("settingsLayoutReset"));
-        diagLog("[config-panel] layout reset");
-      })
-      .catch((error: unknown) => {
-        diagLog(`[config-panel] layout reset failed: ${String(error)}`);
-      });
+    resetLayout();
+    showToast(t("settingsLayoutReset"));
+    diagLog("[config-panel] layout reset");
   });
 
   // F2 (v7.2): Alert volume live preview

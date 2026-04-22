@@ -1,0 +1,30 @@
+/**
+ * FamilyDashBoard v7.1 — Card Drag-and-Drop Layout
+ *
+ * Allows users to reorder cards between the three grid columns by dragging
+ * card headers. Layout is persisted to config.cardLayout via saveConfig().
+ *
+ * Design decisions:
+ * - HTML5 Drag & Drop API (no libraries, zero runtime dependencies)
+ * - draggable="true" set on .card-header elements at init time
+ * - Visual feedback via CSS classes already defined in sprints.css:
+ *     .card.dragging    — the card being moved (semi-transparent + accent outline)
+ *     .card.drag-over   — the card over which the dragged card will insert
+ * - Inserts before/after a target card based on pointer Y position
+ * - Appends to column bottom when dropped on empty column space
+ * - Saves layout after every successful drop
+ */
+
+import { loadConfig, saveConfig } from "../core/config";
+import { diagLog } from "../core/diag";
+
+let _dragCard: HTMLElement | null = null;
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+/** Collect data-card-id values from a column, in DOM order. */
+function getColIds(colEl: HTMLElement): string[] {
+  return [...colEl.querySelectorAll<HTMLElement>(":scope > [data-card-id]")]
+    .map((c) => c.dataset["cardId"] ?? "")
+    .filter(Boolean);
+}

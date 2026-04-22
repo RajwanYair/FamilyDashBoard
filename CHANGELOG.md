@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [11.0.1] — 2026-04-22
+
+> **3265 tests / 98 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
+
+- **Fix (sw-register)**: Guard `controllerchange` reload — first-install claim no longer triggers a page refresh loop
+- **Fix (sw-register)**: Remove page-side `caches.delete()` that silently wiped the API cache on every load
+- **Fix (build)**: Convert dynamic `import('./layout-drag')` in `config-panel.ts` to static import — resolves `INEFFECTIVE_DYNAMIC_IMPORT` Vite warning; Vite build is now warning-free
+- **Tests**: Remove 7 duplicate per-theme class assertions from `theme-switch.test.ts` (already covered in `theme.test.ts`); add 2 focused config round-trip integration tests
+- **Tests**: Add coverage for `cEvictIdb`, `_resetForTest`, `sampleNetworkQuality`, `getNetworkQualityHistory`, `getNetworkQualityTier` rtt branches, countdown primary progress bar, `categorizeDevice` width branches, `rttTile.style.display`
+
+---
+
 ## [11.0.0] — 2026-05-18
 
 > **3249 tests / 98 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
