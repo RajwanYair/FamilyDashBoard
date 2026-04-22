@@ -3,7 +3,7 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v9.3.0
+# FamilyDashBoard — v10.0.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
@@ -34,9 +34,9 @@ TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RT
 src/                        # TypeScript v7 modular source (Vite build)
 src/public/                 # Vite static dir — icon.svg, manifest.webmanifest (NOT src/assets/)
 tests/unit/                 # Vitest unit tests — 3193 tests / 94 suites
-sw.js                       # ServiceWorker v9.3.0 (offline + API cache)
+sw.js                       # ServiceWorker v10.0.0 (offline + API cache)
 icon.svg                    # App icon (root copy; manifest in src/public/)
-BestDashBoard.html          # Legacy dashboard (read-only, preserved)
+BestDashBoard.html is archived to `docs/legacy/`
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer
 .github/copilot/            # Copilot repo config + MCP/server guidance docs

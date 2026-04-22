@@ -5,6 +5,48 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [10.0.0] — 2026-04-22
+
+> **3193 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
+
+**First semver major release — production hardening, repo hygiene, local-dev guide.**
+
+### Phase 0 — Repo Audit
+
+Full audit of 97 test files, 7 workflows, VS Code config, scripts, and docs. Identified orphaned HTML tool configs, missing local-dev guide, and CI missing bail/annotation support.
+
+### Phase 1 — Test Runner Performance
+
+- **`vitest.config.ts`**: `bail: 1` in CI (stop on first failure — no longer spins all 94 suites on error); `bail: 0` locally for full watch mode.
+- **`vitest.config.ts`**: `reporters: ['github-actions', 'default']` in CI — failing test files now appear as GitHub check annotations inline in PRs.
+
+### Phase 2/3 — VS Code + MCP Modernization
+
+- **`.vscode/mcp.json`**: Added `gitkraken` MCP server (`https://mcp.gitkraken.com/mcp`) — git blame, log, diff, branch ops, PR workflow, and Launchpad issue tracking available in Copilot chat.
+- **`.vscode/mcp.json`**: Fixed stale `filesystem` server description (removed `BestDashBoard.html` reference).
+
+### Phase 5 — Production Cleanup
+
+- **Deleted `.htmlhintrc`**: Orphaned — HTMLHint has zero npm scripts and is listed in `unwantedRecommendations` in `.vscode/extensions.json`.
+- **Deleted `.htmlvalidate.json`**: Orphaned — html-validate has no npm script and is absent from CI.
+- **Archived `BestDashBoard.html` → `docs/legacy/BestDashBoard.html`**: Removes legacy single-file dashboard from repo root (confusing alongside production `index.html` / `src/index.html` Vite entry).
+- **Updated `workspace.instructions.md`**: Reflects archived location of `BestDashBoard.html`.
+
+### Phase 6 — Local Verification Guide
+
+- **New `docs/local-dev.md`**: Three verified workflows (hot-reload dev server, production preview, `file://` local access), 12-point verification checklist, troubleshooting table, VS Code tasks quick-reference.
+
+### Version Bump (9.3.0 → 10.0.0)
+
+- `package.json`, `sw.ts`, `sw.js`, `src/core/sw-constants.ts`
+- `CLAUDE.md`, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`
+- `ARCHITECTURE.md`, `README.md` badges
+- SVG assets: `architecture.svg`, `banner.svg`, `preview.svg`, `data-sources.svg`, `roadmap.svg`
+- `docs/data-sources.md`, `docs/card-architecture-audit.md`
+- `ROADMAP.md` baseline + v10.0.0 row in completed releases table
+
+---
+
 ## [9.3.0] — 2026-04-22
 
 > **3193 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier

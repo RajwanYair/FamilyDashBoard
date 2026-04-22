@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v9.3.0
+/* FamilyDashBoard ServiceWorker — v10.0.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v9.3.0: Sprint 9.3.0 — docs modernization, Mermaid diagrams, stale-ref cleanup
+ * v10.0.0: Major release — production hardening, CI bail, local-dev guide
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

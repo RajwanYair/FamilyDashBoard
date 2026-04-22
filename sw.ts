@@ -1,9 +1,9 @@
-/* FamilyDashBoard ServiceWorker — v9.3.0
+/* FamilyDashBoard ServiceWorker — v10.0.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * Stream SW.4: Migrated from sw.js to sw.ts (TypeScript + WebWorker lib)
- * v9.3.0: Sprint 9.3.0 — docs modernization, Mermaid diagrams, stale-ref cleanup,
- *         SECURITY.md 9.x, card-architecture-audit refresh, data-sources Mermaid flow
+ * v10.0.0: Major release — production hardening, CI bail, local-dev guide,
+ *          GitKraken MCP, legacy cleanup (2 orphaned configs removed)
  * See CHANGELOG.md for full version history. */
 
 // TypeScript's webworker lib declares `self` as `WorkerGlobalScope & typeof
