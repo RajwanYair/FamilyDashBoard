@@ -1,7 +1,7 @@
 # FamilyDashBoard — Strategic Roadmap
 
 > Roadmap refresh date: 2026-05-18
-> Shipped baseline: **v11.2.0** — 3265 tests / 98 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
+> Shipped baseline: **v11.5.0** — 3303 tests / 100 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
 > This document reopens every major architecture decision — including those that previously looked clean — and sets the explicit path to best-in-class as an always-on family information display.
 
 ---
@@ -725,9 +725,12 @@ One line per release. Detailed per-sprint tables are in `CHANGELOG.md`.
 | v11.0.0 | 2026-05-18 | Security · observability · A11Y · property-based tests · 0 runtime deps                  | 3249 / 98    |
 | v11.0.1 | 2026-04-22 | Fix SW reload loop · fix Vite build warning · test coverage improvements                 | 3265 / 98    |
 | v11.2.0 | 2026-04-22 | A11y reduced-motion · focus-ring tokens · bundle growth guard · PWA screenshots · SW update UX · worker backup providers | 3265 / 98    |
+| v11.3.0 | 2026-07-01 | Video-news card (opt-in) · mountRegisteredCards · scroll shadows · error boundary · ADR-019 · frontmatter linter        | 3303 / 100   |
+| v11.4.0 | 2026-07-02 | Registry-driven DOM · Lighthouse thresholds · TTI optimisation · PWA splash screens · screen-reader docs                | 3303 / 100   |
+| v11.5.0 | 2026-07-05 | ADR-020 idle-callback deferred init · video-news docs · dead initX registry cleanup · ARCHITECTURE.md refresh           | 3303 / 100   |
 
-Total: **30 + production sprints**, 0 regressions through v11.2.0.
+Total: **33 + production sprints**, 0 regressions through v11.5.0.
 
 ---
 
-**Roadmap owner:** Reuven Airhar · **Last reviewed:** 2026-04-22 · **Next review:** on v12.0.0 milestone.
+**Roadmap owner:** Reuven Airhar · **Last reviewed:** 2026-07-05 · **Next review:** on v12.0.0 milestone.

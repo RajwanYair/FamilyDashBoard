@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v11.2.0
+/* FamilyDashBoard ServiceWorker — v11.5.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v11.2.0: A11y reduced-motion · focus-ring tokens · bundle growth guard · PWA screenshots · SW update UX · worker backup providers
+ * v11.5.0: PWA splash screens · screen-reader test docs · TTI optimisation via requestIdleCallback · ADR-020 · V11-DX registry dead-export cleanup · video-news docs
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

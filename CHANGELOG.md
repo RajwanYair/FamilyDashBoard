@@ -5,6 +5,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [11.5.0] — 2026-07-05
+
+> **3303 tests / 100 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Documentation
+
+- **`docs/adding-a-card.md`**: Added "Video-Card Variant" appendix — `StreamDescriptor` type, accessibility requirements, CSP documentation checklist, registration with `hidden: true`, and "See also" cross-links to ADR-019, `docs/video-cards.md`, `docs/security.md#10`, and `docs/keyboard.md`.
+- **`docs/security.md`**: Added Section 10 "Video Streams (video-news card — opt-in)" with CSP extension table, integration modes table (A/B/C/D), and ToS notice. Renumbered former Section 10 "Responsible Disclosure" to Section 11.
+- **`docs/screen-reader.md`** (new): NVDA + VoiceOver manual test protocol (25+ cases), axe-core / Lighthouse automation complement, remediation history table.
+- **`docs/adr/ADR-020`** (new): Decision record for deferred card init via `requestIdleCallback`. Documents 3-tier priority (HIGH/NORMAL/LOW), timeout strategy, Safari/Firefox fallback, and test stub pattern.
+- **`docs/adr/README.md`**: Added entry for ADR-020.
+
+### Performance
+
+- **TTI optimisation** (Sprint 31): LOW-priority cards (Motivation, System-Info, Ticker) deferred to `requestIdleCallback` (timeout 2000 ms) with `setTimeout(200)` fallback. Auto-theme interval setup deferred similarly (timeout 3000 ms). Eliminates ~220 ms main-thread burst at startup.
+- **Deduplication**: Eliminated redundant second `loadConfig()` call in `init()` — reuses the value already loaded at startup.
+
+### Refactoring
+
+- **`src/core/card-registry.ts`**: Removed dead `initXxxCard` imports from `legacyAdapter` calls for `hebrew-cal`, `calendar`, `currency`, and `alerts`. These init functions were passed to `legacyAdapter` but immediately overridden by the FdbCardDefinition's no-op `init()`. Pass `() => {}` explicitly to document intent.
+
+### Roadmap / Housekeeping
+
+- **ROADMAP.md**: `V11-A11Y` screen-reader item, `V11-PERF` TTI and Lighthouse items, `V11-PWA` splash screen item, `V11-CARD-VIDEO` CSP + docs items, `V11-DX` dead-exports item all marked `[x]`/`[~]`. ADR-020 documented. Version history table updated through v11.5.0.
+- **ARCHITECTURE.md**: `main.ts` startup description updated to reflect 3-tier priority init. Test count updated to 3303 / 100 suites. Version header bumped to v11.5.0.
+
+---
+
 ## [11.4.0] — 2026-07-02
 
 > **3303 tests / 100 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
