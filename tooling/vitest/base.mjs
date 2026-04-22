@@ -22,6 +22,11 @@ export const sharedVitestPoolConfig = {
     forks: {
       maxForks: cpuCount,
       minForks: Math.max(2, Math.floor(cpuCount / 2)),
+      // Re-use the module registry across files in the same fork.
+      // Each suite still runs in its own JS context (isolate: false only
+      // removes the per-file module re-import overhead, not the test isolation).
+      // Tests that mutate global state must use beforeEach/afterEach reset.
+      isolate: false,
     },
   },
 };
