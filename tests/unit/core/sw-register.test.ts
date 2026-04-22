@@ -718,15 +718,16 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
     expect(registerSpy).toHaveBeenCalledOnce();
   });
 
-  it("deletes old caches that don't start with familydashboard-v7", async () => {
+  it("deletes old caches that don't start with the familydashboard-v prefix", async () => {
     const deleteSpy = vi.fn().mockResolvedValue(true);
     const cachesMock = {
       keys: vi
         .fn()
         .mockResolvedValue([
-          "familydashboard-v5-shell",
-          "familydashboard-v6-api",
+          "some-other-app-cache",
+          "workbox-precache-v2",
           "familydashboard-v7.1.6-shell",
+          "familydashboard-v10.0.0-shell",
         ]),
       delete: deleteSpy,
     };
@@ -757,9 +758,10 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
     const mod = await freshMod();
     await mod.registerSW();
 
-    // Should delete v5 and v6 caches, but NOT the v7 cache
-    expect(deleteSpy).toHaveBeenCalledWith("familydashboard-v5-shell");
-    expect(deleteSpy).toHaveBeenCalledWith("familydashboard-v6-api");
+    // Should delete non-familydashboard caches; must NOT delete any familydashboard-v* cache
+    expect(deleteSpy).toHaveBeenCalledWith("some-other-app-cache");
+    expect(deleteSpy).toHaveBeenCalledWith("workbox-precache-v2");
     expect(deleteSpy).not.toHaveBeenCalledWith("familydashboard-v7.1.6-shell");
+    expect(deleteSpy).not.toHaveBeenCalledWith("familydashboard-v10.0.0-shell");
   });
 });

@@ -6,6 +6,7 @@
 
 import { diagLog } from "./diag";
 import {
+  CACHE_NAME,
   SW_MSG_SKIP_WAITING,
   SW_MSG_VERSION_ACTIVATED,
   isVersionActivatedMsg,
@@ -34,8 +35,9 @@ export async function registerSW(): Promise<void> {
     // before registering the current one. This silently evicts legacy SWs
     // even if they have an incompatible scope or cache-name, ensuring no old
     // version can intercept requests after an upgrade.
-    // Also purge any cache entries whose name doesn't start with "familydashboard-v7"
-    // so old caches (v5, v6) never serve stale content.
+    // Also purge any cache entries whose name doesn't start with the shared
+    // CACHE_NAME prefix ("familydashboard-v") so truly alien caches are removed
+    // while any familydashboard-v* version cache (v7, v8, v9, v10…) is kept.
     const existing = await navigator.serviceWorker.getRegistrations();
     for (const reg of existing) {
       if (reg.scope !== `${window.location.origin}/FamilyDashBoard/`) {
@@ -44,11 +46,13 @@ export async function registerSW(): Promise<void> {
       }
     }
 
-    // Delete any caches from old versions (v5/v6) that don't match v7
+    // Delete any caches from old versions that don't match the current prefix.
+    // Uses the CACHE_NAME constant ("familydashboard-v") so this stays correct
+    // across major version bumps without needing a manual string update.
     if ("caches" in window) {
       const cacheNames = await caches.keys();
       for (const name of cacheNames) {
-        if (!name.startsWith("familydashboard-v7")) {
+        if (!name.startsWith(CACHE_NAME)) {
           diagLog(`[sw] Deleting stale cache: ${name}`);
           await caches.delete(name);
         }
