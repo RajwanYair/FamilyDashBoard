@@ -222,3 +222,59 @@ describe("DOM Contract — Tasks card action buttons", () => {
 describe("DOM Contract — Currency last-fetch chip", () => {
   it("has #cur-last-fetch", () => expect(hasId("cur-last-fetch")).toBe(true));
 });
+
+// ── A11y: ARIA landmarks (v11.0-A11Y-1) ──
+
+describe("DOM Contract — A11y ARIA landmarks", () => {
+  const CARD_IDS = [
+    "news",
+    "weather",
+    "hebrew-cal",
+    "calendar",
+    "currency",
+    "stocks",
+    "alerts",
+    "motivation",
+    "countdown",
+    "tasks",
+    "system-info",
+  ];
+
+  it("all 11 cards have role=region", () => {
+    for (const id of CARD_IDS) {
+      expect(
+        html,
+        `card[data-card-id="${id}"] should have role="region"`,
+      ).toContain(`role="region" data-card-id="${id}"`);
+    }
+  });
+
+  it("all 11 cards have aria-label", () => {
+    for (const id of CARD_IDS) {
+      const re = new RegExp(`data-card-id="${id}"[^>]+aria-label=|aria-label=[^>]+data-card-id="${id}"`);
+      expect(re.test(html), `card[data-card-id="${id}"] should have aria-label`).toBe(true);
+    }
+  });
+
+  it("skip-link targets #main-content", () => {
+    expect(html).toContain('href="#main-content"');
+    expect(html).toContain('class="skip-link"');
+  });
+
+  it("alerts scroll region has aria-live=assertive", () => {
+    expect(html).toContain('aria-live="assertive"');
+  });
+
+  it("toast has aria-live=polite for status announcements", () => {
+    expect(html).toContain('id="toast"');
+    expect(html).toContain('aria-live="polite"');
+  });
+
+  it("news ticker has aria-live=polite", () => {
+    expect(html).toContain('id="news-ticker"');
+    // news-ticker is inside the news card and has aria-live="polite"
+    const tickerIdx = html.indexOf('id="news-ticker"');
+    const nearbyHtml = html.slice(Math.max(0, tickerIdx - 50), tickerIdx + 80);
+    expect(nearbyHtml).toContain('aria-live="polite"');
+  });
+});

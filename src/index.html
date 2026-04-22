@@ -571,7 +571,7 @@
             </section>
             <section class="card" role="region" data-card-id="weather" aria-label="Weather">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-wx" role="status" aria-label="מצב סנכרון מזג אוויר" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span></div>
-              <div class="weather-body">
+              <div class="weather-body" aria-live="polite" aria-label="נתוני מזג אוויר">
                 <!-- Feature 45: Multi-city tabs -->
                 <div class="wx-city-tabs" id="wx-city-tabs">
                   <button type="button" class="wx-city-tab active" data-city="jerusalem" data-lat="31.7683" data-lon="35.2137" title="לחץ להצגת מזג אוויר בירושלים">ירושלים</button>
@@ -629,7 +629,7 @@
           <div class="grid-col grid-col-mid">
             <section class="card" role="region" data-card-id="hebrew-cal" aria-label="Hebrew Calendar">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge yellow">🕍</span> <span id="card-title-hebrew-cal">לוח עברי</span></div>
-              <div class="hebcal-body" id="hebcal-body">
+              <div class="hebcal-body" id="hebcal-body" aria-live="polite" aria-label="לוח עברי ושבת">
                 <!-- Main content column (right side in RTL) -->
                 <div class="hc-main-col">
                   <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
