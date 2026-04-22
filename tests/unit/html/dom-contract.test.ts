@@ -260,7 +260,9 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
 
   it("all 11 cards have aria-label", () => {
     for (const id of CARD_IDS) {
-      const re = new RegExp(`data-card-id="${id}"[^>]+aria-label=|aria-label=[^>]+data-card-id="${id}"`);
+      const re = new RegExp(
+        `data-card-id="${id}"[^>]+aria-label(?:ledby)?=|aria-label(?:ledby)?=[^>]+data-card-id="${id}"`,
+      );
       expect(re.test(html), `card[data-card-id="${id}"] should have aria-label`).toBe(true);
     }
   });

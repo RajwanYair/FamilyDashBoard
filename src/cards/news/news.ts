@@ -280,6 +280,11 @@ export function isBookmarkMode(): boolean {
 
 export function cacheDom(): void {
   elRssScroll = document.getElementById("rss-scroll");
+  if (elRssScroll) {
+    elRssScroll.setAttribute("role", "feed");
+    elRssScroll.setAttribute("aria-busy", "true");
+    elRssScroll.setAttribute("aria-label", "עדכוני חדשות");
+  }
   elNewsTicker = document.getElementById("news-ticker");
   elBkmPill = document.getElementById("news-bkm-pill");
   elSearchInput = document.getElementById("news-search") as HTMLInputElement | null;
@@ -446,7 +451,11 @@ export function renderNews(items: NewsItem[]): void {
       const key0 = getBookmarkKey(item.title);
       const visitedCls = !isClone && _visited.has(key0) ? " visited" : "";
       div.className = "rss-item" + (isClone ? " clone" : "") + visitedCls;
-      if (isClone) div.setAttribute("aria-hidden", "true");
+      if (isClone) {
+        div.setAttribute("aria-hidden", "true");
+      } else {
+        div.setAttribute("role", "article");
+      }
       if (item.category) div.dataset["category"] = item.category;
 
       // Stale age tinting (F136) — primary items only
@@ -594,6 +603,7 @@ export function renderNews(items: NewsItem[]): void {
 
   elRssScroll.innerHTML = "";
   elRssScroll.scrollTop = 0;
+  elRssScroll.setAttribute("aria-busy", "false");
   elRssScroll.appendChild(frag);
 
   // Start scroll animation (pause in bookmark mode or reduced-motion preference)

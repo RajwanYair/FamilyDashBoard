@@ -188,11 +188,11 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v7 → v8");
   }
 
-  // v8 → v9: reset tempUnit to 'C' (Celsius is the project default).
+  // v8 → v9: introduced tempUnit — default to 'C' only when not already a valid value.
   if (version < 9) {
-    cfg.tempUnit = "C";
+    if (!isValidTempUnit(cfg.tempUnit)) cfg.tempUnit = "C";
     cfg.configVersion = 9;
-    diagLog("[config] migrated v8 → v9: tempUnit reset to C");
+    diagLog("[config] migrated v8 → v9: tempUnit ensured");
   }
 
   return cfg;
