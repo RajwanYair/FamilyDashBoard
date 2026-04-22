@@ -5,23 +5,23 @@
  * elements. Uses :focus-visible to avoid ring on mouse clicks.
  */
 :focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
   border-radius: 3px;
 }
 
 /* Stronger ring inside dark glass cards */
 .card :focus-visible {
-  outline-color: var(--accent);
-  outline-width: 2px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-color: var(--focus-outline-color-card);
+  outline-width: var(--focus-outline-width-card);
+  box-shadow: 0 0 0 var(--focus-shadow-spread) color-mix(in srgb, var(--focus-outline-color-card) 35%, transparent);
 }
 
 /* Icon buttons and pill chips */
 button:focus-visible,
 [role="button"]:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset-btn);
   border-radius: 4px;
 }
 
@@ -30,7 +30,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: var(--focus-outline-width-input) solid var(--focus-outline-color);
   outline-offset: 0;
 }
 
