@@ -112,6 +112,56 @@ Always add new rules to the correct layer. No duplicate selectors.
 - Card content: tile/grid blocks — never plain vertical lists (except news/stock rows)
 - `data-card-id` must match registry ID exactly (`"hebrew-cal"`, `"calendar"`, etc.)
 
+## Shared Card State Classes (Stream F.1/F.2/F.3)
+
+Use these classes to communicate card state — do not invent per-card equivalents:
+
+| Class            | Purpose                                                              |
+| ---------------- | -------------------------------------------------------------------- |
+| `.card-empty`    | No data available (flex center, italic, 50% opacity)                 |
+| `.card-error`    | Fetch or parse failure (`::before` warning icon, `--negative` color) |
+| `.card-stale`    | Stale data banner container                                          |
+| `.card-loading`  | Spinner overlay while fetching                                       |
+| `.card-skeleton` | Shimmer placeholder rows                                             |
+| `.card--empty`   | BEM modifier on `.card` element itself — sets `min-height`           |
+| `.card--error`   | BEM modifier — adds negative border tint                             |
+| `.card--stale`   | BEM modifier — adds warning border tint                              |
+
+## Tile-Grid Utilities (Stream F.3)
+
+Card data content must use rectangular tiles, not plain lists:
+
+```css
+/* Option 1: BEM utility (inside .card__body) */
+.card__grid {
+  /* auto-fit minmax(120px, 1fr) */
+}
+.card__tile {
+  /* bordered tile */
+}
+.card__tile-label {
+  /* uppercase label */
+}
+.card__tile-value {
+  /* bold value */
+}
+
+/* Option 2: standalone for ad-hoc grids */
+.tile-grid {
+  /* configurable via --tile-min-width, --tile-gap */
+}
+```
+
+## Design Token Reference (tokens.css)
+
+Key tokens relevant to TV readability:
+
+- `--card-min-height: 160px` — minimum height for 3 m viewing distance
+- `--text-base` through `--text-4xl` — fluid typography via `clamp()`
+- `--radius-sm/md/lg/xl` — consistent corner radii
+- `--shadow-sm/md/lg` — depth hierarchy
+- `--duration-fast/normal/slow` — animation timing
+
 ## Output Expectations
 
 - Say whether the change belongs in tokens, themes, base, layout, components, or animations.

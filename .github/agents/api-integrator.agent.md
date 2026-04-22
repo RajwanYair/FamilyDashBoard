@@ -81,6 +81,26 @@ Use this agent when the task is primarily about one of the following:
 - Logging: `diagLog(msg)` on every fetch success/error
 - Visibility: `if (!_pageVisible) return;` guard in all loaders or `isPageVisible()` where the module uses the helper
 
+## Worker KV Stale Pattern (ADR-013, ADR-015)
+
+When adding KV stale fallback to a new worker route:
+
+1. `Env` is defined in `worker/src/types.ts` — import from there, never from `index.ts` (ADR-015)
+2. Use `kvGetStale<T>(env.CACHE_KV, key)` from `worker/src/utils/kv.ts`
+3. Use `kvPut(env.CACHE_KV, key, data, ttlSeconds)` — non-fatal (try/catch inside)
+4. Stale provider name convention: `"<upstream-name>-kv-stale"` (e.g. `"yahoo-kv-stale"`)
+5. Route handler signature must accept `env: Env` as a parameter when using KV
+6. TTL guidance: 24 h for financial data, 1 h for time-sensitive (alerts, prayer times)
+7. Update the router call in `index.ts` to pass `env` to the updated handler
+
+```typescript
+// Canonical pattern (from feeds.ts)
+const cached = await kvGetStale<MyDataType>(env.CACHE_KV, kvKey);
+if (cached) return workerEnvelope(cached, "source-kv-stale", true, 60);
+```
+
+Reference ADRs: [ADR-013](../docs/adr/ADR-013-kv-stale-cache.md) · [ADR-015](../docs/adr/ADR-015-env-type-isolation.md)
+
 ## Hard Constraints
 
 - Never introduce a runtime dependency or CDN for an integration.

@@ -33,6 +33,10 @@ Use for RTL layout, theme work, card readability, CSS custom properties, typogra
 
 Use for API integrations, worker-first fetch flow, proxy fallback, caching, diagnostics, sync dots, and adapter or loader correctness.
 
+### `@quality-reviewer`
+
+Use for pre-release gates, PR reviews, coverage audits, dead-code scans, and structured quality reports. Produces a PASS/FAIL/WARNING report and fixes blockers.
+
 ## When To Use What
 
 | Need                                              | Best Fit                                 |
@@ -46,12 +50,22 @@ Use for API integrations, worker-first fetch flow, proxy fallback, caching, diag
 
 ## Prompts
 
-| Prompt               | Purpose                                                            |
-| -------------------- | ------------------------------------------------------------------ |
-| `/code-review`       | Review for bugs, risks, regressions, security, and maintainability |
-| `/add-section`       | Scaffold a dashboard section or card concept                       |
-| `/fix-quality`       | Tighten lint, type, test, and quality issues                       |
-| `/modernize-tooling` | Refresh Copilot, CI, MCP, prompt, instruction, and workflow setup  |
+| Prompt                 | Purpose                                                                      |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| `/add-card`            | Scaffold a new card module (TS + CSS + tests + registry entry)               |
+| `/add-section`         | Scaffold a dashboard section or card concept                                 |
+| `/card-contract-audit` | Audit a card against the FdbCard CardRuntime contract                        |
+| `/code-review`         | Review for bugs, risks, regressions, security, and maintainability           |
+| `/debug-card`          | Debug a malfunctioning card (fetch path, render, config, stale)              |
+| `/fix-lint`            | Fix ESLint / TypeScript / Prettier / Markdownlint issues                     |
+| `/fix-quality`         | Tighten lint, type, test, and quality issues                                 |
+| `/kv-stale-audit`      | Audit or debug KV stale fallback for a worker route (stocks, crypto, alerts) |
+| `/modernize-tooling`   | Refresh Copilot, CI, MCP, prompt, instruction, and workflow setup            |
+| `/release-check`       | Pre-release readiness gate (types + lint + tests + CHANGELOG + version)      |
+| `/test-coverage`       | Add targeted tests to meet the 90%/81%/90%/92% coverage thresholds           |
+| `/version-bump`        | Bump version in package.json, CHANGELOG, README badges, and sw.ts            |
+| `/worker-debug`        | Debug a failing Cloudflare Worker route (fetch, Zod, KV, envelope)           |
+| `/worker-route`        | Scaffold a new Cloudflare Worker route (handler + Zod schema + tests)        |
 
 ## Skills
 
@@ -64,13 +78,15 @@ Use for API integrations, worker-first fetch flow, proxy fallback, caching, diag
 
 ## Instruction Files
 
-| Instruction                | Applies To                                     | Purpose                                                           |
-| -------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
-| `copilot-instructions`     | All work                                       | Canonical coding rules and hard constraints                       |
-| `workspace.instructions`   | `**`                                           | File map, architecture, shell expectations, shared tooling layout |
-| `dashboard.instructions`   | `**/*.html`                                    | HTML, layout, DOM, and styling rules                              |
-| `cicd.instructions`        | `**/*.yml, **/*.yaml, .github/**`              | Workflows, Actions, permissions, CI conventions                   |
-| `pre-release.instructions` | `CHANGELOG.md, package.json, sw.js, README.md` | Release gate and version-update checklist                         |
+| Instruction                | Applies To                                     | Purpose                                                               |
+| -------------------------- | ---------------------------------------------- | --------------------------------------------------------------------- |
+| `copilot-instructions`     | All work                                       | Canonical coding rules, naming conventions, hard constraints          |
+| `workspace.instructions`   | `**`                                           | File map, architecture, shell expectations, shared tooling layout     |
+| `dashboard.instructions`   | `**/*.html`                                    | HTML, layout, DOM, and styling rules                                  |
+| `cicd.instructions`        | `**/*.yml, **/*.yaml, .github/**`              | Workflows, Actions, permissions, CI conventions                       |
+| `pre-release.instructions` | `CHANGELOG.md, package.json, sw.js, README.md` | Release gate and version-update checklist                             |
+| `tests.instructions`       | `tests/**`                                     | Vitest patterns, `_resetForTest()`, mock helpers, coverage thresholds |
+| `typescript.instructions`  | `src/**/*.ts, worker/**/*.ts`                  | TypeScript strict rules, import conventions, ADR references           |
 
 ## MCP Server Guidance
 
