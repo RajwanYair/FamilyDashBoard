@@ -36,23 +36,78 @@ are exempt and MUST continue using `proxyResponse` to preserve byte-for-byte pas
 
 ### In-scope routes (must use envelope)
 
-| Route                      | Provider name | KV key                   |
-| -------------------------- | ------------- | ------------------------ |
-| `GET /api/weather`         | `open-meteo`  | `weather:{lat}:{lon}`    |
-| `GET /api/currency`        | `er-api`      | `currency:ILS`           |
-| `GET /api/hebcal`          | `hebcal`      | `hebcal:{geonameid}`     |
-| `GET /api/hebcal/holidays` | `hebcal`      | `hebcal-holidays:{year}` |
-| `GET /api/alerts`          | `tzevaadom`   | _(no KV — TTL 60 s)_     |
+| Route                        | Provider name       | KV key                       |
+| ---------------------------- | ------------------- | ---------------------------- |
+| `GET /api/weather`           | `open-meteo`        | `weather:{lat}:{lon}`        |
+| `GET /api/currency`          | `er-api`            | `currency:ILS`               |
+| `GET /api/hebcal`            | `hebcal`            | `hebcal:{geonameid}`         |
+| `GET /api/hebcal/holidays`   | `hebcal`            | `hebcal-holidays:{year}`     |
+| `GET /api/alerts`            | `tzevaadom`         | _(no KV — TTL 60 s)_         |
+| `GET /api/news/aggregate`    | `rss-aggregate`     | `news-aggregate`             |
 
 ### Exempt routes (pass-through)
 
-| Route                       | Reason                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------- |
-| `GET /api/stocks`           | Yahoo Finance returns JSON but shape is consumed directly by the client adapter |
-| `GET /api/news`             | Returns RSS XML                                                                 |
-| `GET /api/calendar`         | Returns ICS text                                                                |
-| `GET /api/sefaria/calendar` | Returns JSON but consumed by a dedicated client adapter                         |
-| `GET /api/sefaria/text`     | Returns Sefaria v3 JSON consumed by a dedicated client adapter                  |
+| Route                       | Reason                                                                           |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| `GET /api/stocks`           | Yahoo Finance returns JSON but shape is consumed directly by the client adapter  |
+| `GET /api/news`             | Returns RSS XML                                                                  |
+| `GET /api/calendar`         | Returns ICS text                                                                 |
+| `GET /api/sefaria/calendar` | Returns JSON but consumed by a dedicated client adapter                          |
+| `GET /api/sefaria/text`     | Returns Sefaria v3 JSON consumed by a dedicated client adapter                   |
+
+---
+
+## News Aggregation Strategy
+
+`GET /api/news/aggregate` (added v11.2.0) merges **17 curated RSS/Atom feeds** into a single
+normalised JSON response. The algorithm is:
+
+### Fetch phase
+
+All 17 feed URLs are fetched in parallel (`Promise.allSettled`). Feeds that fail or time
+out (2 s timeout per feed) are silently dropped from the result set. At least one feed
+must succeed; otherwise the route falls back to KV stale data.
+
+### Normalisation
+
+Each item is mapped to:
+```ts
+interface NewsItem {
+  title:       string;   // HTML-entity-decoded
+  link:        string;   // absolute HTTPS URL
+  pubDate:     string;   // ISO-8601 (parsed from RFC 822 or ISO input)
+  description: string;   // first 300 chars of content, plain text
+  source:      string;   // publisher name from feed <title> or meta
+}
+```
+
+Relative URLs are resolved against the feed origin. Items missing `title` or `link` are
+discarded.
+
+### Deduplication
+
+After normalisation, a dedup pass removes near-duplicate articles:
+
+1. **Exact title match** — `item.title.toLowerCase().trim()` equality.
+2. **URL normalisation** — query-string stripped, `www.` prefix removed, fragment removed.
+3. Items from the same source published within a 5-minute window with ≥ 70 % title token
+   overlap (Jaccard coefficient, word-level) are considered duplicates; the **older** copy
+   is dropped.
+
+### Sort and cap
+
+Surviving items are sorted by `pubDate` descending. The response is capped at **100 items**
+(configurable via `NEWS_AGGREGATE_LIMIT` env var, default 100, max 200).
+
+### KV caching
+
+The deduplicated and sorted result is written to KV key `news-aggregate` with
+`expirationTtl = 900` (15 min). If all upstream fetches fail, the last stored KV value is
+returned with `stale: true`. A complete upstream failure with no KV data returns HTTP 502.
+
+### Client integration
+
+The news card checks `isWorkerEnabled()` and calls `fetchJSONWithWorker<WorkerResponse<NewsItem[]>>(WORKER_BASE + "/api/news/aggregate")`. On success it renders all returned items in the news tile grid. The `stale` flag activates the `card-stale` chip.
 
 ---
 
@@ -72,4 +127,4 @@ are exempt and MUST continue using `proxyResponse` to preserve byte-for-byte pas
 - Client card loaders consuming in-scope routes MUST type their fetch as `WorkerResponse<T>` and check `stale`.
 - `proxyResponse` usage is restricted to exempt routes and MUST NOT be used for new structured-data endpoints.
 - Worker tests MUST assert `provider` and `stale` fields on envelope responses.
-- This ADR is considered implemented when all in-scope routes above return the envelope. Current status: ✅ complete as of Stream W.4.
+- This ADR is considered implemented when all in-scope routes above return the envelope. Current status: ✅ complete as of v11.2.0 (Stream W.4 + news aggregate).
