@@ -5,6 +5,55 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [11.0.0] — 2026-05-18
+
+> **3249 tests / 98 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
+
+### Security (V11-SEC)
+
+- All GitHub Actions pinned to full commit SHAs (supply-chain hardening)
+- `dependency-review` Action added on every PR
+- Strict CSP meta tag extended with Cloudflare Analytics `script-src`/`connect-src`
+- ADR-018: CSP + COOP/COEP posture documented
+
+### Observability (V11-OBS)
+
+- Cloudflare Web Analytics beacon injected at build time via `injectCfAnalytics` Vite plugin (cookie-less, privacy-preserving)
+- Web Vitals (CLS/LCP/INP) reported to `/api/errors` via `vitals-reporter.ts`
+- `Ctrl+Shift+E` exports local diagnostic snapshot as JSON
+
+### Accessibility (V11-A11Y)
+
+- axe-core WCAG 2.2 AA gate in Playwright CI across all 3 screen modes (0 critical/serious violations)
+- `role="feed"` + `aria-busy` on news feed; `role="article"` on news items
+- `role="row"` + `aria-label` on stock rows
+- `aria-labelledby` accepted alongside `aria-label` in DOM contract test
+- All 11 cards have `role="region"` + `aria-labelledby`; refreshing cards have `aria-live="polite"`
+
+### Data Plane (V11-DATA)
+
+- `/api/news` worker route aggregates 17 RSS feeds, deduplicates, returns normalised JSON
+- KV stale-fallback extended to all 10 worker routes
+
+### Performance (V11-PERF)
+
+- Lightning CSS transformer active at Vite build time (autoprefixing + minification)
+- Vitest coverage thresholds raised: 92/85/92/94 (statements/branches/functions/lines)
+- Vitest pool upgraded to `forks` with `maxForks: 6, minForks: 2`
+
+### PWA (V11-PWA)
+
+- `manifest.webmanifest`: `id`, `launch_handler` fields added
+- iOS meta tags: `apple-touch-icon`, `apple-mobile-web-app-*` meta
+- First-run tour `<dialog>` for keyboard shortcuts + card orientation
+
+### Developer Experience (V11-DX)
+
+- Property-based tests with `fast-check`: cache TTL expiry, config migration idempotency, ICS parser never-throw (8 tests)
+- Config `migrateConfig` v8→v9 now preserves valid `tempUnit` rather than resetting to `'C'`
+
+---
+
 ## [10.0.0] — 2026-04-22
 
 > **3193 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
