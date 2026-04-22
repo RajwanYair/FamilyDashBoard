@@ -152,6 +152,62 @@ export const CoinGeckoSchema = z
   })
   .passthrough();
 
+// ── met.no (Yr) Weather — backup provider ────────────────────────────────────
+
+export const MetNoInstantDetailsSchema = z
+  .object({
+    air_temperature: z.number(),
+    wind_speed: z.number(),
+    relative_humidity: z.number().optional(),
+  })
+  .passthrough();
+
+export const MetNoTimeseriesSchema = z
+  .object({
+    time: z.string(),
+    data: z
+      .object({
+        instant: z
+          .object({ details: MetNoInstantDetailsSchema })
+          .passthrough(),
+        next_1_hours: z
+          .object({ summary: z.object({ symbol_code: z.string() }).passthrough() })
+          .passthrough()
+          .optional(),
+        next_6_hours: z
+          .object({ summary: z.object({ symbol_code: z.string() }).passthrough() })
+          .passthrough()
+          .optional(),
+      })
+      .passthrough(),
+  })
+  .passthrough();
+
+export const MetNoWeatherSchema = z
+  .object({
+    properties: z
+      .object({
+        timeseries: z.array(MetNoTimeseriesSchema).min(1),
+      })
+      .passthrough(),
+  })
+  .passthrough();
+
+// ── Finnhub Stock Quote — backup provider ─────────────────────────────────────
+
+/**
+ * Finnhub GET /quote response:
+ *   { c: currentPrice, d: change, dp: changePercent, h, l, o, pc, t }
+ */
+export const FinnhubQuoteSchema = z
+  .object({
+    c: z.number(),  // current price
+    d: z.number(),  // change
+    dp: z.number(), // percent change
+    t: z.number(),  // unix timestamp
+  })
+  .passthrough();
+
 // ── Tzeva Adom (Red Alerts) ──────────────────────────────────────────────────
 
 export const AlertItemSchema = z

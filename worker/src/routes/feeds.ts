@@ -10,7 +10,7 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../utils/validation";
-import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema, AlertsSchema, SefariaCalendarSchema, SefariaTextSchema } from "../utils/schemas";
+import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema, AlertsSchema, SefariaCalendarSchema, SefariaTextSchema, FinnhubQuoteSchema } from "../utils/schemas";
 import { kvGetStale, kvPut } from "../utils/kv";
 import { parseRss } from "../utils/rss-parser";
 import type { Env } from "../types";
@@ -24,32 +24,74 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
   }
   const kvKey = `stocks:${sym.toUpperCase()}`;
   const encoded = encodeURIComponent(sym);
+
+  // ── Primary: Yahoo Finance ─────────────────────────────────────────────────
+  let lastSchemaError: string | undefined;
   const upstream = await fetch(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1d&range=1d`,
     { headers: { "User-Agent": "FamilyDashBoard/6.0" } },
   );
-  if (!upstream.ok) {
-    const stale = await kvGetStale(env.CACHE_KV, kvKey);
-    if (stale) return workerEnvelope(stale, "yahoo-kv-stale", true, 60);
-    return jsonResponse({ error: `Upstream ${upstream.status}` }, 502);
+  if (upstream.ok) {
+    const data: unknown = await upstream.json();
+    const validated = safeParse(StocksChartSchema, data);
+    if (validated.ok) {
+      void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
+      return new Response(JSON.stringify(validated.data), {
+        status: 200,
+        headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300", ...CORS_HEADERS },
+      });
+    }
+    lastSchemaError = validated.error;
   }
-  const data: unknown = await upstream.json();
-  const validated = safeParse(StocksChartSchema, data);
-  if (!validated.ok) {
-    const stale = await kvGetStale(env.CACHE_KV, kvKey);
-    if (stale) return workerEnvelope(stale, "yahoo-kv-stale", true, 60);
-    return jsonResponse({ error: "Upstream stocks schema invalid", detail: validated.error }, 502);
+
+  // ── Backup: KV stale ──────────────────────────────────────────────────────
+  const staleKv = await kvGetStale(env.CACHE_KV, kvKey);
+  if (staleKv) return workerEnvelope(staleKv, "yahoo-kv-stale", true, 60);
+
+  // ── Backup: Finnhub (requires FINNHUB_API_KEY Worker secret) ─────────────
+  if (env.FINNHUB_API_KEY) {
+    try {
+      const finnhubRes = await fetch(
+        `https://finnhub.io/api/v1/quote?symbol=${encoded}&token=${env.FINNHUB_API_KEY}`,
+        { headers: { "User-Agent": "FamilyDashBoard/11.0", Accept: "application/json" } },
+      );
+      if (finnhubRes.ok) {
+        const finnhubData: unknown = await finnhubRes.json();
+        const finnhubParsed = safeParse(FinnhubQuoteSchema, finnhubData);
+        if (finnhubParsed.ok) {
+          // Normalise to Yahoo chart envelope so the client needs no changes.
+          const normalised = {
+            chart: {
+              result: [{
+                meta: {
+                  symbol: sym.toUpperCase(),
+                  currency: "USD",
+                  regularMarketPrice: finnhubParsed.data.c,
+                  chartPreviousClose: finnhubParsed.data.c - finnhubParsed.data.d,
+                  regularMarketChangePercent: finnhubParsed.data.dp,
+                },
+              }],
+              error: null,
+            },
+          };
+          void kvPut(env.CACHE_KV, kvKey, normalised, 3600);
+          return new Response(JSON.stringify(normalised), {
+            status: 200,
+            headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300", ...CORS_HEADERS },
+          });
+        }
+      }
+    } catch {
+      // Finnhub unreachable — fall through
+    }
   }
-  // Write to KV for future stale fallback (24 h TTL)
-  void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
-  return new Response(JSON.stringify(data), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "public, max-age=300",
-      ...CORS_HEADERS,
-    },
-  });
+
+  return jsonResponse({
+    error: lastSchemaError
+      ? `Upstream stocks schema invalid — all providers failed`
+      : "All stock providers failed",
+    ...(lastSchemaError ? { detail: lastSchemaError } : {}),
+  }, 502);
 }
 
 export async function handleNews(url: URL): Promise<Response> {

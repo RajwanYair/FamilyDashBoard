@@ -32,4 +32,10 @@ export interface Env {
    * Optional — export endpoint returns 501 when not configured.
    */
   ERROR_REPORTING_TOKEN?: string;
+  /**
+   * Finnhub API key for backup stock quotes.
+   * Set as a Worker secret (wrangler secret put FINNHUB_API_KEY).
+   * Optional — Finnhub fallback is skipped when not configured.
+   */
+  FINNHUB_API_KEY?: string;
 }

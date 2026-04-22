@@ -9,6 +9,7 @@ import {
 } from "../utils/validation";
 import {
   WeatherSchema,
+  MetNoWeatherSchema,
   CurrencySchema,
   HebcalSchema,
   HebcalHolidaysSchema,
@@ -26,24 +27,49 @@ export async function handleWeather(url: URL, env: Env): Promise<Response> {
     return validationErrorResponse(err as ValidationError);
   }
   const kvKey = `weather:${latNum.toFixed(4)}:${lonNum.toFixed(4)}`;
+
+  // ── Primary: Open-Meteo ────────────────────────────────────────────────────
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latNum}&longitude=${lonNum}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
-  const res = await fetch(weatherUrl);
-  if (!res.ok) {
-    // Upstream error — try KV stale fallback before proxy
-    const stale = await kvGetStale(env.CACHE_KV, kvKey);
-    if (stale) return workerEnvelope(stale, "open-meteo-kv-stale", true, 60);
-    return proxyResponse(res, 60);
+  const primaryRes = await fetch(weatherUrl);
+  if (primaryRes.ok) {
+    const data: unknown = await primaryRes.json();
+    const parsed = safeParse(WeatherSchema, data);
+    if (parsed.ok) {
+      void kvPut(env.CACHE_KV, kvKey, parsed.data, 86400);
+      return workerEnvelope(parsed.data, "open-meteo", false, 1800);
+    }
   }
-  const data: unknown = await res.json();
-  const parsed = safeParse(WeatherSchema, data);
-  if (!parsed.ok) {
-    const stale = await kvGetStale(env.CACHE_KV, kvKey);
-    if (stale) return workerEnvelope(stale, "open-meteo-kv-stale", true, 60);
-    return jsonResponse({ error: "Upstream shape mismatch", detail: parsed.error }, 502);
+
+  // ── Backup: KV stale (fast, no network) ───────────────────────────────────
+  const staleKv = await kvGetStale(env.CACHE_KV, kvKey);
+  if (staleKv) return workerEnvelope(staleKv, "open-meteo-kv-stale", true, 60);
+
+  // ── Backup: met.no / Yr ────────────────────────────────────────────────────
+  const metnoUrl = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${latNum.toFixed(4)}&lon=${lonNum.toFixed(4)}`;
+  try {
+    const metnoRes = await fetch(metnoUrl, {
+      headers: {
+        "User-Agent": "FamilyDashBoard/11.0 https://github.com/RajwanYair/FamilyDashBoard",
+        Accept: "application/json",
+      },
+    });
+    if (metnoRes.ok) {
+      const metnoData: unknown = await metnoRes.json();
+      const metnoValidated = safeParse(MetNoWeatherSchema, metnoData);
+      if (metnoValidated.ok) {
+        // Store raw met.no data under a separate key so it doesn't pollute the
+        // Open-Meteo cache. The client receives it as-is inside the envelope;
+        // the "provider" field signals which normaliser to apply on the client.
+        const metnoKey = `weather-metno:${latNum.toFixed(4)}:${lonNum.toFixed(4)}`;
+        void kvPut(env.CACHE_KV, metnoKey, metnoValidated.data, 3600);
+        return workerEnvelope(metnoValidated.data, "met.no", false, 1800);
+      }
+    }
+  } catch {
+    // met.no unreachable — fall through to final error
   }
-  // Write to KV for future stale fallback (24 h TTL)
-  void kvPut(env.CACHE_KV, kvKey, parsed.data, 86400);
-  return workerEnvelope(parsed.data, "open-meteo", false, 1800); // 30 min
+
+  return jsonResponse({ error: "All weather providers failed" }, 502);
 }
 
 export async function handleCurrency(env: Env): Promise<Response> {
