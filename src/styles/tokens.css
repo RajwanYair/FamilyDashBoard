@@ -74,6 +74,7 @@
     --grid-cols: 38fr 33fr 29fr;
     --grid-gap: 8px;
     --container-pad: 10px;
+    --card-min-height: 160px; /* minimum height for TV readability at 3 m distance */
 
     /* ── Animation Tokens (R1.9) ── */
     --duration-fast: 0.15s;

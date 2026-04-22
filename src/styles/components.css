@@ -10,7 +10,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  min-height: var(--card-min-height, 160px); /* TV readability at 3 m (Stream F.3) */
   border: var(--card-border);
   box-shadow: var(--shadow-md, var(--card-shadow));
   transition:
@@ -1699,3 +1699,38 @@ select.cfg-input {
     opacity: 0.4;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Stream F.3 — tile-grid utility + card BEM state aliases
+   ═══════════════════════════════════════════════════════
+   .tile-grid  — standalone alias for .card__grid
+                 (rule 25: all data in rectangular tiles)
+   .card--empty / .card--stale / .card--error
+                 — BEM modifier aliases mapping to the
+                   functional classes above. Use on the
+                   .card element to communicate state to
+                   assistive tech and CSS selectors.
+   ═══════════════════════════════════════════════════════ */
+
+/* Standalone tile-grid utility (use outside of .card__grid when convenient) */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--tile-min-width, 120px), 1fr));
+  gap: var(--tile-gap, 0.5em);
+}
+
+/* BEM state modifier aliases for the .card element */
+.card--empty {
+  min-height: var(--card-min-height, 160px);
+}
+
+.card--error {
+  border-color: color-mix(in sRGB, var(--negative) 40%, transparent);
+  min-height: var(--card-min-height, 160px);
+}
+
+.card--stale {
+  border-color: color-mix(in sRGB, var(--warning) 30%, transparent);
+}
+
+/* Enforce minimum card height on all cards for TV readability */
