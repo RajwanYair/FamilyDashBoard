@@ -5,6 +5,46 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [9.0.0] — 2026-04-22
+
+> **3179 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Major Release — CI Self-Sufficiency & Production Hardening
+
+**Breaking change**: All shared tooling configs (`tsconfig`, `eslint`, `vitest` base) are now
+vendored into `tooling/` inside this repository. CI no longer depends on the parent
+`MyScripts/node_modules/` or `MyScripts/tooling/` paths. Local dev workflow is unchanged.
+
+#### CI & Tooling
+
+- **`tooling/tsconfig/base-typescript.json`** + **`base-node.json`**: Vendored from
+  `MyScripts/tooling/tsconfig/` — all `tsconfig*.json` files now extend `./tooling/tsconfig/`
+  (was `../tooling/tsconfig/`)
+- **`tooling/eslint/web-ts-app.mjs`**: Vendored ESLint config factory; `eslint.config.mjs` now
+  imports from `./tooling/eslint/` (was `../tooling/eslint/`)
+- **`tooling/vitest/base.mjs`**: Vendored Vitest base; `vitest.config.ts` now imports from
+  `./tooling/vitest/` (was `../tooling/vitest/`)
+- **`scripts/build-sw.mjs`**: Resolved TypeScript from local `node_modules` first, with parent
+  monorepo fallback for local dev
+- **`.github/ci/install-tools.sh`**: Updated tool versions — vite@8.0.9, vitest@4.1.5,
+  eslint@10.2.1, typescript-eslint@8.59.0; added vendored tooling documentation
+- **`@eslint/js` version fix**: Pinned to `^10.0.1` (10.2.0 never published); eslint upgraded
+  to `^10.2.1` (current latest)
+
+#### GitHub Actions
+
+- **Node 20 matrix dropped**: `unit-tests` job now runs only on Node 22 (~40% CI time reduction)
+- **`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`**: Opt-in to Node 24 actions runtime in all
+  workflows (`ci.yml`, `deploy.yml`, `release.yml`) — eliminates Node.js 20 deprecation warnings
+- **ci.yml header**: Updated to v9 reference
+
+#### Tests
+
+- **`tests/unit/core/test-helpers.test.ts`**: Removed — meta-test of test helpers with zero
+  production coverage value (3179 tests after; coverage thresholds unchanged)
+
+---
+
 ## [8.9.0] — 2026-04-20
 
 > **3205 tests / 95 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
