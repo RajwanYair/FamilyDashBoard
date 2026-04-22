@@ -15,14 +15,18 @@
 
 import { jsonResponse, CORS_HEADERS } from "../utils/response";
 import type { Env, KVStore } from "../types";
+import { z } from "zod";
+
+/** Zod schema for a single error entry sent by the client. */
+const ErrorPayloadSchema = z.object({
+  ts: z.number().finite(),
+  message: z.string(),
+  source: z.string().optional(),
+  lineno: z.number().optional(),
+});
 
 /** Minimal shape of an error entry sent by the client. */
-interface ErrorPayload {
-  ts: number;
-  message: string;
-  source?: string;
-  lineno?: number;
-}
+type ErrorPayload = z.infer<typeof ErrorPayloadSchema>;
 
 const MAX_ERRORS_PER_REQUEST = 20;
 const MAX_MESSAGE_LENGTH = 500;
@@ -30,19 +34,6 @@ const MAX_MESSAGE_LENGTH = 500;
 const MAX_ERRORS_PER_DAY = 1000;
 /** KV TTL for persisted error entries and counters: 7 days. */
 const ERROR_TTL_SECONDS = 7 * 24 * 60 * 60;
-
-/** Validate and sanitize a single error entry. */
-function isValidEntry(e: unknown): e is ErrorPayload {
-  if (typeof e !== "object" || e === null) return false;
-  const entry = e as Record<string, unknown>;
-  return (
-    typeof entry["ts"] === "number" &&
-    isFinite(entry["ts"] as number) &&
-    typeof entry["message"] === "string" &&
-    (entry["source"] === undefined || typeof entry["source"] === "string") &&
-    (entry["lineno"] === undefined || typeof entry["lineno"] === "number")
-  );
-}
 
 /** Return today's date string in UTC (YYYY-MM-DD). */
 function utcDateKey(): string {
@@ -118,12 +109,13 @@ export async function handleErrors(request: Request, env?: Env): Promise<Respons
 
   const valid: ErrorPayload[] = [];
   for (const entry of body) {
-    if (isValidEntry(entry)) {
+    const result = ErrorPayloadSchema.safeParse(entry);
+    if (result.success) {
       valid.push({
-        ts: entry.ts,
-        message: entry.message.slice(0, MAX_MESSAGE_LENGTH),
-        source: entry.source,
-        lineno: entry.lineno,
+        ts: result.data.ts,
+        message: result.data.message.slice(0, MAX_MESSAGE_LENGTH),
+        source: result.data.source,
+        lineno: result.data.lineno,
       });
     }
   }
