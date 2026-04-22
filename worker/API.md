@@ -1,6 +1,6 @@
 # FamilyDashBoard Worker — API Reference
 
-> Worker version: v9.2.0
+> Worker version: v10.0.0
 > Base URL: `https://fdb.rajwanyair.workers.dev`
 > All responses include CORS headers (`Access-Control-Allow-Origin: *`).
 > Error format: `{ "ok": false, "code": "FDB-0xx", "message": "...", "status": N }`

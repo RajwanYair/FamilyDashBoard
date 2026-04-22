@@ -259,7 +259,7 @@ FamilyDashBoard/
 │   ├── types/              # TypeScript type definitions (api · config · card)
 │   └── public/             # Static assets (icon.svg, manifest.webmanifest)
 ├── tests/
-│   ├── unit/               # Vitest — 3143+ tests / 94 suites
+│   ├── unit/               # Vitest — 3193 tests / 94 suites
 │   └── integration/        # Integration-level tests
 ├── worker/                 # Cloudflare Worker (API proxy + normalization)
 │   └── src/routes/         # Per-provider route handlers
