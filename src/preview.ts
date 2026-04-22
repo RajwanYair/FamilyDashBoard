@@ -252,7 +252,14 @@ async function mountCard(id: string): Promise<void> {
     statusEl.textContent = `✅ ${id}`;
   } catch (err) {
     statusEl.textContent = `❌ ${String(err)}`;
-    console.error(`[preview] mountCard(${id}) failed:`, err);
+    // log to diagnostic overlay — no console in production
+    const w = window as unknown as Record<string, unknown>;
+    if (typeof w["diagLog"] === "function") {
+      (w["diagLog"] as (tag: string, data?: unknown) => void)(
+        `[preview] mountCard(${id}) failed:`,
+        err,
+      );
+    }
   }
 }
 

@@ -44,8 +44,7 @@ test.describe("FamilyDashBoard — Accessibility (axe-core WCAG 2.2 AA)", () => 
         const summary = [...critical, ...serious]
           .map((v) => `[${v.impact}] ${v.id}: ${v.description}`)
           .join("\n");
-        // eslint-disable-next-line no-console
-        console.error(`Accessibility violations (${mode}):\n${summary}`);
+        process.stderr.write(`Accessibility violations (${mode}):\n${summary}\n`);
       }
 
       expect(critical, `Critical a11y violations on ${mode} mode`).toHaveLength(0);
