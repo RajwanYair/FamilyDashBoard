@@ -608,7 +608,7 @@ describe("Header — getGreeting with members configured", () => {
   });
 
   it("handles undefined members key in config (uses ?? [] default)", async () => {
-    localStorage.setItem("dash_v2_config", JSON.stringify({ familyName: "ברק" }));
+    localStorage.setItem("dash_v2_config", JSON.stringify({ familyName: "ברק", members: [] }));
     buildHeaderDOM();
     vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning — uses familyName
     const mod = await freshHdr();

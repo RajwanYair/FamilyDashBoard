@@ -243,7 +243,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   hiddenStocks: [],
   customProxy: "",
   familyName: "",
-  members: [],
+  members: ["יאיר", "ענת", "נריה", "שילת", "אליאור", "טובה", "עמיחי", "בניהו", "שירה", "יהודה", "אמציה", "עלמה"],
   birthdays: [],
   countdownLabel: "",
   countdownDate: "",
