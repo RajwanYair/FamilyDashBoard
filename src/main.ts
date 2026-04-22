@@ -85,6 +85,7 @@ import {
   recordCardInitTime,
 } from "./core/perf";
 import { applyHardwareTier } from "./core/hardware";
+import { scheduleVitalsReport, flushVitalsReport } from "./core/vitals-reporter";
 
 // ── Version ──
 export const VERSION = __APP_VERSION__;
@@ -100,6 +101,12 @@ if (document.readyState === "loading") {
 }
 // Detect hardware tier and apply data-hw-tier to <html> for adaptive CSS
 applyHardwareTier();
+// Schedule Web Vitals report 30 s after boot (v11.0-OBS-1)
+scheduleVitalsReport();
+// Flush vitals on page hide so we capture them before unload
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") flushVitalsReport();
+});
 
 /**
  * Apply card size overrides from config to DOM elements.

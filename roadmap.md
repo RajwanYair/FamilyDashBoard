@@ -282,11 +282,11 @@ Exit: browser DevTools "Security" panel shows no warnings on production; Observa
 | Deliverable                                                                 | Status |
 | --------------------------------------------------------------------------- | ------ |
 | Cloudflare Web Analytics in `<head>` (cookie-less, privacy-preserving)      | [ ]    |
-| Web Vitals (CLS / LCP / INP) reported to `/api/errors` via same batcher     | [ ]    |
+| Web Vitals (CLS / LCP / INP) reported to `/api/errors` via same batcher     | [x]    |
 | Worker stores last 1000 error reports in KV with 7-day TTL                  | [ ]    |
 | Public (token-gated) `/api/errors/export` endpoint + `docs/error-viewer.md` | [ ]    |
 | `Ctrl+Shift+E` exports local diagnostic snapshot as JSON                    | [ ]    |
-| ADR-016: Error reporting contract + KV storage model                        | [ ]    |
+| ADR-016: Error reporting contract + KV storage model                        | [x]    |
 
 Exit: first error in production surfaces in the worker KV within 60 s; user can email a diagnostic JSON snapshot.
 
