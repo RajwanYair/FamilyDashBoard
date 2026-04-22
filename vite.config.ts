@@ -48,6 +48,22 @@ const injectSwVersion: Plugin = {
  *  2. Rewrite absolute /FamilyDashBoard/ paths → relative ./ so manifest,
  *     icon, and SW scope resolve correctly from a local directory.
  */
+/**
+ * V11-OBS-1: Inject Cloudflare Web Analytics beacon (cookie-less, privacy-preserving).
+ * Only injected when CF_ANALYTICS_TOKEN env var is set.
+ * The beacon adds `https://static.cloudflareinsights.com` to script-src CSP.
+ * Skipped for local file:// builds where the beacon has no value.
+ */
+const injectCfAnalytics: Plugin = {
+  name: "inject-cf-analytics",
+  transformIndexHtml(html: string): string {
+    const token = process.env["CF_ANALYTICS_TOKEN"];
+    if (!token || isLocalBuild) return html;
+    const snippet = `  <!-- V11-OBS-1: Cloudflare Web Analytics (cookie-less, privacy-preserving) -->\n  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${token}"}'></script>`;
+    return html.replace("</head>", `${snippet}\n</head>`);
+  },
+};
+
 const removeCrossOrigin: Plugin = {
   name: "remove-crossorigin",
   transformIndexHtml(html: string): string {
@@ -76,7 +92,7 @@ export default defineConfig(({ command }) => ({
   root: "src",
   base: "/FamilyDashBoard/",
   cacheDir: join(tempBase, ".vite"),
-  plugins: [removeCrossOrigin, injectSwVersion],
+  plugins: [removeCrossOrigin, injectCfAnalytics, injectSwVersion],
 
   // v11.0-PERF-1: Use Lightning CSS for faster, smaller CSS builds.
   // Targets modern evergreen browsers that support all dashboard CSS features.
