@@ -23,3 +23,4 @@
 | [ADR-017](ADR-017-lightning-css.md)                 | Lightning CSS Adoption                           | 2026-07-12 | Accepted |
 | [ADR-018](ADR-018-csp-coop-coep.md)                 | CSP + COOP/COEP Security Headers                 | 2026-07-12 | Accepted |
 | [ADR-019](ADR-019-video-card-csp.md)                | Video-Card CSP Strategy & Integration Mode       | 2026-07-01 | Accepted |
+| [ADR-020](ADR-020-idle-callback-deferred-init.md)   | Deferred Card Init via `requestIdleCallback`     | 2026-07-05 | Accepted |

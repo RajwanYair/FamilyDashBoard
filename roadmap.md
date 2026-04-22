@@ -566,7 +566,7 @@ interface VideoNewsConfig {
 - [ ] Lighthouse performance ≥ 93 with card enabled (budget: no more than 2 points below the baseline of 95)
 - [ ] No regression in any of the existing 11 cards' tests
 - [x] Docs: `docs/adding-a-card.md` updated with the video-card variant; new `docs/video-cards.md` covers CSP, channel schema, and how to add channel #5
-- [ ] ADR-019 "Video content card — provider integration modes and CSP implications" committed
+- [x] ADR-019 "Video content card — provider integration modes and CSP implications" committed
 
 #### Open Questions (to resolve in Research sprint)
 

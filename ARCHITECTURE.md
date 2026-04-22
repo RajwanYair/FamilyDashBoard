@@ -30,7 +30,7 @@ Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README
 ```text
 src/
 ├── index.html                  # App shell HTML (RTL, Hebrew)
-├── main.ts                     # Startup: safeLoad wrappers, Promise.allSettled, intervals
+├── main.ts                     # Startup: 3-tier priority init (HIGH/NORMAL/LOW via requestIdleCallback), intervals
 ├── types/
 │   ├── api.ts                  # API response shapes (weather, stocks, news…)
 │   ├── config.ts               # User config schema + defaults
