@@ -10,4 +10,5 @@ export const sharedVitestTestConfig = {
     maxForks: 4,
     testTimeout: 10000,
     hookTimeout: 10000,
+    restoreMocks: true,
 };
