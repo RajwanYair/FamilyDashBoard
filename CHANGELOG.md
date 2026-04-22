@@ -5,7 +5,76 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [9.1.0] — 2026-04-22
+## [9.2.0] — 2026-05-21
+
+> **3193 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
+
+### Sprint 9.2 — Worker KV Stale Fallback, CSS Utilities & Tooling Hardening
+
+#### Worker — KV Stale Fallback (Stream W.9)
+
+- **`worker/src/types.ts`** (new): Extracted `Env` interface from `index.ts` to avoid circular imports (ADR-015)
+- **`worker/src/utils/kv.ts`** (new): Shared `kvGetStale<T>(kv, key)` + `kvPut(kv, key, data, ttlSeconds)` helpers — non-fatal writes, stale flag on reads
+- **`worker/src/routes/feeds.ts`**: KV stale fallback added for `handleStocks` (24h TTL, key `stocks:SYMBOL`), `handleAlerts` (1h TTL, key `alerts:tzevaadom`), `handleCrypto` (24h TTL, key `crypto:bitcoin:${vs}`)
+- **`worker/src/index.ts`**: Router updated to pass `env` to all three stale-fallback handlers; re-exports `Env` for backward compat
+
+#### Shared Tooling Presets (Stream I)
+
+- **`tooling/vitest/happy-dom.mjs`** (new): DOM test preset (happy-dom environment, extended timeout)
+- **`tooling/vitest/node.mjs`** (new): Node.js test preset (no DOM environment)
+- **`tooling/eslint/node-ts-app.mjs`** (new): ESLint factory for Node.js / Cloudflare Worker TypeScript apps
+- **`tooling/eslint/js-browser-app.mjs`** (new): ESLint factory for JS-only browser apps
+- **`tooling/README.md`**: Full usage documentation, import templates, and split rules for shared vs. project-specific config
+
+#### CSS Design Tokens & Utilities (Stream F.3)
+
+- **`src/styles/tokens.css`**: Added `--card-min-height: 160px` in Grid Layout section (TV readability at 3m)
+- **`src/styles/components.css`**: `.card` base rule now applies `min-height: var(--card-min-height, 160px)` (merged, no selector duplication)
+- **`src/styles/components.css`**: Added `.tile-grid` standalone utility (`auto-fit minmax`, configurable via `--tile-min-width`)
+- **`src/styles/components.css`**: Added `.card--empty`, `.card--stale`, `.card--error` BEM modifier classes
+
+#### ADR Documents (Sprint 9.4)
+
+- **`docs/adr/ADR-013-kv-stale-cache.md`** (new): KV stale cache strategy — which routes, TTLs, stale provider names, non-fatal write contract
+- **`docs/adr/ADR-014-shared-tooling-presets.md`** (new): Shared tooling in `tooling/` rationale and usage patterns
+- **`docs/adr/ADR-015-env-type-isolation.md`** (new): `Env` in `types.ts` to prevent circular imports; re-export from `index.ts` for compat
+- **`docs/adr/README.md`**: Added rows for ADR-013/014/015
+
+#### Agent & Prompt Improvements (Stream I hardening)
+
+- **`AGENTS.md`**: Added `@quality-reviewer` to inventory; expanded prompts table (14 prompts); added `tests.instructions` + `typescript.instructions` rows
+- **`.github/agents/api-integrator.agent.md`**: Added "Worker KV Stale Pattern" section with ADR-013/015 references
+- **`.github/agents/dashboard-designer.agent.md`**: Added shared card state classes table, `.tile-grid` docs, `--card-min-height` token reference
+- **`.github/prompts/kv-stale-audit.prompt.md`** (new): 8-step audit prompt for KV stale fallback pattern
+
+#### Worker API Documentation (Sprint 9.8)
+
+- **`worker/API.md`**: Version → v9.2.0; added `/alerts`, `/sefaria/calendar`, `/sefaria/text`, `/crypto` route docs; added KV Stale Fallback table (routes, KV keys, TTLs, stale provider labels); expanded error codes (FDB-085–FDB-088)
+- **`worker/openapi.yaml`**: Version → 9.2.0; added `crypto` tag; added `WorkerEnvelope` schema component; updated `/api/stocks`, `/api/alerts`, `/api/crypto` descriptions with KV stale behavior note
+
+#### Test Helpers (Sprint 9.9)
+
+- **`tests/helpers/worker.ts`** (new): `makeKv(getImpl?, putImpl?)` and `makeWorkerEnv(kvOverrides?)` factory helpers for Worker unit tests
+- **`vitest.config.ts`**: Added `@tests/worker-helpers` alias → `tests/helpers/worker.ts`
+- **`tests/unit/worker/worker.test.ts`**: Refactored to import `makeKv`/`makeWorkerEnv` from helper (DRY); added 5 new edge-case tests (**3193 total / +5**)
+
+#### Service Worker Maintenance (Sprint 9.10)
+
+- **`sw.ts`** + **`sw.js`**: Header comments updated to v9.2.0; inline changelog lines for v9.1.0 and v9.2.0 added to `sw.js`
+- **`src/core/sw-constants.ts`**: Fixed stale v7.9 doc comment version → v9.2.0
+
+#### Footprint
+
+| Item                         | Before                  | After                       |
+| ---------------------------- | ----------------------- | --------------------------- |
+| Test count                   | 3179 / 94 suites        | 3193 / 94 suites (+14)      |
+| Worker KV stale routes       | 0                       | 3 (stocks/alerts/crypto)    |
+| Shared tooling preset files  | 2 (base.mjs + tsconfig) | 6 (+4 new presets)          |
+| ADR documents                | 12                      | 15 (+ADR-013/014/015)       |
+| Worker test helper files     | 0                       | 1 (tests/helpers/worker.ts) |
+| CSS BEM card state modifiers | 2 (skeleton/stale)      | 5 (+empty/stale/error)      |
+
+---
 
 > **3179 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
 
