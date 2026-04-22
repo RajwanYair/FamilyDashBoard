@@ -10,7 +10,7 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../utils/validation";
-import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema } from "../utils/schemas";
+import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema, AlertsSchema, SefariaCalendarSchema, SefariaTextSchema } from "../utils/schemas";
 import { kvGetStale, kvPut } from "../utils/kv";
 import { parseRss } from "../utils/rss-parser";
 import type { Env } from "../types";
@@ -168,9 +168,16 @@ export async function handleAlerts(env: Env): Promise<Response> {
     return jsonResponse({ error: `Upstream ${res.status}` }, 502);
   }
   const data: unknown = await res.json();
+  const validated = safeParse(AlertsSchema, data);
+  if (!validated.ok) {
+    // Log but don't block — fall back to raw upstream data so the client
+    // still gets something rather than a hard 502.
+    console.warn(`[alerts] Zod validation warning: ${validated.error}`);
+  }
+  const payload = validated.ok ? validated.data : data;
   // Write to KV for future stale fallback (1 h TTL — alerts are time-sensitive)
-  void kvPut(env.CACHE_KV, kvKey, data, 3600);
-  return workerEnvelope(data, "tzevaadom", false, 60); // 1 min
+  void kvPut(env.CACHE_KV, kvKey, payload, 3600);
+  return workerEnvelope(payload, "tzevaadom", false, 60); // 1 min
 }
 
 export async function handleCalendar(url: URL, env: Env): Promise<Response> {
@@ -226,8 +233,13 @@ export async function handleSefariaCalendar(env: Env): Promise<Response> {
     return jsonResponse({ error: `Upstream ${res.status}` }, 502);
   }
   const data: unknown = await res.json();
-  void kvPut(env.CACHE_KV, kvKey, data, 86400);
-  return new Response(JSON.stringify(data), {
+  const validated = safeParse(SefariaCalendarSchema, data);
+  if (!validated.ok) {
+    console.warn(`[sefaria:calendar] Zod validation warning: ${validated.error}`);
+  }
+  const payload = validated.ok ? validated.data : data;
+  void kvPut(env.CACHE_KV, kvKey, payload, 86400);
+  return new Response(JSON.stringify(payload), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -259,8 +271,13 @@ export async function handleSefariaText(url: URL, env: Env): Promise<Response> {
     return jsonResponse({ error: `Upstream ${res.status}` }, 502);
   }
   const data: unknown = await res.json();
-  void kvPut(env.CACHE_KV, kvKey, data, 86400);
-  return new Response(JSON.stringify(data), {
+  const validated = safeParse(SefariaTextSchema, data);
+  if (!validated.ok) {
+    console.warn(`[sefaria:text] Zod validation warning: ${validated.error}`);
+  }
+  const payload = validated.ok ? validated.data : data;
+  void kvPut(env.CACHE_KV, kvKey, payload, 86400);
+  return new Response(JSON.stringify(payload), {
     status: 200,
     headers: {
       "Content-Type": "application/json",

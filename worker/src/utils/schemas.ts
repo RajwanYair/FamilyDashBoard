@@ -152,6 +152,48 @@ export const CoinGeckoSchema = z
   })
   .passthrough();
 
+// ── Tzeva Adom (Red Alerts) ──────────────────────────────────────────────────
+
+export const AlertItemSchema = z
+  .object({
+    time: z.string(),
+    threat: z.string(),
+    cities: z.array(z.string()),
+  })
+  .passthrough();
+
+/**
+ * Tzeva Adom /alerts-history response — an array of alert objects.
+ * Unknown extra fields on each item are allowed via .passthrough().
+ */
+export const AlertsSchema = z.array(AlertItemSchema);
+
+// ── Sefaria Calendar ─────────────────────────────────────────────────────────
+
+export const SefariaCalendarItemSchema = z
+  .object({
+    title: z.object({ en: z.string(), he: z.string().optional() }).passthrough(),
+    displayValue: z.object({ en: z.string(), he: z.string().optional() }).passthrough(),
+  })
+  .passthrough();
+
+export const SefariaCalendarSchema = z
+  .object({
+    calendar_items: z.array(SefariaCalendarItemSchema),
+  })
+  .passthrough();
+
+// ── Sefaria Text ─────────────────────────────────────────────────────────────
+
+export const SefariaTextSchema = z
+  .object({
+    ref: z.string(),
+    versions: z.array(z.object({ text: z.string().optional() }).passthrough()).optional(),
+    he: z.union([z.string(), z.array(z.unknown())]).optional(),
+    text: z.union([z.string(), z.array(z.unknown())]).optional(),
+  })
+  .passthrough();
+
 // ── Helper ────────────────────────────────────────────────────────────────────
 
 /** Parse `data` against `schema`. Returns `{ ok: true, data }` or `{ ok: false, error }`. */
