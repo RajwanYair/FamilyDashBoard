@@ -5,6 +5,61 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [9.3.0] — 2026-04-22
+
+> **3193 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
+> Issues: [#84](https://github.com/RajwanYair/FamilyDashBoard/issues/84) · [#85](https://github.com/RajwanYair/FamilyDashBoard/issues/85) · [#86](https://github.com/RajwanYair/FamilyDashBoard/issues/86)
+
+### Sprint 9.3.0 — Third Consolidation & Quality Sprint
+
+Third pass of the standard 20-task external audit sprint. 14 tasks were already fully
+satisfied by v9.2.0 infrastructure; 6 required targeted improvements.
+
+#### Documentation Modernization (Tasks 13, 19, 20 — Closes [#84](https://github.com/RajwanYair/FamilyDashBoard/issues/84))
+
+- **`SECURITY.md`**: Supported versions table updated — 9.x now active, 8.x end-of-life
+- **`docs/data-sources.md`**: "Last updated" header refreshed from v8.9.0 → v9.3.0
+- **`docs/card-architecture-audit.md`**: Header version (v8.5.0 → v9.3.0) and date updated
+
+#### Mermaid Diagrams for docs/ (Task 17 — Closes [#85](https://github.com/RajwanYair/FamilyDashBoard/issues/85))
+
+- **`docs/adding-a-card.md`**: Added Mermaid flowchart showing the 10-step card creation
+  flow (Plan → Create → Write Loader → HTML Slot → Register → CSS → Config → Tests → Docs → Validate)
+- **`docs/data-sources.md`**: Replaced ASCII diagram with Mermaid sequence diagram showing
+  the full worker data flow (Card → Cache HIT path + Cache MISS → Worker → KV stale → API → normalize → cSetAsync)
+
+#### Version Bump (Tasks 15, 16 — Closes [#86](https://github.com/RajwanYair/FamilyDashBoard/issues/86))
+
+- `package.json`: 9.2.0 → 9.3.0
+- `sw.ts` + `sw.js`: version comment headers
+- `src/core/sw-constants.ts`, `CLAUDE.md`, `.github/copilot-instructions.md`,
+  `.github/instructions/workspace.instructions.md`, `ARCHITECTURE.md`, `README.md` badges
+- SVG assets: `architecture.svg`, `banner.svg`, `preview.svg`, `data-sources.svg`, `roadmap.svg`
+
+#### Tasks Already Satisfied at v9.2.0 (1–12, 14, 18)
+
+| #   | Task                             | Status                                                                   |
+| --- | -------------------------------- | ------------------------------------------------------------------------ |
+| 1   | Inventory & delete non-web paths | ✅ Web-only; `.gitignore` covers diagnostic artifacts                    |
+| 2   | Remove Python scripts/steps      | ✅ No Python in project                                                  |
+| 3   | Architecture in ARCHITECTURE.md  | ✅ v9.3.0 updated; Mermaid data flow diagram exists                      |
+| 4   | Standardize build system         | ✅ npm + Vite 8; parent `MyScripts/` monorepo pattern                    |
+| 5   | Clean project structure          | ✅ `src/`, `tests/`, `docs/`, `.github/`, `worker/`, `scripts/`          |
+| 6   | Deduplicate utilities            | ✅ Single implementations in `src/core/`                                 |
+| 7   | Warnings as errors               | ✅ `--max-warnings 0`, TS strict, CI gate                                |
+| 8   | Fix all warnings                 | ✅ 0 ESLint/TS/markdownlint/Prettier errors                              |
+| 9   | Formatting and linting standards | ✅ Prettier + ESLint flat config + Stylelint                             |
+| 10  | GitHub Actions CI                | ✅ typecheck → lint → prettier → test → security → build → bundle        |
+| 11  | GitHub Actions Release workflow  | ✅ dist.zip + checksums + SLSA attestation on `v*` tags                  |
+| 12  | .vscode workspace standards      | ✅ settings.json + extensions.json + tasks.json + launch.json            |
+| 14  | Dependabot                       | ✅ github-actions (weekly) + npm `/` (monthly) + npm `/worker` (monthly) |
+| 18  | Remove redundant configs         | ✅ Each config file serves a distinct tool                               |
+
+**Footprint delta**: 0 files deleted · 2 docs enhanced with Mermaid diagrams ·
+5 SVG assets + 8 text files version-bumped.
+
+---
+
 ## [9.2.0] — 2026-04-22
 
 > **3193 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier

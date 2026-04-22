@@ -3,6 +3,25 @@
 This guide walks through every step needed to add a fully functional card to the
 dashboard. Follow the steps in order — each builds on the previous.
 
+## Card Creation Flow
+
+```mermaid
+flowchart TD
+    A["1. Plan\n(ID · data source · refresh interval · tile layout)"] --> B
+    B["2. Create folder\nsrc/cards/my-card/index.ts"] --> C
+    C["3. Write loader\ncGet → fetch → cSet · safeLoad() guard"] --> D
+    D["4. Add HTML slot\n<fdb-card data-card-id>"] --> E
+    E["5. Register card\nregisterCard() in card-registry.ts"] --> F
+    F["6. Add CSS\n@layer components · tile-grid"] --> G
+    G["7. Config support\n(optional) DashboardConfig + migration"] --> H
+    H["8. Write tests\ntests/unit/cards/my-card/"] --> I
+    I["9. Update docs\nREADME · CHANGELOG · ADR if needed"] --> J
+    J["10. Validate\nnpm run check · 0 errors · 0 warnings"]
+
+    style A fill:#1e3a8a,color:#93c5fd
+    style J fill:#065f46,color:#6ee7b7
+```
+
 ---
 
 ## 1. Plan the Card

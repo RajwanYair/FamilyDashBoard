@@ -1,6 +1,6 @@
 # Data Sources
 
-> Last updated: v8.9.0
+> Last updated: v9.3.0
 
 This document describes every external data source used by FamilyDashBoard, its
 caching strategy, worker route, and known failure modes.
@@ -13,12 +13,35 @@ All production data flows through the Cloudflare Worker at
 `https://fdb.rajwanyair.workers.dev`. The worker validates upstream responses
 with Zod schemas and normalises them before returning them to the client.
 
-```text
-Client Card                     Cloudflare Worker               Upstream API
-───────────                     ─────────────────               ────────────
-fetchJSONWithWorker(url)   →    /api/<route>             →      upstream.example.com
-                           ←    Zod-validated JSON       ←      raw response
-cSetAsync(key, data)
+```mermaid
+sequenceDiagram
+    participant Card as Card (src/cards/)
+    participant Cache as Cache (L1–L3)
+    participant Worker as Cloudflare Worker
+    participant KV as Cloudflare KV
+    participant API as Upstream API
+
+    Card->>Cache: cGet(key, TTL)
+    alt Cache HIT
+        Cache-->>Card: cached data (render immediately)
+    else Cache MISS
+        Card->>Worker: fetchJSONWithWorker(/api/route)
+        Worker->>KV: kvGetStale(key)
+        alt KV stale available
+            KV-->>Worker: stale JSON (fallback)
+        end
+        Worker->>API: HTTPS request
+        alt API responds OK
+            API-->>Worker: raw JSON
+            Worker->>Worker: Zod validate + normalize
+            Worker->>KV: kvPut(key, normalized)
+            Worker-->>Card: normalized JSON
+        else API fails / timeout
+            Worker-->>Card: stale KV data (or 502)
+        end
+        Card->>Cache: cSetAsync(key, data)
+        Card->>Card: render()
+    end
 ```
 
 Fallback chain (dev / file:// only — `__USE_PROXIES__=true`):

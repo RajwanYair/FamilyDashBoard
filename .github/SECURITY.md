@@ -4,7 +4,8 @@
 
 | Version                  | Supported      |
 | ------------------------ | -------------- |
-| 8.x (current)            | ✅ Active      |
+| 9.x (current)            | ✅ Active      |
+| 8.x                      | ❌ End of life |
 | 7.x                      | ❌ End of life |
 | 6.x                      | ❌ End of life |
 | 5.x (BestDashBoard.html) | ❌ End of life |
