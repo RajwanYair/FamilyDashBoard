@@ -1,7 +1,7 @@
 # FamilyDashBoard Worker — API Reference
 
-> Worker version: v7.17.0
-> Base URL: `https://familydashboard.ryair.workers.dev`
+> Worker version: v9.2.0
+> Base URL: `https://fdb.rajwanyair.workers.dev`
 > All responses include CORS headers (`Access-Control-Allow-Origin: *`).
 > Error format: `{ "ok": false, "code": "FDB-0xx", "message": "...", "status": N }`
 
@@ -83,6 +83,7 @@ Proxy to [Yahoo Finance Chart API](https://finance.yahoo.com/) for a single symb
 | `symbol`  | ✅       | Ticker symbol (e.g. `AAPL`, `^GSPC`). Max 10 chars, alphanumeric + `.^-` |
 
 **Cache TTL:** 5 minutes
+**KV stale fallback:** Yes — serves last cached value with `stale: true` when Yahoo is unreachable (24 h TTL in KV)
 
 **Example:** `/stocks?symbol=AAPL`
 
@@ -106,6 +107,30 @@ Proxy to an RSS/Atom feed URL. Origin must be on the permitted allowlist.
 
 ---
 
+### `GET /alerts`
+
+Proxy to [tzevaadom.co.il](https://www.tzevaadom.co.il/) rocket alert history (IDF Home Front Command data).
+
+**Query Parameters:** none
+
+**Cache TTL:** 1 minute (real-time data)
+**KV stale fallback:** Yes — serves last cached alerts with `stale: true` when upstream fails (1 h TTL in KV)
+
+**Response envelope (via `workerEnvelope`):**
+
+```json
+{
+  "data": [ ...alert objects ],
+  "provider": "tzevaadom",
+  "stale": false,
+  "ts": 1720000000
+}
+```
+
+**Example:** `/alerts`
+
+---
+
 ### `GET /calendar`
 
 Proxy to a Google Calendar or CalDAV feed URL. Origin must be on the calendar allowlist.
@@ -120,6 +145,52 @@ Proxy to a Google Calendar or CalDAV feed URL. Origin must be on the calendar al
 
 ---
 
+### `GET /sefaria/calendar`
+
+Proxy to the [Sefaria](https://www.sefaria.org/) daily learning calendar (Daf Yomi, Parasha, etc.).
+
+**Query Parameters:** none
+
+**Cache TTL:** 6 hours
+
+**Example:** `/sefaria/calendar`
+
+---
+
+### `GET /sefaria/text`
+
+Proxy to a Sefaria text endpoint.
+
+**Query Parameters:**
+
+| Parameter | Required | Description                              |
+| --------- | -------- | ---------------------------------------- |
+| `ref`     | ✅       | Sefaria text reference (e.g. `Psalms.1`) |
+
+**Cache TTL:** 24 hours
+
+**Example:** `/sefaria/text?ref=Psalms.1`
+
+---
+
+### `GET /crypto`
+
+Proxy to [CoinGecko](https://www.coingecko.com/) simple price API. Only `bitcoin` is supported.
+
+**Query Parameters:**
+
+| Parameter       | Required | Description                                     |
+| --------------- | -------- | ----------------------------------------------- |
+| `ids`           | ✅       | Must be `bitcoin`                               |
+| `vs_currencies` | ❌       | Comma-separated currency codes (default: `usd`) |
+
+**Cache TTL:** 5 minutes
+**KV stale fallback:** Yes — serves last cached price with `stale: true` when CoinGecko is unreachable (24 h TTL in KV)
+
+**Example:** `/crypto?ids=bitcoin&vs_currencies=usd,ils`
+
+---
+
 ## Error Codes
 
 | Code    | HTTP Status | Meaning                                              |
@@ -130,9 +201,31 @@ Proxy to a Google Calendar or CalDAV feed URL. Origin must be on the calendar al
 | FDB-073 | 500         | Internal worker error (unexpected)                   |
 | FDB-080 | 400         | Missing or invalid `lat` / `lon` parameters          |
 | FDB-081 | 400         | Missing or invalid `geonameid` parameter             |
-| FDB-082 | 400         | Missing or invalid `symbol` parameter                |
+| FDB-082 | 400         | Missing, invalid, or unsupported `symbol` parameter  |
 | FDB-083 | 400         | Missing, invalid, or non-allowlisted `url` parameter |
 | FDB-084 | 400         | Missing or invalid `year` parameter                  |
+| FDB-085 | 400         | `ids` parameter must be `bitcoin`                    |
+| FDB-086 | 400         | Missing `ref` parameter for Sefaria text             |
+| FDB-087 | 403         | News feed origin not on allowlist                    |
+| FDB-088 | 403         | Calendar origin not on allowlist                     |
+
+---
+
+## KV Stale Fallback
+
+Several routes serve a cached copy from Cloudflare KV when the upstream API is unreachable.
+The response envelope includes `"stale": true` and the provider field is suffixed with `-kv-stale`.
+
+| Route       | KV key pattern         | KV TTL | Stale provider label  |
+| ----------- | ---------------------- | ------ | --------------------- |
+| `/stocks`   | `stocks:SYMBOL`        | 24 h   | `yahoo-kv-stale`      |
+| `/alerts`   | `alerts:tzevaadom`     | 1 h    | `tzevaadom-kv-stale`  |
+| `/crypto`   | `crypto:bitcoin:CURRS` | 24 h   | `coingecko-kv-stale`  |
+| `/weather`  | `weather:LAT:LON`      | 30 min | `open-meteo-kv-stale` |
+| `/currency` | `currency:usd`         | 1 h    | `er-api-kv-stale`     |
+
+Clients detect stale responses via the `stale` field in the `workerEnvelope` and render a
+stale-data badge in the card header. See [ADR-013](../docs/adr/ADR-013-kv-stale-cache.md).
 
 ---
 

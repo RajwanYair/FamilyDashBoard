@@ -5,7 +5,7 @@ info:
     Cloudflare Worker API proxy for the FamilyDashBoard dashboard.
     All routes enforce CORS (any origin), per-IP rate limiting (120 req/min),
     and SSRF allowlists on URL parameters.
-  version: "8.7.0"
+  version: "9.2.0"
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard
@@ -27,6 +27,8 @@ tags:
     description: RSS news feed proxy
   - name: alerts
     description: Israeli civil-defense alerts (Tzeva Adom)
+  - name: crypto
+    description: Cryptocurrency price data from CoinGecko
   - name: sefaria
     description: Jewish text data from Sefaria.org
 
@@ -102,7 +104,10 @@ paths:
     get:
       tags: [finance]
       summary: Stock quote for a single ticker
-      description: Proxies Yahoo Finance v8 chart endpoint. Cached 5 min.
+      description: |
+        Proxies Yahoo Finance v8 chart endpoint. Cached 5 min.
+        On upstream failure, returns last KV-cached value with `stale: true`
+        (KV TTL: 24 h, provider: `yahoo-kv-stale`). See ADR-013.
       operationId: getStock
       parameters:
         - name: sym
@@ -249,7 +254,10 @@ paths:
     get:
       tags: [alerts]
       summary: Tzeva Adom (Red Alert) history
-      description: Proxies api.tzevaadom.co.il. Cached 1 min.
+      description: |
+        Proxies api.tzevaadom.co.il. Cached 1 min.
+        On upstream failure, returns last KV-cached value with `stale: true`
+        (KV TTL: 1 h, provider: `tzevaadom-kv-stale`). See ADR-013.
       operationId: getAlerts
       responses:
         "200":
@@ -296,9 +304,13 @@ paths:
 
   /api/crypto:
     get:
-      tags: [data]
+      tags: [crypto]
       summary: CoinGecko Bitcoin price (validated proxy)
-      description: Proxies the CoinGecko simple/price endpoint for Bitcoin USD. Validates response schema and returns 502 on mismatch.
+      description: |
+        Proxies the CoinGecko simple/price endpoint for Bitcoin USD.
+        Validates response schema and returns 502 on mismatch.
+        On upstream failure, returns last KV-cached value with `stale: true`
+        (KV TTL: 24 h, provider: `coingecko-kv-stale`). See ADR-013.
       operationId: getCrypto
       parameters:
         - name: ids
@@ -410,6 +422,29 @@ components:
         param:
           type: string
           example: lat
+    WorkerEnvelope:
+      type: object
+      description: |
+        Standard wrapper returned by routes that support KV stale fallback.
+        When `stale` is `true`, data was served from Cloudflare KV because
+        the upstream API was unreachable (see ADR-013).
+      required: [data, provider, stale, ts]
+      properties:
+        data:
+          description: The actual payload (route-specific shape)
+        provider:
+          type: string
+          description: |
+            Data source identifier. Suffixed with `-kv-stale` when served from KV.
+          example: yahoo-kv-stale
+        stale:
+          type: boolean
+          description: True when data was served from KV stale cache
+          example: false
+        ts:
+          type: integer
+          description: Unix timestamp (seconds) when data was fetched
+          example: 1720000000
 
   responses:
     ValidationError:
