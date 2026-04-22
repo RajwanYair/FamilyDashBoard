@@ -38,12 +38,9 @@ import {
   MAX_REQUESTS_PER_WINDOW,
 } from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
+import type { Env } from "./types";
 
-export interface Env {
-  ENVIRONMENT: string;
-  /** KV namespace for stale-fallback cache (Stream W.2). */
-  CACHE_KV: KVNamespace;
-}
+export type { Env };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -67,13 +64,13 @@ export default {
       else if (path === "/api/currency") response = await handleCurrency(env);
       else if (path === "/api/hebcal") response = await handleHebcal(url, env);
       else if (path === "/api/hebcal/holidays") response = await handleHebcalHolidays(url, env);
-      else if (path === "/api/stocks") response = await handleStocks(url);
+      else if (path === "/api/stocks") response = await handleStocks(url, env);
       else if (path === "/api/news") response = await handleNews(url);
-      else if (path === "/api/alerts") response = await handleAlerts();
+      else if (path === "/api/alerts") response = await handleAlerts(env);
       else if (path === "/api/calendar") response = await handleCalendar(url);
       else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar();
       else if (path === "/api/sefaria/text") response = await handleSefariaText(url);
-      else if (path === "/api/crypto") response = await handleCrypto(url);
+      else if (path === "/api/crypto") response = await handleCrypto(url, env);
       else if (path === "/api/errors") response = await handleErrors(request);
       else response = jsonResponse({ error: "Not found" }, 404);
     } catch {

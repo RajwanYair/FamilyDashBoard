@@ -659,17 +659,32 @@ describe("Worker — handleAlerts route", () => {
         headers: { "Content-Type": "application/json" },
       }),
     );
-    const res = await handleAlerts();
+    const res = await handleAlerts(mockEnv);
     expect(res.status).toBe(200);
     const body = (await res.json()) as { provider: string; data: unknown[] };
     expect(body.provider).toBe("tzevaadom");
     expect(Array.isArray(body.data)).toBe(true);
   });
 
-  it("returns 502 when upstream fails", async () => {
+  it("returns 502 when upstream fails and no KV stale", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
-    const res = await handleAlerts();
+    const res = await handleAlerts(mockEnv);
     expect(res.status).toBe(502);
+  });
+
+  it("returns stale KV envelope when upstream fails and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
+    const staleData = [{ id: "a1", area: "Tel Aviv" }];
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+    };
+    const res = await handleAlerts(envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean };
+    expect(body.provider).toBe("tzevaadom-kv-stale");
+    expect(body.stale).toBe(true);
   });
 });
 
@@ -884,7 +899,7 @@ describe("Worker — handleStocks route", () => {
       }),
     );
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
-    const res = await handleStocks(url);
+    const res = await handleStocks(url, mockEnv);
     expect(res.status).toBe(200);
     const body = (await res.json()) as typeof VALID_STOCKS;
     expect(body.chart.result[0]?.meta.symbol).toBe("AAPL");
@@ -892,18 +907,18 @@ describe("Worker — handleStocks route", () => {
 
   it("returns 400 for missing sym param", async () => {
     const url = new URL("https://worker.example.com/api/stocks");
-    const res = await handleStocks(url);
+    const res = await handleStocks(url, mockEnv);
     expect(res.status).toBe(400);
   });
 
-  it("returns 502 when upstream returns non-ok status", async () => {
+  it("returns 502 when upstream returns non-ok status and no KV stale", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 503 }));
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
-    const res = await handleStocks(url);
+    const res = await handleStocks(url, mockEnv);
     expect(res.status).toBe(502);
   });
 
-  it("returns 502 when upstream data fails Zod schema validation", async () => {
+  it("returns 502 when upstream data fails Zod schema validation and no KV stale", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ chart: { result: [], error: null } }), {
         status: 200,
@@ -911,10 +926,25 @@ describe("Worker — handleStocks route", () => {
       }),
     );
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
-    const res = await handleStocks(url);
+    const res = await handleStocks(url, mockEnv);
     expect(res.status).toBe(502);
     const body = (await res.json()) as { error: string };
     expect(body.error).toContain("schema invalid");
+  });
+
+  it("returns stale KV envelope when upstream fails and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 503 }));
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(VALID_STOCKS));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+    };
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url, envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean };
+    expect(body.provider).toBe("yahoo-kv-stale");
+    expect(body.stale).toBe(true);
   });
 });
 
@@ -967,7 +997,7 @@ describe("Worker — handleCrypto route", () => {
       }),
     );
     const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin&vs_currencies=usd");
-    const res = await handleCrypto(url);
+    const res = await handleCrypto(url, mockEnv);
     expect(res.status).toBe(200);
     const body = (await res.json()) as typeof VALID_CRYPTO;
     expect(body.bitcoin.usd).toBe(65000);
@@ -975,20 +1005,20 @@ describe("Worker — handleCrypto route", () => {
 
   it("returns 400 for non-bitcoin ids", async () => {
     const url = new URL("https://worker.example.com/api/crypto?ids=ethereum");
-    const res = await handleCrypto(url);
+    const res = await handleCrypto(url, mockEnv);
     expect(res.status).toBe(400);
     const body = (await res.json()) as { error: string };
     expect(body.error).toContain("bitcoin");
   });
 
-  it("returns 502 when upstream returns non-ok status", async () => {
+  it("returns 502 when upstream returns non-ok status and no KV stale", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("rate limited", { status: 429 }));
     const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
-    const res = await handleCrypto(url);
+    const res = await handleCrypto(url, mockEnv);
     expect(res.status).toBe(502);
   });
 
-  it("returns 502 when upstream data fails Zod schema validation", async () => {
+  it("returns 502 when upstream data fails Zod schema validation and no KV stale", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ ethereum: { usd: 3000 } }), {
         status: 200,
@@ -996,10 +1026,25 @@ describe("Worker — handleCrypto route", () => {
       }),
     );
     const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
-    const res = await handleCrypto(url);
+    const res = await handleCrypto(url, mockEnv);
     expect(res.status).toBe(502);
     const body = (await res.json()) as { error: string };
     expect(body.error).toContain("schema invalid");
+  });
+
+  it("returns stale KV envelope when upstream fails and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("rate limited", { status: 429 }));
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(VALID_CRYPTO));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+    };
+    const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
+    const res = await handleCrypto(url, envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean };
+    expect(body.provider).toBe("coingecko-kv-stale");
+    expect(body.stale).toBe(true);
   });
 });
 
@@ -1143,5 +1188,68 @@ describe("Worker — handleNews route", () => {
     const url = new URL("https://worker.example.com/api/news");
     const res = await handleNews(url);
     expect(res.status).toBe(400);
+  });
+});
+
+// ── Worker — KV cache utilities (Stream W.9) ──────────────────────────────────
+
+import { kvGetStale, kvPut } from "../../../worker/src/utils/kv";
+
+function makeKv(
+  getImpl: () => Promise<string | null> = () => Promise.resolve(null),
+  putImpl: () => Promise<void> = () => Promise.resolve(),
+): KVNamespace {
+  return {
+    get: getImpl,
+    put: putImpl,
+    delete: async () => undefined,
+    list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
+    getWithMetadata: async () => ({ value: null, metadata: null }),
+  } as unknown as KVNamespace;
+}
+
+describe("KV cache utilities — kvGetStale", () => {
+  it("returns null when key is absent", async () => {
+    const kv = makeKv(() => Promise.resolve(null));
+    const result = await kvGetStale(kv, "missing:key");
+    expect(result).toBeNull();
+  });
+
+  it("returns parsed data with _stale:true when key exists", async () => {
+    const data = { rates: { USD: 0.27 } };
+    const kv = makeKv(() => Promise.resolve(JSON.stringify(data)));
+    const result = await kvGetStale<{ rates: Record<string, number> }>(kv, "currency:ILS");
+    expect(result).not.toBeNull();
+    expect(result?._stale).toBe(true);
+    expect(result?.rates.USD).toBe(0.27);
+  });
+
+  it("returns null when stored value is invalid JSON", async () => {
+    const kv = makeKv(() => Promise.resolve("not-json{{"));
+    const result = await kvGetStale(kv, "bad:key");
+    expect(result).toBeNull();
+  });
+
+  it("returns null when KV.get throws", async () => {
+    const kv = makeKv(() => Promise.reject(new Error("KV unavailable")));
+    const result = await kvGetStale(kv, "error:key");
+    expect(result).toBeNull();
+  });
+});
+
+describe("KV cache utilities — kvPut", () => {
+  it("serializes data to JSON and calls kv.put", async () => {
+    const putSpy = vi.fn().mockResolvedValue(undefined);
+    const kv = makeKv(undefined, putSpy);
+    const data = { rates: { USD: 0.27 } };
+    await kvPut(kv, "currency:ILS", data, 3600);
+    expect(putSpy).toHaveBeenCalledWith("currency:ILS", JSON.stringify(data), {
+      expirationTtl: 3600,
+    });
+  });
+
+  it("does not throw when kv.put rejects", async () => {
+    const kv = makeKv(undefined, () => Promise.reject(new Error("KV write failed")));
+    await expect(kvPut(kv, "key", {}, 60)).resolves.not.toThrow();
   });
 });

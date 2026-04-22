@@ -14,38 +14,8 @@ import {
   HebcalHolidaysSchema,
   safeParse,
 } from "../utils/schemas";
-import type { Env } from "../index";
-
-// ── KV stale-fallback helpers (Stream W.2) ────────────────────────────────
-
-/**
- * Try to read a cached value from KV.
- * Returns the parsed object with `_stale: true` injected, or null if absent.
- */
-async function kvGetStale<T>(kv: KVNamespace, key: string): Promise<(T & { _stale: true }) | null> {
-  try {
-    const raw = await kv.get(key);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as T;
-    return { ...parsed, _stale: true };
-  } catch {
-    return null;
-  }
-}
-
-/** Write a successful upstream response to KV for future stale fallback. */
-async function kvPut(
-  kv: KVNamespace,
-  key: string,
-  data: unknown,
-  ttlSeconds: number,
-): Promise<void> {
-  try {
-    await kv.put(key, JSON.stringify(data), { expirationTtl: ttlSeconds });
-  } catch {
-    // Non-fatal — KV write failures should not break the response.
-  }
-}
+import { kvGetStale, kvPut } from "../utils/kv";
+import type { Env } from "../types";
 
 export async function handleWeather(url: URL, env: Env): Promise<Response> {
   let latNum: number, lonNum: number;

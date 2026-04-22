@@ -7,25 +7,36 @@ import {
   requireHttpsUrl,
 } from "../utils/validation";
 import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema } from "../utils/schemas";
+import { kvGetStale, kvPut } from "../utils/kv";
+import type { Env } from "../types";
 
-export async function handleStocks(url: URL): Promise<Response> {
+export async function handleStocks(url: URL, env: Env): Promise<Response> {
   let sym: string;
   try {
     sym = requireSymbol(url);
   } catch (err) {
     return validationErrorResponse(err as ValidationError);
   }
+  const kvKey = `stocks:${sym.toUpperCase()}`;
   const encoded = encodeURIComponent(sym);
   const upstream = await fetch(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1d&range=1d`,
     { headers: { "User-Agent": "FamilyDashBoard/6.0" } },
   );
-  if (!upstream.ok) return jsonResponse({ error: `Upstream ${upstream.status}` }, 502);
+  if (!upstream.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "yahoo-kv-stale", true, 60);
+    return jsonResponse({ error: `Upstream ${upstream.status}` }, 502);
+  }
   const data: unknown = await upstream.json();
   const validated = safeParse(StocksChartSchema, data);
   if (!validated.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "yahoo-kv-stale", true, 60);
     return jsonResponse({ error: "Upstream stocks schema invalid", detail: validated.error }, 502);
   }
+  // Write to KV for future stale fallback (24 h TTL)
+  void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -72,15 +83,22 @@ export async function handleNews(url: URL): Promise<Response> {
   });
 }
 
-export async function handleAlerts(): Promise<Response> {
+export async function handleAlerts(env: Env): Promise<Response> {
+  const kvKey = "alerts:tzevaadom";
   const res = await fetch("https://api.tzevaadom.co.il/alerts-history", {
     headers: {
       "User-Agent": "FamilyDashBoard/6.0",
       Accept: "application/json",
     },
   });
-  if (!res.ok) return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  if (!res.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "tzevaadom-kv-stale", true, 60);
+    return jsonResponse({ error: `Upstream ${res.status}` }, 502);
+  }
   const data: unknown = await res.json();
+  // Write to KV for future stale fallback (1 h TTL — alerts are time-sensitive)
+  void kvPut(env.CACHE_KV, kvKey, data, 3600);
   return workerEnvelope(data, "tzevaadom", false, 60); // 1 min
 }
 
@@ -139,7 +157,7 @@ export async function handleSefariaText(url: URL): Promise<Response> {
  * GET /api/crypto?ids=bitcoin&vs_currencies=usd
  * Returns CoinGecko simple/price JSON, validated with CoinGeckoSchema.
  */
-export async function handleCrypto(url: URL): Promise<Response> {
+export async function handleCrypto(url: URL, env: Env): Promise<Response> {
   const ids = url.searchParams.get("ids") ?? "bitcoin";
   const vsCurrencies = url.searchParams.get("vs_currencies") ?? "usd";
 
@@ -148,17 +166,26 @@ export async function handleCrypto(url: URL): Promise<Response> {
     return jsonResponse({ error: "Only bitcoin is supported", param: "ids" }, 400);
   }
 
+  const kvKey = `crypto:bitcoin:${vsCurrencies}`;
   const upstream = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(ids)}&vs_currencies=${encodeURIComponent(vsCurrencies)}&include_24hr_change=true`,
     { headers: { "User-Agent": "FamilyDashBoard/8.0", Accept: "application/json" } },
   );
-  if (!upstream.ok) return jsonResponse({ error: `Upstream ${upstream.status}` }, 502);
+  if (!upstream.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "coingecko-kv-stale", true, 60);
+    return jsonResponse({ error: `Upstream ${upstream.status}` }, 502);
+  }
 
   const data: unknown = await upstream.json();
   const validated = safeParse(CoinGeckoSchema, data);
   if (!validated.ok) {
+    const stale = await kvGetStale(env.CACHE_KV, kvKey);
+    if (stale) return workerEnvelope(stale, "coingecko-kv-stale", true, 60);
     return jsonResponse({ error: "Upstream crypto schema invalid", detail: validated.error }, 502);
   }
+  // Write to KV for future stale fallback (24 h TTL)
+  void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
