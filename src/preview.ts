@@ -429,7 +429,41 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
   }
 });
 
+// ── Diag panel resize ──────────────────────────────────────────────────────
+function initDiagResize(): void {
+  const handle = document.getElementById("preview-diag-resize") as HTMLElement;
+  const panel = document.getElementById("preview-diag-panel") as HTMLElement;
+  if (!handle || !panel) return;
+
+  let _startX = 0;
+  let _startW = 0;
+
+  handle.addEventListener("mousedown", (e: MouseEvent) => {
+    e.preventDefault();
+    _startX = e.clientX;
+    _startW = panel.offsetWidth;
+    handle.classList.add("dragging");
+
+    const onMove = (ev: MouseEvent): void => {
+      // Panel is on the right side; dragging left (smaller clientX) = wider panel.
+      const delta = _startX - ev.clientX;
+      const next = Math.min(720, Math.max(140, _startW + delta));
+      panel.style.width = `${next}px`;
+    };
+
+    const onUp = (): void => {
+      handle.classList.remove("dragging");
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  });
+}
+
 // ── Boot ───────────────────────────────────────────────────────────────────
 buildToolbar();
 startDiagPoll();
+initDiagResize();
 void mountCard(getCardParam());
