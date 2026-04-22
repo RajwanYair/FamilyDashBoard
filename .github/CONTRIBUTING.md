@@ -1,6 +1,6 @@
 # Contributing to FamilyDashBoard
 
-> TypeScript modular TV dashboard · Vite 8 + TS 5.9 + Vitest 4 · Hebrew RTL
+> TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL
 
 Thank you for your interest in contributing! This guide covers everything you need to get started.
 
@@ -108,14 +108,14 @@ npx vitest run --coverage
 
 All terminal commands in this project use **PowerShell syntax**. Unix shell commands are not supported in the dev environment.
 
-| Forbidden | Use instead |
-|-----------|-------------|
-| `&&` | `;` (chain commands) |
-| `grep` | `Select-String` |
-| `cat`, `head`, `tail` | `Get-Content`, `Select-Object -First N`, `Select-Object -Last N` |
-| `find` | `Get-ChildItem` |
-| `ls`, `rm`, `cp`, `mv` | `Get-ChildItem`, `Remove-Item`, `Copy-Item`, `Move-Item` |
-| `export VAR=value` | `$env:VAR = "value"` |
+| Forbidden              | Use instead                                                      |
+| ---------------------- | ---------------------------------------------------------------- |
+| `&&`                   | `;` (chain commands)                                             |
+| `grep`                 | `Select-String`                                                  |
+| `cat`, `head`, `tail`  | `Get-Content`, `Select-Object -First N`, `Select-Object -Last N` |
+| `find`                 | `Get-ChildItem`                                                  |
+| `ls`, `rm`, `cp`, `mv` | `Get-ChildItem`, `Remove-Item`, `Copy-Item`, `Move-Item`         |
+| `export VAR=value`     | `$env:VAR = "value"`                                             |
 
 ---
 
@@ -156,12 +156,12 @@ See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full system diagram and file s
 
 ## Key Rules
 
-| Wrong | Correct |
-|-------|---------|
-| `loadStocks()` | `loadAllStocks()` |
-| `_useFahrenheit` | `_tempUnit` (`'C'`/`'F'`) |
-| `getCachedData()` | `cGet(key, TTL)` |
-| `setCachedData()` | `cSet(key, data)` |
-| `setSyncStatus()` | `setSync(id, state)` |
-| `innerHTML = userInput` | `textContent = userInput` |
-| bare `fetch()` | `fetchJSON()` or `fetchJSONWithWorker()` |
+| Wrong                   | Correct                                  |
+| ----------------------- | ---------------------------------------- |
+| `loadStocks()`          | `loadAllStocks()`                        |
+| `_useFahrenheit`        | `_tempUnit` (`'C'`/`'F'`)                |
+| `getCachedData()`       | `cGet(key, TTL)`                         |
+| `setCachedData()`       | `cSet(key, data)`                        |
+| `setSyncStatus()`       | `setSync(id, state)`                     |
+| `innerHTML = userInput` | `textContent = userInput`                |
+| bare `fetch()`          | `fetchJSON()` or `fetchJSONWithWorker()` |

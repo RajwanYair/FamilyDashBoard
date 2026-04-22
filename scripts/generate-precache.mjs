@@ -20,30 +20,19 @@ const distDir = join(rootDir, "dist");
 const assetsDir = join(distDir, "assets");
 
 if (!existsSync(distDir)) {
-  console.error(
-    "❌  dist/ directory not found — run `npm run build` first.",
-  );
+  console.error("❌  dist/ directory not found — run `npm run build` first.");
   process.exit(1);
 }
 
 // Collect all JS and CSS hashed assets from dist/assets/.
 const assetEntries = existsSync(assetsDir)
   ? readdirSync(assetsDir, { withFileTypes: true })
-      .filter(
-        (f) =>
-          f.isFile() &&
-          (f.name.endsWith(".js") || f.name.endsWith(".css")),
-      )
+      .filter((f) => f.isFile() && (f.name.endsWith(".js") || f.name.endsWith(".css")))
       .map((f) => `./assets/${f.name}`)
   : [];
 
 // Root shell files always precached.
-const shellFiles = [
-  "./index.html",
-  "./manifest.webmanifest",
-  "./sw.js",
-  "./icon.svg",
-];
+const shellFiles = ["./index.html", "./manifest.webmanifest", "./sw.js", "./icon.svg"];
 
 // Deduplicate (safety guard).
 const manifest = [...new Set([...shellFiles, ...assetEntries])];
@@ -51,7 +40,5 @@ const manifest = [...new Set([...shellFiles, ...assetEntries])];
 const outPath = join(distDir, "sw-precache-manifest.json");
 writeFileSync(outPath, JSON.stringify(manifest, null, 2) + "\n", "utf-8");
 
-console.log(
-  `✅  sw-precache-manifest.json written — ${manifest.length} entries`,
-);
+console.log(`✅  sw-precache-manifest.json written — ${manifest.length} entries`);
 manifest.forEach((u) => console.log(`   ${u}`));

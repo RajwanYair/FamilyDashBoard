@@ -38,9 +38,7 @@ describe("BgImages — isValidBgUrl", () => {
   });
 
   it("accepts an HTTPS URL with query params", () => {
-    expect(isValidBgUrl("https://images.unsplash.com/photo?w=1920&q=80")).toBe(
-      true,
-    );
+    expect(isValidBgUrl("https://images.unsplash.com/photo?w=1920&q=80")).toBe(true);
   });
 });
 
@@ -105,10 +103,7 @@ describe("BgImages — initBgImages", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
-        bgImages: [
-          "http://insecure.com/bad.jpg",
-          "https://example.com/good.jpg",
-        ],
+        bgImages: ["http://insecure.com/bad.jpg", "https://example.com/good.jpg"],
       }),
     );
     initBgImages();
@@ -248,10 +243,7 @@ describe("BgImages — rotateBgImage Image.onload crossfade", () => {
   });
 
   it("does not throw when Image.onload fires but layers were cleared", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }));
     // Override so onload fires but layers are gone (simulates layer destruction)
     class DelayedImage {
       onload: (() => void) | null = null;
@@ -299,7 +291,9 @@ describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
     class SyncImage {
       onload: (() => void) | null = null;
       private _src = "";
-      get src(): string { return this._src; }
+      get src(): string {
+        return this._src;
+      }
       set src(v: string) {
         this._src = v;
         if (this.onload) this.onload();
@@ -328,10 +322,7 @@ describe("BgImages — rotateBgImage img.onload crossfade branch", () => {
   });
 
   it("rotateBgImage returns early when layers are null and images exist", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ bgImages: ["https://a.com/a.jpg"] }));
     // initBgImages NOT called → _layerA and _layerB are null → early return
     expect(() => rotateBgImage()).not.toThrow();
   });

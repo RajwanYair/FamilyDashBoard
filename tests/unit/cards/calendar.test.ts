@@ -225,11 +225,11 @@ describe("Calendar — renderTodayStrip sort comparator with multiple today even
     // events always remain within today regardless of what time the test runs
     const afterNow = new Date(now.getTime() + 60_000); // 1 min from now
     ev1.start = new Date(afterNow.getTime() + 180_000); // +3 min
-    ev1.end   = new Date(afterNow.getTime() + 300_000); // +5 min
-    ev2.start = new Date(afterNow.getTime() +  90_000); // +1.5 min
-    ev2.end   = new Date(afterNow.getTime() + 180_000); // +3 min
-    ev3.start = new Date(afterNow.getTime() +  1_000);  // +1 s (earliest)
-    ev3.end   = new Date(afterNow.getTime() +  90_000); // +1.5 min
+    ev1.end = new Date(afterNow.getTime() + 300_000); // +5 min
+    ev2.start = new Date(afterNow.getTime() + 90_000); // +1.5 min
+    ev2.end = new Date(afterNow.getTime() + 180_000); // +3 min
+    ev3.start = new Date(afterNow.getTime() + 1_000); // +1 s (earliest)
+    ev3.end = new Date(afterNow.getTime() + 90_000); // +1.5 min
     const strip = document.getElementById("cal-today-strip");
     renderCalendar([ev1, ev2, ev3]);
     // After rendering, today strip should have sorted events (earliest first)
@@ -601,9 +601,7 @@ describe("Calendar — renderCalendar zero-duration event (else branch)", () => 
       category: "default",
     };
     renderCalendar([ev]);
-    const timeEl = document
-      .getElementById("cal-agenda")
-      ?.querySelector(".cal-event-time");
+    const timeEl = document.getElementById("cal-agenda")?.querySelector(".cal-event-time");
     expect(timeEl?.textContent).not.toContain("–");
   });
 
@@ -621,9 +619,7 @@ describe("Calendar — renderCalendar zero-duration event (else branch)", () => 
       location: "Tel Aviv Office",
     };
     renderCalendar([ev]);
-    const locEl = document
-      .getElementById("cal-agenda")
-      ?.querySelector(".cal-event-loc");
+    const locEl = document.getElementById("cal-agenda")?.querySelector(".cal-event-loc");
     expect(locEl).not.toBeNull();
     expect(locEl?.textContent).toContain("Tel Aviv Office");
   });
@@ -764,9 +760,7 @@ describe("Calendar — hour-format duration (>=60 min)", () => {
       category: "default" as const,
     };
     renderCalendar([ev]);
-    const timeEl = document
-      .getElementById("cal-agenda")!
-      .querySelector(".cal-event-time");
+    const timeEl = document.getElementById("cal-agenda")!.querySelector(".cal-event-time");
     expect(timeEl?.textContent).toContain("h");
   });
 
@@ -783,9 +777,7 @@ describe("Calendar — hour-format duration (>=60 min)", () => {
       category: "default" as const,
     };
     renderCalendar([ev]);
-    const timeEl = document
-      .getElementById("cal-agenda")!
-      .querySelector(".cal-event-time");
+    const timeEl = document.getElementById("cal-agenda")!.querySelector(".cal-event-time");
     expect(timeEl?.textContent).toContain("m");
   });
 });
@@ -809,9 +801,7 @@ describe("Calendar — icsIndex dataset", () => {
       category: "default" as const,
     };
     renderCalendar([ev]);
-    const row = document
-      .getElementById("cal-agenda")!
-      .querySelector(".cal-event");
+    const row = document.getElementById("cal-agenda")!.querySelector(".cal-event");
     expect(row?.getAttribute("data-ics")).toBe("2");
   });
 });
@@ -946,9 +936,7 @@ describe("Calendar — loadCalendar via initCalendarCard error + hidden guard", 
   it("handles fetch error in loadCalendar catch path", async () => {
     makeSuite();
     vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(
-      new Error("network error"),
-    );
+    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(new Error("network error"));
     initCalendarCard();
     await new Promise<void>((r) => setTimeout(r, 50));
     // Should not throw — error is caught internally
@@ -960,16 +948,14 @@ describe("Calendar — loadCalendar via initCalendarCard error + hidden guard", 
     let callNum = 0;
     vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async () => {
       callNum++;
-      if (callNum === 1)
-        return { ok: false, text: async () => "" } as Response;
+      if (callNum === 1) return { ok: false, text: async () => "" } as Response;
       // allorigins proxy returns JSON wrapper
       return {
         ok: true,
         json: async () => ({
           contents: SAMPLE_ICS,
         }),
-        text: async () =>
-          JSON.stringify({ contents: SAMPLE_ICS }),
+        text: async () => JSON.stringify({ contents: SAMPLE_ICS }),
       } as Response;
     });
     initCalendarCard();
@@ -986,7 +972,11 @@ describe("Calendar — loadCalendar via initCalendarCard error + hidden guard", 
       callCount++;
       const urlStr = String(url);
       // Direct fetch fails
-      if (!urlStr.includes("allorigins") && !urlStr.includes("codetabs") && !urlStr.includes("corsproxy")) {
+      if (
+        !urlStr.includes("allorigins") &&
+        !urlStr.includes("codetabs") &&
+        !urlStr.includes("corsproxy")
+      ) {
         throw new Error("direct fail");
       }
       // Allorigins: not ok (continue to next proxy)
@@ -1074,8 +1064,12 @@ describe("Calendar — loadCalendar outer catch block", () => {
     // Override cacheDom result by setting agenda to an element that throws on access
     const broken = document.createElement("div");
     Object.defineProperty(broken, "textContent", {
-      set() { throw new Error("forced render error"); },
-      get() { return ""; },
+      set() {
+        throw new Error("forced render error");
+      },
+      get() {
+        return "";
+      },
     });
     // This won't directly cause the catch because renderCalendar uses DocumentFragment
     // Instead, let's make Promise.allSettled result processing throw
@@ -1180,7 +1174,11 @@ describe("Calendar — loadCalendar outer catch when syncBurst throws (lines 482
     // Set up fetchWithTimeout to return a valid ICS with future events
     vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
     const futureDate = new Date(Date.now() + 86_400_000 * 30);
-    const dtStr = futureDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0, 15) + "Z";
+    const dtStr =
+      futureDate
+        .toISOString()
+        .replace(/-|:|\.\d+/g, "")
+        .slice(0, 15) + "Z";
     vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValue({
       ok: true,
       text: async () =>

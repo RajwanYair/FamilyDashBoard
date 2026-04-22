@@ -6,7 +6,27 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchWithTimeout, fetchJSON, raceProxies, fetchWithRetry, withRetry, recordFetchSuccess, recordFetchFailure, isNetworkOffline, getConsecutiveFailures, fetchJSONDeduped, getInflightCount, clearFetchLocks, acquireLock, releaseLock, getNetworkQualityTier, NetworkQualityTier, enqueueFetch, getFetchQueueDepth, getFetchQueueRunning } from "@/core/fetch";
+import {
+  fetchWithTimeout,
+  fetchJSON,
+  raceProxies,
+  fetchWithRetry,
+  withRetry,
+  recordFetchSuccess,
+  recordFetchFailure,
+  isNetworkOffline,
+  getConsecutiveFailures,
+  fetchJSONDeduped,
+  getInflightCount,
+  clearFetchLocks,
+  acquireLock,
+  releaseLock,
+  getNetworkQualityTier,
+  NetworkQualityTier,
+  enqueueFetch,
+  getFetchQueueDepth,
+  getFetchQueueRunning,
+} from "@/core/fetch";
 
 // Helper: mock fetch that resolves after `delay` ms
 function delayedFetch(delay: number, response: unknown) {
@@ -52,13 +72,8 @@ describe("fetchWithTimeout", () => {
   });
 
   it("passes through fetch error", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("network error")),
-    );
-    await expect(fetchWithTimeout("https://example.com", 5000)).rejects.toThrow(
-      "network error",
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
+    await expect(fetchWithTimeout("https://example.com", 5000)).rejects.toThrow("network error");
   });
 });
 
@@ -75,17 +90,12 @@ describe("fetchJSON — direct success", () => {
         json: async () => ({ value: 42 }),
       } as Response),
     );
-    const result = await fetchJSON<{ value: number }>(
-      "https://example.com/api",
-    );
+    const result = await fetchJSON<{ value: number }>("https://example.com/api");
     expect(result.value).toBe(42);
   });
 
   it("throws when all proxies fail", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("All proxies failed")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("All proxies failed")));
     await expect(fetchJSON("https://example.com/bad")).rejects.toThrow();
   });
 
@@ -109,9 +119,7 @@ describe("fetchJSON — direct success", () => {
       }),
     );
 
-    const result = await fetchJSON<{ data: string }>(
-      "https://api.example.com/data",
-    );
+    const result = await fetchJSON<{ data: string }>("https://api.example.com/data");
     expect(result.data).toBe("proxy-result");
     expect(callCount).toBeGreaterThan(1);
   });
@@ -135,10 +143,7 @@ describe("raceProxies", () => {
   });
 
   it("rejects when all fetch attempts fail", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("network error")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     await expect(raceProxies("https://example.com/bad", 50)).rejects.toThrow();
   });
 });
@@ -188,23 +193,13 @@ describe("fetchJSON — all proxies exhausted throws", () => {
   });
 
   it("throws 'All proxies failed' when direct + every proxy fails", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("network down")),
-    );
-    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(
-      /All proxies failed/,
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(/All proxies failed/);
   });
 
   it("throws when direct returns non-ok and all proxies also return non-ok", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: false, status: 500 } as Response),
-    );
-    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(
-      /All proxies failed/,
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 } as Response));
+    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(/All proxies failed/);
   });
 });
 
@@ -241,9 +236,7 @@ describe("fetchJSON — allorigins malformed contents", () => {
       }),
     );
 
-    const result = await fetchJSON<{ data: string }>(
-      "https://api.example.com/endpoint",
-    );
+    const result = await fetchJSON<{ data: string }>("https://api.example.com/endpoint");
     expect(result.data).toBe("from-proxy");
     expect(callCount).toBeGreaterThan(2);
   });
@@ -275,17 +268,12 @@ describe("fetchJSON — non-allorigins proxy path", () => {
       }),
     );
 
-    const result = await fetchJSON<{ value: number }>(
-      "https://api.example.com/data",
-    );
+    const result = await fetchJSON<{ value: number }>("https://api.example.com/data");
     expect(result.value).toBe(99);
   });
 
   it("uses custom proxy from localStorage when set", async () => {
-    localStorage.setItem(
-      "dash_custom_proxy",
-      "https://my-proxy.example.com/?url=",
-    );
+    localStorage.setItem("dash_custom_proxy", "https://my-proxy.example.com/?url=");
     let usedCustom = false;
     vi.stubGlobal(
       "fetch",
@@ -301,9 +289,7 @@ describe("fetchJSON — non-allorigins proxy path", () => {
       }),
     );
 
-    const result = await fetchJSON<{ custom: boolean }>(
-      "https://api.example.com/data",
-    );
+    const result = await fetchJSON<{ custom: boolean }>("https://api.example.com/data");
     expect(result.custom).toBe(true);
     expect(usedCustom).toBe(true);
   });
@@ -319,11 +305,7 @@ describe("runConcurrent", () => {
   it("runs all tasks and returns settled results", async () => {
     const { runConcurrent } = await import("@/core/fetch");
     const results = await runConcurrent(
-      [
-        () => Promise.resolve(1),
-        () => Promise.reject(new Error("fail")),
-        () => Promise.resolve(3),
-      ],
+      [() => Promise.resolve(1), () => Promise.reject(new Error("fail")), () => Promise.resolve(3)],
       2,
     );
     expect(results.length).toBe(3);
@@ -350,11 +332,7 @@ describe("runConcurrent", () => {
 });
 
 import { fetchViaWorker, fetchJSONWithWorker } from "@/core/fetch";
-import {
-  API,
-  WORKER_BASE_URL,
-  resetWorkerEnabledCache,
-} from "@/core/constants";
+import { API, WORKER_BASE_URL, resetWorkerEnabledCache } from "@/core/constants";
 
 // \u2500\u2500 fetchViaWorker \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
@@ -384,28 +362,21 @@ describe("fetchViaWorker", () => {
     const result = await fetchViaWorker<{ data: string }>(API.CURRENCY_PRIMARY);
     expect(result).toEqual({ data: "worker-result" });
     // Verify the URL used the worker base
-    const calledUrl = (global.fetch as ReturnType<typeof vi.fn>).mock
-      .calls[0][0] as string;
+    const calledUrl = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
     expect(calledUrl).toContain(WORKER_BASE_URL);
     expect(calledUrl).toContain("/api/currency");
   });
 
   it("returns null when worker returns non-ok status", async () => {
     vi.stubGlobal("navigator", { ...navigator, onLine: true });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: false, status: 502 } as Response),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 502 } as Response));
     const result = await fetchViaWorker("https://api.example.com");
     expect(result).toBeNull();
   });
 
   it("returns null when worker fetch throws", async () => {
     vi.stubGlobal("navigator", { ...navigator, onLine: true });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("network error")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     const result = await fetchViaWorker("https://api.example.com");
     expect(result).toBeNull();
   });
@@ -427,9 +398,7 @@ describe("fetchJSONWithWorker", () => {
         json: async () => ({ source: "worker" }),
       } as Response),
     );
-    const result = await fetchJSONWithWorker<{ source: string }>(
-      API.CURRENCY_PRIMARY,
-    );
+    const result = await fetchJSONWithWorker<{ source: string }>(API.CURRENCY_PRIMARY);
     expect(result.source).toBe("worker");
   });
 
@@ -442,9 +411,7 @@ describe("fetchJSONWithWorker", () => {
         json: async () => ({ source: "direct" }),
       } as Response),
     );
-    const result = await fetchJSONWithWorker<{ source: string }>(
-      API.CURRENCY_PRIMARY,
-    );
+    const result = await fetchJSONWithWorker<{ source: string }>(API.CURRENCY_PRIMARY);
     expect(result.source).toBe("direct");
   });
 });
@@ -567,9 +534,7 @@ describe("Fetch — fetchWithRetry (v7.4)", () => {
 
   it("throws after maxAttempts exhausted", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("always fails")));
-    await expect(
-      fetchWithRetry("https://example.com", 2, 1),
-    ).rejects.toThrow();
+    await expect(fetchWithRetry("https://example.com", 2, 1)).rejects.toThrow();
   });
 });
 
@@ -612,7 +577,13 @@ describe("fetchWithStale", () => {
     vi.mocked(cacheModule.cSet).mockReturnValue(undefined);
     const fetcher = vi.fn().mockRejectedValue(new Error("network fail"));
     const onData = vi.fn();
-    await fetchWithStale({ cacheKey: "k", ttlMs: 1000, fetcher, onData, staticFallback: { fallback: true } });
+    await fetchWithStale({
+      cacheKey: "k",
+      ttlMs: 1000,
+      fetcher,
+      onData,
+      staticFallback: { fallback: true },
+    });
     expect(onData).toHaveBeenCalledWith({ fallback: true }, true);
   });
 
@@ -622,7 +593,13 @@ describe("fetchWithStale", () => {
     vi.mocked(cacheModule.cSet).mockReturnValue(undefined);
     const fetcher = vi.fn().mockResolvedValue({ fresh: true });
     const onData = vi.fn();
-    await fetchWithStale({ cacheKey: "k", ttlMs: 1000, fetcher, onData, staticFallback: { fallback: true } });
+    await fetchWithStale({
+      cacheKey: "k",
+      ttlMs: 1000,
+      fetcher,
+      onData,
+      staticFallback: { fallback: true },
+    });
     expect(onData).toHaveBeenNthCalledWith(1, { fallback: true }, true);
     expect(onData).toHaveBeenNthCalledWith(2, { fresh: true }, false);
   });
@@ -811,7 +788,8 @@ describe("enqueueFetch — priority queue (Sprint 21)", () => {
     const order: string[] = [];
 
     // Use delayed tasks to force queuing
-    const makeTask = (label: string, delay = 0) =>
+    const makeTask =
+      (label: string, delay = 0) =>
       () =>
         new Promise<void>((resolve) =>
           setTimeout(() => {
@@ -864,9 +842,15 @@ describe("enqueueFetch — priority queue (Sprint 21)", () => {
   it("multiple tasks complete in any workable order", async () => {
     const results: number[] = [];
     await Promise.all([
-      enqueueFetch(async () => { results.push(1); }, "high"),
-      enqueueFetch(async () => { results.push(2); }, "normal"),
-      enqueueFetch(async () => { results.push(3); }, "low"),
+      enqueueFetch(async () => {
+        results.push(1);
+      }, "high"),
+      enqueueFetch(async () => {
+        results.push(2);
+      }, "normal"),
+      enqueueFetch(async () => {
+        results.push(3);
+      }, "low"),
     ]);
     expect(results).toHaveLength(3);
     expect(results).toContain(1);

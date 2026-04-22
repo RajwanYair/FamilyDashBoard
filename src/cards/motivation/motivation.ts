@@ -62,7 +62,9 @@ let _activeCategory: MotivationCategory | null = null;
 /**
  * Sprint 23: Returns quotes filtered by category (or all when null).
  */
-export function getQuotesByCategory(category: MotivationCategory | null): ReadonlyArray<MotivationQuote> {
+export function getQuotesByCategory(
+  category: MotivationCategory | null,
+): ReadonlyArray<MotivationQuote> {
   if (category === null) return MOTIVATIONS;
   return MOTIVATIONS.filter((q) => q.category === category);
 }
@@ -103,7 +105,7 @@ export function setMotivationInterval(minutes: number): void {
 
 export function getCurrentQuote(): MotivationQuote | null {
   const pool = getQuotesByCategory(_activeCategory);
-  const lastIdx = ((motiIdx - 1) + pool.length) % pool.length;
+  const lastIdx = (motiIdx - 1 + pool.length) % pool.length;
   return pool[lastIdx] ?? null;
 }
 

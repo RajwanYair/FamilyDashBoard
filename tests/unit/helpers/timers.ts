@@ -27,9 +27,7 @@ export interface FakeTimerHandle {
  *   afterEach(timers.restore);
  *   await timers.advance(60_000); // 1 min
  */
-export function withFakeTimers(
-  opts: Parameters<typeof vi.useFakeTimers>[0] = {},
-): FakeTimerHandle {
+export function withFakeTimers(opts: Parameters<typeof vi.useFakeTimers>[0] = {}): FakeTimerHandle {
   vi.useFakeTimers(opts);
 
   return {

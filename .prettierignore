@@ -11,6 +11,9 @@ coverage/
 tsconfig.tsbuildinfo
 *.log
 
+# Shell scripts (no Prettier parser)
+**/*.sh
+
 # Test artifacts
 test-results/
 playwright-report/
@@ -21,3 +24,10 @@ blob-report/
 
 # Legacy archive
 BestDashBoard.html
+
+# App shell HTML (hand-crafted dashboard template — Prettier HTML parser chokes on
+# inline templates with custom-element tags; formatting is maintained manually)
+src/index.html
+
+# Transient CI artifacts
+ci_status.json

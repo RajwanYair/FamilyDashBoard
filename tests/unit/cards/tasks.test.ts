@@ -7,11 +7,22 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
-  renderTasksCard, markAllDone, resetDoneToday, removeDoneTasks,
-  initTasksCard, destroyTasksCard, tasksCard,
-  getTasksForToday, countOverdueTasks,
-  parseTaskPriority, parseTaskDueDate, isOverdue, isDueToday,
-  formatTaskDueDate, taskCompletionRatio, taskPriorityIcon,
+  renderTasksCard,
+  markAllDone,
+  resetDoneToday,
+  removeDoneTasks,
+  initTasksCard,
+  destroyTasksCard,
+  tasksCard,
+  getTasksForToday,
+  countOverdueTasks,
+  parseTaskPriority,
+  parseTaskDueDate,
+  isOverdue,
+  isDueToday,
+  formatTaskDueDate,
+  taskCompletionRatio,
+  taskPriorityIcon,
 } from "@/cards/tasks/tasks";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
@@ -105,10 +116,7 @@ describe("Tasks — done state", () => {
   beforeEach(() => {
     setupDOM(JSON.stringify(chores));
     // Pre-mark as done
-    localStorage.setItem(
-      "dash_tasks_done",
-      JSON.stringify({ [doneKey]: true }),
-    );
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [doneKey]: true }));
     // Seed today's reset date so checkDailyReset() doesn't wipe the done map
     const today = new Date();
     const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
@@ -195,9 +203,10 @@ describe("Tasks — checkbox change handler", () => {
     const cb = document.querySelector<HTMLInputElement>(".tasks-cb")!;
     cb.checked = true;
     cb.dispatchEvent(new Event("change"));
-    const map = JSON.parse(
-      localStorage.getItem("dash_tasks_done") ?? "{}",
-    ) as Record<string, boolean>;
+    const map = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(map[fp]).toBe(true);
   });
 
@@ -216,9 +225,10 @@ describe("Tasks — checkbox change handler", () => {
     const cb = document.querySelector<HTMLInputElement>(".tasks-cb")!;
     cb.checked = false;
     cb.dispatchEvent(new Event("change"));
-    const map = JSON.parse(
-      localStorage.getItem("dash_tasks_done") ?? "{}",
-    ) as Record<string, boolean>;
+    const map = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(map[fp]).toBe(false);
   });
 
@@ -261,8 +271,8 @@ describe("Tasks — initTasksCard / destroyTasksCard", () => {
 
   it("clearInterval fires when initTasksCard called twice (line 175 TRUE branch)", () => {
     vi.useFakeTimers();
-    initTasksCard();         // sets _tasksInterval
-    initTasksCard();         // _tasksInterval is now non-null → line 175 clears it
+    initTasksCard(); // sets _tasksInterval
+    initTasksCard(); // _tasksInterval is now non-null → line 175 clears it
     // No throw expected
     expect(document.getElementById("tasks-list")).not.toBeNull();
   });
@@ -306,10 +316,7 @@ describe("Tasks — invalid JSON in localStorage", () => {
 
   it("gracefully handles corrupt done-map JSON", () => {
     document.body.innerHTML = `<div id="tasks-list"></div>`;
-    localStorage.setItem(
-      "dash_chores",
-      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
-    );
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]));
     localStorage.setItem("dash_tasks_done", "{invalid}");
     expect(() => renderTasksCard()).not.toThrow();
   });
@@ -338,14 +345,8 @@ describe("Tasks — getTasksForToday", () => {
   });
 
   it("excludes completed chores from result", () => {
-    localStorage.setItem(
-      "dash_chores",
-      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
-    );
-    localStorage.setItem(
-      "dash_tasks_done",
-      JSON.stringify({ "עמרי::🧹 לנקות": true }),
-    );
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]));
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ "עמרי::🧹 לנקות": true }));
     const today = new Date();
     localStorage.setItem(
       "dash_tasks_reset_date",
@@ -361,10 +362,7 @@ describe("Tasks — getTasksForToday", () => {
   });
 
   it("loadDoneMap catch: returns empty map for corrupted JSON", () => {
-    localStorage.setItem(
-      "dash_chores",
-      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
-    );
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]));
     localStorage.setItem("dash_tasks_done", "not-json{{{}");
     const today = new Date();
     localStorage.setItem(
@@ -416,9 +414,7 @@ describe("Tasks — markAllDone", () => {
     const list = document.getElementById("tasks-list");
     expect(list).not.toBeNull();
     // All checkboxes should be checked
-    const checkboxes = list!.querySelectorAll<HTMLInputElement>(
-      "input[type='checkbox']",
-    );
+    const checkboxes = list!.querySelectorAll<HTMLInputElement>("input[type='checkbox']");
     checkboxes.forEach((cb) => expect(cb.checked).toBe(true));
   });
 
@@ -434,15 +430,9 @@ describe("Tasks — resetDoneToday", () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.innerHTML = `<div id="tasks-list"></div>`;
-    localStorage.setItem(
-      "dash_chores",
-      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
-    );
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]));
     // Pre-seed done map
-    localStorage.setItem(
-      "dash_tasks_done",
-      JSON.stringify({ "עמרי::🧹 לנקות": true }),
-    );
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ "עמרי::🧹 לנקות": true }));
   });
   afterEach(() => {
     document.body.innerHTML = "";
@@ -457,9 +447,7 @@ describe("Tasks — resetDoneToday", () => {
   it("re-renders task list with checkboxes unchecked after reset", () => {
     resetDoneToday();
     const list = document.getElementById("tasks-list");
-    const checkboxes = list!.querySelectorAll<HTMLInputElement>(
-      "input[type='checkbox']",
-    );
+    const checkboxes = list!.querySelectorAll<HTMLInputElement>("input[type='checkbox']");
     // After reset all chores should be unchecked
     checkboxes.forEach((cb) => expect(cb.checked).toBe(false));
   });
@@ -478,10 +466,7 @@ describe("Tasks — initTasksCard wires button click handlers (line 175)", () =>
       <div id="tasks-list"></div>
       <button id="tasks-mark-all-btn">סמן הכל</button>
       <button id="tasks-reset-btn">איפוס</button>`;
-    localStorage.setItem(
-      "dash_chores",
-      JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]),
-    );
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "עמרי", chore: "🧹 לנקות" }]));
     localStorage.removeItem("dash_tasks_done");
     localStorage.removeItem("dash_tasks_reset_date");
   });
@@ -503,10 +488,7 @@ describe("Tasks — initTasksCard wires button click handlers (line 175)", () =>
   it("clicking tasks-reset-btn triggers resetDoneToday", () => {
     vi.useFakeTimers();
     // Pre-mark all done
-    localStorage.setItem(
-      "dash_tasks_done",
-      JSON.stringify({ "עמרי::🧹 לנקות": true }),
-    );
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ "עמרי::🧹 לנקות": true }));
     initTasksCard();
     document.getElementById("tasks-reset-btn")!.click();
     expect(localStorage.getItem("dash_tasks_done")).toBeNull();
@@ -620,7 +602,9 @@ describe("Tasks — tasks-all-done-msg visibility (Sprint v7.12)", () => {
   it("hides all-done-msg when tasks are pending", () => {
     setupWithDoneMsg(JSON.stringify(chores));
     renderTasksCard();
-    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe("none");
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe(
+      "none",
+    );
   });
 
   it("shows all-done-msg when all chores are pre-marked done", () => {
@@ -633,7 +617,9 @@ describe("Tasks — tasks-all-done-msg visibility (Sprint v7.12)", () => {
       JSON.stringify({ "עמרי::🧹 לנקות": true, "ריבה::🍳 בישול": true }),
     );
     renderTasksCard();
-    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe("none");
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe(
+      "none",
+    );
   });
 
   it("shows all-done-msg after markAllDone() is called", () => {
@@ -643,7 +629,9 @@ describe("Tasks — tasks-all-done-msg visibility (Sprint v7.12)", () => {
     const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
     localStorage.setItem("dash_tasks_reset_date", resetKey);
     markAllDone();
-    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe("none");
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe(
+      "none",
+    );
   });
 
   it("hides all-done-msg after resetDoneToday() following markAllDone()", () => {
@@ -653,9 +641,13 @@ describe("Tasks — tasks-all-done-msg visibility (Sprint v7.12)", () => {
     const resetKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
     localStorage.setItem("dash_tasks_reset_date", resetKey);
     markAllDone();
-    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe("none");
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).not.toBe(
+      "none",
+    );
     resetDoneToday();
-    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe("none");
+    expect((document.getElementById("tasks-all-done-msg") as HTMLElement).style.display).toBe(
+      "none",
+    );
   });
 });
 
@@ -720,10 +712,13 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
       <div id="tasks-all-done-msg" style="display:none"></div>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "A", chore: "task1" },
-      { person: "A", chore: "task2" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "A", chore: "task1" },
+        { person: "A", chore: "task2" },
+      ]),
+    );
     renderTasksCard();
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
     expect(badge.textContent).toBe("0 / 2 ✓ (0%)");
@@ -735,10 +730,13 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
       <div id="tasks-all-done-msg" style="display:none"></div>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "A", chore: "task1" },
-      { person: "A", chore: "task2" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "A", chore: "task1" },
+        { person: "A", chore: "task2" },
+      ]),
+    );
     renderTasksCard();
     const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
     cbs[0].checked = true;
@@ -752,10 +750,13 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
       <div id="tasks-all-done-msg" style="display:none"></div>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "A", chore: "task1" },
-      { person: "A", chore: "task2" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "A", chore: "task1" },
+        { person: "A", chore: "task2" },
+      ]),
+    );
     renderTasksCard();
     const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
     cbs[0].checked = true;
@@ -786,10 +787,13 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
       <div id="tasks-all-done-msg" style="display:none"></div>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "A", chore: "task1" },
-      { person: "A", chore: "task2" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "A", chore: "task1" },
+        { person: "A", chore: "task2" },
+      ]),
+    );
     renderTasksCard();
     const badge = document.getElementById("tasks-pending-badge") as HTMLElement;
     expect(badge.textContent).toBe("0 / 2 ✓ (0%)");
@@ -801,10 +805,13 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
       <div id="tasks-all-done-msg" style="display:none"></div>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "A", chore: "task1" },
-      { person: "A", chore: "task2" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "A", chore: "task1" },
+        { person: "A", chore: "task2" },
+      ]),
+    );
     renderTasksCard();
     const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
     cbs[0].checked = true;
@@ -818,10 +825,13 @@ describe("Tasks — N/M done counter badge (v7.1.7)", () => {
       <div id="tasks-list"></div>
       <span id="tasks-pending-badge"></span>
       <div id="tasks-all-done-msg" style="display:none"></div>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "A", chore: "task1" },
-      { person: "A", chore: "task2" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "A", chore: "task1" },
+        { person: "A", chore: "task2" },
+      ]),
+    );
     renderTasksCard();
     const cbs = document.querySelectorAll<HTMLInputElement>(".tasks-cb");
     cbs[0].checked = true;
@@ -871,7 +881,10 @@ describe("Tasks — removeDoneTasks (F3 v7.3)", () => {
 
   it("does nothing when no tasks are done", () => {
     document.body.innerHTML = `<div id="tasks-list"></div><span id="tasks-pending-badge"></span>`;
-    const chores = [{ person: "A", chore: "X" }, { person: "B", chore: "Y" }];
+    const chores = [
+      { person: "A", chore: "X" },
+      { person: "B", chore: "Y" },
+    ];
     localStorage.setItem("dash_chores", JSON.stringify(chores));
     renderTasksCard();
     removeDoneTasks();
@@ -890,10 +903,13 @@ describe("Tasks — person filter chips (F8 v7.3)", () => {
 
   it("renders filter chips when multiple persons exist", () => {
     document.body.innerHTML = `<div id="tasks-list"></div><div id="tasks-filter-bar"></div><span id="tasks-pending-badge"></span>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "Alice", chore: "A" },
-      { person: "Bob", chore: "B" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "Alice", chore: "A" },
+        { person: "Bob", chore: "B" },
+      ]),
+    );
     renderTasksCard();
     const chips = document.querySelectorAll(".tasks-person-chip");
     expect(chips.length).toBe(2);
@@ -901,10 +917,13 @@ describe("Tasks — person filter chips (F8 v7.3)", () => {
 
   it("does not render chips when only one person", () => {
     document.body.innerHTML = `<div id="tasks-list"></div><div id="tasks-filter-bar"></div><span id="tasks-pending-badge"></span>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "Alice", chore: "A" },
-      { person: "Alice", chore: "B" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "Alice", chore: "A" },
+        { person: "Alice", chore: "B" },
+      ]),
+    );
     renderTasksCard();
     const chips = document.querySelectorAll(".tasks-person-chip");
     expect(chips.length).toBe(0);
@@ -912,11 +931,14 @@ describe("Tasks — person filter chips (F8 v7.3)", () => {
 
   it("clicking a chip filters tasks, clicking again shows all", () => {
     document.body.innerHTML = `<div id="tasks-list"></div><div id="tasks-filter-bar"></div><span id="tasks-pending-badge"></span>`;
-    localStorage.setItem("dash_chores", JSON.stringify([
-      { person: "Alice", chore: "A" },
-      { person: "Bob", chore: "B" },
-      { person: "Alice", chore: "C" },
-    ]));
+    localStorage.setItem(
+      "dash_chores",
+      JSON.stringify([
+        { person: "Alice", chore: "A" },
+        { person: "Bob", chore: "B" },
+        { person: "Alice", chore: "C" },
+      ]),
+    );
     renderTasksCard();
     expect(document.querySelectorAll(".tasks-cb").length).toBe(3);
     document.querySelector<HTMLButtonElement>(".tasks-person-chip")!.click();
@@ -1194,8 +1216,7 @@ describe("Tasks — priority emoji badge in renderTasksCard (Sprint 30)", () => 
       "dash_chores",
       JSON.stringify([{ person: "טל", chore: "[H] עבודה דחופה" }]),
     );
-    document.body.innerHTML =
-      '<div id="tasks-list"></div><div id="tasks-filter-chips"></div>';
+    document.body.innerHTML = '<div id="tasks-list"></div><div id="tasks-filter-chips"></div>';
   });
 
   afterEach(() => {
@@ -1243,9 +1264,7 @@ describe("Tasks — countOverdueTasks (Sprint 33)", () => {
   });
 
   it("returns 0 when due date is in the future", () => {
-    const chores: ChoreItem[] = [
-      { person: "עמרי", chore: `לנקות @${tomorrow}` },
-    ];
+    const chores: ChoreItem[] = [{ person: "עמרי", chore: `לנקות @${tomorrow}` }];
     expect(countOverdueTasks(chores)).toBe(0);
   });
 
@@ -1263,9 +1282,7 @@ describe("Tasks — countOverdueTasks (Sprint 33)", () => {
   });
 
   it("does not count chores with only a priority prefix (no due date)", () => {
-    const chores: ChoreItem[] = [
-      { person: "עמרי", chore: "[H] משימה דחופה" },
-    ];
+    const chores: ChoreItem[] = [{ person: "עמרי", chore: "[H] משימה דחופה" }];
     expect(countOverdueTasks(chores)).toBe(0);
   });
 });

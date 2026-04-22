@@ -24,9 +24,7 @@ describe("SW Constants — string values", () => {
 
 describe("SW Constants — isVersionActivatedMsg", () => {
   it("returns true for a valid VERSION_ACTIVATED message", () => {
-    expect(
-      isVersionActivatedMsg({ type: "VERSION_ACTIVATED", version: "1.0.0" }),
-    ).toBe(true);
+    expect(isVersionActivatedMsg({ type: "VERSION_ACTIVATED", version: "1.0.0" })).toBe(true);
   });
 
   it("returns false for SKIP_WAITING message", () => {
@@ -53,9 +51,7 @@ describe("SW Constants — isSkipWaitingMsg", () => {
   });
 
   it("returns false for VERSION_ACTIVATED message", () => {
-    expect(
-      isSkipWaitingMsg({ type: "VERSION_ACTIVATED", version: "1.0.0" }),
-    ).toBe(false);
+    expect(isSkipWaitingMsg({ type: "VERSION_ACTIVATED", version: "1.0.0" })).toBe(false);
   });
 
   it("returns false for null", () => {

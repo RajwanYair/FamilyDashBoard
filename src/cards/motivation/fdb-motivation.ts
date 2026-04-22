@@ -10,11 +10,7 @@ import { diagLog } from "../../core/diag";
 import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import { INTERVALS, MS_PER_MIN } from "../../core/constants";
-import {
-  getQuotesByCategory,
-  type MotivationCategory,
-  type MotivationQuote,
-} from "./motivation";
+import { getQuotesByCategory, type MotivationCategory, type MotivationQuote } from "./motivation";
 
 export class FdbMotivationCard extends FdbCard {
   private _idx = 0;
@@ -70,7 +66,9 @@ export class FdbMotivationCard extends FdbCard {
 
     // Initial render + schedule
     this.nextQuote();
-    this.scheduleRefresh(() => { this.nextQuote(); }, INTERVALS.MOTIVATION);
+    this.scheduleRefresh(() => {
+      this.nextQuote();
+    }, INTERVALS.MOTIVATION);
     this.watchConfig("motivationInterval", true);
 
     this.setSyncState("ok");
@@ -110,7 +108,7 @@ export class FdbMotivationCard extends FdbCard {
 
   shareQuote(): void {
     const pool = getQuotesByCategory(this._category);
-    const lastIdx = ((this._idx - 1) + pool.length) % pool.length;
+    const lastIdx = (this._idx - 1 + pool.length) % pool.length;
     const q = pool[lastIdx];
     if (!q) return;
     const text = q.author ? `"${q.text}" — ${q.author}` : `"${q.text}"`;

@@ -33,9 +33,7 @@ export function createNewsAdapter(): ProviderAdapter<NewsItem[]> {
     cacheTtl,
     async fetchFresh(): Promise<NewsItem[]> {
       const feeds = getActiveFeeds();
-      const results = await runConcurrent(
-        feeds.map((f) => () => fetchFeed(f)),
-      );
+      const results = await runConcurrent(feeds.map((f) => () => fetchFeed(f)));
 
       const allItems: NewsItem[] = [];
       for (const result of results) {
@@ -54,10 +52,7 @@ export function createNewsAdapter(): ProviderAdapter<NewsItem[]> {
         return true;
       });
 
-      unique.sort(
-        (a, b) =>
-          new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime(),
-      );
+      unique.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
 
       return unique;
     },

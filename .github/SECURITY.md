@@ -2,11 +2,11 @@
 
 ## Supported Versions
 
-| Version | Supported |
-|---------|----------|
-| 8.x (current) | ✅ Active |
-| 7.x | ❌ End of life |
-| 6.x | ❌ End of life |
+| Version                  | Supported      |
+| ------------------------ | -------------- |
+| 8.x (current)            | ✅ Active      |
+| 7.x                      | ❌ End of life |
+| 6.x                      | ❌ End of life |
 | 5.x (BestDashBoard.html) | ❌ End of life |
 
 ## Reporting a Vulnerability

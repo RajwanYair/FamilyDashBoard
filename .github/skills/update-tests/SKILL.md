@@ -37,55 +37,55 @@ npx vitest run --reporter=verbose                 # see each test name
 
 ## File Map
 
-| Source file | Test file |
-|---|---|
-| `src/main.ts` | `tests/unit/main.test.ts` |
-| `src/cards/weather/weather.ts` | `tests/unit/cards/weather.test.ts` |
-| `src/cards/news/news.ts` | `tests/unit/cards/news.test.ts` |
-| `src/cards/calendar/calendar.ts` | `tests/unit/cards/calendar.test.ts` |
-| `src/cards/alerts/alerts.ts` | `tests/unit/cards/alerts.test.ts` |
-| `src/cards/stocks/stocks.ts` | `tests/unit/cards/stocks.test.ts` |
-| `src/cards/hebrew-cal/hebrew-cal.ts` | `tests/unit/cards/hebrew-cal.test.ts` |
-| `src/cards/currency/currency.ts` | `tests/unit/cards/currency.test.ts` |
-| `src/cards/motivation/motivation.ts` | `tests/unit/cards/motivation.test.ts` |
-| `src/cards/tasks/tasks.ts` | `tests/unit/cards/tasks.test.ts` |
-| `src/cards/countdown/countdown.ts` | `tests/unit/cards/countdown.test.ts` |
-| `src/cards/system-info/system-info.ts` | `tests/unit/cards/system-info.test.ts` |
-| `src/cards/base-card.ts` | `tests/unit/cards/base-card.test.ts` |
-| `src/ui/ticker.ts` | `tests/unit/ui/ticker.test.ts` |
-| `src/ui/header.ts` | `tests/unit/ui/header.test.ts` |
-| `src/ui/config-panel.ts` | `tests/unit/ui/config-panel.test.ts` |
-| `src/ui/maximize.ts` | `tests/unit/ui/maximize.test.ts` |
-| `src/ui/night-dimmer.ts` | `tests/unit/ui/night-dimmer.test.ts` |
-| `src/ui/theme.ts` | `tests/unit/ui/theme.test.ts` |
-| `src/ui/toast.ts` | `tests/unit/ui/toast.test.ts` |
-| `src/ui/bg-images.ts` | `tests/unit/ui/bg-images.test.ts` |
-| `src/ui/keyboard.ts` | `tests/unit/ui/keyboard.test.ts` |
-| `src/ui/scroll.ts` | `tests/unit/ui/scroll.test.ts` |
-| `src/ui/screen-mode.ts` | `tests/unit/ui/screen-mode.test.ts` |
-| `src/ui/status-bar.ts` | `tests/unit/ui/status-bar.test.ts` |
-| `src/ui/layout-drag.ts` | `tests/unit/ui/layout-drag.test.ts` |
-| `src/ui/diag-overlay.ts` | `tests/unit/ui/diag-overlay.test.ts` |
-| `src/core/cache.ts` | `tests/unit/core/cache.test.ts` |
-| `src/core/idb-cache.ts` | `tests/unit/core/idb-cache.test.ts` |
-| `src/core/config.ts` | `tests/unit/core/config.test.ts` |
-| `src/core/fetch.ts` | `tests/unit/core/fetch.test.ts` |
-| `src/core/card-registry.ts` | `tests/unit/core/card-registry.test.ts` |
-| `src/core/constants.ts` | `tests/unit/core/constants.test.ts` |
-| `src/core/diag.ts` | `tests/unit/core/diag.test.ts` |
-| `src/core/sync.ts` | `tests/unit/core/sync.test.ts` |
-| `src/core/state.ts` | `tests/unit/core/state.test.ts` |
-| `src/core/hardware.ts` | `tests/unit/core/hardware.test.ts` |
-| `src/core/idle.ts` | `tests/unit/core/idle.test.ts` |
-| `src/core/perf.ts` | `tests/unit/core/perf.test.ts` |
-| `src/core/provider.ts` | `tests/unit/core/provider.test.ts` |
-| `src/core/utils.ts` | `tests/unit/core/utils.test.ts` |
-| `src/core/error-reporter.ts` | `tests/unit/core/error-reporter.test.ts` |
-| `src/core/error-tracker.ts` | `tests/unit/core/error-tracker.test.ts` |
-| `src/core/fdb-card.ts` | `tests/unit/core/fdb-card.test.ts` |
-| `src/core/sw-constants.ts` | `tests/unit/core/sw-constants.test.ts` |
-| `src/index.html` | `tests/unit/html/dom-contract.test.ts` |
-| `worker/src/` | `tests/unit/worker/worker.test.ts` |
+| Source file                            | Test file                                |
+| -------------------------------------- | ---------------------------------------- |
+| `src/main.ts`                          | `tests/unit/main.test.ts`                |
+| `src/cards/weather/weather.ts`         | `tests/unit/cards/weather.test.ts`       |
+| `src/cards/news/news.ts`               | `tests/unit/cards/news.test.ts`          |
+| `src/cards/calendar/calendar.ts`       | `tests/unit/cards/calendar.test.ts`      |
+| `src/cards/alerts/alerts.ts`           | `tests/unit/cards/alerts.test.ts`        |
+| `src/cards/stocks/stocks.ts`           | `tests/unit/cards/stocks.test.ts`        |
+| `src/cards/hebrew-cal/hebrew-cal.ts`   | `tests/unit/cards/hebrew-cal.test.ts`    |
+| `src/cards/currency/currency.ts`       | `tests/unit/cards/currency.test.ts`      |
+| `src/cards/motivation/motivation.ts`   | `tests/unit/cards/motivation.test.ts`    |
+| `src/cards/tasks/tasks.ts`             | `tests/unit/cards/tasks.test.ts`         |
+| `src/cards/countdown/countdown.ts`     | `tests/unit/cards/countdown.test.ts`     |
+| `src/cards/system-info/system-info.ts` | `tests/unit/cards/system-info.test.ts`   |
+| `src/cards/base-card.ts`               | `tests/unit/cards/base-card.test.ts`     |
+| `src/ui/ticker.ts`                     | `tests/unit/ui/ticker.test.ts`           |
+| `src/ui/header.ts`                     | `tests/unit/ui/header.test.ts`           |
+| `src/ui/config-panel.ts`               | `tests/unit/ui/config-panel.test.ts`     |
+| `src/ui/maximize.ts`                   | `tests/unit/ui/maximize.test.ts`         |
+| `src/ui/night-dimmer.ts`               | `tests/unit/ui/night-dimmer.test.ts`     |
+| `src/ui/theme.ts`                      | `tests/unit/ui/theme.test.ts`            |
+| `src/ui/toast.ts`                      | `tests/unit/ui/toast.test.ts`            |
+| `src/ui/bg-images.ts`                  | `tests/unit/ui/bg-images.test.ts`        |
+| `src/ui/keyboard.ts`                   | `tests/unit/ui/keyboard.test.ts`         |
+| `src/ui/scroll.ts`                     | `tests/unit/ui/scroll.test.ts`           |
+| `src/ui/screen-mode.ts`                | `tests/unit/ui/screen-mode.test.ts`      |
+| `src/ui/status-bar.ts`                 | `tests/unit/ui/status-bar.test.ts`       |
+| `src/ui/layout-drag.ts`                | `tests/unit/ui/layout-drag.test.ts`      |
+| `src/ui/diag-overlay.ts`               | `tests/unit/ui/diag-overlay.test.ts`     |
+| `src/core/cache.ts`                    | `tests/unit/core/cache.test.ts`          |
+| `src/core/idb-cache.ts`                | `tests/unit/core/idb-cache.test.ts`      |
+| `src/core/config.ts`                   | `tests/unit/core/config.test.ts`         |
+| `src/core/fetch.ts`                    | `tests/unit/core/fetch.test.ts`          |
+| `src/core/card-registry.ts`            | `tests/unit/core/card-registry.test.ts`  |
+| `src/core/constants.ts`                | `tests/unit/core/constants.test.ts`      |
+| `src/core/diag.ts`                     | `tests/unit/core/diag.test.ts`           |
+| `src/core/sync.ts`                     | `tests/unit/core/sync.test.ts`           |
+| `src/core/state.ts`                    | `tests/unit/core/state.test.ts`          |
+| `src/core/hardware.ts`                 | `tests/unit/core/hardware.test.ts`       |
+| `src/core/idle.ts`                     | `tests/unit/core/idle.test.ts`           |
+| `src/core/perf.ts`                     | `tests/unit/core/perf.test.ts`           |
+| `src/core/provider.ts`                 | `tests/unit/core/provider.test.ts`       |
+| `src/core/utils.ts`                    | `tests/unit/core/utils.test.ts`          |
+| `src/core/error-reporter.ts`           | `tests/unit/core/error-reporter.test.ts` |
+| `src/core/error-tracker.ts`            | `tests/unit/core/error-tracker.test.ts`  |
+| `src/core/fdb-card.ts`                 | `tests/unit/core/fdb-card.test.ts`       |
+| `src/core/sw-constants.ts`             | `tests/unit/core/sw-constants.test.ts`   |
+| `src/index.html`                       | `tests/unit/html/dom-contract.test.ts`   |
+| `worker/src/`                          | `tests/unit/worker/worker.test.ts`       |
 
 ## Adding Tests for a New Card
 
@@ -114,7 +114,10 @@ describe("<Name> — init()", () => {
   beforeEach(() => {
     document.body.innerHTML = `<div id="<name>-body"></div>`;
   });
-  afterEach(() => { document.body.innerHTML = ""; vi.clearAllMocks(); });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.clearAllMocks();
+  });
 
   it("does not throw on init", () => {
     expect(() => initCard()).not.toThrow();
@@ -143,8 +146,7 @@ vi.mocked(cGet).mockReturnValue(null); // force cache miss
 ### Proxy !r.ok branch
 
 ```typescript
-vi.mocked(fetchWithTimeout)
-  .mockResolvedValue({ ok: false, json: vi.fn() } as unknown as Response);
+vi.mocked(fetchWithTimeout).mockResolvedValue({ ok: false, json: vi.fn() } as unknown as Response);
 // Verify no throw and function returns gracefully
 ```
 
@@ -179,13 +181,13 @@ Prefer reducing churn in the big suites rather than adding another one-off fixtu
 
 ## Fixing Broken Tests
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| `mockReturnValue is not a function` | Used `vi.mocked()` on a non-mock | Use `vi.spyOn(module, "fn").mockReturnValue(...)` instead |
-| Test passes alone but fails in suite | Module state bleed | Add `vi.resetModules()` in beforeEach |
-| Time-sensitive test fails at night | Missing `vi.setSystemTime` | Add `vi.useFakeTimers(); vi.setSystemTime(new Date("2024-06-15T08:00:00"))` |
-| Calendar event not in agenda | Date is outside 21-day window | Use `vi.setSystemTime` to pin clock near fixture date |
-| `};)` syntax error | Wrong closing brace | Change `};)` → `});` |
+| Symptom                              | Cause                            | Fix                                                                         |
+| ------------------------------------ | -------------------------------- | --------------------------------------------------------------------------- |
+| `mockReturnValue is not a function`  | Used `vi.mocked()` on a non-mock | Use `vi.spyOn(module, "fn").mockReturnValue(...)` instead                   |
+| Test passes alone but fails in suite | Module state bleed               | Add `vi.resetModules()` in beforeEach                                       |
+| Time-sensitive test fails at night   | Missing `vi.setSystemTime`       | Add `vi.useFakeTimers(); vi.setSystemTime(new Date("2024-06-15T08:00:00"))` |
+| Calendar event not in agenda         | Date is outside 21-day window    | Use `vi.setSystemTime` to pin clock near fixture date                       |
+| `};)` syntax error                   | Wrong closing brace              | Change `};)` → `});`                                                        |
 
 ## Session Commit Rule
 

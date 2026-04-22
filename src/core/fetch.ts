@@ -52,10 +52,7 @@ function buildWorkerRoute(url: string): string | null {
     return `${WORKER_BASE_URL}/api/alerts`;
   }
 
-  if (
-    parsed.origin === new URL(API.HEBCAL).origin &&
-    parsed.pathname === "/shabbat"
-  ) {
+  if (parsed.origin === new URL(API.HEBCAL).origin && parsed.pathname === "/shabbat") {
     const geonameid = parsed.searchParams.get("geonameid");
     return `${WORKER_BASE_URL}/api/hebcal${geonameid ? `?geonameid=${encodeURIComponent(geonameid)}` : ""}`;
   }
@@ -73,9 +70,7 @@ function buildWorkerRoute(url: string): string | null {
   }
 
   if (url.startsWith(API.SEFARIA_TEXT)) {
-    const ref = decodeURIComponent(
-      url.slice(API.SEFARIA_TEXT.length).split("?")[0] ?? "",
-    );
+    const ref = decodeURIComponent(url.slice(API.SEFARIA_TEXT.length).split("?")[0] ?? "");
     if (!ref) return null;
     return `${WORKER_BASE_URL}/api/sefaria/text?ref=${encodeURIComponent(ref)}`;
   }
@@ -129,9 +124,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
   // 2. Try each proxy (only in dev/local builds — gated by __USE_PROXIES__)
   if (!__USE_PROXIES__) {
     recordFetchFailure();
-    throw new Error(
-      `Direct fetch failed and proxy chain disabled in production: ${short}`,
-    );
+    throw new Error(`Direct fetch failed and proxy chain disabled in production: ${short}`);
   }
 
   const customProxy = localStorage.getItem(LS_CUSTOM_PROXY);
@@ -166,9 +159,7 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
       return (await r.json()) as T;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      diagLog(
-        `FDB-014: fetchJSON ${pName} FAIL (${msg.slice(0, 60)}): ${short}`,
-      );
+      diagLog(`FDB-014: fetchJSON ${pName} FAIL (${msg.slice(0, 60)}): ${short}`);
     }
   }
 
@@ -235,7 +226,7 @@ const _inflightRequests = new Map<string, Promise<unknown>>();
 export async function fetchJSONDeduped<T = unknown>(url: string): Promise<T> {
   const existing = _inflightRequests.get(url);
   if (existing !== undefined) {
-      diagLog(`FDB-018: [fetch] dedup reuse: ${url.slice(0, 60)}`);
+    diagLog(`FDB-018: [fetch] dedup reuse: ${url.slice(0, 60)}`);
     return existing as Promise<T>;
   }
   const p = fetchJSON<T>(url).finally(() => {
@@ -254,10 +245,7 @@ export function getInflightCount(): number {
  * Race all proxies via Promise.any() for fastest response.
  * Used by stock loader for lowest latency.
  */
-export async function raceProxies(
-  url: string,
-  timeout: number = 5_000,
-): Promise<Response> {
+export async function raceProxies(url: string, timeout: number = 5_000): Promise<Response> {
   const attempts = PROXIES.map((p) => {
     const proxyUrl = p + encodeURIComponent(url);
     return fetchWithTimeout(proxyUrl, timeout);
@@ -299,9 +287,7 @@ let _queueRunning = 0;
 
 function _drainFetchQueue(): void {
   while (_queueRunning < _QUEUE_CONCURRENCY && _fetchQueue.length > 0) {
-    _fetchQueue.sort(
-      (a, b) => _PRIORITY_ORDER[a.priority] - _PRIORITY_ORDER[b.priority],
-    );
+    _fetchQueue.sort((a, b) => _PRIORITY_ORDER[a.priority] - _PRIORITY_ORDER[b.priority]);
     const entry = _fetchQueue.shift();
     if (!entry) break;
     _queueRunning++;
@@ -483,7 +469,10 @@ export function sampleNetworkQuality(): void {
 /**
  * Return last N network quality samples.
  */
-export function getNetworkQualityHistory(): ReadonlyArray<{ ts: number; tier: NetworkQualityTier }> {
+export function getNetworkQualityHistory(): ReadonlyArray<{
+  ts: number;
+  tier: NetworkQualityTier;
+}> {
   return _netQualityHistory;
 }
 
@@ -562,8 +551,7 @@ export async function fetchWithStale<T>(opts: {
     onData(data, false);
   } catch {
     diagLog(`[fetch] fetchWithStale miss: ${cacheKey}`);
-    if (stale === null && staticFallback !== undefined)
-      onData(staticFallback, true);
+    if (stale === null && staticFallback !== undefined) onData(staticFallback, true);
   }
 }
 

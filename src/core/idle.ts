@@ -36,9 +36,7 @@ function handleVisibilityChange(): void {
     diagLog("[visibility] Page hidden");
   } else {
     const wasAway =
-      lastHiddenAt !== null
-        ? `(away ${Math.round((Date.now() - lastHiddenAt) / 1000)}s)`
-        : "";
+      lastHiddenAt !== null ? `(away ${Math.round((Date.now() - lastHiddenAt) / 1000)}s)` : "";
     diagLog(`[visibility] Page visible ${wasAway}`);
     lastHiddenAt = null;
   }

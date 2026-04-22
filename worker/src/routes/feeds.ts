@@ -6,12 +6,7 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../utils/validation";
-import {
-  safeParse,
-  StocksChartSchema,
-  CoinGeckoSchema,
-  NewsRssSchema,
-} from "../utils/schemas";
+import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema } from "../utils/schemas";
 
 export async function handleStocks(url: URL): Promise<Response> {
   let sym: string;
@@ -96,9 +91,7 @@ export async function handleCalendar(url: URL): Promise<Response> {
   } catch (err) {
     return validationErrorResponse(err as ValidationError);
   }
-  if (
-    !ALLOWED_CALENDAR_ORIGINS.some((origin) => parsed.hostname.endsWith(origin))
-  ) {
+  if (!ALLOWED_CALENDAR_ORIGINS.some((origin) => parsed.hostname.endsWith(origin))) {
     return jsonResponse({ error: "Calendar origin not permitted", param: "url" }, 403);
   }
 

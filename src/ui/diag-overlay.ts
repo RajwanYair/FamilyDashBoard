@@ -11,10 +11,28 @@ import { getDiagEntries, formatDiagEntry, clearDiag } from "../core/diag";
 import { diagLog } from "../core/diag";
 import { getFailedPanes } from "../core/sync";
 import { isWorkerEnabled } from "../core/constants";
-import { cacheStats, getOldestCacheAgeMinutes, cacheDashboard, cacheInventory, lastHitLayer } from "../core/cache";
+import {
+  cacheStats,
+  getOldestCacheAgeMinutes,
+  cacheDashboard,
+  cacheInventory,
+  lastHitLayer,
+} from "../core/cache";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
-import { getErrors, clearErrors, formatErrorEntry, getErrorCount, getErrorTrend } from "../core/error-tracker";
-import { getPerfVitals, formatVital, rateVital, hasPerfSupport, getCardTimings } from "../core/perf";
+import {
+  getErrors,
+  clearErrors,
+  formatErrorEntry,
+  getErrorCount,
+  getErrorTrend,
+} from "../core/error-tracker";
+import {
+  getPerfVitals,
+  formatVital,
+  rateVital,
+  hasPerfSupport,
+  getCardTimings,
+} from "../core/perf";
 import { idbEstimateSize } from "../core/idb-cache";
 import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
 import { getAllProviderHealth } from "../core/provider";
@@ -24,9 +42,7 @@ let logEl: HTMLElement | null = null;
 
 function overlay(): HTMLDialogElement | null {
   if (!overlayEl?.isConnected)
-    overlayEl = document.getElementById(
-      "diag-overlay",
-    ) as HTMLDialogElement | null;
+    overlayEl = document.getElementById("diag-overlay") as HTMLDialogElement | null;
   return overlayEl;
 }
 
@@ -70,15 +86,15 @@ function renderStats(): void {
       const k = localStorage.key(i) ?? "";
       lsBytes += k.length + (localStorage.getItem(k)?.length ?? 0);
     }
-  } catch { /* quota error */ }
+  } catch {
+    /* quota error */
+  }
   const lsKB = (lsBytes / 1024).toFixed(1);
 
   // Failed panes backoff
   const failed = getFailedPanes();
   const failedText =
-    failed.length === 0
-      ? "אין כשלים"
-      : failed.map((f) => `${f.key}(×${f.delay})`).join(", ");
+    failed.length === 0 ? "אין כשלים" : failed.map((f) => `${f.key}(×${f.delay})`).join(", ");
 
   // Worker status
   const workerStatus = isWorkerEnabled() ? "✅ פעיל" : "❌ כבוי";
@@ -92,15 +108,20 @@ function renderStats(): void {
 
   // Network quality (Sprint 34+37)
   const networkTier = getNetworkQualityTier();
-  const networkIcon = networkTier === "ok" ? "🟢" : networkTier === "slow" ? "🟡" : networkTier === "bad" ? "🔴" : "⚪";
+  const networkIcon =
+    networkTier === "ok"
+      ? "🟢"
+      : networkTier === "slow"
+        ? "🟡"
+        : networkTier === "bad"
+          ? "🔴"
+          : "⚪";
   const consecutiveFails = getConsecutiveFailures();
   const networkOffline = isNetworkOffline() ? " (offline)" : "";
 
   // Build info
-  const version =
-    typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "?";
-  const buildTime =
-    typeof __BUILD_TIME__ !== "undefined" ? __BUILD_TIME__ : "?";
+  const version = typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "?";
+  const buildTime = typeof __BUILD_TIME__ !== "undefined" ? __BUILD_TIME__ : "?";
 
   // Error count
   const errCount = getErrorCount();
@@ -116,31 +137,42 @@ function renderStats(): void {
       <span>${networkIcon} רשת: <b>${networkTier}${networkOffline}</b>${consecutiveFails > 0 ? ` (×${consecutiveFails})` : ""}</span>
       <span>🏷️ v${version}</span>
       <span>🕒 Build: ${buildTime.slice(0, 10)}</span>
-      ${errCount > 0 ? `<span style="color:var(--negative)">⚠️ שגיאות: <b>${errCount}</b></span>` : "<span style=\"color:var(--positive)\">\u2705 אין שגיאות</span>"}
+      ${errCount > 0 ? `<span style="color:var(--negative)">⚠️ שגיאות: <b>${errCount}</b></span>` : '<span style="color:var(--positive)">\u2705 אין שגיאות</span>'}
       <span id="diag-idb-size">💾 IDB: טוען...</span>
     </div>`;
   // Web Vitals section (Sprint 41) + startup waterfall (Sprint 16)
-  const vitalsHtml = hasPerfSupport() ? (() => {
-    const v = getPerfVitals();
-    const vitalColor = (r: string): string =>
-      r === "good" ? "var(--positive)" : r === "poor" ? "var(--negative)" : "var(--warning)";
-    const items: string[] = [];
-    for (const key of ["lcp", "fcp", "ttfb", "inp", "cls", "startup"] as const) {
-      const rating = rateVital(key, v[key]);
-      const label = key === "startup" ? "INIT" : key.toUpperCase();
-      items.push(`<span style="color:${vitalColor(rating)}">${label}: <b>${formatVital(key, v[key])}</b></span>`);
-    }
-    return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">${items.join("")}</div>`;
-  })() : "";
+  const vitalsHtml = hasPerfSupport()
+    ? (() => {
+        const v = getPerfVitals();
+        const vitalColor = (r: string): string =>
+          r === "good" ? "var(--positive)" : r === "poor" ? "var(--negative)" : "var(--warning)";
+        const items: string[] = [];
+        for (const key of ["lcp", "fcp", "ttfb", "inp", "cls", "startup"] as const) {
+          const rating = rateVital(key, v[key]);
+          const label = key === "startup" ? "INIT" : key.toUpperCase();
+          items.push(
+            `<span style="color:${vitalColor(rating)}">${label}: <b>${formatVital(key, v[key])}</b></span>`,
+          );
+        }
+        return `<div class="diag-stats" style="margin-top:6px;font-size:0.78em">${items.join("")}</div>`;
+      })()
+    : "";
 
   // Hardware profile section
   const hwTier = getHardwareTier();
-  const hwColor = hwTier === "high" ? "var(--positive)" : hwTier === "mid" ? "var(--warning)" : "var(--negative)";
+  const hwColor =
+    hwTier === "high" ? "var(--positive)" : hwTier === "mid" ? "var(--warning)" : "var(--negative)";
   const hwHtml = `<div class="diag-stats" style="margin-top:6px;font-size:0.78em;color:var(--text-muted)">
     🖥️ HW: <span style="color:${hwColor}"><b>${formatHardwareProfile()}</b></span>
   </div>`;
 
-  panes.innerHTML = html + vitalsHtml + hwHtml + renderCardTimingsHtml() + renderErrorTrendHtml() + renderProviderHealthHtml();
+  panes.innerHTML =
+    html +
+    vitalsHtml +
+    hwHtml +
+    renderCardTimingsHtml() +
+    renderErrorTrendHtml() +
+    renderProviderHealthHtml();
 
   // Async IDB size + inventory update (v7.10 — non-blocking, Sprint 179 — key count)
   void Promise.all([idbEstimateSize(), cacheInventory()]).then(([bytes, inv]) => {
@@ -157,10 +189,12 @@ function renderCardTimingsHtml(): string {
   const timings = getCardTimings();
   if (timings.size === 0) return "";
   const sorted = [...timings.entries()].sort((a, b) => b[1] - a[1]);
-  const rows = sorted.map(([id, ms]) => {
-    const color = ms < 5 ? "var(--positive)" : ms < 20 ? "var(--warning)" : "var(--negative)";
-    return `<tr><td>${id}</td><td style="color:${color};text-align:end"><b>${ms.toFixed(1)}ms</b></td></tr>`;
-  }).join("");
+  const rows = sorted
+    .map(([id, ms]) => {
+      const color = ms < 5 ? "var(--positive)" : ms < 20 ? "var(--warning)" : "var(--negative)";
+      return `<tr><td>${id}</td><td style="color:${color};text-align:end"><b>${ms.toFixed(1)}ms</b></td></tr>`;
+    })
+    .join("");
   return `<div style="margin-top:6px;font-size:0.75em">
     <b>⏱️ Card Init Timing</b>
     <table style="width:100%;border-collapse:collapse;margin-top:3px">${rows}</table>
@@ -173,11 +207,13 @@ function renderErrorTrendHtml(): string {
   const trend = getErrorTrend();
   if (trend.length < 2) return "";
   const max = Math.max(...trend, 1);
-  const bars = trend.map((v) => {
-    const h = Math.max(2, Math.round((v / max) * 24));
-    const color = v === 0 ? "var(--positive)" : v < 1 ? "var(--warning)" : "var(--negative)";
-    return `<span style="display:inline-block;width:8px;height:${String(h)}px;background:${color};border-radius:1px;vertical-align:bottom"></span>`;
-  }).join("");
+  const bars = trend
+    .map((v) => {
+      const h = Math.max(2, Math.round((v / max) * 24));
+      const color = v === 0 ? "var(--positive)" : v < 1 ? "var(--warning)" : "var(--negative)";
+      return `<span style="display:inline-block;width:8px;height:${String(h)}px;background:${color};border-radius:1px;vertical-align:bottom"></span>`;
+    })
+    .join("");
   return `<div style="margin-top:6px;font-size:0.75em">
     <b>📉 Error Rate Trend</b> (err/min)
     <div style="display:flex;gap:2px;align-items:end;height:28px;margin-top:3px">${bars}</div>

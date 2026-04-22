@@ -100,9 +100,7 @@ describe("Theme System", () => {
     for (const t of THEMES) {
       applyTheme(t);
     }
-    const themeClasses = [...document.body.classList].filter((c) =>
-      c.startsWith("theme-"),
-    );
+    const themeClasses = [...document.body.classList].filter((c) => c.startsWith("theme-"));
     expect(themeClasses).toHaveLength(1);
     expect(themeClasses[0]).toBe("theme-rose");
   });
@@ -253,27 +251,21 @@ describe("Theme — OS prefers-color-scheme change listener", () => {
     localStorage.clear();
     changeHandler = null;
     // Use stubGlobal to reliably replace matchMedia in happy-dom
-    vi.stubGlobal(
-      "matchMedia",
-      (query: string): MediaQueryList => {
-        const mql = {
-          matches: false,
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-          addEventListener: vi.fn(
-            (event: string, handler: EventListenerOrEventListenerObject) => {
-              if (event === "change")
-                changeHandler = handler as (e: { matches: boolean }) => void;
-            },
-          ),
-          removeEventListener: vi.fn(),
-        };
-        return mql as unknown as MediaQueryList;
-      },
-    );
+    vi.stubGlobal("matchMedia", (query: string): MediaQueryList => {
+      const mql = {
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+        addEventListener: vi.fn((event: string, handler: EventListenerOrEventListenerObject) => {
+          if (event === "change") changeHandler = handler as (e: { matches: boolean }) => void;
+        }),
+        removeEventListener: vi.fn(),
+      };
+      return mql as unknown as MediaQueryList;
+    });
   });
 
   afterEach(() => {

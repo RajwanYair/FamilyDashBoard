@@ -18,11 +18,7 @@ const actions: KeyboardAction[] = [];
 /**
  * Register a keyboard shortcut.
  */
-export function registerKey(
-  key: string,
-  description: string,
-  handler: () => void,
-): void {
+export function registerKey(key: string, description: string, handler: () => void): void {
   actions.push({ key: key.toLowerCase(), description, handler });
 }
 

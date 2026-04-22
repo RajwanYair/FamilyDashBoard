@@ -31,10 +31,7 @@ function collectTs(dir: string): string[] {
 }
 
 /** Return all lines matching a pattern, with file path and line number. */
-function grep(
-  files: string[],
-  pattern: RegExp,
-): { file: string; line: number; text: string }[] {
+function grep(files: string[], pattern: RegExp): { file: string; line: number; text: string }[] {
   const hits: { file: string; line: number; text: string }[] = [];
   for (const file of files) {
     const lines = readFileSync(file, "utf-8").split("\n");
@@ -60,34 +57,26 @@ describe("localStorage discipline audit (Stream D2.8)", () => {
   });
 
   it("no file outside core/cache.ts uses raw 'dash_v2_' strings in localStorage.setItem", () => {
-    const rawDataWrites = grep(
-      nonCacheTs,
-      /localStorage\.setItem\s*\(\s*["']dash_v2_/,
-    );
+    const rawDataWrites = grep(nonCacheTs, /localStorage\.setItem\s*\(\s*["']dash_v2_/);
     if (rawDataWrites.length > 0) {
-      const report = rawDataWrites
-        .map((h) => `  ${h.file}:${h.line} → ${h.text}`)
-        .join("\n");
+      const report = rawDataWrites.map((h) => `  ${h.file}:${h.line} → ${h.text}`).join("\n");
       throw new Error(
         "Raw 'dash_v2_' string passed to localStorage.setItem outside core/cache.ts.\n" +
-        "Use a named LS_* constant from core/constants.ts instead:\n" + report,
+          "Use a named LS_* constant from core/constants.ts instead:\n" +
+          report,
       );
     }
     expect(rawDataWrites).toHaveLength(0);
   });
 
   it("card files do not call localStorage.setItem with inline string literals", () => {
-    const inlineStringWrites = grep(
-      cardTs,
-      /localStorage\.setItem\s*\(\s*["']/,
-    );
+    const inlineStringWrites = grep(cardTs, /localStorage\.setItem\s*\(\s*["']/);
     if (inlineStringWrites.length > 0) {
-      const report = inlineStringWrites
-        .map((h) => `  ${h.file}:${h.line} → ${h.text}`)
-        .join("\n");
+      const report = inlineStringWrites.map((h) => `  ${h.file}:${h.line} → ${h.text}`).join("\n");
       throw new Error(
         "Card file uses localStorage.setItem with an inline string literal.\n" +
-        "Use a named LS_* constant from core/constants.ts instead:\n" + report,
+          "Use a named LS_* constant from core/constants.ts instead:\n" +
+          report,
       );
     }
     expect(inlineStringWrites).toHaveLength(0);
@@ -95,9 +84,7 @@ describe("localStorage discipline audit (Stream D2.8)", () => {
 
   it("every LS_* constant exported from constants.ts is used somewhere in src/", () => {
     const constants = readFileSync(join(ROOT, "core", "constants.ts"), "utf-8");
-    const lsExports = [...constants.matchAll(/export const (LS_[A-Z_]+) =/g)].map(
-      (m) => m[1],
-    );
+    const lsExports = [...constants.matchAll(/export const (LS_[A-Z_]+) =/g)].map((m) => m[1]);
     // LS_PREFIX and LS_MAX_AGE are internal — cache.ts uses them implicitly
     const excluded = new Set(["LS_PREFIX", "LS_MAX_AGE"]);
     const nonConstantsSrc = allSrcTs
@@ -113,7 +100,7 @@ describe("localStorage discipline audit (Stream D2.8)", () => {
     if (unused.length > 0) {
       throw new Error(
         "Unused LS_* constants in core/constants.ts (dead config keys):\n" +
-        unused.map((n) => "  " + n).join("\n"),
+          unused.map((n) => "  " + n).join("\n"),
       );
     }
     expect(unused).toHaveLength(0);

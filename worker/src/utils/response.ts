@@ -23,10 +23,7 @@ export function jsonResponse(data: unknown, status = 200): Response {
 }
 
 /** Proxy an upstream Response, adding CORS and a Cache-Control TTL. */
-export async function proxyResponse(
-  res: Response,
-  cacheTtl: number,
-): Promise<Response> {
+export async function proxyResponse(res: Response, cacheTtl: number): Promise<Response> {
   const body = await res.text();
   return new Response(body, {
     status: res.status,

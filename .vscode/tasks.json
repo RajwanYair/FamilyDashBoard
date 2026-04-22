@@ -141,9 +141,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": [
-                "$tsc"
-            ]
+            "problemMatcher": ["$tsc"]
         },
         {
             "label": "🚀 Dev Server",

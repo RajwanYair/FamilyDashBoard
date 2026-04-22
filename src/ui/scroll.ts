@@ -73,9 +73,7 @@ export function startSimpleScroll(
   injectScrollKeyframes(styleId, keyframeName, scrollDistance);
   container.style.animation = `${keyframeName} ${duration}ms linear infinite alternate`;
 
-  diagLog(
-    `[scroll] ${keyframeName}: ${scrollDistance}px alternate @ ${duration}ms`,
-  );
+  diagLog(`[scroll] ${keyframeName}: ${scrollDistance}px alternate @ ${duration}ms`);
 }
 
 /**

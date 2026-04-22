@@ -8,26 +8,10 @@
 
 import { scheduleCard } from "../base-card";
 import "./hebrew-cal.css";
-import {
-  INTERVALS,
-  API,
-  MS_PER_DAY,
-  MS_PER_HOUR,
-  MS_PER_MIN,
-} from "../../core/constants";
-import {
-  cGetStale,
-  cGetAsync,
-  cGetStaleAsync,
-  cSetAsync,
-} from "../../core/cache";
+import { INTERVALS, API, MS_PER_DAY, MS_PER_HOUR, MS_PER_MIN } from "../../core/constants";
+import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
 import { fetchJSONWithWorker } from "../../core/fetch";
-import {
-  setSync,
-  syncBurst,
-  recordSuccess,
-  recordFailure,
-} from "../../core/sync";
+import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { getTasksForToday } from "../tasks/tasks";
@@ -43,10 +27,7 @@ import type { CardConfigField } from "../../types/card";
  * Uses the known candles/havdala times if provided; otherwise falls back
  * to a simple Friday/Saturday heuristic (covers most UI cases).
  */
-export function isShabbat(
-  candlesMs?: number | null,
-  havdalaMs?: number | null,
-): boolean {
+export function isShabbat(candlesMs?: number | null, havdalaMs?: number | null): boolean {
   const now = Date.now();
   if (candlesMs != null && havdalaMs != null) {
     return now >= candlesMs && now < havdalaMs;
@@ -65,15 +46,10 @@ export function isShabbat(
  * Looks at items with category "holiday" and a future date.
  * Returns null when there are no upcoming holidays.
  */
-export function nextHolidayName(
-  items: HebcalItem[],
-  now: Date = new Date(),
-): string | null {
+export function nextHolidayName(items: HebcalItem[], now: Date = new Date()): string | null {
   const upcoming = items
     .filter(
-      (i) =>
-        i.category === "holiday" &&
-        new Date(i.date).getTime() >= now.setHours(0, 0, 0, 0),
+      (i) => i.category === "holiday" && new Date(i.date).getTime() >= now.setHours(0, 0, 0, 0),
     )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   return upcoming[0]?.hebrew ?? upcoming[0]?.title ?? null;
@@ -84,9 +60,7 @@ export function nextHolidayName(
  * using the `Intl.DateTimeFormat` Hebrew calendar extension.
  */
 export function hebrewMonthName(date: Date = new Date()): string {
-  return new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "long" }).format(
-    date,
-  );
+  return new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "long" }).format(date);
 }
 
 /**
@@ -367,8 +341,7 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
 
   // Proximity colouring: red ≤ 7 days, amber ≤ 30 days, default otherwise
   els.holiday.dataset["days"] = String(days);
-  els.holiday.style.color =
-    days <= 7 ? "var(--negative)" : days <= 30 ? "var(--warning)" : "";
+  els.holiday.style.color = days <= 7 ? "var(--negative)" : days <= 30 ? "var(--warning)" : "";
 
   if (els.holidayRow) els.holidayRow.style.display = "";
 
@@ -443,9 +416,7 @@ async function loadOmer(): Promise<void> {
     });
     if (deduped.length) {
       _lastSpecialNames = deduped.map((i) => i.hebrew ?? i.title);
-      els.special.textContent = deduped
-        .map((i) => `✡️ ${i.hebrew ?? i.title}`)
-        .join("  ·  ");
+      els.special.textContent = deduped.map((i) => `✡️ ${i.hebrew ?? i.title}`).join("  ·  ");
       els.specialRow.style.display = "";
     } else {
       els.specialRow.style.display = "none";
@@ -509,10 +480,7 @@ function renderParasha(items: HebcalItem[]): void {
 async function loadDafYomi(): Promise<void> {
   const now = new Date();
   const key = `daf-${now.toDateString()}`;
-  const fresh = await cGetAsync<{ ref: string; heRef: string }>(
-    key,
-    INTERVALS.DAY,
-  );
+  const fresh = await cGetAsync<{ ref: string; heRef: string }>(key, INTERVALS.DAY);
   if (fresh !== null) {
     renderDaf(fresh);
     return;
@@ -528,12 +496,8 @@ async function loadDafYomi(): Promise<void> {
         url?: string;
       }>;
     }>(API.SEFARIA_CALENDAR);
-    const daf = d.calendar_items?.find((i) =>
-      i.title?.en?.toLowerCase().includes("daf yomi"),
-    );
-    const item = daf
-      ? { ref: daf.ref, heRef: daf.title.he, url: daf.url }
-      : null;
+    const daf = d.calendar_items?.find((i) => i.title?.en?.toLowerCase().includes("daf yomi"));
+    const item = daf ? { ref: daf.ref, heRef: daf.title.he, url: daf.url } : null;
     await cSetAsync(key, item);
     renderDaf(item);
     // Also extract Halacha Yomit from the same response (no extra network call)
@@ -556,9 +520,7 @@ async function loadDafYomi(): Promise<void> {
   }
 }
 
-function renderDaf(
-  item: { ref: string; heRef: string; url?: string } | null,
-): void {
+function renderDaf(item: { ref: string; heRef: string; url?: string } | null): void {
   if (!els.daf) return;
   if (!item) {
     if (els.dafRow) els.dafRow.style.display = "none";
@@ -572,16 +534,13 @@ function renderDaf(
     ? `https://www.sefaria.org/${item.url}`
     : `https://www.sefaria.org/${item.ref.replace(/\s+/g, ".")}`;
   if (els.dafLink && els.dafLinkRow) {
-    els.dafLink.onclick = () =>
-      window.open(_dafSefariaUrl, "_blank", "noopener,noreferrer");
+    els.dafLink.onclick = () => window.open(_dafSefariaUrl, "_blank", "noopener,noreferrer");
     els.dafLinkRow.style.display = "";
   }
 }
 
 // ── Halacha Yomit ──
-function renderHalacha(
-  item: { text: string; ref: string; url?: string } | null,
-): void {
+function renderHalacha(item: { text: string; ref: string; url?: string } | null): void {
   if (!els.halacha || !els.halacaRow) return;
   if (!item) {
     els.halacaRow.style.display = "none";
@@ -591,8 +550,7 @@ function renderHalacha(
   if (item.url) {
     const halachaUrl = `https://www.sefaria.org/${item.url}`;
     els.halacha.title = halachaUrl;
-    els.halacha.onclick = () =>
-      window.open(halachaUrl, "_blank", "noopener,noreferrer");
+    els.halacha.onclick = () => window.open(halachaUrl, "_blank", "noopener,noreferrer");
     els.halacha.style.cursor = "pointer";
   }
   els.halacaRow.style.display = "";
@@ -663,9 +621,7 @@ async function loadHebCal(): Promise<void> {
       els.specialRow?.style.display !== "none" &&
       _lastSpecialNames.some(
         (n) =>
-          n === _lastHolidayName ||
-          n.includes(_lastHolidayName) ||
-          _lastHolidayName.includes(n),
+          n === _lastHolidayName || n.includes(_lastHolidayName) || _lastHolidayName.includes(n),
       )
     ) {
       if (els.specialRow) els.specialRow.style.display = "none";
@@ -713,8 +669,7 @@ const ZMANIM_DISPLAY: Array<[string, string]> = [
 
 export function renderZmanim(times: Record<string, string>): void {
   const grid = els.zmanimGrid ?? document.getElementById("zmanim-grid");
-  const section =
-    els.zmanimSection ?? document.getElementById("zmanim-section");
+  const section = els.zmanimSection ?? document.getElementById("zmanim-section");
   if (!grid || !section) return;
   const now = Date.now();
   const frag = document.createDocumentFragment();
@@ -755,13 +710,8 @@ export function renderZmanim(times: Record<string, string>): void {
   // Equalize all cell widths to the widest cell so all blocks are uniform.
   if (typeof requestAnimationFrame === "function") {
     requestAnimationFrame(() => {
-      const cells = Array.from(
-        grid.querySelectorAll<HTMLElement>(".zman-item"),
-      );
-      const maxW = cells.reduce(
-        (m, el) => Math.max(m, el.getBoundingClientRect().width),
-        0,
-      );
+      const cells = Array.from(grid.querySelectorAll<HTMLElement>(".zman-item"));
+      const maxW = cells.reduce((m, el) => Math.max(m, el.getBoundingClientRect().width), 0);
       if (maxW > 0) {
         grid.style.gridTemplateColumns = `repeat(3, ${Math.ceil(maxW)}px)`;
       }
@@ -814,27 +764,18 @@ export function renderNextCalEvent(): void {
     const sumMatch = /^SUMMARY[^:]*:(.+)/m.exec(block);
     const dtMatch = /^DTSTART(?:;[^:]+)?:(\d{8}(?:T\d{6}Z?)?)/m.exec(block);
     if (!sumMatch || !dtMatch) continue;
-    const summary = (sumMatch[1] ?? "")
-      .replace(/\\,/g, ",")
-      .replace(/\\n/g, " ")
-      .trim();
+    const summary = (sumMatch[1] ?? "").replace(/\\,/g, ",").replace(/\\n/g, " ").trim();
     const raw = dtMatch[1] ?? "";
     if (!raw) continue;
     let d: Date;
     if (raw.length === 8) {
-      d = new Date(
-        `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`,
-      );
+      d = new Date(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
     } else {
       d = new Date(
-        raw.replace(
-          /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/,
-          "$1-$2-$3T$4:$5:$6$7",
-        ),
+        raw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, "$1-$2-$3T$4:$5:$6$7"),
       );
     }
-    if (!isNaN(d.getTime()) && d.getTime() > now)
-      events.push({ summary, start: d });
+    if (!isNaN(d.getTime()) && d.getTime() > now) events.push({ summary, start: d });
   }
   events.sort((a, b) => a.start.getTime() - b.start.getTime());
   const next = events[0];
@@ -846,16 +787,14 @@ export function renderNextCalEvent(): void {
   const summary = next.summary;
   const isDuplicate =
     (_lastHolidayName !== "" &&
-      (summary.includes(_lastHolidayName) ||
-        _lastHolidayName.includes(summary))) ||
+      (summary.includes(_lastHolidayName) || _lastHolidayName.includes(summary))) ||
     _lastSpecialNames.some((s) => summary.includes(s) || s.includes(summary));
   if (isDuplicate) {
     eventRow.style.display = "none";
     return;
   }
   const daysUntil = Math.ceil((next.start.getTime() - now) / MS_PER_DAY);
-  const when =
-    daysUntil <= 0 ? "היום" : daysUntil === 1 ? "מחר" : `בעוד ${daysUntil} ימ׳`;
+  const when = daysUntil <= 0 ? "היום" : daysUntil === 1 ? "מחר" : `בעוד ${daysUntil} ימ׳`;
   eventEl.textContent = `${summary} (${when})`;
   eventRow.style.display = "";
 }

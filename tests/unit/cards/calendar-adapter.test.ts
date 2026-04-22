@@ -37,9 +37,7 @@ describe("Calendar Provider Adapter (Sprint 129)", () => {
   });
 
   it("returns ok:true for valid ICS response", async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(VALID_ICS, { status: 200 }),
-    );
+    vi.mocked(fetch).mockResolvedValue(new Response(VALID_ICS, { status: 200 }));
     const adapter = createCalendarAdapter("https://example.com/cal.ics");
     const result = await adapter.fetch();
     expect(result.ok).toBe(true);
@@ -49,9 +47,7 @@ describe("Calendar Provider Adapter (Sprint 129)", () => {
   });
 
   it("returns ok:false for non-ICS response", async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response("<html>Not Found</html>", { status: 200 }),
-    );
+    vi.mocked(fetch).mockResolvedValue(new Response("<html>Not Found</html>", { status: 200 }));
     const adapter = createCalendarAdapter("https://example.com/cal.ics");
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);
@@ -70,9 +66,7 @@ describe("Calendar Provider Adapter (Sprint 129)", () => {
   });
 
   it("records success on valid fetch", async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(VALID_ICS, { status: 200 }),
-    );
+    vi.mocked(fetch).mockResolvedValue(new Response(VALID_ICS, { status: 200 }));
     const adapter = createCalendarAdapter("https://example.com/cal.ics");
     await adapter.fetch();
     const health = getProviderHealth("calendar-ics");

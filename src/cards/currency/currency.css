@@ -54,10 +54,28 @@
     gap: 8px;
     text-align: center;
   }
-  .cur-flag { font-size: 2em; }
-  .cur-pair { font-size: 0.9em; text-align: center; justify-content: center; }
-  .cur-rate { font-size: 1.8em; }
-  .cur-chg { font-size: 0.85em; min-width: unset; text-align: center; }
-  .cur-spark { width: 80px; height: 30px; }
-  .cur-footer { grid-column: 1 / -1; padding: 4px 8px; }
+  .cur-flag {
+    font-size: 2em;
+  }
+  .cur-pair {
+    font-size: 0.9em;
+    text-align: center;
+    justify-content: center;
+  }
+  .cur-rate {
+    font-size: 1.8em;
+  }
+  .cur-chg {
+    font-size: 0.85em;
+    min-width: unset;
+    text-align: center;
+  }
+  .cur-spark {
+    width: 80px;
+    height: 30px;
+  }
+  .cur-footer {
+    grid-column: 1 / -1;
+    padding: 4px 8px;
+  }
 }

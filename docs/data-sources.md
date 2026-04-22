@@ -30,48 +30,48 @@ Direct → allorigins → codetabs → corsproxy.io
 
 ### 🌤 Weather — `open-meteo`
 
-| Property | Value |
-|---|---|
-| Provider | [Open-Meteo](https://open-meteo.com/) — free, no key required |
-| Worker route | `GET /api/weather?lat=X&lon=Y` |
-| Upstream URL | `https://api.open-meteo.com/v1/forecast` |
-| Zod schema | `WeatherSchema` in `worker/src/utils/schemas.ts` |
-| Cache TTL | 30 min (`INTERVALS.WEATHER`) |
-| Cache key | `wx` |
-| Stale fallback | `cGetStaleAsync("wx")` in `open-meteo-adapter.ts` |
-| KV stale fallback | Yes (`data.ts` — `handleWeather`) |
-| Failure mode | Worker returns 502 if upstream shape is invalid |
+| Property          | Value                                                         |
+| ----------------- | ------------------------------------------------------------- |
+| Provider          | [Open-Meteo](https://open-meteo.com/) — free, no key required |
+| Worker route      | `GET /api/weather?lat=X&lon=Y`                                |
+| Upstream URL      | `https://api.open-meteo.com/v1/forecast`                      |
+| Zod schema        | `WeatherSchema` in `worker/src/utils/schemas.ts`              |
+| Cache TTL         | 30 min (`INTERVALS.WEATHER`)                                  |
+| Cache key         | `wx`                                                          |
+| Stale fallback    | `cGetStaleAsync("wx")` in `open-meteo-adapter.ts`             |
+| KV stale fallback | Yes (`data.ts` — `handleWeather`)                             |
+| Failure mode      | Worker returns 502 if upstream shape is invalid               |
 
 ---
 
 ### 💱 Currency — `er-api`
 
-| Property | Value |
-|---|---|
-| Provider | [ExchangeRate-API](https://www.exchangerate-api.com/) (ILS base) |
-| Worker route | `GET /api/currency` |
-| Upstream URL | `https://v6.exchangerate-api.com/v6/<KEY>/latest/ILS` + `https://open.er-api.com/v6/latest/ILS` fallback |
-| Zod schema | `CurrencySchema` in `worker/src/utils/schemas.ts` |
-| Cache TTL | 1 hour (`INTERVALS.CURRENCY`) |
-| Cache key | `curr` |
-| KV stale fallback | Yes (`data.ts` — `handleCurrency`) |
-| Failure mode | Worker returns 502 on shape mismatch |
+| Property          | Value                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| Provider          | [ExchangeRate-API](https://www.exchangerate-api.com/) (ILS base)                                         |
+| Worker route      | `GET /api/currency`                                                                                      |
+| Upstream URL      | `https://v6.exchangerate-api.com/v6/<KEY>/latest/ILS` + `https://open.er-api.com/v6/latest/ILS` fallback |
+| Zod schema        | `CurrencySchema` in `worker/src/utils/schemas.ts`                                                        |
+| Cache TTL         | 1 hour (`INTERVALS.CURRENCY`)                                                                            |
+| Cache key         | `curr`                                                                                                   |
+| KV stale fallback | Yes (`data.ts` — `handleCurrency`)                                                                       |
+| Failure mode      | Worker returns 502 on shape mismatch                                                                     |
 
 ---
 
 ### 📈 Stocks — `yahoo-finance`
 
-| Property | Value |
-|---|---|
-| Provider | Yahoo Finance v8 chart API (unofficial, no key required) |
-| Worker route | `GET /api/stocks?sym=AAPL` |
-| Upstream URL | `https://query1.finance.yahoo.com/v8/finance/chart/<sym>` |
-| Zod schema | `StocksChartSchema` in `worker/src/utils/schemas.ts` |
-| Cache TTL | 5 min open, 30 min closed (`INTERVALS.STOCKS_OPEN/CLOSED`) |
-| Cache key | `stk-<SYM>` |
-| Stale fallback | `cGetStale` on error |
-| Failure mode | Worker returns 502 if shape invalid |
-| Known risk | Unofficial API — may break without notice. Use `StocksChartSchema` to detect breakage early. |
+| Property       | Value                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| Provider       | Yahoo Finance v8 chart API (unofficial, no key required)                                     |
+| Worker route   | `GET /api/stocks?sym=AAPL`                                                                   |
+| Upstream URL   | `https://query1.finance.yahoo.com/v8/finance/chart/<sym>`                                    |
+| Zod schema     | `StocksChartSchema` in `worker/src/utils/schemas.ts`                                         |
+| Cache TTL      | 5 min open, 30 min closed (`INTERVALS.STOCKS_OPEN/CLOSED`)                                   |
+| Cache key      | `stk-<SYM>`                                                                                  |
+| Stale fallback | `cGetStale` on error                                                                         |
+| Failure mode   | Worker returns 502 if shape invalid                                                          |
+| Known risk     | Unofficial API — may break without notice. Use `StocksChartSchema` to detect breakage early. |
 
 **BTC-USD special case**: Bitcoin uses `GET /api/crypto` (CoinGecko) since Yahoo
 Finance crypto quotes are unreliable in browser CORS contexts.
@@ -80,84 +80,84 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 
 ### ₿ Bitcoin — `coingecko`
 
-| Property | Value |
-|---|---|
-| Provider | [CoinGecko](https://www.coingecko.com/) — free tier |
-| Worker route | `GET /api/crypto?ids=bitcoin&vs_currencies=usd` |
-| Upstream URL | `https://api.coingecko.com/api/v3/simple/price` |
-| Zod schema | `CoinGeckoSchema` in `worker/src/utils/schemas.ts` |
-| Cache TTL | 5 min (`Cache-Control: max-age=300` on worker response) |
-| Cache key | (stock cache key `stk-BTC-USD`) |
+| Property     | Value                                                                   |
+| ------------ | ----------------------------------------------------------------------- |
+| Provider     | [CoinGecko](https://www.coingecko.com/) — free tier                     |
+| Worker route | `GET /api/crypto?ids=bitcoin&vs_currencies=usd`                         |
+| Upstream URL | `https://api.coingecko.com/api/v3/simple/price`                         |
+| Zod schema   | `CoinGeckoSchema` in `worker/src/utils/schemas.ts`                      |
+| Cache TTL    | 5 min (`Cache-Control: max-age=300` on worker response)                 |
+| Cache key    | (stock cache key `stk-BTC-USD`)                                         |
 | Failure mode | Worker returns 502 if schema invalid; 400 if unsupported coin requested |
-| Note | Only `bitcoin` is accepted by the worker (`ids` allowlist) |
+| Note         | Only `bitcoin` is accepted by the worker (`ids` allowlist)              |
 
 ---
 
 ### 📰 News — RSS feeds
 
-| Property | Value |
-|---|---|
-| Provider | 17 RSS feeds (Haaretz, Ynet, Times of Israel, BBC, etc.) |
-| Worker route | `GET /api/news?url=<encoded-rss-url>` |
-| Upstream | Direct RSS proxy (allowlisted origins only) |
-| Cache TTL | 15 min (`INTERVALS.NEWS`) |
-| Cache key | `news-<hash>` |
-| Stale fallback | `cGetStale` on error |
-| Failure mode | Worker returns 403 if origin not in `ALLOWED_NEWS_ORIGINS` |
+| Property       | Value                                                      |
+| -------------- | ---------------------------------------------------------- |
+| Provider       | 17 RSS feeds (Haaretz, Ynet, Times of Israel, BBC, etc.)   |
+| Worker route   | `GET /api/news?url=<encoded-rss-url>`                      |
+| Upstream       | Direct RSS proxy (allowlisted origins only)                |
+| Cache TTL      | 15 min (`INTERVALS.NEWS`)                                  |
+| Cache key      | `news-<hash>`                                              |
+| Stale fallback | `cGetStale` on error                                       |
+| Failure mode   | Worker returns 403 if origin not in `ALLOWED_NEWS_ORIGINS` |
 
 ---
 
 ### 📅 Hebrew Calendar — `hebcal`
 
-| Property | Value |
-|---|---|
-| Provider | [Hebcal](https://www.hebcal.com/) — free, no key required |
-| Worker routes | `GET /api/hebcal?geonameid=X`, `GET /api/hebcal/holidays?year=X` |
-| Zod schemas | `HebcalSchema`, `HebcalHolidaysSchema` |
-| Cache TTL | 6 hours (`INTERVALS.HEBREW_CAL`) |
-| Cache key | `hcal`, `hcal-holidays-<year>` |
-| KV stale fallback | Yes (`data.ts` — `handleHebcal`, `handleHebcalHolidays`) |
-| Additional data | Parasha, Omer, Zmanim, Daf Yomi, Candles/Havdala — all via Hebcal |
+| Property          | Value                                                             |
+| ----------------- | ----------------------------------------------------------------- |
+| Provider          | [Hebcal](https://www.hebcal.com/) — free, no key required         |
+| Worker routes     | `GET /api/hebcal?geonameid=X`, `GET /api/hebcal/holidays?year=X`  |
+| Zod schemas       | `HebcalSchema`, `HebcalHolidaysSchema`                            |
+| Cache TTL         | 6 hours (`INTERVALS.HEBREW_CAL`)                                  |
+| Cache key         | `hcal`, `hcal-holidays-<year>`                                    |
+| KV stale fallback | Yes (`data.ts` — `handleHebcal`, `handleHebcalHolidays`)          |
+| Additional data   | Parasha, Omer, Zmanim, Daf Yomi, Candles/Havdala — all via Hebcal |
 
 ---
 
 ### 🗓 Calendar — Google ICS
 
-| Property | Value |
-|---|---|
-| Provider | Google Calendar (ICS export) |
-| Worker route | `GET /api/calendar?url=<encoded-ics-url>` |
-| Upstream | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.) |
-| Cache TTL | 15 min (`INTERVALS.CALENDAR`) |
-| Cache key | `cal-ics-<index>` |
-| Validation | Server validates `BEGIN:VCALENDAR` presence |
+| Property     | Value                                                                                |
+| ------------ | ------------------------------------------------------------------------------------ |
+| Provider     | Google Calendar (ICS export)                                                         |
+| Worker route | `GET /api/calendar?url=<encoded-ics-url>`                                            |
+| Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                       |
+| Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                        |
+| Cache key    | `cal-ics-<index>`                                                                    |
+| Validation   | Server validates `BEGIN:VCALENDAR` presence                                          |
 | Failure mode | Worker returns 403 if origin not in `ALLOWED_CALENDAR_ORIGINS`, 502 if not valid ICS |
 
 ---
 
 ### 🚨 Alerts — Tzeva Adom
 
-| Property | Value |
-|---|---|
-| Provider | [tzevaadom.co.il](https://www.tzevaadom.co.il/) |
-| Worker route | `GET /api/alerts` |
-| Upstream URL | `https://api.tzevaadom.co.il/alerts-history` |
-| Cache TTL | 1 min (`INTERVALS.ALERTS_ACTIVE`) |
-| Cache key | `alerts` |
-| Response envelope | `workerEnvelope(data, "tzevaadom", false, 60)` |
-| Failure mode | Worker returns 502 on upstream error |
+| Property          | Value                                           |
+| ----------------- | ----------------------------------------------- |
+| Provider          | [tzevaadom.co.il](https://www.tzevaadom.co.il/) |
+| Worker route      | `GET /api/alerts`                               |
+| Upstream URL      | `https://api.tzevaadom.co.il/alerts-history`    |
+| Cache TTL         | 1 min (`INTERVALS.ALERTS_ACTIVE`)               |
+| Cache key         | `alerts`                                        |
+| Response envelope | `workerEnvelope(data, "tzevaadom", false, 60)`  |
+| Failure mode      | Worker returns 502 on upstream error            |
 
 ---
 
 ### 💡 Motivation — Sefaria
 
-| Property | Value |
-|---|---|
-| Provider | [Sefaria](https://www.sefaria.org/) — free, no key |
+| Property      | Value                                                      |
+| ------------- | ---------------------------------------------------------- |
+| Provider      | [Sefaria](https://www.sefaria.org/) — free, no key         |
 | Worker routes | `GET /api/sefaria/calendar`, `GET /api/sefaria/text?ref=X` |
-| Cache TTL | 24 hours (`INTERVALS.HALACHA`) |
-| Cache key | `sefaria-cal`, `sefaria-text-<ref>` |
-| Failure mode | Returns stale or empty on error |
+| Cache TTL     | 24 hours (`INTERVALS.HALACHA`)                             |
+| Cache key     | `sefaria-cal`, `sefaria-text-<ref>`                        |
+| Failure mode  | Returns stale or empty on error                            |
 
 ---
 

@@ -1,121 +1,285 @@
 /* Animations & Effects */
 /* ── Animated Gradient Border on Card Focus/Hover ── */
 @property --border-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
 .card:hover::before {
-    content: ''; position: absolute; inset: -1px; border-radius: var(--border-radius); z-index: -1;
-    background: conic-gradient(from var(--border-angle), var(--accent), var(--cyan), var(--purple), var(--pink), var(--accent));
-    animation: rotateBorder 4s linear infinite;
-    opacity: 0.5;
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--border-radius);
+  z-index: -1;
+  background: conic-gradient(
+    from var(--border-angle),
+    var(--accent),
+    var(--cyan),
+    var(--purple),
+    var(--pink),
+    var(--accent)
+  );
+  animation: rotateBorder 4s linear infinite;
+  opacity: 0.5;
 }
-@keyframes rotateBorder { to { --border-angle: 360deg; } }
+@keyframes rotateBorder {
+  to {
+    --border-angle: 360deg;
+  }
+}
 
 /* ── News Item Freshness Indicator ── */
 .rss-item[data-age="fresh"] {
-    border-right-width: 4px;
-    background: linear-gradient(90deg, var(--bg-card-inner), rgba(96,165,250,0.06));
+  border-right-width: 4px;
+  background: linear-gradient(90deg, var(--bg-card-inner), rgba(96, 165, 250, 0.06));
 }
 .rss-item[data-age="fresh"]::before {
-    content: '●'; color: var(--accent); font-size: 0.5em; margin-left: 4px;
-    animation: freshDot 2s ease-in-out infinite;
+  content: "●";
+  color: var(--accent);
+  font-size: 0.5em;
+  margin-left: 4px;
+  animation: freshDot 2s ease-in-out infinite;
 }
-@keyframes freshDot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes freshDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
 
 /* ── Smooth Number Transition ── */
 .num-transition {
-    display: inline-block;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+  display: inline-block;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease;
 }
-.num-transition.updating { transform: translateY(-4px); opacity: 0.3; }
+.num-transition.updating {
+  transform: translateY(-4px);
+  opacity: 0.3;
+}
 
 /* ── Content Visibility for Off-screen Optimization ── */
 /* Skip weather card (first in bottom-grid) — its flex layout needs full height computation */
-.bottom-grid .card:nth-child(n+2) { content-visibility: auto; contain-intrinsic-size: auto 250px; }
+.bottom-grid .card:nth-child(n + 2) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 250px;
+}
 
 /* ── Enhanced Loading Skeleton with Pulse ── */
 .skeleton {
-    background: linear-gradient(90deg, var(--bg-card-inner) 25%, rgba(96,165,250,0.10) 50%, var(--bg-card-inner) 75%);
-    background-size: 200% 100%; animation: shimmer 1.2s ease-in-out infinite;
-    border-radius: 6px; color: transparent !important; min-width: 3em;
+  background: linear-gradient(
+    90deg,
+    var(--bg-card-inner) 25%,
+    rgba(96, 165, 250, 0.1) 50%,
+    var(--bg-card-inner) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  border-radius: 6px;
+  color: transparent !important;
+  min-width: 3em;
 }
 
 /* ── Sync Dot Refresh Burst ── */
-@keyframes syncBurst { 0% { box-shadow: 0 0 0 0 var(--positive); } 100% { box-shadow: 0 0 0 8px transparent; } }
-.sync-dot.just-synced { animation: syncBurst 0.6s ease-out; }
+@keyframes syncBurst {
+  0% {
+    box-shadow: 0 0 0 0 var(--positive);
+  }
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+.sync-dot.just-synced {
+  animation: syncBurst 0.6s ease-out;
+}
 
 /* ── Weather Forecast Day Improvements ── */
-.wx-fday:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.wx-fday:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
 /* ── Uptime in Status Bar ── */
-.status-uptime { color: var(--text-muted); font-size: 1em; }
-
+.status-uptime {
+  color: var(--text-muted);
+  font-size: 1em;
+}
 
 /* ── Focus Visible for Accessibility ── */
-.card:focus-visible, select:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+.card:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* ── Calendar Today Highlight ── */
 .cal-day-header.today {
-    color: var(--warning);
-    border-bottom-color: var(--warning);
+  color: var(--warning);
+  border-bottom-color: var(--warning);
 }
-.cal-day-header.today::before { content: '📌 '; }
+.cal-day-header.today::before {
+  content: "📌 ";
+}
 
 /* ── Stock Positive/Negative Row Tint ── */
-.stk.stk-up { background: linear-gradient(90deg, var(--bg-card-inner), rgba(52,211,153,0.04)); }
-.stk.stk-down { background: linear-gradient(90deg, var(--bg-card-inner), rgba(248,113,113,0.04)); }
+.stk.stk-up {
+  background: linear-gradient(90deg, var(--bg-card-inner), rgba(52, 211, 153, 0.04));
+}
+.stk.stk-down {
+  background: linear-gradient(90deg, var(--bg-card-inner), rgba(248, 113, 113, 0.04));
+}
 
 /* ── Stale Stock Data ── */
 .stk[data-stale="true"] .stk-price,
-.stk[data-stale="true"] .stk-chg { opacity: 0.5; font-style: italic; }
-.stk[data-stale="true"] .stk-name::after { content: " ⏱"; font-size: 0.65em; color: var(--text-secondary); vertical-align: super; }
+.stk[data-stale="true"] .stk-chg {
+  opacity: 0.5;
+  font-style: italic;
+}
+.stk[data-stale="true"] .stk-name::after {
+  content: " ⏱";
+  font-size: 0.65em;
+  color: var(--text-secondary);
+  vertical-align: super;
+}
 
 /* ── Theme Transition ── */
-body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition: background 0.5s ease, color 0.3s ease, border-color 0.3s ease; }
+body,
+.card,
+.card-header,
+.ticker-bar,
+.time-section,
+.status-bar {
+  transition:
+    background 0.5s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
 
 /* ── Background Image Cycling ── */
 
 /* ── Temperature Unit Toggle ── */
-.temp-toggle { cursor: pointer; user-select: none; }
-.temp-toggle:hover { opacity: 0.75; }
+.temp-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+.temp-toggle:hover {
+  opacity: 0.75;
+}
 
 /* ── Shabbat Countdown ── */
-.hc-countdown { font-size: 0.84em; font-weight: 700; color: var(--accent); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
-.hc-countdown.urgent { color: var(--warning); animation: pulse 1s infinite; }
+.hc-countdown {
+  font-size: 0.84em;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.hc-countdown.urgent {
+  color: var(--warning);
+  animation: pulse 1s infinite;
+}
 
 /* ── Parasha & Daf Yomi ── */
-.hc-parasha-val { font-size: 0.76em; font-weight: 700; color: var(--cyan); }
-.hc-daf-val { font-size: 0.72em; font-weight: 600; color: var(--text-secondary); }
+.hc-parasha-val {
+  font-size: 0.76em;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.hc-daf-val {
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
 
 /* ── Zmanim (Prayer Times) Grid ── */
-.zmanim-grid { display: grid; grid-template-columns: repeat(3, max-content); gap: 3px; }
-.zman-item { display: flex; flex-direction: column; align-items: center; gap: 1px; background: var(--bg-card-inner); border-radius: 5px; padding: 3px 2px; min-width: 0; }
-.zman-name { font-size: 0.52em; color: var(--text-muted); white-space: nowrap; text-align: center; }
-.zman-time { font-size: 0.66em; font-weight: 700; color: var(--accent-bright); font-variant-numeric: tabular-nums; }
-.zman-item.zman-next { background: rgba(251, 191, 36, 0.15); outline: 1px solid #fbbf24; }
-.zman-item.zman-next .zman-time { color: #fbbf24; }
+.zmanim-grid {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 3px;
+}
+.zman-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  background: var(--bg-card-inner);
+  border-radius: 5px;
+  padding: 3px 2px;
+  min-width: 0;
+}
+.zman-name {
+  font-size: 0.52em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-align: center;
+}
+.zman-time {
+  font-size: 0.66em;
+  font-weight: 700;
+  color: var(--accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+.zman-item.zman-next {
+  background: rgba(251, 191, 36, 0.15);
+  outline: 1px solid #fbbf24;
+}
+.zman-item.zman-next .zman-time {
+  color: #fbbf24;
+}
 
 /* ── Birthday Notification ── */
-.hc-birthday { font-size: 0.68em; color: var(--warning); text-align: center; padding: 2px 4px; font-weight: 600; }
+.hc-birthday {
+  font-size: 0.68em;
+  color: var(--warning);
+  text-align: center;
+  padding: 2px 4px;
+  font-weight: 600;
+}
 /* v7: Tasks strip inside Hebrew-cal card */
-.hc-tasks-strip { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 0 2px; }
-.hc-task-chip { font-size: 0.65em; color: var(--text-muted); background: rgba(255,255,255,0.06); border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
+.hc-tasks-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 0 2px;
+}
+.hc-task-chip {
+  font-size: 0.65em;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
 
 /* ── UV Index Color Coding ── */
-.uv-low   { color: var(--positive); }
-.uv-mod   { color: #a3e635; }
-.uv-high  { color: var(--orange); }
-.uv-vhigh { color: var(--negative); }
-.uv-extreme { color: var(--purple); font-weight: 800; }
+.uv-low {
+  color: var(--positive);
+}
+.uv-mod {
+  color: #a3e635;
+}
+.uv-high {
+  color: var(--orange);
+}
+.uv-vhigh {
+  color: var(--negative);
+}
+.uv-extreme {
+  color: var(--purple);
+  font-weight: 800;
+}
 
 /* ── Precipitation in Forecast ── */
-.wx-fday-rain { font-size: 0.72em; color: var(--accent); margin-top: 1px; }
+.wx-fday-rain {
+  font-size: 0.72em;
+  color: var(--accent);
+  margin-top: 1px;
+}
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    GPU / CPU ADAPTIVE PERFORMANCE (hardware.ts → data-hw-tier)
@@ -128,71 +292,131 @@ body, .card, .card-header, .ticker-bar, .time-section, .status-bar { transition:
 
 /* ── Card layout containment (high + mid) — isolates reflow per card ── */
 :is([data-hw-tier="high"], [data-hw-tier="mid"]) .card {
-    contain: layout style;
+  contain: layout style;
 }
 
 /* ── GPU compositor layer hints for actively animated elements ── */
 [data-hw-tier="high"] .skeleton {
-    will-change: background-position;
+  will-change: background-position;
 }
 [data-hw-tier="high"] .wx-fday,
 [data-hw-tier="high"] .stk {
-    will-change: transform;
+  will-change: transform;
 }
 [data-hw-tier="high"] .sync-dot {
-    will-change: box-shadow;
+  will-change: box-shadow;
 }
 
 /* ── Extend content-visibility to ALL cards on mid/low for off-screen skip ── */
 :is([data-hw-tier="mid"], [data-hw-tier="low"]) .card {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 260px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 260px;
 }
 
 /* ── Low tier: cut expensive animations and effects ── */
 [data-hw-tier="low"] .card:hover::before {
-    animation: none;
-    background: var(--accent-border);
+  animation: none;
+  background: var(--accent-border);
 }
 [data-hw-tier="low"] .skeleton {
-    animation: none;
-    background: var(--bg-card-inner);
+  animation: none;
+  background: var(--bg-card-inner);
 }
 [data-hw-tier="low"] .hc-countdown.urgent {
-    animation: none;
+  animation: none;
 }
 [data-hw-tier="low"] .rss-item[data-age="fresh"]::before {
-    animation: none;
+  animation: none;
 }
 /* Low tier: compress animation durations to near-instant */
 [data-hw-tier="low"] {
-    --duration-fast:   0.05s;
-    --duration-normal: 0.1s;
-    --duration-slow:   0.15s;
+  --duration-fast: 0.05s;
+  --duration-normal: 0.1s;
+  --duration-slow: 0.15s;
 }
 
-
-
 /* ── School Holiday ── */
-.hc-school-val { font-size: 0.74em; color: var(--pink); font-weight: 600; }
+.hc-school-val {
+  font-size: 0.74em;
+  color: var(--pink);
+  font-weight: 600;
+}
 
 /* ── Parasha Reading Reference ── */
-.hc-parasha-ref { font-size: 0.68em; color: var(--text-secondary); }
+.hc-parasha-ref {
+  font-size: 0.68em;
+  color: var(--text-secondary);
+}
 
 /* ── Shabbat Mode ── */
-body.shabbat-mode .container { filter: brightness(0.60); transition: filter 2s ease; }
-body.shabbat-mode .card { animation: none !important; }
-body.shabbat-mode .ticker-track * { animation-play-state: paused !important; }
-#shabbat-mode-banner { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1100; background: rgba(30,41,59,0.95); border: 1px solid var(--accent-border); border-radius: 12px; padding: 12px 24px; font-size: 1.6em; color: var(--accent); text-align: center; pointer-events: none; }
-body.shabbat-mode #shabbat-mode-banner { display: block; }
+body.shabbat-mode .container {
+  filter: brightness(0.6);
+  transition: filter 2s ease;
+}
+body.shabbat-mode .card {
+  animation: none !important;
+}
+body.shabbat-mode .ticker-track * {
+  animation-play-state: paused !important;
+}
+#shabbat-mode-banner {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1100;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1.6em;
+  color: var(--accent);
+  text-align: center;
+  pointer-events: none;
+}
+body.shabbat-mode #shabbat-mode-banner {
+  display: block;
+}
 
 /* ── Help Overlay (<dialog>) ── */
-#help-overlay { border: none; padding: 0; background: transparent; outline: none; }
-#help-overlay::backdrop { background: rgba(6,11,20,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-#help-panel { background: var(--bg-card); border: 1px solid var(--accent-border); border-radius: 14px; padding: 20px 28px; max-width: 480px; width: 90%; color: var(--text-primary); }
-#help-panel h2 { font-size: 1.1em; color: var(--accent); margin: 0 0 14px 0; text-align: center; }
-.help-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.82em; }
-.help-row:last-child { border-bottom: none; }
+#help-overlay {
+  border: none;
+  padding: 0;
+  background: transparent;
+  outline: none;
+}
+#help-overlay::backdrop {
+  background: rgba(6, 11, 20, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+#help-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-radius: 14px;
+  padding: 20px 28px;
+  max-width: 480px;
+  width: 90%;
+  color: var(--text-primary);
+}
+#help-panel h2 {
+  font-size: 1.1em;
+  color: var(--accent);
+  margin: 0 0 14px 0;
+  text-align: center;
+}
+.help-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.82em;
+}
+.help-row:last-child {
+  border-bottom: none;
+}
 
 /* ═══════════════════════════════════════════════════════
    Sprint 151: Card Badge Pulse — new data indicator
@@ -210,8 +434,15 @@ body.shabbat-mode #shabbat-mode-banner { display: block; }
   z-index: 3;
 }
 @keyframes badge-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.6); opacity: 0.4; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0.4;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -225,8 +456,16 @@ body.shabbat-mode #shabbat-mode-banner { display: block; }
   ::view-transition-new(root) {
     animation: 280ms ease-in both vt-fade-in;
   }
-  @keyframes vt-fade-out { to { opacity: 0; } }
-  @keyframes vt-fade-in { from { opacity: 0; } }
+  @keyframes vt-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes vt-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -237,15 +476,27 @@ body.shabbat-mode #shabbat-mode-banner { display: block; }
     animation: card-enter 0.35s ease-out both;
   }
   @keyframes card-enter {
-    from { opacity: 0; transform: translateY(12px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
   .card.card--hiding {
     animation: card-leave 0.25s ease-in forwards;
   }
   @keyframes card-leave {
-    from { opacity: 1; transform: scale(1); }
-    to   { opacity: 0; transform: scale(0.95); }
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
   }
 }
 
@@ -263,7 +514,9 @@ body.shabbat-mode #shabbat-mode-banner { display: block; }
 @supports (animation-timeline: auto) or (selector(::view-transition-new(*))) {
   /* Config panel slides in from right */
   #config-overlay {
-    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition:
+      opacity 0.2s ease,
+      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   #config-overlay:not(.visible) {
     opacity: 0;
@@ -273,11 +526,35 @@ body.shabbat-mode #shabbat-mode-banner { display: block; }
 }
 
 /* ── Enhanced card entrance stagger ── */
-.grid-col-left  .card:nth-child(1) { animation-name: cardSlideRight; animation-delay: 0.04s; }
-.grid-col-left  .card:nth-child(2) { animation-name: cardSlideRight; animation-delay: 0.1s; }
-.grid-col-mid   .card:nth-child(1) { animation-name: cardSlideUp;    animation-delay: 0.07s; }
-.grid-col-mid   .card:nth-child(2) { animation-name: cardSlideUp;    animation-delay: 0.13s; }
-.grid-col-mid   .card:nth-child(3) { animation-name: cardSlideUp;    animation-delay: 0.18s; }
-.grid-col-right .card:nth-child(1) { animation-name: cardSlideLeft;  animation-delay: 0.05s; }
-.grid-col-right .card:nth-child(2) { animation-name: cardSlideLeft;  animation-delay: 0.11s; }
-.grid-col-right .card:nth-child(3) { animation-name: cardSlideLeft;  animation-delay: 0.16s; }
+.grid-col-left .card:nth-child(1) {
+  animation-name: cardSlideRight;
+  animation-delay: 0.04s;
+}
+.grid-col-left .card:nth-child(2) {
+  animation-name: cardSlideRight;
+  animation-delay: 0.1s;
+}
+.grid-col-mid .card:nth-child(1) {
+  animation-name: cardSlideUp;
+  animation-delay: 0.07s;
+}
+.grid-col-mid .card:nth-child(2) {
+  animation-name: cardSlideUp;
+  animation-delay: 0.13s;
+}
+.grid-col-mid .card:nth-child(3) {
+  animation-name: cardSlideUp;
+  animation-delay: 0.18s;
+}
+.grid-col-right .card:nth-child(1) {
+  animation-name: cardSlideLeft;
+  animation-delay: 0.05s;
+}
+.grid-col-right .card:nth-child(2) {
+  animation-name: cardSlideLeft;
+  animation-delay: 0.11s;
+}
+.grid-col-right .card:nth-child(3) {
+  animation-name: cardSlideLeft;
+  animation-delay: 0.16s;
+}

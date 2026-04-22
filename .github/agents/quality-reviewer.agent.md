@@ -27,15 +27,15 @@ You are the quality gate for FamilyDashBoard. Your job is to verify that the cod
 
 ## Key Context Files
 
-| File | Purpose |
-|------|---------|
-| `.github/copilot-instructions.md` | Project rules, naming conventions, forbidden patterns |
-| `.github/instructions/typescript.instructions.md` | TypeScript strict rules |
-| `.github/instructions/tests.instructions.md` | Test patterns, `_resetForTest()` pattern |
-| `.github/instructions/pre-release.instructions.md` | Full pre-release checklist |
-| `.github/prompts/release-check.prompt.md` | Release readiness prompt |
-| `vitest.config.ts` | Test aliases: `@` → `src/`, `@tests` → `tests/unit/` |
-| `ROADMAP.md` | Sprint status, stream progress |
+| File                                               | Purpose                                               |
+| -------------------------------------------------- | ----------------------------------------------------- |
+| `.github/copilot-instructions.md`                  | Project rules, naming conventions, forbidden patterns |
+| `.github/instructions/typescript.instructions.md`  | TypeScript strict rules                               |
+| `.github/instructions/tests.instructions.md`       | Test patterns, `_resetForTest()` pattern              |
+| `.github/instructions/pre-release.instructions.md` | Full pre-release checklist                            |
+| `.github/prompts/release-check.prompt.md`          | Release readiness prompt                              |
+| `vitest.config.ts`                                 | Test aliases: `@` → `src/`, `@tests` → `tests/unit/`  |
+| `ROADMAP.md`                                       | Sprint status, stream progress                        |
 
 ## Mission
 
@@ -61,23 +61,23 @@ Use this agent when:
 
 ## Quality Gates (Zero Tolerance)
 
-| Gate | Command | Expected |
-|------|---------|---------|
-| Type errors | `npx tsc --noEmit` | 0 errors |
-| Lint errors | `npx eslint src tests --max-warnings 0` | 0 errors · 0 warnings |
-| Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors |
-| Test failures | `npx vitest run` | 0 failures (3080+ / 88 suites baseline) |
-| Build | `npm run build` | 0 errors |
-| Bundle size | `npm run check:bundle` | within limits |
+| Gate          | Command                                                 | Expected                                |
+| ------------- | ------------------------------------------------------- | --------------------------------------- |
+| Type errors   | `npx tsc --noEmit`                                      | 0 errors                                |
+| Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                   |
+| Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                |
+| Test failures | `npx vitest run`                                        | 0 failures (3080+ / 88 suites baseline) |
+| Build         | `npm run build`                                         | 0 errors                                |
+| Bundle size   | `npm run check:bundle`                                  | within limits                           |
 
 ## Coverage Thresholds
 
-| Metric | Threshold |
-|--------|-----------|
-| Statements | 90% |
-| Branches | 81% |
-| Functions | 90% |
-| Lines | 92% |
+| Metric     | Threshold |
+| ---------- | --------- |
+| Statements | 90%       |
+| Branches   | 81%       |
+| Functions  | 90%       |
+| Lines      | 92%       |
 
 ## Security Checklist
 
@@ -96,15 +96,15 @@ Use this agent when:
 
 ## Failure Playbook
 
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| Tests fail after refactor | Module state leaked between tests | Add `_resetForTest()` to `beforeEach`/`afterEach` |
-| `vi.resetModules()` making tests slow | Unnecessary full module reload | Replace with `_resetForTest()` pattern |
-| Type errors on `_reset*ForTest` | Function not exported from source | Add `export function _reset*ForTest(): void { ... }` at end of module |
-| Lint: `no-unused-vars` on `_reset*ForTest` | Not imported in test file | Add to static imports |
-| CI red on bundle size | New dependency added | Check `npm run check:bundle`; remove dependency |
-| CI red on typecheck | Implicit `any` or missing type | Add explicit type annotation; never use `@ts-ignore` |
-| CI red on lint | New warning introduced | Fix at source; never use `eslint-disable` |
+| Symptom                                    | Likely Cause                      | Fix                                                                   |
+| ------------------------------------------ | --------------------------------- | --------------------------------------------------------------------- |
+| Tests fail after refactor                  | Module state leaked between tests | Add `_resetForTest()` to `beforeEach`/`afterEach`                     |
+| `vi.resetModules()` making tests slow      | Unnecessary full module reload    | Replace with `_resetForTest()` pattern                                |
+| Type errors on `_reset*ForTest`            | Function not exported from source | Add `export function _reset*ForTest(): void { ... }` at end of module |
+| Lint: `no-unused-vars` on `_reset*ForTest` | Not imported in test file         | Add to static imports                                                 |
+| CI red on bundle size                      | New dependency added              | Check `npm run check:bundle`; remove dependency                       |
+| CI red on typecheck                        | Implicit `any` or missing type    | Add explicit type annotation; never use `@ts-ignore`                  |
+| CI red on lint                             | New warning introduced            | Fix at source; never use `eslint-disable`                             |
 
 ## Report Format
 

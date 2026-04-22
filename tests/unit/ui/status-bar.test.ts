@@ -63,8 +63,7 @@ describe("Status Bar — initStatusBar", () => {
   });
 
   it("does not throw when sync dot elements are absent", async () => {
-    document.body.innerHTML =
-      '<div id="version-badge"></div><div id="refresh-stamp"></div>';
+    document.body.innerHTML = '<div id="version-badge"></div><div id="refresh-stamp"></div>';
     const emptyMod = await freshBar();
     expect(() => emptyMod.initStatusBar()).not.toThrow();
   });
@@ -277,9 +276,7 @@ describe("Status Bar — updateConnIndicator", () => {
       configurable: true,
     });
     mod.updateConnIndicator();
-    expect(
-      document.getElementById("conn-indicator")?.textContent,
-    ).toBe("🟢");
+    expect(document.getElementById("conn-indicator")?.textContent).toBe("🟢");
   });
 
   it("shows 🔴 when navigator.onLine is false", () => {
@@ -289,9 +286,7 @@ describe("Status Bar — updateConnIndicator", () => {
       configurable: true,
     });
     mod.updateConnIndicator();
-    expect(
-      document.getElementById("conn-indicator")?.textContent,
-    ).toBe("🔴");
+    expect(document.getElementById("conn-indicator")?.textContent).toBe("🔴");
   });
 
   it("does not throw when conn-indicator is absent", () => {
@@ -323,17 +318,13 @@ describe("Status Bar — updateFontScaleIndicator", () => {
   it("shows empty string at default 100% scale", () => {
     document.documentElement.style.setProperty("--font-scale", "1");
     mod.updateFontScaleIndicator();
-    expect(
-      document.getElementById("font-scale-indicator")?.textContent,
-    ).toBe("");
+    expect(document.getElementById("font-scale-indicator")?.textContent).toBe("");
   });
 
   it("shows percentage when scale differs from 100%", () => {
     document.documentElement.style.setProperty("--font-scale", "1.1");
     mod.updateFontScaleIndicator();
-    expect(
-      document.getElementById("font-scale-indicator")?.textContent,
-    ).toBe("110%");
+    expect(document.getElementById("font-scale-indicator")?.textContent).toBe("110%");
   });
 
   it("does not throw when font-scale-indicator is absent", () => {

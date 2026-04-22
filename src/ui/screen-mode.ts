@@ -53,9 +53,7 @@ export function initScreenMode(): void {
   applyFontScale(c.fontScale);
 
   // Wire the screen-mode dropdown
-  const sel = document.getElementById(
-    "screen-mode-select",
-  ) as HTMLSelectElement | null;
+  const sel = document.getElementById("screen-mode-select") as HTMLSelectElement | null;
   if (sel) {
     sel.addEventListener("change", () => {
       const mode = sel.value as DashboardConfig["screenMode"];
@@ -64,7 +62,5 @@ export function initScreenMode(): void {
     });
   }
 
-  diagLog(
-    `[screen-mode] Initialized: mode=${c.screenMode} scale=${c.fontScale}`,
-  );
+  diagLog(`[screen-mode] Initialized: mode=${c.screenMode} scale=${c.fontScale}`);
 }

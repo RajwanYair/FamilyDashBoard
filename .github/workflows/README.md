@@ -72,14 +72,14 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 
 ## Permissions Matrix
 
-| Workflow | contents | pages | id-token | deployments | pull-requests |
-|----------|----------|-------|----------|-------------|---------------|
-| `ci.yml` | read | — | — | — | — |
-| `deploy.yml` | read | write | write | — | — |
-| `release.yml` | write | — | — | write | — |
-| `deploy-worker.yml` | read | — | — | — | — |
-| `auto-label.yml` | read | — | — | — | write |
-| `dependabot-auto-merge.yml` | write | — | — | — | write |
+| Workflow                    | contents | pages | id-token | deployments | pull-requests |
+| --------------------------- | -------- | ----- | -------- | ----------- | ------------- |
+| `ci.yml`                    | read     | —     | —        | —           | —             |
+| `deploy.yml`                | read     | write | write    | —           | —             |
+| `release.yml`               | write    | —     | —        | write       | —             |
+| `deploy-worker.yml`         | read     | —     | —        | —           | —             |
+| `auto-label.yml`            | read     | —     | —        | —           | write         |
+| `dependabot-auto-merge.yml` | write    | —     | —        | —           | write         |
 
 > Principle: **least privilege**. Only grant the minimum permissions required for the workflow to function.
 > The `id-token: write` on `deploy.yml` is required for OIDC authentication with GitHub Pages.
@@ -88,11 +88,11 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 
 ## Secrets Inventory
 
-| Secret | Used by | Purpose |
-|--------|---------|---------|
-| `CF_API_TOKEN` | `deploy-worker.yml` | Cloudflare API token for Worker deployment via Wrangler |
-| `CF_ACCOUNT_ID` | `deploy-worker.yml` | Cloudflare account identifier |
-| _(none others)_ | all others | Workflows use `GITHUB_TOKEN` (auto-provisioned) only |
+| Secret          | Used by             | Purpose                                                 |
+| --------------- | ------------------- | ------------------------------------------------------- |
+| `CF_API_TOKEN`  | `deploy-worker.yml` | Cloudflare API token for Worker deployment via Wrangler |
+| `CF_ACCOUNT_ID` | `deploy-worker.yml` | Cloudflare account identifier                           |
+| _(none others)_ | all others          | Workflows use `GITHUB_TOKEN` (auto-provisioned) only    |
 
 > If you add a new secret, document it here and in the workflow that uses it.
 > Never commit secrets as plaintext. Never log secret values.
@@ -118,13 +118,13 @@ concurrency:
 
 ## Action Version Policy
 
-| Action | Pinned version | Notes |
-|--------|---------------|-------|
-| `actions/checkout` | `v4` | Do NOT use v5+ (does not exist yet) |
-| `actions/setup-node` | `v4` | Do NOT use v5+ (does not exist yet) |
-| `actions/upload-pages-artifact` | `v3` | Stable Pages API |
-| `actions/deploy-pages` | `v4` | Stable Pages deploy |
-| `actions/upload-artifact` | `v4` | |
-| `actions/download-artifact` | `v4` | |
+| Action                          | Pinned version | Notes                               |
+| ------------------------------- | -------------- | ----------------------------------- |
+| `actions/checkout`              | `v4`           | Do NOT use v5+ (does not exist yet) |
+| `actions/setup-node`            | `v4`           | Do NOT use v5+ (does not exist yet) |
+| `actions/upload-pages-artifact` | `v3`           | Stable Pages API                    |
+| `actions/deploy-pages`          | `v4`           | Stable Pages deploy                 |
+| `actions/upload-artifact`       | `v4`           |                                     |
+| `actions/download-artifact`     | `v4`           |                                     |
 
 > Update action versions only when there is a clear need. Document the reason in the commit message.

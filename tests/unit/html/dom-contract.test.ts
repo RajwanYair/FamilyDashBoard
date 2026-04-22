@@ -11,10 +11,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const html = readFileSync(
-  resolve(__dirname, "../../../src/index.html"),
-  "utf8",
-);
+const html = readFileSync(resolve(__dirname, "../../../src/index.html"), "utf8");
 
 // Helper: check that id="X" exists in the HTML
 function hasId(id: string): boolean {
@@ -33,10 +30,8 @@ describe("DOM Contract — no inline onclick handlers", () => {
 // ── Core infrastructure elements ──
 
 describe("DOM Contract — SW update banner", () => {
-  it("has #sw-update-banner", () =>
-    expect(hasId("sw-update-banner")).toBe(true));
-  it("has #sw-update-reload-btn", () =>
-    expect(hasId("sw-update-reload-btn")).toBe(true));
+  it("has #sw-update-banner", () => expect(hasId("sw-update-banner")).toBe(true));
+  it("has #sw-update-reload-btn", () => expect(hasId("sw-update-reload-btn")).toBe(true));
 });
 
 describe("DOM Contract — Header elements", () => {
@@ -47,16 +42,13 @@ describe("DOM Contract — Header elements", () => {
   it("has #year-bar", () => expect(hasId("year-bar")).toBe(true));
   it("has #hebrew-date", () => expect(hasId("hebrew-date")).toBe(true));
   it("has #top-temp", () => expect(hasId("top-temp")).toBe(true));
-  it("has #header-event-count", () =>
-    expect(hasId("header-event-count")).toBe(true));
+  it("has #header-event-count", () => expect(hasId("header-event-count")).toBe(true));
   it("has #notif-bell (no onclick)", () => {
     expect(hasId("notif-bell")).toBe(true);
     expect(html).not.toContain('notif-bell" onclick');
   });
-  it("has #header-birthday-chip (F104)", () =>
-    expect(hasId("header-birthday-chip")).toBe(true));
-  it("has #header-countdown (F139)", () =>
-    expect(hasId("header-countdown")).toBe(true));
+  it("has #header-birthday-chip (F104)", () => expect(hasId("header-birthday-chip")).toBe(true));
+  it("has #header-countdown (F139)", () => expect(hasId("header-countdown")).toBe(true));
 });
 
 // ── Overlays ──
@@ -89,18 +81,14 @@ describe("DOM Contract — Config panel form", () => {
     expect(html).not.toContain('cfg-share-btn" onclick');
   });
   it("has #cfg-import-file", () => expect(hasId("cfg-import-file")).toBe(true));
-  it("has #cfg-countdown-date (F139)", () =>
-    expect(hasId("cfg-countdown-date")).toBe(true));
-  it("has #cfg-countdown-label (F139)", () =>
-    expect(hasId("cfg-countdown-label")).toBe(true));
+  it("has #cfg-countdown-date (F139)", () => expect(hasId("cfg-countdown-date")).toBe(true));
+  it("has #cfg-countdown-label (F139)", () => expect(hasId("cfg-countdown-label")).toBe(true));
   it("has .cfg-tab[data-tab] buttons (no onclick)", () => {
-    const tabCount = (html.match(/class="cfg-tab[^"]*" data-tab="/g) ?? [])
-      .length;
+    const tabCount = (html.match(/class="cfg-tab[^"]*" data-tab="/g) ?? []).length;
     expect(tabCount).toBeGreaterThanOrEqual(5);
     expect(html).not.toMatch(/cfg-tab[^>]+onclick=/);
   });
-  it("has #screen-mode-select", () =>
-    expect(hasId("screen-mode-select")).toBe(true));
+  it("has #screen-mode-select", () => expect(hasId("screen-mode-select")).toBe(true));
   it("has #theme-select", () => expect(hasId("theme-select")).toBe(true));
   it("has #cfg-ics-url", () => expect(hasId("cfg-ics-url")).toBe(true));
   it("has #diag-copy-btn (no onclick)", () => {
@@ -128,8 +116,7 @@ describe("DOM Contract — News card", () => {
   it("has #news-search", () => expect(hasId("news-search")).toBe(true));
   it("has #news-filter-bar", () => expect(hasId("news-filter-bar")).toBe(true));
   it("has #sync-news", () => expect(hasId("sync-news")).toBe(true));
-  it("has #news-bkm-pill (B-key bookmarks)", () =>
-    expect(hasId("news-bkm-pill")).toBe(true));
+  it("has #news-bkm-pill (B-key bookmarks)", () => expect(hasId("news-bkm-pill")).toBe(true));
 });
 
 // ── Weather card ──
@@ -226,10 +213,8 @@ describe("DOM Contract — Status bar", () => {
 // ── Tasks card buttons (v7.1) ──
 
 describe("DOM Contract — Tasks card action buttons", () => {
-  it("has #tasks-mark-all-btn", () =>
-    expect(hasId("tasks-mark-all-btn")).toBe(true));
-  it("has #tasks-reset-btn", () =>
-    expect(hasId("tasks-reset-btn")).toBe(true));
+  it("has #tasks-mark-all-btn", () => expect(hasId("tasks-mark-all-btn")).toBe(true));
+  it("has #tasks-reset-btn", () => expect(hasId("tasks-reset-btn")).toBe(true));
 });
 
 // ── Currency last-fetch chip (v7.1) ──

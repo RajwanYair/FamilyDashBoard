@@ -6,10 +6,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { THEMES } from "@/core/constants";
 
-const css = readFileSync(
-  resolve(__dirname, "../../../src/styles/themes.css"),
-  "utf-8",
-);
+const css = readFileSync(resolve(__dirname, "../../../src/styles/themes.css"), "utf-8");
 
 /** CSS custom properties every theme MUST define. */
 const REQUIRED_PROPS = [

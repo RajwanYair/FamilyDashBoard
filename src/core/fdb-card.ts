@@ -63,9 +63,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    */
   connectedCallback(): void {
     document.addEventListener("visibilitychange", this._visListener);
-    diagLog(
-      `FDB-059: [fdb-card] connected: ${this.getAttribute("data-card-id") ?? this.tagName}`,
-    );
+    diagLog(`FDB-059: [fdb-card] connected: ${this.getAttribute("data-card-id") ?? this.tagName}`);
     this.connect();
   }
 
@@ -88,16 +86,10 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    * Called when one of `observedAttributes` changes.
    * Override in subclasses to react to specific attribute changes.
    */
-  attributeChangedCallback(
-    name: string,
-    oldValue: string | null,
-    newValue: string | null,
-  ): void {
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
     if (oldValue === newValue) return;
     // Subclasses handle their specific attributes; base class logs only.
-    diagLog(
-      `FDB-061: [fdb-card] attr ${name}: ${String(oldValue)} → ${String(newValue)}`,
-    );
+    diagLog(`FDB-061: [fdb-card] attr ${name}: ${String(oldValue)} → ${String(newValue)}`);
   }
 
   // ── Refresh Scheduling ────────────────────────────────────────────────────
@@ -108,10 +100,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    * @param callback - The async function to call on each interval
    * @param intervalMs - Interval duration in milliseconds
    */
-  scheduleRefresh(
-    callback: () => Promise<void> | void,
-    intervalMs: number,
-  ): void {
+  scheduleRefresh(callback: () => Promise<void> | void, intervalMs: number): void {
     this._clearRefreshTimer();
     this._refreshTimer = setInterval(() => {
       void Promise.resolve(callback());
@@ -294,8 +283,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
       return;
     }
     const mins = Math.round(ageMs / 60_000);
-    const label =
-      mins < 1 ? "< 1 דק׳" : mins < 60 ? `${mins} דק׳` : `${Math.round(mins / 60)} שע׳`;
+    const label = mins < 1 ? "< 1 דק׳" : mins < 60 ? `${mins} דק׳` : `${Math.round(mins / 60)} שע׳`;
     if (existing) {
       existing.textContent = `⏳ ${label}`;
     } else {
@@ -532,7 +520,11 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    * @param titleHe Hebrew title text
    * @param titleEn English title text
    */
-  buildShell(icon: string, titleHe: string, titleEn = titleHe): {
+  buildShell(
+    icon: string,
+    titleHe: string,
+    titleEn = titleHe,
+  ): {
     header: HTMLElement;
     body: HTMLElement;
     footer: HTMLElement;

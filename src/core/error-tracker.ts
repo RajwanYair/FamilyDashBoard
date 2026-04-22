@@ -13,9 +13,9 @@
  */
 
 export interface ErrorEntry {
-  ts: number;        // epoch ms
+  ts: number; // epoch ms
   message: string;
-  source?: string;   // filename or 'unhandledrejection'
+  source?: string; // filename or 'unhandledrejection'
   lineno?: number;
 }
 
@@ -25,11 +25,7 @@ const _buffer: ErrorEntry[] = [];
 /**
  * Append an error entry, evicting the oldest if buffer is full.
  */
-export function recordError(
-  message: string,
-  source?: string,
-  lineno?: number,
-): void {
+export function recordError(message: string, source?: string, lineno?: number): void {
   if (_buffer.length >= MAX_ERRORS) _buffer.shift();
   _buffer.push({ ts: Date.now(), message: String(message), source, lineno });
 }
@@ -75,23 +71,14 @@ export function installGlobalErrorHandlers(): void {
   _installed = true;
 
   window.addEventListener("error", (ev: ErrorEvent) => {
-    recordError(
-      ev.message ?? "Unknown error",
-      ev.filename,
-      ev.lineno,
-    );
+    recordError(ev.message ?? "Unknown error", ev.filename, ev.lineno);
   });
 
-  window.addEventListener(
-    "unhandledrejection",
-    (ev: PromiseRejectionEvent) => {
-      const msg =
-        ev.reason instanceof Error
-          ? ev.reason.message
-          : String(ev.reason ?? "Unhandled rejection");
-      recordError(msg, "unhandledrejection");
-    },
-  );
+  window.addEventListener("unhandledrejection", (ev: PromiseRejectionEvent) => {
+    const msg =
+      ev.reason instanceof Error ? ev.reason.message : String(ev.reason ?? "Unhandled rejection");
+    recordError(msg, "unhandledrejection");
+  });
 }
 
 /** Reset installed flag (test helper). */

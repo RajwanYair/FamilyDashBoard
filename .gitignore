@@ -42,6 +42,7 @@ blob-report/
 git_out.txt
 log.txt
 status.txt
+ci_status.json
 
 # Python (not used — guard against stray caches)
 .mypy_cache/

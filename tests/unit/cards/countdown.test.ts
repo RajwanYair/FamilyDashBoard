@@ -9,7 +9,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   getTimeComponents,
-  tick, tick2, tick3,
+  tick,
+  tick2,
+  tick3,
   initCountdownCard,
   destroyCountdownCard,
   getCountdownTargetDate,
@@ -144,9 +146,7 @@ describe("tick — event has passed", () => {
 
   it("shows mazel tov message when target is in the past", () => {
     tick();
-    expect(document.getElementById("cd-wedding-title")?.textContent).toContain(
-      "מזל",
-    );
+    expect(document.getElementById("cd-wedding-title")?.textContent).toContain("מזל");
     expect(document.getElementById("cd-msg")?.textContent).toContain("מזל טוב");
   });
 
@@ -665,15 +665,21 @@ describe("Countdown — tick2 progress bar (Sprint 31)", () => {
     `;
   }
 
-  afterEach(() => { document.body.innerHTML = ""; vi.restoreAllMocks(); vi.useRealTimers(); });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
 
   it("shows progress bar when start date is set and event is in the future", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2025-06-01T00:00:00"));
     buildCD2DOM();
     vi.mocked(loadConfig).mockReturnValue({
-      countdownCard2Date: "2025-12-31", countdownCard2Time: "00:00",
-      countdownCard2Title: "אירוע 2", countdownCard2DoneMsg: "done",
+      countdownCard2Date: "2025-12-31",
+      countdownCard2Time: "00:00",
+      countdownCard2Title: "אירוע 2",
+      countdownCard2DoneMsg: "done",
       countdownCard2StartDate: "2025-01-01",
     } as DashboardConfig);
     tick2();
@@ -687,8 +693,10 @@ describe("Countdown — tick2 progress bar (Sprint 31)", () => {
     vi.setSystemTime(new Date("2025-06-01T00:00:00"));
     buildCD2DOM();
     vi.mocked(loadConfig).mockReturnValue({
-      countdownCard2Date: "2025-12-31", countdownCard2Time: "00:00",
-      countdownCard2Title: "אירוע 2", countdownCard2DoneMsg: "done",
+      countdownCard2Date: "2025-12-31",
+      countdownCard2Time: "00:00",
+      countdownCard2Title: "אירוע 2",
+      countdownCard2DoneMsg: "done",
       countdownCard2StartDate: "",
     } as DashboardConfig);
     tick2();
@@ -700,8 +708,10 @@ describe("Countdown — tick2 progress bar (Sprint 31)", () => {
     vi.setSystemTime(new Date("2025-07-01T00:00:00")); // midpoint of Jan–Dec
     buildCD2DOM();
     vi.mocked(loadConfig).mockReturnValue({
-      countdownCard2Date: "2026-01-01", countdownCard2Time: "00:00",
-      countdownCard2Title: "אירוע 2", countdownCard2DoneMsg: "done",
+      countdownCard2Date: "2026-01-01",
+      countdownCard2Time: "00:00",
+      countdownCard2Title: "אירוע 2",
+      countdownCard2DoneMsg: "done",
       countdownCard2StartDate: "2025-01-01",
     } as DashboardConfig);
     tick2();
@@ -724,15 +734,21 @@ describe("Countdown — tick3 progress bar (Sprint 31)", () => {
     `;
   }
 
-  afterEach(() => { document.body.innerHTML = ""; vi.restoreAllMocks(); vi.useRealTimers(); });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
 
   it("shows progress bar when start date is set and event is in the future", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2025-06-01T00:00:00"));
     buildCD3DOM();
     vi.mocked(loadConfig).mockReturnValue({
-      countdownCard3Date: "2025-12-31", countdownCard3Time: "00:00",
-      countdownCard3Title: "אירוע 3", countdownCard3DoneMsg: "done",
+      countdownCard3Date: "2025-12-31",
+      countdownCard3Time: "00:00",
+      countdownCard3Title: "אירוע 3",
+      countdownCard3DoneMsg: "done",
       countdownCard3StartDate: "2025-01-01",
     } as DashboardConfig);
     tick3();
@@ -746,8 +762,10 @@ describe("Countdown — tick3 progress bar (Sprint 31)", () => {
     vi.setSystemTime(new Date("2025-06-01T00:00:00"));
     buildCD3DOM();
     vi.mocked(loadConfig).mockReturnValue({
-      countdownCard3Date: "2025-12-31", countdownCard3Time: "00:00",
-      countdownCard3Title: "אירוע 3", countdownCard3DoneMsg: "done",
+      countdownCard3Date: "2025-12-31",
+      countdownCard3Time: "00:00",
+      countdownCard3Title: "אירוע 3",
+      countdownCard3DoneMsg: "done",
       countdownCard3StartDate: "",
     } as DashboardConfig);
     tick3();
@@ -763,8 +781,10 @@ describe("Countdown — tick3 progress bar (Sprint 31)", () => {
       <div id="cd3-mins"></div><div id="cd3-secs"></div><div id="cd3-msg"></div>
     `;
     vi.mocked(loadConfig).mockReturnValue({
-      countdownCard3Date: "2025-12-31", countdownCard3Time: "00:00",
-      countdownCard3Title: "Test", countdownCard3DoneMsg: "done",
+      countdownCard3Date: "2025-12-31",
+      countdownCard3Time: "00:00",
+      countdownCard3Title: "Test",
+      countdownCard3DoneMsg: "done",
       countdownCard3StartDate: "2025-01-01",
     } as DashboardConfig);
     expect(() => tick3()).not.toThrow();
@@ -780,7 +800,7 @@ describe("Countdown — configSchema (Sprint 82)", () => {
   });
 
   it("includes primary event fields", () => {
-    const keys = countdownConfigSchema.map(f => f.key);
+    const keys = countdownConfigSchema.map((f) => f.key);
     expect(keys).toContain("countdownCardTitle");
     expect(keys).toContain("countdownCardDate");
     expect(keys).toContain("countdownCardTime");
@@ -788,7 +808,7 @@ describe("Countdown — configSchema (Sprint 82)", () => {
   });
 
   it("includes event 2 and event 3 fields", () => {
-    const keys = countdownConfigSchema.map(f => f.key);
+    const keys = countdownConfigSchema.map((f) => f.key);
     expect(keys).toContain("countdownCard2Title");
     expect(keys).toContain("countdownCard3Title");
   });

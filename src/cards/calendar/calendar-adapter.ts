@@ -26,10 +26,7 @@ const FETCH_TIMEOUT = 10_000;
  * @param icsUrl   Full URL of the ICS feed
  * @param feedIndex Index for cache-key disambiguation when multiple feeds exist
  */
-export function createCalendarAdapter(
-  icsUrl: string,
-  feedIndex = 0,
-): ProviderAdapter<string> {
+export function createCalendarAdapter(icsUrl: string, feedIndex = 0): ProviderAdapter<string> {
   const cacheKey = `cal-ics-${feedIndex}`;
   const cacheTtl = INTERVALS.CALENDAR;
 

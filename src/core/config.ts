@@ -124,25 +124,27 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     const cards: Record<string, CardConfig> = cfg.cards ?? {};
 
     // Weather: pull in tempUnit, homeCity
-    const wSettings = (cards["weather"]?.settings ?? {});
+    const wSettings = cards["weather"]?.settings ?? {};
     if (cfg.tempUnit && !wSettings["tempUnit"]) wSettings["tempUnit"] = cfg.tempUnit;
     if (cfg.homeCity && !wSettings["homeCity"]) wSettings["homeCity"] = cfg.homeCity;
     cards["weather"] = { ...cards["weather"], settings: wSettings };
 
     // Motivation: pull in motivationInterval
-    const mSettings = (cards["motivation"]?.settings ?? {});
+    const mSettings = cards["motivation"]?.settings ?? {};
     if (typeof cfg.motivationInterval === "number" && !("interval" in mSettings)) {
       mSettings["interval"] = cfg.motivationInterval;
     }
     cards["motivation"] = { ...cards["motivation"], settings: mSettings };
 
     // Countdown: pull in countdownCard* flat props
-    const cSettings = (cards["countdown"]?.settings ?? {});
+    const cSettings = cards["countdown"]?.settings ?? {};
     if (cfg.countdownCardTitle && !cSettings["title"]) cSettings["title"] = cfg.countdownCardTitle;
     if (cfg.countdownCardDate && !cSettings["date"]) cSettings["date"] = cfg.countdownCardDate;
     if (cfg.countdownCardTime && !cSettings["time"]) cSettings["time"] = cfg.countdownCardTime;
-    if (cfg.countdownCardDoneMsg && !cSettings["doneMsg"]) cSettings["doneMsg"] = cfg.countdownCardDoneMsg;
-    if (cfg.countdownCardStartDate && !cSettings["startDate"]) cSettings["startDate"] = cfg.countdownCardStartDate;
+    if (cfg.countdownCardDoneMsg && !cSettings["doneMsg"])
+      cSettings["doneMsg"] = cfg.countdownCardDoneMsg;
+    if (cfg.countdownCardStartDate && !cSettings["startDate"])
+      cSettings["startDate"] = cfg.countdownCardStartDate;
     cards["countdown"] = { ...cards["countdown"], settings: cSettings };
 
     cfg.cards = cards;
@@ -155,16 +157,21 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     const cards: Record<string, CardConfig> = cfg.cards ?? {};
 
     // Alerts: pull in alertsEnabled, alertSound, realtimeAlerts, alertVolume
-    const aSettings = (cards["alerts"]?.settings ?? {});
-    if (cfg.alertsEnabled !== undefined && !("enabled" in aSettings)) aSettings["enabled"] = cfg.alertsEnabled;
-    if (cfg.alertSound !== undefined && !("sound" in aSettings)) aSettings["sound"] = cfg.alertSound;
-    if (cfg.realtimeAlerts !== undefined && !("realtime" in aSettings)) aSettings["realtime"] = cfg.realtimeAlerts;
-    if (cfg.alertVolume !== undefined && !("volume" in aSettings)) aSettings["volume"] = cfg.alertVolume;
+    const aSettings = cards["alerts"]?.settings ?? {};
+    if (cfg.alertsEnabled !== undefined && !("enabled" in aSettings))
+      aSettings["enabled"] = cfg.alertsEnabled;
+    if (cfg.alertSound !== undefined && !("sound" in aSettings))
+      aSettings["sound"] = cfg.alertSound;
+    if (cfg.realtimeAlerts !== undefined && !("realtime" in aSettings))
+      aSettings["realtime"] = cfg.realtimeAlerts;
+    if (cfg.alertVolume !== undefined && !("volume" in aSettings))
+      aSettings["volume"] = cfg.alertVolume;
     cards["alerts"] = { ...cards["alerts"], settings: aSettings };
 
     // Calendar: pull in calendarDaysAhead if present
-    const calSettings = (cards["calendar"]?.settings ?? {});
-    if (cfg.calendarDaysAhead !== undefined && !("daysAhead" in calSettings)) calSettings["daysAhead"] = cfg.calendarDaysAhead;
+    const calSettings = cards["calendar"]?.settings ?? {};
+    if (cfg.calendarDaysAhead !== undefined && !("daysAhead" in calSettings))
+      calSettings["daysAhead"] = cfg.calendarDaysAhead;
     cards["calendar"] = { ...cards["calendar"], settings: calSettings };
 
     cfg.cards = cards;
@@ -203,11 +210,16 @@ function sanitize(cfg: DashboardConfig): DashboardConfig {
   if (!isValidHour(cfg.nightDimStartHour)) cfg.nightDimStartHour = DEFAULT_CONFIG.nightDimStartHour;
   if (!isValidHour(cfg.nightDimEndHour)) cfg.nightDimEndHour = DEFAULT_CONFIG.nightDimEndHour;
   // v3 boolean fields — coerce non-boolean to default
-  if (typeof cfg.weatherShowHourly !== "boolean") cfg.weatherShowHourly = DEFAULT_CONFIG.weatherShowHourly;
-  if (typeof cfg.weatherShowWind !== "boolean") cfg.weatherShowWind = DEFAULT_CONFIG.weatherShowWind;
-  if (typeof cfg.weatherShowSunrise !== "boolean") cfg.weatherShowSunrise = DEFAULT_CONFIG.weatherShowSunrise;
-  if (typeof cfg.stocksGroupBySector !== "boolean") cfg.stocksGroupBySector = DEFAULT_CONFIG.stocksGroupBySector;
-  if (typeof cfg.tasksShowCategories !== "boolean") cfg.tasksShowCategories = DEFAULT_CONFIG.tasksShowCategories;
+  if (typeof cfg.weatherShowHourly !== "boolean")
+    cfg.weatherShowHourly = DEFAULT_CONFIG.weatherShowHourly;
+  if (typeof cfg.weatherShowWind !== "boolean")
+    cfg.weatherShowWind = DEFAULT_CONFIG.weatherShowWind;
+  if (typeof cfg.weatherShowSunrise !== "boolean")
+    cfg.weatherShowSunrise = DEFAULT_CONFIG.weatherShowSunrise;
+  if (typeof cfg.stocksGroupBySector !== "boolean")
+    cfg.stocksGroupBySector = DEFAULT_CONFIG.stocksGroupBySector;
+  if (typeof cfg.tasksShowCategories !== "boolean")
+    cfg.tasksShowCategories = DEFAULT_CONFIG.tasksShowCategories;
   if (typeof cfg.newsShowSource !== "boolean") cfg.newsShowSource = DEFAULT_CONFIG.newsShowSource;
   if (typeof cfg.sysInfoShowRtt !== "boolean") cfg.sysInfoShowRtt = DEFAULT_CONFIG.sysInfoShowRtt;
   return cfg;
@@ -223,8 +235,7 @@ export function loadConfig(): DashboardConfig {
     const raw = localStorage.getItem(LS_CONFIG);
     if (!raw) return { ...DEFAULT_CONFIG };
     const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null)
-      return { ...DEFAULT_CONFIG };
+    if (typeof parsed !== "object" || parsed === null) return { ...DEFAULT_CONFIG };
     const migrated = migrateConfig(parsed as Partial<DashboardConfig>);
     const config: DashboardConfig = { ...DEFAULT_CONFIG, ...migrated };
     // Log if schema is behind current version
@@ -287,9 +298,7 @@ export function resetConfig(): DashboardConfig {
  */
 export function dispatchConfigChange(config: DashboardConfig): void {
   state.seedConfig(config as unknown as Record<string, unknown>);
-  document.dispatchEvent(
-    new CustomEvent<DashboardConfig>("configchange", { detail: config }),
-  );
+  document.dispatchEvent(new CustomEvent<DashboardConfig>("configchange", { detail: config }));
 }
 
 /**
@@ -341,7 +350,12 @@ export function validateImportedConfig(raw: unknown): ConfigImportResult {
   let obj = raw as Record<string, unknown>;
 
   // Sprint 102: unwrap ConfigExportEnvelope if detected
-  if ("config" in obj && typeof obj["config"] === "object" && obj["config"] !== null && "appVersion" in obj) {
+  if (
+    "config" in obj &&
+    typeof obj["config"] === "object" &&
+    obj["config"] !== null &&
+    "appVersion" in obj
+  ) {
     diagLog("[config] detected export envelope — unwrapping");
     obj = obj["config"] as Record<string, unknown>;
   }
@@ -365,11 +379,19 @@ export function validateImportedConfig(raw: unknown): ConfigImportResult {
   if ("theme" in obj && obj["theme"] !== undefined && !isValidTheme(obj["theme"])) {
     return { ok: false, message: `ערך עיצוב לא תקין: "${String(obj["theme"])}"`, config: null };
   }
-  if ("screenMode" in obj && obj["screenMode"] !== undefined && !isValidScreenMode(obj["screenMode"])) {
+  if (
+    "screenMode" in obj &&
+    obj["screenMode"] !== undefined &&
+    !isValidScreenMode(obj["screenMode"])
+  ) {
     return { ok: false, message: `מצב מסך לא תקין: "${String(obj["screenMode"])}"`, config: null };
   }
   if ("tempUnit" in obj && obj["tempUnit"] !== undefined && !isValidTempUnit(obj["tempUnit"])) {
-    return { ok: false, message: `יחידת טמפרטורה לא תקינה: "${String(obj["tempUnit"])}"`, config: null };
+    return {
+      ok: false,
+      message: `יחידת טמפרטורה לא תקינה: "${String(obj["tempUnit"])}"`,
+      config: null,
+    };
   }
 
   // Run migration + merge with defaults + sanitize
@@ -406,8 +428,7 @@ export interface ConfigExportEnvelope {
  */
 export function buildExportEnvelope(config: DashboardConfig): ConfigExportEnvelope {
   return {
-    appVersion:
-      typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "unknown",
+    appVersion: typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "unknown",
     configSchemaVersion: CONFIG_VERSION,
     exportedAt: new Date().toISOString(),
     config,
@@ -445,7 +466,9 @@ export function validateExportPayload(envelope: unknown): ConfigExportValidation
   if (typeof env["configSchemaVersion"] !== "number") {
     errors.push("Missing or invalid configSchemaVersion");
   } else if (env["configSchemaVersion"] > CONFIG_VERSION) {
-    errors.push(`configSchemaVersion ${String(env["configSchemaVersion"])} exceeds current ${String(CONFIG_VERSION)}`);
+    errors.push(
+      `configSchemaVersion ${String(env["configSchemaVersion"])} exceeds current ${String(CONFIG_VERSION)}`,
+    );
   }
   if (typeof env["exportedAt"] !== "string" || !env["exportedAt"]) {
     errors.push("Missing or invalid exportedAt timestamp");
@@ -503,15 +526,9 @@ export interface ConfigDiffEntry {
  * Only compares top-level keys (shallow diff).
  * Useful for showing what changed before save, or in diagnostics.
  */
-export function diffConfigs(
-  a: DashboardConfig,
-  b: DashboardConfig,
-): ConfigDiffEntry[] {
+export function diffConfigs(a: DashboardConfig, b: DashboardConfig): ConfigDiffEntry[] {
   const diffs: ConfigDiffEntry[] = [];
-  const allKeys = new Set([
-    ...Object.keys(a),
-    ...Object.keys(b),
-  ]) as Set<keyof DashboardConfig>;
+  const allKeys = new Set([...Object.keys(a), ...Object.keys(b)]) as Set<keyof DashboardConfig>;
 
   for (const key of allKeys) {
     const va = (a as unknown as Record<string, unknown>)[key as string];

@@ -16,7 +16,7 @@ description: "Fix all ESLint and TypeScript errors to reach zero warnings. Use w
 
 Fix all lint and type errors reported by the commands below.
 
-**Scope:** {{LINT_SCOPE}} *(default: `src tests`)*
+**Scope:** {{LINT_SCOPE}} _(default: `src tests`)_
 
 ## Rules — Never Violate
 
@@ -43,14 +43,14 @@ Fix all lint and type errors reported by the commands below.
 
 3. Fix each error in the source. Common patterns:
 
-   | Error | Fix |
-   |-------|-----|
-   | `no-unused-vars` | Remove or prefix with `_` if intentionally unused |
-   | `@typescript-eslint/no-explicit-any` | Replace with `unknown` + type guard |
-   | `prefer-const` | Change `let` → `const` |
-   | `no-console` | Replace `console.log` with `diagLog()` |
-   | Type `X is not assignable to Y` | Add missing field or narrow with type guard |
-   | `Object is possibly undefined` | Add null check or non-null assertion with comment |
+   | Error                                | Fix                                               |
+   | ------------------------------------ | ------------------------------------------------- |
+   | `no-unused-vars`                     | Remove or prefix with `_` if intentionally unused |
+   | `@typescript-eslint/no-explicit-any` | Replace with `unknown` + type guard               |
+   | `prefer-const`                       | Change `let` → `const`                            |
+   | `no-console`                         | Replace `console.log` with `diagLog()`            |
+   | Type `X is not assignable to Y`      | Add missing field or narrow with type guard       |
+   | `Object is possibly undefined`       | Add null check or non-null assertion with comment |
 
 4. Re-run until clean:
 

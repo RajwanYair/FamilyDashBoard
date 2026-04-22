@@ -57,10 +57,8 @@ function detectGPU(): GPUInfo {
       return unknown;
     }
 
-    const renderer =
-      (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) as string | null) ?? "unknown";
-    const vendor =
-      (gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) as string | null) ?? "unknown";
+    const renderer = (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) as string | null) ?? "unknown";
+    const vendor = (gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) as string | null) ?? "unknown";
 
     const tier: HardwareTier = GPU_LOW_RE.test(renderer)
       ? "low"
@@ -91,8 +89,7 @@ let _profile: HardwareProfile | null = null;
 export function getHardwareProfile(): HardwareProfile {
   if (_profile) return _profile;
 
-  const cores =
-    (typeof navigator !== "undefined" ? navigator.hardwareConcurrency : undefined) ?? 4;
+  const cores = (typeof navigator !== "undefined" ? navigator.hardwareConcurrency : undefined) ?? 4;
 
   const memGB =
     (typeof navigator !== "undefined"
@@ -162,9 +159,7 @@ export function applyHardwareTier(): void {
 /** One-line summary for the diagnostics overlay. */
 export function formatHardwareProfile(): string {
   const p = getHardwareProfile();
-  const gpuShort = p.gpu.renderer.length > 40
-    ? p.gpu.renderer.slice(0, 37) + "…"
-    : p.gpu.renderer;
+  const gpuShort = p.gpu.renderer.length > 40 ? p.gpu.renderer.slice(0, 37) + "…" : p.gpu.renderer;
   return `${p.cpuCores} CPU | ${p.memoryGB} GB RAM | GPU: ${gpuShort} | tier: ${p.tier}`;
 }
 

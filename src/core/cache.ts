@@ -61,7 +61,11 @@ export function cGet<T = unknown>(key: string, ttl: number): T | null {
   // Fall back to localStorage
   try {
     const raw = localStorage.getItem(LS_PREFIX + key);
-    if (!raw) { _recordCacheMiss(); _setHitLayer("none"); return null; }
+    if (!raw) {
+      _recordCacheMiss();
+      _setHitLayer("none");
+      return null;
+    }
     const parsed = JSON.parse(raw) as { data: T; ts: number };
     if (now - parsed.ts < ttl) {
       // Promote to in-memory for speed
@@ -105,10 +109,7 @@ export function cGetStale<T = unknown>(key: string): T | null {
  * @param key  - Cache key (auto-prefixed for IDB too)
  * @param ttl  - Maximum age in milliseconds
  */
-export async function cGetAsync<T = unknown>(
-  key: string,
-  ttl: number,
-): Promise<T | null> {
+export async function cGetAsync<T = unknown>(key: string, ttl: number): Promise<T | null> {
   const now = Date.now();
 
   // L1: in-memory
@@ -275,7 +276,11 @@ export function cClear(): void {
 /** Remove a single cache key from all layers (memory, localStorage, IDB). */
 export function cDelete(key: string): void {
   mem.delete(key);
-  try { localStorage.removeItem(LS_PREFIX + key); } catch { /* quota / security */ }
+  try {
+    localStorage.removeItem(LS_PREFIX + key);
+  } catch {
+    /* quota / security */
+  }
   void idbDel(key);
 }
 
@@ -313,14 +318,22 @@ export type CacheLayer = "mem" | "ls" | "idb" | "none";
 let _lastHitLayer: CacheLayer = "none";
 
 /** Increment hit counter (called internally by cGet). */
-export function _recordCacheHit(): void { _cacheHits++; }
+export function _recordCacheHit(): void {
+  _cacheHits++;
+}
 /** Increment miss counter (called internally by cGet). */
-export function _recordCacheMiss(): void { _cacheMisses++; }
+export function _recordCacheMiss(): void {
+  _cacheMisses++;
+}
 
 /** Sprint 181: Record which tier served a hit. */
-export function _setHitLayer(layer: CacheLayer): void { _lastHitLayer = layer; }
+export function _setHitLayer(layer: CacheLayer): void {
+  _lastHitLayer = layer;
+}
 /** Sprint 181: Returns the layer that served the most recent hit. */
-export function lastHitLayer(): CacheLayer { return _lastHitLayer; }
+export function lastHitLayer(): CacheLayer {
+  return _lastHitLayer;
+}
 
 /** Returns current cache hit/miss counts and hit rate. */
 export function cacheStats(): { hits: number; misses: number; hitRate: number } {
@@ -572,7 +585,9 @@ export async function cacheInventory(): Promise<CacheInventory> {
   try {
     const keys = await idbKeys();
     idbCount = keys.length;
-  } catch { /* IDB unavailable */ }
+  } catch {
+    /* IDB unavailable */
+  }
   return {
     memEntries: mem.size,
     lsEntries: lsCount,

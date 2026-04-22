@@ -2,14 +2,36 @@
 /* Migrated from src/styles/sprints.css */
 
 /* F54: Night Screen Auto-Dimmer */
-#night-dim { position: fixed; inset: 0; background: #000; pointer-events: none; opacity: 0; transition: opacity 3s ease, background 2s ease; z-index: 2; }
-#night-dim.warm-tint { background: #6B3A1F; }
+#night-dim {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 3s ease,
+    background 2s ease;
+  z-index: 2;
+}
+#night-dim.warm-tint {
+  background: #6b3a1f;
+}
 
 /* Sprint 157: Smooth filter transition on body when dimmer activates */
-body { transition: filter 2s ease; }
-body.night-active { filter: brightness(0.85); }
+body {
+  transition: filter 2s ease;
+}
+body.night-active {
+  filter: brightness(0.85);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  #night-dim { transition: opacity 0.5s ease, background 0.5s ease; }
-  body { transition: filter 0.5s ease; }
+  #night-dim {
+    transition:
+      opacity 0.5s ease,
+      background 0.5s ease;
+  }
+  body {
+    transition: filter 0.5s ease;
+  }
 }

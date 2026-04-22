@@ -115,9 +115,7 @@ const SYNODIC_MS = SYNODIC_DAYS * 86_400_000;
  * Uses 8 phase bins, each 0.125 wide, centered on the phase midpoints.
  */
 export function computeMoonPhase(date: Date = new Date()): MoonPhaseResult {
-  const elapsed =
-    ((date.getTime() - KNOWN_NEW_MOON_MS) % SYNODIC_MS + SYNODIC_MS) %
-    SYNODIC_MS;
+  const elapsed = (((date.getTime() - KNOWN_NEW_MOON_MS) % SYNODIC_MS) + SYNODIC_MS) % SYNODIC_MS;
   const frac = elapsed / SYNODIC_MS;
   if (frac < 0.0625) return MOON_PHASES[0] ?? { emoji: "🌑", label: "ירח חדש" };
   if (frac < 0.1875) return MOON_PHASES[1] ?? { emoji: "🌒", label: "ירח גדל" };

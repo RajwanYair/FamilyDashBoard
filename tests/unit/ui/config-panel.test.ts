@@ -12,11 +12,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { setupConfigPanelTestDOM } from "../helpers/config-panel-dom";
-import {
-  shareSettings,
-  exportSettings,
-  importSettings,
-} from "@/ui/config-panel";
+import { shareSettings, exportSettings, importSettings } from "@/ui/config-panel";
 
 type CfgMod = {
   openConfigPanel: () => void;
@@ -52,32 +48,24 @@ describe("Config Panel — open/close/toggle", () => {
 
   it("openConfigPanel adds visible class", () => {
     mod.openConfigPanel();
-    expect(
-      document.getElementById("config-overlay")?.classList.contains("visible"),
-    ).toBe(true);
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(true);
   });
 
   it("closeConfigPanel removes visible class", () => {
     mod.openConfigPanel();
     mod.closeConfigPanel();
-    expect(
-      document.getElementById("config-overlay")?.classList.contains("visible"),
-    ).toBe(false);
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
   });
 
   it("toggleConfigPanel opens when closed", () => {
     mod.toggleConfigPanel();
-    expect(
-      document.getElementById("config-overlay")?.classList.contains("visible"),
-    ).toBe(true);
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(true);
   });
 
   it("toggleConfigPanel closes when open", () => {
     mod.openConfigPanel();
     mod.toggleConfigPanel();
-    expect(
-      document.getElementById("config-overlay")?.classList.contains("visible"),
-    ).toBe(false);
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
   });
 
   it("isConfigPanelOpen returns correct state", () => {
@@ -109,33 +97,25 @@ describe("Config Panel — switchCfgTab", () => {
 
   it("activates the target section", () => {
     mod.switchCfgTab("calendar");
-    const calSection = document.querySelector<HTMLElement>(
-      '.cfg-section[data-tab="calendar"]',
-    );
+    const calSection = document.querySelector<HTMLElement>('.cfg-section[data-tab="calendar"]');
     expect(calSection?.classList.contains("active")).toBe(true);
   });
 
   it("deactivates the previously active section", () => {
     mod.switchCfgTab("calendar");
-    const displaySection = document.querySelector<HTMLElement>(
-      '.cfg-section[data-tab="display"]',
-    );
+    const displaySection = document.querySelector<HTMLElement>('.cfg-section[data-tab="display"]');
     expect(displaySection?.classList.contains("active")).toBe(false);
   });
 
   it("activates the target tab button", () => {
     mod.switchCfgTab("feeds");
-    const feedsBtn = document.querySelector<HTMLElement>(
-      '.cfg-tab[data-tab="feeds"]',
-    );
+    const feedsBtn = document.querySelector<HTMLElement>('.cfg-tab[data-tab="feeds"]');
     expect(feedsBtn?.classList.contains("active")).toBe(true);
   });
 
   it("deactivates other tab buttons", () => {
     mod.switchCfgTab("feeds");
-    const displayBtn = document.querySelector<HTMLElement>(
-      '.cfg-tab[data-tab="display"]',
-    );
+    const displayBtn = document.querySelector<HTMLElement>('.cfg-tab[data-tab="display"]');
     expect(displayBtn?.classList.contains("active")).toBe(false);
   });
 });
@@ -173,69 +153,54 @@ describe("Config Panel — populateForm (via openConfigPanel)", () => {
 
   it("populates theme select from config", () => {
     mod.openConfigPanel();
-    expect(
-      (document.getElementById("theme-select") as HTMLSelectElement)?.value,
-    ).toBe("blue");
+    expect((document.getElementById("theme-select") as HTMLSelectElement)?.value).toBe("blue");
   });
 
   it("populates screen-mode select from config", () => {
     mod.openConfigPanel();
-    expect(
-      (document.getElementById("screen-mode-select") as HTMLSelectElement)
-        ?.value,
-    ).toBe("tablet");
+    expect((document.getElementById("screen-mode-select") as HTMLSelectElement)?.value).toBe(
+      "tablet",
+    );
   });
 
   it("populates interface language from config", () => {
     mod.openConfigPanel();
-    expect(
-      (document.getElementById("cfg-interface-language") as HTMLSelectElement)
-        ?.value,
-    ).toBe("en");
+    expect((document.getElementById("cfg-interface-language") as HTMLSelectElement)?.value).toBe(
+      "en",
+    );
   });
 
   it("populates temp unit from config", () => {
     mod.openConfigPanel();
-    expect(
-      (document.getElementById("cfg-temp-unit") as HTMLInputElement)?.value,
-    ).toBe("F");
+    expect((document.getElementById("cfg-temp-unit") as HTMLInputElement)?.value).toBe("F");
   });
 
   it("populates family name from config", () => {
     mod.openConfigPanel();
-    expect(
-      (document.getElementById("cfg-family-name") as HTMLInputElement)?.value,
-    ).toBe("בן-דוד");
+    expect((document.getElementById("cfg-family-name") as HTMLInputElement)?.value).toBe("בן-דוד");
   });
 
   it("populates members from config", () => {
     mod.openConfigPanel();
-    const v = (document.getElementById("cfg-members") as HTMLInputElement)
-      ?.value;
+    const v = (document.getElementById("cfg-members") as HTMLInputElement)?.value;
     expect(v).toContain("אבא");
     expect(v).toContain("אמא");
   });
 
   it("populates countdown card title from config", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ countdownCardTitle: "יום הולדת" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ countdownCardTitle: "יום הולדת" }));
     mod.openConfigPanel();
-    expect(
-      (document.getElementById("cfg-cd-card-title") as HTMLInputElement)?.value,
-    ).toBe("יום הולדת");
+    expect((document.getElementById("cfg-cd-card-title") as HTMLInputElement)?.value).toBe(
+      "יום הולדת",
+    );
   });
 
   it("populates countdown card date from config", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ countdownCardDate: "2027-06-15" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ countdownCardDate: "2027-06-15" }));
     mod.openConfigPanel();
-    expect(
-      (document.getElementById("cfg-cd-card-date") as HTMLInputElement)?.value,
-    ).toBe("2027-06-15");
+    expect((document.getElementById("cfg-cd-card-date") as HTMLInputElement)?.value).toBe(
+      "2027-06-15",
+    );
   });
 });
 
@@ -269,25 +234,20 @@ describe("Config Panel — initConfigPanel wiring", () => {
   it("save button closes the panel and persists config", () => {
     mod.initConfigPanel();
     mod.openConfigPanel();
-    (document.getElementById("cfg-family-name") as HTMLInputElement).value =
-      "משפחת לוי";
+    (document.getElementById("cfg-family-name") as HTMLInputElement).value = "משפחת לוי";
     document.getElementById("cfg-save-btn")?.click();
     expect(mod.isConfigPanelOpen()).toBe(false);
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as { familyName?: string };
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as {
+      familyName?: string;
+    };
     expect(saved.familyName).toBe("משפחת לוי");
   });
 
   it("tab buttons switch active tab on click", () => {
     mod.initConfigPanel();
-    const calBtn = document.querySelector<HTMLButtonElement>(
-      '.cfg-tab[data-tab="calendar"]',
-    );
+    const calBtn = document.querySelector<HTMLButtonElement>('.cfg-tab[data-tab="calendar"]');
     calBtn?.click();
-    const calSection = document.querySelector<HTMLElement>(
-      '.cfg-section[data-tab="calendar"]',
-    );
+    const calSection = document.querySelector<HTMLElement>('.cfg-section[data-tab="calendar"]');
     expect(calSection?.classList.contains("active")).toBe(true);
   });
 });
@@ -341,9 +301,7 @@ describe("Config Panel — exportSettings", () => {
   });
 
   it("calls URL.createObjectURL with a Blob", () => {
-    const blobSpy = vi
-      .spyOn(URL, "createObjectURL")
-      .mockReturnValue("blob:test");
+    const blobSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
     exportSettings();
@@ -354,9 +312,7 @@ describe("Config Panel — exportSettings", () => {
 
   it("calls URL.revokeObjectURL to clean up", () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-    const revokeSpy = vi
-      .spyOn(URL, "revokeObjectURL")
-      .mockImplementation(() => {});
+    const revokeSpy = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
     exportSettings();
     expect(revokeSpy).toHaveBeenCalledWith("blob:test");
@@ -365,9 +321,7 @@ describe("Config Panel — exportSettings", () => {
   it("triggers anchor click to download the file", () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
-    const clickSpy = vi
-      .spyOn(HTMLAnchorElement.prototype, "click")
-      .mockImplementation(() => {});
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
     exportSettings();
     expect(clickSpy).toHaveBeenCalledOnce();
   });
@@ -390,9 +344,7 @@ describe("Config Panel — importSettings", () => {
 
   it("calls click() on the file input", () => {
     document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    const input = document.getElementById(
-      "cfg-import-file",
-    ) as HTMLInputElement;
+    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
     const clickSpy = vi.spyOn(input, "click").mockImplementation(() => {});
     importSettings();
     expect(clickSpy).toHaveBeenCalledOnce();
@@ -400,9 +352,7 @@ describe("Config Panel — importSettings", () => {
 
   it("saves config when FileReader.onload fires with valid JSON", () => {
     document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    const input = document.getElementById(
-      "cfg-import-file",
-    ) as HTMLInputElement;
+    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
     // Prevent real click from opening OS dialog
     vi.spyOn(input, "click").mockImplementation(() => {});
 
@@ -433,9 +383,9 @@ describe("Config Panel — importSettings", () => {
     });
     input.onchange?.(new Event("change"));
 
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as { familyName?: string };
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as {
+      familyName?: string;
+    };
     expect(saved.familyName).toBe("טסט");
   });
 
@@ -448,13 +398,17 @@ describe("Config Panel — importSettings", () => {
       result: string | ArrayBuffer | null = null;
       readAsText(): void {
         this.result = '{"familyName":"test"}';
-        if (this.onload) this.onload({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+        if (this.onload)
+          this.onload({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
       }
     }
     vi.stubGlobal("FileReader", MissingVersionReader);
     importSettings();
     const mockFile = new File(['{"familyName":"test"}'], "cfg.json", { type: "application/json" });
-    Object.defineProperty(input, "files", { value: { 0: mockFile, length: 1 }, configurable: true });
+    Object.defineProperty(input, "files", {
+      value: { 0: mockFile, length: 1 },
+      configurable: true,
+    });
     input.onchange?.(new Event("change"));
     // config should NOT be overwritten with bad import
     expect(localStorage.getItem("dash_v2_config")).toBeNull();
@@ -469,22 +423,26 @@ describe("Config Panel — importSettings", () => {
       result: string | ArrayBuffer | null = null;
       readAsText(): void {
         this.result = '{"familyName":"test","configVersion":0}';
-        if (this.onload) this.onload({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+        if (this.onload)
+          this.onload({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
       }
     }
     vi.stubGlobal("FileReader", BadVersionReader);
     importSettings();
-    const mockFile = new File(['{"familyName":"test","configVersion":0}'], "cfg.json", { type: "application/json" });
-    Object.defineProperty(input, "files", { value: { 0: mockFile, length: 1 }, configurable: true });
+    const mockFile = new File(['{"familyName":"test","configVersion":0}'], "cfg.json", {
+      type: "application/json",
+    });
+    Object.defineProperty(input, "files", {
+      value: { 0: mockFile, length: 1 },
+      configurable: true,
+    });
     input.onchange?.(new Event("change"));
     expect(localStorage.getItem("dash_v2_config")).toBeNull();
   });
 
   it("handles invalid JSON in FileReader without throwing", () => {
     document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    const input = document.getElementById(
-      "cfg-import-file",
-    ) as HTMLInputElement;
+    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
     vi.spyOn(input, "click").mockImplementation(() => {});
 
     class BadFileReader {
@@ -568,9 +526,7 @@ describe("Config Panel — font size slider live preview", () => {
   it("updates font size display on slider input event", async () => {
     localStorage.clear();
     setupDOM();
-    const slider = document.getElementById(
-      "cfg-news-fontsize",
-    ) as HTMLInputElement;
+    const slider = document.getElementById("cfg-news-fontsize") as HTMLInputElement;
     // Use property assignment so happy-dom tracks limits
     slider.min = "50";
     slider.max = "200";
@@ -600,9 +556,7 @@ describe("Config Panel — populateForm without fontsize val element", () => {
     // Remove the font size val element before init
     document.getElementById("cfg-news-fontsize-val")?.remove();
     // Use property assignment so happy-dom tracks limits
-    const slider = document.getElementById(
-      "cfg-news-fontsize",
-    ) as HTMLInputElement;
+    const slider = document.getElementById("cfg-news-fontsize") as HTMLInputElement;
     slider.min = "50";
     slider.max = "200";
 
@@ -671,9 +625,10 @@ describe("Config Panel — collectForm with minimal DOM", () => {
     const btn = document.getElementById("cfg-save-btn")!;
     expect(() => btn.click()).not.toThrow();
     // Config should still be saved (with defaults since no form fields)
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(saved).toHaveProperty("theme");
   });
 
@@ -696,9 +651,10 @@ Bob,7,1</textarea>
 
     const btn = document.getElementById("cfg-save-btn")!;
     btn.click();
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(saved.theme).toBe("warm-dark");
     expect(saved.alertZone).toBe("תל אביב");
     expect(saved.birthdays).toEqual([
@@ -724,9 +680,10 @@ invalid line
     mod.initConfigPanel();
 
     document.getElementById("cfg-save-btn")!.click();
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(saved.birthdays).toEqual([{ name: "Valid", month: 3, day: 15 }]);
   });
 
@@ -745,9 +702,10 @@ invalid line
     mod.initConfigPanel();
 
     document.getElementById("cfg-save-btn")!.click();
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     // X is not C or F, so tempUnit should remain default (C)
     expect(saved.tempUnit).toBe("C");
   });
@@ -806,9 +764,7 @@ describe("Config Panel — cards tab visibility and sizes", () => {
     `;
     vi.resetModules();
     vi.doMock("@/core/card-registry", () => ({
-      listCards: () => [
-        { id: "weather", titleHe: "מזג אוויר", icon: "🌤" },
-      ],
+      listCards: () => [{ id: "weather", titleHe: "מזג אוויר", icon: "🌤" }],
       registerCard: vi.fn(),
       getCard: vi.fn(),
     }));
@@ -821,9 +777,7 @@ describe("Config Panel — cards tab visibility and sizes", () => {
     if (cb) {
       cb.checked = false;
       document.getElementById("cfg-save-btn")!.click();
-      const weatherWidget = document.querySelector<HTMLElement>(
-        '[data-card-id="weather"]',
-      )!;
+      const weatherWidget = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;
       expect(weatherWidget.style.display).toBe("none");
     } else {
       // No checkbox generated in this env — just verify no crash
@@ -843,9 +797,7 @@ describe("Config Panel — cards tab visibility and sizes", () => {
     `;
     vi.resetModules();
     vi.doMock("@/core/card-registry", () => ({
-      listCards: () => [
-        { id: "weather", titleHe: "מזג אוויר", icon: "🌤" },
-      ],
+      listCards: () => [{ id: "weather", titleHe: "מזג אוויר", icon: "🌤" }],
       registerCard: vi.fn(),
       getCard: vi.fn(),
     }));
@@ -857,9 +809,7 @@ describe("Config Panel — cards tab visibility and sizes", () => {
     if (sel) {
       sel.value = "lg";
       document.getElementById("cfg-save-btn")!.click();
-      const weatherWidget = document.querySelector<HTMLElement>(
-        '[data-card-id="weather"]',
-      )!;
+      const weatherWidget = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;
       expect(weatherWidget.dataset["cardSize"]).toBe("lg");
     } else {
       // No selector generated in this env — just verify no crash
@@ -886,9 +836,7 @@ describe("Config Panel — font size slider live preview", () => {
 
   it("updates cfg-news-fontsize-val when slider input fires", () => {
     mod.initConfigPanel();
-    const slider = document.getElementById(
-      "cfg-news-fontsize",
-    ) as HTMLInputElement | null;
+    const slider = document.getElementById("cfg-news-fontsize") as HTMLInputElement | null;
     const display = document.getElementById("cfg-news-fontsize-val");
     if (!slider || !display) return; // elements might not exist in minimal DOM
     slider.value = "85"; // within default range 0-100
@@ -901,7 +849,10 @@ describe("Config Panel — font size slider live preview", () => {
     const btn = document.getElementById("cfg-export-btn");
     if (!btn) return;
     // Mock createObjectURL (used by exportSettings)
-    vi.stubGlobal("URL", { createObjectURL: vi.fn().mockReturnValue("blob:test"), revokeObjectURL: vi.fn() });
+    vi.stubGlobal("URL", {
+      createObjectURL: vi.fn().mockReturnValue("blob:test"),
+      revokeObjectURL: vi.fn(),
+    });
     expect(() => btn.click()).not.toThrow();
     vi.unstubAllGlobals();
   });
@@ -939,9 +890,7 @@ describe("Config Panel — initConfigPanel overlay and tab branch coverage", () 
     expect(mod.isConfigPanelOpen()).toBe(true);
     // Fire click ON the overlay element itself (e.target === ov true branch)
     const ov = document.getElementById("config-overlay")!;
-    ov.dispatchEvent(
-      new MouseEvent("click", { bubbles: true }),
-    );
+    ov.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     expect(mod.isConfigPanelOpen()).toBe(false);
   });
 
@@ -970,9 +919,7 @@ describe("Config Panel — initConfigPanel overlay and tab branch coverage", () 
     const mod = await freshCfg();
     mod.initConfigPanel();
     // Click the button with data-tab="" — should not throw (if(tab) = false, skips switchCfgTab)
-    const btn = document.querySelector<HTMLButtonElement>(
-      ".cfg-tab[data-tab]",
-    )!;
+    const btn = document.querySelector<HTMLButtonElement>(".cfg-tab[data-tab]")!;
     expect(() => btn.click()).not.toThrow();
   });
 });
@@ -1022,7 +969,9 @@ describe("Config Panel — collectForm disabledFeeds split (line 303)", () => {
     const feedsEl = document.getElementById("cfg-feeds-disabled") as HTMLInputElement | null;
     if (feedsEl) feedsEl.value = "Ynet,וואלה,N12";
     document.getElementById("cfg-save-btn")?.click();
-    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as { disabledFeeds?: string[] };
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as {
+      disabledFeeds?: string[];
+    };
     // Should have split by comma and filtered empty strings
     expect(Array.isArray(saved.disabledFeeds)).toBe(true);
     if (saved.disabledFeeds?.length) {
@@ -1060,10 +1009,13 @@ describe("Config Panel — applyConfig sets [data-card-size] on matching card el
 
   it("sets data-card-size attribute on card element when cardSizes config has matching id (line 507)", async () => {
     setupDOM(); // includes <select class="cfg-card-size-sel" data-card-id="weather"> and <div data-card-id="weather">
-    const mod = await freshCfg();    mod.initConfigPanel();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
     mod.openConfigPanel();
     // Select the weather card size as "lg"
-    const sizeEl = document.querySelector<HTMLSelectElement>(".cfg-card-size-sel[data-card-id='weather']");
+    const sizeEl = document.querySelector<HTMLSelectElement>(
+      ".cfg-card-size-sel[data-card-id='weather']",
+    );
     if (sizeEl) sizeEl.value = "lg";
     // Click save → collectForm sets cardSizes["weather"]="lg" → applyConfig runs → line 507 fires
     document.getElementById("cfg-save-btn")?.click();
@@ -1130,9 +1082,10 @@ describe("Config Panel — collectForm tasksResetHour NaN preserves default", ()
     const mod = await freshCfg();
     mod.initConfigPanel();
     document.getElementById("cfg-save-btn")?.click();
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     // When NaN, collectForm does not overwrite the field — DEFAULT_CONFIG value (6) is kept
     expect(saved["tasksResetHour"]).toBe(6);
   });
@@ -1173,9 +1126,7 @@ describe("Config Panel — dirty tracking (Sprint 171)", () => {
     inp.dispatchEvent(new Event("input", { bubbles: true }));
     mod.closeConfigPanel();
     // Panel should still be visible (toast shown, not closed)
-    expect(
-      document.getElementById("config-overlay")?.classList.contains("visible"),
-    ).toBe(true);
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(true);
   });
 
   it("second close after dirty warning actually closes", async () => {
@@ -1187,9 +1138,7 @@ describe("Config Panel — dirty tracking (Sprint 171)", () => {
     inp.dispatchEvent(new Event("input", { bubbles: true }));
     mod.closeConfigPanel(); // first close: warning
     mod.closeConfigPanel(); // second close: actual close
-    expect(
-      document.getElementById("config-overlay")?.classList.contains("visible"),
-    ).toBe(false);
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
   });
 
   it("gear button shows * when dirty", async () => {
@@ -1225,9 +1174,10 @@ describe("Config Panel — collectForm tasksResetHour > 23 clamps to 23", () => 
     const mod = await freshCfg();
     mod.initConfigPanel();
     document.getElementById("cfg-save-btn")?.click();
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(saved["tasksResetHour"]).toBe(23);
   });
 });
@@ -1256,9 +1206,10 @@ describe("Config Panel — collectForm countdown card fields persist", () => {
     const mod = await freshCfg();
     mod.initConfigPanel();
     document.getElementById("cfg-save-btn")?.click();
-    const saved = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(saved["countdownCardTitle"]).toBe("יום הולדת");
     expect(saved["countdownCardDate"]).toBe("2027-01-15");
     expect(saved["countdownCardTime"]).toBe("19:30");
@@ -1305,7 +1256,10 @@ describe("Config Panel — collectForm cfg-clock-seconds (Sprint v7.12)", () => 
     mod.initConfigPanel();
     (document.getElementById("cfg-clock-seconds") as HTMLInputElement).value = "on";
     document.getElementById("cfg-save-btn")?.click();
-    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(saved["clockSeconds"]).toBe(true);
   });
 
@@ -1315,7 +1269,10 @@ describe("Config Panel — collectForm cfg-clock-seconds (Sprint v7.12)", () => 
     mod.initConfigPanel();
     (document.getElementById("cfg-clock-seconds") as HTMLInputElement).value = "off";
     document.getElementById("cfg-save-btn")?.click();
-    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(saved["clockSeconds"]).toBe(false);
   });
 });

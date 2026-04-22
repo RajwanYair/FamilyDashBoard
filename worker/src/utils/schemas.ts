@@ -163,8 +163,6 @@ export function safeParse<T>(
   if (result.success) return { ok: true, data: result.data };
   return {
     ok: false,
-    error: result.error.issues
-      .map((i) => `${i.path.join(".")}: ${i.message}`)
-      .join("; "),
+    error: result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "),
   };
 }

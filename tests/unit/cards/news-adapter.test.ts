@@ -13,7 +13,12 @@ vi.mock("@/cards/news/news", async (importOriginal) => {
     ...actual,
     fetchFeed: vi.fn(() =>
       Promise.resolve([
-        { title: "Test News", link: "https://example.com", pubDate: new Date().toISOString(), source: "Test" },
+        {
+          title: "Test News",
+          link: "https://example.com",
+          pubDate: new Date().toISOString(),
+          source: "Test",
+        },
       ]),
     ),
   };

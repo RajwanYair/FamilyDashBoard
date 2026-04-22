@@ -8,13 +8,7 @@
 
 import { FdbCard } from "../../core/fdb-card";
 import { diagLog } from "../../core/diag";
-import {
-  tick,
-  tick2,
-  tick3,
-  initCountdownCard,
-  destroyCountdownCard,
-} from "./countdown";
+import { tick, tick2, tick3, initCountdownCard, destroyCountdownCard } from "./countdown";
 
 export class FdbCountdownCard extends FdbCard {
   /** Interval for the 1-second tick, stored for cleanup. */

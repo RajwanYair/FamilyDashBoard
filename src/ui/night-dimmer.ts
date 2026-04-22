@@ -41,8 +41,7 @@ export function setDimLevel(level: number): void {
 }
 
 function applyDim(): void {
-  if (!dimEl?.isConnected)
-    dimEl = document.getElementById("night-dim");
+  if (!dimEl?.isConnected) dimEl = document.getElementById("night-dim");
   if (!dimEl) return;
 
   if (dimActive) {
@@ -103,11 +102,7 @@ export function autoDimCheck(startHour: number, endHour: number): void {
  * @param weekdays   - Array of JS weekday numbers (0=Sun…6=Sat) to restrict dimming.
  *                     Empty or undefined means all days.
  */
-export function autoDimCheckWeekday(
-  startHour: number,
-  endHour: number,
-  weekdays?: number[],
-): void {
+export function autoDimCheckWeekday(startHour: number, endHour: number, weekdays?: number[]): void {
   if (weekdays && weekdays.length > 0) {
     const today = new Date().getDay();
     if (!weekdays.includes(today)) {
@@ -174,7 +169,9 @@ export function setIdleAutoDimMinutes(minutes: number): void {
   _armIdleTimer();
   if (!_idleListenersAdded && _idleMinutes > 0) {
     _idleListenersAdded = true;
-    const handler = (): void => { resetIdleTimer(); };
+    const handler = (): void => {
+      resetIdleTimer();
+    };
     document.addEventListener("mousemove", handler, { passive: true });
     document.addEventListener("keydown", handler, { passive: true });
     document.addEventListener("touchstart", handler, { passive: true });
@@ -205,12 +202,12 @@ export function initNightDimmer(
 
   // Prefer config params; fall back to localStorage for backward compat
   const readHours = (): { start: number; end: number; enabled: boolean } => ({
-    start: startHour !== 23
-      ? startHour
-      : parseInt(localStorage.getItem(LS_DIM_START) ?? String(startHour), 10),
-    end: endHour !== 6
-      ? endHour
-      : parseInt(localStorage.getItem(LS_DIM_END) ?? String(endHour), 10),
+    start:
+      startHour !== 23
+        ? startHour
+        : parseInt(localStorage.getItem(LS_DIM_START) ?? String(startHour), 10),
+    end:
+      endHour !== 6 ? endHour : parseInt(localStorage.getItem(LS_DIM_END) ?? String(endHour), 10),
     enabled: scheduleEnabled,
   });
 

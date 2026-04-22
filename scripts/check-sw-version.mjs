@@ -35,16 +35,18 @@ const placeholder = "familydashboard-v__APP_VERSION__";
 if (actualCacheName !== expectedCacheName && actualCacheName !== placeholder) {
   console.error(
     `❌  SW version mismatch!\n` +
-    `    package.json version : ${appVersion}\n` +
-    `    expected CACHE_NAME  : ${expectedCacheName} (or placeholder)\n` +
-    `    actual   CACHE_NAME  : ${actualCacheName}\n` +
-    `\n    Fix: update CACHE_NAME in sw.js to "${expectedCacheName}" or use the __APP_VERSION__ placeholder`
+      `    package.json version : ${appVersion}\n` +
+      `    expected CACHE_NAME  : ${expectedCacheName} (or placeholder)\n` +
+      `    actual   CACHE_NAME  : ${actualCacheName}\n` +
+      `\n    Fix: update CACHE_NAME in sw.js to "${expectedCacheName}" or use the __APP_VERSION__ placeholder`,
   );
   process.exit(1);
 }
 
 if (actualCacheName === placeholder) {
-  console.log(`✅  SW version: using __APP_VERSION__ placeholder — will resolve to v${appVersion} at build time`);
+  console.log(
+    `✅  SW version: using __APP_VERSION__ placeholder — will resolve to v${appVersion} at build time`,
+  );
 } else {
   console.log(`✅  SW version matches package.json: v${appVersion}`);
 }

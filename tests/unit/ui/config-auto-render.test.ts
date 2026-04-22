@@ -152,7 +152,10 @@ describe("readConfigValues (Sprint 100)", () => {
         labelEn: "Unit",
         type: "select",
         defaultValue: "C",
-        options: [{ value: "C", label: "C" }, { value: "F", label: "F" }],
+        options: [
+          { value: "C", label: "C" },
+          { value: "F", label: "F" },
+        ],
       },
     ];
     const container = document.createElement("div");
@@ -199,7 +202,14 @@ describe("filterConfigFields (Sprint 107)", () => {
   it("hides details group when all children hidden", () => {
     const container = document.createElement("div");
     const fields: CardConfigField[] = [
-      { key: "x", labelHe: "שדה", labelEn: "Field", type: "text", defaultValue: "", group: "Advanced" },
+      {
+        key: "x",
+        labelHe: "שדה",
+        labelEn: "Field",
+        type: "text",
+        defaultValue: "",
+        group: "Advanced",
+      },
     ];
     renderConfigFields(fields, {}, container);
     filterConfigFields(container, "nomatch");

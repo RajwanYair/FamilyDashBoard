@@ -10,7 +10,7 @@ export const CORS_PREFLIGHT_HEADERS: HeadersInit = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Max-Age": "86400",
-  "Vary": "Origin",
+  Vary: "Origin",
 };
 
 /** Returns true when the request is a CORS preflight (OPTIONS). */

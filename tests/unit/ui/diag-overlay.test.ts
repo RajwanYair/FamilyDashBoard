@@ -62,32 +62,24 @@ describe("Diag Overlay — open/close/toggle", () => {
 
   it("openDiagOverlay sets open attribute", () => {
     openDiagOverlay();
-    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(
-      true,
-    );
+    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(true);
   });
 
   it("closeDiagOverlay removes open attribute", () => {
     openDiagOverlay();
     closeDiagOverlay();
-    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(
-      false,
-    );
+    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(false);
   });
 
   it("toggleDiagOverlay opens when closed", () => {
     toggleDiagOverlay();
-    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(
-      true,
-    );
+    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(true);
   });
 
   it("toggleDiagOverlay closes when open", () => {
     openDiagOverlay();
     toggleDiagOverlay();
-    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(
-      false,
-    );
+    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(false);
   });
 
   it("isDiagOverlayOpen reflects state correctly", () => {
@@ -165,8 +157,7 @@ describe("Diag Overlay — copyDiagLog", () => {
   it("writes log content to clipboard", () => {
     diagLog("[test] clipboard content");
     copyDiagLog();
-    const arg =
-      vi.mocked(navigator.clipboard.writeText).mock.calls[0]?.[0] ?? "";
+    const arg = vi.mocked(navigator.clipboard.writeText).mock.calls[0]?.[0] ?? "";
     expect(arg).toContain("[test] clipboard content");
   });
 
@@ -261,9 +252,7 @@ describe("Diag Overlay — null element branches", () => {
     document.body.innerHTML = `<dialog id="diag-overlay"></dialog>`;
     polyfillDialog(document.getElementById("diag-overlay"));
     expect(() => openDiagOverlay()).not.toThrow();
-    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(
-      true,
-    );
+    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(true);
   });
 
   it("openDiagOverlay re-queries disconnected logContainer", () => {
@@ -437,11 +426,20 @@ describe("DiagOverlay — renderStats populates #diag-panes", () => {
         <div id="diag-log"></div>
         <div id="diag-panes"></div>
       </dialog>`;
-    const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & { show?: () => void; close?: () => void };
+    const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & {
+      show?: () => void;
+      close?: () => void;
+    };
     if (typeof dlg.show !== "function") {
-      dlg.show = function () { this.setAttribute("open", ""); };
-      dlg.showModal = function () { this.setAttribute("open", ""); };
-      dlg.close = function () { this.removeAttribute("open"); };
+      dlg.show = function () {
+        this.setAttribute("open", "");
+      };
+      dlg.showModal = function () {
+        this.setAttribute("open", "");
+      };
+      dlg.close = function () {
+        this.removeAttribute("open");
+      };
     }
     clearDiag();
   });

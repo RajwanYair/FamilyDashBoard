@@ -55,9 +55,7 @@ export function parseCityEntry(raw: string): CityEntry | null {
  * and sync _activeLat/_activeLon from the currently active tab.
  */
 export function initWeatherCities(): void {
-  const tabs = document.querySelectorAll<HTMLButtonElement>(
-    ".wx-city-tab[data-city]",
-  );
+  const tabs = document.querySelectorAll<HTMLButtonElement>(".wx-city-tab[data-city]");
   const lsKeys = [LS_CITY_1, LS_CITY_2, LS_CITY_3];
 
   tabs.forEach((tab, i) => {
@@ -73,9 +71,7 @@ export function initWeatherCities(): void {
   });
 
   // If city 1 has no explicit LS override, fall back to home city coords
-  const tab1 = document.querySelector<HTMLButtonElement>(
-    ".wx-city-tab[data-city='1']",
-  );
+  const tab1 = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']");
   if (tab1 && !localStorage.getItem(LS_CITY_1)) {
     const homeLat = parseFloat(localStorage.getItem(LS_HOME_LAT) ?? "");
     const homeLon = parseFloat(localStorage.getItem(LS_HOME_LON) ?? "");
@@ -88,9 +84,7 @@ export function initWeatherCities(): void {
   }
 
   // Sync active coords from the active tab
-  const active = document.querySelector<HTMLButtonElement>(
-    ".wx-city-tab.active",
-  );
+  const active = document.querySelector<HTMLButtonElement>(".wx-city-tab.active");
   if (active) {
     const lat = parseFloat(active.dataset["lat"] ?? "");
     const lon = parseFloat(active.dataset["lon"] ?? "");
@@ -118,10 +112,7 @@ export function toggleTempUnit(): void {
 /**
  * Switch to a different weather city: update state, fetch fresh data, render.
  */
-export async function switchWeatherCity(
-  lat: number,
-  lon: number,
-): Promise<void> {
+export async function switchWeatherCity(lat: number, lon: number): Promise<void> {
   _activeLat = lat;
   _activeLon = lon;
   setSync("wx", "loading");
@@ -345,10 +336,8 @@ export function renderWeather(d: WeatherResponse): void {
   const cur = d.current;
   const tempC = Math.round(cur.temperature_2m);
   const wCfg = loadConfig();
-  if (el.wxWindTile)
-    el.wxWindTile.style.display = wCfg.weatherShowWind ? "" : "none";
-  if (el.wxRiseTile)
-    el.wxRiseTile.style.display = wCfg.weatherShowSunrise ? "" : "none";
+  if (el.wxWindTile) el.wxWindTile.style.display = wCfg.weatherShowWind ? "" : "none";
+  if (el.wxRiseTile) el.wxRiseTile.style.display = wCfg.weatherShowSunrise ? "" : "none";
 
   if (el.topTemp) el.topTemp.textContent = toDisplayTemp(tempC);
   if (el.wxTemp) el.wxTemp.textContent = toDisplayTemp(tempC);
@@ -370,13 +359,12 @@ export function renderWeather(d: WeatherResponse): void {
 
   if (el.wxWind)
     el.wxWind.textContent = `${Math.round(cur.wind_speed_10m)} קמ"ש ${deg2arrow(cur.wind_direction_10m)}`;
-  if (el.wxWindHeb)
-    el.wxWindHeb.textContent = deg2hebrewDir(cur.wind_direction_10m);
-  if (el.wxHum) el.wxHum.textContent = `${cur.relative_humidity_2m}% · ${humidityLabel(cur.relative_humidity_2m)}`;
+  if (el.wxWindHeb) el.wxWindHeb.textContent = deg2hebrewDir(cur.wind_direction_10m);
+  if (el.wxHum)
+    el.wxHum.textContent = `${cur.relative_humidity_2m}% · ${humidityLabel(cur.relative_humidity_2m)}`;
 
   // Dew point (נ.ר.)
-  if (el.wxDew)
-    el.wxDew.textContent = toDisplayTemp(Math.round(cur.dew_point_2m));
+  if (el.wxDew) el.wxDew.textContent = toDisplayTemp(Math.round(cur.dew_point_2m));
 
   // Wind gust — shown only when significantly higher than sustained wind speed
   if (el.wxGust) {
@@ -453,15 +441,9 @@ export function renderWeather(d: WeatherResponse): void {
 
   // Weekly weather summary (F148)
   if (d.daily && el.wxWeekSummary) {
-    const maxTemps = d.daily.temperature_2m_max.slice(1, 8).filter(
-      (v): v is number => v != null,
-    );
-    const minTemps = d.daily.temperature_2m_min.slice(1, 8).filter(
-      (v): v is number => v != null,
-    );
-    const codes = d.daily.weather_code.slice(1, 8).filter(
-      (v): v is number => v != null,
-    );
+    const maxTemps = d.daily.temperature_2m_max.slice(1, 8).filter((v): v is number => v != null);
+    const minTemps = d.daily.temperature_2m_min.slice(1, 8).filter((v): v is number => v != null);
+    const codes = d.daily.weather_code.slice(1, 8).filter((v): v is number => v != null);
     if (maxTemps.length && minTemps.length) {
       const weekMax = Math.round(Math.max(...maxTemps));
       const weekMin = Math.round(Math.min(...minTemps));
@@ -542,7 +524,9 @@ export function initWeatherCard(): void {
           LS_WX_CHART_MODE,
           chart.classList.contains("wx-chart-rain") ? "rain" : "temp",
         );
-      } catch { /* quota */ }
+      } catch {
+        /* quota */
+      }
     }
   }) as EventListener);
   // Restore persisted chart mode
@@ -551,25 +535,17 @@ export function initWeatherCard(): void {
   }
 
   // Wire temperature unit toggle (°C ↔ °F)
-  bindOnce(
-    document.getElementById("wx-temp"),
-    "click",
-    "fdbWxClickBound",
-    (() => toggleTempUnit()) as EventListener,
-  );
+  bindOnce(document.getElementById("wx-temp"), "click", "fdbWxClickBound", (() =>
+    toggleTempUnit()) as EventListener);
 
   // Wire city tab clicks
   bindOnce(document.getElementById("wx-city-tabs"), "click", "fdbWxClickBound", ((e: Event) => {
-    const tab = (e.target as HTMLElement).closest<HTMLButtonElement>(
-      ".wx-city-tab",
-    );
+    const tab = (e.target as HTMLElement).closest<HTMLButtonElement>(".wx-city-tab");
     if (!tab) return;
     const lat = parseFloat(tab.dataset["lat"] ?? "");
     const lon = parseFloat(tab.dataset["lon"] ?? "");
     if (isNaN(lat) || isNaN(lon)) return;
-    document
-      .querySelectorAll(".wx-city-tab")
-      .forEach((t) => t.classList.remove("active"));
+    document.querySelectorAll(".wx-city-tab").forEach((t) => t.classList.remove("active"));
     tab.classList.add("active");
     void switchWeatherCity(lat, lon);
   }) as EventListener);
@@ -610,11 +586,51 @@ export const weatherConfigSchema: CardConfigField[] = [
     tab: "display",
     group: "weather",
   },
-  { key: "homeCity", labelHe: "עיר ברירת מחדל", labelEn: "Default City", type: "text", defaultValue: "jerusalem", tab: "display", group: "weather" },
-  { key: "weatherShowDetails", labelHe: "הצג פרטים (לחות/UV/ירח)", labelEn: "Show Details (humidity/UV/moon)", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
-  { key: "weatherShowHourly", labelHe: "הצג תחזית שעתית", labelEn: "Show Hourly Forecast", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
-  { key: "weatherShowWind", labelHe: "הצג רוח", labelEn: "Show Wind", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
-  { key: "weatherShowSunrise", labelHe: "הצג זריחה/שקיעה", labelEn: "Show Sunrise/Sunset", type: "boolean", defaultValue: true, tab: "display", group: "weather" },
+  {
+    key: "homeCity",
+    labelHe: "עיר ברירת מחדל",
+    labelEn: "Default City",
+    type: "text",
+    defaultValue: "jerusalem",
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherShowDetails",
+    labelHe: "הצג פרטים (לחות/UV/ירח)",
+    labelEn: "Show Details (humidity/UV/moon)",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherShowHourly",
+    labelHe: "הצג תחזית שעתית",
+    labelEn: "Show Hourly Forecast",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherShowWind",
+    labelHe: "הצג רוח",
+    labelEn: "Show Wind",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherShowSunrise",
+    labelHe: "הצג זריחה/שקיעה",
+    labelEn: "Show Sunrise/Sunset",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "weather",
+  },
 ];
 
 export const weatherCard: CardDefinition = {

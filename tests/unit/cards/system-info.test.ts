@@ -47,17 +47,13 @@ describe("SystemInfo — renderSystemInfo online status", () => {
   it("shows online indicator when navigator.onLine is true", async () => {
     vi.spyOn(navigator, "onLine", "get").mockReturnValue(true);
     await renderSystemInfo();
-    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
-      "מחובר",
-    );
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain("מחובר");
   });
 
   it("shows offline indicator when navigator.onLine is false", async () => {
     vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
     await renderSystemInfo();
-    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
-      "מנותק",
-    );
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain("מנותק");
   });
 });
 
@@ -70,21 +66,15 @@ describe("SystemInfo — renderSystemInfo battery", () => {
 
   it("shows battery percentage when Battery API available", async () => {
     const mockBattery = { level: 0.75, charging: false };
-    (navigator as Record<string, unknown>).getBattery = vi
-      .fn()
-      .mockResolvedValue(mockBattery);
+    (navigator as Record<string, unknown>).getBattery = vi.fn().mockResolvedValue(mockBattery);
     await renderSystemInfo();
-    expect(document.getElementById("sysinfo-battery")?.textContent).toContain(
-      "75%",
-    );
+    expect(document.getElementById("sysinfo-battery")?.textContent).toContain("75%");
     delete (navigator as Record<string, unknown>).getBattery;
   });
 
   it("shows charging indicator when battery is charging", async () => {
     const mockBattery = { level: 0.5, charging: true };
-    (navigator as Record<string, unknown>).getBattery = vi
-      .fn()
-      .mockResolvedValue(mockBattery);
+    (navigator as Record<string, unknown>).getBattery = vi.fn().mockResolvedValue(mockBattery);
     await renderSystemInfo();
     const text = document.getElementById("sysinfo-battery")?.textContent ?? "";
     expect(text).toContain("⚡");
@@ -94,9 +84,7 @@ describe("SystemInfo — renderSystemInfo battery", () => {
 
   it("shows low battery icon at or below 20%", async () => {
     const mockBattery = { level: 0.15, charging: false };
-    (navigator as Record<string, unknown>).getBattery = vi
-      .fn()
-      .mockResolvedValue(mockBattery);
+    (navigator as Record<string, unknown>).getBattery = vi.fn().mockResolvedValue(mockBattery);
     await renderSystemInfo();
     const text = document.getElementById("sysinfo-battery")?.textContent ?? "";
     expect(text).toContain("🔴");
@@ -105,9 +93,7 @@ describe("SystemInfo — renderSystemInfo battery", () => {
 
   it("shows medium battery icon between 21–50%", async () => {
     const mockBattery = { level: 0.35, charging: false };
-    (navigator as Record<string, unknown>).getBattery = vi
-      .fn()
-      .mockResolvedValue(mockBattery);
+    (navigator as Record<string, unknown>).getBattery = vi.fn().mockResolvedValue(mockBattery);
     await renderSystemInfo();
     const text = document.getElementById("sysinfo-battery")?.textContent ?? "";
     expect(text).toContain("🪫");
@@ -179,20 +165,14 @@ describe("SystemInfo — renderSystemInfo uptime and timing", () => {
 
   it("renders page load time when PerformanceNavigationTiming is available", async () => {
     const fakeEntry = { loadEventEnd: 1500, startTime: 0 };
-    vi.spyOn(performance, "getEntriesByType").mockReturnValue([
-      fakeEntry as PerformanceEntry,
-    ]);
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([fakeEntry as PerformanceEntry]);
     await renderSystemInfo();
-    expect(document.getElementById("sysinfo-load")?.textContent).toContain(
-      "1500 ms",
-    );
+    expect(document.getElementById("sysinfo-load")?.textContent).toContain("1500 ms");
   });
 
   it("shows em-dash for page load when loadEventEnd is zero", async () => {
     const fakeEntry = { loadEventEnd: 0, startTime: 0 };
-    vi.spyOn(performance, "getEntriesByType").mockReturnValue([
-      fakeEntry as PerformanceEntry,
-    ]);
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([fakeEntry as PerformanceEntry]);
     await renderSystemInfo();
     expect(document.getElementById("sysinfo-load")?.textContent).toBe("—");
   });
@@ -233,16 +213,12 @@ describe("SystemInfo — renderSystemInfo browser/UA", () => {
       platform: "macOS",
     };
     await renderSystemInfo();
-    expect(document.getElementById("sysinfo-browser")?.textContent).toBe(
-      "macOS",
-    );
+    expect(document.getElementById("sysinfo-browser")?.textContent).toBe("macOS");
   });
 
   it("falls back to navigator.userAgent parse when userAgentData absent", async () => {
     delete (navigator as Record<string, unknown>).userAgentData;
-    vi.spyOn(navigator, "userAgent", "get").mockReturnValue(
-      "Mozilla/5.0 Chrome/120.0.0.0",
-    );
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 Chrome/120.0.0.0");
     await renderSystemInfo();
     const text = document.getElementById("sysinfo-browser")?.textContent ?? "";
     // May be "—" or Chrome info, just ensure it doesn't throw
@@ -303,17 +279,13 @@ describe("SystemInfo — online/offline event handlers", () => {
   it("updates sysinfo-online to connected on 'online' event", () => {
     initSystemInfoCard();
     window.dispatchEvent(new Event("online"));
-    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
-      "מחובר",
-    );
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain("מחובר");
   });
 
   it("updates sysinfo-online to disconnected on 'offline' event", () => {
     initSystemInfoCard();
     window.dispatchEvent(new Event("offline"));
-    expect(document.getElementById("sysinfo-online")?.textContent).toContain(
-      "מנותק",
-    );
+    expect(document.getElementById("sysinfo-online")?.textContent).toContain("מנותק");
   });
 });
 
@@ -405,8 +377,8 @@ describe("SystemInfo — initSystemInfoCard interval cleared on second call (lin
       <div id="sysinfo-online"></div>
     `;
     vi.useFakeTimers();
-    initSystemInfoCard();    // first call: _sysInfoInterval = null → line 155 FALSE → set interval
-    initSystemInfoCard();    // second call: _sysInfoInterval is set → line 155 TRUE → clearInterval
+    initSystemInfoCard(); // first call: _sysInfoInterval = null → line 155 FALSE → set interval
+    initSystemInfoCard(); // second call: _sysInfoInterval is set → line 155 TRUE → clearInterval
     // Should not throw
     expect(document.getElementById("sysinfo-browser")).not.toBeNull();
   });
@@ -738,7 +710,9 @@ describe("SystemInfo — formatHeapMb (Sprint 29)", () => {
 
 describe("SystemInfo — gpuShortName (Sprint 29)", () => {
   it("trims at slash", () => {
-    expect(gpuShortName("ANGLE (Intel(R) UHD Graphics)")).toBe("ANGLE (Intel(R) UHD Graphics)".split("/")[0]!.split("(")[0]!.trim().slice(0, 30));
+    expect(gpuShortName("ANGLE (Intel(R) UHD Graphics)")).toBe(
+      "ANGLE (Intel(R) UHD Graphics)".split("/")[0]!.split("(")[0]!.trim().slice(0, 30),
+    );
   });
 
   it("truncates to 30 chars max", () => {
@@ -765,7 +739,7 @@ describe("SystemInfo — configSchema (Sprint 81)", () => {
   });
 
   it("includes sysInfoShowRtt field", () => {
-    const field = systemInfoCard.configSchema!.find(f => f.key === "sysInfoShowRtt");
+    const field = systemInfoCard.configSchema!.find((f) => f.key === "sysInfoShowRtt");
     expect(field).toBeDefined();
     expect(field!.type).toBe("boolean");
     expect(field!.defaultValue).toBe(true);

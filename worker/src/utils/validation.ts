@@ -18,16 +18,13 @@ export class ValidationError extends Error {
 
 /** Build a 400 response from a ValidationError. */
 export function validationErrorResponse(err: ValidationError): Response {
-  return new Response(
-    JSON.stringify({ error: err.message, param: err.param }),
-    {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+  return new Response(JSON.stringify({ error: err.message, param: err.param }), {
+    status: 400,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
     },
-  );
+  });
 }
 
 /**
@@ -36,8 +33,7 @@ export function validationErrorResponse(err: ValidationError): Response {
  */
 export function requireParam(url: URL, name: string): string {
   const v = url.searchParams.get(name);
-  if (!v || v.trim() === "")
-    throw new ValidationError(name, `Missing required parameter: ${name}`);
+  if (!v || v.trim() === "") throw new ValidationError(name, `Missing required parameter: ${name}`);
   return v.trim();
 }
 
@@ -83,8 +79,7 @@ export function requireYear(url: URL, name = "year"): number {
  */
 export function requireGeoId(url: URL, name = "geonameid"): string {
   const v = url.searchParams.get(name) ?? "281184";
-  if (!/^\d{1,10}$/.test(v))
-    throw new ValidationError(name, `Invalid geonameid: digits only`);
+  if (!/^\d{1,10}$/.test(v)) throw new ValidationError(name, `Invalid geonameid: digits only`);
   return v;
 }
 
@@ -111,7 +106,6 @@ export function requireHttpsUrl(url: URL, name: string): URL {
   } catch {
     throw new ValidationError(name, `Invalid URL for parameter: ${name}`);
   }
-  if (parsed.protocol !== "https:")
-    throw new ValidationError(name, `Only HTTPS URLs are allowed`);
+  if (parsed.protocol !== "https:") throw new ValidationError(name, `Only HTTPS URLs are allowed`);
   return parsed;
 }

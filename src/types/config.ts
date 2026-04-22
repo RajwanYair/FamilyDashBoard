@@ -3,11 +3,7 @@
  */
 
 import { THEMES, SCREEN_MODES, INTERFACE_LANGUAGES } from "../core/constants";
-import type {
-  ThemeName,
-  ScreenModeName,
-  InterfaceLanguage,
-} from "../core/constants";
+import type { ThemeName, ScreenModeName, InterfaceLanguage } from "../core/constants";
 
 /**
  * Per-card namespaced settings (Config v4+).
@@ -312,18 +308,12 @@ export const CONFIG_VERSION = 8;
 
 /** Type guard: checks if a string is a valid interface language. */
 export function isValidInterfaceLanguage(v: unknown): v is InterfaceLanguage {
-  return (
-    typeof v === "string" &&
-    (INTERFACE_LANGUAGES as readonly string[]).includes(v)
-  );
+  return typeof v === "string" && (INTERFACE_LANGUAGES as readonly string[]).includes(v);
 }
 
 /** Type guard: checks if a string is a valid theme name. */
 export function isValidTheme(v: unknown): v is ThemeName {
-  return (
-    typeof v === "string" &&
-    (THEMES as readonly string[]).includes(v)
-  );
+  return typeof v === "string" && (THEMES as readonly string[]).includes(v);
 }
 
 /** Type guard: checks if a string is a valid screen mode. */

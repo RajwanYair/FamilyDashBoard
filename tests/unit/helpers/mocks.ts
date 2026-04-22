@@ -120,9 +120,7 @@ export interface ConfigMocks {
  * @example
  *   vi.mock("@/core/config", () => makeConfigMocks());
  */
-export function makeConfigMocks(
-  overrides: Partial<DashboardConfig> = {},
-): ConfigMocks {
+export function makeConfigMocks(overrides: Partial<DashboardConfig> = {}): ConfigMocks {
   const cfg = { ...DEFAULT_TEST_CONFIG, ...overrides };
   return {
     loadConfig: vi.fn().mockReturnValue(cfg),

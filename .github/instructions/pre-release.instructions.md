@@ -54,23 +54,23 @@ npx vite build
 
 Update ALL of these on every version bump. Search the old version string (e.g. `7.9.0`) to find occurrences.
 
-| # | File | What to update |
-|---|------|---------------|
-| 1 | `package.json` | `"version"` — canonical single source |
-| 2 | `sw.js` | Comment header version string (e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z`) |
-| 3 | `CHANGELOG.md` | New `## [X.Y.Z]` section with test count; move `[Unreleased]` block |
-| 4 | `README.md` | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge (~lines 22-23) |
-| 5 | `CLAUDE.md` | Header line 1, test count ×2 (lines ~17 and ~48) |
-| 6 | `.github/copilot-instructions.md` | Header version (line 1) + test count (line 6) |
-| 7 | `.github/instructions/workspace.instructions.md` | Header version + test count (line 6) |
-| 8 | `ARCHITECTURE.md` | Test count in stack table (~line 14) + constraint list (~line 195) |
-| 9 | `.github/assets/banner.svg` | Version string + test count in footer text |
-| 10 | `.github/assets/architecture.svg` | Version ×3 (title, sw.js label, footer) + test count |
-| 11 | `.github/assets/preview.svg` | `Dashboard vX.Y.Z` footer text |
-| 12 | `.github/assets/data-sources.svg` | Title line `— vX.Y.Z` |
-| 13 | `.github/assets/roadmap.svg` | Test count progression line |
-| 14 | `ROADMAP.md` | New row in released-versions table + `<!-- Last updated: vX.Y.Z -->` comment |
-| 15 | `.github/skills/release/SKILL.md` | `All N+ tests / M+ suites` verification line |
+| #   | File                                             | What to update                                                                   |
+| --- | ------------------------------------------------ | -------------------------------------------------------------------------------- |
+| 1   | `package.json`                                   | `"version"` — canonical single source                                            |
+| 2   | `sw.js`                                          | Comment header version string (e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z`) |
+| 3   | `CHANGELOG.md`                                   | New `## [X.Y.Z]` section with test count; move `[Unreleased]` block              |
+| 4   | `README.md`                                      | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge (~lines 22-23)               |
+| 5   | `CLAUDE.md`                                      | Header line 1, test count ×2 (lines ~17 and ~48)                                 |
+| 6   | `.github/copilot-instructions.md`                | Header version (line 1) + test count (line 6)                                    |
+| 7   | `.github/instructions/workspace.instructions.md` | Header version + test count (line 6)                                             |
+| 8   | `ARCHITECTURE.md`                                | Test count in stack table (~line 14) + constraint list (~line 195)               |
+| 9   | `.github/assets/banner.svg`                      | Version string + test count in footer text                                       |
+| 10  | `.github/assets/architecture.svg`                | Version ×3 (title, sw.js label, footer) + test count                             |
+| 11  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                                                   |
+| 12  | `.github/assets/data-sources.svg`                | Title line `— vX.Y.Z`                                                            |
+| 13  | `.github/assets/roadmap.svg`                     | Test count progression line                                                      |
+| 14  | `ROADMAP.md`                                     | New row in released-versions table + `<!-- Last updated: vX.Y.Z -->` comment     |
+| 15  | `.github/skills/release/SKILL.md`                | `All N+ tests / M+ suites` verification line                                     |
 
 - [ ] All 15 files above have been updated with the new version and/or test count
 - [ ] `CHANGELOG.md` — unreleased items moved to new version section; old sprints collapsed to one line each
@@ -84,14 +84,14 @@ Update ALL of these on every version bump. Search the old version string (e.g. `
 
 Every architecture diagram, data-flow, and table that exists as Markdown must also have an SVG in `.github/assets/`:
 
-| Diagram | SVG File |
-|---------|----------|
+| Diagram                        | SVG File           |
+| ------------------------------ | ------------------ |
 | Card layout / column structure | `architecture.svg` |
-| Fetch proxy chain | `fetch-flow.svg` |
-| Cache layer diagram | `cache-flow.svg` |
-| SW lifecycle | `sw-lifecycle.svg` |
-| CSS layer stack | `css-layers.svg` |
-| Theme token map | `theme-tokens.svg` |
+| Fetch proxy chain              | `fetch-flow.svg`   |
+| Cache layer diagram            | `cache-flow.svg`   |
+| SW lifecycle                   | `sw-lifecycle.svg` |
+| CSS layer stack                | `css-layers.svg`   |
+| Theme token map                | `theme-tokens.svg` |
 
 Use the `renderMermaidDiagram` or `mermaid-diagram-validator` tool to generate/validate SVG from Mermaid source, then save to `.github/assets/`.
 

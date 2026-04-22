@@ -18,11 +18,7 @@ vi.mock("@/core/diag", () => ({
 
 import { createCachedProviderAdapter } from "@/core/provider-adapter";
 import { cGet, cGetStale, cSet } from "@/core/cache";
-import {
-  getProviderHealth,
-  recordProviderFailure,
-  recordProviderSuccess,
-} from "@/core/provider";
+import { getProviderHealth, recordProviderFailure, recordProviderSuccess } from "@/core/provider";
 import { diagLog } from "@/core/diag";
 
 describe("createCachedProviderAdapter", () => {

@@ -76,8 +76,7 @@ export function filterBySearch(items: NewsItem[], query: string): NewsItem[] {
   if (!query.trim()) return items;
   const q = query.toLowerCase();
   return items.filter(
-    (i) =>
-      i.title.toLowerCase().includes(q) || i.source.toLowerCase().includes(q),
+    (i) => i.title.toLowerCase().includes(q) || i.source.toLowerCase().includes(q),
   );
 }
 
@@ -90,11 +89,7 @@ export function getSearchQuery(): string {
  * Matches of `query` are wrapped in <mark class="rss-highlight">.
  * Uses DOM text nodes — no innerHTML with user data.
  */
-export function highlightTitle(
-  el: HTMLAnchorElement,
-  title: string,
-  query: string,
-): void {
+export function highlightTitle(el: HTMLAnchorElement, title: string, query: string): void {
   if (!query) {
     el.textContent = title;
     return;
@@ -187,8 +182,13 @@ export function newsSourceDomain(url: string): string {
  */
 export function sanitizeNewsTitle(title: string, maxLen = 120): string {
   const entities: Record<string, string> = {
-    "&amp;": "&", "&lt;": "<", "&gt;": ">",
-    "&quot;": '"', "&#39;": "'", "&apos;": "'", "&nbsp;": " ",
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+    "&apos;": "'",
+    "&nbsp;": " ",
   };
   let out = title;
   for (const [ent, ch] of Object.entries(entities)) {
@@ -230,9 +230,7 @@ let _bookmarks: Set<string> = new Set();
 
 function loadBookmarks(): void {
   try {
-    const stored = JSON.parse(
-      localStorage.getItem(LS_NEWS_BOOKMARKS) ?? "[]",
-    ) as string[];
+    const stored = JSON.parse(localStorage.getItem(LS_NEWS_BOOKMARKS) ?? "[]") as string[];
     _bookmarks = new Set(stored);
   } catch {
     _bookmarks = new Set();
@@ -295,9 +293,7 @@ export function cacheDom(): void {
   elRssScroll = document.getElementById("rss-scroll");
   elNewsTicker = document.getElementById("news-ticker");
   elBkmPill = document.getElementById("news-bkm-pill");
-  elSearchInput = document.getElementById(
-    "news-search",
-  ) as HTMLInputElement | null;
+  elSearchInput = document.getElementById("news-search") as HTMLInputElement | null;
   elSearchClear = document.getElementById("news-search-clear");
   elSearchCount = document.getElementById("news-search-count");
   elNewsCount = document.getElementById("news-count");
@@ -345,30 +341,13 @@ export function renderSourceFilterChips(): void {
 // ── Category detection ──
 export function detectCategory(title: string): string | null {
   const t = (title || "").toLowerCase();
-  if (/ביטחון|צבא|לחימה|טיל|רקטה|מלחמה|חמאס|טרור|נשק|כיבוש|ירי/.test(t))
-    return "security";
-  if (
-    /פוליטיקה|ממשלה|כנסת|קואליציה|אופוזיציה|בחירות|מפלגה|שר|ראש.*ממשלה|נשיא/.test(
-      t,
-    )
-  )
+  if (/ביטחון|צבא|לחימה|טיל|רקטה|מלחמה|חמאס|טרור|נשק|כיבוש|ירי/.test(t)) return "security";
+  if (/פוליטיקה|ממשלה|כנסת|קואליציה|אופוזיציה|בחירות|מפלגה|שר|ראש.*ממשלה|נשיא/.test(t))
     return "politics";
-  if (
-    /כלכלה|שוק.*מניה|שקל|בנק|ריבית|תקציב|גז|נפט|ייצוא|ייבוא|שביתה|אינפלציה/.test(
-      t,
-    )
-  )
+  if (/כלכלה|שוק.*מניה|שקל|בנק|ריבית|תקציב|גז|נפט|ייצוא|ייבוא|שביתה|אינפלציה/.test(t))
     return "economy";
-  if (
-    /ספורט|כדורגל|כדורסל|טניס|אצלתנות|אולימפיאד|ליגה|אלופות|מונדיאל|גביע/.test(
-      t,
-    )
-  )
-    return "sport";
-  if (
-    /טכנולוגיה|סטארטאפ|בינה מלאכותית|ai\b|cyber|קיברנטי|אפליקציה|רובוט/.test(t)
-  )
-    return "tech";
+  if (/ספורט|כדורגל|כדורסל|טניס|אצלתנות|אולימפיאד|ליגה|אלופות|מונדיאל|גביע/.test(t)) return "sport";
+  if (/טכנולוגיה|סטארטאפ|בינה מלאכותית|ai\b|cyber|קיברנטי|אפליקציה|רובוט/.test(t)) return "tech";
   return null;
 }
 
@@ -451,20 +430,14 @@ export function renderNews(items: NewsItem[]): void {
   const cfg = loadConfig();
 
   // In bookmark mode show only bookmarked items as a static list (no clone loop).
-  const baseItems = _bkmMode
-    ? items.filter((i) => _bookmarks.has(getBookmarkKey(i.title)))
-    : items;
+  const baseItems = _bkmMode ? items.filter((i) => _bookmarks.has(getBookmarkKey(i.title))) : items;
 
   // Apply search filter
-  const displayItems = _searchQuery
-    ? filterBySearch(baseItems, _searchQuery)
-    : baseItems;
+  const displayItems = _searchQuery ? filterBySearch(baseItems, _searchQuery) : baseItems;
 
   // Update search count and clear button visibility
   if (elSearchCount) {
-    elSearchCount.textContent = _searchQuery
-      ? `${displayItems.length}/${items.length}`
-      : "";
+    elSearchCount.textContent = _searchQuery ? `${displayItems.length}/${items.length}` : "";
   }
   if (elSearchClear) {
     elSearchClear.style.display = _searchQuery ? "" : "none";
@@ -489,9 +462,7 @@ export function renderNews(items: NewsItem[]): void {
 
       // Stale age tinting (F136) — primary items only
       if (!isClone && item.pubDate) {
-        const ageH = Math.floor(
-          (Date.now() - new Date(item.pubDate).getTime()) / MS_PER_HOUR,
-        );
+        const ageH = Math.floor((Date.now() - new Date(item.pubDate).getTime()) / MS_PER_HOUR);
         if (ageH >= 24) div.classList.add("stale-old");
         else if (ageH >= 12) div.classList.add("stale-day");
         else if (ageH >= 6) div.classList.add("stale-half");
@@ -536,8 +507,7 @@ export function renderNews(items: NewsItem[]): void {
         const key = getBookmarkKey(item.title);
         const bkmBtn = document.createElement("button");
         bkmBtn.type = "button";
-        bkmBtn.className =
-          "news-bkm-btn" + (_bookmarks.has(key) ? " active" : "");
+        bkmBtn.className = "news-bkm-btn" + (_bookmarks.has(key) ? " active" : "");
         bkmBtn.textContent = "🔖";
         bkmBtn.title = _bookmarks.has(key) ? "הסר מהמועדפים" : "הוסף למועדפים";
         bkmBtn.addEventListener("click", (e) => {
@@ -594,9 +564,7 @@ export function renderNews(items: NewsItem[]): void {
         copyBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          const text = item.link
-            ? `${item.title}\n${item.link}`
-            : item.title;
+          const text = item.link ? `${item.title}\n${item.link}` : item.title;
           navigator.clipboard
             .writeText(text)
             .then(() => {
@@ -607,7 +575,9 @@ export function renderNews(items: NewsItem[]): void {
                 copyBtn.classList.remove("copied");
               }, 1500);
             })
-            .catch(() => { /* clipboard unavailable */ });
+            .catch(() => {
+              /* clipboard unavailable */
+            });
         });
         div.appendChild(copyBtn);
       }
@@ -622,7 +592,9 @@ export function renderNews(items: NewsItem[]): void {
         shareBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          navigator.share({ title: item.title, url: item.link }).catch(() => { /* cancelled or unsupported */ });
+          navigator.share({ title: item.title, url: item.link }).catch(() => {
+            /* cancelled or unsupported */
+          });
         });
         div.appendChild(shareBtn);
       }

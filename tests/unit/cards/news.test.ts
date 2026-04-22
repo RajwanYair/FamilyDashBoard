@@ -191,10 +191,7 @@ describe("News — fetchFeed", () => {
   });
 
   it("returns empty array when fetch rejects", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("Network error")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")));
     const { fetchFeed } = await import("@/cards/news/news");
     const items = await fetchFeed({
       url: "https://rss.example.com/fail",
@@ -301,9 +298,7 @@ describe("News — toggleBookmark", () => {
 
   it("persists bookmarks to localStorage", () => {
     toggleBookmark("saved-key");
-    const stored = JSON.parse(
-      localStorage.getItem("dash_bookmarks") ?? "[]",
-    ) as string[];
+    const stored = JSON.parse(localStorage.getItem("dash_bookmarks") ?? "[]") as string[];
     expect(stored).toContain("saved-key");
   });
 });
@@ -532,9 +527,7 @@ describe("News — visited articles", () => {
 
   it("markVisited persists to sessionStorage", () => {
     markVisited("persistent-key");
-    const stored = JSON.parse(
-      sessionStorage.getItem("dash_visited_news") ?? "[]",
-    ) as string[];
+    const stored = JSON.parse(sessionStorage.getItem("dash_visited_news") ?? "[]") as string[];
     expect(stored).toContain("persistent-key");
   });
 
@@ -934,8 +927,7 @@ describe("News — fetchFeed DOMParser item parsing", () => {
       querySelector: (s: string) => {
         if (s === "title") return { textContent: "מבחן כותרת" };
         if (s === "link") return { textContent: "https://example.com/test" };
-        if (s === "pubDate")
-          return { textContent: "Mon, 01 Jan 2024 10:00:00 +0000" };
+        if (s === "pubDate") return { textContent: "Mon, 01 Jan 2024 10:00:00 +0000" };
         if (s === "description") return { textContent: "<p>תיאור</p>" };
         return null;
       },
@@ -1032,12 +1024,8 @@ describe("News — renderNews extra DOM paths (static import)", () => {
   });
 
   it("ticker shows titles when elNewsTicker is present", () => {
-    renderNews([
-      { title: "כותרת טיקר", link: "", pubDate: "", source: "מקור" },
-    ]);
-    expect(document.getElementById("news-ticker")?.textContent).toContain(
-      "כותרת טיקר",
-    );
+    renderNews([{ title: "כותרת טיקר", link: "", pubDate: "", source: "מקור" }]);
+    expect(document.getElementById("news-ticker")?.textContent).toContain("כותרת טיקר");
   });
 
   it("ticker is not updated when items list is empty", () => {
@@ -1111,9 +1099,7 @@ describe("News — renderNews search-query paths (static import)", () => {
 
   afterEach(() => {
     // Clear _searchQuery before destroying DOM
-    const input = document.getElementById(
-      "news-search",
-    ) as HTMLInputElement | null;
+    const input = document.getElementById("news-search") as HTMLInputElement | null;
     if (input) {
       input.value = "";
       input.dispatchEvent(new Event("input"));
@@ -1130,9 +1116,7 @@ describe("News — renderNews search-query paths (static import)", () => {
     const input = document.getElementById("news-search") as HTMLInputElement;
     input.value = "ביטחון";
     input.dispatchEvent(new Event("input"));
-    renderNews([
-      { title: "ביטחון בצפון", link: "", pubDate: "", source: "מקור" },
-    ]);
+    renderNews([{ title: "ביטחון בצפון", link: "", pubDate: "", source: "מקור" }]);
     expect(document.querySelector("mark.rss-highlight")).not.toBeNull();
   });
 
@@ -1144,9 +1128,7 @@ describe("News — renderNews search-query paths (static import)", () => {
       { title: "ביטחון בצפון", link: "", pubDate: "", source: "מקור" },
       { title: "כלכלה", link: "", pubDate: "", source: "מקור" },
     ]);
-    expect(document.getElementById("news-search-count")?.textContent).toBe(
-      "1/2",
-    );
+    expect(document.getElementById("news-search-count")?.textContent).toBe("1/2");
   });
 
   it("getSearchQuery returns the current search value", () => {
@@ -1160,9 +1142,7 @@ describe("News — renderNews search-query paths (static import)", () => {
     const input = document.getElementById("news-search") as HTMLInputElement;
     input.value = "some query";
     input.dispatchEvent(new Event("input"));
-    document
-      .getElementById("news-search-clear")
-      ?.dispatchEvent(new Event("click"));
+    document.getElementById("news-search-clear")?.dispatchEvent(new Event("click"));
     expect(getSearchQuery()).toBe("");
   });
 });
@@ -1294,20 +1274,16 @@ describe("News — storage catch paths (static import)", () => {
 
   it("cacheDom handles sessionStorage.getItem throw gracefully (L141-142)", () => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
-    vi.spyOn(globalThis.sessionStorage, "getItem").mockImplementationOnce(
-      () => {
-        throw new Error("storage unavailable");
-      },
-    );
+    vi.spyOn(globalThis.sessionStorage, "getItem").mockImplementationOnce(() => {
+      throw new Error("storage unavailable");
+    });
     expect(() => cacheDom()).not.toThrow();
   });
 
   it("markVisited handles sessionStorage.setItem throw gracefully (L151)", () => {
-    vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementationOnce(
-      () => {
-        throw new Error("quota exceeded");
-      },
-    );
+    vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementationOnce(() => {
+      throw new Error("quota exceeded");
+    });
     expect(() => markVisited("test-key")).not.toThrow();
   });
 
@@ -1472,19 +1448,16 @@ describe("News — fetchAllNews sort and dedup path", () => {
     const rssXml = [
       '<?xml version="1.0"?>',
       '<rss version="2.0"><channel><title>T</title>',
-      '<item><title>אחד</title><link>http://a.com/1</link>',
-      '<pubDate>Mon, 13 Jan 2025 09:00:00 +0000</pubDate></item>',
-      '<item><title>שניים</title><link>http://a.com/2</link>',
-      '<pubDate>Mon, 13 Jan 2025 11:00:00 +0000</pubDate></item>',
-      '<item><title>אחד</title><link>http://a.com/3</link>',
-      '<pubDate>Mon, 13 Jan 2025 08:00:00 +0000</pubDate></item>',
-      '</channel></rss>',
+      "<item><title>אחד</title><link>http://a.com/1</link>",
+      "<pubDate>Mon, 13 Jan 2025 09:00:00 +0000</pubDate></item>",
+      "<item><title>שניים</title><link>http://a.com/2</link>",
+      "<pubDate>Mon, 13 Jan 2025 11:00:00 +0000</pubDate></item>",
+      "<item><title>אחד</title><link>http://a.com/3</link>",
+      "<pubDate>Mon, 13 Jan 2025 08:00:00 +0000</pubDate></item>",
+      "</channel></rss>",
     ].join("\n");
 
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: true, text: async () => rssXml }),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, text: async () => rssXml }));
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
     const mod = await import("@/cards/news/news");
     mod.cacheDom();
@@ -1641,9 +1614,7 @@ describe("News — renderSourceFilterChips (F9 v7.2)", () => {
   it("each chip has correct data-src attribute", () => {
     document.body.innerHTML = `<div id="news-filter-bar"></div>`;
     renderSourceFilterChips();
-    const chips = Array.from(
-      document.querySelectorAll<HTMLElement>(".news-src-chip"),
-    );
+    const chips = Array.from(document.querySelectorAll<HTMLElement>(".news-src-chip"));
     const srcs = chips.map((c) => c.dataset["src"]);
     for (const feed of NEWS_FEEDS) {
       expect(srcs).toContain(feed.src);
@@ -1917,12 +1888,14 @@ describe("News — breaking news badge (Sprint 48)", () => {
 
   it("renders breaking badge for item with breaking keyword in title", () => {
     setupNewsDOM();
-    renderNews([{
-      title: "בזק: מתקפה קשה",
-      link: "https://ynet.co.il",
-      pubDate: new Date().toUTCString(),
-      source: "Ynet",
-    }]);
+    renderNews([
+      {
+        title: "בזק: מתקפה קשה",
+        link: "https://ynet.co.il",
+        pubDate: new Date().toUTCString(),
+        source: "Ynet",
+      },
+    ]);
     const badge = document.querySelector(".news-breaking-badge");
     expect(badge).not.toBeNull();
     expect(badge?.textContent).toContain("מבזק");
@@ -1930,12 +1903,14 @@ describe("News — breaking news badge (Sprint 48)", () => {
 
   it("does not render breaking badge for regular items", () => {
     setupNewsDOM();
-    renderNews([{
-      title: "ידיעה רגילה על השבוע",
-      link: "https://ynet.co.il",
-      pubDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toUTCString(),
-      source: "Ynet",
-    }]);
+    renderNews([
+      {
+        title: "ידיעה רגילה על השבוע",
+        link: "https://ynet.co.il",
+        pubDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toUTCString(),
+        source: "Ynet",
+      },
+    ]);
     const badge = document.querySelector(".news-breaking-badge");
     expect(badge).toBeNull();
   });
@@ -1944,12 +1919,14 @@ describe("News — breaking news badge (Sprint 48)", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
     setupNewsDOM();
-    renderNews([{
-      title: "ידיעה חדשה ביותר",
-      link: "https://ynet.co.il",
-      pubDate: new Date("2025-06-15T11:45:00Z").toUTCString(),
-      source: "Ynet",
-    }]);
+    renderNews([
+      {
+        title: "ידיעה חדשה ביותר",
+        link: "https://ynet.co.il",
+        pubDate: new Date("2025-06-15T11:45:00Z").toUTCString(),
+        source: "Ynet",
+      },
+    ]);
     const badge = document.querySelector(".news-breaking-badge");
     expect(badge).not.toBeNull();
   });
@@ -1986,25 +1963,29 @@ describe("News — reading-time badge in renderNews (Sprint 27)", () => {
   });
 
   it("shows reading-time badge for items with description", () => {
-    renderNews([{
-      title: "Article with description",
-      link: "https://ynet.co.il",
-      pubDate: "",
-      source: "Ynet",
-      description: Array(250).fill("word").join(" "),
-    }]);
+    renderNews([
+      {
+        title: "Article with description",
+        link: "https://ynet.co.il",
+        pubDate: "",
+        source: "Ynet",
+        description: Array(250).fill("word").join(" "),
+      },
+    ]);
     const badge = document.querySelector(".news-reading-time");
     expect(badge).not.toBeNull();
     expect(badge!.textContent).toMatch(/~\d+ דק׳/);
   });
 
   it("does NOT show reading-time badge when description is absent", () => {
-    renderNews([{
-      title: "No desc",
-      link: "https://ynet.co.il",
-      pubDate: "",
-      source: "Ynet",
-    }]);
+    renderNews([
+      {
+        title: "No desc",
+        link: "https://ynet.co.il",
+        pubDate: "",
+        source: "Ynet",
+      },
+    ]);
     expect(document.querySelector(".news-reading-time")).toBeNull();
   });
 });
@@ -2032,7 +2013,7 @@ describe("News — loadNews uses createAsyncCardLoader (Stream D2.2)", () => {
     });
   });
 
-  it("newsCard.id is \"news\"", async () => {
+  it('newsCard.id is "news"', async () => {
     const { newsCard } = await import("@/cards/news/news");
     expect(newsCard.id).toBe("news");
   });

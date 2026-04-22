@@ -238,7 +238,9 @@ describe("FdbCard CardRuntime hooks (Sprint 50)", () => {
   it("onStale can be overridden in subclass", () => {
     class StaleTracker extends FdbCard {
       lastAge: number | null = null;
-      override onStale(ageMs: number): void { this.lastAge = ageMs; }
+      override onStale(ageMs: number): void {
+        this.lastAge = ageMs;
+      }
     }
     if (!customElements.get("fdb-stale-tracker")) {
       customElements.define("fdb-stale-tracker", StaleTracker);
@@ -334,7 +336,9 @@ describe("FdbCard.renderNodes (Sprint 54)", () => {
     card = document.createElement("fdb-test-card") as FdbCard;
     document.body.appendChild(card);
   });
-  afterEach(() => { if (card.isConnected) document.body.removeChild(card); });
+  afterEach(() => {
+    if (card.isConnected) document.body.removeChild(card);
+  });
 
   it("clears target and appends Node children", () => {
     const target = document.createElement("div");
@@ -367,7 +371,9 @@ describe("FdbCard.withLoading (Sprint 55)", () => {
     card = document.createElement("fdb-test-card") as FdbCard;
     document.body.appendChild(card);
   });
-  afterEach(() => { if (card.isConnected) document.body.removeChild(card); });
+  afterEach(() => {
+    if (card.isConnected) document.body.removeChild(card);
+  });
 
   it("sets aria-busy=true during fn execution", async () => {
     let busyDuring = false;
@@ -378,14 +384,18 @@ describe("FdbCard.withLoading (Sprint 55)", () => {
   });
 
   it("clears aria-busy after fn resolves", async () => {
-    await card.withLoading(async () => { /* noop */ });
+    await card.withLoading(async () => {
+      /* noop */
+    });
     expect(card.getAttribute("aria-busy")).toBe("false");
   });
 
   it("calls onError and still clears loading on rejection", async () => {
     const errors: Error[] = [];
     card.onError = (e) => errors.push(e);
-    await card.withLoading(async () => { throw new Error("boom"); });
+    await card.withLoading(async () => {
+      throw new Error("boom");
+    });
     expect(errors).toHaveLength(1);
     expect(errors[0]?.message).toBe("boom");
     expect(card.getAttribute("aria-busy")).toBe("false");
@@ -439,7 +449,9 @@ describe("FdbCard.setTitle", () => {
     document.body.appendChild(card);
   });
 
-  afterEach(() => { card.remove(); });
+  afterEach(() => {
+    card.remove();
+  });
 
   it("sets textContent of [data-card-title] element", () => {
     const title = document.createElement("span");
@@ -464,7 +476,9 @@ describe("FdbCard.setBadge", () => {
     document.body.appendChild(card);
   });
 
-  afterEach(() => { card.remove(); });
+  afterEach(() => {
+    card.remove();
+  });
 
   it("sets badge text and removes aria-hidden when count > 0", () => {
     const badge = document.createElement("span");
@@ -912,7 +926,9 @@ describe("FdbCard.loadData (Sprint 184)", () => {
     document.body.appendChild(card);
 
     // Override fetchCardData to throw
-    card["fetchCardData"] = async () => { throw new Error("net"); };
+    card["fetchCardData"] = async () => {
+      throw new Error("net");
+    };
     await card["loadData"]("dt4", 60_000);
     expect(card.renderCalls).toContainEqual("stale-data");
     expect(setSync).toHaveBeenCalledWith("dt4", "ok");

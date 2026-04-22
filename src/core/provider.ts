@@ -153,11 +153,7 @@ export function getAllProviderLatencies(): ReadonlyMap<string, readonly number[]
  * @param baseMs Base delay (default 2 000 ms)
  * @param maxMs  Maximum delay cap (default 60 000 ms = 1 min)
  */
-export function getBackoffMs(
-  id: string,
-  baseMs = 2_000,
-  maxMs = 60_000,
-): number {
+export function getBackoffMs(id: string, baseMs = 2_000, maxMs = 60_000): number {
   const h = _ensure(id);
   if (h.consecutiveFails === 0) return 0;
   return Math.min(baseMs * Math.pow(2, h.consecutiveFails - 1), maxMs);

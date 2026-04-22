@@ -63,10 +63,7 @@ function openDB(): Promise<IDBDatabase | null> {
  * @param key - Cache key
  * @param ttl - Maximum age in milliseconds (0 = no expiry check)
  */
-export async function idbGet<T = unknown>(
-  key: string,
-  ttl = 0,
-): Promise<T | null> {
+export async function idbGet<T = unknown>(key: string, ttl = 0): Promise<T | null> {
   const db = await openDB();
   if (!db) return null;
 
@@ -212,10 +209,7 @@ export const IDB_MAX_BYTES = 50 * 1024 * 1024; // 50 MB
  * Returns 0 if the API is unavailable (Safari < 15.2, node, etc.).
  */
 export async function idbEstimateSize(): Promise<number> {
-  if (
-    typeof navigator === "undefined" ||
-    !navigator.storage?.estimate
-  ) {
+  if (typeof navigator === "undefined" || !navigator.storage?.estimate) {
     return 0;
   }
   try {

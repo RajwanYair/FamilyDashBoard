@@ -9,26 +9,10 @@
 
 import { scheduleCard } from "../base-card";
 import "./calendar.css";
-import {
-  INTERVALS,
-  PROXIES,
-  LS_ICS_URL,
-  MS_PER_DAY,
-  MS_PER_MIN,
-} from "../../core/constants";
-import {
-  cGetStale,
-  cGetAsync,
-  cGetStaleAsync,
-  cSetAsync,
-} from "../../core/cache";
+import { INTERVALS, PROXIES, LS_ICS_URL, MS_PER_DAY, MS_PER_MIN } from "../../core/constants";
+import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
-import {
-  setSync,
-  syncBurst,
-  recordSuccess,
-  recordFailure,
-} from "../../core/sync";
+import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { diagLog } from "../../core/diag";
 import { acquireLock, releaseLock } from "../../core/fetch";
 import type { CalendarEvent } from "../../types/api";
@@ -73,9 +57,7 @@ function parseICSDate(raw: string): Date | null {
   if (!raw) return null;
   if (raw.length === 8) {
     // All-day: YYYYMMDD
-    return new Date(
-      `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`,
-    );
+    return new Date(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
   }
   const s = raw.replace(
     /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/,
@@ -100,9 +82,7 @@ export function parseICS(text: string, icsIndex = 0): CalendarEvent[] {
     const block = blocks[i]!;
     const unfolded = block.replace(/\r?\n[ \t]/g, "");
     const get = (key: string): string | null => {
-      const m = unfolded.match(
-        new RegExp("(?:^|\n)" + key + "(?:;[^:]*)?:([^\r\n]+)", "i"),
-      );
+      const m = unfolded.match(new RegExp("(?:^|\n)" + key + "(?:;[^:]*)?:([^\r\n]+)", "i"));
       return m ? m[1]!.trim() : null;
     };
     const dtRaw = get("DTSTART") ?? "";
@@ -133,23 +113,11 @@ export function parseICS(text: string, icsIndex = 0): CalendarEvent[] {
 // ── Category Detection ──
 export function detectCalCategory(summary: string): string {
   const s = summary.toLowerCase();
-  if (
-    /work|עבודה|meeting|פגישה|office|משרד|zoom|ועדה|ישיבה|הרצאה|תכנון|פרויקט/.test(
-      s,
-    )
-  )
+  if (/work|עבודה|meeting|פגישה|office|משרד|zoom|ועדה|ישיבה|הרצאה|תכנון|פרויקט/.test(s))
     return "work";
-  if (
-    /family|משפחה|ילדים|בית|הורים|dinner|ארוחה|אמא|אבא|סבא|סבתא|אחים|חתונה|ברית|בר.מצוה/.test(
-      s,
-    )
-  )
+  if (/family|משפחה|ילדים|בית|הורים|dinner|ארוחה|אמא|אבא|סבא|סבתא|אחים|חתונה|ברית|בר.מצוה/.test(s))
     return "family";
-  if (
-    /doctor|רופא|רופאה|קופת|medical|בריאות|hospital|clinic|ניתוח|טיפול|שיניים|תרופות/.test(
-      s,
-    )
-  )
+  if (/doctor|רופא|רופאה|קופת|medical|בריאות|hospital|clinic|ניתוח|טיפול|שיניים|תרופות/.test(s))
     return "health";
   if (
     /חג|holiday|shabbat|שבת|omer|passover|pesach|sukk|chanuk|purim|rosh|yom.kip|שמחה|חנוכה|פורים|פסח|סוכות|שבועות/i.test(
@@ -168,9 +136,7 @@ export function detectCalCategory(summary: string): string {
 export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dateMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const diffDays = Math.round(
-    (dateMidnight.getTime() - todayMidnight.getTime()) / MS_PER_DAY,
-  );
+  const diffDays = Math.round((dateMidnight.getTime() - todayMidnight.getTime()) / MS_PER_DAY);
   if (diffDays <= 0) return "";
   if (diffDays === 1) return "מחר";
   return `עוד ${diffDays} ימים`;
@@ -181,14 +147,10 @@ export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
 function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
   const now = Date.now();
   const msTilStart = ev.start.getTime() - now;
-  const isSoon =
-    !ev.allDay && msTilStart > 0 && msTilStart < 60 * 60 * 1000;
+  const isSoon = !ev.allDay && msTilStart > 0 && msTilStart < 60 * 60 * 1000;
 
   const row = document.createElement("div");
-  row.className =
-    "cal-event" +
-    (isConflict ? " has-conflict" : "") +
-    (isSoon ? " event-soon" : "");
+  row.className = "cal-event" + (isConflict ? " has-conflict" : "") + (isSoon ? " event-soon" : "");
   if (ev.icsIndex) row.dataset["ics"] = String(ev.icsIndex);
 
   const timeEl = document.createElement("div");
@@ -201,9 +163,7 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
       minute: "2-digit",
       timeZone: "Asia/Jerusalem",
     });
-    const durMin = Math.round(
-      (ev.end.getTime() - ev.start.getTime()) / MS_PER_MIN,
-    );
+    const durMin = Math.round((ev.end.getTime() - ev.start.getTime()) / MS_PER_MIN);
     if (durMin > 0 && ev.end > ev.start) {
       const endStr = ev.end.toLocaleTimeString("he-IL", {
         hour: "2-digit",
@@ -267,11 +227,7 @@ function renderCalCountdown(upcoming: CalendarEvent[], now: Date): void {
 function renderTodayStrip(events: CalendarEvent[]): void {
   if (!els.todayStrip) return;
   const now = new Date();
-  const endOfDay = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1,
-  );
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   const todayEvents = events
     .filter((e) => !e.allDay && e.start >= now && e.start < endOfDay)
     .sort((a, b) => a.start.getTime() - b.start.getTime())
@@ -302,9 +258,7 @@ function renderWeekStrip(events: CalendarEvent[]): void {
     day.setHours(0, 0, 0, 0);
     day.setDate(day.getDate() + i);
     const key = day.toDateString();
-    const count = events.filter(
-      (ev) => ev.start?.toDateString() === key,
-    ).length;
+    const count = events.filter((ev) => ev.start?.toDateString() === key).length;
     const isToday = i === 0;
     const dots = Array.from({ length: Math.min(count, 4) }, (_, j) => {
       const color =
@@ -317,14 +271,7 @@ function renderWeekStrip(events: CalendarEvent[]): void {
               : "#94a3b8";
       return `<div class="cal-week-dot" style="background:${color}"></div>`;
     }).join("");
-    const heat =
-      count >= 4
-        ? " heat-3"
-        : count >= 2
-          ? " heat-2"
-          : count >= 1
-            ? " heat-1"
-            : "";
+    const heat = count >= 4 ? " heat-3" : count >= 2 ? " heat-2" : count >= 1 ? " heat-1" : "";
     rows.push(
       `<div class="cal-week-day${isToday ? " cal-week-today" : ""}${heat}">` +
         `<div class="cal-week-label">${CAL_WEEK_DAY_HE[day.getDay()]!}</div>` +
@@ -340,9 +287,7 @@ function updateTodayEventCount(events: CalendarEvent[]): void {
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);
   const todayEnd = new Date(todayMidnight.getTime() + MS_PER_DAY);
-  const count = events.filter(
-    (e) => e.start >= todayMidnight && e.start < todayEnd,
-  ).length;
+  const count = events.filter((e) => e.start >= todayMidnight && e.start < todayEnd).length;
   hdrEl.textContent = count > 0 ? `${count} 📅` : "";
   hdrEl.style.display = count > 0 ? "" : "none";
 }
@@ -353,11 +298,7 @@ export function renderCalendar(events: CalendarEvent[]): number {
 
   const now = new Date();
   const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * MS_PER_DAY);
-  const todayMidnight = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-  );
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const upcoming = events
     .filter((e) => e.start >= todayMidnight && e.start <= cutoff)
     .sort((a, b) => a.start.getTime() - b.start.getTime());
@@ -387,8 +328,7 @@ export function renderCalendar(events: CalendarEvent[]): number {
       if (dateKey !== lastDateKey) {
         lastDateKey = dateKey;
         const hdr = document.createElement("div");
-        hdr.className =
-          "cal-day-header" + (dateKey === todayKey ? " today" : "");
+        hdr.className = "cal-day-header" + (dateKey === todayKey ? " today" : "");
         const dayHe = ev.start.toLocaleDateString("he-IL", {
           weekday: "long",
           timeZone: "Asia/Jerusalem",
@@ -493,18 +433,13 @@ async function loadCalendar(): Promise<void> {
   // Use stale while revalidating
   const staleText = await cGetStaleAsync<string>(key0);
   if (staleText !== null) {
-    const events = [
-      ...parseICS(staleText, 0),
-      ...loadExtraEventsFromCache(urls),
-    ];
+    const events = [...parseICS(staleText, 0), ...loadExtraEventsFromCache(urls)];
     renderCalendar(events);
   }
 
   try {
     // Fetch all ICS feeds in parallel
-    const results = await Promise.allSettled(
-      urls.map((url, idx) => fetchICSWithCache(url, idx)),
-    );
+    const results = await Promise.allSettled(urls.map((url, idx) => fetchICSWithCache(url, idx)));
     const allEvents: CalendarEvent[] = [];
     for (const r of results) {
       if (r.status === "fulfilled" && r.value) allEvents.push(...r.value);
@@ -538,10 +473,7 @@ function loadExtraEventsFromCache(urls: string[]): CalendarEvent[] {
   return extra;
 }
 
-async function fetchICSWithCache(
-  url: string,
-  idx: number,
-): Promise<CalendarEvent[]> {
+async function fetchICSWithCache(url: string, idx: number): Promise<CalendarEvent[]> {
   const key = idx === 0 ? "cal-ics" : `cal-ics-${idx}`;
   const text = await fetchICS(url);
   if (!text) return [];

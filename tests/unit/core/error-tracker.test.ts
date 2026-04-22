@@ -98,7 +98,12 @@ describe("getErrorCount", () => {
 
 describe("formatErrorEntry", () => {
   it("formats entry with source and lineno", () => {
-    const entry = { ts: new Date("2024-01-01T10:00:00Z").getTime(), message: "boom", source: "path/to/foo.ts", lineno: 55 };
+    const entry = {
+      ts: new Date("2024-01-01T10:00:00Z").getTime(),
+      message: "boom",
+      source: "path/to/foo.ts",
+      lineno: 55,
+    };
     const s = formatErrorEntry(entry);
     expect(s).toContain("foo.ts");
     expect(s).toContain(":55");
@@ -120,7 +125,9 @@ describe("installGlobalErrorHandlers", () => {
     installGlobalErrorHandlers();
     // Second call should not add more listeners (early-return via _installed flag)
     // The first call adds 2 listeners; second adds 0
-    const errorCalls = addSpy.mock.calls.filter(([ev]) => ev === "error" || ev === "unhandledrejection");
+    const errorCalls = addSpy.mock.calls.filter(
+      ([ev]) => ev === "error" || ev === "unhandledrejection",
+    );
     expect(errorCalls.length).toBeLessThanOrEqual(4); // at most 2 per call
     addSpy.mockRestore();
   });

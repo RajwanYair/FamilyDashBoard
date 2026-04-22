@@ -9,13 +9,7 @@
 
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import "./currency.css";
-import {
-  INTERVALS,
-  CUR_TILES,
-  API,
-  LS_CUR_HISTORY,
-  MS_PER_MIN,
-} from "../../core/constants";
+import { INTERVALS, CUR_TILES, API, LS_CUR_HISTORY, MS_PER_MIN } from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import type { CurrencyResponse } from "../../types/api";
@@ -211,12 +205,8 @@ export function renderCurrency(rates: Record<string, number>): void {
       let sessionChangeShown = false;
       if (prevRaw && rawRate && val !== null) {
         const prevVal = 1 / prevRaw;
-        const diff =
-          tile.precision === 0
-            ? Math.round(val) - Math.round(prevVal)
-            : val - prevVal;
-        const threshold =
-          tile.precision === 0 ? 5 : tile.precision === 1 ? 0.05 : 0.0005;
+        const diff = tile.precision === 0 ? Math.round(val) - Math.round(prevVal) : val - prevVal;
+        const threshold = tile.precision === 0 ? 5 : tile.precision === 1 ? 0.05 : 0.0005;
         if (Math.abs(diff) > threshold) {
           chgEl.textContent = `${diff > 0 ? "▲" : "▼"} ${Math.abs(tile.precision === 0 ? diff : parseFloat(diff.toFixed(tile.precision)))}`;
           chgEl.className = `cur-chg ${diff > 0 ? "positive" : "negative"}`;

@@ -32,10 +32,7 @@ export function toggleCardMaximize(card: HTMLElement): void {
  * Compute the adaptive font scale: ratio of expanded area to collapsed area,
  * clamped to [1, 4] so fonts are never smaller than normal and never absurdly large.
  */
-export function computeFontScale(
-  first: DOMRect,
-  last: DOMRect,
-): number {
+export function computeFontScale(first: DOMRect, last: DOMRect): number {
   const scaleW = last.width / (first.width || 1);
   const scaleH = last.height / (first.height || 1);
   // Use the smaller axis so content is never clipped horizontally or vertically
@@ -72,10 +69,7 @@ function expandCard(card: HTMLElement): void {
   const sy = first.height / last.height;
 
   card.animate(
-    [
-      { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
-      { transform: "none" },
-    ],
+    [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: "none" }],
     { duration: 300, easing: "ease-out" },
   );
 
@@ -96,10 +90,7 @@ function collapseCard(card: HTMLElement): void {
   const sy = first.height / last.height;
 
   const anim = card.animate(
-    [
-      { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
-      { transform: "none" },
-    ],
+    [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: "none" }],
     { duration: 300, easing: "ease-out" },
   );
 
@@ -149,7 +140,9 @@ function loadCollapsedCards(): Set<string> {
 function saveCollapsedCards(set: Set<string>): void {
   try {
     localStorage.setItem(LS_COLLAPSED, JSON.stringify([...set]));
-  } catch { /* quota */ }
+  } catch {
+    /* quota */
+  }
 }
 
 export function getCollapsedCards(): Set<string> {
@@ -193,7 +186,9 @@ export function initCardCollapse(): void {
           else set.delete(cardId);
           saveCollapsedCards(set);
         }
-        diagLog(`[maximize] Card ${card.classList.contains("collapsed") ? "collapsed" : "expanded"}: ${cardId}`);
+        diagLog(
+          `[maximize] Card ${card.classList.contains("collapsed") ? "collapsed" : "expanded"}: ${cardId}`,
+        );
       };
 
       if ("startViewTransition" in document) {

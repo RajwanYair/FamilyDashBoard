@@ -6,12 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fetchViaWorker } from "@/core/fetch";
-import {
-  API,
-  WORKER_BASE_URL,
-  isWorkerEnabled,
-  resetWorkerEnabledCache,
-} from "@/core/constants";
+import { API, WORKER_BASE_URL, isWorkerEnabled, resetWorkerEnabledCache } from "@/core/constants";
 
 // ── WORKER_BASE_URL + isWorkerEnabled ─────────────────────────────────────
 
@@ -73,28 +68,21 @@ describe("fetchViaWorker", () => {
     const result = await fetchViaWorker<{ data: string }>(API.CURRENCY_PRIMARY);
     expect(result).toEqual({ data: "worker-result" });
     // Verify the URL used the worker base
-    const calledUrl = (global.fetch as ReturnType<typeof vi.fn>).mock
-      .calls[0][0] as string;
+    const calledUrl = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
     expect(calledUrl).toContain(WORKER_BASE_URL);
     expect(calledUrl).toContain("/api/currency");
   });
 
   it("returns null when worker returns non-ok status", async () => {
     vi.stubGlobal("navigator", { ...navigator, onLine: true });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: false, status: 502 } as Response),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 502 } as Response));
     const result = await fetchViaWorker("https://api.example.com");
     expect(result).toBeNull();
   });
 
   it("returns null when worker fetch throws", async () => {
     vi.stubGlobal("navigator", { ...navigator, onLine: true });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("network error")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     const result = await fetchViaWorker("https://api.example.com");
     expect(result).toBeNull();
   });

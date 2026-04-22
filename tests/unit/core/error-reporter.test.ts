@@ -68,7 +68,10 @@ describe("Error Reporter — reportErrors", () => {
     expect(globalThis.fetch).not.toHaveBeenCalled();
     await vi.runAllTimersAsync();
     expect(globalThis.fetch).toHaveBeenCalledOnce();
-    const [url, opts] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    const [url, opts] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+      RequestInit,
+    ];
     expect(url).toBe("https://worker.test/api/errors");
     expect(opts.method).toBe("POST");
   });

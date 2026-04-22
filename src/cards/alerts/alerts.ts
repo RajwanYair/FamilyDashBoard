@@ -7,15 +7,17 @@
  * Renders scrolling list of recent alert events.
  */
 
-import { INTERVALS, THREAT_LABELS, API, PROXIES, WORKER_BASE_URL, isWorkerEnabled } from "../../core/constants";
+import {
+  INTERVALS,
+  THREAT_LABELS,
+  API,
+  PROXIES,
+  WORKER_BASE_URL,
+  isWorkerEnabled,
+} from "../../core/constants";
 import "./alerts.css";
 import { cGetStale, cSetAsync } from "../../core/cache";
-import {
-  setSync,
-  syncBurst,
-  recordSuccess,
-  recordFailure,
-} from "../../core/sync";
+import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
 import type { AlertEvent, AlertsResponse } from "../../types/api";
@@ -75,8 +77,7 @@ function playBeep(): void {
   try {
     const AudioCtor =
       window.AudioContext ??
-      (window as unknown as { webkitAudioContext: typeof AudioContext })
-        .webkitAudioContext;
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtor) return;
     const ctx = new AudioCtor();
     const osc = ctx.createOscillator();
@@ -96,11 +97,7 @@ function playBeep(): void {
 // ── Desktop notification ──
 function notify(data: AlertEvent[]): void {
   playBeep();
-  if (
-    typeof Notification === "undefined" ||
-    Notification.permission !== "granted"
-  )
-    return;
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
   const cities =
     data[0]?.alerts
       ?.flatMap((a) => a.cities ?? [])
@@ -161,9 +158,7 @@ async function fetchAlerts(): Promise<AlertEvent[]> {
       const res = await fetch(src.url);
       if (!res.ok) continue;
       const data = src.isAllOrigins
-        ? (JSON.parse(
-            ((await res.json()) as { contents: string }).contents,
-          ) as AlertEvent[])
+        ? (JSON.parse(((await res.json()) as { contents: string }).contents) as AlertEvent[])
         : ((await res.json()) as AlertEvent[]);
       if (Array.isArray(data) && data.length) return data;
     } catch {
@@ -277,9 +272,7 @@ export function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
   }
 
   const recent = data.slice(0, 25);
-  const hasActive = data.some((ev) =>
-    ev.alerts?.some((a) => now - a.time < 600),
-  );
+  const hasActive = data.some((ev) => ev.alerts?.some((a) => now - a.time < 600));
 
   const frag = document.createDocumentFragment();
   for (const isClone of [false, true]) {
@@ -364,16 +357,14 @@ export async function loadAlerts(): Promise<void> {
       recordSuccess("alerts");
 
       const now = Date.now() / 1000;
-      _haveActive = validData.some((ev) =>
-        ev.alerts?.some((a) => now - a.time < 600),
-      );
+      _haveActive = validData.some((ev) => ev.alerts?.some((a) => now - a.time < 600));
     } else {
       _haveActive = false;
       setSync("alerts", stale ? "ok" : "error");
       recordFailure("alerts");
     }
   } catch (err) {
-      diagLog(`FDB-021: [alerts] Error: ${String(err)}`);
+    diagLog(`FDB-021: [alerts] Error: ${String(err)}`);
     setSync("alerts", stale ? "ok" : "error");
     recordFailure("alerts");
   }

@@ -20,10 +20,19 @@ import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
 import {
-  LS_DIM_START, LS_DIM_END, LS_TICKER_MSG,
-  LS_CITY_1, LS_CITY_2, LS_CITY_3, LS_STOCK_ALERTS,
-  LS_HOME_LAT, LS_HOME_LON, LS_HOME_NAME,
-  LS_NEWS_FONT, LS_CHORES, LS_PORTFOLIO,
+  LS_DIM_START,
+  LS_DIM_END,
+  LS_TICKER_MSG,
+  LS_CITY_1,
+  LS_CITY_2,
+  LS_CITY_3,
+  LS_STOCK_ALERTS,
+  LS_HOME_LAT,
+  LS_HOME_LON,
+  LS_HOME_NAME,
+  LS_NEWS_FONT,
+  LS_CHORES,
+  LS_PORTFOLIO,
 } from "../core/constants";
 // ── Extra localStorage keys now imported from core/constants ──
 
@@ -87,16 +96,12 @@ async function getCardConfigSchemaDefs(): Promise<CardConfigSchemaDef[]> {
       listCards().map(async (entry) => {
         try {
           const def = await loadCard(entry.id);
-          return def.configSchema?.length
-            ? { id: entry.id, fields: def.configSchema }
-            : null;
+          return def.configSchema?.length ? { id: entry.id, fields: def.configSchema } : null;
         } catch {
           return null;
         }
       }),
-    ).then((defs) =>
-      defs.filter((def): def is CardConfigSchemaDef => def !== null),
-    );
+    ).then((defs) => defs.filter((def): def is CardConfigSchemaDef => def !== null));
   }
 
   return cardConfigSchemaDefsPromise;
@@ -108,21 +113,15 @@ async function applySavedConfigSideEffects(
   refreshPortfolio: boolean,
 ): Promise<void> {
   try {
-    const [
-      alertsMod,
-      weatherMod,
-      stocksMod,
-      newsMod,
-      countdownMod,
-      motivationMod,
-    ] = await Promise.all([
-      import("../cards/alerts/alerts"),
-      import("../cards/weather/weather"),
-      import("../cards/stocks/stocks"),
-      import("../cards/news/news"),
-      import("../cards/countdown/countdown"),
-      import("../cards/motivation/motivation"),
-    ]);
+    const [alertsMod, weatherMod, stocksMod, newsMod, countdownMod, motivationMod] =
+      await Promise.all([
+        import("../cards/alerts/alerts"),
+        import("../cards/weather/weather"),
+        import("../cards/stocks/stocks"),
+        import("../cards/news/news"),
+        import("../cards/countdown/countdown"),
+        import("../cards/motivation/motivation"),
+      ]);
 
     alertsMod.setAlertsRealtime(config.realtimeAlerts);
     alertsMod.setAlertVolume(config.alertVolume ?? 18);
@@ -221,9 +220,7 @@ function populateForm(): void {
   // Calendar tab
   const bday = gTxt("cfg-birthday");
   if (bday)
-    bday.value = c.birthdays
-      .map((b) => `${b.name},${String(b.month)},${String(b.day)}`)
-      .join("\n");
+    bday.value = c.birthdays.map((b) => `${b.name},${String(b.month)},${String(b.day)}`).join("\n");
 
   const ics1 = g("cfg-ics-url");
   const ics2 = g("cfg-ics-url-2");
@@ -274,8 +271,7 @@ function populateForm(): void {
   if (alertRealtime) alertRealtime.value = c.realtimeAlerts ? "on" : "off";
 
   const stockAlerts = gTxt("cfg-stock-alerts");
-  if (stockAlerts)
-    stockAlerts.value = localStorage.getItem(LS_STOCK_ALERTS) ?? "";
+  if (stockAlerts) stockAlerts.value = localStorage.getItem(LS_STOCK_ALERTS) ?? "";
 
   // Advanced tab
   const homeLat = g("cfg-home-lat");
@@ -285,8 +281,7 @@ function populateForm(): void {
   if (homeLon) homeLon.value = localStorage.getItem(LS_HOME_LON) ?? "";
 
   const homeName = g("cfg-home-name");
-  if (homeName)
-    homeName.value = localStorage.getItem(LS_HOME_NAME) ?? c.homeCity;
+  if (homeName) homeName.value = localStorage.getItem(LS_HOME_NAME) ?? c.homeCity;
 
   const proxy = g("cfg-custom-proxy");
   if (proxy) proxy.value = c.customProxy;
@@ -338,8 +333,7 @@ function populateForm(): void {
 
   // Portfolio editor (Advanced tab)
   const portfolioEl = gTxt("cfg-portfolio");
-  if (portfolioEl)
-    portfolioEl.value = localStorage.getItem(LS_PORTFOLIO) ?? "";
+  if (portfolioEl) portfolioEl.value = localStorage.getItem(LS_PORTFOLIO) ?? "";
 
   // Tasks reset hour (Advanced tab)
   const resetHourEl = g("cfg-tasks-reset-hour");
@@ -533,9 +527,7 @@ function collectForm(): DashboardConfig {
         const day = parseInt(parts[2] ?? "0", 10);
         return name && month > 0 && day > 0 ? { name, month, day } : null;
       })
-      .filter(
-        (b): b is { name: string; month: number; day: number } => b !== null,
-      );
+      .filter((b): b is { name: string; month: number; day: number } => b !== null);
   }
 
   const ics1 = g("cfg-ics-url")?.value.trim() ?? "";
@@ -591,12 +583,10 @@ function collectForm(): DashboardConfig {
   }
 
   const alertRealtime = g("cfg-alert-realtime");
-  if (alertRealtime)
-    c.realtimeAlerts = alertRealtime.value.trim().toLowerCase() === "on";
+  if (alertRealtime) c.realtimeAlerts = alertRealtime.value.trim().toLowerCase() === "on";
 
   const stockAlerts = gTxt("cfg-stock-alerts");
-  if (stockAlerts)
-    localStorage.setItem(LS_STOCK_ALERTS, stockAlerts.value.trim());
+  if (stockAlerts) localStorage.setItem(LS_STOCK_ALERTS, stockAlerts.value.trim());
 
   // Advanced
   const homeLat = g("cfg-home-lat");
@@ -626,18 +616,15 @@ function collectForm(): DashboardConfig {
   if (cdCardTitleEl) c.countdownCardTitle = cdCardTitleEl.value.trim();
 
   const cdCardDateEl = g("cfg-cd-card-date");
-  if (cdCardDateEl?.value)
-    c.countdownCardDate = cdCardDateEl.value;
+  if (cdCardDateEl?.value) c.countdownCardDate = cdCardDateEl.value;
 
   const cdCardTimeEl = g("cfg-cd-card-time");
-  if (cdCardTimeEl?.value)
-    c.countdownCardTime = cdCardTimeEl.value;
+  if (cdCardTimeEl?.value) c.countdownCardTime = cdCardTimeEl.value;
 
   const cdCardDoneMsgEl = g("cfg-cd-card-done-msg");
   if (cdCardDoneMsgEl) c.countdownCardDoneMsg = cdCardDoneMsgEl.value.trim();
   const cdCardStartDateEl = g("cfg-cd-card-start-date");
-  if (cdCardStartDateEl)
-    c.countdownCardStartDate = cdCardStartDateEl.value.trim();
+  if (cdCardStartDateEl) c.countdownCardStartDate = cdCardStartDateEl.value.trim();
 
   // F8 (v7.2): 2nd countdown event
   const cd2TitleEl = g("cfg-cd2-title");
@@ -661,12 +648,10 @@ function collectForm(): DashboardConfig {
 
   // Cards tab — hidden cards + sizes
   const hiddenCards: string[] = [];
-  document
-    .querySelectorAll<HTMLInputElement>(".cfg-card-cb[data-card-id]")
-    .forEach((cb) => {
-      const id = cb.dataset["cardId"] ?? "";
-      if (!cb.checked && id) hiddenCards.push(id);
-    });
+  document.querySelectorAll<HTMLInputElement>(".cfg-card-cb[data-card-id]").forEach((cb) => {
+    const id = cb.dataset["cardId"] ?? "";
+    if (!cb.checked && id) hiddenCards.push(id);
+  });
   c.hiddenCards = hiddenCards;
 
   const cardSizes: Record<string, string> = {};
@@ -699,11 +684,17 @@ function collectForm(): DashboardConfig {
   c.weatherShowDetails = (g("cfg-weather-details") as HTMLSelectElement | null)?.value !== "off";
   c.newsShowSource = (g("cfg-news-show-source") as HTMLSelectElement | null)?.value !== "off";
   const newsMaxEl = g("cfg-news-max-items");
-  if (newsMaxEl) { const v = parseInt(newsMaxEl.value, 10); if (!isNaN(v)) c.newsMaxItems = Math.min(50, Math.max(5, v)); }
-  c.stocksGroupBySector = (g("cfg-stocks-group-sector") as HTMLSelectElement | null)?.value === "on";
-  c.stocksShowPortfolio = (g("cfg-stocks-show-portfolio") as HTMLSelectElement | null)?.value === "on";
+  if (newsMaxEl) {
+    const v = parseInt(newsMaxEl.value, 10);
+    if (!isNaN(v)) c.newsMaxItems = Math.min(50, Math.max(5, v));
+  }
+  c.stocksGroupBySector =
+    (g("cfg-stocks-group-sector") as HTMLSelectElement | null)?.value === "on";
+  c.stocksShowPortfolio =
+    (g("cfg-stocks-show-portfolio") as HTMLSelectElement | null)?.value === "on";
   c.tasksShowDone = (g("cfg-tasks-show-done") as HTMLSelectElement | null)?.value !== "off";
-  c.tasksShowCategories = (g("cfg-tasks-show-categories") as HTMLSelectElement | null)?.value !== "off";
+  c.tasksShowCategories =
+    (g("cfg-tasks-show-categories") as HTMLSelectElement | null)?.value !== "off";
   c.sysInfoShowRtt = (g("cfg-sysinfo-show-rtt") as HTMLSelectElement | null)?.value !== "off";
 
   return c;
@@ -715,8 +706,7 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
   const runId = String(++cardConfigSchemaInjectRun);
   container.dataset["schemaRunId"] = runId;
   const defs = await getCardConfigSchemaDefs();
-  if (!container.isConnected || container.dataset["schemaRunId"] !== runId)
-    return;
+  if (!container.isConnected || container.dataset["schemaRunId"] !== runId) return;
 
   for (const def of defs) {
     try {
@@ -732,9 +722,7 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
       resetBtn.textContent = "↩ איפוס";
       resetBtn.addEventListener("click", () => {
         for (const field of def.fields) {
-          const input = wrapper.querySelector<HTMLInputElement>(
-            `[name="${field.key}"]`,
-          );
+          const input = wrapper.querySelector<HTMLInputElement>(`[name="${field.key}"]`);
           if (!input) continue;
           if (typeof field.defaultValue === "boolean") {
             input.checked = field.defaultValue;
@@ -769,10 +757,7 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
  * @param fields    - Card config field schema
  * @param container - Parent element to append the fragment into
  */
-export function buildConfigAccordion(
-  fields: CardConfigField[],
-  container: HTMLElement,
-): void {
+export function buildConfigAccordion(fields: CardConfigField[], container: HTMLElement): void {
   const groupMap = new Map<string, HTMLDetailsElement>();
 
   for (const field of fields) {
@@ -825,9 +810,7 @@ export function openConfigPanel(): void {
   ov.classList.add("visible");
   // Auto-focus first text input for immediate keyboard access
   setTimeout(() => {
-    const first = ov.querySelector<HTMLElement>(
-      "input[type='text']:not([disabled])",
-    );
+    const first = ov.querySelector<HTMLElement>("input[type='text']:not([disabled])");
     first?.focus();
   }, 50);
   // Wire unsaved-changes indicator on first open
@@ -876,9 +859,7 @@ export function exportSettings(): void {
 }
 
 export function importSettings(): void {
-  const input = document.getElementById(
-    "cfg-import-file",
-  ) as HTMLInputElement | null;
+  const input = document.getElementById("cfg-import-file") as HTMLInputElement | null;
   if (!input) return;
   input.onchange = () => {
     const file = input.files?.[0];
@@ -895,7 +876,11 @@ export function importSettings(): void {
         }
         const cfg = parsed as Record<string, unknown>;
         // Schema validation: configVersion must be a positive integer
-        if (typeof cfg["configVersion"] !== "number" || !Number.isInteger(cfg["configVersion"]) || cfg["configVersion"] < 1) {
+        if (
+          typeof cfg["configVersion"] !== "number" ||
+          !Number.isInteger(cfg["configVersion"]) ||
+          cfg["configVersion"] < 1
+        ) {
           showToast(t("settingsImportFailed"), 4000);
           diagLog("[config-panel] import failed: missing or invalid configVersion");
           return;
@@ -944,9 +929,7 @@ function initTabKeyboard(): void {
   if (!container) return;
 
   container.addEventListener("keydown", (e: KeyboardEvent) => {
-    const tabs = Array.from(
-      container.querySelectorAll<HTMLButtonElement>(".cfg-tab"),
-    );
+    const tabs = Array.from(container.querySelectorAll<HTMLButtonElement>(".cfg-tab"));
     const current = tabs.indexOf(e.target as HTMLButtonElement);
     if (current === -1) return;
 
@@ -975,9 +958,7 @@ function initTabKeyboard(): void {
 // ── Init ──
 export function initConfigPanel(): void {
   // Gear button opens panel
-  document
-    .getElementById("cfg-gear-btn")
-    ?.addEventListener("click", toggleConfigPanel);
+  document.getElementById("cfg-gear-btn")?.addEventListener("click", toggleConfigPanel);
 
   // Arrow-key navigation for config tabs (Sprint 45)
   initTabKeyboard();
@@ -1051,19 +1032,15 @@ export function initConfigPanel(): void {
   });
 
   // Close button
-  document
-    .getElementById("cfg-close-btn")
-    ?.addEventListener("click", closeConfigPanel);
+  document.getElementById("cfg-close-btn")?.addEventListener("click", closeConfigPanel);
 
   // Tab buttons — replace inline onclick with event listeners
-  document
-    .querySelectorAll<HTMLButtonElement>(".cfg-tab[data-tab]")
-    .forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const tab = btn.dataset["tab"];
-        if (tab) switchCfgTab(tab);
-      });
+  document.querySelectorAll<HTMLButtonElement>(".cfg-tab[data-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset["tab"];
+      if (tab) switchCfgTab(tab);
     });
+  });
 
   // Font size slider live preview
   const newsFont = g("cfg-news-fontsize");
@@ -1110,30 +1087,22 @@ export function initConfigPanel(): void {
   }
 
   // Settings export / import / share buttons (replaces inline onclick)
-  document
-    .getElementById("cfg-export-btn")
-    ?.addEventListener("click", exportSettings);
-  document
-    .getElementById("cfg-import-btn")
-    ?.addEventListener("click", importSettings);
-  document
-    .getElementById("cfg-share-btn")
-    ?.addEventListener("click", shareSettings);
+  document.getElementById("cfg-export-btn")?.addEventListener("click", exportSettings);
+  document.getElementById("cfg-import-btn")?.addEventListener("click", importSettings);
+  document.getElementById("cfg-share-btn")?.addEventListener("click", shareSettings);
 
   // Reset card layout button
-  document
-    .getElementById("cfg-reset-layout-btn")
-    ?.addEventListener("click", () => {
-      void import("./layout-drag")
-        .then(({ resetLayout }) => {
-          resetLayout();
-          showToast(t("settingsLayoutReset"));
-          diagLog("[config-panel] layout reset");
-        })
-        .catch((error: unknown) => {
-          diagLog(`[config-panel] layout reset failed: ${String(error)}`);
-        });
-    });
+  document.getElementById("cfg-reset-layout-btn")?.addEventListener("click", () => {
+    void import("./layout-drag")
+      .then(({ resetLayout }) => {
+        resetLayout();
+        showToast(t("settingsLayoutReset"));
+        diagLog("[config-panel] layout reset");
+      })
+      .catch((error: unknown) => {
+        diagLog(`[config-panel] layout reset failed: ${String(error)}`);
+      });
+  });
 
   // F2 (v7.2): Alert volume live preview
   const alertVolSliderInit = g("cfg-alert-volume");
@@ -1145,15 +1114,13 @@ export function initConfigPanel(): void {
   }
 
   // F4 (v7.2): Reset all defaults
-  document
-    .getElementById("cfg-reset-all-btn")
-    ?.addEventListener("click", () => {
-      if (!confirm("מחיקת כל ההגדרות ואיפוס לברירות המחדל?")) return;
-      Object.keys(localStorage)
-        .filter((k) => k.startsWith("dash"))
-        .forEach((k) => localStorage.removeItem(k));
-      location.reload();
-    });
+  document.getElementById("cfg-reset-all-btn")?.addEventListener("click", () => {
+    if (!confirm("מחיקת כל ההגדרות ואיפוס לברירות המחדל?")) return;
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith("dash"))
+      .forEach((k) => localStorage.removeItem(k));
+    location.reload();
+  });
 
   // JSON live validation for chores + portfolio textareas
   const validateJsonField = (el: HTMLTextAreaElement): void => {

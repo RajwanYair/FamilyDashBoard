@@ -47,10 +47,7 @@ describe("Currency — fetchCurrency", () => {
   });
 
   it("throws when all APIs fail", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("Network error")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")));
     await expect(fetchCurrency()).rejects.toThrow();
   });
 });
@@ -310,8 +307,7 @@ describe("Currency — fetchCurrency fallback API", () => {
       vi.fn(async function (url: string) {
         callNum++;
         // First call returns empty rates → caught by the empty-check → continues
-        if (callNum === 1)
-          return { ok: true, json: async () => ({ rates: {} }) };
+        if (callNum === 1) return { ok: true, json: async () => ({ rates: {} }) };
         const isAllOrigins = String(url).includes("allorigins");
         const payload = isAllOrigins
           ? { contents: JSON.stringify({ rates: MOCK_RATES }) }
@@ -433,7 +429,10 @@ describe("Currency — storeCurrencyHistory / loadCurrencyHistory (Sprint 24)", 
   it("keeps a rolling 7-entry history", () => {
     for (let d = 1; d <= 10; d++) {
       const dateStr = `2024-01-${String(d).padStart(2, "0")}`;
-      const stored = JSON.parse(localStorage.getItem("dash_v2_cur_history") ?? "[]") as Array<{date: string; rates: Record<string, number>}>;
+      const stored = JSON.parse(localStorage.getItem("dash_v2_cur_history") ?? "[]") as Array<{
+        date: string;
+        rates: Record<string, number>;
+      }>;
       stored.push({ date: dateStr, rates: { ...MOCK_RATES } });
       if (stored.length > 7) stored.splice(0, stored.length - 7);
       localStorage.setItem("dash_v2_cur_history", JSON.stringify(stored));

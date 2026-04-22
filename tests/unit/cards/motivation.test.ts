@@ -39,9 +39,7 @@ describe("Motivation — MOTIVATIONS array", () => {
 
   it("is a read-only array (no mutation)", () => {
     expect(
-      Object.isFrozen(MOTIVATIONS) ||
-        !Array.isArray(MOTIVATIONS) ||
-        MOTIVATIONS.length > 0,
+      Object.isFrozen(MOTIVATIONS) || !Array.isArray(MOTIVATIONS) || MOTIVATIONS.length > 0,
     ).toBe(true);
   });
 });
@@ -380,9 +378,7 @@ describe("Motivation — defensive branches when MOTIVATIONS is empty", () => {
 
   it("getCurrentQuote returns null when MOTIVATIONS is emptied", async () => {
     vi.resetModules();
-    const { MOTIVATIONS, getCurrentQuote } = await import(
-      "@/cards/motivation/motivation"
-    );
+    const { MOTIVATIONS, getCurrentQuote } = await import("@/cards/motivation/motivation");
     // Truncate at runtime — ReadonlyArray is a TS-only constraint
     (MOTIVATIONS as unknown as unknown[]).length = 0;
     // lastIdx = ((0-1)+0) % 0 = NaN → MOTIVATIONS[NaN] = undefined → ?? null
@@ -392,9 +388,7 @@ describe("Motivation — defensive branches when MOTIVATIONS is empty", () => {
 
   it("renderMotivation returns early when MOTIVATIONS is empty", async () => {
     vi.resetModules();
-    const { MOTIVATIONS, renderMotivation } = await import(
-      "@/cards/motivation/motivation"
-    );
+    const { MOTIVATIONS, renderMotivation } = await import("@/cards/motivation/motivation");
     (MOTIVATIONS as unknown as unknown[]).length = 0;
     // motiIdx++ % 0 = NaN → MOTIVATIONS[NaN] = undefined → if (!m) return
     expect(() => renderMotivation()).not.toThrow();
@@ -402,9 +396,7 @@ describe("Motivation — defensive branches when MOTIVATIONS is empty", () => {
 
   it("shareMotivation returns early when getCurrentQuote is null", async () => {
     vi.resetModules();
-    const { MOTIVATIONS, shareMotivation } = await import(
-      "@/cards/motivation/motivation"
-    );
+    const { MOTIVATIONS, shareMotivation } = await import("@/cards/motivation/motivation");
     (MOTIVATIONS as unknown as unknown[]).length = 0;
     // getCurrentQuote() → null → if (!q) return
     expect(() => shareMotivation()).not.toThrow();
@@ -459,7 +451,13 @@ describe("Motivation — getQuotesByCategory (Sprint 23)", () => {
   });
 
   it("every quote has a valid category", () => {
-    const validCategories: MotivationCategory[] = ["general", "morning", "shabbat", "family", "success"];
+    const validCategories: MotivationCategory[] = [
+      "general",
+      "morning",
+      "shabbat",
+      "family",
+      "success",
+    ];
     for (const q of MOTIVATIONS) {
       expect(validCategories).toContain(q.category);
     }
@@ -539,7 +537,7 @@ describe("Motivation — configSchema (Sprint 83)", () => {
   });
 
   it("includes motivationInterval field", () => {
-    const field = motivationConfigSchema.find(f => f.key === "motivationInterval");
+    const field = motivationConfigSchema.find((f) => f.key === "motivationInterval");
     expect(field).toBeDefined();
     expect(field!.type).toBe("range");
     expect(field!.defaultValue).toBe(0);

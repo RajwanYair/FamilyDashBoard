@@ -19,7 +19,7 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-9.0.0-a78bfa?style=flat-square)
+![Version](https://img.shields.io/badge/Version-9.1.0-a78bfa?style=flat-square)
 ![Tests](https://img.shields.io/badge/Vitest-3179_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
@@ -161,8 +161,10 @@ cd FamilyDashBoard
 npx vite        # → http://localhost:5173/FamilyDashBoard/
 ```
 
-> **Tip:** Press **F11** for full-screen TV mode. Press **T** to cycle themes, **D** for diagnostics, **A** to toggle alerts, **Escape** to close overlays.
-> **Important:** Never run `npm install` inside `FamilyDashBoard/`. All dev tools resolve from `MyScripts/node_modules/`.
+> **Monorepo note:** `FamilyDashBoard` is a sub-project of `MyScripts/`. There is intentionally **no local `package-lock.json`** and no local `devDependencies`. All dev tools (`typescript`, `vite`, `vitest`, `eslint`, `prettier`, …) resolve from the parent `MyScripts/node_modules/`. The CI pipeline installs them via `.github/ci/install-tools.sh`.
+>
+> - **Never** run `npm install` inside `FamilyDashBoard/`.
+> - Run `npm install` from `MyScripts/` to set up the shared toolchain.
 
 ### Available Commands
 
@@ -170,6 +172,7 @@ npx vite        # → http://localhost:5173/FamilyDashBoard/
 npx vite                              # Dev server
 npx tsc --noEmit                      # Type-check (0 errors)
 npx eslint src tests --max-warnings 0 # Lint (0 errors, 0 warnings)
+npx prettier --check .                # Format check (0 issues)
 npx vitest run                        # Run all tests
 npx vite build                        # Production build → dist/
 npm run check                         # All quality gates
@@ -185,16 +188,16 @@ npm run check                         # All quality gates
 
 All APIs are free and require no API keys. Data goes through the **Cloudflare Workers** proxy at `fdb.rajwanyair.workers.dev`. Client-side fallback chain: `direct → allorigins.win → codetabs.com → corsproxy.io`. Every response is cached in a **3-layer cache** (in-memory → localStorage → IndexedDB) with stale-while-revalidate for instant display.
 
-| Card | Provider | Refresh |
-| --- | --- | --- |
-| Weather | Open-Meteo | 15 min |
-| Stocks | Yahoo Finance v8 chart | 5 min (market), 30 min (off-hours) |
-| Currency | ExchangeRate-API | 1 hour |
-| News | 17 Hebrew RSS feeds | 15 min |
-| Calendar | Google Calendar ICS | 15 min |
-| Hebrew Calendar | Hebcal API | 6 hours |
-| Red Alerts | Tzeva Adom | 60 seconds |
-| Ticker | Sefaria.org | 12 hours |
+| Card            | Provider               | Refresh                            |
+| --------------- | ---------------------- | ---------------------------------- |
+| Weather         | Open-Meteo             | 15 min                             |
+| Stocks          | Yahoo Finance v8 chart | 5 min (market), 30 min (off-hours) |
+| Currency        | ExchangeRate-API       | 1 hour                             |
+| News            | 17 Hebrew RSS feeds    | 15 min                             |
+| Calendar        | Google Calendar ICS    | 15 min                             |
+| Hebrew Calendar | Hebcal API             | 6 hours                            |
+| Red Alerts      | Tzeva Adom             | 60 seconds                         |
+| Ticker          | Sefaria.org            | 12 hours                           |
 
 ---
 
@@ -210,28 +213,31 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full architecture guide and [docs
 
 The dashboard is built as a proper TypeScript SPA, bundled by Vite:
 
-| Layer | Description |
-| --- | --- |
-| `src/core/` | 14 core modules — cache, fetch, state, config, registry, FdbCard base, perf, diag |
-| `src/cards/` | 11 card modules — each owns its fetch, render, and refresh schedule |
-| `src/ui/` | 14 UI modules — theme, keyboard, maximize, header, toast, night-dimmer, ticker |
-| `src/styles/` | 13 CSS modules — `@layer tokens, themes, base, layout, components, animations` |
-| `worker/` | Cloudflare Worker — per-provider routes, middleware, error reporting |
+| Layer         | Description                                                                       |
+| ------------- | --------------------------------------------------------------------------------- |
+| `src/core/`   | 14 core modules — cache, fetch, state, config, registry, FdbCard base, perf, diag |
+| `src/cards/`  | 11 card modules — each owns its fetch, render, and refresh schedule               |
+| `src/ui/`     | 14 UI modules — theme, keyboard, maximize, header, toast, night-dimmer, ticker    |
+| `src/styles/` | 13 CSS modules — `@layer tokens, themes, base, layout, components, animations`    |
+| `worker/`     | Cloudflare Worker — per-provider routes, middleware, error reporting              |
 
 ### Key Patterns
 
 ```typescript
 // ✅ 3-layer cache with async IDB L3
-const fresh = cGet<WeatherResponse>('weather', TTL_15M);
-if (fresh) { render(fresh); return; }
-const stale = await cGetAsync<WeatherResponse>('weather'); // IDB cold-start
+const fresh = cGet<WeatherResponse>("weather", TTL_15M);
+if (fresh) {
+  render(fresh);
+  return;
+}
+const stale = await cGetAsync<WeatherResponse>("weather"); // IDB cold-start
 if (stale) render(stale);
 
 // ✅ Reactive config — no page reload needed
-state.on('config.tempUnit', (unit) => renderWeather(unit));
+state.on("config.tempUnit", (unit) => renderWeather(unit));
 
 // ✅ Priority fetch queue
-const data = await enqueueFetch(() => fetchViaWorker('/api/weather'), 'high');
+const data = await enqueueFetch(() => fetchViaWorker("/api/weather"), "high");
 
 // ✅ Hardware-adaptive rendering
 applyHardwareTier(); // sets data-hw-tier on <html>, gating CSS animation fidelity
@@ -275,20 +281,20 @@ FamilyDashBoard/
 
 ## 🎨 Design System
 
-| Token | Value | Usage |
-| ------- | ------- | ------- |
-| `--bg-primary` | `#060b14` | Page background |
-| `--bg-card` | `rgba(15,23,42,0.78)` | Card panels |
-| `--accent` | `#60a5fa` | Headers, borders, links |
-| `--positive` | `#34d399` | Stock gains, sync OK |
-| `--negative` | `#f87171` | Stock losses, errors |
-| `--warning` | `#fbbf24` | Shabbat info, loading |
-| `--purple` | `#a78bfa` | Accents, stock colors |
-| `--pink` | `#f472b6` | Motivation, greeting |
-| `--orange` | `#fb923c` | Weather, stock accent |
-| `--cyan` | `#22d3ee` | Weather, news accent |
-| `--text-primary` | `#f1f5f9` | Main text |
-| `--text-secondary` | `#94a3b8` | Secondary labels |
+| Token              | Value                 | Usage                   |
+| ------------------ | --------------------- | ----------------------- |
+| `--bg-primary`     | `#060b14`             | Page background         |
+| `--bg-card`        | `rgba(15,23,42,0.78)` | Card panels             |
+| `--accent`         | `#60a5fa`             | Headers, borders, links |
+| `--positive`       | `#34d399`             | Stock gains, sync OK    |
+| `--negative`       | `#f87171`             | Stock losses, errors    |
+| `--warning`        | `#fbbf24`             | Shabbat info, loading   |
+| `--purple`         | `#a78bfa`             | Accents, stock colors   |
+| `--pink`           | `#f472b6`             | Motivation, greeting    |
+| `--orange`         | `#fb923c`             | Weather, stock accent   |
+| `--cyan`           | `#22d3ee`             | Weather, news accent    |
+| `--text-primary`   | `#f1f5f9`             | Main text               |
+| `--text-secondary` | `#94a3b8`             | Secondary labels        |
 
 Cards use `backdrop-filter: blur(16px)` for the glassmorphism effect. All animations use `ease-out` with staggered delays.
 
@@ -315,16 +321,16 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history. Summary in the [R
 
 This project leverages extensive GitHub features:
 
-| Feature | Details |
-| --------- | --------- |
-| **GitHub Pages** | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main` |
-| **GitHub Actions** | 5 workflows — CI, deploy, release, auto-label, dependabot-auto-merge |
-| **Issue Templates** | YAML forms for bugs, features, API issues with auto-labeling |
-| **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories |
-| **Dependabot** | Weekly updates for GitHub Actions dependencies |
-| **Copilot Integration** | 2 custom agents, 4 skills, 3 prompts, 3 instruction files |
-| **Community Health** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS |
-| **Auto Release Notes** | 8-category changelog via `release.yml` |
+| Feature                  | Details                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| **GitHub Pages**         | [Live demo](https://rajwanyair.github.io/FamilyDashBoard/) auto-deployed from `main` |
+| **GitHub Actions**       | 5 workflows — CI, deploy, release, auto-label, dependabot-auto-merge                 |
+| **Issue Templates**      | YAML forms for bugs, features, API issues with auto-labeling                         |
+| **Discussion Templates** | Ideas, Q&A, Show-and-Tell categories                                                 |
+| **Dependabot**           | Weekly updates for GitHub Actions dependencies                                       |
+| **Copilot Integration**  | 2 custom agents, 4 skills, 3 prompts, 3 instruction files                            |
+| **Community Health**     | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, SUPPORT, CODEOWNERS                         |
+| **Auto Release Notes**   | 8-category changelog via `release.yml`                                               |
 
 ---
 
@@ -334,34 +340,34 @@ This project leverages extensive GitHub features:
 
 ### Completed
 
-| Version | Summary |
-| --------- | --------- |
-| v3.0–v4.4 | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay |
-| v4.5–v4.8 | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos |
-| v4.9 | Sprints 1–5 (F1–50): Parasha, Zmanim, Daf Yomi, config panel, AQI, Gold/Silver, sparklines |
-| v4.10 | Sprints 6–7 (F51–70): TA-35, portfolio P&L, earthquake monitor, market countdown |
-| v4.11 | Sprint 8 (F71–80): GBP, favicons, sector headers, Shabbat pill, PWA metas |
-| v4.12 | Sprint 9 (F81–90): 7-day forecast, ICS config, dim schedule, offline cache age |
-| v4.13 | Sprint 10 (F91–100): SW offline, home city, news feed toggle, card drag-reorder |
-| v4.14 | Sprint 11 (F101–110): Multi-ICS, news search, settings import/export, visited news |
-| v4.15 | Sprint 12 (F111–120): API cache, notifications, weather cities, config tabs |
-| v4.16 | Sprint 13 (F121–130): Toast system, UV pill, chart toggle, deeplinks |
-| v4.17 | Sprint 14 (F131–140): Stock alerts, P&L chip, weather toast, countdown chip |
-| v4.18 | Sprint 15 (F141–150): Dew point, bookmarks, weather summary, help overlay |
-| v4.19 | Sprint 16 (F151–160): Omer, sparklines, card collapse, halacha overlay |
-| v5.0 | Sprint 17 (F161–170): Corp proxy, SW v5, PWA install, offline fallback |
-| v5.1 | Refactoring R1–R5: CSS tokens, ARIA, JS constants, dead code removal |
+| Version   | Summary                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------ |
+| v3.0–v4.4 | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay         |
+| v4.5–v4.8 | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos            |
+| v4.9      | Sprints 1–5 (F1–50): Parasha, Zmanim, Daf Yomi, config panel, AQI, Gold/Silver, sparklines |
+| v4.10     | Sprints 6–7 (F51–70): TA-35, portfolio P&L, earthquake monitor, market countdown           |
+| v4.11     | Sprint 8 (F71–80): GBP, favicons, sector headers, Shabbat pill, PWA metas                  |
+| v4.12     | Sprint 9 (F81–90): 7-day forecast, ICS config, dim schedule, offline cache age             |
+| v4.13     | Sprint 10 (F91–100): SW offline, home city, news feed toggle, card drag-reorder            |
+| v4.14     | Sprint 11 (F101–110): Multi-ICS, news search, settings import/export, visited news         |
+| v4.15     | Sprint 12 (F111–120): API cache, notifications, weather cities, config tabs                |
+| v4.16     | Sprint 13 (F121–130): Toast system, UV pill, chart toggle, deeplinks                       |
+| v4.17     | Sprint 14 (F131–140): Stock alerts, P&L chip, weather toast, countdown chip                |
+| v4.18     | Sprint 15 (F141–150): Dew point, bookmarks, weather summary, help overlay                  |
+| v4.19     | Sprint 16 (F151–160): Omer, sparklines, card collapse, halacha overlay                     |
+| v5.0      | Sprint 17 (F161–170): Corp proxy, SW v5, PWA install, offline fallback                     |
+| v5.1      | Refactoring R1–R5: CSS tokens, ARIA, JS constants, dead code removal                       |
 
 ### Upcoming
 
-| Version | Focus | Status |
-| --- | --- | --- |
-| v7.13 | Truth & Stabilization — docs, CardRuntime interface, domain types, config validation | ✅ |
-| v7.14 | Data Boundary — provider adapters, IDB-first cache, stale-state UX | ✅ |
-| v7.15 | Card Shell Primitives — skeleton/empty/error states, FdbCard.withLoading | ✅ |
-| v7.16 | Config v5 + Observability — featureFlags, config accordion, fetchWithRetry | ✅ |
-| v7.17 | Worker Normalization — FdbCard helpers, release tooling, doc updates | ✅ |
-| v8.0 | Architecture Convergence — registry-driven shells, namespaced config | 💡 |
+| Version | Focus                                                                                | Status |
+| ------- | ------------------------------------------------------------------------------------ | ------ |
+| v7.13   | Truth & Stabilization — docs, CardRuntime interface, domain types, config validation | ✅     |
+| v7.14   | Data Boundary — provider adapters, IDB-first cache, stale-state UX                   | ✅     |
+| v7.15   | Card Shell Primitives — skeleton/empty/error states, FdbCard.withLoading             | ✅     |
+| v7.16   | Config v5 + Observability — featureFlags, config accordion, fetchWithRetry           | ✅     |
+| v7.17   | Worker Normalization — FdbCard helpers, release tooling, doc updates                 | ✅     |
+| v8.0    | Architecture Convergence — registry-driven shells, namespaced config                 | 💡     |
 
 See [ROADMAP.md](ROADMAP.md) for the full strategic plan and stream priorities.
 

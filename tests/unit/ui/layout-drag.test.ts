@@ -15,11 +15,7 @@ import {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function setupColumns(
-  left: string[] = [],
-  mid: string[] = [],
-  right: string[] = [],
-): void {
+function setupColumns(left: string[] = [], mid: string[] = [], right: string[] = []): void {
   document.body.innerHTML = `
     <div class="grid-col grid-col-left">
       ${left.map((id) => `<section class="card" data-card-id="${id}"><div class="card-header">H ${id}</div></section>`).join("")}
@@ -41,11 +37,7 @@ describe("Layout Drag — readCurrentLayout()", () => {
   });
 
   it("returns three arrays matching the live DOM column order", () => {
-    setupColumns(
-      ["news", "weather"],
-      ["hebrew-cal", "calendar"],
-      ["stocks", "alerts"],
-    );
+    setupColumns(["news", "weather"], ["hebrew-cal", "calendar"], ["stocks", "alerts"]);
     const [left, mid, right] = readCurrentLayout();
     expect(left).toEqual(["news", "weather"]);
     expect(mid).toEqual(["hebrew-cal", "calendar"]);
@@ -97,10 +89,7 @@ describe("Layout Drag — resetLayout()", () => {
   });
 
   it("sets config.cardLayout to null in localStorage", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ cardLayout: [["news"], [], []] }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ cardLayout: [["news"], [], []] }));
     resetLayout();
     const raw = localStorage.getItem("dash_v2_config");
     const cfg = JSON.parse(raw ?? "{}") as { cardLayout?: unknown };
@@ -387,7 +376,14 @@ describe("Layout Drag — drop on target card uses insertBefore (lines 112-116)"
 
     // Mock getBoundingClientRect so midpoint is 50+100/2 = 100
     vi.spyOn(weatherCard, "getBoundingClientRect").mockReturnValue({
-      top: 50, height: 100, bottom: 150, left: 0, right: 100, width: 100, x: 0, y: 50,
+      top: 50,
+      height: 100,
+      bottom: 150,
+      left: 0,
+      right: 100,
+      width: 100,
+      x: 0,
+      y: 50,
       toJSON: () => ({}),
     } as DOMRect);
 
@@ -423,7 +419,14 @@ describe("Layout Drag — drop on target card uses insertBefore (lines 112-116)"
 
     // Mock getBoundingClientRect so midpoint is 50+100/2 = 100
     vi.spyOn(weatherCard, "getBoundingClientRect").mockReturnValue({
-      top: 50, height: 100, bottom: 150, left: 0, right: 100, width: 100, x: 0, y: 50,
+      top: 50,
+      height: 100,
+      bottom: 150,
+      left: 0,
+      right: 100,
+      width: 100,
+      x: 0,
+      y: 50,
       toJSON: () => ({}),
     } as DOMRect);
 
@@ -609,7 +612,14 @@ describe("Layout Drag — drop AFTER target uses insertBefore(card, target.nextS
 
     // Mock getBoundingClientRect so midpoint is 50+100/2 = 100; clientY = 150 > 100 → insert AFTER
     vi.spyOn(weatherCard, "getBoundingClientRect").mockReturnValue({
-      top: 50, height: 100, bottom: 150, left: 0, right: 100, width: 100, x: 0, y: 50,
+      top: 50,
+      height: 100,
+      bottom: 150,
+      left: 0,
+      right: 100,
+      width: 100,
+      x: 0,
+      y: 50,
       toJSON: () => ({}),
     } as DOMRect);
 
@@ -621,10 +631,11 @@ describe("Layout Drag — drop AFTER target uses insertBefore(card, target.nextS
     );
 
     // Drop on the weather card, clientY = 150 > midpoint 100
-    const dropEvt = Object.assign(
-      new Event("drop", { bubbles: true }),
-      { preventDefault: vi.fn(), clientY: 150, dataTransfer: { dropEffect: "" } },
-    );
+    const dropEvt = Object.assign(new Event("drop", { bubbles: true }), {
+      preventDefault: vi.fn(),
+      clientY: 150,
+      dataTransfer: { dropEffect: "" },
+    });
     Object.defineProperty(dropEvt, "target", { value: weatherCard });
     leftCol.dispatchEvent(dropEvt);
 

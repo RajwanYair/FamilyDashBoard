@@ -31,9 +31,7 @@ describe("isWorkerResponse", () => {
     expect(isWorkerResponse(null)).toBe(false);
   });
   it("rejects missing stale field", () => {
-    expect(isWorkerResponse({ data: {}, timestamp: 1, provider: "x" })).toBe(
-      false,
-    );
+    expect(isWorkerResponse({ data: {}, timestamp: 1, provider: "x" })).toBe(false);
   });
   it("rejects stale as string instead of boolean", () => {
     expect(
@@ -46,9 +44,7 @@ describe("isWorkerResponse", () => {
     ).toBe(false);
   });
   it("rejects missing provider", () => {
-    expect(isWorkerResponse({ data: {}, stale: false, timestamp: 1 })).toBe(
-      false,
-    );
+    expect(isWorkerResponse({ data: {}, stale: false, timestamp: 1 })).toBe(false);
   });
   it("rejects primitive", () => {
     expect(isWorkerResponse("not-an-object")).toBe(false);
@@ -87,9 +83,7 @@ describe("isNormalizedWeatherData", () => {
     ).toBe(false);
   });
   it("rejects when daily is not an array", () => {
-    expect(isNormalizedWeatherData({ ...validWeather, daily: null })).toBe(
-      false,
-    );
+    expect(isNormalizedWeatherData({ ...validWeather, daily: null })).toBe(false);
   });
   it("rejects when hourly is missing", () => {
     const { hourly: _h, ...noHourly } = validWeather;
@@ -161,9 +155,7 @@ describe("isNormalizedCurrencyRates", () => {
     expect(isNormalizedCurrencyRates({ ...validRates, rates: [] })).toBe(false);
   });
   it("rejects rates as null", () => {
-    expect(isNormalizedCurrencyRates({ ...validRates, rates: null })).toBe(
-      false,
-    );
+    expect(isNormalizedCurrencyRates({ ...validRates, rates: null })).toBe(false);
   });
   it("rejects missing updatedAt", () => {
     const { updatedAt: _u, ...noUpdate } = validRates;
@@ -233,14 +225,10 @@ describe("isNormalizedAlertEvent", () => {
     expect(isNormalizedAlertEvent({ ...validAlert, areas: [] })).toBe(true);
   });
   it("rejects areas as string", () => {
-    expect(isNormalizedAlertEvent({ ...validAlert, areas: "Tel Aviv" })).toBe(
-      false,
-    );
+    expect(isNormalizedAlertEvent({ ...validAlert, areas: "Tel Aviv" })).toBe(false);
   });
   it("rejects active as string", () => {
-    expect(isNormalizedAlertEvent({ ...validAlert, active: "true" })).toBe(
-      false,
-    );
+    expect(isNormalizedAlertEvent({ ...validAlert, active: "true" })).toBe(false);
   });
   it("rejects missing id", () => {
     const { id: _i, ...noId } = validAlert;

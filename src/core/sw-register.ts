@@ -55,12 +55,9 @@ export async function registerSW(): Promise<void> {
       }
     }
 
-    swRegistration = await navigator.serviceWorker.register(
-      "/FamilyDashBoard/sw.js",
-      {
-        scope: "/FamilyDashBoard/",
-      },
-    );
+    swRegistration = await navigator.serviceWorker.register("/FamilyDashBoard/sw.js", {
+      scope: "/FamilyDashBoard/",
+    });
     diagLog("[sw] Registered");
 
     swRegistration.addEventListener("updatefound", () => {
@@ -68,10 +65,7 @@ export async function registerSW(): Promise<void> {
       if (!installing) return;
 
       installing.addEventListener("statechange", () => {
-        if (
-          installing.state === "installed" &&
-          navigator.serviceWorker.controller
-        ) {
+        if (installing.state === "installed" && navigator.serviceWorker.controller) {
           diagLog("[sw] New version available");
           showUpdateBanner();
         }
@@ -85,17 +79,14 @@ export async function registerSW(): Promise<void> {
     });
 
     // Listen for VERSION_ACTIVATED broadcast from SW
-    navigator.serviceWorker.addEventListener(
-      "message",
-      (event: MessageEvent) => {
-        if (isVersionActivatedMsg(event.data)) {
-          diagLog(`[sw] Activated version: ${event.data.version}`);
-        } else if (event.data?.type === SW_MSG_VERSION_ACTIVATED) {
-          // Fallback for non-typed payloads (legacy SW)
-          diagLog(`[sw] Activated version: ${String(event.data.version)}`);
-        }
-      },
-    );
+    navigator.serviceWorker.addEventListener("message", (event: MessageEvent) => {
+      if (isVersionActivatedMsg(event.data)) {
+        diagLog(`[sw] Activated version: ${event.data.version}`);
+      } else if (event.data?.type === SW_MSG_VERSION_ACTIVATED) {
+        // Fallback for non-typed payloads (legacy SW)
+        diagLog(`[sw] Activated version: ${String(event.data.version)}`);
+      }
+    });
   } catch (err) {
     diagLog(`[sw] Registration failed: ${String(err)}`);
   }
@@ -118,6 +109,5 @@ function showUpdateBanner(): void {
   if (banner) banner.classList.add("visible");
   // Wire reload button (replaces inline onclick="swUpdateReload()")
   const reloadBtn = document.getElementById("sw-update-reload-btn");
-  if (reloadBtn)
-    reloadBtn.addEventListener("click", swSkipWaiting, { once: true });
+  if (reloadBtn) reloadBtn.addEventListener("click", swSkipWaiting, { once: true });
 }

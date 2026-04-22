@@ -6,13 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  registerCard,
-  getCard,
-  listCards,
-  loadCard,
-  createShell,
-} from "@/core/card-registry";
+import { registerCard, getCard, listCards, loadCard, createShell } from "@/core/card-registry";
 import { isValidCardSize, assertCardSize } from "@/types/card";
 import type { CardDefinition } from "@/types/card";
 
@@ -85,9 +79,7 @@ describe("Card Registry — listCards", () => {
 
   it("returns a sorted array (not the internal Map order)", () => {
     const list = listCards();
-    const sorted = [...list].sort((a, b) =>
-      a.titleHe.localeCompare(b.titleHe, "he"),
-    );
+    const sorted = [...list].sort((a, b) => a.titleHe.localeCompare(b.titleHe, "he"));
     expect(list.map((e) => e.id)).toEqual(sorted.map((e) => e.id));
   });
 });
@@ -159,17 +151,14 @@ describe("Card Registry — loadCard (parameterized)", () => {
     },
   );
 
-  it.each(ceCards)(
-    "%s render() returns <%s> custom element host",
-    async (cardId, expectedTag) => {
-      const def = await loadCard(cardId);
-      expect("tagName" in def).toBe(true);
-      expect("elementClass" in def).toBe(true);
-      const el = def.render();
-      expect(el).toBeInstanceOf(HTMLElement);
-      expect(el.tagName).toBe(expectedTag);
-    },
-  );
+  it.each(ceCards)("%s render() returns <%s> custom element host", async (cardId, expectedTag) => {
+    const def = await loadCard(cardId);
+    expect("tagName" in def).toBe(true);
+    expect("elementClass" in def).toBe(true);
+    const el = def.render();
+    expect(el).toBeInstanceOf(HTMLElement);
+    expect(el.tagName).toBe(expectedTag);
+  });
 });
 
 // ── createShell (Sprint 68, enhanced Sprint 134) ─────────────────────────
@@ -220,14 +209,9 @@ describe("createShell", () => {
   });
 
   it("localizes shell title in English mode", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ interfaceLanguage: "en" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ interfaceLanguage: "en" }));
     const { header, root } = createShell("motivation");
-    expect(header?.querySelector("[data-card-title]")?.textContent).toContain(
-      "Motivation",
-    );
+    expect(header?.querySelector("[data-card-title]")?.textContent).toContain("Motivation");
     expect(root.getAttribute("aria-label")).toContain("Motivation");
   });
 

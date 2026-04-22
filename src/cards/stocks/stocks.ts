@@ -17,18 +17,8 @@ import {
   LS_PORTFOLIO,
 } from "../../core/constants";
 import { cGet, cGetStale, cSetAsync } from "../../core/cache";
-import {
-  fetchJSONWithWorker,
-  runConcurrent,
-  acquireLock,
-  releaseLock,
-} from "../../core/fetch";
-import {
-  setSync,
-  syncBurst,
-  recordSuccess,
-  recordFailure,
-} from "../../core/sync";
+import { fetchJSONWithWorker, runConcurrent, acquireLock, releaseLock } from "../../core/fetch";
+import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
@@ -39,8 +29,7 @@ import type { CardConfigField, CardDefinition } from "../../types/card";
 
 // ── Helpers ──
 export function fmtPrice(price: number, sym: string): string {
-  if (price >= 1000)
-    return price.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  if (price >= 1000) return price.toLocaleString("en-US", { maximumFractionDigits: 0 });
   if (price >= 10) return price.toFixed(2);
   if (sym === "^VIX") return price.toFixed(2);
   return price.toFixed(4);
@@ -61,11 +50,7 @@ export function formatVolume(vol: number): string {
  * Return the position (0–1) of `price` within the 52-week [low, high] range.
  * Returns null when range data is missing or low === high.
  */
-export function priceInRange52w(
-  price: number,
-  low52: number,
-  high52: number,
-): number | null {
+export function priceInRange52w(price: number, low52: number, high52: number): number | null {
   if (low52 == null || high52 == null || high52 <= low52) return null;
   return Math.max(0, Math.min(1, (price - low52) / (high52 - low52)));
 }
@@ -117,9 +102,7 @@ export function sectorEmoji(sym: string): string {
  * Compute the aggregate portfolio % change across all provided quote pairs.
  * Each entry is { prev, cur }. Returns null when list is empty.
  */
-export function portfolioChange(
-  quotes: Array<{ prev: number; cur: number }>,
-): number | null {
+export function portfolioChange(quotes: Array<{ prev: number; cur: number }>): number | null {
   if (!quotes.length) return null;
   const totalPrev = quotes.reduce((s, q) => s + q.prev, 0);
   if (totalPrev === 0) return null;
@@ -168,9 +151,7 @@ export type MarketStatus = "pre" | "open" | "after" | "closed";
 export function getMarketStatus(): MarketStatus {
   const now = new Date();
   // Get day-of-week in New York to handle weekends
-  const nyDate = new Date(
-    now.toLocaleString("en-US", { timeZone: "America/New_York" }),
-  );
+  const nyDate = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
   if (day === 0 || day === 6) return "closed";
 
@@ -192,9 +173,7 @@ export function getMarketStatus(): MarketStatus {
 
 export function getMinutesToNextTransition(): number {
   const now = new Date();
-  const nyDate = new Date(
-    now.toLocaleString("en-US", { timeZone: "America/New_York" }),
-  );
+  const nyDate = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const day = nyDate.getDay();
 
   const nyTimeStr = now.toLocaleTimeString("en-US", {
@@ -233,9 +212,7 @@ export function updateMarketBadge(): void {
   const status = getMarketStatus();
   const mins = getMinutesToNextTransition();
   const countdown =
-    mins > 0
-      ? ` ${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, "0")}`
-      : "";
+    mins > 0 ? ` ${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, "0")}` : "";
 
   const labels: Record<MarketStatus, string> = {
     open: t("marketOpen", { countdown }),
@@ -280,12 +257,7 @@ function bezierChart(prices: number[], color: string): string {
 }
 
 // ── Update 52-week range bar ──
-function updateStockRange(
-  blk: Element,
-  cur: number,
-  low: number,
-  high: number,
-): void {
+function updateStockRange(blk: Element, cur: number, low: number, high: number): void {
   if (high <= low) return;
   const pct = Math.max(0, Math.min(100, ((cur - low) / (high - low)) * 100));
   const fill = blk.querySelector<HTMLElement>(".stk-range-fill");
@@ -306,8 +278,7 @@ export function renderStocksShell(): void {
   const container = document.getElementById("stocks-body");
   if (!container) return;
 
-  const FAVICON = (domain: string) =>
-    `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  const FAVICON = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
   const makeStockRow = (symbol: string): HTMLElement | null => {
     const meta = STOCK_META[symbol];
@@ -376,14 +347,12 @@ export function renderStocksShell(): void {
   const fragment = document.createDocumentFragment();
   // Sprint 49: gate sector headers on cfg.stocksGroupBySector
   const cfg = loadConfig();
-  if (cfg.stocksGroupBySector)
-    fragment.appendChild(makeSectorHeader("📊 מדדים"));
+  if (cfg.stocksGroupBySector) fragment.appendChild(makeSectorHeader("📊 מדדים"));
   INDEX_SYMBOLS.forEach((s) => {
     const el = makeStockRow(s);
     if (el) fragment.appendChild(el);
   });
-  if (cfg.stocksGroupBySector)
-    fragment.appendChild(makeSectorHeader("📈 מניות"));
+  if (cfg.stocksGroupBySector) fragment.appendChild(makeSectorHeader("📈 מניות"));
   stockSymbols.forEach((s) => {
     const el = makeStockRow(s);
     if (el) fragment.appendChild(el);
@@ -395,11 +364,7 @@ export function renderStocksShell(): void {
 }
 
 // ── Render a single stock block ──
-export function renderStock(
-  blk: Element,
-  data: YahooChartResponse,
-  sym: string,
-): void {
+export function renderStock(blk: Element, data: YahooChartResponse, sym: string): void {
   const result = data.chart?.result?.[0];
   if (!result) return;
   const meta = result.meta;
@@ -416,17 +381,9 @@ export function renderStock(
 
   const absChg = Math.abs(chgPct);
   const trend =
-    !isFinite(chgPct) || absChg < 0.1
-      ? "neutral"
-      : chgPct > 0
-        ? "positive"
-        : "negative";
+    !isFinite(chgPct) || absChg < 0.1 ? "neutral" : chgPct > 0 ? "positive" : "negative";
   const trendColor =
-    trend === "positive"
-      ? "#34d399"
-      : trend === "negative"
-        ? "#f87171"
-        : "#94a3b8";
+    trend === "positive" ? "#34d399" : trend === "negative" ? "#f87171" : "#94a3b8";
 
   const brand = STOCK_META[sym];
   const brandColor = brand?.color ?? "#94a3b8";
@@ -527,11 +484,7 @@ export function renderStock(
   blk.querySelector(".stk-after-price")?.remove();
   const extPrice = meta.postMarketPrice || meta.preMarketPrice;
   const extChg = meta.postMarketChangePercent ?? meta.preMarketChangePercent;
-  const extLbl = meta.postMarketPrice
-    ? "אחה\u05f4מ"
-    : meta.preMarketPrice
-      ? "טרום"
-      : null;
+  const extLbl = meta.postMarketPrice ? "אחה\u05f4מ" : meta.preMarketPrice ? "טרום" : null;
   if (extPrice != null && extLbl) {
     const afterEl = document.createElement("div");
     afterEl.className = "stk-after-price";
@@ -646,10 +599,7 @@ export async function loadAllStocks(): Promise<void> {
       syncBurst("stocks");
       recordSuccess("stocks");
     } else {
-      setSync(
-        "stocks",
-        uncached.length === STOCK_SYMBOLS.length ? "error" : "ok",
-      );
+      setSync("stocks", uncached.length === STOCK_SYMBOLS.length ? "error" : "ok");
       recordFailure("stocks");
     }
   } else {
@@ -730,13 +680,8 @@ export function checkStockAlerts(): void {
     if (triggered) {
       _alertedThisSession.add(alertKey);
       const dir = op.startsWith(">") ? "מעל" : "מתחת";
-      showToast(
-        `🔔 ${sym}: ${fmtPrice(cur, sym)} — ${dir} ${String(threshold)}`,
-        5000,
-      );
-      diagLog(
-        `FDB-046: [stocks] alert fired: ${sym} ${String(cur)} ${op} ${String(threshold)}`,
-      );
+      showToast(`🔔 ${sym}: ${fmtPrice(cur, sym)} — ${dir} ${String(threshold)}`, 5000);
+      diagLog(`FDB-046: [stocks] alert fired: ${sym} ${String(cur)} ${op} ${String(threshold)}`);
     }
   }
 }
@@ -845,15 +790,11 @@ export function updateMarketCountdown(): void {
  * Symbols in the array are hidden; all others are shown.
  */
 export function applyHiddenStocks(): void {
-  const hidden = new Set(
-    loadConfig().hiddenStocks.map((s) => s.toUpperCase().trim()),
-  );
-  document
-    .querySelectorAll<HTMLElement>("#stocks-body .stk[data-symbol]")
-    .forEach((blk) => {
-      const sym = (blk.dataset["symbol"] ?? "").toUpperCase();
-      blk.style.display = hidden.has(sym) ? "none" : "";
-    });
+  const hidden = new Set(loadConfig().hiddenStocks.map((s) => s.toUpperCase().trim()));
+  document.querySelectorAll<HTMLElement>("#stocks-body .stk[data-symbol]").forEach((blk) => {
+    const sym = (blk.dataset["symbol"] ?? "").toUpperCase();
+    blk.style.display = hidden.has(sym) ? "none" : "";
+  });
 }
 
 export function initStocksCard(): void {
@@ -865,14 +806,8 @@ export function initStocksCard(): void {
   if (_marketCountdownInterval !== null) clearInterval(_marketCountdownInterval);
   if (_stocksRefreshInterval !== null) clearInterval(_stocksRefreshInterval);
   // Refresh badge and countdown every minute so they stay accurate
-  _marketBadgeInterval = window.setInterval(
-    updateMarketBadge,
-    INTERVALS.MARKET_BADGE,
-  );
-  _marketCountdownInterval = window.setInterval(
-    updateMarketCountdown,
-    INTERVALS.MARKET_BADGE,
-  );
+  _marketBadgeInterval = window.setInterval(updateMarketBadge, INTERVALS.MARKET_BADGE);
+  _marketCountdownInterval = window.setInterval(updateMarketCountdown, INTERVALS.MARKET_BADGE);
   void loadAllStocks();
   _stocksRefreshInterval = scheduleCard(
     loadAllStocks,

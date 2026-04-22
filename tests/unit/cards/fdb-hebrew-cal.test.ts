@@ -42,17 +42,13 @@ describe("FdbHebrewCalCard", () => {
   });
 
   it("calls initHebrewCalCard on connect", async () => {
-    const { initHebrewCalCard } = await import(
-      "@/cards/hebrew-cal/hebrew-cal"
-    );
+    const { initHebrewCalCard } = await import("@/cards/hebrew-cal/hebrew-cal");
     mountCard();
     expect(initHebrewCalCard).toHaveBeenCalled();
   });
 
   it("calls destroyHebrewCalCard on disconnect", async () => {
-    const { destroyHebrewCalCard } = await import(
-      "@/cards/hebrew-cal/hebrew-cal"
-    );
+    const { destroyHebrewCalCard } = await import("@/cards/hebrew-cal/hebrew-cal");
     const card = mountCard();
     card.remove();
     expect(destroyHebrewCalCard).toHaveBeenCalled();

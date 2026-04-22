@@ -47,8 +47,7 @@ describe("FdbCountdownCard", () => {
   });
 
   it("calls destroyCountdownCard on disconnect", async () => {
-    const { destroyCountdownCard } =
-      await import("@/cards/countdown/countdown");
+    const { destroyCountdownCard } = await import("@/cards/countdown/countdown");
     const card = mountCard();
     card.remove();
     expect(destroyCountdownCard).toHaveBeenCalled();

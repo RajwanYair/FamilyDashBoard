@@ -21,10 +21,7 @@ import type { ProviderStatus } from "../../core/provider";
 const PROVIDER_ID = "open-meteo";
 const CACHE_KEY = "wx";
 
-export function createOpenMeteoAdapter(
-  lat: number,
-  lon: number,
-): ProviderAdapter<WeatherResponse> {
+export function createOpenMeteoAdapter(lat: number, lon: number): ProviderAdapter<WeatherResponse> {
   const cacheTtl = INTERVALS.WEATHER;
 
   return {

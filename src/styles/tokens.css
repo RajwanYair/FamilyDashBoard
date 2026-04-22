@@ -3,7 +3,7 @@
 @layer tokens, themes, base, layout, components, animations;
 
 @layer tokens {
-:root {
+  :root {
     /* ── Colors: Warm Dark (default) ── */
     --bg-primary: #1a1410;
     --bg-card: rgba(42, 34, 26, 0.82);
@@ -29,13 +29,13 @@
     --border-radius: 14px;
     --card-border: 1px solid rgba(212, 160, 83, 0.15);
     --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-    --bg-gradient-1: rgba(212,160,83,0.06);
-    --bg-gradient-2: rgba(106,191,123,0.04);
-    --bg-gradient-3: rgba(184,154,223,0.04);
+    --bg-gradient-1: rgba(212, 160, 83, 0.06);
+    --bg-gradient-2: rgba(106, 191, 123, 0.04);
+    --bg-gradient-3: rgba(184, 154, 223, 0.04);
     --news-font-scale: 1;
 
     /* ── Night Dimmer ── */
-    --dimmer-warm-color: #8B4513;
+    --dimmer-warm-color: #8b4513;
 
     /* ── Spacing Scale ── */
     --space-1: 4px;
@@ -54,9 +54,9 @@
     --radius-xl: 20px;
 
     /* ── Shadow Scale ── */
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.18);
-    --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
-    --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
 
     /* ── Fluid Typography (R1.4) ── */
     --text-xs: clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);
@@ -67,8 +67,8 @@
     --text-2xl: clamp(1.4rem, 1.2rem + 1vw, 2rem);
     --text-3xl: clamp(1.8rem, 1.5rem + 1.5vw, 2.8rem);
     --text-4xl: clamp(2.2rem, 1.8rem + 2vw, 3.6rem);
-    --font-body: 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', sans-serif;
-    --font-mono: 'Consolas', 'Courier New', monospace;
+    --font-body: "Segoe UI", Tahoma, Arial, "Noto Sans Hebrew", sans-serif;
+    --font-mono: "Consolas", "Courier New", monospace;
 
     /* ── Grid Layout (R1.6) ── */
     --grid-cols: 38fr 33fr 29fr;
@@ -88,5 +88,5 @@
     --positive-subtle: color-mix(in srgb, var(--positive) 12%, transparent);
     --negative-subtle: color-mix(in srgb, var(--negative) 12%, transparent);
     --bg-overlay: color-mix(in srgb, var(--bg-primary) 92%, transparent);
-}
+  }
 }

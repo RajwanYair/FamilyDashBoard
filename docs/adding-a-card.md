@@ -44,18 +44,23 @@ const CACHE_KEY = "my_card_data";
 const CACHE_TTL = 300; // seconds
 
 let _pageVisible = true;
-export function setPageVisible(v: boolean) { _pageVisible = v; }
+export function setPageVisible(v: boolean) {
+  _pageVisible = v;
+}
 
 export async function loadMyCard(): Promise<void> {
   if (!_pageVisible) return;
 
   const cached = cGet<MyCardData>(CACHE_KEY, CACHE_TTL);
-  if (cached !== null) { render(cached); return; }
+  if (cached !== null) {
+    render(cached);
+    return;
+  }
 
   setSync(CARD_ID, "loading");
   try {
     const res = await fetchWithTimeout("https://api.example.com/data", 8000);
-    const data = await res.json() as MyCardData;
+    const data = (await res.json()) as MyCardData;
     cSet(CACHE_KEY, data);
     render(data);
     setSync(CARD_ID, "ok");
@@ -152,8 +157,7 @@ Create `tests/unit/cards/my-card/my-card.test.ts`:
 
 ```typescript
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { createCardDOM, cleanupDOM, createMockFetch, createMockCache }
-  from "@tests/helpers";
+import { createCardDOM, cleanupDOM, createMockFetch, createMockCache } from "@tests/helpers";
 
 describe("my-card", () => {
   beforeEach(() => cleanupDOM());

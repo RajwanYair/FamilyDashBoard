@@ -6,21 +6,14 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  registerKey,
-  getKeyboardActions,
-  initKeyboard,
-  closeAllOverlays,
-} from "@/ui/keyboard";
+import { registerKey, getKeyboardActions, initKeyboard, closeAllOverlays } from "@/ui/keyboard";
 
 describe("Keyboard — registerKey / getKeyboardActions", () => {
   it("registers a key action", () => {
     const handler = vi.fn();
     registerKey("x", "test action", handler);
     const actions = getKeyboardActions();
-    expect(
-      actions.some((a) => a.key === "x" && a.description === "test action"),
-    ).toBe(true);
+    expect(actions.some((a) => a.key === "x" && a.description === "test action")).toBe(true);
   });
 
   it("stores key in lowercase", () => {
@@ -75,9 +68,7 @@ describe("Keyboard — initKeyboard built-in shortcuts", () => {
     registerKey("w", "should ignore in input", handler);
     const input = document.createElement("input");
     document.body.appendChild(input);
-    input.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "w", bubbles: true }),
-    );
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "w", bubbles: true }));
     expect(handler).not.toHaveBeenCalled();
   });
 
@@ -115,15 +106,9 @@ describe("Keyboard — closeAllOverlays", () => {
 
   it("removes visible class from all known overlays", () => {
     closeAllOverlays();
-    expect(
-      document.getElementById("config-overlay")?.classList.contains("visible"),
-    ).toBe(false);
-    expect(
-      document.getElementById("help-overlay")?.classList.contains("visible"),
-    ).toBe(false);
-    expect(
-      document.getElementById("diag-overlay")?.classList.contains("visible"),
-    ).toBe(false);
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
+    expect(document.getElementById("help-overlay")?.classList.contains("visible")).toBe(false);
+    expect(document.getElementById("diag-overlay")?.classList.contains("visible")).toBe(false);
   });
 
   it("does not throw when overlays are missing", () => {

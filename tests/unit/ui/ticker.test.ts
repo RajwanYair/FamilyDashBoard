@@ -185,9 +185,7 @@ describe("Ticker — custom announcement message", () => {
 
   it("can store and retrieve a custom ticker message", () => {
     localStorage.setItem("dash_v2_ticker_msg", "Important family announcement");
-    expect(localStorage.getItem("dash_v2_ticker_msg")).toBe(
-      "Important family announcement",
-    );
+    expect(localStorage.getItem("dash_v2_ticker_msg")).toBe("Important family announcement");
   });
 
   it("initTicker does not throw when custom message is set", () => {
@@ -277,9 +275,7 @@ describe("Ticker — renderTicker via cached data", () => {
     initTicker();
     const ticker = document.getElementById("halacha-ticker")!;
     // both text entries should appear (non-clone pass)
-    const items = Array.from(
-      ticker.querySelectorAll(".ticker-item:not(.clone)"),
-    );
+    const items = Array.from(ticker.querySelectorAll(".ticker-item:not(.clone)"));
     const combinedText = items.map((el) => el.textContent).join(" ");
     expect(combinedText).toContain("אסור לאכול עירבות");
   });
@@ -864,13 +860,15 @@ describe("Ticker — fetchFromSefaria proxy chain branches", () => {
     };
 
     vi.mocked(fetchWithTimeout)
-      .mockRejectedValueOnce(new Error("direct fail"))        // direct cal fails
-      .mockResolvedValueOnce({                                 // allorigins proxy for cal
+      .mockRejectedValueOnce(new Error("direct fail")) // direct cal fails
+      .mockResolvedValueOnce({
+        // allorigins proxy for cal
         ok: true,
         json: () => Promise.resolve({ contents: JSON.stringify(calData) }),
       } as unknown as Response)
-      .mockRejectedValueOnce(new Error("direct text fail"))   // direct text fails
-      .mockResolvedValueOnce({                                 // allorigins proxy for text
+      .mockRejectedValueOnce(new Error("direct text fail")) // direct text fails
+      .mockResolvedValueOnce({
+        // allorigins proxy for text
         ok: true,
         json: () => Promise.resolve({ contents: JSON.stringify(textData) }),
       } as unknown as Response);
@@ -1089,8 +1087,14 @@ describe("Ticker — loadHalacha displayValue missing → ?? title.he branch (li
       versions: [{ language: "he", text: ["הלכה יומית בדיקה"] }],
     };
     vi.mocked(fetchWithTimeout)
-      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(calData) } as unknown as Response)
-      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(textData) } as unknown as Response);
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(calData),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(textData),
+      } as unknown as Response);
 
     initTicker();
     for (let i = 0; i < 50; i++) await Promise.resolve();
@@ -1132,7 +1136,7 @@ describe("Ticker — loadHalacha category?.[0] ?? '' fallback (line 239)", () =>
           title: { en: "Halakhah Yomit", he: "הלכה יומית" },
           url: "KSA.1",
           ref: "KSA 1",
-          category: ["Halakhah"],  // only [0], no [1]
+          category: ["Halakhah"], // only [0], no [1]
         },
       ],
     };
@@ -1141,8 +1145,14 @@ describe("Ticker — loadHalacha category?.[0] ?? '' fallback (line 239)", () =>
       versions: [{ language: "he", text: ["הלכה בדיקה"] }],
     };
     vi.mocked(fetchWithTimeout)
-      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(calData) } as unknown as Response)
-      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(textData) } as unknown as Response);
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(calData),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(textData),
+      } as unknown as Response);
 
     initTicker();
     for (let i = 0; i < 50; i++) await Promise.resolve();
@@ -1173,8 +1183,14 @@ describe("Ticker — loadHalacha category?.[0] ?? '' fallback (line 239)", () =>
       versions: [{ language: "he", text: ["הלכה ב בדיקה"] }],
     };
     vi.mocked(fetchWithTimeout)
-      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(calData) } as unknown as Response)
-      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(textData) } as unknown as Response);
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(calData),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(textData),
+      } as unknown as Response);
 
     initTicker();
     for (let i = 0; i < 50; i++) await Promise.resolve();
@@ -1192,7 +1208,11 @@ describe("Ticker — loadHalacha category?.[0] ?? '' fallback (line 239)", () =>
     document.body.innerHTML = '<div id="hc-halacha-row"><div id="hc-halacha"></div></div>';
     // Provide cached data so loadHalacha calls renderTicker immediately
     vi.mocked(cGet).mockReturnValue({
-      ref: "KSA 1", heRef: "test", category: "Halakhah", url: "https://sefaria.org/KSA.1", texts: ["text"],
+      ref: "KSA 1",
+      heRef: "test",
+      category: "Halakhah",
+      url: "https://sefaria.org/KSA.1",
+      texts: ["text"],
     });
     // renderTicker: !elTicker = true → return early (no throw)
     expect(() => initTicker()).not.toThrow();
@@ -1202,7 +1222,11 @@ describe("Ticker — loadHalacha category?.[0] ?? '' fallback (line 239)", () =>
     buildTickerDOM(); // sets up elTicker
     // Return cached data with EMPTY texts array
     vi.mocked(cGet).mockReturnValue({
-      ref: "KSA 1", heRef: "test", category: "Halakhah", url: "https://sefaria.org/KSA.1", texts: [],
+      ref: "KSA 1",
+      heRef: "test",
+      category: "Halakhah",
+      url: "https://sefaria.org/KSA.1",
+      texts: [],
     });
     // renderTicker: !data.texts?.length = true → return early (no throw)
     expect(() => initTicker()).not.toThrow();
@@ -1267,7 +1291,7 @@ describe("Ticker — loadHalacha category with 1 element → category[1] ?? cate
       ],
     };
     const textData = {
-      heRef: "שו\"ע א",
+      heRef: 'שו"ע א',
       versions: [{ language: "he", text: ["הלכה כלשהי"] }],
     };
 

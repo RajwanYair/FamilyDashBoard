@@ -47,7 +47,11 @@ export function createAlertsAdapter(): ProviderAdapter<AlertsResponse> {
         if (!Array.isArray(data)) {
           recordProviderFailure(PROVIDER_ID);
           const stale = cGetStale<AlertsResponse>(CACHE_KEY);
-          return { ok: false, error: "Invalid response — expected array", stale: stale ?? undefined };
+          return {
+            ok: false,
+            error: "Invalid response — expected array",
+            stale: stale ?? undefined,
+          };
         }
         await cSetAsync(CACHE_KEY, data);
         recordProviderSuccess(PROVIDER_ID);

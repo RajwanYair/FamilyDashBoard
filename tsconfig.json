@@ -1,26 +1,12 @@
 {
     "extends": "./tooling/tsconfig/base-typescript.json",
     "compilerOptions": {
-        "lib": [
-            "ES2022",
-            "DOM",
-            "DOM.Iterable"
-        ],
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "exactOptionalPropertyTypes": false,
         "paths": {
-            "@/*": [
-                "./src/*"
-            ]
+            "@/*": ["./src/*"]
         }
     },
-    "include": [
-        "src/**/*.ts",
-        "src/vite-env.d.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "worker",
-        "tests"
-    ]
+    "include": ["src/**/*.ts", "src/vite-env.d.ts"],
+    "exclude": ["node_modules", "dist", "worker", "tests"]
 }

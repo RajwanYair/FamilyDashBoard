@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v8.8.0)
+# FamilyDashBoard — Architecture (v9.1.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -9,18 +9,18 @@ Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README
 
 ## Stack
 
-| Decision       | Choice                                                          | Rationale                                                       |
-| -------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
-| Build tool     | **Vite 8**                                                      | Fast dev server, Rollup bundler, native TS, tree-shaking        |
-| Language       | **TypeScript 5.9**                                              | Type safety, type-aware ESLint, strict null checks              |
-| Test framework | **Vitest 4 + happy-dom**                                        | Vite-native, real DOM simulation, 3205+ tests / 95 suites       |
-| Lint           | **ESLint 10 + typescript-eslint 8**                             | Flat config, type-aware rules, 0 errors / 0 warnings enforced   |
-| API proxy      | **Cloudflare Workers**                                          | Eliminates CORS chain, 100 K req/day free, edge-deployed        |
-| Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)        |                                                                 |
-| CSS approach   | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`     | No preprocessor; cascade-aware; container queries               |
-| Module format  | **ES Modules** native `import`/`export`                         |                                                                 |
-| npm model      | Tools installed at parent **`MyScripts/`**; no local lock file  | Single-root install for all scripts in the monorepo             |
-| CI             | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed |                                                                 |
+| Decision       | Choice                                                                                                  | Rationale                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Build tool     | **Vite 8**                                                                                              | Fast dev server, Rollup bundler, native TS, tree-shaking      |
+| Language       | **TypeScript 6.0.3**                                                                                    | Type safety, type-aware ESLint, strict null checks            |
+| Test framework | **Vitest 4.1.5 + happy-dom 20**                                                                         | Vite-native, real DOM simulation, 3179 tests / 94 suites      |
+| Lint           | **ESLint 10 + typescript-eslint 8**                                                                     | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
+| API proxy      | **Cloudflare Workers**                                                                                  | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
+| Deployment     | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                |                                                               |
+| CSS approach   | **Vanilla CSS** with `@layer`, design tokens, `color-mix()`                                             | No preprocessor; cascade-aware; container queries             |
+| Module format  | **ES Modules** native `import`/`export`                                                                 |                                                               |
+| npm model      | Tools installed at parent **`MyScripts/`**; shared configs vendored into `tooling/`; no local lock file | Single-root install for all scripts in the monorepo           |
+| CI             | `.github/ci/install-tools.sh` — no `npm ci` or lock file needed; `tooling/` is self-contained           |                                                               |
 
 ## File Structure
 
@@ -186,8 +186,14 @@ flowchart TD
 --bg-overlay: color-mix(in oklch, var(--bg-card) 85%, transparent);
 
 /* Container queries on cards */
-.card { container-type: inline-size; }
-@container (max-width: 320px) { .card-title { font-size: 0.85rem; } }
+.card {
+  container-type: inline-size;
+}
+@container (max-width: 320px) {
+  .card-title {
+    font-size: 0.85rem;
+  }
+}
 ```
 
 ### CSS Co-location Rule (v7.5+)

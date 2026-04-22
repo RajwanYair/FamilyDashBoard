@@ -45,9 +45,7 @@ export const WORKER_BASE_URL = "https://fdb.rajwanyair.workers.dev";
 let _workerStaticOk: boolean | null = null;
 export function isWorkerEnabled(): boolean {
   if (_workerStaticOk === null) {
-    _workerStaticOk =
-      WORKER_BASE_URL.length > 0 &&
-      window.location.protocol !== "file:";
+    _workerStaticOk = WORKER_BASE_URL.length > 0 && window.location.protocol !== "file:";
   }
   return _workerStaticOk && navigator.onLine;
 }
@@ -241,10 +239,7 @@ export const WX_EMOJI: Record<number, string> = {
 // ── Concurrency ──
 export const CPU_CORES =
   typeof navigator !== "undefined" ? (navigator.hardwareConcurrency ?? 4) : 4;
-export const MAX_CONCURRENT = Math.max(
-  2,
-  Math.min(8, Math.floor(CPU_CORES * 0.6)),
-);
+export const MAX_CONCURRENT = Math.max(2, Math.min(8, Math.floor(CPU_CORES * 0.6)));
 
 // ── Diagnostics ──
 export const DIAG_BUFFER_SIZE = 80;
@@ -296,14 +291,7 @@ export const LS_ICS_URL = "dash_ics_url";
 export const LS_CONFIG = "dash_v2_config";
 
 // ── Themes (single source of truth for theme names) ──
-export const THEMES = [
-  "black",
-  "blue",
-  "matrix",
-  "amber",
-  "purple",
-  "rose",
-] as const;
+export const THEMES = ["black", "blue", "matrix", "amber", "purple", "rose"] as const;
 export type ThemeName = (typeof THEMES)[number];
 
 // ── Screen Modes ──

@@ -33,7 +33,15 @@ vi.mock("@/core/cache", () => ({
   cSetAsync: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { createCardLoader, createAsyncCardLoader, scheduleCard, staleChip, createSkeleton, createEmptyState, createErrorState } from "@/cards/base-card";
+import {
+  createCardLoader,
+  createAsyncCardLoader,
+  scheduleCard,
+  staleChip,
+  createSkeleton,
+  createEmptyState,
+  createErrorState,
+} from "@/cards/base-card";
 import * as idleMod from "@/core/idle";
 import * as fetchMod from "@/core/fetch";
 import * as cacheMod from "@/core/cache";

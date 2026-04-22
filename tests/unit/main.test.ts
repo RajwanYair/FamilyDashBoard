@@ -101,13 +101,7 @@ vi.mock("@/cards/system-info/system-info", () => ({
   initSystemInfoCard: vi.fn(),
 }));
 
-import {
-  applySeasonClass,
-  applyHiddenCards,
-  applyCardLayout,
-  applyCardSizes,
-  init,
-} from "@/main";
+import { applySeasonClass, applyHiddenCards, applyCardLayout, applyCardSizes, init } from "@/main";
 import { diagLog } from "@/core/diag";
 import { cEvict } from "@/core/cache";
 import { initVisibility } from "@/core/idle";
@@ -195,12 +189,7 @@ describe("Main — applySeasonClass (F27 seasonal tint)", () => {
     applySeasonClass();
     vi.setSystemTime(new Date("2024-07-15T12:00:00"));
     applySeasonClass();
-    const seasons = [
-      "season-spring",
-      "season-summer",
-      "season-autumn",
-      "season-winter",
-    ];
+    const seasons = ["season-spring", "season-summer", "season-autumn", "season-winter"];
     const active = seasons.filter((s) => document.body.classList.contains(s));
     expect(active.length).toBe(1);
     expect(active[0]).toBe("season-summer");
@@ -305,9 +294,7 @@ describe("Main — init() core setup", () => {
 
   it("calls diagLog with initialized message", () => {
     init();
-    expect(diagLog).toHaveBeenCalledWith(
-      expect.stringContaining("initialized"),
-    );
+    expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("initialized"));
   });
 });
 
@@ -519,10 +506,7 @@ describe("Main — init() online/offline handlers", () => {
   it("shows toast on offline event", () => {
     init();
     window.dispatchEvent(new Event("offline"));
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringContaining("אין חיבור"),
-      5000,
-    );
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("אין חיבור"), 5000);
   });
 
   it("shows reconnect toast when coming online after offline", () => {
@@ -530,10 +514,7 @@ describe("Main — init() online/offline handlers", () => {
     window.dispatchEvent(new Event("offline"));
     vi.mocked(showToast).mockClear();
     window.dispatchEvent(new Event("online"));
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringContaining("החיבור חזר"),
-      2500,
-    );
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("החיבור חזר"), 2500);
   });
 
   it("does not show reconnect toast on online if never went offline", () => {
@@ -541,9 +522,7 @@ describe("Main — init() online/offline handlers", () => {
     window.dispatchEvent(new Event("online"));
     const reconnectCalls = vi
       .mocked(showToast)
-      .mock.calls.filter(
-        ([msg]) => typeof msg === "string" && msg.includes("החיבור חזר"),
-      );
+      .mock.calls.filter(([msg]) => typeof msg === "string" && msg.includes("החיבור חזר"));
     expect(reconnectCalls.length).toBe(0);
   });
 
@@ -627,13 +606,9 @@ describe("Main — init() help overlay toggle", () => {
     expect(hCall).toBeDefined();
     const handler = hCall![2] as () => void;
     handler();
-    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(
-      true,
-    );
+    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(true);
     handler();
-    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(
-      false,
-    );
+    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(false);
   });
 
   it("'?' handler toggles help-overlay dialog open state", () => {
@@ -655,13 +630,9 @@ describe("Main — init() help overlay toggle", () => {
     expect(qCall).toBeDefined();
     const handler = qCall![2] as () => void;
     handler();
-    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(
-      true,
-    );
+    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(true);
     handler();
-    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(
-      false,
-    );
+    expect(document.getElementById("help-overlay")!.hasAttribute("open")).toBe(false);
   });
 
   it("'?' handler is no-op without help-overlay element", () => {
@@ -736,9 +707,7 @@ describe("Main — init() keyboard lambda callbacks", () => {
       value: null,
       configurable: true,
     });
-    document.documentElement.requestFullscreen = vi
-      .fn()
-      .mockResolvedValue(undefined);
+    document.documentElement.requestFullscreen = vi.fn().mockResolvedValue(undefined);
     extractHandler("f")();
     expect(document.documentElement.requestFullscreen).toHaveBeenCalled();
   });
@@ -792,10 +761,7 @@ describe("Main — init() SW NETWORK_BACK message", () => {
     init();
     expect(listeners["message"]).toBeDefined();
     listeners["message"]({ data: { type: "NETWORK_BACK" } });
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringContaining("החיבור חזר"),
-      2500,
-    );
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("החיבור חזר"), 2500);
   });
 
   it("does NOT show NETWORK_BACK toast when already in offline state", () => {
@@ -865,9 +831,13 @@ describe("Main — applyHiddenCards", () => {
       <div data-card-id="stocks"></div>
     `;
     applyHiddenCards(["weather", "stocks"]);
-    expect(document.querySelector<HTMLElement>("[data-card-id='weather']")!.style.display).toBe("none");
+    expect(document.querySelector<HTMLElement>("[data-card-id='weather']")!.style.display).toBe(
+      "none",
+    );
     expect(document.querySelector<HTMLElement>("[data-card-id='news']")!.style.display).toBe("");
-    expect(document.querySelector<HTMLElement>("[data-card-id='stocks']")!.style.display).toBe("none");
+    expect(document.querySelector<HTMLElement>("[data-card-id='stocks']")!.style.display).toBe(
+      "none",
+    );
   });
 
   it("does not throw when no [data-card-id] elements exist", () => {
@@ -1077,7 +1047,9 @@ describe("Main — init() URL hash config import", () => {
   });
 
   it("calls saveConfig when loadConfigFromHash returns config", () => {
-    vi.mocked(loadConfigFromHash).mockReturnValueOnce({ theme: "ocean" } as ReturnType<typeof loadConfig>);
+    vi.mocked(loadConfigFromHash).mockReturnValueOnce({ theme: "ocean" } as ReturnType<
+      typeof loadConfig
+    >);
     Object.defineProperty(window, "location", {
       value: { hash: "#cfg=abc123", pathname: "/", search: "" },
       configurable: true,
@@ -1241,8 +1213,12 @@ describe("Main — dynamic help overlay (F10 v7.3)", () => {
       close?: () => void;
     };
     if (typeof dlg.showModal !== "function") {
-      dlg.showModal = function () { this.setAttribute("open", ""); };
-      dlg.close = function () { this.removeAttribute("open"); };
+      dlg.showModal = function () {
+        this.setAttribute("open", "");
+      };
+      dlg.close = function () {
+        this.removeAttribute("open");
+      };
     }
     return dlg;
   }

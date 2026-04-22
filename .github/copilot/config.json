@@ -14,7 +14,11 @@
             "enabled": true,
             "aliases": ["design", "css", "layout", "theme"],
             "priority": "high",
-            "context_files": ["src/styles/tokens.css", "src/styles/themes.css", "src/styles/components.css"],
+            "context_files": [
+                "src/styles/tokens.css",
+                "src/styles/themes.css",
+                "src/styles/components.css"
+            ],
             "description": "UI/UX: CSS custom properties, glassmorphism, RTL layout, 6 themes"
         },
         "api-mode": {
@@ -28,41 +32,26 @@
             "enabled": true,
             "aliases": ["debug", "troubleshoot", "error"],
             "priority": "high",
-            "context_files": [
-                "src/core/diag.ts",
-                "src/core/fetch.ts"
-            ],
+            "context_files": ["src/core/diag.ts", "src/core/fetch.ts"],
             "description": "Debug fetch failures, dead code, JS syntax errors"
         },
         "docs-mode": {
             "enabled": true,
             "aliases": ["documentation", "readme"],
             "priority": "medium",
-            "context_files": [
-                "README.md",
-                "CHANGELOG.md"
-            ],
+            "context_files": ["README.md", "CHANGELOG.md"],
             "description": "Documentation, README, CHANGELOG, SVG assets"
         },
         "security-mode": {
             "enabled": true,
             "aliases": ["security", "audit", "xss"],
             "priority": "critical",
-            "context_files": [
-                "src/main.ts",
-                ".github/SECURITY.md"
-            ],
+            "context_files": ["src/main.ts", ".github/SECURITY.md"],
             "description": "Security: XSS prevention, CSP, API input sanitization"
         },
         "pre-release-mode": {
             "enabled": true,
-            "aliases": [
-                "release",
-                "cleanup",
-                "pre-release",
-                "production",
-                "tag"
-            ],
+            "aliases": ["release", "cleanup", "pre-release", "production", "tag"],
             "priority": "critical",
             "context_files": [
                 ".github/instructions/pre-release.instructions.md",

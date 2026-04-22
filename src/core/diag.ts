@@ -26,9 +26,7 @@ export function diagLog(msg: string): void {
 /**
  * Get recent diagnostic entries (newest first).
  */
-export function getDiagEntries(
-  limit: number = DIAG_DISPLAY_LIMIT,
-): DiagEntry[] {
+export function getDiagEntries(limit: number = DIAG_DISPLAY_LIMIT): DiagEntry[] {
   return buffer.slice(-limit).reverse();
 }
 
@@ -63,12 +61,7 @@ export function formatDiagEntry(entry: DiagEntry): string {
  * - `"upstream"` — upstream API returned a non-OK HTTP status
  * - `"unknown"`  — unclassified error
  */
-export type ProviderErrorKind =
-  | "network"
-  | "parse"
-  | "timeout"
-  | "upstream"
-  | "unknown";
+export type ProviderErrorKind = "network" | "parse" | "timeout" | "upstream" | "unknown";
 
 /**
  * Derive a standardized error kind from an arbitrary caught error (Sprint 60).
@@ -79,10 +72,7 @@ export type ProviderErrorKind =
  * @param providerId - Provider identifier for log context
  * @returns Normalized error kind
  */
-export function classifyProviderError(
-  err: unknown,
-  providerId: string,
-): ProviderErrorKind {
+export function classifyProviderError(err: unknown, providerId: string): ProviderErrorKind {
   let kind: ProviderErrorKind = "unknown";
 
   if (err instanceof Error) {
@@ -96,11 +86,7 @@ export function classifyProviderError(
       kind = "network";
     } else if (msg.includes("timeout") || msg.includes("aborted")) {
       kind = "timeout";
-    } else if (
-      msg.includes("json") ||
-      msg.includes("parse") ||
-      msg.includes("syntax")
-    ) {
+    } else if (msg.includes("json") || msg.includes("parse") || msg.includes("syntax")) {
       kind = "parse";
     } else if (msg.includes("http") || msg.includes("status")) {
       kind = "upstream";

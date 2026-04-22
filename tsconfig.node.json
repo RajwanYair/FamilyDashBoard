@@ -1,13 +1,7 @@
 {
-  "extends": "./tooling/tsconfig/base-typescript.json",
-  "compilerOptions": {
-    "lib": [
-      "ES2022"
-    ]
-  },
-  "include": [
-    "vite.config.ts",
-    "vitest.config.ts",
-    "eslint.config.mjs"
-  ]
+    "extends": "./tooling/tsconfig/base-typescript.json",
+    "compilerOptions": {
+        "lib": ["ES2022"]
+    },
+    "include": ["vite.config.ts", "vitest.config.ts", "eslint.config.mjs"]
 }

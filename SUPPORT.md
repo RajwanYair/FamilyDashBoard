@@ -42,11 +42,11 @@
 
 ### Keyboard Shortcuts
 
-| Key      | Action                                                            |
-| -------- | ----------------------------------------------------------------- |
-| `T`      | Cycle through 6 themes (OLED black, blue, matrix, amber, purple, rose)  |
-| `D`      | Toggle diagnostic overlay (per-pane status + fetch log)           |
-| `Escape` | Close maximized card                                              |
+| Key      | Action                                                                 |
+| -------- | ---------------------------------------------------------------------- |
+| `T`      | Cycle through 6 themes (OLED black, blue, matrix, amber, purple, rose) |
+| `D`      | Toggle diagnostic overlay (per-pane status + fetch log)                |
+| `Escape` | Close maximized card                                                   |
 
 > **Tip:** Click any card header to expand it full-screen (FLIP animation). Click again or press `Escape` to restore.
 

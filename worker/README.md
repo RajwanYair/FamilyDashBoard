@@ -47,9 +47,9 @@ Proxies Open-Meteo forecast for a coordinate.
 
 **Parameters**:
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `lat` | float | `31.7683` | Latitude (-90..90) |
+| Name  | Type  | Default   | Description           |
+| ----- | ----- | --------- | --------------------- |
+| `lat` | float | `31.7683` | Latitude (-90..90)    |
 | `lon` | float | `35.2137` | Longitude (-180..180) |
 
 **Cache**: 30 minutes (`max-age=1800`)
@@ -74,8 +74,8 @@ Proxies Hebcal Shabbat times for a location.
 
 **Parameters**:
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
+| Name        | Type    | Default              | Description |
+| ----------- | ------- | -------------------- | ----------- |
 | `geonameid` | integer | `281184` (Jerusalem) | GeoNames ID |
 
 **Cache**: 6 hours (`max-age=21600`)
@@ -90,8 +90,8 @@ Proxies Hebcal yearly holiday list.
 
 **Parameters**:
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
+| Name   | Type    | Default      | Description                |
+| ------ | ------- | ------------ | -------------------------- |
 | `year` | integer | current year | Gregorian year (2000–2100) |
 
 **Cache**: 12 hours (`max-age=43200`)
@@ -106,9 +106,9 @@ Proxies Yahoo Finance v8 chart data for a single ticker.
 
 **Parameters**:
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `sym` | string | ✅ | Ticker symbol (1–20 chars, `A-Z 0-9 . - ^`) |
+| Name  | Type   | Required | Description                                 |
+| ----- | ------ | -------- | ------------------------------------------- |
+| `sym` | string | ✅       | Ticker symbol (1–20 chars, `A-Z 0-9 . - ^`) |
 
 **Cache**: 5 minutes (`max-age=300`)
 
@@ -122,9 +122,9 @@ Proxies RSS/Atom news feeds. Origin must be in the allowlist.
 
 **Parameters**:
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `url` | string (HTTPS) | ✅ | Full RSS feed URL |
+| Name  | Type           | Required | Description       |
+| ----- | -------------- | -------- | ----------------- |
+| `url` | string (HTTPS) | ✅       | Full RSS feed URL |
 
 **Cache**: 15 minutes (`max-age=900`)
 
@@ -153,9 +153,9 @@ Proxies Google Calendar ICS feeds.
 
 **Parameters**:
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `url` | string (HTTPS) | ✅ | Full `.ics` URL |
+| Name  | Type           | Required | Description     |
+| ----- | -------------- | -------- | --------------- |
+| `url` | string (HTTPS) | ✅       | Full `.ics` URL |
 
 **Cache**: 15 minutes (`max-age=900`)
 

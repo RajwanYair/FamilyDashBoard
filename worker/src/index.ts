@@ -19,10 +19,24 @@
 
 import { jsonResponse } from "./utils/response";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
-import { handleStocks, handleNews, handleAlerts, handleCalendar, handleSefariaCalendar, handleSefariaText, handleCrypto } from "./routes/feeds";
+import {
+  handleStocks,
+  handleNews,
+  handleAlerts,
+  handleCalendar,
+  handleSefariaCalendar,
+  handleSefariaText,
+  handleCrypto,
+} from "./routes/feeds";
 import { handleErrors } from "./routes/errors";
 import { isPreflight, handlePreflight } from "./middleware/cors";
-import { isRateLimited, getClientIp, rateLimitResponse, getRemainingRequests, MAX_REQUESTS_PER_WINDOW } from "./middleware/rate-limit";
+import {
+  isRateLimited,
+  getClientIp,
+  rateLimitResponse,
+  getRemainingRequests,
+  MAX_REQUESTS_PER_WINDOW,
+} from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
 
 export interface Env {
@@ -82,4 +96,3 @@ export default {
     return finalResponse;
   },
 };
-

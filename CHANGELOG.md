@@ -5,7 +5,51 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [9.0.0] — 2026-04-22
+## [9.1.0] — 2026-04-22
+
+> **3179 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 Prettier
+
+### Sprint 9.1 — CI Hardening, Prettier & Docs Refresh
+
+Issues: [#81](https://github.com/RajwanYair/FamilyDashBoard/issues/81) · [#82](https://github.com/RajwanYair/FamilyDashBoard/issues/82) · [#83](https://github.com/RajwanYair/FamilyDashBoard/issues/83)
+
+#### CI & Formatting (Tasks 9, 10 — Closes [#83](https://github.com/RajwanYair/FamilyDashBoard/issues/83))
+
+- **Prettier format enforcement**: `npx prettier --check .` added as a required CI gate in the `lint` job
+- **`prettier@^3.5.0`** added to `.github/ci/install-tools.sh` so CI can run the check
+- **`prettier --write .`** applied to the entire codebase — ~35 TypeScript, JSON, YAML, and config files reformatted to Prettier standard
+- **`.prettierignore`** hardened: `**/*.sh` (no Prettier parser), `src/index.html` (complex hand-crafted HTML), `ci_status.json` excluded
+- **`package.json` scripts**: `"format": "prettier --write ."` and `"format:check": "prettier --check ."` added
+
+#### Documentation & Diagrams (Tasks 3, 15, 17, 19 — Closes [#82](https://github.com/RajwanYair/FamilyDashBoard/issues/82))
+
+- **`ARCHITECTURE.md`**: version header `v8.8.0` → `v9.1.0`; TypeScript `5.9` → `6.0.3`; Vitest `4 + happy-dom` → `4.1.5 + happy-dom 20`; test count `3205+/95` → `3179/94`; npm model row updated with vendored tooling note
+- **`.github/assets/architecture.svg`**: TypeScript 5.9 → 6.0.3; Vitest 4 → 4.1.5; test count 3205/95 → 3179/94; SW version v8.9.0 → v9.1.0; 10 cards → 11 cards
+- **`.github/assets/roadmap.svg`**: TypeScript 5.9 → 6.0.3; Vitest 4 → 4.1.5
+- **`README.md`**: version badge `9.0.0` → `9.1.0`; "Monorepo note" added to Development Setup explaining no local `package-lock.json`, lockfile intent, and the `install-tools.sh` approach; `prettier --check .` added to Available Commands
+- **`CONTRIBUTING.md`**: TS `5.9` → `6.0.3`, Vitest `4` → `4.1.5` in header
+- **`CLAUDE.md`**: version `v8.9.0` → `v9.1.0`
+- **`.github/copilot-instructions.md`**: version `v8.9.0` → `v9.1.0`; TS `5.9` → `6.0.3`; test count updated
+- **`.github/instructions/workspace.instructions.md`**: version header `v8.9.0` → `v9.1.0`; TS `5.9` → `6.0.3`; Vitest `4` → `4.1.5`; vendored tooling note added to shared deps
+
+#### Cleanup (Tasks 1, 5, 20 — Closes [#81](https://github.com/RajwanYair/FamilyDashBoard/issues/81))
+
+- **`ci_status.json`** removed from git tracking (accidentally committed in v9.0.0 release; now gitignored)
+- **`.gitignore`**: `ci_status.json` added explicitly to the debug-logs section
+- **`sw.ts` / `sw.js`**: version headers bumped to `v9.1.0`
+
+#### ROADMAP
+
+- Sprint 9.1.0 section added with all 20 tasks, statuses, issue links, and footprint delta
+- Version history table updated with v9.0.0 and v9.1.0 entries
+
+#### Footprint
+
+| Item                     | Before                  | After                                |
+| ------------------------ | ----------------------- | ------------------------------------ |
+| Tracked stray artifacts  | `ci_status.json` in git | Deleted from history                 |
+| Prettier-formatted files | ~35 unformatted         | All formatted                        |
+| CI lint steps            | ESLint + Markdownlint   | ESLint + **Prettier** + Markdownlint |
 
 > **3179 tests / 94 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
 
@@ -62,30 +106,30 @@ External 20-task audit evaluating the project against web-project best practices
 
 ### Audit Results — Pre-Satisfied (11/20 tasks required no changes)
 
-| Task | Infrastructure |
-|------|---------------|
-| Build system (task 4) | npm + Vite 8, parent `MyScripts/` install |
-| Utility deduplication (task 6) | Single implementations in `src/core/` |
-| Warnings as errors (task 7) | `--max-warnings 0`, TS strict, CI fails on warnings |
-| Fix all warnings (task 8) | 0 across typecheck + lint + build |
-| CI (task 10) | typecheck → lint → test → security → build → lighthouse |
-| Release workflow (task 11) | dist.zip + checksums + SLSA attestation |
-| .vscode (task 12) | settings + extensions + tasks + launch (6 debug configs) |
-| .github hygiene (task 13) | 4 issue templates, PR template, CODEOWNERS, CONTRIBUTING, SECURITY |
-| Dependabot (task 14) | npm + github-actions configured |
-| README (task 15) | Comprehensive with badges, features, getting started |
-| Redundant configs (task 18) | 0 redundancy found |
+| Task                           | Infrastructure                                                     |
+| ------------------------------ | ------------------------------------------------------------------ |
+| Build system (task 4)          | npm + Vite 8, parent `MyScripts/` install                          |
+| Utility deduplication (task 6) | Single implementations in `src/core/`                              |
+| Warnings as errors (task 7)    | `--max-warnings 0`, TS strict, CI fails on warnings                |
+| Fix all warnings (task 8)      | 0 across typecheck + lint + build                                  |
+| CI (task 10)                   | typecheck → lint → test → security → build → lighthouse            |
+| Release workflow (task 11)     | dist.zip + checksums + SLSA attestation                            |
+| .vscode (task 12)              | settings + extensions + tasks + launch (6 debug configs)           |
+| .github hygiene (task 13)      | 4 issue templates, PR template, CODEOWNERS, CONTRIBUTING, SECURITY |
+| Dependabot (task 14)           | npm + github-actions configured                                    |
+| README (task 15)               | Comprehensive with badges, features, getting started               |
+| Redundant configs (task 18)    | 0 redundancy found                                                 |
 
 ### Footprint Summary
 
-| Item | Before | After |
-|------|--------|-------|
-| `.gitignore` entries | 42 | 46 (+4 globs) |
-| Root config files | 17 | 19 (+`.prettierrc.json`, `.prettierignore`) |
-| ARCHITECTURE.md Mermaid diagrams | 1 | 4 (+3 new) |
-| SVG documentation assets | 10 | 10 (unchanged) |
-| Dead files removed | — | `.mypy_cache/` gitignored |
-| sw.js version drift | v8.7.0 (stale) | v8.9.0 (aligned) |
+| Item                             | Before         | After                                       |
+| -------------------------------- | -------------- | ------------------------------------------- |
+| `.gitignore` entries             | 42             | 46 (+4 globs)                               |
+| Root config files                | 17             | 19 (+`.prettierrc.json`, `.prettierignore`) |
+| ARCHITECTURE.md Mermaid diagrams | 1              | 4 (+3 new)                                  |
+| SVG documentation assets         | 10             | 10 (unchanged)                              |
+| Dead files removed               | —              | `.mypy_cache/` gitignored                   |
+| sw.js version drift              | v8.7.0 (stale) | v8.9.0 (aligned)                            |
 
 ---
 

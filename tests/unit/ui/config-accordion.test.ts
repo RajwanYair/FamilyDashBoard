@@ -10,7 +10,17 @@ import type { CardConfigField } from "@/types/card";
 const grouped: CardConfigField[] = [
   { key: "a", labelHe: "א", labelEn: "A", type: "text", defaultValue: "", group: "Group1" },
   { key: "b", labelHe: "ב", labelEn: "B", type: "boolean", defaultValue: true, group: "Group1" },
-  { key: "c", labelHe: "ג", labelEn: "C", type: "range", defaultValue: 5, min: 0, max: 10, group: "Group2", groupOpenByDefault: true },
+  {
+    key: "c",
+    labelHe: "ג",
+    labelEn: "C",
+    type: "range",
+    defaultValue: 5,
+    min: 0,
+    max: 10,
+    group: "Group2",
+    groupOpenByDefault: true,
+  },
 ];
 
 const flat: CardConfigField[] = [

@@ -42,10 +42,7 @@ describe("FdbTasksCard", () => {
   it("refresh rerenders the list after data changes", async () => {
     const card = mountCard();
 
-    localStorage.setItem(
-      "dash_chores",
-      JSON.stringify([{ person: "משפחה", chore: "📦 לארגן" }]),
-    );
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "משפחה", chore: "📦 לארגן" }]));
 
     await card.refresh();
 

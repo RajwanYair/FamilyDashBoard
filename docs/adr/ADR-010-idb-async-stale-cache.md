@@ -41,11 +41,11 @@ The **first adopter** is the currency card (`src/cards/currency/currency.ts`).
 
 ## Storage Tier Policy
 
-| Tier | API | Access pattern | Max size |
-|------|-----|---------------|----------|
-| Memory (`Map`) | `mem.get/set` | Synchronous, fastest, volatile | RAM |
-| localStorage | `LS_PREFIX + key` | Synchronous, persistent | ~5 MB total |
-| IndexedDB | `idbGet/idbSet` | Asynchronous, persistent | ~50 MB+ |
+| Tier           | API               | Access pattern                 | Max size    |
+| -------------- | ----------------- | ------------------------------ | ----------- |
+| Memory (`Map`) | `mem.get/set`     | Synchronous, fastest, volatile | RAM         |
+| localStorage   | `LS_PREFIX + key` | Synchronous, persistent        | ~5 MB total |
+| IndexedDB      | `idbGet/idbSet`   | Asynchronous, persistent       | ~50 MB+     |
 
 **Read priority** (createAsyncCardLoader): memory → IDB → localStorage
 **Write**: all three tiers — IDB awaited in `cSetAsync`, fire-and-forget in `cSet`
@@ -54,12 +54,12 @@ The **first adopter** is the currency card (`src/cards/currency/currency.ts`).
 
 ## Migration Path
 
-| Phase | Scope | Target |
-|-------|-------|--------|
-| Phase 1 (this ADR) | currency card | `createAsyncCardLoader` + `cSetAsync` |
-| Phase 2 | news, stocks | Same migration |
-| Phase 3 | weather | Same migration (complex due to city state) |
-| Phase 4 | All 11 cards | localStorage used for config/flags only |
+| Phase              | Scope         | Target                                     |
+| ------------------ | ------------- | ------------------------------------------ |
+| Phase 1 (this ADR) | currency card | `createAsyncCardLoader` + `cSetAsync`      |
+| Phase 2            | news, stocks  | Same migration                             |
+| Phase 3            | weather       | Same migration (complex due to city state) |
+| Phase 4            | All 11 cards  | localStorage used for config/flags only    |
 
 ---
 

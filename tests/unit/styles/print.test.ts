@@ -5,10 +5,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const css = readFileSync(
-  resolve(__dirname, "../../../src/styles/print.css"),
-  "utf-8",
-);
+const css = readFileSync(resolve(__dirname, "../../../src/styles/print.css"), "utf-8");
 
 describe("Print stylesheet (Sprint 114)", () => {
   it("contains @media print block", () => {

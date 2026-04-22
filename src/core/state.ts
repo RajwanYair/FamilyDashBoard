@@ -68,9 +68,7 @@ class FdbStateStore extends EventTarget {
     if (previous === value) return; // skip no-op writes
 
     this._data[slice][field] = value;
-    this.dispatchEvent(
-      Object.assign(new CustomEvent(key, { detail: value }), { key }),
-    );
+    this.dispatchEvent(Object.assign(new CustomEvent(key, { detail: value }), { key }));
   }
 
   /**
@@ -122,8 +120,7 @@ export const state = new FdbStateStore();
 // ── DevTools hook (development builds only) ───────────────────────────────────
 
 if (typeof window !== "undefined" && import.meta.env.DEV) {
-  (window as typeof window & { __FDB_STATE__?: FdbStateStore })
-    .__FDB_STATE__ = state;
+  (window as typeof window & { __FDB_STATE__?: FdbStateStore }).__FDB_STATE__ = state;
 }
 
 // ── Test isolation helper ─────────────────────────────────────────────────────
@@ -143,7 +140,13 @@ if (typeof window !== "undefined" && import.meta.env.DEV) {
  */
 export function _resetForTest(): void {
   // Access private _data via type assertion (test-only pattern)
-  const store = state as unknown as { _data: { config: Record<string, unknown>; cache: Record<string, unknown>; ui: Record<string, unknown> } };
+  const store = state as unknown as {
+    _data: {
+      config: Record<string, unknown>;
+      cache: Record<string, unknown>;
+      ui: Record<string, unknown>;
+    };
+  };
   store._data.config = {};
   store._data.cache = {};
   store._data.ui = {};

@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v9.0.0
+/* FamilyDashBoard ServiceWorker — v9.1.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * Stream SW.4: Migrated from sw.js to sw.ts (TypeScript + WebWorker lib)
@@ -29,12 +29,7 @@ const CACHE_NAME_API = `familydashboard-api-v${__APP_VERSION__}`;
 // v8.6.0: Stream SW.2 — background sync error queue (_queueErrorReport, _flushErrorQueue)
 // v8.7.0: Stream D2.5/D2.6 — calendar/hebrew-cal/alerts async IDB cache; W.5 Stocks Zod schema
 // v8.8.0: Stream SW.4 — TypeScript migration
-const APP_SHELL: string[] = [
-  "./index.html",
-  "./manifest.webmanifest",
-  "./sw.js",
-  "./icon.svg",
-];
+const APP_SHELL: string[] = ["./index.html", "./manifest.webmanifest", "./sw.js", "./icon.svg"];
 
 /**
  * Stream SW.1: Load the auto-generated precache manifest produced by
@@ -134,15 +129,15 @@ sw.addEventListener("message", (event: ExtendableMessageEvent) => {
   // F5 (v7.2): Clear API cache on demand
   if ((event.data as { type?: string } | null)?.type === "CLEAR_API_CACHE") {
     event.waitUntil(
-      caches.delete(CACHE_NAME_API).then(() =>
-        sw.clients
-          .matchAll({ includeUncontrolled: true })
-          .then((clients) =>
-            clients.forEach((c) =>
-              c.postMessage({ type: "API_CACHE_CLEARED" }),
+      caches
+        .delete(CACHE_NAME_API)
+        .then(() =>
+          sw.clients
+            .matchAll({ includeUncontrolled: true })
+            .then((clients) =>
+              clients.forEach((c) => c.postMessage({ type: "API_CACHE_CLEARED" })),
             ),
-          ),
-      ),
+        ),
     );
   }
 });
@@ -154,20 +149,14 @@ sw.addEventListener("activate", (event: ExtendableEvent) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys
-            .filter((k) => k !== CACHE_NAME && k !== CACHE_NAME_API)
-            .map((k) => caches.delete(k)),
+          keys.filter((k) => k !== CACHE_NAME && k !== CACHE_NAME_API).map((k) => caches.delete(k)),
         ),
       )
       // F167: tell all clients this version has activated
       .then(() => {
-        void sw.clients
-          .matchAll({ includeUncontrolled: true })
-          .then((clients) => {
-            clients.forEach((c) =>
-              c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }),
-            );
-          });
+        void sw.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+          clients.forEach((c) => c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }));
+        });
         return sw.clients.claim();
       }),
   );
@@ -207,9 +196,7 @@ sw.addEventListener("fetch", (event: FetchEvent) => {
                 return h;
               })(),
             });
-            void caches
-              .open(CACHE_NAME_API)
-              .then((c) => c.put(event.request, stamped));
+            void caches.open(CACHE_NAME_API).then((c) => c.put(event.request, stamped));
           }
           return response;
         })
@@ -221,9 +208,7 @@ sw.addEventListener("fetch", (event: FetchEvent) => {
             .then((cached) => {
               // Stream SW: honour per-origin TTL — evict stale cached responses
               if (cached && !_isFresh(cached, url.hostname)) {
-                void caches
-                  .open(CACHE_NAME_API)
-                  .then((c) => c.delete(event.request));
+                void caches.open(CACHE_NAME_API).then((c) => c.delete(event.request));
                 return Response.error();
               }
               return cached ?? Response.error();

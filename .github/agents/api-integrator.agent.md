@@ -57,15 +57,15 @@ Use this agent when the task is primarily about one of the following:
 
 ## Common Failure Patterns
 
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| Card shows stale data forever | `cGet` returning non-null too long — TTL too high | Lower CACHE_TTL or call `cSet` with fresh data |
-| Network error not shown in diag | Missing `diagLog()` in catch block | Add `diagLog(\`${CARD_ID}: error\`, err)` |
-| Sync dot stuck on loading | `setSync(id, 'ok')` not called on success | Add call after render |
-| CORS error in console | Direct fetch bypasses proxy chain | Wrap with `fetchWithTimeout` via `PROXIES` |
-| Worker fetch returns stale | Worker cache TTL too high or key mismatch | Check Worker route cache headers |
-| Card renders on hidden tab | Missing `if (!_pageVisible) return;` guard | Add guard at top of loader |
-| `cGet` returns `undefined` instead of `null` | Wrong null check: `!== undefined` | Change to `!== null` (rule 22) |
+| Symptom                                      | Likely Cause                                      | Fix                                            |
+| -------------------------------------------- | ------------------------------------------------- | ---------------------------------------------- |
+| Card shows stale data forever                | `cGet` returning non-null too long — TTL too high | Lower CACHE_TTL or call `cSet` with fresh data |
+| Network error not shown in diag              | Missing `diagLog()` in catch block                | Add `diagLog(\`${CARD_ID}: error\`, err)`      |
+| Sync dot stuck on loading                    | `setSync(id, 'ok')` not called on success         | Add call after render                          |
+| CORS error in console                        | Direct fetch bypasses proxy chain                 | Wrap with `fetchWithTimeout` via `PROXIES`     |
+| Worker fetch returns stale                   | Worker cache TTL too high or key mismatch         | Check Worker route cache headers               |
+| Card renders on hidden tab                   | Missing `if (!_pageVisible) return;` guard        | Add guard at top of loader                     |
+| `cGet` returns `undefined` instead of `null` | Wrong null check: `!== undefined`                 | Change to `!== null` (rule 22)                 |
 
 ## Architecture Rules
 
@@ -92,20 +92,20 @@ Use this agent when the task is primarily about one of the following:
 
 ## Sources Already In Use
 
-| Source | API | Refresh | Notes |
-|--------|-----|---------|-------|
-| Weather | Open-Meteo | 30 min | Current + hourly + 7-day forecast |
-| Hebrew Date | Hebcal converter | 3 hours | |
-| Shabbat | Hebcal shabbat | 6 hours | |
-| Holidays | Hebcal hebcal | 12 hours | |
-| Stocks | Yahoo Finance v8/chart | 5 min / 30 min | ~15 symbols via `raceProxies` + `runConcurrent(tasks, 4)` |
-| BTC | CoinGecko fallback | 5 min | Yahoo crypto fails through CORS |
-| News | 17 Hebrew RSS feeds | 15 min | Via CORS proxy |
-| Currency | ER-API + exchangerate-api | 1 hour | USD/EUR/GBP -> ILS + Gold/Silver via Yahoo |
-| Calendar | Google Calendar ICS | 15 min | Native parser + iframe fallback |
-| Alerts | tzevaadom.co.il | 60s / 5min | Active / idle interval |
-| Halacha | Sefaria | 12 hours | Daily halacha ticker |
-| Motivation | Static quotes | 2 min | No network |
+| Source      | API                       | Refresh        | Notes                                                     |
+| ----------- | ------------------------- | -------------- | --------------------------------------------------------- |
+| Weather     | Open-Meteo                | 30 min         | Current + hourly + 7-day forecast                         |
+| Hebrew Date | Hebcal converter          | 3 hours        |                                                           |
+| Shabbat     | Hebcal shabbat            | 6 hours        |                                                           |
+| Holidays    | Hebcal hebcal             | 12 hours       |                                                           |
+| Stocks      | Yahoo Finance v8/chart    | 5 min / 30 min | ~15 symbols via `raceProxies` + `runConcurrent(tasks, 4)` |
+| BTC         | CoinGecko fallback        | 5 min          | Yahoo crypto fails through CORS                           |
+| News        | 17 Hebrew RSS feeds       | 15 min         | Via CORS proxy                                            |
+| Currency    | ER-API + exchangerate-api | 1 hour         | USD/EUR/GBP -> ILS + Gold/Silver via Yahoo                |
+| Calendar    | Google Calendar ICS       | 15 min         | Native parser + iframe fallback                           |
+| Alerts      | tzevaadom.co.il           | 60s / 5min     | Active / idle interval                                    |
+| Halacha     | Sefaria                   | 12 hours       | Daily halacha ticker                                      |
+| Motivation  | Static quotes             | 2 min          | No network                                                |
 
 ## Expected Output
 
@@ -129,16 +129,16 @@ Escalate to broader test coverage only after the focused path is green.
 
 ## Key Context Files
 
-| File | Purpose |
-|------|---------|
-| `src/core/cache.ts` | `cGet` / `cSet` / `cGetStale` implementations |
-| `src/core/fetch.ts` | `fetchWithTimeout`, `fetchJSONWithWorker`, proxy chain |
-| `src/core/sync.ts` | `setSync(id, state)` |
-| `src/core/diag.ts` | `diagLog()` |
-| `src/core/card-registry.ts` | `registerCard()` / `getCard()` |
-| `src/types/api.ts` | Shared data models (NewsItem, WeatherData, etc.) |
-| `src/types/config.ts` | `DashboardConfig` + `DEFAULT_CONFIG` |
-| `tests/helpers/index.ts` | `createMockFetch`, `createMockCache`, `createMockConfig` |
+| File                        | Purpose                                                  |
+| --------------------------- | -------------------------------------------------------- |
+| `src/core/cache.ts`         | `cGet` / `cSet` / `cGetStale` implementations            |
+| `src/core/fetch.ts`         | `fetchWithTimeout`, `fetchJSONWithWorker`, proxy chain   |
+| `src/core/sync.ts`          | `setSync(id, state)`                                     |
+| `src/core/diag.ts`          | `diagLog()`                                              |
+| `src/core/card-registry.ts` | `registerCard()` / `getCard()`                           |
+| `src/types/api.ts`          | Shared data models (NewsItem, WeatherData, etc.)         |
+| `src/types/config.ts`       | `DashboardConfig` + `DEFAULT_CONFIG`                     |
+| `tests/helpers/index.ts`    | `createMockFetch`, `createMockCache`, `createMockConfig` |
 
 ## Skills To Pull In
 

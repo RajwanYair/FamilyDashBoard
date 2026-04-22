@@ -31,9 +31,7 @@ import {
 import type { WeatherResponse } from "@/types/api";
 
 // ── Minimal WeatherResponse fixture ──
-function makeWeather(
-  overrides?: Partial<WeatherResponse["current"]>,
-): WeatherResponse {
+function makeWeather(overrides?: Partial<WeatherResponse["current"]>): WeatherResponse {
   return {
     current: {
       temperature_2m: 22,
@@ -252,9 +250,7 @@ describe("Weather — initWeatherCard fetch integration", () => {
       if (!called) throw new Error("fetch not called yet");
     });
     const url = String(vi.mocked(fetch).mock.calls[0]?.[0] ?? "");
-    expect(url.includes("open-meteo.com") || url.includes("/api/weather")).toBe(
-      true,
-    );
+    expect(url.includes("open-meteo.com") || url.includes("/api/weather")).toBe(true);
   });
 
   it("destroyWeatherCard does not throw after init", async () => {
@@ -352,9 +348,7 @@ describe("Weather — initWeatherCities", () => {
     localStorage.setItem("dash_v2_city_1", "Haifa|32.79|34.99");
     const { initWeatherCities } = await import("@/cards/weather/weather");
     initWeatherCities();
-    const tab = document.querySelector<HTMLButtonElement>(
-      ".wx-city-tab[data-city='1']",
-    );
+    const tab = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']");
     expect(tab?.textContent).toBe("Haifa");
   });
 
@@ -363,9 +357,7 @@ describe("Weather — initWeatherCities", () => {
     localStorage.setItem("dash_v2_city_2", "Eilat|29.56|34.95");
     const { initWeatherCities } = await import("@/cards/weather/weather");
     initWeatherCities();
-    const tab = document.querySelector<HTMLButtonElement>(
-      ".wx-city-tab[data-city='2']",
-    );
+    const tab = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='2']");
     expect(tab?.dataset["lat"]).toBe("29.56");
     expect(tab?.dataset["lon"]).toBe("34.95");
   });
@@ -390,9 +382,7 @@ describe("Weather — initWeatherCities", () => {
     localStorage.setItem("dash_v2_home_name", "Eilat");
     const { initWeatherCities } = await import("@/cards/weather/weather");
     initWeatherCities();
-    const tab = document.querySelector<HTMLButtonElement>(
-      ".wx-city-tab[data-city='1']",
-    );
+    const tab = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']");
     expect(tab?.dataset["lat"]).toBe("29.56");
     expect(tab?.dataset["lon"]).toBe("34.95");
     expect(tab?.textContent).toBe("Eilat");
@@ -406,9 +396,7 @@ describe("Weather — initWeatherCities", () => {
     localStorage.setItem("dash_v2_home_name", "Eilat");
     const { initWeatherCities } = await import("@/cards/weather/weather");
     initWeatherCities();
-    const tab = document.querySelector<HTMLButtonElement>(
-      ".wx-city-tab[data-city='1']",
-    );
+    const tab = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']");
     expect(tab?.textContent).toBe("TelAviv"); // city_1 wins
   });
 });
@@ -540,9 +528,7 @@ describe("Weather — sky condition pill in renderWeather", () => {
 
   it("adds sky-storm class for thunderstorm code 95", () => {
     renderWeather(makeWeather({ weather_code: 95 }));
-    expect(document.getElementById("wx-sky-pill")?.className).toContain(
-      "sky-storm",
-    );
+    expect(document.getElementById("wx-sky-pill")?.className).toContain("sky-storm");
   });
 
   it("does not throw when #wx-sky-pill is absent", () => {
@@ -588,30 +574,22 @@ describe("Weather — UV pill in renderWeather", () => {
 
   it("renders uv-mod for UV 4", () => {
     renderWeather(makeWeather({ uv_index: 4 }));
-    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain(
-      "uv-mod",
-    );
+    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain("uv-mod");
   });
 
   it("renders uv-high for UV 6", () => {
     renderWeather(makeWeather({ uv_index: 6 }));
-    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain(
-      "uv-high",
-    );
+    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain("uv-high");
   });
 
   it("renders uv-vhigh for UV 9", () => {
     renderWeather(makeWeather({ uv_index: 9 }));
-    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain(
-      "uv-vhigh",
-    );
+    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain("uv-vhigh");
   });
 
   it("renders uv-extreme for UV 11", () => {
     renderWeather(makeWeather({ uv_index: 11 }));
-    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain(
-      "uv-extreme",
-    );
+    expect(document.querySelector("#wx-uv .uv-pill")?.className).toContain("uv-extreme");
   });
 });
 
@@ -776,9 +754,7 @@ describe("Weather — feels-like display (F26)", () => {
   });
 
   it("updates #wx-feels when apparent_temperature differs from air temp", () => {
-    renderWeather(
-      makeWeather({ temperature_2m: 30, apparent_temperature: 24 }),
-    );
+    renderWeather(makeWeather({ temperature_2m: 30, apparent_temperature: 24 }));
     expect(document.getElementById("wx-feels")?.textContent).toBe("24°C");
   });
 
@@ -790,9 +766,7 @@ describe("Weather — feels-like display (F26)", () => {
   it("does not throw when #wx-feels is absent", () => {
     document.getElementById("wx-feels")?.remove();
     cacheDom();
-    expect(() =>
-      renderWeather(makeWeather({ apparent_temperature: 20 })),
-    ).not.toThrow();
+    expect(() => renderWeather(makeWeather({ apparent_temperature: 20 }))).not.toThrow();
   });
 });
 
@@ -888,13 +862,9 @@ describe("Weather — initWeatherCard DOM wiring", () => {
     initWeatherCard();
     const btn = document.getElementById("wx-chart-toggle")!;
     btn.click();
-    expect(
-      document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain"),
-    ).toBe(true);
+    expect(document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain")).toBe(true);
     btn.click();
-    expect(
-      document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain"),
-    ).toBe(false);
+    expect(document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain")).toBe(false);
   });
 
   it("city tab click switches active tab", async () => {
@@ -912,11 +882,7 @@ describe("Weather — initWeatherCard DOM wiring", () => {
     initWeatherCard();
     tab2.click();
     // Should not throw and tab1 should stay active
-    expect(
-      document
-        .querySelectorAll(".wx-city-tab")[0]!
-        .classList.contains("active"),
-    ).toBe(true);
+    expect(document.querySelectorAll(".wx-city-tab")[0]!.classList.contains("active")).toBe(true);
   });
 });
 
@@ -995,9 +961,7 @@ describe("Weather — UV pill high/very-high branches", () => {
 
   it("UV very high (8-10) shows 'גבוה מאוד'", () => {
     renderWeather(makeWeather({ uv_index: 9 }));
-    expect(document.getElementById("wx-uv")?.textContent).toContain(
-      "גבוה מאוד",
-    );
+    expect(document.getElementById("wx-uv")?.textContent).toContain("גבוה מאוד");
     expect(document.getElementById("wx-uv")?.innerHTML).toContain("uv-vhigh");
   });
 
@@ -1099,13 +1063,9 @@ describe("Weather — initWeatherCard DOM wiring", () => {
     initWeatherCard();
     const btn = document.getElementById("wx-chart-toggle")!;
     btn.click();
-    expect(
-      document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain"),
-    ).toBe(true);
+    expect(document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain")).toBe(true);
     btn.click();
-    expect(
-      document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain"),
-    ).toBe(false);
+    expect(document.getElementById("wx-hourly")!.classList.contains("wx-chart-rain")).toBe(false);
   });
 
   it("city tab click switches active tab", async () => {
@@ -1123,11 +1083,7 @@ describe("Weather — initWeatherCard DOM wiring", () => {
     initWeatherCard();
     tab2.click();
     // Should not throw and tab1 should stay active
-    expect(
-      document
-        .querySelectorAll(".wx-city-tab")[0]!
-        .classList.contains("active"),
-    ).toBe(true);
+    expect(document.querySelectorAll(".wx-city-tab")[0]!.classList.contains("active")).toBe(true);
   });
 });
 
@@ -1367,9 +1323,7 @@ describe("Weather — inline coverage: city tab click handler (line 353)", () =>
       }),
     );
     initWeatherCard(); // wires click handler and calls cacheDom internally
-    const tab2 = document.querySelector<HTMLButtonElement>(
-      ".wx-city-tab[data-city='2']",
-    )!;
+    const tab2 = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='2']")!;
     // Click the second tab — has valid lat/lon, reaches const lon line (353)
     expect(() => tab2.click()).not.toThrow();
   });
@@ -1613,9 +1567,16 @@ describe("Weather — renderWeather without daily data", () => {
   it("renderWeather weekly summary with all-null weather codes → codes[0]??0 fallback (line 287)", () => {
     // weather_code positions 1-7 are null → codes=[] → codes[0]??0 = 0 → WX_EMOJI[0]="☀️"
     const data = makeWeather();
-    data.daily.weather_code = [0, null as unknown as number, null as unknown as number,
-      null as unknown as number, null as unknown as number, null as unknown as number,
-      null as unknown as number, null as unknown as number];
+    data.daily.weather_code = [
+      0,
+      null as unknown as number,
+      null as unknown as number,
+      null as unknown as number,
+      null as unknown as number,
+      null as unknown as number,
+      null as unknown as number,
+      null as unknown as number,
+    ];
     renderWeather(data);
     const summary = document.getElementById("wx-week-summary")!;
     // dominant = 0 (from ?? 0 fallback), WX_EMOJI[0] = "☀️"
@@ -1796,7 +1757,9 @@ describe(`Weather — dew point rendering`, () => {
     document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><div id="wx-dew"></div><span id="wx-gust"></span><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><span id="wx-sky-pill"></span><div id="top-temp"></div>`;
     cacheDom();
   });
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it(`renders dew point in Celsius`, () => {
     renderWeather(makeWeather({ dew_point_2m: 14 }));
@@ -1832,14 +1795,18 @@ describe("Weather — renderWeather with null wxDew (no #wx-dew element)", () =>
     document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><span id="wx-sky-pill"></span><div id="top-temp"></div>`;
     cacheDom();
   });
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("does not throw when wx-dew element is absent", () => {
     expect(() => renderWeather(makeWeather({ dew_point_2m: 14 }))).not.toThrow();
   });
 
   it("does not throw when wx-gust element is absent", () => {
-    expect(() => renderWeather(makeWeather({ wind_speed_10m: 10, wind_gusts_10m: 30 }))).not.toThrow();
+    expect(() =>
+      renderWeather(makeWeather({ wind_speed_10m: 10, wind_gusts_10m: 30 })),
+    ).not.toThrow();
   });
 });
 
@@ -1856,7 +1823,10 @@ describe("Weather — toggleTempUnit no-cache path (neither fresh nor stale)", (
     // No cache seeded → cGet and cGetStale both return null
     expect(() => ttu()).not.toThrow();
     // Check tempUnit was actually saved
-    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(["C", "F"]).toContain(saved["tempUnit"]);
   });
 });
@@ -1868,7 +1838,9 @@ describe("Weather — renderWeather wx-sky-pill null guard", () => {
     document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><div id="wx-dew"></div><span id="wx-gust"></span><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><div id="top-temp"></div>`;
     cacheDom();
   });
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("does not throw when wx-sky-pill element is absent", () => {
     expect(() => renderWeather(makeWeather({ weather_code: 0 }))).not.toThrow();
@@ -1881,7 +1853,9 @@ describe("Weather — weekly summary 'שמשי' label (all-clear week)", () => {
     document.body.innerHTML = `<div id="wx-temp"></div><div id="wx-wind"></div><div id="wx-hum"></div><div id="wx-uv"></div><div id="wx-dew"></div><span id="wx-gust"></span><span id="wx-wind-heb"></span><div id="wx-desc"></div><div id="wx-icon"></div><div id="wx-rise"></div><div id="wx-hourly"></div><div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div><div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div><span id="wx-sky-pill"></span><div id="top-temp"></div>`;
     cacheDom();
   });
-  afterEach(() => { document.body.innerHTML = ""; });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("shows '☀️' emoji when all forecast days are clear (code 0)", () => {
     const wx = makeWeather({ weather_code: 0 });
@@ -1943,7 +1917,7 @@ describe("Weather — moonPhase", () => {
 
   it("uses today's date when no argument is passed", () => {
     const [emoji] = moonPhase();
-    expect(["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"]).toContain(emoji);
+    expect(["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"]).toContain(emoji);
   });
 });
 
@@ -1988,7 +1962,15 @@ function makeHourlyWeather(hourCount = 6): WeatherResponse {
     codes.push(0);
   }
   const base = makeWeather();
-  return { ...base, hourly: { time: times, temperature_2m: temps, precipitation_probability: probs, weather_code: codes } };
+  return {
+    ...base,
+    hourly: {
+      time: times,
+      temperature_2m: temps,
+      precipitation_probability: probs,
+      weather_code: codes,
+    },
+  };
 }
 
 describe("Weather — renderHourlyStrip (Sprint 46)", () => {
@@ -2007,7 +1989,10 @@ describe("Weather — renderHourlyStrip (Sprint 46)", () => {
   });
 
   it("hides the strip when weatherShowHourly is false", () => {
-    localStorage.setItem("dash_v2_config", JSON.stringify({ weatherShowHourly: false, configVersion: 3 }));
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ weatherShowHourly: false, configVersion: 3 }),
+    );
     renderHourlyStrip(makeHourlyWeather(10));
     const strip = document.getElementById("wx-hourly-strip")!;
     expect(strip.querySelector(".wx-h-tile")).toBeNull();
@@ -2106,14 +2091,14 @@ describe("Weather — configSchema (Sprint 87)", () => {
   });
 
   it("includes tempUnit as select field", () => {
-    const field = weatherConfigSchema.find(f => f.key === "tempUnit");
+    const field = weatherConfigSchema.find((f) => f.key === "tempUnit");
     expect(field).toBeDefined();
     expect(field!.type).toBe("select");
     expect(field!.options).toHaveLength(2);
   });
 
   it("includes weather toggle fields", () => {
-    const keys = weatherConfigSchema.map(f => f.key);
+    const keys = weatherConfigSchema.map((f) => f.key);
     expect(keys).toContain("weatherShowDetails");
     expect(keys).toContain("weatherShowHourly");
     expect(keys).toContain("weatherShowWind");
@@ -2142,13 +2127,14 @@ describe("Weather — loadWeather uses createAsyncCardLoader (Stream D2.2)", () 
     expect(typeof weatherCard.destroy).toBe("function");
   });
 
-  it("weatherCard id is \"weather\"", () => {
+  it('weatherCard id is "weather"', () => {
     expect(weatherCard.id).toBe("weather");
   });
 
   it("loadWeather returns a Promise when page is hidden", async () => {
     const { initWeatherCard, weatherCard: wc } = await import("@/cards/weather/weather");
-    void initWeatherCard; void wc; // loaded but not invoked — just check import
+    void initWeatherCard;
+    void wc; // loaded but not invoked — just check import
     // Confirm the card loader pattern is present via init existence
     expect(typeof wc.init).toBe("function");
   });

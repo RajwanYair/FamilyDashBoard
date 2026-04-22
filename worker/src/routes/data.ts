@@ -22,10 +22,7 @@ import type { Env } from "../index";
  * Try to read a cached value from KV.
  * Returns the parsed object with `_stale: true` injected, or null if absent.
  */
-async function kvGetStale<T>(
-  kv: KVNamespace,
-  key: string,
-): Promise<(T & { _stale: true }) | null> {
+async function kvGetStale<T>(kv: KVNamespace, key: string): Promise<(T & { _stale: true }) | null> {
   try {
     const raw = await kv.get(key);
     if (!raw) return null;
@@ -103,12 +100,7 @@ export async function handleCurrency(env: Env): Promise<Response> {
   const stale = await kvGetStale(env.CACHE_KV, kvKey);
   if (stale) return workerEnvelope(stale, "currency-kv-stale", true, 60);
 
-  return workerEnvelope(
-    { error: "Currency upstream unavailable" },
-    "none",
-    true,
-    60,
-  );
+  return workerEnvelope({ error: "Currency upstream unavailable" }, "none", true, 60);
 }
 
 export async function handleHebcal(url: URL, env: Env): Promise<Response> {
@@ -119,9 +111,7 @@ export async function handleHebcal(url: URL, env: Env): Promise<Response> {
     return validationErrorResponse(err as ValidationError);
   }
   const kvKey = `hebcal:${geonameid}`;
-  const res = await fetch(
-    `https://www.hebcal.com/shabbat?cfg=json&geonameid=${geonameid}&M=on`,
-  );
+  const res = await fetch(`https://www.hebcal.com/shabbat?cfg=json&geonameid=${geonameid}&M=on`);
   if (!res.ok) {
     const stale = await kvGetStale(env.CACHE_KV, kvKey);
     if (stale) return workerEnvelope(stale, "hebcal-kv-stale", true, 60);

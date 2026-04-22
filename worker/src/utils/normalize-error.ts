@@ -27,10 +27,7 @@ export interface NormalizedError {
  * @param err       - The thrown value (unknown type)
  * @param routeName - Worker route or context name for logging (e.g. "weather")
  */
-export function normalizeWorkerError(
-  err: unknown,
-  routeName: string,
-): NormalizedError {
+export function normalizeWorkerError(err: unknown, routeName: string): NormalizedError {
   const msg = err instanceof Error ? err.message : String(err);
 
   if (msg.includes("timeout") || msg.includes("Timeout")) {
@@ -42,11 +39,7 @@ export function normalizeWorkerError(
     };
   }
 
-  if (
-    msg.includes("JSON") ||
-    msg.includes("parse") ||
-    msg.includes("SyntaxError")
-  ) {
+  if (msg.includes("JSON") || msg.includes("parse") || msg.includes("SyntaxError")) {
     return {
       ok: false,
       code: "FDB-072",

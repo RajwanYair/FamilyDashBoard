@@ -145,8 +145,12 @@ describe("Cache — extra coverage", () => {
 // ── Sprint 5: localStorage path coverage ─────────────────────────────────────
 
 describe("Cache — cGetStale localStorage path", () => {
-  beforeEach(() => { cClear(); });
-  afterEach(() => { cClear(); });
+  beforeEach(() => {
+    cClear();
+  });
+  afterEach(() => {
+    cClear();
+  });
 
   it("reads from localStorage when key not in memory", () => {
     // Write directly to localStorage (bypasses mem Map)
@@ -167,8 +171,12 @@ describe("Cache — cGetStale localStorage path", () => {
 });
 
 describe("Cache — cGet localStorage path", () => {
-  beforeEach(() => { cClear(); });
-  afterEach(() => { cClear(); });
+  beforeEach(() => {
+    cClear();
+  });
+  afterEach(() => {
+    cClear();
+  });
 
   it("promotes fresh localStorage entry to memory", () => {
     const ts = Date.now();
@@ -186,7 +194,10 @@ describe("Cache — cGet localStorage path", () => {
 });
 
 describe("Cache — cSet localStorage-full retry", () => {
-  afterEach(() => { cClear(); vi.restoreAllMocks(); });
+  afterEach(() => {
+    cClear();
+    vi.restoreAllMocks();
+  });
 
   it("retries setItem after eviction when quota exceeded first time", () => {
     let calls = 0;
@@ -220,10 +231,7 @@ describe("Cache — cEvict edge cases", () => {
 
   it("removes localStorage entry older than 7 days", () => {
     const oldTs = Date.now() - 8 * 24 * 60 * 60 * 1000; // 8 days ago
-    localStorage.setItem(
-      "dash_v2_evict-old",
-      JSON.stringify({ data: "old", ts: oldTs }),
-    );
+    localStorage.setItem("dash_v2_evict-old", JSON.stringify({ data: "old", ts: oldTs }));
     cEvict();
     expect(localStorage.getItem("dash_v2_evict-old")).toBeNull();
   });
@@ -236,10 +244,7 @@ describe("Cache — cEvict edge cases", () => {
 
   it("keeps fresh localStorage entry (< 7 days)", () => {
     const freshTs = Date.now() - 1 * 24 * 60 * 60 * 1000; // 1 day ago
-    localStorage.setItem(
-      "dash_v2_fresh-entry",
-      JSON.stringify({ data: "fresh", ts: freshTs }),
-    );
+    localStorage.setItem("dash_v2_fresh-entry", JSON.stringify({ data: "fresh", ts: freshTs }));
     cEvict();
     expect(localStorage.getItem("dash_v2_fresh-entry")).not.toBeNull();
     localStorage.removeItem("dash_v2_fresh-entry");
@@ -249,10 +254,7 @@ describe("Cache — cEvict edge cases", () => {
     // Non-dash_v2_ key should be ignored (line 25: !k?.startsWith(LS_PREFIX) continue)
     localStorage.setItem("other_app_key", "some-value");
     const oldTs = Date.now() - 10 * 24 * 60 * 60 * 1000;
-    localStorage.setItem(
-      "dash_v2_stale",
-      JSON.stringify({ data: "x", ts: oldTs }),
-    );
+    localStorage.setItem("dash_v2_stale", JSON.stringify({ data: "x", ts: oldTs }));
     cEvict();
     // Non-prefixed key survives
     expect(localStorage.getItem("other_app_key")).toBe("some-value");
@@ -268,10 +270,7 @@ describe("Cache — cClear preserves non-prefixed keys", () => {
   });
 
   it("removes only dash_v2_ keys and preserves others", () => {
-    localStorage.setItem(
-      "dash_v2_cached",
-      JSON.stringify({ data: "a", ts: Date.now() }),
-    );
+    localStorage.setItem("dash_v2_cached", JSON.stringify({ data: "a", ts: Date.now() }));
     localStorage.setItem("unrelated_key", "keep-me");
     cClear();
     // Prefixed key removed
@@ -394,7 +393,9 @@ describe("cacheStats", () => {
 // ── Sprint 50+51: hydrateFromIdb + migrateLocalStorageToIdb ─────────────────
 
 describe("hydrateFromIdb", () => {
-  beforeEach(() => { cClear(); });
+  beforeEach(() => {
+    cClear();
+  });
 
   it("returns 0 gracefully when IDB is unavailable (happy-dom fallback)", async () => {
     // happy-dom has no real IDB; hydrateFromIdb should return 0 without throwing
@@ -444,8 +445,13 @@ describe("migrateLocalStorageToIdb", () => {
 // ── v7.10: cGetAsync / cGetStaleAsync (IDB L2 tier) ──────────────────────────
 
 describe("cGetAsync — IDB L2 tier (v7.10)", () => {
-  beforeEach(() => { cClear(); resetCacheStats(); });
-  afterEach(() => { cClear(); });
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+  afterEach(() => {
+    cClear();
+  });
 
   it("returns data from memory (L1) without hitting IDB", async () => {
     cSet("async-mem", { v: 1 });
@@ -498,8 +504,12 @@ describe("cGetAsync — IDB L2 tier (v7.10)", () => {
 });
 
 describe("cGetStaleAsync — IDB L2 stale tier (v7.10)", () => {
-  beforeEach(() => { cClear(); });
-  afterEach(() => { cClear(); });
+  beforeEach(() => {
+    cClear();
+  });
+  afterEach(() => {
+    cClear();
+  });
 
   it("returns stale data from memory regardless of age", async () => {
     cSet("stale-async-mem", { old: true });
@@ -567,12 +577,17 @@ describe("coldStart — IDB cold-start helper (Sprint 47)", () => {
 
 // ── Sprint 59: cOr ───────────────────────────────────────────────────────────
 describe("cOr — null-coalescing cache read (Sprint 59)", () => {
-  beforeEach(() => { cClear(); });
+  beforeEach(() => {
+    cClear();
+  });
 
   it("returns cached value without calling fallback", () => {
     cSet("cor-key", 42);
     let called = false;
-    const result = cOr("cor-key", 60_000, () => { called = true; return 99; });
+    const result = cOr("cor-key", 60_000, () => {
+      called = true;
+      return 99;
+    });
     expect(result).toBe(42);
     expect(called).toBe(false);
   });
@@ -662,7 +677,10 @@ describe("Cache — cDelete", () => {
 // ── Sprint 121: cacheDashboard tests ──────────────────────────────────────────
 
 describe("Cache — cacheDashboard", () => {
-  beforeEach(() => { cClear(); resetCacheStats(); });
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
 
   it("returns zero counts on empty cache", () => {
     const stats = cacheDashboard();
@@ -683,7 +701,7 @@ describe("Cache — cacheDashboard", () => {
 
   it("reflects hit/miss after cGet calls", () => {
     cSet("x", 42);
-    cGet("x", 60_000);   // hit
+    cGet("x", 60_000); // hit
     cGet("nope", 60_000); // miss
     const stats = cacheDashboard();
     expect(stats.hits).toBe(1);
@@ -695,7 +713,10 @@ describe("Cache — cacheDashboard", () => {
 // ── Sprint 178: cacheInventory ──────────────────────────────────────────────
 
 describe("Cache — cacheInventory", () => {
-  beforeEach(() => { cClear(); resetCacheStats(); });
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
 
   it("returns zero counts on empty cache", async () => {
     const inv = await cacheInventory();
@@ -720,8 +741,8 @@ describe("Cache — cacheInventory", () => {
 
   it("tracks hit/miss stats", async () => {
     cSet("z", 99);
-    cGet("z", 60_000);      // hit
-    cGet("nope", 60_000);   // miss
+    cGet("z", 60_000); // hit
+    cGet("nope", 60_000); // miss
     const inv = await cacheInventory();
     expect(inv.hits).toBe(1);
     expect(inv.misses).toBe(1);
@@ -732,7 +753,10 @@ describe("Cache — cacheInventory", () => {
 // ── Sprint 181: lastHitLayer ────────────────────────────────────────────────
 
 describe("Cache — lastHitLayer", () => {
-  beforeEach(() => { cClear(); resetCacheStats(); });
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
 
   it("returns 'none' before any read", () => {
     expect(lastHitLayer()).toBe("none");
@@ -764,7 +788,9 @@ describe("Cache — lastHitLayer", () => {
 // ── cSetAsync ─────────────────────────────────────────────────────────────────
 
 describe("Cache — cSetAsync", () => {
-  beforeEach(() => { cClear(); });
+  beforeEach(() => {
+    cClear();
+  });
 
   it("stores data readable via synchronous cGet", async () => {
     await cSetAsync("asyncKey", { hello: "world" });

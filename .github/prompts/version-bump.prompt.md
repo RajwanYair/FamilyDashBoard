@@ -12,16 +12,16 @@ Bump the version from the current value to a new semver target.
 
 Run `grep -r "8\.[0-9]\+\.[0-9]\+" --include="*.{md,json,js,ts}"` to locate all version references, then update each one:
 
-| File | Field / Location |
-|------|-----------------|
-| `package.json` | `"version"` field |
-| `sw.js` | Comment header + `CACHE_NAME` constant |
-| `CHANGELOG.md` | New top-level `## vX.Y.Z` heading + date |
-| `README.md` | Version badge URL + inline references |
-| `CLAUDE.md` | Version heading |
-| `.github/copilot-instructions.md` | Heading line |
-| `.github/instructions/workspace.instructions.md` | Version reference |
-| `ARCHITECTURE.md` | Version reference |
+| File                                             | Field / Location                         |
+| ------------------------------------------------ | ---------------------------------------- |
+| `package.json`                                   | `"version"` field                        |
+| `sw.js`                                          | Comment header + `CACHE_NAME` constant   |
+| `CHANGELOG.md`                                   | New top-level `## vX.Y.Z` heading + date |
+| `README.md`                                      | Version badge URL + inline references    |
+| `CLAUDE.md`                                      | Version heading                          |
+| `.github/copilot-instructions.md`                | Heading line                             |
+| `.github/instructions/workspace.instructions.md` | Version reference                        |
+| `ARCHITECTURE.md`                                | Version reference                        |
 
 ## Steps
 

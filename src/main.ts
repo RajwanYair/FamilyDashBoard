@@ -23,12 +23,7 @@ import "./cards/countdown/countdown.css";
 
 // ── Core ──
 import { diagLog } from "./core/diag";
-import {
-  cEvict,
-  hydrateFromIdb,
-  migrateLocalStorageToIdb,
-  cEvictIdb,
-} from "./core/cache";
+import { cEvict, hydrateFromIdb, migrateLocalStorageToIdb, cEvictIdb } from "./core/cache";
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
@@ -38,19 +33,25 @@ import { state } from "./core/state";
 
 // ── UI ──
 import { initTheme, checkAutoTheme } from "./ui/theme";
-import {
-  initKeyboard,
-  registerKey,
-  closeAllOverlays,
-  getKeyboardActions,
-} from "./ui/keyboard";
+import { initKeyboard, registerKey, closeAllOverlays, getKeyboardActions } from "./ui/keyboard";
 import { initHeader, toggleClockSeconds } from "./ui/header";
 import { initCardMaximize, initCardCollapse } from "./ui/maximize";
 import { initStatusBar, stampRefresh } from "./ui/status-bar";
 import { initTicker, applyTickerSpeed } from "./ui/ticker";
-import { initConfigPanel, toggleConfigPanel, openConfigPanel, switchCfgTab } from "./ui/config-panel";
+import {
+  initConfigPanel,
+  toggleConfigPanel,
+  openConfigPanel,
+  switchCfgTab,
+} from "./ui/config-panel";
 import { initScreenMode, stepFontScale } from "./ui/screen-mode";
-import { toggleNightDim, initNightDimmer, setWarmTint, isWarmTint, setIdleAutoDimMinutes } from "./ui/night-dimmer";
+import {
+  toggleNightDim,
+  initNightDimmer,
+  setWarmTint,
+  isWarmTint,
+  setIdleAutoDimMinutes,
+} from "./ui/night-dimmer";
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
@@ -77,7 +78,12 @@ import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
 
 import { installGlobalErrorHandlers } from "./core/error-tracker";
-import { initPerfObserver, markDomReady, markStartupComplete, recordCardInitTime } from "./core/perf";
+import {
+  initPerfObserver,
+  markDomReady,
+  markStartupComplete,
+  recordCardInitTime,
+} from "./core/perf";
 import { applyHardwareTier } from "./core/hardware";
 
 // ── Version ──
@@ -123,9 +129,7 @@ export function applyHiddenCards(hiddenCards: string[]): void {
  * Each id is matched against `[data-card-id]` and appended to the target column.
  * Missing ids (unregistered) are silently ignored.
  */
-export function applyCardLayout(
-  layout: [string[], string[], string[]] | null,
-): void {
+export function applyCardLayout(layout: [string[], string[], string[]] | null): void {
   if (!layout) return;
   const cols = [
     document.querySelector<HTMLElement>(".grid-col-left"),
@@ -136,9 +140,7 @@ export function applyCardLayout(
     const col = cols[colIdx];
     if (!col) return;
     for (const id of ids) {
-      const card = document.querySelector<HTMLElement>(
-        `[data-card-id="${id}"]`,
-      );
+      const card = document.querySelector<HTMLElement>(`[data-card-id="${id}"]`);
       if (card) col.appendChild(card);
     }
   });
@@ -212,56 +214,72 @@ export function init(): void {
   initDiagOverlay();
 
   // Sprint 45: Add aria-label to icon-only collapse buttons
-  document
-    .querySelectorAll<HTMLButtonElement>(".card-collapse-btn")
-    .forEach((btn) => {
-      if (!btn.getAttribute("aria-label")) {
-        btn.setAttribute("aria-label", "מזער/הרחב כרטיסית");
-      }
-    });
+  document.querySelectorAll<HTMLButtonElement>(".card-collapse-btn").forEach((btn) => {
+    if (!btn.getAttribute("aria-label")) {
+      btn.setAttribute("aria-label", "מזער/הרחב כרטיסית");
+    }
+  });
 
   // ── Additional keyboard shortcuts ──
-  registerKey("s", document.documentElement.lang === "en" ? "Settings" : "הגדרות", toggleConfigPanel);
-  registerKey("n", document.documentElement.lang === "en" ? "Night dimmer" : "דימר לילה", toggleNightDim);
-  registerKey("c", document.documentElement.lang === "en" ? "Seconds" : "שניות", toggleClockSeconds);
-  registerKey("+", document.documentElement.lang === "en" ? "Increase font" : "הגדל גופן", () => stepFontScale(1));
-  registerKey("=", document.documentElement.lang === "en" ? "Increase font" : "הגדל גופן", () => stepFontScale(1)); // + without shift
-  registerKey("-", document.documentElement.lang === "en" ? "Decrease font" : "הקטן גופן", () => stepFontScale(-1));
+  registerKey(
+    "s",
+    document.documentElement.lang === "en" ? "Settings" : "הגדרות",
+    toggleConfigPanel,
+  );
+  registerKey(
+    "n",
+    document.documentElement.lang === "en" ? "Night dimmer" : "דימר לילה",
+    toggleNightDim,
+  );
+  registerKey(
+    "c",
+    document.documentElement.lang === "en" ? "Seconds" : "שניות",
+    toggleClockSeconds,
+  );
+  registerKey("+", document.documentElement.lang === "en" ? "Increase font" : "הגדל גופן", () =>
+    stepFontScale(1),
+  );
+  registerKey("=", document.documentElement.lang === "en" ? "Increase font" : "הגדל גופן", () =>
+    stepFontScale(1),
+  ); // + without shift
+  registerKey("-", document.documentElement.lang === "en" ? "Decrease font" : "הקטן גופן", () =>
+    stepFontScale(-1),
+  );
   registerKey("f", document.documentElement.lang === "en" ? "Fullscreen" : "מסך מלא", () => {
-    if (!document.fullscreenElement)
-      void document.documentElement.requestFullscreen();
+    if (!document.fullscreenElement) void document.documentElement.requestFullscreen();
     else void document.exitFullscreen();
   });
-  registerKey("b", document.documentElement.lang === "en" ? "Bookmarks" : "מועדפים", () => toggleBookmarkMode());
-  registerKey("m", document.documentElement.lang === "en" ? "Next quote" : "ציטוט הבא", () => renderMotivation());
-  registerKey("r", document.documentElement.lang === "en" ? "Refresh data" : "רענון נתונים", () => window.location.reload());
-  registerKey("w", document.documentElement.lang === "en" ? "Toggle °C/°F" : "מעבר °C/°F", () => toggleTempUnit());
+  registerKey("b", document.documentElement.lang === "en" ? "Bookmarks" : "מועדפים", () =>
+    toggleBookmarkMode(),
+  );
+  registerKey("m", document.documentElement.lang === "en" ? "Next quote" : "ציטוט הבא", () =>
+    renderMotivation(),
+  );
+  registerKey("r", document.documentElement.lang === "en" ? "Refresh data" : "רענון נתונים", () =>
+    window.location.reload(),
+  );
+  registerKey("w", document.documentElement.lang === "en" ? "Toggle °C/°F" : "מעבר °C/°F", () =>
+    toggleTempUnit(),
+  );
   registerKey("1", "עיר מזג אוויר 1", () =>
-    document
-      .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']")
-      ?.click(),
+    document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']")?.click(),
   );
   registerKey("2", "עיר מזג אוויר 2", () =>
-    document
-      .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='2']")
-      ?.click(),
+    document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='2']")?.click(),
   );
   registerKey("3", "עיר מזג אוויר 3", () =>
-    document
-      .querySelector<HTMLButtonElement>(".wx-city-tab[data-city='3']")
-      ?.click(),
+    document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='3']")?.click(),
   );
-  registerKey("a", document.documentElement.lang === "en" ? "Red alerts" : "התרעות צבע אדום", () => {
-    toggleAlerts();
-    showToast(
-      isAlertsEnabled() ? t("alertsEnabled") : t("alertsDisabled"),
-      2500,
-    );
-  });
+  registerKey(
+    "a",
+    document.documentElement.lang === "en" ? "Red alerts" : "התרעות צבע אדום",
+    () => {
+      toggleAlerts();
+      showToast(isAlertsEnabled() ? t("alertsEnabled") : t("alertsDisabled"), 2500);
+    },
+  );
   const _toggleHelp = (): void => {
-    const dlg = document.getElementById(
-      "help-overlay",
-    ) as HTMLDialogElement | null;
+    const dlg = document.getElementById("help-overlay") as HTMLDialogElement | null;
     if (!dlg) return;
     if (dlg.open) {
       dlg.close();
@@ -273,11 +291,11 @@ export function init(): void {
         if (actions.length > 0) {
           const frag = document.createDocumentFragment();
           const hdr = document.createElement("div");
-          hdr.style.cssText =
-            "font-weight:700;margin-bottom:4px;color:var(--accent)";
-          hdr.textContent = document.documentElement.lang === "en"
-            ? `⌨ ${String(actions.length)} registered shortcuts`
-            : `⌨ ${String(actions.length)} קיצורים רשומים`;
+          hdr.style.cssText = "font-weight:700;margin-bottom:4px;color:var(--accent)";
+          hdr.textContent =
+            document.documentElement.lang === "en"
+              ? `⌨ ${String(actions.length)} registered shortcuts`
+              : `⌨ ${String(actions.length)} קיצורים רשומים`;
           frag.appendChild(hdr);
           dynamicEl.replaceChildren(frag);
         }
@@ -287,13 +305,29 @@ export function init(): void {
   };
   registerKey("h", document.documentElement.lang === "en" ? "Help" : "עזרה", _toggleHelp);
   registerKey("?", document.documentElement.lang === "en" ? "Help" : "עזרה", _toggleHelp);
-  registerKey("d", document.documentElement.lang === "en" ? "Diagnostics" : "אבחון", toggleDiagOverlay);
-  registerKey("v", document.documentElement.lang === "en" ? "Card management" : "ניהול כרטיסיות", () => {
-    openConfigPanel();
-    switchCfgTab("cards");
-  });
-  registerKey("l", document.documentElement.lang === "en" ? "Warm night tint" : "גוון חם לדימר לילה", () => setWarmTint(!isWarmTint()));
-  registerKey("escape", document.documentElement.lang === "en" ? "Close overlays" : "סגור כל חלון", closeAllOverlays);
+  registerKey(
+    "d",
+    document.documentElement.lang === "en" ? "Diagnostics" : "אבחון",
+    toggleDiagOverlay,
+  );
+  registerKey(
+    "v",
+    document.documentElement.lang === "en" ? "Card management" : "ניהול כרטיסיות",
+    () => {
+      openConfigPanel();
+      switchCfgTab("cards");
+    },
+  );
+  registerKey(
+    "l",
+    document.documentElement.lang === "en" ? "Warm night tint" : "גוון חם לדימר לילה",
+    () => setWarmTint(!isWarmTint()),
+  );
+  registerKey(
+    "escape",
+    document.documentElement.lang === "en" ? "Close overlays" : "סגור כל חלון",
+    closeAllOverlays,
+  );
 
   // Cards — priority-based init: high-value visible cards first (v7.10)
   // Sprint 158: wrap each init with timing
@@ -328,11 +362,7 @@ export function init(): void {
     if (imported) {
       saveConfig(imported);
       // Strip hash so the next reload doesn't re-import
-      history.replaceState(
-        null,
-        "",
-        window.location.pathname + window.location.search,
-      );
+      history.replaceState(null, "", window.location.pathname + window.location.search);
       diagLog("[init] FDB-007: config imported from URL hash");
     }
   }
@@ -419,7 +449,6 @@ export function init(): void {
 
   diagLog(`[init] FDB-010: dashboard initialized`);
 }
-
 
 // ── Bootstrap ──
 // Skip auto-init in Vitest to prevent side effects (intervals, fetch calls)

@@ -34,14 +34,14 @@ instead of `cSet(key, data)` when storing fetched data.**
 The function signature of `cSetAsync` is:
 
 ```ts
-async function cSetAsync(key: string, data: unknown): Promise<void>
+async function cSetAsync(key: string, data: unknown): Promise<void>;
 ```
 
 Adapters must `await cSetAsync(...)` after each successful fetch:
 
 ```ts
 const data = await fetchJSONWithWorker<T>(url);
-await cSetAsync(CACHE_KEY, data);          // ✅ correct
+await cSetAsync(CACHE_KEY, data); // ✅ correct
 // cSet(CACHE_KEY, data);                  // ✗ removed
 ```
 
@@ -84,12 +84,12 @@ counter increments, etc.) where IDB persistence is not required.
 
 The migration is complete for all four adapters as of Sprint D2.7:
 
-| Adapter | File |
-|---|---|
-| Open-Meteo (weather) | `src/cards/weather/open-meteo-adapter.ts` |
-| Alerts (Tzeva Adom) | `src/cards/alerts/alerts-adapter.ts` |
-| Hebcal (Hebrew calendar) | `src/cards/hebrew-cal/hebcal-adapter.ts` |
-| Google Calendar (ICS) | `src/cards/calendar/calendar-adapter.ts` |
+| Adapter                  | File                                      |
+| ------------------------ | ----------------------------------------- |
+| Open-Meteo (weather)     | `src/cards/weather/open-meteo-adapter.ts` |
+| Alerts (Tzeva Adom)      | `src/cards/alerts/alerts-adapter.ts`      |
+| Hebcal (Hebrew calendar) | `src/cards/hebrew-cal/hebcal-adapter.ts`  |
+| Google Calendar (ICS)    | `src/cards/calendar/calendar-adapter.ts`  |
 
 Any new `ProviderAdapter` implementation must use `cSetAsync` from the outset.
 

@@ -15,11 +15,11 @@
  */
 
 export interface PerfVitals {
-  lcp: number | null;   // ms — Largest Contentful Paint
-  cls: number | null;   // score — Cumulative Layout Shift (unitless)
-  inp: number | null;   // ms — Interaction to Next Paint
-  fcp: number | null;   // ms — First Contentful Paint
-  ttfb: number | null;  // ms — Time to First Byte
+  lcp: number | null; // ms — Largest Contentful Paint
+  cls: number | null; // score — Cumulative Layout Shift (unitless)
+  inp: number | null; // ms — Interaction to Next Paint
+  fcp: number | null; // ms — First Contentful Paint
+  ttfb: number | null; // ms — Time to First Byte
   startup: number | null; // ms — DOMContentLoaded → all cards rendered (waterfall)
 }
 
@@ -56,19 +56,30 @@ export function getPerfVitals(): PerfVitals {
 export function formatVital(key: keyof PerfVitals, value: number | null): string {
   if (value === null) return "–";
   switch (key) {
-    case "cls": return value.toFixed(3);
-    default: return `${Math.round(value)} ms`;
+    case "cls":
+      return value.toFixed(3);
+    default:
+      return `${Math.round(value)} ms`;
   }
 }
-export function rateVital(key: keyof PerfVitals, value: number | null): "good" | "needs-improvement" | "poor" | "unknown" {
+export function rateVital(
+  key: keyof PerfVitals,
+  value: number | null,
+): "good" | "needs-improvement" | "poor" | "unknown" {
   if (value === null) return "unknown";
   switch (key) {
-    case "lcp": return value <= 2500 ? "good" : value <= 4000 ? "needs-improvement" : "poor";
-    case "cls": return value <= 0.1 ? "good" : value <= 0.25 ? "needs-improvement" : "poor";
-    case "inp": return value <= 200 ? "good" : value <= 500 ? "needs-improvement" : "poor";
-    case "fcp": return value <= 1800 ? "good" : value <= 3000 ? "needs-improvement" : "poor";
-    case "ttfb": return value <= 800 ? "good" : value <= 1800 ? "needs-improvement" : "poor";
-    case "startup": return value <= 3000 ? "good" : value <= 6000 ? "needs-improvement" : "poor";
+    case "lcp":
+      return value <= 2500 ? "good" : value <= 4000 ? "needs-improvement" : "poor";
+    case "cls":
+      return value <= 0.1 ? "good" : value <= 0.25 ? "needs-improvement" : "poor";
+    case "inp":
+      return value <= 200 ? "good" : value <= 500 ? "needs-improvement" : "poor";
+    case "fcp":
+      return value <= 1800 ? "good" : value <= 3000 ? "needs-improvement" : "poor";
+    case "ttfb":
+      return value <= 800 ? "good" : value <= 1800 ? "needs-improvement" : "poor";
+    case "startup":
+      return value <= 3000 ? "good" : value <= 6000 ? "needs-improvement" : "poor";
   }
 }
 
@@ -86,11 +97,16 @@ export function initPerfObserver(): void {
   try {
     const obs = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const last = entries[entries.length - 1] as PerformanceEntry & { renderTime?: number; loadTime?: number };
+      const last = entries[entries.length - 1] as PerformanceEntry & {
+        renderTime?: number;
+        loadTime?: number;
+      };
       if (last) _vitals.lcp = (last.renderTime ?? last.loadTime ?? 0) || last.startTime;
     });
     obs.observe({ type: "largest-contentful-paint", buffered: true });
-  } catch { /* browser may not support */ }
+  } catch {
+    /* browser may not support */
+  }
 
   // CLS
   try {
@@ -102,7 +118,9 @@ export function initPerfObserver(): void {
       _vitals.cls = _clsAccumulator;
     });
     obs.observe({ type: "layout-shift", buffered: true });
-  } catch { /* browser may not support */ }
+  } catch {
+    /* browser may not support */
+  }
 
   // INP (Interaction to Next Paint — replaces FID)
   try {
@@ -114,7 +132,9 @@ export function initPerfObserver(): void {
       }
     });
     obs.observe({ type: "event", buffered: true } as PerformanceObserverInit);
-  } catch { /* browser may not support */ }
+  } catch {
+    /* browser may not support */
+  }
 
   // FCP
   try {
@@ -126,7 +146,9 @@ export function initPerfObserver(): void {
       }
     });
     obs.observe({ type: "paint", buffered: true });
-  } catch { /* browser may not support */ }
+  } catch {
+    /* browser may not support */
+  }
 
   // TTFB via Navigation Timing
   try {
@@ -141,7 +163,9 @@ export function initPerfObserver(): void {
       });
       obs.observe({ type: "navigation", buffered: true });
     }
-  } catch { /* browser may not support */ }
+  } catch {
+    /* browser may not support */
+  }
 }
 
 /** Reset observer state (test helper). */
@@ -164,7 +188,11 @@ export function _resetPerfObserver(): void {
  */
 export function markDomReady(): void {
   // Store in performance.mark for reliable cross-context reference
-  try { performance.mark("fdb:dom-ready"); } catch { /* Safari < 15 */ }
+  try {
+    performance.mark("fdb:dom-ready");
+  } catch {
+    /* Safari < 15 */
+  }
 }
 
 /**
@@ -178,9 +206,13 @@ export function markStartupComplete(): void {
   const origin = domReadyMark ? domReadyMark.startTime : 0;
   _vitals.startup = Math.round(performance.now() - origin);
   // Import diagLog lazily to avoid top-level circular dep
-  import("./diag").then(({ diagLog }) => {
-    diagLog(`FDB-058: [perf] startup waterfall ${String(_vitals.startup)} ms`);
-  }).catch(() => { /* swallow in test env */ });
+  import("./diag")
+    .then(({ diagLog }) => {
+      diagLog(`FDB-058: [perf] startup waterfall ${String(_vitals.startup)} ms`);
+    })
+    .catch(() => {
+      /* swallow in test env */
+    });
 }
 
 // ── Perf Budget (Sprint 40, v7.13) ────────────────────────────────────────
@@ -211,11 +243,15 @@ export function checkPerfBudget(limitMs = 3000): PerfBudgetResult {
   }
   const pass = measured <= limitMs;
   if (!pass) {
-    import("./diag").then(({ diagLog }) => {
-      diagLog(
-        `FDB-059: [perf] budget EXCEEDED — startup ${String(measured)} ms > ${String(limitMs)} ms limit`,
-      );
-    }).catch(() => { /* swallow in test env */ });
+    import("./diag")
+      .then(({ diagLog }) => {
+        diagLog(
+          `FDB-059: [perf] budget EXCEEDED — startup ${String(measured)} ms > ${String(limitMs)} ms limit`,
+        );
+      })
+      .catch(() => {
+        /* swallow in test env */
+      });
   }
   return { limitMs, measuredMs: measured, status: pass ? "pass" : "fail" };
 }
@@ -292,6 +328,11 @@ export function checkAllVitalBudgets(
     const measured = vitals[key];
     const budget = budgets[key];
     if (measured === null) return { key, budget, measured, status: "pending" as const };
-    return { key, budget, measured, status: measured <= budget ? "pass" as const : "fail" as const };
+    return {
+      key,
+      budget,
+      measured,
+      status: measured <= budget ? ("pass" as const) : ("fail" as const),
+    };
   });
 }

@@ -36,10 +36,7 @@ function makeRegistration(
   } as unknown as ServiceWorkerRegistration;
 }
 
-function stubServiceWorker(
-  reg: ServiceWorkerRegistration | null = null,
-  rejects = false,
-): void {
+function stubServiceWorker(reg: ServiceWorkerRegistration | null = null, rejects = false): void {
   const swContainer = {
     register: rejects
       ? vi.fn().mockRejectedValue(new Error("SW registration failed"))
@@ -105,17 +102,13 @@ describe("SW Register — successful registration", () => {
 
   it("registers the correct SW path", async () => {
     await mod.registerSW();
-    const [path] =
-      vi.mocked(navigator.serviceWorker.register).mock.calls[0] ?? [];
+    const [path] = vi.mocked(navigator.serviceWorker.register).mock.calls[0] ?? [];
     expect(String(path)).toContain("sw.js");
   });
 
   it("attaches updatefound listener on registration", async () => {
     await mod.registerSW();
-    expect(reg.addEventListener).toHaveBeenCalledWith(
-      "updatefound",
-      expect.any(Function),
-    );
+    expect(reg.addEventListener).toHaveBeenCalledWith("updatefound", expect.any(Function));
   });
 
   it("attaches controllerchange listener on navigator.serviceWorker", async () => {
@@ -151,11 +144,9 @@ describe("SW Register — VERSION_ACTIVATED message handling", () => {
         register: vi.fn().mockResolvedValue(reg),
         controller: null,
         getRegistrations: vi.fn().mockResolvedValue([]),
-        addEventListener: vi.fn(
-          (evt: string, handler: (e: unknown) => void) => {
-            navListeners[evt] = handler;
-          },
-        ),
+        addEventListener: vi.fn((evt: string, handler: (e: unknown) => void) => {
+          navListeners[evt] = handler;
+        }),
       },
       writable: true,
       configurable: true,
@@ -182,11 +173,9 @@ describe("SW Register — VERSION_ACTIVATED message handling", () => {
         register: vi.fn().mockResolvedValue(reg),
         controller: null,
         getRegistrations: vi.fn().mockResolvedValue([]),
-        addEventListener: vi.fn(
-          (evt: string, handler: (e: unknown) => void) => {
-            navListeners[evt] = handler;
-          },
-        ),
+        addEventListener: vi.fn((evt: string, handler: (e: unknown) => void) => {
+          navListeners[evt] = handler;
+        }),
       },
       writable: true,
       configurable: true,
@@ -273,12 +262,9 @@ describe("SW Register — showUpdateBanner", () => {
     const reg = {
       installing,
       waiting: null,
-      addEventListener: vi.fn(
-        (_: string, cb: EventListenerOrEventListenerObject) => {
-          if (_ === "updatefound" && typeof cb === "function")
-            updateFoundCb = cb as () => void;
-        },
-      ),
+      addEventListener: vi.fn((_: string, cb: EventListenerOrEventListenerObject) => {
+        if (_ === "updatefound" && typeof cb === "function") updateFoundCb = cb as () => void;
+      }),
     } as unknown as ServiceWorkerRegistration;
 
     stubServiceWorker(reg);
@@ -287,11 +273,7 @@ describe("SW Register — showUpdateBanner", () => {
 
     // trigger updatefound
     updateFoundCb?.();
-    expect(
-      document
-        .getElementById("sw-update-banner")
-        ?.classList.contains("visible"),
-    ).toBe(true);
+    expect(document.getElementById("sw-update-banner")?.classList.contains("visible")).toBe(true);
   });
 });
 
@@ -394,11 +376,7 @@ describe("SW Register — statechange installing → installed", () => {
     installingMock.state = "installed";
     stateChangeCb?.();
 
-    expect(
-      document
-        .getElementById("sw-update-banner")
-        ?.classList.contains("visible"),
-    ).toBe(true);
+    expect(document.getElementById("sw-update-banner")?.classList.contains("visible")).toBe(true);
   });
 
   it("does not show banner when state is not installed", async () => {
@@ -436,11 +414,7 @@ describe("SW Register — statechange installing → installed", () => {
     updateFoundCb?.();
     stateChangeCb?.();
 
-    expect(
-      document
-        .getElementById("sw-update-banner")
-        ?.classList.contains("visible"),
-    ).toBe(false);
+    expect(document.getElementById("sw-update-banner")?.classList.contains("visible")).toBe(false);
   });
 
   it("wires reload button to swSkipWaiting on update banner", async () => {
@@ -575,11 +549,7 @@ describe("SW Register — showUpdateBanner without reload button", () => {
     installingMock.state = "installed";
     stateChangeCb?.();
 
-    expect(
-      document
-        .getElementById("sw-update-banner")
-        ?.classList.contains("visible"),
-    ).toBe(true);
+    expect(document.getElementById("sw-update-banner")?.classList.contains("visible")).toBe(true);
   });
 });
 
@@ -694,7 +664,11 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
       configurable: true,
     });
     Object.defineProperty(window, "location", {
-      value: { protocol: "http:", origin: "http://localhost", href: "http://localhost/FamilyDashBoard/" },
+      value: {
+        protocol: "http:",
+        origin: "http://localhost",
+        href: "http://localhost/FamilyDashBoard/",
+      },
       writable: true,
       configurable: true,
     });
@@ -728,7 +702,11 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
       configurable: true,
     });
     Object.defineProperty(window, "location", {
-      value: { protocol: "http:", origin: "http://localhost", href: "http://localhost/FamilyDashBoard/" },
+      value: {
+        protocol: "http:",
+        origin: "http://localhost",
+        href: "http://localhost/FamilyDashBoard/",
+      },
       writable: true,
       configurable: true,
     });
@@ -743,7 +721,13 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
   it("deletes old caches that don't start with familydashboard-v7", async () => {
     const deleteSpy = vi.fn().mockResolvedValue(true);
     const cachesMock = {
-      keys: vi.fn().mockResolvedValue(["familydashboard-v5-shell", "familydashboard-v6-api", "familydashboard-v7.1.6-shell"]),
+      keys: vi
+        .fn()
+        .mockResolvedValue([
+          "familydashboard-v5-shell",
+          "familydashboard-v6-api",
+          "familydashboard-v7.1.6-shell",
+        ]),
       delete: deleteSpy,
     };
     vi.stubGlobal("caches", cachesMock);
@@ -751,7 +735,9 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         getRegistrations: vi.fn().mockResolvedValue([]),
-        register: vi.fn().mockResolvedValue({ installing: null, waiting: null, addEventListener: vi.fn() }),
+        register: vi
+          .fn()
+          .mockResolvedValue({ installing: null, waiting: null, addEventListener: vi.fn() }),
         addEventListener: vi.fn(),
         controller: null,
       },
@@ -759,7 +745,11 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
       configurable: true,
     });
     Object.defineProperty(window, "location", {
-      value: { protocol: "http:", origin: "http://localhost", href: "http://localhost/FamilyDashBoard/" },
+      value: {
+        protocol: "http:",
+        origin: "http://localhost",
+        href: "http://localhost/FamilyDashBoard/",
+      },
       writable: true,
       configurable: true,
     });

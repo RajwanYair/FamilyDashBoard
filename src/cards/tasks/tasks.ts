@@ -88,10 +88,10 @@ export type TaskPriority = "high" | "medium" | "low" | "none";
 
 /** Priority color map — CSS variable names. */
 const PRIORITY_COLORS: Record<TaskPriority, string> = {
-  high:   "var(--danger,  #f87171)",
+  high: "var(--danger,  #f87171)",
   medium: "var(--warning, #fbbf24)",
-  low:    "var(--positive,#34d399)",
-  none:   "",
+  low: "var(--positive,#34d399)",
+  none: "",
 };
 
 /**
@@ -103,8 +103,7 @@ export function parseTaskPriority(chore: string): { priority: TaskPriority; clea
   const m = /^\[([HMLhml])\]\s*/u.exec(chore);
   if (!m) return { priority: "none", cleanText: chore };
   const letter = m[1]?.toUpperCase();
-  const priority: TaskPriority =
-    letter === "H" ? "high" : letter === "M" ? "medium" : "low";
+  const priority: TaskPriority = letter === "H" ? "high" : letter === "M" ? "medium" : "low";
   return { priority, cleanText: chore.slice(m[0].length) };
 }
 
@@ -211,9 +210,7 @@ export function renderTasksCard(): void {
 
   // Apply active person filter
   const visibleChores =
-    _filterPerson !== null
-      ? chores.filter((c) => c.person === _filterPerson)
-      : chores;
+    _filterPerson !== null ? chores.filter((c) => c.person === _filterPerson) : chores;
 
   if (!visibleChores.length) {
     container.textContent = chores.length
@@ -299,7 +296,12 @@ export function renderTasksCard(): void {
         badge.style.color = PRIORITY_COLORS[priority];
         // Sprint 30: emoji icons for better TV readability
         badge.textContent = priority === "high" ? "🔴" : priority === "medium" ? "🟡" : "🔵";
-        badge.title = priority === "high" ? "עדיפות גבוהה" : priority === "medium" ? "עדיפות בינונית" : "עדיפות נמוכה";
+        badge.title =
+          priority === "high"
+            ? "עדיפות גבוהה"
+            : priority === "medium"
+              ? "עדיפות בינונית"
+              : "עדיפות נמוכה";
         row.appendChild(badge);
       }
 
@@ -469,12 +471,8 @@ export function initTasksCard(): void {
   );
 
   // F7 (v7.2): Quick-add task
-  const quickInput = document.getElementById(
-    "tasks-quick-input",
-  ) as HTMLInputElement | null;
-  const quickPerson = document.getElementById(
-    "tasks-quick-person",
-  ) as HTMLInputElement | null;
+  const quickInput = document.getElementById("tasks-quick-input") as HTMLInputElement | null;
+  const quickPerson = document.getElementById("tasks-quick-person") as HTMLInputElement | null;
   const quickBtn = document.getElementById("tasks-quick-add-btn");
   if (quickBtn && quickInput) {
     bindOnce(quickBtn, "click", "fdbTasksClickBound", (() => {

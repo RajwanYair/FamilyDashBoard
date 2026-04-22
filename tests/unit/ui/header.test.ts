@@ -162,10 +162,7 @@ describe("Header — initHeader", () => {
   });
 
   it("reads clockSeconds from saved config", async () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ clockSeconds: true }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ clockSeconds: true }));
     buildHeaderDOM();
     const mod = await freshHdr();
     mod.initHeader();
@@ -223,9 +220,7 @@ describe("Header — updateBirthdayChip", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
-        birthdays: [
-          { name: "עמרי", month: soon.getMonth() + 1, day: soon.getDate() },
-        ],
+        birthdays: [{ name: "עמרי", month: soon.getMonth() + 1, day: soon.getDate() }],
       }),
     );
     buildHeaderDOM();
@@ -242,9 +237,7 @@ describe("Header — updateBirthdayChip", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
-        birthdays: [
-          { name: "שרה", month: today.getMonth() + 1, day: today.getDate() },
-        ],
+        birthdays: [{ name: "שרה", month: today.getMonth() + 1, day: today.getDate() }],
       }),
     );
     buildHeaderDOM();
@@ -263,9 +256,7 @@ describe("Header — updateBirthdayChip", () => {
     localStorage.setItem(
       "dash_v2_config",
       JSON.stringify({
-        birthdays: [
-          { name: "דניאל", month: far.getMonth() + 1, day: far.getDate() },
-        ],
+        birthdays: [{ name: "דניאל", month: far.getMonth() + 1, day: far.getDate() }],
       }),
     );
     buildHeaderDOM();
@@ -488,9 +479,7 @@ describe("Header — updateElecBadge (electricity peak hours)", () => {
     mod.initHeader();
     const saturday = new Date("2024-01-06T19:00:00"); // Saturday 19:00
     mod.updateElecBadge(saturday);
-    expect(
-      document.getElementById("elec-badge")?.classList.contains("peak-on"),
-    ).toBe(false);
+    expect(document.getElementById("elec-badge")?.classList.contains("peak-on")).toBe(false);
   });
 
   it("no peak-on on Friday (weekend)", async () => {
@@ -499,9 +488,7 @@ describe("Header — updateElecBadge (electricity peak hours)", () => {
     mod.initHeader();
     const friday = new Date("2024-01-05T20:00:00"); // Friday 20:00
     mod.updateElecBadge(friday);
-    expect(
-      document.getElementById("elec-badge")?.classList.contains("peak-on"),
-    ).toBe(false);
+    expect(document.getElementById("elec-badge")?.classList.contains("peak-on")).toBe(false);
   });
 
   it("peak on Thursday 21:59 (last peak minute)", async () => {
@@ -510,9 +497,7 @@ describe("Header — updateElecBadge (electricity peak hours)", () => {
     mod.initHeader();
     const thu = new Date("2024-01-04T21:59:00"); // Thursday 21:59
     mod.updateElecBadge(thu);
-    expect(
-      document.getElementById("elec-badge")?.classList.contains("peak-on"),
-    ).toBe(true);
+    expect(document.getElementById("elec-badge")?.classList.contains("peak-on")).toBe(true);
   });
 
   it("no peak at 22:00 (after peak ends)", async () => {
@@ -521,9 +506,7 @@ describe("Header — updateElecBadge (electricity peak hours)", () => {
     mod.initHeader();
     const mon = new Date("2024-01-08T22:00:00"); // Monday 22:00
     mod.updateElecBadge(mon);
-    expect(
-      document.getElementById("elec-badge")?.classList.contains("peak-on"),
-    ).toBe(false);
+    expect(document.getElementById("elec-badge")?.classList.contains("peak-on")).toBe(false);
   });
 
   it("does not throw when #elec-badge is absent", async () => {
@@ -580,10 +563,7 @@ describe("Header — greeting with members config", () => {
   it("falls back to family name when members array is empty", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2024, 0, 1, 8, 0, 0));
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ members: [], familyName: "ישראלי" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ members: [], familyName: "ישראלי" }));
     buildHeaderDOM();
     const mod = await freshHdr();
     mod.initHeader();
@@ -618,10 +598,7 @@ describe("Header — getGreeting with members configured", () => {
   });
 
   it("falls back to familyName when members is empty array", async () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ members: [], familyName: "כהן" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ members: [], familyName: "כהן" }));
     buildHeaderDOM();
     vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning
     const mod = await freshHdr();
@@ -631,10 +608,7 @@ describe("Header — getGreeting with members configured", () => {
   });
 
   it("handles undefined members key in config (uses ?? [] default)", async () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ familyName: "ברק" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ familyName: "ברק" }));
     buildHeaderDOM();
     vi.setSystemTime(new Date("2024-06-15T08:00:00")); // morning — uses familyName
     const mod = await freshHdr();
@@ -741,10 +715,7 @@ describe("Header — getGreeting noon branch", () => {
   it("returns morning greeting for member at index-based rotation", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-06-15T08:00:00"));
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ members: ["עמרי", "ריבה"] }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ members: ["עמרי", "ריבה"] }));
     buildHeaderDOM();
     const mod = await freshHdr();
     mod.initHeader();

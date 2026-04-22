@@ -55,9 +55,7 @@ function updateProgress(now: Date): void {
   const startOfYear = new Date(now.getFullYear(), 0, 1);
   const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
   const yearPct =
-    ((now.getTime() - startOfYear.getTime()) /
-      (endOfYear.getTime() - startOfYear.getTime())) *
-    100;
+    ((now.getTime() - startOfYear.getTime()) / (endOfYear.getTime() - startOfYear.getTime())) * 100;
   if (elYearBar) elYearBar.style.width = `${yearPct.toFixed(1)}%`;
 }
 
@@ -80,10 +78,9 @@ export function updateBirthdayChip(): void {
 
   for (const { name, month, day } of birthdays) {
     const bdayThisYear = new Date(today.getFullYear(), month - 1, day);
-    const bday = bdayThisYear >= today ? bdayThisYear : new Date(today.getFullYear() + 1, month - 1, day);
-    const daysAway = Math.round(
-      (bday.getTime() - today.getTime()) / MS_PER_DAY,
-    );
+    const bday =
+      bdayThisYear >= today ? bdayThisYear : new Date(today.getFullYear() + 1, month - 1, day);
+    const daysAway = Math.round((bday.getTime() - today.getTime()) / MS_PER_DAY);
     if (daysAway <= 14 && (!nearest || daysAway < nearest.daysAway)) {
       nearest = { name, daysAway };
     }

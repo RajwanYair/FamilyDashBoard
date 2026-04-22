@@ -142,8 +142,6 @@ describe("state.snapshot", () => {
 describe("state — invalid/unknown slice key", () => {
   it("silently ignores writes to unknown slice", () => {
     // TypeScript would prevent this, but runtime guard should not throw
-    expect(() =>
-      state.set("unknown.key" as Parameters<typeof state.set>[0], "val"),
-    ).not.toThrow();
+    expect(() => state.set("unknown.key" as Parameters<typeof state.set>[0], "val")).not.toThrow();
   });
 });

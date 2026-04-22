@@ -45,7 +45,11 @@ export class FdbTasksCard extends FdbCard {
       markAllButton.title = "סמן הכל כבוצע";
       actions.appendChild(markAllButton);
 
-      const resetButton = FdbCard.createEl("button", "tasks-action-btn tasks-action-reset", "🔄 אפס");
+      const resetButton = FdbCard.createEl(
+        "button",
+        "tasks-action-btn tasks-action-reset",
+        "🔄 אפס",
+      );
       resetButton.type = "button";
       resetButton.id = "tasks-reset-btn";
       resetButton.title = "אפס סימוני היום";

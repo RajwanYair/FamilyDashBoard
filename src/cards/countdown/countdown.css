@@ -47,21 +47,50 @@
   transition: color 0.2s;
 }
 
-.cd-tile:nth-child(1) .cd-num { color: var(--accent); }
-.cd-tile:nth-child(2) .cd-num { color: var(--cyan, #67e8f9); }
-.cd-tile:nth-child(3) .cd-num { color: var(--purple, #a78bfa); }
-.cd-tile:nth-child(4) .cd-num { color: var(--positive, #34d399); }
+.cd-tile:nth-child(1) .cd-num {
+  color: var(--accent);
+}
+.cd-tile:nth-child(2) .cd-num {
+  color: var(--cyan, #67e8f9);
+}
+.cd-tile:nth-child(3) .cd-num {
+  color: var(--purple, #a78bfa);
+}
+.cd-tile:nth-child(4) .cd-num {
+  color: var(--positive, #34d399);
+}
 
 /* Sprint 11: Maximize — large countdown card layout */
 @container card (min-width: 900px) {
-  .countdown-body { gap: 20px; padding: 20px; }
-  .cd-title { font-size: 1.5em; }
-  .cd-tiles { gap: 20px; max-width: 700px; width: auto; }
-  .cd-tile { padding: 24px 16px; border-radius: 14px; min-width: 140px; }
-  .cd-num { font-size: 3.2em; }
-  .cd-unit { font-size: 0.75em; }
-  .cd-msg { font-size: 1.1em; }
-  .cd-progress-wrap { height: 10px; }
+  .countdown-body {
+    gap: 20px;
+    padding: 20px;
+  }
+  .cd-title {
+    font-size: 1.5em;
+  }
+  .cd-tiles {
+    gap: 20px;
+    max-width: 700px;
+    width: auto;
+  }
+  .cd-tile {
+    padding: 24px 16px;
+    border-radius: 14px;
+    min-width: 140px;
+  }
+  .cd-num {
+    font-size: 3.2em;
+  }
+  .cd-unit {
+    font-size: 0.75em;
+  }
+  .cd-msg {
+    font-size: 1.1em;
+  }
+  .cd-progress-wrap {
+    height: 10px;
+  }
 }
 
 .cd-unit {
@@ -83,7 +112,7 @@
 .cd-progress-wrap {
   width: 100%;
   height: 6px;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 3px;
   margin-top: 8px;
   overflow: hidden;
@@ -103,8 +132,15 @@
 }
 
 @keyframes cd-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.6; transform: scale(1.05); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
 }
 
 .cd-num.cd-urgent-pulse {

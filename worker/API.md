@@ -15,10 +15,10 @@ Proxy to [Open-Meteo](https://open-meteo.com/). Returns current conditions, 8-da
 
 **Query Parameters:**
 
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
-| `lat` | ✅ | Latitude (float, -90 to 90) |
-| `lon` | ✅ | Longitude (float, -180 to 180) |
+| Parameter | Required | Description                    |
+| --------- | -------- | ------------------------------ |
+| `lat`     | ✅       | Latitude (float, -90 to 90)    |
+| `lon`     | ✅       | Longitude (float, -180 to 180) |
 
 **Cache TTL:** 30 minutes
 
@@ -44,9 +44,9 @@ Proxy to [Hebcal Shabbat API](https://www.hebcal.com/shabbat). Returns candle-li
 
 **Query Parameters:**
 
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
-| `geonameid` | ✅ | Geonames city ID (e.g. `281184` for Jerusalem) |
+| Parameter   | Required | Description                                    |
+| ----------- | -------- | ---------------------------------------------- |
+| `geonameid` | ✅       | Geonames city ID (e.g. `281184` for Jerusalem) |
 
 **Cache TTL:** 6 hours
 
@@ -60,9 +60,9 @@ Proxy to Hebcal Hebrew calendar holidays for a full Jewish year.
 
 **Query Parameters:**
 
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
-| `year` | ✅ | Gregorian year (integer) |
+| Parameter | Required | Description              |
+| --------- | -------- | ------------------------ |
+| `year`    | ✅       | Gregorian year (integer) |
 
 **Cache TTL:** 24 hours
 
@@ -78,9 +78,9 @@ Proxy to [Yahoo Finance Chart API](https://finance.yahoo.com/) for a single symb
 
 **Query Parameters:**
 
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
-| `symbol` | ✅ | Ticker symbol (e.g. `AAPL`, `^GSPC`). Max 10 chars, alphanumeric + `.^-` |
+| Parameter | Required | Description                                                              |
+| --------- | -------- | ------------------------------------------------------------------------ |
+| `symbol`  | ✅       | Ticker symbol (e.g. `AAPL`, `^GSPC`). Max 10 chars, alphanumeric + `.^-` |
 
 **Cache TTL:** 5 minutes
 
@@ -94,9 +94,9 @@ Proxy to an RSS/Atom feed URL. Origin must be on the permitted allowlist.
 
 **Query Parameters:**
 
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
-| `url` | ✅ | Full HTTPS URL of the RSS feed (`https://...`) |
+| Parameter | Required | Description                                    |
+| --------- | -------- | ---------------------------------------------- |
+| `url`     | ✅       | Full HTTPS URL of the RSS feed (`https://...`) |
 
 **Allowed Origins:** `ynet.co.il`, `mako.co.il`, `haaretz.co.il`, `walla.co.il`, `kan.org.il`, `n12.co.il`, `rotter.net`, `globes.co.il`, `calcalist.co.il`, `maariv.co.il`
 
@@ -112,9 +112,9 @@ Proxy to a Google Calendar or CalDAV feed URL. Origin must be on the calendar al
 
 **Query Parameters:**
 
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
-| `url` | ✅ | Full HTTPS URL of the iCal feed |
+| Parameter | Required | Description                     |
+| --------- | -------- | ------------------------------- |
+| `url`     | ✅       | Full HTTPS URL of the iCal feed |
 
 **Cache TTL:** 15 minutes
 
@@ -122,17 +122,17 @@ Proxy to a Google Calendar or CalDAV feed URL. Origin must be on the calendar al
 
 ## Error Codes
 
-| Code | HTTP Status | Meaning |
-| ---- | ----------- | ------- |
-| FDB-070 | 502 | Upstream HTTP error (non-2xx from external API) |
-| FDB-071 | 504 | Upstream timeout |
-| FDB-072 | 502 | JSON or XML parse failure |
-| FDB-073 | 500 | Internal worker error (unexpected) |
-| FDB-080 | 400 | Missing or invalid `lat` / `lon` parameters |
-| FDB-081 | 400 | Missing or invalid `geonameid` parameter |
-| FDB-082 | 400 | Missing or invalid `symbol` parameter |
-| FDB-083 | 400 | Missing, invalid, or non-allowlisted `url` parameter |
-| FDB-084 | 400 | Missing or invalid `year` parameter |
+| Code    | HTTP Status | Meaning                                              |
+| ------- | ----------- | ---------------------------------------------------- |
+| FDB-070 | 502         | Upstream HTTP error (non-2xx from external API)      |
+| FDB-071 | 504         | Upstream timeout                                     |
+| FDB-072 | 502         | JSON or XML parse failure                            |
+| FDB-073 | 500         | Internal worker error (unexpected)                   |
+| FDB-080 | 400         | Missing or invalid `lat` / `lon` parameters          |
+| FDB-081 | 400         | Missing or invalid `geonameid` parameter             |
+| FDB-082 | 400         | Missing or invalid `symbol` parameter                |
+| FDB-083 | 400         | Missing, invalid, or non-allowlisted `url` parameter |
+| FDB-084 | 400         | Missing or invalid `year` parameter                  |
 
 ---
 

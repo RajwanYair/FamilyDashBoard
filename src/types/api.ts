@@ -80,14 +80,7 @@ export interface HebcalItem {
   title: string;
   hebrew: string;
   date: string;
-  category:
-    | "candles"
-    | "havdalah"
-    | "holiday"
-    | "parashat"
-    | "omer"
-    | "roshchodesh"
-    | string;
+  category: "candles" | "havdalah" | "holiday" | "parashat" | "omer" | "roshchodesh" | string;
   subcat?: string;
   memo?: string;
   link?: string;
@@ -173,15 +166,23 @@ export function isWeatherResponse(v: unknown): v is WeatherResponse {
   const cur = v["current"];
   if (!isObj(cur)) return false;
   const numFields: (keyof WeatherResponse["current"])[] = [
-    "temperature_2m", "relative_humidity_2m", "weather_code",
-    "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m",
-    "apparent_temperature", "uv_index", "dew_point_2m",
+    "temperature_2m",
+    "relative_humidity_2m",
+    "weather_code",
+    "wind_speed_10m",
+    "wind_direction_10m",
+    "wind_gusts_10m",
+    "apparent_temperature",
+    "uv_index",
+    "dew_point_2m",
   ];
   if (numFields.some((f) => typeof cur[f] !== "number")) return false;
   const hourly = v["hourly"];
-  if (!isObj(hourly) || !isStrArr(hourly["time"]) || !isNumArr(hourly["temperature_2m"])) return false;
+  if (!isObj(hourly) || !isStrArr(hourly["time"]) || !isNumArr(hourly["temperature_2m"]))
+    return false;
   const daily = v["daily"];
-  if (!isObj(daily) || !isStrArr(daily["time"]) || !isNumArr(daily["temperature_2m_max"])) return false;
+  if (!isObj(daily) || !isStrArr(daily["time"]) || !isNumArr(daily["temperature_2m_max"]))
+    return false;
   return true;
 }
 
@@ -219,10 +220,7 @@ export function isAlertEvent(v: unknown): v is AlertEvent {
   if (!isObj(v)) return false;
   if (!Array.isArray(v["alerts"])) return false;
   return v["alerts"].every(
-    (a) =>
-      isObj(a) &&
-      Array.isArray(a["cities"]) &&
-      typeof a["time"] === "number",
+    (a) => isObj(a) && Array.isArray(a["cities"]) && typeof a["time"] === "number",
   );
 }
 
@@ -829,4 +827,3 @@ export function isNormalizedAlertEvent(v: unknown): v is NormalizedAlertEvent {
     typeof r["active"] === "boolean"
   );
 }
-

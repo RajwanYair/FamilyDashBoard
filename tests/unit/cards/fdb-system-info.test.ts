@@ -42,17 +42,13 @@ describe("FdbSystemInfoCard", () => {
   });
 
   it("calls initSystemInfoCard on connect", async () => {
-    const { initSystemInfoCard } = await import(
-      "@/cards/system-info/system-info"
-    );
+    const { initSystemInfoCard } = await import("@/cards/system-info/system-info");
     mountCard();
     expect(initSystemInfoCard).toHaveBeenCalled();
   });
 
   it("calls destroySystemInfoCard on disconnect", async () => {
-    const { destroySystemInfoCard } = await import(
-      "@/cards/system-info/system-info"
-    );
+    const { destroySystemInfoCard } = await import("@/cards/system-info/system-info");
     const card = mountCard();
     card.remove();
     expect(destroySystemInfoCard).toHaveBeenCalled();

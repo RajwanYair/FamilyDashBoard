@@ -98,9 +98,7 @@ test.describe("FamilyDashBoard — Visual Regression Baselines", () => {
 
 test.describe("FamilyDashBoard — Theme CSS Class Applied", () => {
   for (const theme of THEMES) {
-    test(`data-theme="${theme}" attribute is set on <html>`, async ({
-      page,
-    }) => {
+    test(`data-theme="${theme}" attribute is set on <html>`, async ({ page }) => {
       await goWithConfig(page, theme, "normal");
 
       const html = page.locator("html");
@@ -113,8 +111,7 @@ test.describe("FamilyDashBoard — Theme CSS Class Applied", () => {
         .catch(() => "");
 
       const hasTheme =
-        attr === theme ||
-        (cls ?? "").split(" ").some((c) => c === `theme-${theme}` || c === theme);
+        attr === theme || (cls ?? "").split(" ").some((c) => c === `theme-${theme}` || c === theme);
 
       expect(hasTheme, `Expected theme "${theme}" to be applied`).toBe(true);
     });

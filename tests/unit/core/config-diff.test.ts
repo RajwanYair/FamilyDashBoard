@@ -38,8 +38,14 @@ describe("diffConfigs (Sprint 103)", () => {
   });
 
   it("detects nested object changes", () => {
-    const a = { ...DEFAULT_CONFIG, featureFlags: { workerFetch: true, idleSchedule: true, idbCache: false } };
-    const b = { ...DEFAULT_CONFIG, featureFlags: { workerFetch: false, idleSchedule: true, idbCache: false } };
+    const a = {
+      ...DEFAULT_CONFIG,
+      featureFlags: { workerFetch: true, idleSchedule: true, idbCache: false },
+    };
+    const b = {
+      ...DEFAULT_CONFIG,
+      featureFlags: { workerFetch: false, idleSchedule: true, idbCache: false },
+    };
     const diffs = diffConfigs(a, b);
     expect(diffs.some((d) => d.key === "featureFlags")).toBe(true);
   });

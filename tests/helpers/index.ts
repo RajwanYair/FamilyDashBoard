@@ -60,9 +60,7 @@ export function appendToDOM(html: string): HTMLElement {
  *     return getWorkResult();
  *   });
  */
-export async function withFakeTimers<T>(
-  fn: () => T | Promise<T>,
-): Promise<T> {
+export async function withFakeTimers<T>(fn: () => T | Promise<T>): Promise<T> {
   vi.useFakeTimers();
   try {
     return await fn();
@@ -100,9 +98,7 @@ export function createMockFetch(
  * Create a vi.fn() that rejects with a network error.
  * Useful for testing proxy-fallback and error-handling paths.
  */
-export function createFailingFetch(
-  message = "Network error",
-): ReturnType<typeof vi.fn> {
+export function createFailingFetch(message = "Network error"): ReturnType<typeof vi.fn> {
   return vi.fn().mockRejectedValue(new TypeError(message));
 }
 
@@ -160,9 +156,7 @@ export function createMockCache(): MockCache {
  * @example
  *   const cfg = createMockConfig({ tempUnit: "F", homeCity: "Jerusalem" });
  */
-export function createMockConfig(
-  overrides: Partial<DashboardConfig> = {},
-): DashboardConfig {
+export function createMockConfig(overrides: Partial<DashboardConfig> = {}): DashboardConfig {
   return {
     ...DEFAULT_CONFIG,
     familyName: "Test Family",

@@ -73,9 +73,7 @@ describe("Stocks Provider Adapter (Sprint 128)", () => {
         error: null,
       },
     };
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(JSON.stringify(mockResp), { status: 200 }),
-    );
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify(mockResp), { status: 200 }));
     const adapter = createStocksAdapter("AAPL");
     const result = await adapter.fetch();
     expect(result.ok).toBe(true);

@@ -1,6 +1,6 @@
 {
     "name": "familydashboard",
-    "version": "9.0.0",
+    "version": "9.1.0",
     "description": "Family TV Dashboard — Hebrew RTL, TypeScript, Vite, Cloudflare Workers",
     "author": "Reuven Airhar",
     "license": "MIT",
@@ -38,6 +38,8 @@
         "lint": "eslint . --max-warnings 0 --cache --cache-strategy content",
         "lint:fix": "eslint . --fix --cache --cache-strategy content",
         "lint:md": "markdownlint-cli2 \"**/*.md\" \"#**/node_modules/**\"",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
         "typecheck": "tsc -b --noEmit",
         "typecheck:sw": "tsc --project tsconfig.sw.json",
         "check": "npm run typecheck && npm run typecheck:sw && npm run lint && npm run lint:md && npm run check:sw && npm run test",

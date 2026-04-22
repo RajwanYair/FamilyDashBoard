@@ -18,19 +18,19 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 
 ## Per-Pane Refresh Intervals
 
-| Pane | Interval | Notes |
-|------|----------|-------|
-| Clock | 1 min | HH:MM, no seconds |
-| Alerts | 60s / 5min | 60s active, 5min idle |
-| Market badge | 1 min | Pre/open/after/closed |
-| News | 15 min | 17 RSS feeds via proxy |
-| Stocks | 5 / 30 min | 5min market open, 30min closed |
-| Calendar | 15 min | ICS parse + iframe fallback |
-| Weather | 30 min | Open-Meteo hourly + precip |
-| Currency | 1 hour | ER-API + Gold/Silver via Yahoo |
-| Hebrew Calendar | 6 hours | Hebcal (all Jewish data) |
-| Halacha | 12 hours | Sefaria daily halacha |
-| Motivation | 2 min | Static quotes, no network |
+| Pane            | Interval   | Notes                          |
+| --------------- | ---------- | ------------------------------ |
+| Clock           | 1 min      | HH:MM, no seconds              |
+| Alerts          | 60s / 5min | 60s active, 5min idle          |
+| Market badge    | 1 min      | Pre/open/after/closed          |
+| News            | 15 min     | 17 RSS feeds via proxy         |
+| Stocks          | 5 / 30 min | 5min market open, 30min closed |
+| Calendar        | 15 min     | ICS parse + iframe fallback    |
+| Weather         | 30 min     | Open-Meteo hourly + precip     |
+| Currency        | 1 hour     | ER-API + Gold/Silver via Yahoo |
+| Hebrew Calendar | 6 hours    | Hebcal (all Jewish data)       |
+| Halacha         | 12 hours   | Sefaria daily halacha          |
+| Motivation      | 2 min      | Static quotes, no network      |
 
 ## UI Layout
 
@@ -69,24 +69,24 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 
 ## Screen Modes
 
-| Mode | Behavior |
-|------|----------|
-| `tv` (default) | Fixed viewport, scroll loops active |
-| `tablet` | Smaller fonts, tighter spacing |
-| `phone` | `overflow-y: auto`, all cards expand, scroll loops disabled, clones hidden |
+| Mode           | Behavior                                                                   |
+| -------------- | -------------------------------------------------------------------------- |
+| `tv` (default) | Fixed viewport, scroll loops active                                        |
+| `tablet`       | Smaller fonts, tighter spacing                                             |
+| `phone`        | `overflow-y: auto`, all cards expand, scroll loops disabled, clones hidden |
 
 ## Font Sizes (TV-first)
 
-| Element | Size |
-|---------|------|
-| Body | 28px |
-| Clock | 2.9em |
-| Card headers | 0.95em / 700 |
-| News items | 0.88em |
-| Stock prices | 1em |
+| Element           | Size          |
+| ----------------- | ------------- |
+| Body              | 28px          |
+| Clock             | 2.9em         |
+| Card headers      | 0.95em / 700  |
+| News items        | 0.88em        |
+| Stock prices      | 1em           |
 | Weather icon/temp | 1.6em / 1.1em |
-| Motivation | 1.0em |
-| Currency rate | 0.88em |
+| Motivation        | 1.0em         |
+| Currency rate     | 0.88em        |
 
 ## JS Constants (v7.0)
 
@@ -105,11 +105,11 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 
 **All card body content must use rectangular tile blocks, not line/list display.**
 
-| ✅ Preferred (tile grid) | ❌ Avoid (line list) |
-|--------------------------|----------------------|
-| Weather UV, wind, humidity as chips in a row | System-info `<p>label: value</p>` rows |
-| Currency pairs as 2-col grid tiles | Stacked `<div class="row">` label + value |
-| Stock stats as pill badges | Plain `<li>item</li>` list |
+| ✅ Preferred (tile grid)                     | ❌ Avoid (line list)                      |
+| -------------------------------------------- | ----------------------------------------- |
+| Weather UV, wind, humidity as chips in a row | System-info `<p>label: value</p>` rows    |
+| Currency pairs as 2-col grid tiles           | Stacked `<div class="row">` label + value |
+| Stock stats as pill badges                   | Plain `<li>item</li>` list                |
 
 **Pattern to use:**
 
@@ -130,8 +130,14 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
   align-items: center;
   gap: 2px;
 }
-.card-tile-label { font-size: 0.72em; color: var(--text-secondary); }
-.card-tile-value { font-size: 1em; font-weight: 700; }
+.card-tile-label {
+  font-size: 0.72em;
+  color: var(--text-secondary);
+}
+.card-tile-value {
+  font-size: 1em;
+  font-weight: 700;
+}
 ```
 
 **Exceptions** (inherently sequential content):

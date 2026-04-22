@@ -6,11 +6,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import {
-  recordFailure,
-  recordSuccess,
-  getBackoffDelay,
-} from "@/core/sync";
+import { recordFailure, recordSuccess, getBackoffDelay } from "@/core/sync";
 
 describe("Backoff — failure/success sequence", () => {
   it("fresh key has 1x delay (2^0 = 1)", () => {

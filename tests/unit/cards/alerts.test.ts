@@ -356,18 +356,16 @@ describe("Alerts — loadAlerts via mocked fetch", () => {
   });
 
   it("parses allorigins proxy response (contents field)", async () => {
-    vi.spyOn(globalThis, "fetch").mockImplementation(
-      async (url: RequestInfo | URL) => {
-        const urlStr = String(url);
-        if (urlStr.includes("allorigins")) {
-          return {
-            ok: true,
-            json: async () => ({ contents: JSON.stringify(FRESH) }),
-          } as Response;
-        }
-        return { ok: false, json: async () => [] } as unknown as Response;
-      },
-    );
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (url: RequestInfo | URL) => {
+      const urlStr = String(url);
+      if (urlStr.includes("allorigins")) {
+        return {
+          ok: true,
+          json: async () => ({ contents: JSON.stringify(FRESH) }),
+        } as Response;
+      }
+      return { ok: false, json: async () => [] } as unknown as Response;
+    });
     await loadAlerts();
     expect(document.querySelector(".alert-item")).not.toBeNull();
   });
@@ -610,9 +608,7 @@ describe("Alerts — loadAlerts success with new alert (full path)", () => {
     });
     await loadAlerts();
     expect(callNum).toBeGreaterThan(1);
-    expect(
-      document.getElementById("alerts-scroll")?.querySelector(".alert-item"),
-    ).not.toBeNull();
+    expect(document.getElementById("alerts-scroll")?.querySelector(".alert-item")).not.toBeNull();
   });
 
   it("handles empty data array (no alerts) gracefully", async () => {
@@ -735,7 +731,10 @@ describe("Alerts — loadAlerts catch block with stale data", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [
-        { id: "catch-001", alerts: [{ cities: ["אשדוד"], threat: 1, time: Math.floor(Date.now() / 1000) - 30 }] },
+        {
+          id: "catch-001",
+          alerts: [{ cities: ["אשדוד"], threat: 1, time: Math.floor(Date.now() / 1000) - 30 }],
+        },
       ],
     } as Response);
     await expect(loadAlerts()).resolves.not.toThrow();
@@ -764,8 +763,7 @@ describe("Alerts — notify with Notification permission granted", () => {
   });
 
   it("calls Notification with city names when isNew and permission granted", async () => {
-    const NotifMock = vi.fn() as unknown as typeof Notification &
-      ReturnType<typeof vi.fn>;
+    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
@@ -804,8 +802,7 @@ describe("Alerts — notify with Notification permission granted", () => {
   });
 
   it("filters out events with no alerts array (validation gate)", async () => {
-    const NotifMock = vi.fn() as unknown as typeof Notification &
-      ReturnType<typeof vi.fn>;
+    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
@@ -823,11 +820,9 @@ describe("Alerts — notify with Notification permission granted", () => {
       .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
 
     await loadAlerts(); // first call: valid data, notification sent
-    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
-      .length;
+    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
     await loadAlerts(); // second call: invalid data → filtered → no extra notification
-    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
-      .length;
+    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
 
     // Notification from first load was sent; no new notification from the invalid second load
     expect(callsAfterFirst).toBeGreaterThanOrEqual(0);
@@ -835,8 +830,7 @@ describe("Alerts — notify with Notification permission granted", () => {
   });
 
   it("filters out alert zones with no cities property (validation gate)", async () => {
-    const NotifMock = vi.fn() as unknown as typeof Notification &
-      ReturnType<typeof vi.fn>;
+    const NotifMock = vi.fn() as unknown as typeof Notification & ReturnType<typeof vi.fn>;
     (NotifMock as unknown as { permission: string }).permission = "granted";
     vi.stubGlobal("Notification", NotifMock);
 
@@ -854,11 +848,9 @@ describe("Alerts — notify with Notification permission granted", () => {
       .mockResolvedValueOnce({ ok: true, json: async () => data2 } as Response);
 
     await loadAlerts(); // first call: valid → possibly notifies
-    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
-      .length;
+    const callsAfterFirst = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
     await loadAlerts(); // second call: invalid zone → filtered → no new notification
-    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls
-      .length;
+    const callsAfterSecond = (NotifMock as ReturnType<typeof vi.fn>).mock.calls.length;
 
     expect(callsAfterSecond).toBe(callsAfterFirst);
   });
@@ -956,10 +948,7 @@ describe("Alerts — loadAlerts empty response else branch", () => {
     document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
     cacheDom();
 
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: true, json: async () => [] }),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => [] }));
 
     await loadAlerts();
     // empty data → else branch fires: setSync(error or ok), recordFailure
@@ -975,9 +964,7 @@ describe("Alerts — loadAlerts empty response else branch", () => {
     const nowSec = Math.floor(Date.now() / 1000);
     const makeAlert = (id: string) => ({
       ok: true,
-      json: async () => [
-        { id, alerts: [{ cities: ["תל אביב"], threat: 1, time: nowSec - 30 }] },
-      ],
+      json: async () => [{ id, alerts: [{ cities: ["תל אביב"], threat: 1, time: nowSec - 30 }] }],
     });
 
     // First call: sets _lastAlertId = "A"
@@ -1050,9 +1037,7 @@ describe("Alerts — loadAlerts data[0]?.id ?? null (line 271)", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => [
-          { alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] },
-        ],
+        json: async () => [{ alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] }],
       }),
     );
 
@@ -1126,10 +1111,15 @@ describe("Alerts — loadAlerts catch block when cSetAsync rejects (lines 291-29
     cacheDom();
     const nowTs = Math.floor(Date.now() / 1000);
     // fetch returns valid alert data (data.length > 0) → then cSetAsync rejects → outer catch fires
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => [{ id: "z1", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] }],
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { id: "z1", alerts: [{ cities: ["תל אביב"], threat: 1, time: nowTs - 10 }] },
+        ],
+      }),
+    );
     // Spy on cSetAsync from the real cache module to reject when called
     const cacheModule = await import("@/core/cache");
     vi.spyOn(cacheModule, "cSetAsync").mockImplementationOnce(() => {
@@ -1203,10 +1193,15 @@ describe("Alerts — loadAlerts catch block stale=null ternary FALSE (lines 291-
     cacheDom();
     setAlertsEnabled(true);
     const nowTs = Math.floor(Date.now() / 1000);
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => [{ id: "c1", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 10 }] }],
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { id: "c1", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 10 }] },
+        ],
+      }),
+    );
     vi.spyOn(cacheModule, "cSetAsync").mockImplementationOnce(() => {
       return Promise.reject(new Error("forced cSetAsync reject for catch stale=null coverage"));
     });
@@ -1232,10 +1227,15 @@ describe("Alerts — playBeep AudioContext unavailable (no throw)", () => {
     const nowTs = Math.floor(Date.now() / 1000);
     const { cSet: rCs } = await import("@/core/cache");
     rCs("alerts", [{ id: "old", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 60 }] }]);
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => [{ id: "new_id", alerts: [{ cities: ["חיפה"], threat: 1, time: nowTs - 5 }] }],
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { id: "new_id", alerts: [{ cities: ["חיפה"], threat: 1, time: nowTs - 5 }] },
+        ],
+      }),
+    );
     await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });
@@ -1254,10 +1254,15 @@ describe("Alerts — notify without Notification API (no throw)", () => {
     const nowTs = Math.floor(Date.now() / 1000);
     const { cSet: rCs } = await import("@/core/cache");
     rCs("alerts", [{ id: "prev", alerts: [{ cities: ["ת״א"], threat: 1, time: nowTs - 60 }] }]);
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => [{ id: "next_id", alerts: [{ cities: ["רחובות"], threat: 1, time: nowTs - 3 }] }],
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { id: "next_id", alerts: [{ cities: ["רחובות"], threat: 1, time: nowTs - 3 }] },
+        ],
+      }),
+    );
     await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });
@@ -1276,10 +1281,15 @@ describe("Alerts — notify Notification.permission not granted (no throw)", () 
     const nowTs = Math.floor(Date.now() / 1000);
     const { cSet: rCs } = await import("@/core/cache");
     rCs("alerts", [{ id: "deny1", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 120 }] }]);
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => [{ id: "deny2", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 2 }] }],
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { id: "deny2", alerts: [{ cities: ["נצרת"], threat: 1, time: nowTs - 2 }] },
+        ],
+      }),
+    );
     await expect(loadAlerts()).resolves.toBeUndefined();
   });
 });
@@ -1313,10 +1323,7 @@ describe("Alerts — fetchAlerts !res.ok falls through to next proxy", () => {
     cacheDom();
     setAlertsEnabled(true);
     // All responses are 404 (not ok)
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: false, json: async () => [] }),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, json: async () => [] }));
     await expect(loadAlerts()).resolves.toBeUndefined();
     // Sync should be 'error' (no stale data, fetch returned nothing)
   });
@@ -1463,7 +1470,10 @@ describe("Alerts — buildAlertItem Sprint 28: threat icon + age badge", () => {
 
   it("includes threat icon in the threat span text", () => {
     const now = Date.now() / 1000;
-    const ev: AlertEvent = { id: "t28a", alerts: [{ cities: ["תל אביב"], threat: 0, time: now - 30 }] };
+    const ev: AlertEvent = {
+      id: "t28a",
+      alerts: [{ cities: ["תל אביב"], threat: 0, time: now - 30 }],
+    };
     const el = buildAlertItem(ev, now, false, false);
     expect(el).not.toBeNull();
     const thrEl = el!.querySelector(".alert-threat");
@@ -1472,7 +1482,10 @@ describe("Alerts — buildAlertItem Sprint 28: threat icon + age badge", () => {
 
   it("includes .alert-age span", () => {
     const now = Date.now() / 1000;
-    const ev: AlertEvent = { id: "t28b", alerts: [{ cities: ["חיפה"], threat: 1, time: now - 300 }] };
+    const ev: AlertEvent = {
+      id: "t28b",
+      alerts: [{ cities: ["חיפה"], threat: 1, time: now - 300 }],
+    };
     const el = buildAlertItem(ev, now, false, false);
     expect(el!.querySelector(".alert-age")).not.toBeNull();
   });

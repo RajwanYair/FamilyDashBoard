@@ -17,7 +17,20 @@ import {
   serializeConfigExport,
   readFeatureFlag,
 } from "@/core/config";
-import { DEFAULT_CONFIG, isValidTheme, isValidScreenMode, isValidTempUnit, isValidFontScale, CONFIG_VERSION, isValidAlertVolume, isValidNightDimLevel, isValidNewsMaxItems, isValidTickerSpeed, isValidHour, isValidInterfaceLanguage } from "@/types/config";
+import {
+  DEFAULT_CONFIG,
+  isValidTheme,
+  isValidScreenMode,
+  isValidTempUnit,
+  isValidFontScale,
+  CONFIG_VERSION,
+  isValidAlertVolume,
+  isValidNightDimLevel,
+  isValidNewsMaxItems,
+  isValidTickerSpeed,
+  isValidHour,
+  isValidInterfaceLanguage,
+} from "@/types/config";
 
 describe("Config — loadConfig", () => {
   it("returns defaults when localStorage is empty", () => {
@@ -505,7 +518,9 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
   });
 
   it("does not modify config already at current version (v5)", () => {
-    const result = migrateConfig({ configVersion: 5, theme: "rose" as const } as Parameters<typeof migrateConfig>[0]);
+    const result = migrateConfig({ configVersion: 5, theme: "rose" as const } as Parameters<
+      typeof migrateConfig
+    >[0]);
     expect(result.configVersion).toBe(CONFIG_VERSION);
   });
 
@@ -562,14 +577,23 @@ describe("Config — migrateConfig v3→v4 (v7.10)", () => {
   });
 
   it("stocks card settings contain showPortfolio and groupBySector", () => {
-    const result = migrateConfig({ configVersion: 3, stocksShowPortfolio: false, stocksGroupBySector: false });
+    const result = migrateConfig({
+      configVersion: 3,
+      stocksShowPortfolio: false,
+      stocksGroupBySector: false,
+    });
     const ss = result.cards!["stocks"]?.settings;
     expect(ss?.["showPortfolio"]).toBe(false);
     expect(ss?.["groupBySector"]).toBe(false);
   });
 
   it("tasks card settings contain showDone, showCategories, resetHour", () => {
-    const result = migrateConfig({ configVersion: 3, tasksShowDone: false, tasksShowCategories: false, tasksResetHour: 8 });
+    const result = migrateConfig({
+      configVersion: 3,
+      tasksShowDone: false,
+      tasksShowCategories: false,
+      tasksResetHour: 8,
+    });
     const ts = result.cards!["tasks"]?.settings;
     expect(ts?.["showDone"]).toBe(false);
     expect(ts?.["showCategories"]).toBe(false);
@@ -583,7 +607,10 @@ describe("Config — migrateConfig v3→v4 (v7.10)", () => {
   });
 
   it("v4 config is not re-migrated (cards preserved)", () => {
-    const existing = { configVersion: 4 as const, cards: { weather: { settings: { showDetails: false } } } };
+    const existing = {
+      configVersion: 4 as const,
+      cards: { weather: { settings: { showDetails: false } } },
+    };
     const result = migrateConfig(existing);
     expect(result.configVersion).toBe(CONFIG_VERSION);
     expect(result.cards!["weather"]?.settings?.["showDetails"]).toBe(false);
@@ -722,7 +749,9 @@ describe("Config — serializeConfigExport (Sprint 39)", () => {
   });
 
   it("inner config.theme is preserved", () => {
-    const parsed = JSON.parse(serializeConfigExport({ ...DEFAULT_CONFIG, theme: "rose" })) as { config: { theme: string } };
+    const parsed = JSON.parse(serializeConfigExport({ ...DEFAULT_CONFIG, theme: "rose" })) as {
+      config: { theme: string };
+    };
     expect(parsed.config.theme).toBe("rose");
   });
 });
@@ -774,13 +803,19 @@ describe("Config — migrateConfig v4→v5 (Sprint 62)", () => {
   });
 
   it("merges existing featureFlags when present in raw config", () => {
-    const result = migrateConfig({ configVersion: 4, featureFlags: { customFlag: true } } as Parameters<typeof migrateConfig>[0]);
+    const result = migrateConfig({
+      configVersion: 4,
+      featureFlags: { customFlag: true },
+    } as Parameters<typeof migrateConfig>[0]);
     expect(result.featureFlags?.["customFlag"]).toBe(true);
     expect(result.featureFlags?.["workerFetch"]).toBeDefined();
   });
 
   it("does not re-run v5 migration for a current config", () => {
-    const result = migrateConfig({ configVersion: 5, featureFlags: { workerFetch: false } } as Parameters<typeof migrateConfig>[0]);
+    const result = migrateConfig({
+      configVersion: 5,
+      featureFlags: { workerFetch: false },
+    } as Parameters<typeof migrateConfig>[0]);
     // featureFlags should remain as-is (not overwritten)
     expect(result.featureFlags?.["workerFetch"]).toBe(false);
   });
@@ -790,19 +825,31 @@ describe("Config — migrateConfig v4→v5 (Sprint 62)", () => {
 
 describe("migrateConfig v5→v6 (Sprint 99)", () => {
   it("copies tempUnit into cards.weather.settings", () => {
-    const result = migrateConfig({ configVersion: 5, tempUnit: "F" } as Parameters<typeof migrateConfig>[0]);
+    const result = migrateConfig({ configVersion: 5, tempUnit: "F" } as Parameters<
+      typeof migrateConfig
+    >[0]);
     expect(result.configVersion).toBe(CONFIG_VERSION);
-    expect((result.cards?.["weather"]?.settings as Record<string, unknown>)?.["tempUnit"]).toBe("F");
+    expect((result.cards?.["weather"]?.settings as Record<string, unknown>)?.["tempUnit"]).toBe(
+      "F",
+    );
   });
 
   it("copies homeCity into cards.weather.settings", () => {
-    const result = migrateConfig({ configVersion: 5, homeCity: "tel-aviv" } as Parameters<typeof migrateConfig>[0]);
-    expect((result.cards?.["weather"]?.settings as Record<string, unknown>)?.["homeCity"]).toBe("tel-aviv");
+    const result = migrateConfig({ configVersion: 5, homeCity: "tel-aviv" } as Parameters<
+      typeof migrateConfig
+    >[0]);
+    expect((result.cards?.["weather"]?.settings as Record<string, unknown>)?.["homeCity"]).toBe(
+      "tel-aviv",
+    );
   });
 
   it("copies motivationInterval into cards.motivation.settings", () => {
-    const result = migrateConfig({ configVersion: 5, motivationInterval: 15 } as Parameters<typeof migrateConfig>[0]);
-    expect((result.cards?.["motivation"]?.settings as Record<string, unknown>)?.["interval"]).toBe(15);
+    const result = migrateConfig({ configVersion: 5, motivationInterval: 15 } as Parameters<
+      typeof migrateConfig
+    >[0]);
+    expect((result.cards?.["motivation"]?.settings as Record<string, unknown>)?.["interval"]).toBe(
+      15,
+    );
   });
 
   it("copies countdownCard* props into cards.countdown.settings", () => {

@@ -12,13 +12,13 @@ Use this skill when the task is not just "make a fetch work", but "ship a comple
 
 ## Step 1 — Plan
 
-| Decision | Value |
-|----------|-------|
-| Card ID | kebab-case slug used in `data-card-id`, registry, sync dots |
-| Cache key | Short unique string passed to `cGet`/`cSet` (e.g. `"weather"`, `"parasha"`) |
-| Cache TTL | Use existing `INTERVALS.*` constant from `src/core/constants.ts`, or add a new one |
-| Fetch method | `fetchJSONWithWorker<T>()` or the current worker-backed helper when available; `fetchWithTimeout()` only when a worker route does not fit |
-| Refresh interval | Match to TTL — pass to `scheduleCard()` |
+| Decision         | Value                                                                                                                                     |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Card ID          | kebab-case slug used in `data-card-id`, registry, sync dots                                                                               |
+| Cache key        | Short unique string passed to `cGet`/`cSet` (e.g. `"weather"`, `"parasha"`)                                                               |
+| Cache TTL        | Use existing `INTERVALS.*` constant from `src/core/constants.ts`, or add a new one                                                        |
+| Fetch method     | `fetchJSONWithWorker<T>()` or the current worker-backed helper when available; `fetchWithTimeout()` only when a worker route does not fit |
+| Refresh interval | Match to TTL — pass to `scheduleCard()`                                                                                                   |
 
 ## Step 2 — Create Card Module
 

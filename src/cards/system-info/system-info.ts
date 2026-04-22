@@ -104,17 +104,8 @@ export async function renderSystemInfo(): Promise<void> {
   const battery = await getBatteryInfo();
   if (battery) {
     const pct = Math.round(battery.level * 100);
-    const icon = battery.charging
-      ? "⚡"
-      : pct > 50
-        ? "🔋"
-        : pct > 20
-          ? "🪫"
-          : "🔴";
-    setText(
-      "sysinfo-battery",
-      `${icon} ${pct}%${battery.charging ? " (טוען)" : ""}`,
-    );
+    const icon = battery.charging ? "⚡" : pct > 50 ? "🔋" : pct > 20 ? "🪫" : "🔴";
+    setText("sysinfo-battery", `${icon} ${pct}%${battery.charging ? " (טוען)" : ""}`);
   } else {
     setText("sysinfo-battery", "—");
   }
@@ -153,8 +144,7 @@ export async function renderSystemInfo(): Promise<void> {
     platform =
       ua.brands
         .filter(
-          (b: NavigatorUABrandVersion) =>
-            !b.brand.includes("Not") && !b.brand.includes("Chromium"),
+          (b: NavigatorUABrandVersion) => !b.brand.includes("Not") && !b.brand.includes("Chromium"),
         )
         .map((b: NavigatorUABrandVersion) => `${b.brand} ${b.version}`)
         .join(", ") || ua.platform;
@@ -193,11 +183,8 @@ export async function renderSystemInfo(): Promise<void> {
 
   // F9 (v7.3): Network RTT tile — prefer Connection API, fallback to navigation timing
   const rttTile =
-    (document
-      .getElementById("sysinfo-rtt")
-      ?.closest(".sysinfo-tile") as HTMLElement) ?? null;
-  if (rttTile)
-    rttTile.style.display = loadConfig().sysInfoShowRtt ? "" : "none";
+    (document.getElementById("sysinfo-rtt")?.closest(".sysinfo-tile") as HTMLElement) ?? null;
+  if (rttTile) rttTile.style.display = loadConfig().sysInfoShowRtt ? "" : "none";
   const rttConn = (navigator as NavigatorWithExtras).connection;
   if (rttConn?.rtt !== undefined && rttConn.rtt > 0) {
     setText("sysinfo-rtt", `${rttConn.rtt}ms`);
@@ -214,9 +201,11 @@ export async function renderSystemInfo(): Promise<void> {
   }
 
   // Sprint 29: JS Heap memory (Chrome only — performance.memory)
-  const perfMem = (performance as Performance & {
-    memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number };
-  }).memory;
+  const perfMem = (
+    performance as Performance & {
+      memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number };
+    }
+  ).memory;
   if (perfMem) {
     setText("sysinfo-heap", formatHeapMb(perfMem.usedJSHeapSize, perfMem.jsHeapSizeLimit));
   }
@@ -224,7 +213,8 @@ export async function renderSystemInfo(): Promise<void> {
   // Sprint 29: GPU renderer via WebGL debug extension
   try {
     const canvas = document.createElement("canvas");
-    const gl = (canvas.getContext("webgl") ?? canvas.getContext("experimental-webgl")) as WebGLRenderingContext | null;
+    const gl = (canvas.getContext("webgl") ??
+      canvas.getContext("experimental-webgl")) as WebGLRenderingContext | null;
     if (gl) {
       const dbgInfo = gl.getExtension("WEBGL_debug_renderer_info");
       if (dbgInfo) {

@@ -14,43 +14,43 @@ Before making internal decisions, we studied five top-tier open-source dashboard
 
 ### Comparison Table
 
-| Dimension | **FamilyDashBoard** | **Homepage** (gethomepage) | **Dashy** (Lissy93) | **Homer** (bastienwirtz) | **Homarr** (homarr-labs) |
-| --- | --- | --- | --- | --- | --- |
-| **Stars** | ~30 (niche) | 29.6 K | 24.7 K | 11.3 K | 7.1 K |
-| **Purpose** | Family info display (TV/wall) | Service dashboard | Personal dashboard | Static homepage | Homelab management |
-| **Frontend** | Vanilla TypeScript + Vite | Next.js (React) | Vue 2 → 3 | Vue 3 + Vite | Next.js + Mantine |
-| **CSS** | Vanilla CSS `@layer` tokens | Tailwind CSS | SCSS + themes | SCSS + themes | Mantine component CSS |
-| **Backend** | Cloudflare Worker (edge) | Node.js proxied API | Express + Node | None (static YAML) | Node.js + Drizzle ORM |
-| **Database** | None (IDB + localStorage) | None (YAML config) | None (YAML / cloud KV) | None (YAML) | SQLite via Drizzle |
-| **Test suite** | 3053+ tests / Vitest | Vitest | Vitest (recent) | None | Vitest |
-| **TypeScript** | 100% strict TS 5.9 | JavaScript 99% | Vue 68% / JS 22% | Vue 86% / JS 5% | TypeScript 98% |
-| **Runtime deps** | Zero | react, next, tailwind, etc. | vue, axios, etc. | vue, lodash, etc. | next, mantine, trpc, drizzle |
-| **Themes** | 6 dark themes | CSS variables + custom | 50+ built-in | Custom YAML themes | Mantine theming |
-| **i18n** | Hebrew + English (bilingual) | 40+ languages (Crowdin) | 20+ languages | YAML-based | 30+ languages (Crowdin) |
-| **Docker** | N/A (static PWA) | Docker-first | Docker + bare metal | Docker + static zip | Docker-first |
-| **Service integrations** | 11 live-data cards | 100+ service widgets | 50+ widgets | Smart cards (limited) | 30+ integrations |
-| **Offline / PWA** | Full SW + IDB + stale cache | No | Basic PWA | Installable PWA | No |
-| **RTL support** | Native Hebrew RTL-first | Partial (via i18n) | Partial | No | Partial |
-| **Auth** | None (static, intentional) | Host check / reverse proxy | Keycloak + basic auth | None | OIDC / credentials |
-| **Config** | UI panel + JSON export | YAML + Docker labels | YAML + UI editor | YAML | UI drag-and-drop |
-| **Visual regression** | None (planned) | None | None | None | Argos CI |
-| **CORS strategy** | Worker proxy (edge) | Server-side proxy | CORS proxy chain | None needed | Server-side proxy |
-| **CI quality gates** | Typecheck + lint + test + bundle | Docker build + tests | Docker build | Build only | Build + tests |
-| **License** | MIT | GPL-3.0 | MIT | Apache-2.0 | MIT |
+| Dimension                | **FamilyDashBoard**              | **Homepage** (gethomepage)  | **Dashy** (Lissy93)    | **Homer** (bastienwirtz) | **Homarr** (homarr-labs)     |
+| ------------------------ | -------------------------------- | --------------------------- | ---------------------- | ------------------------ | ---------------------------- |
+| **Stars**                | ~30 (niche)                      | 29.6 K                      | 24.7 K                 | 11.3 K                   | 7.1 K                        |
+| **Purpose**              | Family info display (TV/wall)    | Service dashboard           | Personal dashboard     | Static homepage          | Homelab management           |
+| **Frontend**             | Vanilla TypeScript + Vite        | Next.js (React)             | Vue 2 → 3              | Vue 3 + Vite             | Next.js + Mantine            |
+| **CSS**                  | Vanilla CSS `@layer` tokens      | Tailwind CSS                | SCSS + themes          | SCSS + themes            | Mantine component CSS        |
+| **Backend**              | Cloudflare Worker (edge)         | Node.js proxied API         | Express + Node         | None (static YAML)       | Node.js + Drizzle ORM        |
+| **Database**             | None (IDB + localStorage)        | None (YAML config)          | None (YAML / cloud KV) | None (YAML)              | SQLite via Drizzle           |
+| **Test suite**           | 3053+ tests / Vitest             | Vitest                      | Vitest (recent)        | None                     | Vitest                       |
+| **TypeScript**           | 100% strict TS 5.9               | JavaScript 99%              | Vue 68% / JS 22%       | Vue 86% / JS 5%          | TypeScript 98%               |
+| **Runtime deps**         | Zero                             | react, next, tailwind, etc. | vue, axios, etc.       | vue, lodash, etc.        | next, mantine, trpc, drizzle |
+| **Themes**               | 6 dark themes                    | CSS variables + custom      | 50+ built-in           | Custom YAML themes       | Mantine theming              |
+| **i18n**                 | Hebrew + English (bilingual)     | 40+ languages (Crowdin)     | 20+ languages          | YAML-based               | 30+ languages (Crowdin)      |
+| **Docker**               | N/A (static PWA)                 | Docker-first                | Docker + bare metal    | Docker + static zip      | Docker-first                 |
+| **Service integrations** | 11 live-data cards               | 100+ service widgets        | 50+ widgets            | Smart cards (limited)    | 30+ integrations             |
+| **Offline / PWA**        | Full SW + IDB + stale cache      | No                          | Basic PWA              | Installable PWA          | No                           |
+| **RTL support**          | Native Hebrew RTL-first          | Partial (via i18n)          | Partial                | No                       | Partial                      |
+| **Auth**                 | None (static, intentional)       | Host check / reverse proxy  | Keycloak + basic auth  | None                     | OIDC / credentials           |
+| **Config**               | UI panel + JSON export           | YAML + Docker labels        | YAML + UI editor       | YAML                     | UI drag-and-drop             |
+| **Visual regression**    | None (planned)                   | None                        | None                   | None                     | Argos CI                     |
+| **CORS strategy**        | Worker proxy (edge)              | Server-side proxy           | CORS proxy chain       | None needed              | Server-side proxy            |
+| **CI quality gates**     | Typecheck + lint + test + bundle | Docker build + tests        | Docker build           | Build only               | Build + tests                |
+| **License**              | MIT                              | GPL-3.0                     | MIT                    | Apache-2.0               | MIT                          |
 
 ### Patterns to Harvest
 
-| Pattern | Source | How We Adapt It |
-| --- | --- | --- |
-| **Docker label auto-discovery** | Homepage | Not applicable (no Docker management), but the *plugin registry* concept is relevant: cards should self-describe their config schema, data needs, and refresh contract — which we already have via `CardRegistryEntry` + `configSchema`. Solidify this as our "service discovery." |
-| **100+ widget ecosystem** | Homepage, Dashy | Our 11 cards are deep, not broad. We do not need 100 widgets. But we should make adding a new card trivially easy (template + skill + test scaffold). The `add-api` skill exists — finish it. |
-| **50+ built-in themes** | Dashy | 6 themes is correct for a TV dashboard. More themes = more visual QA surface. Instead, make the 6 themes *flawless* with automated screenshot regression. |
-| **Crowdin / 40+ languages** | Homepage, Homarr | Our bilingual (Hebrew + English) model is correct for a family product. Crowdin is overkill. But our i18n infrastructure should support adding a language without touching every file — which the `i18n.ts` module already enables. |
-| **Visual regression (Argos CI)** | Homarr | Adopt Playwright screenshot tests. This is the single biggest quality gap versus Homarr. |
-| **Database-backed config** | Homarr (Drizzle/SQLite) | We do not need a database. Our config model (localStorage + IDB + JSON export) is correct for a single-device static PWA. But we should harden import/export validation. |
-| **YAML config + UI editor** | Homer, Dashy | Our UI-first config panel is *better* than YAML editing for non-technical family members. Double down on the config panel quality. |
-| **Zero-install static builds** | Homer | We already have `dist.zip` + GitHub Pages. Add a "download and run" section to README for non-technical users. |
-| **Cloud backup and sync** | Dashy | Consider optional encrypted config backup to a personal URL (not a third-party service). Low priority — the product is single-device. |
+| Pattern                          | Source                  | How We Adapt It                                                                                                                                                                                                                                                                    |
+| -------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Docker label auto-discovery**  | Homepage                | Not applicable (no Docker management), but the _plugin registry_ concept is relevant: cards should self-describe their config schema, data needs, and refresh contract — which we already have via `CardRegistryEntry` + `configSchema`. Solidify this as our "service discovery." |
+| **100+ widget ecosystem**        | Homepage, Dashy         | Our 11 cards are deep, not broad. We do not need 100 widgets. But we should make adding a new card trivially easy (template + skill + test scaffold). The `add-api` skill exists — finish it.                                                                                      |
+| **50+ built-in themes**          | Dashy                   | 6 themes is correct for a TV dashboard. More themes = more visual QA surface. Instead, make the 6 themes _flawless_ with automated screenshot regression.                                                                                                                          |
+| **Crowdin / 40+ languages**      | Homepage, Homarr        | Our bilingual (Hebrew + English) model is correct for a family product. Crowdin is overkill. But our i18n infrastructure should support adding a language without touching every file — which the `i18n.ts` module already enables.                                                |
+| **Visual regression (Argos CI)** | Homarr                  | Adopt Playwright screenshot tests. This is the single biggest quality gap versus Homarr.                                                                                                                                                                                           |
+| **Database-backed config**       | Homarr (Drizzle/SQLite) | We do not need a database. Our config model (localStorage + IDB + JSON export) is correct for a single-device static PWA. But we should harden import/export validation.                                                                                                           |
+| **YAML config + UI editor**      | Homer, Dashy            | Our UI-first config panel is _better_ than YAML editing for non-technical family members. Double down on the config panel quality.                                                                                                                                                 |
+| **Zero-install static builds**   | Homer                   | We already have `dist.zip` + GitHub Pages. Add a "download and run" section to README for non-technical users.                                                                                                                                                                     |
+| **Cloud backup and sync**        | Dashy                   | Consider optional encrypted config backup to a personal URL (not a third-party service). Low priority — the product is single-device.                                                                                                                                              |
 
 ### Our Unique Strengths (Protect and Amplify)
 
@@ -70,16 +70,16 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 
 ### Success Metrics
 
-| Area | Target | Current |
-| --- | --- | --- |
-| Time to first meaningful content | < 1.5 s on cached desktop browser | ~1.2 s (meets) |
-| Empty-card rate after boot | 0 for cached sessions | ~0 (meets) |
-| Upstream outage resilience | Stale or fallback for every card | Partial (some cards lack graceful degradation) |
-| Production JS size | < 200 KB gzip (explicit budget) | Tracked but no formal gzip budget |
-| Accessibility | Lighthouse >= 95 | Not measured in CI |
-| Visual regressions | Screenshot coverage across all themes x screen modes | None |
-| Documentation drift | Architecture updated in same release as structural changes | Mostly met |
-| Test suite health | 0 failures, < 30 s total run time | 0 failures, ~45 s run time |
+| Area                             | Target                                                     | Current                                        |
+| -------------------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| Time to first meaningful content | < 1.5 s on cached desktop browser                          | ~1.2 s (meets)                                 |
+| Empty-card rate after boot       | 0 for cached sessions                                      | ~0 (meets)                                     |
+| Upstream outage resilience       | Stale or fallback for every card                           | Partial (some cards lack graceful degradation) |
+| Production JS size               | < 200 KB gzip (explicit budget)                            | Tracked but no formal gzip budget              |
+| Accessibility                    | Lighthouse >= 95                                           | Not measured in CI                             |
+| Visual regressions               | Screenshot coverage across all themes x screen modes       | None                                           |
+| Documentation drift              | Architecture updated in same release as structural changes | Mostly met                                     |
+| Test suite health                | 0 failures, < 30 s total run time                          | 0 failures, ~45 s run time                     |
 
 ---
 
@@ -87,81 +87,81 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 
 ### 3.1 Frontend Language and Build
 
-| Decision | Current | Verdict | Rationale |
-| --- | --- | --- | --- |
-| TypeScript | TS 5.9 strict | **Keep** | Highest-leverage choice. All competitors trend toward TS. |
-| Vite | 8.x | **Keep** | Fast, stable, native TS. No reason to switch to Turbopack/Rspack yet. |
-| Zero runtime deps | 0 deps | **Keep with exceptions** | Client stays zero-dep. Worker and build tools may adopt Zod (schema validation). |
-| Vanilla CSS | `@layer` + tokens | **Keep** | Tailwind adds 50+ KB and a build step for minimal gain on a TV dashboard. Container queries and `color-mix()` give us modern capabilities. |
-| No framework (React/Vue) | Vanilla DOM | **Keep** | Our rendering is imperative and card-scoped. A framework adds bundle size, complexity, and contributor friction for no product gain. See ADR-005. |
+| Decision                 | Current           | Verdict                  | Rationale                                                                                                                                         |
+| ------------------------ | ----------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TypeScript               | TS 5.9 strict     | **Keep**                 | Highest-leverage choice. All competitors trend toward TS.                                                                                         |
+| Vite                     | 8.x               | **Keep**                 | Fast, stable, native TS. No reason to switch to Turbopack/Rspack yet.                                                                             |
+| Zero runtime deps        | 0 deps            | **Keep with exceptions** | Client stays zero-dep. Worker and build tools may adopt Zod (schema validation).                                                                  |
+| Vanilla CSS              | `@layer` + tokens | **Keep**                 | Tailwind adds 50+ KB and a build step for minimal gain on a TV dashboard. Container queries and `color-mix()` give us modern capabilities.        |
+| No framework (React/Vue) | Vanilla DOM       | **Keep**                 | Our rendering is imperative and card-scoped. A framework adds bundle size, complexity, and contributor friction for no product gain. See ADR-005. |
 
 ### 3.2 Frontend Architecture
 
-| Decision | Current | Verdict | Rationale |
-| --- | --- | --- | --- |
-| `FdbCard` base class | Foundation exists, partial adoption | **Complete migration** | Half the cards still use `initX()` + file-scoped state. This dual model is the biggest maintainability risk. |
-| Static HTML shells | `index.html` defines all cards | **Migrate to registry-driven** | `createShell()` exists. Cards should be DOM-generated from the registry, not hardcoded HTML. |
-| EventTarget state store | `state.ts` (config/cache/ui) | **Keep and expand** | Simple, zero-dep, debuggable. Expand to cover card-level state. |
-| Shadow DOM | Decided against (ADR-001) | **Keep decision: No Shadow DOM** | Confirmed. Shadow DOM breaks global theming, diagnostics, and TV readability at distance. |
-| Service Worker | `sw.js` with APP_SHELL + API cache | **Keep, modernize** | SW code is vanilla JS. Consider migrating to TypeScript + Workbox-inspired patterns (without Workbox dependency). |
-| CSS `@layer` architecture | tokens, themes, base, layout, components, animations | **Keep** | Best-in-class approach. No other dashboard project uses cascade layers. |
+| Decision                  | Current                                              | Verdict                          | Rationale                                                                                                         |
+| ------------------------- | ---------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `FdbCard` base class      | Foundation exists, partial adoption                  | **Complete migration**           | Half the cards still use `initX()` + file-scoped state. This dual model is the biggest maintainability risk.      |
+| Static HTML shells        | `index.html` defines all cards                       | **Migrate to registry-driven**   | `createShell()` exists. Cards should be DOM-generated from the registry, not hardcoded HTML.                      |
+| EventTarget state store   | `state.ts` (config/cache/ui)                         | **Keep and expand**              | Simple, zero-dep, debuggable. Expand to cover card-level state.                                                   |
+| Shadow DOM                | Decided against (ADR-001)                            | **Keep decision: No Shadow DOM** | Confirmed. Shadow DOM breaks global theming, diagnostics, and TV readability at distance.                         |
+| Service Worker            | `sw.js` with APP_SHELL + API cache                   | **Keep, modernize**              | SW code is vanilla JS. Consider migrating to TypeScript + Workbox-inspired patterns (without Workbox dependency). |
+| CSS `@layer` architecture | tokens, themes, base, layout, components, animations | **Keep**                         | Best-in-class approach. No other dashboard project uses cascade layers.                                           |
 
 ### 3.3 Backend and Infrastructure
 
-| Decision | Current | Verdict | Rationale |
-| --- | --- | --- | --- |
-| Cloudflare Worker | Single worker, route-based | **Keep, enhance** | Edge deployment, free tier, eliminates CORS. But: needs schema validation, KV caching, and structured error responses. |
-| No database | localStorage + IDB | **Keep for now** | A database (D1, KV) becomes relevant only for multi-device sync or provider health history. Not needed yet. |
-| GitHub Pages deploy | Static `dist/` | **Keep** | Zero-cost, zero-ops. Perfect for this product. |
-| CORS proxy chain (fallback) | allorigins, codetabs, corsproxy.io | **Deprecate in production** | `__USE_PROXIES__=false` already disables in prod builds. Remove proxy code from production bundles entirely via tree-shaking. |
-| Worker response normalization | Thin proxy today | **Enhance significantly** | Worker should return normalized domain shapes, not raw upstream JSON. This is the single biggest data architecture improvement available. |
+| Decision                      | Current                            | Verdict                     | Rationale                                                                                                                                 |
+| ----------------------------- | ---------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Cloudflare Worker             | Single worker, route-based         | **Keep, enhance**           | Edge deployment, free tier, eliminates CORS. But: needs schema validation, KV caching, and structured error responses.                    |
+| No database                   | localStorage + IDB                 | **Keep for now**            | A database (D1, KV) becomes relevant only for multi-device sync or provider health history. Not needed yet.                               |
+| GitHub Pages deploy           | Static `dist/`                     | **Keep**                    | Zero-cost, zero-ops. Perfect for this product.                                                                                            |
+| CORS proxy chain (fallback)   | allorigins, codetabs, corsproxy.io | **Deprecate in production** | `__USE_PROXIES__=false` already disables in prod builds. Remove proxy code from production bundles entirely via tree-shaking.             |
+| Worker response normalization | Thin proxy today                   | **Enhance significantly**   | Worker should return normalized domain shapes, not raw upstream JSON. This is the single biggest data architecture improvement available. |
 
 ### 3.4 Data Sources and External APIs
 
-| Provider | API | Current Approach | Verdict | Action |
-| --- | --- | --- | --- | --- |
-| Weather | Open-Meteo | Worker-proxied, well-structured | **Keep** | Add normalized `WeatherResponse` from worker. Add backup provider evaluation. |
-| Stocks | Yahoo Finance v8 | Worker-proxied, unofficial API | **Keep behind abstraction** | High risk of breakage. Add provider adapter. Evaluate IEX Cloud or Polygon.io as backup. |
-| Currency | ER-API + ExchangeRate-API | Dual upstream in worker | **Keep** | Add gold/silver from a dedicated metals API. Worker normalization. |
-| News | 17 RSS feeds | Direct fetch + proxy fallback | **Move aggregation to worker** | Worker should aggregate, deduplicate, and return a single normalized news payload. Biggest change in this domain. |
-| Calendar | Google ICS | Worker-proxied | **Keep** | Add ICS validation in worker. Handle recurring events better. |
-| Hebrew Calendar | Hebcal | Worker-proxied | **Keep** | Normalize zmanim response. Cache holidays yearly. |
-| Alerts (Tzeva Adom) | tzevaadom.co.il | Worker-proxied | **Keep** | Add health/backoff policy. Add degraded-state UX. |
-| Learning (Sefaria) | Sefaria API | Worker-proxied | **Keep** | Add stronger response validation. |
-| Bitcoin | CoinGecko | Direct fetch | **Move to worker** | CoinGecko rate-limits aggressively. Worker should cache and normalize. |
-| Background Images | Unsplash-style (HTTPS) | Direct fetch, 30-min rotation | **Keep** | Consider adding config for custom image URLs. |
+| Provider            | API                       | Current Approach                | Verdict                        | Action                                                                                                            |
+| ------------------- | ------------------------- | ------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Weather             | Open-Meteo                | Worker-proxied, well-structured | **Keep**                       | Add normalized `WeatherResponse` from worker. Add backup provider evaluation.                                     |
+| Stocks              | Yahoo Finance v8          | Worker-proxied, unofficial API  | **Keep behind abstraction**    | High risk of breakage. Add provider adapter. Evaluate IEX Cloud or Polygon.io as backup.                          |
+| Currency            | ER-API + ExchangeRate-API | Dual upstream in worker         | **Keep**                       | Add gold/silver from a dedicated metals API. Worker normalization.                                                |
+| News                | 17 RSS feeds              | Direct fetch + proxy fallback   | **Move aggregation to worker** | Worker should aggregate, deduplicate, and return a single normalized news payload. Biggest change in this domain. |
+| Calendar            | Google ICS                | Worker-proxied                  | **Keep**                       | Add ICS validation in worker. Handle recurring events better.                                                     |
+| Hebrew Calendar     | Hebcal                    | Worker-proxied                  | **Keep**                       | Normalize zmanim response. Cache holidays yearly.                                                                 |
+| Alerts (Tzeva Adom) | tzevaadom.co.il           | Worker-proxied                  | **Keep**                       | Add health/backoff policy. Add degraded-state UX.                                                                 |
+| Learning (Sefaria)  | Sefaria API               | Worker-proxied                  | **Keep**                       | Add stronger response validation.                                                                                 |
+| Bitcoin             | CoinGecko                 | Direct fetch                    | **Move to worker**             | CoinGecko rate-limits aggressively. Worker should cache and normalize.                                            |
+| Background Images   | Unsplash-style (HTTPS)    | Direct fetch, 30-min rotation   | **Keep**                       | Consider adding config for custom image URLs.                                                                     |
 
 ### 3.5 Testing and Quality
 
-| Decision | Current | Verdict | Rationale |
-| --- | --- | --- | --- |
-| Vitest + happy-dom | 3053+ tests, 87 suites | **Keep, consolidate** | Test count is high but run time is too slow (~45 s). Consolidate per Stream G.1. |
-| No E2E tests | None | **Add Playwright** | The biggest quality gap. Screenshot regression across 6 themes x 3 screen modes = 18 baseline images. |
-| No Lighthouse CI | None | **Add** | Accessibility and performance budgets should be CI-enforced. |
-| Coverage thresholds | 90/81/90/92 | **Keep** | Already strong. Raise branches to 85 after consolidation. |
-| ESLint 10 + typescript-eslint 8 | Flat config, 0 warnings | **Keep** | Best-in-class lint setup. |
-| Markdownlint | 0 errors | **Keep** | Important for doc quality. |
+| Decision                        | Current                 | Verdict               | Rationale                                                                                             |
+| ------------------------------- | ----------------------- | --------------------- | ----------------------------------------------------------------------------------------------------- |
+| Vitest + happy-dom              | 3053+ tests, 87 suites  | **Keep, consolidate** | Test count is high but run time is too slow (~45 s). Consolidate per Stream G.1.                      |
+| No E2E tests                    | None                    | **Add Playwright**    | The biggest quality gap. Screenshot regression across 6 themes x 3 screen modes = 18 baseline images. |
+| No Lighthouse CI                | None                    | **Add**               | Accessibility and performance budgets should be CI-enforced.                                          |
+| Coverage thresholds             | 90/81/90/92             | **Keep**              | Already strong. Raise branches to 85 after consolidation.                                             |
+| ESLint 10 + typescript-eslint 8 | Flat config, 0 warnings | **Keep**              | Best-in-class lint setup.                                                                             |
+| Markdownlint                    | 0 errors                | **Keep**              | Important for doc quality.                                                                            |
 
 ### 3.6 Documentation
 
-| Decision | Current | Verdict | Rationale |
-| --- | --- | --- | --- |
-| ARCHITECTURE.md | Accurate, detailed | **Keep, add SVG diagrams** | Needs lifecycle, cache-layer, and CI pipeline SVGs. |
-| ADR folder | 6 ADRs | **Keep, add more** | Missing ADRs for: worker normalization strategy, news aggregation, config schema evolution. |
-| README | Comprehensive with SVG assets | **Keep, tighten** | Could be shorter for new users. Add quick-start copy-paste block. |
-| ROADMAP.md | This document | **This is the rewrite** | Previous version had accumulated drift. |
-| Inline docs | Co-located per module | **Keep** | JSDoc on exported functions, no excessive internal comments. |
-| docs/ folder | ADRs + index | **Expand** | Add `docs/data-sources.md`, `docs/adding-a-card.md`, `docs/deployment.md`. |
+| Decision        | Current                       | Verdict                    | Rationale                                                                                   |
+| --------------- | ----------------------------- | -------------------------- | ------------------------------------------------------------------------------------------- |
+| ARCHITECTURE.md | Accurate, detailed            | **Keep, add SVG diagrams** | Needs lifecycle, cache-layer, and CI pipeline SVGs.                                         |
+| ADR folder      | 6 ADRs                        | **Keep, add more**         | Missing ADRs for: worker normalization strategy, news aggregation, config schema evolution. |
+| README          | Comprehensive with SVG assets | **Keep, tighten**          | Could be shorter for new users. Add quick-start copy-paste block.                           |
+| ROADMAP.md      | This document                 | **This is the rewrite**    | Previous version had accumulated drift.                                                     |
+| Inline docs     | Co-located per module         | **Keep**                   | JSDoc on exported functions, no excessive internal comments.                                |
+| docs/ folder    | ADRs + index                  | **Expand**                 | Add `docs/data-sources.md`, `docs/adding-a-card.md`, `docs/deployment.md`.                  |
 
 ### 3.7 Configuration and Tooling
 
-| Decision | Current | Verdict | Rationale |
-| --- | --- | --- | --- |
-| Parent `MyScripts/` install | Shared `node_modules/` | **Keep, formalize** | All TS projects should extend shared configs. See Stream I-0. |
-| No monorepo tool (npm workspaces, pnpm, etc.) | Flat structure | **Keep** | Node module resolution walk-up is sufficient and simpler. |
-| Shared ESLint/TS/Vitest configs | `MyScripts/tooling/` | **Expand** | Other projects (BudgetManager, CrossTideWeb, Wedding) should consume shared configs. |
-| VS Code as primary editor | `.vscode/` config | **Keep, complete** | Add `launch.json`, audit deprecated settings. |
-| GitHub Actions CI | 6 workflows | **Keep, harden** | Add explicit `permissions`, `concurrency`, SLSA attestations. |
+| Decision                                      | Current                | Verdict             | Rationale                                                                            |
+| --------------------------------------------- | ---------------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| Parent `MyScripts/` install                   | Shared `node_modules/` | **Keep, formalize** | All TS projects should extend shared configs. See Stream I-0.                        |
+| No monorepo tool (npm workspaces, pnpm, etc.) | Flat structure         | **Keep**            | Node module resolution walk-up is sufficient and simpler.                            |
+| Shared ESLint/TS/Vitest configs               | `MyScripts/tooling/`   | **Expand**          | Other projects (BudgetManager, CrossTideWeb, Wedding) should consume shared configs. |
+| VS Code as primary editor                     | `.vscode/` config      | **Keep, complete**  | Add `launch.json`, audit deprecated settings.                                        |
+| GitHub Actions CI                             | 6 workflows            | **Keep, harden**    | Add explicit `permissions`, `concurrency`, SLSA attestations.                        |
 
 ---
 
@@ -169,58 +169,97 @@ FamilyDashBoard is a best-in-class always-on family command center: fast, reliab
 
 ### Completed Streams
 
-| Release | Key Deliverables |
-| --- | --- |
-| v7.13.0 | README rewrite, ARCHITECTURE.md, ADRs, CardRuntime, domain types, config validation |
-| v7.14.0 | Domain type tests, provider health model, diag table, coldStart, migrateLsToIdb |
-| v7.15.0 | createSkeleton/Empty/Error, FdbCard.withLoading, CardShell, weekday dimmer |
-| v7.16.0 | bundle-trend, config v5, fetchWithRetry, FdbCard.emit, registry createShell |
-| v7.17.0 | Worker normalization, FdbCard helpers, API.md, release report |
-| v7.18.0 | Provider adapters, typed card config, config auto-renderer, CSS card anatomy, theme audit, offline banner |
-| v7.19.0 | Per-card configSchema, config dirty tracking, observability suite, provider latency |
-| v7.19.1 | Tooling modernization, bilingual interface, config migration hardening |
-| v7.20.0 | ROADMAP strategic overhaul, worker-first fetch resilience, provider adapter hardening, shared tooling foundation |
-| v7.21.0 | Shared test helpers, normalized worker types, node-ts-app tooling, instruction files, .nvmrc, agent/prompts, card audit, loading CSS, SW constants |
-| v8.0.0 | Production readiness: test consolidation (it.each), dead file cleanup, config modernization, hardened .gitignore, full version bump across 15 files |
-| v8.1.0 | Stream G.1 shared helpers (tests/helpers/); CI hardening (SW check + SLSA); ADR-007/008/009; docs/adding-a-card.md + deployment.md; release-report gate checks; api-integrator agent modernization; useFakeTimers audit (all 50+ legitimate); .vscode Vitest tasks + extensions |
-| v8.2.0 | Stream G.1 `vi.resetModules()` elimination (bg-images, motivation, news, currency, fetch, config-panel — 80+ calls removed); `_resetForTest()` pattern established; SVG architecture diagrams (ci-cd, cache-layers); quality-reviewer modernized (context table, failure playbook); CONTRIBUTING.md PowerShell table; workflows README permissions matrix + secrets inventory + concurrency policy |
-| v8.3.0 | Stream G.2 Playwright E2E config + smoke suite; Stream SW per-origin API cache TTL (CACHE_TTL_BY_ORIGIN); Stream I dashboard-designer agent — error playbook + verification; Stream W worker WorkerResponse<T> envelope (workerEnvelope helper + 4 tests); Stream H README Quick Start + Cloudflare Pages preview deploy workflow; Stream B2 FdbCountdown FdbCard migration (fdb-countdown.ts + 3 tests); card-lifecycle.svg + theme-cascade.svg docs; CHANGELOG/badge fixes for v8.2.0 |
-| v8.4.0 | Stream B2 COMPLETE: FdbCard migration for system-info, currency, hebrew-cal, calendar, alerts (11/11) + destroy lifecycle; Stream G.2 critical-flow Playwright tests + Lighthouse CI; Stream W Zod upstream validation in worker (schemas.ts + 19 tests); Stream D2 cSetAsync + createAsyncCardLoader + ADR-010; Stream J GitHub Actions hardening (per-job permissions, concurrency) + 2 Vitest breakpoint debug configs |
-| v8.5.0 | Stream D2.2 news+weather to createAsyncCardLoader; Stream I-0.2 worker tsconfig base extension; Stream G.2.3 visual regression baselines (18 screenshots, 6 themes) + Lighthouse 95/90; Stream J.2 Playwright debug config + VR tasks; Stream SW.1 auto-precache manifest + postbuild hook; Stream W.2 worker KV stale fallback; Stream E.1 tasksConfigSchema (all 11 cards); Stream F.1 card shell anatomy CSS; Stream I.2 3 new Copilot prompt files |
-| v8.6.0 | Stream W.3 HebCal KV stale fallback; Stream D2.3 stocks cSetAsync; Stream E.2 config import schema validation; Stream W.4 alerts workerEnvelope; Stream F.2 CSS dedup + card-skeleton/card-stale; Stream J.3 ADR-011 worker normalization contract; Stream I.3 SKILL.md verification sections; Stream SW.2 background sync error queue; Stream D2.4 motivation createAsyncCardLoader; Stream J.4 tsconfig deprecated options audit |
-| v8.7.0 | Stream D2.5 countdown createAsyncCardLoader; Stream W.5 Zod worker weather validation; Stream W.6 Zod worker alerts/HebCal validation; Stream D2.6 tasks+news+system-info createAsyncCardLoader; Stream I.4 instruction file improvements; Stream SW.3 sw.ts source maps + sourceMappingURL |
-| v8.8.0 | Stream W.7 Bitcoin /api/crypto worker route; Stream W.8 NewsRssSchema Zod RSS/Atom validation; Stream D2.7 provider adapters cSetAsync; Stream docs.1 data-sources.md reference; Stream F.5 theme completeness (4 semantic tokens); Stream D2.8 localStorage discipline audit; Stream ADR-012 async adapter pattern; Stream SW.4 sw.ts TypeScript migration; Stream I.5 instruction file improvements |
-| v8.9.0 | **Sprint 8.9.0 — Consolidation & Quality Audit**: 20-task external audit verifying web-only scope, build system, project structure, utility deduplication, warnings-as-errors, CI/CD, release automation, .vscode/.github hygiene, Dependabot, README, CHANGELOG, diagrams, config files, documentation. New: `.prettierrc.json` + `.prettierignore` (explicit formatting config), 3 Mermaid diagrams (cache layers, CSS layer stack, SW lifecycle), `.gitignore` hardening (`.mypy_cache/`, `*.old`), `sw.js` version fix, ROADMAP sprint section |
+| Release | Key Deliverables                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v7.13.0 | README rewrite, ARCHITECTURE.md, ADRs, CardRuntime, domain types, config validation                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| v7.14.0 | Domain type tests, provider health model, diag table, coldStart, migrateLsToIdb                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| v7.15.0 | createSkeleton/Empty/Error, FdbCard.withLoading, CardShell, weekday dimmer                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| v7.16.0 | bundle-trend, config v5, fetchWithRetry, FdbCard.emit, registry createShell                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| v7.17.0 | Worker normalization, FdbCard helpers, API.md, release report                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| v7.18.0 | Provider adapters, typed card config, config auto-renderer, CSS card anatomy, theme audit, offline banner                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| v7.19.0 | Per-card configSchema, config dirty tracking, observability suite, provider latency                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| v7.19.1 | Tooling modernization, bilingual interface, config migration hardening                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| v7.20.0 | ROADMAP strategic overhaul, worker-first fetch resilience, provider adapter hardening, shared tooling foundation                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| v7.21.0 | Shared test helpers, normalized worker types, node-ts-app tooling, instruction files, .nvmrc, agent/prompts, card audit, loading CSS, SW constants                                                                                                                                                                                                                                                                                                                                                                                                 |
+| v8.0.0  | Production readiness: test consolidation (it.each), dead file cleanup, config modernization, hardened .gitignore, full version bump across 15 files                                                                                                                                                                                                                                                                                                                                                                                                |
+| v8.1.0  | Stream G.1 shared helpers (tests/helpers/); CI hardening (SW check + SLSA); ADR-007/008/009; docs/adding-a-card.md + deployment.md; release-report gate checks; api-integrator agent modernization; useFakeTimers audit (all 50+ legitimate); .vscode Vitest tasks + extensions                                                                                                                                                                                                                                                                    |
+| v8.2.0  | Stream G.1 `vi.resetModules()` elimination (bg-images, motivation, news, currency, fetch, config-panel — 80+ calls removed); `_resetForTest()` pattern established; SVG architecture diagrams (ci-cd, cache-layers); quality-reviewer modernized (context table, failure playbook); CONTRIBUTING.md PowerShell table; workflows README permissions matrix + secrets inventory + concurrency policy                                                                                                                                                 |
+| v8.3.0  | Stream G.2 Playwright E2E config + smoke suite; Stream SW per-origin API cache TTL (CACHE_TTL_BY_ORIGIN); Stream I dashboard-designer agent — error playbook + verification; Stream W worker WorkerResponse<T> envelope (workerEnvelope helper + 4 tests); Stream H README Quick Start + Cloudflare Pages preview deploy workflow; Stream B2 FdbCountdown FdbCard migration (fdb-countdown.ts + 3 tests); card-lifecycle.svg + theme-cascade.svg docs; CHANGELOG/badge fixes for v8.2.0                                                            |
+| v8.4.0  | Stream B2 COMPLETE: FdbCard migration for system-info, currency, hebrew-cal, calendar, alerts (11/11) + destroy lifecycle; Stream G.2 critical-flow Playwright tests + Lighthouse CI; Stream W Zod upstream validation in worker (schemas.ts + 19 tests); Stream D2 cSetAsync + createAsyncCardLoader + ADR-010; Stream J GitHub Actions hardening (per-job permissions, concurrency) + 2 Vitest breakpoint debug configs                                                                                                                          |
+| v8.5.0  | Stream D2.2 news+weather to createAsyncCardLoader; Stream I-0.2 worker tsconfig base extension; Stream G.2.3 visual regression baselines (18 screenshots, 6 themes) + Lighthouse 95/90; Stream J.2 Playwright debug config + VR tasks; Stream SW.1 auto-precache manifest + postbuild hook; Stream W.2 worker KV stale fallback; Stream E.1 tasksConfigSchema (all 11 cards); Stream F.1 card shell anatomy CSS; Stream I.2 3 new Copilot prompt files                                                                                             |
+| v8.6.0  | Stream W.3 HebCal KV stale fallback; Stream D2.3 stocks cSetAsync; Stream E.2 config import schema validation; Stream W.4 alerts workerEnvelope; Stream F.2 CSS dedup + card-skeleton/card-stale; Stream J.3 ADR-011 worker normalization contract; Stream I.3 SKILL.md verification sections; Stream SW.2 background sync error queue; Stream D2.4 motivation createAsyncCardLoader; Stream J.4 tsconfig deprecated options audit                                                                                                                 |
+| v8.7.0  | Stream D2.5 countdown createAsyncCardLoader; Stream W.5 Zod worker weather validation; Stream W.6 Zod worker alerts/HebCal validation; Stream D2.6 tasks+news+system-info createAsyncCardLoader; Stream I.4 instruction file improvements; Stream SW.3 sw.ts source maps + sourceMappingURL                                                                                                                                                                                                                                                        |
+| v8.8.0  | Stream W.7 Bitcoin /api/crypto worker route; Stream W.8 NewsRssSchema Zod RSS/Atom validation; Stream D2.7 provider adapters cSetAsync; Stream docs.1 data-sources.md reference; Stream F.5 theme completeness (4 semantic tokens); Stream D2.8 localStorage discipline audit; Stream ADR-012 async adapter pattern; Stream SW.4 sw.ts TypeScript migration; Stream I.5 instruction file improvements                                                                                                                                              |
+| v8.9.0  | **Sprint 8.9.0 — Consolidation & Quality Audit**: 20-task external audit verifying web-only scope, build system, project structure, utility deduplication, warnings-as-errors, CI/CD, release automation, .vscode/.github hygiene, Dependabot, README, CHANGELOG, diagrams, config files, documentation. New: `.prettierrc.json` + `.prettierignore` (explicit formatting config), 3 Mermaid diagrams (cache layers, CSS layer stack, SW lifecycle), `.gitignore` hardening (`.mypy_cache/`, `*.old`), `sw.js` version fix, ROADMAP sprint section |
+| v9.0.0  | **Sprint 9.0 — CI Self-Sufficiency**: Vendored all shared tooling configs into `tooling/` (tsconfig base, ESLint factory, Vitest base); fixed `build-sw.mjs` TypeScript resolution; updated all extends/import paths; dropped Node 20 CI matrix; added `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`; fixed `restoreMocks` spy leak; added `@cloudflare/workers-types` to CI; fixed npm audit ENOLOCK. First fully self-contained CI build.                                                                                                                 |
+| v9.1.0  | **Sprint 9.1 — CI Hardening, Prettier & Docs Refresh**: Prettier enforced in CI (`prettier --check .` step + `prettier@^3.5.0` in install-tools.sh); `prettier --write .` run on all source files; ARCHITECTURE.md refreshed (v9.1.0, TS 6.0.3, 3179/94 tests, vendored tooling note); SVG diagrams updated; README monorepo lockfile documentation; CONTRIBUTING/CLAUDE/copilot-instructions version refresh; `ci_status.json` removed from git; `.prettierignore` hardened.                                                                      |
 
 **Completed Streams:** A (Truth) · B (Card Architecture) · **B2 ✅** (11/11 FdbCard migrations) · C (Data Contracts) · D (Observability) · **G.1 ✅** (3205 tests / 95 suites) · **G.2 ✅** (Playwright E2E + Lighthouse) · **SW ✅** (per-origin TTL) · **SW.1 ✅** (auto-precache manifest) · **SW.2 ✅** (background sync error queue) · **SW.4 ✅** (sw.ts TypeScript migration) · **W ✅** (worker Zod validation) · **W.2 ✅** (KV stale fallback) · **W.3 ✅** (HebCal KV stale) · **W.4 ✅** (alerts workerEnvelope) · **W.7 ✅** (Bitcoin /api/crypto) · **W.8 ✅** (NewsRssSchema) · **H ✅** (Quick Start + preview deploy) · **D2 ✅** (IDB-async stale cache) · **D2.2 ✅** (news+weather createAsyncCardLoader) · **D2.3 ✅** (stocks cSetAsync) · **D2.4 ✅** (motivation createAsyncCardLoader) · **D2.5 ✅** (countdown) · **D2.6 ✅** (tasks+news+system-info) · **D2.7 ✅** (provider adapters cSetAsync) · **D2.8 ✅** (localStorage discipline audit) · **E.1 ✅** (all 11 cards configSchema) · **E.2 ✅** (config import schema validation) · **F.1 ✅** (card shell anatomy CSS) · **F.2 ✅** (CSS dedup + card-skeleton/stale) · **F.5 ✅** (theme completeness 4 tokens) · **I.2 ✅** (3 Copilot prompts) · **I.3 ✅** (SKILL.md verification) · **I.5 ✅** (instruction updates) · **ADR-012 ✅** (async adapter pattern) · **docs.1 ✅** (data-sources.md) · **J.3 ✅** (ADR-011) · **J.4 ✅** (tsconfig audit) · **Sprint 8.9.0 ✅** (20-task consolidation audit)
 **Partially Complete:** I (api-integrator ✅, quality-reviewer ✅, dashboard-designer ✅, I-0.2 ✅, I-0.3 ✅) · J (package.json URLs ✅, SLSA ✅, ADRs ✅, tasks ✅, docs ✅, Actions hardening ✅, J.2 ✅)
+
+### Sprint 9.1.0 — CI Hardening, Prettier & Docs Refresh ✅ COMPLETE
+
+> v9.1.0 · 2026-04-22 · Issues: [#81](https://github.com/RajwanYair/FamilyDashBoard/issues/81) · [#82](https://github.com/RajwanYair/FamilyDashBoard/issues/82) · [#83](https://github.com/RajwanYair/FamilyDashBoard/issues/83)
+
+Second external 20-task sprint. Baseline was v9.0.0 (CI self-sufficiency release). 14 tasks were already fully satisfied; 6 required targeted improvements (Prettier CI enforcement, ARCHITECTURE.md refresh, stray artifact removal, version bump, Mermaid diagram corrections).
+
+| #   | Task                                   | Status               | Evidence / Deliverable                                                                                                                     |
+| --- | -------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Inventory & delete non-web code paths  | ✅ Done              | `ci_status.json` removed from git; `.mypy_cache/` confirmed gitignored; no desktop/mobile scaffolding. Closes [#81][i81]                   |
+| 2   | Remove Python scripts/steps            | ✅ Already satisfied | No Python in project; `.mypy_cache/` + `__pycache__/` gitignored                                                                           |
+| 3   | Define architecture in ARCHITECTURE.md | ✅ Updated           | Version → v9.1.0; TypeScript 5.9 → 6.0.3; test count 3205/95 → 3179/94; vendored tooling note added. Closes [#82][i82]                     |
+| 4   | Standardize build system               | ✅ Already satisfied | npm + no local lockfile (monorepo pattern); documented in ARCHITECTURE.md and README "Monorepo note"                                       |
+| 5   | Establish clean project structure      | ✅ Done              | `ci_status.json` removed from git; `.gitignore` hardened. Closes [#81][i81]                                                                |
+| 6   | Deduplicate utilities                  | ✅ Already satisfied | `src/core/constants.ts` + `src/core/utils.ts` — single source of truth. No change needed.                                                  |
+| 7   | Enforce warnings as errors             | ✅ Already satisfied | TypeScript strict, `--max-warnings 0`, CI gate. No change needed.                                                                          |
+| 8   | Fix all warnings                       | ✅ Already satisfied | 0 ESLint/TS/markdownlint errors after v9.0.0.                                                                                              |
+| 9   | Formatting standards                   | ✅ Enhanced          | `prettier --write .` run on entire codebase; `src/index.html` + `*.sh` added to `.prettierignore`; `format` + `format:check` scripts added |
+| 10  | GitHub Actions CI                      | ✅ Enhanced          | `npx prettier --check .` step added to lint job; `prettier@^3.5.0` added to `install-tools.sh`. Closes [#83][i83]                          |
+| 11  | GitHub Actions Release workflow        | ✅ Already satisfied | dist.zip + checksums + sw.js + icon.svg + SLSA attestation on `v*` tags. Verified.                                                         |
+| 12  | .vscode workspace standards            | ✅ Already satisfied | settings.json, extensions.json, tasks.json, launch.json all current. No change needed.                                                     |
+| 13  | .github hygiene                        | ✅ Already satisfied | CODEOWNERS, CONTRIBUTING.md, 4 issue templates, PR template, SECURITY.md, CODE_OF_CONDUCT. All current.                                    |
+| 14  | Dependabot                             | ✅ Already satisfied | github-actions (weekly) + npm at `/` (monthly) + npm at `/worker` (monthly). No change needed.                                             |
+| 15  | Update README                          | ✅ Updated           | Version badge 9.0.0 → 9.1.0; "Monorepo note" with lockfile explanation added to dev setup. Closes [#82][i82]                               |
+| 16  | Update CHANGELOG                       | ✅ Done              | v9.1.0 entry added covering all 20 tasks.                                                                                                  |
+| 17  | Update diagrams                        | ✅ Updated           | `architecture.svg` + `roadmap.svg` updated: TS 6.0.3, Vitest 4.1.5, 3179/94 tests, SW v9.1.0. Closes [#82][i82]                            |
+| 18  | Remove redundant configs               | ✅ Already satisfied | 3 tsconfigs serve distinct purposes (main/node/SW); all others single-source-of-truth.                                                     |
+| 19  | Consolidate documentation              | ✅ Updated           | CONTRIBUTING.md, CLAUDE.md, copilot-instructions.md, workspace.instructions.md — version strings refreshed.                                |
+| 20  | Final consolidation pass               | ✅ Done              | `ci_status.json` deleted; `.prettierignore` hardened; ARCHITECTURE.md footprint reduced via correct versions.                              |
+
+[i81]: https://github.com/RajwanYair/FamilyDashBoard/issues/81
+[i82]: https://github.com/RajwanYair/FamilyDashBoard/issues/82
+[i83]: https://github.com/RajwanYair/FamilyDashBoard/issues/83
+
+**Footprint delta**: removed 1 tracked artifact (`ci_status.json`); formatted ~35 source files to Prettier standard.
+
+---
 
 ### Sprint 8.9.0 — Consolidation & Quality Audit ✅ COMPLETE
 
 External 20-task audit evaluating the project against web-project best practices. 11 tasks were already fully satisfied by v8.8.0 infrastructure; 9 required targeted improvements.
 
-| # | Task | Status | Evidence / Deliverable |
-|---|------|--------|----------------------|
-| 1 | Inventory & delete non-web code paths | ✅ Already satisfied | No desktop/mobile/backend scaffolding exists; `.mypy_cache/` added to `.gitignore` |
-| 2 | Remove Python scripts/steps | ✅ Already satisfied | Zero Python in project; `.mypy_cache/` + `__pycache__/` gitignored |
-| 3 | Define architecture in ARCHITECTURE.md | ✅ Enhanced | Existing comprehensive doc + 3 new Mermaid diagrams (cache layers, CSS stack, SW lifecycle) |
-| 4 | Standardize build system | ✅ Already satisfied | npm + Vite 8, parent `MyScripts/` install, documented in README |
-| 5 | Establish clean project structure | ✅ Already satisfied | `src/`, `tests/`, `docs/`, `.github/`, `worker/`, `scripts/` — no unused dirs |
-| 6 | Deduplicate utilities | ✅ Already satisfied | Single implementations in `src/core/` (cache, fetch, config, sync, diag, utils) |
-| 7 | Enforce warnings as errors | ✅ Already satisfied | `--max-warnings 0`, TS strict, CI fails on warnings |
-| 8 | Fix all warnings | ✅ Fixed | 0 warnings; `sw.js` stale version header fixed (v8.7.0 → v8.9.0) |
-| 9 | Formatting and linting standards | ✅ Enhanced | ESLint + Stylelint existed; added `.prettierrc.json` + `.prettierignore` |
-| 10 | GitHub Actions CI | ✅ Already satisfied | typecheck → lint → test → security → build → lighthouse |
-| 11 | GitHub Actions Release workflow | ✅ Already satisfied | dist.zip + checksums + SLSA attestation on `v*` tags |
-| 12 | .vscode workspace standards | ✅ Already satisfied | settings.json + extensions.json + tasks.json + launch.json (6 debug configs) |
-| 13 | .github hygiene | ✅ Already satisfied | Issue templates (4), PR template, CODEOWNERS, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT |
-| 14 | Dependabot | ✅ Already satisfied | npm + github-actions in `.github/dependabot.yml` |
-| 15 | Update README | ✅ Already satisfied | Comprehensive with badges, features, data sources, getting started |
-| 16 | Update CHANGELOG | ✅ Done | v8.9.0 section added with sprint summary |
-| 17 | Update diagrams | ✅ Enhanced | 3 new Mermaid diagrams + 10 existing SVGs in `.github/assets/` |
-| 18 | Remove redundant configs | ✅ Already satisfied | 0 redundancy — each config serves a distinct tool |
-| 19 | Consolidate documentation | ✅ Verified | All internal links verified; no broken refs; no duplicate content |
-| 20 | Final consolidation pass | ✅ Done | `.gitignore` hardened, dead files audited, footprint report in CHANGELOG |
+| #   | Task                                   | Status               | Evidence / Deliverable                                                                      |
+| --- | -------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------- |
+| 1   | Inventory & delete non-web code paths  | ✅ Already satisfied | No desktop/mobile/backend scaffolding exists; `.mypy_cache/` added to `.gitignore`          |
+| 2   | Remove Python scripts/steps            | ✅ Already satisfied | Zero Python in project; `.mypy_cache/` + `__pycache__/` gitignored                          |
+| 3   | Define architecture in ARCHITECTURE.md | ✅ Enhanced          | Existing comprehensive doc + 3 new Mermaid diagrams (cache layers, CSS stack, SW lifecycle) |
+| 4   | Standardize build system               | ✅ Already satisfied | npm + Vite 8, parent `MyScripts/` install, documented in README                             |
+| 5   | Establish clean project structure      | ✅ Already satisfied | `src/`, `tests/`, `docs/`, `.github/`, `worker/`, `scripts/` — no unused dirs               |
+| 6   | Deduplicate utilities                  | ✅ Already satisfied | Single implementations in `src/core/` (cache, fetch, config, sync, diag, utils)             |
+| 7   | Enforce warnings as errors             | ✅ Already satisfied | `--max-warnings 0`, TS strict, CI fails on warnings                                         |
+| 8   | Fix all warnings                       | ✅ Fixed             | 0 warnings; `sw.js` stale version header fixed (v8.7.0 → v8.9.0)                            |
+| 9   | Formatting and linting standards       | ✅ Enhanced          | ESLint + Stylelint existed; added `.prettierrc.json` + `.prettierignore`                    |
+| 10  | GitHub Actions CI                      | ✅ Already satisfied | typecheck → lint → test → security → build → lighthouse                                     |
+| 11  | GitHub Actions Release workflow        | ✅ Already satisfied | dist.zip + checksums + SLSA attestation on `v*` tags                                        |
+| 12  | .vscode workspace standards            | ✅ Already satisfied | settings.json + extensions.json + tasks.json + launch.json (6 debug configs)                |
+| 13  | .github hygiene                        | ✅ Already satisfied | Issue templates (4), PR template, CODEOWNERS, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT       |
+| 14  | Dependabot                             | ✅ Already satisfied | npm + github-actions in `.github/dependabot.yml`                                            |
+| 15  | Update README                          | ✅ Already satisfied | Comprehensive with badges, features, data sources, getting started                          |
+| 16  | Update CHANGELOG                       | ✅ Done              | v8.9.0 section added with sprint summary                                                    |
+| 17  | Update diagrams                        | ✅ Enhanced          | 3 new Mermaid diagrams + 10 existing SVGs in `.github/assets/`                              |
+| 18  | Remove redundant configs               | ✅ Already satisfied | 0 redundancy — each config serves a distinct tool                                           |
+| 19  | Consolidate documentation              | ✅ Verified          | All internal links verified; no broken refs; no duplicate content                           |
+| 20  | Final consolidation pass               | ✅ Done              | `.gitignore` hardened, dead files audited, footprint report in CHANGELOG                    |
 
 ---
 
@@ -236,19 +275,19 @@ The test suite has 3080 tests / 88 suites. `vi.resetModules()` reduced from 186 
 
 #### Achieved
 
-| Phase | Status | Notes |
-| --- | --- | --- |
-| Shared helpers | ✅ | `tests/helpers/` with 6+ utilities |
-| Eliminate `resetModules` | ✅ | 186 → ≤11 remaining (all legitimate) |
-| `_resetForTest()` pattern | ✅ | bg-images, motivation, news, currency, fetch |
+| Phase                     | Status | Notes                                        |
+| ------------------------- | ------ | -------------------------------------------- |
+| Shared helpers            | ✅     | `tests/helpers/` with 6+ utilities           |
+| Eliminate `resetModules`  | ✅     | 186 → ≤11 remaining (all legitimate)         |
+| `_resetForTest()` pattern | ✅     | bg-images, motivation, news, currency, fetch |
 
 #### Exit Criteria — MET
 
-| Criterion | Achieved |
-| --- | --- |
-| `vi.resetModules()` calls | ≤11 (was 186) |
-| Shared helpers | 6+ utilities in `tests/helpers/` |
-| Test count | 3080 / 88 suites · 0 failures |
+| Criterion                 | Achieved                         |
+| ------------------------- | -------------------------------- |
+| `vi.resetModules()` calls | ≤11 (was 186)                    |
+| Shared helpers            | 6+ utilities in `tests/helpers/` |
+| Test count                | 3080 / 88 suites · 0 failures    |
 
 ---
 
@@ -260,22 +299,22 @@ No other dashboard project in the comparison table has automated visual regressi
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
-| Playwright setup | Install, configure for 6 themes x 3 screen modes = 18 baseline screenshots |
+| Phase               | Deliverables                                                                |
+| ------------------- | --------------------------------------------------------------------------- |
+| Playwright setup    | Install, configure for 6 themes x 3 screen modes = 18 baseline screenshots  |
 | Critical-flow suite | Load, render, config panel, theme switch, card maximize, keyboard shortcuts |
-| Lighthouse CI | Accessibility >= 95, performance >= 90, bundle budget enforcement |
-| CI integration | Screenshot comparison in PR checks, Lighthouse budget in CI gate |
+| Lighthouse CI       | Accessibility >= 95, performance >= 90, bundle budget enforcement           |
+| CI integration      | Screenshot comparison in PR checks, Lighthouse budget in CI gate            |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| Screenshot baselines | 18 (6 themes x 3 modes) |
-| Playwright test count | 15 or more critical-flow tests |
-| Lighthouse accessibility | 95 or higher in CI |
-| Lighthouse performance | 90 or higher in CI |
-| Visual regressions caught | Automated in PR workflow |
+| Criterion                 | Target                         |
+| ------------------------- | ------------------------------ |
+| Screenshot baselines      | 18 (6 themes x 3 modes)        |
+| Playwright test count     | 15 or more critical-flow tests |
+| Lighthouse accessibility  | 95 or higher in CI             |
+| Lighthouse performance    | 90 or higher in CI             |
+| Visual regressions caught | Automated in PR workflow       |
 
 ---
 
@@ -293,14 +332,14 @@ Not yet shared: BudgetManager, CrossTideWeb, Wedding each maintain independent c
 
 #### Action Plan
 
-| Phase | Target |
-| --- | --- |
-| Expand presets | Create `node-ts-app.mjs` (ESLint), `js-browser-app.mjs`, `base-node.json` (tsconfig), `happy-dom.mjs` + `node.mjs` (Vitest) |
-| Migrate BudgetManager | Extend shared factory + base configs |
-| Migrate CrossTideWeb | Same pattern |
-| Migrate Wedding | JS-only variant, move devDeps to parent |
-| Worker config alignment | `worker/tsconfig.json` extends `base-node.json` |
-| Documentation | `tooling/README.md` + templates |
+| Phase                   | Target                                                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Expand presets          | Create `node-ts-app.mjs` (ESLint), `js-browser-app.mjs`, `base-node.json` (tsconfig), `happy-dom.mjs` + `node.mjs` (Vitest) |
+| Migrate BudgetManager   | Extend shared factory + base configs                                                                                        |
+| Migrate CrossTideWeb    | Same pattern                                                                                                                |
+| Migrate Wedding         | JS-only variant, move devDeps to parent                                                                                     |
+| Worker config alignment | `worker/tsconfig.json` extends `base-node.json`                                                                             |
+| Documentation           | `tooling/README.md` + templates                                                                                             |
 
 #### Architecture
 
@@ -328,13 +367,13 @@ MyScripts/                              <- SHARED LEVEL
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| TS projects extending shared tsconfig | 4/4 |
-| TS projects using shared ESLint factory | 4/4 |
-| Zero duplicated rule definitions | Only overrides in project configs |
-| All migrated projects pass full suite | Green per project |
-| `tooling/README.md` | Accurate + templates |
+| Criterion                               | Target                            |
+| --------------------------------------- | --------------------------------- |
+| TS projects extending shared tsconfig   | 4/4                               |
+| TS projects using shared ESLint factory | 4/4                               |
+| Zero duplicated rule definitions        | Only overrides in project configs |
+| All migrated projects pass full suite   | Green per project                 |
+| `tooling/README.md`                     | Accurate + templates              |
 
 ---
 
@@ -346,24 +385,24 @@ Every `.github/` markdown file should exploit the full capability surface of VS 
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
-| Agent modernization | Full frontmatter: `tools`, `handoffs`, `applyTo`, `#file` context refs, error playbooks. Add `quality-reviewer` agent. |
-| Instruction expansion | New `typescript.instructions.md` (`src/**/*.ts`), `tests.instructions.md` (`tests/**`). Tighten 4 existing files. |
-| Prompt enhancement | Context variables, tool restrictions. Add `/test-coverage`, `/debug-card`, `/release-check` prompts. |
-| Skill hardening | Machine-verifiable "Verification" sections for all 4 skills. |
-| MCP and config cleanup | Evaluate legacy `config.json`, add `.vscode/mcp.json` examples, server capability matrix. |
-| Workflow docs | Permissions matrix, secrets inventory, concurrency policy, branch protection alignment. |
+| Phase                  | Deliverables                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Agent modernization    | Full frontmatter: `tools`, `handoffs`, `applyTo`, `#file` context refs, error playbooks. Add `quality-reviewer` agent. |
+| Instruction expansion  | New `typescript.instructions.md` (`src/**/*.ts`), `tests.instructions.md` (`tests/**`). Tighten 4 existing files.      |
+| Prompt enhancement     | Context variables, tool restrictions. Add `/test-coverage`, `/debug-card`, `/release-check` prompts.                   |
+| Skill hardening        | Machine-verifiable "Verification" sections for all 4 skills.                                                           |
+| MCP and config cleanup | Evaluate legacy `config.json`, add `.vscode/mcp.json` examples, server capability matrix.                              |
+| Workflow docs          | Permissions matrix, secrets inventory, concurrency policy, branch protection alignment.                                |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| Agent files with full spec | All agents |
-| Instruction files | 6 or more covering all file categories |
-| Prompt files | 6 or more with context variables |
-| Skills with verification | All 4 |
-| Workflow README | Complete permissions/secrets/concurrency tables |
+| Criterion                  | Target                                          |
+| -------------------------- | ----------------------------------------------- |
+| Agent files with full spec | All agents                                      |
+| Instruction files          | 6 or more covering all file categories          |
+| Prompt files               | 6 or more with context variables                |
+| Skills with verification   | All 4                                           |
+| Workflow README            | Complete permissions/secrets/concurrency tables |
 
 ---
 
@@ -375,26 +414,26 @@ Every config file, doc asset, and environment descriptor conforms to latest VS C
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
-| Environment alignment | `.nvmrc`, `package.json` metadata (repository, homepage, bugs, author), Prettier decision |
-| VS Code config | `launch.json` (3 debug configs), deprecated keys audit, problem matchers on tasks |
-| GitHub community | Issue/discussion template spec audit, CONTRIBUTING prerequisites, SECURITY versions table |
-| Actions hardening | Explicit `permissions` on every workflow, `concurrency` groups, SLSA attestations |
-| Root config audit | tsconfig/eslint/vite/vitest against latest tool versions, 0 deprecated options |
-| SVG documentation | 5 new diagrams (card lifecycle, cache layers, config pipeline, CI/CD, theme cascade) + audit 6 existing |
-| Doc cross-references | Embed SVGs in README, ARCHITECTURE, workflows README |
+| Phase                 | Deliverables                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Environment alignment | `.nvmrc`, `package.json` metadata (repository, homepage, bugs, author), Prettier decision               |
+| VS Code config        | `launch.json` (3 debug configs), deprecated keys audit, problem matchers on tasks                       |
+| GitHub community      | Issue/discussion template spec audit, CONTRIBUTING prerequisites, SECURITY versions table               |
+| Actions hardening     | Explicit `permissions` on every workflow, `concurrency` groups, SLSA attestations                       |
+| Root config audit     | tsconfig/eslint/vite/vitest against latest tool versions, 0 deprecated options                          |
+| SVG documentation     | 5 new diagrams (card lifecycle, cache layers, config pipeline, CI/CD, theme cascade) + audit 6 existing |
+| Doc cross-references  | Embed SVGs in README, ARCHITECTURE, workflows README                                                    |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| SVG documentation assets | 10 or more total |
-| VS Code `launch.json` | 3 or more debug configs |
-| `package.json` metadata | All standard fields present |
-| GitHub Actions permissions | Explicit on every workflow |
-| Root config deprecated options | 0 |
-| All checks pass | `npm run check` green |
+| Criterion                      | Target                      |
+| ------------------------------ | --------------------------- |
+| SVG documentation assets       | 10 or more total            |
+| VS Code `launch.json`          | 3 or more debug configs     |
+| `package.json` metadata        | All standard fields present |
+| GitHub Actions permissions     | Explicit on every workflow  |
+| Root config deprecated options | 0                           |
+| All checks pass                | `npm run check` green       |
 
 ---
 
@@ -420,25 +459,25 @@ Renders domain model
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
+| Phase                   | Deliverables                                                                                                                                                                                         |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Define domain contracts | `NormalizedWeather`, `NormalizedStocks`, `NormalizedCurrency`, `NormalizedNews`, `NormalizedAlerts`, `NormalizedHebcal`, `NormalizedCalendar` TypeScript interfaces shared between client and worker |
-| Worker normalization | Each route handler normalizes upstream response into domain contract before returning |
-| Zod validation | Add Zod in worker for upstream response validation (first worker dependency) |
-| Client simplification | Cards receive and render domain models only — remove upstream parsing from client code |
-| News aggregation | Worker aggregates 17 RSS feeds into a single `NormalizedNews` response with deduplication |
-| Fallback responses | When upstream fails, worker returns last-known KV value with `stale: true` flag |
-| Shared types package | `src/types/api.ts` becomes the shared contract between client and worker |
+| Worker normalization    | Each route handler normalizes upstream response into domain contract before returning                                                                                                                |
+| Zod validation          | Add Zod in worker for upstream response validation (first worker dependency)                                                                                                                         |
+| Client simplification   | Cards receive and render domain models only — remove upstream parsing from client code                                                                                                               |
+| News aggregation        | Worker aggregates 17 RSS feeds into a single `NormalizedNews` response with deduplication                                                                                                            |
+| Fallback responses      | When upstream fails, worker returns last-known KV value with `stale: true` flag                                                                                                                      |
+| Shared types package    | `src/types/api.ts` becomes the shared contract between client and worker                                                                                                                             |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| Worker routes returning normalized responses | All 10 routes |
-| Zod schemas for all upstream inputs | All providers |
-| Client parsing of raw upstream JSON | 0 (all on worker) |
-| News aggregation | Worker returns single deduped feed |
-| KV-backed stale fallback | 3 or more routes (weather, currency, news) |
+| Criterion                                    | Target                                     |
+| -------------------------------------------- | ------------------------------------------ |
+| Worker routes returning normalized responses | All 10 routes                              |
+| Zod schemas for all upstream inputs          | All providers                              |
+| Client parsing of raw upstream JSON          | 0 (all on worker)                          |
+| News aggregation                             | Worker returns single deduped feed         |
+| KV-backed stale fallback                     | 3 or more routes (weather, currency, news) |
 
 ---
 
@@ -452,21 +491,21 @@ Make IndexedDB the real persistent cache. Reduce localStorage pressure.
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
-| Async-first cache | Standardize `cGetAsync`/`cSetAsync` for all network-backed cards |
-| LS to IDB migration | Complete migration policy, cleanup legacy `dash_v2_*` keys |
-| Worker KV cache | Add Cloudflare KV for shared edge caching (weather, currency, news) |
-| Stale rendering | Consistent stale-chip + retry-button patterns across all cards |
+| Phase               | Deliverables                                                        |
+| ------------------- | ------------------------------------------------------------------- |
+| Async-first cache   | Standardize `cGetAsync`/`cSetAsync` for all network-backed cards    |
+| LS to IDB migration | Complete migration policy, cleanup legacy `dash_v2_*` keys          |
+| Worker KV cache     | Add Cloudflare KV for shared edge caching (weather, currency, news) |
+| Stale rendering     | Consistent stale-chip + retry-button patterns across all cards      |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| Network-backed cards on IDB | All 11 |
-| localStorage usage | Config + flags only |
-| Worker KV endpoints | 3 or more (weather, currency, news) |
-| Stale-state UX | Consistent across all cards |
+| Criterion                   | Target                              |
+| --------------------------- | ----------------------------------- |
+| Network-backed cards on IDB | All 11                              |
+| localStorage usage          | Config + flags only                 |
+| Worker KV endpoints         | 3 or more (weather, currency, news) |
+| Stale-state UX              | Consistent across all cards         |
 
 ---
 
@@ -480,20 +519,20 @@ Stop growing a single flat config bag. Make per-card settings maintainable.
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
+| Phase             | Deliverables                                                            |
+| ----------------- | ----------------------------------------------------------------------- |
 | Namespaced config | Complete migration to `cards: Record<string, CardConfig>` for all cards |
-| Config panel | Card-specific accordion groups (already started), per-card reset |
-| Import/export | Schema-aware validation on import, versioned export format |
-| URL sharing | `loadConfigFromHash()` for sharing config via URL fragment |
+| Config panel      | Card-specific accordion groups (already started), per-card reset        |
+| Import/export     | Schema-aware validation on import, versioned export format              |
+| URL sharing       | `loadConfigFromHash()` for sharing config via URL fragment              |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| Cards with namespaced config | 11/11 |
-| Config migration is localized | Per-card, not monolithic |
-| Import validation | Schema + version check on every import |
+| Criterion                     | Target                                 |
+| ----------------------------- | -------------------------------------- |
+| Cards with namespaced config  | 11/11                                  |
+| Config migration is localized | Per-card, not monolithic               |
+| Import validation             | Schema + version check on every import |
 
 ---
 
@@ -507,22 +546,22 @@ Turn a strong-looking dashboard into a coherent visual system. Improve consisten
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
+| Phase                 | Deliverables                                                                |
+| --------------------- | --------------------------------------------------------------------------- |
 | Card shell primitives | Formal `card__header`, `card__body`, `card__footer` anatomy with shared CSS |
-| Shared UI patterns | Skeleton, empty, stale, error states as reusable CSS classes |
-| Theme audit | All 6 themes verified across all 11 cards, no broken tokens |
-| TV readability | Font sizes audited for 3m reading distance, contrast ratios checked |
-| Design density | Card grid optimized for 1920x1080 with no wasted space |
+| Shared UI patterns    | Skeleton, empty, stale, error states as reusable CSS classes                |
+| Theme audit           | All 6 themes verified across all 11 cards, no broken tokens                 |
+| TV readability        | Font sizes audited for 3m reading distance, contrast ratios checked         |
+| Design density        | Card grid optimized for 1920x1080 with no wasted space                      |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| Cards using formal shell anatomy | 11/11 |
-| Shared UI pattern classes | 5 or more (skeleton, empty, stale, error, loading) |
-| Theme x card matrix | All 66 combinations verified |
-| Contrast ratio | WCAG AA on all text |
+| Criterion                        | Target                                             |
+| -------------------------------- | -------------------------------------------------- |
+| Cards using formal shell anatomy | 11/11                                              |
+| Shared UI pattern classes        | 5 or more (skeleton, empty, stale, error, loading) |
+| Theme x card matrix              | All 66 combinations verified                       |
+| Contrast ratio                   | WCAG AA on all text                                |
 
 ---
 
@@ -534,22 +573,22 @@ Complete the migration from `initX()` to `FdbCard` instance pattern.
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
-| Audit | Catalog which cards still use `initX()` vs `FdbCard` |
-| Migration | Convert remaining cards to `FdbCard` instances with `CardRuntime` contract |
+| Phase               | Deliverables                                                               |
+| ------------------- | -------------------------------------------------------------------------- |
+| Audit               | Catalog which cards still use `initX()` vs `FdbCard`                       |
+| Migration           | Convert remaining cards to `FdbCard` instances with `CardRuntime` contract |
 | Registry-driven DOM | Replace static HTML card shells in `index.html` with `createShell()` calls |
-| Instance lifecycle | Cards own their refresh schedule, DOM cache, and subscriptions |
-| Cleanup | Remove dead `initX()` exports, dead HTML IDs, dead CSS selectors |
+| Instance lifecycle  | Cards own their refresh schedule, DOM cache, and subscriptions             |
+| Cleanup             | Remove dead `initX()` exports, dead HTML IDs, dead CSS selectors           |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| Cards on FdbCard pattern | 11/11 |
-| Static HTML card shells | 0 (all registry-generated) |
-| File-scoped mutable state | 0 (all instance state) |
-| Dead HTML IDs | 0 |
+| Criterion                 | Target                     |
+| ------------------------- | -------------------------- |
+| Cards on FdbCard pattern  | 11/11                      |
+| Static HTML card shells   | 0 (all registry-generated) |
+| File-scoped mutable state | 0 (all instance state)     |
+| Dead HTML IDs             | 0                          |
 
 ---
 
@@ -563,21 +602,21 @@ Make shipping boring and safe.
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
-| Version alignment | TypeScript, Node, and all tool versions aligned across app and worker |
-| Contributor setup | Documented install story: `cd MyScripts && npm install` then all tools available |
-| Release automation | `release:report` script validates all gates, produces pass/fail summary |
-| Preview deploys | PR-triggered preview deploys for visual review (Cloudflare Pages or Netlify) |
-| SLSA provenance | Add `actions/attest-build-provenance` to release workflow |
+| Phase              | Deliverables                                                                     |
+| ------------------ | -------------------------------------------------------------------------------- |
+| Version alignment  | TypeScript, Node, and all tool versions aligned across app and worker            |
+| Contributor setup  | Documented install story: `cd MyScripts && npm install` then all tools available |
+| Release automation | `release:report` script validates all gates, produces pass/fail summary          |
+| Preview deploys    | PR-triggered preview deploys for visual review (Cloudflare Pages or Netlify)     |
+| SLSA provenance    | Add `actions/attest-build-provenance` to release workflow                        |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
+| Criterion         | Target                      |
+| ----------------- | --------------------------- |
 | Contributor setup | Documented and unsurprising |
-| Release gates | Automated pass/fail report |
-| Preview deploys | Available on PRs |
+| Release gates     | Automated pass/fail report  |
+| Preview deploys   | Available on PRs            |
 
 ---
 
@@ -589,21 +628,21 @@ The Service Worker is vanilla JS with `__APP_VERSION__` replacement at build tim
 
 #### Action Plan
 
-| Phase | Deliverables |
-| --- | --- |
-| TypeScript migration | `sw.ts` compiled to `sw.js` at build time via Vite plugin |
-| Shared constants | Import `SW_VERSION`, `CACHE_NAME` from `src/core/sw-constants.ts` (already exists) |
-| Precache manifest | Auto-generated from Vite build output instead of hardcoded `APP_SHELL` array |
-| API cache strategy | Configurable per-origin TTL (weather: 30 min, news: 15 min, hebcal: 6 h) |
-| Background sync | Queue failed `POST /api/errors` for retry when online |
+| Phase                | Deliverables                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| TypeScript migration | `sw.ts` compiled to `sw.js` at build time via Vite plugin                          |
+| Shared constants     | Import `SW_VERSION`, `CACHE_NAME` from `src/core/sw-constants.ts` (already exists) |
+| Precache manifest    | Auto-generated from Vite build output instead of hardcoded `APP_SHELL` array       |
+| API cache strategy   | Configurable per-origin TTL (weather: 30 min, news: 15 min, hebcal: 6 h)           |
+| Background sync      | Queue failed `POST /api/errors` for retry when online                              |
 
 #### Exit Criteria
 
-| Criterion | Target |
-| --- | --- |
-| SW in TypeScript | Compiled, type-checked in CI |
-| Precache manifest | Auto-generated from build |
-| Per-origin TTL | Configurable, not hardcoded |
+| Criterion         | Target                       |
+| ----------------- | ---------------------------- |
+| SW in TypeScript  | Compiled, type-checked in CI |
+| Precache manifest | Auto-generated from build    |
+| Per-origin TTL    | Configurable, not hardcoded  |
 
 ---
 
@@ -687,23 +726,23 @@ After this roadmap is committed, execute in this order:
 
 Items from the old roadmap, resolved to final status:
 
-| Old Item | Final Status |
-| --- | --- |
-| EventTarget state store | Done. Keep and extend. |
-| FdbCard base class | Foundation done. Complete adoption in Stream B2. |
-| Shadow DOM migration | De-scoped (ADR-001). Never revisit unless hard encapsulation need emerges. |
-| Worker tests in CI | Done. Maintain. |
-| IDB cache support | Foundation done. Complete operational model in Stream D2. |
-| localStorage to IDB migration | Partially done. Complete in Stream D2. |
-| Dynamic registry-driven layout | Foundation exists (`createShell`). Complete in Stream B2. |
-| Config namespacing | v5 schema started. Complete in Stream E. |
-| Proxy removal in production | `__USE_PROXIES__=false` in prod builds. Consider removing proxy code entirely. |
-| OpenAPI completeness | `worker/openapi.yaml` exists. Expand alongside Stream W normalization. |
-| Playwright / visual regression | New: Stream G.2. |
-| Lighthouse CI | New: Stream G.2. |
-| Monorepo/workspaces migration | Rejected. Flat structure with Node walk-up is simpler. |
-| Doc consolidation | Streams I + J. |
-| React/Next.js rewrite | Rejected (ADR-005). Never revisit. |
-| Authentication | Rejected. Static PWA, no auth. |
-| Relational database | Deferred until multi-device sync need is real. |
-| Framework rewrite | Rejected. Vanilla TS stays. |
+| Old Item                       | Final Status                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| EventTarget state store        | Done. Keep and extend.                                                         |
+| FdbCard base class             | Foundation done. Complete adoption in Stream B2.                               |
+| Shadow DOM migration           | De-scoped (ADR-001). Never revisit unless hard encapsulation need emerges.     |
+| Worker tests in CI             | Done. Maintain.                                                                |
+| IDB cache support              | Foundation done. Complete operational model in Stream D2.                      |
+| localStorage to IDB migration  | Partially done. Complete in Stream D2.                                         |
+| Dynamic registry-driven layout | Foundation exists (`createShell`). Complete in Stream B2.                      |
+| Config namespacing             | v5 schema started. Complete in Stream E.                                       |
+| Proxy removal in production    | `__USE_PROXIES__=false` in prod builds. Consider removing proxy code entirely. |
+| OpenAPI completeness           | `worker/openapi.yaml` exists. Expand alongside Stream W normalization.         |
+| Playwright / visual regression | New: Stream G.2.                                                               |
+| Lighthouse CI                  | New: Stream G.2.                                                               |
+| Monorepo/workspaces migration  | Rejected. Flat structure with Node walk-up is simpler.                         |
+| Doc consolidation              | Streams I + J.                                                                 |
+| React/Next.js rewrite          | Rejected (ADR-005). Never revisit.                                             |
+| Authentication                 | Rejected. Static PWA, no auth.                                                 |
+| Relational database            | Deferred until multi-device sync need is real.                                 |
+| Framework rewrite              | Rejected. Vanilla TS stays.                                                    |

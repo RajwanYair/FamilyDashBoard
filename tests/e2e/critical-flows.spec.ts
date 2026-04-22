@@ -50,17 +50,13 @@ test.describe("FamilyDashBoard — Diagnostics Overlay", () => {
 
   test("D key opens the diagnostics overlay", async ({ page }) => {
     await page.keyboard.press("d");
-    const diag = page.locator(
-      "#diag-overlay, [id*='diag'], dialog[id*='diag']",
-    );
+    const diag = page.locator("#diag-overlay, [id*='diag'], dialog[id*='diag']");
     await expect(diag.first()).toBeVisible({ timeout: 3_000 });
   });
 
   test("Escape closes the diagnostics overlay", async ({ page }) => {
     await page.keyboard.press("d");
-    const diag = page.locator(
-      "#diag-overlay, [id*='diag'], dialog[id*='diag']",
-    );
+    const diag = page.locator("#diag-overlay, [id*='diag'], dialog[id*='diag']");
     await expect(diag.first()).toBeVisible({ timeout: 3_000 });
     await page.keyboard.press("Escape");
     await expect(diag.first()).not.toBeVisible({ timeout: 3_000 });
@@ -79,17 +75,13 @@ test.describe("FamilyDashBoard — Help Overlay", () => {
 
   test("? key opens the help overlay", async ({ page }) => {
     await page.keyboard.press("?");
-    const help = page.locator(
-      "#help-overlay, [id*='help'], dialog[id*='help']",
-    );
+    const help = page.locator("#help-overlay, [id*='help'], dialog[id*='help']");
     await expect(help.first()).toBeVisible({ timeout: 3_000 });
   });
 
   test("Escape closes the help overlay", async ({ page }) => {
     await page.keyboard.press("?");
-    const help = page.locator(
-      "#help-overlay, [id*='help'], dialog[id*='help']",
-    );
+    const help = page.locator("#help-overlay, [id*='help'], dialog[id*='help']");
     await expect(help.first()).toBeVisible({ timeout: 3_000 });
     await page.keyboard.press("Escape");
     await expect(help.first()).not.toBeVisible({ timeout: 3_000 });
@@ -108,13 +100,11 @@ test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
 
   test("T key changes the active theme", async ({ page }) => {
     const before = await page.evaluate(
-      () =>
-        document.documentElement.dataset["theme"] ?? document.body.className,
+      () => document.documentElement.dataset["theme"] ?? document.body.className,
     );
     await page.keyboard.press("t");
     const after = await page.evaluate(
-      () =>
-        document.documentElement.dataset["theme"] ?? document.body.className,
+      () => document.documentElement.dataset["theme"] ?? document.body.className,
     );
     expect(after).not.toBe(before);
   });
@@ -122,17 +112,13 @@ test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
   test("+ key increases font size", async ({ page }) => {
     const before = await page.evaluate(() =>
       parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--base-font-size",
-        ) || "16",
+        getComputedStyle(document.documentElement).getPropertyValue("--base-font-size") || "16",
       ),
     );
     await page.keyboard.press("+");
     const after = await page.evaluate(() =>
       parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--base-font-size",
-        ) || "16",
+        getComputedStyle(document.documentElement).getPropertyValue("--base-font-size") || "16",
       ),
     );
     // Font size should have increased or stayed the same at max
@@ -145,17 +131,13 @@ test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
     await page.keyboard.press("+");
     const before = await page.evaluate(() =>
       parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--base-font-size",
-        ) || "18",
+        getComputedStyle(document.documentElement).getPropertyValue("--base-font-size") || "18",
       ),
     );
     await page.keyboard.press("-");
     const after = await page.evaluate(() =>
       parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--base-font-size",
-        ) || "16",
+        getComputedStyle(document.documentElement).getPropertyValue("--base-font-size") || "16",
       ),
     );
     expect(after).toBeLessThanOrEqual(before);
@@ -170,9 +152,7 @@ test.describe("FamilyDashBoard — Status Bar", () => {
     await page.waitForSelector(".card-header, [data-card-id]", {
       timeout: 10_000,
     });
-    const badge = page.locator(
-      "#version-badge, [id*='version'], .version-badge",
-    );
+    const badge = page.locator("#version-badge, [id*='version'], .version-badge");
     // It may be present or not, but if present should have text
     const count = await badge.count();
     if (count > 0) {

@@ -29,10 +29,7 @@ describe("i18n", () => {
   });
 
   it("applies English language and direction to the document", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ interfaceLanguage: "en" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ interfaceLanguage: "en" }));
 
     applyInterfaceLanguage("en");
 

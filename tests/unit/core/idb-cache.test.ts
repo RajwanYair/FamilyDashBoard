@@ -28,7 +28,11 @@ function makeMockIdb() {
   const store = new Map<string, unknown>();
 
   function makeRequest<T>(fn: () => T): IDBRequest<T> {
-    const req = { result: undefined as T, onsuccess: null as ((e: Event) => void) | null, onerror: null as ((e: Event) => void) | null } as unknown as IDBRequest<T>;
+    const req = {
+      result: undefined as T,
+      onsuccess: null as ((e: Event) => void) | null,
+      onerror: null as ((e: Event) => void) | null,
+    } as unknown as IDBRequest<T>;
     setTimeout(() => {
       try {
         (req as unknown as { result: T }).result = fn();
@@ -42,9 +46,21 @@ function makeMockIdb() {
 
   const mockObjectStore = {
     get: (key: string) => makeRequest(() => store.get(key) ?? undefined),
-    put: (value: unknown, key: string) => makeRequest(() => { store.set(key, value); return key; }),
-    delete: (key: string) => makeRequest(() => { store.delete(key); return undefined; }),
-    clear: () => makeRequest(() => { store.clear(); return undefined; }),
+    put: (value: unknown, key: string) =>
+      makeRequest(() => {
+        store.set(key, value);
+        return key;
+      }),
+    delete: (key: string) =>
+      makeRequest(() => {
+        store.delete(key);
+        return undefined;
+      }),
+    clear: () =>
+      makeRequest(() => {
+        store.clear();
+        return undefined;
+      }),
     getAllKeys: () => makeRequest(() => Array.from(store.keys())),
   };
 
@@ -194,7 +210,6 @@ describe("IDB Cache — idbKeys", () => {
   });
 });
 
-
 describe("IDB Cache — isIdbAvailable", () => {
   it("returns a boolean", () => {
     expect(typeof isIdbAvailable()).toBe("boolean");
@@ -279,7 +294,6 @@ describe("IDB Cache — idbKeys", () => {
     expect(keys).toEqual([]);
   });
 });
-
 
 describe("IDB Cache — isIdbAvailable", () => {
   it("returns true when indexedDB exists in the environment", () => {

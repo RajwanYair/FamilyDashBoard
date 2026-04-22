@@ -91,16 +91,18 @@ if (existsSync(trendPath)) {
 
 // ── Quality gates ──────────────────────────────────────────────────────────
 
-process.stderr.write(RUN_GATES
-  ? "Running quality gates (use --no-gates to skip)...\n"
-  : "Skipping quality gates (--no-gates)\n");
+process.stderr.write(
+  RUN_GATES
+    ? "Running quality gates (use --no-gates to skip)...\n"
+    : "Skipping quality gates (--no-gates)\n",
+);
 
 const gates = [
-  { label: "TypeScript (tsc --noEmit)",       result: gate("npx tsc --noEmit") },
-  { label: "ESLint (0 warnings)",             result: gate("npx eslint src tests --max-warnings 0") },
-  { label: "Vitest unit tests",               result: gate("npx vitest run") },
-  { label: "Bundle size check",               result: gate("node scripts/check-bundle-size.mjs") },
-  { label: "SW version check",                result: gate("node scripts/check-sw-version.mjs") },
+  { label: "TypeScript (tsc --noEmit)", result: gate("npx tsc --noEmit") },
+  { label: "ESLint (0 warnings)", result: gate("npx eslint src tests --max-warnings 0") },
+  { label: "Vitest unit tests", result: gate("npx vitest run") },
+  { label: "Bundle size check", result: gate("node scripts/check-bundle-size.mjs") },
+  { label: "SW version check", result: gate("node scripts/check-sw-version.mjs") },
 ];
 
 const allPassed = gates.every((g) => g.result.passed !== false);
@@ -123,11 +125,15 @@ for (const g of gates) {
 console.log();
 
 if (!allPassed) {
-  console.log("> ⚠️ **One or more quality gates failed.** Do not tag a release until all gates pass.");
+  console.log(
+    "> ⚠️ **One or more quality gates failed.** Do not tag a release until all gates pass.",
+  );
   console.log();
   for (const g of gates) {
     if (g.result.passed === false) {
-      console.log(`<details><summary>❌ ${g.label}</summary>\n\n\`\`\`\n${g.result.output.slice(0, 2000)}\n\`\`\`\n</details>`);
+      console.log(
+        `<details><summary>❌ ${g.label}</summary>\n\n\`\`\`\n${g.result.output.slice(0, 2000)}\n\`\`\`\n</details>`,
+      );
       console.log();
     }
   }
@@ -141,4 +147,3 @@ console.log();
 console.log(changelogSection.trim());
 
 process.exit(allPassed ? 0 : 1);
-

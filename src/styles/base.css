@@ -2,100 +2,261 @@
 /* ═══════════════════════════════════════════════════════
    R1.1  CSS Reset & Base
    ═══════════════════════════════════════════════════════ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-* { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
-::selection { background: var(--accent); color: var(--bg-primary); }
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+::selection {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
 
 /* ── Animated Background ── */
 body {
-    font-family: var(--font-body, 'Segoe UI', Tahoma, Arial, 'Noto Sans Hebrew', sans-serif);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    overflow: hidden;
-    height: 100vh;
-    font-size: 21px;
-    position: relative;
-    transition: background 0.6s ease;
+  font-family: var(--font-body, "Segoe UI", Tahoma, Arial, "Noto Sans Hebrew", sans-serif);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  font-size: 21px;
+  position: relative;
+  transition: background 0.6s ease;
 }
 /* Full-screen background image (behind gradient overlay) */
 body::after {
-    content: ''; position: fixed; inset: 0; z-index: 0;
-    background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80') center/cover no-repeat;
-    opacity: 0.35;
-    pointer-events: none;
-    transition: opacity 1.5s ease; /* Background Image Cycling */
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80")
+    center/cover no-repeat;
+  opacity: 0.35;
+  pointer-events: none;
+  transition: opacity 1.5s ease; /* Background Image Cycling */
 }
 body::before {
-    content: ''; position: fixed; inset: 0; z-index: 0;
-    background: radial-gradient(ellipse at 20% 50%, var(--bg-gradient-1) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, var(--bg-gradient-2) 0%, transparent 50%),
-                radial-gradient(ellipse at 60% 80%, var(--bg-gradient-3) 0%, transparent 50%);
-    background: var(--season-tint, transparent); /* season overlay — wins by cascade */
-    animation: bgShift 30s ease-in-out infinite alternate;
-    pointer-events: none;
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, var(--bg-gradient-1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, var(--bg-gradient-2) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, var(--bg-gradient-3) 0%, transparent 50%);
+  background: var(--season-tint, transparent); /* season overlay — wins by cascade */
+  animation: bgShift 30s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 @keyframes bgShift {
-    0% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.05); }
-    100% { opacity: 0.7; transform: scale(1.02); }
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(1.02);
+  }
 }
-.container { position: relative; z-index: 1; max-width: 100vw; padding: var(--container-pad, 10px); height: calc(100vh - calc(var(--container-pad, 10px) * 2)); display: flex; flex-direction: column; gap: 6px; }
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 100vw;
+  padding: var(--container-pad, 10px);
+  height: calc(100vh - calc(var(--container-pad, 10px) * 2));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
 /* ── Halacha Ticker ── */
 .ticker-bar {
-    background: var(--bg-card-header); border-radius: 8px; overflow: hidden;
-    position: relative; flex: 0 0 auto; height: 36px;
-    border: var(--card-border); display: flex; align-items: center;
-    cursor: pointer;
+  background: var(--bg-card-header);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  flex: 0 0 auto;
+  height: 36px;
+  border: var(--card-border);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 .ticker-label {
-    background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; font-weight: 800; font-size: 0.75em;
-    padding: 0 12px; height: 100%; display: flex; align-items: center;
-    white-space: nowrap; z-index: 2; letter-spacing: 1px;
-    box-shadow: -4px 0 12px rgba(248,113,113,0.3);
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.75em;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  z-index: 2;
+  letter-spacing: 1px;
+  box-shadow: -4px 0 12px rgba(248, 113, 113, 0.3);
 }
 .ticker-track {
-    flex: 1; overflow: hidden; position: relative; height: 100%;
-    -webkit-mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
-    mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(to left, transparent, #000 4%, #000 96%, transparent);
 }
 .ticker-content {
-    display: flex; align-items: center; height: 100%; white-space: nowrap;
-    animation: tickerScroll var(--ticker-duration, 30s) linear infinite; will-change: transform;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  white-space: nowrap;
+  animation: tickerScroll var(--ticker-duration, 30s) linear infinite;
+  will-change: transform;
 }
-.ticker-content:hover { animation-play-state: paused; }
+.ticker-content:hover {
+  animation-play-state: paused;
+}
 .ticker-item {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 0 18px; font-size: 0.82em; color: var(--text-primary); flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  font-size: 0.82em;
+  color: var(--text-primary);
+  flex-shrink: 0;
 }
 .ticker-item::after {
-    content: '◆'; color: var(--accent); font-size: 0.5em; margin-right: 12px; opacity: 0.4;
+  content: "◆";
+  color: var(--accent);
+  font-size: 0.5em;
+  margin-right: 12px;
+  opacity: 0.4;
 }
-.ticker-src { color: var(--accent); font-weight: 600; font-size: 0.85em; text-shadow: 0 0 6px var(--accent-glow); }
+.ticker-src {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.85em;
+  text-shadow: 0 0 6px var(--accent-glow);
+}
 @keyframes tickerScroll {
-    0% { transform: translateX(-50%); }
-    100% { transform: translateX(0); }
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /* ── Header ── */
 .time-section {
-    display: flex; justify-content: space-between; align-items: center;
-    background: var(--bg-card); backdrop-filter: blur(6px);
-    padding: 6px 16px; border-radius: var(--border-radius);
-    border: var(--card-border); box-shadow: var(--card-shadow);
-    flex: 0 0 auto;
-    border-bottom: 2px solid transparent;
-    border-image: linear-gradient(90deg, var(--accent), var(--cyan), var(--purple), var(--pink), var(--orange), var(--warning)) 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  backdrop-filter: blur(6px);
+  padding: 6px 16px;
+  border-radius: var(--border-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+  flex: 0 0 auto;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(
+      90deg,
+      var(--accent),
+      var(--cyan),
+      var(--purple),
+      var(--pink),
+      var(--orange),
+      var(--warning)
+    )
+    1;
 }
-.header-left, .header-right { display: flex; flex-direction: column; flex: 1; gap: 1px; }
-.header-left { align-items: flex-start; }
-.header-right { align-items: flex-end; }
-.header-center { flex: 1.2; text-align: center; }
-.clock { font-size: 2.9em; font-weight: 800; color: var(--accent); letter-spacing: 3px; text-shadow: 0 0 30px var(--accent-glow); line-height: 1; background: linear-gradient(135deg, var(--accent) 0%, var(--cyan) 50%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 20px var(--accent-glow)); }
-.greeting { font-size: 0.82em; color: var(--text-secondary); margin-top: 1px; background: linear-gradient(90deg, var(--text-secondary), var(--pink), var(--text-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 100%; animation: greetingShift 6s ease-in-out infinite; }
-@keyframes greetingShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-.hebrew-date { font-size: 1.05em; color: var(--accent-bright); font-weight: 600; text-shadow: 0 0 10px rgba(147,197,253,0.3); }
-.english-date { font-size: 0.85em; color: var(--text-secondary); }
-.shabbat-info { font-size: 0.75em; color: var(--warning); font-weight: 600; margin-top: 1px; text-shadow: 0 0 8px rgba(251,191,36,0.2); }
-.top-temp { font-size: 1.2em; color: var(--accent); font-weight: 700; text-shadow: 0 0 12px var(--accent-glow); }
-.header-emoji { font-size: 2.8em; flex: 0 0 auto; margin: 0 6px; line-height: 1; filter: drop-shadow(0 0 8px rgba(96,165,250,0.3)); }
+.header-left,
+.header-right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 1px;
+}
+.header-left {
+  align-items: flex-start;
+}
+.header-right {
+  align-items: flex-end;
+}
+.header-center {
+  flex: 1.2;
+  text-align: center;
+}
+.clock {
+  font-size: 2.9em;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-shadow: 0 0 30px var(--accent-glow);
+  line-height: 1;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--cyan) 50%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px var(--accent-glow));
+}
+.greeting {
+  font-size: 0.82em;
+  color: var(--text-secondary);
+  margin-top: 1px;
+  background: linear-gradient(90deg, var(--text-secondary), var(--pink), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 100%;
+  animation: greetingShift 6s ease-in-out infinite;
+}
+@keyframes greetingShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+.hebrew-date {
+  font-size: 1.05em;
+  color: var(--accent-bright);
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(147, 197, 253, 0.3);
+}
+.english-date {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+.shabbat-info {
+  font-size: 0.75em;
+  color: var(--warning);
+  font-weight: 600;
+  margin-top: 1px;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+}
+.top-temp {
+  font-size: 1.2em;
+  color: var(--accent);
+  font-weight: 700;
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+.header-emoji {
+  font-size: 2.8em;
+  flex: 0 0 auto;
+  margin: 0 6px;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
+}

@@ -31,8 +31,7 @@ function getColIds(colEl: HTMLElement): string[] {
 
 /** Read the live layout from the three grid columns. */
 export function readCurrentLayout(): [string[], string[], string[]] {
-  const q = <T extends HTMLElement>(sel: string): T | null =>
-    document.querySelector<T>(sel);
+  const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
   return [
     getColIds(q<HTMLElement>(".grid-col-left") ?? document.createElement("div")),
     getColIds(q<HTMLElement>(".grid-col-mid") ?? document.createElement("div")),
@@ -72,9 +71,9 @@ function onDragEnd(): void {
 }
 
 function clearDragOver(): void {
-  document.querySelectorAll<HTMLElement>(".drag-over").forEach((el) =>
-    el.classList.remove("drag-over"),
-  );
+  document
+    .querySelectorAll<HTMLElement>(".drag-over")
+    .forEach((el) => el.classList.remove("drag-over"));
 }
 
 function onColDragOver(e: DragEvent, col: HTMLElement): void {
@@ -83,9 +82,7 @@ function onColDragOver(e: DragEvent, col: HTMLElement): void {
   if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
 
   clearDragOver();
-  const target = (e.target as HTMLElement).closest<HTMLElement>(
-    "[data-card-id]",
-  );
+  const target = (e.target as HTMLElement).closest<HTMLElement>("[data-card-id]");
   if (target && target !== _dragCard && col.contains(target)) {
     target.classList.add("drag-over");
   }
@@ -103,9 +100,7 @@ function onColDrop(e: DragEvent, col: HTMLElement): void {
   clearDragOver();
   if (!_dragCard) return;
 
-  const target = (e.target as HTMLElement).closest<HTMLElement>(
-    "[data-card-id]",
-  );
+  const target = (e.target as HTMLElement).closest<HTMLElement>("[data-card-id]");
 
   if (target && target !== _dragCard) {
     // Insert before or after the target based on pointer position

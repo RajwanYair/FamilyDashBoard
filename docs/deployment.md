@@ -125,10 +125,10 @@ a graceful error tile otherwise.
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| Blank page after deploy | Check `--base` flag matches your deployment path |
-| SW not registering | Ensure `sw.js` is at the same origin as `index.html` |
-| Old version still showing | Hard-reload (`Ctrl+Shift+R`) or clear the SW in DevTools |
-| API data not loading | Open diagnostics (`D` key) to see the fetch log |
+| Symptom                   | Fix                                                        |
+| ------------------------- | ---------------------------------------------------------- |
+| Blank page after deploy   | Check `--base` flag matches your deployment path           |
+| SW not registering        | Ensure `sw.js` is at the same origin as `index.html`       |
+| Old version still showing | Hard-reload (`Ctrl+Shift+R`) or clear the SW in DevTools   |
+| API data not loading      | Open diagnostics (`D` key) to see the fetch log            |
 | Cards hidden unexpectedly | Config is stored in localStorage — open config panel (`S`) |

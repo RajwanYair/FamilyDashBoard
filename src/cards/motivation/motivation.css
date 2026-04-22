@@ -51,9 +51,26 @@
 
 /* Sprint 11: Maximize — large motivation card layout */
 @container card (min-width: 900px) {
-  .moti-body { padding: 24px; }
-  .moti-card { max-width: 860px; margin: 0 auto; }
-  .moti-text { font-size: 1.8em; line-height: 1.8; padding: 0 20px; }
-  .moti-author { font-size: 1em; margin-top: 10px; }
-  #moti-next-btn, #moti-share-btn { font-size: 0.8em; padding: 6px 18px; margin-top: 12px; }
+  .moti-body {
+    padding: 24px;
+  }
+  .moti-card {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .moti-text {
+    font-size: 1.8em;
+    line-height: 1.8;
+    padding: 0 20px;
+  }
+  .moti-author {
+    font-size: 1em;
+    margin-top: 10px;
+  }
+  #moti-next-btn,
+  #moti-share-btn {
+    font-size: 0.8em;
+    padding: 6px 18px;
+    margin-top: 12px;
+  }
 }

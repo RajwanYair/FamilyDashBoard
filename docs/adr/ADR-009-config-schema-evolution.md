@@ -30,7 +30,7 @@
 // src/core/config.ts
 type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
 const MIGRATIONS: Record<number, Migration> = {
-  8: (cfg) => ({ ...cfg, newField: 'default' }),
+  8: (cfg) => ({ ...cfg, newField: "default" }),
   // next: 9: ...
 };
 ```

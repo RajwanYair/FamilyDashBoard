@@ -2,19 +2,69 @@
 /* Migrated from src/styles/sprints.css */
 
 /* F37: Today-event count badge */
-#header-event-count { display: none; font-size: 0.6em; background: var(--accent); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; margin-right: 4px; }
+#header-event-count {
+  display: none;
+  font-size: 0.6em;
+  background: var(--accent);
+  color: #000;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-right: 4px;
+}
 
 /* F77: Header Shabbat time pill */
-#header-shabbat-pill { font-size: 0.70em; background: rgba(251,191,36,0.12); color: var(--warning); border-radius: 8px; padding: 1px 8px; margin: 1px 0; display: none; white-space: nowrap; }
+#header-shabbat-pill {
+  font-size: 0.7em;
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--warning);
+  border-radius: 8px;
+  padding: 1px 8px;
+  margin: 1px 0;
+  display: none;
+  white-space: nowrap;
+}
 
 /* F104: Birthday Header Chip */
-#header-birthday-chip { font-size: 0.68em; background: rgba(251,191,36,0.16); color: var(--warning); border-radius: 10px; padding: 2px 7px; font-weight: 600; white-space: nowrap; display: none; cursor: default; }
+#header-birthday-chip {
+  font-size: 0.68em;
+  background: rgba(251, 191, 36, 0.16);
+  color: var(--warning);
+  border-radius: 10px;
+  padding: 2px 7px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: none;
+  cursor: default;
+}
 
 /* F109: Next Zman Header Indicator */
-#header-next-zman { font-size: 0.68em; color: var(--accent); background: var(--accent-glow); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; }
+#header-next-zman {
+  font-size: 0.68em;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border-radius: 10px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  display: none;
+}
 
 /* F114: Notification permission bell chip */
-#notif-bell { font-size: 0.68em; background: rgba(251,191,36,0.16); color: var(--warning); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: pointer; animation: pulse 2s infinite; }
+#notif-bell {
+  font-size: 0.68em;
+  background: rgba(251, 191, 36, 0.16);
+  color: var(--warning);
+  border-radius: 10px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  display: none;
+  cursor: pointer;
+  animation: pulse 2s infinite;
+}
 
 /* F89: Clock seconds display */
-#clock.with-seconds { letter-spacing: -0.02em; font-size: 2.5em; }
+#clock.with-seconds {
+  letter-spacing: -0.02em;
+  font-size: 2.5em;
+}

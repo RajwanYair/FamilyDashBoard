@@ -342,10 +342,7 @@ describe("Stocks — checkStockAlerts (v6.1)", () => {
 
   it("ignores invalid line format", () => {
     cSet("stk-INTC", makeStockCache(50));
-    localStorage.setItem(
-      "dash_v2_stock_alerts",
-      "invalid line without operator",
-    );
+    localStorage.setItem("dash_v2_stock_alerts", "invalid line without operator");
     checkStockAlerts();
     expect(vi.mocked(showToast)).not.toHaveBeenCalled();
   });
@@ -420,14 +417,8 @@ describe("Stocks — applyHiddenStocks", () => {
     saveConfig(c);
     const { applyHiddenStocks } = await import("@/cards/stocks/stocks");
     applyHiddenStocks();
-    expect(
-      document.querySelector<HTMLElement>('[data-symbol="AAPL"]')?.style
-        .display,
-    ).toBe("none");
-    expect(
-      document.querySelector<HTMLElement>('[data-symbol="TSLA"]')?.style
-        .display,
-    ).toBe("none");
+    expect(document.querySelector<HTMLElement>('[data-symbol="AAPL"]')?.style.display).toBe("none");
+    expect(document.querySelector<HTMLElement>('[data-symbol="TSLA"]')?.style.display).toBe("none");
   });
 
   it("un-hides a symbol when removed from hiddenStocks", async () => {
@@ -603,9 +594,7 @@ describe("Stocks — renderPortfolioRow (F132)", () => {
   it("no-ops when portfolio key is missing", () => {
     buildPortfolioDom();
     renderPortfolioRow();
-    expect(document.getElementById("stk-total-row")?.style.display).toBe(
-      "none",
-    );
+    expect(document.getElementById("stk-total-row")?.style.display).toBe("none");
   });
 
   it("no-ops when portfolio JSON is malformed", () => {
@@ -615,10 +604,7 @@ describe("Stocks — renderPortfolioRow (F132)", () => {
   });
 
   it("no-ops when no prices are cached", () => {
-    localStorage.setItem(
-      "dash_v2_portfolio",
-      JSON.stringify({ AAPL: { shares: 10, cost: 150 } }),
-    );
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify({ AAPL: { shares: 10, cost: 150 } }));
     buildPortfolioDom();
     renderPortfolioRow();
     // stk-total-val must still contain the placeholder text (not updated)
@@ -627,10 +613,7 @@ describe("Stocks — renderPortfolioRow (F132)", () => {
 
   it("shows total-row and sets total-val on gain", () => {
     makeYahooCache("AAPL", 200);
-    localStorage.setItem(
-      "dash_v2_portfolio",
-      JSON.stringify({ AAPL: { shares: 10, cost: 150 } }),
-    );
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify({ AAPL: { shares: 10, cost: 150 } }));
     buildPortfolioDom();
     renderPortfolioRow();
     const rowEl = document.getElementById("stk-total-row");
@@ -641,10 +624,7 @@ describe("Stocks — renderPortfolioRow (F132)", () => {
 
   it("applies pl-gain class on gain to header chip", () => {
     makeYahooCache("AAPL", 200);
-    localStorage.setItem(
-      "dash_v2_portfolio",
-      JSON.stringify({ AAPL: { shares: 10, cost: 150 } }),
-    );
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify({ AAPL: { shares: 10, cost: 150 } }));
     buildPortfolioDom();
     renderPortfolioRow();
     const chip = document.getElementById("header-portfolio-pl");
@@ -654,10 +634,7 @@ describe("Stocks — renderPortfolioRow (F132)", () => {
 
   it("applies pl-loss class on loss", () => {
     makeYahooCache("AAPL", 100);
-    localStorage.setItem(
-      "dash_v2_portfolio",
-      JSON.stringify({ AAPL: { shares: 10, cost: 150 } }),
-    );
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify({ AAPL: { shares: 10, cost: 150 } }));
     buildPortfolioDom();
     renderPortfolioRow();
     const chip = document.getElementById("header-portfolio-pl");
@@ -666,10 +643,7 @@ describe("Stocks — renderPortfolioRow (F132)", () => {
 
   it("does not throw when DOM elements are absent", () => {
     makeYahooCache("AAPL", 200);
-    localStorage.setItem(
-      "dash_v2_portfolio",
-      JSON.stringify({ AAPL: { shares: 10, cost: 150 } }),
-    );
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify({ AAPL: { shares: 10, cost: 150 } }));
     document.body.innerHTML = "<div></div>";
     expect(() => renderPortfolioRow()).not.toThrow();
   });
@@ -724,10 +698,7 @@ describe("Stocks — renderStock per-stock P&L row (F149)", () => {
   });
 
   it("renders stk-pos-pnl with gain class when in profit", () => {
-    localStorage.setItem(
-      "dash_v2_portfolio",
-      JSON.stringify({ AAPL: { shares: 10, cost: 100 } }),
-    );
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify({ AAPL: { shares: 10, cost: 100 } }));
     const blk = buildBlock("AAPL");
     renderStock(blk, makeStockData(150), "AAPL");
     const posEl = blk.querySelector(".stk-pos-pnl");
@@ -737,10 +708,7 @@ describe("Stocks — renderStock per-stock P&L row (F149)", () => {
   });
 
   it("renders stk-pos-pnl with loss class when at a loss", () => {
-    localStorage.setItem(
-      "dash_v2_portfolio",
-      JSON.stringify({ AAPL: { shares: 10, cost: 200 } }),
-    );
+    localStorage.setItem("dash_v2_portfolio", JSON.stringify({ AAPL: { shares: 10, cost: 200 } }));
     const blk = buildBlock("AAPL");
     renderStock(blk, makeStockData(150), "AAPL");
     const posEl = blk.querySelector(".stk-pos-pnl");
@@ -854,21 +822,13 @@ describe("Stocks — renderStock after/pre-market price (F137)", () => {
 
   it("renders .stk-after-price when postMarketPrice is set", () => {
     const blk = buildBlock();
-    renderStock(
-      blk,
-      makeData({ postMarketPrice: 151.5, postMarketChangePercent: 1.0 }),
-      "AAPL",
-    );
+    renderStock(blk, makeData({ postMarketPrice: 151.5, postMarketChangePercent: 1.0 }), "AAPL");
     expect(blk.querySelector(".stk-after-price")).not.toBeNull();
   });
 
   it("renders .stk-after-price when preMarketPrice is set", () => {
     const blk = buildBlock();
-    renderStock(
-      blk,
-      makeData({ preMarketPrice: 149.5, preMarketChangePercent: -0.33 }),
-      "AAPL",
-    );
+    renderStock(blk, makeData({ preMarketPrice: 149.5, preMarketChangePercent: -0.33 }), "AAPL");
     expect(blk.querySelector(".stk-after-price")).not.toBeNull();
   });
 
@@ -890,9 +850,7 @@ describe("Stocks — renderStock after/pre-market price (F137)", () => {
   it("contains 'טרום' label for pre-market price", () => {
     const blk = buildBlock();
     renderStock(blk, makeData({ preMarketPrice: 148.5 }), "AAPL");
-    expect(blk.querySelector(".stk-after-price")?.textContent).toContain(
-      "טרום",
-    );
+    expect(blk.querySelector(".stk-after-price")?.textContent).toContain("טרום");
   });
 });
 
@@ -900,8 +858,7 @@ describe("Stocks — renderStock after/pre-market price (F137)", () => {
 
 describe("Stocks — renderStocksShell", () => {
   function buildContainer(): void {
-    document.body.innerHTML =
-      '<div class="stocks-scroll" id="stocks-body"></div>';
+    document.body.innerHTML = '<div class="stocks-scroll" id="stocks-body"></div>';
   }
 
   afterEach(() => {
@@ -1116,11 +1073,7 @@ describe("Stocks — renderStock negative trend", () => {
 // ── renderStock — 52-week range bar (updateStockRange) ────────────────────
 
 describe("Stocks — renderStock 52-week range bar", () => {
-  function makeData52w(
-    price: number,
-    low: number,
-    high: number,
-  ): YahooChartResponse {
+  function makeData52w(price: number, low: number, high: number): YahooChartResponse {
     return {
       chart: {
         result: [
@@ -1189,9 +1142,7 @@ describe("Stocks — renderStock 52-week range bar", () => {
 
   it("does not throw when high <= low (degenerate range)", () => {
     const blk = buildBlockWith52w();
-    expect(() =>
-      renderStock(blk, makeData52w(150, 200, 100), "AAPL"),
-    ).not.toThrow();
+    expect(() => renderStock(blk, makeData52w(150, 200, 100), "AAPL")).not.toThrow();
   });
 });
 
@@ -1225,9 +1176,7 @@ describe("Stocks — initStocksCard", () => {
   it("populates stocks-body after init", () => {
     buildDom();
     initStocksCard();
-    expect(
-      document.getElementById("stocks-body")!.innerHTML.length,
-    ).toBeGreaterThan(0);
+    expect(document.getElementById("stocks-body")!.innerHTML.length).toBeGreaterThan(0);
   });
 });
 
@@ -1242,9 +1191,7 @@ describe("Stocks — updateMarketCountdown", () => {
   it("sets countdown text when element is present", () => {
     document.body.innerHTML = '<div id="stk-mkt-countdown"></div>';
     updateMarketCountdown();
-    expect(document.getElementById("stk-mkt-countdown")!.textContent).not.toBe(
-      "",
-    );
+    expect(document.getElementById("stk-mkt-countdown")!.textContent).not.toBe("");
   });
 
   it("does not throw when element is missing", () => {
@@ -1257,9 +1204,7 @@ describe("Stocks — updateMarketCountdown", () => {
     vi.setSystemTime(new Date("2024-01-13T14:00:00Z")); // Saturday
     document.body.innerHTML = '<div id="stk-mkt-countdown"></div>';
     updateMarketCountdown();
-    expect(document.getElementById("stk-mkt-countdown")!.textContent).toContain(
-      "סגור",
-    );
+    expect(document.getElementById("stk-mkt-countdown")!.textContent).toContain("סגור");
   });
 
   it("shows 'פתוח' during market hours", () => {
@@ -1267,9 +1212,7 @@ describe("Stocks — updateMarketCountdown", () => {
     vi.setSystemTime(new Date("2024-01-08T18:00:00Z")); // Mon 1 PM ET
     document.body.innerHTML = '<div id="stk-mkt-countdown"></div>';
     updateMarketCountdown();
-    expect(document.getElementById("stk-mkt-countdown")!.textContent).toContain(
-      "פתוח",
-    );
+    expect(document.getElementById("stk-mkt-countdown")!.textContent).toContain("פתוח");
   });
 
   it("shows 'פרה' during pre-market hours", () => {
@@ -1277,9 +1220,7 @@ describe("Stocks — updateMarketCountdown", () => {
     vi.setSystemTime(new Date("2024-01-08T11:00:00Z")); // Mon 6 AM ET
     document.body.innerHTML = '<div id="stk-mkt-countdown"></div>';
     updateMarketCountdown();
-    expect(document.getElementById("stk-mkt-countdown")!.textContent).toContain(
-      "פרה",
-    );
+    expect(document.getElementById("stk-mkt-countdown")!.textContent).toContain("פרה");
   });
 });
 
@@ -1309,10 +1250,7 @@ describe("Stocks — checkStockAlerts", () => {
       chart: { result: [{ meta: { regularMarketPrice: 150 } }], error: null },
     });
     checkStockAlerts();
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringContaining("AAPL"),
-      5000,
-    );
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("AAPL"), 5000);
   });
 
   it("fires toast for < operator", () => {
@@ -1321,10 +1259,7 @@ describe("Stocks — checkStockAlerts", () => {
       chart: { result: [{ meta: { regularMarketPrice: 150 } }], error: null },
     });
     checkStockAlerts();
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringContaining("AAPL"),
-      5000,
-    );
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("AAPL"), 5000);
   });
 
   it("fires toast for >= operator", () => {
@@ -1333,10 +1268,7 @@ describe("Stocks — checkStockAlerts", () => {
       chart: { result: [{ meta: { regularMarketPrice: 300 } }], error: null },
     });
     checkStockAlerts();
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringContaining("MSFT"),
-      5000,
-    );
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("MSFT"), 5000);
   });
 
   it("fires toast for <= operator", () => {
@@ -1345,10 +1277,7 @@ describe("Stocks — checkStockAlerts", () => {
       chart: { result: [{ meta: { regularMarketPrice: 450 } }], error: null },
     });
     checkStockAlerts();
-    expect(showToast).toHaveBeenCalledWith(
-      expect.stringContaining("NVDA"),
-      5000,
-    );
+    expect(showToast).toHaveBeenCalledWith(expect.stringContaining("NVDA"), 5000);
   });
 
   it("does not fire when condition is not met", () => {
@@ -1413,17 +1342,13 @@ describe("Stocks — renderPortfolioRow", () => {
 
   it("does nothing when no portfolio in localStorage", () => {
     renderPortfolioRow();
-    expect(document.getElementById("stk-total-row")!.style.display).toBe(
-      "none",
-    );
+    expect(document.getElementById("stk-total-row")!.style.display).toBe("none");
   });
 
   it("does nothing with invalid JSON", () => {
     localStorage.setItem("dash_v2_portfolio", "not json");
     renderPortfolioRow();
-    expect(document.getElementById("stk-total-row")!.style.display).toBe(
-      "none",
-    );
+    expect(document.getElementById("stk-total-row")!.style.display).toBe("none");
   });
 
   it("computes and displays portfolio P&L with gain", () => {
@@ -1438,16 +1363,10 @@ describe("Stocks — renderPortfolioRow", () => {
     });
     renderPortfolioRow();
     expect(document.getElementById("stk-total-row")!.style.display).toBe("");
-    expect(document.getElementById("stk-total-val")!.textContent).toContain(
-      "$",
-    );
-    expect(document.getElementById("stk-total-pnl")!.textContent).toContain(
-      "+",
-    );
+    expect(document.getElementById("stk-total-val")!.textContent).toContain("$");
+    expect(document.getElementById("stk-total-pnl")!.textContent).toContain("+");
     expect(document.getElementById("stk-total-pnl")!.className).toBe("gain");
-    expect(document.getElementById("header-portfolio-pl")!.style.display).toBe(
-      "",
-    );
+    expect(document.getElementById("header-portfolio-pl")!.style.display).toBe("");
   });
 
   it("displays loss styling when cost > current value", () => {
@@ -1488,9 +1407,7 @@ describe("Stocks — renderPortfolioRow", () => {
       }),
     );
     renderPortfolioRow();
-    expect(document.getElementById("stk-total-row")!.style.display).toBe(
-      "none",
-    );
+    expect(document.getElementById("stk-total-row")!.style.display).toBe("none");
   });
 });
 
@@ -1813,7 +1730,17 @@ describe("Stocks — renderPortfolioRow totalCost=0 branch (line 664)", () => {
     // cache a price for AAPL
     cSet("stk-AAPL", {
       chart: {
-        result: [{ meta: { regularMarketPrice: 180, previousClose: 175, currency: "USD", regularMarketVolume: 0 }, indicators: { quote: [{ close: [175, 180] }] } }],
+        result: [
+          {
+            meta: {
+              regularMarketPrice: 180,
+              previousClose: 175,
+              currency: "USD",
+              regularMarketVolume: 0,
+            },
+            indicators: { quote: [{ close: [175, 180] }] },
+          },
+        ],
         error: null,
       },
     });
@@ -1902,10 +1829,17 @@ describe("Stocks — renderPortfolioRow entry.cost undefined → ?? 0 (line 657)
     // Provide a cached price so cGetStale returns data (line 653-654)
     cSet("stk-AAPL", {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 180, previousClose: 175, currency: "USD", regularMarketVolume: 0 },
-          indicators: { quote: [{ close: [175, 180] }] },
-        }],
+        result: [
+          {
+            meta: {
+              regularMarketPrice: 180,
+              previousClose: 175,
+              currency: "USD",
+              regularMarketVolume: 0,
+            },
+            indicators: { quote: [{ close: [175, 180] }] },
+          },
+        ],
         error: null,
       },
     });
@@ -1939,16 +1873,18 @@ describe("Stocks — renderStock second render removes existing .stk-after-price
   function makeData(extra: Record<string, unknown> = {}): YahooChartResponse {
     return {
       chart: {
-        result: [{
-          meta: {
-            regularMarketPrice: 150,
-            previousClose: 148,
-            currency: "USD",
-            regularMarketVolume: 5_000_000,
-            ...extra,
-          } as YahooChartResponse["chart"]["result"][0]["meta"],
-          indicators: { quote: [{ close: [148, 150] }] },
-        }],
+        result: [
+          {
+            meta: {
+              regularMarketPrice: 150,
+              previousClose: 148,
+              currency: "USD",
+              regularMarketVolume: 5_000_000,
+              ...extra,
+            } as YahooChartResponse["chart"]["result"][0]["meta"],
+            indicators: { quote: [{ close: [148, 150] }] },
+          },
+        ],
         error: null,
       },
     };
@@ -1975,11 +1911,13 @@ describe("Stocks — renderStock second render removes existing .stk-after-price
 
 describe("Stocks — loadAllStocks partial failure sets sync ok (line 530 FALSE branch)", () => {
   function buildStockDOM(): void {
-    const rows = STOCK_SYMBOLS.map((s) => `<div class="stk" data-symbol="${s}">
+    const rows = STOCK_SYMBOLS.map(
+      (s) => `<div class="stk" data-symbol="${s}">
       <div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div>
       <svg class="stk-chart" viewBox="0 0 200 22"></svg>
       <div class="stk-time">-</div>
-    </div>`).join("");
+    </div>`,
+    ).join("");
     document.body.innerHTML = `
       <div id="stocks-body">${rows}</div>
       <div id="stk-summary"></div>
@@ -2006,10 +1944,17 @@ describe("Stocks — loadAllStocks partial failure sets sync ok (line 530 FALSE 
     const firstSym = STOCK_SYMBOLS[0]!;
     cSet(`stk-${firstSym}`, {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 150, previousClose: 148, currency: "USD", regularMarketVolume: 0 },
-          indicators: { quote: [{ close: [148, 150] }] },
-        }],
+        result: [
+          {
+            meta: {
+              regularMarketPrice: 150,
+              previousClose: 148,
+              currency: "USD",
+              regularMarketVolume: 0,
+            },
+            indicators: { quote: [{ close: [148, 150] }] },
+          },
+        ],
         error: null,
       },
     });
@@ -2028,11 +1973,13 @@ describe("Stocks — loadAllStocks partial failure sets sync ok (line 530 FALSE 
 
 describe("Stocks — updateStockSummary counts stk-down stocks (line 557 else-if branch)", () => {
   function buildStockDOM(): void {
-    const rows = STOCK_SYMBOLS.map((s) => `<div class="stk" data-symbol="${s}">
+    const rows = STOCK_SYMBOLS.map(
+      (s) => `<div class="stk" data-symbol="${s}">
       <div class="stk-vals"><div class="stk-price skeleton">---</div><div class="stk-chg">-</div></div>
       <svg class="stk-chart" viewBox="0 0 200 22"></svg>
       <div class="stk-time">-</div>
-    </div>`).join("");
+    </div>`,
+    ).join("");
     document.body.innerHTML = `
       <div id="stocks-body">${rows}</div>
       <div id="stk-summary"></div>
@@ -2059,10 +2006,17 @@ describe("Stocks — updateStockSummary counts stk-down stocks (line 557 else-if
     const sym = STOCK_SYMBOLS[0]!;
     cSet(`stk-${sym}`, {
       chart: {
-        result: [{
-          meta: { regularMarketPrice: 140, previousClose: 150, currency: "USD", regularMarketVolume: 0 },
-          indicators: { quote: [{ close: [150, 140] }] },
-        }],
+        result: [
+          {
+            meta: {
+              regularMarketPrice: 140,
+              previousClose: 150,
+              currency: "USD",
+              regularMarketVolume: 0,
+            },
+            indicators: { quote: [{ close: [150, 140] }] },
+          },
+        ],
         error: null,
       },
     });

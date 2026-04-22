@@ -230,9 +230,7 @@ export function isValidCardSize(value: unknown): value is CardSize {
  */
 export function assertCardSize(value: unknown): asserts value is CardSize {
   if (!isValidCardSize(value)) {
-    throw new TypeError(
-      `Expected CardSize ("sm"|"md"|"lg"|"xl"), got: ${JSON.stringify(value)}`,
-    );
+    throw new TypeError(`Expected CardSize ("sm"|"md"|"lg"|"xl"), got: ${JSON.stringify(value)}`);
   }
 }
 

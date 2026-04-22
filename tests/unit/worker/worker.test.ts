@@ -28,7 +28,10 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../../../worker/src/utils/validation";
-import { ALLOWED_NEWS_ORIGINS, ALLOWED_CALENDAR_ORIGINS } from "../../../worker/src/utils/allowlists";
+import {
+  ALLOWED_NEWS_ORIGINS,
+  ALLOWED_CALENDAR_ORIGINS,
+} from "../../../worker/src/utils/allowlists";
 import { jsonResponse, proxyResponse, workerEnvelope } from "../../../worker/src/utils/response";
 
 // ── CORS middleware tests ─────────────────────────────────────────────────────
@@ -170,7 +173,7 @@ describe("Validation — validationErrorResponse", () => {
     const err = new ValidationError("sym", "bad symbol");
     const res = validationErrorResponse(err);
     expect(res.status).toBe(400);
-    const body = await res.json() as { error: string; param: string };
+    const body = (await res.json()) as { error: string; param: string };
     expect(body.param).toBe("sym");
     expect(body.error).toContain("bad symbol");
   });
@@ -335,7 +338,7 @@ describe("Worker response helpers — jsonResponse", () => {
 
   it("serializes body correctly", async () => {
     const res = jsonResponse({ x: 42 });
-    const body = await res.json() as { x: number };
+    const body = (await res.json()) as { x: number };
     expect(body.x).toBe(42);
   });
 });
@@ -519,9 +522,7 @@ describe("Worker — handleCurrency route", () => {
 
     const res = await handleCurrency(mockEnv);
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      "https://open.er-api.com/v6/latest/ILS",
-    );
+    expect(fetchMock).toHaveBeenCalledWith("https://open.er-api.com/v6/latest/ILS");
     expect(res.status).toBe(200);
   });
 
@@ -538,14 +539,8 @@ describe("Worker — handleCurrency route", () => {
 
     const res = await handleCurrency(mockEnv);
 
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      1,
-      "https://open.er-api.com/v6/latest/ILS",
-    );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
-      "https://api.exchangerate-api.com/v4/latest/ILS",
-    );
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "https://open.er-api.com/v6/latest/ILS");
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "https://api.exchangerate-api.com/v4/latest/ILS");
     expect(res.status).toBe(200);
   });
 });
@@ -562,14 +557,16 @@ describe("Worker — handleHebcal route", () => {
   it("returns 200 with workerEnvelope on valid upstream", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
-        JSON.stringify({ items: [{ date: "2024-01-05", title: "Candles", category: "candles", hebrew: "" }] }),
+        JSON.stringify({
+          items: [{ date: "2024-01-05", title: "Candles", category: "candles", hebrew: "" }],
+        }),
         { status: 200, headers: { "Content-Type": "application/json" } },
       ),
     );
     const url = new URL("https://worker.dev/api/hebcal?geonameid=293397");
     const res = await handleHebcal(url, mockEnv);
     expect(res.status).toBe(200);
-    const body = await res.json() as { provider: string };
+    const body = (await res.json()) as { provider: string };
     expect(body.provider).toBe("hebcal");
   });
 
@@ -580,11 +577,12 @@ describe("Worker — handleHebcal route", () => {
   });
 
   it("returns KV stale on upstream error", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("bad gateway", { status: 502 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
     const kvGet = vi.fn().mockResolvedValue(
-      JSON.stringify({ items: [{ date: "2024-01-05", title: "Candles", category: "candles", hebrew: "" }], _stale: true }),
+      JSON.stringify({
+        items: [{ date: "2024-01-05", title: "Candles", category: "candles", hebrew: "" }],
+        _stale: true,
+      }),
     );
     const envWithKv: Env = {
       ...mockEnv,
@@ -604,14 +602,16 @@ describe("Worker — handleHebcalHolidays route", () => {
   it("returns 200 with workerEnvelope on valid upstream", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
-        JSON.stringify({ items: [{ date: "2024-01-05", title: "Rosh Hashana", category: "holiday", hebrew: "" }] }),
+        JSON.stringify({
+          items: [{ date: "2024-01-05", title: "Rosh Hashana", category: "holiday", hebrew: "" }],
+        }),
         { status: 200, headers: { "Content-Type": "application/json" } },
       ),
     );
     const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
     const res = await handleHebcalHolidays(url, mockEnv);
     expect(res.status).toBe(200);
-    const body = await res.json() as { provider: string };
+    const body = (await res.json()) as { provider: string };
     expect(body.provider).toBe("hebcal");
   });
 
@@ -622,11 +622,11 @@ describe("Worker — handleHebcalHolidays route", () => {
   });
 
   it("returns KV stale on upstream error", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("bad gateway", { status: 502 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
     const kvGet = vi.fn().mockResolvedValue(
-      JSON.stringify({ items: [{ date: "2024-01-05", title: "Rosh Hashana", category: "holiday", hebrew: "" }] }),
+      JSON.stringify({
+        items: [{ date: "2024-01-05", title: "Rosh Hashana", category: "holiday", hebrew: "" }],
+      }),
     );
     const envWithKv: Env = {
       ...mockEnv,
@@ -648,7 +648,9 @@ import {
 } from "../../../worker/src/routes/feeds";
 
 describe("Worker — handleAlerts route", () => {
-  afterEach(() => { vi.restoreAllMocks(); });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it("returns 200 with workerEnvelope when upstream succeeds", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -659,15 +661,13 @@ describe("Worker — handleAlerts route", () => {
     );
     const res = await handleAlerts();
     expect(res.status).toBe(200);
-    const body = await res.json() as { provider: string; data: unknown[] };
+    const body = (await res.json()) as { provider: string; data: unknown[] };
     expect(body.provider).toBe("tzevaadom");
     expect(Array.isArray(body.data)).toBe(true);
   });
 
   it("returns 502 when upstream fails", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("bad gateway", { status: 502 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
     const res = await handleAlerts();
     expect(res.status).toBe(502);
   });
@@ -786,7 +786,9 @@ describe("Zod schemas — HebcalSchema", () => {
   });
 
   it("rejects item missing required title field", () => {
-    const result = safeParse(HebcalSchema, { items: [{ date: "2024-01-05", category: "candles" }] });
+    const result = safeParse(HebcalSchema, {
+      items: [{ date: "2024-01-05", category: "candles" }],
+    });
     expect(result.ok).toBe(false);
   });
 });
@@ -828,7 +830,9 @@ describe("Zod schemas — StocksChartSchema", () => {
   it("passes through extra fields in meta", () => {
     const data = {
       chart: {
-        result: [{ meta: { regularMarketPrice: 100, currency: "USD", symbol: "TSLA", extraField: true } }],
+        result: [
+          { meta: { regularMarketPrice: 100, currency: "USD", symbol: "TSLA", extraField: true } },
+        ],
         error: null,
       },
     };
@@ -854,7 +858,12 @@ describe("Zod schemas — StocksChartSchema", () => {
   });
 
   it("rejects meta with non-number regularMarketPrice", () => {
-    const bad = { chart: { result: [{ meta: { regularMarketPrice: "not-a-number", currency: "USD", symbol: "X" } }], error: null } };
+    const bad = {
+      chart: {
+        result: [{ meta: { regularMarketPrice: "not-a-number", currency: "USD", symbol: "X" } }],
+        error: null,
+      },
+    };
     const result = safeParse(StocksChartSchema, bad);
     expect(result.ok).toBe(false);
   });
@@ -863,7 +872,9 @@ describe("Zod schemas — StocksChartSchema", () => {
 // ── Worker — handleStocks route (Stream W.5) ──────────────────────────────────
 
 describe("Worker — handleStocks route", () => {
-  afterEach(() => { vi.restoreAllMocks(); });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it("returns 200 JSON with valid upstream stocks data", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -875,7 +886,7 @@ describe("Worker — handleStocks route", () => {
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
     const res = await handleStocks(url);
     expect(res.status).toBe(200);
-    const body = await res.json() as typeof VALID_STOCKS;
+    const body = (await res.json()) as typeof VALID_STOCKS;
     expect(body.chart.result[0]?.meta.symbol).toBe("AAPL");
   });
 
@@ -886,9 +897,7 @@ describe("Worker — handleStocks route", () => {
   });
 
   it("returns 502 when upstream returns non-ok status", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("bad gateway", { status: 503 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 503 }));
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
     const res = await handleStocks(url);
     expect(res.status).toBe(502);
@@ -904,7 +913,7 @@ describe("Worker — handleStocks route", () => {
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
     const res = await handleStocks(url);
     expect(res.status).toBe(502);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toContain("schema invalid");
   });
 });
@@ -946,7 +955,9 @@ describe("Zod schemas — CoinGeckoSchema", () => {
 // ── Worker — handleCrypto route (Stream W.7) ──────────────────────────────────
 
 describe("Worker — handleCrypto route", () => {
-  afterEach(() => { vi.restoreAllMocks(); });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it("returns 200 JSON with valid CoinGecko bitcoin data", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -958,7 +969,7 @@ describe("Worker — handleCrypto route", () => {
     const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin&vs_currencies=usd");
     const res = await handleCrypto(url);
     expect(res.status).toBe(200);
-    const body = await res.json() as typeof VALID_CRYPTO;
+    const body = (await res.json()) as typeof VALID_CRYPTO;
     expect(body.bitcoin.usd).toBe(65000);
   });
 
@@ -966,14 +977,12 @@ describe("Worker — handleCrypto route", () => {
     const url = new URL("https://worker.example.com/api/crypto?ids=ethereum");
     const res = await handleCrypto(url);
     expect(res.status).toBe(400);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toContain("bitcoin");
   });
 
   it("returns 502 when upstream returns non-ok status", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("rate limited", { status: 429 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("rate limited", { status: 429 }));
     const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
     const res = await handleCrypto(url);
     expect(res.status).toBe(502);
@@ -989,7 +998,7 @@ describe("Worker — handleCrypto route", () => {
     const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
     const res = await handleCrypto(url);
     expect(res.status).toBe(502);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toContain("schema invalid");
   });
 });
@@ -1025,7 +1034,10 @@ describe("Zod schemas — NewsRssSchema", () => {
   });
 
   it("accepts minimal feed with XML declaration, <channel> and <item>", () => {
-    const result = safeParse(NewsRssSchema, "<?xml version=\"1.0\"?><rss><channel><item/></channel></rss>");
+    const result = safeParse(
+      NewsRssSchema,
+      '<?xml version="1.0"?><rss><channel><item/></channel></rss>',
+    );
     expect(result.ok).toBe(true);
   });
 
@@ -1045,7 +1057,10 @@ describe("Zod schemas — NewsRssSchema", () => {
   });
 
   it("rejects RSS without <item> (empty channel)", () => {
-    const result = safeParse(NewsRssSchema, "<rss><channel><title>No items</title></channel></rss>");
+    const result = safeParse(
+      NewsRssSchema,
+      "<rss><channel><title>No items</title></channel></rss>",
+    );
     expect(result.ok).toBe(false);
   });
 
@@ -1063,7 +1078,9 @@ describe("Zod schemas — NewsRssSchema", () => {
 // ── Worker — handleNews route (Stream W.8) ────────────────────────────────────
 
 describe("Worker — handleNews route", () => {
-  afterEach(() => { vi.restoreAllMocks(); });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it("returns 200 with RSS text for valid RSS 2.0 upstream", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -1094,9 +1111,7 @@ describe("Worker — handleNews route", () => {
   });
 
   it("returns 502 when upstream returns non-ok status", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("rate limited", { status: 429 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("rate limited", { status: 429 }));
     const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
     const res = await handleNews(url);
     expect(res.status).toBe(502);
@@ -1112,12 +1127,14 @@ describe("Worker — handleNews route", () => {
     const url = new URL("https://worker.example.com/api/news?url=https://rss.ynet.co.il/0.xml");
     const res = await handleNews(url);
     expect(res.status).toBe(502);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toContain("not valid RSS");
   });
 
   it("returns 403 for disallowed origin", async () => {
-    const url = new URL("https://worker.example.com/api/news?url=https://evil.example.com/feed.xml");
+    const url = new URL(
+      "https://worker.example.com/api/news?url=https://evil.example.com/feed.xml",
+    );
     const res = await handleNews(url);
     expect(res.status).toBe(403);
   });

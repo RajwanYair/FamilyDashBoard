@@ -29,9 +29,7 @@ export function applyTheme(theme: string): void {
       /* quota exceeded */
     }
     // Sync the config panel's theme dropdown
-    const sel = document.getElementById(
-      "theme-select",
-    ) as HTMLSelectElement | null;
+    const sel = document.getElementById("theme-select") as HTMLSelectElement | null;
     if (sel && sel.value !== valid) sel.value = valid;
     diagLog(`[theme] Applied: ${valid}`);
   };
@@ -47,9 +45,7 @@ export function applyTheme(theme: string): void {
  * Cycle to the next theme.
  */
 export function cycleTheme(): void {
-  const current = THEMES.findIndex((t) =>
-    document.body.classList.contains(`theme-${t}`),
-  );
+  const current = THEMES.findIndex((t) => document.body.classList.contains(`theme-${t}`));
   applyTheme(THEMES[(current + 1) % THEMES.length] ?? "black");
 }
 
@@ -57,9 +53,7 @@ export function cycleTheme(): void {
  * Get the currently active theme name.
  */
 export function currentTheme(): ThemeName {
-  const found = THEMES.find((t) =>
-    document.body.classList.contains(`theme-${t}`),
-  );
+  const found = THEMES.find((t) => document.body.classList.contains(`theme-${t}`));
   return found ?? "black";
 }
 
@@ -70,23 +64,19 @@ export function initTheme(): void {
   const saved = localStorage.getItem(LS_THEME) ?? "black";
   applyTheme(saved);
 
-  const sel = document.getElementById(
-    "theme-select",
-  ) as HTMLSelectElement | null;
+  const sel = document.getElementById("theme-select") as HTMLSelectElement | null;
   if (sel) {
     sel.addEventListener("change", () => applyTheme(sel.value));
   }
 
   // v7: Follow OS dark/light preference changes (only when user hasn't picked a theme)
-  window
-    .matchMedia("(prefers-color-scheme: light)")
-    .addEventListener("change", (e) => {
-      const hasSaved = !!localStorage.getItem(LS_THEME);
-      if (!hasSaved) {
-        // Light OS → amber; Dark OS → black
-        applyTheme(e.matches ? "amber" : "black");
-      }
-    });
+  window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", (e) => {
+    const hasSaved = !!localStorage.getItem(LS_THEME);
+    if (!hasSaved) {
+      // Light OS → amber; Dark OS → black
+      applyTheme(e.matches ? "amber" : "black");
+    }
+  });
 }
 
 /**

@@ -8,10 +8,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const css = readFileSync(
-  resolve(__dirname, "../../../src/styles/components.css"),
-  "utf-8",
-);
+const css = readFileSync(resolve(__dirname, "../../../src/styles/components.css"), "utf-8");
 
 describe("CSS card-shell anatomy (Sprint 108)", () => {
   it("defines .card__header", () => {
@@ -63,10 +60,7 @@ describe("Metric tile (Sprint 112)", () => {
 
 // ── Sprint 172: Animation CSS tests ────────────────────────────────────
 
-const animCss = readFileSync(
-  resolve(__dirname, "../../../src/styles/animations.css"),
-  "utf-8",
-);
+const animCss = readFileSync(resolve(__dirname, "../../../src/styles/animations.css"), "utf-8");
 
 describe("Card badge pulse animation (Sprint 172)", () => {
   it("defines .card-badge-new class", () => {
@@ -161,4 +155,3 @@ describe("Card skeleton state (Stream F v7.22)", () => {
     expect(css).toMatch(/prefers-reduced-motion[\s\S]*card-skeleton/);
   });
 });
-

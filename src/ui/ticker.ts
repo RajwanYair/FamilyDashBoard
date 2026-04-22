@@ -103,8 +103,7 @@ function makeTickerSet(data: HalachaData, isClone: boolean): DocumentFragment {
   const customMsg = localStorage.getItem(LS_TICKER_MSG) ?? "";
   if (customMsg) {
     const announce = document.createElement("span");
-    announce.className =
-      "ticker-item ticker-custom-msg" + (isClone ? " clone" : "");
+    announce.className = "ticker-item ticker-custom-msg" + (isClone ? " clone" : "");
     announce.textContent = `📢 ${customMsg}`;
     frag.appendChild(announce);
   }
@@ -166,7 +165,7 @@ function renderHalachaExcerpt(data: HalachaData): void {
   elHcHalachaRow.style.display = excerpt ? "" : "none";
 
   if (data.url) {
-    (elHcHalachaRow).onclick = (): void => {
+    elHcHalachaRow.onclick = (): void => {
       try {
         window.open(data.url, "_blank", "noopener,noreferrer");
       } catch {
@@ -175,7 +174,7 @@ function renderHalachaExcerpt(data: HalachaData): void {
     };
     elHcHalachaRow.title = "לחץ לקרוא ב-Sefaria";
   } else {
-    (elHcHalachaRow).onclick = null;
+    elHcHalachaRow.onclick = null;
   }
 }
 
@@ -219,27 +218,21 @@ async function loadHalacha(): Promise<void> {
   if (stale) renderTicker(stale);
 
   try {
-    const calData = (await fetchFromSefaria(
-      API.SEFARIA_CALENDAR,
-    )) as SefariaCalResponse | null;
+    const calData = (await fetchFromSefaria(API.SEFARIA_CALENDAR)) as SefariaCalResponse | null;
 
     if (!calData?.calendar_items) {
       diagLog("[ticker] Sefaria calendar fetch failed");
       return;
     }
 
-    const halachaItem = calData.calendar_items.find(
-      (it) => it.title?.en === "Halakhah Yomit",
-    );
+    const halachaItem = calData.calendar_items.find((it) => it.title?.en === "Halakhah Yomit");
     if (!halachaItem?.url) {
       diagLog("[ticker] Halakhah Yomit not found in calendar");
       return;
     }
 
     const textUrl = API.SEFARIA_TEXT + encodeURIComponent(halachaItem.url);
-    const textData = (await fetchFromSefaria(
-      textUrl,
-    )) as SefariaTextResponse | null;
+    const textData = (await fetchFromSefaria(textUrl)) as SefariaTextResponse | null;
 
     if (!textData?.versions?.length) {
       diagLog("[ticker] Sefaria text fetch failed");

@@ -2,53 +2,83 @@
 /* ── Card Maximize (click header to expand) ── */
 
 /* Keep ticker + header above the maximized card — fallback z-index */
-.ticker-bar, .time-section { position: relative; z-index: 901; }
+.ticker-bar,
+.time-section {
+  position: relative;
+  z-index: 901;
+}
 
 .card.maximized {
-    position: fixed !important;
-    top: var(--maximize-top, 0px);
-    left: 0;
-    width: 100vw;
-    height: var(--maximize-height, 100vh);
-    z-index: 900;
-    border-radius: 0;
-    transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                border-color 0.3s;
-    contain: none !important;
-    overflow: auto;
-    will-change: transform, top, left, width, height; /* GPU promote during FLIP */
+  position: fixed !important;
+  top: var(--maximize-top, 0px);
+  left: 0;
+  width: 100vw;
+  height: var(--maximize-height, 100vh);
+  z-index: 900;
+  border-radius: 0;
+  transition:
+    top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s;
+  contain: none !important;
+  overflow: auto;
+  will-change: transform, top, left, width, height; /* GPU promote during FLIP */
 }
 .card.maximized .card-header::after {
-    content: '✕'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-    font-size: 0.8em; opacity: 0.5; pointer-events: none;
+  content: "✕";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+  opacity: 0.5;
+  pointer-events: none;
 }
 .card.card-hidden {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transition: opacity 0.3s ease;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
 }
 .col-split.card-hidden {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transition: opacity 0.3s ease;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
 }
-.card.maximized:hover { transform: none; }
+.card.maximized:hover {
+  transform: none;
+}
 /* When maximized: lift containment & hidden overflow so body fills the full card */
 .card.maximized .news-body,
 .card.maximized .cal-wrapper,
 .card.maximized .stocks-body,
 .card.maximized .alerts-body,
 .card.maximized .currency-body,
-.card.maximized .moti-body { contain: none; flex: 1; min-height: 0; overflow: auto; }
+.card.maximized .moti-body {
+  contain: none;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
 /* Weather body uses hidden overflow so its flex children pin top/mid/bottom correctly */
-.card.maximized .weather-body { contain: none; flex: 1; min-height: 0; overflow: hidden; }
+.card.maximized .weather-body {
+  contain: none;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
 /* Weather layout when maximized: top info fixed top, chart fills middle, forecast pinned bottom */
-.card.maximized .wx-top-row { flex: 0 0 auto; }
-.card.maximized .wx-hourly-chart { max-height: none; flex: 1 1 0; }
-.card.maximized .wx-fday { padding: 8px 10px; }
+.card.maximized .wx-top-row {
+  flex: 0 0 auto;
+}
+.card.maximized .wx-hourly-chart {
+  max-height: none;
+  flex: 1 1 0;
+}
+.card.maximized .wx-fday {
+  padding: 8px 10px;
+}
 /* Maximized: scale up font dynamically via --max-font-scale (set by JS).
  * clamp(1rem, scale·1rem, 6rem) ensures content fills the expanded card while
  * staying legible. Layout-only rules (justify-content, flex-direction) stay per-type. */
@@ -60,49 +90,65 @@
 .card.maximized .moti-body,
 .card.maximized .hc-body,
 .card.maximized .cal-wrapper {
-    font-size: clamp(1rem, calc(1rem * clamp(1, var(--max-font-scale, 1), 4)), 6rem);
-    transition: font-size 0.3s ease-out;
+  font-size: clamp(1rem, calc(1rem * clamp(1, var(--max-font-scale, 1), 4)), 6rem);
+  transition: font-size 0.3s ease-out;
 }
 /* Per-type layout rules preserved */
-.card.maximized .currency-body { justify-content: center; }
-.card.maximized .moti-body { display: flex; align-items: center; justify-content: center; }
-.card.maximized .hc-body { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.card.maximized .currency-body {
+  justify-content: center;
+}
+.card.maximized .moti-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card.maximized .hc-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 /* News: let scroll container fill the full expanded height */
-.card.maximized .news-body { max-height: 100%; }
+.card.maximized .news-body {
+  max-height: 100%;
+}
 
 /* Sprint 116: Maximize backdrop overlay */
 .maximize-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 899;
-    background: rgba(0, 0, 0, 0);
-    pointer-events: none;
-    transition: background 0.4s ease;
+  position: fixed;
+  inset: 0;
+  z-index: 899;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  transition: background 0.4s ease;
 }
 .maximize-backdrop.active {
-    background: rgba(0, 0, 0, 0.55);
-    pointer-events: auto;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
 }
 
 /* Sprint 116: Minimize transition — reverse ease-out for snap-back feel */
 .card.minimizing {
-    transition: top 0.35s cubic-bezier(0.5, 0, 0.75, 0),
-                left 0.35s cubic-bezier(0.5, 0, 0.75, 0),
-                width 0.35s cubic-bezier(0.5, 0, 0.75, 0),
-                height 0.35s cubic-bezier(0.5, 0, 0.75, 0);
+  transition:
+    top 0.35s cubic-bezier(0.5, 0, 0.75, 0),
+    left 0.35s cubic-bezier(0.5, 0, 0.75, 0),
+    width 0.35s cubic-bezier(0.5, 0, 0.75, 0),
+    height 0.35s cubic-bezier(0.5, 0, 0.75, 0);
 }
 
 /* ── Accessibility: Reduced Motion (R1.9) ── */
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-    :root {
-        --duration-fast: 0.01ms;
-        --duration-normal: 0.01ms;
-        --duration-slow: 0.01ms;
-    }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-normal: 0.01ms;
+    --duration-slow: 0.01ms;
+  }
 }

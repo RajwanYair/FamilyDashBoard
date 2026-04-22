@@ -8,8 +8,12 @@ import { debounce, throttle, clamp, pad2, decomposeDuration, computeMoonPhase } 
 // ── debounce ──────────────────────────────────────────────────────────────────
 
 describe("debounce", () => {
-  beforeEach(() => { vi.useFakeTimers(); });
-  afterEach(() => { vi.useRealTimers(); });
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("does not call fn immediately", () => {
     const fn = vi.fn();
@@ -50,8 +54,12 @@ describe("debounce", () => {
 // ── throttle ──────────────────────────────────────────────────────────────────
 
 describe("throttle", () => {
-  beforeEach(() => { vi.useFakeTimers(); });
-  afterEach(() => { vi.useRealTimers(); });
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("calls fn on first invocation", () => {
     const fn = vi.fn();

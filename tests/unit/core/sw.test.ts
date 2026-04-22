@@ -23,9 +23,7 @@ describe("ServiceWorker — CACHE_NAME", () => {
 
   it("CACHE_NAME includes a version string or build-time placeholder", () => {
     // Accept either a resolved version (e.g. v7.3.0) or the build-time placeholder
-    expect(swSource).toMatch(
-      /CACHE_NAME\s*=\s*["']familydashboard-v(\d+|__APP_VERSION__)/,
-    );
+    expect(swSource).toMatch(/CACHE_NAME\s*=\s*["']familydashboard-v(\d+|__APP_VERSION__)/);
   });
 });
 

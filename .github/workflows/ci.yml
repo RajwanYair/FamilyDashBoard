@@ -60,6 +60,8 @@ jobs:
         run: bash .github/ci/install-tools.sh
       - name: ESLint (0 warnings allowed)
         run: npx eslint src tests --max-warnings 0
+      - name: Prettier format check
+        run: npx prettier --check .
       - name: Markdownlint
         run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**" "#**/dist/**"
 

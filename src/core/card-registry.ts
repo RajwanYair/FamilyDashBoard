@@ -46,9 +46,7 @@ export function getCard(id: string): CardRegistryEntry | undefined {
  * Return all registered entries, sorted by titleHe.
  */
 export function listCards(): CardRegistryEntry[] {
-  return [..._registry.values()].sort((a, b) =>
-    a.titleHe.localeCompare(b.titleHe, "he"),
-  );
+  return [..._registry.values()].sort((a, b) => a.titleHe.localeCompare(b.titleHe, "he"));
 }
 
 /**
@@ -141,10 +139,7 @@ function legacyAdapter(
     defaultSlot: { col, order, flexGrow, hidden: false },
     defaultSize: "md" as const,
     render(): HTMLElement {
-      return (
-        document.querySelector(`[data-card-id="${id}"]`) ??
-        document.createElement("section")
-      );
+      return document.querySelector(`[data-card-id="${id}"]`) ?? document.createElement("section");
     },
     init: initFn,
     ...(configSchema ? { configSchema } : {}),
@@ -261,13 +256,11 @@ registerCard({
   titleHe: "יומן",
   titleEn: "Calendar",
   load: async (): Promise<FdbCardDefinition> => {
-    const [
-      { initCalendarCard, calendarConfigSchema, destroyCalendarCard },
-      { FdbCalendarCard },
-    ] = await Promise.all([
-      import("@/cards/calendar/calendar"),
-      import("@/cards/calendar/fdb-calendar"),
-    ]);
+    const [{ initCalendarCard, calendarConfigSchema, destroyCalendarCard }, { FdbCalendarCard }] =
+      await Promise.all([
+        import("@/cards/calendar/calendar"),
+        import("@/cards/calendar/fdb-calendar"),
+      ]);
     const def = legacyAdapter(
       "calendar",
       "📅",
@@ -303,13 +296,11 @@ registerCard({
   titleHe: "מטבעות",
   titleEn: "Currency",
   load: async (): Promise<FdbCardDefinition> => {
-    const [
-      { initCurrencyCard, currencyConfigSchema, destroyCurrencyCard },
-      { FdbCurrencyCard },
-    ] = await Promise.all([
-      import("@/cards/currency/currency"),
-      import("@/cards/currency/fdb-currency"),
-    ]);
+    const [{ initCurrencyCard, currencyConfigSchema, destroyCurrencyCard }, { FdbCurrencyCard }] =
+      await Promise.all([
+        import("@/cards/currency/currency"),
+        import("@/cards/currency/fdb-currency"),
+      ]);
     const def = legacyAdapter(
       "currency",
       "💱",
@@ -376,13 +367,8 @@ registerCard({
   titleHe: "התראות",
   titleEn: "Alerts",
   load: async (): Promise<FdbCardDefinition> => {
-    const [
-      { initAlertsCard, alertsConfigSchema, destroyAlertsCard },
-      { FdbAlertsCard },
-    ] = await Promise.all([
-      import("@/cards/alerts/alerts"),
-      import("@/cards/alerts/fdb-alerts"),
-    ]);
+    const [{ initAlertsCard, alertsConfigSchema, destroyAlertsCard }, { FdbAlertsCard }] =
+      await Promise.all([import("@/cards/alerts/alerts"), import("@/cards/alerts/fdb-alerts")]);
     const def = legacyAdapter(
       "alerts",
       "🚨",
@@ -418,13 +404,11 @@ registerCard({
   titleHe: "השראה",
   titleEn: "Motivation",
   load: async (): Promise<FdbCardDefinition> => {
-    const [
-      { initMotivationCard, motivationConfigSchema },
-      { FdbMotivationCard },
-    ] = await Promise.all([
-      import("@/cards/motivation/motivation"),
-      import("@/cards/motivation/fdb-motivation"),
-    ]);
+    const [{ initMotivationCard, motivationConfigSchema }, { FdbMotivationCard }] =
+      await Promise.all([
+        import("@/cards/motivation/motivation"),
+        import("@/cards/motivation/fdb-motivation"),
+      ]);
     const def = legacyAdapter(
       "motivation",
       "💡",
@@ -511,9 +495,8 @@ registerCard({
   titleHe: "ספירה לאחור",
   titleEn: "Countdown",
   load: async (): Promise<CardDefinition> => {
-    const { initCountdownCard, countdownConfigSchema } = await import(
-      "@/cards/countdown/countdown"
-    );
+    const { initCountdownCard, countdownConfigSchema } =
+      await import("@/cards/countdown/countdown");
     return legacyAdapter(
       "countdown",
       "💍",

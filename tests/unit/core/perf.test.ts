@@ -75,7 +75,8 @@ describe("rateVital", () => {
 
   describe("LCP", () => {
     it("good ≤ 2500ms", () => expect(rateVital("lcp", 2500)).toBe("good"));
-    it("needs-improvement ≤ 4000ms", () => expect(rateVital("lcp", 3000)).toBe("needs-improvement"));
+    it("needs-improvement ≤ 4000ms", () =>
+      expect(rateVital("lcp", 3000)).toBe("needs-improvement"));
     it("poor > 4000ms", () => expect(rateVital("lcp", 5000)).toBe("poor"));
   });
 
@@ -93,13 +94,15 @@ describe("rateVital", () => {
 
   describe("FCP", () => {
     it("good ≤ 1800ms", () => expect(rateVital("fcp", 1000)).toBe("good"));
-    it("needs-improvement ≤ 3000ms", () => expect(rateVital("fcp", 2000)).toBe("needs-improvement"));
+    it("needs-improvement ≤ 3000ms", () =>
+      expect(rateVital("fcp", 2000)).toBe("needs-improvement"));
     it("poor > 3000ms", () => expect(rateVital("fcp", 4000)).toBe("poor"));
   });
 
   describe("TTFB", () => {
     it("good ≤ 800ms", () => expect(rateVital("ttfb", 500)).toBe("good"));
-    it("needs-improvement ≤ 1800ms", () => expect(rateVital("ttfb", 1000)).toBe("needs-improvement"));
+    it("needs-improvement ≤ 1800ms", () =>
+      expect(rateVital("ttfb", 1000)).toBe("needs-improvement"));
     it("poor > 1800ms", () => expect(rateVital("ttfb", 2000)).toBe("poor"));
   });
 });

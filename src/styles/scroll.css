@@ -2,80 +2,117 @@
 /* ── Performance: Paint Containment ── */
 /* Currency and motivation are compact cards — cap at 30% viewport height, centered in row */
 .bottom-grid > .card:nth-child(2),
-.bottom-grid > .card:nth-child(3) { max-height: 30vh; align-self: center; }
-.news-body, .stocks-body, .alerts-body, .weather-body, .currency-body, .moti-body { contain: content; }
+.bottom-grid > .card:nth-child(3) {
+  max-height: 30vh;
+  align-self: center;
+}
+.news-body,
+.stocks-body,
+.alerts-body,
+.weather-body,
+.currency-body,
+.moti-body {
+  contain: content;
+}
 
 /* ── Performance: GPU-Accelerated Layers ── */
 /* Promote continuously-animating scroll containers to GPU-composited layers */
-.rss-scroll, .stocks-scroll, .alerts-scroll, .ticker-inner {
-    will-change: transform;
-    transform: translateZ(0);         /* force GPU layer */
-    backface-visibility: hidden;      /* skip back-face rasterization */
+.rss-scroll,
+.stocks-scroll,
+.alerts-scroll,
+.ticker-inner {
+  will-change: transform;
+  transform: translateZ(0); /* force GPU layer */
+  backface-visibility: hidden; /* skip back-face rasterization */
 }
-.stk-chart svg { will-change: contents; }
+.stk-chart svg {
+  will-change: contents;
+}
 
 /* Animated gradient border — GPU composite */
-.card::before { will-change: transform; backface-visibility: hidden; }
+.card::before {
+  will-change: transform;
+  backface-visibility: hidden;
+}
 
 /* ── Scroll Fade Masks (top/bottom gradient edges on scrolling containers) ── */
-.news-body, .stocks-body, .alerts-body {
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+.news-body,
+.stocks-body,
+.alerts-body {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
 }
 
 /* Sprint 117: Scroll-snap for single-column phone mode */
 body.mode-phone .grids-area {
-    scroll-snap-type: y proximity;
-    -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y proximity;
+  -webkit-overflow-scrolling: touch;
 }
 body.mode-phone .card {
-    scroll-snap-align: start;
-    scroll-margin-top: var(--space-2, 8px);
+  scroll-snap-align: start;
+  scroll-margin-top: var(--space-2, 8px);
 }
 
 /* ═══════════════════════════════════════════════════════
    Sprint 155: Scroll Shadow Indicators
    ═══════════════════════════════════════════════════════ */
 .card__body {
-    position: relative;
-    overflow-y: auto;
+  position: relative;
+  overflow-y: auto;
 }
 .card__body::before,
 .card__body::after {
-    content: "";
-    position: sticky;
-    left: 0;
-    right: 0;
-    height: 12px;
-    pointer-events: none;
-    z-index: 2;
-    opacity: 0;
-    transition: opacity 0.25s ease;
+  content: "";
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 12px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.25s ease;
 }
 .card__body::before {
-    top: 0;
-    background: linear-gradient(to bottom, var(--bg-card, #1a1a2e), transparent);
+  top: 0;
+  background: linear-gradient(to bottom, var(--bg-card, #1a1a2e), transparent);
 }
 .card__body::after {
-    bottom: 0;
-    background: linear-gradient(to top, var(--bg-card, #1a1a2e), transparent);
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg-card, #1a1a2e), transparent);
 }
-.card__body.scroll-top::before { opacity: 1; }
-.card__body.scroll-bottom::after { opacity: 1; }
-
-
+.card__body.scroll-top::before {
+  opacity: 1;
+}
+.card__body.scroll-bottom::after {
+  opacity: 1;
+}
 
 /* ── Animated Gradient Border on Card Focus/Hover ── */
 @property --border-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
 .card:hover::before {
-    content: ''; position: absolute; inset: -1px; border-radius: var(--border-radius); z-index: -1;
-    background: conic-gradient(from var(--border-angle), var(--accent), var(--cyan), var(--purple), var(--pink), var(--accent));
-    animation: rotateBorder 4s linear infinite;
-    opacity: 0.5;
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--border-radius);
+  z-index: -1;
+  background: conic-gradient(
+    from var(--border-angle),
+    var(--accent),
+    var(--cyan),
+    var(--purple),
+    var(--pink),
+    var(--accent)
+  );
+  animation: rotateBorder 4s linear infinite;
+  opacity: 0.5;
 }
-@keyframes rotateBorder { to { --border-angle: 360deg; } }
+@keyframes rotateBorder {
+  to {
+    --border-angle: 360deg;
+  }
+}

@@ -1,9 +1,9 @@
-# GitHub Copilot Instructions — FamilyDashBoard v8.9.0
+# GitHub Copilot Instructions — FamilyDashBoard v9.1.0
 
-> TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · Vite 8 + TS 5.9 + Vitest 4
+> TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · Vite 8 + TS 6.0.3 + Vitest 4.1.5
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
-> No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`
-> Tests: `npx vitest run` — 3205 / 95 suites / 0 failures
+> No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
+> Tests: `npx vitest run` — 3179 / 94 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
 
 ## Mandatory Rules
@@ -26,13 +26,13 @@
 
 ## Key Names & Gotchas
 
-| Wrong | Correct |
-|-------|---------|
-| `loadStocks()` | `loadAllStocks()` |
-| `_useFahrenheit` | `_tempUnit` (`'C'`/`'F'`) |
-| `getCachedData()` | `cGet(key, TTL)` |
-| `setCachedData()` | `cSet(key, data)` |
-| `setSyncStatus()` | `setSync(id, state)` |
+| Wrong             | Correct                   |
+| ----------------- | ------------------------- |
+| `loadStocks()`    | `loadAllStocks()`         |
+| `_useFahrenheit`  | `_tempUnit` (`'C'`/`'F'`) |
+| `getCachedData()` | `cGet(key, TTL)`          |
+| `setCachedData()` | `cSet(key, data)`         |
+| `setSyncStatus()` | `setSync(id, state)`      |
 
 ## v7.x Rules
 

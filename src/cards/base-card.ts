@@ -5,14 +5,7 @@
  * Each card module exports an init function and a load function.
  */
 
-import {
-  cGet,
-  cGetStale,
-  cSet,
-  cSetAsync,
-  cGetAsync,
-  cGetStaleAsync,
-} from "../core/cache";
+import { cGet, cGetStale, cSet, cSetAsync, cGetAsync, cGetStaleAsync } from "../core/cache";
 import { isPageVisible } from "../core/idle";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../core/sync";
 import { acquireLock, releaseLock } from "../core/fetch";
@@ -84,10 +77,7 @@ export function createCardLoader<T>(
 /**
  * Schedule a card to refresh at a fixed interval.
  */
-export function scheduleCard(
-  load: () => Promise<void>,
-  intervalMs: number,
-): number {
+export function scheduleCard(load: () => Promise<void>, intervalMs: number): number {
   return window.setInterval(() => {
     void load();
   }, intervalMs);
@@ -160,7 +150,8 @@ export function staleChip(ageMs: number): string {
   if (minutes < 1) return "\u05E2\u05DB\u05E9\u05D9\u05D5";
   if (minutes < 60) return `\u05DC\u05E4\u05E0\u05D9 ${minutes} \u05D3\u05E7'`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `\u05DC\u05E4\u05E0\u05D9 \u05E9\u05E2\u05D4${hours > 1 ? ` ${hours}` : ""}`;
+  if (hours < 24)
+    return `\u05DC\u05E4\u05E0\u05D9 \u05E9\u05E2\u05D4${hours > 1 ? ` ${hours}` : ""}`;
   const days = Math.floor(hours / 24);
   return days === 1
     ? `\u05DC\u05E4\u05E0\u05D9 1 \u05D9\u05D5\u05DD`

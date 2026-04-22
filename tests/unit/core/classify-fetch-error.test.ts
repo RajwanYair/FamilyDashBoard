@@ -15,7 +15,9 @@ describe("classifyFetchError (Sprint 94)", () => {
   });
 
   it("classifies TypeError with 'networkerror' as network", () => {
-    expect(classifyFetchError(new TypeError("NetworkError when attempting to fetch resource."))).toBe("network");
+    expect(
+      classifyFetchError(new TypeError("NetworkError when attempting to fetch resource.")),
+    ).toBe("network");
   });
 
   it("classifies TypeError with 'cors' as cors", () => {

@@ -9,12 +9,12 @@ Analyse the current test coverage for the specified module and add the minimum s
 
 ## Coverage Thresholds
 
-| Metric | Threshold |
-|--------|-----------|
-| Statements | 90% |
-| Branches | 81% |
-| Functions | 90% |
-| Lines | 92% |
+| Metric     | Threshold |
+| ---------- | --------- |
+| Statements | 90%       |
+| Branches   | 81%       |
+| Functions  | 90%       |
+| Lines      | 92%       |
 
 ## Steps
 

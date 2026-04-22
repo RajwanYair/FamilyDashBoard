@@ -125,7 +125,7 @@ const UI_TEXT: Record<InterfaceLanguage, Record<TranslationKey, string>> = {
     onlineRefreshing: "🌐 החיבור חזר — מרענן נתונים...",
     marketOpen: "🟢 פתוח{countdown}",
     marketPre: "🟡 פרה{countdown}",
-    marketAfter: "🟠 אח\"מ{countdown}",
+    marketAfter: '🟠 אח"מ{countdown}',
     marketClosed: "🔴 סגור",
     birthdayToday: "🎂 יום הולדת — {name}!",
     birthdayInDays: "🎂 {name} בעוד {days} ימים",
@@ -235,10 +235,7 @@ const UI_TEXT: Record<InterfaceLanguage, Record<TranslationKey, string>> = {
   },
 };
 
-function formatTemplate(
-  template: string,
-  params?: Record<string, string | number>,
-): string {
+function formatTemplate(template: string, params?: Record<string, string | number>): string {
   if (!params) return template;
   return template.replace(/\{(\w+)\}/g, (_, key: string) => {
     const value = params[key];
@@ -268,9 +265,7 @@ export function getLocalizedCardTitle(
   return includeIcon && item.icon ? `${item.icon} ${title}` : title;
 }
 
-export function getInterfaceDirection(
-  language = getInterfaceLanguage(),
-): "rtl" | "ltr" {
+export function getInterfaceDirection(language = getInterfaceLanguage()): "rtl" | "ltr" {
   return language === "en" ? "ltr" : "rtl";
 }
 
@@ -290,10 +285,7 @@ function setCfgLabel(id: string, value: string): void {
   if (label) label.textContent = value;
 }
 
-function setSelectOptions(
-  id: string,
-  options: Record<string, string>,
-): void {
+function setSelectOptions(id: string, options: Record<string, string>): void {
   const select = document.getElementById(id) as HTMLSelectElement | null;
   if (!select) return;
   Array.from(select.options).forEach((option) => {
@@ -302,18 +294,14 @@ function setSelectOptions(
   });
 }
 
-export function applyInterfaceLanguage(
-  language = getInterfaceLanguage(),
-): void {
+export function applyInterfaceLanguage(language = getInterfaceLanguage()): void {
   const dir = getInterfaceDirection(language);
   document.documentElement.lang = language;
   document.documentElement.dir = dir;
   document.body.dataset["interfaceLanguage"] = language;
   document.title = t("dashboardTitle", undefined, language);
 
-  const description = document.querySelector<HTMLMetaElement>(
-    'meta[name="description"]',
-  );
+  const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
   if (description) {
     description.content = t("documentDescription", undefined, language);
   }
@@ -363,14 +351,12 @@ export function applyInterfaceLanguage(
     cards: "settingsTabCards",
     advanced: "settingsTabAdvanced",
   };
-  document
-    .querySelectorAll<HTMLButtonElement>(".cfg-tab[data-tab]")
-    .forEach((button) => {
-      const tab = button.dataset["tab"];
-      if (!tab) return;
-      const key = tabLabels[tab];
-      if (key) button.textContent = t(key, undefined, language);
-    });
+  document.querySelectorAll<HTMLButtonElement>(".cfg-tab[data-tab]").forEach((button) => {
+    const tab = button.dataset["tab"];
+    if (!tab) return;
+    const key = tabLabels[tab];
+    if (key) button.textContent = t(key, undefined, language);
+  });
 
   setCfgLabel("cfg-interface-language", t("interfaceLanguageLabel", undefined, language));
   setCfgLabel("screen-mode-select", t("screenModeLabel", undefined, language));
@@ -402,9 +388,7 @@ export function applyInterfaceLanguage(
     off: t("alertsToggleOff", undefined, language),
   });
 
-  document
-    .querySelectorAll<HTMLElement>(".cfg-card-size-wrap .cfg-label")
-    .forEach((label) => {
-      label.textContent = t("cardSizeLabel", undefined, language);
-    });
+  document.querySelectorAll<HTMLElement>(".cfg-card-size-wrap .cfg-label").forEach((label) => {
+    label.textContent = t("cardSizeLabel", undefined, language);
+  });
 }

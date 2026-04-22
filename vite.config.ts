@@ -125,16 +125,10 @@ export default defineConfig(({ command }) => ({
               ) {
                 return "cards";
               }
-              if (
-                id.includes("/cards/tasks/") ||
-                id.includes("/cards/system-info/")
-              ) {
+              if (id.includes("/cards/tasks/") || id.includes("/cards/system-info/")) {
                 return "cards-v7";
               }
-              if (
-                id.includes("/core/card-registry") ||
-                id.includes("/types/card")
-              ) {
+              if (id.includes("/core/card-registry") || id.includes("/types/card")) {
                 return "card-infra";
               }
             },

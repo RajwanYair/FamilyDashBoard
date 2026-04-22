@@ -20,23 +20,23 @@ description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML con
 
 ## Workflow Map
 
-| Workflow | Purpose | Trigger |
-|---|---|---|
-| `ci.yml` | Quality gate for typecheck, lint, docs, tests, security, worker tests, build | push, pull_request, manual |
-| `deploy.yml` | Build and publish GitHub Pages artifact | push to `main`, manual |
-| `release.yml` | Build tagged release assets and publish GitHub Release | tag push |
-| `deploy-worker.yml` | Deploy Cloudflare Worker | `worker/**` changes on `main`, manual |
-| `auto-label.yml` | Label PRs and issues | GitHub events |
-| `dependabot-auto-merge.yml` | Controlled dependency automation | Dependabot PR events |
+| Workflow                    | Purpose                                                                      | Trigger                               |
+| --------------------------- | ---------------------------------------------------------------------------- | ------------------------------------- |
+| `ci.yml`                    | Quality gate for typecheck, lint, docs, tests, security, worker tests, build | push, pull_request, manual            |
+| `deploy.yml`                | Build and publish GitHub Pages artifact                                      | push to `main`, manual                |
+| `release.yml`               | Build tagged release assets and publish GitHub Release                       | tag push                              |
+| `deploy-worker.yml`         | Deploy Cloudflare Worker                                                     | `worker/**` changes on `main`, manual |
+| `auto-label.yml`            | Label PRs and issues                                                         | GitHub events                         |
+| `dependabot-auto-merge.yml` | Controlled dependency automation                                             | Dependabot PR events                  |
 
 Keep `.github/workflows/README.md` aligned with any workflow changes.
 
 ## Tool Install Model
 
-| Context | How tools are provided |
-|---------|------------------------|
-| Local dev | `npm install` in `MyScripts/` (parent) — Node walks up to find `node_modules` |
-| CI (GitHub Actions) | `.github/ci/install-tools.sh` — `npm install --no-save --no-package-lock` |
+| Context             | How tools are provided                                                        |
+| ------------------- | ----------------------------------------------------------------------------- |
+| Local dev           | `npm install` in `MyScripts/` (parent) — Node walks up to find `node_modules` |
+| CI (GitHub Actions) | `.github/ci/install-tools.sh` — `npm install --no-save --no-package-lock`     |
 
 > To update tool versions: edit **both** `MyScripts/package.json` AND `.github/ci/install-tools.sh`.
 

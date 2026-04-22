@@ -52,8 +52,7 @@ function cacheDom(): void {
 
 // ── Version Badge ──
 declare const __APP_VERSION__: string;
-const APP_VERSION: string =
-  typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "0.0.0";
+const APP_VERSION: string = typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "0.0.0";
 
 function renderVersionBadge(): void {
   if (!elVersion) return;
@@ -118,9 +117,7 @@ export function updateConnIndicator(): void {
 // ── Font scale indicator ──
 export function updateFontScaleIndicator(): void {
   if (!elFontScale) return;
-  const raw = getComputedStyle(document.documentElement)
-    .getPropertyValue("--font-scale")
-    .trim();
+  const raw = getComputedStyle(document.documentElement).getPropertyValue("--font-scale").trim();
   const pct = raw ? Math.round(parseFloat(raw) * 100) : 100;
   elFontScale.textContent = pct !== 100 ? `${pct}%` : "";
   elFontScale.title = `גודל גופן: ${pct}% — לחץ +/- לשינוי`;

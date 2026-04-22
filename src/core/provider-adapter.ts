@@ -1,9 +1,5 @@
 import { cGet, cGetStale, cSet } from "./cache";
-import {
-  getProviderHealth,
-  recordProviderFailure,
-  recordProviderSuccess,
-} from "./provider";
+import { getProviderHealth, recordProviderFailure, recordProviderSuccess } from "./provider";
 import { diagLog } from "./diag";
 import type { ProviderAdapter, ProviderResult } from "../types/provider";
 

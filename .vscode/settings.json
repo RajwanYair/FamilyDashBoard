@@ -18,18 +18,12 @@
     "typescript.tsdk": "../node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     // ── ESLint ──
-    "eslint.validate": [
-        "javascript",
-        "typescript"
-    ],
+    "eslint.validate": ["javascript", "typescript"],
     "eslint.run": "onType",
     "eslint.useFlatConfig": true,
     "eslint.lintTask.enable": true,
     // ── Stylelint ──
-    "stylelint.validate": [
-        "css",
-        "html"
-    ],
+    "stylelint.validate": ["css", "html"],
     "css.validate": false,
     // ── HTMLHint ──
     "htmlhint.enable": true,
@@ -120,17 +114,12 @@
     "terminal.integrated.profiles.windows": {
         "PowerShell Fast": {
             "source": "PowerShell",
-            "args": [
-                "-NoLogo"
-            ],
+            "args": ["-NoLogo"],
             "icon": "terminal-powershell"
         },
         "PowerShell NoProfile": {
             "source": "PowerShell",
-            "args": [
-                "-NoLogo",
-                "-NoProfile"
-            ],
+            "args": ["-NoLogo", "-NoProfile"],
             "icon": "terminal-powershell"
         }
     },

@@ -27,9 +27,7 @@ async function freshMax(): Promise<MaxMod> {
 
 /** Stub Element.animate so FLIP doesn't throw in happy-dom */
 function stubAnimate(): void {
-  Element.prototype.animate = vi
-    .fn()
-    .mockReturnValue({ finished: Promise.resolve() });
+  Element.prototype.animate = vi.fn().mockReturnValue({ finished: Promise.resolve() });
 }
 
 function makeCard(id = "card-a"): HTMLElement {
@@ -262,17 +260,12 @@ describe("Maximize — initCardCollapse", () => {
     mod.initCardCollapse();
     const btn = document.querySelector<HTMLElement>(".card-collapse-btn")!;
     btn.click();
-    const stored = JSON.parse(
-      localStorage.getItem("dash_v2_collapsed_cards") ?? "[]",
-    ) as string[];
+    const stored = JSON.parse(localStorage.getItem("dash_v2_collapsed_cards") ?? "[]") as string[];
     expect(stored).toContain("cc-3");
   });
 
   it("restores collapsed state from localStorage on init", async () => {
-    localStorage.setItem(
-      "dash_v2_collapsed_cards",
-      JSON.stringify(["cc-restore"]),
-    );
+    localStorage.setItem("dash_v2_collapsed_cards", JSON.stringify(["cc-restore"]));
     const card = makeCollapsibleCard("cc-restore");
     const freshMod = await freshMaxFull();
     freshMod.initCardCollapse();
@@ -413,10 +406,7 @@ describe("Maximize — getCollapsedCards", () => {
   });
 
   it("returns persisted card IDs from localStorage", async () => {
-    localStorage.setItem(
-      "dash_v2_collapsed_cards",
-      JSON.stringify(["card-1", "card-2"]),
-    );
+    localStorage.setItem("dash_v2_collapsed_cards", JSON.stringify(["card-1", "card-2"]));
     const mod = await freshCollapseMod();
     const result = mod.getCollapsedCards();
     expect(result.has("card-1")).toBe(true);
@@ -452,10 +442,7 @@ describe("Maximize — initCardCollapse card-id fallback via child element", () 
 
   it("restores collapsed state using child element ID when card has no id", async () => {
     // Card without .id but with a child that has an id (line 130 fallback)
-    localStorage.setItem(
-      "dash_v2_collapsed_cards",
-      JSON.stringify(["inner-child"]),
-    );
+    localStorage.setItem("dash_v2_collapsed_cards", JSON.stringify(["inner-child"]));
     const card = document.createElement("div");
     card.className = "card";
     // No card.id!
@@ -501,9 +488,7 @@ describe("Maximize — initCardCollapse card-id fallback via child element", () 
     expect(card.classList.contains("collapsed")).toBe(true);
     expect(btn.textContent).toBe("▶");
     // No LS entry since cardId is empty
-    const stored = JSON.parse(
-      localStorage.getItem("dash_v2_collapsed_cards") ?? "[]",
-    ) as string[];
+    const stored = JSON.parse(localStorage.getItem("dash_v2_collapsed_cards") ?? "[]") as string[];
     expect(stored).not.toContain("");
   });
 
@@ -522,9 +507,7 @@ describe("Maximize — initCardCollapse card-id fallback via child element", () 
     mod.initCardCollapse();
     btn.click(); // collapse
     expect(card.classList.contains("collapsed")).toBe(true);
-    const stored = JSON.parse(
-      localStorage.getItem("dash_v2_collapsed_cards") ?? "[]",
-    ) as string[];
+    const stored = JSON.parse(localStorage.getItem("dash_v2_collapsed_cards") ?? "[]") as string[];
     expect(stored).toContain("child-panel");
   });
 });
@@ -545,7 +528,17 @@ describe("Maximize — computeFontScale (v7.1 adaptive font scaling)", () => {
   });
 
   function rect(w: number, h: number): DOMRect {
-    return { width: w, height: h, top: 0, left: 0, bottom: h, right: w, x: 0, y: 0, toJSON: () => ({}) } as DOMRect;
+    return {
+      width: w,
+      height: h,
+      top: 0,
+      left: 0,
+      bottom: h,
+      right: w,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    } as DOMRect;
   }
 
   it("returns 1 when expanded card is same size as original (no scale-up)", () => {
@@ -598,7 +591,7 @@ describe("Maximize — computeFontScale (v7.1 adaptive font scaling)", () => {
     await Promise.resolve();
     expect(card.style.getPropertyValue("--max-font-scale")).toBe("");
   });
-})
+});
 
 // ── Sprint v7.14: header-offset maximize (card stays below header/clock) ──
 
@@ -619,10 +612,20 @@ describe("Maximize — card starts below header.time-section (v7.14)", () => {
     // Build header at a known position
     const header = document.createElement("header");
     header.className = "time-section";
-    header.getBoundingClientRect = vi.fn(() => ({
-      bottom: 120, top: 0, left: 0, right: 1920, width: 1920, height: 120,
-      x: 0, y: 0, toJSON: () => ({}),
-    } as DOMRect));
+    header.getBoundingClientRect = vi.fn(
+      () =>
+        ({
+          bottom: 120,
+          top: 0,
+          left: 0,
+          right: 1920,
+          width: 1920,
+          height: 120,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }) as DOMRect,
+    );
     document.body.appendChild(header);
 
     const card = makeCard("offset-card");
@@ -634,10 +637,20 @@ describe("Maximize — card starts below header.time-section (v7.14)", () => {
   it("sets --maximize-height to viewport height minus header bottom", () => {
     const header = document.createElement("header");
     header.className = "time-section";
-    header.getBoundingClientRect = vi.fn(() => ({
-      bottom: 80, top: 0, left: 0, right: 1920, width: 1920, height: 80,
-      x: 0, y: 0, toJSON: () => ({}),
-    } as DOMRect));
+    header.getBoundingClientRect = vi.fn(
+      () =>
+        ({
+          bottom: 80,
+          top: 0,
+          left: 0,
+          right: 1920,
+          width: 1920,
+          height: 80,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }) as DOMRect,
+    );
     document.body.appendChild(header);
 
     // happy-dom reports window.innerHeight as 768 by default
@@ -657,10 +670,20 @@ describe("Maximize — card starts below header.time-section (v7.14)", () => {
   it("removes --maximize-top and --maximize-height after collapse", async () => {
     const header = document.createElement("header");
     header.className = "time-section";
-    header.getBoundingClientRect = vi.fn(() => ({
-      bottom: 100, top: 0, left: 0, right: 1920, width: 1920, height: 100,
-      x: 0, y: 0, toJSON: () => ({}),
-    } as DOMRect));
+    header.getBoundingClientRect = vi.fn(
+      () =>
+        ({
+          bottom: 100,
+          top: 0,
+          left: 0,
+          right: 1920,
+          width: 1920,
+          height: 100,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }) as DOMRect,
+    );
     document.body.appendChild(header);
 
     const card = makeCard("collapse-cleanup-card");

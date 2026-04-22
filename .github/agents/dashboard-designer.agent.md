@@ -123,16 +123,16 @@ Always add new rules to the correct layer. No duplicate selectors.
 
 Common failures and how to resolve them:
 
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| Color not reflecting theme | Wrong token name or missing override | `grep_search` for the token in `tokens.css`; check `themes.css` for all 6 overrides |
+| Symptom                                               | Likely Cause                                                  | Fix                                                                                                      |
+| ----------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Color not reflecting theme                            | Wrong token name or missing override                          | `grep_search` for the token in `tokens.css`; check `themes.css` for all 6 overrides                      |
 | RTL layout breaks (text runs wrong way, margins flip) | Missing `direction: rtl` cascade or logical-property mismatch | Check that the element inherits `dir="rtl"` from `<html>`; use `margin-inline-*` not `margin-left/right` |
-| Theme not applying to a card | Body selector missing `body.theme-<name>` override | Check `themes.css` — all theme overrides must be on `body.theme-<name>` not `:root.theme-<name>` |
-| `backdrop-filter` ignored on low-end device | Hardware tier guard | Check `data-hw-tier="low"` on `<html>`; low-tier CSS disables backdrop-filter in `components.css` |
-| New CSS selector has no effect | Wrong layer or duplicate selector | Check `@layer` order; grep for duplicate selectors in the same file before adding |
-| `data-card-id` mismatch breaks hide/show | Alias used instead of registry ID | Use exact registry ID: `"hebrew-cal"`, `"calendar"`, `"motivation"` — not `hcal`, `cal`, `moti` |
-| Card body is a plain list | Layout convention violation | Wrap data points in `display: grid; grid-template-columns: repeat(auto-fit, minmax(Xpx, 1fr))` tiles |
-| Animation flickers in theater mode | Missing `prefers-reduced-motion` guard | Add `@media (prefers-reduced-motion: reduce)` override in `a11y.css` |
+| Theme not applying to a card                          | Body selector missing `body.theme-<name>` override            | Check `themes.css` — all theme overrides must be on `body.theme-<name>` not `:root.theme-<name>`         |
+| `backdrop-filter` ignored on low-end device           | Hardware tier guard                                           | Check `data-hw-tier="low"` on `<html>`; low-tier CSS disables backdrop-filter in `components.css`        |
+| New CSS selector has no effect                        | Wrong layer or duplicate selector                             | Check `@layer` order; grep for duplicate selectors in the same file before adding                        |
+| `data-card-id` mismatch breaks hide/show              | Alias used instead of registry ID                             | Use exact registry ID: `"hebrew-cal"`, `"calendar"`, `"motivation"` — not `hcal`, `cal`, `moti`          |
+| Card body is a plain list                             | Layout convention violation                                   | Wrap data points in `display: grid; grid-template-columns: repeat(auto-fit, minmax(Xpx, 1fr))` tiles     |
+| Animation flickers in theater mode                    | Missing `prefers-reduced-motion` guard                        | Add `@media (prefers-reduced-motion: reduce)` override in `a11y.css`                                     |
 
 ## Verification
 

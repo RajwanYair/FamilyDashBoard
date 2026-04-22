@@ -9,7 +9,7 @@
 
 ## Context
 
-ADR-006 established the *goal* of worker-normalized responses. As the implementation matured across Streams W, W.2, W.3, and W.4, a concrete response envelope emerged:
+ADR-006 established the _goal_ of worker-normalized responses. As the implementation matured across Streams W, W.2, W.3, and W.4, a concrete response envelope emerged:
 `workerEnvelope<T>(data, provider, stale, cacheTtl)` returns a typed JSON body with the fields `{ data, provider, stale, timestamp }`.
 
 Several routes still returned raw `proxyResponse` pass-throughs (alerts, stocks, news, Sefaria) mixing two different response contracts. This ADR formalises which routes must use the envelope and what the contract guarantees.
@@ -24,9 +24,9 @@ The envelope schema is:
 
 ```json
 {
-  "data":      "<T>",
-  "provider":  "string  — canonical name of the upstream source",
-  "stale":     "boolean — true when served from KV stale cache",
+  "data": "<T>",
+  "provider": "string  — canonical name of the upstream source",
+  "stale": "boolean — true when served from KV stale cache",
   "timestamp": "number  — Unix ms at time of response construction"
 }
 ```
@@ -36,23 +36,23 @@ are exempt and MUST continue using `proxyResponse` to preserve byte-for-byte pas
 
 ### In-scope routes (must use envelope)
 
-| Route | Provider name | KV key |
-|---|---|---|
-| `GET /api/weather` | `open-meteo` | `weather:{lat}:{lon}` |
-| `GET /api/currency` | `er-api` | `currency:ILS` |
-| `GET /api/hebcal` | `hebcal` | `hebcal:{geonameid}` |
-| `GET /api/hebcal/holidays` | `hebcal` | `hebcal-holidays:{year}` |
-| `GET /api/alerts` | `tzevaadom` | *(no KV — TTL 60 s)* |
+| Route                      | Provider name | KV key                   |
+| -------------------------- | ------------- | ------------------------ |
+| `GET /api/weather`         | `open-meteo`  | `weather:{lat}:{lon}`    |
+| `GET /api/currency`        | `er-api`      | `currency:ILS`           |
+| `GET /api/hebcal`          | `hebcal`      | `hebcal:{geonameid}`     |
+| `GET /api/hebcal/holidays` | `hebcal`      | `hebcal-holidays:{year}` |
+| `GET /api/alerts`          | `tzevaadom`   | _(no KV — TTL 60 s)_     |
 
 ### Exempt routes (pass-through)
 
-| Route | Reason |
-|---|---|
-| `GET /api/stocks` | Yahoo Finance returns JSON but shape is consumed directly by the client adapter |
-| `GET /api/news` | Returns RSS XML |
-| `GET /api/calendar` | Returns ICS text |
-| `GET /api/sefaria/calendar` | Returns JSON but consumed by a dedicated client adapter |
-| `GET /api/sefaria/text` | Returns Sefaria v3 JSON consumed by a dedicated client adapter |
+| Route                       | Reason                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `GET /api/stocks`           | Yahoo Finance returns JSON but shape is consumed directly by the client adapter |
+| `GET /api/news`             | Returns RSS XML                                                                 |
+| `GET /api/calendar`         | Returns ICS text                                                                |
+| `GET /api/sefaria/calendar` | Returns JSON but consumed by a dedicated client adapter                         |
+| `GET /api/sefaria/text`     | Returns Sefaria v3 JSON consumed by a dedicated client adapter                  |
 
 ---
 

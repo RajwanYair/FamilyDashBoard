@@ -5,12 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  applyScreenMode,
-  applyFontScale,
-  stepFontScale,
-  initScreenMode,
-} from "@/ui/screen-mode";
+import { applyScreenMode, applyFontScale, stepFontScale, initScreenMode } from "@/ui/screen-mode";
 
 describe("Screen Mode — applyScreenMode", () => {
   beforeEach(() => {
@@ -46,9 +41,7 @@ describe("Screen Mode — applyScreenMode", () => {
   it("only has one screen class at a time", () => {
     applyScreenMode("phone");
     applyScreenMode("tv");
-    const screenClasses = [...document.body.classList].filter((c) =>
-      c.startsWith("screen-"),
-    );
+    const screenClasses = [...document.body.classList].filter((c) => c.startsWith("screen-"));
     expect(screenClasses).toHaveLength(1);
   });
 });
@@ -60,30 +53,22 @@ describe("Screen Mode — applyFontScale", () => {
 
   it("sets --font-scale CSS property", () => {
     applyFontScale(1.2);
-    expect(
-      document.documentElement.style.getPropertyValue("--font-scale"),
-    ).toBe("1.2");
+    expect(document.documentElement.style.getPropertyValue("--font-scale")).toBe("1.2");
   });
 
   it("clamps to minimum 0.7", () => {
     applyFontScale(0.3);
-    expect(
-      document.documentElement.style.getPropertyValue("--font-scale"),
-    ).toBe("0.7");
+    expect(document.documentElement.style.getPropertyValue("--font-scale")).toBe("0.7");
   });
 
   it("clamps to maximum 1.5", () => {
     applyFontScale(2.0);
-    expect(
-      document.documentElement.style.getPropertyValue("--font-scale"),
-    ).toBe("1.5");
+    expect(document.documentElement.style.getPropertyValue("--font-scale")).toBe("1.5");
   });
 
   it("rounds to 2 decimal places", () => {
     applyFontScale(1.123456);
-    const val = parseFloat(
-      document.documentElement.style.getPropertyValue("--font-scale"),
-    );
+    const val = parseFloat(document.documentElement.style.getPropertyValue("--font-scale"));
     expect(val).toBeCloseTo(1.12, 2);
   });
 });
@@ -102,43 +87,35 @@ describe("Screen Mode — stepFontScale", () => {
   it("increments font scale by 0.05", () => {
     // Default fontScale is 1
     stepFontScale(1);
-    const val = parseFloat(
-      document.documentElement.style.getPropertyValue("--font-scale") || "0",
-    );
+    const val = parseFloat(document.documentElement.style.getPropertyValue("--font-scale") || "0");
     expect(val).toBeCloseTo(1.05, 2);
   });
 
   it("decrements font scale by 0.05", () => {
     stepFontScale(-1);
-    const val = parseFloat(
-      document.documentElement.style.getPropertyValue("--font-scale") || "0",
-    );
+    const val = parseFloat(document.documentElement.style.getPropertyValue("--font-scale") || "0");
     expect(val).toBeCloseTo(0.95, 2);
   });
 
   it("persists new scale to config", () => {
     stepFontScale(1);
-    const config = JSON.parse(
-      localStorage.getItem("dash_v2_config") ?? "{}",
-    ) as { fontScale?: number };
+    const config = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as {
+      fontScale?: number;
+    };
     expect(config.fontScale).toBeCloseTo(1.05, 2);
   });
 
   it("does not go below 0.7", () => {
     localStorage.setItem("dash_v2_config", JSON.stringify({ fontScale: 0.71 }));
     stepFontScale(-1);
-    const val = parseFloat(
-      document.documentElement.style.getPropertyValue("--font-scale") || "1",
-    );
+    const val = parseFloat(document.documentElement.style.getPropertyValue("--font-scale") || "1");
     expect(val).toBeGreaterThanOrEqual(0.7);
   });
 
   it("does not go above 1.5", () => {
     localStorage.setItem("dash_v2_config", JSON.stringify({ fontScale: 1.49 }));
     stepFontScale(1);
-    const val = parseFloat(
-      document.documentElement.style.getPropertyValue("--font-scale") || "0",
-    );
+    const val = parseFloat(document.documentElement.style.getPropertyValue("--font-scale") || "0");
     expect(val).toBeLessThanOrEqual(1.5);
   });
 });
@@ -160,10 +137,7 @@ describe("Screen Mode — initScreenMode", () => {
   });
 
   it("applies saved screen mode on init", () => {
-    localStorage.setItem(
-      "dash_v2_config",
-      JSON.stringify({ screenMode: "tablet" }),
-    );
+    localStorage.setItem("dash_v2_config", JSON.stringify({ screenMode: "tablet" }));
     initScreenMode();
     expect(document.body.classList.contains("screen-tablet")).toBe(true);
   });
@@ -176,17 +150,13 @@ describe("Screen Mode — initScreenMode", () => {
   it("applies saved font scale on init", () => {
     localStorage.setItem("dash_v2_config", JSON.stringify({ fontScale: 1.15 }));
     initScreenMode();
-    const val = parseFloat(
-      document.documentElement.style.getPropertyValue("--font-scale") || "0",
-    );
+    const val = parseFloat(document.documentElement.style.getPropertyValue("--font-scale") || "0");
     expect(val).toBeCloseTo(1.15, 2);
   });
 
   it("wires screen-mode dropdown change", () => {
     initScreenMode();
-    const sel = document.getElementById(
-      "screen-mode-select",
-    ) as HTMLSelectElement;
+    const sel = document.getElementById("screen-mode-select") as HTMLSelectElement;
     sel.value = "tablet";
     sel.dispatchEvent(new Event("change"));
     expect(document.body.classList.contains("screen-tablet")).toBe(true);

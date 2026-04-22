@@ -10,19 +10,19 @@ Audit all 11 registered cards for a specific interface contract and fix any gaps
 
 ## Cards to Audit
 
-| Card ID | File |
-|---------|------|
-| `weather` | `src/cards/weather/weather.ts` |
-| `news` | `src/cards/news/news.ts` |
-| `stocks` | `src/cards/stocks/stocks.ts` |
-| `currency` | `src/cards/currency/currency.ts` |
-| `hebrew-cal` | `src/cards/hebrew-cal/hebrew-cal.ts` |
-| `calendar` | `src/cards/calendar/calendar.ts` |
-| `motivation` | `src/cards/motivation/motivation.ts` |
-| `alerts` | `src/cards/alerts/alerts.ts` |
-| `countdown` | `src/cards/countdown/countdown.ts` |
+| Card ID       | File                                   |
+| ------------- | -------------------------------------- |
+| `weather`     | `src/cards/weather/weather.ts`         |
+| `news`        | `src/cards/news/news.ts`               |
+| `stocks`      | `src/cards/stocks/stocks.ts`           |
+| `currency`    | `src/cards/currency/currency.ts`       |
+| `hebrew-cal`  | `src/cards/hebrew-cal/hebrew-cal.ts`   |
+| `calendar`    | `src/cards/calendar/calendar.ts`       |
+| `motivation`  | `src/cards/motivation/motivation.ts`   |
+| `alerts`      | `src/cards/alerts/alerts.ts`           |
+| `countdown`   | `src/cards/countdown/countdown.ts`     |
 | `system-info` | `src/cards/system-info/system-info.ts` |
-| `tasks` | `src/cards/tasks/tasks.ts` |
+| `tasks`       | `src/cards/tasks/tasks.ts`             |
 
 ## Supported Contracts
 

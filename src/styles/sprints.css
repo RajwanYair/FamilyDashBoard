@@ -12,59 +12,189 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 /* Keyboard shortcut key chip (used in help overlay) */
-.help-key { background: var(--bg-card-inner); border-radius: 5px; padding: 2px 8px; font-family: monospace; font-size: 0.92em; color: var(--cyan); border: 1px solid var(--accent-border); }
+.help-key {
+  background: var(--bg-card-inner);
+  border-radius: 5px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 0.92em;
+  color: var(--cyan);
+  border: 1px solid var(--accent-border);
+}
 
 /* F22: Electricity Peak Warning Badge */
-#elec-badge { display: none; font-size: 0.62em; padding: 1px 5px; border-radius: 4px; font-weight: 700; background: var(--warning); color: #000; animation: elecPulse 2s ease-in-out infinite; margin-right: 4px; vertical-align: middle; }
-#elec-badge.peak-on { display: inline; }
+#elec-badge {
+  display: none;
+  font-size: 0.62em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 700;
+  background: var(--warning);
+  color: #000;
+  animation: elecPulse 2s ease-in-out infinite;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+#elec-badge.peak-on {
+  display: inline;
+}
 
 /* F27: Seasonal CSS Tint (body-level, not card-specific) */
-body.season-spring  { --season-tint: rgba(134,239,172,0.03); }
-body.season-summer  { --season-tint: rgba(253,224,71,0.04); }
-body.season-autumn  { --season-tint: rgba(249,115,22,0.04); }
-body.season-winter  { --season-tint: rgba(147,197,253,0.04); }
+body.season-spring {
+  --season-tint: rgba(134, 239, 172, 0.03);
+}
+body.season-summer {
+  --season-tint: rgba(253, 224, 71, 0.04);
+}
+body.season-autumn {
+  --season-tint: rgba(249, 115, 22, 0.04);
+}
+body.season-winter {
+  --season-tint: rgba(147, 197, 253, 0.04);
+}
 
 /* F85: Multi-photo slideshow fade (body-level) */
-body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwards; }
+body.slideshow-fade::after {
+  animation: slideshow-fadein 1.2s ease-in-out forwards;
+}
 
 /* F90: Offline banner data age */
-.offline-banner .offline-age { font-size: 0.82em; opacity: 0.75; margin-inline-start: 6px; }
+.offline-banner .offline-age {
+  font-size: 0.82em;
+  opacity: 0.75;
+  margin-inline-start: 6px;
+}
 
 /* F99: Card drag-reorder (layout-level, applied to .card) */
-.card.dragging { opacity: 0.42; outline: 2px dashed var(--accent); }
-.card.drag-over { outline: 2px solid var(--accent); transform: scale(1.012); transition: transform 0.12s; }
-.card-header[draggable="true"] { cursor: grab; }
-.card-header[draggable="true"]:active { cursor: grabbing; }
+.card.dragging {
+  opacity: 0.42;
+  outline: 2px dashed var(--accent);
+}
+.card.drag-over {
+  outline: 2px solid var(--accent);
+  transform: scale(1.012);
+  transition: transform 0.12s;
+}
+.card-header[draggable="true"] {
+  cursor: grab;
+}
+.card-header[draggable="true"]:active {
+  cursor: grabbing;
+}
 
 /* F101: SW Update Banner */
-#sw-update-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: #22c55e; color: #000; padding: 8px 16px; display: none; align-items: center; justify-content: center; gap: 10px; font-size: 0.88em; font-weight: 600; text-align: center; }
-#sw-update-banner.visible { display: flex; }
-#sw-update-reload-btn { background: rgba(0,0,0,0.18); color: inherit; border: 1px solid rgba(0,0,0,0.3); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 0.9em; font-weight: 700; }
+#sw-update-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #22c55e;
+  color: #000;
+  padding: 8px 16px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.88em;
+  font-weight: 600;
+  text-align: center;
+}
+#sw-update-banner.visible {
+  display: flex;
+}
+#sw-update-reload-btn {
+  background: rgba(0, 0, 0, 0.18);
+  color: inherit;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 3px 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 700;
+}
 
 /* F122: UV pill color levels */
-.uv-pill { display: inline-block; padding: 0 5px; border-radius: 6px; font-size: 0.75em; font-weight: 700; color: #fff; }
-.uv-pill.uv-low { background: #22c55e; }
-.uv-pill.uv-mod { background: #eab308; color: #000; }
-.uv-pill.uv-high { background: #f97316; }
-.uv-pill.uv-vhigh { background: #ef4444; }
-.uv-pill.uv-extreme { background: #a855f7; }
+.uv-pill {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 6px;
+  font-size: 0.75em;
+  font-weight: 700;
+  color: #fff;
+}
+.uv-pill.uv-low {
+  background: #22c55e;
+}
+.uv-pill.uv-mod {
+  background: #eab308;
+  color: #000;
+}
+.uv-pill.uv-high {
+  background: #f97316;
+}
+.uv-pill.uv-vhigh {
+  background: #ef4444;
+}
+.uv-pill.uv-extreme {
+  background: #a855f7;
+}
 
 /* Motivation buttons — see src/cards/motivation/motivation.css */
 
 /* F139: Custom countdown chip */
-#header-countdown { font-size: 0.68em; background: rgba(192,132,252,0.14); color: var(--purple); border-radius: 10px; padding: 2px 7px; white-space: nowrap; display: none; cursor: default; font-weight: 600; }
+#header-countdown {
+  font-size: 0.68em;
+  background: rgba(192, 132, 252, 0.14);
+  color: var(--purple);
+  border-radius: 10px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  display: none;
+  cursor: default;
+  font-weight: 600;
+}
 
 /* Motivation next button — see src/cards/motivation/motivation.css */
-#print-datetime { display: none; }
+#print-datetime {
+  display: none;
+}
 
 /* F150: Help overlay 2-column grid */
-#help-panel .help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin-top: 6px; }
-#help-panel .help-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+#help-panel .help-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  margin-top: 6px;
+}
+#help-panel .help-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
 
 /* F159: Card collapse toggle */
-.card-collapse-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75em; padding: 0 2px; margin-inline-end: 4px; transition: transform 0.25s ease, color 0.2s; line-height: 1; }
-.card-collapse-btn:hover { color: var(--accent); }
-.card.collapsed .card-collapse-btn { transform: rotate(-90deg); }
+.card-collapse-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75em;
+  padding: 0 2px;
+  margin-inline-end: 4px;
+  transition:
+    transform 0.25s ease,
+    color 0.2s;
+  line-height: 1;
+}
+.card-collapse-btn:hover {
+  color: var(--accent);
+}
+.card.collapsed .card-collapse-btn {
+  transform: rotate(-90deg);
+}
 .card.collapsed > .card-body,
 .card.collapsed > .weather-body,
 .card.collapsed > .news-body,
@@ -73,9 +203,26 @@ body.slideshow-fade::after { animation: slideshow-fadein 1.2s ease-in-out forwar
 .card.collapsed > .currency-body,
 .card.collapsed > .hebcal-body,
 .card.collapsed > .cal-body,
-.card.collapsed > .moti-body { display: none !important; }
+.card.collapsed > .moti-body {
+  display: none !important;
+}
 
 @layer animations {
-  @keyframes elecPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
-  @keyframes slideshow-fadein { from { opacity: 0; } to { opacity: 0.18; } }
+  @keyframes elecPulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+  @keyframes slideshow-fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.18;
+    }
+  }
 }

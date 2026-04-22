@@ -23,8 +23,14 @@ import {
   mapToCalendarDomainEvent,
 } from "@/types/api";
 import type {
-  WeatherResponse, NewsItem, CurrencyResponse, AlertEvent,
-  YahooChartResponse, HebcalResponse, CoinGeckoResponse, CalendarEvent,
+  WeatherResponse,
+  NewsItem,
+  CurrencyResponse,
+  AlertEvent,
+  YahooChartResponse,
+  HebcalResponse,
+  CoinGeckoResponse,
+  CalendarEvent,
 } from "@/types/api";
 
 // ── isWeatherResponse ─────────────────────────────────────────────────────────
@@ -204,9 +210,7 @@ describe("isCurrencyResponse", () => {
 
 function makeAlertEvent(): AlertEvent {
   return {
-    alerts: [
-      { cities: ["תל אביב", "רמת גן"], threat: 1, time: 1700000000 },
-    ],
+    alerts: [{ cities: ["תל אביב", "רמת גן"], threat: 1, time: 1700000000 }],
     id: "abc123",
   };
 }
@@ -303,9 +307,7 @@ describe("isYahooChartResponse", () => {
 function makeHebcalResponse(): HebcalResponse {
   return {
     title: "Hebcal Israel 2024",
-    items: [
-      { title: "שבת שלום", hebrew: "שבת שלום", date: "2024-01-06", category: "parashat" },
-    ],
+    items: [{ title: "שבת שלום", hebrew: "שבת שלום", date: "2024-01-06", category: "parashat" }],
   };
 }
 
@@ -327,11 +329,15 @@ describe("isHebcalResponse", () => {
   });
 
   it("returns false when an item is missing title", () => {
-    expect(isHebcalResponse({ title: "t", items: [{ date: "2024-01-01", category: "holiday" }] })).toBe(false);
+    expect(
+      isHebcalResponse({ title: "t", items: [{ date: "2024-01-01", category: "holiday" }] }),
+    ).toBe(false);
   });
 
   it("returns false when an item is missing date", () => {
-    expect(isHebcalResponse({ title: "t", items: [{ title: "x", category: "holiday" }] })).toBe(false);
+    expect(isHebcalResponse({ title: "t", items: [{ title: "x", category: "holiday" }] })).toBe(
+      false,
+    );
   });
 
   it("returns false for null", () => {
@@ -389,7 +395,9 @@ describe("isCalendarEvent", () => {
   });
 
   it("returns true with optional fields present", () => {
-    expect(isCalendarEvent({ ...makeCalendarEvent(), location: "School", description: "Bring ID" })).toBe(true);
+    expect(
+      isCalendarEvent({ ...makeCalendarEvent(), location: "School", description: "Bring ID" }),
+    ).toBe(true);
   });
 
   it("returns false when summary is missing", () => {
@@ -458,15 +466,17 @@ describe("mapToWeatherDomain (Sprint 36)", () => {
 function makeDomainStockResponse(): YahooChartResponse {
   return {
     chart: {
-      result: [{
-        meta: {
-          regularMarketPrice: 150,
-          previousClose: 145,
-          currency: "USD",
-          regularMarketVolume: 1000000,
+      result: [
+        {
+          meta: {
+            regularMarketPrice: 150,
+            previousClose: 145,
+            currency: "USD",
+            regularMarketVolume: 1000000,
+          },
+          indicators: { quote: [{ close: [140, 142, 148, 150] }] },
         },
-        indicators: { quote: [{ close: [140, 142, 148, 150] }] },
-      }],
+      ],
       error: null,
     },
   };
@@ -503,7 +513,11 @@ describe("mapToStockDomain (Sprint 37)", () => {
 
 describe("mapToCurrencyDomain (Sprint 42)", () => {
   function makeCurrencyResponse(): CurrencyResponse {
-    return { rates: { ILS: 3.7, EUR: 0.92 }, base_code: "USD", time_last_update_utc: "2024-01-01T00:00:00Z" };
+    return {
+      rates: { ILS: 3.7, EUR: 0.92 },
+      base_code: "USD",
+      time_last_update_utc: "2024-01-01T00:00:00Z",
+    };
   }
 
   it("maps base, rates, updatedAt", () => {
@@ -521,7 +535,13 @@ describe("mapToCurrencyDomain (Sprint 42)", () => {
 
 describe("rssItemToDomain (Sprint 41)", () => {
   function makeNewsItem(): NewsItem {
-    return { title: "כותרת", link: "https://x.com/1", pubDate: "2024-01-01T10:00:00Z", source: "Ynet", description: "תיאור" };
+    return {
+      title: "כותרת",
+      link: "https://x.com/1",
+      pubDate: "2024-01-01T10:00:00Z",
+      source: "Ynet",
+      description: "תיאור",
+    };
   }
 
   it("maps title, link, source, feedIndex", () => {
@@ -580,7 +600,9 @@ describe("mapToHebcalDomain (Sprint 44)", () => {
   it("maps items to titleHe/titleEn", () => {
     const r: HebcalResponse = {
       title: "Hebcal",
-      items: [{ title: "Candle lighting", hebrew: "הדלקת נרות", date: "2024-01-05", category: "candles" }],
+      items: [
+        { title: "Candle lighting", hebrew: "הדלקת נרות", date: "2024-01-05", category: "candles" },
+      ],
     };
     const d = mapToHebcalDomain(r);
     expect(d.items[0]?.titleHe).toBe("הדלקת נרות");
@@ -590,7 +612,14 @@ describe("mapToHebcalDomain (Sprint 44)", () => {
   it("extracts candleLighting time", () => {
     const r: HebcalResponse = {
       title: "Hebcal",
-      items: [{ title: "Candle lighting: 17:30", hebrew: "הדלקת נרות", date: "2024-01-05", category: "candles" }],
+      items: [
+        {
+          title: "Candle lighting: 17:30",
+          hebrew: "הדלקת נרות",
+          date: "2024-01-05",
+          category: "candles",
+        },
+      ],
     };
     const d = mapToHebcalDomain(r);
     expect(d.candleLighting).toContain("Candle lighting");

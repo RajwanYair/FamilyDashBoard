@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v8.9.0
+/* FamilyDashBoard ServiceWorker — v9.1.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * See CHANGELOG.md for full version history. */
@@ -9,12 +9,7 @@ const CACHE_NAME_API = "familydashboard-api-v__APP_VERSION__";
 // v8.5.0: Stream SW.1 — auto-precache manifest extends APP_SHELL at install
 // v8.6.0: Stream SW.2 — background sync error queue (_queueErrorReport, _flushErrorQueue)
 // v8.7.0: Stream D2.5/D2.6 — calendar/hebrew-cal/alerts async IDB cache; W.5 Stocks Zod schema; F.3 theme token audit
-const APP_SHELL = [
-  "./index.html",
-  "./manifest.webmanifest",
-  "./sw.js",
-  "./icon.svg",
-];
+const APP_SHELL = ["./index.html", "./manifest.webmanifest", "./sw.js", "./icon.svg"];
 
 /**
  * Stream SW.1: Load the auto-generated precache manifest produced by
@@ -113,11 +108,7 @@ self.addEventListener("message", (event) => {
       caches.delete(CACHE_NAME_API).then(() => {
         return self.clients
           .matchAll({ includeUncontrolled: true })
-          .then((clients) =>
-            clients.forEach((c) =>
-              c.postMessage({ type: "API_CACHE_CLEARED" }),
-            ),
-          );
+          .then((clients) => clients.forEach((c) => c.postMessage({ type: "API_CACHE_CLEARED" })));
       }),
     );
   }
@@ -130,17 +121,13 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys
-            .filter((k) => k !== CACHE_NAME && k !== CACHE_NAME_API)
-            .map((k) => caches.delete(k)),
+          keys.filter((k) => k !== CACHE_NAME && k !== CACHE_NAME_API).map((k) => caches.delete(k)),
         ),
       )
       // F167: tell all clients this version has activated
       .then(() => {
         self.clients.matchAll({ includeUncontrolled: true }).then((clients) => {
-          clients.forEach((c) =>
-            c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }),
-          );
+          clients.forEach((c) => c.postMessage({ type: "VERSION_ACTIVATED", version: CACHE_NAME }));
         });
         return self.clients.claim();
       }),
@@ -181,9 +168,7 @@ self.addEventListener("fetch", (event) => {
                 return h;
               })(),
             });
-            caches
-              .open(CACHE_NAME_API)
-              .then((c) => c.put(event.request, stamped));
+            caches.open(CACHE_NAME_API).then((c) => c.put(event.request, stamped));
           }
           return response;
         })
@@ -195,9 +180,7 @@ self.addEventListener("fetch", (event) => {
             .then((cached) => {
               // Stream SW: honour per-origin TTL — evict stale cached responses
               if (cached && !_isFresh(cached, url.hostname)) {
-                caches
-                  .open(CACHE_NAME_API)
-                  .then((c) => c.delete(event.request));
+                caches.open(CACHE_NAME_API).then((c) => c.delete(event.request));
                 return Response.error();
               }
               return cached || Response.error();

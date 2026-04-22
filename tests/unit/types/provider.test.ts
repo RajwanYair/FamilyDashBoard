@@ -4,11 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import type {
-  ProviderAdapter,
-  ProviderResult,
-  ProviderAdapterOptions,
-} from "@/types/provider";
+import type { ProviderAdapter, ProviderResult, ProviderAdapterOptions } from "@/types/provider";
 import type { ProviderStatus } from "@/core/provider";
 
 describe("ProviderAdapter types (Sprint 88)", () => {
