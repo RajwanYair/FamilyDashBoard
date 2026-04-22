@@ -5,6 +5,43 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [11.3.0] — 2026-07-01
+
+> **3278 tests / 99 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### New Features
+
+- **Video News Card (v11.1-VIDEO-1+2)**: New 12th card — `video-news`. Disabled by default (opt-in). Supports 4 Israeli news channels (C14, i24, NOW14, Arutz 7) with mute toggle (`M`) and channel-cycle (`V`) keyboard shortcuts. StreamDescriptor type, adapter, FdbCard WC, player lifecycle, retry logic, reduced-motion support. Stream URLs pending research sprint; card renders graceful "pending" state. 13 unit tests.
+- **Instruction/Skill Frontmatter Linter**: `scripts/lint-instructions.mjs` validates YAML frontmatter in all `.github/instructions/*.instructions.md`, `skills/*/SKILL.md`, `agents/*.agent.md`, and `prompts/*.prompt.md` files. Wired into `npm run lint:instructions` and `npm run check`. 27 files validated.
+
+### Documentation
+
+- **`docs/error-viewer.md`**: Comprehensive guide to the Cloudflare KV error storage, export endpoint, daily cap, 7-day retention, Ctrl+Shift+E local snapshot, and Logpush live-tail. Links ADR-016 and the client reporter.
+- **`docs/keyboard.md`**: Keyboard focus-order audit, ARIA landmarks table, screen-reader operation guide (NVDA/VoiceOver), live-region table, color contrast matrix for all 6 themes, accessibility test command.
+- **`docs/video-cards.md`**: Full video-news card guide — integration modes, research checklist, config settings, error states, architecture map.
+- **`docs/adr/ADR-011`** updated: added `GET /api/news/aggregate` to the envelope routes table; new §News Aggregation Strategy section documents the 17-feed parallel fetch, normalisation schema, Jaccard dedup algorithm, and KV cache strategy.
+- **`docs/adr/ADR-019`**: New ADR — Video-Card CSP Strategy & Integration Mode Decision Tree. Documents Mode A→B→D→C preference, ADR-002 exception conditions for vendored hls.js, CSP policy extensions, autoplay policy, SW cache policy, and performance budget.
+- **`docs/adr/README.md`**: Added entries for ADR-013 through ADR-019.
+
+### Worker / OpenAPI
+
+- **OpenAPI `v11.2.0`**: Added `GET /api/news/aggregate` and `GET /api/errors/export` routes. Updated `POST /api/errors` description to reflect KV persistence (removed outdated "No persistence" note). Added `NewsItem` schema. Fixed `WorkerEnvelope.timestamp` field name (was `ts`). Added `news` tag description update.
+
+### Performance
+
+- **Vitest run time 30s → 25s**: Enabled `isolate: false` in the `forks` pool config (`tooling/vitest/base.mjs`). Reuses module registry across test files within the same fork. All 99 suites pass; no flakiness observed.
+
+### Quality
+
+- **Lighthouse thresholds raised**: `accessibility ≥ 0.98`, `performance ≥ 0.95`, `best-practices ≥ 0.95` (all error-level). TBT max 300 ms. LCP warn threshold tightened to 2500 ms.
+
+### Types
+
+- **`src/types/stream.ts`**: New — `StreamDescriptor`, `VideoChannelId`, `VideoIntegrationMode`, `StreamCspHosts` interfaces.
+- **`src/types/config.ts`**: Added `VideoNewsCardConfig` and `CardConfigMap["video-news"]` entry.
+
+---
+
 ## [11.2.0] — 2026-04-22
 
 > **3265 tests / 98 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
