@@ -1,0 +1,32 @@
+{
+  "extends": "./tooling/tsconfig/base-typescript.json",
+  "compilerOptions": {
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "exactOptionalPropertyTypes": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@tests/helpers": [
+        "./tests/helpers/index.ts"
+      ],
+      "@tests/worker-helpers": [
+        "./tests/helpers/worker.ts"
+      ],
+      "@tests/*": [
+        "./tests/unit/*"
+      ]
+    }
+  },
+  "include": [
+    "tests/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

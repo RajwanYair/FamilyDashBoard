@@ -30,7 +30,6 @@ export function logRequest(
     ip,
     ts: new Date().toISOString(),
   };
-  // eslint-disable-next-line no-console
   console.log(
     `[${entry.ts}] ${entry.method} ${entry.path} → ${entry.status} (${entry.durationMs}ms) ip=${entry.ip}`,
   );

@@ -30,7 +30,7 @@ import {
   handleSefariaText,
   handleCrypto,
 } from "./routes/feeds";
-import { handleErrors } from "./routes/errors";
+import { handleErrors, handleErrorsExport } from "./routes/errors";
 import { isPreflight, handlePreflight } from "./middleware/cors";
 import {
   isRateLimited,
@@ -74,7 +74,8 @@ export default {
       else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar(env);
       else if (path === "/api/sefaria/text") response = await handleSefariaText(url, env);
       else if (path === "/api/crypto") response = await handleCrypto(url, env);
-      else if (path === "/api/errors") response = await handleErrors(request);
+      else if (path === "/api/errors/export") response = await handleErrorsExport(request, env);
+      else if (path === "/api/errors") response = await handleErrors(request, env);
       else response = jsonResponse({ error: "Not found" }, 404);
     } catch {
       response = jsonResponse({ error: "Internal error" }, 500);

@@ -403,6 +403,7 @@ describe("Worker response helpers — workerEnvelope", () => {
 import { handleErrors } from "../../../worker/src/routes/errors";
 import { handleCurrency } from "../../../worker/src/routes/data";
 import type { Env } from "../../../worker/src/index";
+import type { KVStore } from "../../../worker/src/types";
 import { makeKv, makeWorkerEnv } from "@tests/worker-helpers";
 
 /** Minimal mock Env with a no-op KV namespace for unit tests (Stream W.2). */
@@ -578,7 +579,7 @@ describe("Worker — handleHebcal route", () => {
     );
     const envWithKv: Env = {
       ...mockEnv,
-      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
     };
     const url = new URL("https://worker.dev/api/hebcal?geonameid=293397");
     const res = await handleHebcal(url, envWithKv);
@@ -622,7 +623,7 @@ describe("Worker — handleHebcalHolidays route", () => {
     );
     const envWithKv: Env = {
       ...mockEnv,
-      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
     };
     const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
     const res = await handleHebcalHolidays(url, envWithKv);
@@ -670,7 +671,7 @@ describe("Worker — handleAlerts route", () => {
     const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
     const envWithKv: Env = {
       ...mockEnv,
-      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
     };
     const res = await handleAlerts(envWithKv);
     expect(res.status).toBe(200);
@@ -929,7 +930,7 @@ describe("Worker — handleStocks route", () => {
     const kvGet = vi.fn().mockResolvedValue(JSON.stringify(VALID_STOCKS));
     const envWithKv: Env = {
       ...mockEnv,
-      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
     };
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
     const res = await handleStocks(url, envWithKv);
@@ -1029,7 +1030,7 @@ describe("Worker — handleCrypto route", () => {
     const kvGet = vi.fn().mockResolvedValue(JSON.stringify(VALID_CRYPTO));
     const envWithKv: Env = {
       ...mockEnv,
-      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVNamespace,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
     };
     const url = new URL("https://worker.example.com/api/crypto?ids=bitcoin");
     const res = await handleCrypto(url, envWithKv);
@@ -1260,7 +1261,7 @@ describe("Worker test helper — makeWorkerEnv", () => {
   it("accepts a KV get override", async () => {
     const env = makeWorkerEnv({
       get: vi.fn().mockResolvedValue(JSON.stringify({ ok: true })),
-    } as unknown as Partial<KVNamespace>);
+    } as unknown as Partial<KVStore>);
     const result = await env.CACHE_KV.get("test:key");
     expect(result).toBe(JSON.stringify({ ok: true }));
   });

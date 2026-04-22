@@ -5,14 +5,13 @@
  * KV reads/writes are non-fatal: failures never break the primary response.
  */
 
+import type { KVStore } from "../types";
+
 /**
  * Try to read a cached value from KV.
  * Returns the parsed object with `_stale: true` injected, or null if absent.
  */
-export async function kvGetStale<T>(
-  kv: KVNamespace,
-  key: string,
-): Promise<(T & { _stale: true }) | null> {
+export async function kvGetStale<T>(kv: KVStore, key: string): Promise<(T & { _stale: true }) | null> {
   try {
     const raw = await kv.get(key);
     if (!raw) return null;
@@ -24,12 +23,7 @@ export async function kvGetStale<T>(
 }
 
 /** Write a successful upstream response to KV for future stale fallback. */
-export async function kvPut(
-  kv: KVNamespace,
-  key: string,
-  data: unknown,
-  ttlSeconds: number,
-): Promise<void> {
+export async function kvPut(kv: KVStore, key: string, data: unknown, ttlSeconds: number): Promise<void> {
   try {
     await kv.put(key, JSON.stringify(data), { expirationTtl: ttlSeconds });
   } catch {

@@ -558,3 +558,27 @@ body.shabbat-mode #shabbat-mode-banner {
   animation-name: cardSlideLeft;
   animation-delay: 0.16s;
 }
+
+/* ── Card Data-Refresh Reappear Animation ── */
+@keyframes cardRefresh {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.984);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.003);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card--refreshed {
+    animation: cardRefresh 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+[data-hw-tier="low"] .card--refreshed {
+  animation: none;
+}

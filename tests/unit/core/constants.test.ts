@@ -43,15 +43,12 @@ describe("Constants — CPU_CORES with hardwareConcurrency", () => {
 
   it("falls back to 4 when navigator is undefined", async () => {
     vi.resetModules();
-    // Remove navigator entirely from globalThis
-    const origNav = globalThis.navigator;
-    // @ts-expect-error — intentionally removing navigator for test
-    delete globalThis.navigator;
+    vi.stubGlobal("navigator", undefined);
     try {
       const { CPU_CORES } = await import("@/core/constants");
       expect(CPU_CORES).toBe(4);
     } finally {
-      globalThis.navigator = origNav;
+      vi.unstubAllGlobals();
     }
   });
 });

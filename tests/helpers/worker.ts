@@ -8,7 +8,7 @@
  *   import { makeKv, makeWorkerEnv } from "@tests/worker-helpers";
  */
 
-import type { Env } from "../../worker/src/types";
+import type { Env, KVStore } from "../../worker/src/types";
 
 // ── KV helpers ─────────────────────────────────────────────────────────────────
 
@@ -25,14 +25,14 @@ import type { Env } from "../../worker/src/types";
 export function makeKv(
   getImpl: () => Promise<string | null> = () => Promise.resolve(null),
   putImpl: () => Promise<void> = () => Promise.resolve(),
-): KVNamespace {
+): KVStore {
   return {
     get: getImpl,
     put: putImpl,
     delete: async () => undefined,
     list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
     getWithMetadata: async () => ({ value: null, metadata: null }),
-  } as unknown as KVNamespace;
+  } as unknown as KVStore;
 }
 
 // ── Env helpers ────────────────────────────────────────────────────────────────
@@ -50,10 +50,10 @@ export function makeKv(
  * @example Custom KV get:
  *   const env = makeWorkerEnv({ get: vi.fn().mockResolvedValue('"cached"') });
  */
-export function makeWorkerEnv(kvOverrides?: Partial<KVNamespace>): Env {
+export function makeWorkerEnv(kvOverrides?: Partial<KVStore>): Env {
   const kv = makeKv();
   return {
     ENVIRONMENT: "test",
-    CACHE_KV: kvOverrides ? ({ ...kv, ...kvOverrides } as unknown as KVNamespace) : kv,
+    CACHE_KV: kvOverrides ? ({ ...kv, ...kvOverrides } as unknown as KVStore) : kv,
   };
 }

@@ -297,8 +297,8 @@ export async function migrateLsToIdb(keys: string[]): Promise<number> {
 
 // ── Sprint 120: time-based stale IDB eviction ────────────────────────────────
 
-/** Default IDB stale threshold — 7 days (matches LS_MAX_AGE). */
-const IDB_STALE_MS = 7 * 24 * 60 * 60 * 1000;
+/** Default IDB stale threshold — 3 days (matches LS_MAX_AGE). */
+const IDB_STALE_MS = 3 * 24 * 60 * 60 * 1000;
 
 /**
  * Delete all IDB entries whose timestamp is older than `maxAgeMs`.

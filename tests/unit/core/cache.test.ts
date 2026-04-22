@@ -229,7 +229,7 @@ describe("Cache — cEvict edge cases", () => {
     cClear();
   });
 
-  it("removes localStorage entry older than 7 days", () => {
+  it("removes localStorage entry older than 3 days", () => {
     const oldTs = Date.now() - 8 * 24 * 60 * 60 * 1000; // 8 days ago
     localStorage.setItem("dash_v2_evict-old", JSON.stringify({ data: "old", ts: oldTs }));
     cEvict();
@@ -242,7 +242,7 @@ describe("Cache — cEvict edge cases", () => {
     expect(localStorage.getItem("dash_v2_corrupt-evict")).toBeNull();
   });
 
-  it("keeps fresh localStorage entry (< 7 days)", () => {
+  it("keeps fresh localStorage entry (< 3 days)", () => {
     const freshTs = Date.now() - 1 * 24 * 60 * 60 * 1000; // 1 day ago
     localStorage.setItem("dash_v2_fresh-entry", JSON.stringify({ data: "fresh", ts: freshTs }));
     cEvict();

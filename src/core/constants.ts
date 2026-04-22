@@ -17,7 +17,7 @@ export type InterfaceLanguage = (typeof INTERFACE_LANGUAGES)[number];
 // ── Cache ──
 export const CACHE_TTL = 5 * MS_PER_MIN; // 5 minutes
 export const LS_PREFIX = "dash_v2_";
-export const LS_MAX_AGE = 7 * MS_PER_DAY; // 7 days
+export const LS_MAX_AGE = 3 * MS_PER_DAY; // 3 days
 
 // ── Fetch ──
 export const FETCH_TIMEOUT_MS = 8_000;

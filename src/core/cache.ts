@@ -245,7 +245,7 @@ export async function hydrateFromIdb(): Promise<number> {
       if (mem.has(key)) continue;
       const entry = await idbGetEntry(key);
       if (!entry) continue;
-      // Skip stale entries (matches LS_MAX_AGE = 7 days)
+      // Skip stale entries (matches LS_MAX_AGE = 3 days)
       if (now - entry.ts > LS_MAX_AGE) continue;
       mem.set(key, { data: entry.data, ts: entry.ts });
       count++;

@@ -308,8 +308,7 @@ describe("Maximize — initCardCollapse with startViewTransition", () => {
     // Remove startViewTransition stub if set
     if ("startViewTransition" in document) {
       try {
-        // @ts-expect-error reset to undefined
-        delete document.startViewTransition;
+        Reflect.deleteProperty(document, "startViewTransition");
       } catch {
         /* non-configurable in some envs */
       }

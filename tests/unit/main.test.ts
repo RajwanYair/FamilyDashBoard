@@ -526,10 +526,11 @@ describe("Main — init() online/offline handlers", () => {
     expect(reconnectCalls.length).toBe(0);
   });
 
-  it("does not throw when online schedules reload and window.location.reload is missing", () => {
+  it("does not call window.location.reload on reconnect after offline", () => {
     init();
+    const reloadSpy = vi.fn();
     Object.defineProperty(window, "location", {
-      value: { hash: "", pathname: "/", search: "" },
+      value: { hash: "", pathname: "/", search: "", reload: reloadSpy },
       configurable: true,
     });
     vi.useFakeTimers();
@@ -537,7 +538,8 @@ describe("Main — init() online/offline handlers", () => {
     window.dispatchEvent(new Event("offline"));
     window.dispatchEvent(new Event("online"));
 
-    expect(() => vi.runAllTimers()).not.toThrow();
+    expect(() => vi.advanceTimersByTime(5_000)).not.toThrow();
+    expect(reloadSpy).not.toHaveBeenCalled();
   });
 });
 
@@ -691,15 +693,14 @@ describe("Main — init() keyboard lambda callbacks", () => {
     expect(toggleBookmarkMode).toHaveBeenCalled();
   });
 
-  it("'r' handler calls window.location.reload()", () => {
-    const reloadMock = vi.fn();
-    Object.defineProperty(window, "location", {
-      value: { reload: reloadMock },
-      writable: true,
-      configurable: true,
-    });
-    extractHandler("r")();
-    expect(reloadMock).toHaveBeenCalled();
+  it("'r' handler triggers per-card refresh", () => {
+    const rHandler = extractHandler("r"); // capture before clearing mocks
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    rHandler();
+    vi.advanceTimersByTime(5_000);
+    expect(initWeatherCard).toHaveBeenCalled();
+    vi.useRealTimers();
   });
 
   it("'f' handler requests fullscreen when not fullscreen", () => {

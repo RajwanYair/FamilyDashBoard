@@ -40,6 +40,31 @@ export function setSync(name: string, state: SyncState): void {
   }
 }
 
+/** Maps sync-dot IDs to their data-card-id attribute values where they differ. */
+const SYNC_TO_CARD_ID: Readonly<Record<string, string>> = {
+  wx: "weather",
+  cur: "currency",
+  moti: "motivation",
+  hebcal: "hebrew-cal",
+  cal: "calendar",
+};
+
+/**
+ * Trigger a subtle reappear animation on the card element after a fresh data fetch.
+ * Resolves the sync-dot ID to the correct data-card-id selector.
+ */
+function flashCardRefresh(syncId: string): void {
+  const cardDomId = SYNC_TO_CARD_ID[syncId] ?? syncId;
+  const card = document.querySelector<HTMLElement>(`[data-card-id="${cardDomId}"]`);
+  if (!card) return;
+  card.classList.remove("card--refreshed");
+  void card.offsetWidth; // force reflow so re-adding the class retriggers the animation
+  card.classList.add("card--refreshed");
+  card.addEventListener("animationend", () => card.classList.remove("card--refreshed"), {
+    once: true,
+  });
+}
+
 /**
  * Apply a brief burst animation on successful refresh.
  */
@@ -48,6 +73,7 @@ export function syncBurst(name: string): void {
   if (!dot) return;
   dot.classList.add("burst");
   setTimeout(() => dot.classList.remove("burst"), 600);
+  flashCardRefresh(name);
 }
 
 // ── Exponential Backoff ──

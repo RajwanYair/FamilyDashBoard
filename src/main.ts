@@ -179,11 +179,24 @@ export function applySeasonClass(): void {
   document.body.classList.add(cls);
 }
 
-function requestWindowReload(): void {
-  const reload = window.location?.reload;
-  if (typeof reload === "function") {
-    reload.call(window.location);
-  }
+/** Refresh every card individually with 350 ms stagger — never reloads the page. */
+function refreshAllCardsStaggered(): void {
+  const inits: Array<() => void> = [
+    initWeatherCard,
+    initNewsCard,
+    initAlertsCard,
+    initHebrewCalCard,
+    initCalendarCard,
+    initStocksCard,
+    initCurrencyCard,
+    initTasksCard,
+    initCountdownCard,
+    initMotivationCard,
+    initSystemInfoCard,
+  ];
+  inits.forEach((fn, i) => {
+    setTimeout(fn, i * 350);
+  });
 }
 
 /**
@@ -266,7 +279,7 @@ export function init(): void {
     renderMotivation(),
   );
   registerKey("r", document.documentElement.lang === "en" ? "Refresh data" : "רענון נתונים", () =>
-    window.location.reload(),
+    refreshAllCardsStaggered(),
   );
   registerKey("w", document.documentElement.lang === "en" ? "Toggle °C/°F" : "מעבר °C/°F", () =>
     toggleTempUnit(),
@@ -442,7 +455,7 @@ export function init(): void {
     if (_wenOffline) {
       _wenOffline = false;
       showToast(t("onlineRefreshing"), 2500);
-      setTimeout(requestWindowReload, 2500);
+      setTimeout(refreshAllCardsStaggered, 500);
     }
     diagLog("[init] FDB-009: network reconnected");
   });
@@ -452,7 +465,7 @@ export function init(): void {
       const data = e.data as { type?: string };
       if (data?.type === "NETWORK_BACK" && !_wenOffline) {
         showToast(t("onlineRefreshing"), 2500);
-        setTimeout(requestWindowReload, 2500);
+        setTimeout(refreshAllCardsStaggered, 500);
       }
     });
   }
