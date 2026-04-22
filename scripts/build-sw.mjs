@@ -21,9 +21,14 @@ if (!version) {
   process.exit(1);
 }
 
-// Load typescript from the monorepo parent node_modules (MyScripts/node_modules)
+// Resolve typescript from local node_modules first (CI), then parent monorepo (dev).
 const require = createRequire(import.meta.url);
-const ts = require("../../node_modules/typescript");
+let ts;
+try {
+  ts = require("typescript");
+} catch {
+  ts = require("../../node_modules/typescript");
+}
 
 const swTs = readFileSync(resolve(ROOT, "sw.ts"), "utf-8");
 
