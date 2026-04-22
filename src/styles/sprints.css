@@ -207,6 +207,28 @@ body.slideshow-fade::after {
   display: none !important;
 }
 
+/* Collapsed card shrinks to header height; freed space flows to sibling cards */
+.card.collapsed {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+/* Card mini-info — compact summary shown only in the header when collapsed */
+.card-mini-info {
+  display: none;
+  font-size: 0.71em;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+  vertical-align: middle;
+  margin-inline-start: 5px;
+}
+.card.collapsed .card-mini-info:not(:empty) {
+  display: inline;
+}
+
 /* Sprint 8 (v11.0-PWA-1): First-run tour dialog */
 #tour-overlay {
   border: none;

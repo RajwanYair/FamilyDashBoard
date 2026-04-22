@@ -10,6 +10,7 @@ import {
   recordSuccess,
   getBackoffDelay,
   syncBurst,
+  updateCardMiniInfo,
 } from "@/core/sync";
 
 describe("Sync Indicators", () => {
@@ -182,5 +183,77 @@ describe("Sync — aria-busy on parent card (Sprint 45)", () => {
     const dot = document.getElementById("sync-no-card")!;
     registerSyncDot("no-card", dot);
     expect(() => setSync("no-card", "loading")).not.toThrow();
+  });
+});
+
+// ── updateCardMiniInfo ────────────────────────────────────────────────────────
+describe("updateCardMiniInfo", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("populates weather mini-info from wx-temp and wx-desc", () => {
+    document.body.innerHTML = `
+      <span id="wx-temp">22°C</span>
+      <span id="wx-desc">בהיר</span>
+      <span id="mini-weather"></span>`;
+    updateCardMiniInfo("weather");
+    expect(document.getElementById("mini-weather")!.textContent).toBe("22°C · בהיר");
+  });
+
+  it("skips placeholder values like --", () => {
+    document.body.innerHTML = `
+      <span id="wx-temp">--</span>
+      <span id="wx-desc">בהיר</span>
+      <span id="mini-weather"></span>`;
+    updateCardMiniInfo("weather");
+    expect(document.getElementById("mini-weather")!.textContent).toBe("בהיר");
+  });
+
+  it("handles countdown card with title and days", () => {
+    document.body.innerHTML = `
+      <span id="cd-wedding-title">חתונה</span>
+      <span id="cd-days">45</span>
+      <span id="mini-countdown"></span>`;
+    updateCardMiniInfo("countdown");
+    expect(document.getElementById("mini-countdown")!.textContent).toBe("חתונה \u2014 45 ימים");
+  });
+
+  it("countdown with -- days shows only title", () => {
+    document.body.innerHTML = `
+      <span id="cd-wedding-title">חתונה</span>
+      <span id="cd-days">--</span>
+      <span id="mini-countdown"></span>`;
+    updateCardMiniInfo("countdown");
+    expect(document.getElementById("mini-countdown")!.textContent).toBe("חתונה");
+  });
+
+  it("does nothing when mini element does not exist", () => {
+    expect(() => updateCardMiniInfo("weather")).not.toThrow();
+  });
+
+  it("truncates motivation quote beyond 50 chars", () => {
+    document.body.innerHTML = `
+      <span id="moti-text">${"א".repeat(60)}</span>
+      <span id="mini-motivation"></span>`;
+    updateCardMiniInfo("motivation");
+    const text = document.getElementById("mini-motivation")!.textContent!;
+    expect(text.length).toBeLessThanOrEqual(53); // 50 chars + "…"
+    expect(text.endsWith("…")).toBe(true);
+  });
+
+  it("ignores unknown card IDs without throwing", () => {
+    document.body.innerHTML = '<span id="mini-unknown"></span>';
+    updateCardMiniInfo("unknown");
+    expect(document.getElementById("mini-unknown")!.textContent).toBe("");
+  });
+
+  it("leaves mini-info empty when source element has no text", () => {
+    document.body.innerHTML = `
+      <span id="wx-temp"></span>
+      <span id="wx-desc"></span>
+      <span id="mini-weather"></span>`;
+    updateCardMiniInfo("weather");
+    expect(document.getElementById("mini-weather")!.textContent).toBe("");
   });
 });

@@ -7,6 +7,7 @@
 
 import { diagLog } from "../core/diag";
 import { LS_COLLAPSED } from "../core/constants";
+import { updateCardMiniInfo } from "../core/sync";
 
 let maximizedCard: HTMLElement | null = null;
 
@@ -163,6 +164,9 @@ export function initCardCollapse(): void {
     if (id && collapsed.has(id)) {
       card.classList.add("collapsed");
       if (btn) btn.setAttribute("aria-expanded", "false");
+      // Populate mini-info for cards that start already collapsed
+      const dataCardId = card.dataset["cardId"] ?? "";
+      if (dataCardId) updateCardMiniInfo(dataCardId);
     } else if (btn) {
       btn.setAttribute("aria-expanded", "true");
     }
@@ -189,7 +193,12 @@ export function initCardCollapse(): void {
         diagLog(
           `[maximize] Card ${card.classList.contains("collapsed") ? "collapsed" : "expanded"}: ${cardId}`,
         );
-      };
+        // Update mini-info to reflect latest rendered data when collapsing
+        if (isNowCollapsed) {
+          const dataCardId = card.dataset["cardId"] ?? "";
+          if (dataCardId) updateCardMiniInfo(dataCardId);
+        }
+      };;
 
       if ("startViewTransition" in document) {
         void document.startViewTransition(doToggle);

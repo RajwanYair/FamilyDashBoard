@@ -50,6 +50,49 @@ const SYNC_TO_CARD_ID: Readonly<Record<string, string>> = {
 };
 
 /**
+ * DOM element IDs to read when building per-card mini-info text.
+ * Only cards whose headers lack dynamic data need an entry here.
+ */
+const MINI_INFO_SOURCES: Readonly<Record<string, readonly string[]>> = {
+  weather: ["wx-temp", "wx-desc"],
+  "hebrew-cal": ["hc-candles"],
+  currency: ["curUsd"],
+  motivation: ["moti-text"],
+  "system-info": ["sysinfo-online", "sysinfo-battery"],
+};
+
+/**
+ * Build a compact one-line summary for the given card's mini-info span.
+ * Reads from live DOM elements so it always reflects the latest rendered data.
+ */
+function buildMiniText(cardId: string): string {
+  if (cardId === "countdown") {
+    const title = document.getElementById("cd-wedding-title")?.textContent?.trim() ?? "";
+    const days = document.getElementById("cd-days")?.textContent?.trim() ?? "";
+    if (!title) return "";
+    return days && days !== "--" ? `${title} \u2014 ${days} \u05d9\u05de\u05d9\u05dd` : title;
+  }
+  const sources = MINI_INFO_SOURCES[cardId];
+  if (!sources || sources.length === 0) return "";
+  const parts = sources
+    .map((id) => document.getElementById(id)?.textContent?.trim() ?? "")
+    .filter((t) => t !== "" && t !== "--" && t !== "\u2014" && t !== "\u05d8\u05d5\u05e2\u05df...");
+  const text = parts.join(" \u00b7 ");
+  // Motivation quotes can be very long — truncate to one glanceable line
+  return cardId === "motivation" && text.length > 50 ? `${text.slice(0, 50)}\u2026` : text;
+}
+
+/**
+ * Update the `#mini-<cardId>` span in the card header with a compact summary.
+ * No-op when the element does not exist (cards without a mini-info span).
+ */
+export function updateCardMiniInfo(cardDomId: string): void {
+  const el = document.getElementById(`mini-${cardDomId}`);
+  if (!el) return;
+  el.textContent = buildMiniText(cardDomId);
+}
+
+/**
  * Trigger a subtle reappear animation on the card element after a fresh data fetch.
  * Resolves the sync-dot ID to the correct data-card-id selector.
  */
@@ -63,6 +106,7 @@ function flashCardRefresh(syncId: string): void {
   card.addEventListener("animationend", () => card.classList.remove("card--refreshed"), {
     once: true,
   });
+  updateCardMiniInfo(cardDomId);
 }
 
 /**
