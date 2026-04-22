@@ -1,9 +1,0 @@
-
-Filename        LineNumber
---------        ----------
-main.ts                 57
-config-panel.ts       1096
-layout-drag.ts          47
-layout-drag.ts          55
-layout-drag.ts         152
-

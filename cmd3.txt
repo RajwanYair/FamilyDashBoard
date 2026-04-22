@@ -1,3 +1,0 @@
-
-[INEFFECTIVE_DYNAMIC_IMPORT] Warning: src/ui/layout-drag.ts is dynamically imported by src/ui/config-panel.ts but also statically imported by src/main.ts, dynamic import will not move module into another chunk.
-
