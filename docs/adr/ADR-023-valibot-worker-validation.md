@@ -79,15 +79,18 @@ additions, all `v.object({})` calls become `v.looseObject({})`.
 ## Consequences
 
 **Good:**
+
 - Worker bundle shrinks by ~12.5 KB gzip (~87% reduction on validation).
 - Full tree-shaking: only imported schema builders appear in the bundle.
 - Valibot 1.x has a stable API with no breaking changes planned until v2.
 
 **Neutral:**
+
 - `result.data` → `result.output` in the `safeParse` wrapper (one-line change).
 - `z.infer` → `v.InferOutput` in type annotations.
 
 **Bad:**
+
 - None identified.
 
 ---

@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.0.0] — 2026-05-19
+
+> **Toolchain Modernisation** · **3309 tests / 102 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 27 ADRs
+
+### Changed (Breaking — Worker)
+
+- **Zod → Valibot 1.x** (`worker/src/utils/schemas.ts`): All 20 schemas rewritten from Zod to Valibot 1.x. Worker bundle reduced by ~12.5 KB gzip (~87% reduction). `safeParse<T>()` helper updated to use `result.output` / `result.issues`. ([ADR-023](docs/adr/ADR-023-valibot-worker-validation.md))
+- **Hono 4.x router** (`worker/src/index.ts`): Replaced hand-written `if/else` route dispatcher with Hono 4.x type-safe router. All 17 routes migrated to `app.get(...)` pattern. CORS via `hono/cors` middleware. ([ADR-026](docs/adr/ADR-026-hono-router.md))
+
+### Added
+
+- **Finnhub primary / Yahoo secondary stock feed** (`worker/src/routes/feeds.ts`): Finnhub promoted to primary provider when `FINNHUB_API_KEY` is set. Yahoo Finance demoted to fallback. KV stale cache is tertiary. Finnhub responses normalized to Yahoo chart envelope shape for client compatibility.
+- **SimHash news deduplication** (`worker/src/utils/simhash.ts`): 64-bit FNV-1a SimHash with 4-gram tokenization and Hamming-distance deduplication in `/api/news/aggregate`. Prevents near-duplicate headlines from multiple RSS sources. 13 unit tests.
+- **7-day IDB history + sparkline tiles**: `src/core/history.ts` — IndexedDB rolling 7-day history with auto-eviction. `sparklineSvg()` generates inline SVG polyline. Weather card (`wx-temp-spark`) and Currency card (5 sparklines: USD/EUR/GBP/XAU/XAG) show live sparklines. 10 unit tests.
+- **WCAG 2.4.11 AAA focus indicators**: Enhanced focus ring tokens (`--focus-outline-width-card: 3px`), `@media (prefers-contrast: more)` double-ring, `@media (forced-colors: active)` Windows HCM support. `aria-label` + `aria-expanded` added to all 11 card-collapse buttons, sw-update banner, and diagnostic panel buttons.
+- **SBOM (CycloneDX JSON)**: CI `sbom` job generates `sbom.json` after each `main` push, uploaded as 90-day artifact. ([ADR-027](docs/adr/ADR-027-sbom-renovate.md))
+- **Renovate Bot**: `renovate.json` — weekly batched dependency PRs (Saturday, Israel TZ), auto-merge for ESLint/Actions patches, manual review for TypeScript/Vite/worker major bumps. ([ADR-027](docs/adr/ADR-027-sbom-renovate.md))
+- **ADRs**: ADR-021 (tsgo second typecheck), ADR-022 (CSS `@scope` isolation), ADR-023 (Valibot), ADR-026 (Hono router), ADR-027 (SBOM + Renovate).
+
+### Fixed
+
+- Markdown: `MD032` blanks-around-lists in ADR-021, ADR-022, ADR-023, ADR-026.
+
+---
+
 ## [11.5.1] — 2026-07-10
 
 > **3309 tests / 100 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

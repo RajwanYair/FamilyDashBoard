@@ -35,6 +35,7 @@ unscoped rule in the same `@layer` when both apply to the same element.
 new `@layer components` block in a dedicated `src/styles/scope.css` file.**
 
 The approach is **additive**:
+
 - Existing per-card CSS files are left intact (they continue to work in all browsers).
 - `scope.css` adds stronger cascade containment for browsers that support `@scope`.
 - No functional change — only specificity containment.
@@ -72,16 +73,19 @@ A full migration of all card rules is a v12.1 follow-up.
 ## Consequences
 
 **Good:**
+
 - Cross-card style bleed becomes structurally impossible inside the scoped blocks.
 - Developers get a clear declaration of "these rules belong to this card" in the cascade.
 - Zero runtime cost — `@scope` is a CSS parsing hint, not a JS wrapper.
 
 **Neutral:**
+
 - Browsers without `@scope` support (Firefox < 117, Safari < 17.4) fall back to the
   unscoped rules in per-card CSS files — identical behaviour to today.
 - Full migration of all card rules to `@scope` is deferred to v12.1.
 
 **Bad:**
+
 - Two sources of truth for card styles during the migration window (per-card `.css` +
   `scope.css`). Addressed in v12.1 when per-card files are merged into `@scope` blocks.
 

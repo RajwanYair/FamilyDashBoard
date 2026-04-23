@@ -74,12 +74,14 @@ export default {
 ## Consequences
 
 **Good:**
+
 - Cleaner, more readable route table.
 - Type-safe `c.env` bindings — no need to thread `env` through each handler.
 - Middleware chain is declarative.
 - Future route params (e.g. `/api/stocks/:sym`) work without string parsing.
 
 **Neutral:**
+
 - Adds ~12 KB gzip to Worker bundle. Combined with Valibot (~1.5 KB),
   total runtime deps remain well under 20 KB — a fraction of the previous
   Zod-only approach.
@@ -87,6 +89,7 @@ export default {
   `(url: URL, env: Env) => Promise<Response>`.
 
 **Bad:**
+
 - None identified.
 
 ---

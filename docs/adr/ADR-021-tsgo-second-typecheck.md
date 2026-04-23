@@ -36,6 +36,7 @@ Promote `tsgo` to **primary** (and remove `tsc`) when both of the following hold
 2. `tsgo` passes the same zero-error baseline locally (`npx @typescript/tsgo --noEmit`).
 
 The two-gate window gives us:
+
 - Free early warning of type drift that `tsc` might not yet catch.
 - Measured cold-run speed improvement on CI (tracked in bundle-trend).
 - Zero risk of a blocked PR during the alpha period.
@@ -77,15 +78,18 @@ No changes to existing `npm run check` or `npx tsc` workflow.
 ## Consequences
 
 **Good:**
+
 - CI gets an 8–10× faster supplementary typecheck in parallel.
 - We track `tsgo` fidelity early, reducing the promotion cost later.
 - Zero risk of blocked PRs during alpha (continue-on-error).
 
 **Neutral:**
+
 - Adds ~30 s to the CI wall-clock budget (parallel, so no change to critical path).
 - Requires periodic review of `tsgo` release notes.
 
 **Bad:**
+
 - Alpha-period false positives will generate CI warnings that need triage.
 
 ---
