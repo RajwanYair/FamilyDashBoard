@@ -48,6 +48,7 @@
         "bundle:trend": "node scripts/bundle-trend.mjs",
         "mutate": "stryker run scripts/stryker.config.mjs",
         "arch:table": "node scripts/generate-arch-table.mjs",
+        "adr:index": "node scripts/generate-adr-index.mjs",
         "release:report": "node scripts/release-report.mjs",
         "audit": "npm audit --audit-level=high",
         "check:sw": "node scripts/check-sw-version.mjs",
