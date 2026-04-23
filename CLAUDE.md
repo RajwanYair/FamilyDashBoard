@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v12.2.0
+# CLAUDE.md — FamilyDashBoard v12.3.0
 
 > Context file for Claude Code / Claude agents.
 > **Canonical rules live in `.github/copilot-instructions.md`** — this file is a lean entry point.
@@ -26,7 +26,7 @@
 ```text
 src/                   # TypeScript v7 modular source (Vite build)
 src/public/            # Vite static dir — icon.svg, manifest.webmanifest
-tests/unit/            # Vitest — 3459 tests / 109 suites
+tests/unit/            # Vitest — 3486 tests / 110 suites
 sw.ts                  # ServiceWorker source v11.2.0 (compiled to dist/sw.js via scripts/build-sw.mjs)
 sw.js                  # ServiceWorker output (compiled artifact, do not edit directly)
 ```

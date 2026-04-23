@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.3.0] — 2025-07-14
+
+> **CI + Quality polish** · **3486 tests / 110 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 29 ADRs
+
+### Added
+
+- **CI release gate** (`release.yml`): All release builds now run ESLint (`--max-warnings 0`), markdownlint, worker TypeScript type-check, bundle size check, and SW version check before packaging. (Sprint 36)
+- **CSS `@scope` coverage tests** (`tests/unit/css/scope.test.ts`): 16 tests audit ADR-022 compliance — one `@scope` block per card, canonical `data-card-id` selector form, no duplicates, all inside `@layer components`. (Sprint 37)
+- **`sampleErrorTrend` / `getErrorTrend` tests** (`tests/unit/core/error-tracker.test.ts`): 7 new tests covering trend buffer accumulation, max-10 cap, eviction, and rate sampling. (Sprint 38)
+- **Error reporter request shape tests** (`tests/unit/core/error-reporter.test.ts`): 4 new tests asserting `Content-Type: application/json`, `keepalive: true`, 20-error batch cap, and `/api/errors` URL. (Sprint 38)
+
+### Fixed
+
+- **`getErrorTrend()` returned raw internal array** (`src/core/error-tracker.ts`): Changed to return `[..._errorTrend]` defensive copy — external mutation no longer affects internal state. (Sprint 38)
+- **`_resetTrend()` test helper** added to `error-tracker.ts` for test isolation of trend buffer. (Sprint 38)
+
+---
+
 ## [12.2.0] — 2025-07-13
 
 > **OPS + A11Y** · **3459 tests / 109 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 29 ADRs (commit `833afc7`)
