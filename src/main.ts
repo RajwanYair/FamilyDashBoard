@@ -191,7 +191,7 @@ export function applySeasonClass(): void {
 }
 
 /** Refresh every card individually with 350 ms stagger — never reloads the page. */
-function refreshAllCardsStaggered(): void {
+export function refreshAllCardsStaggered(): void {
   const inits: Array<() => void> = [
     initWeatherCard,
     initNewsCard,
@@ -491,7 +491,7 @@ export function init(): void {
   stampRefresh();
 
   // Service Worker
-  void registerSW();
+  void registerSW(refreshAllCardsStaggered);
 
   // ── Network reconnect: auto-refresh after connectivity loss ──
   let _wenOffline = false;

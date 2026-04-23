@@ -17,8 +17,12 @@ let _autoReloadSecs = 0;
 
 /**
  * Register the service worker and set up update detection.
+ *
+ * @param onActivated - Optional callback invoked when a new SW version takes
+ *   control (controllerchange on upgrade). Defaults to a per-card refresh via
+ *   the caller-supplied function. Providing this avoids a full page reload.
  */
-export async function registerSW(): Promise<void> {
+export async function registerSW(onActivated?: () => void): Promise<void> {
   if (!("serviceWorker" in navigator)) {
     diagLog("[sw] Service Worker not supported");
     return;
@@ -92,15 +96,15 @@ export async function registerSW(): Promise<void> {
     });
 
     // Listen for controller change (another tab activated a new SW).
-    // Guard: only reload if a controller already existed before registration
+    // Guard: only act if a controller already existed before registration
     // started (hadController captured synchronously above). On first install
     // the SW calls clients.claim() which fires controllerchange (null→SW);
     // without this guard that would cause a reload loop on every first visit.
     navigator.serviceWorker.addEventListener("controllerchange", () => {
-      diagLog("[sw] Controller changed — reloading");
-      if (hadController) {
-        window.location.reload();
-      }
+      if (!hadController) return;
+      diagLog("[sw] Controller changed — refreshing cards");
+      // Refresh each card individually instead of reloading the whole page.
+      onActivated?.();
     });
 
     // Listen for VERSION_ACTIVATED broadcast from SW

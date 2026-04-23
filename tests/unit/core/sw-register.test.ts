@@ -328,9 +328,9 @@ describe("SW Register — controllerchange triggers reload", () => {
     expect(reloadSpy).not.toHaveBeenCalled();
   });
 
-  it("reloads on controllerchange when a controller already existed at startup (SW upgrade)", async () => {
+  it("calls onActivated callback (not location.reload) on controllerchange during SW upgrade", async () => {
     // hadController = true (existing SW active) → user clicked update banner →
-    // skipWaiting → new SW activates → controllerchange → reload is correct here.
+    // skipWaiting → new SW activates → controllerchange → per-card refresh instead of full reload.
     const navListeners: Record<string, (...args: unknown[]) => void> = {};
     const reg = makeRegistration();
     vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
@@ -354,13 +354,48 @@ describe("SW Register — controllerchange triggers reload", () => {
       configurable: true,
     });
 
+    const onActivated = vi.fn();
     const mod = await freshMod();
-    await mod.registerSW();
+    await mod.registerSW(onActivated);
 
     expect(navListeners["controllerchange"]).toBeDefined();
     navListeners["controllerchange"]!();
-    // SW upgrade must reload so the new version takes over
-    expect(reloadSpy).toHaveBeenCalledOnce();
+    // SW upgrade must call per-card refresh — NOT a full page reload
+    expect(onActivated).toHaveBeenCalledOnce();
+    expect(reloadSpy).not.toHaveBeenCalled();
+  });
+
+  it("does nothing on controllerchange when no onActivated callback provided", async () => {
+    // Ensure no unhandled reload or throw when callback is omitted
+    const navListeners: Record<string, (...args: unknown[]) => void> = {};
+    const reg = makeRegistration();
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        register: vi.fn().mockResolvedValue(reg),
+        controller: { postMessage: vi.fn() } as unknown as ServiceWorker,
+        getRegistrations: vi.fn().mockResolvedValue([]),
+        addEventListener: vi.fn((evt: string, handler: (...args: unknown[]) => void) => {
+          navListeners[evt] = handler;
+        }),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    const reloadSpy = vi.fn();
+    Object.defineProperty(window, "location", {
+      value: { ...window.location, reload: reloadSpy },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW(); // no callback
+
+    navListeners["controllerchange"]!();
+    // No callback provided → no reload, no throw
+    expect(reloadSpy).not.toHaveBeenCalled();
   });
 });
 
