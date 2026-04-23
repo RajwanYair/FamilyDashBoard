@@ -31,6 +31,7 @@ import {
   handleCrypto,
 } from "./routes/feeds";
 import { handleErrors, handleErrorsExport } from "./routes/errors";
+import { handleScheduled } from "./routes/cron";
 import { isPreflight, handlePreflight } from "./middleware/cors";
 import {
   isRateLimited,
@@ -95,5 +96,9 @@ export default {
 
     logRequest(request, finalResponse, startMs, ip);
     return finalResponse;
+  },
+
+  async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
+    await handleScheduled(env);
   },
 };

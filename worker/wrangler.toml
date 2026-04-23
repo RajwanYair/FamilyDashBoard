@@ -15,3 +15,9 @@ default_ttl = 300  # 5 minutes
 binding = "CACHE_KV"
 id = "PLACEHOLDER_KV_ID"
 preview_id = "PLACEHOLDER_KV_PREVIEW_ID"
+
+# Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
+# 00:00 UTC — warm stocks, currency, hebcal before the working day
+# 12:00 UTC — mid-day warm to refresh stale KV entries
+[triggers]
+crons = ["0 0 * * *", "0 12 * * *"]
