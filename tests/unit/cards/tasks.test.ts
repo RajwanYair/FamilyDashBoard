@@ -23,6 +23,8 @@ import {
   formatTaskDueDate,
   taskCompletionRatio,
   taskPriorityIcon,
+  recurrenceResetKey,
+  checkRecurringReset,
 } from "@/cards/tasks/tasks";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
@@ -1284,5 +1286,75 @@ describe("Tasks — countOverdueTasks (Sprint 33)", () => {
   it("does not count chores with only a priority prefix (no due date)", () => {
     const chores: ChoreItem[] = [{ person: "עמרי", chore: "[H] משימה דחופה" }];
     expect(countOverdueTasks(chores)).toBe(0);
+  });
+});
+
+// ── Recurrence helpers ────────────────────────────────────────────────────
+describe("recurrenceResetKey", () => {
+  it("returns YYYY-MM-DD for daily recurrence", () => {
+    const date = new Date("2025-03-15T10:00:00");
+    expect(recurrenceResetKey("daily", date)).toBe("2025-03-15");
+  });
+
+  it("returns YYYY-MM for monthly recurrence", () => {
+    const date = new Date("2025-03-15T10:00:00");
+    expect(recurrenceResetKey("monthly", date)).toBe("2025-03");
+  });
+
+  it("returns YYYY-WNN for weekly recurrence", () => {
+    const date = new Date("2025-03-15T10:00:00"); // week 11 of 2025
+    const key = recurrenceResetKey("weekly", date);
+    expect(key).toMatch(/^\d{4}-W\d{2}$/u);
+  });
+
+  it("returns undefined recurrence as daily key", () => {
+    const date = new Date("2025-03-15T10:00:00");
+    expect(recurrenceResetKey(undefined, date)).toBe("2025-03-15");
+  });
+});
+
+describe("checkRecurringReset", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    localStorage.clear();
+  });
+
+  it("does nothing for a non-recurring chore", () => {
+    const item: ChoreItem = { person: "דנה", chore: "ניקיון" };
+    // set done state
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ "דנה::ניקיון": true }));
+    checkRecurringReset(item);
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    expect(done["דנה::ניקיון"]).toBe(true);
+  });
+
+  it("clears done state for weekly chore after new week starts (past reset hour)", () => {
+    vi.setSystemTime(new Date("2025-03-15T08:00:00")); // hour 8, past default reset 6
+    const item: ChoreItem = { person: "עמרי", chore: "קניות שבועיות", recurrence: "weekly" };
+    const fp = "עמרי::קניות שבועיות";
+    const lsResetKey = `tasks-reset::${fp}`;
+    // Simulate: last reset was in a different week
+    localStorage.setItem(lsResetKey, "2025-W10");
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
+    checkRecurringReset(item);
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    expect(done[fp]).toBeUndefined();
+  });
+
+  it("does not clear done state when still in the same recurrence cycle", () => {
+    vi.setSystemTime(new Date("2025-03-15T08:00:00")); // hour 8
+    const item: ChoreItem = { person: "עמרי", chore: "קניות חודשיות", recurrence: "monthly" };
+    const fp = "עמרי::קניות חודשיות";
+    const lsResetKey = `tasks-reset::${fp}`;
+    // Same month as now
+    localStorage.setItem(lsResetKey, "2025-03");
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
+    checkRecurringReset(item);
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    expect(done[fp]).toBe(true);
   });
 });

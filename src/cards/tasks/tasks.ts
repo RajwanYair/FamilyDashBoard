@@ -22,6 +22,8 @@ import type { CardDefinition, CardConfigField } from "../../types/card";
 export interface ChoreItem {
   person: string;
   chore: string;
+  /** Optional recurrence — if set, the task auto-resets after each cycle. */
+  recurrence?: "daily" | "weekly" | "monthly";
 }
 
 // LS_TASKS_DONE and LS_CHORES imported from constants
@@ -71,13 +73,66 @@ function checkDailyReset(): void {
   }
 }
 
+/**
+ * Return a reset-key string for a recurring task at the given date.
+ * - daily:   "YYYY-MM-DD"
+ * - weekly:  "YYYY-WW"  (ISO week number)
+ * - monthly: "YYYY-MM"
+ */
+export function recurrenceResetKey(
+  recurrence: ChoreItem["recurrence"],
+  now: Date = new Date(),
+): string {
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  if (recurrence === "monthly") return `${y}-${m}`;
+  if (recurrence === "weekly") {
+    // ISO week: day 4 (Thursday) of the week sets the year
+    const jan1 = new Date(y, 0, 1);
+    const week = Math.ceil(
+      ((now.getTime() - jan1.getTime()) / 86_400_000 + jan1.getDay() + 1) / 7,
+    );
+    return `${y}-W${String(week).padStart(2, "0")}`;
+  }
+  return `${y}-${m}-${d}`;
+}
+
+/**
+ * Check if a recurring chore's done-state should be cleared for the new cycle.
+ * Uses a per-task LS key: `tasks-reset::<fingerprint>`.
+ */
+export function checkRecurringReset(item: ChoreItem): void {
+  if (!item.recurrence) return;
+  const fp = fingerprint(item);
+  const lsKey = `tasks-reset::${fp}`;
+  const resetHour = loadConfig().tasksResetHour ?? DEFAULT_RESET_HOUR;
+  const now = new Date();
+  if (now.getHours() < resetHour) return; // not yet reset time
+  const currentKey = recurrenceResetKey(item.recurrence, now);
+  const lastKey = localStorage.getItem(lsKey);
+  if (lastKey === currentKey) return; // already reset this cycle
+  // Clear done state for this task
+  const doneMap = loadDoneMap();
+  delete doneMap[fp];
+  saveDoneMap(doneMap);
+  try {
+    localStorage.setItem(lsKey, currentKey);
+  } catch {
+    /* quota */
+  }
+}
+
 // ── Chore loader ───────────────────────────────────────────────────────────
 
 function loadChores(): ChoreItem[] {
   try {
     const raw = localStorage.getItem(LS_CHORES);
     if (!raw) return [];
-    return JSON.parse(raw) as ChoreItem[];
+    const chores = JSON.parse(raw) as ChoreItem[];
+    // Apply per-task recurring reset for weekly/monthly chores
+    chores.forEach((item) => checkRecurringReset(item));
+    return chores;
   } catch {
     return [];
   }
