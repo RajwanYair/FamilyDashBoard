@@ -273,6 +273,38 @@ const INDEX_SYMBOLS = ["^GSPC", "^VIX"] as const;
 const TA35_SYMBOL = "^TA35.TA";
 
 /**
+ * V13-DATA: Fill and reveal the Popover API stock detail panel.
+ * Reads from the already-rendered `.stk` row so no extra fetch is needed.
+ */
+export function fillStockDetailPopover(symbol: string): void {
+  const popover = document.getElementById("stk-detail-popover") as HTMLElement & {
+    showPopover?: () => void;
+  };
+  if (!popover) return;
+
+  const row = document.querySelector<HTMLElement>(`.stk[data-symbol="${CSS.escape(symbol)}"]`);
+  const meta = STOCK_META[symbol];
+
+  const symEl = document.getElementById("stk-dp-sym");
+  const nameEl = document.getElementById("stk-dp-name");
+  const priceEl = document.getElementById("stk-dp-price");
+  const chgEl = document.getElementById("stk-dp-chg");
+  const timeEl = document.getElementById("stk-dp-time");
+
+  if (symEl) symEl.textContent = meta?.sym ?? symbol;
+  if (nameEl) nameEl.textContent = meta?.he ?? symbol;
+  if (priceEl) priceEl.textContent = row?.querySelector(".stk-price")?.textContent ?? "---";
+  if (chgEl) {
+    const chgSrc = row?.querySelector(".stk-chg");
+    chgEl.textContent = chgSrc?.textContent ?? "-";
+    chgEl.className = `stk-dp-chg ${chgSrc?.className.replace("stk-chg", "").trim() ?? ""}`;
+  }
+  if (timeEl) timeEl.textContent = row?.querySelector(".stk-time")?.textContent ?? "";
+
+  if (typeof popover.showPopover === "function") popover.showPopover();
+}
+
+/**
  * Render the stock row skeleton HTML into `#stocks-body`.
  * Called once from initStocksCard() before any data loads.
  * Driven by STOCK_SYMBOLS + STOCK_META; no user data is interpolated.
@@ -343,7 +375,19 @@ export function renderStocksShell(): void {
     volSparkDiv.className = "stk-vol-spark";
     volSparkDiv.setAttribute("aria-hidden", "true");
 
-    row.append(logoDiv, infoDiv, valsDiv, svg, timeDiv, histSparkDiv, volSparkDiv);
+    // V13-DATA: Popover API — detail trigger button
+    const detailBtn = document.createElement("button");
+    detailBtn.type = "button";
+    detailBtn.className = "stk-detail-btn";
+    detailBtn.setAttribute("popovertarget", "stk-detail-popover");
+    detailBtn.setAttribute("aria-label", `פרטים נוספים — ${meta?.he ?? symbol}`);
+    detailBtn.textContent = "ℹ";
+    detailBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fillStockDetailPopover(symbol);
+    });
+
+    row.append(logoDiv, infoDiv, valsDiv, svg, timeDiv, histSparkDiv, volSparkDiv, detailBtn);
     return row;
   };
 

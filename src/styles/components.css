@@ -636,6 +636,74 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   letter-spacing: -0.5px;
 }
 
+/* V13-DATA: Stock detail popover */
+.stk-detail-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.8em;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.stk-detail-btn:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+.stk-detail-popover {
+  position: fixed;
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 220px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  color: var(--text-primary);
+  margin: 0;
+}
+.stk-detail-popover::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+.stk-dp-header {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.stk-dp-sym {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--accent);
+}
+.stk-dp-name {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+.stk-dp-body {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.stk-dp-price {
+  font-size: 1.4em;
+  font-weight: 600;
+}
+.stk-dp-chg {
+  font-size: 0.9em;
+}
+.stk-dp-meta {
+  font-size: 0.75em;
+  color: var(--text-secondary);
+}
+
 /* ── Weather ── */
 .weather-body {
   flex: 1;

@@ -27,6 +27,7 @@ import {
   marketStatusLabel,
   stocksCard,
   loadAllStocks,
+  fillStockDetailPopover,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear, cSetAsync } from "@/core/cache";
@@ -2246,5 +2247,52 @@ describe("Stocks — V13-DATA-1 worker-first fetch (isWorkerEnabled path)", () =
     const calls = vi.mocked(fetchJSONWithWorker).mock.calls.map(([u]) => u as string);
     const coinGeckoCalled = calls.some((u) => u.includes("coingecko.com"));
     expect(coinGeckoCalled).toBe(true);
+  });
+});
+
+// ── fillStockDetailPopover ────────────────────────────────────────────────────
+describe("Stocks — fillStockDetailPopover", () => {
+  function setupPopoverDOM(): void {
+    document.body.innerHTML += `
+      <div id="stk-detail-popover" class="stk-detail-popover">
+        <span id="stk-dp-sym"></span>
+        <span id="stk-dp-name"></span>
+        <span id="stk-dp-price"></span>
+        <span id="stk-dp-chg"></span>
+        <span id="stk-dp-time"></span>
+      </div>
+      <div class="stk" data-symbol="AAPL">
+        <div class="stk-price">186.12</div>
+        <div class="stk-chg positive">▲ +1.23%</div>
+        <div class="stk-time">15:59</div>
+      </div>`;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("fills sym and name from STOCK_META", () => {
+    setupPopoverDOM();
+    fillStockDetailPopover("AAPL");
+    expect(document.getElementById("stk-dp-sym")!.textContent).toBe("AAPL");
+    expect(document.getElementById("stk-dp-name")!.textContent).not.toBe("");
+  });
+
+  it("fills price from rendered row", () => {
+    setupPopoverDOM();
+    fillStockDetailPopover("AAPL");
+    expect(document.getElementById("stk-dp-price")!.textContent).toBe("186.12");
+  });
+
+  it("fills chg class from rendered row", () => {
+    setupPopoverDOM();
+    fillStockDetailPopover("AAPL");
+    expect(document.getElementById("stk-dp-chg")!.className).toContain("positive");
+  });
+
+  it("does not throw when popover element is absent", () => {
+    document.body.innerHTML = "";
+    expect(() => fillStockDetailPopover("AAPL")).not.toThrow();
   });
 });

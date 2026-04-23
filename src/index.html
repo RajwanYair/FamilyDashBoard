@@ -786,6 +786,20 @@
               <!-- Feature 68: Market open/close countdown -->
               <div id="stk-mkt-countdown"></div>
             </section>
+            <!-- V13-DATA: Popover API stock detail panel (light-dismiss, auto mode) -->
+            <div id="stk-detail-popover" popover class="stk-detail-popover" role="dialog" aria-label="פרטי מניה">
+              <div class="stk-dp-header">
+                <span class="stk-dp-sym" id="stk-dp-sym"></span>
+                <span class="stk-dp-name" id="stk-dp-name"></span>
+              </div>
+              <div class="stk-dp-body">
+                <span class="stk-dp-price" id="stk-dp-price"></span>
+                <span class="stk-dp-chg" id="stk-dp-chg"></span>
+              </div>
+              <div class="stk-dp-meta">
+                <span class="stk-dp-time" id="stk-dp-time"></span>
+              </div>
+            </div>
             <section class="card" role="region" data-card-id="alerts" aria-labelledby="card-title-alerts">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-alerts" role="status" aria-label="מצב סנכרון התראות" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span><span id="card-title-alerts">צבע אדום</span></div>
               <div class="alerts-body">
