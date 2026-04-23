@@ -60,6 +60,7 @@ import { initCardDragDrop } from "./ui/layout-drag";
 import { showToast } from "./ui/toast";
 import { initScrollShadows } from "./ui/scroll";
 import { mountRegisteredCards } from "./core/card-registry";
+import { initCardSettingsButtons } from "./ui/card-settings-dialog";
 
 // ── Cards ──
 import { initWeatherCard, toggleTempUnit } from "./cards/weather/weather";
@@ -243,6 +244,8 @@ export function init(): void {
   initScrollShadows();
   // Sprint 23: auto-mount registry cards not already in index.html (e.g. video-news)
   mountRegisteredCards();
+  // Per-card settings gear buttons (lazy async — fires after card shells are in DOM)
+  void initCardSettingsButtons();
 
   // Sprint 45: Add aria-label to icon-only collapse buttons
   document.querySelectorAll<HTMLButtonElement>(".card-collapse-btn").forEach((btn) => {

@@ -1151,6 +1151,21 @@ describe("Config Panel — dirty tracking (Sprint 171)", () => {
     const gear = document.getElementById("cfg-gear-btn");
     expect(gear?.textContent).toContain("*");
   });
+
+  it("save button closes panel even when form is dirty", async () => {
+    setupDirtyDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    mod.openConfigPanel();
+    // Mark form dirty via input event
+    const inp = document.getElementById("cfg-family-name") as HTMLInputElement;
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    // Panel should still be open and dirty
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(true);
+    // Clicking save should close the panel (not show "unsaved changes" warning)
+    document.getElementById("cfg-save-btn")?.click();
+    expect(document.getElementById("config-overlay")?.classList.contains("visible")).toBe(false);
+  });
 });
 
 describe("Config Panel — collectForm tasksResetHour > 23 clamps to 23", () => {

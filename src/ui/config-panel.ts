@@ -1025,8 +1025,8 @@ export function initConfigPanel(): void {
       const el = document.querySelector<HTMLElement>(`[data-card-id="${id}"]`);
       if (el) el.dataset["cardSize"] = size;
     });
-    closeConfigPanel();
     clearDirty();
+    closeConfigPanel();
     diagLog("[config-panel] settings saved");
     showToast(t("settingsSaved"));
     void applySavedConfigSideEffects(c, refreshTasks, refreshPortfolio);
