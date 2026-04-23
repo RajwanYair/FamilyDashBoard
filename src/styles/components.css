@@ -238,7 +238,7 @@
   left: 0;
   right: 0;
   z-index: 200;
-  background: linear-gradient(135deg, var(--negative), #b91c1c);
+  background: linear-gradient(135deg, var(--negative), #a07070);
   color: #fff;
   text-align: center;
   padding: 4px 12px;
@@ -294,13 +294,13 @@ dialog.diag-overlay::backdrop {
   font-weight: 700;
 }
 .diag-row .status.ok {
-  color: #34d399;
+  color: #7ec49a;
 }
 .diag-row .status.err {
-  color: #f87171;
+  color: #c89090;
 }
 .diag-row .status.pending {
-  color: #fbbf24;
+  color: #c8b060;
 }
 .diag-log {
   margin-top: 8px;
@@ -1172,20 +1172,20 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   vertical-align: middle;
 }
 .market-badge--open {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  background: rgba(122, 184, 138, 0.15);
+  color: #6aaa80;
 }
 .market-badge--pre {
-  background: rgba(234, 179, 8, 0.15);
-  color: #eab308;
+  background: rgba(200, 176, 96, 0.15);
+  color: #c8b060;
 }
 .market-badge--after {
-  background: rgba(249, 115, 22, 0.15);
-  color: #f97316;
+  background: rgba(200, 144, 96, 0.15);
+  color: #c89060;
 }
 .market-badge--closed {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  background: rgba(192, 128, 128, 0.15);
+  color: #c07878;
 }
 
 /* ── Scrollbar ── */
@@ -1266,8 +1266,8 @@ select.cfg-input {
   gap: 0.25em;
   padding: 0.15em 0.5em;
   border-radius: var(--radius-sm, 4px);
-  background: color-mix(in srgb, var(--warning, #f59e0b) 15%, transparent);
-  color: var(--warning, #f59e0b);
+  background: color-mix(in srgb, var(--warning, #c4a060) 15%, transparent);
+  color: var(--warning, #c4a060);
   font-size: 0.72em;
   font-weight: 500;
   white-space: nowrap;
@@ -1478,7 +1478,7 @@ select.cfg-input {
   justify-content: center;
   gap: 0.4em;
   padding: 1em 1.5em;
-  color: var(--error, #f87171);
+  color: var(--error, #c89090);
   font-size: 0.85em;
   font-weight: 600;
   text-align: center;

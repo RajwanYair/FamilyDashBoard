@@ -25,7 +25,7 @@
 @property --accent {
   syntax: "<color>";
   inherits: true;
-  initial-value: #d4a053;
+  initial-value: #c8a87a;
 }
 @property --bg-primary {
   syntax: "<color>";
@@ -50,12 +50,12 @@
 @property --positive {
   syntax: "<color>";
   inherits: true;
-  initial-value: #6abf7b;
+  initial-value: #86c490;
 }
 @property --negative {
   syntax: "<color>";
   inherits: true;
-  initial-value: #e07070;
+  initial-value: #c89090;
 }
 
 @layer tokens {
@@ -66,28 +66,28 @@
     --bg-card-header: rgba(56, 46, 36, 0.88);
     --bg-card-inner: rgba(48, 40, 30, 0.55);
     --bg-card-hover: rgba(66, 54, 42, 0.65);
-    --accent: #d4a053;
-    --accent-bright: #e8c07a;
-    --accent-glow: rgba(212, 160, 83, 0.22);
-    --accent-border: rgba(212, 160, 83, 0.25);
+    --accent: #c8a87a;
+    --accent-bright: #d9bc9e;
+    --accent-glow: rgba(200, 168, 122, 0.18);
+    --accent-border: rgba(200, 168, 122, 0.20);
     --text-primary: #faf5ef;
     --text-secondary: #c4b8a8;
     --text-muted: #8a7e70;
-    --positive: #6abf7b;
-    --positive-glow: rgba(106, 191, 123, 0.22);
-    --negative: #e07070;
-    --negative-glow: rgba(224, 112, 112, 0.22);
-    --warning: #f0c040;
-    --purple: #b89adf;
-    --pink: #e89ab8;
-    --orange: #e8a060;
-    --cyan: #6abfcf;
+    --positive: #86c490;
+    --positive-glow: rgba(134, 196, 144, 0.18);
+    --negative: #c89090;
+    --negative-glow: rgba(200, 144, 144, 0.18);
+    --warning: #d4b870;
+    --purple: #b8aad4;
+    --pink: #d4a4b4;
+    --orange: #c8a880;
+    --cyan: #82bec8;
     --border-radius: 14px;
-    --card-border: 1px solid rgba(212, 160, 83, 0.15);
+    --card-border: 1px solid rgba(200, 168, 122, 0.15);
     --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-    --bg-gradient-1: rgba(212, 160, 83, 0.06);
-    --bg-gradient-2: rgba(106, 191, 123, 0.04);
-    --bg-gradient-3: rgba(184, 154, 223, 0.04);
+    --bg-gradient-1: rgba(200, 168, 122, 0.05);
+    --bg-gradient-2: rgba(134, 196, 144, 0.04);
+    --bg-gradient-3: rgba(184, 170, 212, 0.04);
     --news-font-scale: 1;
 
     /* ── Night Dimmer ── */

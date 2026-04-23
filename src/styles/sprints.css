@@ -89,7 +89,7 @@ body.slideshow-fade::after {
   left: 0;
   right: 0;
   z-index: 9999;
-  background: #22c55e;
+  background: #7ab88a;
   color: #000;
   padding: 8px 16px;
   display: none;
@@ -106,7 +106,7 @@ body.slideshow-fade::after {
 /* Downloading / installing states: muted amber to signal in-progress */
 #sw-update-banner[data-sw-state="downloading"],
 #sw-update-banner[data-sw-state="installing"] {
-  background: #f59e0b;
+  background: #c4a060;
 }
 #sw-update-reload-btn {
   background: rgba(0, 0, 0, 0.18);
@@ -139,20 +139,20 @@ body.slideshow-fade::after {
   color: #fff;
 }
 .uv-pill.uv-low {
-  background: #22c55e;
+  background: #6aaa80;
 }
 .uv-pill.uv-mod {
-  background: #eab308;
-  color: #000;
+  background: #c8b060;
+  color: #fff;
 }
 .uv-pill.uv-high {
-  background: #f97316;
+  background: #c88050;
 }
 .uv-pill.uv-vhigh {
-  background: #ef4444;
+  background: #c07070;
 }
 .uv-pill.uv-extreme {
-  background: #a855f7;
+  background: #9070b8;
 }
 
 /* Motivation buttons — see src/cards/motivation/motivation.css */
