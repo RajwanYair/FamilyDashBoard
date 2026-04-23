@@ -33,3 +33,8 @@
 | [ADR-027](ADR-027-sbom-renovate.md)                 | SBOM + Renovate Dependency Tracking              | 2025-07-01 | Accepted |
 | [ADR-028](ADR-028-reporting-api-d1.md)              | Browser Reporting API + D1 Storage               | 2025-07-13 | Accepted |
 | [ADR-029](ADR-029-analytics-engine.md)              | Workers Analytics Engine Request Tracking        | 2025-07-13 | Accepted |
+| [ADR-030](ADR-030-workers-ai-optional-summarisation.md) | Workers AI Optional Hebrew Summarisation     | 2026-04-23 | Accepted |
+| [ADR-031](ADR-031-vendor-neutrality-drill.md)       | Annual Vendor-Neutrality Build Drill             | 2026-04-23 | Accepted |
+| [ADR-032](ADR-032-workers-queues-error-fanout.md)   | Workers Queues for Error-Reporter Fan-out        | 2026-04-23 | Accepted |
+| [ADR-033](ADR-033-email-workers-weekly-digest.md)   | Email Workers Weekly Digest                      | 2026-04-23 | Accepted |
+| [ADR-034](ADR-034-changesets-auto-changelog.md)     | Changesets Auto-CHANGELOG                        | 2026-04-23 | Accepted |
