@@ -42,7 +42,7 @@
 /* Sprint 11: Maximize — large currency card layout */
 @container card (min-width: 900px) {
   .currency-body {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(min-content, 1fr));
     gap: 16px;
     padding: 16px 20px;
     align-items: stretch;

@@ -234,7 +234,7 @@
     font-size: 0.9em;
   }
   .wx-details {
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(min-content, 1fr));
     grid-template-rows: 1fr;
     font-size: 0.82em;
     flex: 1 1 auto;

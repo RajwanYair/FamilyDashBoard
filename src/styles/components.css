@@ -776,7 +776,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 .wx-details {
   flex: 1 1 50%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(min-content, 1fr));
   grid-template-rows: 1fr 1fr;
   gap: 3px;
   font-size: 0.68em;
@@ -826,7 +826,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 }
 .wx-forecast {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(min-content, 1fr));
   gap: 3px;
   flex: 0 0 auto;
   padding: 2px 0;
@@ -866,7 +866,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 .currency-body {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(min-content, 1fr));
   gap: 6px;
   padding: 4px 8px;
   align-items: start;
@@ -1602,7 +1602,7 @@ select.cfg-input {
 /* ── Data tile grid container (rule 25: always use tiles, not line lists) ── */
 .card__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min-content, 1fr));
   gap: 0.5em;
 }
 
@@ -1715,7 +1715,7 @@ select.cfg-input {
 /* Standalone tile-grid utility (use outside of .card__grid when convenient) */
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--tile-min-width, 120px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile-min-width, min-content), 1fr));
   gap: var(--tile-gap, 0.5em);
 }
 

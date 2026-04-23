@@ -21,7 +21,7 @@
 
 .cd-tiles {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(min-content, 1fr));
   gap: 6px;
   width: 100%;
   direction: ltr;
