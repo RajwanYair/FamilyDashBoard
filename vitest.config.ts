@@ -57,11 +57,11 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       exclude: ["src/vite-env.d.ts", "src/**/*.d.ts"],
       thresholds: {
-        // V11-DX-2: raised from 90/81/90/92 → 92/85/92/94
-        statements: 92,
-        branches: 85,
-        functions: 92,
-        lines: 94,
+        // V12-DX-1: raised from 92/85/92/94 → 94/88/94/95
+        statements: 94,
+        branches: 88,
+        functions: 94,
+        lines: 95,
       },
     },
   },
