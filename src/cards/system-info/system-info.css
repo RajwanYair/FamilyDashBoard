@@ -22,7 +22,7 @@
 }
 
 .sysinfo-tile {
-  background: color-mix(in srgb, var(--bg-card-inner) 80%, transparent);
+  background: color-mix(in sRGB, var(--bg-card-inner) 80%, transparent);
   border: 1px solid var(--accent-border);
   border-radius: var(--border-radius);
   padding: 6px 8px;
@@ -58,7 +58,7 @@
   justify-content: space-between;
   gap: var(--space-2);
   padding: 3px 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent-border) 40%, transparent);
+  border-bottom: 1px solid color-mix(in sRGB, var(--accent-border) 40%, transparent);
 }
 
 .sysinfo-row:last-child {

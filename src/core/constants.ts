@@ -320,4 +320,5 @@ export const CUR_TILES: readonly CurrencyTile[] = [
   { label: "GBP", key: "GBP", icon: "£", precision: 3 },
   { label: "Gold", key: "XAU", icon: "🥇", precision: 0 },
   { label: "Silver", key: "XAG", icon: "🥈", precision: 1 },
+  { label: "Oil", key: "XOI", icon: "🛢️", precision: 0 },
 ] as const;

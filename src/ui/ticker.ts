@@ -138,6 +138,13 @@ function makeTickerSet(data: HalachaData, isClone: boolean): DocumentFragment {
 
 function renderTicker(data: HalachaData): void {
   if (!elTicker || !data.texts?.length) return;
+
+  // Skip DOM rebuild if same day's data is already playing — prevents mid-scroll restart
+  if (_halachaData?.ref === data.ref && elTicker.childElementCount > 0) {
+    renderHalachaExcerpt(data);
+    return;
+  }
+
   _halachaData = data;
 
   const frag = document.createDocumentFragment();

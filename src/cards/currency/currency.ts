@@ -105,11 +105,13 @@ interface CurEls {
   gbp: HTMLElement | null;
   gold: HTMLElement | null;
   silver: HTMLElement | null;
+  oil: HTMLElement | null;
   usdChg: HTMLElement | null;
   eurChg: HTMLElement | null;
   gbpChg: HTMLElement | null;
   goldChg: HTMLElement | null;
   silverChg: HTMLElement | null;
+  oilChg: HTMLElement | null;
   body: HTMLElement | null;
   lastFetch: HTMLElement | null;
 }
@@ -120,11 +122,13 @@ let curEls: CurEls = {
   gbp: null,
   gold: null,
   silver: null,
+  oil: null,
   usdChg: null,
   eurChg: null,
   gbpChg: null,
   goldChg: null,
   silverChg: null,
+  oilChg: null,
   body: null,
   lastFetch: null,
 };
@@ -136,6 +140,7 @@ const TILE_EL_MAP: Record<string, { rate: keyof CurEls; chg: keyof CurEls }> = {
   GBP: { rate: "gbp", chg: "gbpChg" },
   XAU: { rate: "gold", chg: "goldChg" },
   XAG: { rate: "silver", chg: "silverChg" },
+  XOI: { rate: "oil", chg: "oilChg" },
 };
 
 export function cacheDom(): void {
@@ -145,11 +150,13 @@ export function cacheDom(): void {
     gbp: document.getElementById("curGbp"),
     gold: document.getElementById("curGold"),
     silver: document.getElementById("curSilver"),
+    oil: document.getElementById("curOil"),
     usdChg: document.getElementById("curUsdChg"),
     eurChg: document.getElementById("curEurChg"),
     gbpChg: document.getElementById("curGbpChg"),
     goldChg: document.getElementById("curGoldChg"),
     silverChg: document.getElementById("curSilverChg"),
+    oilChg: document.getElementById("curOilChg"),
     body: document.getElementById("currency-body"),
     lastFetch: document.getElementById("cur-last-fetch"),
   };
@@ -162,9 +169,10 @@ async function fetchMetalRates(rates: Record<string, number>): Promise<void> {
   const usdRate = rates["USD"];
   if (!usdRate || usdRate <= 0) return;
 
-  const [goldResult, silverResult] = await Promise.allSettled([
+  const [goldResult, silverResult, oilResult] = await Promise.allSettled([
     fetchJSONWithWorker<YahooChartResponse>(`${API.YAHOO_CHART}${encodeURIComponent("GC=F")}`),
     fetchJSONWithWorker<YahooChartResponse>(`${API.YAHOO_CHART}${encodeURIComponent("SI=F")}`),
+    fetchJSONWithWorker<YahooChartResponse>(`${API.YAHOO_CHART}${encodeURIComponent("CL=F")}`),
   ]);
 
   if (goldResult.status === "fulfilled") {
@@ -185,6 +193,16 @@ async function fetchMetalRates(rates: Record<string, number>): Promise<void> {
     }
   } else {
     diagLog("FDB-031c: [currency] Silver fetch failed");
+  }
+
+  if (oilResult.status === "fulfilled") {
+    const price = oilResult.value?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if (typeof price === "number" && price > 0) {
+      rates["XOI"] = usdRate / price;
+      diagLog(`FDB-031d: [currency] Oil OK – $${price.toFixed(2)}`);
+    }
+  } else {
+    diagLog("FDB-031d: [currency] Oil fetch failed");
   }
 }
 
@@ -214,6 +232,7 @@ const SPARK_EL: Record<string, string> = {
   GBP: "cur-gbp-spark",
   XAU: "cur-gold-spark",
   XAG: "cur-silver-spark",
+  XOI: "cur-oil-spark",
 };
 
 /**
@@ -428,11 +447,13 @@ export function _resetCurrencyForTest(): void {
     gbp: null,
     gold: null,
     silver: null,
+    oil: null,
     usdChg: null,
     eurChg: null,
     gbpChg: null,
     goldChg: null,
     silverChg: null,
+    oilChg: null,
     body: null,
     lastFetch: null,
   };
