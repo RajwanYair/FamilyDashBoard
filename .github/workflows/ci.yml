@@ -45,6 +45,30 @@ jobs:
       - name: Worker typecheck
         run: npx tsc --project worker/tsconfig.json --noEmit
 
+  typecheck-tsgo:
+    name: TypeScript-Go (alpha second pass)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true # ADR-021: alpha — informational until tsgo hits 1.0
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - name: Install tsgo
+        run: npm install -g @typescript/tsgo --ignore-scripts 2>/dev/null || echo "tsgo not yet available on npm — skipping"
+      - name: tsgo typecheck (alpha — not blocking)
+        run: |
+          if command -v tsgo &> /dev/null; then
+            tsgo --noEmit 2>&1 || echo "::warning::tsgo found type issues (alpha second pass — not yet blocking, see ADR-021)"
+          else
+            echo "::notice::tsgo binary not found — step skipped (install succeeded partially)"
+          fi
+
   lint:
     name: ESLint + Markdown
     runs-on: ubuntu-latest
