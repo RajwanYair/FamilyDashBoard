@@ -147,6 +147,93 @@ export function updateElecBadge(now: Date): void {
   elElecBadge.classList.toggle("peak-on", isPeak);
 }
 
+// Hebrew gematria alphabet lookup tables
+const _GEM_ONES = ["", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט"];
+const _GEM_TENS = ["", "י", "כ", "ל", "מ", "נ", "ס", "ע", "פ", "צ"];
+
+/**
+ * Convert a positive integer (1–9999) to a Hebrew gematria string.
+ * - Thousands are separated with a geresh (׳), e.g. 5786 → ה׳תשפ״ו
+ * - Multi-letter numbers have gershayim (״) before the last letter, e.g. 25 → כ״ה
+ * - Single-letter numbers get a geresh, e.g. 5 → ה׳
+ * - Special cases: 15 → ט״ו, 16 → ט״ז (to avoid divine-name abbreviations)
+ * - Falls back to String(n) for out-of-range inputs.
+ */
+export function numToGematria(n: number): string {
+  if (!Number.isInteger(n) || n <= 0 || n > 9999) return String(n);
+
+  let rem = n;
+  const parts: string[] = [];
+
+  // Thousands (1–9) → single letter with geresh added later
+  if (rem >= 1000) {
+    const th = Math.floor(rem / 1000);
+    parts.push((_GEM_ONES[th] ?? "") + "׳");
+    rem %= 1000;
+  }
+
+  // Hundreds — repeat ת for values ≥ 400
+  while (rem >= 400) {
+    parts.push("ת");
+    rem -= 400;
+  }
+  if (rem >= 100) {
+    const hIdx = Math.floor(rem / 100);
+    parts.push(["", "ק", "ר", "ש"][hIdx] ?? "");
+    rem %= 100;
+  }
+
+  // Special: 15 → ט+ו, 16 → ט+ז (avoid divine abbreviations)
+  if (rem === 15) {
+    parts.push("ט", "ו");
+  } else if (rem === 16) {
+    parts.push("ט", "ז");
+  } else {
+    if (rem >= 10) {
+      parts.push(_GEM_TENS[Math.floor(rem / 10)] ?? "");
+      rem %= 10;
+    }
+    if (rem > 0) {
+      parts.push(_GEM_ONES[rem] ?? "");
+    }
+  }
+
+  // Add punctuation: geresh after thousands prefix (already added), gershayim before last letter
+  const thousands = parts.findIndex((p) => p.endsWith("׳"));
+  const suffix = thousands >= 0 ? parts.slice(thousands + 1) : parts;
+  const prefix = thousands >= 0 ? parts.slice(0, thousands + 1) : [];
+
+  let suffixStr: string;
+  if (suffix.length === 0) {
+    // Pure thousands (e.g. n=1000 → "א׳")
+    suffixStr = "";
+  } else if (suffix.length === 1) {
+    suffixStr = suffix[0] + "׳";
+  } else {
+    suffixStr = suffix.slice(0, -1).join("") + "״" + suffix[suffix.length - 1];
+  }
+
+  return prefix.join("") + suffixStr;
+}
+
+/**
+ * Build the full Hebrew date string in Hebrew letters (gematria) for a given Date.
+ * Uses Intl.DateTimeFormat with the Hebrew calendar to get weekday, month name, day
+ * and year in their natural order, then replaces numeric day/year with gematria.
+ * Returns a string like: "יום חמישי, כ״ה ניסן ה׳תשפ״ו"
+ */
+export function formatHebrewDateGematria(date: Date): string {
+  const fmt = new Intl.DateTimeFormat("he-u-ca-hebrew", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jerusalem",
+  });
+  // Replace any run of ASCII digits with their gematria equivalent
+  return fmt.format(date).replace(/\d+/gu, (m) => numToGematria(parseInt(m, 10)));
+}
+
 /**
  * Tick the clock, update greeting and progress bars.
  */
@@ -180,15 +267,8 @@ export function tickClock(): void {
   });
   if (elEngDate && elEngDate.textContent !== d) elEngDate.textContent = d;
 
-  // Use Hebrew numbering system (nu-hebr) so day + year render as Hebrew gematria
-  // letters (e.g. "ט״ו בניסן ה׳תשפ״ו") instead of Arabic numerals.
-  const hd = now.toLocaleDateString("he-u-ca-hebrew-nu-hebr", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Jerusalem",
-  });
+  // Build Hebrew date with all numbers as Hebrew gematria letters (browser-independent).
+  const hd = formatHebrewDateGematria(now);
   if (elHebrewDate && elHebrewDate.textContent !== hd) elHebrewDate.textContent = hd;
 
   const g = getGreeting();

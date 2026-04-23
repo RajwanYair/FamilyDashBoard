@@ -18,6 +18,8 @@ type HeaderMod = {
   updateBirthdayChip: () => void;
   updateCountdownChip: () => void;
   updateElecBadge: (now: Date) => void;
+  numToGematria: (n: number) => string;
+  formatHebrewDateGematria: (d: Date) => string;
 };
 
 async function freshHdr(): Promise<HeaderMod> {
@@ -772,5 +774,80 @@ describe("Header — cfg.clockSeconds ?? false fallback (line 209)", () => {
     mod.tickClock(); // no throw
     const clock = document.getElementById("clock");
     expect(clock).not.toBeNull();
+  });
+});
+
+// ── numToGematria ─────────────────────────────────────────────────────────
+
+describe("Header — numToGematria", () => {
+  let numToGematria: (n: number) => string;
+
+  beforeEach(async () => {
+    vi.resetModules();
+    const mod = await import("@/ui/header");
+    numToGematria = mod.numToGematria;
+  });
+
+  it("converts 1 → א׳", () => expect(numToGematria(1)).toBe("א׳"));
+  it("converts 5 → ה׳", () => expect(numToGematria(5)).toBe("ה׳"));
+  it("converts 10 → י׳", () => expect(numToGematria(10)).toBe("י׳"));
+  it("converts 15 → ט״ו (special case)", () => expect(numToGematria(15)).toBe("ט״ו"));
+  it("converts 16 → ט״ז (special case)", () => expect(numToGematria(16)).toBe("ט״ז"));
+  it("converts 23 → כ״ג", () => expect(numToGematria(23)).toBe("כ״ג"));
+  it("converts 25 → כ״ה", () => expect(numToGematria(25)).toBe("כ״ה"));
+  it("converts 30 → ל׳", () => expect(numToGematria(30)).toBe("ל׳"));
+  it("converts 100 → ק׳", () => expect(numToGematria(100)).toBe("ק׳"));
+  it("converts 400 → ת׳", () => expect(numToGematria(400)).toBe("ת׳"));
+  it("converts 500 → ת״ק", () => expect(numToGematria(500)).toBe("ת״ק"));
+  it("converts 786 → תשפ״ו", () => expect(numToGematria(786)).toBe("תשפ״ו"));
+  it("converts 5786 → ה׳תשפ״ו", () => expect(numToGematria(5786)).toBe("ה׳תשפ״ו"));
+  it("returns String(n) for 0", () => expect(numToGematria(0)).toBe("0"));
+  it("returns String(n) for 10000", () => expect(numToGematria(10000)).toBe("10000"));
+  it("output contains no ASCII digits for typical Hebrew years (5780–5800)", () => {
+    for (let y = 5780; y <= 5800; y++) {
+      expect(numToGematria(y)).not.toMatch(/\d/);
+    }
+  });
+  it("output contains no ASCII digits for typical Hebrew days (1–30)", () => {
+    for (let d = 1; d <= 30; d++) {
+      expect(numToGematria(d)).not.toMatch(/\d/);
+    }
+  });
+});
+
+// ── formatHebrewDateGematria ───────────────────────────────────────────────
+
+describe("Header — formatHebrewDateGematria", () => {
+  let formatHebrewDateGematria: (d: Date) => string;
+
+  beforeEach(async () => {
+    vi.resetModules();
+    const mod = await import("@/ui/header");
+    formatHebrewDateGematria = mod.formatHebrewDateGematria;
+  });
+
+  it("returns a non-empty string", () => {
+    expect(formatHebrewDateGematria(new Date()).length).toBeGreaterThan(0);
+  });
+
+  it("contains no ASCII digits (all numbers converted to Hebrew letters)", () => {
+    // Test a range of dates across different Hebrew months
+    const dates = [
+      new Date("2024-01-15"),
+      new Date("2024-04-15"),
+      new Date("2024-09-15"),
+      new Date("2026-04-23"),
+    ];
+    for (const d of dates) {
+      const result = formatHebrewDateGematria(d);
+      expect(result).not.toMatch(/\d/);
+    }
+  });
+
+  it("includes a Hebrew weekday name", () => {
+    // Monday 2024-01-15 → יום שני
+    const result = formatHebrewDateGematria(new Date("2024-01-15T12:00:00Z"));
+    // At least one of the common Hebrew weekday keywords should appear
+    expect(result).toMatch(/יום|שבת/u);
   });
 });
