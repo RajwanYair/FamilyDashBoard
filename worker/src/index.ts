@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard API Proxy — Cloudflare Worker
+ * FamilyDashBoard API Proxy — Cloudflare Worker (Hono router — ADR-026)
  *
  * Routes:
  *   GET /health                           → Health check
@@ -18,7 +18,8 @@
  *   POST /api/errors                      → Client error ingestion (best-effort telemetry)
  */
 
-import { jsonResponse } from "./utils/response";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
 import {
   handleStocks,
@@ -32,7 +33,6 @@ import {
 } from "./routes/feeds";
 import { handleErrors, handleErrorsExport } from "./routes/errors";
 import { handleScheduled } from "./routes/cron";
-import { isPreflight, handlePreflight } from "./middleware/cors";
 import {
   isRateLimited,
   getClientIp,
@@ -45,58 +45,104 @@ import type { Env } from "./types";
 
 export type { Env };
 
+// ── Hono app ─────────────────────────────────────────────────────────────────
+
+const app = new Hono<{ Bindings: Env }>();
+
+// CORS — allow all origins (same policy as before)
+app.use(
+  "*",
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "OPTIONS"],
+    allowHeaders: ["Content-Type"],
+    maxAge: 86400,
+  }),
+);
+
+// Rate limiting + request logging middleware
+app.use("*", async (c, next) => {
+  const ip = getClientIp(c.req.raw);
+  if (isRateLimited(ip)) return rateLimitResponse();
+
+  const startMs = Date.now();
+  await next();
+
+  // Inject rate-limit info headers
+  c.res.headers.set("X-RateLimit-Limit", String(MAX_REQUESTS_PER_WINDOW));
+  c.res.headers.set("X-RateLimit-Remaining", String(getRemainingRequests(ip)));
+
+  logRequest(c.req.raw, c.res, startMs, ip);
+});
+
+// ── Routes ────────────────────────────────────────────────────────────────────
+
+app.get("/health", (c) =>
+  c.json({ ok: true, status: "healthy", ts: Date.now() }),
+);
+
+app.get("/api/weather", (c) =>
+  handleWeather(new URL(c.req.url), c.env),
+);
+
+app.get("/api/currency", (c) =>
+  handleCurrency(c.env),
+);
+
+app.get("/api/hebcal/holidays", (c) =>
+  handleHebcalHolidays(new URL(c.req.url), c.env),
+);
+
+app.get("/api/hebcal", (c) =>
+  handleHebcal(new URL(c.req.url), c.env),
+);
+
+app.get("/api/stocks", (c) =>
+  handleStocks(new URL(c.req.url), c.env),
+);
+
+app.get("/api/news/aggregate", (c) =>
+  handleNewsAggregate(c.env),
+);
+
+app.get("/api/news", (c) =>
+  handleNews(new URL(c.req.url)),
+);
+
+app.get("/api/alerts", (c) =>
+  handleAlerts(c.env),
+);
+
+app.get("/api/calendar", (c) =>
+  handleCalendar(new URL(c.req.url), c.env),
+);
+
+app.get("/api/sefaria/calendar", (c) =>
+  handleSefariaCalendar(c.env),
+);
+
+app.get("/api/sefaria/text", (c) =>
+  handleSefariaText(new URL(c.req.url), c.env),
+);
+
+app.get("/api/crypto", (c) =>
+  handleCrypto(new URL(c.req.url), c.env),
+);
+
+app.get("/api/errors/export", (c) =>
+  handleErrorsExport(c.req.raw, c.env),
+);
+
+app.post("/api/errors", (c) =>
+  handleErrors(c.req.raw, c.env),
+);
+
+app.all("*", (c) => c.json({ error: "Not found" }, 404));
+
+// ── Export ────────────────────────────────────────────────────────────────────
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const startMs = Date.now();
-
-    // CORS preflight
-    if (isPreflight(request)) return handlePreflight();
-
-    // Rate limiting
-    const ip = getClientIp(request);
-    if (isRateLimited(ip)) return rateLimitResponse();
-
-    const url = new URL(request.url);
-    const path = url.pathname;
-
-    let response: Response;
-    try {
-      if (path === "/health")
-        response = jsonResponse({ ok: true, status: "healthy", ts: Date.now() });
-      else if (path === "/api/weather") response = await handleWeather(url, env);
-      else if (path === "/api/currency") response = await handleCurrency(env);
-      else if (path === "/api/hebcal") response = await handleHebcal(url, env);
-      else if (path === "/api/hebcal/holidays") response = await handleHebcalHolidays(url, env);
-      else if (path === "/api/stocks") response = await handleStocks(url, env);
-      else if (path === "/api/news/aggregate") response = await handleNewsAggregate(env);
-      else if (path === "/api/news") response = await handleNews(url);
-      else if (path === "/api/alerts") response = await handleAlerts(env);
-      else if (path === "/api/calendar") response = await handleCalendar(url, env);
-      else if (path === "/api/sefaria/calendar") response = await handleSefariaCalendar(env);
-      else if (path === "/api/sefaria/text") response = await handleSefariaText(url, env);
-      else if (path === "/api/crypto") response = await handleCrypto(url, env);
-      else if (path === "/api/errors/export") response = await handleErrorsExport(request, env);
-      else if (path === "/api/errors") response = await handleErrors(request, env);
-      else response = jsonResponse({ error: "Not found" }, 404);
-    } catch {
-      response = jsonResponse({ error: "Internal error" }, 500);
-    }
-
-    // Inject rate-limit info headers so clients can track their quota
-    const remaining = getRemainingRequests(ip);
-    const headers = new Headers(response.headers);
-    headers.set("X-RateLimit-Limit", String(MAX_REQUESTS_PER_WINDOW));
-    headers.set("X-RateLimit-Remaining", String(remaining));
-
-    const finalResponse = new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers,
-    });
-
-    logRequest(request, finalResponse, startMs, ip);
-    return finalResponse;
-  },
+  fetch: app.fetch.bind(app),
 
   async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
     await handleScheduled(env);
