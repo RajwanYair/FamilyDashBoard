@@ -1,3 +1,0 @@
-markdownlint-cli2 v0.22.0 (markdownlint v0.40.0)
-Finding: **/*.md --ignore node_modules --ignore dist --ignore coverage
-Linting: 324 file(s)
