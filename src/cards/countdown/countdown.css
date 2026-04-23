@@ -128,6 +128,11 @@
   width: 0%;
 }
 
+/* cd2 / cd3 sections must stretch full width so their tile grids fill the card */
+.cd2-section {
+  width: 100%;
+}
+
 /* Urgency tiers (Sprint 23) */
 .cd-num.cd-urgent-amber {
   color: #f59e0b !important;
