@@ -8,16 +8,16 @@ import { defineConfig, devices } from "@playwright/test";
  * Run in CI:   npx playwright test --reporter=github
  *
  * Extends the shared base from MyScripts/tooling/playwright.base.ts.
- * The dev server (vite) must be available at http://localhost:5173.
+ * The dev server (vite) must be available at http://localhost:3000.
  */
 export default defineConfig({
   testDir: "./tests/e2e",
-  timeout: 30_000,
-  expect: { timeout: 5_000 },
-  fullyParallel: false,
+  timeout: 25_000,
+  expect: { timeout: 6_000 },
+  fullyParallel: true,
   forbidOnly: !!process.env["CI"],
   retries: process.env["CI"] ? 2 : 0,
-  workers: process.env["CI"] ? 1 : undefined,
+  workers: process.env["CI"] ? 1 : 4,
   reporter: process.env["CI"] ? "github" : "list",
 
   use: {

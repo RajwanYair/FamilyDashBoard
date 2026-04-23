@@ -5,19 +5,22 @@
  * theme cycling, diagnostics overlay, help overlay, dimmer.
  *
  * Run locally: npx playwright test tests/e2e/critical-flows.spec.ts
- * Requires dev server at http://localhost:5173 (or CI build serve).
+ * Requires dev server at http://localhost:3000 (npx vite).
  */
 
 import { test, expect } from "@playwright/test";
+
+/** Shared navigate-and-wait used by all describes in this file. */
+async function gotoAndWaitForCards(page: import("@playwright/test").Page): Promise<void> {
+  await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".card-header, [data-card-id]", { timeout: 5_000 });
+}
 
 // ── Config panel ──────────────────────────────────────────────────────────
 
 test.describe("FamilyDashBoard — Config Panel", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".card-header, [data-card-id]", {
-      timeout: 10_000,
-    });
+    await gotoAndWaitForCards(page);
   });
 
   test("S key opens the config panel", async ({ page }) => {
@@ -42,10 +45,7 @@ test.describe("FamilyDashBoard — Config Panel", () => {
 
 test.describe("FamilyDashBoard — Diagnostics Overlay", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".card-header, [data-card-id]", {
-      timeout: 10_000,
-    });
+    await gotoAndWaitForCards(page);
   });
 
   test("D key opens the diagnostics overlay", async ({ page }) => {
@@ -67,10 +67,7 @@ test.describe("FamilyDashBoard — Diagnostics Overlay", () => {
 
 test.describe("FamilyDashBoard — Help Overlay", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".card-header, [data-card-id]", {
-      timeout: 10_000,
-    });
+    await gotoAndWaitForCards(page);
   });
 
   test("? key opens the help overlay", async ({ page }) => {
@@ -92,10 +89,7 @@ test.describe("FamilyDashBoard — Help Overlay", () => {
 
 test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".card-header, [data-card-id]", {
-      timeout: 10_000,
-    });
+    await gotoAndWaitForCards(page);
   });
 
   test("T key changes the active theme", async ({ page }) => {
@@ -149,11 +143,11 @@ test.describe("FamilyDashBoard — Keyboard Shortcuts", () => {
 // ── Status bar ────────────────────────────────────────────────────────────
 
 test.describe("FamilyDashBoard — Status Bar", () => {
+  test.beforeEach(async ({ page }) => {
+    await gotoAndWaitForCards(page);
+  });
+
   test("version badge is present and non-empty", async ({ page }) => {
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".card-header, [data-card-id]", {
-      timeout: 10_000,
-    });
     const badge = page.locator("#version-badge, [id*='version'], .version-badge");
     // It may be present or not, but if present should have text
     const count = await badge.count();
@@ -164,10 +158,6 @@ test.describe("FamilyDashBoard — Status Bar", () => {
   });
 
   test("sync dots container is present", async ({ page }) => {
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".card-header, [data-card-id]", {
-      timeout: 10_000,
-    });
     // At least one sync-dot should be present (even in loading state)
     const dots = page.locator(".sync-dot, [class*='sync']");
     const count = await dots.count();

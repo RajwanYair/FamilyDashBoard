@@ -28,7 +28,7 @@ const LS_THEME_KEY = "dash_theme";
 const LS_CONFIG_KEY = "dash_v2_config";
 
 /** How long to wait for cards to begin rendering before the screenshot. */
-const SETTLE_MS = 1_500;
+const SETTLE_MS = 400;
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -68,11 +68,13 @@ async function goWithConfig(
   await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
 
   // Wait for at least one card to be present in the DOM.
-  await page.waitForSelector("[data-card-id], .card-header", {
-    timeout: 15_000,
-  });
+  // Wait until at least one card is present in the DOM.
+  await page.waitForFunction(
+    () => document.querySelectorAll("[data-card-id], .card-header").length > 0,
+    { timeout: 12_000 },
+  );
 
-  // Allow cards time to render their content.
+  // Brief settle for animations and deferred renders.
   await page.waitForTimeout(SETTLE_MS);
 }
 
@@ -118,7 +120,7 @@ test.describe("FamilyDashBoard — Visual Regression Baselines", () => {
 test.describe("FamilyDashBoard — Theme CSS Class Applied", () => {
   for (const theme of THEMES) {
     test(`data-theme="${theme}" attribute is set on <html>`, async ({ page }) => {
-      await goWithConfig(page, theme, "normal");
+      await goWithConfig(page, theme, "tv");
 
       const html = page.locator("html");
       // The dashboard applies the theme as a data attribute or body class.
