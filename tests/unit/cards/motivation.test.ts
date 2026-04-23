@@ -16,6 +16,7 @@ import {
   getCurrentQuote,
   shareMotivation,
   loadMotivation,
+  fetchAiMotivationQuote,
   _resetMotivationForTest,
 } from "@/cards/motivation/motivation";
 
@@ -586,5 +587,53 @@ describe("Motivation — loadMotivation uses createAsyncCardLoader (Stream D2.4)
     await loadMotivation();
     const text = document.getElementById("moti-text")?.textContent ?? "";
     expect(MOTIVATIONS.some((m) => m.text === text)).toBe(true);
+  });
+});
+
+// ── fetchAiMotivationQuote ────────────────────────────────────────────────────
+describe("Motivation — fetchAiMotivationQuote", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns null when fetch rejects", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("network"));
+    const result = await fetchAiMotivationQuote();
+    expect(result).toBeNull();
+  });
+
+  it("returns null on non-ok response", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, { status: 500 }),
+    );
+    const result = await fetchAiMotivationQuote();
+    expect(result).toBeNull();
+  });
+
+  it("returns null when text field is missing", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ author: "בןגוריון" }), { status: 200 }),
+    );
+    const result = await fetchAiMotivationQuote();
+    expect(result).toBeNull();
+  });
+
+  it("returns a MotivationQuote on valid response", async () => {
+    const payload = { text: "הכל אפשר", author: "בןגוריון" };
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify(payload), { status: 200 }),
+    );
+    const result = await fetchAiMotivationQuote();
+    expect(result).not.toBeNull();
+    expect(result!.text).toBe("הכל אפשר");
+    expect(result!.author).toBe("בןגוריון");
+    expect(result!.category).toBe("general");
+  });
+
+  it("motivationConfigSchema includes motivationAiHebrew toggle", () => {
+    const field = motivationConfigSchema.find((f) => f.key === "motivationAiHebrew");
+    expect(field).toBeDefined();
+    expect(field!.type).toBe("boolean");
+    expect(field!.defaultValue).toBe(false);
   });
 });

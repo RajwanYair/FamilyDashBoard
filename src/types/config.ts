@@ -180,6 +180,8 @@ export interface DashboardConfig {
   countdownCard3StartDate: string;
   /** Motivation card — auto-advance interval in minutes (0 = off). */
   motivationInterval: number;
+  /** V13-DATA: Motivation card — opt-in to AI-generated Hebrew quotes from the worker. */
+  motivationAiHebrew: boolean;
   /**
    * Schema version — used to run forward migrations when loading older stored configs.
    * Increment each time the config shape changes in a breaking way.
@@ -300,6 +302,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3DoneMsg: "🎉 מזל טוב!",
   countdownCard3StartDate: "",
   motivationInterval: 0,
+  motivationAiHebrew: false,
   configVersion: 11,
 
   // Config v2 defaults

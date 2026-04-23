@@ -4,7 +4,7 @@
  * Static quotes, no network dependency. Rotates with fade animation.
  */
 
-import { INTERVALS, MS_PER_MIN } from "../../core/constants";
+import { INTERVALS, MS_PER_MIN, WORKER_BASE_URL } from "../../core/constants";
 import "./motivation.css";
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import { setSync } from "../../core/sync";
@@ -137,10 +137,33 @@ export function renderMotivation(): void {
 }
 
 /**
+ * V13-DATA: Fetch an AI-generated Hebrew motivational quote from the worker.
+ * Falls back to static quotes on any error.
+ */
+export async function fetchAiMotivationQuote(): Promise<MotivationQuote | null> {
+  try {
+    const resp = await fetch(`${WORKER_BASE_URL}/api/motivation/hebrew`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!resp.ok) return null;
+    const data = (await resp.json()) as { text?: string; author?: string };
+    if (typeof data.text !== "string" || !data.text) return null;
+    return { text: data.text, author: data.author ?? "", category: "general" };
+  } catch {
+    diagLog("FDB-042: [motivation] AI Hebrew fetch failed — falling back to static");
+    return null;
+  }
+}
+
+/**
  * Stream D2.4: Async fetch for the createAsyncCardLoader lifecycle.
  * Picks the next quote from the active category pool.
  */
 async function fetchMotivation(): Promise<MotivationQuote> {
+  if (loadConfig().motivationAiHebrew) {
+    const ai = await fetchAiMotivationQuote();
+    if (ai) return ai;
+  }
   const pool = getQuotesByCategory(_activeCategory);
   const m = pool[motiIdx++ % Math.max(pool.length, 1)];
   return Promise.resolve(m ?? MOTIVATIONS[0]!);
@@ -205,6 +228,15 @@ export const motivationConfigSchema: CardConfigField[] = [
     min: 0,
     max: 60,
     step: 5,
+    tab: "display",
+    group: "motivation",
+  },
+  {
+    key: "motivationAiHebrew",
+    labelHe: "ציטוטים AI בעברית (דריש רשת)",
+    labelEn: "AI-generated Hebrew quotes (requires network)",
+    type: "boolean",
+    defaultValue: false,
     tab: "display",
     group: "motivation",
   },
