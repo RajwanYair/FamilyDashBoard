@@ -669,7 +669,7 @@
                   </div>
                 </div>
                 <!-- F128: Hourly chart view toggle -->
-                <button type="button" id="wx-chart-toggle" title="החלף תצוגה">🌡️ טמפ׳</button>
+                <button type="button" id="wx-chart-toggle" aria-label="החלף תצוגת תרשים" title="החלף תצוגה">🌡️ טמפ׳</button>
                 <!-- Sprint 46: Next-6-hours strip -->
                 <div id="wx-hourly-strip" class="wx-hourly-strip" role="list" aria-label="תחזית שעתית"></div>
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
@@ -707,7 +707,7 @@
                   <!-- Feature 53: Daf Yomi Sefaria link -->
                   <div class="hc-row" id="hc-daf-link-row" style="display:none">
                     <span class="hc-label" style="visibility:hidden">.</span>
-                    <button type="button" class="hc-parasha-link" id="hc-daf-link" title="פתח את דף היומי בספריא — Open in Sefaria">📚 ספריה</button>
+                    <button type="button" class="hc-parasha-link" id="hc-daf-link" aria-label="פתח דף יומי בספריה" title="פתח את דף היומי בספריא — Open in Sefaria">📚 ספריה</button>
                   </div>
                   <!-- Feature 23: Psalm of the Day -->
                   <div class="hc-row" id="hc-psalm-row" style="display:none"><span class="hc-label">🎵 שיר</span><span class="hc-val hc-psalm-val" id="hc-psalm">--</span></div>
@@ -716,7 +716,7 @@
                   <!-- F151: Sefirat HaOmer count -->
                   <div class="hc-row" id="hc-omer-row" style="display:none"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="hc-omer"></span></div>
                   <!-- Feature 44: Parasha Sefaria link -->
-                  <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button type="button" class="hc-parasha-link" id="hc-parasha-link" title="פתח את פרשת השבוע בספריא — Open in Sefaria">📖 ספרייה</button></div>
+                  <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button type="button" class="hc-parasha-link" id="hc-parasha-link" aria-label="פתח פרשת השבוע בספריה" title="פתח את פרשת השבוע בספריא — Open in Sefaria">📖 ספרייה</button></div>
                   <div class="hc-divider"></div>
                   <!-- Feature 30: Halacha excerpt -->
                   <div class="hc-row" id="hc-halacha-row" style="display:none"><span class="hc-label">⚖️ הלכה</span><span class="hc-val hc-halacha-val" id="hc-halacha">--</span></div>
@@ -860,7 +860,7 @@
                 <div class="tasks-quick-add" id="tasks-quick-add">
                   <input type="text" id="tasks-quick-input" placeholder="📝 משימה חדשה..." autocomplete="off" >
                   <input type="text" id="tasks-quick-person" placeholder="שם" style="width:70px" >
-                  <button type="button" id="tasks-quick-add-btn" title="הוסף משימה">➕</button>
+                  <button type="button" id="tasks-quick-add-btn" aria-label="הוסף משימה" title="הוסף משימה">➕</button>
                 </div>
                 <div class="tasks-list" id="tasks-list" aria-live="polite" aria-label="רשימת משימות"></div>
                 <!-- Celebratory message when all tasks are done -->

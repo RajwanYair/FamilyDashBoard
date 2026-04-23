@@ -319,3 +319,43 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     }
   });
 });
+
+// ── A11y: Voice-control accessible names (V13-A11Y) ──
+
+describe("DOM Contract — A11y voice-control accessible names (V13-A11Y)", () => {
+  /** Returns true when a button with the given id also carries aria-label on the same tag. */
+  function buttonHasAriaLabel(id: string): boolean {
+    const re = new RegExp(`id="${id}"[^>]*aria-label=|aria-label=[^>]*id="${id}"`);
+    return re.test(html);
+  }
+
+  it("tasks-quick-add-btn (icon-only ➕) has aria-label", () => {
+    expect(buttonHasAriaLabel("tasks-quick-add-btn")).toBe(true);
+  });
+
+  it("wx-chart-toggle (emoji+abbreviation) has aria-label", () => {
+    expect(buttonHasAriaLabel("wx-chart-toggle")).toBe(true);
+  });
+
+  it("hc-daf-link (Sefaria daily) has aria-label", () => {
+    expect(buttonHasAriaLabel("hc-daf-link")).toBe(true);
+  });
+
+  it("hc-parasha-link (Sefaria weekly) has aria-label", () => {
+    expect(buttonHasAriaLabel("hc-parasha-link")).toBe(true);
+  });
+
+  it("hc-daf-link and hc-parasha-link have distinct aria-label values", () => {
+    const dafMatch = html.match(/id="hc-daf-link"[^>]*aria-label="([^"]+)"/);
+    const parashaMatch = html.match(/id="hc-parasha-link"[^>]*aria-label="([^"]+)"/);
+    expect(dafMatch).not.toBeNull();
+    expect(parashaMatch).not.toBeNull();
+    if (dafMatch && parashaMatch) {
+      expect(dafMatch[1]).not.toBe(parashaMatch[1]);
+    }
+  });
+
+  it("cfg-gear-btn (icon-only ⚙️) has aria-label", () => {
+    expect(buttonHasAriaLabel("cfg-gear-btn")).toBe(true);
+  });
+});
