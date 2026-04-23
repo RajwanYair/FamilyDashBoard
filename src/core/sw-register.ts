@@ -12,6 +12,8 @@ import {
 } from "./sw-constants";
 
 let swRegistration: ServiceWorkerRegistration | null = null;
+let _autoReloadTimer: ReturnType<typeof setInterval> | null = null;
+let _autoReloadSecs = 0;
 
 /**
  * Register the service worker and set up update detection.
@@ -65,6 +67,16 @@ export async function registerSW(): Promise<void> {
     });
     diagLog("[sw] Registered");
 
+    // Periodically poll for SW updates so always-on displays pick up new
+    // deployments without requiring a page navigation (browsers only check
+    // automatically on navigation events; interval here is 60 minutes).
+    const SW_UPDATE_INTERVAL_MS = 60 * 60 * 1000;
+    setInterval(() => {
+      swRegistration?.update().catch((e: unknown) => {
+        diagLog(`[sw] Periodic update check failed: ${String(e)}`);
+      });
+    }, SW_UPDATE_INTERVAL_MS);
+
     swRegistration.addEventListener("updatefound", () => {
       const installing = swRegistration?.installing;
       if (!installing) return;
@@ -114,11 +126,42 @@ export function swSkipWaiting(): void {
   waiting.postMessage({ type: SW_MSG_SKIP_WAITING });
 }
 
+/** Cancel any running auto-reload countdown. */
+function _clearAutoReloadCountdown(): void {
+  if (_autoReloadTimer !== null) {
+    clearInterval(_autoReloadTimer);
+    _autoReloadTimer = null;
+  }
+}
+
+/**
+ * Start a 10-second countdown then auto-activate the waiting SW.
+ * Designed for always-on TV displays where nobody clicks the button.
+ * The manual reload button also clears the countdown and fires immediately.
+ */
+function _startAutoReloadCountdown(statusEl: HTMLElement | null): void {
+  _clearAutoReloadCountdown();
+  _autoReloadSecs = 10;
+  const tick = () => {
+    if (statusEl) {
+      statusEl.textContent = `🆕 גרסה חדשה — מתרענן תוך ${_autoReloadSecs}s`;
+    }
+    if (_autoReloadSecs === 0) {
+      _clearAutoReloadCountdown();
+      swSkipWaiting();
+      return;
+    }
+    _autoReloadSecs--;
+  };
+  tick(); // immediate first render
+  _autoReloadTimer = setInterval(tick, 1000);
+}
+
 /**
  * Show the SW update banner with a specific progress state.
  *   downloading — SW fetch in progress (updatefound fired)
  *   installing  — SW installing assets
- *   ready       — SW installed, waiting to activate; show reload button
+ *   ready       — SW installed, waiting to activate; start auto-reload countdown
  */
 function showUpdateBannerState(state: "downloading" | "installing" | "ready"): void {
   const banner = document.getElementById("sw-update-banner");
@@ -130,20 +173,28 @@ function showUpdateBannerState(state: "downloading" | "installing" | "ready"): v
   const labels: Record<string, string> = {
     downloading: "🔄 מוריד עדכון...",
     installing: "⚙️ מתקין עדכון...",
-    ready: "🆕 גרסה חדשה מוכנה",
   };
 
-  if (statusEl) statusEl.textContent = labels[state] ?? "🆕 גרסה חדשה מוכנה";
+  if (state !== "ready" && statusEl) statusEl.textContent = labels[state] ?? "";
   if (reloadBtn) reloadBtn.hidden = state !== "ready";
 
   banner.classList.add("visible");
   if (state === "ready") {
     banner.setAttribute("data-sw-state", "ready");
-    // Wire reload button only once
+    // Wire reload button only once — clicking cancels the countdown and reloads immediately
     if (reloadBtn && !reloadBtn.dataset["wired"]) {
-      reloadBtn.addEventListener("click", swSkipWaiting, { once: true });
       reloadBtn.dataset["wired"] = "1";
+      reloadBtn.addEventListener(
+        "click",
+        () => {
+          _clearAutoReloadCountdown();
+          swSkipWaiting();
+        },
+        { once: true },
+      );
     }
+    // Always-on display: auto-activate after 10 s countdown
+    _startAutoReloadCountdown(statusEl);
   } else {
     banner.setAttribute("data-sw-state", state);
   }

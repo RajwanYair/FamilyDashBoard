@@ -2,10 +2,14 @@
  * Tests for src/core/sw-register.ts
  *
  * Covers: registerSW (no-support path, registration path, error path),
- * swSkipWaiting (with and without waiting SW), showUpdateBanner.
+ * swSkipWaiting (with and without waiting SW), showUpdateBanner,
+ * auto-reload countdown (_startAutoReloadCountdown),
+ * periodic SW update check (setInterval every 60 min).
  *
  * Uses vi.resetModules() per describe because the module stores a mutable
  * swRegistration reference.
+ * Uses vi.useFakeTimers() in tests that trigger the "ready" banner state to
+ * prevent real setInterval leaking between tests.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -243,7 +247,11 @@ describe("SW Register — swSkipWaiting", () => {
 // ── Update banner ──
 
 describe("SW Register — showUpdateBanner", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
   afterEach(() => {
+    vi.useRealTimers();
     document.body.innerHTML = "";
     vi.restoreAllMocks();
   });
@@ -359,7 +367,11 @@ describe("SW Register — controllerchange triggers reload", () => {
 // ── statechange callback with installing state ──
 
 describe("SW Register — statechange installing → installed", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
   afterEach(() => {
+    vi.useRealTimers();
     document.body.innerHTML = "";
     vi.restoreAllMocks();
   });
@@ -544,7 +556,11 @@ describe("SW Register — updatefound with null installing", () => {
 // ── showUpdateBanner without reload button ──
 
 describe("SW Register — showUpdateBanner without reload button", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
   afterEach(() => {
+    vi.useRealTimers();
     document.body.innerHTML = "";
     vi.restoreAllMocks();
   });
@@ -593,7 +609,11 @@ describe("SW Register — showUpdateBanner without reload button", () => {
 // ── showUpdateBanner with no DOM at all ──
 
 describe("SW Register — showUpdateBanner with empty DOM", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
   afterEach(() => {
+    vi.useRealTimers();
     document.body.innerHTML = "";
     vi.restoreAllMocks();
   });
@@ -800,5 +820,162 @@ describe("SW Register — stale SW / stale cache cleanup (v7.1.7)", () => {
 
     // registerSW must NOT delete any caches — the SW activate handler owns this
     expect(deleteSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ── Auto-reload countdown (_startAutoReloadCountdown) ────────────────────────
+
+describe("SW Register — auto-reload countdown", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  function makeReadyScenario(): {
+    triggerReady: () => Promise<void>;
+    postMsgSpy: ReturnType<typeof vi.fn>;
+  } {
+    document.body.innerHTML = `
+      <div id="sw-update-banner"></div>
+      <span id="sw-update-status"></span>
+      <button id="sw-update-reload-btn"></button>
+    `;
+    const postMsgSpy = vi.fn();
+    let updateFoundCb: (() => void) | null = null;
+    let stateChangeCb: (() => void) | null = null;
+    const installingMock = {
+      state: "installing",
+      addEventListener: vi.fn((evt: string, h: (...a: unknown[]) => void) => {
+        if (evt === "statechange") stateChangeCb = h as () => void;
+      }),
+    };
+    const reg = {
+      installing: installingMock,
+      waiting: { postMessage: postMsgSpy },
+      addEventListener: vi.fn((evt: string, h: (...a: unknown[]) => void) => {
+        if (evt === "updatefound") updateFoundCb = h as () => void;
+      }),
+    } as unknown as ServiceWorkerRegistration;
+
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        register: vi.fn().mockResolvedValue(reg),
+        controller: { postMessage: vi.fn() },
+        getRegistrations: vi.fn().mockResolvedValue([]),
+        addEventListener: vi.fn(),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    const triggerReady = async () => {
+      const mod = await freshMod();
+      await mod.registerSW();
+      updateFoundCb?.();
+      installingMock.state = "installed";
+      stateChangeCb?.();
+    };
+    return { triggerReady, postMsgSpy };
+  }
+
+  it("shows countdown text immediately when 'ready' state is entered", async () => {
+    const { triggerReady } = makeReadyScenario();
+    await triggerReady();
+    const statusEl = document.getElementById("sw-update-status");
+    expect(statusEl?.textContent).toMatch(/10/);
+  });
+
+  it("calls skipWaiting automatically after countdown reaches 0", async () => {
+    const { triggerReady, postMsgSpy } = makeReadyScenario();
+    await triggerReady();
+    // 11 ticks × 1 s = countdown hits 0 and fires skipWaiting
+    vi.advanceTimersByTime(11_000);
+    expect(postMsgSpy).toHaveBeenCalledWith({ type: "SKIP_WAITING" });
+  });
+
+  it("cancels countdown when reload button is clicked before it fires", async () => {
+    const { triggerReady, postMsgSpy } = makeReadyScenario();
+    await triggerReady();
+    document.getElementById("sw-update-reload-btn")?.click();
+    expect(postMsgSpy).toHaveBeenCalledTimes(1);
+    // Advance past full countdown — must not fire a second time
+    vi.advanceTimersByTime(15_000);
+    expect(postMsgSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ── Periodic SW update check ──────────────────────────────────────────────────
+
+describe("SW Register — periodic SW update check", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("calls registration.update() after 60 minutes", async () => {
+    const updateSpy = vi.fn().mockResolvedValue(undefined);
+    const reg = {
+      installing: null,
+      waiting: null,
+      addEventListener: vi.fn(),
+      update: updateSpy,
+    } as unknown as ServiceWorkerRegistration;
+
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        register: vi.fn().mockResolvedValue(reg),
+        controller: null,
+        getRegistrations: vi.fn().mockResolvedValue([]),
+        addEventListener: vi.fn(),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    vi.advanceTimersByTime(59 * 60 * 1000);
+    expect(updateSpy).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(60 * 1000);
+    expect(updateSpy).toHaveBeenCalledOnce();
+  });
+
+  it("calls registration.update() again after 120 minutes", async () => {
+    const updateSpy = vi.fn().mockResolvedValue(undefined);
+    const reg = {
+      installing: null,
+      waiting: null,
+      addEventListener: vi.fn(),
+      update: updateSpy,
+    } as unknown as ServiceWorkerRegistration;
+
+    vi.stubGlobal("caches", { keys: vi.fn().mockResolvedValue([]), delete: vi.fn() });
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        register: vi.fn().mockResolvedValue(reg),
+        controller: null,
+        getRegistrations: vi.fn().mockResolvedValue([]),
+        addEventListener: vi.fn(),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    const mod = await freshMod();
+    await mod.registerSW();
+
+    vi.advanceTimersByTime(120 * 60 * 1000);
+    expect(updateSpy).toHaveBeenCalledTimes(2);
   });
 });
