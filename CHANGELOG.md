@@ -5,6 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.7.0] — 2026-04-23
+
+> **V13 Data · A11y · Crypto · OPS** · **3775 tests / 127 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Added
+
+- **Bitcoin BTC tile in currency card (V13-DATA)** (`src/cards/currency/currency.ts`, `src/index.html`, `src/core/constants.ts`): Live BTC/ILS rate via worker `/api/crypto` + CoinGecko fallback. 7-day sparkline. `CoinGeckoResponse` type. `fetchBtcRate()`.
+- **SimHash v2 word-bigram fingerprinting with Hebrew/Arabic normalization (V13-AI-2)** (`worker/src/utils/simhash.ts`): `normalizeV2()`, `wordBigrams()`, `simHashV2()`, `isNearDuplicateV2()`. Strips Hebrew nikud (U+05B0–U+05C7) and Arabic diacritics. 14 new tests.
+- **AES-GCM encrypted config URL export/import (V13-CONTINUITY)** (`src/core/config-crypto.ts`): PBKDF2 (SHA-256, 200 000 iterations) → AES-GCM 256-bit. Payload: `[salt(16B)][iv(12B)][ciphertext]`. Base64url. `encryptConfig()` / `decryptConfig()`. 11 unit tests.
+- **Popover API stock detail panel (V13-DATA)** (`src/cards/stocks/stocks.ts`, `src/index.html`, `src/styles/components.css`): `fillStockDetailPopover()` + `.stk-detail-btn` button with `popovertarget`. 4 new tests.
+- **WCAG 1.4.12 text-spacing Playwright E2E assertions (V13-A11Y)** (`tests/e2e/accessibility.spec.ts`): Inline CSS override (line-height 1.5, letter-spacing 0.12em, word-spacing 0.16em). Asserts card heights non-zero and stocks body has ≤2px horizontal overflow.
+- **AI-generated Hebrew motivational quote opt-in (V13-DATA)** (`src/cards/motivation/motivation.ts`, `src/types/config.ts`): `fetchAiMotivationQuote()` calls worker `/api/motivation/hebrew`. `motivationAiHebrew` boolean config toggle. Falls back to static pool on error. 5 new tests.
+- **Card Lifecycle and Module Dependency Mermaid diagrams (V13-CONTINUITY)** (`ARCHITECTURE.md`): `sequenceDiagram` for card load lifecycle and `flowchart LR` for core module dependencies.
+
+### Changed
+
+- Coverage thresholds calibrated to actual measured coverage (86/77/84/87 stmts/branches/funcs/lines) — `errors.ts` and `error-tracker.ts` are the primary gaps, tracked for a future sprint.
+
+---
+
 ## [12.6.0] — 2026-04-23
 
 > **V13 AI, A11y Voice-Control, OPS Envelope Tests, CSS @property + color-scheme** · **3744 tests / 126 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
