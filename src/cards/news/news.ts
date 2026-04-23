@@ -14,6 +14,7 @@ import {
   LS_NEWS_BOOKMARKS,
   LS_NEWS_FONT,
   MS_PER_HOUR,
+  MS_PER_DAY,
   WORKER_BASE_URL,
   isWorkerEnabled,
 } from "../../core/constants";
@@ -108,20 +109,56 @@ export function highlightTitle(el: HTMLAnchorElement, title: string, query: stri
 
 // ── News article age (F67) ──
 /**
- * Returns a Hebrew relative-time string for a news pubDate stamp.
+ * Returns an absolute publish-time label for display next to a news item.
+ * Today      → "14:32"
+ * Yesterday  → "אתמול 14:32"
+ * Older      → "20/04 14:32"
  * Returns "" for missing/invalid dates.
+ */
+export function pubTimeLabel(pubDate: string): string {
+  if (!pubDate) return "";
+  const d = new Date(pubDate);
+  if (isNaN(d.getTime())) return "";
+  const timeStr = d.toLocaleTimeString("he-IL", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Jerusalem",
+  });
+  const now = new Date();
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const pubMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  if (pubMidnight === todayMidnight) return timeStr;
+  if (pubMidnight === todayMidnight - MS_PER_DAY) return `אתמול ${timeStr}`;
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `${dd}/${mm} ${timeStr}`;
+}
+
+/**
+ * Returns a precise elapsed-time string in dd:hh:mm:ss for a news pubDate stamp.
+ * Returns "" for missing/invalid/future dates.
+ * Returns "עכשיו" for items published less than 60 seconds ago.
+ * Examples: "03:45:10" (3 h 45 min 10 sec), "2:01:30:05" (2 days 1 h 30 min 5 sec).
  */
 export function relativeAge(pubDate: string): string {
   if (!pubDate) return "";
   const d = new Date(pubDate);
   if (isNaN(d.getTime())) return "";
-  const h = Math.floor((Date.now() - d.getTime()) / MS_PER_HOUR);
-  if (h < 0) return "";
-  if (h < 1) return "עכשיו";
-  if (h < 24) return `לפני ${h}ש׳`;
-  const days = Math.floor(h / 24);
-  if (days === 1) return "אתמול";
-  return `לפני ${days} ימ׳`;
+  const ageMs = Date.now() - d.getTime();
+  if (ageMs < 0) return "";
+  if (ageMs < 60_000) return "עכשיו";
+  const totalSecs = Math.floor(ageMs / 1000);
+  const secs = totalSecs % 60;
+  const totalMins = Math.floor(totalSecs / 60);
+  const mins = totalMins % 60;
+  const totalHours = Math.floor(totalMins / 60);
+  const hours = totalHours % 24;
+  const days = Math.floor(totalHours / 24);
+  const hh = String(hours).padStart(2, "0");
+  const mm = String(mins).padStart(2, "0");
+  const ss = String(secs).padStart(2, "0");
+  return days > 0 ? `${days}:${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
 }
 
 // ── Visited articles (session-scoped) ──
@@ -538,14 +575,29 @@ export function renderNews(items: NewsItem[]): void {
       div.appendChild(sourceEl);
       div.appendChild(titleEl);
 
-      // Age badge (F67) — primary items only
+      // Time badge (F67) — primary items only: absolute pub time + precise elapsed
       if (!isClone) {
-        const age = relativeAge(item.pubDate);
-        if (age) {
-          const ageEl = document.createElement("span");
-          ageEl.className = "news-age";
-          ageEl.textContent = age;
-          div.appendChild(ageEl);
+        const pubTime = pubTimeLabel(item.pubDate);
+        const elapsed = relativeAge(item.pubDate);
+        if (pubTime || elapsed) {
+          const timeWrap = document.createElement("span");
+          timeWrap.className = "news-time-wrap";
+          if (pubTime) {
+            const ptEl = document.createElement("span");
+            ptEl.className = "news-pub-time";
+            ptEl.textContent = pubTime;
+            ptEl.title = item.pubDate
+              ? new Date(item.pubDate).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+              : "";
+            timeWrap.appendChild(ptEl);
+          }
+          if (elapsed) {
+            const ageEl = document.createElement("span");
+            ageEl.className = "news-age";
+            ageEl.textContent = elapsed;
+            timeWrap.appendChild(ageEl);
+          }
+          div.appendChild(timeWrap);
         }
       }
 

@@ -97,12 +97,26 @@
   opacity: 0.7;
 }
 
-/* Feature 67: News item published age */
+/* Feature 67: News item published age — absolute time + elapsed dd:hh:mm:ss */
+.news-time-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  flex-shrink: 0;
+}
+.news-pub-time {
+  font-size: 0.62em;
+  color: var(--accent);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
 .news-age {
-  font-size: 0.55em;
+  font-size: 0.52em;
   color: var(--text-muted);
   white-space: nowrap;
-  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 .news-reading-time {
   font-size: 0.52em;
@@ -330,8 +344,11 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   .rss-item {
     padding: 8px 12px !important;
   }
+  .news-pub-time {
+    font-size: 0.72em;
+  }
   .news-age {
-    font-size: 0.65em;
+    font-size: 0.62em;
   }
   .news-filter-chip {
     font-size: 0.68em;

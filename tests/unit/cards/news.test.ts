@@ -11,6 +11,7 @@ import {
   NEWS_FEEDS,
   highlightTitle,
   relativeAge,
+  pubTimeLabel,
   renderNews,
   cacheDom,
   applyNewsFontSize,
@@ -673,34 +674,83 @@ describe("News — relativeAge (F67)", () => {
     expect(relativeAge("not-a-date")).toBe("");
   });
 
-  it('returns "עכשיו" for date less than 1 hour ago', () => {
+  it('returns "עכשיו" for date less than 60 seconds ago', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
-    expect(relativeAge("2024-01-10T09:45:00Z")).toBe("עכשיו");
+    expect(relativeAge("2024-01-10T09:59:30Z")).toBe("עכשיו");
   });
 
-  it("returns hours string for 3 hours ago", () => {
+  it("returns HH:MM:SS for 15 minutes ago", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
-    expect(relativeAge("2024-01-10T07:00:00Z")).toBe("לפני 3ש׳");
+    expect(relativeAge("2024-01-10T09:45:00Z")).toBe("00:15:00");
   });
 
-  it('returns "אתמול" for date 25 hours ago', () => {
+  it("returns HH:MM:SS for 3 hours ago", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
-    expect(relativeAge("2024-01-09T09:00:00Z")).toBe("אתמול");
+    expect(relativeAge("2024-01-10T07:00:00Z")).toBe("03:00:00");
   });
 
-  it("returns days string for 48 hours ago", () => {
+  it("returns D:HH:MM:SS for 25 hours 1 minute ago", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
-    expect(relativeAge("2024-01-08T09:00:00Z")).toBe("לפני 2 ימ׳");
+    expect(relativeAge("2024-01-09T09:00:00Z")).toBe("1:01:00:00");
+  });
+
+  it("returns D:HH:MM:SS for 49 hours ago", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
+    expect(relativeAge("2024-01-08T09:00:00Z")).toBe("2:01:00:00");
   });
 
   it("returns empty string for future date", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
     expect(relativeAge("2024-01-11T10:00:00Z")).toBe("");
+  });
+});
+
+// ── pubTimeLabel ──
+
+describe("News — pubTimeLabel", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("returns empty string for missing pubDate", () => {
+    expect(pubTimeLabel("")).toBe("");
+  });
+
+  it("returns empty string for invalid date", () => {
+    expect(pubTimeLabel("not-a-date")).toBe("");
+  });
+
+  it("returns HH:MM only for a date published today", () => {
+    vi.useFakeTimers();
+    // UTC noon
+    vi.setSystemTime(new Date("2024-06-15T12:00:00Z"));
+    // Published 2 hours earlier same local day (Israel is UTC+3 in summer)
+    const result = pubTimeLabel("2024-06-15T08:00:00Z");
+    // Should be a short time-only string (HH:MM), no date prefix
+    expect(result).toMatch(/^\d{1,2}:\d{2}$/);
+    expect(result).not.toMatch(/אתמול/);
+  });
+
+  it("prefixes 'אתמול' for yesterday", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T10:00:00Z"));
+    // Published exactly 25 hours ago
+    const result = pubTimeLabel("2024-06-14T09:00:00Z");
+    expect(result).toMatch(/^אתמול /);
+  });
+
+  it("returns dd/mm HH:MM for dates older than yesterday", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-15T10:00:00Z"));
+    const result = pubTimeLabel("2024-06-12T14:30:00Z");
+    expect(result).toMatch(/^\d{2}\/\d{2} \d{1,2}:\d{2}$/);
   });
 });
 
