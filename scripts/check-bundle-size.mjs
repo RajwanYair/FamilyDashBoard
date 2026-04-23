@@ -147,3 +147,61 @@ if (baseline) {
       "    Run `npm run bundle:trend` after a successful build to record one.",
   );
 }
+
+// ── Per-card JS chunk breakdown ───────────────────────────────────────────────
+
+console.log("\n📊 Per-card chunk breakdown (gzip)\n");
+
+/** Card chunk patterns — maps display label → filename substring. */
+const CARD_CHUNKS = [
+  ["weather",     "weather"],
+  ["stocks",      "stocks"],
+  ["currency",    "currency"],
+  ["calendar",    "calendar"],
+  ["hebrew-cal",  "hebrew-cal"],
+  ["alerts",      "alerts"],
+  ["motivation",  "motivation"],
+  ["tasks",       "tasks"],
+  ["system-info", "system-info"],
+  ["countdown",   "countdown"],
+  ["news",        "news"],
+];
+
+let chunkFiles;
+try {
+  chunkFiles = readdirSync(DIST_ASSETS).filter((f) => f.endsWith(".js"));
+} catch {
+  chunkFiles = [];
+}
+
+let cardRows = [];
+for (const [label, pattern] of CARD_CHUNKS) {
+  const matching = chunkFiles.filter((f) => f.toLowerCase().includes(pattern));
+  if (matching.length === 0) continue;
+  let totalGz = 0;
+  let totalRaw = 0;
+  for (const f of matching) {
+    const fp = join(DIST_ASSETS, f);
+    totalRaw += statSync(fp).size;
+    totalGz  += gzipSize(fp);
+  }
+  cardRows.push({ label, rawKb: totalRaw / 1024, gzKb: totalGz / 1024 });
+}
+
+// Sort descending by gzip size
+cardRows.sort((a, b) => b.gzKb - a.gzKb);
+
+const colW = 14;
+const header = `  ${"Card".padEnd(colW)} ${"Raw (KB)".padStart(9)} ${"Gzip (KB)".padStart(10)}`;
+console.log(header);
+console.log("  " + "─".repeat(colW + 21));
+for (const { label, rawKb, gzKb } of cardRows) {
+  console.log(
+    `  ${label.padEnd(colW)} ${rawKb.toFixed(1).padStart(9)} ${gzKb.toFixed(1).padStart(10)}`,
+  );
+}
+if (cardRows.length === 0) {
+  console.log("  (no per-card chunks found — build may use a single IIFE bundle)");
+}
+console.log();
+
