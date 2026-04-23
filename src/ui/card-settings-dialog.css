@@ -29,21 +29,24 @@
 .card-settings-dialog {
   background: var(--bg-card);
   border: 1px solid var(--accent-border);
-  border-radius: 12px;
+  border-radius: 14px;
   color: var(--text-primary);
   direction: rtl;
-  max-height: 80vh;
-  max-width: min(90vw, 480px);
+  max-height: 88vh;
+  max-width: min(94vw, 480px);
+  width: 94%;
   min-width: 280px;
   overflow: hidden;
   padding: 0;
   display: flex;
   flex-direction: column;
+  /* ensure vertical centering in all browsers */
+  margin: auto;
 }
 .card-settings-dialog::backdrop {
-  background: rgba(6, 11, 20, 0.82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(6, 11, 20, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 /* Header */
