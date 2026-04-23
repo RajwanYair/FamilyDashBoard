@@ -1,0 +1,235 @@
+/**
+ * FamilyDashBoard v12 — CSS @scope per-card isolation (ADR-022)
+ *
+ * Each card's most-specific selectors are wrapped in @scope so cross-card
+ * style bleed becomes structurally impossible. Browsers that do not support
+ * @scope (Firefox < 117, Safari < 17.4) fall back to the existing per-card
+ * CSS files — identical behaviour.
+ *
+ * This is an @layer components block so scoped rules participate in the
+ * existing cascade governance (ADR-008).
+ *
+ * Full migration (moving ALL rules here from per-card files) is v12.1.
+ */
+
+@layer components {
+  /* ── News ──────────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="news"]) {
+    .news-item {
+      container-type: inline-size;
+    }
+
+    .news-item-header {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+
+    .news-source-badge {
+      flex-shrink: 0;
+    }
+
+    .news-item-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  /* ── Weather ───────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="weather"]) {
+    .wx-wind-dir {
+      display: inline-block;
+    }
+
+    .wx-sky-pill {
+      border-radius: 8px;
+      vertical-align: middle;
+    }
+
+    .wx-alert-banner {
+      text-align: center;
+    }
+
+    .wx-city-tabs {
+      flex-shrink: 0;
+    }
+
+    .wx-detail:nth-child(6) {
+      border-bottom: 2px solid var(--pink);
+    }
+  }
+
+  /* ── Stocks ────────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="stocks"]) {
+    .stk-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .stk-symbol {
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .stk-price {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stk-sparkline {
+      overflow: visible;
+    }
+
+    .stk-market-badge {
+      border-radius: 4px;
+    }
+  }
+
+  /* ── Currency ──────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="currency"]) {
+    .cur-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cur-rate {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cur-change {
+      font-size: 0.72em;
+    }
+
+    .cur-sparkline {
+      overflow: visible;
+    }
+  }
+
+  /* ── Hebrew Calendar ───────────────────────────────────────────────────── */
+  @scope ([data-card-id="hebrew-cal"]) {
+    .hcal-parasha {
+      font-weight: 700;
+    }
+
+    .hcal-zman-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .hcal-holiday {
+      border-radius: 4px;
+    }
+  }
+
+  /* ── Calendar ──────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="calendar"]) {
+    .cal-event {
+      overflow: hidden;
+    }
+
+    .cal-event-time {
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cal-day-header {
+      font-weight: 700;
+    }
+  }
+
+  /* ── Alerts ────────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="alerts"]) {
+    .alerts-badge {
+      border-radius: 50%;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .alert-row {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .alert-location {
+      font-weight: 600;
+    }
+  }
+
+  /* ── Motivation ────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="motivation"]) {
+    .moti-text {
+      line-height: 1.6;
+    }
+
+    .moti-author {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+  }
+
+  /* ── Tasks ─────────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="tasks"]) {
+    .tasks-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tasks-body {
+      overflow-y: auto;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+  }
+
+  /* ── Countdown ─────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="countdown"]) {
+    .countdown-value {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    .countdown-label {
+      font-size: 0.7em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  /* ── System Info ───────────────────────────────────────────────────────── */
+  @scope ([data-card-id="system-info"]) {
+    .sys-bar-track {
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .sys-bar-fill {
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+
+    .sys-metric-label {
+      flex-shrink: 0;
+    }
+  }
+
+  /* ── Video News ────────────────────────────────────────────────────────── */
+  @scope ([data-card-id="video-news"]) {
+    .vn-player {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vn-overlay {
+      position: absolute;
+      inset: 0;
+    }
+
+    .vn-channel-badge {
+      border-radius: 4px;
+    }
+  }
+}

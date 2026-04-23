@@ -17,6 +17,7 @@ import "./styles/maximize.css";
 import "./styles/a11y.css";
 import "./styles/print.css";
 import "./styles/sprints.css";
+import "./styles/scope.css"; // ADR-022: @scope per-card isolation (v12.0)
 import "./cards/tasks/tasks.css";
 import "./cards/system-info/system-info.css";
 import "./cards/countdown/countdown.css";
