@@ -1,8 +1,9 @@
 /**
- * FamilyDashBoard v7 — Card Maximize (FLIP Animation)
+ * FamilyDashBoard v7 — Card Maximize (FLIP + View Transitions)
  *
  * Click a card header to expand it fullscreen. Click again or Escape to collapse.
  * v7.1: Adaptive font scaling via --max-font-scale CSS custom property.
+ * F12: View Transitions API used when available; FLIP animation as fallback.
  */
 
 import { diagLog } from "../core/diag";
@@ -41,6 +42,15 @@ export function computeFontScale(first: DOMRect, last: DOMRect): number {
   return Math.max(1, Math.min(4, parseFloat(raw.toFixed(3))));
 }
 
+/**
+ * F12: Derive a unique CSS `view-transition-name` for a card.
+ * Must be a valid CSS ident: letters, digits, and hyphens only.
+ */
+export function cardVtName(card: HTMLElement): string {
+  const id = (card.dataset["cardId"] || card.id || "card").replace(/[^a-zA-Z0-9]/g, "-");
+  return `card-max-${id}`;
+}
+
 function expandCard(card: HTMLElement): void {
   // Collapse any other maximized card first
   if (maximizedCard && maximizedCard !== card) {
@@ -58,56 +68,51 @@ function expandCard(card: HTMLElement): void {
   card.style.setProperty("--maximize-top", `${headerBottom}px`);
   card.style.setProperty("--maximize-height", `${availableHeight}px`);
 
-  // FLIP: Record initial position
-  const first = card.getBoundingClientRect();
-  card.classList.add("maximized");
-  const last = card.getBoundingClientRect();
+  if ("startViewTransition" in document) {
+    // F12: View Transitions — browser morphs card from grid position to fullscreen.
+    card.style.setProperty("view-transition-name", cardVtName(card));
+    void document.startViewTransition(() => {
+      const first = card.getBoundingClientRect();
+      card.classList.add("maximized");
+      const last = card.getBoundingClientRect();
+      card.style.setProperty("--max-font-scale", String(computeFontScale(first, last)));
+    }).finished.then(() => {
+      card.style.removeProperty("view-transition-name");
+    });
+  } else {
+    // FLIP fallback for browsers without View Transitions
+    const first = card.getBoundingClientRect();
+    card.classList.add("maximized");
+    const last = card.getBoundingClientRect();
 
-  // v7.1: Inject adaptive font scale
-  const fontScale = computeFontScale(first, last);
-  card.style.setProperty("--max-font-scale", String(fontScale));
+    // v7.1: Inject adaptive font scale
+    const fontScale = computeFontScale(first, last);
+    card.style.setProperty("--max-font-scale", String(fontScale));
 
-  // Animate from first → last
-  const dx = first.left - last.left;
-  const dy = first.top - last.top;
-  const sx = first.width / last.width;
-  const sy = first.height / last.height;
+    // Animate from first → last
+    const dx = first.left - last.left;
+    const dy = first.top - last.top;
+    const sx = first.width / last.width;
+    const sy = first.height / last.height;
 
-  card.animate(
-    [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: "none" }],
-    { duration: 300, easing: "ease-out" },
-  );
+    card.animate(
+      [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: "none" }],
+      { duration: 300, easing: "ease-out" },
+    );
+  }
 
   card.setAttribute("aria-expanded", "true");
   maximizedCard = card;
-  diagLog(`[maximize] Expanded card (fontScale=${fontScale})`);
+  diagLog(`[maximize] Expanded card via ${"startViewTransition" in document ? "ViewTransition" : "FLIP"}`);
 }
 
 function collapseCard(card: HTMLElement): void {
   // Check whether this card was persisted as collapsed, so we can restore the
   // minimized state after the animation (it was removed by expandCard).
-  const collapseId = (card.id || card.querySelector("[id]")?.id) ?? "";
+  const collapseId = (card.dataset["cardId"] ?? card.id ?? (card.querySelector("[id]")?.id ?? ""));
   const wasCollapsed = collapseId ? loadCollapsedCards().has(collapseId) : false;
 
-  // FLIP: Record maximized position
-  const first = card.getBoundingClientRect();
-  card.classList.remove("maximized");
-  const last = card.getBoundingClientRect();
-
-  const dx = first.left - last.left;
-  const dy = first.top - last.top;
-  const sx = first.width / last.width;
-  const sy = first.height / last.height;
-
-  const anim = card.animate(
-    [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: "none" }],
-    { duration: 300, easing: "ease-out" },
-  );
-
-  // Remove the scale variable only after the collapse animation, so font
-  // does not snap before the card reaches its original size.
-  // Also restore .collapsed if the card was minimized before maximize.
-  void anim.finished.then(() => {
+  const afterCollapse = (): void => {
     card.style.removeProperty("--max-font-scale");
     card.style.removeProperty("--maximize-top");
     card.style.removeProperty("--maximize-height");
@@ -119,7 +124,38 @@ function collapseCard(card: HTMLElement): void {
         btn.setAttribute("aria-expanded", "false");
       }
     }
-  });
+  };
+
+  if ("startViewTransition" in document) {
+    // F12: View Transitions — browser morphs card from fullscreen back to grid position.
+    card.style.setProperty("view-transition-name", cardVtName(card));
+    void document.startViewTransition(() => {
+      card.classList.remove("maximized");
+    }).finished.then(() => {
+      card.style.removeProperty("view-transition-name");
+      afterCollapse();
+    });
+  } else {
+    // FLIP fallback for browsers without View Transitions
+    const first = card.getBoundingClientRect();
+    card.classList.remove("maximized");
+    const last = card.getBoundingClientRect();
+
+    const dx = first.left - last.left;
+    const dy = first.top - last.top;
+    const sx = first.width / last.width;
+    const sy = first.height / last.height;
+
+    const anim = card.animate(
+      [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: "none" }],
+      { duration: 300, easing: "ease-out" },
+    );
+
+    // Remove the scale variable only after the collapse animation, so font
+    // does not snap before the card reaches its original size.
+    // Also restore .collapsed if the card was minimized before maximize.
+    void anim.finished.then(afterCollapse);
+  }
 
   card.setAttribute("aria-expanded", "false");
   maximizedCard = null;

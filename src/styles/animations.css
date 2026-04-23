@@ -466,6 +466,20 @@ body.shabbat-mode #shabbat-mode-banner {
       opacity: 0;
     }
   }
+
+  /* F12: Card maximize/collapse — view-transition-name is set dynamically by maximize.ts
+     as "card-max-{id}". The browser morphs the card geometry between grid and fullscreen.
+     ::view-transition-group handles the geometric interpolation automatically;
+     we only need to set the timing to match the FLIP fallback (300ms ease-out). */
+  ::view-transition-group(*) {
+    animation-duration: 300ms;
+    animation-timing-function: ease-out;
+  }
+  /* Suppress root crossfade during card maximize so only the named element animates */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0ms;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════

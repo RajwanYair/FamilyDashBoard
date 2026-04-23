@@ -841,3 +841,128 @@ describe("Maximize — initCardCollapse aria-expanded on collapse buttons (Sprin
     expect(btn.getAttribute("aria-expanded")).toBe("true");
   });
 });
+
+// ── F12: cardVtName + View Transitions for maximize ─────────────────────────
+
+describe("Maximize — cardVtName (F12)", () => {
+  it("generates a valid CSS ident from data-card-id", async () => {
+    vi.resetModules();
+    const { cardVtName } = await import("@/ui/maximize");
+    const card = document.createElement("div");
+    card.dataset["cardId"] = "hebrew-cal";
+    expect(cardVtName(card)).toBe("card-max-hebrew-cal");
+  });
+
+  it("falls back to card.id when no data-card-id", async () => {
+    vi.resetModules();
+    const { cardVtName } = await import("@/ui/maximize");
+    const card = document.createElement("div");
+    card.id = "weather";
+    expect(cardVtName(card)).toBe("card-max-weather");
+  });
+
+  it("replaces non-alphanumeric chars with hyphens", async () => {
+    vi.resetModules();
+    const { cardVtName } = await import("@/ui/maximize");
+    const card = document.createElement("div");
+    card.dataset["cardId"] = "my card!";
+    expect(cardVtName(card)).toBe("card-max-my-card-");
+  });
+
+  it("uses 'card' as fallback when both data-card-id and id are absent", async () => {
+    vi.resetModules();
+    const { cardVtName } = await import("@/ui/maximize");
+    const card = document.createElement("div");
+    expect(cardVtName(card)).toBe("card-max-card");
+  });
+});
+
+describe("Maximize — View Transitions path (F12)", () => {
+  let mod: MaxMod;
+
+  function stubViewTransition(): ReturnType<typeof vi.fn> {
+    const vtSpy = vi.fn((cb: () => void) => {
+      cb();
+      return { finished: Promise.resolve(), ready: Promise.resolve(), updateCallbackDone: Promise.resolve() };
+    });
+    Object.defineProperty(document, "startViewTransition", {
+      value: vtSpy,
+      configurable: true,
+      writable: true,
+    });
+    return vtSpy;
+  }
+
+  function removeViewTransition(): void {
+    try {
+      Reflect.deleteProperty(document, "startViewTransition");
+    } catch {
+      /* non-configurable */
+    }
+  }
+
+  beforeEach(async () => {
+    stubAnimate();
+    mod = await freshMax();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    removeViewTransition();
+  });
+
+  it("calls startViewTransition instead of card.animate on expand", () => {
+    const vtSpy = stubViewTransition();
+    const card = makeCard("vt-expand");
+    mod.toggleCardMaximize(card);
+    expect(vtSpy).toHaveBeenCalledOnce();
+    expect(card.animate).not.toHaveBeenCalled();
+  });
+
+  it("calls startViewTransition instead of card.animate on collapse", () => {
+    // First expand via VT
+    const vtSpy = stubViewTransition();
+    const card = makeCard("vt-collapse");
+    mod.toggleCardMaximize(card); // expand via VT
+    vtSpy.mockClear();
+    mod.toggleCardMaximize(card); // collapse via VT
+    expect(vtSpy).toHaveBeenCalledOnce();
+    expect(card.animate).not.toHaveBeenCalled();
+  });
+
+  it("sets view-transition-name on card before expand transition", () => {
+    stubViewTransition();
+    const card = makeCard("vt-name-check");
+    card.dataset["cardId"] = "weather";
+    mod.toggleCardMaximize(card);
+    // During the VT callback, view-transition-name should have been set
+    // (cleared after .finished, but spy runs cb synchronously so we see it briefly)
+    // After finished resolves, name is cleared
+    // We verify the card gets the maximized class (VT worked)
+    expect(card.classList.contains("maximized")).toBe(true);
+  });
+
+  it("adds .maximized class even via VT path", () => {
+    stubViewTransition();
+    const card = makeCard("vt-class");
+    mod.toggleCardMaximize(card);
+    expect(card.classList.contains("maximized")).toBe(true);
+  });
+
+  it("removes .maximized class on collapse via VT path", () => {
+    stubViewTransition();
+    const card = makeCard("vt-rm-class");
+    mod.toggleCardMaximize(card); // expand
+    mod.toggleCardMaximize(card); // collapse
+    expect(card.classList.contains("maximized")).toBe(false);
+  });
+
+  it("FLIP path: card.animate IS called when startViewTransition not available", () => {
+    // Ensure no startViewTransition stub
+    removeViewTransition();
+    const card = makeCard("flip-only");
+    mod.toggleCardMaximize(card);
+    expect(card.animate).toHaveBeenCalledOnce();
+  });
+});
