@@ -1,5 +1,13 @@
 /* ── Weather Card Styles ── */
 
+/* Sprint 11: 7-day temperature sparkline */
+.wx-temp-spark {
+  display: block;
+  width: 60px;
+  height: 18px;
+  margin-top: 2px;
+}
+
 /* Feature 26: Feels-like temp — 6th detail cell border accent */
 .wx-detail:nth-child(6) {
   border-bottom: 2px solid var(--pink);

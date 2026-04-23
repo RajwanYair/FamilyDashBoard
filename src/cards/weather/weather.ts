@@ -6,6 +6,7 @@
 
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import { trustedHTML } from "../../core/trusted-types";
+import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import "./weather.css";
 import {
   INTERVALS,
@@ -152,6 +153,7 @@ const el = {
   wxCloud: null as HTMLElement | null,
   wxWindTile: null as HTMLElement | null,
   wxRiseTile: null as HTMLElement | null,
+  wxTempSpark: null as SVGElement | null,
 };
 
 let _weatherRefreshInterval: number | null = null;
@@ -180,6 +182,7 @@ export function cacheDom(): void {
   el.wxCloud = document.getElementById("wx-cloud");
   el.wxWindTile = (el.wxWind?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
+  el.wxTempSpark = document.getElementById("wx-temp-spark") as SVGElement | null;
 }
 
 function getTempUnit(): "C" | "F" {
@@ -342,6 +345,15 @@ export function renderWeather(d: WeatherResponse): void {
 
   if (el.topTemp) el.topTemp.textContent = toDisplayTemp(tempC);
   if (el.wxTemp) el.wxTemp.textContent = toDisplayTemp(tempC);
+
+  // Sprint 11: IDB history write + sparkline (async — non-blocking)
+  void (async () => {
+    await historyAppend("weather:temp", tempC);
+    const vals = await historyGet("weather:temp", 7);
+    if (el.wxTempSpark && vals.length >= 2) {
+      el.wxTempSpark.innerHTML = trustedHTML(sparklineSvg(vals, "var(--accent)", 60, 18));
+    }
+  })();
   if (el.wxDesc) {
     const desc = WX_CODES[cur.weather_code] ?? "לא ידוע";
     const feels = Math.round(cur.apparent_temperature);

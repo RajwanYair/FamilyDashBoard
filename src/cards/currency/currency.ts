@@ -14,6 +14,8 @@ import { fetchJSONWithWorker, acquireLock, releaseLock } from "../../core/fetch"
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
+import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
+import { trustedHTML } from "../../core/trusted-types";
 import type { CurrencyResponse, YahooChartResponse } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
@@ -205,6 +207,42 @@ export async function fetchCurrency(): Promise<Record<string, number>> {
   throw new Error("All currency APIs failed");
 }
 
+// Tile key → spark element ID
+const SPARK_EL: Record<string, string> = {
+  USD: "cur-usd-spark",
+  EUR: "cur-eur-spark",
+  GBP: "cur-gbp-spark",
+  XAU: "cur-gold-spark",
+  XAG: "cur-silver-spark",
+};
+
+/**
+ * Write today's ILS value per tile to IDB history and re-render sparklines.
+ * Runs asynchronously — never blocks the synchronous render path.
+ */
+async function renderCurrencySparklines(rates: Record<string, number>): Promise<void> {
+  const writes = Object.entries(SPARK_EL).map(async ([key, svgId]) => {
+    const rawRate = rates[key];
+    if (!rawRate || rawRate <= 0) return;
+    const ilsValue = 1 / rawRate;
+
+    // Persist to IDB history
+    await historyAppend(`cur:${key}`, ilsValue);
+
+    // Fetch the 7-day window and render
+    const values = await historyGet(`cur:${key}`, 7);
+    if (values.length < 2) return;
+
+    const svgEl = document.getElementById(svgId);
+    if (!svgEl) return;
+
+    const positive = ilsValue >= (values[0] ?? ilsValue);
+    const color = positive ? "var(--positive)" : "var(--negative)";
+    svgEl.innerHTML = trustedHTML(sparklineSvg(values, color));
+  });
+  await Promise.allSettled(writes);
+}
+
 // ── Render currency tiles ──
 export function renderCurrency(rates: Record<string, number>): void {
   // Sprint 24: persist today's snapshot before rendering
@@ -284,6 +322,9 @@ export function renderCurrency(rates: Record<string, number>): void {
     void curEls.body.offsetWidth;
     curEls.body.classList.add("data-fresh");
   }
+
+  // IDB history + sparklines (async — non-blocking)
+  void renderCurrencySparklines(rates);
 
   diagLog(`FDB-032: [currency] Rendered ${Object.keys(rates).length} rates`);
 }
