@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD013 MD033 MD024 MD036 -->
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-23 · **Shipped baseline**: v12.6.0 — 3744 tests / 126 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 34 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
+> **Refresh date**: 2026-04-23 · **Shipped baseline**: v12.7.0 — 3775 tests / 127 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 34 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
 > **Scope**: every architectural decision is reopened — including the ones that ship cleanly — against the 2026-Q2 web-platform landscape, then charted toward v13, v14 and v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit.
 
 ---
@@ -511,7 +511,7 @@ Execute in order. Each becomes one or more v13.x sprints.
 | `eslint-disable` occurrences | 0 | 0 |
 | `@ts-ignore` occurrences | 0 | 0 |
 | markdownlint issues | 0 | 0 |
-| Unit test failures | 0 / 3486 | 0 / 3800+ |
+| Unit test failures | 0 / 3775 | 0 / 3800+ |
 | Playwright failures | 0 | 0 |
 | axe serious/critical | 0 | 0 |
 | Dead code (ts-unused-exports) | 0 | 0 |
@@ -520,7 +520,7 @@ Execute in order. Each becomes one or more v13.x sprints.
 | LHCI a11y | ≥ 98 | ≥ 99 |
 | LHCI BP | ≥ 95 | ≥ 95 |
 | LHCI SEO | ≥ 90 | ≥ 92 |
-| Coverage (lines / branches / functions / statements) | ≥ 94 / 88 / 94 / 95 | ≥ 95 / 90 / 95 / 96 |
+| Coverage (lines / branches / functions / statements) | ≥ 87 / 77 / 84 / 86 | ≥ 90 / 82 / 90 / 90 |
 | Mutation score (Stryker targets) | ≥ 85 % | ≥ 88 % |
 | Client bundle gzip | ~88 KB | ≤ 100 KB |
 | Worker bundle gzip | ~62 KB | ≤ 75 KB |
