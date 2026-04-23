@@ -2,6 +2,12 @@ name = "familydashboard-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
+# Smart Placement: CF picks the PoP nearest to origin APIs, not the client.
+# Improves latency for origin-fetch routes (stocks, weather, currency, news).
+# ADR-031 vendor-neutrality drill: enabled unconditionally — no opt-in.
+[placement]
+mode = "smart"
+
 [vars]
 ENVIRONMENT = "production"
 
@@ -52,7 +58,6 @@ crons = ["0 0 * * *", "0 12 * * *", "0 23 * * *"]
 #                            e.g. "10" tags 10% of responses with X-Canary: true
 #
 # Analytics Engine dataset (V12-EDGE-2b, ADR-029):
-#   Add to wrangler.toml once the dataset is created:
-#   [[analytics_engine_datasets]]
-#   binding = "ANALYTICS"
-#   dataset = "fdb_requests"
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "fdb_requests"
