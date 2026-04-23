@@ -96,3 +96,72 @@ export function classifyProviderError(err: unknown, providerId: string): Provide
   diagLog(`FDB-062: [${providerId}] error kind=${kind} — ${String(err)}`);
   return kind;
 }
+
+// ── Structured JSON diagnostics export (V12-OBSERVABILITY) ───────────────────
+
+/** Schema version for the structured diagnostics export. Increment on breaking changes. */
+export const DIAG_EXPORT_SCHEMA_VERSION = 1;
+
+/**
+ * Structured diagnostics export payload.
+ *
+ * Use this format when sending diagnostic data to the worker error endpoint
+ * or downloading as a support file. The `schemaVersion` field allows consumers
+ * to handle multiple export formats without breaking on old payloads.
+ */
+export interface DiagExport {
+  /** Always 1 for this schema. Increment on breaking changes. */
+  schemaVersion: typeof DIAG_EXPORT_SCHEMA_VERSION;
+  /** App version string from __APP_VERSION__. */
+  appVersion: string;
+  /** Export generation time (Unix ms). */
+  exportedAt: number;
+  /** User-agent string at time of export. */
+  userAgent: string;
+  /** URL of the page at time of export (excludes query params for privacy). */
+  pageUrl: string;
+  /** All buffered diagnostic entries (newest last). */
+  entries: DiagEntry[];
+  /** Total entry count since last clearDiag() call. */
+  totalCount: number;
+}
+
+declare const __APP_VERSION__: string;
+
+/**
+ * Build a structured `DiagExport` snapshot of the current diagnostic buffer.
+ *
+ * This is the canonical format for:
+ *   - Downloading diagnostics as a JSON support file
+ *   - Sending to the worker `/api/errors` endpoint
+ *   - Automated log ingestion / analysis
+ *
+ * @param limit Maximum entries to include (default: all buffered entries)
+ */
+export function buildDiagExport(limit?: number): DiagExport {
+  const entries = limit !== undefined ? buffer.slice(-limit) : buffer.slice();
+  const url = new URL(window.location.href);
+  // Strip query params and fragment for privacy
+  url.search = "";
+  url.hash = "";
+  return {
+    schemaVersion: DIAG_EXPORT_SCHEMA_VERSION,
+    appVersion: typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "unknown",
+    exportedAt: Date.now(),
+    userAgent: navigator.userAgent,
+    pageUrl: url.toString(),
+    entries,
+    totalCount: buffer.length,
+  };
+}
+
+/**
+ * Serialize the current diagnostic buffer to a JSON string using the
+ * versioned `DiagExport` schema.
+ *
+ * Consumers should check `schemaVersion === 1` before parsing.
+ */
+export function exportDiagJson(limit?: number): string {
+  return JSON.stringify(buildDiagExport(limit), null, 2);
+}
+

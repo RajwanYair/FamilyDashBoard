@@ -9,6 +9,9 @@ import {
   clearDiag,
   formatDiagEntry,
   classifyProviderError,
+  buildDiagExport,
+  exportDiagJson,
+  DIAG_EXPORT_SCHEMA_VERSION,
 } from "@/core/diag";
 
 describe("DiagLog", () => {
@@ -137,5 +140,88 @@ describe("classifyProviderError (Sprint 60)", () => {
     const entries = getDiagEntries();
     expect(entries[0]?.msg).toMatch(/FDB-062/);
     expect(entries[0]?.msg).toContain("test-provider");
+  });
+});
+
+// ── Structured JSON export (V12-OBSERVABILITY) ─────────────────────────────
+
+describe("buildDiagExport", () => {
+  beforeEach(() => {
+    clearDiag();
+  });
+
+  it("returns schemaVersion 1", () => {
+    const ex = buildDiagExport();
+    expect(ex.schemaVersion).toBe(DIAG_EXPORT_SCHEMA_VERSION);
+    expect(ex.schemaVersion).toBe(1);
+  });
+
+  it("entries array is ordered oldest-first", () => {
+    diagLog("alpha");
+    diagLog("beta");
+    const ex = buildDiagExport();
+    expect(ex.entries[0]?.msg).toBe("alpha");
+    expect(ex.entries[1]?.msg).toBe("beta");
+  });
+
+  it("respects limit parameter", () => {
+    diagLog("a");
+    diagLog("b");
+    diagLog("c");
+    const ex = buildDiagExport(2);
+    expect(ex.entries.length).toBe(2);
+    expect(ex.entries[0]?.msg).toBe("b");
+    expect(ex.entries[1]?.msg).toBe("c");
+  });
+
+  it("totalCount matches buffer length", () => {
+    diagLog("x");
+    diagLog("y");
+    const ex = buildDiagExport();
+    expect(ex.totalCount).toBe(2);
+  });
+
+  it("exportedAt is a recent timestamp", () => {
+    const before = Date.now();
+    const ex = buildDiagExport();
+    expect(ex.exportedAt).toBeGreaterThanOrEqual(before);
+    expect(ex.exportedAt).toBeLessThanOrEqual(Date.now() + 100);
+  });
+
+  it("includes appVersion field", () => {
+    const ex = buildDiagExport();
+    expect(typeof ex.appVersion).toBe("string");
+    expect(ex.appVersion.length).toBeGreaterThan(0);
+  });
+
+  it("includes userAgent string", () => {
+    const ex = buildDiagExport();
+    expect(typeof ex.userAgent).toBe("string");
+  });
+
+  it("includes pageUrl without query params", () => {
+    const ex = buildDiagExport();
+    expect(ex.pageUrl).not.toContain("?");
+  });
+});
+
+describe("exportDiagJson", () => {
+  beforeEach(() => {
+    clearDiag();
+  });
+
+  it("returns valid JSON string", () => {
+    diagLog("test");
+    expect(() => JSON.parse(exportDiagJson())).not.toThrow();
+  });
+
+  it("JSON has schemaVersion 1", () => {
+    const parsed = JSON.parse(exportDiagJson()) as { schemaVersion: number };
+    expect(parsed.schemaVersion).toBe(1);
+  });
+
+  it("JSON is pretty-printed (has newlines)", () => {
+    const json = exportDiagJson();
+    expect(json).toContain("\n");
   });
 });
