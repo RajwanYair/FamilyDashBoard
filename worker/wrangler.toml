@@ -47,6 +47,10 @@ crons = ["0 0 * * *", "0 12 * * *", "0 23 * * *"]
 #   METRICS_TOKEN          — GET /api/metrics Prometheus endpoint gate
 #   REPORTS_TOKEN          — GET /api/reports/digest gate (V12-OPS, ADR-028)
 #
+# Worker environment variables (set via `wrangler deploy --var`):
+#   CANARY_PCT             — 0–100 integer string for canary traffic tagging (V12-EDGE-4b)
+#                            e.g. "10" tags 10% of responses with X-Canary: true
+#
 # Analytics Engine dataset (V12-EDGE-2b, ADR-029):
 #   Add to wrangler.toml once the dataset is created:
 #   [[analytics_engine_datasets]]

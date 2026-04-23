@@ -19,6 +19,9 @@
  *   GET  /api/metrics                     → Prometheus text metrics (token-gated, D1-backed)
  *   POST /api/reports                     → Browser Reporting API ingest (CSP + deprecation + intervention)
  *   GET  /api/reports/digest              → Report summary digest (token-gated, D1-backed, ADR-028)
+ *
+ * Middleware:
+ *   CORS · Rate-limiting · Request logging · Canary header (X-Canary: true, CANARY_PCT%) · Analytics Engine
  */
 
 import { Hono } from "hono";
@@ -48,6 +51,7 @@ import {
   MAX_REQUESTS_PER_WINDOW,
 } from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
+import { applyCanaryHeader } from "./middleware/canary";
 import { writeAnalyticsHit, normaliseRoute } from "./utils/analytics";
 import type { Env } from "./types";
 
@@ -81,6 +85,9 @@ app.use("*", async (c, next) => {
   c.res.headers.set("X-RateLimit-Remaining", String(getRemainingRequests(ip)));
 
   logRequest(c.req.raw, c.res, startMs, ip);
+
+  // Canary traffic tagging (V12-EDGE-4b, Sprint 32) — fire-and-forget header injection
+  applyCanaryHeader(c.res, c.env.CANARY_PCT);
 
   // Analytics Engine hit (V12-EDGE-2b, ADR-029) — fire-and-forget
   writeAnalyticsHit(
