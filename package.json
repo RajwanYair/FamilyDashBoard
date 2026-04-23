@@ -37,7 +37,7 @@
         "test:coverage": "vitest run --coverage",
         "lint": "eslint . --max-warnings 0 --cache --cache-strategy content",
         "lint:fix": "eslint . --fix --cache --cache-strategy content",
-        "lint:md": "markdownlint-cli2 \"**/*.md\" \"#**/node_modules/**\" \"#test-results/**\"",
+        "lint:md": "markdownlint-cli2 \"**/*.md\" \"#**/node_modules/**\" \"#worker/node_modules/**\" \"#test-results/**\"",
         "lint:instructions": "node scripts/lint-instructions.mjs",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
