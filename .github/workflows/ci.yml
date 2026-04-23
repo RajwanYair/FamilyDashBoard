@@ -227,3 +227,39 @@ jobs:
           fail-on-severity: high
           # Comment on the PR with a summary of added/removed dependencies
           comment-summary-in-pr: always
+
+  sbom:
+    name: SBOM (CycloneDX)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    # Only generate SBOM on main branch pushes (not PRs)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [build]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - name: Generate SBOM (CycloneDX JSON)
+        run: |
+          npm install --package-lock-only --ignore-scripts --silent
+          npx @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.json --package-lock-only --ignore-npm-errors
+      - name: Verify SBOM was created
+        run: |
+          if [ ! -f sbom.json ]; then
+            echo "::error::SBOM generation failed — sbom.json not found"
+            exit 1
+          fi
+          echo "✅ SBOM generated: $(wc -c < sbom.json) bytes"
+          # Verify it's valid JSON
+          node -e "const s=require('fs').readFileSync('sbom.json','utf8'); JSON.parse(s); console.log('✅ SBOM is valid JSON');"
+      - name: Upload SBOM as artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: sbom.json
+          retention-days: 90
