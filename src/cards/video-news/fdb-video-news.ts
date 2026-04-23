@@ -20,7 +20,6 @@ import { LS_COLLAPSED } from "../../core/constants";
 import type { VideoChannelId } from "../../types/stream";
 
 export class FdbVideoNewsCard extends FdbCard {
-  private _collapseBtn: HTMLButtonElement | null = null;
 
   override connect(): void {
     const { header, body } = this.buildShell("📺", "ערוץ חדשות", "Video News");
@@ -36,7 +35,6 @@ export class FdbVideoNewsCard extends FdbCard {
       collapseBtn.title = "מזער/הרחב — Collapse / Expand";
       collapseBtn.textContent = "▼";
       endSlot.prepend(collapseBtn);
-      this._collapseBtn = collapseBtn;
 
       // Restore collapsed state from localStorage
       const cardId = this.dataset["cardId"] ?? "video-news";
@@ -46,11 +44,7 @@ export class FdbVideoNewsCard extends FdbCard {
         collapseBtn.textContent = "▶";
         collapseBtn.setAttribute("aria-expanded", "false");
       }
-
-      collapseBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._toggleCollapse();
-      });
+      // Click is handled by initCardCollapse() in maximize.ts — no listener here.
     }
 
     // ── Add mini-info span into center slot (next to title) ───────────────
@@ -80,7 +74,6 @@ export class FdbVideoNewsCard extends FdbCard {
 
   override disconnect(): void {
     destroyVideoNews();
-    this._collapseBtn = null;
     diagLog("[fdb-video-news] disconnected");
   }
 
@@ -91,37 +84,10 @@ export class FdbVideoNewsCard extends FdbCard {
 
   // ── Collapse helpers ───────────────────────────────────────────────────
 
-  private _toggleCollapse(): void {
-    const doToggle = (): void => {
-      this.classList.toggle("collapsed");
-      const isCollapsed = this.classList.contains("collapsed");
-      if (this._collapseBtn) {
-        this._collapseBtn.textContent = isCollapsed ? "▶" : "▼";
-        this._collapseBtn.setAttribute("aria-expanded", String(!isCollapsed));
-      }
-      // Persist state
-      const cardId = this.dataset["cardId"] ?? "video-news";
-      const set = this._loadCollapsedIds();
-      if (isCollapsed) set.add(cardId); else set.delete(cardId);
-      this._saveCollapsedIds(set);
-      diagLog(`[fdb-video-news] ${isCollapsed ? "collapsed" : "expanded"}`);
-    };
-
-    if ("startViewTransition" in document) {
-      void (document as { startViewTransition: (fn: () => void) => unknown }).startViewTransition(doToggle);
-    } else {
-      doToggle();
-    }
-  }
-
   private _loadCollapsedIds(): Set<string> {
     try {
       return new Set(JSON.parse(localStorage.getItem(LS_COLLAPSED) ?? "[]") as string[]);
     } catch { return new Set(); }
-  }
-
-  private _saveCollapsedIds(set: Set<string>): void {
-    try { localStorage.setItem(LS_COLLAPSED, JSON.stringify([...set])); } catch { /* quota */ }
   }
 }
 
