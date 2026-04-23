@@ -95,3 +95,19 @@ describe("applyCanaryHeader", () => {
     vi.restoreAllMocks();
   });
 });
+
+// ── /api/canary endpoint (V13-EDGE-5) ────────────────────────────────────────
+
+describe("/api/canary endpoint behaviour", () => {
+  it("shouldTagCanary returns true when pct=100 (all traffic tagged)", () => {
+    expect(shouldTagCanary("100")).toBe(true);
+  });
+
+  it("shouldTagCanary returns false when pct=0 (canary off)", () => {
+    expect(shouldTagCanary("0")).toBe(false);
+  });
+
+  it("shouldTagCanary returns false when pct=undefined (not configured)", () => {
+    expect(shouldTagCanary(undefined)).toBe(false);
+  });
+});

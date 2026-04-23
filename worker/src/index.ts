@@ -54,7 +54,7 @@ import {
   MAX_REQUESTS_PER_WINDOW,
 } from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
-import { applyCanaryHeader } from "./middleware/canary";
+import { applyCanaryHeader, shouldTagCanary } from "./middleware/canary";
 import { writeAnalyticsHit, normaliseRoute } from "./utils/analytics";
 import type { Env } from "./types";
 
@@ -107,6 +107,13 @@ app.use("*", async (c, next) => {
 app.get("/health", (c) =>
   c.json({ ok: true, status: "healthy", ts: Date.now() }),
 );
+
+// V13-EDGE-5: Canary health endpoint — reveals canary percentage and current tag status
+app.get("/api/canary", (c) => {
+  const pct = parseInt(c.env.CANARY_PCT ?? "0", 10);
+  const tagged = shouldTagCanary(c.env.CANARY_PCT);
+  return c.json({ canary: tagged, pct: isNaN(pct) ? 0 : pct, ts: Date.now() });
+});
 
 app.get("/api/weather", (c) =>
   handleWeather(new URL(c.req.url), c.env),
