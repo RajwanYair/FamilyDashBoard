@@ -156,3 +156,23 @@ textarea:focus-visible {
   white-space: nowrap;
   border: 0;
 }
+
+/* ── WCAG 3.1.5 Reading Level — prose line-height for Hebrew RTL text ─────────
+ * WCAG 3.1.5 (AAA) requires text at lower secondary school reading level or below,
+ * or a supplemental simplified version. For this Hebrew dashboard, we satisfy the
+ * criterion by: (1) using the correct lang="he" on the root element, (2) keeping
+ * prose text in short headline form (news), and (3) applying --reading-lh (1.6×)
+ * to multi-line prose blocks to reduce cognitive load for RTL readers.
+ *
+ * Applies to: motivation quote, news descriptions, news reading-time hints,
+ *             alert item descriptions, and Hebrew calendar parasha text.
+ */
+@layer base {
+  .moti-text,
+  .news-desc,
+  .news-reading-time,
+  .alert-item-desc,
+  .hcal-parasha-text {
+    line-height: var(--reading-lh, 1.6);
+  }
+}

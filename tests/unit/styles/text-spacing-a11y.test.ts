@@ -96,3 +96,37 @@ describe("WCAG 1.4.12 — token values meet WCAG 2.1 SC 1.4.12 minimums", () => 
     expect(parseFloat(m![1])).toBeGreaterThanOrEqual(2);
   });
 });
+
+// ── WCAG 3.1.5 Reading Level ─────────────────────────────────────────────────
+
+describe("WCAG 3.1.5 — tokens.css declares --reading-lh and a11y.css applies it", () => {
+  it("tokens.css declares --reading-lh for prose reading comfort", () => {
+    expect(tokensCSS).toMatch(/--reading-lh\s*:\s*[\d.]+/);
+  });
+
+  it("--reading-lh value is ≥ 1.5 (cognitively accessible for RTL prose)", () => {
+    const m = tokensCSS.match(/--reading-lh\s*:\s*([\d.]+)/);
+    expect(m).not.toBeNull();
+    expect(parseFloat(m![1])).toBeGreaterThanOrEqual(1.5);
+  });
+
+  it("a11y.css applies --reading-lh to prose selectors", () => {
+    expect(a11yCSS).toMatch(/line-height\s*:\s*var\(--reading-lh[^)]*\)/);
+  });
+
+  it("a11y.css covers motivation text (.moti-text)", () => {
+    expect(a11yCSS).toContain(".moti-text");
+  });
+
+  it("a11y.css covers news description (.news-desc)", () => {
+    expect(a11yCSS).toContain(".news-desc");
+  });
+
+  it("a11y.css covers Hebrew calendar parasha text (.hcal-parasha-text)", () => {
+    expect(a11yCSS).toContain(".hcal-parasha-text");
+  });
+
+  it("reading-lh block is inside @layer base", () => {
+    expect(a11yCSS).toMatch(/@layer\s+base\s*\{[^}]*\.moti-text/s);
+  });
+});

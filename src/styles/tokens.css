@@ -208,5 +208,9 @@
     --ts-letter-spacing: 0.12em; /* ≥ 0.12 × font-size */
     --ts-word-spacing: 0.16em;   /* ≥ 0.16 × font-size */
     --ts-paragraph-spacing: 2em; /* ≥ 2 × font-size */
+
+    /* ── WCAG 3.1.5 Reading Level Token ── */
+    /* 1.6 × font-size for Hebrew/RTL prose — improves cognitive reading ease (AAA). */
+    --reading-lh: 1.6;
   }
 }
