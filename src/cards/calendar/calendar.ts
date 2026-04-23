@@ -10,7 +10,7 @@
 import { scheduleCard } from "../base-card";
 import { trustedHTML } from "../../core/trusted-types";
 import "./calendar.css";
-import { INTERVALS, PROXIES, LS_ICS_URL, MS_PER_DAY, MS_PER_MIN } from "../../core/constants";
+import { INTERVALS, PROXIES, LS_ICS_URL, MS_PER_DAY, MS_PER_MIN, WORKER_BASE_URL, isWorkerEnabled } from "../../core/constants";
 import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
@@ -372,6 +372,23 @@ function getICSUrls(): string[] {
 }
 
 async function fetchICS(url: string): Promise<string | null> {
+  // 0. Cloudflare Worker — server-side ICS proxy, no CORS or network-proxy dependency
+  if (isWorkerEnabled()) {
+    const workerUrl = `${WORKER_BASE_URL}/api/calendar?url=${encodeURIComponent(url)}`;
+    try {
+      const r = await fetchWithTimeout(workerUrl, CAL_DIRECT_TIMEOUT);
+      if (r.ok) {
+        const text = await r.text();
+        if (text.includes("BEGIN:VCALENDAR")) {
+          diagLog(`FDB-022W: [calendar] worker OK (${text.length} bytes)`);
+          return text;
+        }
+      }
+    } catch (e) {
+      diagLog(`FDB-022E: [calendar] worker ERR: ${String(e)}`);
+    }
+  }
+
   // 1. Direct fetch
   try {
     const r = await fetchWithTimeout(url, CAL_DIRECT_TIMEOUT);

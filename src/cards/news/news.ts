@@ -14,6 +14,8 @@ import {
   LS_NEWS_BOOKMARKS,
   LS_NEWS_FONT,
   MS_PER_HOUR,
+  WORKER_BASE_URL,
+  isWorkerEnabled,
 } from "../../core/constants";
 import { runConcurrent } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
@@ -346,7 +348,42 @@ export function detectCategory(title: string): string | null {
 }
 
 // ── Fetch a single RSS feed ──
+function parseFeedItems(text: string, src: string): NewsItem[] {
+  const xml = new DOMParser().parseFromString(text, "text/xml");
+  const items: NewsItem[] = [];
+  xml.querySelectorAll("item").forEach((el) => {
+    const title = el.querySelector("title")?.textContent?.trim();
+    if (!title) return;
+    const link = el.querySelector("link")?.textContent ?? "";
+    items.push({
+      title,
+      link,
+      pubDate: el.querySelector("pubDate")?.textContent ?? "",
+      source: src,
+      category: detectCategory(title) ?? undefined,
+      description:
+        (el.querySelector("description")?.textContent ?? "")
+          .replace(/<[^>]+>/g, "")
+          .trim()
+          .slice(0, 200) || undefined,
+    });
+  });
+  return items;
+}
+
 export async function fetchFeed(feed: NewsFeed): Promise<NewsItem[]> {
+  // 0. Cloudflare Worker — server-side RSS proxy, no CORS or network-proxy dependency
+  if (isWorkerEnabled()) {
+    try {
+      const res = await fetch(`${WORKER_BASE_URL}/api/news?url=${encodeURIComponent(feed.url)}`);
+      if (res.ok) {
+        const items = parseFeedItems(await res.text(), feed.src);
+        if (items.length) return items;
+      }
+    } catch { /* fall through to proxy chain */ }
+  }
+
+  // 1–N. CORS proxy chain
   for (const proxy of PROXIES) {
     try {
       const res = await fetch(proxy + encodeURIComponent(feed.url));
@@ -354,25 +391,7 @@ export async function fetchFeed(feed: NewsFeed): Promise<NewsItem[]> {
       const text = proxy.includes("allorigins")
         ? ((await res.json()) as { contents: string }).contents
         : await res.text();
-      const xml = new DOMParser().parseFromString(text, "text/xml");
-      const items: NewsItem[] = [];
-      xml.querySelectorAll("item").forEach((el) => {
-        const title = el.querySelector("title")?.textContent?.trim();
-        if (!title) return;
-        const link = el.querySelector("link")?.textContent ?? "";
-        items.push({
-          title,
-          link,
-          pubDate: el.querySelector("pubDate")?.textContent ?? "",
-          source: feed.src,
-          category: detectCategory(title) ?? undefined,
-          description:
-            (el.querySelector("description")?.textContent ?? "")
-              .replace(/<[^>]+>/g, "")
-              .trim()
-              .slice(0, 200) || undefined,
-        });
-      });
+      const items = parseFeedItems(text, feed.src);
       if (items.length) return items;
     } catch {
       continue;

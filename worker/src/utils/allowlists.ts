@@ -37,6 +37,7 @@ export const NEWS_FEED_URLS: Array<{ url: string; src: string }> = [
 
 /** Permitted RSS/news feed origins (SSRF prevention). */
 export const ALLOWED_NEWS_ORIGINS = [
+  "www.rotter.net",
   "rss.ynet.co.il",
   "www.ynet.co.il",
   "rss.haaretz.co.il",
