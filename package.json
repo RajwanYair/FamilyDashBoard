@@ -52,7 +52,11 @@
         "release:report": "node scripts/release-report.mjs",
         "audit": "npm audit --audit-level=high",
         "check:sw": "node scripts/check-sw-version.mjs",
-        "commitlint": "commitlint --from=HEAD~1 --to=HEAD --verbose"
+        "commitlint": "commitlint --from=HEAD~1 --to=HEAD --verbose",
+        "changeset": "changeset",
+        "changeset:add": "changeset add",
+        "changeset:version": "changeset version",
+        "changeset:publish": "changeset publish"
     },
     "engines": {
         "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
