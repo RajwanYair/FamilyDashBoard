@@ -6,7 +6,8 @@
  * so developers can track bundle growth over time.
  *
  * Each record:
- *   { "date": "2026-06-22", "version": "7.16.0", "jsKb": 88.4, "cssKb": 17.2 }
+ *   { "date": "2026-06-22", "version": "7.16.0", "jsKb": 88.4, "cssKb": 17.2,
+ *     "cards": { "weather": 12.3, "stocks": 8.1, ... } }
  *
  * Usage:
  *   node scripts/bundle-trend.mjs [version]
@@ -54,11 +55,41 @@ for (const file of files) {
   if (file.endsWith(".css")) cssBytes += gzipSize(fullPath);
 }
 
+// ── Per-card chunk sizes ───────────────────────────────────────────────────
+
+const CARD_CHUNKS = [
+  ["weather",     "weather"],
+  ["stocks",      "stocks"],
+  ["currency",    "currency"],
+  ["calendar",    "calendar"],
+  ["hebrew-cal",  "hebrew-cal"],
+  ["alerts",      "alerts"],
+  ["motivation",  "motivation"],
+  ["tasks",       "tasks"],
+  ["system-info", "system-info"],
+  ["countdown",   "countdown"],
+  ["news",        "news"],
+];
+
+const jsFiles = files.filter((f) => f.endsWith(".js"));
+/** @type {Record<string, number>} */
+const cardSizes = {};
+for (const [label, pattern] of CARD_CHUNKS) {
+  const matching = jsFiles.filter((f) => f.toLowerCase().includes(pattern));
+  if (matching.length === 0) continue;
+  let totalGz = 0;
+  for (const f of matching) {
+    totalGz += gzipSize(join(DIST_ASSETS, f));
+  }
+  cardSizes[label] = toKb(totalGz);
+}
+
 const record = {
   date: new Date().toISOString().slice(0, 10),
   version: process.argv[2] ?? pkg.version,
   jsKb: toKb(jsBytes),
   cssKb: toKb(cssBytes),
+  ...(Object.keys(cardSizes).length > 0 && { cards: cardSizes }),
 };
 
 // ── Read+append or create ──────────────────────────────────────────────────
@@ -77,5 +108,7 @@ writeFileSync(TREND_FILE, JSON.stringify(history, null, 2) + "\n", "utf-8");
 
 console.log(
   `[bundle-trend] Recorded v${record.version} on ${record.date}: ` +
-    `JS ${record.jsKb} KB · CSS ${record.cssKb} KB (${history.length} entries total)`,
+    `JS ${record.jsKb} KB · CSS ${record.cssKb} KB` +
+    (record.cards ? ` · ${Object.keys(record.cards).length} card chunks` : "") +
+    ` (${history.length} entries total)`,
 );

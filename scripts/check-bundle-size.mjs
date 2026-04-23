@@ -205,3 +205,35 @@ if (cardRows.length === 0) {
 }
 console.log();
 
+// ── Per-card 10% delta gate against last baseline ─────────────────────────────
+// Fails CI if any card chunk grows > 10% vs the recorded baseline.
+
+if (baseline && baseline.cards && cardRows.length > 0) {
+  console.log(`📈 Per-card growth check vs baseline v${baseline.version} (${baseline.date})\n`);
+  let cardGrowthOk = true;
+
+  for (const { label, gzKb } of cardRows) {
+    const baseKb = baseline.cards[label];
+    if (typeof baseKb !== "number" || baseKb === 0) {
+      console.log(`  ℹ️   ${label.padEnd(colW)} no baseline — skipping`);
+      continue;
+    }
+    const delta = (gzKb - baseKb) / baseKb;
+    const pct = (delta * 100).toFixed(1);
+    const sign = delta >= 0 ? "+" : "";
+    if (delta > GROWTH_THRESHOLD) {
+      console.error(
+        `  ❌  ${label.padEnd(colW)} grew ${sign}${pct}% (${baseKb.toFixed(1)} → ${gzKb.toFixed(1)} KB) — exceeds ${GROWTH_THRESHOLD * 100}% limit`,
+      );
+      cardGrowthOk = false;
+    } else {
+      console.log(
+        `  ✅  ${label.padEnd(colW)} ${sign}${pct}% (${baseKb.toFixed(1)} → ${gzKb.toFixed(1)} KB)`,
+      );
+    }
+  }
+  console.log();
+  if (!cardGrowthOk) {
+    process.exit(1);
+  }
+}
