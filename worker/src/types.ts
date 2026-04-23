@@ -90,6 +90,12 @@ export interface Env {
    */
   AI_ENABLED?: string;
   /**
+   * Workers AI binding (ADR-030, V13-AI-1).
+   * Bound in wrangler.toml as [ai] with binding name "AI".
+   * Optional — AI routes return 503 when not bound.
+   */
+  AI?: AiBinding;
+  /**
    * Workers Queue binding for error fan-out (ADR-032).
    * When bound, each validated error batch is also enqueued for async processing.
    * Optional — silently skipped when not configured.
@@ -107,6 +113,25 @@ export interface Env {
    * Optional — weekly digest is skipped when not set.
    */
   EMAIL_SEND_TO?: string;
+}
+
+/**
+ * Minimal Workers AI binding interface (ADR-030, V13-AI-1).
+ * The Cloudflare Ai binding satisfies this via structural typing.
+ * Only the text-generation run() signature is modelled here.
+ */
+export interface AiTextGenerationInput {
+  messages: Array<{ role: string; content: string }>;
+  max_tokens?: number;
+}
+export interface AiTextGenerationOutput {
+  response?: string;
+}
+export interface AiBinding {
+  run(
+    model: string,
+    input: AiTextGenerationInput,
+  ): Promise<AiTextGenerationOutput | ReadableStream>;
 }
 
 /**

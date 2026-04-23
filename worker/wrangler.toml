@@ -90,3 +90,9 @@ max_batch_size = 10
 max_batch_timeout = 30
 max_retries = 3
 dead_letter_queue = "fdb-errors-dlq"
+
+# Workers AI binding (ADR-030, V13-AI-1)
+# Enables /api/news/summarise and /api/motivation/hebrew when AI_ENABLED=true.
+# Model: @cf/meta/llama-3.3-70b-instruct (text generation)
+[ai]
+binding = "AI"
