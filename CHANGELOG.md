@@ -5,6 +5,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.2.0] — 2025-07-13
+
+> **OPS + A11Y** · **3459 tests / 109 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 29 ADRs (commit `833afc7`)
+
+### Added
+
+- **Reporting API `/api/reports`** (`worker/src/routes/reports.ts`): `POST /api/reports` ingests Browser Reporting API payloads (CSP violations, deprecation, intervention). Valibot-validated, PII-stripped (userAgent discarded, URL query params removed), D1-stored. 50/request cap. Returns 204 always. (ADR-028, Sprint 28)
+- **Reporting digest `/api/reports/digest`**: `GET /api/reports/digest` returns report counts grouped by `{type, day}` over 30 days. Bearer-token-gated (`REPORTS_TOKEN`). 21 unit tests.
+- **D1 report pruning** (`worker/src/utils/d1-reports.ts`): `pruneOldReports(db, 30)` runs on daily cron to keep `browser_reports` table bounded.
+- **Analytics Engine middleware** (`worker/src/utils/analytics.ts`): `writeAnalyticsHit()` records per-request telemetry to Workers Analytics Engine (`ANALYTICS` binding). Schema: `blobs=[route, method, env]`, `doubles=[status]`, `indexes=[route]`. Fire-and-forget, optional binding. (ADR-029, Sprint 29)
+- **Canary route header** (`worker/src/middleware/canary.ts`): `CANARY_PCT` env var (0–100 integer string) tags a random fraction of responses with `X-Canary: true`. Fire-and-forget header injection in middleware. 14 unit tests. (Sprint 32)
+- **SR-only `<h1>` heading** (`src/index.html`): `<h1 class="sr-only" id="page-heading">` inside `<main>` satisfies WCAG 2.4.6 Headings for screen readers without affecting TV layout. (Sprint 30)
+- **`.sr-only` CSS utility** (`src/styles/a11y.css`): Standard WebAIM SR-only pattern (`clip: rect(0,0,0,0)`) added to `@layer base`. (Sprint 30)
+- **WCAG compliance docs** (`ARCHITECTURE.md`): New `## Accessibility Compliance` section documents WCAG 3.3.7 redundant-entry (config panel pre-fill), WCAG 2.4.6 headings, WCAG 3.2.6 consistent help (`?`/`H` shortcut). (Sprint 31)
+- **SimHash property tests expanded** (`tests/unit/worker/simhash.property.test.ts`): Added 6 new fast-check invariants — determinism, BigInt type, monotone threshold, threshold=64 always true, threshold=0 only for identical, prefix sensitivity. (Sprint 33)
+- **Stryker mutation config** (`scripts/stryker.config.mjs`): Targets `simhash.ts`, `analytics.ts`, `d1-reports.ts`, `canary.ts` with ≥85% score threshold. `npm run mutate` script. (Sprint 33)
+- **ADR-028** (`docs/adr/ADR-028-reporting-api-d1.md`): Reporting API + D1 storage decision record.
+- **ADR-029** (`docs/adr/ADR-029-analytics-engine.md`): Workers Analytics Engine middleware decision record.
+- **`ANALYTICS?: AnalyticsEngineDataset`** and **`CANARY_PCT?: string`** added to `worker/src/types.ts` `Env` interface.
+- **`AnalyticsEngineDataset` interface** added to `worker/src/types.ts` (structural typing, no workers-types dependency).
+
+---
+
 ## [12.1.0] — 2026-07-15
 
 > **Edge Upgrade** · **3406 tests / 106 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 27 ADRs

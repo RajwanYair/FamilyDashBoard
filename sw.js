@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v12.1.0
+/* FamilyDashBoard ServiceWorker — v12.2.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v12.1.0: Edge upgrade — D1 telemetry, Durable Objects, Prometheus metrics, JSON diag export
+ * v12.2.0: Reporting API, Analytics Engine, Canary routing, A11Y WCAG 2.2 improvements
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
