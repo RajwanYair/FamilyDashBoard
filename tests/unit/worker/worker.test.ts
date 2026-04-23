@@ -15,6 +15,7 @@ import {
   rateLimitResponse,
   getRemainingRequests,
   clearRateLimitState,
+  checkRateLimitAsync,
   MAX_REQUESTS_PER_WINDOW,
 } from "../../../worker/src/middleware/rate-limit";
 import {
@@ -1272,5 +1273,68 @@ describe("Worker test helper — makeWorkerEnv", () => {
     const kv = makeKv(getSpy);
     await kv.get("stocks:AAPL");
     expect(getSpy).toHaveBeenCalledWith("stocks:AAPL");
+  });
+});
+// ── checkRateLimitAsync (V13-EDGE-6 DO-backed rate limiter) ──────────────────
+
+describe("checkRateLimitAsync — in-memory fallback (no DO)", () => {
+  beforeEach(() => clearRateLimitState());
+  afterEach(() => clearRateLimitState());
+
+  it("returns limited=false for a fresh IP when doNamespace is undefined", async () => {
+    const result = await checkRateLimitAsync("10.0.0.1");
+    expect(result.limited).toBe(false);
+    expect(result.remaining).toBeLessThanOrEqual(MAX_REQUESTS_PER_WINDOW);
+  });
+
+  it("returns limited=true after exceeding the limit", async () => {
+    for (let i = 0; i <= MAX_REQUESTS_PER_WINDOW; i++) {
+      await checkRateLimitAsync("10.0.0.2");
+    }
+    const result = await checkRateLimitAsync("10.0.0.2");
+    expect(result.limited).toBe(true);
+    expect(result.remaining).toBe(0);
+  });
+
+  it("falls back to in-memory when DO stub throws", async () => {
+    const badDO = {
+      idFromName: () => "id",
+      get: () => ({ fetch: async () => { throw new Error("DO unavailable"); } }),
+    };
+    const result = await checkRateLimitAsync("10.0.0.3", badDO as never);
+    expect(result.limited).toBe(false);
+  });
+
+  it("falls back to in-memory when DO returns non-ok status", async () => {
+    const badDO = {
+      idFromName: () => "id",
+      get: () => ({ fetch: async () => new Response("error", { status: 500 }) }),
+    };
+    const result = await checkRateLimitAsync("10.0.0.4", badDO as never);
+    expect(result.limited).toBe(false);
+  });
+
+  it("uses DO response when stub returns valid JSON", async () => {
+    const mockDO = {
+      idFromName: () => "id",
+      get: () => ({
+        fetch: async () => Response.json({ limited: false, remaining: 99 }),
+      }),
+    };
+    const result = await checkRateLimitAsync("10.0.0.5", mockDO as never);
+    expect(result.limited).toBe(false);
+    expect(result.remaining).toBe(99);
+  });
+
+  it("returns limited=true from DO when DO says limited", async () => {
+    const mockDO = {
+      idFromName: () => "id",
+      get: () => ({
+        fetch: async () => Response.json({ limited: true, remaining: 0 }),
+      }),
+    };
+    const result = await checkRateLimitAsync("10.0.0.6", mockDO as never);
+    expect(result.limited).toBe(true);
+    expect(result.remaining).toBe(0);
   });
 });

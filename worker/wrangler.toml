@@ -41,6 +41,15 @@ jurisdiction = "eu"
 tag = "v1"
 new_classes = ["AlertsOrchestrator"]
 
+# V13-EDGE-6: globally-consistent DO-backed rate limiter
+[[durable_objects.bindings]]
+name = "RATE_LIMITER_DO"
+class_name = "RateLimiterDO"
+
+[[migrations]]
+tag = "v2"
+new_classes = ["RateLimiterDO"]
+
 # Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries

@@ -45,6 +45,13 @@ export interface Env {
    */
   ALERTS_DO?: DurableObjectNamespace;
   /**
+   * Durable Object for globally-consistent rate limiting (V13-EDGE-6).
+   * Replaces per-isolate in-memory state with a single globally-serialised DO counter.
+   * Bound in wrangler.toml as [[durable_objects.bindings]].
+   * Optional — falls back to in-memory rate limiting when not bound.
+   */
+  RATE_LIMITER_DO?: DurableObjectNamespace;
+  /**
    * D1 database for telemetry and error persistence (V12-EDGE-2).
    * Provision via: wrangler d1 create fdb-telemetry
    * Optional — telemetry is silently skipped when not configured.

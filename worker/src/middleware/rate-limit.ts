@@ -1,11 +1,10 @@
 /**
- * FamilyDashBoard Worker — In-memory rate limiter
+ * FamilyDashBoard Worker — In-memory + DO-backed rate limiter (V13-EDGE-6)
  *
  * Limits each IP to MAX_REQUESTS_PER_WINDOW requests per sliding window.
- * Uses a simple Map with timestamp-based eviction (no Cloudflare KV required).
- *
- * Note: In-memory state is per-isolate. For true global rate limiting,
- * replace the Map with a Cloudflare KV or Durable Object counter.
+ * When RATE_LIMITER_DO is bound, requests are checked via the Durable Object
+ * for globally-consistent rate limiting across CF isolates.
+ * Falls back to in-memory Map when the DO is unavailable.
  */
 
 export const MAX_REQUESTS_PER_WINDOW = 120;
@@ -17,6 +16,16 @@ interface WindowEntry {
 }
 
 const ipWindows = new Map<string, WindowEntry>();
+
+// Minimal DO interfaces for structural typing — avoids hard dep on @cloudflare/workers-types in tests
+interface DONamespace {
+  idFromName(name: string): unknown;
+  get(id: unknown): DOStub;
+}
+
+interface DOStub {
+  fetch(request: Request): Promise<Response>;
+}
 
 /**
  * Check whether the given IP has exceeded the rate limit.
@@ -76,3 +85,43 @@ export function rateLimitResponse(): Response {
 export function clearRateLimitState(): void {
   ipWindows.clear();
 }
+
+/**
+ * Async rate-limit check: uses DO when available for global per-client limiting,
+ * falls back to in-memory on error or when DO is not bound (V13-EDGE-6).
+ *
+ * @param ip           - The client IP address.
+ * @param doNamespace  - Optional RATE_LIMITER_DO binding from the Worker Env.
+ * @returns { limited, remaining } — `limited=true` means the request should be rejected.
+ */
+export async function checkRateLimitAsync(
+  ip: string,
+  doNamespace?: DONamespace,
+): Promise<{ limited: boolean; remaining: number }> {
+  if (!doNamespace) {
+    const limited = isRateLimited(ip);
+    return { limited, remaining: getRemainingRequests(ip) };
+  }
+
+  try {
+    const id = doNamespace.idFromName("rate-limiter");
+    const stub = doNamespace.get(id);
+    const params = new URLSearchParams({
+      ip,
+      max: String(MAX_REQUESTS_PER_WINDOW),
+      window: String(WINDOW_MS),
+    });
+    const res = await stub.fetch(
+      new Request(`https://rate-limiter.internal/check?${params}`, { method: "POST" }),
+    );
+    if (!res.ok) {
+      const limited = isRateLimited(ip);
+      return { limited, remaining: getRemainingRequests(ip) };
+    }
+    return (await res.json()) as { limited: boolean; remaining: number };
+  } catch {
+    const limited = isRateLimited(ip);
+    return { limited, remaining: getRemainingRequests(ip) };
+  }
+}
+

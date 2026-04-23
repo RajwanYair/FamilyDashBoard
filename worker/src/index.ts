@@ -28,8 +28,9 @@
 
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-// ── Durable Objects (V12-EDGE-3) — re-exported for wrangler binding ───────────
+// ── Durable Objects (V12-EDGE-3, V13-EDGE-6) — re-exported for wrangler binding ──
 export { AlertsOrchestrator } from "./durable-objects/alerts-orchestrator";
+export { RateLimiterDO } from "./durable-objects/rate-limiter-do";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
 import {
   handleStocks,
@@ -47,10 +48,9 @@ import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleScheduled, handleNextYearPreWarm, handleWeeklyDigest } from "./routes/cron";
 import { handleNewsSummarise, handleMotivationHebrew } from "./routes/ai";
 import {
-  isRateLimited,
+  checkRateLimitAsync,
   getClientIp,
   rateLimitResponse,
-  getRemainingRequests,
   MAX_REQUESTS_PER_WINDOW,
 } from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
@@ -75,17 +75,18 @@ app.use(
   }),
 );
 
-// Rate limiting + request logging middleware
+// Rate limiting + request logging middleware (V13-EDGE-6: DO-backed when RATE_LIMITER_DO bound)
 app.use("*", async (c, next) => {
   const ip = getClientIp(c.req.raw);
-  if (isRateLimited(ip)) return rateLimitResponse();
+  const { limited, remaining } = await checkRateLimitAsync(ip, c.env.RATE_LIMITER_DO);
+  if (limited) return rateLimitResponse();
 
   const startMs = Date.now();
   await next();
 
   // Inject rate-limit info headers
   c.res.headers.set("X-RateLimit-Limit", String(MAX_REQUESTS_PER_WINDOW));
-  c.res.headers.set("X-RateLimit-Remaining", String(getRemainingRequests(ip)));
+  c.res.headers.set("X-RateLimit-Remaining", String(remaining));
 
   logRequest(c.req.raw, c.res, startMs, ip);
 
