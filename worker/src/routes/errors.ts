@@ -14,7 +14,7 @@
  */
 
 import { jsonResponse, CORS_HEADERS } from "../utils/response";
-import type { Env, KVStore } from "../types";
+import type { Env, KVStore, ErrorQueueMessage } from "../types";
 import * as v from "valibot";
 
 /** Valibot schema for a single error entry sent by the client. */
@@ -147,6 +147,21 @@ export async function handleErrors(request: Request, env?: Env): Promise<Respons
       );
       await Promise.allSettled(writePromises);
       await incrementDailyCount(env.CACHE_KV, dateKey, dailyCount, valid.length);
+
+      // Enqueue batch notification for async fan-out (ADR-032)
+      if (env.ERRORS_QUEUE) {
+        const msg: ErrorQueueMessage = {
+          enqueuedAt: new Date().toISOString(),
+          dateKey,
+          count: valid.length,
+          kvPrefix: `errors:${dateKey}:`,
+        };
+        try {
+          await env.ERRORS_QUEUE.send(msg);
+        } catch {
+          // Non-fatal — queue send failure does not affect the primary response
+        }
+      }
     }
   }
 
@@ -206,5 +221,35 @@ export async function handleErrorsExport(request: Request, env: Env): Promise<Re
       ...CORS_HEADERS,
     },
   });
+}
+
+/**
+ * Workers Queue consumer — processes messages from ERRORS_QUEUE (ADR-032).
+ *
+ * Export this from worker/src/index.ts as a named `queue` export.
+ * Called automatically by the Cloudflare runtime when messages are dequeued.
+ * Each message body is typed as ErrorQueueMessage.
+ *
+ * Current behaviour: logs the batch metadata to the Worker console.
+ * Future: route to email alert, PagerDuty, Slack webhook, etc.
+ */
+export async function handleErrorsQueue(
+  batch: { messages: Array<{ body: unknown; ack(): void }> },
+): Promise<void> {
+  for (const msg of batch.messages) {
+    try {
+      const data =
+        msg.body !== null && typeof msg.body === "object"
+          ? (msg.body as Partial<ErrorQueueMessage>)
+          : {};
+      const info = `[FDB-queue] errors batch: ${data.count ?? "?"} entries @ ${data.dateKey ?? "?"} (enqueued ${data.enqueuedAt ?? "?"})`;
+      console.log(info);
+    } catch {
+      // Malformed message — log and ack to avoid redelivery loop
+      console.error("[FDB-queue] malformed message body", msg.body);
+    }
+    // Acknowledge the message so it is not redelivered
+    msg.ack();
+  }
 }
 

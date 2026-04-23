@@ -82,6 +82,12 @@ export interface Env {
    * When absent or not "true", those routes return 503 {"ok":false,"error":"ai_disabled"}.
    */
   AI_ENABLED?: string;
+  /**
+   * Workers Queue binding for error fan-out (ADR-032).
+   * When bound, each validated error batch is also enqueued for async processing.
+   * Optional — silently skipped when not configured.
+   */
+  ERRORS_QUEUE?: WorkersQueue;
 }
 
 /**
@@ -140,4 +146,28 @@ export interface AnalyticsEngineDataset {
     doubles?: number[];
     indexes?: string[];
   }): void;
+}
+
+/**
+ * Minimal Workers Queue producer interface (ADR-032).
+ * Cloudflare's Queue satisfies this via structural typing.
+ * Only the `send` method is used for error fan-out.
+ */
+export interface WorkersQueue {
+  send(body: unknown, options?: { contentType?: string }): Promise<void>;
+  sendBatch(messages: Array<{ body: unknown }>): Promise<void>;
+}
+
+/**
+ * Message body shape sent to the ERRORS_QUEUE (ADR-032).
+ */
+export interface ErrorQueueMessage {
+  /** ISO 8601 timestamp of when the batch was enqueued. */
+  enqueuedAt: string;
+  /** UTC date key (YYYY-MM-DD) for KV lookup. */
+  dateKey: string;
+  /** Number of error entries in this batch. */
+  count: number;
+  /** KV key prefix for this batch (errors:<dateKey>:). */
+  kvPrefix: string;
 }

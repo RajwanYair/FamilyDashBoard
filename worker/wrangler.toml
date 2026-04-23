@@ -61,3 +61,18 @@ crons = ["0 0 * * *", "0 12 * * *", "0 23 * * *"]
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
 dataset = "fdb_requests"
+
+# Workers Queue for error fan-out (ADR-032, V13-S26)
+# Create via: wrangler queues create fdb-errors
+# Producer binding — used in handleErrors() when ERRORS_QUEUE is bound.
+[[queues.producers]]
+binding = "ERRORS_QUEUE"
+queue = "fdb-errors"
+
+# Consumer binding — routes dequeued messages to the queue() handler.
+[[queues.consumers]]
+queue = "fdb-errors"
+max_batch_size = 10
+max_batch_timeout = 30
+max_retries = 3
+dead_letter_queue = "fdb-errors-dlq"

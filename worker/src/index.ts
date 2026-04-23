@@ -41,7 +41,7 @@ import {
   handleSefariaText,
   handleCrypto,
 } from "./routes/feeds";
-import { handleErrors, handleErrorsExport } from "./routes/errors";
+import { handleErrors, handleErrorsExport, handleErrorsQueue } from "./routes/errors";
 import { handleMetrics } from "./routes/metrics";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleScheduled, handleNextYearPreWarm } from "./routes/cron";
@@ -198,5 +198,12 @@ export default {
     } else {
       await handleScheduled(env);
     }
+  },
+
+  async queue(
+    batch: { messages: Array<{ body: unknown; ack(): void }> },
+    _env: Env,
+  ): Promise<void> {
+    await handleErrorsQueue(batch);
   },
 };
