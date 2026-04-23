@@ -8,6 +8,7 @@
 
 import "./stocks.css";
 import { trustedHTML } from "../../core/trusted-types";
+import { initAutoLoopScroll } from "../../core/auto-loop-scroll";
 import {
   INTERVALS,
   STOCK_SYMBOLS,
@@ -643,6 +644,12 @@ export async function loadAllStocks(): Promise<void> {
   updateStockSummary();
   checkStockAlerts();
   renderPortfolioRow();
+
+  // Start loop scroll if stocks overflow the visible area
+  const scrollEl = document.getElementById("stocks-body");
+  if (scrollEl instanceof HTMLElement) {
+    initAutoLoopScroll(scrollEl, { styleId: "stocks-scroll-style", pxPerSec: 40 });
+  }
 }
 
 function updateStockSummary(): void {

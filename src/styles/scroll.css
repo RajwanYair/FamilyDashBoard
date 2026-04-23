@@ -20,6 +20,7 @@
 .rss-scroll,
 .stocks-scroll,
 .alerts-scroll,
+.tasks-list,
 .ticker-inner {
   will-change: transform;
   transform: translateZ(0); /* force GPU layer */

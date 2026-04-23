@@ -15,6 +15,7 @@
 import { diagLog } from "../../core/diag";
 import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
+import { initAutoLoopScroll } from "../../core/auto-loop-scroll";
 import { LS_TASKS_DONE, LS_TASKS_RESET, LS_CHORES } from "../../core/constants";
 import type { CardDefinition, CardConfigField } from "../../types/card";
 
@@ -349,6 +350,12 @@ export function renderTasksCard(): void {
     } else {
       overdueBadge.style.display = "none";
     }
+  }
+
+  // Start loop scroll if task list overflows its visible area
+  const listEl = document.getElementById("tasks-list");
+  if (listEl instanceof HTMLElement) {
+    initAutoLoopScroll(listEl, { styleId: "tasks-list-scroll-style", pxPerSec: 35 });
   }
 }
 
