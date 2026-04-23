@@ -180,7 +180,10 @@ export function tickClock(): void {
   });
   if (elEngDate && elEngDate.textContent !== d) elEngDate.textContent = d;
 
-  const hd = now.toLocaleDateString("he-u-ca-hebrew", {
+  // Use Hebrew numbering system (nu-hebr) so day + year render as Hebrew gematria
+  // letters (e.g. "ט״ו בניסן ה׳תשפ״ו") instead of Arabic numerals.
+  const hd = now.toLocaleDateString("he-u-ca-hebrew-nu-hebr", {
+    weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
