@@ -95,6 +95,14 @@ describe("Maximize — toggleCardMaximize expand/collapse", () => {
     expect(card.classList.contains("maximized")).toBe(true);
   });
 
+  it("removes collapsed class when card is expanded from minimized state", () => {
+    const card = makeCard();
+    card.classList.add("collapsed");
+    mod.toggleCardMaximize(card);
+    expect(card.classList.contains("collapsed")).toBe(false);
+    expect(card.classList.contains("maximized")).toBe(true);
+  });
+
   it("removes maximized class on second toggle", () => {
     const card = makeCard();
     mod.toggleCardMaximize(card);
@@ -147,6 +155,62 @@ describe("Maximize — toggleCardMaximize swap", () => {
     mod.toggleCardMaximize(cardA);
     mod.toggleCardMaximize(cardB);
     expect(mod.getMaximizedCard()).toBe(cardB);
+  });
+});
+
+// ── maximize from collapsed state ──
+
+describe("Maximize — maximize from collapsed state", () => {
+  let mod: MaxMod;
+
+  beforeEach(async () => {
+    stubAnimate();
+    localStorage.clear();
+    mod = await freshMax();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("removes .collapsed when expanding a collapsed card", () => {
+    const card = makeCard("mc-collapsed-1");
+    card.classList.add("collapsed");
+    mod.toggleCardMaximize(card);
+    expect(card.classList.contains("collapsed")).toBe(false);
+    expect(card.classList.contains("maximized")).toBe(true);
+  });
+
+  it("restores .collapsed after collapse animation if card was persisted as collapsed", async () => {
+    localStorage.setItem("dash_v2_collapsed_cards", JSON.stringify(["mc-restore-1"]));
+    const card = makeCard("mc-restore-1");
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.textContent = "▶";
+    card.appendChild(btn);
+    card.classList.add("collapsed");
+
+    mod.toggleCardMaximize(card); // expand — removes .collapsed
+    expect(card.classList.contains("collapsed")).toBe(false);
+
+    mod.toggleCardMaximize(card); // collapse back
+    // anim.finished is resolved immediately by the stub
+    await Promise.resolve();
+    expect(card.classList.contains("collapsed")).toBe(true);
+    expect(btn.textContent).toBe("▶");
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("does NOT re-add .collapsed if card was NOT persisted as collapsed", async () => {
+    const card = makeCard("mc-no-restore-1");
+    card.classList.add("collapsed"); // visually collapsed but not persisted
+
+    mod.toggleCardMaximize(card); // expand
+    mod.toggleCardMaximize(card); // collapse
+    await Promise.resolve();
+    expect(card.classList.contains("collapsed")).toBe(false);
   });
 });
 

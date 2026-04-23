@@ -47,6 +47,10 @@ function expandCard(card: HTMLElement): void {
     collapseCard(maximizedCard);
   }
 
+  // If the card is collapsed (minimized), un-collapse it so content is visible when maximized.
+  // The collapsed state is restored after the maximize→collapse animation completes.
+  card.classList.remove("collapsed");
+
   // Measure the header so the maximized card starts below it (not covering the clock)
   const headerEl = document.querySelector<HTMLElement>("header.time-section");
   const headerBottom = headerEl ? Math.round(headerEl.getBoundingClientRect().bottom) : 0;
@@ -80,6 +84,11 @@ function expandCard(card: HTMLElement): void {
 }
 
 function collapseCard(card: HTMLElement): void {
+  // Check whether this card was persisted as collapsed, so we can restore the
+  // minimized state after the animation (it was removed by expandCard).
+  const collapseId = (card.id || card.querySelector("[id]")?.id) ?? "";
+  const wasCollapsed = collapseId ? loadCollapsedCards().has(collapseId) : false;
+
   // FLIP: Record maximized position
   const first = card.getBoundingClientRect();
   card.classList.remove("maximized");
@@ -96,11 +105,20 @@ function collapseCard(card: HTMLElement): void {
   );
 
   // Remove the scale variable only after the collapse animation, so font
-  // does not snap before the card reaches its original size
+  // does not snap before the card reaches its original size.
+  // Also restore .collapsed if the card was minimized before maximize.
   void anim.finished.then(() => {
     card.style.removeProperty("--max-font-scale");
     card.style.removeProperty("--maximize-top");
     card.style.removeProperty("--maximize-height");
+    if (wasCollapsed) {
+      card.classList.add("collapsed");
+      const btn = card.querySelector<HTMLElement>(".card-collapse-btn");
+      if (btn) {
+        btn.textContent = "▶";
+        btn.setAttribute("aria-expanded", "false");
+      }
+    }
   });
 
   card.setAttribute("aria-expanded", "false");
