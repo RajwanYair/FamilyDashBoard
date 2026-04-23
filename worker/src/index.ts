@@ -16,6 +16,7 @@
  *   GET /api/sefaria/text?ref=X           → Sefaria individual text lookup
  *   GET /api/crypto?ids=bitcoin          → CoinGecko Bitcoin price (validated)
  *   POST /api/errors                      → Client error ingestion (best-effort telemetry)
+ *   GET  /api/metrics                     → Prometheus text metrics (token-gated, D1-backed)
  */
 
 import { Hono } from "hono";
@@ -32,6 +33,7 @@ import {
   handleCrypto,
 } from "./routes/feeds";
 import { handleErrors, handleErrorsExport } from "./routes/errors";
+import { handleMetrics } from "./routes/metrics";
 import { handleScheduled, handleNextYearPreWarm } from "./routes/cron";
 import {
   isRateLimited,
@@ -135,6 +137,10 @@ app.get("/api/errors/export", (c) =>
 
 app.post("/api/errors", (c) =>
   handleErrors(c.req.raw, c.env),
+);
+
+app.get("/api/metrics", (c) =>
+  handleMetrics(c.req.raw, c.env),
 );
 
 app.all("*", (c) => c.json({ error: "Not found" }, 404));
