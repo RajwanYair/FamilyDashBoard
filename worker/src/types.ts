@@ -38,4 +38,44 @@ export interface Env {
    * Optional — Finnhub fallback is skipped when not configured.
    */
   FINNHUB_API_KEY?: string;
+  /**
+   * D1 database for telemetry and error persistence (V12-EDGE-2).
+   * Provision via: wrangler d1 create fdb-telemetry
+   * Optional — telemetry is silently skipped when not configured.
+   */
+  DB?: D1Database;
+  /**
+   * Token required to read metrics/telemetry endpoints.
+   * Set as a Worker secret (wrangler secret put METRICS_TOKEN).
+   * Optional — metrics endpoint returns 501 when not configured.
+   */
+  METRICS_TOKEN?: string;
+}
+
+/**
+ * Minimal D1Database interface — only the methods used by this worker.
+ * The Cloudflare D1Database satisfies this via structural typing.
+ * Defining it here prevents a hard dependency on @cloudflare/workers-types.
+ */
+export interface D1Database {
+  prepare(query: string): D1PreparedStatement;
+  exec(query: string): Promise<D1ExecResult>;
+}
+
+export interface D1PreparedStatement {
+  bind(...values: unknown[]): D1PreparedStatement;
+  run(): Promise<D1Result>;
+  first<T = Record<string, unknown>>(colName?: string): Promise<T | null>;
+  all<T = Record<string, unknown>>(): Promise<D1Result<T>>;
+}
+
+export interface D1Result<T = Record<string, unknown>> {
+  results: T[];
+  success: boolean;
+  meta?: { duration?: number; rows_written?: number; rows_read?: number };
+}
+
+export interface D1ExecResult {
+  count: number;
+  duration: number;
 }

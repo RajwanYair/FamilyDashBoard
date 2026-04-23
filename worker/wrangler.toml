@@ -16,8 +16,16 @@ binding = "CACHE_KV"
 id = "PLACEHOLDER_KV_ID"
 preview_id = "PLACEHOLDER_KV_PREVIEW_ID"
 
+# D1 database for telemetry/error persistence (V12-EDGE-2)
+# Provision via: wrangler d1 create fdb-telemetry
+[[d1_databases]]
+binding = "DB"
+database_name = "fdb-telemetry"
+database_id = "PLACEHOLDER_D1_ID"
+
 # Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries
+# 23:00 UTC — pre-warm next Hebrew year holidays on 29 Elul (V12-DATA)
 [triggers]
-crons = ["0 0 * * *", "0 12 * * *"]
+crons = ["0 0 * * *", "0 12 * * *", "0 23 * * *"]

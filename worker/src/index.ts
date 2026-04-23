@@ -32,7 +32,7 @@ import {
   handleCrypto,
 } from "./routes/feeds";
 import { handleErrors, handleErrorsExport } from "./routes/errors";
-import { handleScheduled } from "./routes/cron";
+import { handleScheduled, handleNextYearPreWarm } from "./routes/cron";
 import {
   isRateLimited,
   getClientIp,
@@ -144,7 +144,12 @@ app.all("*", (c) => c.json({ error: "Not found" }, 404));
 export default {
   fetch: app.fetch.bind(app),
 
-  async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
-    await handleScheduled(env);
+  async scheduled(event: ScheduledEvent, env: Env): Promise<void> {
+    // 23:00 UTC — pre-warm next Hebrew year's holiday list (V12-DATA)
+    if (new Date(event.scheduledTime).getUTCHours() === 23) {
+      await handleNextYearPreWarm(env);
+    } else {
+      await handleScheduled(env);
+    }
   },
 };

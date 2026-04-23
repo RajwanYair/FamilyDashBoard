@@ -237,7 +237,7 @@ export async function handleAlerts(env: Env): Promise<Response> {
   if (!validated.ok) {
     // Log but don't block — fall back to raw upstream data so the client
     // still gets something rather than a hard 502.
-    console.warn(`[alerts] Zod validation warning: ${validated.error}`);
+    console.warn(`[alerts] Valibot validation warning: ${validated.error}`);
   }
   const payload = validated.ok ? validated.data : data;
   // Write to KV for future stale fallback (1 h TTL — alerts are time-sensitive)
@@ -300,7 +300,7 @@ export async function handleSefariaCalendar(env: Env): Promise<Response> {
   const data: unknown = await res.json();
   const validated = safeParse(SefariaCalendarSchema, data);
   if (!validated.ok) {
-    console.warn(`[sefaria:calendar] Zod validation warning: ${validated.error}`);
+    console.warn(`[sefaria:calendar] Valibot validation warning: ${validated.error}`);
   }
   const payload = validated.ok ? validated.data : data;
   void kvPut(env.CACHE_KV, kvKey, payload, 86400);
@@ -338,7 +338,7 @@ export async function handleSefariaText(url: URL, env: Env): Promise<Response> {
   const data: unknown = await res.json();
   const validated = safeParse(SefariaTextSchema, data);
   if (!validated.ok) {
-    console.warn(`[sefaria:text] Zod validation warning: ${validated.error}`);
+    console.warn(`[sefaria:text] Valibot validation warning: ${validated.error}`);
   }
   const payload = validated.ok ? validated.data : data;
   void kvPut(env.CACHE_KV, kvKey, payload, 86400);
