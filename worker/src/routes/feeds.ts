@@ -13,6 +13,7 @@ import {
 import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema, AlertsSchema, SefariaCalendarSchema, SefariaTextSchema, FinnhubQuoteSchema } from "../utils/schemas";
 import { kvGetStale, kvPut } from "../utils/kv";
 import { parseRss } from "../utils/rss-parser";
+import { simHash, isNearDuplicate } from "../utils/simhash";
 import type { Env } from "../types";
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
@@ -184,12 +185,18 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
     if (r.status === "fulfilled") allItems.push(...r.value);
   }
 
-  // Deduplicate by first 40 chars of title
-  const seen = new Set<string>();
+  // Deduplicate: exact URL first, then SimHash near-duplicate on title
+  const seenUrls = new Set<string>();
+  const hashes: bigint[] = [];
   const unique = allItems.filter((item) => {
-    const key = item.title.trim().substring(0, 40).toLowerCase();
-    if (seen.has(key)) return false;
-    seen.add(key);
+    // Exact-URL dedup
+    if (seenUrls.has(item.link)) return false;
+    seenUrls.add(item.link);
+
+    // SimHash near-duplicate dedup on title
+    const fingerprint = simHash(item.title);
+    if (hashes.some((h) => isNearDuplicate(fingerprint, h))) return false;
+    hashes.push(fingerprint);
     return true;
   });
 
