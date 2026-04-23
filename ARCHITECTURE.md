@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v12.1.0)
+# FamilyDashBoard — Architecture (v12.3.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                                    | Vite-native, real DOM simulation, 3486 tests / 110 suites      |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                                    | Vite-native, real DOM simulation, 3500+ tests / 111 suites      |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
@@ -102,6 +102,7 @@ worker/src/
 │   ├── routes/
 │   │   ├── data.ts             # weather · currency · hebcal · hebcal/holidays (KV stale)
 │   │   ├── feeds.ts            # stocks · news · alerts · calendar · sefaria · crypto (KV stale)
+│   │   ├── ai.ts               # GET /api/news/summarise · /api/motivation/hebrew (AI_ENABLED gate, ADR-030)
 │   │   └── errors.ts           # POST /api/errors — client error ingestion (best-effort telemetry)
 │   ├── utils/
 │   │   ├── response.ts         # jsonResponse() · proxyResponse() · CORS_HEADERS
@@ -114,7 +115,7 @@ tests/unit/
 ├── core/                       # cache · fetch · config · constants · diag · sync · sw · state · idb-cache · error-reporter · hardware
 ├── cards/                      # all 11 card modules
 ├── ui/                         # theme · header · keyboard · maximize · night-dimmer …
-├── worker/                     # cors · rate-limit · validation · allowlists · response · errors routes
+├── tests/unit/worker/          # cors · rate-limit · validation · allowlists · response · errors routes · ai routes
 └── html/dom-contract.test.ts   # Element ID existence contract tests
 ```
 
@@ -164,7 +165,7 @@ flowchart TD
     end
 
     FVW -->|"HTTPS"| Worker["Cloudflare Worker\n(worker/src/index.ts)"]
-    Worker -->|"Zod validation"| Upstream["Upstream APIs\n(Open-Meteo · Hebcal · Yahoo\nER-API · CoinGecko · RSS)"]
+    Worker -->|"Valibot validation"| Upstream["Upstream APIs\n(Open-Meteo · Hebcal · Yahoo\nER-API · CoinGecko · RSS)"]
     Worker -->|"KV stale fallback"| CFKV["Cloudflare KV"]
 
     ParseData -->|"cSet"| CacheL1
@@ -238,7 +239,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **3486 tests / 110 suites / 0 failures** — coverage thresholds: 94% statements, 88% branches, 94% functions, 95% lines (v12.3.0)
+15. **3500+ tests / 111 suites / 0 failures** — coverage thresholds: 94% statements, 88% branches, 94% functions, 95% lines (v12.3.0)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)
