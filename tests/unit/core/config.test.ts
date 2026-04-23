@@ -528,7 +528,7 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
   });
 
   it("CONFIG_VERSION constant is 5", () => {
-    expect(CONFIG_VERSION).toBe(10);
+    expect(CONFIG_VERSION).toBe(11);
   });
 
   it("DEFAULT_CONFIG has all v3 fields with correct defaults", () => {
@@ -954,12 +954,36 @@ describe("Config — migrateConfig v9→v10 (animLevel)", () => {
   });
 
   it("CONFIG_VERSION is 10", () => {
-    expect(CONFIG_VERSION).toBe(10);
+    expect(CONFIG_VERSION).toBe(11);
   });
 
   it("migrates v0 all the way to v10 including animLevel", () => {
     const result = migrateConfig({});
     expect(result.configVersion).toBe(CONFIG_VERSION);
     expect(result.animLevel).toBe("normal");
+  });
+});
+
+describe("Config — migrateConfig v10→v11 (countdownCard2 defaults)", () => {
+  it("sets countdownCard2 defaults when migrating from v10 with empty fields", () => {
+    const result = migrateConfig({ configVersion: 10 });
+    expect(result.configVersion).toBe(CONFIG_VERSION);
+    expect(result.countdownCard2Date).toBe("2026-06-19");
+    expect(result.countdownCard2Title).toBe("ספירת הגומר");
+  });
+
+  it("preserves existing countdownCard2 data when already set", () => {
+    const result = migrateConfig({
+      configVersion: 10,
+      countdownCard2Date: "2027-01-01",
+      countdownCard2Title: "חתונה",
+    } as Parameters<typeof migrateConfig>[0]);
+    expect(result.countdownCard2Date).toBe("2027-01-01");
+    expect(result.countdownCard2Title).toBe("חתונה");
+  });
+
+  it("DEFAULT_CONFIG has countdownCard2 pre-set", () => {
+    expect(DEFAULT_CONFIG.countdownCard2Date).toBe("2026-06-19");
+    expect(DEFAULT_CONFIG.countdownCard2Title).toBe("ספירת הגומר");
   });
 });

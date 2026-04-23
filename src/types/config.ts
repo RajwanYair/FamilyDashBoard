@@ -289,8 +289,8 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   tickerSpeed: 3,
   alertVolume: 18,
   dimWarmTint: false,
-  countdownCard2Title: "",
-  countdownCard2Date: "",
+  countdownCard2Title: "ספירת הגומר",
+  countdownCard2Date: "2026-06-19",
   countdownCard2Time: "18:00",
   countdownCard2DoneMsg: "🎉 מזל טוב!",
   countdownCard2StartDate: "",
@@ -300,7 +300,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3DoneMsg: "🎉 מזל טוב!",
   countdownCard3StartDate: "",
   motivationInterval: 0,
-  configVersion: 10,
+  configVersion: 11,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -336,7 +336,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 10;
+export const CONFIG_VERSION = 11;
 
 /** Type guard: checks if a string is a valid animation level. */
 export function isValidAnimLevel(v: unknown): v is DashboardConfig["animLevel"] {

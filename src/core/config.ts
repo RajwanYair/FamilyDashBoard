@@ -203,6 +203,15 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v9 → v10: animLevel ensured");
   }
 
+  // v10 → v11: pre-populate countdownCard2 with "ספירת הגומר" (19 Jun 2026) when still empty.
+  if (version < 11) {
+    if (!cfg.countdownCard2Date) cfg.countdownCard2Date = DEFAULT_CONFIG.countdownCard2Date;
+    if (!cfg.countdownCard2Title) cfg.countdownCard2Title = DEFAULT_CONFIG.countdownCard2Title;
+    if (!cfg.countdownCard2Time) cfg.countdownCard2Time = DEFAULT_CONFIG.countdownCard2Time;
+    cfg.configVersion = 11;
+    diagLog("[config] migrated v10 → v11: countdownCard2 defaults set");
+  }
+
   return cfg;
 }
 
