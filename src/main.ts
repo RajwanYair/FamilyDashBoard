@@ -12,6 +12,7 @@ import "./styles/layout.css";
 import "./styles/components.css";
 import "./styles/scroll.css";
 import "./styles/animations.css";
+import "./styles/transitions.css"; // ADR-022 companion: VT Level 2 named transitions (v12.0)
 import "./styles/screen-modes.css";
 import "./styles/maximize.css";
 import "./styles/a11y.css";

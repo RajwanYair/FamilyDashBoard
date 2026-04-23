@@ -1,0 +1,183 @@
+/**
+ * FamilyDashBoard v12 — View Transitions Level 2 (V12-MODERNISE-4)
+ *
+ * Level 1 (already shipped): applyTheme() in src/ui/theme.ts wraps DOM
+ * mutations in document.startViewTransition(). This gives every element a
+ * default cross-fade.
+ *
+ * Level 2 (this file): Assign view-transition-name to unique key elements so
+ * they receive per-element animations that differ from the root cross-fade.
+ * Rule: each view-transition-name MUST be unique per rendered frame.
+ *
+ * @layer animations — participates in existing cascade governance (ADR-008).
+ * Browsers without View Transitions API ignore these rules entirely — zero risk.
+ *
+ * Reduced-motion: no transitions, instant swap.
+ */
+
+@layer animations {
+  /* ── Named capture groups ───────────────────────────────────────────────── */
+
+  /* Root background — slower full-page cross-fade */
+  :root {
+    view-transition-name: vt-root;
+  }
+
+  /* Main header bar — slides down from above */
+  #main-header {
+    view-transition-name: vt-header;
+  }
+
+  /* Date / time readout */
+  #date-time-main {
+    view-transition-name: vt-clock;
+  }
+
+  /* Card grid wrapper (one unique element) */
+  #cards-grid {
+    view-transition-name: vt-grid;
+  }
+
+  /* Bottom status bar */
+  #status-bar {
+    view-transition-name: vt-status;
+  }
+
+  /* ── Transition durations ───────────────────────────────────────────────── */
+
+  /* Root: longer, dreamy fade for the background color change */
+  ::view-transition-group(vt-root) {
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+  }
+
+  /* Header: shorter, snappier */
+  ::view-transition-group(vt-header) {
+    animation-duration: 0.3s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Clock: medium fade */
+  ::view-transition-group(vt-clock) {
+    animation-duration: 0.35s;
+    animation-timing-function: ease-in-out;
+  }
+
+  /* Grid: staggered feel — starts a beat after the header */
+  ::view-transition-group(vt-grid) {
+    animation-duration: 0.45s;
+    animation-timing-function: ease-in-out;
+    animation-delay: 0.06s;
+  }
+
+  /* ── Per-group animations ───────────────────────────────────────────────── */
+
+  /* Header: old slides up + fades out; new slides down + fades in */
+  ::view-transition-old(vt-header) {
+    animation-name: vt-slide-up-out;
+  }
+
+  ::view-transition-new(vt-header) {
+    animation-name: vt-slide-down-in;
+  }
+
+  /* Clock: gentle scale-fade */
+  ::view-transition-old(vt-clock) {
+    animation-name: vt-scale-fade-out;
+  }
+
+  ::view-transition-new(vt-clock) {
+    animation-name: vt-scale-fade-in;
+  }
+
+  /* Grid: cross-fade with slight upward drift */
+  ::view-transition-old(vt-grid) {
+    animation-name: vt-drift-fade-out;
+  }
+
+  ::view-transition-new(vt-grid) {
+    animation-name: vt-drift-fade-in;
+  }
+
+  /* ── Keyframe definitions ───────────────────────────────────────────────── */
+
+  @keyframes vt-slide-up-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes vt-slide-down-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes vt-scale-fade-out {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+
+  @keyframes vt-scale-fade-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes vt-drift-fade-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes vt-drift-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ── Reduced motion: instant swap, no animation ────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+  }
+}
