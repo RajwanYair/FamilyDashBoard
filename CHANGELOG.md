@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.6.0] — 2026-04-23
+
+> **V13 AI, A11y Voice-Control, OPS Envelope Tests, CSS @property + color-scheme** · **3744 tests / 126 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
+
+### Added
+
+- **Workers AI news summarise + motivation Hebrew (V13-AI-1)** (`worker/src/routes/ai.ts`, `worker/src/types.ts`, `worker/wrangler.toml`): `GET /api/news/summarise` and `GET /api/motivation/hebrew` routes via `@cf/meta/llama-3.3-70b-instruct`. KV cache with 1 h TTL (`ai:news-summary:YYYY-MM-DD`, `ai:motivation-he:YYYY-MM-DD`). `ai_disabled` / `ai_not_configured` 503 guards. 20 unit tests.
+- **A11y unique accessible names (V13-A11Y)** (`src/index.html`): Added `aria-label` to `wx-chart-toggle`, `hc-daf-link`, `hc-parasha-link`, `tasks-quick-add-btn`. 6 new DOM-contract tests.
+- **A11y dialog heading-skip (V13-A11Y)** (`src/index.html`): `<dialog id="diag-overlay">` gains `aria-labelledby="diag-dialog-title"` + `aria-modal="true"`. `<h3 id="diag-dialog-title">` wired. 3 new DOM-contract tests.
+- **Release check prompt V13 gates (V13-OPS)** (`.github/prompts/release-check.prompt.md`): Added Gate 2a (worker typecheck), Gate 9 (A11Y audit), V13 Gate Summary table. Fixed version-placeholder typos.
+- **Fast-check property tests for workerEnvelope invariants (V13-OPS)** (`tests/unit/worker/envelope-invariants.test.ts`): 8 property-based tests (E1–E8) — status 200, 4 required fields, stale boolean, timestamp > 0, provider round-trip, data round-trip, Cache-Control max-age, Content-Type JSON.
+- **CSS `@property` registrations + `color-scheme: dark` (V13-DATA)** (`src/styles/tokens.css`): Registered `--bg-card-header`, `--bg-card-inner`, `--bg-card-hover`, `--text-muted`, `--warning`, `--accent-bright` via `@property`. `:root` now declares `color-scheme: dark` for future `light-dark()` token support. 18 new theme-audit tests.
+
+---
+
 ## [12.5.0] — 2026-04-23
 
 > **V13 Edge + Data Depth + A11y + OPS** · **3678 tests / 123 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs

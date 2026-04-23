@@ -124,7 +124,7 @@ export async function handleWeeklyDigest(env: Env): Promise<void> {
   // Email Workers send_email (ADR-033)
   // The send_email binding is injected by Cloudflare at runtime.
   // We cast env to access it without hard-coding the types package.
-  const sendEmail = (env as Record<string, unknown>)["send_email"] as
+  const sendEmail = (env as unknown as Record<string, unknown>)["send_email"] as
     | { send(msg: Record<string, unknown>): Promise<void> }
     | undefined;
 
