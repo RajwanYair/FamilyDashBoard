@@ -25,9 +25,9 @@ export class FdbVideoNewsCard extends FdbCard {
   override connect(): void {
     const { header, body } = this.buildShell("📺", "ערוץ חדשות", "Video News");
 
-    // ── Add collapse button into the start slot ───────────────────────────
-    const startSlot = header.querySelector<HTMLElement>(".card__hd-start");
-    if (startSlot && !startSlot.querySelector(".card-collapse-btn")) {
+    // ── Add collapse button into the end slot (beside settings button) ───
+    const endSlot = header.querySelector<HTMLElement>(".card__hd-end");
+    if (endSlot && !endSlot.querySelector(".card-collapse-btn")) {
       const collapseBtn = document.createElement("button");
       collapseBtn.type = "button";
       collapseBtn.className = "card-collapse-btn";
@@ -35,7 +35,7 @@ export class FdbVideoNewsCard extends FdbCard {
       collapseBtn.setAttribute("aria-expanded", "true");
       collapseBtn.title = "מזער/הרחב — Collapse / Expand";
       collapseBtn.textContent = "▼";
-      startSlot.prepend(collapseBtn);
+      endSlot.prepend(collapseBtn);
       this._collapseBtn = collapseBtn;
 
       // Restore collapsed state from localStorage
