@@ -58,6 +58,7 @@ import {
 import { initDiagOverlay, toggleDiagOverlay } from "./ui/diag-overlay";
 import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
+import { initResizers } from "./ui/resizer";
 import { showToast } from "./ui/toast";
 import { initScrollShadows } from "./ui/scroll";
 import { mountRegisteredCards } from "./core/card-registry";
@@ -243,6 +244,7 @@ export function init(): void {
   initCardCollapse();
   initCardAutoScroll();
   initCardDragDrop();
+  initResizers();
   initStatusBar();
   initConfigPanel();
   initDiagOverlay();

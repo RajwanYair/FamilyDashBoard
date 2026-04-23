@@ -1,0 +1,49 @@
+/* FamilyDashBoard — Card Resize Handles */
+
+/* Force col-resize cursor globally while hovering / dragging a column gap */
+html[data-resize-col] * {
+  cursor: col-resize !important;
+}
+
+/* Force row-resize cursor globally while hovering / dragging a row gap */
+html[data-resize-row] * {
+  cursor: row-resize !important;
+}
+
+/* Ghost guide line shown while dragging — col */
+.resize-guide--col {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 950;
+  display: none;
+}
+
+/* Ghost guide line shown while dragging — row */
+.resize-guide--row {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 950;
+  display: none;
+}
+
+/* Visible while drag is active */
+.resize-guide--col.active,
+.resize-guide--row.active {
+  display: block;
+}
+
+/* Suppress drag during card maximize */
+.card.maximized ~ .resize-guide--col,
+.card.maximized ~ .resize-guide--row {
+  display: none !important;
+}
