@@ -46,6 +46,7 @@
         "check": "npm run typecheck && npm run typecheck:sw && npm run lint && npm run lint:md && npm run lint:instructions && npm run check:sw && npm run test",
         "check:bundle": "node scripts/check-bundle-size.mjs",
         "bundle:trend": "node scripts/bundle-trend.mjs",
+        "mutate": "stryker run scripts/stryker.config.mjs",
         "arch:table": "node scripts/generate-arch-table.mjs",
         "release:report": "node scripts/release-report.mjs",
         "audit": "npm audit --audit-level=high",

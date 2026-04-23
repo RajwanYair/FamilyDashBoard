@@ -168,3 +168,87 @@ describe("hammingDistance — property: triangle inequality", () => {
     );
   });
 });
+
+// ── Sprint 33 expanded invariants (V12-TESTING) ───────────────────────────────
+
+describe("simHash — property: determinism", () => {
+  it("produces the same fingerprint for the same string on every call", () => {
+    fc.assert(
+      fc.property(printableStr, (s) => {
+        expect(simHash(s)).toBe(simHash(s));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("produces BigInt for any string input", () => {
+    fc.assert(
+      fc.property(printableStr, (s) => {
+        expect(typeof simHash(s)).toBe("bigint");
+      }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("simHash — property: monotone threshold", () => {
+  it("isNearDuplicate(h1, h2, t) implies isNearDuplicate(h1, h2, t+1)", () => {
+    // If two hashes are near-duplicates at threshold t, they must also be at t+1.
+    fc.assert(
+      fc.property(
+        printableStr,
+        printableStr,
+        fc.integer({ min: 0, max: BITS - 1 }),
+        (s1, s2, threshold) => {
+          const h1 = simHash(s1);
+          const h2 = simHash(s2);
+          if (isNearDuplicate(h1, h2, threshold)) {
+            expect(isNearDuplicate(h1, h2, threshold + 1)).toBe(true);
+          }
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("isNearDuplicate with threshold=64 is always true (all fingerprints within 64 bits)", () => {
+    fc.assert(
+      fc.property(printableStr, printableStr, (s1, s2) => {
+        expect(isNearDuplicate(simHash(s1), simHash(s2), BITS)).toBe(true);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it("isNearDuplicate with threshold=0 is only true for identical fingerprints", () => {
+    fc.assert(
+      fc.property(printableStr, printableStr, (s1, s2) => {
+        const h1 = simHash(s1);
+        const h2 = simHash(s2);
+        const result = isNearDuplicate(h1, h2, 0);
+        expect(result).toBe(h1 === h2);
+      }),
+      { numRuns: 200 },
+    );
+  });
+});
+
+describe("simHash — property: prefix sensitivity", () => {
+  it("appending content to a string changes the fingerprint (in most cases)", () => {
+    // This is a statistical test — simhash is not guaranteed to change for every append.
+    // We check the false-equality rate is low (< 5%) over many random strings.
+    let unchanged = 0;
+    const runs = 200;
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 5, maxLength: 80 }),
+        fc.string({ minLength: 5, maxLength: 40 }),
+        (base, suffix) => {
+          if (simHash(base) === simHash(base + suffix)) unchanged++;
+        },
+      ),
+      { numRuns: runs },
+    );
+    expect(unchanged / runs).toBeLessThan(0.05);
+  });
+});
