@@ -65,6 +65,8 @@ export const API = {
   CURRENCY_PRIMARY: "https://open.er-api.com/v6/latest/ILS",
   CURRENCY_FALLBACK: "https://api.exchangerate-api.com/v4/latest/ILS",
   YAHOO_CHART: "https://query1.finance.yahoo.com/v8/finance/chart/",
+  // V13-DATA-1: Worker stocks endpoint — Finnhub primary, Yahoo secondary (feeds.ts)
+  WORKER_STOCKS: `${WORKER_BASE_URL}/api/stocks`,
   COINGECKO_BTC:
     "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",
   ALERTS: "https://api.tzevaadom.co.il/alerts-history",

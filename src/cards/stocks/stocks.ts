@@ -21,6 +21,7 @@ import { cGet, cGetStale, cSetAsync } from "../../core/cache";
 import { fetchJSONWithWorker, runConcurrent, acquireLock, releaseLock } from "../../core/fetch";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
+import { isWorkerEnabled } from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { t } from "../../core/i18n";
@@ -558,7 +559,24 @@ async function fetchStock(sym: string): Promise<YahooChartResponse> {
     }
   }
 
-  // Yahoo Finance v8 chart (bare URL — proxy chain for CORS)
+  // V13-DATA-1: Worker-first — worker has Finnhub (primary) → Yahoo (secondary) → KV stale
+  // Fall back to Yahoo direct only when worker is unavailable (file://, offline, etc.)
+  if (isWorkerEnabled()) {
+    try {
+      const encoded = encodeURIComponent(sym);
+      const workerData = await fetchJSONWithWorker<YahooChartResponse>(
+        `${API.WORKER_STOCKS}?sym=${encoded}`,
+      );
+      if (workerData?.chart?.result?.[0]) {
+        diagLog(`FDB-044w: [stocks] ${sym} OK via worker (Finnhub/Yahoo)`);
+        return workerData;
+      }
+    } catch {
+      diagLog(`FDB-044w: [stocks] ${sym} worker unavailable — direct Yahoo fallback`);
+    }
+  }
+
+  // Direct Yahoo Finance v8 chart (bare URL — proxy chain for CORS)
   const url = `${API.YAHOO_CHART}${encodeURIComponent(sym)}`;
   return fetchJSONWithWorker<YahooChartResponse>(url);
 }

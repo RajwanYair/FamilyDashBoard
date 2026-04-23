@@ -26,6 +26,7 @@ import {
   portfolioChange,
   marketStatusLabel,
   stocksCard,
+  loadAllStocks,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear, cSetAsync } from "@/core/cache";
@@ -2167,5 +2168,83 @@ describe("Stocks — cSetAsync (Stream D2.3)", () => {
     await cSetAsync(key, payload);
     const stale = cGetStale(key);
     expect(stale).not.toBeNull();
+  });
+});
+
+// ── V13-DATA-1: Worker-first stocks fetch ────────────────────────────────────
+
+describe("Stocks — V13-DATA-1 worker-first fetch (isWorkerEnabled path)", () => {
+  const makeYahooResp = (price: number, prev: number): YahooChartResponse => ({
+    chart: {
+      result: [{
+        meta: { regularMarketPrice: price, previousClose: prev, currency: "USD", regularMarketVolume: 0 },
+        indicators: { quote: [{ close: [prev, price] }] },
+      }],
+      error: null,
+    },
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("calls worker URL first when isWorkerEnabled returns true", async () => {
+    document.body.innerHTML = `<div id="stocks-body"></div>`;
+    renderStocksShell();
+
+    // Make AAPL uncached so it triggers a fetch
+    cClear();
+
+    // Resolve worker URL; reject Yahoo URL
+    const workerBase = "https://fdb.rajwanyair.workers.dev/api/stocks";
+    vi.mocked(fetchJSONWithWorker).mockImplementation(async (url: string) => {
+      if (url.includes("/api/stocks?sym=")) return makeYahooResp(190, 185);
+      throw new Error("yahoo-should-not-be-called");
+    });
+
+    await loadAllStocks();
+
+    const calls = vi.mocked(fetchJSONWithWorker).mock.calls.map(([u]) => u as string);
+    const workerCalled = calls.some((u) => u.startsWith(workerBase));
+    expect(workerCalled).toBe(true);
+  });
+
+  it("falls back to Yahoo direct when worker URL rejects", async () => {
+    document.body.innerHTML = `<div id="stocks-body"></div>`;
+    renderStocksShell();
+    cClear();
+
+    // Worker rejects; Yahoo resolves
+    vi.mocked(fetchJSONWithWorker).mockImplementation(async (url: string) => {
+      if (url.includes("/api/stocks?sym=")) throw new Error("worker-unavailable");
+      return makeYahooResp(190, 185);
+    });
+
+    await loadAllStocks();
+
+    const calls = vi.mocked(fetchJSONWithWorker).mock.calls.map(([u]) => u as string);
+    const yahooCalled = calls.some((u) => u.includes("finance.yahoo.com"));
+    expect(yahooCalled).toBe(true);
+  });
+
+  it("BTC-USD always uses CoinGecko even when worker is enabled", async () => {
+    document.body.innerHTML = `<div id="stocks-body"></div>`;
+    renderStocksShell();
+    cClear();
+
+    vi.mocked(fetchJSONWithWorker).mockImplementation(async (url: string) => {
+      if (url.includes("coingecko.com"))
+        return { bitcoin: { usd: 65000, usd_24h_change: 2.5 } };
+      if (url.includes("/api/stocks?sym=")) return makeYahooResp(190, 185);
+      return makeYahooResp(190, 185);
+    });
+
+    await loadAllStocks();
+
+    const calls = vi.mocked(fetchJSONWithWorker).mock.calls.map(([u]) => u as string);
+    const coinGeckoCalled = calls.some((u) => u.includes("coingecko.com"));
+    expect(coinGeckoCalled).toBe(true);
   });
 });
