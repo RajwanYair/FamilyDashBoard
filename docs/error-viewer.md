@@ -65,7 +65,7 @@ npx wrangler secret put ERROR_REPORTING_TOKEN
 # Paste your secret value at the prompt
 ```
 
-Choose a long random token (e.g. `openssl rand -hex 32`).  
+Choose a long random token (e.g. `openssl rand -hex 32`).
 The same value is used in the `?token=` query parameter.
 
 ---

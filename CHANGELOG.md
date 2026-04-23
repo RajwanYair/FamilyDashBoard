@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [11.5.1] — 2026-07-10
+
+> **3309 tests / 100 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Fixed
+
+- **Currency card — Gold (XAU) / Silver (XAG) tiles now show real data**. The free-tier `er-api.com` endpoint does not publish precious-metal rates, which left both tiles dashed-out since v9. Added `fetchMetalRates()` in `src/cards/currency/currency.ts` that concurrently fetches Yahoo Finance `GC=F` (gold futures) and `SI=F` (silver futures) via `fetchJSONWithWorker<YahooChartResponse>` → worker `/api/stocks?sym=…`. The USD spot price is converted to the card's internal rate convention (`rates[metal] = usdRate / metalUsd`) so the existing renderer's `1 / rate` formula yields ILS per troy ounce. `Promise.allSettled` ensures a single metal failure never blocks the currency card, and both metals degrade gracefully when the USD rate itself is missing.
+- **Countdown card — tile order in RTL mode** now reads days → hours → minutes → seconds left-to-right, matching the conventional countdown orientation. Added `direction: ltr` to `.cd-tiles` grid container in `src/cards/countdown/countdown.css`. The RTL page direction previously caused the grid to place the first DOM child (days) on the right. Hebrew text inside each tile remains centered and unaffected.
+
+### Testing
+
+- 6 new unit tests in `tests/unit/cards/currency.test.ts` for the new `fetchMetalRates` path: XAU injection from Yahoo `GC=F`, XAG injection from Yahoo `SI=F`, graceful degradation when gold/silver/both fail, and early-exit when the USD rate is missing. Test total: 3303 → 3309.
+
+---
+
 ## [11.5.0] — 2026-07-05
 
 > **3303 tests / 100 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

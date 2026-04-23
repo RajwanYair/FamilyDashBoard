@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v11.5.0
+# CLAUDE.md — FamilyDashBoard v11.5.1
 
 > Context file for Claude Code / Claude agents.
 > **Canonical rules live in `.github/copilot-instructions.md`** — this file is a lean entry point.

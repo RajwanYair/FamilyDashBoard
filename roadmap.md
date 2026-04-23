@@ -1,7 +1,7 @@
 # FamilyDashBoard — Strategic Roadmap
 
 > Roadmap refresh date: 2026-05-18
-> Shipped baseline: **v11.5.0** — 3303 tests / 100 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
+> Shipped baseline: **v11.5.1** — 3309 tests / 100 suites / 0 failures · 0 ESLint warnings · 0 TS errors · 0 Prettier issues · 0 runtime deps
 > This document reopens every major architecture decision — including those that previously looked clean — and sets the explicit path to best-in-class as an always-on family information display.
 
 ---
@@ -728,6 +728,7 @@ One line per release. Detailed per-sprint tables are in `CHANGELOG.md`.
 | v11.3.0 | 2026-07-01 | Video-news card (opt-in) · mountRegisteredCards · scroll shadows · error boundary · ADR-019 · frontmatter linter        | 3303 / 100   |
 | v11.4.0 | 2026-07-02 | Registry-driven DOM · Lighthouse thresholds · TTI optimisation · PWA splash screens · screen-reader docs                | 3303 / 100   |
 | v11.5.0 | 2026-07-05 | ADR-020 idle-callback deferred init · video-news docs · dead initX registry cleanup · ARCHITECTURE.md refresh           | 3303 / 100   |
+| v11.5.1 | 2026-07-10 | Currency XAU/XAG via Yahoo GC=F/SI=F · countdown RTL tile direction fix · +6 unit tests for fetchMetalRates            | 3309 / 100   |
 
 Total: **33 + production sprints**, 0 regressions through v11.5.0.
 

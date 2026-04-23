@@ -52,6 +52,125 @@ describe("Currency — fetchCurrency", () => {
   });
 });
 
+describe("Currency — fetchCurrency metal injection (XAU/XAG from Yahoo Finance)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  // Multi-URL mock: returns currency JSON for er-api, Yahoo chart JSON for GC=F/SI=F
+  // (Requests for Yahoo symbols are rewritten by the worker adapter to
+  //  `/api/stocks?sym=<symbol>` OR hit the raw Yahoo URL when worker is disabled.
+  //  Match on either.)
+  function stubMetalsFetch(opts: { goldUsd?: number | null; silverUsd?: number | null }): void {
+    function chartResponse(price: number): Response {
+      return {
+        ok: true,
+        json: async () => ({
+          chart: {
+            result: [
+              {
+                meta: {
+                  regularMarketPrice: price,
+                  previousClose: price,
+                  currency: "USD",
+                  regularMarketVolume: 0,
+                },
+                indicators: { quote: [{ close: [price] }] },
+              },
+            ],
+            error: null,
+          },
+        }),
+      } as unknown as Response;
+    }
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: string | URL) => {
+        const urlStr = typeof input === "string" ? input : input.toString();
+        const isYahoo =
+          urlStr.includes("query1.finance.yahoo.com") || urlStr.includes("/api/stocks");
+        if (isYahoo) {
+          const isGold =
+            urlStr.includes("GC%3DF") || urlStr.includes("GC=F") || urlStr.includes("sym=GC");
+          const isSilver =
+            urlStr.includes("SI%3DF") || urlStr.includes("SI=F") || urlStr.includes("sym=SI");
+          if (isGold) {
+            if (opts.goldUsd === null || opts.goldUsd === undefined) {
+              return Promise.reject(new Error("Gold fail"));
+            }
+            return Promise.resolve(chartResponse(opts.goldUsd));
+          }
+          if (isSilver) {
+            if (opts.silverUsd === null || opts.silverUsd === undefined) {
+              return Promise.reject(new Error("Silver fail"));
+            }
+            return Promise.resolve(chartResponse(opts.silverUsd));
+          }
+          return Promise.reject(new Error("Unknown Yahoo symbol"));
+        }
+        // Currency API (er-api or worker /api/currency)
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ rates: { USD: 0.2667, EUR: 0.2451, GBP: 0.2098 } }),
+        } as unknown as Response);
+      }),
+    );
+  }
+
+  it("injects XAU from Yahoo GC=F (rate = usdRate / goldUsd)", async () => {
+    stubMetalsFetch({ goldUsd: 2400, silverUsd: 30 });
+    const rates = await fetchCurrency();
+    expect(rates["XAU"]).toBeCloseTo(0.2667 / 2400, 10);
+    // Render value = 1/rate ≈ 9000 ILS/oz (3.75 × 2400)
+    const renderIls = 1 / rates["XAU"]!;
+    expect(renderIls).toBeCloseTo(9000, -1); // within ±5
+  });
+
+  it("injects XAG from Yahoo SI=F (rate = usdRate / silverUsd)", async () => {
+    stubMetalsFetch({ goldUsd: 2400, silverUsd: 30 });
+    const rates = await fetchCurrency();
+    expect(rates["XAG"]).toBeCloseTo(0.2667 / 30, 10);
+    const renderIls = 1 / rates["XAG"]!;
+    expect(renderIls).toBeCloseTo(112.5, 0);
+  });
+
+  it("leaves XAU undefined when Yahoo gold fetch fails", async () => {
+    stubMetalsFetch({ goldUsd: null, silverUsd: 30 });
+    const rates = await fetchCurrency();
+    expect(rates["XAU"]).toBeUndefined();
+    expect(rates["XAG"]).toBeDefined();
+  });
+
+  it("leaves XAG undefined when Yahoo silver fetch fails", async () => {
+    stubMetalsFetch({ goldUsd: 2400, silverUsd: null });
+    const rates = await fetchCurrency();
+    expect(rates["XAG"]).toBeUndefined();
+    expect(rates["XAU"]).toBeDefined();
+  });
+
+  it("does not crash when both metal fetches fail", async () => {
+    stubMetalsFetch({ goldUsd: null, silverUsd: null });
+    const rates = await fetchCurrency();
+    expect(rates["USD"]).toBe(0.2667);
+    expect(rates["XAU"]).toBeUndefined();
+    expect(rates["XAG"]).toBeUndefined();
+  });
+
+  it("skips metal fetch when USD rate is missing", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ rates: { EUR: 0.2451 } }),
+      }),
+    );
+    const rates = await fetchCurrency();
+    expect(rates["XAU"]).toBeUndefined();
+    expect(rates["XAG"]).toBeUndefined();
+  });
+});
+
 describe("Currency — renderCurrency", () => {
   beforeEach(() => {
     // Set up minimal DOM

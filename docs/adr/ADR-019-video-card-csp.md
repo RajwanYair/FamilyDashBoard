@@ -1,8 +1,8 @@
 # ADR-019: Video-Card CSP Strategy & Integration Mode Decision Tree
 
-**Date:** 2026-07-01  
-**Status:** Accepted  
-**Deciders:** Project maintainer  
+**Date:** 2026-07-01
+**Status:** Accepted
+**Deciders:** Project maintainer
 **Relates to:** ADR-018 (CSP + COOP/COEP), ADR-002 (zero client deps)
 
 ---
