@@ -7,11 +7,13 @@
  * Falls back to exchangerate-api.com if primary fails.
  */
 
-import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import "./currency.css";
 import { INTERVALS, CUR_TILES, API, LS_CUR_HISTORY, MS_PER_MIN } from "../../core/constants";
 import { diagLog } from "../../core/diag";
-import { fetchJSONWithWorker } from "../../core/fetch";
+import { fetchJSONWithWorker, acquireLock, releaseLock } from "../../core/fetch";
+import { cGet, cGetStale, cSet } from "../../core/cache";
+import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
+import { isPageVisible } from "../../core/idle";
 import type { CurrencyResponse, YahooChartResponse } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
@@ -286,24 +288,74 @@ export function renderCurrency(rates: Record<string, number>): void {
   diagLog(`FDB-032: [currency] Rendered ${Object.keys(rates).length} rates`);
 }
 
-const loadCurrency = createAsyncCardLoader<Record<string, number>>(
-  { id: "cur", ttl: INTERVALS.CURRENCY, interval: INTERVALS.CURRENCY },
-  fetchCurrency,
-  renderCurrency,
-);
+/** Returns cache TTL for exchange rates: shorter when US markets are active. */
+function getCurrencyTTL(): number {
+  // Mirror isMarketOpen() from stocks.ts — forex rates move with NYSE hours.
+  const nyDate = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const day = nyDate.getDay();
+  if (day === 0 || day === 6) return INTERVALS.CURRENCY;
+  const nyTimeStr = new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/New_York",
+  });
+  const [h, m] = nyTimeStr.split(":");
+  const nyMins = parseInt(h!, 10) * 60 + parseInt(m!, 10);
+  return nyMins >= 570 && nyMins < 960 ? INTERVALS.CURRENCY_OPEN : INTERVALS.CURRENCY;
+}
+
+/** Load currency rates: cache check → fetch → render. Market-aware TTL. */
+export async function loadCurrency(): Promise<void> {
+  if (!isPageVisible() || !acquireLock("cur")) return;
+  setSync("cur", "loading");
+
+  const ttl = getCurrencyTTL();
+  const fresh = cGet<Record<string, number>>("cur", ttl);
+  if (fresh !== null) {
+    renderCurrency(fresh);
+    setSync("cur", "ok");
+    releaseLock("cur");
+    return;
+  }
+
+  const stale = cGetStale<Record<string, number>>("cur");
+  if (stale !== null) renderCurrency(stale);
+
+  try {
+    const data = await fetchCurrency();
+    cSet("cur", data);
+    renderCurrency(data);
+    setSync("cur", "ok");
+    syncBurst("cur");
+    recordSuccess("cur");
+  } catch (err) {
+    diagLog(`[currency] Load failed: ${String(err)}`);
+    setSync("cur", stale !== null ? "ok" : "error");
+    recordFailure("cur");
+  } finally {
+    releaseLock("cur");
+  }
+}
 
 let _curScheduleId: number | null = null;
+
+/** Market-aware self-rescheduling refresh: 10 min when active, 60 min when closed. */
+function scheduleCurrencyRefresh(): void {
+  const delay = getCurrencyTTL(); // same as the TTL boundary — avoids over-fetching
+  _curScheduleId = window.setTimeout(() => {
+    void loadCurrency();
+    scheduleCurrencyRefresh();
+  }, delay);
+}
 
 export function initCurrencyCard(): void {
   cacheDom();
   void loadCurrency();
-  _curScheduleId = scheduleCard(loadCurrency, INTERVALS.CURRENCY);
+  scheduleCurrencyRefresh();
   diagLog("FDB-033: [currency] Initialized");
 }
 
 export function destroyCurrencyCard(): void {
   if (_curScheduleId !== null) {
-    clearInterval(_curScheduleId);
+    clearTimeout(_curScheduleId);
     _curScheduleId = null;
   }
 }

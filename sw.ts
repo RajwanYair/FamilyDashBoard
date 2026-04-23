@@ -61,7 +61,11 @@ const API_CACHE_ORIGINS: string[] = [
   "api.allorigins.win",
   "api.codetabs.com",
   "corsproxy.io",
-  "query1.finance.yahoo.com",
+  // query1.finance.yahoo.com intentionally omitted: all Yahoo requests are
+  // routed through the Cloudflare Worker in production. Direct browser fetches
+  // to Yahoo are CORS-blocked; including the origin here caused the SW to set
+  // _networkWasDown=true on every stocks refresh, triggering spurious
+  // "Connection restored" toasts.
   "api.coingecko.com",
   "tzevaadom.co.il",
   "sefaria.org",
@@ -70,7 +74,6 @@ const API_CACHE_ORIGINS: string[] = [
 // Stream SW: per-origin TTL (seconds). Default: 3600 s (1 h).
 // Mirrors CACHE_TTL_BY_ORIGIN in src/core/sw-constants.ts.
 const CACHE_TTL_BY_ORIGIN: Readonly<Record<string, number>> = {
-  "query1.finance.yahoo.com": 300,
   "api.coingecko.com": 300,
   "api.open-meteo.com": 1800,
   "open.er-api.com": 1800,

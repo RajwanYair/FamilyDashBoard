@@ -935,9 +935,10 @@ describe("Worker — handleStocks route", () => {
     const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
     const res = await handleStocks(url, envWithKv);
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { provider: string; stale: boolean };
-    expect(body.provider).toBe("yahoo-kv-stale");
-    expect(body.stale).toBe(true);
+    // KV stale path returns raw chart JSON (no envelope) so client can access
+    // data.chart.result[0] directly — same format as the happy path.
+    const body = (await res.json()) as typeof VALID_STOCKS;
+    expect(body.chart.result[0]?.meta.symbol).toBe("AAPL");
   });
 });
 

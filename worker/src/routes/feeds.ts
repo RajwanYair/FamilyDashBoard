@@ -25,28 +25,47 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
   const kvKey = `stocks:${sym.toUpperCase()}`;
   const encoded = encodeURIComponent(sym);
 
-  // ── Primary: Yahoo Finance ─────────────────────────────────────────────────
+  // ── Helper: return raw chart JSON (no envelope — client expects YahooChartResponse directly) ──
+  const rawChartResponse = (data: unknown, maxAge: number): Response =>
+    new Response(JSON.stringify(data), {
+      status: 200,
+      headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${maxAge}`, ...CORS_HEADERS },
+    });
+
+  // ── Primary: Yahoo Finance (query1 then query2) ────────────────────────────
   let lastSchemaError: string | undefined;
-  const upstream = await fetch(
-    `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1d&range=1d`,
-    { headers: { "User-Agent": "FamilyDashBoard/6.0" } },
-  );
-  if (upstream.ok) {
-    const data: unknown = await upstream.json();
-    const validated = safeParse(StocksChartSchema, data);
-    if (validated.ok) {
-      void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
-      return new Response(JSON.stringify(validated.data), {
-        status: 200,
-        headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300", ...CORS_HEADERS },
-      });
+  const yahooHosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"] as const;
+  for (const host of yahooHosts) {
+    try {
+      const upstream = await fetch(
+        `https://${host}/v8/finance/chart/${encoded}?interval=1d&range=1d`,
+        {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (compatible; FamilyDashBoard/11.5)",
+            Accept: "application/json",
+            Origin: "https://finance.yahoo.com",
+            Referer: "https://finance.yahoo.com/",
+          },
+        },
+      );
+      if (!upstream.ok) continue;
+      const data: unknown = await upstream.json();
+      const validated = safeParse(StocksChartSchema, data);
+      if (validated.ok) {
+        void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
+        return rawChartResponse(validated.data, 300);
+      }
+      lastSchemaError = validated.error;
+      break; // Same schema error on both hosts — skip to fallbacks
+    } catch {
+      continue;
     }
-    lastSchemaError = validated.error;
   }
 
   // ── Backup: KV stale ──────────────────────────────────────────────────────
+  // Return raw chart JSON (not workerEnvelope) — client uses YahooChartResponse directly
   const staleKv = await kvGetStale(env.CACHE_KV, kvKey);
-  if (staleKv) return workerEnvelope(staleKv, "yahoo-kv-stale", true, 60);
+  if (staleKv) return rawChartResponse(staleKv, 60);
 
   // ── Backup: Finnhub (requires FINNHUB_API_KEY Worker secret) ─────────────
   if (env.FINNHUB_API_KEY) {
@@ -60,6 +79,7 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
         const finnhubParsed = safeParse(FinnhubQuoteSchema, finnhubData);
         if (finnhubParsed.ok) {
           // Normalise to Yahoo chart envelope so the client needs no changes.
+          // Use `previousClose` (not chartPreviousClose) — that is what renderStock reads.
           const normalised = {
             chart: {
               result: [{
@@ -67,18 +87,16 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
                   symbol: sym.toUpperCase(),
                   currency: "USD",
                   regularMarketPrice: finnhubParsed.data.c,
-                  chartPreviousClose: finnhubParsed.data.c - finnhubParsed.data.d,
+                  previousClose: finnhubParsed.data.c - finnhubParsed.data.d,
                   regularMarketChangePercent: finnhubParsed.data.dp,
                 },
+                indicators: { quote: [{ close: [finnhubParsed.data.c - finnhubParsed.data.d, finnhubParsed.data.c] }] },
               }],
               error: null,
             },
           };
           void kvPut(env.CACHE_KV, kvKey, normalised, 3600);
-          return new Response(JSON.stringify(normalised), {
-            status: 200,
-            headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300", ...CORS_HEADERS },
-          });
+          return rawChartResponse(normalised, 300);
         }
       }
     } catch {

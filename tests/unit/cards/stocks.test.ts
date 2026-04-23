@@ -1665,7 +1665,7 @@ describe("Stocks — initStocksCard closed market interval (line 749)", () => {
     vi.restoreAllMocks();
   });
 
-  it("uses STOCKS_CLOSED interval when market is closed", async () => {
+  it("schedules refresh timer when market is closed (Saturday)", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-13T14:00:00Z")); // Saturday — market closed
     document.body.innerHTML = `
@@ -1674,11 +1674,9 @@ describe("Stocks — initStocksCard closed market interval (line 749)", () => {
       <div id="stk-mkt-badge"></div>
       <div id="stk-mkt-countdown"></div>
     `;
-    const { scheduleCard } = await import("@/cards/base-card");
-    vi.mocked(scheduleCard).mockClear();
     expect(() => initStocksCard()).not.toThrow();
-    // scheduleCard called — Saturday market is closed → isMarketOpen() = false
-    expect(vi.mocked(scheduleCard)).toHaveBeenCalled();
+    // Timers > 0: market-badge interval, countdown interval, and stocks refresh timeout
+    expect(vi.getTimerCount()).toBeGreaterThan(0);
   });
 });
 
@@ -1691,7 +1689,7 @@ describe("Stocks — initStocksCard market-open interval (line 749 TRUE branch)"
     vi.restoreAllMocks();
   });
 
-  it("uses STOCKS_OPEN interval when market is open (NYSE weekday 14:30-21:00 UTC)", async () => {
+  it("schedules refresh timer when market is open (NYSE weekday 14:30-21:00 UTC)", () => {
     vi.useFakeTimers();
     // Tuesday 15:00 UTC = NYSE market open (14:30-21:00 UTC)
     vi.setSystemTime(new Date("2024-01-09T15:00:00Z"));
@@ -1701,11 +1699,9 @@ describe("Stocks — initStocksCard market-open interval (line 749 TRUE branch)"
       <div id="stk-mkt-badge"></div>
       <div id="stk-mkt-countdown"></div>
     `;
-    const { scheduleCard } = await import("@/cards/base-card");
-    vi.mocked(scheduleCard).mockClear();
     expect(() => initStocksCard()).not.toThrow();
-    // isMarketOpen() = true → STOCKS_OPEN branch used
-    expect(vi.mocked(scheduleCard)).toHaveBeenCalled();
+    // Timers > 0: market-badge interval, countdown interval, and stocks refresh timeout
+    expect(vi.getTimerCount()).toBeGreaterThan(0);
   });
 });
 

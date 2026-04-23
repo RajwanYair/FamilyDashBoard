@@ -6,7 +6,6 @@
  * Renders price, % change, mini sparkline chart, 52-week range.
  */
 
-import { scheduleCard } from "../base-card";
 import "./stocks.css";
 import {
   INTERVALS,
@@ -806,16 +805,22 @@ export function initStocksCard(): void {
   updateMarketCountdown();
   if (_marketBadgeInterval !== null) clearInterval(_marketBadgeInterval);
   if (_marketCountdownInterval !== null) clearInterval(_marketCountdownInterval);
-  if (_stocksRefreshInterval !== null) clearInterval(_stocksRefreshInterval);
+  if (_stocksRefreshInterval !== null) clearTimeout(_stocksRefreshInterval);
   // Refresh badge and countdown every minute so they stay accurate
   _marketBadgeInterval = window.setInterval(updateMarketBadge, INTERVALS.MARKET_BADGE);
   _marketCountdownInterval = window.setInterval(updateMarketCountdown, INTERVALS.MARKET_BADGE);
   void loadAllStocks();
-  _stocksRefreshInterval = scheduleCard(
-    loadAllStocks,
-    isMarketOpen() ? INTERVALS.STOCKS_OPEN : INTERVALS.STOCKS_CLOSED,
-  );
+  scheduleStocksRefresh();
   diagLog("FDB-047: [stocks] Initialized");
+}
+
+/** Market-aware self-rescheduling refresh: 10 min when open, 60 min when closed. */
+function scheduleStocksRefresh(): void {
+  const delay = isMarketOpen() ? INTERVALS.STOCKS_OPEN : INTERVALS.STOCKS_CLOSED;
+  _stocksRefreshInterval = window.setTimeout(() => {
+    void loadAllStocks();
+    scheduleStocksRefresh();
+  }, delay);
 }
 
 export function destroyStocksCard(): void {
@@ -828,7 +833,7 @@ export function destroyStocksCard(): void {
     _marketCountdownInterval = null;
   }
   if (_stocksRefreshInterval !== null) {
-    clearInterval(_stocksRefreshInterval);
+    clearTimeout(_stocksRefreshInterval);
     _stocksRefreshInterval = null;
   }
 }
