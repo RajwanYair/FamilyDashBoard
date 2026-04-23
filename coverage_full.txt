@@ -1,0 +1,277 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.4 [39m[90mC:/Users/ryair/OneDrive - Intel Corporation/Documents/MyScripts/FamilyDashBoard[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32mΓ£ô[39m tests/unit/worker/simhash.property.test.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 1698[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m completely different strings rarely dedupe at threshold 3 [33m 499[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts [2m([22m[2m52 tests[22m[2m)[22m[33m 1731[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m sets textContent on #clock [33m 873[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts [2m([22m[2m166 tests[22m[2m)[22m[33m 1159[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts [2m([22m[2m63 tests[22m[2m)[22m[33m 2275[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts [2m([22m[2m184 tests[22m[2m)[22m[33m 2102[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/main.test.ts [2m([22m[2m100 tests[22m[2m)[22m[33m 1468[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts [2m([22m[2m71 tests[22m[2m)[22m[33m 2493[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts [2m([22m[2m51 tests[22m[2m)[22m[33m 1430[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads tasks CardDefinition via dynamic import [33m 331[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts [2m([22m[2m92 tests[22m[2m)[22m[33m 1194[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts [2m([22m[2m182 tests[22m[2m)[22m[33m 1050[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/calendar.test.ts [2m([22m[2m81 tests[22m[2m)[22m[33m 929[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/tasks.test.ts [2m([22m[2m96 tests[22m[2m)[22m[33m 448[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw-register.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 273[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts [2m([22m[2m139 tests[22m[2m)[22m[33m 849[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/currency.test.ts [2m([22m[2m46 tests[22m[2m)[22m[33m 311[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts [2m([22m[2m29 tests[22m[2m)[22m[33m 480[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/property-based.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 323[2mms[22m[39m
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > returns 204 for a valid single error entry
+[FDB-error] 2026-04-23T07:33:59.349Z test error
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > returns 204 for multiple valid error entries
+[FDB-error] 2026-04-23T07:33:59.359Z @ main.ts:42 err1
+[FDB-error] 2026-04-23T07:33:59.359Z err2
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > accepts entries with optional source and lineno
+[FDB-error] 2001-09-09T01:46:40.000Z @ file.ts:10 m
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > truncates messages longer than 500 characters
+[FDB-error] 2026-04-23T07:33:59.377Z aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleAlerts route > returns 200 with workerEnvelope when upstream succeeds
+[alerts] Valibot validation warning: Invalid key: Expected "time" but received undefined; Invalid key: Expected "threat" but received undefined; Invalid key: Expected "cities" but received undefined
+
+ [32mΓ£ô[39m tests/unit/ui/layout-drag.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 171[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/countdown.test.ts [2m([22m[2m63 tests[22m[2m)[22m[32m 274[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/worker.test.ts [2m([22m[2m140 tests[22m[2m)[22m[32m 196[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/maximize.test.ts [2m([22m[2m46 tests[22m[2m)[22m[33m 392[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/fetch.test.ts [2m([22m[2m73 tests[22m[2m)[22m[32m 210[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/history.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 235[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/fdb-card.test.ts [2m([22m[2m80 tests[22m[2m)[22m[32m 166[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/theme.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 136[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/night-dimmer.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 274[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config.test.ts [2m([22m[2m118 tests[22m[2m)[22m[32m 138[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-tasks.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 104[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/worker-client.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 291[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/motivation.test.ts [2m([22m[2m44 tests[22m[2m)[22m[32m 185[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/ticker.test.ts [2m([22m[2m67 tests[22m[2m)[22m[33m 472[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/card-settings-dialog.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 123[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts [2m([22m[2m67 tests[22m[2m)[22m[32m 172[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/diag-overlay.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 208[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/ls-discipline.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 198[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/auto-loop-scroll.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 142[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/cache.test.ts [2m([22m[2m94 tests[22m[2m)[22m[32m 140[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/scroll.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 137[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/html/dom-contract.test.ts [2m([22m[2m105 tests[22m[2m)[22m[32m 122[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/diag.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 107[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/screen-mode.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/reports.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-weather.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sync.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/base-card.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/bg-images.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 92[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/rss-parser.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/api-validators.test.ts [2m([22m[2m80 tests[22m[2m)[22m[32m 122[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-auto-render.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/keyboard.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/config-schemas.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/i18n.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idle.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/toast.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-boundary.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-stocks.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw-constants.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-tracker.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/theme-audit.test.ts [2m([22m[2m108 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-motivation.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/provider.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/utils.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-reporter.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-news.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/metrics.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/video-news.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/first-run-tour.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-accordion.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/perf.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/hardware.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/sync-dots.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/simhash.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 92[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/api-normalized.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/state.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/vitals-reporter.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/anim-level.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/canary.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/analytics.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/constants.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/calendar-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/worker-fetch.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/config-save.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/cache-stale.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/alerts-orchestrator.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-countdown.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-export-validation.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/css/scope.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebcal-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/theme-switch.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/open-meteo-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-reset-card.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/config-export-import.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/classify-fetch-error.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/provider-lifecycle.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/currency-adapter.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/backoff-sequence.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-calendar.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-currency.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/ls-audit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-diff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/provider.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-alerts.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-system-info.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/card-config-map.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/print.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/provider-adapter.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-hebrew-cal.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/health-snapshot.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m113 passed[39m[22m[90m (113)[39m
+[2m      Tests [22m [1m[32m3540 passed[39m[22m[90m (3540)[39m
+[2m   Start at [22m 10:33:46
+[2m   Duration [22m 50.78s[2m (transform 14.49s, setup 2.72s, import 19.53s, tests 27.86s, environment 167.21s)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   86.28 |    78.29 |   85.66 |   87.51 |                   
+ src               |   36.98 |    43.77 |   47.14 |   37.92 |                   
+  main.ts          |    87.5 |    70.37 |   84.61 |    89.5 | ...70,440,528-531 
+  preview.ts       |       0 |        0 |       0 |       0 | 44-477            
+ src/cards         |   96.15 |    86.04 |     100 |   95.87 |                   
+  base-card.ts     |   96.15 |    86.04 |     100 |   95.87 | 57-60             
+ src/cards/alerts  |   97.29 |    90.51 |    92.1 |   97.85 |                   
+  ...ts-adapter.ts |     100 |       90 |     100 |     100 | 65                
+  alerts.ts        |   96.98 |     91.2 |    90.9 |   97.57 | 312-313,405-407   
+  fdb-alerts.ts    |     100 |       50 |     100 |     100 | 26                
+ ...cards/calendar |   95.93 |    89.53 |   97.22 |   97.24 |                   
+  ...ar-adapter.ts |      92 |    72.72 |     100 |      92 | 42,48             
+  calendar.ts      |   96.19 |    91.19 |   96.77 |   97.68 | 460-462,495-497   
+  fdb-calendar.ts  |     100 |       50 |     100 |     100 | 26                
+ ...ards/countdown |    97.2 |     77.7 |   95.23 |   96.68 |                   
+  countdown.ts     |   98.75 |    78.47 |     100 |   98.49 | 208,273           
+  fdb-countdown.ts |   83.33 |       50 |   66.66 |   83.33 | 28-30             
+ ...cards/currency |      89 |    77.77 |    91.3 |    91.3 |                   
+  ...cy-adapter.ts |     100 |       75 |     100 |     100 | 33                
+  currency.ts      |   87.97 |    78.33 |   88.88 |   90.41 | ...85-386,398-400 
+  fdb-currency.ts  |     100 |       50 |     100 |     100 | 26                
+ ...rds/hebrew-cal |   94.87 |    85.41 |   95.31 |   96.35 |                   
+  ...hebrew-cal.ts |     100 |       50 |     100 |     100 | 26                
+  ...al-adapter.ts |   86.95 |    69.23 |     100 |   86.95 | 56-58             
+  hebrew-cal.ts    |   95.21 |     86.3 |   94.91 |   96.85 | ...05,790,837-843 
+ ...rds/motivation |   83.11 |    67.64 |   78.12 |   85.61 |                   
+  ...motivation.ts |   70.88 |    47.05 |   53.33 |   74.64 | ...10-132,137-138 
+  motivation.ts    |      96 |    88.23 |     100 |   97.05 | 228-229           
+ src/cards/news    |   97.68 |    90.55 |   95.65 |    98.5 |                   
+  fdb-news.ts      |     100 |       50 |     100 |     100 | 9-96              
+  news-adapter.ts  |    93.1 |       75 |   88.88 |   95.83 | 44                
+  news.ts          |   97.61 |    91.85 |   96.49 |    98.4 | 242-247,312       
+ src/cards/stocks  |   98.07 |    86.93 |   98.21 |   98.62 |                   
+  fdb-stocks.ts    |     100 |       50 |     100 |     100 | 17-83             
+  ...ks-adapter.ts |     100 |      100 |     100 |     100 |                   
+  stocks.ts        |   97.84 |    87.08 |   97.91 |   98.43 | ...13-614,856-857 
+ ...ds/system-info |   93.42 |    83.05 |   95.45 |   93.98 |                   
+  ...ystem-info.ts |     100 |       50 |     100 |     100 | 27                
+  system-info.ts   |    93.1 |    83.62 |      95 |   93.65 | ...21-224,243-245 
+ src/cards/tasks   |   96.33 |    81.69 |   94.87 |   96.63 |                   
+  fdb-tasks.ts     |     100 |       75 |     100 |     100 | 127               
+  tasks.ts         |   95.07 |    81.88 |   94.44 |   95.33 | ...56,348-349,495 
+ ...rds/video-news |   23.22 |    21.05 |   48.38 |   23.44 |                   
+  ...video-news.ts |    3.22 |     3.33 |       0 |    3.44 | 23-122            
+  ...ws-adapter.ts |     100 |      100 |     100 |     100 |                   
+  video-news.ts    |   32.95 |       36 |   63.15 |   32.92 | ...04-188,195-196 
+ src/cards/weather |   96.63 |    84.94 |     100 |   97.32 |                   
+  fdb-weather.ts   |     100 |       50 |     100 |     100 | 10-83             
+  ...eo-adapter.ts |   86.36 |       60 |     100 |   86.36 | 50-52             
+  weather.ts       |   97.08 |    87.25 |     100 |   97.95 | ...15,420-421,547 
+ src/core          |   89.42 |    81.42 |   84.72 |   91.28 |                   
+  anim-level.ts    |     100 |      100 |     100 |     100 |                   
+  ...oop-scroll.ts |   91.83 |    83.33 |    87.5 |   95.34 | 102-104           
+  cache.ts         |   86.82 |    77.08 |     100 |   88.88 | ...85,389,405-409 
+  card-registry.ts |   81.29 |    81.25 |   45.09 |    80.3 | ...44-545,566-603 
+  config.ts        |   89.13 |    86.34 |     100 |   92.82 | ...21,490,502,528 
+  constants.ts     |     100 |      100 |     100 |     100 |                   
+  diag.ts          |     100 |    96.42 |     100 |     100 | 149               
+  ...r-boundary.ts |     100 |      100 |     100 |     100 |                   
+  ...r-reporter.ts |     100 |      100 |     100 |     100 |                   
+  error-tracker.ts |   89.74 |    66.66 |   84.61 |    90.9 | 74,79-80          
+  fdb-card.ts      |   97.94 |    86.84 |   95.23 |    98.9 | 461,503           
+  fetch.ts         |   91.12 |    80.92 |      95 |   93.11 | ...,79-81,136-137 
+  ...t-run-tour.ts |      90 |    91.66 |      80 |      88 | 40,65-66          
+  hardware.ts      |   81.25 |     65.9 |      90 |   84.09 | 53-60,73,126      
+  history.ts       |   84.81 |    78.26 |   78.94 |   86.56 | 41-45,55-56,89-90 
+  i18n.ts          |   95.65 |    89.83 |     100 |   97.61 | 306,342           
+  idb-cache.ts     |    86.7 |     84.9 |   77.77 |   90.07 | ...65,192,255-256 
+  idle.ts          |     100 |      100 |     100 |     100 |                   
+  perf.ts          |   70.75 |    63.63 |   60.86 |   72.16 | ...62,248,296-307 
+  ...er-adapter.ts |     100 |    83.33 |     100 |     100 | 47-54             
+  provider.ts      |   97.72 |       95 |     100 |     100 | 56                
+  state.ts         |   85.71 |     87.5 |    87.5 |   84.61 | 143-152           
+  sw-constants.ts  |     100 |      100 |     100 |     100 |                   
+  sw-register.ts   |   91.22 |    80.55 |     100 |   94.23 | 74,100,148        
+  sync.ts          |   83.87 |    89.13 |   76.47 |   86.79 | 104-110,156-157   
+  trusted-types.ts |   53.33 |     37.5 |   66.66 |      60 | 33-35,48          
+  utils.ts         |     100 |    56.41 |     100 |     100 | 120-128           
+  ...s-reporter.ts |   93.93 |    63.63 |     100 |     100 | 36,57-64          
+  worker-client.ts |   94.59 |       90 |     100 |   94.11 | 146-147           
+ src/types         |   99.29 |    93.08 |     100 |     100 |                   
+  api.ts           |    99.2 |    91.62 |     100 |     100 | ...47-365,417-425 
+  card.ts          |     100 |      100 |     100 |     100 |                   
+  config.ts        |     100 |      100 |     100 |     100 |                   
+  provider.ts      |       0 |        0 |       0 |       0 |                   
+  stream.ts        |       0 |        0 |       0 |       0 |                   
+ src/ui            |   87.59 |     72.5 |   88.21 |   90.07 |                   
+  bg-images.ts     |   96.55 |    80.95 |     100 |     100 | 39-45,92          
+  ...ngs-dialog.ts |   91.93 |    69.23 |      90 |   93.85 | ...72,161,206-207 
+  ...uto-render.ts |   94.84 |    81.03 |     100 |   97.67 | 106-107           
+  config-panel.ts  |   80.73 |    62.22 |    79.1 |   85.28 | ...1146,1155-1158 
+  diag-overlay.ts  |   75.55 |    56.73 |   75.86 |   74.69 | ...59-361,378-382 
+  header.ts        |   99.13 |    96.05 |     100 |     100 | 36,189            
+  keyboard.ts      |     100 |      100 |     100 |     100 |                   
+  layout-drag.ts   |     100 |    89.74 |     100 |     100 | 28,63-64,113      
+  maximize.ts      |      98 |    92.59 |     100 |     100 | 166,169-170,199   
+  night-dimmer.ts  |      95 |    90.14 |   94.44 |   94.56 | 52,111-113,173    
+  screen-mode.ts   |     100 |      100 |     100 |     100 |                   
+  scroll.ts        |     100 |      100 |     100 |     100 |                   
+  status-bar.ts    |   77.17 |       55 |      80 |   78.31 | ...58-159,176-183 
+  theme.ts         |   97.43 |    96.42 |   76.92 |     100 | 55                
+  ticker.ts        |   97.12 |    93.97 |     100 |   96.82 | 69-70,152-153     
+  toast.ts         |     100 |      100 |     100 |     100 |                   
+ ...urable-objects |     100 |      100 |     100 |     100 |                   
+  ...chestrator.ts |     100 |      100 |     100 |     100 |                   
+ ...src/middleware |     100 |      100 |     100 |     100 |                   
+  canary.ts        |     100 |      100 |     100 |     100 |                   
+  cors.ts          |     100 |      100 |     100 |     100 |                   
+  rate-limit.ts    |     100 |      100 |     100 |     100 |                   
+ worker/src/routes |   48.47 |    48.36 |   38.88 |      50 |                   
+  data.ts          |    48.1 |    34.37 |      75 |   49.31 | ...21,142,147-149 
+  errors.ts        |    37.5 |    46.87 |    8.33 |    39.7 | ...36-149,163-201 
+  feeds.ts         |    42.1 |    39.13 |      40 |   42.58 | ...59-219,250-345 
+  metrics.ts       |   93.75 |      100 |   66.66 |     100 |                   
+  reports.ts       |     100 |    94.44 |     100 |     100 | 86                
+ worker/src/utils  |   95.85 |    88.59 |   95.12 |   96.98 |                   
+  allowlists.ts    |     100 |      100 |     100 |     100 |                   
+  analytics.ts     |     100 |       75 |     100 |     100 | 55                
+  d1-reports.ts    |      92 |      100 |     100 |   91.66 | 40,147            
+  d1-telemetry.ts  |   94.11 |      100 |     100 |   94.11 | 93                
+  kv.ts            |     100 |      100 |     100 |     100 |                   
+  response.ts      |     100 |    66.66 |     100 |     100 | 33                
+  rss-parser.ts    |   88.09 |    80.95 |   71.42 |   94.59 | 51-52             
+  schemas.ts       |     100 |      100 |     100 |     100 |                   
+  simhash.ts       |     100 |      100 |     100 |     100 |                   
+  validation.ts    |   97.36 |     92.1 |     100 |   97.14 | 107               
+-------------------|---------|----------|---------|---------|-------------------
+ERROR: Coverage for lines (87.51%) does not meet global threshold (96%)
+ERROR: Coverage for functions (85.66%) does not meet global threshold (95%)
+ERROR: Coverage for statements (86.28%) does not meet global threshold (95%)
+ERROR: Coverage for branches (78.29%) does not meet global threshold (90%)

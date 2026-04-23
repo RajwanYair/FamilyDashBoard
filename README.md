@@ -14,13 +14,13 @@
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-12.3.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-3486_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-12.4.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-3595_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -29,7 +29,7 @@
 [![Repo Size](https://img.shields.io/github/repo-size/RajwanYair/FamilyDashBoard?style=flat-square&color=34d399)](https://github.com/RajwanYair/FamilyDashBoard)
 
 **A zero-dependency TypeScript family dashboard for always-on TV display.**<br/>
-Dark glassmorphism · 6 themes · Hebrew RTL · 11 cards · Per-pane smart refresh · Drag-and-drop layout · Diagnostic overlay
+Pastel glassmorphism · 6 themes · Hebrew RTL · 12 cards · Per-pane smart refresh · Drag-and-drop layout · SW auto-reload · Diagnostic overlay
 
 [Getting Started](#-getting-started) · [Features](#-features) · [Data Sources](#-data-sources) · [Architecture](#%EF%B8%8F-architecture) · [Docs](docs/README.md) · [Changelog](#-changelog) · [Contributing](.github/CONTRIBUTING.md)
 
@@ -56,11 +56,11 @@ Dark glassmorphism · 6 themes · Hebrew RTL · 11 cards · Per-pane smart refre
 
 ### 📰 Live News
 
-Auto-scrolling Hebrew news from **17 RSS sources** (Ynet, Walla, Mako, Kan, N12, Rotter, Israel Hayom, Globes, Calcalist, Makor Rishon, Kikar HaShabbat, ICE, Geektime, Channel 14, Arutz 7, Srugim, Behadrei Haredim), sorted newest-first with source labels and relative timestamps. Refreshes every **15 minutes**.
+Auto-scrolling Hebrew news from **17 RSS sources** (Ynet, Walla, Mako, Kan, N12, Rotter, Israel Hayom, Globes, Calcalist, Makor Rishon, Kikar HaShabbat, ICE, Geektime, Channel 14, Arutz 7, Srugim, Behadrei Haredim), sorted newest-first with source labels. Each item shows **absolute publication time** (HH:MM / אתמול HH:MM / DD/MM HH:MM) and **elapsed age** (MM:SS · HH:MM:SS · D:HH:MM:SS). Feeds routed through the Cloudflare Worker. Refreshes every **15 minutes**.
 
 ### 📅 Family Calendar
 
-Native **ICS parser** fetches Google Calendar data via direct → 3 CORS proxy fallback chain, renders events in a dark-themed agenda view. Falls back to iframe embed if all ICS fetches fail. Refreshes every **15 minutes**.
+Native **ICS parser** fetches Google Calendar data via Cloudflare Worker (→ direct → 3 CORS proxy fallback chain), renders events in a pastel-themed agenda view. Falls back to iframe embed if all ICS fetches fail. Refreshes every **15 minutes**.
 
 ### 📈 Stock Tracker
 
@@ -94,12 +94,13 @@ Candle lighting and havdalah times from Hebcal, plus a **holiday countdown** wit
 - **Per-pane independent refresh** — no full-page reloads
 - **Dual-layer cache** (in-memory Map + localStorage) — survives browser restart, 7-day eviction
 - **Stale-while-revalidate** — shows cached data instantly, fetches in background
-- **6 themes** (OLED black, blue, matrix, amber, purple, rose) — press `T` to cycle
+- **6 themes** (pastel black, blue, matrix, amber, purple, rose) — press `T` to cycle; all colors use CSS custom properties with pasteled palettes
 - **3 screen modes** (TV, tablet, phone) — phone mode enables full-page scroll
 - **6 card entrance animations** — random direction per card, attention loop every 5min
 - **Card maximize** — click any card header to expand it full-screen (FLIP animation), click again or press `Escape` to restore
 - **Alerts toggle** — press `A` or use dropdown to show/hide red alerts pane; **off by default**, persisted in localStorage
 - **Auto hard-reload every 1h** — picks up HTML file changes without manual browser refresh; defers when tab is hidden
+- **SW auto-reload** — 10-second countdown on Service Worker update + 60-min periodic SW update check for always-on TVs
 - **Closest sun event** — weather detail shows next upcoming sunrise or sunset based on current time
 - **Daily Halacha ticker** — daily halacha from Sefaria.org with reference badge and numbered segments
 - **Animated number transitions** — smooth counting effect on temperature, stock prices, and currency values
@@ -158,7 +159,7 @@ npm install
 
 # 3. Start dev server
 cd FamilyDashBoard
-npx vite        # → http://localhost:5173/FamilyDashBoard/
+npx vite        # → http://localhost:3000/FamilyDashBoard/
 ```
 
 > **Monorepo note:** `FamilyDashBoard` is a sub-project of `MyScripts/`. There is intentionally **no local `package-lock.json`** and no local `devDependencies`. All dev tools (`typescript`, `vite`, `vitest`, `eslint`, `prettier`, …) resolve from the parent `MyScripts/node_modules/`. The CI pipeline installs them via `.github/ci/install-tools.sh`.
@@ -216,7 +217,7 @@ The dashboard is built as a proper TypeScript SPA, bundled by Vite:
 | Layer         | Description                                                                       |
 | ------------- | --------------------------------------------------------------------------------- |
 | `src/core/`   | 14 core modules — cache, fetch, state, config, registry, FdbCard base, perf, diag |
-| `src/cards/`  | 11 card modules — each owns its fetch, render, and refresh schedule               |
+| `src/cards/`  | 12 card modules — each owns its fetch, render, and refresh schedule               |
 | `src/ui/`     | 14 UI modules — theme, keyboard, maximize, header, toast, night-dimmer, ticker    |
 | `src/styles/` | 13 CSS modules — `@layer tokens, themes, base, layout, components, animations`    |
 | `worker/`     | Cloudflare Worker — per-provider routes, middleware, error reporting              |
@@ -252,14 +253,14 @@ FamilyDashBoard/
 ├── src/                    # TypeScript source (Vite build → dist/)
 │   ├── index.html          # App shell (RTL, CSP, minimal static markup)
 │   ├── main.ts             # Startup orchestration
-│   ├── cards/              # 11 card modules (news · weather · stocks · ...)
+│   ├── cards/              # 12 card modules (news · weather · stocks · ...)
 │   ├── core/               # 14 core modules (cache · fetch · state · fdb-card · ...)
 │   ├── ui/                 # 14 UI modules (theme · keyboard · maximize · toast · ...)
 │   ├── styles/             # 13 CSS modules (@layer tokens → animations)
 │   ├── types/              # TypeScript type definitions (api · config · card)
 │   └── public/             # Static assets (icon.svg, manifest.webmanifest)
 ├── tests/
-│   ├── unit/               # Vitest — 3265 tests / 98 suites
+│   ├── unit/               # Vitest — 3595 tests / 117 suites
 │   └── integration/        # Integration-level tests
 ├── worker/                 # Cloudflare Worker (API proxy + normalization)
 │   └── src/routes/         # Per-provider route handlers

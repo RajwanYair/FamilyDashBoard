@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v12.3.0)
+# FamilyDashBoard — Architecture (v12.4.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                                    | Vite-native, real DOM simulation, 3500+ tests / 111 suites      |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                                    | Vite-native, real DOM simulation, 3595 tests / 117 suites      |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
@@ -54,7 +54,7 @@ src/
 │   ├── utils.ts                # Shared utility functions (formatters, helpers)
 │   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
 │   ├── sw-constants.ts         # SW version/cache name constants shared between sw.ts and src/
-│   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED
+│   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED + 10s auto-reload countdown + 60min periodic update
 ├── ui/
 │   ├── theme.ts                # 6-theme system: black·blue·matrix·amber·purple·rose
 │   ├── keyboard.ts             # All keyboard shortcuts (T/D/A/S/N/+/-/P/B/H/C/Esc)
@@ -72,17 +72,18 @@ src/
 │   └── toast.ts                # Toast notification system
 ├── cards/
 │   ├── base-card.ts            # createCardLoader() + scheduleCard() — shared lifecycle
-│   ├── news/news.ts            # RSS feeds + search + bookmarks + stale tinting
+│   ├── news/news.ts            # RSS feeds + search + bookmarks + stale tinting + pub-time/elapsed display
 │   ├── weather/weather.ts      # Open-Meteo, multi-city tabs, UV, sky, precipitation
 │   ├── stocks/stocks.ts        # Yahoo Finance, portfolio P&L, alerts, market countdown
 │   ├── currency/currency.ts    # Exchange rates + gold/silver
-│   ├── calendar/calendar.ts    # ICS parser + week strip + countdown
+│   ├── calendar/calendar.ts    # ICS parser + week strip + countdown (Worker-first fetch)
 │   ├── hebrew-cal/hebrew-cal.ts # Hebcal API, Zmanim, moon phase, psalm, chores
 │   ├── alerts/alerts.ts        # Tzeva Adom (Red Alert), realtime mode
 │   ├── motivation/motivation.ts # Rotating quotes with share
 │   ├── tasks/tasks.ts          # Family chore board (v7, localStorage, daily reset)
 │   ├── countdown/countdown.ts  # Countdown timers to user-defined events (v7.1)
-│   └── system-info/system-info.ts # Battery, network, timing, browser info (v7)
+│   ├── system-info/system-info.ts # Battery, network, timing, browser info (v7)
+│   └── video-news/             # Live streaming news channels (C14, i24, etc.)
 ├── styles/
 │   ├── tokens.css              # @layer tokens: design tokens, @layer order declaration
 │   ├── themes.css              # 6 theme overrides + auto-theme hooks
@@ -113,7 +114,7 @@ worker/src/
 └── package.json
 tests/unit/
 ├── core/                       # cache · fetch · config · constants · diag · sync · sw · state · idb-cache · error-reporter · hardware
-├── cards/                      # all 11 card modules
+├── cards/                      # all 12 card modules
 ├── ui/                         # theme · header · keyboard · maximize · night-dimmer …
 ├── tests/unit/worker/          # cors · rate-limit · validation · allowlists · response · errors routes · ai routes
 └── html/dom-contract.test.ts   # Element ID existence contract tests
@@ -153,7 +154,7 @@ Cache layers:
 
 ```mermaid
 flowchart TD
-    Browser["Browser\n(src/main.ts)"] -->|"safeLoad() cards"| Cards["11 Cards\n(cards/*.ts)"]
+    Browser["Browser\n(src/main.ts)"] -->|"safeLoad() cards"| Cards["12 Cards\n(cards/*.ts)"]
     Cards -->|"cGet(key,TTL) hit"| CacheL1["L1 Memory Cache\n(in-memory Map)"]
     Cards -->|"cGet miss"| FetchChain
 
@@ -239,7 +240,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **3500+ tests / 111 suites / 0 failures** — coverage thresholds: 94% statements, 88% branches, 94% functions, 95% lines (v12.3.0)
+15. **3595 tests / 117 suites / 0 failures** — coverage thresholds: 94% statements, 88% branches, 94% functions, 95% lines (v12.4.0)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)

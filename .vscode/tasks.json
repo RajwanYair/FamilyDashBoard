@@ -153,6 +153,30 @@
             "problemMatcher": []
         },
         {
+            "label": "🌐 Serve Local: Dev (hot-reload)",
+            "type": "shell",
+            "command": "powershell -ExecutionPolicy Bypass -File scripts/serve-local.ps1 -Mode dev",
+            "group": "build",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🌐 Serve Local: Preview (production build)",
+            "type": "shell",
+            "command": "powershell -ExecutionPolicy Bypass -File scripts/serve-local.ps1 -Mode preview",
+            "group": "build",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "🎭 Playwright: E2E Tests",
             "type": "shell",
             "command": "npx playwright test",

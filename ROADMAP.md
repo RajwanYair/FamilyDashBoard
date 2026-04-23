@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD013 MD033 MD024 MD036 -->
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-23 · **Shipped baseline**: v12.3.0 — 3486 tests / 110 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 29 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
+> **Refresh date**: 2026-07-13 · **Shipped baseline**: v12.4.0 — 3595 tests / 117 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 34 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
 > **Scope**: every architectural decision is reopened — including the ones that ship cleanly — against the 2026-Q2 web-platform landscape, then charted toward v13, v14 and v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit.
 
 ---
@@ -14,7 +14,7 @@ Between v10 and v12.3 (≈ 50 sprints) we went from "working family TV display" 
 - **Edge upgrade** (v12.1): D1 telemetry, Durable Objects for alerts, Prometheus `/api/metrics`, Workers Analytics Engine, Cron pre-warm, Reporting API endpoint, canary-header plumbing.
 - **OPS + A11Y polish** (v12.2–v12.3): WCAG 2.4.6 headings, 3.2.6 consistent help, 3.3.7 redundant entry, 2.4.11 enhanced focus, SR-only h1, SimHash property tests, Stryker mutation audit, CI release gate (tsc + eslint + markdownlint + bundle-size + SW version), conventional commits.
 
-Quantitatively v10 → v12.3: 2147 → 3486 tests (+62%), 88 → 110 suites (+25%), 20 → 29 ADRs, worker routes 7 → 11, worker gzip ~75 → ~62 KB (Zod → Valibot net win even after adding Hono + D1 + DO), TTI ~1.4 s → < 1.0 s cached.
+Quantitatively v10 → v12.4: 2147 → 3595 tests (+67%), 88 → 117 suites (+33%), 20 → 34 ADRs, worker routes 7 → 11, worker gzip ~75 → ~62 KB (Zod → Valibot net win even after adding Hono + D1 + DO), TTI ~1.4 s → < 1.0 s cached.
 
 **Where we are.** The tactical catch-up is done. The frontier is no longer "modernise" — it is:
 
@@ -38,7 +38,7 @@ We benchmark against nine representative projects, grouped by mission:
 - **Server/infra monitoring** (architecture-only, not UX peers): Beszel, Dashdot.
 - **News-first tickers**: NetNewsWire (reference for RSS depth), Feedly (reference for SimHash/clustering).
 
-| Dimension | **FamilyDashBoard v12.3.0** | **Homepage** | **Dashy** | **Homer** | **Homarr v2** | **Glance** | **MagicMirror²** | **Beszel** | **Dashdot** | **NetNewsWire** |
+| Dimension | **FamilyDashBoard v12.4.0** | **Homepage** | **Dashy** | **Homer** | **Homarr v2** | **Glance** | **MagicMirror²** | **Beszel** | **Dashdot** | **NetNewsWire** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Primary audience | Always-on family TV | Homelab launcher | Homelab dashboard | Static startpage | Homelab mgmt | News/feed dashboard | Smart mirror display | Server monitoring | Server monitoring | News reader |
 | Stars (Apr 2026 est.) | ~85 | 44 K | 28 K | 12 K | 16 K | 24 K | 19 K | 7 K | 6 K | 7 K |
@@ -48,7 +48,7 @@ We benchmark against nine representative projects, grouped by mission:
 | Database | **None user (LS + IDB + KV + D1-anon)** | None (YAML) | None (YAML) | None (YAML) | **SQLite + Drizzle** | None (YAML) | None (JSON) | **SQLite embedded** | None | **SQLite** (feeds) |
 | TypeScript strictness | **100% strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`** | `strict` | partial | JS-dominant | `strict` | N/A | partial | `strict` | partial | N/A |
 | CSS architecture | **Vanilla `@layer` + tokens + Lightning CSS + `@scope`** | Tailwind 4 | SCSS + themes | SCSS | Mantine CSS-in-JS | Hand-written CSS | CSS modules | Tailwind 4 | Tailwind 3 | AppKit/UIKit |
-| Tests (unit + E2E + VR + axe) | **3486 unit + Playwright + axe + 54 VR + LHCI + fast-check + Stryker** | Vitest partial | Vitest partial | None | Vitest + PW + Argos CI | Go tests | Minimal | Go tests + Svelte test | Partial | XCTest |
+| Tests (unit + E2E + VR + axe) | **3595 unit + Playwright + axe + 54 VR + LHCI + fast-check + Stryker** | Vitest partial | Vitest partial | None | Vitest + PW + Argos CI | Go tests | Minimal | Go tests + Svelte test | Partial | XCTest |
 | Visual regression | **Playwright (54 baselines)** | None | None | None | Argos CI | None | None | None | None | Snapshot testing |
 | i18n | **Hebrew RTL + English** | 45+ (Crowdin) | 22+ | YAML | 38+ | English-only | 30+ | English-only | English-only | 40+ (Apple) |
 | Accessibility | **WCAG 2.2 AA · axe-core gate · parts of 2.2 AAA** | Partial | Partial | Unknown | Partial | Unknown | Partial | Unknown | Unknown | VoiceOver |
@@ -103,7 +103,7 @@ What we consider, filtered through our mission:
 3. **Hebrew RTL + Zmanim + Hebcal + Sefaria + Tzeva-Adom native** — unique.
 4. **12 deep, provider-adapted cards with normalized history** — depth over breadth.
 5. **4-tier offline** (mem → LS → IDB → SW) — no competitor renders a useful dashboard `navigator.onLine === false`.
-6. **3486 tests + axe + VR + LHCI + Stryker + SLSA** — highest quality-gate density in the table.
+6. **3595 tests + axe + VR + LHCI + Stryker + SLSA** — highest quality-gate density in the table.
 7. **Observable in production** (RUM + Vitals + Errors + Reports + Analytics Engine + Prometheus) with zero tracking cookies.
 8. **One-binary-ish deployment** — static ZIP + one worker.js, SLSA L2, SBOM per release.
 

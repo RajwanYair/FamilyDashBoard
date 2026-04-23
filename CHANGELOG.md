@@ -7,7 +7,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [12.4.0] — 2026-07-13
 
-> **Worker OPS + AI stubs + Property Tests** · **3584 tests / 117 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
+> **Worker OPS + AI stubs + Property Tests + UI polish + TV reliability** · **3595 tests / 117 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
 
 ### Added
 
@@ -18,6 +18,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - **Workers Queues `ERRORS_QUEUE`** (`worker/src/routes/errors.ts`): `handleErrors()` enqueues an `ErrorQueueMessage` after KV writes (non-fatal). `handleErrorsQueue()` consumer acks all messages in batch. Wrangler queue producer + consumer bindings. 7 unit tests. (Sprint 26)
 - **Email Workers weekly digest** (`worker/src/routes/cron.ts`): `handleWeeklyDigest()` reads daily error KV counts and emails a plain-text stats summary via `send_email` binding. Fires on Saturday 23:00 UTC cron. 9 unit tests. (Sprint 27)
 - **fast-check property tests for worker-client** (`tests/unit/core/worker-client-props.test.ts`): 7 property-based tests verifying URL construction invariants (lat/lon, sym, geonameid, base URL), HTTP error throw contract (any 4xx–5xx always throws), `WorkerEnvelope.data` round-trip, and `submitErrors` never-throws contract. (Sprint 28)
+- **SW auto-reload + periodic update** (`src/core/sw-register.ts`): `registerSW()` now schedules a 60-minute `swRegistration.update()` interval for always-on TV displays that are never navigated. When a new SW is ready, a 10-second countdown banner appears and automatically fires `swSkipWaiting()` so the latest version activates without user interaction.
+- **News absolute pub-time + elapsed display** (`src/cards/news/news.ts`, `src/cards/news/news.css`): New `pubTimeLabel()` function renders the real publication time per item: today → `HH:MM`, yesterday → `אתמול HH:MM`, older → `DD/MM HH:MM` (Asia/Jerusalem). `relativeAge()` rewritten to output `MM:SS` / `HH:MM:SS` / `D:HH:MM:SS` countdown format. Each news item now shows both a `.news-pub-time` tile and a `.news-age` elapsed counter.
+- **Pastel color refactor** (`src/styles/tokens.css`, `themes.css`, `sprints.css`, `components.css`): All six themes (black, blue, matrix, amber, purple, rose) transitioned from OLED-black saturated hues to pastel palette using CSS `color-mix()`. Design tokens updated; no hardcoded values.
+- **Cloudflare Worker-first for calendar + news** (`src/cards/calendar/calendar.ts`, `src/cards/news/news.ts`): `fetchICS()` and `fetchFeed()` now try `WORKER_BASE_URL/api/calendar?url=…` and `WORKER_BASE_URL/api/news?url=…` as step 0 before the CORS proxy chain, eliminating CORS failures on those two cards.
+- **Playwright E2E parallelisation** (`playwright.config.ts`, `tests/e2e/`): `fullyParallel: true`, `workers: 4` (CI stays 1), `timeout: 25_000`. `SETTLE_MS` reduced 1500→400. Deduped repeated `goto()+waitForSelector()` into shared helper `gotoAndWaitForCards()`. Total E2E suite time ≈ 504 s → ≈70 s.
 
 ### Changed
 

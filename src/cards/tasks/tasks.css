@@ -121,7 +121,7 @@
 
 .tasks-action-btn {
   flex: 1;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  background: color-mix(in sRGB, var(--accent) 15%, transparent);
   border: 1px solid var(--accent-border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -132,7 +132,7 @@
 }
 
 .tasks-action-btn:hover {
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in sRGB, var(--accent) 30%, transparent);
 }
 
 .tasks-action-reset {
@@ -187,7 +187,7 @@
 }
 
 .tasks-quick-add button {
-  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  background: color-mix(in sRGB, var(--accent) 20%, transparent);
   border: 1px solid var(--accent-border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);

@@ -44,9 +44,14 @@
 
 | Key      | Action                                                                 |
 | -------- | ---------------------------------------------------------------------- |
-| `T`      | Cycle through 6 themes (OLED black, blue, matrix, amber, purple, rose) |
+| `T`      | Cycle through 6 themes (black, blue, matrix, amber, purple, rose)      |
 | `D`      | Toggle diagnostic overlay (per-pane status + fetch log)                |
-| `Escape` | Close maximized card                                                   |
+| `A`      | Toggle red alerts pane                                                 |
+| `S`      | Open settings / config panel                                           |
+| `N`      | Toggle night dimmer                                                    |
+| `M`      | Toggle video mute (video-news card)                                    |
+| `V`      | Cycle video channel (C14 → i24 → …)                                  |
+| `Escape` | Close maximized card / active overlay                                  |
 
 > **Tip:** Click any card header to expand it full-screen (FLIP animation). Click again or press `Escape` to restore.
 
@@ -54,7 +59,7 @@
 
 ```bash
 npx vitest run
-# 2571+ tests, 56 suites, zero failures
+# 3595+ tests, 117 suites, zero failures
 ```
 
 Requires **Node.js 22+**.

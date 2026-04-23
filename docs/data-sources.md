@@ -1,6 +1,6 @@
 # Data Sources
 
-> Last updated: v10.0.0
+> Last updated: v12.4.0
 
 This document describes every external data source used by FamilyDashBoard, its
 caching strategy, worker route, and known failure modes.
@@ -11,7 +11,7 @@ caching strategy, worker route, and known failure modes.
 
 All production data flows through the Cloudflare Worker at
 `https://fdb.rajwanyair.workers.dev`. The worker validates upstream responses
-with Zod schemas and normalises them before returning them to the client.
+with **Valibot** schemas and normalises them before returning them to the client.
 
 ```mermaid
 sequenceDiagram
@@ -33,7 +33,7 @@ sequenceDiagram
         Worker->>API: HTTPS request
         alt API responds OK
             API-->>Worker: raw JSON
-            Worker->>Worker: Zod validate + normalize
+            Worker->>Worker: Valibot validate + normalize
             Worker->>KV: kvPut(key, normalized)
             Worker-->>Card: normalized JSON
         else API fails / timeout
@@ -58,7 +58,7 @@ Direct → allorigins → codetabs → corsproxy.io
 | Provider          | [Open-Meteo](https://open-meteo.com/) — free, no key required |
 | Worker route      | `GET /api/weather?lat=X&lon=Y`                                |
 | Upstream URL      | `https://api.open-meteo.com/v1/forecast`                      |
-| Zod schema        | `WeatherSchema` in `worker/src/utils/schemas.ts`              |
+| Valibot schema    | `WeatherSchema` in `worker/src/utils/schemas.ts`              |
 | Cache TTL         | 30 min (`INTERVALS.WEATHER`)                                  |
 | Cache key         | `wx`                                                          |
 | Stale fallback    | `cGetStaleAsync("wx")` in `open-meteo-adapter.ts`             |
@@ -74,7 +74,7 @@ Direct → allorigins → codetabs → corsproxy.io
 | Provider          | [ExchangeRate-API](https://www.exchangerate-api.com/) (ILS base)                                         |
 | Worker route      | `GET /api/currency`                                                                                      |
 | Upstream URL      | `https://v6.exchangerate-api.com/v6/<KEY>/latest/ILS` + `https://open.er-api.com/v6/latest/ILS` fallback |
-| Zod schema        | `CurrencySchema` in `worker/src/utils/schemas.ts`                                                        |
+| Valibot schema    | `CurrencySchema` in `worker/src/utils/schemas.ts`                                                        |
 | Cache TTL         | 1 hour (`INTERVALS.CURRENCY`)                                                                            |
 | Cache key         | `curr`                                                                                                   |
 | KV stale fallback | Yes (`data.ts` — `handleCurrency`)                                                                       |
@@ -89,7 +89,7 @@ Direct → allorigins → codetabs → corsproxy.io
 | Provider       | Yahoo Finance v8 chart API (unofficial, no key required)                                     |
 | Worker route   | `GET /api/stocks?sym=AAPL`                                                                   |
 | Upstream URL   | `https://query1.finance.yahoo.com/v8/finance/chart/<sym>`                                    |
-| Zod schema     | `StocksChartSchema` in `worker/src/utils/schemas.ts`                                         |
+| Valibot schema | `StocksChartSchema` in `worker/src/utils/schemas.ts`                                         |
 | Cache TTL      | 5 min open, 30 min closed (`INTERVALS.STOCKS_OPEN/CLOSED`)                                   |
 | Cache key      | `stk-<SYM>`                                                                                  |
 | Stale fallback | `cGetStale` on error                                                                         |
@@ -108,7 +108,7 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 | Provider     | [CoinGecko](https://www.coingecko.com/) — free tier                     |
 | Worker route | `GET /api/crypto?ids=bitcoin&vs_currencies=usd`                         |
 | Upstream URL | `https://api.coingecko.com/api/v3/simple/price`                         |
-| Zod schema   | `CoinGeckoSchema` in `worker/src/utils/schemas.ts`                      |
+| Valibot schema | `CoinGeckoSchema` in `worker/src/utils/schemas.ts`                      |
 | Cache TTL    | 5 min (`Cache-Control: max-age=300` on worker response)                 |
 | Cache key    | (stock cache key `stk-BTC-USD`)                                         |
 | Failure mode | Worker returns 502 if schema invalid; 400 if unsupported coin requested |
@@ -118,15 +118,16 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 
 ### 📰 News — RSS feeds
 
-| Property       | Value                                                      |
-| -------------- | ---------------------------------------------------------- |
-| Provider       | 17 RSS feeds (Haaretz, Ynet, Times of Israel, BBC, etc.)   |
-| Worker route   | `GET /api/news?url=<encoded-rss-url>`                      |
-| Upstream       | Direct RSS proxy (allowlisted origins only)                |
-| Cache TTL      | 15 min (`INTERVALS.NEWS`)                                  |
-| Cache key      | `news-<hash>`                                              |
-| Stale fallback | `cGetStale` on error                                       |
-| Failure mode   | Worker returns 403 if origin not in `ALLOWED_NEWS_ORIGINS` |
+| Property       | Value                                                                      |
+| -------------- | -------------------------------------------------------------------------- |
+| Provider       | 17 RSS feeds (Ynet, Walla, Mako, Kan, N12, Rotter, Israel Hayom, Globes, Calcalist, Makor Rishon, Kikar HaShabbat, ICE, Geektime, Channel 14, Arutz 7, Srugim, Behadrei Haredim) |
+| Worker route   | `GET /api/news?url=<encoded-rss-url>`                                      |
+| Upstream       | Direct RSS proxy (allowlisted origins only) — tried **first** before proxy chain |
+| Cache TTL      | 15 min (`INTERVALS.NEWS`)                                                  |
+| Cache key      | `news-<hash>`                                                              |
+| Stale fallback | `cGetStale` on error                                                       |
+| Time display   | Each item: `.news-pub-time` (HH:MM / אתמול HH:MM / DD/MM HH:MM) + `.news-age` (MM:SS / HH:MM:SS / D:HH:MM:SS) |
+| Failure mode   | Worker returns 403 if origin not in `ALLOWED_NEWS_ORIGINS`                 |
 
 ---
 
@@ -136,7 +137,7 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 | ----------------- | ----------------------------------------------------------------- |
 | Provider          | [Hebcal](https://www.hebcal.com/) — free, no key required         |
 | Worker routes     | `GET /api/hebcal?geonameid=X`, `GET /api/hebcal/holidays?year=X`  |
-| Zod schemas       | `HebcalSchema`, `HebcalHolidaysSchema`                            |
+| Valibot schemas   | `HebcalSchema`, `HebcalHolidaysSchema`                            |
 | Cache TTL         | 6 hours (`INTERVALS.HEBREW_CAL`)                                  |
 | Cache key         | `hcal`, `hcal-holidays-<year>`                                    |
 | KV stale fallback | Yes (`data.ts` — `handleHebcal`, `handleHebcalHolidays`)          |
@@ -149,7 +150,7 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 | Property     | Value                                                                                |
 | ------------ | ------------------------------------------------------------------------------------ |
 | Provider     | Google Calendar (ICS export)                                                         |
-| Worker route | `GET /api/calendar?url=<encoded-ics-url>`                                            |
+| Worker route | `GET /api/calendar?url=<encoded-ics-url>` — tried **first** before direct/proxy chain |
 | Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                       |
 | Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                        |
 | Cache key    | `cal-ics-<index>`                                                                    |

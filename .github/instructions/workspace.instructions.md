@@ -3,12 +3,12 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v12.3.0
+# FamilyDashBoard — v12.4.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
-> **Tests**: 3486 / 110 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Tests**: 3595 / 117 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
 
 ## Shell / Terminal
 
@@ -63,9 +63,9 @@ Common reusable tooling can live in the parent `MyScripts/tooling/` directory.
 - Keep repository-specific aliases, include patterns, setup files, coverage settings, and path assumptions here in the workspace.
 - When moving config upward, document the split so other repositories can reuse it safely.
 
-## Cards (11 total)
+## Cards (12 total)
 
-news · weather · stocks · currency · calendar · hebrew-cal · alerts · motivation · tasks · system-info · countdown
+news · weather · stocks · currency · calendar · hebrew-cal · alerts · motivation · tasks · system-info · countdown · video-news
 
 ## Architecture
 
