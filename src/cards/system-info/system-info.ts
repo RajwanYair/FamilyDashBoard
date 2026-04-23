@@ -229,6 +229,8 @@ export async function renderSystemInfo(): Promise<void> {
   }
 
   diagLog("FDB-053: [system-info] Rendered");
+  // Fire-and-forget sparkline updates (non-blocking)
+  void updateNetworkHistory();
 }
 
 /**
@@ -252,6 +254,26 @@ async function updateBatteryHistory(pct: number): Promise<void> {
 }
 
 let _sysInfoInterval: number | null = null;
+
+/**
+ * Persist network downlink (Mbps) to IDB history and render a 7-day sparkline
+ * in the `#sysinfo-net-spark` element if it exists. Fire-and-forget.
+ */
+async function updateNetworkHistory(): Promise<void> {
+  try {
+    const nav = navigator as NavigatorWithExtras;
+    const downlink = nav.connection?.downlink;
+    if (downlink === undefined || downlink <= 0) return;
+    await historyAppend("sysinfo:downlink", downlink);
+    const values = await historyGet("sysinfo:downlink", 7);
+    if (values.length < 2) return;
+    const sparkEl = document.getElementById("sysinfo-net-spark");
+    if (!sparkEl) return;
+    sparkEl.innerHTML = trustedHTML(sparklineSvg(values, "var(--cyan, #6abfcf)", 44, 12));
+  } catch {
+    /* IDB unavailable — ignore */
+  }
+}
 
 export function initSystemInfoCard(): void {
   void renderSystemInfo();
