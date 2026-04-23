@@ -33,6 +33,7 @@ import "./cards/system-info/system-info.css";
 
 // ── Card registry (side-effect: registers all 11 built-in cards) ──
 import { loadCard, listCards } from "./core/card-registry";
+import { trustedHTML } from "./core/trusted-types";
 import { getDiagEntries, clearDiag, formatDiagEntry } from "./core/diag";
 import { toggleCardMaximize } from "./ui/maximize";
 import { THEMES } from "./core/constants";
@@ -91,7 +92,7 @@ async function ensureLegacyCardDOM(id: string, el: HTMLElement): Promise<void> {
       el.classList.add(cls);
     }
     // Inject the card's inner HTML (all IDs and structure).
-    el.innerHTML = template.innerHTML;
+    el.innerHTML = trustedHTML(template.innerHTML);
 
     // Remove and re-append so connectedCallback fires again, this time with
     // all DOM IDs present as descendants of the custom element.

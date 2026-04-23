@@ -371,7 +371,7 @@ function populateForm(): void {
   // Cards tab — dynamically build per-card rows
   const cardsList = document.getElementById("cfg-cards-list");
   if (cardsList) {
-    cardsList.innerHTML = "";
+    cardsList.replaceChildren();
     const frag = document.createDocumentFragment();
     const entries = [...listCards()].sort((a, b) =>
       getLocalizedCardTitle(a, c.interfaceLanguage).localeCompare(

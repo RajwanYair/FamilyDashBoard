@@ -13,6 +13,7 @@
  */
 
 import { diagLog } from "../../core/diag";
+import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
 import { LS_TASKS_DONE, LS_TASKS_RESET, LS_CHORES } from "../../core/constants";
 import type { CardDefinition, CardConfigField } from "../../types/card";
@@ -398,7 +399,7 @@ function renderFilterChips(chores: ChoreItem[]): void {
   const bar = document.getElementById("tasks-filter-bar");
   if (!bar) return;
   const persons = [...new Set(chores.map((c) => c.person))].filter(Boolean);
-  bar.innerHTML = "";
+  bar.replaceChildren();
   if (persons.length <= 1) return;
   for (const person of persons) {
     const chip = document.createElement("button");
@@ -555,7 +556,7 @@ export const tasksCard: CardDefinition = {
     section.className = "card";
     section.dataset.cardId = "tasks";
     section.setAttribute("aria-label", "Tasks");
-    section.innerHTML = `<div class="card-header"><span class="icon-badge green">✅</span> משימות</div><div class="tasks-body"><div class="tasks-list" id="tasks-list"></div></div>`;
+    section.innerHTML = trustedHTML(`<div class="card-header"><span class="icon-badge green">✅</span> משימות</div><div class="tasks-body"><div class="tasks-list" id="tasks-list"></div></div>`);
     return section;
   },
   init: initTasksCard,

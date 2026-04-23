@@ -5,6 +5,7 @@
  */
 
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
+import { trustedHTML } from "../../core/trusted-types";
 import "./weather.css";
 import {
   INTERVALS,
@@ -393,7 +394,7 @@ export function renderWeather(d: WeatherResponse): void {
               ? ["uv-vhigh", "גבוה מאוד"]
               : ["uv-extreme", "קיצוני"];
     // All values are computed constants — innerHTML is safe here
-    el.wxUv.innerHTML = `<span class="uv-pill ${uvCls}">${uv.toFixed(0)}</span> ${uvLabel}`;
+    el.wxUv.innerHTML = trustedHTML(`<span class="uv-pill ${uvCls}">${uv.toFixed(0)}</span> ${uvLabel}`);
   }
 
   // F1 (v7.2): Today's precipitation probability (from daily forecast index 0)

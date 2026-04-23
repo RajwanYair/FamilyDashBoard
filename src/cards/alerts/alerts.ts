@@ -305,8 +305,7 @@ export function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
     }
   }
 
-  elScroll.innerHTML = "";
-  elScroll.appendChild(frag);
+  elScroll.replaceChildren(frag);
 
   // Scroll animation — disabled when user prefers reduced motion
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {

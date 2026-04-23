@@ -13,6 +13,7 @@
  */
 
 import { diagLog } from "../../core/diag";
+import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
 import { decomposeDuration, pad2 } from "../../core/utils";
 import type { CardDefinition } from "../../types/card";
@@ -334,7 +335,7 @@ export const systemInfoCard: CardDefinition = {
     section.className = "card";
     section.dataset.cardId = "system-info";
     section.setAttribute("aria-label", "System Info");
-    section.innerHTML = `<div class="card-header"><span class="icon-badge cyan">🖥</span> מצב מערכת</div><div class="sysinfo-body" id="sysinfo-body"></div>`;
+    section.innerHTML = trustedHTML(`<div class="card-header"><span class="icon-badge cyan">🖥</span> מצב מערכת</div><div class="sysinfo-body" id="sysinfo-body"></div>`);
     return section;
   },
   init: initSystemInfoCard,

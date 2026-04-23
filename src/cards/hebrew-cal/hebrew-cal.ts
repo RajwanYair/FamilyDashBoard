@@ -704,8 +704,7 @@ export function renderZmanim(times: Record<string, string>): void {
     const minsUntil = Math.round((nextTime - now) / MS_PER_MIN);
     nextItem.title = `בעוד ${minsUntil} דק׳`;
   }
-  grid.innerHTML = "";
-  grid.appendChild(frag);
+  grid.replaceChildren(frag);
   section.style.display = "";
   // Equalize all cell widths to the widest cell so all blocks are uniform.
   if (typeof requestAnimationFrame === "function") {

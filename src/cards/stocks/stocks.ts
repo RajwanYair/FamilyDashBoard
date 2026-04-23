@@ -7,6 +7,7 @@
  */
 
 import "./stocks.css";
+import { trustedHTML } from "../../core/trusted-types";
 import {
   INTERVALS,
   STOCK_SYMBOLS,
@@ -422,7 +423,7 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
 
   const chartEl = blk.querySelector(".stk-chart");
   if (chartEl && prices.length >= 2) {
-    chartEl.innerHTML = bezierChart(prices, trendColor);
+    chartEl.innerHTML = trustedHTML(bezierChart(prices, trendColor));
   }
 
   const timeEl = blk.querySelector(".stk-time");

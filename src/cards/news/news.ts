@@ -302,7 +302,7 @@ export function cacheDom(): void {
 export function renderSourceFilterChips(): void {
   const bar = document.getElementById("news-filter-bar");
   if (!bar) return;
-  bar.innerHTML = "";
+  bar.replaceChildren();
   const frag = document.createDocumentFragment();
   for (const feed of NEWS_FEEDS) {
     const domain = (() => {
@@ -601,7 +601,7 @@ export function renderNews(items: NewsItem[]): void {
     }
   }
 
-  elRssScroll.innerHTML = "";
+  elRssScroll.replaceChildren();
   elRssScroll.scrollTop = 0;
   elRssScroll.setAttribute("aria-busy", "false");
   elRssScroll.appendChild(frag);

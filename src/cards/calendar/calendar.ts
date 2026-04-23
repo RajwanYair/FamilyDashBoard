@@ -8,6 +8,7 @@
  */
 
 import { scheduleCard } from "../base-card";
+import { trustedHTML } from "../../core/trusted-types";
 import "./calendar.css";
 import { INTERVALS, PROXIES, LS_ICS_URL, MS_PER_DAY, MS_PER_MIN } from "../../core/constants";
 import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
@@ -278,7 +279,7 @@ function renderWeekStrip(events: CalendarEvent[]): void {
         `<div class="cal-week-dots">${dots}</div></div>`,
     );
   }
-  els.weekStrip.innerHTML = rows.join("");
+  els.weekStrip.innerHTML = trustedHTML(rows.join(""));
 }
 
 function updateTodayEventCount(events: CalendarEvent[]): void {

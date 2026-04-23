@@ -1,5 +1,6 @@
 import { FdbCard } from "../../core/fdb-card";
 import { diagLog } from "../../core/diag";
+import { trustedHTML } from "../../core/trusted-types";
 import { destroyWeatherCard, initWeatherCard, switchWeatherCity } from "./weather";
 
 export class FdbWeatherCard extends FdbCard {
@@ -20,7 +21,7 @@ export class FdbWeatherCard extends FdbCard {
       skyPill.className = "wx-sky-pill";
       header.appendChild(skyPill);
 
-      body.innerHTML = `
+      body.innerHTML = trustedHTML(`
         <div class="wx-city-tabs" id="wx-city-tabs">
           <button type="button" class="wx-city-tab active" data-city="jerusalem" data-lat="31.7683" data-lon="35.2137" title="לחץ להצגת מזג אוויר בירושלים">ירושלים</button>
           <button type="button" class="wx-city-tab" data-city="telaviv" data-lat="32.0853" data-lon="34.7818" title="לחץ להצגת מזג אוויר בתל אביב">ת"א</button>
@@ -60,7 +61,7 @@ export class FdbWeatherCard extends FdbCard {
           <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
           <div class="wx-fday"><div class="wx-fday-icon">-</div><div class="wx-fday-name">--</div><div class="wx-fday-temp">--°</div></div>
         </div>
-      `;
+      `);
     }
 
     initWeatherCard();

@@ -36,6 +36,7 @@ import {
 import { idbEstimateSize } from "../core/idb-cache";
 import { formatHardwareProfile, getHardwareTier } from "../core/hardware";
 import { getAllProviderHealth } from "../core/provider";
+import { trustedHTML } from "../core/trusted-types";
 
 let overlayEl: HTMLDialogElement | null = null;
 let logEl: HTMLElement | null = null;
@@ -126,7 +127,7 @@ function renderStats(): void {
   // Error count
   const errCount = getErrorCount();
 
-  panes.innerHTML = "";
+  panes.replaceChildren();
   const html = `
     <div class="diag-stats">
       <span>🗄️ LocalStorage: <b>${lsKB} KB</b></span>
@@ -166,20 +167,21 @@ function renderStats(): void {
     🖥️ HW: <span style="color:${hwColor}"><b>${formatHardwareProfile()}</b></span>
   </div>`;
 
-  panes.innerHTML =
+  panes.innerHTML = trustedHTML(
     html +
     vitalsHtml +
     hwHtml +
     renderCardTimingsHtml() +
     renderErrorTrendHtml() +
-    renderProviderHealthHtml();
+    renderProviderHealthHtml(),
+  );
 
   // Async IDB size + inventory update (v7.10 — non-blocking, Sprint 179 — key count)
   void Promise.all([idbEstimateSize(), cacheInventory()]).then(([bytes, inv]) => {
     const idbEl = document.getElementById("diag-idb-size");
     if (!idbEl) return;
     const idbMB = (bytes / (1024 * 1024)).toFixed(2);
-    idbEl.innerHTML = `💾 IDB: <b>${idbMB} MB</b> · ${String(inv.idbEntries)} keys · LS ${(inv.lsBytes / 1024).toFixed(1)} KB`;
+    idbEl.innerHTML = trustedHTML(`💾 IDB: <b>${idbMB} MB</b> · ${String(inv.idbEntries)} keys · LS ${(inv.lsBytes / 1024).toFixed(1)} KB`);
   });
 }
 
