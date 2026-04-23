@@ -477,9 +477,10 @@ One line per release. Per-sprint detail lives in `CHANGELOG.md`.
 | v11.5.0 | 2026-07-05 | ADR-020 idle-callback deferred init · video-news docs · dead `initX` cleanup · ARCHITECTURE refresh                     | 3303 / 100 |
 | v11.5.1 | 2026-07-10 | Currency XAU/XAG via Yahoo GC=F/SI=F · countdown RTL tile direction · +6 unit tests                                     | 3309 / 100 |
 | v12.0.0 | 2026-05-19 | **Toolchain Modernisation** — Valibot (Zod→Valibot) · Hono 4.x router · Finnhub primary stocks · SimHash news dedup · 7-day IDB history + sparklines · WCAG 2.4.11 AAA focus + aria-labels · SBOM (CycloneDX) + Renovate · 27 ADRs | 3309 / 102 |
+| v12.1.0 | 2026-07-15 | **Edge Upgrade** — D1 telemetry (ADR-024) · Durable Objects alerts (ADR-025) · Prometheus `/api/metrics` · worker-client.ts typed HTTP · JSON diag export · security headers COEP credentialless · IDB sparklines on stocks + system-info · openapi.yaml v12.1.0 · commitlint · 13 iCalendar fuzz tests | 3406 / 106 |
 
-Total through v12.0.0: **42+ production sprints**, **27 ADRs**, **0 regressions**.
+Total through v12.1.0: **50+ production sprints**, **27 ADRs**, **0 regressions**.
 
 ---
 
-**Roadmap owner**: Reuven Airhar · **Last reviewed**: 2026-04-23 · **Next review**: on v12.0 milestone tagging.
+**Roadmap owner**: Reuven Airhar · **Last reviewed**: 2026-07-15 · **Next review**: on v12.2 milestone tagging.

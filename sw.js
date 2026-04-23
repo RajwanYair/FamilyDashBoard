@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v11.5.1
+/* FamilyDashBoard ServiceWorker — v12.1.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v11.5.1: Currency XAU/XAG via Yahoo GC=F/SI=F · countdown RTL tile direction fix
+ * v12.1.0: Edge upgrade — D1 telemetry, Durable Objects, Prometheus metrics, JSON diag export
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

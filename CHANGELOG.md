@@ -5,6 +5,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.1.0] — 2026-07-15
+
+> **Edge Upgrade** · **3406 tests / 106 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 27 ADRs
+
+### Added
+
+- **Worker-client typed HTTP** (`src/core/worker-client.ts`): Typed `wc` object wrapping all 14 worker routes — weather/currency/hebcal/stocks/news/alerts/calendar/sefaria/crypto/errors/metrics. Auto-discovers via `WorkerEnvelope<T>`. 19 unit tests.
+- **D1 telemetry** (`worker/src/utils/d1-telemetry.ts`): `recordHit()` / `queryRecentHits()` / `queryTotalsByRoute()` backed by Cloudflare D1. Lazy schema creation. (ADR-024)
+- **Prometheus `/api/metrics`** (`worker/src/routes/metrics.ts`): Token-gated (`METRICS_TOKEN`) Prometheus text-format endpoint; returns D1-backed route hit counters. Returns 501 when not configured. 13 unit tests.
+- **Durable Object `AlertsOrchestrator`** (`worker/src/durable-objects/alerts-orchestrator.ts`): Minimal DO stub for SSE alerts fan-out. `GET /state` + `POST /alarm` endpoints with DO storage. (ADR-025)
+- **SimHash property tests** (`tests/unit/core/simhash.property.test.ts`): 11 fast-check property tests covering commutativity, bit-width, bit-count, and dedup rate. Coverage threshold raised: 94/88/94/95.
+- **Commitlint** (`commitlint.config.mjs`): Conventional Commits enforcement — scope-enum (all 12 cards + infra), type-enum. Added `"commitlint"` npm script.
+- **Per-card bundle breakdown** (`scripts/check-bundle-size.mjs`): `CARD_CHUNKS` table sorted by gzip size added to bundle check output.
+- **Structured JSON diagnostics export** (`src/core/diag.ts`): `buildDiagExport()` / `exportDiagJson()` with `DIAG_EXPORT_SCHEMA_VERSION = 1`. `DiagExport` interface with schemaVersion, appVersion, exportedAt, userAgent, pageUrl. 11 unit tests.
+- **Security headers tightened** (`_headers`): COEP upgraded `require-corp` → `credentialless`; Permissions-Policy expanded to 28 APIs; HSTS (`max-age=2592000`); immutable cache on fingerprinted assets; stale-while-revalidate on shell HTML.
+- **OpenAPI v12.1.0** (`worker/openapi.yaml`): Version bumped, `/api/metrics` endpoint spec added.
+- **`generate-arch-table.mjs`** (`scripts/`): Scans `src/cards/` and generates a Markdown card inventory table. `npm run arch:table`.
+- **IDB history sparklines on stocks** (`src/cards/stocks/stocks.ts`): `historyAppend`/`historyGet`/`sparklineSvg` from `core/history` — 7-day rolling price sparkline per symbol in `.stk-ph-spark`.
+- **IDB history sparklines on system-info** (`src/cards/system-info/system-info.ts`): Battery % appended to IDB history per render cycle; `#sysinfo-battery-spark` shows 7-day sparkline.
+- **iCalendar fuzz tests** (`tests/unit/cards/calendar.test.ts`): 13 edge-case / fuzz tests covering missing DTSTART, malformed dates, empty SUMMARY, CRLF endings, null bytes, duplicate fields, long summaries, TZID params.
+- **Worker cron 29-Elul pre-warm**: `handleNextYearPreWarm()` at 23:00 UTC pre-warms next Hebrew year holiday cache. Three cron triggers (`0 0 * * *`, `0 12 * * *`, `0 23 * * *`).
+- **markdownlint fix**: `worker/node_modules/**` excluded from lint scope.
+
+### Fixed
+
+- `worker/src/routes/feeds.ts`: "Zod validation warning" log strings renamed to "Valibot validation warning".
+
+---
+
 ## [12.0.0] — 2026-05-19
 
 > **Toolchain Modernisation** · **3309 tests / 102 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 27 ADRs
