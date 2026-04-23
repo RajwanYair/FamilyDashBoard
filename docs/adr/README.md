@@ -24,3 +24,12 @@
 | [ADR-018](ADR-018-csp-coop-coep.md)                 | CSP + COOP/COEP Security Headers                 | 2026-07-12 | Accepted |
 | [ADR-019](ADR-019-video-card-csp.md)                | Video-Card CSP Strategy & Integration Mode       | 2026-07-01 | Accepted |
 | [ADR-020](ADR-020-idle-callback-deferred-init.md)   | Deferred Card Init via `requestIdleCallback`     | 2026-07-05 | Accepted |
+| [ADR-021](ADR-021-worker-client.md)                 | Worker Client Typed Fetch Wrapper                | 2025-07-01 | Accepted |
+| [ADR-022](ADR-022-css-scope.md)                     | CSS `@scope` for Card Isolation                  | 2025-07-01 | Accepted |
+| [ADR-023](ADR-023-valibot-worker-validation.md)     | Valibot Schema Validation in Worker              | 2025-07-01 | Accepted |
+| [ADR-024](ADR-024-d1-telemetry.md)                  | D1 Telemetry Database                            | 2025-07-01 | Accepted |
+| [ADR-025](ADR-025-durable-objects-alerts-sse.md)    | Durable Objects Alerts SSE Fan-out               | 2025-07-01 | Accepted |
+| [ADR-026](ADR-026-hono-router.md)                   | Hono Router for Worker                           | 2025-07-01 | Accepted |
+| [ADR-027](ADR-027-sbom-renovate.md)                 | SBOM + Renovate Dependency Tracking              | 2025-07-01 | Accepted |
+| [ADR-028](ADR-028-reporting-api-d1.md)              | Browser Reporting API + D1 Storage               | 2025-07-13 | Accepted |
+| [ADR-029](ADR-029-analytics-engine.md)              | Workers Analytics Engine Request Tracking        | 2025-07-13 | Accepted |
