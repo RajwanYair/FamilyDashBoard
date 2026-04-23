@@ -272,6 +272,15 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     expect(html).toContain('class="skip-link"');
   });
 
+  it("has SR-only h1 heading inside main for WCAG 2.4.6 compliance (Sprint 30 V12-A11Y)", () => {
+    expect(html).toContain('id="page-heading"');
+    expect(html).toContain('class="sr-only"');
+    // The heading must be inside the main element (page-heading appears after main-content)
+    const mainIdx = html.indexOf('id="main-content"');
+    const h1Idx = html.indexOf('id="page-heading"');
+    expect(h1Idx).toBeGreaterThan(mainIdx);
+  });
+
   it("alerts scroll region has aria-live=assertive", () => {
     expect(html).toContain('aria-live="assertive"');
   });
