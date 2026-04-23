@@ -93,13 +93,11 @@ const header = "| Card ID | TS files | Worker adapter | CSS | Tests |";
 const sep = "|---------|----------|----------------|-----|-------|";
 const tableLines = [header, sep, ...rows.map((r) => `| \`${r.id}\` | ${r.src} | ${icon(r.adapter)} | ${icon(r.css)} | ${icon(r.test)} |`)];
 
-// eslint-disable-next-line no-console
 console.log(tableLines.join("\n"));
 
 // ── Summary ────────────────────────────────────────────────────────────────
 const untested = rows.filter((r) => !r.test);
 if (untested.length > 0) {
-  // eslint-disable-next-line no-console
   console.error(`\n⚠️  ${untested.length} card(s) have no unit test file: ${untested.map((r) => r.id).join(", ")}`);
   if (checkMode) process.exit(1);
 }
