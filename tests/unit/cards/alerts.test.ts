@@ -25,6 +25,8 @@ import {
   loadAlerts,
   cacheDom,
   initAlertsCard,
+  initAlertsSSE,
+  destroyAlertsSSE,
   alertThreatIcon,
   alertAgeLabel,
   clearUnreadAlerts,
@@ -1291,6 +1293,75 @@ describe("Alerts — notify Notification.permission not granted (no throw)", () 
       }),
     );
     await expect(loadAlerts()).resolves.toBeUndefined();
+  });
+});
+
+// ── SSE connection: initAlertsSSE / destroyAlertsSSE (V13-EDGE-1) ─────────────
+
+/** Reusable EventSource mock class for SSE tests */
+class MockEventSource {
+  static instances: MockEventSource[] = [];
+  readonly url: string;
+  private readonly _listeners = new Map<string, () => void>();
+  closeCalled = false;
+  onerror: (() => void) | null = null;
+
+  constructor(url: string) {
+    this.url = url;
+    MockEventSource.instances.push(this);
+  }
+  addEventListener(event: string, fn: () => void): void {
+    this._listeners.set(event, fn);
+  }
+  fireEvent(event: string): void { this._listeners.get(event)?.(); }
+  close(): void { this.closeCalled = true; }
+}
+
+describe("Alerts — initAlertsSSE and destroyAlertsSSE", () => {
+  beforeEach(() => { MockEventSource.instances = []; });
+  afterEach(() => {
+    _resetAlertsForTest();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("initAlertsSSE does nothing when EventSource is undefined", () => {
+    const orig = (globalThis as Record<string, unknown>).EventSource;
+    delete (globalThis as Record<string, unknown>).EventSource;
+    expect(() => initAlertsSSE()).not.toThrow();
+    (globalThis as Record<string, unknown>).EventSource = orig;
+  });
+
+  it("initAlertsSSE creates EventSource when worker is enabled", () => {
+    vi.stubGlobal("EventSource", MockEventSource);
+    vi.stubGlobal("navigator", { onLine: true });
+
+    initAlertsSSE();
+    expect(MockEventSource.instances).toHaveLength(1);
+    expect(MockEventSource.instances[0]?.url).toContain("/api/alerts/subscribe");
+  });
+
+  it("destroyAlertsSSE closes connection and resets realtime mode", () => {
+    vi.stubGlobal("EventSource", MockEventSource);
+    vi.stubGlobal("navigator", { onLine: true });
+
+    initAlertsSSE();
+    destroyAlertsSSE();
+
+    expect(MockEventSource.instances[0]?.closeCalled).toBe(true);
+  });
+
+  it("SSE onerror handler closes connection", () => {
+    vi.stubGlobal("EventSource", MockEventSource);
+    vi.stubGlobal("navigator", { onLine: true });
+
+    setAlertsRealtime(true);
+    initAlertsSSE();
+    const es = MockEventSource.instances[0]!;
+    expect(es.onerror).not.toBeNull();
+    es.onerror?.();
+
+    expect(es.closeCalled).toBe(true);
   });
 });
 

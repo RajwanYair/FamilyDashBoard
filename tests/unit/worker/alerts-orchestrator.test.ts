@@ -79,3 +79,61 @@ describe("AlertsOrchestrator — Durable Object stub", () => {
     expect(body.lastAlarmAt).toBeLessThanOrEqual(Date.now() + 100);
   });
 });
+
+// ── SSE + broadcast (V13-EDGE-1) ─────────────────────────────────────────────
+
+describe("AlertsOrchestrator — SSE subscribe and broadcast", () => {
+  it("GET /subscribe returns 200 with text/event-stream content-type", async () => {
+    const do_ = new AlertsOrchestrator(makeDOState());
+    const ac = new AbortController();
+    const res = await do_.fetch(
+      new Request("https://do/subscribe", { signal: ac.signal }),
+    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toContain("text/event-stream");
+    // Clean up: abort to release writer
+    ac.abort();
+  });
+
+  it("GET /subscribe sends initial 'event: ping' to the stream", async () => {
+    const do_ = new AlertsOrchestrator(makeDOState());
+    const ac = new AbortController();
+    const res = await do_.fetch(
+      new Request("https://do/subscribe", { signal: ac.signal }),
+    );
+    expect(res.body).not.toBeNull();
+    // Read at least the ping frame from the stream
+    const reader = res.body!.getReader();
+    const { value } = await reader.read();
+    const text = new TextDecoder().decode(value);
+    expect(text).toContain("event: ping");
+    expect(text).toContain("data: {}");
+    reader.cancel();
+    ac.abort();
+  });
+
+  it("POST /broadcast returns ok:true with connections count", async () => {
+    const do_ = new AlertsOrchestrator(makeDOState());
+    // No active subscribers — broadcast succeeds immediately with 0 connections
+    const res = await do_.fetch(
+      new Request("https://do/broadcast", {
+        method: "POST",
+        body: JSON.stringify({ type: "alert", city: "Tel Aviv" }),
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json() as { ok: boolean; connections: number };
+    expect(body.ok).toBe(true);
+    expect(body.connections).toBe(0);
+  });
+
+  it("GET /state includes connections count field", async () => {
+    const do_ = new AlertsOrchestrator(makeDOState());
+    const res = await do_.fetch(new Request("https://do/state"));
+    expect(res.status).toBe(200);
+    const body = await res.json() as { alarmCount: number; lastAlarmAt: null; connections: number };
+    expect(body).toHaveProperty("connections");
+    expect(body.connections).toBe(0);
+  });
+});

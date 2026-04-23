@@ -144,6 +144,16 @@ app.get("/api/alerts", (c) =>
   handleAlerts(c.env),
 );
 
+// V13-EDGE-1: SSE fan-out via ALERTS_DO Durable Object (ADR-025)
+app.get("/api/alerts/subscribe", (c) => {
+  if (!c.env.ALERTS_DO) return c.json({ error: "SSE not available" }, 503);
+  const id = c.env.ALERTS_DO.idFromName("global");
+  const stub = c.env.ALERTS_DO.get(id);
+  const subscribeUrl = new URL(c.req.raw.url);
+  subscribeUrl.pathname = "/subscribe";
+  return stub.fetch(new Request(subscribeUrl.href, { signal: c.req.raw.signal }));
+});
+
 app.get("/api/calendar", (c) =>
   handleCalendar(new URL(c.req.url), c.env),
 );

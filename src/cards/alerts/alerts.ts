@@ -33,6 +33,7 @@ let _haveActive = false;
 let _unread = 0;
 let _timer: ReturnType<typeof setTimeout> | null = null;
 let _realtimeMode = false;
+let _sse: EventSource | null = null;
 let _beepVolume = 18; // 0-100, matches config.alertVolume default
 const _baseTitle = document.title || "FamilyDashBoard";
 
@@ -406,8 +407,50 @@ export function setAlertsRealtime(on: boolean): void {
   _realtimeMode = on;
 }
 
+// ── SSE connection (V13-EDGE-1, ADR-025) ──
+
+/**
+ * Open a Server-Sent Events connection to the ALERTS_DO for real-time push.
+ * Falls back to the existing polling loop if SSE is unavailable or errors.
+ */
+export function initAlertsSSE(): void {
+  if (!isWorkerEnabled() || typeof EventSource === "undefined") return;
+  _sse?.close();
+
+  const url = `${WORKER_BASE_URL}/api/alerts/subscribe`;
+  const es = new EventSource(url);
+
+  es.addEventListener("ping", () => {
+    setAlertsRealtime(true);
+    diagLog("FDB-026: [alerts] SSE connected");
+  });
+
+  es.addEventListener("alert", () => {
+    void loadAlerts();
+  });
+
+  es.onerror = () => {
+    setAlertsRealtime(false);
+    es.close();
+    _sse = null;
+    diagLog("FDB-027: [alerts] SSE disconnected, polling fallback active");
+  };
+
+  _sse = es;
+}
+
+/** Close the SSE connection and reset realtime mode. */
+export function destroyAlertsSSE(): void {
+  if (_sse) {
+    _sse.close();
+    _sse = null;
+  }
+  setAlertsRealtime(false);
+}
+
 export function initAlertsCard(): void {
   cacheDom();
+  initAlertsSSE();
   void loadAlerts();
   diagLog("FDB-022: [alerts] Initialized");
 }
@@ -417,6 +460,7 @@ export function destroyAlertsCard(): void {
     clearTimeout(_timer);
     _timer = null;
   }
+  destroyAlertsSSE();
 }
 
 // ── Sprint 138: configSchema ────────────────────────────────────────────────
@@ -480,7 +524,10 @@ export function _resetAlertsForTest(): void {
   }
   _realtimeMode = false;
   _beepVolume = 18;
+  _sse?.close();
+  _sse = null;
   elScroll = null;
   elBadge = null;
+  elSpark = null;
   document.title = "FamilyDashBoard";
 }
