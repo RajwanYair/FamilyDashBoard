@@ -76,6 +76,12 @@ export interface Env {
    * Optional — canary tagging is disabled when not set or when value is 0.
    */
   CANARY_PCT?: string;
+  /**
+   * Feature flag: enable Workers AI routes (ADR-030).
+   * Set to "true" to activate /api/news/summarise and /api/motivation/hebrew.
+   * When absent or not "true", those routes return 503 {"ok":false,"error":"ai_disabled"}.
+   */
+  AI_ENABLED?: string;
 }
 
 /**

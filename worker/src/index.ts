@@ -10,6 +10,8 @@
  *   GET /api/stocks?sym=X                 → Yahoo Finance v8 chart
  *   GET /api/news?url=X                   → RSS feed proxy (allowlisted origins)
  *   GET /api/news/aggregate               → Aggregate all 16 curated RSS feeds
+ *   GET /api/news/summarise               → Workers AI news summarisation (AI_ENABLED=true, else 503)
+ *   GET /api/motivation/hebrew            → Workers AI Hebrew motivational quote (AI_ENABLED=true, else 503)
  *   GET /api/alerts                       → Tzeva Adom history
  *   GET /api/calendar?url=X              → Google Calendar ICS proxy
  *   GET /api/sefaria/calendar             → Sefaria calendars (Daf Yomi)
@@ -43,6 +45,7 @@ import { handleErrors, handleErrorsExport } from "./routes/errors";
 import { handleMetrics } from "./routes/metrics";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleScheduled, handleNextYearPreWarm } from "./routes/cron";
+import { handleNewsSummarise, handleMotivationHebrew } from "./routes/ai";
 import {
   isRateLimited,
   getClientIp,
@@ -129,6 +132,10 @@ app.get("/api/news/aggregate", (c) =>
   handleNewsAggregate(c.env),
 );
 
+app.get("/api/news/summarise", (c) =>
+  handleNewsSummarise(c.env),
+);
+
 app.get("/api/news", (c) =>
   handleNews(new URL(c.req.url)),
 );
@@ -151,6 +158,10 @@ app.get("/api/sefaria/text", (c) =>
 
 app.get("/api/crypto", (c) =>
   handleCrypto(new URL(c.req.url), c.env),
+);
+
+app.get("/api/motivation/hebrew", (c) =>
+  handleMotivationHebrew(c.env),
 );
 
 app.get("/api/errors/export", (c) =>
