@@ -154,6 +154,7 @@ const el = {
   wxWindTile: null as HTMLElement | null,
   wxRiseTile: null as HTMLElement | null,
   wxTempSpark: null as SVGElement | null,
+  wxPrecipSpark: null as SVGElement | null,
 };
 
 let _weatherRefreshInterval: number | null = null;
@@ -183,6 +184,7 @@ export function cacheDom(): void {
   el.wxWindTile = (el.wxWind?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxTempSpark = document.getElementById("wx-temp-spark") as SVGElement | null;
+  el.wxPrecipSpark = document.getElementById("wx-precip-spark") as SVGElement | null;
 }
 
 function getTempUnit(): "C" | "F" {
@@ -406,14 +408,27 @@ export function renderWeather(d: WeatherResponse): void {
               ? ["uv-vhigh", "גבוה מאוד"]
               : ["uv-extreme", "קיצוני"];
     // All values are computed constants — innerHTML is safe here
-    el.wxUv.innerHTML = trustedHTML(`<span class="uv-pill ${uvCls}">${uv.toFixed(0)}</span> ${uvLabel}`);
+    el.wxUv.innerHTML = trustedHTML(
+      `<span class="uv-pill ${uvCls}">${uv.toFixed(0)}</span> ${uvLabel}`,
+    );
   }
 
   // F1 (v7.2): Today's precipitation probability (from daily forecast index 0)
+  const pp = d.daily.precipitation_probability_max[0] ?? 0;
   if (el.wxPrecip) {
-    const pp = d.daily.precipitation_probability_max[0] ?? 0;
     el.wxPrecip.textContent = `${pp}% · ${precipSummaryLabel(pp)}`;
   }
+
+  // V13-DATA: 7-day precipitation sparkline
+  void (async () => {
+    await historyAppend("weather:precip", pp);
+    const precipVals = await historyGet("weather:precip", 7);
+    if (el.wxPrecipSpark !== null && precipVals.length >= 2) {
+      el.wxPrecipSpark.innerHTML = trustedHTML(
+        sparklineSvg(precipVals, "var(--accent-2, var(--accent))", 44, 12),
+      );
+    }
+  })();
 
   // Sprint 32: Cloud cover
   if (el.wxCloud) {
