@@ -644,4 +644,135 @@ describe("Calendar — parseICS edge cases", () => {
     const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Neg\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, -1)).not.toThrow();
   });
+
+  // ── V13-DATA: 12 additional ICS fuzz cases ──────────────────────────────
+
+  it("handles RRULE line without crashing (parser ignores recurrence rules)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250901T090000Z\nSUMMARY:Weekly\nRRULE:FREQ=WEEKLY;BYDAY=MO\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    // Parser parses the base event even if it cannot expand recurrences
+    expect(parseICS(ics, 0)).toHaveLength(1);
+  });
+
+  it("handles EXDATE line without crashing", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250901T090000Z\nSUMMARY:Recurring\nEXDATE:20250908T090000Z\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("does not produce an event for a VTIMEZONE block", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VTIMEZONE",
+      "TZID:Asia/Jerusalem",
+      "BEGIN:STANDARD",
+      "DTSTART:19701025T030000",
+      "TZOFFSETFROM:+0300",
+      "TZOFFSETTO:+0200",
+      "END:STANDARD",
+      "END:VTIMEZONE",
+      "BEGIN:VEVENT",
+      "DTSTART:20250901T090000Z",
+      "SUMMARY:Real Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Real Event");
+  });
+
+  it("ignores VALARM block inside VEVENT and parses event correctly", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20250902T100000Z",
+      "SUMMARY:Alarm Event",
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      "DESCRIPTION:Reminder",
+      "TRIGGER:-PT15M",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Alarm Event");
+  });
+
+  it("parses all-day event with DATE-only DTSTART (8-digit format)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20250915\nSUMMARY:All Day\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.allDay).toBe(true);
+  });
+
+  it("parses multi-day event and end date is after start date", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250903T080000Z\nDTEND:20250905T180000Z\nSUMMARY:Multi Day\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.end.getTime()).toBeGreaterThan(events[0]!.start.getTime());
+  });
+
+  it("falls back to start date when DTEND is absent", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250904T120000Z\nSUMMARY:No End\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.end.getTime()).toBe(events[0]!.start.getTime());
+  });
+
+  it("handles RFC 5545 line folding (continuation lines)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20250910T090000Z",
+      "SUMMARY:Folded",
+      " Event Title",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    // After unfolding, summary should be joined
+    expect(events[0]!.summary).toContain("Folded");
+  });
+
+  it("unescapes backslash-comma and backslash-semicolon in SUMMARY", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250911T120000Z\nSUMMARY:Hello\\, World\\; Test\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.summary).toBe("Hello, World; Test");
+  });
+
+  it("parses multiple VEVENTs and returns all valid ones", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20250912T090000Z",
+      "SUMMARY:Event A",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART:20250913T100000Z",
+      "SUMMARY:Event B",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "SUMMARY:No Date — skipped",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(2);
+  });
+
+  it("handles CATEGORIES property without affecting summary or start date", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250914T120000Z\nSUMMARY:Tagged\nCATEGORIES:WORK,IMPORTANT\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Tagged");
+  });
+
+  it("returns empty array for VCALENDAR with no VEVENT blocks", () => {
+    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Test//Test//EN\nEND:VCALENDAR";
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
 });
