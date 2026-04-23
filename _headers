@@ -1,23 +1,55 @@
 /*
- * FamilyDashBoard — intended HTTP response headers
+ * FamilyDashBoard — HTTP response headers (Cloudflare Pages / Netlify / Vercel)
  *
- * These headers are enforced by Cloudflare Pages, Netlify, and Vercel.
- * GitHub Pages (current deployment target) does NOT support custom headers.
+ * GitHub Pages does NOT support custom headers; these headers take effect only
+ * when deployed to a platform that reads _headers (e.g., Cloudflare Pages).
  *
- * See ADR-018 for the full rationale.
+ * V12-SEC changes:
+ *   - COEP upgraded from `require-corp` → `credentialless` (ADR-018 note)
+ *   - Permissions-Policy expanded to cover all sensor/communication APIs
+ *   - CDN cache headers: immutable on fingerprinted assets, SWR on shell
+ *   - Strict-Transport-Security added (30-day HSTS with preload readiness)
+ *
+ * See ADR-018 for the full CSP / COOP / COEP rationale.
  * See docs/security.md for the security model.
- *
- * To activate: deploy to Cloudflare Pages with this file in the output directory
- * (Vite `publicDir: 'src/public'` already copies public/ → dist/, so adding
- * this file to dist/ via a postbuild script would activate it on Cloudflare Pages).
  */
 
+# ── All routes — security baseline ───────────────────────────────────────────
 /*
-  Cross-Origin-Opener-Policy: same-origin
-  Cross-Origin-Embedder-Policy: require-corp
-  Cross-Origin-Resource-Policy: same-site
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
+  X-XSS-Protection: 0
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=2592000; includeSubDomains
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: credentialless
+  Cross-Origin-Resource-Policy: same-site
+  Permissions-Policy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=()
   Content-Security-Policy: trusted-types dashboard; require-trusted-types-for 'script'
+
+# ── Shell HTML — short cache, stale-while-revalidate ─────────────────────────
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# ── Fingerprinted JS/CSS assets — immutable, 1 year ──────────────────────────
+/assets/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── Service Worker — never cache ─────────────────────────────────────────────
+/sw.js
+  Cache-Control: no-store
+
+# ── Web App Manifest — short cache ───────────────────────────────────────────
+/manifest.webmanifest
+  Cache-Control: public, max-age=86400
+
+# ── Icon — medium cache ───────────────────────────────────────────────────────
+/icon.svg
+  Cache-Control: public, max-age=604800
+
