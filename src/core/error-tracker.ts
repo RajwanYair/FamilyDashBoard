@@ -120,5 +120,10 @@ export function sampleErrorTrend(): void {
  * Return the last N error rate samples.
  */
 export function getErrorTrend(): readonly number[] {
-  return _errorTrend;
+  return [..._errorTrend];
+}
+
+/** @internal Test helper — reset trend buffer between tests. */
+export function _resetTrend(): void {
+  _errorTrend.length = 0;
 }

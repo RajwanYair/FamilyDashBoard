@@ -130,3 +130,58 @@ describe("Error Reporter — network failure resilience", () => {
     await expect(vi.runAllTimersAsync()).resolves.not.toThrow();
   });
 });
+
+// ── Sprint 38: request shape + batch cap tests ─────────────────────────────
+
+describe("Error Reporter — request shape", () => {
+  beforeEach(() => {
+    _resetReporter();
+    vi.useFakeTimers();
+    vi.mocked(isWorkerEnabled).mockReturnValue(true);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 204 })));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("sends Content-Type: application/json", async () => {
+    reportErrors([{ ts: 1000, message: "test" }]);
+    await vi.runAllTimersAsync();
+    const [, opts] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+      RequestInit,
+    ];
+    expect((opts.headers as Record<string, string>)["Content-Type"]).toBe("application/json");
+  });
+
+  it("sets keepalive: true on fetch", async () => {
+    reportErrors([{ ts: 1000, message: "test" }]);
+    await vi.runAllTimersAsync();
+    const [, opts] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+      RequestInit,
+    ];
+    expect(opts.keepalive).toBe(true);
+  });
+
+  it("caps batch at 20 errors even when 25 are pending", async () => {
+    const errors = Array.from({ length: 25 }, (_, i) => ({ ts: i, message: `err${i}` }));
+    reportErrors(errors);
+    await vi.runAllTimersAsync();
+    const [, opts] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+      RequestInit,
+    ];
+    const body = JSON.parse(opts.body as string) as unknown[];
+    expect(body).toHaveLength(20);
+  });
+
+  it("sends POST to /api/errors endpoint", async () => {
+    reportErrors([{ ts: 1000, message: "test" }]);
+    await vi.runAllTimersAsync();
+    const [url] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string];
+    expect(url).toMatch(/\/api\/errors$/);
+  });
+});

@@ -13,16 +13,21 @@ import {
   installGlobalErrorHandlers,
   _resetInstalledFlag,
   errorRate,
+  sampleErrorTrend,
+  getErrorTrend,
+  _resetTrend,
 } from "@/core/error-tracker";
 
 beforeEach(() => {
   clearErrors();
   _resetInstalledFlag();
+  _resetTrend();
 });
 
 afterEach(() => {
   clearErrors();
   _resetInstalledFlag();
+  _resetTrend();
 });
 
 describe("recordError", () => {
@@ -144,5 +149,58 @@ describe("errorRate", () => {
     recordError("err2");
     // Rate is errors / minutes since first error; since both in same ms, returns count
     expect(errorRate()).toBeGreaterThanOrEqual(2);
+  });
+});
+
+// ── Sprint 38: sampleErrorTrend / getErrorTrend tests ────────────────────────
+
+describe("sampleErrorTrend", () => {
+  it("starts with an empty trend", () => {
+    expect(getErrorTrend()).toEqual([]);
+  });
+
+  it("adds a sample to the trend buffer", () => {
+    sampleErrorTrend();
+    expect(getErrorTrend()).toHaveLength(1);
+  });
+
+  it("adds 0 when no errors recorded", () => {
+    sampleErrorTrend();
+    expect(getErrorTrend()[0]).toBe(0);
+  });
+
+  it("adds a non-zero rate when errors are present", () => {
+    recordError("err1");
+    recordError("err2");
+    sampleErrorTrend();
+    const trend = getErrorTrend();
+    expect(trend[0]).toBeGreaterThanOrEqual(0);
+  });
+
+  it("caps trend buffer at 10 samples (max)", () => {
+    for (let i = 0; i < 15; i++) sampleErrorTrend();
+    expect(getErrorTrend().length).toBe(10);
+  });
+
+  it("evicts oldest sample when buffer is full", () => {
+    // Fill up to max with 0-rate samples
+    for (let i = 0; i < 10; i++) sampleErrorTrend();
+    // Add errors and sample — new rate should be at tail
+    recordError("err");
+    sampleErrorTrend();
+    const trend = getErrorTrend();
+    expect(trend).toHaveLength(10);
+    // Most recent sample (tail) should reflect the error rate
+    expect(trend[9]).toBeGreaterThan(0);
+  });
+});
+
+describe("getErrorTrend", () => {
+  it("returns a readonly snapshot (cannot mutate internal buffer)", () => {
+    sampleErrorTrend();
+    const snapshot = getErrorTrend() as number[];
+    snapshot.push(999);
+    // Internal buffer should still only have 1 item
+    expect(getErrorTrend()).toHaveLength(1);
   });
 });
