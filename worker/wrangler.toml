@@ -29,11 +29,13 @@ binding = "DB"
 database_name = "fdb-telemetry"
 database_id = "PLACEHOLDER_D1_ID"
 
-# Durable Object for alerts SSE fan-out (V12-EDGE-3, stub in v12.1)
-# Full SSE implementation deferred to v12.2 per ADR-025
+# Durable Object for alerts SSE fan-out (V12-EDGE-3, SSE live in V13-EDGE-1)
+# Regional jurisdiction pinned to "eu" — Cloudflare routes IL traffic to EU PoPs (V13-EDGE-2)
+# See ADR-025 for the full SSE design and migration path.
 [[durable_objects.bindings]]
 name = "ALERTS_DO"
 class_name = "AlertsOrchestrator"
+jurisdiction = "eu"
 
 [[migrations]]
 tag = "v1"
