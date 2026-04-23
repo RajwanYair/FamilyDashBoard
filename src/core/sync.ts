@@ -59,6 +59,7 @@ const MINI_INFO_SOURCES: Readonly<Record<string, readonly string[]>> = {
   currency: ["curUsd"],
   motivation: ["moti-text"],
   "system-info": ["sysinfo-online", "sysinfo-battery"],
+  "video-news": ["mini-video-news"],
 };
 
 /**

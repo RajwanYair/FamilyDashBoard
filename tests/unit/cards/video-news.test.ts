@@ -4,7 +4,7 @@
  * This file focuses on the adapter (pure functions) and the type contracts.
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { getStreamDescriptor, listChannels } from "@/cards/video-news/video-news-adapter";
 import type { VideoChannelId } from "@/types/stream";
 
@@ -12,7 +12,7 @@ import type { VideoChannelId } from "@/types/stream";
 
 describe("getStreamDescriptor", () => {
   it("returns a descriptor for each known channel", () => {
-    const ids: VideoChannelId[] = ["c14", "i24", "now14", "arutz7"];
+    const ids: VideoChannelId[] = ["c14", "i24he", "i24en", "kan11", "n12", "keshet13", "arutz7"];
     for (const id of ids) {
       const desc = getStreamDescriptor(id);
       expect(desc.id).toBe(id);
@@ -29,63 +29,62 @@ describe("getStreamDescriptor", () => {
     expect(desc.id).toBe("c14");
   });
 
-  it("all cspHosts arrays are arrays (not undefined)", () => {
+  it("all channels use iframe mode", () => {
     for (const id of listChannels()) {
       const desc = getStreamDescriptor(id);
-      if (desc.cspHosts.connect !== undefined) {
-        expect(Array.isArray(desc.cspHosts.connect)).toBe(true);
-      }
-      if (desc.cspHosts.media !== undefined) {
-        expect(Array.isArray(desc.cspHosts.media)).toBe(true);
-      }
+      expect(desc.mode).toBe("iframe");
     }
   });
 
-  it("frame-src is not specified for non-iframe channels", () => {
+  it("all iframe channels have frame-src CSP entries", () => {
     for (const id of listChannels()) {
       const desc = getStreamDescriptor(id);
-      if (desc.mode !== "iframe") {
-        expect(desc.cspHosts.frame).toBeUndefined();
-      }
+      expect(Array.isArray(desc.cspHosts.frame)).toBe(true);
+      expect((desc.cspHosts.frame ?? []).length).toBeGreaterThan(0);
+    }
+  });
+
+  it("all channel URLs are non-empty strings starting with https://", () => {
+    for (const id of listChannels()) {
+      const desc = getStreamDescriptor(id);
+      expect(desc.url).toMatch(/^https:\/\//);
     }
   });
 });
 
 describe("listChannels", () => {
-  it("returns exactly 4 channels", () => {
-    expect(listChannels().length).toBe(4);
+  it("returns 7 channels", () => {
+    expect(listChannels().length).toBe(7);
   });
 
   it("includes c14 as the first channel", () => {
     expect(listChannels()[0]).toBe("c14");
   });
 
-  it("returns all expected channel ids", () => {
+  it("includes all expected channel ids", () => {
     const channels = listChannels();
     expect(channels).toContain("c14");
-    expect(channels).toContain("i24");
-    expect(channels).toContain("now14");
+    expect(channels).toContain("i24he");
+    expect(channels).toContain("i24en");
+    expect(channels).toContain("kan11");
+    expect(channels).toContain("n12");
+    expect(channels).toContain("keshet13");
     expect(channels).toContain("arutz7");
   });
 });
 
 // ── video-news.ts logic (headless subset) ────────────────────────────────
 
-describe("video-news module — muted / channel state (headless)", () => {
-  // We test the state-management functions without wiring real DOM elements.
-  // loadChannel + initVideoNews require a DOM environment; cycleChannel and
-  // toggleMute are pure state mutations that work even without DOM refs.
-
+describe("video-news module — channel state (headless)", () => {
   let isMuted: typeof import("@/cards/video-news/video-news").isMuted;
   let getActiveChannel: typeof import("@/cards/video-news/video-news").getActiveChannel;
   let cycleChannel: typeof import("@/cards/video-news/video-news").cycleChannel;
   let toggleMute: typeof import("@/cards/video-news/video-news").toggleMute;
   let loadChannel: typeof import("@/cards/video-news/video-news").loadChannel;
   let destroyVideoNews: typeof import("@/cards/video-news/video-news").destroyVideoNews;
+  let switchChannel: typeof import("@/cards/video-news/video-news").switchChannel;
 
   beforeEach(async () => {
-    // Re-import module fresh each time via vi.resetModules if needed.
-    // Since isolate:false is set on the pool, we import once per describe run.
     const mod = await import("@/cards/video-news/video-news");
     isMuted = mod.isMuted;
     getActiveChannel = mod.getActiveChannel;
@@ -93,15 +92,26 @@ describe("video-news module — muted / channel state (headless)", () => {
     toggleMute = mod.toggleMute;
     loadChannel = mod.loadChannel;
     destroyVideoNews = mod.destroyVideoNews;
+    switchChannel = mod.switchChannel;
   });
 
-  it("starts muted", () => {
+  it("starts muted (iframes always start muted)", () => {
     expect(isMuted()).toBe(true);
+  });
+
+  it("toggleMute is a no-op but does not throw", () => {
+    expect(() => { toggleMute(); }).not.toThrow();
+    expect(isMuted()).toBe(true); // still muted — controlled by iframe URL params
   });
 
   it("starts with c14 as active channel after loadChannel('c14')", () => {
     loadChannel("c14");
     expect(getActiveChannel()).toBe("c14");
+  });
+
+  it("switchChannel updates active channel", () => {
+    switchChannel("kan11");
+    expect(getActiveChannel()).toBe("kan11");
   });
 
   it("cycleChannel advances to the next channel", () => {
@@ -116,18 +126,6 @@ describe("video-news module — muted / channel state (headless)", () => {
     loadChannel("arutz7"); // last channel
     cycleChannel();
     expect(getActiveChannel()).toBe("c14"); // wraps to first
-  });
-
-  it("toggleMute flips the mute state", () => {
-    // Reset to known state
-    loadChannel("c14");
-    // After module load, default is muted=true; toggleMute → false
-    if (!isMuted()) toggleMute(); // ensure starting muted
-    expect(isMuted()).toBe(true);
-    toggleMute();
-    expect(isMuted()).toBe(false);
-    toggleMute();
-    expect(isMuted()).toBe(true);
   });
 
   it("destroyVideoNews does not throw", () => {

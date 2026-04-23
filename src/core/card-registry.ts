@@ -586,8 +586,11 @@ registerCard({
           defaultValue: "c14",
           options: [
             { value: "c14", label: "ערוץ 14" },
-            { value: "i24", label: "i24NEWS" },
-            { value: "now14", label: "NOW14" },
+            { value: "i24he", label: "i24NEWS עברית" },
+            { value: "i24en", label: "i24NEWS English" },
+            { value: "kan11", label: "כאן 11" },
+            { value: "n12", label: "ערוץ 12" },
+            { value: "keshet13", label: "ערוץ 13" },
             { value: "arutz7", label: "ערוץ 7" },
           ],
           tab: "feeds" as const,

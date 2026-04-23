@@ -1,8 +1,8 @@
 # ADR-024 — D1 Telemetry for Route Hit Counting
 
-**Status:** Accepted  
-**Date:** 2025-01  
-**Deciders:** Dashboard maintainer  
+**Status:** Accepted
+**Date:** 2025-01
+**Deciders:** Dashboard maintainer
 **Tags:** edge · observability · worker
 
 ---

@@ -1,275 +1,201 @@
 /**
- * FamilyDashBoard — Video News Card
+ * FamilyDashBoard — Video News Card Logic
  *
- * Renders a live-news video stream inside the dashboard.
- * Supports 4 Israeli news channels via a configurable StreamDescriptor.
+ * Renders live-news channel iframes inside the dashboard.
+ * Supports 7 Israeli news channels via StreamDescriptor.
+ *
+ * Layout modes:
+ *   normal    — one active channel shown, others hidden; channel tabs for switching
+ *   maximized — all channels visible simultaneously in a responsive grid
  *
  * See: docs/adr/ADR-019-video-card-csp.md
- * See: ROADMAP §4.11 Stream V11-CARD-VIDEO
- *
- * Integration status:
- *   Stream URLs are placeholders pending research sprint v11.1-sprint-1.
- *   The card renders an "awaiting stream" state until URLs are confirmed.
  */
 
 import "./video-news.css";
 import { diagLog } from "../../core/diag";
 import { getStreamDescriptor, listChannels } from "./video-news-adapter";
 import type { VideoChannelId } from "../../types/stream";
-import type { StreamDescriptor } from "../../types/stream";
-
-// ── DOM references ─────────────────────────────────────────────────────────
-
-interface VideoNewsEl {
-  container: HTMLElement | null;
-  video: HTMLVideoElement | null;
-  overlay: HTMLElement | null;
-  channelLabel: HTMLElement | null;
-  muteBtn: HTMLButtonElement | null;
-  channelBtn: HTMLButtonElement | null;
-  errorState: HTMLElement | null;
-}
-
-const el: VideoNewsEl = {
-  container: null,
-  video: null,
-  overlay: null,
-  channelLabel: null,
-  muteBtn: null,
-  channelBtn: null,
-  errorState: null,
-};
 
 // ── Internal state ─────────────────────────────────────────────────────────
 
 let _activeChannel: VideoChannelId = "c14";
-let _muted = true;
-let _retryHandle: ReturnType<typeof setTimeout> | null = null;
-let _retryCount = 0;
-const MAX_RETRIES = 3;
-const RETRY_DELAYS_MS = [30_000, 120_000, 600_000]; // 30s → 2min → 10min
+let _root: HTMLElement | null = null;
 
-// ── Player lifecycle ───────────────────────────────────────────────────────
+// ── DOM helpers ────────────────────────────────────────────────────────────
 
-/**
- * Load (or reload) a channel into the <video> element.
- * Clears any pending retry timer before loading.
- */
-export function loadChannel(channelId: VideoChannelId): void {
-  _activeChannel = channelId;
-  _retryCount = 0;
-  clearRetry();
-
-  const desc = getStreamDescriptor(channelId);
-  diagLog(`[video-news] loading channel ${channelId} (mode=${desc.mode})`);
-
-  if (!el.video) {
-    diagLog("[video-news] <video> element not found, skipping load");
-    return;
-  }
-
-  hideError();
-  el.video.poster = desc.poster ?? "";
-  setChannelLabel(desc);
-
-  if (desc.url === "" || desc.url.startsWith("/api/video/")) {
-    // Placeholder URL — stream not yet confirmed; show pending state
-    showError("שידור בבנייה · Stream URL pending research");
-    diagLog(`[video-news] channel ${channelId} URL not yet configured`);
-    return;
-  }
-
-  el.video.src = desc.url;
-  el.video.muted = _muted;
-  el.video.load();
-
-  if (desc.mode !== "iframe") {
-    void el.video.play().catch((err: unknown) => {
-      // Autoplay blocked — show play-to-start overlay; not an error
-      diagLog(`[video-news] autoplay blocked: ${String(err)}`);
-      showPlayPrompt();
-    });
-  }
+function getTile(id: VideoChannelId): HTMLElement | null {
+  return _root?.querySelector<HTMLElement>(`.video-news__tile[data-channel="${id}"]`) ?? null;
 }
 
-/** Cycle to the next channel in the channel list. */
+function getTab(id: VideoChannelId): HTMLElement | null {
+  return _root?.querySelector<HTMLElement>(`.video-news__tab[data-channel="${id}"]`) ?? null;
+}
+
+/** Update the active channel label in the card header mini-info span. */
+function updateMiniInfo(): void {
+  const desc = getStreamDescriptor(_activeChannel);
+  const mini = document.getElementById("mini-video-news");
+  if (mini) mini.textContent = desc.titleHe;
+}
+
+// ── Channel switching ──────────────────────────────────────────────────────
+
+/**
+ * Switch the visible channel in single-channel (normal) mode.
+ * In maximized mode all tiles are visible — this only updates the "active" highlight.
+ */
+export function switchChannel(channelId: VideoChannelId): void {
+  _activeChannel = channelId;
+
+  // Update tile visibility
+  listChannels().forEach((id) => {
+    const tile = getTile(id);
+    if (!tile) return;
+    tile.classList.toggle("video-news__tile--active", id === channelId);
+  });
+
+  // Update tab highlight
+  listChannels().forEach((id) => {
+    const tab = getTab(id);
+    if (!tab) return;
+    tab.classList.toggle("video-news__tab--active", id === channelId);
+    tab.setAttribute("aria-current", id === channelId ? "true" : "false");
+  });
+
+  updateMiniInfo();
+  diagLog(`[video-news] switched to channel: ${channelId}`);
+}
+
+/** Cycle to the next channel. */
 export function cycleChannel(): void {
   const channels = listChannels();
   const idx = channels.indexOf(_activeChannel);
   const next = channels[(idx + 1) % channels.length] ?? "c14";
-  loadChannel(next);
+  switchChannel(next);
 }
 
-/** Toggle audio mute. */
+// ── Legacy compat (kept for tests and destroyVideoNews) ───────────────────
+
+export function loadChannel(channelId: VideoChannelId): void {
+  switchChannel(channelId);
+}
+
 export function toggleMute(): void {
-  _muted = !_muted;
-  if (el.video) {
-    el.video.muted = _muted;
-  }
-  updateMuteBtn();
-  diagLog(`[video-news] mute=${String(_muted)}`);
+  // With iframe embeds, muting is controlled per-iframe via URL params.
+  // This is a no-op kept for API compatibility.
+  diagLog("[video-news] toggleMute: mute is controlled via iframe URL params");
 }
 
-// ── Retry logic ────────────────────────────────────────────────────────────
-
-function scheduleRetry(): void {
-  if (_retryCount >= MAX_RETRIES) {
-    showError("שידור לא זמין · Stream unavailable");
-    diagLog(`[video-news] giving up after ${MAX_RETRIES} retries`);
-    return;
-  }
-  const delay = RETRY_DELAYS_MS[_retryCount] ?? 600_000;
-  _retryCount++;
-  diagLog(`[video-news] retry ${_retryCount} in ${delay / 1000}s`);
-  _retryHandle = setTimeout(() => {
-    loadChannel(_activeChannel);
-  }, delay);
+export function isMuted(): boolean {
+  return true; // iframes always start muted (mute=1 in URL)
 }
 
-function clearRetry(): void {
-  if (_retryHandle !== null) {
-    clearTimeout(_retryHandle);
-    _retryHandle = null;
-  }
+export function getActiveChannel(): VideoChannelId {
+  return _activeChannel;
 }
 
-// ── Event handlers ─────────────────────────────────────────────────────────
+// ── Build DOM ──────────────────────────────────────────────────────────────
 
-function onVideoError(): void {
-  const code = el.video?.error?.code ?? -1;
-  diagLog(`[video-news] playback error code=${code} channel=${_activeChannel}`);
-  showError("שידור לא זמין · נסיון חוזר בקרוב");
-  scheduleRetry();
+/**
+ * Build the channel tab strip at the top of the card body.
+ * @param onSwitch - callback when a tab is clicked
+ */
+function buildChannelTabs(onSwitch: (id: VideoChannelId) => void): HTMLElement {
+  const tabs = document.createElement("div");
+  tabs.className = "video-news__tabs";
+  tabs.setAttribute("role", "tablist");
+  tabs.setAttribute("aria-label", "ערוצי חדשות");
+
+  listChannels().forEach((id) => {
+    const desc = getStreamDescriptor(id);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "video-news__tab";
+    btn.dataset["channel"] = id;
+    btn.setAttribute("role", "tab");
+    btn.setAttribute("aria-selected", id === _activeChannel ? "true" : "false");
+    btn.setAttribute("aria-current", id === _activeChannel ? "true" : "false");
+    btn.textContent = desc.titleHe;
+    if (id === _activeChannel) btn.classList.add("video-news__tab--active");
+
+    btn.addEventListener("click", () => { onSwitch(id); });
+    tabs.appendChild(btn);
+  });
+
+  return tabs;
 }
 
-function onVideoStalled(): void {
-  diagLog(`[video-news] stream stalled channel=${_activeChannel}`);
-}
+/**
+ * Build a single channel tile containing the iframe embed.
+ * All tiles are created at init — CSS controls visibility.
+ */
+function buildChannelTile(id: VideoChannelId): HTMLElement {
+  const desc = getStreamDescriptor(id);
 
-// ── DOM helpers ────────────────────────────────────────────────────────────
+  const tile = document.createElement("div");
+  tile.className = "video-news__tile";
+  tile.dataset["channel"] = id;
+  if (id === _activeChannel) tile.classList.add("video-news__tile--active");
 
-function setChannelLabel(desc: StreamDescriptor): void {
-  if (el.channelLabel) {
-    el.channelLabel.textContent = desc.titleHe;
-  }
-}
+  const label = document.createElement("div");
+  label.className = "video-news__tile-label";
+  label.textContent = desc.titleHe;
+  tile.appendChild(label);
 
-function showError(msg: string): void {
-  if (el.errorState) {
-    el.errorState.textContent = msg;
-    el.errorState.hidden = false;
-  }
-  if (el.video) {
-    el.video.hidden = true;
-  }
-}
+  const iframe = document.createElement("iframe");
+  iframe.className = "video-news__iframe";
+  iframe.src = desc.url;
+  iframe.title = desc.titleHe;
+  iframe.allow = "autoplay; fullscreen; encrypted-media; picture-in-picture";
+  iframe.setAttribute("allowfullscreen", "");
+  iframe.setAttribute("loading", "lazy");
+  iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+  tile.appendChild(iframe);
 
-function hideError(): void {
-  if (el.errorState) {
-    el.errorState.hidden = true;
-  }
-  if (el.video) {
-    el.video.hidden = false;
-  }
-}
-
-function showPlayPrompt(): void {
-  // Surfaces a big ▶ overlay so a single click starts playback
-  if (el.container) {
-    el.container.classList.add("video-news--play-prompt");
-  }
-}
-
-function updateMuteBtn(): void {
-  if (!el.muteBtn) return;
-  el.muteBtn.setAttribute("aria-pressed", String(_muted));
-  el.muteBtn.textContent = _muted ? "🔇" : "🔊";
-  el.muteBtn.title = _muted ? "הפעל שמע (M)" : "השתק (M)";
-}
-
-// ── Reduced-motion support ─────────────────────────────────────────────────
-
-let _reducedMotionMql: MediaQueryList | null = null;
-
-function onReducedMotionChange(e: MediaQueryListEvent): void {
-  if (!el.video) return;
-  if (e.matches) {
-    el.video.pause();
-    diagLog("[video-news] paused: prefers-reduced-motion");
-  } else {
-    void el.video.play().catch(() => undefined);
-  }
+  return tile;
 }
 
 // ── Public init / destroy ──────────────────────────────────────────────────
 
 /**
- * Wire up DOM references and event listeners for the video-news card.
- * Called by the FdbVideoNewsCard custom element on connectedCallback.
+ * Wire up DOM for the video-news card.
+ * Called by FdbVideoNewsCard.connect().
+ *
+ * @param root - The card body element (.card__body)
+ * @param initialChannel - Channel to activate first (default: 'c14')
  */
 export function initVideoNews(root: HTMLElement, initialChannel: VideoChannelId = "c14"): void {
-  el.container = root;
-  el.video = root.querySelector<HTMLVideoElement>(".video-news__video");
-  el.overlay = root.querySelector<HTMLElement>(".video-news__overlay");
-  el.channelLabel = root.querySelector<HTMLElement>(".video-news__channel-label");
-  el.muteBtn = root.querySelector<HTMLButtonElement>(".video-news__mute-btn");
-  el.channelBtn = root.querySelector<HTMLButtonElement>(".video-news__channel-btn");
-  el.errorState = root.querySelector<HTMLElement>(".video-news__error");
+  _root = root;
+  _activeChannel = initialChannel;
 
-  if (el.video) {
-    el.video.addEventListener("error", onVideoError);
-    el.video.addEventListener("stalled", onVideoStalled);
-  }
+  // Channel tabs
+  const tabs = buildChannelTabs(switchChannel);
+  root.appendChild(tabs);
 
-  el.muteBtn?.addEventListener("click", toggleMute);
-  el.channelBtn?.addEventListener("click", cycleChannel);
+  // Grid of all channel tiles
+  const grid = document.createElement("div");
+  grid.className = "video-news__grid";
+  grid.setAttribute("role", "region");
+  grid.setAttribute("aria-label", "שידורים חיים");
 
-  // Play-prompt click resumes playback
-  root.addEventListener("click", () => {
-    if (root.classList.contains("video-news--play-prompt")) {
-      root.classList.remove("video-news--play-prompt");
-      void el.video?.play().catch(() => undefined);
-    }
+  listChannels().forEach((id) => {
+    grid.appendChild(buildChannelTile(id));
   });
 
-  // Reduced-motion
-  _reducedMotionMql = window.matchMedia("(prefers-reduced-motion: reduce)");
-  _reducedMotionMql.addEventListener("change", onReducedMotionChange);
-  if (_reducedMotionMql.matches && el.video) {
-    el.video.pause();
-  }
+  root.appendChild(grid);
 
-  updateMuteBtn();
-  loadChannel(initialChannel);
-  diagLog("[video-news] init complete");
+  updateMiniInfo();
+  diagLog(`[video-news] init complete — ${listChannels().length} channels loaded`);
 }
 
 /** Release all resources. Called on disconnectedCallback. */
 export function destroyVideoNews(): void {
-  clearRetry();
-  if (el.video) {
-    el.video.pause();
-    el.video.removeAttribute("src");
-    el.video.removeEventListener("error", onVideoError);
-    el.video.removeEventListener("stalled", onVideoStalled);
+  if (_root) {
+    // Remove all iframes to stop loading/playback
+    _root.querySelectorAll<HTMLIFrameElement>(".video-news__iframe").forEach((iframe) => {
+      iframe.src = "about:blank";
+    });
   }
-  if (_reducedMotionMql) {
-    _reducedMotionMql.removeEventListener("change", onReducedMotionChange);
-    _reducedMotionMql = null;
-  }
-  // Reset el refs
-  (Object.keys(el) as (keyof VideoNewsEl)[]).forEach((k) => {
-    (el as unknown as Record<string, unknown>)[k] = null;
-  });
+  _root = null;
   diagLog("[video-news] destroyed");
-}
-
-/** Expose currently active channel id (for tests). */
-export function getActiveChannel(): VideoChannelId {
-  return _activeChannel;
-}
-
-/** Expose mute state (for tests). */
-export function isMuted(): boolean {
-  return _muted;
 }

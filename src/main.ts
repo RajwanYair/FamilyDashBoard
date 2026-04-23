@@ -81,6 +81,8 @@ import { initCalendarCard } from "./cards/calendar/calendar";
 import { initTasksCard } from "./cards/tasks/tasks";
 import { initSystemInfoCard } from "./cards/system-info/system-info";
 import { initCountdownCard } from "./cards/countdown/countdown";
+// Eagerly define <fdb-video-news> custom element so it upgrades when index.html is parsed
+import "./cards/video-news/fdb-video-news";
 
 import { installGlobalErrorHandlers } from "./core/error-tracker";
 import { withErrorBoundary } from "./core/error-boundary";

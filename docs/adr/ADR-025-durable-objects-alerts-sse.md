@@ -1,8 +1,8 @@
 # ADR-025 — Durable Objects for Alerts SSE Fan-out
 
-**Status:** Proposed (stub implemented; full SSE deferred to v12.2)  
-**Date:** 2025-01  
-**Deciders:** Dashboard maintainer  
+**Status:** Proposed (stub implemented; full SSE deferred to v12.2)
+**Date:** 2025-01
+**Deciders:** Dashboard maintainer
 **Tags:** edge · real-time · durable-objects · sse
 
 ---

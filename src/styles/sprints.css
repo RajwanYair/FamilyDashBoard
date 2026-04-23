@@ -218,7 +218,9 @@ body.slideshow-fade::after {
 .card.collapsed > .currency-body,
 .card.collapsed > .hebcal-body,
 .card.collapsed > .cal-body,
-.card.collapsed > .moti-body {
+.card.collapsed > .moti-body,
+.card.collapsed > .card__body,
+.card.collapsed > .card__footer {
   display: none !important;
 }
 

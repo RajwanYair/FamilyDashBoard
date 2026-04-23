@@ -9,7 +9,7 @@
  */
 
 /** Known live-news channel identifiers. */
-export type VideoChannelId = "c14" | "i24" | "now14" | "arutz7";
+export type VideoChannelId = "c14" | "i24he" | "i24en" | "kan11" | "n12" | "keshet13" | "arutz7";
 
 /** Integration mode — determines how the stream is loaded. */
 export type VideoIntegrationMode =
