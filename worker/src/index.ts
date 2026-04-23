@@ -48,6 +48,7 @@ import {
   MAX_REQUESTS_PER_WINDOW,
 } from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
+import { writeAnalyticsHit, normaliseRoute } from "./utils/analytics";
 import type { Env } from "./types";
 
 export type { Env };
@@ -80,6 +81,15 @@ app.use("*", async (c, next) => {
   c.res.headers.set("X-RateLimit-Remaining", String(getRemainingRequests(ip)));
 
   logRequest(c.req.raw, c.res, startMs, ip);
+
+  // Analytics Engine hit (V12-EDGE-2b, ADR-029) — fire-and-forget
+  writeAnalyticsHit(
+    c.env.ANALYTICS,
+    c.req.method,
+    normaliseRoute(c.req.url),
+    c.res.status,
+    c.env.ENVIRONMENT ?? "production",
+  );
 });
 
 // ── Routes ────────────────────────────────────────────────────────────────────

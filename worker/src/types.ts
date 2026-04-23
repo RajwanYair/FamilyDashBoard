@@ -63,6 +63,12 @@ export interface Env {
    * POST /api/reports does NOT require this token (browsers send reports automatically).
    */
   REPORTS_TOKEN?: string;
+  /**
+   * Workers Analytics Engine dataset for per-request hit tracking (V12-EDGE-2b, ADR-029).
+   * Bound in wrangler.toml as [[analytics_engine_datasets]] binding name "ANALYTICS".
+   * Optional — tracking is silently skipped when not configured.
+   */
+  ANALYTICS?: AnalyticsEngineDataset;
 }
 
 /**
@@ -109,4 +115,16 @@ export interface DurableObjectId {
 
 export interface DurableObjectStub {
   fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+}
+
+/**
+ * Minimal Workers Analytics Engine dataset interface (V12-EDGE-2b, ADR-029).
+ * Cloudflare's AnalyticsEngineDataset satisfies this via structural typing.
+ */
+export interface AnalyticsEngineDataset {
+  writeDataPoint(event: {
+    blobs?: string[];
+    doubles?: number[];
+    indexes?: string[];
+  }): void;
 }
