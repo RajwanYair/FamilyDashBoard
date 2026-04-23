@@ -62,6 +62,15 @@ export function initAutoLoopScroll(
       container.appendChild(clone);
     });
 
+    // Prevent the scroll container from propagating overscroll to a parent
+    // (e.g. body bounce on iOS Safari). This is a zero-JS side-effect: the
+    // `overscroll-behavior: contain` is set on the *parent* of the animated
+    // container (the card's scrollable wrapper).
+    const parent = container.parentElement;
+    if (parent) {
+      parent.style.overscrollBehavior = "contain";
+    }
+
     // Measure full doubled height after clone insertion, then animate
     requestAnimationFrame(() => {
       if (!container.isConnected) return;
@@ -83,6 +92,19 @@ export function initAutoLoopScroll(
 
       style.textContent = `@keyframes ${animName}{from{transform:translateY(0) translateZ(0)}to{transform:translateY(-${halfH}px) translateZ(0)}}`;
       container.style.animation = `${animName} ${dur}s linear infinite`;
+
+      // `scrollend` (Chrome 114+, Firefox 109+): when a manual scroll ends on the
+      // parent, snap the container back to its natural origin so the CSS animation
+      // can resume cleanly from position 0, avoiding a visible jump.
+      const scrollParent = container.parentElement;
+      if (scrollParent !== null && "onscrollend" in scrollParent) {
+        const onScrollEnd = (): void => {
+          if (!container.isConnected) return;
+          // Re-init to reset position + re-clone
+          initAutoLoopScroll(container, opts);
+        };
+        scrollParent.addEventListener("scrollend", onScrollEnd, { once: true });
+      }
     });
   });
 }

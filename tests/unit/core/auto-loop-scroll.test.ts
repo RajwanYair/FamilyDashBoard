@@ -324,3 +324,74 @@ describe("auto-loop-scroll — respects data-anim-level", () => {
     expect(container.querySelectorAll("[data-als-clone='true']").length).toBe(0);
   });
 });
+
+describe("auto-loop-scroll — scrollend + overscroll-behavior", () => {
+  beforeEach(() => {
+    delete document.body.dataset["animLevel"];
+    vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: false,
+      media: "(prefers-reduced-motion: reduce)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      onchange: null,
+      dispatchEvent: vi.fn(),
+    } as MediaQueryList);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete document.body.dataset["animLevel"];
+  });
+
+  it("sets overscroll-behavior:contain on parent when content overflows", () => {
+    const { parent, container } = makeContainer(10);
+    // Simulate overflow
+    Object.defineProperty(container, "scrollHeight", {
+      configurable: true,
+      get() {
+        return this.childElementCount * 40;
+      },
+    });
+    Object.defineProperty(parent, "clientHeight", { configurable: true, value: 200 });
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      cb(0);
+      return 0;
+    });
+
+    initAutoLoopScroll(container, { styleId: "als-test-overscroll" });
+    expect(parent.style.overscrollBehavior).toBe("contain");
+
+    destroyAutoLoopScroll(container, "als-test-overscroll");
+  });
+
+  it("registers scrollend listener on parent when onscrollend is supported", () => {
+    const { parent, container } = makeContainer(10);
+    // Simulate overflow
+    Object.defineProperty(container, "scrollHeight", {
+      configurable: true,
+      get() {
+        return this.childElementCount * 40;
+      },
+    });
+    Object.defineProperty(parent, "clientHeight", { configurable: true, value: 200 });
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      cb(0);
+      return 0;
+    });
+
+    // Simulate scrollend support
+    (parent as HTMLElement & { onscrollend?: null }).onscrollend = null;
+    let scrollEndRegistered = false;
+    const origAdd = parent.addEventListener.bind(parent);
+    parent.addEventListener = vi.fn((event: string, ...args: unknown[]) => {
+      if (event === "scrollend") scrollEndRegistered = true;
+      origAdd(event, ...(args as [EventListenerOrEventListenerObject, ...unknown[]]));
+    });
+
+    initAutoLoopScroll(container, { styleId: "als-test-scrollend" });
+    expect(scrollEndRegistered).toBe(true);
+
+    destroyAutoLoopScroll(container, "als-test-scrollend");
+  });
+});
