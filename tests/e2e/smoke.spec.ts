@@ -1,84 +1,56 @@
 /**
- * FamilyDashBoard — E2E Smoke Tests (Stream G.2)
+ * FamilyDashBoard — E2E Smoke Tests
  *
- * Critical-flow smoke suite:
- *   - Page loads within budget
- *   - Required DOM landmarks are present
- *   - Title is set correctly
- *   - At least one card header is visible
- *   - No uncaught JS errors on load
- *
- * These tests run against `vite dev` at http://localhost:5173.
- * For visual regression baselines, run: npx playwright test --update-snapshots
+ * Critical-flow smoke suite: page boots cleanly, essential landmarks render,
+ * RTL + theming wired. Kept intentionally small — deep interaction coverage
+ * lives in `critical-flows.spec.ts`, `card-interactions.spec.ts`, etc.
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect, SEL } from "./fixtures";
 
-test.describe("FamilyDashBoard — Smoke", () => {
-  test.beforeEach(async ({ page }) => {
-    // Capture any uncaught errors (ignore benign View Transition skips)
-    page.on("pageerror", (err) => {
-      if (err.message.includes("Transition was skipped")) return;
-      throw new Error(`Uncaught JS error: ${err.message}`);
-    });
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
+test.describe("Smoke — boot & landmarks", () => {
+  test("page title renders", async ({ dashboardPage }) => {
+    await expect(dashboardPage).toHaveTitle(/לוח משפחתי|Family Dashboard|FamilyDashBoard/);
   });
 
-  test("page title is correct", async ({ page }) => {
-    await expect(page).toHaveTitle(/לוח משפחתי|Family Dashboard|FamilyDashBoard/);
-  });
-
-  test("body element has RTL direction", async ({ page }) => {
-    const dir = await page.evaluate(() => document.documentElement.getAttribute("dir"));
+  test("<html> is RTL", async ({ dashboardPage }) => {
+    const dir = await dashboardPage.evaluate(() => document.documentElement.getAttribute("dir"));
     expect(dir).toBe("rtl");
   });
 
-  test("at least one card header renders", async ({ page }) => {
-    const headers = page.locator(".card-header");
-    await expect(headers.first()).toBeVisible({ timeout: 8_000 });
-    const count = await headers.count();
-    expect(count).toBeGreaterThanOrEqual(1);
+  test("at least one card shell renders", async ({ dashboardPage }) => {
+    const cards = dashboardPage.locator(SEL.card);
+    expect(await cards.count()).toBeGreaterThanOrEqual(1);
   });
 
-  test("main grid container is present", async ({ page }) => {
-    // The 3-column grid — layout.css .main-grid or similar wrapper
-    const grid = page.locator(".dashboard-grid, .main-grid, [class*='grid']").first();
-    await expect(grid).toBeAttached({ timeout: 5_000 });
+  test("manifest + charset + viewport meta are present", async ({ dashboardPage }) => {
+    for (const sel of ["link[rel='manifest']", "meta[charset]", "meta[name='viewport']"]) {
+      await expect(dashboardPage.locator(sel)).toHaveCount(1);
+    }
   });
 
-  test("page loads within 5 seconds", async ({ page }) => {
-    // domcontentloaded is already guaranteed by beforeEach.
-    // Verify the page is interactive — networkidle is tolerated since live API
-    // calls may keep the network active beyond the budget window.
-    await page.waitForLoadState("domcontentloaded", { timeout: 5_000 });
-  });
-
-  test("no critical meta-tag or manifest is missing", async ({ page }) => {
-    // Manifest link
-    const manifest = await page.$("link[rel='manifest']");
-    expect(manifest).not.toBeNull();
-    // Charset meta
-    const charset = await page.$("meta[charset]");
-    expect(charset).not.toBeNull();
-    // Viewport meta
-    const viewport = await page.$("meta[name='viewport']");
-    expect(viewport).not.toBeNull();
+  test("skip-to-main-content link is wired", async ({ dashboardPage }) => {
+    const skip = dashboardPage.locator(SEL.skipLink);
+    await expect(skip).toBeAttached();
+    await expect(skip).toHaveAttribute("href", "#main-content");
   });
 });
 
-test.describe("FamilyDashBoard — Theme switching", () => {
-  test("T key cycles the theme class on body", async ({ page }) => {
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
-    // Wait for any card to render (signals JS is running)
-    await page.waitForSelector(".card-header", { timeout: 8_000 });
-
-    const beforeClass = await page.evaluate(() => document.body.className);
-    await page.keyboard.press("t");
-    // Wait for View Transition callback to run
-    await page.waitForTimeout(500);
-    const afterClass = await page.evaluate(() => document.body.className);
-
-    // Theme class should have changed
-    expect(afterClass).not.toBe(beforeClass);
+test.describe("Smoke — theme cycling", () => {
+  test("T key mutates theme state", async ({ dashboardPage }) => {
+    const before = await dashboardPage.evaluate(
+      () => document.documentElement.dataset["theme"] ?? document.body.className,
+    );
+    await dashboardPage.keyboard.press("t");
+    await dashboardPage.waitForFunction(
+      (prev) =>
+        (document.documentElement.dataset["theme"] ?? document.body.className) !== prev,
+      before,
+      { timeout: 2_000 },
+    );
+    const after = await dashboardPage.evaluate(
+      () => document.documentElement.dataset["theme"] ?? document.body.className,
+    );
+    expect(after).not.toBe(before);
   });
 });

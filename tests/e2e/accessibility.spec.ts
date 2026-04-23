@@ -1,46 +1,31 @@
 /**
- * FamilyDashBoard — Accessibility E2E Tests (V11-A11Y)
+ * FamilyDashBoard — Accessibility E2E Tests (WCAG 2.2 AA via axe-core)
  *
- * Runs axe-core on every screen mode to gate 0 serious/critical violations.
- * WCAG 2.2 AA standard enforced in CI.
- *
- * Exit criteria:
- *   - 0 critical violations on all 3 screen modes
- *   - 0 serious violations on all 3 screen modes
+ * Gates: 0 critical / 0 serious violations across all 3 screen modes.
+ * Additional per-feature a11y checks (skip link, aria-labelledby on cards,
+ * button-name rule) run once without a mode switch for speed.
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect, gotoWithSeed, type ScreenMode } from "./fixtures";
 import AxeBuilder from "@axe-core/playwright";
 
-const SCREEN_MODES = ["tv", "tablet", "phone"] as const;
+const SCREEN_MODES: readonly ScreenMode[] = ["tv", "tablet", "phone"] as const;
 
-test.describe("FamilyDashBoard — Accessibility (axe-core WCAG 2.2 AA)", () => {
-  test.beforeEach(async ({ page }) => {
-    // Suppress uncaught errors from live API calls in test env
+test.describe("Accessibility — axe-core WCAG 2.2 AA", () => {
+  // Suppress uncaught errors from live API calls in the test env
+  test.beforeEach(({ page }) => {
     page.on("pageerror", () => {});
-    await page.goto("/FamilyDashBoard/", { waitUntil: "domcontentloaded" });
   });
 
   for (const mode of SCREEN_MODES) {
-    test(`screen mode: ${mode} — 0 critical/serious violations`, async ({ page }) => {
-      // Switch screen mode by updating the config JSON stored under dash_v2_config
-      await page.evaluate((m: string) => {
-        try {
-          const raw = localStorage.getItem("dash_v2_config");
-          const config = (raw ? JSON.parse(raw) : {}) as Record<string, unknown>;
-          config["screenMode"] = m;
-          localStorage.setItem("dash_v2_config", JSON.stringify(config));
-        } catch {
-          /* ignore quota errors */
-        }
-      }, mode);
-      await page.reload({ waitUntil: "domcontentloaded" });
+    test(`${mode} mode: 0 critical/serious violations`, async ({ page }) => {
+      await gotoWithSeed(page, { screenMode: mode });
 
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-        // Exclude cards that are loading (stale data skeletons may trigger colour contrast)
+        // Loading skeletons use transient palettes that can briefly fail contrast.
         .exclude(".card-loading")
-        // Known acceptable: inline style colour tokens set by JS (all pass contrast ratios)
+        // Inline JS-set colour tokens are validated by styles/theme-audit unit tests.
         .disableRules(["color-contrast"])
         .analyze();
 
@@ -51,35 +36,32 @@ test.describe("FamilyDashBoard — Accessibility (axe-core WCAG 2.2 AA)", () => 
         const summary = [...critical, ...serious]
           .map((v) => `[${v.impact}] ${v.id}: ${v.description}`)
           .join("\n");
-        process.stderr.write(`Accessibility violations (${mode}):\n${summary}\n`);
+        process.stderr.write(`A11y violations (${mode}):\n${summary}\n`);
       }
 
-      expect(critical, `Critical a11y violations on ${mode} mode`).toHaveLength(0);
-      expect(serious, `Serious a11y violations on ${mode} mode`).toHaveLength(0);
+      expect(critical, `Critical a11y violations on ${mode}`).toHaveLength(0);
+      expect(serious, `Serious a11y violations on ${mode}`).toHaveLength(0);
     });
   }
+});
 
-  test("skip-to-main-content link is present and functional", async ({ page }) => {
-    const skipLink = page.locator(".skip-link");
-    await expect(skipLink).toBeAttached();
-    await expect(skipLink).toHaveAttribute("href", "#main-content");
+test.describe("Accessibility — structural checks (single mode)", () => {
+  test.beforeEach(({ page }) => {
+    page.on("pageerror", () => {});
   });
 
-  test("all card sections have aria-labelledby", async ({ page }) => {
+  test("every card region has aria-labelledby and has ≥ 6 cards", async ({ page }) => {
+    await gotoWithSeed(page, {});
     const cards = await page.locator("section.card[role='region']").all();
     expect(cards.length).toBeGreaterThanOrEqual(6);
-
     for (const card of cards) {
-      const labelledby = await card.getAttribute("aria-labelledby");
-      expect(labelledby, "Every card region must have aria-labelledby").toBeTruthy();
+      expect(await card.getAttribute("aria-labelledby")).toBeTruthy();
     }
   });
 
-  test("interactive buttons all have accessible names", async ({ page }) => {
-    const results = await new AxeBuilder({ page })
-      .withRules(["button-name"])
-      .analyze();
-
+  test("all buttons have accessible names (button-name rule)", async ({ page }) => {
+    await gotoWithSeed(page, {});
+    const results = await new AxeBuilder({ page }).withRules(["button-name"]).analyze();
     const violations = results.violations.filter((v) => v.id === "button-name");
     expect(violations, "All buttons must have accessible names").toHaveLength(0);
   });
