@@ -15,6 +15,7 @@
 import { diagLog } from "../../core/diag";
 import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
+import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { decomposeDuration, pad2 } from "../../core/utils";
 import type { CardDefinition } from "../../types/card";
 
@@ -119,6 +120,18 @@ export async function renderSystemInfo(): Promise<void> {
     if (conn.downlink !== undefined) parts.push(`${conn.downlink} Mbps`);
     if (conn.rtt !== undefined) parts.push(`RTT ${conn.rtt}ms`);
     setText("sysinfo-net", parts.join(" · ") || "—");
+
+    // V13-DATA: 7-reading downlink sparkline
+    if (conn.downlink !== undefined) {
+      void (async () => {
+        await historyAppend("sysinfo:downlink", conn.downlink as number);
+        const vals = await historyGet("sysinfo:downlink", 7);
+        const sparkEl = document.getElementById("sysinfo-downlink-spark");
+        if (sparkEl !== null && vals.length >= 2) {
+          sparkEl.innerHTML = trustedHTML(sparklineSvg(vals, "var(--accent-2, var(--accent))", 44, 12));
+        }
+      })();
+    }
   } else {
     setText("sysinfo-net", "—");
   }
