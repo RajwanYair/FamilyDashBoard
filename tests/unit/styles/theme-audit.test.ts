@@ -105,7 +105,26 @@ describe("tokens.css — @property registrations (V13-DATA)", () => {
     }
   });
 
-  it(":root declares color-scheme: dark", () => {
-    expect(tokensCss).toContain("color-scheme: dark");
+  it(":root declares color-scheme: dark light", () => {
+    expect(tokensCss).toContain("color-scheme: dark light");
+  });
+
+  it(":root uses light-dark() for key color tokens (F11)", () => {
+    expect(tokensCss).toContain("light-dark(");
+    expect(tokensCss).toContain("--bg-primary: light-dark(");
+    expect(tokensCss).toContain("--text-primary: light-dark(");
+    expect(tokensCss).toContain("--accent: light-dark(");
+  });
+
+  it("themes.css locks explicit themes to color-scheme: dark (F11)", () => {
+    const themeClasses = ["theme-black", "theme-blue", "theme-matrix", "theme-amber", "theme-purple", "theme-rose"];
+    for (const cls of themeClasses) {
+      expect(css, `${cls} should be present in themes.css`).toContain(`body.${cls}`);
+    }
+    // Each theme body block should contain color-scheme: dark
+    const blocks = css.match(/body\.theme-\w+\s*\{[^}]+\}/gs) ?? [];
+    for (const block of blocks) {
+      expect(block, `Theme block missing color-scheme: dark: ${block.slice(0, 80)}`).toContain("color-scheme: dark");
+    }
   });
 });

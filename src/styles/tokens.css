@@ -102,28 +102,28 @@
 
 @layer tokens {
   :root {
-    /* Declare dark color-scheme so the browser activates OS dark-mode
-     * integration. This is a prerequisite for light-dark() token usage
-     * when a light theme variant is added in future. */
-    color-scheme: dark;
-    /* ── Colors: Warm Dark (default) ── */
-    --bg-primary: #1a1410;
-    --bg-card: rgba(42, 34, 26, 0.82);
-    --bg-card-header: rgba(56, 46, 36, 0.88);
-    --bg-card-inner: rgba(48, 40, 30, 0.55);
-    --bg-card-hover: rgba(66, 54, 42, 0.65);
-    --accent: #c8a87a;
-    --accent-bright: #d9bc9e;
+    /* F11: light-dark() token adoption — supports both dark (default) and
+     * system light mode when no explicit theme is selected.
+     * Explicit body.theme-* classes lock to color-scheme: dark in themes.css. */
+    color-scheme: dark light;
+    /* ── Colors: Warm Dark / System Light (default) ── */
+    --bg-primary: light-dark(#1a1410, #f5f0ea);
+    --bg-card: light-dark(rgba(42, 34, 26, 0.82), rgba(255, 252, 248, 0.96));
+    --bg-card-header: light-dark(rgba(56, 46, 36, 0.88), rgba(244, 238, 232, 0.98));
+    --bg-card-inner: light-dark(rgba(48, 40, 30, 0.55), rgba(248, 244, 240, 0.80));
+    --bg-card-hover: light-dark(rgba(66, 54, 42, 0.65), rgba(235, 230, 224, 0.98));
+    --accent: light-dark(#c8a87a, #8a6020);
+    --accent-bright: light-dark(#d9bc9e, #704a10);
     --accent-glow: rgba(200, 168, 122, 0.18);
     --accent-border: rgba(200, 168, 122, 0.20);
-    --text-primary: #faf5ef;
-    --text-secondary: #c4b8a8;
-    --text-muted: #8a7e70;
-    --positive: #86c490;
+    --text-primary: light-dark(#faf5ef, #1c1008);
+    --text-secondary: light-dark(#c4b8a8, #4a3d30);
+    --text-muted: light-dark(#8a7e70, #6a5e50);
+    --positive: light-dark(#86c490, #3a7d44);
     --positive-glow: rgba(134, 196, 144, 0.18);
-    --negative: #c89090;
+    --negative: light-dark(#c89090, #8b2020);
     --negative-glow: rgba(200, 144, 144, 0.18);
-    --warning: #d4b870;
+    --warning: light-dark(#d4b870, #8a6520);
     --purple: #b8aad4;
     --pink: #d4a4b4;
     --orange: #c8a880;

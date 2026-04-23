@@ -2,6 +2,7 @@
 @layer themes {
   /* ── Theme: True Black (OLED) ── */
   body.theme-black {
+    color-scheme: dark; /* lock to dark — overrides :root dark light */
     --bg-primary: #000000;
     --bg-card: rgba(12, 10, 8, 0.88);
     --bg-card-header: rgba(22, 18, 14, 0.92);
@@ -24,6 +25,7 @@
 
   /* ── Theme: Ocean Blue ── */
   body.theme-blue {
+    color-scheme: dark;
     --bg-primary: #0c1824;
     --bg-card: rgba(16, 30, 50, 0.82);
     --bg-card-header: rgba(22, 40, 65, 0.88);
@@ -47,6 +49,7 @@
 
   /* ── Theme: Forest Green ── */
   body.theme-matrix {
+    color-scheme: dark;
     --bg-primary: #0e1a10;
     --bg-card: rgba(18, 34, 22, 0.82);
     --bg-card-header: rgba(24, 46, 30, 0.88);
@@ -71,6 +74,7 @@
 
   /* ── Theme: Amber Glow ── */
   body.theme-amber {
+    color-scheme: dark;
     --bg-primary: #18120a;
     --bg-card: rgba(36, 26, 14, 0.82);
     --bg-card-header: rgba(50, 36, 18, 0.88);
@@ -95,6 +99,7 @@
 
   /* ── Theme: Purple Dusk ── */
   body.theme-purple {
+    color-scheme: dark;
     --bg-primary: #140e1e;
     --bg-card: rgba(30, 22, 44, 0.82);
     --bg-card-header: rgba(42, 30, 60, 0.88);
@@ -119,6 +124,7 @@
 
   /* ── Theme: Rose Night ── */
   body.theme-rose {
+    color-scheme: dark;
     --bg-primary: #180a0e;
     --bg-card: rgba(38, 18, 26, 0.82);
     --bg-card-header: rgba(52, 26, 36, 0.88);
