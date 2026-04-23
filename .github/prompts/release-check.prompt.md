@@ -9,10 +9,11 @@ Run this checklist in order before tagging any release. All items must be ✅ gr
 
 ## 1. Version Consistency
 
-Confirm `7.X.Y` appears consistently in ALL of:
+Confirm `vX.Y.Z` appears consistently in ALL of:
 
 - `package.json` → `"version"`
 - `sw.js` → version comment / `CACHE_NAME` constant
+- `sw.ts` → `SW_VERSION` / `CACHE_NAME` constant (must match `sw.js`)
 - `CHANGELOG.md` → top entry heading
 - `README.md` → badge / version reference
 - `CLAUDE.md` → version reference
@@ -27,6 +28,14 @@ npx tsc --noEmit
 ```
 
 Expected: **0 errors**
+
+## 2a. Worker Type Check (V13-OPS)
+
+```sh
+cd worker && npx tsc --noEmit && cd ..
+```
+
+Expected: **0 errors** in `worker/src/`
 
 ## 3. Lint
 
@@ -78,21 +87,43 @@ npm run check:sw
 
 Expected: **version in sw.js matches package.json**
 
-## 9. Open Issues
+## 9. A11Y Audit (V13-A11Y)
+
+Verify no regressions in accessibility contract:
+
+```sh
+npx vitest run tests/unit/html/dom-contract.test.ts
+```
+
+Expected: **all 112+ tests pass** — confirms every dialog has `aria-labelledby`, all
+icon-only buttons have `aria-label`, all cards have `role=region`.
+
+## 10. Open Issues
 
 All GitHub issues assigned to the milestone must be **closed** with a commit hash in the closing comment before tagging.
 
-## 10. Tag & Release
+## 11. Tag & Release
 
-Only after all 9 gates are green:
+Only after all 10 gates are green:
 
 ```sh
-git tag v7.X.Y
-git push origin v7.X.Y
-gh release create v7.X.Y --generate-notes
+git tag vX.Y.Z
+git push origin vX.Y.Z
+gh release create vX.Y.Z --generate-notes
 ```
 
 ## Output
 
 Report each gate as ✅ PASS or ❌ FAIL with the command output summary.
 Do NOT proceed to the tag step if any gate fails.
+
+---
+
+## v13 Gate Summary (added V13-OPS)
+
+| New gate | Command | Threshold |
+|---|---|---|
+| Worker typecheck | `cd worker && npx tsc --noEmit` | 0 errors |
+| sw.ts version | `npm run check:sw` | matches `package.json` |
+| A11Y contract | `npx vitest run tests/unit/html/dom-contract.test.ts` | 0 failures |
+| AI routes (when `AI_ENABLED=true`) | `npx vitest run tests/unit/worker/ai.test.ts` | 0 failures |
