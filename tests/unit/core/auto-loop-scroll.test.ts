@@ -278,3 +278,49 @@ describe("auto-loop-scroll — destroyAutoLoopScroll", () => {
     expect(() => destroyAutoLoopScroll(container, "als-test-9")).not.toThrow();
   });
 });
+
+// ── Animation level integration ───────────────────────────────────────────────
+
+describe("auto-loop-scroll — respects data-anim-level", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    delete document.body.dataset["animLevel"];
+    vi.restoreAllMocks();
+  });
+
+  it("does not scroll when body data-anim-level=none", () => {
+    vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: false,
+      media: "(prefers-reduced-motion: reduce)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      onchange: null,
+      dispatchEvent: vi.fn(),
+    } as MediaQueryList);
+
+    document.body.dataset["animLevel"] = "none";
+    const { container } = makeContainer(10);
+    initAutoLoopScroll(container, { styleId: "als-test-anim-none" });
+    expect(container.querySelectorAll("[data-als-clone='true']").length).toBe(0);
+  });
+
+  it("does not scroll when body data-anim-level=minimal", () => {
+    vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: false,
+      media: "(prefers-reduced-motion: reduce)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      onchange: null,
+      dispatchEvent: vi.fn(),
+    } as MediaQueryList);
+
+    document.body.dataset["animLevel"] = "minimal";
+    const { container } = makeContainer(10);
+    initAutoLoopScroll(container, { styleId: "als-test-anim-minimal" });
+    expect(container.querySelectorAll("[data-als-clone='true']").length).toBe(0);
+  });
+});

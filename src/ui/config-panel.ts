@@ -19,6 +19,7 @@ import { setClockSeconds } from "./header";
 import { applyFontScale } from "./screen-mode";
 import { setDimLevel, updateDimIndicator, setWarmTint } from "./night-dimmer";
 import { applyTickerSpeed } from "./ticker";
+import { applyConfigAnimLevel } from "../core/anim-level";
 import { resetLayout } from "./layout-drag";
 import {
   LS_DIM_START,
@@ -343,6 +344,10 @@ function populateForm(): void {
   // F7 (v7.3): Motivation auto-advance interval
   const motiInterval = g("cfg-moti-interval");
   if (motiInterval) motiInterval.value = String(c.motivationInterval ?? 0);
+
+  // Animation level
+  const animLevelEl = gSel("cfg-anim-level");
+  if (animLevelEl) animLevelEl.value = c.animLevel ?? "normal";
 
   // Sprint 17: per-card settings (now in Cards tab accordion)
   const wxHourly = g("cfg-weather-hourly") as HTMLSelectElement | null;
@@ -678,6 +683,15 @@ function collectForm(): DashboardConfig {
     c.motivationInterval = isNaN(mi) ? 0 : Math.max(0, Math.min(60, mi));
   }
 
+  // Animation level
+  const animLevelCollect = gSel("cfg-anim-level");
+  if (animLevelCollect) {
+    const v = animLevelCollect.value;
+    if (v === "none" || v === "minimal" || v === "normal" || v === "full") {
+      c.animLevel = v;
+    }
+  }
+
   // Sprint 17: per-card boolean settings (now in Cards tab)
   c.weatherShowHourly = (g("cfg-weather-hourly") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowWind = (g("cfg-weather-wind") as HTMLSelectElement | null)?.value !== "off";
@@ -985,6 +999,7 @@ export function initConfigPanel(): void {
     setClockSeconds(c.clockSeconds);
     applyFontScale(c.fontScale);
     applyTickerSpeed(c.tickerSpeed ?? 3);
+    applyConfigAnimLevel(c);
     setDimLevel(c.nightDimLevel);
     updateDimIndicator();
     // Save chores JSON to localStorage and refresh tasks card

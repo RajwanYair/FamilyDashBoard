@@ -37,7 +37,11 @@ export function initAutoLoopScroll(
   // Always clean up first (handles re-render case)
   destroyAutoLoopScroll(container, opts.styleId);
 
+  // Respect system reduced-motion preference
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Respect user-configured animation level (none/minimal skip auto-scroll)
+  const animLevel = document.body.dataset["animLevel"];
+  if (animLevel === "none" || animLevel === "minimal") return;
 
   requestAnimationFrame(() => {
     if (!container.isConnected) return;

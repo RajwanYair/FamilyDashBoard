@@ -629,3 +629,72 @@ body.shabbat-mode #shabbat-mode-banner {
     animation: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   USER ANIMATION LEVEL — data-anim-level on <body>
+   Set by applyConfigAnimLevel() from config.animLevel.
+   none    → zero motion (overrides prefers-reduced-motion)
+   minimal → only essential state feedback (sync dots)
+   normal  → default behavior (see above)
+   full    → decorative extras always on
+   ═══════════════════════════════════════════════════════ */
+
+/* ── none: kill everything ── */
+body[data-anim-level="none"] *,
+body[data-anim-level="none"] *::before,
+body[data-anim-level="none"] *::after {
+  animation: none !important;
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+
+/* ── minimal: no decorative animations; keep sync dots ── */
+body[data-anim-level="minimal"] .card:hover::before {
+  animation: none;
+}
+body[data-anim-level="minimal"] .rss-item[data-age="fresh"]::before {
+  animation: none;
+}
+body[data-anim-level="minimal"] .skeleton {
+  animation: none;
+  background: var(--bg-card-inner);
+}
+body[data-anim-level="minimal"] .hc-countdown.urgent {
+  animation: none;
+}
+body[data-anim-level="minimal"] .card-badge-new {
+  animation: none;
+}
+body[data-anim-level="minimal"] .num-transition {
+  transition: none;
+}
+body[data-anim-level="minimal"] .card {
+  animation: none !important;
+}
+body[data-anim-level="minimal"] .card.card--hiding {
+  animation: none !important;
+}
+body[data-anim-level="minimal"] .card--refreshed {
+  animation: none;
+}
+
+/* ── full: enable animated border even on low hw-tier; allow card glow ── */
+body[data-anim-level="full"] .card:hover::before {
+  /* override data-hw-tier="low" suppression */
+  animation: rotateBorder 4s linear infinite !important;
+  background: conic-gradient(
+    from var(--border-angle),
+    var(--accent),
+    var(--cyan),
+    var(--purple),
+    var(--pink),
+    var(--accent)
+  );
+}
+body[data-anim-level="full"] .card--refreshed {
+  animation: cardRefresh 0.48s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+/* full: extra glow pulse on card hover */
+body[data-anim-level="full"] .card:hover {
+  box-shadow: 0 0 24px 4px var(--accent-glow, rgba(96, 165, 250, 0.18));
+}

@@ -18,6 +18,7 @@ import {
   isValidNewsMaxItems,
   isValidTickerSpeed,
   isValidHour,
+  isValidAnimLevel,
   type CardConfig,
 } from "../types/config";
 import { diagLog } from "./diag";
@@ -195,6 +196,13 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v8 → v9: tempUnit ensured");
   }
 
+  // v9 → v10: introduced animLevel (none/minimal/normal/full) — default to 'normal'.
+  if (version < 10) {
+    if (!isValidAnimLevel(cfg.animLevel)) cfg.animLevel = DEFAULT_CONFIG.animLevel;
+    cfg.configVersion = 10;
+    diagLog("[config] migrated v9 → v10: animLevel ensured");
+  }
+
   return cfg;
 }
 
@@ -229,6 +237,7 @@ function sanitize(cfg: DashboardConfig): DashboardConfig {
     cfg.tasksShowCategories = DEFAULT_CONFIG.tasksShowCategories;
   if (typeof cfg.newsShowSource !== "boolean") cfg.newsShowSource = DEFAULT_CONFIG.newsShowSource;
   if (typeof cfg.sysInfoShowRtt !== "boolean") cfg.sysInfoShowRtt = DEFAULT_CONFIG.sysInfoShowRtt;
+  if (!isValidAnimLevel(cfg.animLevel)) cfg.animLevel = DEFAULT_CONFIG.animLevel;
   return cfg;
 }
 

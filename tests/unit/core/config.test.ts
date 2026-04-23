@@ -30,6 +30,7 @@ import {
   isValidTickerSpeed,
   isValidHour,
   isValidInterfaceLanguage,
+  isValidAnimLevel,
 } from "@/types/config";
 
 describe("Config — loadConfig", () => {
@@ -527,7 +528,7 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
   });
 
   it("CONFIG_VERSION constant is 5", () => {
-    expect(CONFIG_VERSION).toBe(9);
+    expect(CONFIG_VERSION).toBe(10);
   });
 
   it("DEFAULT_CONFIG has all v3 fields with correct defaults", () => {
@@ -912,5 +913,53 @@ describe("validateImportedConfig envelope unwrap (Sprint 102)", () => {
     };
     const result = validateImportedConfig(envelope);
     expect(result.ok).toBe(false);
+  });
+});
+
+// ── Config v10 — animLevel (migration + type guard + DEFAULT_CONFIG) ──────────
+
+describe("Config — isValidAnimLevel", () => {
+  it("accepts all four valid levels", () => {
+    expect(isValidAnimLevel("none")).toBe(true);
+    expect(isValidAnimLevel("minimal")).toBe(true);
+    expect(isValidAnimLevel("normal")).toBe(true);
+    expect(isValidAnimLevel("full")).toBe(true);
+  });
+
+  it("rejects invalid strings, numbers, and null", () => {
+    expect(isValidAnimLevel("high")).toBe(false);
+    expect(isValidAnimLevel("all")).toBe(false);
+    expect(isValidAnimLevel(2)).toBe(false);
+    expect(isValidAnimLevel(null)).toBe(false);
+    expect(isValidAnimLevel(undefined)).toBe(false);
+  });
+});
+
+describe("Config — migrateConfig v9→v10 (animLevel)", () => {
+  it("adds animLevel=normal when migrating from v9", () => {
+    const result = migrateConfig({ configVersion: 9 });
+    expect(result.configVersion).toBe(CONFIG_VERSION);
+    expect(result.animLevel).toBe("normal");
+  });
+
+  it("preserves existing animLevel when already valid", () => {
+    const result = migrateConfig({ configVersion: 9, animLevel: "full" } as Parameters<
+      typeof migrateConfig
+    >[0]);
+    expect(result.animLevel).toBe("full");
+  });
+
+  it("DEFAULT_CONFIG has animLevel=normal", () => {
+    expect(DEFAULT_CONFIG.animLevel).toBe("normal");
+  });
+
+  it("CONFIG_VERSION is 10", () => {
+    expect(CONFIG_VERSION).toBe(10);
+  });
+
+  it("migrates v0 all the way to v10 including animLevel", () => {
+    const result = migrateConfig({});
+    expect(result.configVersion).toBe(CONFIG_VERSION);
+    expect(result.animLevel).toBe("normal");
   });
 });

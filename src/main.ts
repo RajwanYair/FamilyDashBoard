@@ -93,6 +93,7 @@ import {
   recordCardInitTime,
 } from "./core/perf";
 import { applyHardwareTier } from "./core/hardware";
+import { applyConfigAnimLevel } from "./core/anim-level";
 import { scheduleVitalsReport, flushVitalsReport } from "./core/vitals-reporter";
 import { initTour } from "./core/first-run-tour";
 
@@ -458,6 +459,9 @@ export function init(): void {
 
   // ── Apply warm tint from config ──
   if (cfg.dimWarmTint) setWarmTint(true);
+
+  // ── Apply animation level from config ──
+  applyConfigAnimLevel(cfg);
 
   // ── Auto-theme by time of day (runs every 5 minutes) — deferred to reduce TTI ──
   const _autoThemeSetup = (): void => {

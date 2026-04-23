@@ -238,6 +238,17 @@ export interface DashboardConfig {
    * Populated by v4→v5 migration with sensible defaults.
    */
   featureFlags: Record<string, boolean>;
+
+  // ── Config v10 additions ──
+
+  /**
+   * Global animation level — controls how much motion is shown on the dashboard.
+   * - "none"    : all animations and transitions disabled (accessibility / minimal distraction)
+   * - "minimal" : only essential state feedback (sync dots), no decorative motion
+   * - "normal"  : default behavior — smooth transitions, loop-scroll, card hover effects
+   * - "full"    : everything enabled: animated borders, glow on hover, all extras
+   */
+  animLevel: "none" | "minimal" | "normal" | "full";
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -289,7 +300,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3DoneMsg: "🎉 מזל טוב!",
   countdownCard3StartDate: "",
   motivationInterval: 0,
-  configVersion: 9,
+  configVersion: 10,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -319,10 +330,18 @@ export const DEFAULT_CONFIG: DashboardConfig = {
     idleSchedule: true,
     idbCache: false,
   },
+
+  // Config v10 defaults
+  animLevel: "normal",
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 9;
+export const CONFIG_VERSION = 10;
+
+/** Type guard: checks if a string is a valid animation level. */
+export function isValidAnimLevel(v: unknown): v is DashboardConfig["animLevel"] {
+  return typeof v === "string" && ["none", "minimal", "normal", "full"].includes(v);
+}
 
 /** Type guard: checks if a string is a valid interface language. */
 export function isValidInterfaceLanguage(v: unknown): v is InterfaceLanguage {
