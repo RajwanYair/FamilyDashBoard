@@ -16,6 +16,7 @@ import { diagLog } from "../../core/diag";
 import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
 import { decomposeDuration, pad2 } from "../../core/utils";
+import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import type { CardDefinition } from "../../types/card";
 
 // ── Types for non-standard browser APIs ──────────────────────────────────
@@ -106,8 +107,8 @@ export async function renderSystemInfo(): Promise<void> {
   if (battery) {
     const pct = Math.round(battery.level * 100);
     const icon = battery.charging ? "⚡" : pct > 50 ? "🔋" : pct > 20 ? "🪫" : "🔴";
-    setText("sysinfo-battery", `${icon} ${pct}%${battery.charging ? " (טוען)" : ""}`);
-  } else {
+    setText("sysinfo-battery", `${icon} ${pct}%${battery.charging ? " (טוען)" : ""}`);    // 7-day battery history sparkline (V12-DATA-3)
+    void updateBatteryHistory(pct);  } else {
     setText("sysinfo-battery", "—");
   }
 
@@ -230,7 +231,25 @@ export async function renderSystemInfo(): Promise<void> {
   diagLog("FDB-053: [system-info] Rendered");
 }
 
-// ── Init ────────────────────────────────────────────────────────────────────
+/**
+ * Persist battery percentage to IDB history and render a 7-day sparkline
+ * in the `#sysinfo-battery-spark` element if it exists. Fire-and-forget.
+ */
+async function updateBatteryHistory(pct: number): Promise<void> {
+  try {
+    await historyAppend("sysinfo:battery", pct);
+    const values = await historyGet("sysinfo:battery", 7);
+    if (values.length < 2) return;
+    const sparkEl = document.getElementById("sysinfo-battery-spark");
+    if (!sparkEl) return;
+    const latest = values[values.length - 1] ?? pct;
+    const oldest = values[0] ?? pct;
+    const color = latest >= oldest ? "var(--positive, #34d399)" : "var(--negative, #f87171)";
+    sparkEl.innerHTML = trustedHTML(sparklineSvg(values, color, 44, 12));
+  } catch {
+    /* IDB unavailable — ignore */
+  }
+}
 
 let _sysInfoInterval: number | null = null;
 

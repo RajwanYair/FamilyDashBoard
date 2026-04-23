@@ -24,6 +24,7 @@ import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
+import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 
@@ -331,7 +332,11 @@ export function renderStocksShell(): void {
     timeDiv.className = "stk-time";
     timeDiv.textContent = "-";
 
-    row.append(logoDiv, infoDiv, valsDiv, svg, timeDiv);
+    const histSparkDiv = document.createElement("div");
+    histSparkDiv.className = "stk-ph-spark";
+    histSparkDiv.setAttribute("aria-hidden", "true");
+
+    row.append(logoDiv, infoDiv, valsDiv, svg, timeDiv, histSparkDiv);
     return row;
   };
 
@@ -500,9 +505,31 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
           : "#f87171";
     blk.querySelector(".stk-vals")?.appendChild(afterEl);
   }
+
+  // 7-day IDB history sparkline (V12-DATA-3)
+  if (cur != null && isFinite(cur)) {
+    void updateStockHistory(blk, sym, cur);
+  }
 }
 
-// ── Fetch a single stock ──
+/**
+ * Persist today's close price to IDB history and re-render the 7-day
+ * sparkline in the `.stk-ph-spark` element. Fire-and-forget.
+ */
+async function updateStockHistory(blk: Element, sym: string, price: number): Promise<void> {
+  try {
+    await historyAppend(`stk:${sym}`, price);
+    const values = await historyGet(`stk:${sym}`, 7);
+    if (values.length < 2) return;
+    const sparkEl = blk.querySelector(".stk-ph-spark");
+    if (!sparkEl) return;
+    const positive = price >= (values[0] ?? price);
+    const color = positive ? "var(--positive, #34d399)" : "var(--negative, #f87171)";
+    sparkEl.innerHTML = trustedHTML(sparklineSvg(values, color, 44, 12));
+  } catch {
+    /* IDB unavailable in some environments — ignore */
+  }
+}
 async function fetchStock(sym: string): Promise<YahooChartResponse> {
   // BTC-USD: use CoinGecko (CORS-enabled, Yahoo crypto fails in browser)
   if (sym === "BTC-USD") {
