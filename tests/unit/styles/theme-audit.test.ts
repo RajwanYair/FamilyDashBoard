@@ -7,6 +7,7 @@ import { resolve } from "node:path";
 import { THEMES } from "@/core/constants";
 
 const css = readFileSync(resolve(__dirname, "../../../src/styles/themes.css"), "utf-8");
+const tokensCss = readFileSync(resolve(__dirname, "../../../src/styles/tokens.css"), "utf-8");
 
 /** CSS custom properties every theme MUST define. */
 const REQUIRED_PROPS = [
@@ -65,4 +66,46 @@ describe("Theme audit (Sprint 113)", () => {
       }
     });
   }
+});
+
+// ── V13-DATA: @property registrations + color-scheme ─────────────────────────
+
+describe("tokens.css — @property registrations (V13-DATA)", () => {
+  const REGISTERED_PROPS = [
+    "--duration-fast",
+    "--duration-normal",
+    "--duration-slow",
+    "--accent",
+    "--bg-primary",
+    "--bg-card",
+    "--text-primary",
+    "--text-secondary",
+    "--positive",
+    "--negative",
+    "--bg-card-header",
+    "--bg-card-inner",
+    "--bg-card-hover",
+    "--text-muted",
+    "--warning",
+    "--accent-bright",
+  ];
+
+  for (const prop of REGISTERED_PROPS) {
+    it(`registers ${prop} via @property`, () => {
+      expect(tokensCss).toContain(`@property ${prop}`);
+    });
+  }
+
+  it("all @property blocks have syntax, inherits, and initial-value", () => {
+    const blocks = tokensCss.match(/@property\s+--[\w-]+\s*\{[^}]+\}/g) ?? [];
+    for (const block of blocks) {
+      expect(block, `@property block missing syntax: ${block}`).toContain("syntax:");
+      expect(block, `@property block missing inherits: ${block}`).toContain("inherits:");
+      expect(block, `@property block missing initial-value: ${block}`).toContain("initial-value:");
+    }
+  });
+
+  it(":root declares color-scheme: dark", () => {
+    expect(tokensCss).toContain("color-scheme: dark");
+  });
 });

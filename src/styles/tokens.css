@@ -52,14 +52,60 @@
   inherits: true;
   initial-value: #86c490;
 }
+@property --positive {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #86c490;
+}
 @property --negative {
   syntax: "<color>";
   inherits: true;
   initial-value: #c89090;
 }
 
+/*
+ * Additional @property registrations (V13-DATA) — enables smooth CSS
+ * transitions on theme switches and documents the accepted syntax for
+ * static analysis. color-scheme declaration primes the browser for
+ * future light-dark() token usage.
+ */
+@property --bg-card-header {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(56, 46, 36, 0.88);
+}
+@property --bg-card-inner {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(48, 40, 30, 0.55);
+}
+@property --bg-card-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(66, 54, 42, 0.65);
+}
+@property --text-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8a7e70;
+}
+@property --warning {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d4b870;
+}
+@property --accent-bright {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d9bc9e;
+}
+
 @layer tokens {
   :root {
+    /* Declare dark color-scheme so the browser activates OS dark-mode
+     * integration. This is a prerequisite for light-dark() token usage
+     * when a light theme variant is added in future. */
+    color-scheme: dark;
     /* ── Colors: Warm Dark (default) ── */
     --bg-primary: #1a1410;
     --bg-card: rgba(42, 34, 26, 0.82);
