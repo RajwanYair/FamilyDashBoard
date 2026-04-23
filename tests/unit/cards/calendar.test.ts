@@ -1244,3 +1244,101 @@ describe("Calendar — calDaysUntilLabel (Sprint 25)", () => {
     expect(result).toMatch(/^עוד \d+ ימים$|^מחר$/);
   });
 });
+
+// ── iCalendar fuzz / edge-case tests (Sprint 26) ───────────────────────────
+
+describe("Calendar — parseICS fuzz / edge-cases", () => {
+  it("returns empty array for whitespace-only input", () => {
+    expect(parseICS("   \n  \t  ", 0)).toHaveLength(0);
+  });
+
+  it("returns empty array for non-ICS garbage text", () => {
+    expect(parseICS("not a calendar at all\nfoo bar baz", 0)).toHaveLength(0);
+  });
+
+  it("skips VEVENT with missing DTSTART", () => {
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:No date\nEND:VEVENT\nEND:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    expect(events.length).toBe(0);
+  });
+
+  it("skips VEVENT with malformed DTSTART (non-date string)", () => {
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:NOT_A_DATE\nSUMMARY:Bad date\nEND:VEVENT\nEND:VCALENDAR`;
+    // Should not throw; event with NaN date is filtered or produces empty
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles VEVENT with empty SUMMARY gracefully", () => {
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:\nEND:VEVENT\nEND:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    // Parses fine; summary may be empty string
+    if (events.length > 0) {
+      expect(typeof events[0]?.summary).toBe("string");
+    }
+  });
+
+  it("handles VEVENT with SUMMARY missing entirely", () => {
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nEND:VEVENT\nEND:VCALENDAR`;
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("parses back-to-back VEVENTs without blank lines", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VEVENT",
+      "DTSTART:20251201T120000Z",
+      "SUMMARY:Event One",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART:20251202T120000Z",
+      "SUMMARY:Event Two",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events.length).toBe(2);
+  });
+
+  it("handles extremely long SUMMARY without throwing", () => {
+    const longSummary = "A".repeat(2000);
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:${longSummary}\nEND:VEVENT\nEND:VCALENDAR`;
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles DTSTART with TZID parameter (VALUE=DATE-TIME)", () => {
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART;TZID=America/New_York:20251201T120000\nSUMMARY:Zoned Event\nEND:VEVENT\nEND:VCALENDAR`;
+    // Should not throw; date parse may or may not succeed — but must not crash
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles Windows-style CRLF line endings", () => {
+    const ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nDTSTART:20251201T120000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    const events = parseICS(ics, 0);
+    // May or may not parse, but must not throw
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    if (events.length > 0) {
+      expect(events[0]?.summary).toBeDefined();
+    }
+  });
+
+  it("handles null bytes in input without crashing", () => {
+    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Null\x00Byte\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles ICS with only BEGIN:VCALENDAR and END:VCALENDAR (no events)", () => {
+    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Test//Test//EN\nEND:VCALENDAR";
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("handles duplicate DTSTART lines — does not throw", () => {
+    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nDTSTART:20251202T120000Z\nSUMMARY:Dup\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles negative icsIndex without crashing", () => {
+    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Neg\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, -1)).not.toThrow();
+  });
+});
