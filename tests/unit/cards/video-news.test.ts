@@ -12,7 +12,7 @@ import type { VideoChannelId } from "@/types/stream";
 
 describe("getStreamDescriptor", () => {
   it("returns a descriptor for each known channel", () => {
-    const ids: VideoChannelId[] = ["c14", "i24he", "i24en", "kan11", "n12", "keshet13", "arutz7"];
+    const ids: VideoChannelId[] = ["c14", "i24he", "kan11", "n12", "keshet13", "arutz7"];
     for (const id of ids) {
       const desc = getStreamDescriptor(id);
       expect(desc.id).toBe(id);
@@ -53,8 +53,8 @@ describe("getStreamDescriptor", () => {
 });
 
 describe("listChannels", () => {
-  it("returns 7 channels", () => {
-    expect(listChannels().length).toBe(7);
+  it("returns 6 channels", () => {
+    expect(listChannels().length).toBe(6);
   });
 
   it("includes c14 as the first channel", () => {
@@ -65,7 +65,6 @@ describe("listChannels", () => {
     const channels = listChannels();
     expect(channels).toContain("c14");
     expect(channels).toContain("i24he");
-    expect(channels).toContain("i24en");
     expect(channels).toContain("kan11");
     expect(channels).toContain("n12");
     expect(channels).toContain("keshet13");
@@ -95,13 +94,24 @@ describe("video-news module — channel state (headless)", () => {
     switchChannel = mod.switchChannel;
   });
 
-  it("starts muted (iframes always start muted)", () => {
-    expect(isMuted()).toBe(true);
+  it("c14 starts unmuted — isMuted() returns false", () => {
+    loadChannel("c14");
+    expect(isMuted()).toBe(false); // c14 is the only unmuted channel
   });
 
-  it("toggleMute is a no-op but does not throw", () => {
+  it("all channels except c14 start muted — isMuted() returns true", () => {
+    const others: VideoChannelId[] = ["i24he", "kan11", "n12", "keshet13", "arutz7"];
+    for (const id of others) {
+      loadChannel(id);
+      expect(isMuted()).toBe(true);
+    }
+  });
+
+  it("toggleMute is a no-op and does not throw", () => {
+    loadChannel("c14");
     expect(() => { toggleMute(); }).not.toThrow();
-    expect(isMuted()).toBe(true); // still muted — controlled by iframe URL params
+    // mute state is controlled by iframe URL params — stays per-channel
+    expect(isMuted()).toBe(false); // still c14
   });
 
   it("starts with c14 as active channel after loadChannel('c14')", () => {

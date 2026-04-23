@@ -2,7 +2,7 @@
  * FamilyDashBoard — Video News Card Logic
  *
  * Renders live-news channel iframes inside the dashboard.
- * Supports 7 Israeli news channels via StreamDescriptor.
+ * Supports 6 Israeli news channels via StreamDescriptor.
  *
  * Layout modes:
  *   normal    — one active channel shown, others hidden; channel tabs for switching
@@ -86,8 +86,9 @@ export function toggleMute(): void {
   diagLog("[video-news] toggleMute: mute is controlled via iframe URL params");
 }
 
+/** Returns whether the active channel starts muted (as declared in its StreamDescriptor). */
 export function isMuted(): boolean {
-  return true; // iframes always start muted (mute=1 in URL)
+  return getStreamDescriptor(_activeChannel).muted;
 }
 
 export function getActiveChannel(): VideoChannelId {

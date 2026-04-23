@@ -9,7 +9,7 @@
  */
 
 /** Known live-news channel identifiers. */
-export type VideoChannelId = "c14" | "i24he" | "i24en" | "kan11" | "n12" | "keshet13" | "arutz7";
+export type VideoChannelId = "c14" | "i24he" | "kan11" | "n12" | "keshet13" | "arutz7";
 
 /** Integration mode — determines how the stream is loaded. */
 export type VideoIntegrationMode =
@@ -61,6 +61,12 @@ export interface StreamDescriptor {
    * may be blocked by the player depending on the browser's referrer policy.
    */
   refererRequired?: boolean;
+  /**
+   * Whether the channel starts muted.
+   * YouTube iframes must be muted for autoplay to work in most browsers.
+   * Only c14 is allowed to start unmuted (user-facing TV channel, primary display).
+   */
+  muted: boolean;
   /** CSP hosts contributed by this channel. Used by the card to extend the allow-list. */
   cspHosts: StreamCspHosts;
 }
