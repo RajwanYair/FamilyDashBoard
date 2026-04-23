@@ -20,6 +20,8 @@ import { cGetStale, cSetAsync } from "../../core/cache";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
+import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
+import { trustedHTML } from "../../core/trusted-types";
 import type { AlertEvent, AlertsResponse } from "../../types/api";
 import { isAlertEvent } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
@@ -51,12 +53,14 @@ export function getAlertVolume(): number {
 // ── DOM cache ──
 let elScroll: HTMLElement | null = null;
 let elBadge: HTMLElement | null = null;
+let elSpark: SVGElement | null = null;
 
 const ALERT_INTERVAL_RT = 10_000; // 10s real-time mode
 
 export function cacheDom(): void {
   elScroll = document.getElementById("alerts-scroll");
   elBadge = document.getElementById("alerts-badge");
+  elSpark = document.getElementById("alerts-count-spark") as SVGElement | null;
   if (elBadge) {
     elBadge.addEventListener("click", () => clearUnreadAlerts());
     elBadge.style.cursor = "pointer";
@@ -358,6 +362,13 @@ export async function loadAlerts(): Promise<void> {
       setSync("alerts", "ok");
       syncBurst("alerts");
       recordSuccess("alerts");
+
+      // Record alert count for 7-day sparkline
+      await historyAppend("alerts:count", validData.length);
+      const sparkVals = await historyGet("alerts:count", 7);
+      if (elSpark !== null && sparkVals.length >= 2) {
+        elSpark.innerHTML = trustedHTML(sparklineSvg(sparkVals, "var(--negative)"));
+      }
 
       const now = Date.now() / 1000;
       _haveActive = validData.some((ev) => ev.alerts?.some((a) => now - a.time < 600));
