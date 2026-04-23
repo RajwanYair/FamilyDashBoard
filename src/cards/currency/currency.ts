@@ -8,7 +8,7 @@
  */
 
 import "./currency.css";
-import { INTERVALS, CUR_TILES, API, LS_CUR_HISTORY, MS_PER_MIN } from "../../core/constants";
+import { INTERVALS, CUR_TILES, API, LS_CUR_HISTORY, MS_PER_MIN, WORKER_BASE_URL } from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker, acquireLock, releaseLock } from "../../core/fetch";
 import { cGet, cGetStale, cSet } from "../../core/cache";
@@ -16,7 +16,7 @@ import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/syn
 import { isPageVisible } from "../../core/idle";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { trustedHTML } from "../../core/trusted-types";
-import type { CurrencyResponse, YahooChartResponse } from "../../types/api";
+import type { CurrencyResponse, YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
 // ── State ──
@@ -106,12 +106,14 @@ interface CurEls {
   gold: HTMLElement | null;
   silver: HTMLElement | null;
   oil: HTMLElement | null;
+  btc: HTMLElement | null;
   usdChg: HTMLElement | null;
   eurChg: HTMLElement | null;
   gbpChg: HTMLElement | null;
   goldChg: HTMLElement | null;
   silverChg: HTMLElement | null;
   oilChg: HTMLElement | null;
+  btcChg: HTMLElement | null;
   body: HTMLElement | null;
   lastFetch: HTMLElement | null;
 }
@@ -123,12 +125,14 @@ let curEls: CurEls = {
   gold: null,
   silver: null,
   oil: null,
+  btc: null,
   usdChg: null,
   eurChg: null,
   gbpChg: null,
   goldChg: null,
   silverChg: null,
   oilChg: null,
+  btcChg: null,
   body: null,
   lastFetch: null,
 };
@@ -141,6 +145,7 @@ const TILE_EL_MAP: Record<string, { rate: keyof CurEls; chg: keyof CurEls }> = {
   XAU: { rate: "gold", chg: "goldChg" },
   XAG: { rate: "silver", chg: "silverChg" },
   XOI: { rate: "oil", chg: "oilChg" },
+  BTC: { rate: "btc", chg: "btcChg" },
 };
 
 export function cacheDom(): void {
@@ -151,12 +156,14 @@ export function cacheDom(): void {
     gold: document.getElementById("curGold"),
     silver: document.getElementById("curSilver"),
     oil: document.getElementById("curOil"),
+    btc: document.getElementById("curBtc"),
     usdChg: document.getElementById("curUsdChg"),
     eurChg: document.getElementById("curEurChg"),
     gbpChg: document.getElementById("curGbpChg"),
     goldChg: document.getElementById("curGoldChg"),
     silverChg: document.getElementById("curSilverChg"),
     oilChg: document.getElementById("curOilChg"),
+    btcChg: document.getElementById("curBtcChg"),
     body: document.getElementById("currency-body"),
     lastFetch: document.getElementById("cur-last-fetch"),
   };
@@ -206,6 +213,29 @@ async function fetchMetalRates(rates: Record<string, number>): Promise<void> {
   }
 }
 
+// ── Fetch BTC price from worker and inject as BTC key into rates ──
+// Stores BTC as a synthetic rate: BTC = usdPerIls / btcUsd
+// so that renderCurrency can compute ilsVal = 1/rate = btcIls consistently.
+async function fetchBtcRate(rates: Record<string, number>): Promise<void> {
+  const usdRate = rates["USD"];
+  if (!usdRate || usdRate <= 0) return;
+  try {
+    const json = await fetchJSONWithWorker<CoinGeckoResponse>(
+      `${WORKER_BASE_URL}/api/crypto?ids=bitcoin&vs_currencies=usd`,
+    );
+    const btcUsd = json?.bitcoin?.usd;
+    if (typeof btcUsd === "number" && btcUsd > 0) {
+      // rates[USD] = USD-per-ILS; 1/rates[USD] = ILS-per-USD
+      // BTC in ILS = btcUsd / (1/rates[USD]) = btcUsd * rates[USD]
+      // Store as inverted rate so renderCurrency does: ilsVal = 1/rates[BTC]
+      rates["BTC"] = 1 / (btcUsd * (1 / usdRate));
+      diagLog(`FDB-031e: [currency] BTC OK – $${btcUsd.toLocaleString()}`);
+    }
+  } catch {
+    diagLog("FDB-031e: [currency] BTC fetch failed");
+  }
+}
+
 // ── Fetch exchange rates ──
 export async function fetchCurrency(): Promise<Record<string, number>> {
   const apis = [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK] as const;
@@ -216,6 +246,7 @@ export async function fetchCurrency(): Promise<Record<string, number>> {
         diagLog(`FDB-031: [currency] Rates OK from ${apiUrl}`);
         const rates = { ...json.rates };
         await fetchMetalRates(rates);
+        await fetchBtcRate(rates);
         return rates;
       }
     } catch {
@@ -233,6 +264,7 @@ const SPARK_EL: Record<string, string> = {
   XAU: "cur-gold-spark",
   XAG: "cur-silver-spark",
   XOI: "cur-oil-spark",
+  BTC: "cur-btc-spark",
 };
 
 /**
@@ -448,12 +480,14 @@ export function _resetCurrencyForTest(): void {
     gold: null,
     silver: null,
     oil: null,
+    btc: null,
     usdChg: null,
     eurChg: null,
     gbpChg: null,
     goldChg: null,
     silverChg: null,
     oilChg: null,
+    btcChg: null,
     body: null,
     lastFetch: null,
   };
