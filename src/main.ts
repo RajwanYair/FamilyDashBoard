@@ -38,6 +38,7 @@ import { initTheme, checkAutoTheme } from "./ui/theme";
 import { initKeyboard, registerKey, closeAllOverlays, getKeyboardActions } from "./ui/keyboard";
 import { initHeader, toggleClockSeconds } from "./ui/header";
 import { initCardMaximize, initCardCollapse } from "./ui/maximize";
+import { initCardAutoScroll } from "./ui/card-auto-scroll";
 import { initStatusBar, stampRefresh } from "./ui/status-bar";
 import { initTicker, applyTickerSpeed } from "./ui/ticker";
 import {
@@ -240,6 +241,7 @@ export function init(): void {
   initBgImages();
   initCardMaximize();
   initCardCollapse();
+  initCardAutoScroll();
   initCardDragDrop();
   initStatusBar();
   initConfigPanel();

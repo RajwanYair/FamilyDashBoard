@@ -117,3 +117,13 @@ body.mode-phone .card {
     --border-angle: 360deg;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   Card Auto-Scroll: hide scrollbar on auto-managed bodies
+   ═══════════════════════════════════════════════════════ */
+.card-body-auto-scroll {
+  scrollbar-width: none; /* Firefox */
+}
+.card-body-auto-scroll::-webkit-scrollbar {
+  display: none; /* Chrome / Safari / Edge */
+}
