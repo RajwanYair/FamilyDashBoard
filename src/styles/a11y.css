@@ -118,6 +118,29 @@ textarea:focus-visible {
   contain-intrinsic-size: auto 250px;
 }
 
+/* ── WCAG 1.4.12 Text Spacing — non-breaking override (V13-A11Y-1) ──
+ * Applies when a user injects a text-spacing stylesheet or a bookmarklet
+ * that forces the WCAG 1.4.12 minimum values. This block ensures our UI
+ * does not clip, overlap, or lose content under those overrides.
+ *
+ * Values (tokens from tokens.css):
+ *   line-height  ≥ 1.5  (--ts-line-height)
+ *   letter-spacing ≥ 0.12em (--ts-letter-spacing)
+ *   word-spacing   ≥ 0.16em (--ts-word-spacing)
+ *   paragraph spacing ≥ 2em (--ts-paragraph-spacing)
+ */
+@layer base {
+  .text-spacing-override,
+  .text-spacing-override * {
+    line-height: var(--ts-line-height, 1.5) !important;
+    letter-spacing: var(--ts-letter-spacing, 0.12em) !important;
+    word-spacing: var(--ts-word-spacing, 0.16em) !important;
+  }
+  .text-spacing-override p {
+    margin-block-end: var(--ts-paragraph-spacing, 2em) !important;
+  }
+}
+
 /* ── SR-only utility: visually hidden but accessible to screen readers ──
  * Satisfies WCAG 2.4.6 (Headings) + WCAG 1.3.1 (Info and Relationships).
  * Usage: <h1 class="sr-only" id="page-heading">…</h1>  (Sprint 30 V12-A11Y)

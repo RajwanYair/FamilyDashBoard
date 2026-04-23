@@ -155,5 +155,12 @@
     --focus-shadow-spread: 4px;
     --focus-outline-offset-btn: 3px;
     --focus-outline-width-input: 2px;
+
+    /* ── WCAG 1.4.12 Text Spacing Tokens ── */
+    /* Minimum values required by WCAG 2.1 SC 1.4.12 (AA) when overridden by user styles */
+    --ts-line-height: 1.5;       /* ≥ 1.5 × font-size */
+    --ts-letter-spacing: 0.12em; /* ≥ 0.12 × font-size */
+    --ts-word-spacing: 0.16em;   /* ≥ 0.16 × font-size */
+    --ts-paragraph-spacing: 2em; /* ≥ 2 × font-size */
   }
 }
