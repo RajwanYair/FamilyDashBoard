@@ -248,3 +248,33 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 22. **Per-card configSchema** — Each card exports a `CardConfigField[]` schema; `buildConfigAccordion()` auto-renders the config panel UI; per-card reset buttons (v7.19, ADR-004)
 23. **Config dirty tracking** — `closeConfigPanel()` warns on unsaved changes; second close discards (v7.19)
 24. **Observability suite** — Card init timing (`recordCardInitTime`), startup waterfall in diag overlay, perf JSON export, error rate trending sparkline, network quality history (v7.19)
+
+## Accessibility Compliance
+
+FamilyDashBoard targets **WCAG 2.2 AA** with select Level AAA criteria. The following notes document the implementation decisions for auditors.
+
+### WCAG 3.3.7 — Redundant Entry (Level A, WCAG 2.2)
+
+**Requirement**: Information previously entered by the user that is required to be entered again must be auto-populated or available for selection.
+
+**Implementation**: The config panel (`src/ui/config-panel.ts`) reads all settings from `localStorage` via `config.ts` and pre-fills every `<input>`, `<select>`, and `<textarea>` on open. Users never need to re-enter the same value twice:
+
+- City / location fields are pre-filled from `cards.weather.city` / `cards.weather.lat` / `cards.weather.lon`.
+- Stock symbols, calendar URLs, and task lists are pre-filled from their respective `cards.*` namespace keys.
+- The config import/export feature (`validateImportedConfig`) allows full restore from a JSON backup — eliminating re-entry entirely.
+
+No multi-step forms exist in this dashboard. All settings are presented on a single config panel loaded from the persisted store.
+
+### WCAG 2.4.6 — Headings and Labels (Level AA)
+
+A visually-hidden `<h1 id="page-heading">` is injected inside `<main>` (Sprint 30). Screen readers announce the page title without affecting the visual TV layout. The `.sr-only` CSS utility follows the [WebAIM SR-only pattern](https://webaim.org/techniques/css/invisiblecontent/) with `clip: rect(0,0,0,0)`.
+
+### WCAG 3.2.6 — Consistent Help (Level A, WCAG 2.2)
+
+The `?` / `H` keyboard shortcut opens the help modal (`src/ui/help.ts`) from any page state. The shortcut is documented in:
+
+- The help modal header itself.
+- The keyboard shortcut list rendered in the help modal (`H` / `?` → help).
+- The config panel footer ("Press `?` for keyboard shortcuts").
+
+The help entry point is consistent across all overlay states (config, diagnostics, alerts).
