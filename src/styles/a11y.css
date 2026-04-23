@@ -1,8 +1,10 @@
 /* Accessibility */
-/* ── A11y: Global focus-visible ring (Sprint 35) ── */
+/* ── A11y: Global focus-visible ring (WCAG 2.4.7 AA / 2.4.11 AAA) ── */
 /*
- * High-contrast focus ring visible to keyboard users on all interactive
- * elements. Uses :focus-visible to avoid ring on mouse clicks.
+ * 3px solid outline — satisfies WCAG 2.4.11 Enhanced Focus Appearance (AAA):
+ *  • Area ≥ perimeter of a 2px border around the component.
+ *  • Contrast ≥ 3:1 against adjacent colors (--accent vs --bg-primary).
+ * Uses :focus-visible to suppress ring on pointer clicks.
  */
 :focus-visible {
   outline: var(--focus-outline-width) solid var(--focus-outline-color);
@@ -32,6 +34,42 @@ select:focus-visible,
 textarea:focus-visible {
   outline: var(--focus-outline-width-input) solid var(--focus-outline-color);
   outline-offset: 0;
+}
+
+/* ── A11y: High-contrast mode (prefers-contrast: more) ── */
+/*
+ * WCAG 2.4.11 AAA double-ring: outer outline (white/black) + inner accent.
+ * Ensures the focus indicator is visible against any background color.
+ */
+@media (prefers-contrast: more) {
+  :focus-visible {
+    outline: 3px solid var(--focus-outline-color);
+    outline-offset: 2px;
+    box-shadow:
+      0 0 0 1px #000,
+      0 0 0 4px var(--focus-outline-color),
+      0 0 0 6px #fff;
+  }
+
+  .card :focus-visible {
+    outline: 3px solid var(--focus-outline-color-card);
+    box-shadow:
+      0 0 0 1px #000,
+      0 0 0 4px var(--focus-outline-color-card),
+      0 0 0 6px #fff;
+  }
+}
+
+/* ── A11y: Forced Colors (Windows High Contrast Mode) ── */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid ButtonText;
+    outline-offset: 2px;
+  }
+
+  .card :focus-visible {
+    outline: 3px solid ButtonText;
+  }
 }
 
 /* ── A11y: Skip-to-main link (R1.11) ── */

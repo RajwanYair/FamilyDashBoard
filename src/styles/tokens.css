@@ -90,12 +90,12 @@
     --negative-subtle: color-mix(in sRGB, var(--negative) 12%, transparent);
     --bg-overlay: color-mix(in sRGB, var(--bg-primary) 92%, transparent);
 
-    /* ── Focus Ring Tokens (WCAG 2.4.7 / 2.4.11) ── */
+    /* ── Focus Ring Tokens (WCAG 2.4.7 AA / 2.4.11 AAA) ── */
     --focus-outline-width: 3px;
     --focus-outline-offset: 2px;
     --focus-outline-color: var(--accent);
     --focus-outline-color-card: var(--accent);
-    --focus-outline-width-card: 2px;
+    --focus-outline-width-card: 3px;
     --focus-shadow-spread: 4px;
     --focus-outline-offset-btn: 3px;
     --focus-outline-width-input: 2px;
