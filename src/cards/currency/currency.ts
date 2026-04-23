@@ -8,7 +8,14 @@
  */
 
 import "./currency.css";
-import { INTERVALS, CUR_TILES, API, LS_CUR_HISTORY, MS_PER_MIN, WORKER_BASE_URL } from "../../core/constants";
+import {
+  INTERVALS,
+  CUR_TILES,
+  API,
+  LS_CUR_HISTORY,
+  MS_PER_MIN,
+  WORKER_BASE_URL,
+} from "../../core/constants";
 import { diagLog } from "../../core/diag";
 import { fetchJSONWithWorker, acquireLock, releaseLock } from "../../core/fetch";
 import { cGet, cGetStale, cSet } from "../../core/cache";
