@@ -5,7 +5,7 @@ info:
     Cloudflare Worker API proxy for the FamilyDashBoard dashboard.
     All routes enforce CORS (any origin), per-IP rate limiting (120 req/min),
     and SSRF allowlists on URL parameters.
-  version: "12.2.0"
+  version: "12.3.0"
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard
@@ -62,6 +62,7 @@ paths:
       tags: [weather]
       summary: Current + hourly + daily weather forecast
       description: Proxies Open-Meteo for a given location. Cached 30 min.
+      x-kv-ttl: 1800
       operationId: getWeather
       parameters:
         - name: lat
@@ -93,6 +94,7 @@ paths:
       tags: [finance]
       summary: Exchange rates (USD base)
       description: Proxies open.er-api.com. Cached 1 h.
+      x-kv-ttl: 3600
       operationId: getCurrency
       responses:
         "200":
@@ -108,6 +110,8 @@ paths:
         Proxies Yahoo Finance v8 chart endpoint. Cached 5 min.
         On upstream failure, returns last KV-cached value with `stale: true`
         (KV TTL: 24 h, provider: `yahoo-kv-stale`). See ADR-013.
+      x-kv-ttl: 300
+      x-kv-stale-ttl: 86400
       operationId: getStock
       parameters:
         - name: sym
@@ -136,6 +140,7 @@ paths:
       tags: [calendar]
       summary: Shabbat times for a given location (Hebcal)
       description: Proxies Hebcal shabbat endpoint. Cached 6 h.
+      x-kv-ttl: 21600
       operationId: getHebcal
       parameters:
         - name: geonameid
@@ -160,6 +165,7 @@ paths:
       tags: [calendar]
       summary: Jewish holidays list for a Gregorian year
       description: Proxies Hebcal holiday list. Cached 12 h.
+      x-kv-ttl: 43200
       operationId: getHebcalHolidays
       parameters:
         - name: year
@@ -187,6 +193,7 @@ paths:
         Fetches an ICS calendar file from an allowlisted origin.
         Validates that the response contains a valid VCALENDAR.
         Cached 15 min.
+      x-kv-ttl: 900
       operationId: getCalendar
       parameters:
         - name: url
@@ -224,6 +231,7 @@ paths:
         Fetches an RSS/Atom feed from an allowlisted news origin.
         Validates that the response is a valid RSS 2.0 or Atom 1.0 feed.
         Returns the raw XML. Cached 15 min.
+      x-kv-ttl: 900
       operationId: getNews
       parameters:
         - name: url
@@ -261,6 +269,7 @@ paths:
         Results are cached in KV for 15 min (TTL 900 s).
         On total failure, returns last KV-cached value with `stale: true`.
         See ADR-007 for the news aggregation strategy.
+      x-kv-ttl: 900
       operationId: getNewsAggregate
       responses:
         "200":
@@ -287,6 +296,47 @@ paths:
         "429":
           $ref: "#/components/responses/RateLimitError"
 
+  /api/news/summarise:
+    get:
+      tags: [news]
+      summary: Workers AI Hebrew news summarisation (AI_ENABLED=true)
+      description: |
+        Returns a Hebrew summary of today's top news using Workers AI.
+        Only active when the `AI_ENABLED` environment variable is set to `"true"`.
+        Returns 503 `{"ok":false,"error":"ai_disabled"}` when AI is not enabled.
+        Returns 501 `{"ok":false,"error":"ai_not_implemented"}` when AI is enabled
+        but the implementation is not yet deployed (ADR-030).
+      x-kv-ttl: 900
+      operationId: getNewsSummarise
+      responses:
+        "200":
+          description: AI-generated Hebrew news summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  summary:
+                    type: string
+                    description: Hebrew-language news summary
+        "501":
+          description: AI enabled but implementation pending
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: AI_ENABLED not set — feature disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
   /api/alerts:
     get:
       tags: [alerts]
@@ -295,6 +345,8 @@ paths:
         Proxies api.tzevaadom.co.il. Cached 1 min.
         On upstream failure, returns last KV-cached value with `stale: true`
         (KV TTL: 1 h, provider: `tzevaadom-kv-stale`). See ADR-013.
+      x-kv-ttl: 60
+      x-kv-stale-ttl: 3600
       operationId: getAlerts
       responses:
         "200":
@@ -307,6 +359,7 @@ paths:
       tags: [sefaria]
       summary: Sefaria daily calendar (Daf Yomi, Parashat Hashavua, etc.)
       description: Proxies Sefaria /api/calendars. Cached 24 h.
+      x-kv-ttl: 86400
       operationId: getSefariaCalendar
       responses:
         "200":
@@ -321,6 +374,7 @@ paths:
       description: |
         Fetches a single Sefaria text by reference (e.g. Berakhot.2a.1).
         Cached 24 h (text content is stable).
+      x-kv-ttl: 86400
       operationId: getSefariaText
       parameters:
         - name: ref
@@ -348,6 +402,8 @@ paths:
         Validates response schema and returns 502 on mismatch.
         On upstream failure, returns last KV-cached value with `stale: true`
         (KV TTL: 24 h, provider: `coingecko-kv-stale`). See ADR-013.
+      x-kv-ttl: 300
+      x-kv-stale-ttl: 86400
       operationId: getCrypto
       parameters:
         - name: ids
@@ -386,6 +442,50 @@ paths:
           $ref: "#/components/responses/ValidationError"
         "502":
           description: Upstream error or schema validation failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
+  /api/motivation/hebrew:
+    get:
+      tags: [news]
+      summary: Workers AI Hebrew motivational quote (AI_ENABLED=true)
+      description: |
+        Returns a Hebrew motivational quote using Workers AI.
+        Only active when the `AI_ENABLED` environment variable is set to `"true"`.
+        Returns 503 `{"ok":false,"error":"ai_disabled"}` when AI is not enabled.
+        Returns 501 `{"ok":false,"error":"ai_not_implemented"}` when AI is enabled
+        but the implementation is not yet deployed (ADR-030).
+      x-kv-ttl: 86400
+      operationId: getMotivationHebrew
+      responses:
+        "200":
+          description: AI-generated Hebrew motivational quote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  quote:
+                    type: string
+                    description: Hebrew-language motivational quote
+                  author:
+                    type: string
+                    description: Attribution (optional)
+        "501":
+          description: AI enabled but implementation pending
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: AI_ENABLED not set — feature disabled
           content:
             application/json:
               schema:
