@@ -311,10 +311,12 @@ export function renderCalendar(events: CalendarEvent[]): number {
   const now = new Date();
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  // 7-day window
-  const weekEnd = new Date(todayMidnight.getTime() + CAL_WEEK_DAYS * MS_PER_DAY);
+  // Week window: always Sunday → Saturday of the current week
+  const dayOfWeek = todayMidnight.getDay(); // 0 = Sunday
+  const weekStart = new Date(todayMidnight.getTime() - dayOfWeek * MS_PER_DAY);
+  const weekEnd = new Date(weekStart.getTime() + CAL_WEEK_DAYS * MS_PER_DAY);
   const upcoming = events
-    .filter((e) => e.start >= todayMidnight && e.start < weekEnd)
+    .filter((e) => e.start >= weekStart && e.start < weekEnd)
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
   // Detect overlapping timed events (for conflict indicator)
@@ -328,7 +330,7 @@ export function renderCalendar(events: CalendarEvent[]): number {
     }
   }
 
-  const buckets = groupEventsByDay(upcoming, now);
+  const buckets = groupEventsByDay(upcoming, weekStart);
   const todayKey = now.toDateString();
 
   if (els.grid) {

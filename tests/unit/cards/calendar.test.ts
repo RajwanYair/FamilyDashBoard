@@ -226,11 +226,17 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
       },
     ];
     const count = renderCalendar(events);
-    expect(count).toBe(1);
     const tiles = document.querySelectorAll(".cal-day-tile");
-    // tomorrow = index 1
-    expect(tiles[1]?.textContent).toContain("Test Event");
-    expect(tiles[1]?.classList.contains("is-empty")).toBe(false);
+    // With Sunday–Saturday week, tile index = day-of-week (0=Sun…6=Sat)
+    const tomorrowTileIdx = tomorrow.getDay();
+    if (new Date().getDay() === 6) {
+      // Today is Saturday — tomorrow is next week, not shown
+      expect(count).toBe(0);
+      return;
+    }
+    expect(count).toBe(1);
+    expect(tiles[tomorrowTileIdx]?.textContent).toContain("Test Event");
+    expect(tiles[tomorrowTileIdx]?.classList.contains("is-empty")).toBe(false);
   });
 
   it("shows count badge matching events that day", () => {
@@ -251,7 +257,13 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
     };
     renderCalendar([ev(9, "a"), ev(11, "b"), ev(14, "c")]);
     const tiles = document.querySelectorAll(".cal-day-tile");
-    expect(tiles[1]?.querySelector(".cal-day-count")?.textContent).toBe("3");
+    const tomorrowTileIdx = tomorrow.getDay();
+    if (new Date().getDay() === 6) {
+      // Today is Saturday — tomorrow is next week, not shown
+      expect(tiles[tomorrowTileIdx]?.querySelector(".cal-day-count")).toBeNull();
+      return;
+    }
+    expect(tiles[tomorrowTileIdx]?.querySelector(".cal-day-count")?.textContent).toBe("3");
   });
 
   it("renders all-day event with 'כל היום'", () => {
@@ -375,8 +387,13 @@ describe("Calendar — countdown + header count", () => {
   });
 
   it("countdown visible when next event is within 7 days", () => {
-    const start = new Date(Date.now() + 3 * 86_400_000);
-    const end = new Date(start.getTime() + 3_600_000);
+    // Place event 1 hour before end of the current Sunday–Saturday window
+    const todayMid = new Date();
+    todayMid.setHours(0, 0, 0, 0);
+    const weekStart = new Date(todayMid.getTime() - todayMid.getDay() * 86_400_000);
+    const weekEnd = new Date(weekStart.getTime() + 7 * 86_400_000);
+    const start = new Date(weekEnd.getTime() - 3_600_000);
+    const end = new Date(start.getTime() + 1_800_000);
     renderCalendar([
       { summary: "Trip", start, end, allDay: false, icsIndex: 0, category: "default" as const },
     ]);

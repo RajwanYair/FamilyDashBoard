@@ -39,15 +39,15 @@
   opacity: 0.5;
 }
 
-/* ── Weekly tiled grid (7 day tiles) ── */
+/* ── Weekly tiled grid (7 day tiles, Sunday–Saturday) ── */
 .cal-week-grid {
   flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(7, 1fr);
   gap: 6px;
   padding: 6px 8px;
   overflow: auto;
-  align-content: start;
 }
 
 .cal-empty {
@@ -62,11 +62,12 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   background: var(--bg-card-inner);
   border: 1px solid var(--accent-border);
   border-radius: 6px;
   padding: 4px 6px 5px;
-  min-height: 60px;
+  overflow-y: auto;
 }
 .cal-day-tile.is-today {
   border-color: var(--accent);
@@ -113,10 +114,12 @@
 }
 
 .cal-day-tile-body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 3px;
   min-height: 0;
+  overflow-y: auto;
 }
 .cal-day-empty {
   color: var(--text-muted);
