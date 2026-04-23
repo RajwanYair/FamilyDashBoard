@@ -23,6 +23,16 @@ binding = "DB"
 database_name = "fdb-telemetry"
 database_id = "PLACEHOLDER_D1_ID"
 
+# Durable Object for alerts SSE fan-out (V12-EDGE-3, stub in v12.1)
+# Full SSE implementation deferred to v12.2 per ADR-025
+[[durable_objects.bindings]]
+name = "ALERTS_DO"
+class_name = "AlertsOrchestrator"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["AlertsOrchestrator"]
+
 # Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries

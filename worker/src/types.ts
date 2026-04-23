@@ -39,6 +39,12 @@ export interface Env {
    */
   FINNHUB_API_KEY?: string;
   /**
+   * Durable Object for alerts SSE fan-out (V12-EDGE-3).
+   * Bound in wrangler.toml as [[durable_objects.bindings]].
+   * Optional — the DO fan-out path is only exercised when this is present.
+   */
+  ALERTS_DO?: DurableObjectNamespace;
+  /**
    * D1 database for telemetry and error persistence (V12-EDGE-2).
    * Provision via: wrangler d1 create fdb-telemetry
    * Optional — telemetry is silently skipped when not configured.
@@ -78,4 +84,22 @@ export interface D1Result<T = Record<string, unknown>> {
 export interface D1ExecResult {
   count: number;
   duration: number;
+}
+
+/**
+ * Minimal DurableObjectNamespace interface — only the methods used here.
+ * The Cloudflare DurableObjectNamespace satisfies this via structural typing.
+ */
+export interface DurableObjectNamespace {
+  idFromName(name: string): DurableObjectId;
+  idFromString(id: string): DurableObjectId;
+  get(id: DurableObjectId): DurableObjectStub;
+}
+
+export interface DurableObjectId {
+  toString(): string;
+}
+
+export interface DurableObjectStub {
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
 }

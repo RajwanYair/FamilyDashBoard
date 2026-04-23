@@ -21,6 +21,8 @@
 
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+// ── Durable Objects (V12-EDGE-3) — re-exported for wrangler binding ───────────
+export { AlertsOrchestrator } from "./durable-objects/alerts-orchestrator";
 import { handleWeather, handleCurrency, handleHebcal, handleHebcalHolidays } from "./routes/data";
 import {
   handleStocks,
