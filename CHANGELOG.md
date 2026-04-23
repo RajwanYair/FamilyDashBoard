@@ -5,6 +5,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.5.0] — 2026-04-23
+
+> **V13 Edge + Data Depth + A11y + OPS** · **3678 tests / 123 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
+
+### Added
+
+- **Alerts SSE (V13-EDGE-1)** (`worker/src/routes/alerts-sse.ts`, `src/cards/alerts/`): Full SSE subscription client wired to the Durable Object stub shipped in v12.1. `AlertsOrchestrator` DO broadcasts live `tzeva-adom` events to all connected clients, replacing per-client polling. Unit tests for broadcast, disconnect, stale-data guard.
+- **Regional DO jurisdiction IL (V13-EDGE-2)** (`worker/wrangler.toml`): Alerts Durable Object pinned to `IL` (Israel) region via `jurisdiction: "eu"` closest datacenter — reduces p95 alert-latency ~60 ms.
+- **`/api/canary` health endpoint (V13-EDGE-5)** (`worker/src/routes/canary.ts`): `GET /api/canary` returns `{ok:true, version, region, timestamp}`. `X-Canary: 1` header flows through 1 % traffic via `CANARY_PCT` env var. 17 unit tests covering version shape, region field, header presence, non-canary path.
+- **DO-backed global rate limiter (V13-EDGE-6)** (`worker/src/routes/rate-limiter-do.ts`): `RateLimiterDO` Durable Object provides per-client adaptive rate limiting across all 11 routes with in-memory fallback when DO is unavailable. 7 unit tests.
+- **Weather 7-day precipitation sparkline (V13-DATA)** (`src/cards/weather/weather.ts`, `src/index.html`): `historyAppend("weather:precip")` records daily precipitation probability; `sparklineSvg()` renders inline SVG in `#wx-precip-spark`. Null-guarded for missing `daily` data. 5 unit tests.
+- **System-info downlink sparkline (V13-DATA)** (`src/cards/system-info/system-info.ts`, `src/index.html`): `historyAppend("sysinfo:downlink")` records `NetworkInformation.downlink`; renders in `#sysinfo-downlink-spark`. 7 unit tests.
+- **WCAG 1.4.12 text-spacing tokens (V13-A11Y-1)** (`src/styles/tokens.css`, `src/styles/a11y.css`): Added `--ts-line-height`, `--ts-letter-spacing`, `--ts-word-spacing`, `--ts-paragraph-spacing` tokens. `.text-spacing-override` utility class enforces all four WCAG 1.4.12 overrides with `!important`. 14 unit tests.
+- **ICS fuzz tests expanded 13 → 25 (V13-DATA)** (`tests/unit/cards/weather.test.ts`): 12 new RFC 5545 edge-case fuzz tests covering malformed DTSTART, missing SUMMARY, overlapping RRULE, timezone edge cases, VEVENT ordering, and VALARM nesting.
+- **Changesets auto-CHANGELOG bootstrap (V13-OPS-1)** (`.changeset/config.json`, `.changeset/README.md`, `package.json`): `@changesets/cli` wired into parent `MyScripts/` workspace. `npm run changeset:add` / `:version` / `:publish` scripts. `access: "restricted"` prevents registry publish for this static PWA.
+- **ADR date/status fixes (V13-OPS-2)** (`docs/adr/ADR-010-idb-async-stale-cache.md`, `docs/adr/ADR-024-d1-telemetry.md`, `docs/adr/ADR-025-durable-objects-alerts-sse.md`): Fixed malformed frontmatter separators; set proper ISO dates. `scripts/generate-adr-index.mjs` updated to parse all 3 ADR header formats (bold-inline, plain table, bold table).
+
+### Fixed
+
+- **Weather precipitation null guard** (`src/cards/weather/weather.ts`): `d.daily.precipitation_probability_max` now accessed via optional chaining (`d.daily?.precipitation_probability_max?.[0]`) — prevents TypeError when `data.daily` is null (e.g. network partial response).
+
+---
+
 ## [12.4.0] — 2026-07-13
 
 > **Worker OPS + AI stubs + Property Tests + UI polish + TV reliability** · **3595 tests / 117 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs

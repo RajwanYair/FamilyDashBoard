@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v12.3.0
+/* FamilyDashBoard ServiceWorker — v12.5.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v12.3.0: CSS @scope audit, error boundary polish, CI release gate, getErrorTrend defensive copy
+ * v12.5.0: V13-EDGE SSE+DO+rate-limiter, DATA sparklines (weather/sysinfo), A11Y text-spacing, ICS fuzz, changesets, ADR index
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
