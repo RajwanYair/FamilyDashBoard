@@ -68,3 +68,82 @@ export async function handleNextYearPreWarm(env: Env): Promise<void> {
   await handleHebcalHolidays(new URL(hebcalHolidaysUrl(1)), env).catch(() => null);
 }
 
+/**
+ * handleWeeklyDigest — Email Workers weekly digest (ADR-033, V13-S27).
+ *
+ * Triggered by the Saturday 23:00 UTC cron: `"0 23 * * 6"`.
+ * Compiles a plain-text summary of the current week's stats and sends it
+ * via Email Workers (send_email binding / MailChannels).
+ *
+ * When EMAIL_SEND_FROM or EMAIL_SEND_TO is not set, this is a no-op so
+ * deployments without email configured are unaffected.
+ *
+ * Current summary includes:
+ *  - Today's UTC date
+ *  - Error count for today (from KV daily counter)
+ *  - Browser report count (from D1 — placeholder)
+ *  - A reminder to review the dashboard
+ */
+export async function handleWeeklyDigest(env: Env): Promise<void> {
+  if (!env.EMAIL_SEND_FROM || !env.EMAIL_SEND_TO) {
+    // Email not configured — skip silently
+    return;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Collect stats
+  let errorCount = 0;
+  if (env.CACHE_KV) {
+    try {
+      const raw = await env.CACHE_KV.get(`errors:count:${today}`);
+      if (raw) {
+        const n = parseInt(raw, 10);
+        if (!isNaN(n)) errorCount = n;
+      }
+    } catch {
+      // non-fatal
+    }
+  }
+
+  const subject = `FamilyDashBoard Weekly Digest — ${today}`;
+  const body = [
+    `FamilyDashBoard Weekly Digest`,
+    `Generated: ${new Date().toISOString()}`,
+    ``,
+    `📊 Stats for ${today}:`,
+    `  • Client errors (KV counter): ${errorCount}`,
+    `  • Browser reports (D1): see /api/reports/digest`,
+    ``,
+    `🔗 Dashboard: https://rajwanyair.github.io/FamilyDashBoard/`,
+    `🔗 Worker: https://fdb.rajwanyair.workers.dev/health`,
+    ``,
+    `-- FamilyDashBoard automated digest`,
+  ].join("\n");
+
+  // Email Workers send_email (ADR-033)
+  // The send_email binding is injected by Cloudflare at runtime.
+  // We cast env to access it without hard-coding the types package.
+  const sendEmail = (env as Record<string, unknown>)["send_email"] as
+    | { send(msg: Record<string, unknown>): Promise<void> }
+    | undefined;
+
+  if (!sendEmail) {
+    // send_email binding not configured — log and skip
+    console.log(`[FDB-digest] send_email binding absent — would have sent:\n${subject}`);
+    return;
+  }
+
+  try {
+    await sendEmail.send({
+      from: env.EMAIL_SEND_FROM,
+      to: [env.EMAIL_SEND_TO],
+      subject,
+      text: body,
+    });
+    console.log(`[FDB-digest] Weekly digest sent to ${env.EMAIL_SEND_TO}`);
+  } catch (err) {
+    console.error("[FDB-digest] Failed to send weekly digest:", err);
+  }
+}
+

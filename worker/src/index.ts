@@ -44,7 +44,7 @@ import {
 import { handleErrors, handleErrorsExport, handleErrorsQueue } from "./routes/errors";
 import { handleMetrics } from "./routes/metrics";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
-import { handleScheduled, handleNextYearPreWarm } from "./routes/cron";
+import { handleScheduled, handleNextYearPreWarm, handleWeeklyDigest } from "./routes/cron";
 import { handleNewsSummarise, handleMotivationHebrew } from "./routes/ai";
 import {
   isRateLimited,
@@ -192,8 +192,15 @@ export default {
   fetch: app.fetch.bind(app),
 
   async scheduled(event: ScheduledEvent, env: Env): Promise<void> {
-    // 23:00 UTC — pre-warm next Hebrew year's holiday list (V12-DATA)
-    if (new Date(event.scheduledTime).getUTCHours() === 23) {
+    const hour = new Date(event.scheduledTime).getUTCHours();
+    const dow = new Date(event.scheduledTime).getUTCDay(); // 0=Sun … 6=Sat
+    // 23:00 UTC Saturday — weekly digest (ADR-033)
+    if (hour === 23 && dow === 6) {
+      await handleWeeklyDigest(env);
+      // Also pre-warm next year on 29 Elul (best-effort — same cron window)
+      await handleNextYearPreWarm(env);
+    } else if (hour === 23) {
+      // 23:00 UTC other days — pre-warm next Hebrew year's holiday list (V12-DATA)
       await handleNextYearPreWarm(env);
     } else {
       await handleScheduled(env);

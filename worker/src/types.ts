@@ -88,6 +88,18 @@ export interface Env {
    * Optional — silently skipped when not configured.
    */
   ERRORS_QUEUE?: WorkersQueue;
+  /**
+   * Email Workers "from" address for the weekly digest (ADR-033).
+   * Set as a Worker environment variable (wrangler.toml [vars] or wrangler secret put).
+   * Optional — weekly digest is skipped when not set.
+   */
+  EMAIL_SEND_FROM?: string;
+  /**
+   * Email Workers "to" address for the weekly digest (ADR-033).
+   * Set as a Worker environment variable (wrangler.toml [vars] or wrangler secret put).
+   * Optional — weekly digest is skipped when not set.
+   */
+  EMAIL_SEND_TO?: string;
 }
 
 /**
