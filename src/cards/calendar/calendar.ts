@@ -2,13 +2,12 @@
  * FamilyDashBoard v7 — Google Calendar ICS Card
  *
  * Fetches up to 3 Google Calendar ICS feeds, parses VEVENT blocks,
- * and renders a 21-day agenda with day headers, category dots, and
- * a 7-day week-strip density bar.
+ * and renders a 7-day weekly tiled grid — one tile per day, each tile lists
+ * that day's events (or a muted placeholder when empty).
  * Refresh: INTERVALS.CALENDAR (15 minutes).
  */
 
 import { scheduleCard } from "../base-card";
-import { trustedHTML } from "../../core/trusted-types";
 import "./calendar.css";
 import { INTERVALS, PROXIES, LS_ICS_URL, MS_PER_DAY, MS_PER_MIN, WORKER_BASE_URL, isWorkerEnabled } from "../../core/constants";
 import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
@@ -20,9 +19,11 @@ import type { CalendarEvent } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
 // ── Constants ──
-const CAL_DAYS_AHEAD = 21;
+const CAL_WEEK_DAYS = 7;
 const CAL_DIRECT_TIMEOUT = 10_000;
 const CAL_PROXY_TIMEOUT = 12_000;
+const CAL_WEEK_DAY_HE = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+const CAL_WEEK_DAY_SHORT_HE = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 
 // Default ICS URL (set at build time; users override via Settings)
 const CAL_ICS_DEFAULT =
@@ -30,25 +31,19 @@ const CAL_ICS_DEFAULT =
 
 // ── DOM cache ──
 interface CalEls {
-  agenda: HTMLElement | null;
-  todayStrip: HTMLElement | null;
+  grid: HTMLElement | null;
   countdown: HTMLElement | null;
-  weekStrip: HTMLElement | null;
 }
 
 let els: CalEls = {
-  agenda: null,
-  todayStrip: null,
+  grid: null,
   countdown: null,
-  weekStrip: null,
 };
 
 export function cacheDom(): void {
   els = {
-    agenda: document.getElementById("cal-agenda"),
-    todayStrip: document.getElementById("cal-today-strip"),
+    grid: document.getElementById("cal-week-grid"),
     countdown: document.getElementById("cal-countdown"),
-    weekStrip: document.getElementById("cal-week-strip"),
   };
 }
 
@@ -145,6 +140,27 @@ export function calDaysUntilLabel(date: Date, now: Date = new Date()): string {
 
 // ── Rendering ──
 
+/** Format an event time range (or "כל היום" for all-day, or single time for zero-duration). */
+function formatEventTime(ev: CalendarEvent): string {
+  if (ev.allDay) return "כל היום";
+  const startStr = ev.start.toLocaleTimeString("he-IL", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jerusalem",
+  });
+  const durMin = Math.round((ev.end.getTime() - ev.start.getTime()) / MS_PER_MIN);
+  if (durMin > 0 && ev.end > ev.start) {
+    const endStr = ev.end.toLocaleTimeString("he-IL", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Jerusalem",
+    });
+    return `${startStr}–${endStr}`;
+  }
+  return startStr;
+}
+
+/** Build the event row element inside a day tile. */
 function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
   const now = Date.now();
   const msTilStart = ev.start.getTime() - now;
@@ -156,46 +172,19 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
 
   const timeEl = document.createElement("div");
   timeEl.className = "cal-event-time";
-  if (ev.allDay) {
-    timeEl.textContent = "כל היום";
-  } else {
-    const startStr = ev.start.toLocaleTimeString("he-IL", {
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "Asia/Jerusalem",
-    });
-    const durMin = Math.round((ev.end.getTime() - ev.start.getTime()) / MS_PER_MIN);
-    if (durMin > 0 && ev.end > ev.start) {
-      const endStr = ev.end.toLocaleTimeString("he-IL", {
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Asia/Jerusalem",
-      });
-      const durStr =
-        durMin >= 60
-          ? `${Math.floor(durMin / 60)}:${String(durMin % 60).padStart(2, "0")}h`
-          : `${durMin}m`;
-      timeEl.textContent = `${startStr}–${endStr} (${durStr})`;
-    } else {
-      timeEl.textContent = startStr;
-    }
-  }
+  timeEl.textContent = formatEventTime(ev);
 
   const titleEl = document.createElement("div");
-  titleEl.style.flex = "1";
-
-  const catRow = document.createElement("div");
-  catRow.style.cssText = "display:flex;align-items:flex-start;gap:2px";
+  titleEl.className = "cal-event-body";
 
   const dot = document.createElement("span");
   dot.className = `cal-dot cal-dot-${ev.category ?? "default"}`;
-  catRow.appendChild(dot);
+  titleEl.appendChild(dot);
 
-  const titleLine = document.createElement("div");
+  const titleLine = document.createElement("span");
   titleLine.className = "cal-event-title";
   titleLine.textContent = ev.summary;
-  catRow.appendChild(titleLine);
-  titleEl.appendChild(catRow);
+  titleEl.appendChild(titleLine);
 
   if (ev.location) {
     const locEl = document.createElement("div");
@@ -225,63 +214,6 @@ function renderCalCountdown(upcoming: CalendarEvent[], now: Date): void {
   els.countdown.style.display = "";
 }
 
-function renderTodayStrip(events: CalendarEvent[]): void {
-  if (!els.todayStrip) return;
-  const now = new Date();
-  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  const todayEvents = events
-    .filter((e) => !e.allDay && e.start >= now && e.start < endOfDay)
-    .sort((a, b) => a.start.getTime() - b.start.getTime())
-    .slice(0, 5);
-
-  els.todayStrip.textContent = "";
-  for (const ev of todayEvents) {
-    const pill = document.createElement("span");
-    pill.className = "cal-strip-event";
-    const t = ev.start.toLocaleTimeString("he-IL", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    pill.textContent = `${t} ${ev.summary}`;
-    if (ev.icsIndex) pill.dataset["ics"] = String(ev.icsIndex);
-    els.todayStrip.appendChild(pill);
-  }
-}
-
-const CAL_WEEK_DAY_HE = ["ש", "א", "ב", "ג", "ד", "ה", "ו"];
-
-function renderWeekStrip(events: CalendarEvent[]): void {
-  if (!els.weekStrip) return;
-  const now = new Date();
-  const rows: string[] = [];
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(now);
-    day.setHours(0, 0, 0, 0);
-    day.setDate(day.getDate() + i);
-    const key = day.toDateString();
-    const count = events.filter((ev) => ev.start?.toDateString() === key).length;
-    const isToday = i === 0;
-    const dots = Array.from({ length: Math.min(count, 4) }, (_, j) => {
-      const color =
-        j === 0
-          ? "var(--accent)"
-          : j === 1
-            ? "var(--positive)"
-            : j === 2
-              ? "var(--warning)"
-              : "#94a3b8";
-      return `<div class="cal-week-dot" style="background:${color}"></div>`;
-    }).join("");
-    const heat = count >= 4 ? " heat-3" : count >= 2 ? " heat-2" : count >= 1 ? " heat-1" : "";
-    rows.push(
-      `<div class="cal-week-day${isToday ? " cal-week-today" : ""}${heat}">` +
-        `<div class="cal-week-label">${CAL_WEEK_DAY_HE[day.getDay()]!}</div>` +
-        `<div class="cal-week-dots">${dots}</div></div>`,
-    );
-  }
-  els.weekStrip.innerHTML = trustedHTML(rows.join(""));
-}
-
 function updateTodayEventCount(events: CalendarEvent[]): void {
   const hdrEl = document.getElementById("header-event-count");
   if (!hdrEl) return;
@@ -293,18 +225,99 @@ function updateTodayEventCount(events: CalendarEvent[]): void {
   hdrEl.style.display = count > 0 ? "" : "none";
 }
 
-export function renderCalendar(events: CalendarEvent[]): number {
-  renderWeekStrip(events);
-  renderTodayStrip(events);
+/**
+ * Group events by local-date key and return an array of CAL_WEEK_DAYS buckets
+ * starting from today midnight. Each bucket is sorted earliest-first.
+ */
+export function groupEventsByDay(
+  events: readonly CalendarEvent[],
+  now: Date = new Date(),
+): { date: Date; events: CalendarEvent[] }[] {
+  const buckets: { date: Date; events: CalendarEvent[] }[] = [];
+  for (let i = 0; i < CAL_WEEK_DAYS; i++) {
+    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+    buckets.push({ date: day, events: [] });
+  }
+  const firstKey = buckets[0]!.date.getTime();
+  const lastKey = buckets[CAL_WEEK_DAYS - 1]!.date.getTime() + MS_PER_DAY;
+  for (const ev of events) {
+    const t = ev.start.getTime();
+    if (t < firstKey || t >= lastKey) continue;
+    const diffDays = Math.floor((t - firstKey) / MS_PER_DAY);
+    const bucket = buckets[diffDays];
+    if (bucket) bucket.events.push(ev);
+  }
+  for (const b of buckets) {
+    b.events.sort((a, b2) => a.start.getTime() - b2.start.getTime());
+  }
+  return buckets;
+}
 
+/** Build a single day tile element. */
+function renderDayTile(
+  date: Date,
+  dayEvents: CalendarEvent[],
+  conflictSet: Set<CalendarEvent>,
+  isToday: boolean,
+): HTMLElement {
+  const tile = document.createElement("div");
+  tile.className = "cal-day-tile" + (isToday ? " is-today" : "");
+  if (dayEvents.length === 0) tile.classList.add("is-empty");
+
+  const hdr = document.createElement("div");
+  hdr.className = "cal-day-tile-hdr";
+
+  const dayName = document.createElement("span");
+  dayName.className = "cal-day-name";
+  dayName.textContent = isToday ? "היום" : (CAL_WEEK_DAY_HE[date.getDay()] ?? CAL_WEEK_DAY_SHORT_HE[date.getDay()] ?? "");
+  hdr.appendChild(dayName);
+
+  const dateLbl = document.createElement("span");
+  dateLbl.className = "cal-day-date";
+  dateLbl.textContent = date.toLocaleDateString("he-IL", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: "Asia/Jerusalem",
+  });
+  hdr.appendChild(dateLbl);
+
+  if (dayEvents.length > 0) {
+    const countBadge = document.createElement("span");
+    countBadge.className = "cal-day-count";
+    countBadge.textContent = String(dayEvents.length);
+    hdr.appendChild(countBadge);
+  }
+  tile.appendChild(hdr);
+
+  const body = document.createElement("div");
+  body.className = "cal-day-tile-body";
+
+  if (dayEvents.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "cal-day-empty";
+    empty.textContent = "—";
+    body.appendChild(empty);
+  } else {
+    for (const ev of dayEvents) {
+      body.appendChild(renderCalEvent(ev, conflictSet.has(ev)));
+    }
+  }
+  tile.appendChild(body);
+
+  return tile;
+}
+
+export function renderCalendar(events: CalendarEvent[]): number {
   const now = new Date();
-  const cutoff = new Date(now.getTime() + CAL_DAYS_AHEAD * MS_PER_DAY);
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // 7-day window
+  const weekEnd = new Date(todayMidnight.getTime() + CAL_WEEK_DAYS * MS_PER_DAY);
   const upcoming = events
-    .filter((e) => e.start >= todayMidnight && e.start <= cutoff)
+    .filter((e) => e.start >= todayMidnight && e.start < weekEnd)
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  // Detect overlapping timed events
+  // Detect overlapping timed events (for conflict indicator)
   const conflictSet = new Set<CalendarEvent>();
   const timed = upcoming.filter((e) => !e.allDay && e.end > e.start);
   for (let i = 0; i < timed.length; i++) {
@@ -315,43 +328,17 @@ export function renderCalendar(events: CalendarEvent[]): number {
     }
   }
 
-  const frag = document.createDocumentFragment();
-  if (!upcoming.length) {
-    const empty = document.createElement("div");
-    empty.className = "cal-empty";
-    empty.textContent = `אין אירועים ב-${CAL_DAYS_AHEAD} הימים הקרובים`;
-    frag.appendChild(empty);
-  } else {
-    let lastDateKey: string | null = null;
-    const todayKey = now.toDateString();
-    for (const ev of upcoming) {
-      const dateKey = ev.start.toDateString();
-      if (dateKey !== lastDateKey) {
-        lastDateKey = dateKey;
-        const hdr = document.createElement("div");
-        hdr.className = "cal-day-header" + (dateKey === todayKey ? " today" : "");
-        const dayHe = ev.start.toLocaleDateString("he-IL", {
-          weekday: "long",
-          timeZone: "Asia/Jerusalem",
-        });
-        const dateFmt = ev.start.toLocaleDateString("he-IL", {
-          day: "2-digit",
-          month: "long",
-          timeZone: "Asia/Jerusalem",
-        });
-        const daysUntil = calDaysUntilLabel(ev.start, now);
-        hdr.textContent = daysUntil
-          ? `${dayHe} · ${dateFmt} · ${daysUntil}`
-          : `${dayHe} · ${dateFmt}`;
-        frag.appendChild(hdr);
-      }
-      frag.appendChild(renderCalEvent(ev, conflictSet.has(ev)));
-    }
-  }
+  const buckets = groupEventsByDay(upcoming, now);
+  const todayKey = now.toDateString();
 
-  if (els.agenda) {
-    els.agenda.textContent = "";
-    els.agenda.appendChild(frag);
+  if (els.grid) {
+    els.grid.textContent = "";
+    const frag = document.createDocumentFragment();
+    for (const bucket of buckets) {
+      const isToday = bucket.date.toDateString() === todayKey;
+      frag.appendChild(renderDayTile(bucket.date, bucket.events, conflictSet, isToday));
+    }
+    els.grid.appendChild(frag);
   }
 
   renderCalCountdown(upcoming, now);

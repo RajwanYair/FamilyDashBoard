@@ -169,10 +169,8 @@ describe("DOM Contract — Hebrew Calendar card", () => {
 // ── Google Calendar card ──
 
 describe("DOM Contract — Calendar card", () => {
-  it("has #cal-agenda", () => expect(hasId("cal-agenda")).toBe(true));
-  it("has #cal-today-strip", () => expect(hasId("cal-today-strip")).toBe(true));
+  it("has #cal-week-grid", () => expect(hasId("cal-week-grid")).toBe(true));
   it("has #cal-countdown", () => expect(hasId("cal-countdown")).toBe(true));
-  it("has #cal-week-strip", () => expect(hasId("cal-week-strip")).toBe(true));
 });
 
 // ── Stocks card ──

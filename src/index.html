@@ -739,12 +739,9 @@
             <section class="card" role="region" data-card-id="calendar" aria-labelledby="card-title-calendar" style="position:relative">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div>
               <div class="cal-wrapper">
-                <!-- F154: Today's upcoming events strip -->
-                <div id="cal-today-strip" class="cal-today-strip"></div>
-                <!-- Feature 63: 7-day event density strip -->
-                <div id="cal-week-strip" class="cal-week-strip"></div>
-                <div class="cal-agenda" id="cal-agenda"><div class="cal-empty">טוען לוח שנה...</div></div>
-                <iframe id="cal-iframe" title="Family Calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FJerusalem&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=rajwan.family%40gmail.com&color=%23039BE5"></iframe>
+                <div class="cal-week-grid" id="cal-week-grid" role="list" aria-live="polite" aria-label="תצוגת שבוע קרוב">
+                  <div class="cal-empty">טוען לוח שנה...</div>
+                </div>
               </div>
             </section>
             <section class="card" role="region" data-card-id="currency" aria-labelledby="card-title-currency">

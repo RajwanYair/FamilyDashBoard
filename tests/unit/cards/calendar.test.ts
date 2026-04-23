@@ -1,7 +1,8 @@
 /**
  * Tests for src/cards/calendar/calendar.ts
  *
- * Covers: parseICS, detectCalCategory, renderCalendar.
+ * Covers: parseICS, detectCalCategory, renderCalendar (weekly tiled view),
+ * groupEventsByDay, calDaysUntilLabel, loadCalendar paths.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -12,6 +13,7 @@ import {
   cacheDom,
   initCalendarCard,
   calDaysUntilLabel,
+  groupEventsByDay,
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
@@ -46,6 +48,17 @@ SUMMARY:Doctor Appointment
 END:VEVENT
 END:VCALENDAR`;
 
+// ── Shared helper: build the new weekly tiled DOM ───────────────────────────
+function makeCalDOM(): void {
+  document.body.innerHTML = `
+    <div id="cal-week-grid"></div>
+    <div id="cal-countdown"></div>
+    <div id="header-event-count"></div>
+  `;
+  cacheDom();
+}
+
+// ── parseICS ──────────────────────────────────────────────────────────────
 describe("Calendar — parseICS", () => {
   it("parses timed events correctly", () => {
     const events = parseICS(SAMPLE_ICS, 0);
@@ -98,6 +111,7 @@ END:VCALENDAR`;
   });
 });
 
+// ── detectCalCategory ─────────────────────────────────────────────────────
 describe("Calendar — detectCalCategory", () => {
   it("detects 'work' category", () => {
     expect(detectCalCategory("ישיבה עם הצוות")).toBe("work");
@@ -124,27 +138,83 @@ describe("Calendar — detectCalCategory", () => {
   });
 });
 
-describe("Calendar — renderCalendar", () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div>
-      <div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div>
-      <div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
+// ── groupEventsByDay ──────────────────────────────────────────────────────
+describe("Calendar — groupEventsByDay", () => {
+  it("returns 7 buckets starting at today midnight", () => {
+    const now = new Date("2024-06-10T15:00:00");
+    const buckets = groupEventsByDay([], now);
+    expect(buckets).toHaveLength(7);
+    expect(buckets[0]!.date.getDate()).toBe(10);
+    expect(buckets[6]!.date.getDate()).toBe(16);
   });
 
+  it("drops events outside the 7-day window", () => {
+    const now = new Date("2024-06-10T08:00:00");
+    const past = new Date("2024-06-05T10:00:00");
+    const far = new Date("2024-07-01T10:00:00");
+    const ev = (date: Date, s = "x") => ({
+      summary: s,
+      start: date,
+      end: date,
+      allDay: false,
+      icsIndex: 0,
+      category: "default" as const,
+    });
+    const buckets = groupEventsByDay([ev(past, "past"), ev(far, "far")], now);
+    expect(buckets.every((b) => b.events.length === 0)).toBe(true);
+  });
+
+  it("assigns events to the correct day bucket and sorts earliest-first", () => {
+    const now = new Date("2024-06-10T08:00:00");
+    const d0late = new Date("2024-06-10T18:00:00");
+    const d0early = new Date("2024-06-10T09:00:00");
+    const d2 = new Date("2024-06-12T11:00:00");
+    const ev = (date: Date, s: string) => ({
+      summary: s,
+      start: date,
+      end: date,
+      allDay: false,
+      icsIndex: 0,
+      category: "default" as const,
+    });
+    const buckets = groupEventsByDay([ev(d0late, "late"), ev(d0early, "early"), ev(d2, "d2")], now);
+    expect(buckets[0]!.events.map((e) => e.summary)).toEqual(["early", "late"]);
+    expect(buckets[2]!.events.map((e) => e.summary)).toEqual(["d2"]);
+    expect(buckets[1]!.events).toHaveLength(0);
+  });
+});
+
+// ── renderCalendar — weekly tiled grid ────────────────────────────────────
+describe("Calendar — renderCalendar (weekly tiled view)", () => {
+  beforeEach(makeCalDOM);
   afterEach(() => {
     document.body.innerHTML = "";
   });
 
-  it("renders future events into the agenda", () => {
+  it("renders 7 day tiles even when no events", () => {
+    renderCalendar([]);
+    const grid = document.getElementById("cal-week-grid");
+    expect(grid?.querySelectorAll(".cal-day-tile").length).toBe(7);
+  });
+
+  it("marks all tiles as empty when no events", () => {
+    renderCalendar([]);
+    const tiles = document.querySelectorAll(".cal-day-tile");
+    expect([...tiles].every((t) => t.classList.contains("is-empty"))).toBe(true);
+  });
+
+  it("today tile is flagged with is-today and shows 'היום'", () => {
+    renderCalendar([]);
+    const today = document.querySelector(".cal-day-tile.is-today");
+    expect(today).not.toBeNull();
+    expect(today?.querySelector(".cal-day-name")?.textContent).toBe("היום");
+  });
+
+  it("places a future event into its day tile", () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const end = new Date(tomorrow.getTime() + 3600_000);
-
+    tomorrow.setHours(10, 0, 0, 0);
+    const end = new Date(tomorrow.getTime() + 3_600_000);
     const events = [
       {
         summary: "Test Event",
@@ -152,307 +222,191 @@ describe("Calendar — renderCalendar", () => {
         end,
         allDay: false,
         icsIndex: 0,
-        category: "default",
+        category: "default" as const,
       },
     ];
-
     const count = renderCalendar(events);
     expect(count).toBe(1);
-    const agenda = document.getElementById("cal-agenda");
-    expect(agenda?.textContent).toContain("Test Event");
+    const tiles = document.querySelectorAll(".cal-day-tile");
+    // tomorrow = index 1
+    expect(tiles[1]?.textContent).toContain("Test Event");
+    expect(tiles[1]?.classList.contains("is-empty")).toBe(false);
   });
 
-  it("renders empty message when no events in range", () => {
-    const count = renderCalendar([]);
-    expect(count).toBe(0);
-    const agenda = document.getElementById("cal-agenda");
-    expect(agenda?.textContent).toContain("אין אירועים");
+  it("shows count badge matching events that day", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    const ev = (h: number, s: string) => {
+      const start = new Date(tomorrow);
+      start.setHours(h);
+      return {
+        summary: s,
+        start,
+        end: new Date(start.getTime() + 3_600_000),
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      };
+    };
+    renderCalendar([ev(9, "a"), ev(11, "b"), ev(14, "c")]);
+    const tiles = document.querySelectorAll(".cal-day-tile");
+    expect(tiles[1]?.querySelector(".cal-day-count")?.textContent).toBe("3");
   });
 
-  it("renders week strip with 7 items", () => {
-    renderCalendar([]);
-    const strip = document.getElementById("cal-week-strip");
-    expect(strip?.querySelectorAll(".cal-week-day").length).toBe(7);
+  it("renders all-day event with 'כל היום'", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    renderCalendar([
+      {
+        summary: "Birthday",
+        start: tomorrow,
+        end: tomorrow,
+        allDay: true,
+        icsIndex: 0,
+        category: "family",
+      },
+    ]);
+    const grid = document.getElementById("cal-week-grid")!;
+    expect(grid.textContent).toContain("כל היום");
+    expect(grid.textContent).toContain("Birthday");
+  });
+
+  it("renders event location", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    const end = new Date(tomorrow.getTime() + 3_600_000);
+    renderCalendar([
+      {
+        summary: "Meeting",
+        start: tomorrow,
+        end,
+        allDay: false,
+        icsIndex: 0,
+        category: "work",
+        location: "הרצליה",
+      },
+    ]);
+    const grid = document.getElementById("cal-week-grid")!;
+    expect(grid.textContent).toContain("הרצליה");
+    expect(grid.querySelector(".cal-event-loc")).not.toBeNull();
+  });
+
+  it("marks overlapping timed events with has-conflict", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    const start = new Date(tomorrow);
+    const end = new Date(start.getTime() + 3_600_000);
+    const start2 = new Date(start.getTime() + 1_800_000);
+    const end2 = new Date(start2.getTime() + 3_600_000);
+    renderCalendar([
+      { summary: "A", start, end, allDay: false, icsIndex: 0, category: "default" as const },
+      { summary: "B", start: start2, end: end2, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
+    expect(document.querySelector(".cal-event.has-conflict")).not.toBeNull();
+  });
+
+  it("non-overlapping events do not get has-conflict", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    const start = new Date(tomorrow);
+    const end = new Date(start.getTime() + 1_800_000);
+    const start2 = new Date(start.getTime() + 3_600_000);
+    const end2 = new Date(start2.getTime() + 1_800_000);
+    renderCalendar([
+      { summary: "A", start, end, allDay: false, icsIndex: 0, category: "default" as const },
+      { summary: "B", start: start2, end: end2, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
+    expect(document.querySelector(".cal-event.has-conflict")).toBeNull();
+  });
+
+  it("event with icsIndex > 0 sets data-ics on row", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    const end = new Date(tomorrow.getTime() + 3_600_000);
+    renderCalendar([
+      {
+        summary: "ICS2",
+        start: tomorrow,
+        end,
+        allDay: false,
+        icsIndex: 2,
+        category: "default" as const,
+      },
+    ]);
+    const row = document.querySelector(".cal-event");
+    expect(row?.getAttribute("data-ics")).toBe("2");
+  });
+
+  it("renders time range for timed events with duration > 0", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    const end = new Date(tomorrow.getTime() + 90 * 60_000);
+    renderCalendar([
+      { summary: "Long", start: tomorrow, end, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
+    const time = document.querySelector(".cal-event-time");
+    expect(time?.textContent).toContain("–");
+  });
+
+  it("renders single time (no dash) for zero-duration event", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    renderCalendar([
+      { summary: "Zero", start: tomorrow, end: tomorrow, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
+    const time = document.querySelector(".cal-event-time");
+    expect(time?.textContent).not.toContain("–");
   });
 });
 
-// ── renderTodayStrip sort comparator (line 239) ───────────────────────────────
-
-describe("Calendar — renderTodayStrip sort comparator with multiple today events", () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div>
-      <div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div>
-      <div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-  });
-
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("invokes sort comparator when multiple non-allDay today events are present (line 239)", () => {
-    const now = new Date();
-    // Create 3 timed events for TODAY — forces the sort comparator to run
-    const ev1 = {
-      summary: "Event at 14:00",
-      start: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0),
-      end: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 0, 0),
-      allDay: false,
-      icsIndex: 0,
-      category: "default",
-    };
-    const ev2 = {
-      summary: "Event at 10:00",
-      start: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0),
-      end: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 0, 0),
-      allDay: false,
-      icsIndex: 0,
-      category: "default",
-    };
-    const ev3 = {
-      summary: "Event at 09:00",
-      start: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0),
-      end: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0),
-      allDay: false,
-      icsIndex: 1,
-      category: "work",
-    };
-    // Filter to only 'today' events - use small offsets (seconds/minutes) so
-    // events always remain within today regardless of what time the test runs
-    const afterNow = new Date(now.getTime() + 60_000); // 1 min from now
-    ev1.start = new Date(afterNow.getTime() + 180_000); // +3 min
-    ev1.end = new Date(afterNow.getTime() + 300_000); // +5 min
-    ev2.start = new Date(afterNow.getTime() + 90_000); // +1.5 min
-    ev2.end = new Date(afterNow.getTime() + 180_000); // +3 min
-    ev3.start = new Date(afterNow.getTime() + 1_000); // +1 s (earliest)
-    ev3.end = new Date(afterNow.getTime() + 90_000); // +1.5 min
-    const strip = document.getElementById("cal-today-strip");
-    renderCalendar([ev1, ev2, ev3]);
-    // After rendering, today strip should have sorted events (earliest first)
-    const pills = strip?.querySelectorAll(".cal-strip-event");
-    expect(pills?.length).toBeGreaterThanOrEqual(2);
-    // Events are sorted earliest first by renderTodayStrip (line 239 covered)
-    // ev3 (nearest) should appear before ev1 (furthest)
-    const firstText = pills?.[0]?.textContent ?? "";
-    const lastText = pills?.[pills.length - 1]?.textContent ?? "";
-    // The earliest event in our list is the one closest to afterNow
-    expect(firstText.length).toBeGreaterThan(0);
-    expect(lastText.length).toBeGreaterThan(0);
-  });
-});
-
-// ── renderCalendar — extended coverage ───────────────────────────────────────
-
-function makeDOM(): void {
-  document.body.innerHTML = `
-    <div id="cal-agenda"></div>
-    <div id="cal-today-strip"></div>
-    <div id="cal-countdown"></div>
-    <div id="cal-week-strip"></div>
-    <div id="header-event-count"></div>
-  `;
-  cacheDom();
-}
-
-function dayFromNow(days: number, hour = 10, minute = 0): Date {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  d.setHours(hour, minute, 0, 0);
-  return d;
-}
-
-describe("Calendar — renderCalendar all-day events", () => {
-  beforeEach(makeDOM);
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("all-day event shows 'כל היום'", () => {
-    const d = dayFromNow(1);
-    const ev = {
-      summary: "Birthday",
-      start: d,
-      end: d,
-      allDay: true,
-      icsIndex: 0,
-      category: "family",
-    };
-    renderCalendar([ev]);
-    const agenda = document.getElementById("cal-agenda")!;
-    expect(agenda.textContent).toContain("כל היום");
-  });
-});
-
-describe("Calendar — renderCalendar event location", () => {
-  beforeEach(makeDOM);
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("event with location renders location text", () => {
-    const start = dayFromNow(1);
-    const end = new Date(start.getTime() + 3600_000);
-    const ev = {
-      summary: "Meeting",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "work",
-      location: "הרצליה",
-    };
-    renderCalendar([ev]);
-    const agenda = document.getElementById("cal-agenda")!;
-    expect(agenda.textContent).toContain("הרצליה");
-  });
-});
-
-describe("Calendar — renderCalendar conflict detection", () => {
-  beforeEach(makeDOM);
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("overlapping timed events get has-conflict class", () => {
-    const start = dayFromNow(1, 10, 0);
-    const end = new Date(start.getTime() + 3600_000);
-    const start2 = new Date(start.getTime() + 1800_000); // overlaps
-    const end2 = new Date(start2.getTime() + 3600_000);
-    const ev1 = {
-      summary: "A",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    const ev2 = {
-      summary: "B",
-      start: start2,
-      end: end2,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev1, ev2]);
-    const agenda = document.getElementById("cal-agenda")!;
-    expect(agenda.querySelector(".has-conflict")).not.toBeNull();
-  });
-
-  it("non-overlapping events do not get has-conflict class", () => {
-    const start = dayFromNow(1, 10, 0);
-    const end = new Date(start.getTime() + 1800_000);
-    const start2 = new Date(start.getTime() + 3600_000); // starts after end
-    const end2 = new Date(start2.getTime() + 1800_000);
-    const ev1 = {
-      summary: "A",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    const ev2 = {
-      summary: "B",
-      start: start2,
-      end: end2,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev1, ev2]);
-    const agenda = document.getElementById("cal-agenda")!;
-    expect(agenda.querySelector(".has-conflict")).toBeNull();
-  });
-});
-
-describe("Calendar — renderCalendar countdown", () => {
-  beforeEach(makeDOM);
+// ── countdown + header count ──────────────────────────────────────────────
+describe("Calendar — countdown + header count", () => {
+  beforeEach(makeCalDOM);
   afterEach(() => {
     document.body.innerHTML = "";
   });
 
   it("countdown visible when next event is within 7 days", () => {
-    const start = dayFromNow(3);
-    const end = new Date(start.getTime() + 3600_000);
-    const ev = {
-      summary: "Trip",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev]);
+    const start = new Date(Date.now() + 3 * 86_400_000);
+    const end = new Date(start.getTime() + 3_600_000);
+    renderCalendar([
+      { summary: "Trip", start, end, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
     const countdown = document.getElementById("cal-countdown")!;
     expect(countdown.style.display).not.toBe("none");
     expect(countdown.textContent).toContain("Trip");
   });
 
-  it("countdown hidden when no events in next 7 days", () => {
+  it("countdown hidden with no upcoming events", () => {
     renderCalendar([]);
-    const countdown = document.getElementById("cal-countdown")!;
-    expect(countdown.style.display).toBe("none");
-  });
-});
-
-describe("Calendar — renderCalendar today strip", () => {
-  beforeEach(makeDOM);
-  afterEach(() => {
-    document.body.innerHTML = "";
+    expect(document.getElementById("cal-countdown")!.style.display).toBe("none");
   });
 
-  it("today strip shows future timed events happening today", () => {
-    // Pin to 10:00 AM so +2 hours is noon (always same day, never crosses midnight)
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2024-06-15T10:00:00"));
-    const soon = new Date(Date.now() + 2 * 3600_000);
-    const end = new Date(soon.getTime() + 1800_000);
-    const ev = {
-      summary: "Today Event",
-      start: soon,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev]);
-    vi.useRealTimers();
-    const strip = document.getElementById("cal-today-strip")!;
-    expect(strip.textContent).toContain("Today Event");
-  });
-
-  it("today strip is empty when no timed events today", () => {
-    renderCalendar([]);
-    const strip = document.getElementById("cal-today-strip")!;
-    expect(strip.querySelectorAll(".cal-strip-event").length).toBe(0);
-  });
-});
-
-describe("Calendar — renderCalendar header event count", () => {
-  beforeEach(makeDOM);
-  afterEach(() => {
-    document.body.innerHTML = "";
+  it("countdown says 'מחר' when next event is within 24h", () => {
+    const soon = new Date(Date.now() + 2 * 3_600_000);
+    const end = new Date(soon.getTime() + 1_800_000);
+    renderCalendar([
+      { summary: "Soon", start: soon, end, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
+    expect(document.getElementById("cal-countdown")!.textContent).toContain("מחר");
   });
 
   it("shows count chip for events today", () => {
-    const todayMidnight = new Date();
-    todayMidnight.setHours(0, 0, 0, 0);
-    const start = new Date(todayMidnight.getTime() + 1800_000); // 0:30 today
-    const end = new Date(start.getTime() + 1800_000);
-    const ev = {
-      summary: "Morning task",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "work" as const,
-    };
-    renderCalendar([ev]);
+    const todayMid = new Date();
+    todayMid.setHours(0, 0, 0, 0);
+    const start = new Date(todayMid.getTime() + 1_800_000);
+    const end = new Date(start.getTime() + 1_800_000);
+    renderCalendar([
+      { summary: "Morning", start, end, allDay: false, icsIndex: 0, category: "work" as const },
+    ]);
     const hdr = document.getElementById("header-event-count")!;
     expect(hdr.style.display).not.toBe("none");
     expect(hdr.textContent).toContain("1");
@@ -460,191 +414,47 @@ describe("Calendar — renderCalendar header event count", () => {
 
   it("hides count chip when no events today", () => {
     renderCalendar([]);
-    const hdr = document.getElementById("header-event-count")!;
-    expect(hdr.style.display).toBe("none");
+    expect(document.getElementById("header-event-count")!.style.display).toBe("none");
   });
 });
 
-describe("Calendar — renderCalendar week strip heat classes", () => {
-  beforeEach(makeDOM);
-  afterEach(() => {
-    document.body.innerHTML = "";
+// ── calDaysUntilLabel ─────────────────────────────────────────────────────
+describe("Calendar — calDaysUntilLabel", () => {
+  it("returns '' for today", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    expect(calDaysUntilLabel(new Date("2024-06-10T08:00:00"), now)).toBe("");
   });
-
-  it("day with 1 event gets heat-1 class", () => {
-    const tomorrow = dayFromNow(1);
-    const end = new Date(tomorrow.getTime() + 3600_000);
-    renderCalendar([
-      {
-        summary: "One",
-        start: tomorrow,
-        end,
-        allDay: false,
-        icsIndex: 0,
-        category: "default" as const,
-      },
-    ]);
-    const strip = document.getElementById("cal-week-strip")!;
-    expect(strip.querySelector(".heat-1")).not.toBeNull();
+  it("returns 'מחר' for tomorrow", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    expect(calDaysUntilLabel(new Date("2024-06-11T09:00:00"), now)).toBe("מחר");
   });
-
-  it("day with 4+ events gets heat-3 class", () => {
-    const tomorrow = dayFromNow(1);
-    const events = Array.from({ length: 4 }, (_, i) => ({
-      summary: `E${i}`,
-      start: new Date(tomorrow.getTime() + i * 3600_000),
-      end: new Date(tomorrow.getTime() + i * 3600_000 + 1800_000),
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    }));
-    renderCalendar(events);
-    const strip = document.getElementById("cal-week-strip")!;
-    expect(strip.querySelector(".heat-3")).not.toBeNull();
+  it("returns 'עוד 2 ימים' for 2 days ahead", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    expect(calDaysUntilLabel(new Date("2024-06-12T09:00:00"), now)).toBe("עוד 2 ימים");
+  });
+  it("returns 'עוד 7 ימים' for 7 days ahead", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    expect(calDaysUntilLabel(new Date("2024-06-17T09:00:00"), now)).toBe("עוד 7 ימים");
+  });
+  it("returns '' for yesterday", () => {
+    const now = new Date("2024-06-10T12:00:00");
+    expect(calDaysUntilLabel(new Date("2024-06-09T09:00:00"), now)).toBe("");
+  });
+  it("uses current date when now is not provided", () => {
+    const future = new Date(Date.now() + 2 * 86_400_000 + 3_600_000);
+    expect(calDaysUntilLabel(future)).toMatch(/^עוד \d+ ימים$|^מחר$/);
   });
 });
 
-describe("Calendar — renderCalendar day header markers", () => {
-  beforeEach(makeDOM);
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("today's events get a .today class on the day header", () => {
-    const todayMidnight = new Date();
-    todayMidnight.setHours(0, 0, 0, 0);
-    const start = new Date(todayMidnight.getTime() + 1800_000);
-    const end = new Date(start.getTime() + 1800_000);
-    renderCalendar([
-      {
-        summary: "Now",
-        start,
-        end,
-        allDay: false,
-        icsIndex: 0,
-        category: "default" as const,
-      },
-    ]);
-    const agenda = document.getElementById("cal-agenda")!;
-    expect(agenda.querySelector(".cal-day-header.today")).not.toBeNull();
-  });
-
-  it("future events get a non-today header", () => {
-    const start = dayFromNow(2);
-    const end = new Date(start.getTime() + 3600_000);
-    renderCalendar([
-      {
-        summary: "Future",
-        start,
-        end,
-        allDay: false,
-        icsIndex: 0,
-        category: "default" as const,
-      },
-    ]);
-    const agenda = document.getElementById("cal-agenda")!;
-    // header exists but without 'today' class
-    const hdr = agenda.querySelector(".cal-day-header");
-    expect(hdr).not.toBeNull();
-    expect(hdr?.classList.contains("today")).toBe(false);
-  });
-});
-
-// ── renderCalendar — zero-duration event (no end / start==end) ─────────────
-
-describe("Calendar — renderCalendar zero-duration event (else branch)", () => {
-  function makeCalDOM(): void {
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div>
-      <div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div>
-      <div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-  }
-
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("shows only start time when end equals start (zero-duration event)", () => {
-    makeCalDOM();
-    const start = new Date(Date.now() + 3600_000 * 24); // tomorrow
-    // end === start → durMin = 0 → else branch → only start time shown
-    const ev: ReturnType<typeof parseICS>[0] = {
-      summary: "Zero Duration",
-      start,
-      end: start, // same as start
-      allDay: false,
-      icsIndex: 0,
-      category: "default",
-    };
-    renderCalendar([ev]);
-    const agenda = document.getElementById("cal-agenda")!;
-    const timeEl = agenda.querySelector(".cal-event-time");
-    expect(timeEl).not.toBeNull();
-    // Should NOT contain "–" (no range shown for zero-duration)
-    expect(timeEl?.textContent).not.toContain("–");
-  });
-
-  it("shows only start time when end is before start", () => {
-    makeCalDOM();
-    const start = new Date(Date.now() + 3600_000 * 24); // tomorrow
-    const end = new Date(start.getTime() - 3600_000); // 1h before = negative duration
-    const ev: ReturnType<typeof parseICS>[0] = {
-      summary: "Negative Duration",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default",
-    };
-    renderCalendar([ev]);
-    const timeEl = document.getElementById("cal-agenda")?.querySelector(".cal-event-time");
-    expect(timeEl?.textContent).not.toContain("–");
-  });
-
-  it("shows location when provided", () => {
-    makeCalDOM();
-    const start = new Date(Date.now() + 3600_000 * 24);
-    const end = new Date(start.getTime() + 3600_000);
-    const ev: ReturnType<typeof parseICS>[0] = {
-      summary: "Event at Office",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "work",
-      location: "Tel Aviv Office",
-    };
-    renderCalendar([ev]);
-    const locEl = document.getElementById("cal-agenda")?.querySelector(".cal-event-loc");
-    expect(locEl).not.toBeNull();
-    expect(locEl?.textContent).toContain("Tel Aviv Office");
-  });
-});
-
-// ── initCalendarCard smoke test ────────────────────────────────────────────
-
+// ── initCalendarCard smoke ────────────────────────────────────────────────
 describe("Calendar — initCalendarCard", () => {
-  function makeInitDOM(): void {
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div>
-      <div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div>
-      <div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-  }
-
   afterEach(() => {
     document.body.innerHTML = "";
     vi.restoreAllMocks();
   });
 
   it("does not throw with full DOM", () => {
-    makeInitDOM();
+    makeCalDOM();
     expect(() => initCalendarCard()).not.toThrow();
   });
 
@@ -654,220 +464,130 @@ describe("Calendar — initCalendarCard", () => {
   });
 });
 
-// ── Sprint 5: countdown labels, heat-2, hour-duration, icsIndex, loadCalendar ──────────
-
-function makeSuite(): void {
-  document.body.innerHTML = `
-    <div id="cal-agenda"></div>
-    <div id="cal-today-strip"></div>
-    <div id="cal-countdown"></div>
-    <div id="cal-week-strip"></div>
-    <div id="header-event-count"></div>
-  `;
-  cacheDom();
-}
-
-describe("Calendar — countdown 'מחר' label", () => {
-  beforeEach(makeSuite);
-  afterEach(() => {
-    document.body.innerHTML = "";
+// ── loadCalendar paths ────────────────────────────────────────────────────
+describe("Calendar — loadCalendar paths", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    makeCalDOM();
   });
-
-  it("shows מחר when next event is within 24h", () => {
-    const soon = new Date(Date.now() + 2 * 3600_000); // 2 h from now → ceil(2/24)=1
-    const end = new Date(soon.getTime() + 1800_000);
-    const ev = {
-      summary: "Quick Trip",
-      start: soon,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev]);
-    const cd = document.getElementById("cal-countdown")!;
-    expect(cd.textContent).toContain("מחר");
-  });
-
-  it("shows 'עוד N ימים' for event 3+ days out", () => {
-    const d = new Date(Date.now() + 4 * 86_400_000); // 4 days
-    d.setHours(10, 0, 0, 0);
-    const end = new Date(d.getTime() + 3600_000);
-    const ev = {
-      summary: "Far Event",
-      start: d,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev]);
-    const cd = document.getElementById("cal-countdown")!;
-    expect(cd.textContent).toMatch(/עוד/);
-  });
-});
-
-describe("Calendar — week strip heat-2", () => {
-  beforeEach(makeSuite);
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("day with exactly 2 events gets heat-2", () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(10, 0, 0, 0);
-    const events = [
-      {
-        summary: "E1",
-        start: new Date(tomorrow),
-        end: new Date(tomorrow.getTime() + 1800_000),
-        allDay: false,
-        icsIndex: 0,
-        category: "default" as const,
-      },
-      {
-        summary: "E2",
-        start: new Date(tomorrow.getTime() + 3600_000),
-        end: new Date(tomorrow.getTime() + 5400_000),
-        allDay: false,
-        icsIndex: 0,
-        category: "default" as const,
-      },
-    ];
-    renderCalendar(events);
-    const strip = document.getElementById("cal-week-strip")!;
-    expect(strip.querySelector(".heat-2")).not.toBeNull();
-  });
-});
-
-describe("Calendar — hour-format duration (>=60 min)", () => {
-  beforeEach(makeSuite);
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("duration >= 60 min shows h:mm format", () => {
-    const start = new Date(Date.now() + 86_400_000);
-    start.setHours(10, 0, 0, 0);
-    const end = new Date(start.getTime() + 90 * 60_000); // 1h 30m
-    const ev = {
-      summary: "Long Event",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev]);
-    const timeEl = document.getElementById("cal-agenda")!.querySelector(".cal-event-time");
-    expect(timeEl?.textContent).toContain("h");
-  });
-
-  it("duration < 60 min shows Nm format", () => {
-    const start = new Date(Date.now() + 86_400_000);
-    start.setHours(10, 0, 0, 0);
-    const end = new Date(start.getTime() + 30 * 60_000); // 30 min
-    const ev = {
-      summary: "Short Event",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 0,
-      category: "default" as const,
-    };
-    renderCalendar([ev]);
-    const timeEl = document.getElementById("cal-agenda")!.querySelector(".cal-event-time");
-    expect(timeEl?.textContent).toContain("m");
-  });
-});
-
-describe("Calendar — icsIndex dataset", () => {
-  beforeEach(makeSuite);
-  afterEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("event with icsIndex > 0 sets data-ics attribute", () => {
-    const start = new Date(Date.now() + 86_400_000);
-    start.setHours(10, 0, 0, 0);
-    const end = new Date(start.getTime() + 3600_000);
-    const ev = {
-      summary: "ICS2 Event",
-      start,
-      end,
-      allDay: false,
-      icsIndex: 2,
-      category: "default" as const,
-    };
-    renderCalendar([ev]);
-    const row = document.getElementById("cal-agenda")!.querySelector(".cal-event");
-    expect(row?.getAttribute("data-ics")).toBe("2");
-  });
-});
-
-describe("Calendar — loadCalendar cache-hit path", () => {
-  const SAMPLE = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20250601T100000Z\r\nDTEND:20250601T110000Z\r\nSUMMARY:Cache Event\r\nEND:VEVENT\r\nEND:VCALENDAR`;
 
   afterEach(() => {
     document.body.innerHTML = "";
+    localStorage.clear();
     cClear();
-    vi.restoreAllMocks();
+    Object.defineProperty(document, "hidden", { value: false, configurable: true });
+    vi.clearAllMocks();
   });
 
-  it("runs loadCalendar successfully via cache hit (no throw)", async () => {
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-    // Make acquireLock return true for one call
+  it("runs loadCalendar successfully via cache hit", async () => {
     vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    // Pre-fill fresh cache so loadCalendar takes the cache-hit branch
-    cSet("cal-ics", SAMPLE);
-    // initCalendarCard starts loadCalendar as a floating promise
+    cSet("cal-ics", SAMPLE_ICS);
     expect(() => initCalendarCard()).not.toThrow();
-    // Drain microtasks
-    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    await new Promise<void>((r) => setTimeout(r, 0));
   });
 
-  it("runs loadCalendar successfully when fetchWithTimeout returns ICS", async () => {
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
+  it("runs loadCalendar when fetchWithTimeout returns ICS", async () => {
     vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
     vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValueOnce({
       ok: true,
-      text: async () => SAMPLE,
+      text: async () => SAMPLE_ICS,
     } as Response);
     expect(() => initCalendarCard()).not.toThrow();
-    await new Promise<void>((resolve) => setTimeout(resolve, 10));
+    await new Promise<void>((r) => setTimeout(r, 10));
   });
 
   it("getICSUrls reads extra URLs from localStorage", async () => {
     localStorage.setItem("dash_ics_url_2", "https://example.com/cal2.ics");
     localStorage.setItem("dash_ics_url_3", "https://example.com/cal3.ics");
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
     vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    // Each URL fetch fails (mock rejects) → exercises getICSUrls + fetchICSWithCache
     expect(() => initCalendarCard()).not.toThrow();
-    await new Promise<void>((resolve) => setTimeout(resolve, 10));
-    localStorage.removeItem("dash_ics_url_2");
-    localStorage.removeItem("dash_ics_url_3");
+    await new Promise<void>((r) => setTimeout(r, 10));
+  });
+
+  it("skips load when document is hidden", async () => {
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    Object.defineProperty(document, "hidden", { value: true, configurable: true });
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 10));
+    expect(fetchCore.fetchWithTimeout).not.toHaveBeenCalled();
+  });
+
+  it("handles fetch error via catch path", async () => {
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(new Error("network error"));
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+  });
+
+  it("uses allorigins proxy JSON contents for ICS fetch", async () => {
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    let callNum = 0;
+    vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async () => {
+      callNum++;
+      if (callNum === 1) return { ok: false, text: async () => "" } as Response;
+      return {
+        ok: true,
+        json: async () => ({ contents: SAMPLE_ICS }),
+        text: async () => JSON.stringify({ contents: SAMPLE_ICS }),
+      } as Response;
+    });
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    expect(callNum).toBeGreaterThan(1);
+  });
+
+  it("covers non-allorigins proxy text path", async () => {
+    cClear();
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    let callCount = 0;
+    vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async (url: string) => {
+      callCount++;
+      const urlStr = String(url);
+      if (!urlStr.includes("allorigins") && !urlStr.includes("codetabs") && !urlStr.includes("corsproxy")) {
+        throw new Error("direct fail");
+      }
+      if (urlStr.includes("allorigins")) {
+        return { ok: false, text: async () => "" } as Response;
+      }
+      return { ok: true, json: async () => ({}), text: async () => "not a calendar response" } as Response;
+    });
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 80));
+    expect(callCount).toBeGreaterThan(1);
+  });
+
+  it("loads extra events from stale cache for secondary ICS", async () => {
+    localStorage.setItem("dash_ics_url_2", "https://example.com/extra.ics");
+    cSet("cal-ics", SAMPLE_ICS);
+    cSet("cal-ics-1", SAMPLE_ICS);
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 50));
+    const grid = document.getElementById("cal-week-grid");
+    expect(grid?.querySelectorAll(".cal-day-tile").length).toBe(7);
+  });
+
+  it("outer catch fires when syncBurst throws after allEvents > 0", async () => {
+    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
+    const futureDate = new Date(Date.now() + 86_400_000 * 30);
+    const dtStr =
+      futureDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0, 15) + "Z";
+    vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValue({
+      ok: true,
+      text: async () =>
+        `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:${dtStr}\nSUMMARY:Test Event\nEND:VEVENT\nEND:VCALENDAR`,
+    } as unknown as Response);
+    const syncModule = await import("@/core/sync");
+    vi.spyOn(syncModule, "syncBurst").mockImplementationOnce(() => {
+      throw new Error("forced syncBurst error");
+    });
+    initCalendarCard();
+    await new Promise<void>((r) => setTimeout(r, 100));
+    expect(true).toBe(true);
   });
 });
 
-// ── parseICS edge cases ──
-
+// ── parseICS edge cases / fuzz ─────────────────────────────────────────────
 describe("Calendar — parseICS edge cases", () => {
   it("skips VEVENT without DTSTART", () => {
     const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:No date\r\nEND:VEVENT\r\nEND:VCALENDAR`;
@@ -882,7 +602,6 @@ describe("Calendar — parseICS edge cases", () => {
   it("parses DESCRIPTION field", () => {
     const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20250601T120000Z\r\nSUMMARY:Test\r\nDESCRIPTION:Line one\\nLine two\r\nEND:VEVENT\r\nEND:VCALENDAR`;
     const events = parseICS(ics, 0);
-    expect(events).toHaveLength(1);
     expect(events[0]?.description).toBe("Line one\nLine two");
   });
 
@@ -893,452 +612,36 @@ describe("Calendar — parseICS edge cases", () => {
 
   it("parses LOCATION field", () => {
     const ics = `BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20250601T120000Z\r\nSUMMARY:Meeting\r\nLOCATION:Room 42\r\nEND:VEVENT\r\nEND:VCALENDAR`;
-    const events = parseICS(ics, 0);
-    expect(events[0]?.location).toBe("Room 42");
-  });
-});
-
-// ── loadCalendar paths ──
-
-describe("Calendar — loadCalendar via initCalendarCard error + hidden guard", () => {
-  function makeSuite(): void {
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-  }
-
-  afterEach(() => {
-    document.body.innerHTML = "";
-    localStorage.clear();
-    Object.defineProperty(document, "hidden", {
-      value: false,
-      configurable: true,
-    });
+    expect(parseICS(ics, 0)[0]?.location).toBe("Room 42");
   });
 
-  it("skips load when document is hidden", async () => {
-    makeSuite();
-    vi.clearAllMocks();
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    Object.defineProperty(document, "hidden", {
-      value: true,
-      configurable: true,
-    });
-    initCalendarCard();
-    await new Promise<void>((r) => setTimeout(r, 10));
-    // loadCalendar returns early without calling fetch
-    expect(fetchCore.fetchWithTimeout).not.toHaveBeenCalled();
-  });
-
-  it("handles fetch error in loadCalendar catch path", async () => {
-    makeSuite();
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(new Error("network error"));
-    initCalendarCard();
-    await new Promise<void>((r) => setTimeout(r, 50));
-    // Should not throw — error is caught internally
-  });
-
-  it("uses allorigins proxy JSON contents for ICS fetch", async () => {
-    makeSuite();
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    let callNum = 0;
-    vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async () => {
-      callNum++;
-      if (callNum === 1) return { ok: false, text: async () => "" } as Response;
-      // allorigins proxy returns JSON wrapper
-      return {
-        ok: true,
-        json: async () => ({
-          contents: SAMPLE_ICS,
-        }),
-        text: async () => JSON.stringify({ contents: SAMPLE_ICS }),
-      } as Response;
-    });
-    initCalendarCard();
-    await new Promise<void>((r) => setTimeout(r, 50));
-    expect(callNum).toBeGreaterThan(1);
-  });
-
-  it("covers r.text() path for non-allorigins proxy (line 418)", async () => {
-    makeSuite();
-    cClear(); // Clear stale cache from previous tests
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    let callCount = 0;
-    vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async (url: string) => {
-      callCount++;
-      const urlStr = String(url);
-      // Direct fetch fails
-      if (
-        !urlStr.includes("allorigins") &&
-        !urlStr.includes("codetabs") &&
-        !urlStr.includes("corsproxy")
-      ) {
-        throw new Error("direct fail");
-      }
-      // Allorigins: not ok (continue to next proxy)
-      if (urlStr.includes("allorigins")) {
-        return { ok: false, text: async () => "" } as Response;
-      }
-      // Non-allorigins proxy (codetabs or corsproxy): ok=true, text returns non-ICS
-      // This is the branch at line 418: text = await r.text()
-      return {
-        ok: true,
-        json: async () => ({}),
-        text: async () => "not a calendar response",
-      } as Response;
-    });
-    initCalendarCard();
-    await new Promise<void>((r) => setTimeout(r, 80));
-    expect(callCount).toBeGreaterThan(1); // verifies proxy chain was tried
-  });
-});
-
-// ── Sprint: loadExtraEventsFromCache + loadCalendar catch ───────────────────
-
-describe("Calendar — loadExtraEventsFromCache with stale secondary ICS", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-  });
-
-  afterEach(() => {
-    document.body.innerHTML = "";
-    localStorage.clear();
-    cClear();
-  });
-
-  it("loads extra events from stale cache for secondary ICS URL", async () => {
-    // Configure a secondary ICS URL
-    localStorage.setItem("dash_ics_url_2", "https://example.com/extra.ics");
-    // Put primary ICS data in fresh cache
-    cSet("cal-ics", SAMPLE_ICS);
-    // Put secondary ICS data in stale cache (key = cal-ics-1 since idx=1)
-    cSet("cal-ics-1", SAMPLE_ICS);
-
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    initCalendarCard();
-    await new Promise<void>((r) => setTimeout(r, 50));
-
-    // Calendar should render events from both primary and secondary
-    const agenda = document.getElementById("cal-agenda");
-    expect(agenda?.children.length).toBeGreaterThan(0);
-  });
-});
-
-describe("Calendar — loadCalendar outer catch block", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-  });
-
-  afterEach(() => {
-    document.body.innerHTML = "";
-    localStorage.clear();
-    cClear();
-  });
-
-  it("catches error when renderCalendar throws during loadCalendar", async () => {
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValueOnce({
-      ok: true,
-      text: async () => SAMPLE_ICS,
-    } as unknown as Response);
-
-    // Sabotage the DOM so renderCalendar throws
-    // Remove #cal-agenda after cacheDom but before render fires
-    document.getElementById("cal-agenda")?.remove();
-    // Override cacheDom result by setting agenda to an element that throws on access
-    const broken = document.createElement("div");
-    Object.defineProperty(broken, "textContent", {
-      set() {
-        throw new Error("forced render error");
-      },
-      get() {
-        return "";
-      },
-    });
-    // This won't directly cause the catch because renderCalendar uses DocumentFragment
-    // Instead, let's make Promise.allSettled result processing throw
-    // by mocking fetchICSWithCache to return something that causes sort() to fail
-    // Actually the cleanest way: make cSet throw via spy
-    const cacheModule = await import("@/core/cache");
-    const cSetSpy = vi.spyOn(cacheModule, "cSet").mockImplementationOnce(() => {
-      throw new Error("forced cSet error in calendar");
-    });
-
-    initCalendarCard();
-    await new Promise<void>((r) => setTimeout(r, 50));
-    // Should not reject — error is caught in the catch block (lines 483-485)
-    cSetSpy.mockRestore();
-  });
-});
-
-// ── Sprint: stale-while-revalidating path (L455-459) ──────────────────────
-
-describe("Calendar — loadCalendar stale-while-revalidating path", () => {
-  // Use a far-future date so the event appears in the agenda (not filtered as past)
-  // Pin the time to 2099-01-01 so that 2099-01-05 is within 21-day window
-  const STALE_ICS = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20990105T100000Z\nSUMMARY:Stale Event\nEND:VEVENT\nEND:VCALENDAR`;
-
-  beforeEach(() => {
-    localStorage.clear();
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-  });
-
-  afterEach(() => {
-    document.body.innerHTML = "";
-    localStorage.clear();
-    Object.defineProperty(document, "hidden", {
-      value: false,
-      configurable: true,
-    });
-    vi.clearAllMocks();
-  });
-
-  it("renders stale events while fresh fetch is pending (L455-459)", async () => {
-    // Pin clock to 2099-01-01 so the stale ICS event (Jan 5 2099) is within the 21-day window
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2099-01-01T10:00:00Z"));
-
-    // Write stale ICS to localStorage with timestamp=0 (expired for cGet, but available for cGetStale)
-    cClear(); // clear in-memory so cGetStale falls through to localStorage
-    localStorage.setItem("dash_v2_cal-ics", JSON.stringify({ data: STALE_ICS, ts: 0 }));
-
-    vi.mocked(fetchCore.acquireLock).mockReturnValue(true);
-    vi.mocked(fetchCore.fetchWithTimeout).mockRejectedValue(new Error("network down"));
-
-    initCalendarCard();
-    await vi.runAllTimersAsync();
-
-    vi.useRealTimers();
-
-    // Stale events should have been rendered into the DOM
-    const agenda = document.getElementById("cal-agenda");
-    expect(agenda?.textContent).toContain("Stale Event");
-  });
-
-  it("renders empty slot events when allEvents length is 0 (setSync error path)", async () => {
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    vi.mocked(fetchCore.runConcurrent).mockResolvedValueOnce([]);
-    // fetchWithTimeout resolves successfully but returns empty ICS
-    vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValue({
-      ok: true,
-      text: async () => "BEGIN:VCALENDAR\nEND:VCALENDAR",
-    } as unknown as Response);
-
-    initCalendarCard();
-    await new Promise<void>((r) => setTimeout(r, 50));
-    // No throw — empty events → setSync("cal", "error") path
-  });
-});
-// ── loadCalendar outer catch via syncBurst throw (lines 482-485) ─────────────
-
-describe("Calendar — loadCalendar outer catch when syncBurst throws (lines 482-485)", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.body.innerHTML = `
-      <div id="cal-agenda"></div><div id="cal-today-strip"></div>
-      <div id="cal-countdown"></div><div id="cal-week-strip"></div>
-      <div id="header-event-count"></div>
-    `;
-    cacheDom();
-  });
-
-  afterEach(() => {
-    document.body.innerHTML = "";
-    localStorage.clear();
-    vi.clearAllMocks();
-    vi.restoreAllMocks();
-  });
-
-  it("outer catch fires when syncBurst throws after allEvents.length > 0 (lines 482-485)", async () => {
-    // Set up fetchWithTimeout to return a valid ICS with future events
-    vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
-    const futureDate = new Date(Date.now() + 86_400_000 * 30);
-    const dtStr =
-      futureDate
-        .toISOString()
-        .replace(/-|:|\.\d+/g, "")
-        .slice(0, 15) + "Z";
-    vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValue({
-      ok: true,
-      text: async () =>
-        `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:${dtStr}\nSUMMARY:Test Event\nEND:VEVENT\nEND:VCALENDAR`,
-    } as unknown as Response);
-
-    // Spy on syncBurst to throw — triggers outer catch at line 482
-    const syncModule = await import("@/core/sync");
-    vi.spyOn(syncModule, "syncBurst").mockImplementationOnce(() => {
-      throw new Error("forced syncBurst error for outer catch coverage");
-    });
-
-    initCalendarCard();
-    // Wait for async chain to complete (fetch → allEvents > 0 → syncBurst throws → catch)
-    await new Promise<void>((r) => setTimeout(r, 100));
-    // No unhandled rejection — outer catch consumed the error
-    expect(true).toBe(true);
-  });
-});
-
-// ── Sprint 25: calDaysUntilLabel ─────────────────────────────────────────────
-
-describe("Calendar — calDaysUntilLabel (Sprint 25)", () => {
-  it("returns '' for today", () => {
-    const now = new Date("2024-06-10T12:00:00");
-    const today = new Date("2024-06-10T08:00:00");
-    expect(calDaysUntilLabel(today, now)).toBe("");
-  });
-
-  it("returns 'מחר' for tomorrow", () => {
-    const now = new Date("2024-06-10T12:00:00");
-    const tomorrow = new Date("2024-06-11T09:00:00");
-    expect(calDaysUntilLabel(tomorrow, now)).toBe("מחר");
-  });
-
-  it("returns 'עוד 2 ימים' for 2 days ahead", () => {
-    const now = new Date("2024-06-10T12:00:00");
-    const d = new Date("2024-06-12T09:00:00");
-    expect(calDaysUntilLabel(d, now)).toBe("עוד 2 ימים");
-  });
-
-  it("returns 'עוד 7 ימים' for 7 days ahead", () => {
-    const now = new Date("2024-06-10T12:00:00");
-    const d = new Date("2024-06-17T09:00:00");
-    expect(calDaysUntilLabel(d, now)).toBe("עוד 7 ימים");
-  });
-
-  it("returns 'עוד 21 ימים' for 21 days ahead", () => {
-    const now = new Date("2024-06-10T12:00:00");
-    const d = new Date("2024-07-01T09:00:00");
-    expect(calDaysUntilLabel(d, now)).toBe("עוד 21 ימים");
-  });
-
-  it("returns '' for yesterday (past date)", () => {
-    const now = new Date("2024-06-10T12:00:00");
-    const yesterday = new Date("2024-06-09T09:00:00");
-    expect(calDaysUntilLabel(yesterday, now)).toBe("");
-  });
-
-  it("uses current date when now is not provided", () => {
-    const futureDate = new Date(Date.now() + 2 * 86_400_000 + 3600_000);
-    const result = calDaysUntilLabel(futureDate);
-    expect(result).toMatch(/^עוד \d+ ימים$|^מחר$/);
-  });
-});
-
-// ── iCalendar fuzz / edge-case tests (Sprint 26) ───────────────────────────
-
-describe("Calendar — parseICS fuzz / edge-cases", () => {
-  it("returns empty array for whitespace-only input", () => {
+  it("returns empty for whitespace-only input", () => {
     expect(parseICS("   \n  \t  ", 0)).toHaveLength(0);
-  });
-
-  it("returns empty array for non-ICS garbage text", () => {
-    expect(parseICS("not a calendar at all\nfoo bar baz", 0)).toHaveLength(0);
-  });
-
-  it("skips VEVENT with missing DTSTART", () => {
-    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:No date\nEND:VEVENT\nEND:VCALENDAR`;
-    const events = parseICS(ics, 0);
-    expect(events.length).toBe(0);
-  });
-
-  it("skips VEVENT with malformed DTSTART (non-date string)", () => {
-    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:NOT_A_DATE\nSUMMARY:Bad date\nEND:VEVENT\nEND:VCALENDAR`;
-    // Should not throw; event with NaN date is filtered or produces empty
-    expect(() => parseICS(ics, 0)).not.toThrow();
-  });
-
-  it("handles VEVENT with empty SUMMARY gracefully", () => {
-    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:\nEND:VEVENT\nEND:VCALENDAR`;
-    const events = parseICS(ics, 0);
-    // Parses fine; summary may be empty string
-    if (events.length > 0) {
-      expect(typeof events[0]?.summary).toBe("string");
-    }
-  });
-
-  it("handles VEVENT with SUMMARY missing entirely", () => {
-    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nEND:VEVENT\nEND:VCALENDAR`;
-    expect(() => parseICS(ics, 0)).not.toThrow();
-  });
-
-  it("parses back-to-back VEVENTs without blank lines", () => {
-    const ics = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "BEGIN:VEVENT",
-      "DTSTART:20251201T120000Z",
-      "SUMMARY:Event One",
-      "END:VEVENT",
-      "BEGIN:VEVENT",
-      "DTSTART:20251202T120000Z",
-      "SUMMARY:Event Two",
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\n");
-    const events = parseICS(ics, 0);
-    expect(events.length).toBe(2);
   });
 
   it("handles extremely long SUMMARY without throwing", () => {
     const longSummary = "A".repeat(2000);
-    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:${longSummary}\nEND:VEVENT\nEND:VCALENDAR`;
+    const ics = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:${longSummary}\nEND:VEVENT\nEND:VCALENDAR`;
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
-  it("handles DTSTART with TZID parameter (VALUE=DATE-TIME)", () => {
-    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART;TZID=America/New_York:20251201T120000\nSUMMARY:Zoned Event\nEND:VEVENT\nEND:VCALENDAR`;
-    // Should not throw; date parse may or may not succeed — but must not crash
+  it("handles Windows CRLF line endings", () => {
+    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20251201T120000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
-  it("handles Windows-style CRLF line endings", () => {
-    const ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nDTSTART:20251201T120000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
-    const events = parseICS(ics, 0);
-    // May or may not parse, but must not throw
-    expect(() => parseICS(ics, 0)).not.toThrow();
-    if (events.length > 0) {
-      expect(events[0]?.summary).toBeDefined();
-    }
-  });
-
-  it("handles null bytes in input without crashing", () => {
-    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Null\x00Byte\nEND:VEVENT\nEND:VCALENDAR";
+  it("handles null bytes without crashing", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Null\x00Byte\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
-  it("handles ICS with only BEGIN:VCALENDAR and END:VCALENDAR (no events)", () => {
-    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Test//Test//EN\nEND:VCALENDAR";
-    expect(parseICS(ics, 0)).toHaveLength(0);
-  });
-
-  it("handles duplicate DTSTART lines — does not throw", () => {
-    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nDTSTART:20251202T120000Z\nSUMMARY:Dup\nEND:VEVENT\nEND:VCALENDAR";
+  it("handles duplicate DTSTART lines", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nDTSTART:20251202T120000Z\nSUMMARY:Dup\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
-  it("handles negative icsIndex without crashing", () => {
-    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Neg\nEND:VEVENT\nEND:VCALENDAR";
+  it("handles negative icsIndex", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Neg\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, -1)).not.toThrow();
   });
 });

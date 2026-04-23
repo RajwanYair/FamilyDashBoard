@@ -180,19 +180,15 @@ body.mode-phone .alerts-scroll {
   animation: none !important;
 }
 
-/* Phone: calendar — show native agenda, hide iframe */
+/* Phone: calendar — weekly grid stacks into single column */
 body.mode-phone .cal-wrapper {
   overflow: visible;
   height: auto;
   flex: none;
 }
-body.mode-phone .cal-agenda {
+body.mode-phone .cal-week-grid {
+  grid-template-columns: 1fr;
   overflow: visible;
-  height: auto;
-  flex: none;
-}
-body.mode-phone .cal-wrapper iframe {
-  display: none !important;
 }
 
 /* Phone: hide cloned duplicate items (used only for the loop) */

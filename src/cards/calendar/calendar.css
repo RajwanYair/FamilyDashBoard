@@ -1,6 +1,6 @@
-/* ── Calendar Card Styles ── */
+/* ── Calendar Card Styles — Weekly Tiled Grid ── */
 
-/* Feature 28: Calendar event countdown badge */
+/* Calendar event countdown badge (in card header) */
 #cal-countdown {
   display: none;
   font-size: 0.55em;
@@ -13,23 +13,14 @@
   vertical-align: middle;
 }
 
-/* Feature 47: Calendar event duration */
-.cal-event-dur {
-  font-size: 0.68em;
-  color: var(--text-muted);
-  margin-top: 1px;
-}
-
-/* Feature 58: Calendar event category color dots */
+/* Event category dots */
 .cal-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
-  margin-right: 4px;
-  margin-top: 3px;
-  align-self: flex-start;
+  margin-inline-end: 4px;
 }
 .cal-dot-work {
   background: var(--cyan);
@@ -48,69 +39,143 @@
   opacity: 0.5;
 }
 
-/* Feature 63: Calendar 7-day strip */
-#cal-week-strip {
-  display: flex;
-  gap: 2px;
-  padding: 4px 8px 2px;
-  border-bottom: 1px solid var(--accent-border);
-  flex-shrink: 0;
-}
-.cal-week-day {
+/* ── Weekly tiled grid (7 day tiles) ── */
+.cal-week-grid {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 6px;
+  padding: 6px 8px;
+  overflow: auto;
+  align-content: start;
 }
-.cal-week-label {
-  font-size: 0.54em;
+
+.cal-empty {
+  grid-column: 1 / -1;
+  text-align: center;
   color: var(--text-muted);
+  padding: 16px 8px;
+  font-size: 0.75em;
 }
-.cal-week-dots {
+
+.cal-day-tile {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  min-height: 6px;
+  min-width: 0;
+  background: var(--bg-card-inner);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  padding: 4px 6px 5px;
+  min-height: 60px;
 }
-.cal-week-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  opacity: 0.75;
-}
-.cal-week-today .cal-week-label {
-  color: var(--accent);
-  font-weight: 700;
-}
-
-/* Feature 72: Cal week heat-map (event density → background intensity) */
-.cal-week-day.heat-1 {
+.cal-day-tile.is-today {
+  border-color: var(--accent);
   background: rgba(96, 165, 250, 0.08);
-  border-radius: 4px;
 }
-.cal-week-day.heat-2 {
-  background: rgba(96, 165, 250, 0.18);
-  border-radius: 4px;
-}
-.cal-week-day.heat-3 {
-  background: rgba(96, 165, 250, 0.32);
-  border-radius: 4px;
+.cal-day-tile.is-empty {
+  opacity: 0.45;
 }
 
-/* F133: Calendar ICS source color badges */
+.cal-day-tile-hdr {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--accent-border);
+  margin-bottom: 3px;
+}
+.cal-day-name {
+  font-size: 0.62em;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-day-tile.is-today .cal-day-name {
+  color: var(--accent);
+}
+.cal-day-date {
+  font-size: 0.55em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.cal-day-count {
+  font-size: 0.52em;
+  background: var(--accent);
+  color: #000;
+  border-radius: 8px;
+  padding: 0 5px;
+  font-weight: 700;
+  min-width: 14px;
+  text-align: center;
+}
+
+.cal-day-tile-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 0;
+}
+.cal-day-empty {
+  color: var(--text-muted);
+  font-size: 0.6em;
+  text-align: center;
+  padding: 4px 0;
+  opacity: 0.5;
+}
+
+/* ── Individual event row inside a tile ── */
+.cal-event {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  background: var(--bg-card);
+  border-inline-start: 3px solid var(--accent-border);
+  font-size: 0.6em;
+  line-height: 1.25;
+}
+.cal-event-time {
+  color: var(--text-muted);
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cal-event-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px;
+}
+.cal-event-title {
+  color: var(--text);
+  font-weight: 600;
+  word-break: break-word;
+}
+.cal-event-loc {
+  width: 100%;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ICS source color badges */
 .cal-event[data-ics="1"] {
-  border-right: 3px solid #60a5fa;
+  border-inline-start-color: #60a5fa;
 }
 .cal-event[data-ics="2"] {
-  border-right: 3px solid #34d399;
+  border-inline-start-color: #34d399;
 }
 .cal-event[data-ics="3"] {
-  border-right: 3px solid #f97316;
+  border-inline-start-color: #f97316;
 }
 
-/* F138: Calendar conflict indicator */
+/* Conflict indicator */
 .cal-event.has-conflict .cal-event-title::before {
   content: "⚠ ";
   color: var(--warning);
@@ -119,95 +184,29 @@
 
 /* event-soon: upcoming within 60 min */
 .cal-event.event-soon {
-  background: rgba(251, 191, 36, 0.1);
-  border-right-color: #fbbf24 !important;
+  background: rgba(251, 191, 36, 0.12);
+  border-inline-start-color: #fbbf24 !important;
 }
 .cal-event.event-soon .cal-event-time {
   color: #fbbf24;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* F154: Calendar today-strip */
-#cal-today-strip {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  padding: 4px 6px;
-  min-height: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-#cal-today-strip:empty {
-  display: none;
-}
-.cal-strip-event {
-  font-size: 0.6em;
-  background: var(--bg-card-inner);
-  border-radius: 5px;
-  padding: 2px 6px;
-  color: var(--accent);
-  border-left: 2px solid var(--accent);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 130px;
-}
-
-/* Sprint 11: Maximize — large calendar layout */
+/* Maximized: larger fonts + taller tiles */
 @container card (min-width: 900px) {
+  .cal-week-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .cal-day-name {
+    font-size: 0.9em;
+  }
+  .cal-day-date {
+    font-size: 0.75em;
+  }
   .cal-event {
-    padding: 6px 10px;
-    font-size: 1em;
-  }
-  .cal-event-title {
-    font-size: 1em;
-  }
-  .cal-event-time {
-    font-size: 0.82em;
-  }
-  .cal-event-date {
-    font-size: 0.78em;
-    padding-inline-end: 12px;
-  }
-  .cal-strip-event {
-    font-size: 0.72em;
-    padding: 3px 10px;
-    max-width: 200px;
-  }
-  #cal-today-strip {
-    gap: 8px;
-    padding: 6px 10px;
-  }
-  .cal-agenda {
-    font-size: 1em;
-  }
-}
-
-/* Sprint 11: Maximize — large calendar layout */
-@container card (min-width: 900px) {
-  .cal-event {
-    padding: 6px 10px;
-    font-size: 1em;
-  }
-  .cal-event-title {
-    font-size: 1em;
-  }
-  .cal-event-time {
-    font-size: 0.82em;
-  }
-  .cal-event-date {
-    font-size: 0.78em;
-    padding-inline-end: 12px;
-  }
-  .cal-strip-event {
-    font-size: 0.72em;
-    padding: 3px 10px;
-    max-width: 200px;
-  }
-  #cal-today-strip {
-    gap: 8px;
-    padding: 6px 10px;
-  }
-  .cal-agenda {
-    font-size: 1em;
+    font-size: 0.8em;
+    padding: 5px 8px;
   }
 }
