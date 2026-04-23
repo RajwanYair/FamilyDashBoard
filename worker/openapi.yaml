@@ -5,7 +5,7 @@ info:
     Cloudflare Worker API proxy for the FamilyDashBoard dashboard.
     All routes enforce CORS (any origin), per-IP rate limiting (120 req/min),
     and SSRF allowlists on URL parameters.
-  version: "12.1.0"
+  version: "12.2.0"
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard
@@ -550,6 +550,108 @@ paths:
         "429":
           $ref: "#/components/responses/RateLimitError"
 
+  /api/reports:
+    post:
+      tags: [health]
+      summary: Browser Reporting API ingest (CSP + deprecation + intervention)
+      description: |
+        Receives browser-generated reports forwarded by the W3C Reporting API
+        (https://www.w3.org/TR/reporting-1/). Browsers that have
+        `Report-To` or `Reporting-Endpoints` header configured will POST
+        arrays of CSP violation, deprecation-warning, and intervention reports
+        here automatically.
+
+        No authentication is required for POST (browsers send these natively).
+        Reports are stored in D1 (max 50 per request, 30-day retention).
+        If D1 is not configured, reports are silently dropped with a 204 response.
+        Never stores IP addresses, User-Agent strings, or any PII.
+
+        See ADR-028.
+      operationId: postReports
+      requestBody:
+        required: true
+        content:
+          application/reports+json:
+            schema:
+              type: array
+              maxItems: 50
+              items:
+                $ref: "#/components/schemas/BrowserReport"
+          application/json:
+            schema:
+              type: array
+              maxItems: 50
+              items:
+                $ref: "#/components/schemas/BrowserReport"
+      responses:
+        "204":
+          description: Reports accepted (or silently dropped when DB not configured)
+        "400":
+          description: Invalid JSON or body is not an array
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
+  /api/reports/digest:
+    get:
+      tags: [health]
+      summary: Report count digest (token-gated, last 30 days)
+      description: |
+        Returns a JSON summary of stored browser reports grouped by type and UTC day
+        for the last 30 days. Useful for weekly operational reviews.
+        Requires `Authorization: Bearer <REPORTS_TOKEN>` header.
+        Returns 501 when `REPORTS_TOKEN` or D1 DB is not configured.
+      operationId: getReportsDigest
+      security:
+        - BearerToken: []
+      responses:
+        "200":
+          description: JSON digest of report counts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, generatedAt, summary]
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  generatedAt:
+                    type: string
+                    format: date-time
+                  summary:
+                    type: array
+                    items:
+                      type: object
+                      required: [type, day, count]
+                      properties:
+                        type:
+                          type: string
+                          example: "csp-violation"
+                        day:
+                          type: string
+                          format: date
+                          example: "2026-04-23"
+                        count:
+                          type: integer
+                          example: 5
+        "401":
+          description: Missing or invalid REPORTS_TOKEN
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "501":
+          description: REPORTS_TOKEN or D1 DB not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
 
   schemas:
     Error:
@@ -611,6 +713,42 @@ paths:
           type: string
           description: Human-readable publisher name
           example: "Ynet News"
+    BrowserReport:
+      type: object
+      description: |
+        A single report as submitted by the browser Reporting API
+        (https://www.w3.org/TR/reporting-1/).
+      required: [type]
+      properties:
+        type:
+          type: string
+          example: "csp-violation"
+          description: Report type — "csp-violation", "deprecation", "intervention", etc.
+        url:
+          type: string
+          format: uri
+          description: URL of the document that generated the report
+          example: "https://rajwanyair.github.io/FamilyDashBoard/"
+        body:
+          type: object
+          description: Report body (structure varies by type)
+          properties:
+            documentURL:
+              type: string
+              format: uri
+            blockedURL:
+              type: string
+            effectiveDirective:
+              type: string
+              example: "script-src"
+            statusCode:
+              type: integer
+            message:
+              type: string
+            id:
+              type: string
+            sourceFile:
+              type: string
 
 
   responses:

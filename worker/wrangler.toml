@@ -37,5 +37,12 @@ new_classes = ["AlertsOrchestrator"]
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries
 # 23:00 UTC — pre-warm next Hebrew year holidays on 29 Elul (V12-DATA)
+#              also prunes browser_reports older than 30 days (V12-OPS, ADR-028)
 [triggers]
 crons = ["0 0 * * *", "0 12 * * *", "0 23 * * *"]
+
+# Worker secrets (set via `wrangler secret put <NAME>`):
+#   ERROR_REPORTING_TOKEN  — GET /api/errors/export gate
+#   FINNHUB_API_KEY        — Finnhub stock price backup
+#   METRICS_TOKEN          — GET /api/metrics Prometheus endpoint gate
+#   REPORTS_TOKEN          — GET /api/reports/digest gate (V12-OPS, ADR-028)

@@ -56,6 +56,13 @@ export interface Env {
    * Optional — metrics endpoint returns 501 when not configured.
    */
   METRICS_TOKEN?: string;
+  /**
+   * Token required to read the GET /api/reports/digest endpoint.
+   * Set as a Worker secret (wrangler secret put REPORTS_TOKEN).
+   * Optional — digest endpoint returns 501 when not configured.
+   * POST /api/reports does NOT require this token (browsers send reports automatically).
+   */
+  REPORTS_TOKEN?: string;
 }
 
 /**

@@ -25,6 +25,7 @@
 import type { Env } from "../types";
 import { handleCurrency, handleHebcal, handleHebcalHolidays } from "./data";
 import { handleStocks } from "./feeds";
+import { pruneOldReports } from "../utils/d1-reports";
 
 /** Synthetic "good enough" URL for warming hebcal (Jerusalem geonameid). */
 const HEBCAL_WARM_URL = "https://worker/api/hebcal?geonameid=281184";
@@ -50,6 +51,8 @@ export async function handleScheduled(env: Env): Promise<void> {
     handleHebcal(new URL(HEBCAL_WARM_URL), env).catch(() => null),
     handleHebcalHolidays(new URL(hebcalHolidaysUrl(0)), env).catch(() => null),
     handleStocks(new URL(STOCKS_BTC_URL), env).catch(() => null),
+    // Prune browser_reports older than 30 days (V12-OPS, ADR-028)
+    env.DB ? pruneOldReports(env.DB, 30).catch(() => null) : Promise.resolve(),
   ];
 
   await Promise.allSettled(tasks);

@@ -17,6 +17,8 @@
  *   GET /api/crypto?ids=bitcoin          → CoinGecko Bitcoin price (validated)
  *   POST /api/errors                      → Client error ingestion (best-effort telemetry)
  *   GET  /api/metrics                     → Prometheus text metrics (token-gated, D1-backed)
+ *   POST /api/reports                     → Browser Reporting API ingest (CSP + deprecation + intervention)
+ *   GET  /api/reports/digest              → Report summary digest (token-gated, D1-backed, ADR-028)
  */
 
 import { Hono } from "hono";
@@ -36,6 +38,7 @@ import {
 } from "./routes/feeds";
 import { handleErrors, handleErrorsExport } from "./routes/errors";
 import { handleMetrics } from "./routes/metrics";
+import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleScheduled, handleNextYearPreWarm } from "./routes/cron";
 import {
   isRateLimited,
@@ -143,6 +146,14 @@ app.post("/api/errors", (c) =>
 
 app.get("/api/metrics", (c) =>
   handleMetrics(c.req.raw, c.env),
+);
+
+app.post("/api/reports", (c) =>
+  handleReportsIngest(c.req.raw, c.env),
+);
+
+app.get("/api/reports/digest", (c) =>
+  handleReportsDigest(c.req.raw, c.env),
 );
 
 app.all("*", (c) => c.json({ error: "Not found" }, 404));
