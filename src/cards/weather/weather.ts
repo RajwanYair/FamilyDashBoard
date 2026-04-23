@@ -414,7 +414,7 @@ export function renderWeather(d: WeatherResponse): void {
   }
 
   // F1 (v7.2): Today's precipitation probability (from daily forecast index 0)
-  const pp = d.daily.precipitation_probability_max[0] ?? 0;
+  const pp = d.daily?.precipitation_probability_max?.[0] ?? 0;
   if (el.wxPrecip) {
     el.wxPrecip.textContent = `${pp}% · ${precipSummaryLabel(pp)}`;
   }

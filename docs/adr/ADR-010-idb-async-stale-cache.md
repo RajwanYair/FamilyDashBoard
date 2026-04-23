@@ -1,8 +1,8 @@
 # ADR-010: IDB-Async Stale Cache Pattern
 
-**Status**: Accepted
-**Date**: 2025-07
-**Deciders**: FamilyDashBoard maintainers
+**Status:** Accepted
+**Date:** 2025-07-01
+**Deciders:** FamilyDashBoard maintainers
 
 ---
 

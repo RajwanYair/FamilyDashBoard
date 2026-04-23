@@ -25,21 +25,48 @@ function parseAdr(filePath) {
   const content = readFileSync(filePath, "utf8");
   const lines = content.split("\n");
 
-  // Title is the first # heading
+  // Title: strip "# ADR-NNN: " or "# ADR-NNN — " prefix from first heading
   const titleLine = lines.find((l) => l.startsWith("# "));
   const title = titleLine
-    ? titleLine.replace(/^#\s*ADR-\d+:\s*/, "").trim()
+    ? titleLine.replace(/^#\s*ADR-\d+[:\s—-]+\s*/, "").trim()
     : basename(filePath, ".md");
 
-  // Date: **Date:** YYYY-MM-DD
-  const dateLine = lines.find((l) => /^\*\*Date:\*\*/.test(l));
-  const date = dateLine ? (dateLine.match(/(\d{4}-\d{2}-\d{2})/)?.[1] ?? "—") : "—";
+  // Date extraction — handles 3 formats:
+  //   1. **Date:** 2026-04-23          (bold inline)
+  //   2. | Date       | 2026-04-23 |   (plain table cell)
+  //   3. | **Date**   | 2026-04-23 |   (bold table cell)
+  const datePatterns = [
+    /^\*\*Date:\*\*\s*(\d{4}-\d{2}-\d{2})/,
+    /^\|\s*\*?\*?Date\*?\*?\s*\|\s*(\d{4}-\d{2}-\d{2})/,
+  ];
+  let date = "—";
+  for (const l of lines) {
+    for (const pat of datePatterns) {
+      const m = l.match(pat);
+      if (m) {
+        date = m[1];
+        break;
+      }
+    }
+    if (date !== "—") break;
+  }
 
-  // Status: **Status:** Accepted
-  const statusLine = lines.find((l) => /^\*\*Status:\*\*/.test(l));
-  const status = statusLine
-    ? (statusLine.match(/\*\*Status:\*\*\s*(.+)/)?.[1]?.trim() ?? "—")
-    : "—";
+  // Status extraction — handles 3 formats:
+  //   1. **Status:** Accepted
+  //   2. | Status     | Accepted |
+  //   3. | **Status** | Accepted |
+  const statusPatterns = [/^\*\*Status:\*\*\s*(.+)/, /^\|\s*\*?\*?Status\*?\*?\s*\|\s*([^|]+)\|/];
+  let status = "—";
+  for (const l of lines) {
+    for (const pat of statusPatterns) {
+      const m = l.match(pat);
+      if (m) {
+        status = m[1].trim();
+        break;
+      }
+    }
+    if (status !== "—") break;
+  }
 
   return { file: basename(filePath), title, date, status };
 }

@@ -5,18 +5,22 @@ This directory contains **pending changeset files** that describe unreleased cha
 ## Workflow
 
 1. **After each feature branch**, create a changeset:
-   ```
+
+   ```sh
    npm run changeset:add
    ```
+
    This creates a new `.md` file in this directory describing the change type (major / minor / patch) and a summary.
 
 2. **On release**, bump versions and update CHANGELOG.md:
-   ```
+
+   ```sh
    npm run changeset:version
    ```
 
 3. **After tagging**, publish (no-op for a static PWA — the step just confirms version bumps are applied):
-   ```
+
+   ```sh
    npm run changeset:publish
    ```
 
