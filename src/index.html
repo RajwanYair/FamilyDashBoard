@@ -41,6 +41,17 @@
           media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
     >
     <title>רגואן Family Dashboard</title>
+    <!-- Speculation Rules API: prefetch preview page for instant navigation (V12-PERF-1) -->
+    <script type="speculationrules">
+      {
+        "prefetch": [
+          {
+            "urls": ["/FamilyDashBoard/preview.html"],
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
 </head>
 <body>
     <!-- A11y: skip to main content -->
