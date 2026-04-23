@@ -304,6 +304,30 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     expect(html).not.toContain('<dialog id="help-overlay" aria-label=');
   });
 
+  it("diag-overlay dialog has aria-labelledby=diag-dialog-title (V13-A11Y)", () => {
+    expect(html).toContain('id="diag-dialog-title"');
+    expect(html).toContain('aria-labelledby="diag-dialog-title"');
+  });
+
+  it("diag-overlay dialog has aria-modal=true (V13-A11Y)", () => {
+    expect(html).toContain('id="diag-overlay"');
+    const re = /id="diag-overlay"[^>]*aria-modal="true"|aria-modal="true"[^>]*id="diag-overlay"/;
+    expect(re.test(html)).toBe(true);
+  });
+
+  it("all three dialogs have aria-labelledby (tour, help, diag)", () => {
+    for (const [dialogId, titleId] of [
+      ["tour-overlay", "tour-dialog-title"],
+      ["help-overlay", "help-dialog-title"],
+      ["diag-overlay", "diag-dialog-title"],
+    ]) {
+      expect(html, `${dialogId} should have aria-labelledby="${titleId}"`).toContain(
+        `aria-labelledby="${titleId}"`,
+      );
+      expect(html, `${titleId} heading should exist`).toContain(`id="${titleId}"`);
+    }
+  });
+
   it("all 6 cfg-tab buttons have IDs matching their data-tab", () => {
     for (const tab of ["display", "calendar", "feeds", "alerts-tab", "cards", "advanced"]) {
       expect(html, `cfg-tab-${tab} should have id`).toContain(`id="cfg-tab-${tab}"`);

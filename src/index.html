@@ -548,8 +548,8 @@
         <div style="text-align:center;margin-top:8px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
       </div>
     </div>
-    <dialog class="diag-overlay" id="diag-overlay">
-        <h3>🛠 Dashboard Diagnostics (press D to close)</h3>
+    <dialog class="diag-overlay" id="diag-overlay" aria-labelledby="diag-dialog-title" aria-modal="true">
+        <h3 id="diag-dialog-title">🛠 Dashboard Diagnostics (press D to close)</h3>
         <!-- Feature 70: Copy diagnostics log to clipboard -->
         <button type="button" id="diag-copy-btn" aria-label="העתק לוג אבחון ללוח" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
         <!-- F1 (v7.3): Clear diagnostics log -->
