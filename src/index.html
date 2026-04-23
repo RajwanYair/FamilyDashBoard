@@ -41,9 +41,22 @@
           media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
     >
     <title>רגואן Family Dashboard</title>
-    <!-- Speculation Rules API: prefetch preview page for instant navigation (V12-PERF-1) -->
+    <!-- Speculation Rules API: F13 — audited coverage (V12-PERF-1 + F13)
+         Strategy:
+           prerender preview.html — eagerness: conservative (same-origin, lightweight page,
+             triggered only on hover/pointer-down to avoid wasting bandwidth).
+           prefetch  preview.html — eagerness: moderate (fallback for browsers that support
+             prefetch but not prerender, e.g. Firefox).
+         External links (Sefaria, Hebcal, IDF Tzeva-Adom) are cross-origin so Speculation
+         Rules cannot apply to them. No "eager" rules: dashboard is a long-lived tab. -->
     <script type="speculationrules">
       {
+        "prerender": [
+          {
+            "urls": ["/FamilyDashBoard/preview.html"],
+            "eagerness": "conservative"
+          }
+        ],
         "prefetch": [
           {
             "urls": ["/FamilyDashBoard/preview.html"],

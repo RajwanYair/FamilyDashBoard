@@ -6,6 +6,17 @@
     <meta name="color-scheme" content="dark" />
     <title>🔬 FDB Card Preview [DEV]</title>
     <script type="module" src="/preview.ts"></script>
+    <!-- F13: Speculation Rules — prefetch back to main dashboard for instant return -->
+    <script type="speculationrules">
+      {
+        "prefetch": [
+          {
+            "urls": ["/FamilyDashBoard/", "/FamilyDashBoard/index.html"],
+            "eagerness": "conservative"
+          }
+        ]
+      }
+    </script>
   </head>
   <body class="theme-black">
     <div id="preview-root">

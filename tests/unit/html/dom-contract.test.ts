@@ -383,3 +383,52 @@ describe("DOM Contract — A11y voice-control accessible names (V13-A11Y)", () =
     expect(buttonHasAriaLabel("cfg-gear-btn")).toBe(true);
   });
 });
+
+// ── F13: Speculation Rules API audit ─────────────────────────────────────────
+
+const previewHtml = readFileSync(resolve(__dirname, "../../../src/preview.html"), "utf8");
+
+describe("DOM Contract — F13 Speculation Rules API audit", () => {
+  it("index.html contains a speculationrules script block", () => {
+    expect(html).toContain('type="speculationrules"');
+  });
+
+  it("index.html speculationrules has prerender for preview.html", () => {
+    expect(html).toContain('"prerender"');
+    expect(html).toContain('/FamilyDashBoard/preview.html');
+  });
+
+  it("index.html prerender eagerness is conservative (avoids wasted bandwidth)", () => {
+    // Extract the speculationrules block and verify prerender eagerness
+    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
+    expect(srMatch).not.toBeNull();
+    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
+    const prerender = (srJson["prerender"] as Array<{ eagerness?: string }>) ?? [];
+    expect(prerender.length).toBeGreaterThan(0);
+    expect(prerender[0]?.["eagerness"]).toBe("conservative");
+  });
+
+  it("index.html prefetch eagerness is moderate or conservative", () => {
+    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
+    expect(srMatch).not.toBeNull();
+    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
+    const prefetch = (srJson["prefetch"] as Array<{ eagerness?: string }>) ?? [];
+    expect(prefetch.length).toBeGreaterThan(0);
+    const allowedEagerness = ["conservative", "moderate"];
+    expect(allowedEagerness).toContain(prefetch[0]?.["eagerness"]);
+  });
+
+  it("preview.html contains a speculationrules block for back-navigation (F13)", () => {
+    expect(previewHtml).toContain('type="speculationrules"');
+  });
+
+  it("preview.html speculationrules targets the main dashboard URL", () => {
+    const srMatch = previewHtml.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
+    expect(srMatch).not.toBeNull();
+    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
+    const prefetch = (srJson["prefetch"] as Array<{ urls?: string[] }>) ?? [];
+    const allUrls = prefetch.flatMap((r) => r.urls ?? []);
+    const coversDashboard = allUrls.some((u) => u.includes("/FamilyDashBoard"));
+    expect(coversDashboard).toBe(true);
+  });
+});
