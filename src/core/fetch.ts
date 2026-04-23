@@ -85,16 +85,26 @@ function buildWorkerRoute(url: string): string | null {
 }
 
 /**
- * Fetch with AbortController timeout.
+ * Fetch with AbortSignal.timeout() — native platform API (Chrome 103+, Firefox 100+, Safari 16+).
+ * Falls back to the legacy AbortController pattern for environments that don't yet ship it
+ * (e.g. happy-dom in Vitest 4).
+ *
+ * V13 note: `AbortSignal.timeout()` eliminates the manual clearTimeout bookkeeping and makes
+ * the abort reason a `TimeoutError` (DOMException name "TimeoutError") rather than a generic
+ * `AbortError`, which allows callers to distinguish timeout from manual abort.
  */
 export async function fetchWithTimeout(
   url: string,
   ms: number = FETCH_TIMEOUT_MS,
   init?: RequestInit,
 ): Promise<Response> {
+  // Prefer native AbortSignal.timeout when available
+  if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
+    return fetch(url, { ...init, signal: AbortSignal.timeout(ms) });
+  }
+  // Legacy fallback for environments without AbortSignal.timeout (e.g. happy-dom)
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);
-
   try {
     return await fetch(url, { ...init, signal: controller.signal });
   } finally {

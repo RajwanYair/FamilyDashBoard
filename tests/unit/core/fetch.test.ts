@@ -77,6 +77,46 @@ describe("fetchWithTimeout", () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     await expect(fetchWithTimeout("https://example.com", 5000)).rejects.toThrow("network error");
   });
+
+  it("uses AbortSignal.timeout when available", async () => {
+    const mockSignal = {} as AbortSignal;
+    const originalTimeout = AbortSignal.timeout;
+    // Stub AbortSignal.timeout to return a known sentinel
+    vi.stubGlobal("AbortSignal", {
+      ...AbortSignal,
+      timeout: vi.fn(() => mockSignal),
+    });
+    let capturedSignal: AbortSignal | undefined;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: string, init?: RequestInit) => {
+        capturedSignal = init?.signal;
+        return Promise.resolve({ ok: true } as Response);
+      }),
+    );
+    await fetchWithTimeout("https://example.com", 1000);
+    expect(capturedSignal).toBe(mockSignal);
+    vi.stubGlobal("AbortSignal", { ...AbortSignal, timeout: originalTimeout });
+  });
+
+  it("falls back to AbortController when AbortSignal.timeout absent", async () => {
+    const originalTimeout = AbortSignal.timeout;
+    // Remove AbortSignal.timeout to force legacy path
+    vi.stubGlobal("AbortSignal", { ...AbortSignal, timeout: undefined });
+    let capturedSignal: AbortSignal | undefined;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: string, init?: RequestInit) => {
+        capturedSignal = init?.signal;
+        return Promise.resolve({ ok: true } as Response);
+      }),
+    );
+    await fetchWithTimeout("https://example.com", 1000);
+    // signal should be present (from AbortController.signal) but not the mock sentinel
+    expect(capturedSignal).toBeDefined();
+    expect(typeof capturedSignal?.aborted).toBe("boolean");
+    vi.stubGlobal("AbortSignal", { ...AbortSignal, timeout: originalTimeout });
+  });
 });
 
 describe("fetchJSON — direct success", () => {
