@@ -182,6 +182,82 @@ flowchart TD
     classDef faded opacity:0.55;
 ```
 
+## Card Lifecycle — Mermaid Overview
+
+```mermaid
+sequenceDiagram
+    participant Main as main.ts
+    participant Card as CardModule (e.g. stocks.ts)
+    participant Loader as createAsyncCardLoader
+    participant Cache as cGet/cSet (L1→L3)
+    participant Worker as Cloudflare Worker
+    participant DOM as DOM
+
+    Main->>Card: initXxxCard()
+    Card->>DOM: renderXxxShell() — skeleton rows
+    Card->>Loader: scheduleCard(loader, interval)
+    loop Every interval (visibility-gated)
+        Loader->>Cache: cGet(key, TTL)
+        alt Cache HIT
+            Cache-->>Loader: data
+        else Cache MISS
+            Loader->>Worker: fetchJSONWithWorker()
+            Worker-->>Loader: JSON (validated)
+            Loader->>Cache: cSet(key, data)
+        end
+        Loader->>Card: renderXxx(data)
+        Card->>DOM: update elements (textContent)
+        Card->>DOM: setSync("id", "ok"/"err")
+    end
+```
+
+## Core Module Dependencies — Mermaid Overview
+
+```mermaid
+flowchart LR
+    subgraph Cards["Cards (src/cards/)"]
+        Stocks["stocks.ts"]
+        Weather["weather.ts"]
+        Currency["currency.ts"]
+        Motivation["motivation.ts"]
+        News["news.ts"]
+        HebCal["hebrew-cal.ts"]
+        Calendar["calendar.ts"]
+        Tasks["tasks.ts"]
+        Alerts["alerts.ts"]
+        Countdown["countdown.ts"]
+        SysInfo["system-info.ts"]
+    end
+
+    subgraph Core["Core (src/core/)"]
+        Cache["cache.ts\n(cGet/cSet/cGetStale)"]
+        Config["config.ts\n(loadConfig/saveConfig)"]
+        Constants["constants.ts\n(WORKER_BASE_URL, INTERVALS)"]
+        Fetch["fetch.ts\n(fetchJSONWithWorker)"]
+        Diag["diag.ts\n(diagLog)"]
+        Sync["sync.ts\n(setSync)"]
+        CardReg["card-registry.ts\n(registerCard)"]
+        ConfigCrypto["config-crypto.ts\n(AES-GCM)"]
+    end
+
+    subgraph UI["UI (src/ui/)"]
+        Theme["theme.ts"]
+        Toast["toast.ts"]
+        Help["help.ts"]
+    end
+
+    Cards --> Cache
+    Cards --> Fetch
+    Cards --> Constants
+    Cards --> Diag
+    Cards --> Sync
+    Cards --> Config
+    Config --> ConfigCrypto
+    Fetch --> Constants
+    UI --> Config
+    CardReg --> Cards
+```
+
 ## CSS Architecture (v7.7)
 
 ```css
