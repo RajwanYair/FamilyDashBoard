@@ -220,6 +220,9 @@ body.slideshow-fade::after {
 .card.collapsed > .cal-body,
 .card.collapsed > .cal-wrapper,
 .card.collapsed > .moti-body,
+.card.collapsed > .countdown-body,
+.card.collapsed > .tasks-body,
+.card.collapsed > .sysinfo-grid,
 .card.collapsed > .card__body,
 .card.collapsed > .card__footer {
   display: none !important;
