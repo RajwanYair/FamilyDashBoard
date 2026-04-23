@@ -176,18 +176,8 @@ function renderHalachaExcerpt(data: HalachaData): void {
   elHcHalacha.textContent = excerpt;
   elHcHalachaRow.style.display = excerpt ? "" : "none";
 
-  if (data.url) {
-    elHcHalachaRow.onclick = (): void => {
-      try {
-        window.open(data.url, "_blank", "noopener,noreferrer");
-      } catch {
-        // Ignore blocked popups
-      }
-    };
-    elHcHalachaRow.title = "לחץ לקרוא ב-Sefaria";
-  } else {
-    elHcHalachaRow.onclick = null;
-  }
+  elHcHalachaRow.title = "לחץ לטקסט המלא";
+  elHcHalachaRow.style.cursor = "pointer";
 }
 
 // ── Fetch from Sefaria ──
@@ -283,9 +273,87 @@ export function getHalachaData(): HalachaData | null {
   return _halachaData;
 }
 
+// ── Full-text overlay ──
+let _docKeydownWired = false;
+
+function openHalachaOverlay(): void {
+  const ov = document.getElementById("halacha-overlay");
+  const refEl = document.getElementById("halacha-overlay-ref");
+  const txtEl = document.getElementById("halacha-overlay-text");
+  if (!ov || !refEl || !txtEl || !_halachaData) return;
+  refEl.textContent = _halachaData.category
+    ? `${_halachaData.category} · ${_halachaData.ref}`
+    : _halachaData.ref;
+  txtEl.textContent = _halachaData.texts
+    .map((t, i) => `(${i + 1}) ${t}`)
+    .join("\n\n");
+  ov.classList.add("visible");
+  diagLog("[ticker] Opened halacha overlay");
+}
+
+function closeHalachaOverlay(): void {
+  document.getElementById("halacha-overlay")?.classList.remove("visible");
+}
+
+function wireHalachaOverlay(): void {
+  // Ticker bar click (guard per-element via data-attr so cacheDom() after a
+  // DOM rebuild re-wires against the fresh element).
+  if (elTicker && elTicker.dataset["overlayWired"] !== "1") {
+    elTicker.dataset["overlayWired"] = "1";
+    elTicker.addEventListener("click", () => {
+      if (_halachaData) openHalachaOverlay();
+    });
+    elTicker.style.cursor = "pointer";
+    elTicker.setAttribute("role", "button");
+    elTicker.setAttribute("tabindex", "0");
+    elTicker.setAttribute("aria-label", "פתח טקסט מלא של ההלכה היומית");
+    elTicker.addEventListener("keydown", (e: KeyboardEvent) => {
+      if ((e.key === "Enter" || e.key === " ") && _halachaData) {
+        e.preventDefault();
+        openHalachaOverlay();
+      }
+    });
+  }
+
+  // Hebrew-cal row click — opens the in-app overlay (replaces legacy Sefaria popup).
+  if (elHcHalachaRow && elHcHalachaRow.dataset["overlayWired"] !== "1") {
+    elHcHalachaRow.dataset["overlayWired"] = "1";
+    elHcHalachaRow.setAttribute("role", "button");
+    elHcHalachaRow.setAttribute("tabindex", "0");
+    elHcHalachaRow.addEventListener("click", (e: Event) => {
+      if (!_halachaData) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openHalachaOverlay();
+    });
+    elHcHalachaRow.addEventListener("keydown", (e: KeyboardEvent) => {
+      if ((e.key === "Enter" || e.key === " ") && _halachaData) {
+        e.preventDefault();
+        openHalachaOverlay();
+      }
+    });
+  }
+
+  // Overlay close — click anywhere on it
+  const ov = document.getElementById("halacha-overlay");
+  if (ov && ov.dataset["overlayWired"] !== "1") {
+    ov.dataset["overlayWired"] = "1";
+    ov.addEventListener("click", closeHalachaOverlay);
+  }
+
+  // Escape key (document-level; wire once per page lifetime)
+  if (!_docKeydownWired) {
+    _docKeydownWired = true;
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeHalachaOverlay();
+    });
+  }
+}
+
 // ── Init ──
 export function initTicker(): void {
   cacheDom();
+  wireHalachaOverlay();
   void loadHalacha();
   scheduleCard(loadHalacha, INTERVALS.HALACHA);
   diagLog("[ticker] Initialized");

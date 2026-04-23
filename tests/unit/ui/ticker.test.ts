@@ -317,7 +317,11 @@ describe("Ticker — renderTicker via cached data", () => {
   it("wires onclick on #hc-halacha-row when url present", () => {
     initTicker();
     const row = document.getElementById("hc-halacha-row") as HTMLElement;
-    expect(row.onclick).not.toBeNull();
+    // New behavior: row opens in-app overlay, wired via addEventListener.
+    // Verify click-to-open affordances instead of legacy row.onclick handler.
+    expect(row.getAttribute("role")).toBe("button");
+    expect(row.getAttribute("tabindex")).toBe("0");
+    expect(row.style.cursor).toBe("pointer");
   });
 });
 
@@ -933,10 +937,11 @@ describe("Ticker — renderHalachaExcerpt no-url onclick=null branch", () => {
     });
     initTicker();
     for (let i = 0; i < 30; i++) await Promise.resolve();
-    const row = document.getElementById("hc-halacha-row") as HTMLElement & { onclick?: unknown };
+    const row = document.getElementById("hc-halacha-row") as HTMLElement;
     expect(row).not.toBeNull();
-    // onclick was set to a handler function
-    expect(typeof row.onclick).toBe("function");
+    // New behavior: overlay opens via addEventListener. Verify click affordances.
+    expect(row.getAttribute("role")).toBe("button");
+    expect(row.style.cursor).toBe("pointer");
   });
 });
 

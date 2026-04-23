@@ -118,12 +118,13 @@
 .halacha-overlay {
   position: fixed;
   inset: 0;
-  z-index: 950;
+  z-index: 9500;
   background: rgba(6, 11, 20, 0.92);
   display: none;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  cursor: pointer;
 }
 .halacha-overlay.visible {
   display: flex;
@@ -132,28 +133,29 @@
   background: var(--bg-card);
   border: 1px solid var(--accent-border);
   border-radius: 14px;
-  max-width: 680px;
+  max-width: 1100px;
   width: 100%;
-  padding: 22px 26px;
+  padding: 36px 44px;
   direction: rtl;
-  max-height: 80vh;
+  max-height: 86vh;
   overflow-y: auto;
+  cursor: default;
 }
 .halacha-overlay-ref {
-  font-size: 0.7em;
+  font-size: 1.4em;
   color: var(--accent);
-  margin-bottom: 10px;
-  font-weight: 600;
+  margin-bottom: 18px;
+  font-weight: 700;
 }
 .halacha-overlay-text {
-  font-size: 0.85em;
-  line-height: 1.65;
+  font-size: 1.35em;
+  line-height: 1.8;
   color: var(--text-primary);
   white-space: pre-wrap;
 }
 .halacha-overlay-close {
-  margin-top: 14px;
-  font-size: 0.72em;
+  margin-top: 22px;
+  font-size: 0.9em;
   color: var(--text-muted);
   text-align: center;
   cursor: pointer;
