@@ -5,6 +5,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.4.0] — 2026-07-13
+
+> **Worker OPS + AI stubs + Property Tests** · **3584 tests / 117 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
+
+### Added
+
+- **System-info downlink sparkline** (`src/cards/system-info/system-info.ts`): `updateNetworkHistory()` records `NetworkInformation.downlink` via `historyAppend("sysinfo:downlink")` and renders an inline SVG sparkline inside the `#sysinfo-net` tile. (Sprint 19)
+- **Worker AI stub routes** (`worker/src/routes/ai.ts`): `GET /api/news/summarise` and `GET /api/motivation/hebrew` return `503 {ok:false,error:"ai_disabled"}` while `AI_ENABLED !== "true"`, ready for Workers AI binding. 14 unit tests. (Sprint 20–21)
+- **ADR index auto-gen** (`scripts/generate-adr-index.mjs`): Scans `docs/adr/ADR-*.md`, extracts title/date/status, regenerates `docs/adr/README.md` sorted table. `npm run adr:index`. (Sprint 22)
+- **Per-route KV TTL annotations** (`worker/openapi.yaml`): Added `x-kv-ttl` extension to all 14 worker routes documenting cache TTL + stale TTL. API version bumped to `12.3.0`. (Sprint 23)
+- **Workers Queues `ERRORS_QUEUE`** (`worker/src/routes/errors.ts`): `handleErrors()` enqueues an `ErrorQueueMessage` after KV writes (non-fatal). `handleErrorsQueue()` consumer acks all messages in batch. Wrangler queue producer + consumer bindings. 7 unit tests. (Sprint 26)
+- **Email Workers weekly digest** (`worker/src/routes/cron.ts`): `handleWeeklyDigest()` reads daily error KV counts and emails a plain-text stats summary via `send_email` binding. Fires on Saturday 23:00 UTC cron. 9 unit tests. (Sprint 27)
+- **fast-check property tests for worker-client** (`tests/unit/core/worker-client-props.test.ts`): 7 property-based tests verifying URL construction invariants (lat/lon, sym, geonameid, base URL), HTTP error throw contract (any 4xx–5xx always throws), `WorkerEnvelope.data` round-trip, and `submitErrors` never-throws contract. (Sprint 28)
+
+### Changed
+
+- **`docs/security.md`**: Updated to v12.3.0 — fixed `Zod → Valibot`, added `§11. SRI Policy` and `§12. Secret Rotation Schedule`. (Sprint 24)
+- **`ARCHITECTURE.md`**: Updated to v12.3.0 — fixed `Zod → Valibot`, added worker AI routes, updated test count to 3500+/111 suites, refreshed Mermaid diagram. (Sprint 25)
+- **`docs/adr/README.md`**: Auto-generated index of all 34 ADRs by `generate-adr-index.mjs`. (Sprint 22)
+- **`worker/wrangler.toml`**: Added Saturday 23:00 UTC cron, `ERRORS_QUEUE` producer + consumer bindings, `EMAIL_SEND_FROM`/`EMAIL_SEND_TO` secret comments. (Sprints 26–27)
+- **`worker/src/types.ts`**: Added `AI_ENABLED`, `ERRORS_QUEUE`, `EMAIL_SEND_FROM`, `EMAIL_SEND_TO`, `WorkersQueue`, `ErrorQueueMessage`. (Sprints 20–27)
+
+---
+
 ## [12.3.0] — 2025-07-14
 
 > **CI + Quality polish** · **3486 tests / 110 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 29 ADRs
