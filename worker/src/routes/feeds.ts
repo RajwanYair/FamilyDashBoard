@@ -32,54 +32,18 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
       headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${maxAge}`, ...CORS_HEADERS },
     });
 
-  // ── Primary: Yahoo Finance (query1 then query2) ────────────────────────────
-  let lastSchemaError: string | undefined;
-  const yahooHosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"] as const;
-  for (const host of yahooHosts) {
-    try {
-      const upstream = await fetch(
-        `https://${host}/v8/finance/chart/${encoded}?interval=1d&range=1d`,
-        {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; FamilyDashBoard/11.5)",
-            Accept: "application/json",
-            Origin: "https://finance.yahoo.com",
-            Referer: "https://finance.yahoo.com/",
-          },
-        },
-      );
-      if (!upstream.ok) continue;
-      const data: unknown = await upstream.json();
-      const validated = safeParse(StocksChartSchema, data);
-      if (validated.ok) {
-        void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
-        return rawChartResponse(validated.data, 300);
-      }
-      lastSchemaError = validated.error;
-      break; // Same schema error on both hosts — skip to fallbacks
-    } catch {
-      continue;
-    }
-  }
-
-  // ── Backup: KV stale ──────────────────────────────────────────────────────
-  // Return raw chart JSON (not workerEnvelope) — client uses YahooChartResponse directly
-  const staleKv = await kvGetStale(env.CACHE_KV, kvKey);
-  if (staleKv) return rawChartResponse(staleKv, 60);
-
-  // ── Backup: Finnhub (requires FINNHUB_API_KEY Worker secret) ─────────────
+  // ── Primary: Finnhub (requires FINNHUB_API_KEY Worker secret) ────────────
   if (env.FINNHUB_API_KEY) {
     try {
       const finnhubRes = await fetch(
         `https://finnhub.io/api/v1/quote?symbol=${encoded}&token=${env.FINNHUB_API_KEY}`,
-        { headers: { "User-Agent": "FamilyDashBoard/11.0", Accept: "application/json" } },
+        { headers: { "User-Agent": "FamilyDashBoard/12.0", Accept: "application/json" } },
       );
       if (finnhubRes.ok) {
         const finnhubData: unknown = await finnhubRes.json();
         const finnhubParsed = safeParse(FinnhubQuoteSchema, finnhubData);
         if (finnhubParsed.ok) {
           // Normalise to Yahoo chart envelope so the client needs no changes.
-          // Use `previousClose` (not chartPreviousClose) — that is what renderStock reads.
           const normalised = {
             chart: {
               result: [{
@@ -100,9 +64,43 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
         }
       }
     } catch {
-      // Finnhub unreachable — fall through
+      // Finnhub unreachable — fall through to Yahoo
     }
   }
+
+  // ── Secondary: Yahoo Finance (query1 then query2) ─────────────────────────
+  let lastSchemaError: string | undefined;
+  const yahooHosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"] as const;
+  for (const host of yahooHosts) {
+    try {
+      const upstream = await fetch(
+        `https://${host}/v8/finance/chart/${encoded}?interval=1d&range=1d`,
+        {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (compatible; FamilyDashBoard/12.0)",
+            Accept: "application/json",
+            Origin: "https://finance.yahoo.com",
+            Referer: "https://finance.yahoo.com/",
+          },
+        },
+      );
+      if (!upstream.ok) continue;
+      const data: unknown = await upstream.json();
+      const validated = safeParse(StocksChartSchema, data);
+      if (validated.ok) {
+        void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
+        return rawChartResponse(validated.data, 300);
+      }
+      lastSchemaError = validated.error;
+      break; // Same schema error on both hosts — skip to fallback
+    } catch {
+      continue;
+    }
+  }
+
+  // ── Tertiary: KV stale ────────────────────────────────────────────────────
+  const staleKv = await kvGetStale(env.CACHE_KV, kvKey);
+  if (staleKv) return rawChartResponse(staleKv, 60);
 
   return jsonResponse({
     error: lastSchemaError
