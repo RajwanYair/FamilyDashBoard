@@ -182,21 +182,21 @@ export const AlertsSchema = v.array(AlertItemSchema);
 
 // ── Sefaria Calendar ─────────────────────────────────────────────────────────
 
-export const SefariaCalendarItemSchema = v.looseObject({
-  title: v.looseObject({ en: v.string(), he: v.optional(v.string()) }),
-  displayValue: v.looseObject({ en: v.string(), he: v.optional(v.string()) }),
+export const SefariaCalendarItemSchema = v.object({
+  title: v.object({ en: v.string(), he: v.optional(v.string()) }),
+  displayValue: v.object({ en: v.string(), he: v.optional(v.string()) }),
 });
 
-export const SefariaCalendarSchema = v.looseObject({
+export const SefariaCalendarSchema = v.object({
   calendar_items: v.array(SefariaCalendarItemSchema),
 });
 
 // ── Sefaria Text ─────────────────────────────────────────────────────────────
 
-export const SefariaTextSchema = v.looseObject({
+export const SefariaTextSchema = v.object({
   ref: v.string(),
   versions: v.optional(
-    v.array(v.looseObject({ text: v.optional(v.string()) })),
+    v.array(v.object({ text: v.optional(v.string()) })),
   ),
   he: v.optional(v.union([v.string(), v.array(v.unknown())])),
   text: v.optional(v.union([v.string(), v.array(v.unknown())])),
