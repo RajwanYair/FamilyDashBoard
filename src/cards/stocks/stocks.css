@@ -107,6 +107,16 @@
   margin-top: 1px;
 }
 
+/* V13-DATA: Per-stock 7-day volume sparkline */
+.stk-vol-spark {
+  width: 44px;
+  height: 10px;
+  overflow: visible;
+  display: block;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
 /* Feature 68: Market open/close countdown chip */
 #stk-mkt-countdown {
   font-size: 0.62em;

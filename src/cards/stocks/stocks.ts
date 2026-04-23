@@ -338,7 +338,12 @@ export function renderStocksShell(): void {
     histSparkDiv.className = "stk-ph-spark";
     histSparkDiv.setAttribute("aria-hidden", "true");
 
-    row.append(logoDiv, infoDiv, valsDiv, svg, timeDiv, histSparkDiv);
+    // V13-DATA: 7-day volume sparkline slot
+    const volSparkDiv = document.createElement("div");
+    volSparkDiv.className = "stk-vol-spark";
+    volSparkDiv.setAttribute("aria-hidden", "true");
+
+    row.append(logoDiv, infoDiv, valsDiv, svg, timeDiv, histSparkDiv, volSparkDiv);
     return row;
   };
 
@@ -512,6 +517,11 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
   if (cur != null && isFinite(cur)) {
     void updateStockHistory(blk, sym, cur);
   }
+  // V13-DATA: 7-day volume sparkline
+  const vol = meta.regularMarketVolume;
+  if (vol > 0 && isFinite(vol)) {
+    void updateStockVolumeHistory(blk, sym, vol);
+  }
 }
 
 /**
@@ -528,6 +538,23 @@ async function updateStockHistory(blk: Element, sym: string, price: number): Pro
     const positive = price >= (values[0] ?? price);
     const color = positive ? "var(--positive, #34d399)" : "var(--negative, #f87171)";
     sparkEl.innerHTML = trustedHTML(sparklineSvg(values, color, 44, 12));
+  } catch {
+    /* IDB unavailable in some environments — ignore */
+  }
+}
+
+/**
+ * V13-DATA: Persist today's volume to IDB history and re-render the 7-day
+ * volume sparkline in the `.stk-vol-spark` element. Fire-and-forget.
+ */
+async function updateStockVolumeHistory(blk: Element, sym: string, vol: number): Promise<void> {
+  try {
+    await historyAppend(`stk:vol:${sym}`, vol);
+    const values = await historyGet(`stk:vol:${sym}`, 7);
+    if (values.length < 2) return;
+    const sparkEl = blk.querySelector(".stk-vol-spark");
+    if (!sparkEl) return;
+    sparkEl.innerHTML = trustedHTML(sparklineSvg(values, "var(--accent-2, var(--accent))", 44, 12));
   } catch {
     /* IDB unavailable in some environments — ignore */
   }
