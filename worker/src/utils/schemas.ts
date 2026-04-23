@@ -1,121 +1,96 @@
 /**
- * FamilyDashBoard Worker — Zod schemas for upstream API response validation.
+ * FamilyDashBoard Worker — Valibot schemas for upstream API response validation.
+ * (ADR-023: Zod replaced by Valibot 1.x for ~87% bundle savings on validation)
  *
  * These schemas validate the structural shape of upstream JSON before the
  * worker wraps it in a WorkerResponse envelope. Unknown extra fields are
- * allowed via `.passthrough()` so upstream additions don't break the worker.
+ * preserved via v.looseObject() (Zod's .passthrough() equivalent).
  */
 
-import { z } from "zod";
+import * as v from "valibot";
 
 // ── Weather (Open-Meteo) ──────────────────────────────────────────────────────
 
-export const WeatherCurrentSchema = z
-  .object({
-    temperature_2m: z.number(),
-    apparent_temperature: z.number(),
-    weather_code: z.number(),
-    wind_speed_10m: z.number(),
-    wind_direction_10m: z.number(),
-    relative_humidity_2m: z.number(),
-    uv_index: z.number(),
-  })
-  .passthrough();
+export const WeatherCurrentSchema = v.looseObject({
+  temperature_2m: v.number(),
+  apparent_temperature: v.number(),
+  weather_code: v.number(),
+  wind_speed_10m: v.number(),
+  wind_direction_10m: v.number(),
+  relative_humidity_2m: v.number(),
+  uv_index: v.number(),
+});
 
-export const WeatherHourlySchema = z
-  .object({
-    temperature_2m: z.array(z.number()),
-    precipitation_probability: z.array(z.number()),
-    weather_code: z.array(z.number()),
-  })
-  .passthrough();
+export const WeatherHourlySchema = v.looseObject({
+  temperature_2m: v.array(v.number()),
+  precipitation_probability: v.array(v.number()),
+  weather_code: v.array(v.number()),
+});
 
-export const WeatherDailySchema = z
-  .object({
-    temperature_2m_max: z.array(z.number()),
-    temperature_2m_min: z.array(z.number()),
-    weather_code: z.array(z.number()),
-    sunrise: z.array(z.string()),
-    sunset: z.array(z.string()),
-    precipitation_probability_max: z.array(z.number()),
-    uv_index_max: z.array(z.number()),
-  })
-  .passthrough();
+export const WeatherDailySchema = v.looseObject({
+  temperature_2m_max: v.array(v.number()),
+  temperature_2m_min: v.array(v.number()),
+  weather_code: v.array(v.number()),
+  sunrise: v.array(v.string()),
+  sunset: v.array(v.string()),
+  precipitation_probability_max: v.array(v.number()),
+  uv_index_max: v.array(v.number()),
+});
 
-export const WeatherSchema = z
-  .object({
-    current: WeatherCurrentSchema,
-    hourly: WeatherHourlySchema,
-    daily: WeatherDailySchema,
-  })
-  .passthrough();
+export const WeatherSchema = v.looseObject({
+  current: WeatherCurrentSchema,
+  hourly: WeatherHourlySchema,
+  daily: WeatherDailySchema,
+});
 
 // ── Currency (ER-API) ─────────────────────────────────────────────────────────
 
-export const CurrencySchema = z
-  .object({
-    rates: z.record(z.string(), z.number()),
-  })
-  .passthrough();
+export const CurrencySchema = v.looseObject({
+  rates: v.record(v.string(), v.number()),
+});
 
 // ── Hebcal (Shabbat times) ────────────────────────────────────────────────────
 
-export const HebcalItemSchema = z
-  .object({
-    title: z.string(),
-    date: z.string(),
-    category: z.string(),
-  })
-  .passthrough();
+export const HebcalItemSchema = v.looseObject({
+  title: v.string(),
+  date: v.string(),
+  category: v.string(),
+});
 
-export const HebcalSchema = z
-  .object({
-    items: z.array(HebcalItemSchema),
-  })
-  .passthrough();
+export const HebcalSchema = v.looseObject({
+  items: v.array(HebcalItemSchema),
+});
 
 // ── Hebcal Holidays ───────────────────────────────────────────────────────────
 
-export const HebcalHolidayItemSchema = z
-  .object({
-    title: z.string(),
-    date: z.string(),
-    category: z.string(),
-  })
-  .passthrough();
+export const HebcalHolidayItemSchema = v.looseObject({
+  title: v.string(),
+  date: v.string(),
+  category: v.string(),
+});
 
-export const HebcalHolidaysSchema = z
-  .object({
-    items: z.array(HebcalHolidayItemSchema),
-  })
-  .passthrough();
+export const HebcalHolidaysSchema = v.looseObject({
+  items: v.array(HebcalHolidayItemSchema),
+});
 
 // ── Stocks (Yahoo Finance chart) ─────────────────────────────────────────────
 
-export const StocksChartMetaSchema = z
-  .object({
-    regularMarketPrice: z.number(),
-    currency: z.string(),
-    symbol: z.string(),
-  })
-  .passthrough();
+export const StocksChartMetaSchema = v.looseObject({
+  regularMarketPrice: v.number(),
+  currency: v.string(),
+  symbol: v.string(),
+});
 
-export const StocksChartResultSchema = z
-  .object({
-    meta: StocksChartMetaSchema,
-  })
-  .passthrough();
+export const StocksChartResultSchema = v.looseObject({
+  meta: StocksChartMetaSchema,
+});
 
-export const StocksChartSchema = z
-  .object({
-    chart: z
-      .object({
-        result: z.array(StocksChartResultSchema).min(1),
-        error: z.null().optional(),
-      })
-      .passthrough(),
-  })
-  .passthrough();
+export const StocksChartSchema = v.looseObject({
+  chart: v.looseObject({
+    result: v.pipe(v.array(StocksChartResultSchema), v.minLength(1)),
+    error: v.optional(v.null_()),
+  }),
+});
 
 // ── News / RSS ────────────────────────────────────────────────────────────────
 
@@ -123,75 +98,60 @@ export const StocksChartSchema = z
  * Structural validation for RSS 2.0 and Atom 1.0 feed XML.
  * The worker proxies RSS feeds as raw XML — this schema validates that the
  * response body contains the expected root elements before forwarding it.
- * Uses z.string().refine() because Zod has no XML parser; we check markers.
  */
-export const NewsRssSchema = z.string().refine(
-  (text) =>
-    // RSS 2.0 must have <channel> and at least one <item>
-    (text.includes("<channel") && text.includes("<item")) ||
-    // Atom 1.0 must have <feed and at least one <entry
-    (text.includes("<feed") && text.includes("<entry")),
-  {
-    message:
-      "Response is not a valid RSS 2.0 or Atom 1.0 feed (missing <channel>/<item> or <feed>/<entry>)",
-  },
+export const NewsRssSchema = v.pipe(
+  v.string(),
+  v.check(
+    (text) =>
+      // RSS 2.0 must have <channel> and at least one <item>
+      (text.includes("<channel") && text.includes("<item")) ||
+      // Atom 1.0 must have <feed and at least one <entry
+      (text.includes("<feed") && text.includes("<entry")),
+    "Response is not a valid RSS 2.0 or Atom 1.0 feed (missing <channel>/<item> or <feed>/<entry>)",
+  ),
 );
 
 // ── Crypto / CoinGecko ───────────────────────────────────────────────────────
 
-export const CoinGeckoPriceSchema = z
-  .object({
-    usd: z.number(),
-    usd_24h_change: z.number().optional(),
-  })
-  .passthrough();
+export const CoinGeckoPriceSchema = v.looseObject({
+  usd: v.number(),
+  usd_24h_change: v.optional(v.number()),
+});
 
-export const CoinGeckoSchema = z
-  .object({
-    bitcoin: CoinGeckoPriceSchema,
-  })
-  .passthrough();
+export const CoinGeckoSchema = v.looseObject({
+  bitcoin: CoinGeckoPriceSchema,
+});
 
 // ── met.no (Yr) Weather — backup provider ────────────────────────────────────
 
-export const MetNoInstantDetailsSchema = z
-  .object({
-    air_temperature: z.number(),
-    wind_speed: z.number(),
-    relative_humidity: z.number().optional(),
-  })
-  .passthrough();
+export const MetNoInstantDetailsSchema = v.looseObject({
+  air_temperature: v.number(),
+  wind_speed: v.number(),
+  relative_humidity: v.optional(v.number()),
+});
 
-export const MetNoTimeseriesSchema = z
-  .object({
-    time: z.string(),
-    data: z
-      .object({
-        instant: z
-          .object({ details: MetNoInstantDetailsSchema })
-          .passthrough(),
-        next_1_hours: z
-          .object({ summary: z.object({ symbol_code: z.string() }).passthrough() })
-          .passthrough()
-          .optional(),
-        next_6_hours: z
-          .object({ summary: z.object({ symbol_code: z.string() }).passthrough() })
-          .passthrough()
-          .optional(),
-      })
-      .passthrough(),
-  })
-  .passthrough();
+export const MetNoTimeseriesSchema = v.looseObject({
+  time: v.string(),
+  data: v.looseObject({
+    instant: v.looseObject({ details: MetNoInstantDetailsSchema }),
+    next_1_hours: v.optional(
+      v.looseObject({
+        summary: v.looseObject({ symbol_code: v.string() }),
+      }),
+    ),
+    next_6_hours: v.optional(
+      v.looseObject({
+        summary: v.looseObject({ symbol_code: v.string() }),
+      }),
+    ),
+  }),
+});
 
-export const MetNoWeatherSchema = z
-  .object({
-    properties: z
-      .object({
-        timeseries: z.array(MetNoTimeseriesSchema).min(1),
-      })
-      .passthrough(),
-  })
-  .passthrough();
+export const MetNoWeatherSchema = v.looseObject({
+  properties: v.looseObject({
+    timeseries: v.pipe(v.array(MetNoTimeseriesSchema), v.minLength(1)),
+  }),
+});
 
 // ── Finnhub Stock Quote — backup provider ─────────────────────────────────────
 
@@ -199,68 +159,60 @@ export const MetNoWeatherSchema = z
  * Finnhub GET /quote response:
  *   { c: currentPrice, d: change, dp: changePercent, h, l, o, pc, t }
  */
-export const FinnhubQuoteSchema = z
-  .object({
-    c: z.number(),  // current price
-    d: z.number(),  // change
-    dp: z.number(), // percent change
-    t: z.number(),  // unix timestamp
-  })
-  .passthrough();
+export const FinnhubQuoteSchema = v.looseObject({
+  c: v.number(),  // current price
+  d: v.number(),  // change
+  dp: v.number(), // percent change
+  t: v.number(),  // unix timestamp
+});
 
 // ── Tzeva Adom (Red Alerts) ──────────────────────────────────────────────────
 
-export const AlertItemSchema = z
-  .object({
-    time: z.string(),
-    threat: z.string(),
-    cities: z.array(z.string()),
-  })
-  .passthrough();
+export const AlertItemSchema = v.looseObject({
+  time: v.string(),
+  threat: v.string(),
+  cities: v.array(v.string()),
+});
 
 /**
  * Tzeva Adom /alerts-history response — an array of alert objects.
- * Unknown extra fields on each item are allowed via .passthrough().
+ * Unknown extra fields on each item are allowed via v.looseObject().
  */
-export const AlertsSchema = z.array(AlertItemSchema);
+export const AlertsSchema = v.array(AlertItemSchema);
 
 // ── Sefaria Calendar ─────────────────────────────────────────────────────────
 
-export const SefariaCalendarItemSchema = z
-  .object({
-    title: z.object({ en: z.string(), he: z.string().optional() }).passthrough(),
-    displayValue: z.object({ en: z.string(), he: z.string().optional() }).passthrough(),
-  })
-  .passthrough();
+export const SefariaCalendarItemSchema = v.looseObject({
+  title: v.looseObject({ en: v.string(), he: v.optional(v.string()) }),
+  displayValue: v.looseObject({ en: v.string(), he: v.optional(v.string()) }),
+});
 
-export const SefariaCalendarSchema = z
-  .object({
-    calendar_items: z.array(SefariaCalendarItemSchema),
-  })
-  .passthrough();
+export const SefariaCalendarSchema = v.looseObject({
+  calendar_items: v.array(SefariaCalendarItemSchema),
+});
 
 // ── Sefaria Text ─────────────────────────────────────────────────────────────
 
-export const SefariaTextSchema = z
-  .object({
-    ref: z.string(),
-    versions: z.array(z.object({ text: z.string().optional() }).passthrough()).optional(),
-    he: z.union([z.string(), z.array(z.unknown())]).optional(),
-    text: z.union([z.string(), z.array(z.unknown())]).optional(),
-  })
-  .passthrough();
+export const SefariaTextSchema = v.looseObject({
+  ref: v.string(),
+  versions: v.optional(
+    v.array(v.looseObject({ text: v.optional(v.string()) })),
+  ),
+  he: v.optional(v.union([v.string(), v.array(v.unknown())])),
+  text: v.optional(v.union([v.string(), v.array(v.unknown())])),
+});
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 
 /** Parse `data` against `schema`. Returns `{ ok: true, data }` or `{ ok: false, error }`. */
 export function safeParse<T>(
-  schema: z.ZodType<T>,
+  schema: v.BaseSchema<unknown, T, v.BaseIssue<unknown>>,
   data: unknown,
 ): { ok: true; data: T } | { ok: false; error: string } {
-  const result = schema.safeParse(data);
-  if (result.success) return { ok: true, data: result.data };
+  const result = v.safeParse(schema, data);
+  if (result.success) return { ok: true, data: result.output };
   return {
     ok: false,
-    error: result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "),
+    error: result.issues.map((i) => i.message).join("; "),
   };
 }

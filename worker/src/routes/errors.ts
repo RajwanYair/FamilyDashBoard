@@ -15,18 +15,18 @@
 
 import { jsonResponse, CORS_HEADERS } from "../utils/response";
 import type { Env, KVStore } from "../types";
-import { z } from "zod";
+import * as v from "valibot";
 
-/** Zod schema for a single error entry sent by the client. */
-const ErrorPayloadSchema = z.object({
-  ts: z.number().finite(),
-  message: z.string(),
-  source: z.string().optional(),
-  lineno: z.number().optional(),
+/** Valibot schema for a single error entry sent by the client. */
+const ErrorPayloadSchema = v.object({
+  ts: v.pipe(v.number(), v.finite()),
+  message: v.string(),
+  source: v.optional(v.string()),
+  lineno: v.optional(v.number()),
 });
 
 /** Minimal shape of an error entry sent by the client. */
-type ErrorPayload = z.infer<typeof ErrorPayloadSchema>;
+type ErrorPayload = v.InferOutput<typeof ErrorPayloadSchema>;
 
 const MAX_ERRORS_PER_REQUEST = 20;
 const MAX_MESSAGE_LENGTH = 500;
@@ -109,13 +109,13 @@ export async function handleErrors(request: Request, env?: Env): Promise<Respons
 
   const valid: ErrorPayload[] = [];
   for (const entry of body) {
-    const result = ErrorPayloadSchema.safeParse(entry);
+    const result = v.safeParse(ErrorPayloadSchema, entry);
     if (result.success) {
       valid.push({
-        ts: result.data.ts,
-        message: result.data.message.slice(0, MAX_MESSAGE_LENGTH),
-        source: result.data.source,
-        lineno: result.data.lineno,
+        ts: result.output.ts,
+        message: result.output.message.slice(0, MAX_MESSAGE_LENGTH),
+        source: result.output.source,
+        lineno: result.output.lineno,
       });
     }
   }
