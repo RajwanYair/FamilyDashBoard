@@ -1,7 +1,7 @@
-# Security Model — FamilyDashBoard v11.0
+# Security Model — FamilyDashBoard v12.3.0
 
 > This document describes the security posture, threat model, and mitigation decisions for the
-> FamilyDashBoard project. Updated: 2026-04-22.
+> FamilyDashBoard project. Updated: 2026-07-13.
 
 ---
 
@@ -16,10 +16,10 @@ management. The realistic threat surface is small but non-zero.
 | XSS via injected script tag   | Low (zero third-party scripts)    | High (full page control) | `script-src 'self'` CSP blocks inline scripts                                               |
 | XSS via unsanitized innerHTML | Low (codebase uses `textContent`) | High                     | Code rule + ESLint no-innerHTML check                                                       |
 | Clickjacking                  | Very low (no auth, no money)      | Low                      | `X-Frame-Options: DENY` + `frame-ancestors 'none'`                                          |
-| Upstream API data injection   | Low (validated with Zod)          | Medium                   | Zod schema validation on all worker routes                                                  |
+| Upstream API data injection   | Low (validated with Valibot)       | Medium                   | Valibot schema validation on all worker routes                                               |
 | CORS abuse                    | Low (read-only public data)       | Low                      | Worker rate-limits per IP; `connect-src` allowlist                                          |
 | Sensitive data leakage        | N/A                               | N/A                      | No PII stored beyond family name & calendar URL (user-entered, stays in localStorage)       |
-| Dependency supply chain       | Very low (0 runtime client deps)  | High if occurred         | 0 client deps; 1 worker dep (Zod); Dependabot monthly; `npm audit --audit-level=high` in CI |
+| Dependency supply chain       | Very low (0 runtime client deps)  | High if occurred         | 0 client deps; 1 worker dep (Hono/Valibot); Dependabot monthly; `npm audit --audit-level=high` in CI |
 | Stale credentials             | N/A                               | N/A                      | No auth tokens or session secrets in the client                                             |
 | Secret in source              | Very low                          | High                     | Worker uses `wrangler secret put ERROR_REPORTING_TOKEN`; checked by GitHub secret scanning  |
 
@@ -142,7 +142,7 @@ No secrets are committed to the repository. GitHub native secret scanning is ena
 | Layer         | Dependencies                      | Audit                                   |
 | ------------- | --------------------------------- | --------------------------------------- |
 | Client        | **0 runtime deps**                | No npm audit surface                    |
-| Worker        | `zod` (validation)                | `npm audit --audit-level=high` in CI    |
+| Worker        | `hono`, `valibot` (validation)    | `npm audit --audit-level=high` in CI    |
 | Dev toolchain | Multiple (in parent `MyScripts/`) | Dependabot monthly; reviewed in release |
 
 `npm audit --audit-level=high` runs in the CI `security` job. Current status: **0 high+ vulnerabilities**.
@@ -189,7 +189,47 @@ prohibit third-party embedding will not be supported.
 
 ---
 
-## 11. Responsible Disclosure
+## 11. SRI Policy
+
+FamilyDashBoard has **zero third-party scripts or styles loaded at runtime** (Rule 1 from
+`copilot-instructions.md`). No Content-Delivery-Network (CDN) URLs appear in `index.html`.
+All JavaScript and CSS is bundled from source by Vite into a single IIFE served from the same
+origin. Sub-Resource Integrity (SRI) hashes are therefore not required and not generated.
+
+**Policy statement:**
+
+- No `<script src="https://…">` or `<link rel="stylesheet" href="https://…">` are ever added.
+- Any PR introducing a CDN reference will fail CI via the `eslint` rule `no-external-script-src`.
+- This policy extends to the Cloudflare Worker: all dependencies are bundled by `wrangler build`.
+
+If a future release requires a trusted third-party resource, the SRI hash (`integrity=`) must be
+computed with `openssl dgst -sha384 | base64` and reviewed in the release checklist.
+
+---
+
+## 12. Secret Rotation Schedule
+
+| Secret                   | Storage                          | Rotation cadence          | Owner                |
+| ------------------------ | -------------------------------- | ------------------------- | -------------------- |
+| `ERROR_REPORTING_TOKEN`  | Cloudflare Worker secret         | Annually or on suspicion  | Project maintainer   |
+| `METRICS_TOKEN`          | Cloudflare Worker secret         | Annually or on suspicion  | Project maintainer   |
+| `REPORTS_TOKEN`          | Cloudflare Worker secret         | Annually or on suspicion  | Project maintainer   |
+| `FINNHUB_API_KEY`        | Cloudflare Worker secret         | Per Finnhub terms (1 yr)  | Project maintainer   |
+| GitHub PAT (Dependabot)  | GitHub Actions secret            | Annually                  | Project maintainer   |
+
+**Rotation procedure:**
+
+1. Generate new secret value (use `openssl rand -hex 32` for tokens).
+2. Update in Cloudflare: `wrangler secret put SECRET_NAME`.
+3. For GitHub secrets: Settings → Secrets → update value.
+4. Revoke old value immediately after confirming new one works.
+5. Add a note to `CHANGELOG.md` under the next release section.
+
+No rotation schedule applies to the GitHub Pages deployment key (managed automatically by GitHub).
+
+---
+
+## 13. Responsible Disclosure
 
 This is a private household project. If you find a security issue, please open a GitHub issue
 or email the author directly. There is no bug bounty program.
