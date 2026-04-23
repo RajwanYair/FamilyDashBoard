@@ -836,8 +836,14 @@ describe("FdbCard.buildShell (Sprint 183)", () => {
     expect(body.className).toBe("card__body");
     expect(footer.className).toBe("card__footer");
     expect(card.classList.contains("card")).toBe(true);
-    expect(header.querySelector(".card__title")?.textContent).toBe("📋 בדיקה");
-    expect(header.querySelector(".sync-dot")?.id).toBe("sync-test");
+    // Title is inside the center slot
+    expect(header.querySelector(".card__hd-center .card__title")?.textContent).toBe("📋 בדיקה");
+    // Sync-dot is inside the start slot
+    expect(header.querySelector(".card__hd-start .sync-dot")?.id).toBe("sync-test");
+    // Three layout slots present
+    expect(header.querySelector(".card__hd-start")).not.toBeNull();
+    expect(header.querySelector(".card__hd-center")).not.toBeNull();
+    expect(header.querySelector(".card__hd-end")).not.toBeNull();
   });
 
   it("is idempotent — second call returns same elements", () => {

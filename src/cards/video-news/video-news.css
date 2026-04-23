@@ -121,9 +121,15 @@
 }
 
 .card.maximized .video-news__tile-label {
-  font-size: 0.8em;
+  font-size: calc(0.8em * min(1.5, var(--max-font-scale, 1)));
   color: var(--text, #e2e8f0);
   background: rgba(0, 0, 0, 0.8);
+}
+
+/* Maximized: scale tab strip fonts with card size */
+.card.maximized .video-news__tab {
+  font-size: calc(0.78em * min(1.4, var(--max-font-scale, 1)));
+  padding: calc(0.25em * min(1.4, var(--max-font-scale, 1))) calc(0.65em * min(1.4, var(--max-font-scale, 1)));
 }
 
 /* ── Reduced-motion ──────────────────────────────────────────────────────── */

@@ -546,17 +546,32 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     const language = getInterfaceLanguage();
     const title = language === "en" ? titleEn : titleHe;
 
-    const titleSpan = document.createElement("span");
-    titleSpan.className = "card__title";
-    titleSpan.setAttribute("data-card-title", "");
-    titleSpan.textContent = `${icon} ${title}`;
-    header.appendChild(titleSpan);
+    // ── Start slot: status indicators (sync-dot, collapse-btn) ──
+    const startSlot = document.createElement("div");
+    startSlot.className = "card__hd-start";
 
     const syncDot = document.createElement("span");
     syncDot.className = "sync-dot";
     syncDot.id = `sync-${this.cardId}`;
     syncDot.setAttribute("aria-hidden", "true");
-    header.appendChild(syncDot);
+    startSlot.appendChild(syncDot);
+    header.appendChild(startSlot);
+
+    // ── Center slot: icon + title (+ mini-info appended by subclasses) ──
+    const centerSlot = document.createElement("div");
+    centerSlot.className = "card__hd-center";
+
+    const titleSpan = document.createElement("span");
+    titleSpan.className = "card__title";
+    titleSpan.setAttribute("data-card-title", "");
+    titleSpan.textContent = `${icon} ${title}`;
+    centerSlot.appendChild(titleSpan);
+    header.appendChild(centerSlot);
+
+    // ── End slot: action buttons (settings gear, etc.) ──
+    const endSlot = document.createElement("div");
+    endSlot.className = "card__hd-end";
+    header.appendChild(endSlot);
 
     this.appendChild(header);
 

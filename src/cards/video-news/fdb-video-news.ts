@@ -25,8 +25,9 @@ export class FdbVideoNewsCard extends FdbCard {
   override connect(): void {
     const { header, body } = this.buildShell("📺", "ערוץ חדשות", "Video News");
 
-    // ── Add collapse button (before title span) ───────────────────────────
-    if (!header.querySelector(".card-collapse-btn")) {
+    // ── Add collapse button into the start slot ───────────────────────────
+    const startSlot = header.querySelector<HTMLElement>(".card__hd-start");
+    if (startSlot && !startSlot.querySelector(".card-collapse-btn")) {
       const collapseBtn = document.createElement("button");
       collapseBtn.type = "button";
       collapseBtn.className = "card-collapse-btn";
@@ -34,7 +35,7 @@ export class FdbVideoNewsCard extends FdbCard {
       collapseBtn.setAttribute("aria-expanded", "true");
       collapseBtn.title = "מזער/הרחב — Collapse / Expand";
       collapseBtn.textContent = "▼";
-      header.prepend(collapseBtn);
+      startSlot.prepend(collapseBtn);
       this._collapseBtn = collapseBtn;
 
       // Restore collapsed state from localStorage
@@ -52,12 +53,13 @@ export class FdbVideoNewsCard extends FdbCard {
       });
     }
 
-    // ── Add mini-info span (after sync-dot) ───────────────────────────────
-    if (!header.querySelector(".card-mini-info")) {
+    // ── Add mini-info span into center slot (next to title) ───────────────
+    const centerSlot = header.querySelector<HTMLElement>(".card__hd-center");
+    if (centerSlot && !centerSlot.querySelector(".card-mini-info")) {
       const miniInfo = document.createElement("span");
       miniInfo.className = "card-mini-info";
       miniInfo.id = "mini-video-news";
-      header.appendChild(miniInfo);
+      centerSlot.appendChild(miniInfo);
     }
 
     // ── Maximize on header click (ignoring collapse btn clicks) ──────────

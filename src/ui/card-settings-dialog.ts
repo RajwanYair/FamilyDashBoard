@@ -206,7 +206,9 @@ export async function initCardSettingsButtons(): Promise<void> {
         e.stopPropagation();
         void openCardSettings(id);
       });
-      header.appendChild(btn);
+      // Prefer the end slot; fall back to appending directly to header
+      const endSlot = header.querySelector<HTMLElement>(".card__hd-end");
+      (endSlot ?? header).appendChild(btn);
     }),
   );
 }
