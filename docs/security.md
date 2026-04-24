@@ -223,6 +223,7 @@ Since SRI is N/A for bundled build artifacts, the equivalent supply-chain integr
 | Release provenance         | GitHub Releases are tagged from a protected branch; release notes auto-generated |
 
 For a full SLSA Level 2 upgrade path, see ADR-027 (SBOM Generation and Automated Dependency Updates).
+For the SLSA Level 3 upgrade path (signed provenance attestations via GitHub Actions), see ADR-035.
 
 ---
 
