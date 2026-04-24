@@ -363,6 +363,16 @@ describe("Worker response helpers — proxyResponse", () => {
     const res = await proxyResponse(upstream, 60);
     expect(res.status).toBe(503);
   });
+
+  it("falls back to application/json when upstream has no Content-Type", async () => {
+    // Simulate a response with no Content-Type header (null body → no default CT)
+    const upstream = new Response(null, {
+      status: 200,
+      headers: {}, // no Content-Type set → .get() returns null
+    });
+    const res = await proxyResponse(upstream, 120);
+    expect(res.headers.get("Content-Type")).toBe("application/json");
+  });
 });
 
 describe("Worker response helpers — workerEnvelope", () => {

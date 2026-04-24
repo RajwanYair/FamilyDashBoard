@@ -122,4 +122,31 @@ describe("parseRss — entity decoding", () => {
     const [item] = parseRss(ENTITY_XML, "Test");
     expect(item.title).toBe(`A & B <test> "quoted" 'apos'`);
   });
+
+  it("decodes &nbsp; entity to a space", () => {
+    const xml = `<rss><channel><item>
+      <title>Hello&nbsp;World</title>
+      <link>https://example.com</link>
+    </item></channel></rss>`;
+    const [item] = parseRss(xml, "Test");
+    expect(item.title).toBe("Hello World");
+  });
+
+  it("decodes numeric decimal entities like &#65; (= A)", () => {
+    const xml = `<rss><channel><item>
+      <title>&#72;&#101;&#108;&#108;&#111;</title>
+      <link>https://example.com</link>
+    </item></channel></rss>`;
+    const [item] = parseRss(xml, "Test");
+    expect(item.title).toBe("Hello");
+  });
+
+  it("decodes numeric hex entities like &#x41; (= A)", () => {
+    const xml = `<rss><channel><item>
+      <title>&#x48;&#x65;&#x6C;&#x6C;&#x6F;</title>
+      <link>https://example.com</link>
+    </item></channel></rss>`;
+    const [item] = parseRss(xml, "Test");
+    expect(item.title).toBe("Hello");
+  });
 });

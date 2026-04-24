@@ -140,6 +140,45 @@ describe("buildDailyEntries", () => {
     const daily = buildDailyEntries(periods);
     expect(daily[0]!.maxC).toBe(daily[0]!.minC); // both set to the single temp
   });
+
+  it("second night period for same date uses lower min (existing.minC !== POSITIVE_INFINITY branch)", () => {
+    // Day, Night1 (sets minC), Night2 (should update to lower min)
+    const periods = [
+      makePeriod({ startTime: "2025-01-04T06:00:00", isDaytime: true, temperature: 70 }),
+      makePeriod({ startTime: "2025-01-04T18:00:00", isDaytime: false, temperature: 45 }),
+      makePeriod({ startTime: "2025-01-04T21:00:00", isDaytime: false, temperature: 40 }), // 40°F < 45°F
+    ];
+    const daily = buildDailyEntries(periods);
+    expect(daily[0]!.date).toBe("2025-01-04");
+    expect(daily[0]!.minC).toBeCloseTo(fToC(40), 1); // second night period wins
+  });
+
+  it("night-only then night again (existing.maxC === NEGATIVE_INFINITY both times)", () => {
+    // Two night periods — first sets minC, second triggers maxC = tempC branch
+    const periods = [
+      makePeriod({ startTime: "2025-01-05T18:00:00", isDaytime: false, temperature: 50 }),
+      makePeriod({ startTime: "2025-01-05T22:00:00", isDaytime: false, temperature: 55 }),
+    ];
+    const daily = buildDailyEntries(periods);
+    expect(daily[0]!.date).toBe("2025-01-05");
+    // First night: minC = fToC(50), maxC = NEGATIVE_INFINITY
+    // Second night: minC = min(fToC(50), fToC(55)) = fToC(50); maxC was NEGATIVE_INFINITY → set to fToC(55)
+    expect(daily[0]!.minC).toBeCloseTo(fToC(50), 1);
+    expect(daily[0]!.maxC).toBeCloseTo(fToC(55), 1);
+  });
+
+  it("night period first then day period updates maxC and code (covers lines 97-98)", () => {
+    // Night creates entry with maxC=NEGATIVE_INFINITY; Day updates existing.maxC + existing.code
+    const periods = [
+      makePeriod({ startTime: "2025-01-06T18:00:00", isDaytime: false, temperature: 50, shortForecast: "Light Rain" }),
+      makePeriod({ startTime: "2025-01-06T06:00:00", isDaytime: true, temperature: 72, shortForecast: "Sunny" }),
+    ];
+    const daily = buildDailyEntries(periods);
+    expect(daily[0]!.date).toBe("2025-01-06");
+    expect(daily[0]!.maxC).toBeCloseTo(fToC(72), 1); // day updates maxC
+    expect(daily[0]!.minC).toBeCloseTo(fToC(50), 1);
+    expect(daily[0]!.code).toBe(0); // "Sunny" → code 0 (day takes precedence)
+  });
 });
 
 // ── normalizeNwsToWeatherSchema ───────────────────────────────────────────────

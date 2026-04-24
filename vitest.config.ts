@@ -62,11 +62,12 @@ export default defineConfig({
         // coverage surface. New tests added for cron handlers + trusted-types.
         // Sprints 11-17: encodeConnType, recurrence badge, a11y text-spacing,
         //   dialog-audit, openapi routes, SRI docs — all new paths covered.
-        // Actual: stmts≈86 / branches≈77 / funcs≈85 / lines≈87
+        // Sprint 28: response.ts null-CT + rss-parser entity branches + nws night-day-order
+        // Actual: stmts≈85.22 / branches≈77.11 / funcs≈85.33 / lines≈86.5
         // Target v13 final: 95/90/95/96 (multi-sprint increments)
         statements: 85,
         branches: 77,
-        functions: 84,
+        functions: 85,
         lines: 86,
       },
     },
