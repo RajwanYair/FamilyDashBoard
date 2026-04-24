@@ -735,6 +735,43 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   color: var(--text-secondary);
 }
 
+/* F15: Card quick-reload button + popover (currency card) */
+.card-quick-reload-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.85em;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.card-quick-reload-btn:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+.card-reload-popover {
+  position: fixed;
+  inset: auto;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85em;
+  color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  white-space: nowrap;
+}
+.card-reload-popover::backdrop {
+  background: transparent;
+}
+
 /* ── Weather ── */
 .weather-body {
   flex: 1;

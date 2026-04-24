@@ -449,6 +449,19 @@ export function initCurrencyCard(): void {
   cacheDom();
   void loadCurrency();
   scheduleCurrencyRefresh();
+  // F15: Popover API quick-reload button wiring
+  const reloadBtn = document.getElementById("cur-reload-btn");
+  const reloadPopover = document.getElementById("cur-reload-popover") as
+    | (HTMLElement & { showPopover?: () => void; hidePopover?: () => void })
+    | null;
+  if (reloadBtn && reloadPopover) {
+    reloadBtn.addEventListener("click", () => {
+      if (typeof reloadPopover.showPopover === "function") reloadPopover.showPopover();
+      void loadCurrency().then(() => {
+        if (typeof reloadPopover.hidePopover === "function") reloadPopover.hidePopover();
+      });
+    });
+  }
   diagLog("FDB-033: [currency] Initialized");
 }
 
