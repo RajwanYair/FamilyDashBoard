@@ -16,6 +16,7 @@ import {
   WORKER_BASE_URL,
   LS_CUSTOM_PROXY,
   isWorkerEnabled,
+  getNetworkMode,
 } from "./constants";
 import { diagLog } from "./diag";
 import { cGet, cSet, cGetStale } from "./cache";
@@ -115,9 +116,17 @@ export async function fetchWithTimeout(
 /**
  * Fetch JSON through CORS proxy chain.
  * Tries direct first, then each proxy in order.
+ *
+ * Behaviour by network mode (LS `dash_network_mode`, see `constants.ts`):
+ *   - "auto" (default)  — direct → custom proxy → public proxies
+ *   - "no-proxy"        — direct only; throw on failure (useful behind strict firewalls
+ *                         that block public CORS proxies but allow the worker/origin)
+ *   - "worker-only"     — also restricted to direct only here (worker path is upstream)
+ *   - "no-worker"       — direct → proxies as normal (worker is skipped by isWorkerEnabled)
  */
 export async function fetchJSON<T = unknown>(url: string): Promise<T> {
   const short = url.length > 60 ? url.slice(0, 57) + "..." : url;
+  const mode = getNetworkMode();
 
   // 1. Try direct
   try {
@@ -128,13 +137,16 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
       return (await r.json()) as T;
     }
   } catch {
-    // Direct failed — try proxies
+    // Direct failed — try proxies (unless mode forbids it)
   }
 
-  // 2. Try each proxy (only in dev/local builds — gated by __USE_PROXIES__)
-  if (!__USE_PROXIES__) {
+  // 2. Try each proxy — gated by network mode and build flag.
+  //    Mode "no-proxy" / "worker-only" skip the chain entirely (fail-fast).
+  //    Build flag `__USE_PROXIES__` lets advanced users strip proxy URLs from
+  //    the bundle; defaults to true so prod builds retain the safety net.
+  if (mode === "no-proxy" || mode === "worker-only" || !__USE_PROXIES__) {
     recordFetchFailure();
-    throw new Error(`Direct fetch failed and proxy chain disabled in production: ${short}`);
+    throw new Error(`Direct fetch failed and proxy chain disabled (mode=${mode}): ${short}`);
   }
 
   const customProxy = localStorage.getItem(LS_CUSTOM_PROXY);
@@ -181,10 +193,62 @@ export async function fetchJSON<T = unknown>(url: string): Promise<T> {
  * Fetch JSON via the Cloudflare Worker typed API routes.
  * Returns null when the URL has no known worker route mapping.
  *
+ * Session-scoped circuit breaker: after `_WORKER_BREAKER_THRESHOLD` consecutive
+ * failures the worker path is skipped for `_WORKER_BREAKER_COOLDOWN_MS` so a
+ * corp-firewall-blocked `workers.dev` does not impose an 8 s timeout on every
+ * card refresh. A single success resets the counter and closes the breaker.
+ *
  * @returns The parsed JSON or null if the worker is unavailable.
  */
+
+// ── Worker circuit breaker (session-scoped) ─────────────────────────────────
+const _WORKER_BREAKER_THRESHOLD = 3;
+const _WORKER_BREAKER_COOLDOWN_MS = 5 * 60_000;
+let _workerConsecutiveFailures = 0;
+let _workerBreakerOpenedAt = 0;
+
+/** True when the breaker is OPEN (worker calls should be skipped). */
+function _isWorkerBreakerOpen(): boolean {
+  if (_workerBreakerOpenedAt === 0) return false;
+  if (Date.now() - _workerBreakerOpenedAt > _WORKER_BREAKER_COOLDOWN_MS) {
+    // Cooldown elapsed — half-open: allow one attempt through.
+    _workerBreakerOpenedAt = 0;
+    _workerConsecutiveFailures = 0;
+    return false;
+  }
+  return true;
+}
+
+function _recordWorkerFailure(): void {
+  _workerConsecutiveFailures++;
+  if (_workerConsecutiveFailures >= _WORKER_BREAKER_THRESHOLD && _workerBreakerOpenedAt === 0) {
+    _workerBreakerOpenedAt = Date.now();
+    diagLog(
+      `FDB-015B: fetchViaWorker circuit breaker OPEN — skipping worker for ${_WORKER_BREAKER_COOLDOWN_MS / 60_000} min`,
+    );
+  }
+}
+
+function _recordWorkerSuccess(): void {
+  if (_workerConsecutiveFailures > 0 || _workerBreakerOpenedAt !== 0) {
+    diagLog(`FDB-015C: fetchViaWorker recovered — breaker CLOSED`);
+  }
+  _workerConsecutiveFailures = 0;
+  _workerBreakerOpenedAt = 0;
+}
+
+/** Reset the worker circuit breaker state (useful in tests and on config change). */
+export function resetWorkerBreaker(): void {
+  _workerConsecutiveFailures = 0;
+  _workerBreakerOpenedAt = 0;
+}
+
 export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null> {
   if (!isWorkerEnabled()) return null;
+  if (_isWorkerBreakerOpen()) {
+    diagLog(`FDB-015D: fetchViaWorker skipped (breaker open)`);
+    return null;
+  }
   const workerUrl = buildWorkerRoute(url);
   if (!workerUrl) {
     diagLog(
@@ -197,12 +261,15 @@ export async function fetchViaWorker<T = unknown>(url: string): Promise<T | null
     const r = await fetchWithTimeout(workerUrl, FETCH_TIMEOUT_MS);
     if (!r.ok) {
       diagLog(`FDB-015: fetchViaWorker HTTP ${r.status}: ${short}`);
+      _recordWorkerFailure();
       return null;
     }
     diagLog(`FDB-016: fetchViaWorker OK: ${short}`);
+    _recordWorkerSuccess();
     return (await r.json()) as T;
   } catch {
     diagLog(`FDB-017: fetchViaWorker FAIL: ${short}`);
+    _recordWorkerFailure();
     return null;
   }
 }

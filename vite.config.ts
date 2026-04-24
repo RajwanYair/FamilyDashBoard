@@ -110,9 +110,12 @@ export default defineConfig(({ command }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    // v8.0: production build strips proxy chain (Worker is sole data path).
-    // true = dev server OR file:// local build — proxy fallback retained.
-    __USE_PROXIES__: JSON.stringify(command === "serve" || isLocalBuild),
+    // v13.4: proxy chain is retained in ALL builds (prod + local + dev) as a
+    // safety net for environments where the Cloudflare Worker is unreachable
+    // (corp firewall blocking workers.dev, worker outage, etc.). Runtime
+    // control is via localStorage `dash_network_mode` — see constants.ts.
+    // Set to "false" only when deliberately stripping proxy URLs for size.
+    __USE_PROXIES__: JSON.stringify(true),
   },
 
   build: {
@@ -180,6 +183,8 @@ export default defineConfig(({ command }) => ({
         define: {
           "import.meta": "{}",
           __APP_VERSION__: JSON.stringify(appVersion),
+          __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+          __USE_PROXIES__: JSON.stringify(true),
         },
       }
     : {}),

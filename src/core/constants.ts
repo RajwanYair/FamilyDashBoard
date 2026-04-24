@@ -47,7 +47,11 @@ export function isWorkerEnabled(): boolean {
   if (_workerStaticOk === null) {
     _workerStaticOk = WORKER_BASE_URL.length > 0 && window.location.protocol !== "file:";
   }
-  return _workerStaticOk && navigator.onLine;
+  if (!_workerStaticOk || !navigator.onLine) return false;
+  // Honor the user's explicit network-mode preference (defaults to "auto")
+  const mode = getNetworkMode();
+  if (mode === "no-worker") return false;
+  return true;
 }
 
 /** Reset the cached isWorkerEnabled static result (useful in tests). */
@@ -292,6 +296,30 @@ export const LS_CHORES = "dash_chores";
 export const LS_CUSTOM_PROXY = "dash_custom_proxy";
 export const LS_ICS_URL = "dash_ics_url";
 export const LS_CONFIG = "dash_v2_config";
+
+/**
+ * Network mode override — lets the user force a specific fetch path when auto
+ * detection is wrong for their environment (corporate proxy blocks workers.dev,
+ * machine has no access to public CORS proxies, etc.).
+ *
+ *   "auto"         — default: worker-first → direct → proxy chain (circuit-breaker protected)
+ *   "worker-only"  — only worker; fail if worker is unreachable (fastest in prod when worker is healthy)
+ *   "no-worker"    — skip worker entirely (use direct + proxy chain) — best behind a firewall that blocks workers.dev
+ *   "no-proxy"     — skip public CORS proxies (worker + direct only)
+ */
+export const LS_NETWORK_MODE = "dash_network_mode";
+export type NetworkMode = "auto" | "worker-only" | "no-worker" | "no-proxy";
+
+/** Read the user's network-mode preference from localStorage (defaults to "auto"). */
+export function getNetworkMode(): NetworkMode {
+  try {
+    const v = localStorage.getItem(LS_NETWORK_MODE);
+    if (v === "worker-only" || v === "no-worker" || v === "no-proxy" || v === "auto") return v;
+  } catch {
+    // localStorage unavailable (SSR, private mode) — fall through to default
+  }
+  return "auto";
+}
 
 // ── Themes (single source of truth for theme names) ──
 export const THEMES = ["black", "blue", "matrix", "amber", "purple", "rose"] as const;

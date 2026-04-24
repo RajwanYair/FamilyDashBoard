@@ -23,7 +23,7 @@ import {
 } from "../types/config";
 import { diagLog } from "./diag";
 import { state } from "./state";
-import { LS_CONFIG } from "./constants";
+import { LS_CONFIG, LS_NETWORK_MODE } from "./constants";
 
 /**
  * Run forward migrations on a raw config object.
@@ -602,6 +602,7 @@ const KNOWN_LS_PREFIXES: readonly string[] = [
   "dash_custom_proxy",
   "dash_ics_url",
   "dash_wx_chart_mode",
+  LS_NETWORK_MODE, // user override for fetch path selection
 ];
 
 export interface LsAuditResult {
