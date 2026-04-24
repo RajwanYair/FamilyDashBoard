@@ -268,8 +268,6 @@ describe("normalizeNwsToWeatherSchema", () => {
   });
 });
 
-// ── isUsCoordinate ────────────────────────────────────────────────────────────
-
 describe("isUsCoordinate", () => {
   it("accepts continental US coordinates", () => {
     expect(isUsCoordinate(40.7128, -74.006)).toBe(true); // New York
@@ -290,5 +288,122 @@ describe("isUsCoordinate", () => {
     expect(isUsCoordinate(51.5074, -0.1278)).toBe(false); // London
     expect(isUsCoordinate(35.6762, 139.6503)).toBe(false); // Tokyo
     expect(isUsCoordinate(-33.8688, 151.2093)).toBe(false); // Sydney
+  });
+});
+
+// ── Sprint 46: missing branch coverage ───────────────────────────────────────
+
+describe("parseWindKph — null match branch (line 33 `: 0` path)", () => {
+  it('returns 0 for non-numeric non-calm string "Variable"', () => {
+    expect(parseWindKph("Variable")).toBe(0);
+  });
+
+  it("returns 0 for empty string", () => {
+    expect(parseWindKph("")).toBe(0);
+  });
+});
+
+describe("buildDailyEntries — Celsius temperatureUnit branch (line 83 else path)", () => {
+  function makeCelsiusPeriod(opts: {
+    startTime: string;
+    isDaytime: boolean;
+    temperature: number;
+    precipPct?: number;
+    shortForecast?: string;
+  }) {
+    return {
+      number: 1,
+      startTime: opts.startTime,
+      endTime: opts.startTime,
+      isDaytime: opts.isDaytime,
+      temperature: opts.temperature,
+      temperatureUnit: "C" as const, // ← Celsius, not Fahrenheit
+      windSpeed: "5 mph",
+      windDirection: "N",
+      shortForecast: opts.shortForecast ?? "Sunny",
+      probabilityOfPrecipitation: opts.precipPct !== undefined
+        ? { value: opts.precipPct, unitCode: "wmoUnit:percent" }
+        : undefined,
+      dewpoint: undefined,
+      relativeHumidity: undefined,
+    };
+  }
+
+  it("passes temperature through as-is when temperatureUnit is C (line 83 else branch)", () => {
+    const periods = [
+      makeCelsiusPeriod({ startTime: "2025-01-01T06:00:00", isDaytime: true, temperature: 20, precipPct: 10 }),
+      makeCelsiusPeriod({ startTime: "2025-01-01T18:00:00", isDaytime: false, temperature: 8, precipPct: 5 }),
+    ];
+    const daily = buildDailyEntries(periods);
+    expect(daily[0]!.maxC).toBe(20); // not converted — stays as-is
+    expect(daily[0]!.minC).toBe(8);
+  });
+
+  it("uses 0 when probabilityOfPrecipitation is undefined (line 84 ?? 0 branch)", () => {
+    const periods = [
+      makeCelsiusPeriod({ startTime: "2025-01-02T06:00:00", isDaytime: true, temperature: 15 }), // no precipPct
+    ];
+    const daily = buildDailyEntries(periods);
+    expect(daily[0]!.precipPct).toBe(0); // ?? 0 path
+  });
+});
+
+describe("normalizeNwsToWeatherSchema — Celsius + missing optional fields (lines 116-184 branches)", () => {
+  function makeCelsiusHourly(count = 24) {
+    return Array.from({ length: count }, (_, i) => ({
+      number: i + 1,
+      startTime: `2025-01-01T${String(i).padStart(2, "0")}:00:00Z`,
+      endTime: `2025-01-01T${String(i + 1).padStart(2, "0")}:00:00Z`,
+      isDaytime: i >= 6 && i < 18,
+      temperature: 15 + i, // already in Celsius
+      temperatureUnit: "C" as const, // ← triggers else branch in normalizer
+      windSpeed: "10 mph",
+      windDirection: "SW",
+      shortForecast: "Mostly Sunny",
+      probabilityOfPrecipitation: undefined, // ← triggers ?? 0 in hourly map
+      dewpoint: undefined,           // ← triggers ?? 0 for dew_point_2m
+      relativeHumidity: undefined,   // ← triggers ?? 50 for relative_humidity_2m
+    }));
+  }
+
+  function makeCelsiusDailyPeriods() {
+    return [
+      { number: 1, startTime: "2025-01-01T06:00:00Z", endTime: "2025-01-01T18:00:00Z",
+        isDaytime: true, temperature: 20, temperatureUnit: "C" as const,
+        windSpeed: "5 mph", windDirection: "N", shortForecast: "Sunny",
+        probabilityOfPrecipitation: undefined, dewpoint: undefined, relativeHumidity: undefined },
+      { number: 2, startTime: "2025-01-01T18:00:00Z", endTime: "2025-01-02T06:00:00Z",
+        isDaytime: false, temperature: 8, temperatureUnit: "C" as const,
+        windSpeed: "5 mph", windDirection: "N", shortForecast: "Clear",
+        probabilityOfPrecipitation: undefined, dewpoint: undefined, relativeHumidity: undefined },
+    ];
+  }
+
+  it("uses Celsius temperature directly (no fToC) for hourlyPeriods[0]", () => {
+    const hourly = makeCelsiusHourly();
+    const result = normalizeNwsToWeatherSchema(hourly, makeCelsiusDailyPeriods());
+    // temperature stays as-is (15 + 0 = 15), not converted via fToC
+    expect(result.current.temperature_2m).toBe(15);
+  });
+
+  it("uses ?? 50 for relative_humidity when relativeHumidity is undefined", () => {
+    const result = normalizeNwsToWeatherSchema(makeCelsiusHourly(), makeCelsiusDailyPeriods());
+    expect(result.current.relative_humidity_2m).toBe(50);
+  });
+
+  it("uses ?? 0 for dew_point_2m when dewpoint is undefined", () => {
+    const result = normalizeNwsToWeatherSchema(makeCelsiusHourly(), makeCelsiusDailyPeriods());
+    expect(result.current.dew_point_2m).toBe(0);
+  });
+
+  it("uses ?? 0 for hourly precipitation_probability when field is undefined", () => {
+    const result = normalizeNwsToWeatherSchema(makeCelsiusHourly(), makeCelsiusDailyPeriods());
+    expect(result.hourly.precipitation_probability[0]).toBe(0);
+  });
+
+  it("uses Celsius in hourly temperature_2m map (else branch)", () => {
+    const hourly = makeCelsiusHourly(1);
+    const result = normalizeNwsToWeatherSchema(hourly, makeCelsiusDailyPeriods());
+    expect(result.hourly.temperature_2m[0]).toBe(15);
   });
 });
