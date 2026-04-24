@@ -300,11 +300,14 @@ export async function handleSefariaCalendar(env: Env): Promise<Response> {
   const data: unknown = await res.json();
   const validated = safeParse(SefariaCalendarSchema, data);
   if (!validated.ok) {
-    console.warn(`[sefaria:calendar] Valibot validation warning: ${validated.error}`);
+    // V13-DATA strict mode: invalid response → try KV stale, then 502
+    console.error(`[sefaria:calendar] Valibot strict validation failed: ${validated.error}`);
+    const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
+    if (stale) return jsonResponse(stale, 200);
+    return jsonResponse({ error: "Upstream response failed validation", detail: validated.error }, 502);
   }
-  const payload = validated.ok ? validated.data : data;
-  void kvPut(env.CACHE_KV, kvKey, payload, 86400);
-  return new Response(JSON.stringify(payload), {
+  void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
+  return new Response(JSON.stringify(validated.data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -338,11 +341,14 @@ export async function handleSefariaText(url: URL, env: Env): Promise<Response> {
   const data: unknown = await res.json();
   const validated = safeParse(SefariaTextSchema, data);
   if (!validated.ok) {
-    console.warn(`[sefaria:text] Valibot validation warning: ${validated.error}`);
+    // V13-DATA strict mode: invalid response → try KV stale, then 502
+    console.error(`[sefaria:text] Valibot strict validation failed: ${validated.error}`);
+    const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
+    if (stale) return jsonResponse(stale, 200);
+    return jsonResponse({ error: "Upstream response failed validation", detail: validated.error }, 502);
   }
-  const payload = validated.ok ? validated.data : data;
-  void kvPut(env.CACHE_KV, kvKey, payload, 86400);
-  return new Response(JSON.stringify(payload), {
+  void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
+  return new Response(JSON.stringify(validated.data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",

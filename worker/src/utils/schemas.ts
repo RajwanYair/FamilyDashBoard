@@ -180,23 +180,26 @@ export const AlertItemSchema = v.looseObject({
  */
 export const AlertsSchema = v.array(AlertItemSchema);
 
-// ── Sefaria Calendar ─────────────────────────────────────────────────────────
+// ── Sefaria Calendar (strict mode — V13-DATA) ────────────────────────────────
+// v.looseObject() passes through unknown fields so new Sefaria API additions
+// do not break validation, while still enforcing the required shape.
 
-export const SefariaCalendarItemSchema = v.object({
-  title: v.object({ en: v.string(), he: v.optional(v.string()) }),
-  displayValue: v.object({ en: v.string(), he: v.optional(v.string()) }),
+export const SefariaCalendarItemSchema = v.looseObject({
+  title: v.looseObject({ en: v.string(), he: v.optional(v.string()) }),
+  displayValue: v.looseObject({ en: v.string(), he: v.optional(v.string()) }),
 });
 
-export const SefariaCalendarSchema = v.object({
-  calendar_items: v.array(SefariaCalendarItemSchema),
+export const SefariaCalendarSchema = v.looseObject({
+  calendar_items: v.pipe(v.array(SefariaCalendarItemSchema), v.minLength(1)),
 });
 
-// ── Sefaria Text ─────────────────────────────────────────────────────────────
+// ── Sefaria Text (strict mode — V13-DATA) ─────────────────────────────────────
+// ref is required; text content fields are optional due to sparse Sefaria API.
 
-export const SefariaTextSchema = v.object({
+export const SefariaTextSchema = v.looseObject({
   ref: v.string(),
   versions: v.optional(
-    v.array(v.object({ text: v.optional(v.string()) })),
+    v.array(v.looseObject({ text: v.optional(v.string()) })),
   ),
   he: v.optional(v.union([v.string(), v.array(v.unknown())])),
   text: v.optional(v.union([v.string(), v.array(v.unknown())])),

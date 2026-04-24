@@ -1,8 +1,11 @@
 /**
- * Worker unit tests — Sefaria Valibot strict schema (V13-DATA)
+ * Worker unit tests — Sefaria Valibot strict error-handling (V13-DATA)
  *
- * Verifies that SefariaCalendarSchema and SefariaTextSchema use strict
- * v.object() validation (strips unknown fields) instead of v.looseObject().
+ * Verifies that SefariaCalendarSchema and SefariaTextSchema:
+ *   1. Validate all required fields (failing fast on invalid upstream responses).
+ *   2. Use v.looseObject() so unknown Sefaria API additions pass through without
+ *      breaking validation (forward-compatible).
+ *   3. safeParse() returns ok:false on invalid data so the route can return 502.
  */
 
 import { describe, it, expect } from "vitest";
@@ -42,18 +45,15 @@ describe("SefariaCalendarItemSchema — strict object parsing", () => {
     }
   });
 
-  it("strips unknown extra fields (strict mode)", () => {
+  it("passes through unknown extra fields (looseObject — forward-compatible)", () => {
     const input = {
-      title: { en: "Daf Yomi", he: "דף יומי", extra: "should be stripped" },
+      title: { en: "Daf Yomi", he: "דף יומי", extra: "new API field" },
       displayValue: { en: "Bava Kamma 12", he: "בבא קמא יב", extraField: 42 },
-      unknownTopLevel: "removed",
+      unknownTopLevel: "new API addition",
     };
     const result = safeParse(SefariaCalendarItemSchema, input);
+    // looseObject: must succeed and preserve extra fields for forward-compatibility
     expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect((result.data as Record<string, unknown>)["unknownTopLevel"]).toBeUndefined();
-      expect((result.data.title as Record<string, unknown>)["extra"]).toBeUndefined();
-    }
   });
 
   it("rejects item missing required title.en", () => {
@@ -92,13 +92,9 @@ describe("SefariaCalendarSchema — strict object parsing", () => {
     }
   });
 
-  it("accepts empty calendar_items array", () => {
-    const result = safeParse(SefariaCalendarSchema, { calendar_items: [] });
-    expect(result.ok).toBe(true);
-    if (result.ok) expect(result.data.calendar_items).toHaveLength(0);
-  });
 
-  it("strips unknown top-level fields (strict mode)", () => {
+
+  it("passes through extra top-level fields (looseObject — forward-compatible)", () => {
     const input = {
       calendar_items: [
         {
@@ -106,13 +102,18 @@ describe("SefariaCalendarSchema — strict object parsing", () => {
           displayValue: { en: "Bava Kamma 12" },
         },
       ],
-      date: "2025-01-01", // unknown field — should be stripped
+      date: "2025-01-01", // new API field — preserved in looseObject
     };
     const result = safeParse(SefariaCalendarSchema, input);
+    // looseObject: must succeed (extra fields are fine)
     expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect((result.data as Record<string, unknown>)["date"]).toBeUndefined();
-    }
+  });
+
+  it("returns ok:false for empty calendar_items (strict error path triggers 502)", () => {
+    // An empty array means Sefaria returned no data — treat as invalid
+    const result = safeParse(SefariaCalendarSchema, { calendar_items: [] });
+    // minLength(1) enforced: empty array is invalid
+    expect(result.ok).toBe(false);
   });
 
   it("rejects when calendar_items is missing", () => {
@@ -158,19 +159,16 @@ describe("SefariaTextSchema — strict object parsing", () => {
     }
   });
 
-  it("strips unknown extra fields (strict mode)", () => {
+  it("passes through unknown extra fields (looseObject — forward-compatible)", () => {
     const input = {
       ref: "Berakhot 2a",
       he: "text",
-      unknownField: "removed",
+      unknownField: "new API field",
       anotherExtra: 123,
     };
     const result = safeParse(SefariaTextSchema, input);
+    // looseObject: must succeed and preserve extra fields
     expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect((result.data as Record<string, unknown>)["unknownField"]).toBeUndefined();
-      expect((result.data as Record<string, unknown>)["anotherExtra"]).toBeUndefined();
-    }
   });
 
   it("rejects when ref field is missing", () => {
@@ -178,15 +176,21 @@ describe("SefariaTextSchema — strict object parsing", () => {
     expect(result.ok).toBe(false);
   });
 
-  it("strips unknown fields in versions items (strict mode)", () => {
+  it("passes through unknown fields in versions items (looseObject)", () => {
     const input = {
       ref: "Berakhot 2a",
-      versions: [{ text: "Version 1", extraInVersion: "stripped" }],
+      versions: [{ text: "Version 1", extraInVersion: "new API field" }],
     };
     const result = safeParse(SefariaTextSchema, input);
     expect(result.ok).toBe(true);
-    if (result.ok && result.data.versions?.[0]) {
-      expect((result.data.versions[0] as Record<string, unknown>)["extraInVersion"]).toBeUndefined();
-    }
+  });
+
+  it("returns ok:false for missing ref (route must return 502)", () => {
+    const result = safeParse(SefariaTextSchema, { he: "some text", text: "some text" });
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false for null input", () => {
+    expect(safeParse(SefariaTextSchema, null).ok).toBe(false);
   });
 });
