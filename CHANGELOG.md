@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.9.0] — 2025-07-14
+
+> **CI gate hardening · A11y contract tests · ICS fuzz · Popover quick-reload** · **4021 tests / 135 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
+
+### Added
+
+- **F18 worker-client / OpenAPI sync hash gate** (`scripts/check-worker-client.mjs`, `package.json`, `.github/workflows/ci.yml`): SHA-256 fingerprint of all `operationId` + method + path tuples in `worker/openapi.yaml` is compared against the hash embedded in `src/core/worker-client.ts`. Build fails on divergence. Wired into `npm run check` chain + CI build job.
+- **V13-OPS ADR index staleness gate** (`scripts/check-adr-index.mjs`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`): Counts ADR files vs `docs/adr/README.md` table rows; fails CI if they diverge. Release workflow emits GitHub Actions job summary via `release-report.mjs --no-gates | tee -a "$GITHUB_STEP_SUMMARY"`.
+- **V13-A11Y voice-control unique aria-labels** (`src/index.html`): All 11 card-collapse buttons, 7 config-panel buttons, and 4 range-slider inputs now carry unique, descriptive Hebrew `aria-label` attributes. 24 unit tests (`tests/unit/a11y/voice-control.test.ts`).
+- **V13-A11Y dialog heading hierarchy** (`src/index.html`): `#config-overlay` gains `role="dialog"`, `aria-modal="true"`, `aria-labelledby="cfg-panel-title"`. `#diag-overlay` heading corrected from `<h3>` to `<h2>`. 19 unit tests (`tests/unit/a11y/heading-hierarchy.test.ts`).
+- **V13-EDGE KV TTL OpenAPI annotations** (`worker/openapi.yaml`, `scripts/check-openapi-ttl.mjs`): All 18 GET routes annotated with `x-kv-ttl`; previously missing routes (`/health`, `/api/errors/export`, `/api/metrics`, `/api/reports/digest`) have `x-kv-ttl: 0`. CI gate fails if any GET route is missing the annotation. 20 unit tests (`tests/unit/scripts/openapi-ttl.test.ts`).
+- **V13-DATA ICS fuzz cases extended to 28** (`tests/unit/cards/calendar.test.ts`): 5 new RFC 5545 fuzz cases — DTSTART with TZID parameter, truncated VEVENT (no END), DURATION property without DTEND, URL property inside VEVENT, Hebrew (Unicode) text in SUMMARY and LOCATION.
+- **V13-OPS CHANGELOG staleness gate + job summary** (`scripts/check-release-notes.mjs`, `package.json`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`): Verifies `package.json` version has a populated entry in `CHANGELOG.md`; release workflow appends full readiness report to GitHub Actions job summary. 17 unit tests (`tests/unit/scripts/release-notes.test.ts`).
+- **F15 Popover API quick-reload button on currency card** (`src/index.html`, `src/styles/components.css`, `src/cards/currency/currency.ts`): `#cur-reload-btn` opens `#cur-reload-popover` via `popovertarget`; click also triggers `loadCurrency()` and auto-hides the popover on completion. `showPopover()`/`hidePopover()` calls are capability-guarded.
+
+---
+
 ## [12.8.0] — 2025-07-01
 
 > **Platform primitives · NWS weather · CI delta gating** · **3893 tests / 129 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
