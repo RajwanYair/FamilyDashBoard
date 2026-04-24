@@ -185,6 +185,8 @@ jobs:
         run: node scripts/check-bundle-size.mjs
       - name: SW version check
         run: node scripts/check-sw-version.mjs
+      - name: Worker-client / OpenAPI sync check (F18)
+        run: node scripts/check-worker-client.mjs
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)
