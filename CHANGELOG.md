@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [12.8.0] — 2025-07-01
+
+> **Platform primitives · NWS weather · CI delta gating** · **3893 tests / 129 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Added
+
+- **View Transitions L2 for card expand/collapse (F12)** (`src/cards/base-card.ts`): `document.startViewTransition()` wraps maximize/restore with `view-transition-name` on the card root. Graceful fallback when API absent.
+- **CSS `light-dark()` + `color-scheme: dark light` system auto-theme (F11)** (`src/styles/tokens.css`): Adopted native `light-dark()` for `--surface`, `--text`, `--border` tokens; `:root { color-scheme: dark light }` enables OS-driven auto mode without JS.
+- **WCAG 3.1.5 reading-level prose tokens (V13-A11Y)** (`src/styles/tokens.css`): `--prose-line-height: 1.6`, `--prose-letter-spacing: 0.015em`, `--prose-word-spacing: 0.05em`, `--prose-font-size: clamp(0.9rem, 1vw + 0.5rem, 1.1rem)` applied to `.card-body`.
+- **Speculation Rules API prerender + prefetch (F13)** (`src/index.html`): `<script type="speculationrules">` with `prerender` for `/preview` and `prefetch` for `/` back-nav. `"eagerness": "moderate"`.
+- **Sefaria Valibot strict error-handling — 502 on invalid upstream (V13-DATA)** (`worker/src/routes/feeds.ts`, `worker/src/utils/schemas.ts`): Schemas switched to `v.looseObject()` for forward-compat; validation failure now returns KV stale + 502 instead of silent passthrough. 17 schema tests.
+- **NWS api.weather.gov US-travel mode provider (V13-DATA)** (`worker/src/routes/data.ts`, `worker/src/utils/nws-normalize.ts`): `?provider=nws` opt-in triggers NWS Points API → parallel hourly+daily fetch → `normalizeNwsToWeatherSchema()`. 48 normalizer tests. `isUsCoordinate()` gate.
+- **CSS Anchor Positioning for stocks detail popover (F11)** (`src/cards/stocks/stocks.ts`, `src/styles/components.css`): `@supports (anchor-name: --test)` block positions `.stk-detail-popover` via `position-anchor` + `anchor()`. JS sets `anchor-name` inline on clicked row button.
+- **Per-card source bundle delta alert in CI (F17)** (`scripts/check-bundle-size.mjs`, `scripts/bundle-trend.mjs`): `cardSourceBytes()` recursively sums `.ts/.css/.html` per card folder. Gate fails on >10% growth vs baseline. `bundle-trend.json` gains `cardSource` field. 19 delta-gate tests.
+
+---
+
 ## [12.7.0] — 2026-04-23
 
 > **V13 Data · A11y · Crypto · OPS** · **3775 tests / 127 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint

@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v12.7.0
+/* FamilyDashBoard ServiceWorker — v12.8.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * v12.5.0: V13-EDGE SSE+DO+rate-limiter, DATA sparklines (weather/sysinfo), A11Y text-spacing, ICS fuzz, changesets, ADR index
