@@ -78,10 +78,10 @@ What we consider, filtered through our mission:
 | **Workers Smart Placement** | CF 2024 GA | **Adopt across all routes in v13** | Zero-config latency win for origin-fetch routes. |
 | **CSS `@property` + `@scroll-timeline` + scroll-driven animations** | CSS WG 2025 | **Adopt in v13** | Scroll-driven ticker + progress rings without JS; zero cost. |
 | **CSS Anchor Positioning** | CSS WG 2025 | **Adopt for tooltips + help overlay v13** | Removes `getBoundingClientRect`-driven layout JS. |
-| **CSS `light-dark()` function** | CSS WG 2024 | **Adopt in v13** | Collapses dual theme tokens; still inside `@layer tokens`. |
-| **Popover API (`popover`, `popovertarget`)** | Browser 2024 | **Adopt in v13** | Replaces `<dialog>` for lightweight menus (stocks-details, card-context menu). |
-| **`scrollend` event + `overscroll-behavior: contain`** | Browser 2025 | **Adopt** | Improves auto-loop-scroll re-anchoring after manual pause. |
-| **Fetch `Retry-After` + `AbortSignal.timeout()`** | Browser 2025 | **Already partial; fully adopt v13** | Replaces custom `fetchWithTimeout`; drops ~40 LOC. |
+| **CSS `light-dark()` function** | CSS WG 2024 | ✅ **Done in v13** | Collapses dual theme tokens; still inside `@layer tokens`. Adopted Sprint 24 — all core color tokens use `light-dark()`. |
+| **Popover API (`popover`, `popovertarget`)** | Browser 2024 | ✅ **Done in v13** | Adopted in stocks card: `stk-detail-popover` + `popovertarget` on every stock row + `fillStockDetailPopover()`. |
+| **`scrollend` event + `overscroll-behavior: contain`** | Browser 2025 | ✅ **Done in v13** | `auto-loop-scroll.ts` attaches `scrollend` on parent; `overscroll-behavior: contain` set on parent. |
+| **Fetch `Retry-After` + `AbortSignal.timeout()`** | Browser 2025 | ✅ **Done in v13** | `fetchWithTimeout()` uses `AbortSignal.timeout()` when available (Chrome 103+/FF 100+/Safari 16+); legacy fallback for happy-dom. |
 | **Document Picture-in-Picture API** | Browser 2024 | **Evaluate for video-news card v13** | PiP the video into a corner while other cards refresh. |
 | **URL Pattern API** | Browser 2024 | **Already on worker (Hono uses it); expose in client for dynamic routes** | v13. |
 | **Shared Element Transitions L3 (cross-doc)** | CSS WG draft 2026 | **Track** | Revisit v14. |
@@ -127,11 +127,11 @@ All 29 ADRs re-litigated, plus decisions not yet formalised. Every row is stampe
 | F8 | Signals (TC39 Stage 3) | `state.ts` ~70 LOC | **Track** | Adopt when (a) stage 3, (b) polyfill < 1.5 KB gzip, (c) concrete card benefit. Candidate: v14. |
 | F9 | CSS approach — vanilla `@layer` + tokens + Lightning CSS (ADR-008, ADR-017) | Shipped | **Keep** | Reconfirmed. Tailwind 4 rejected. |
 | F10 | CSS `@scope` per card (ADR-022) | Shipped | **Keep** | 16 unit tests enforce it. |
-| F11 | CSS `light-dark()`, `@property`, scroll-driven animations, Anchor Positioning | Not used | **Adopt in v13** | All zero-cost; progressive-enhancement only. |
+| F11 | CSS `light-dark()`, `@property`, scroll-driven animations, Anchor Positioning | Not used | ✅ **Done in v13** | `light-dark()` adopted in `@layer tokens` for all core color tokens; `@property` registrations for animatable tokens; Anchor Positioning for stocks Popover. |
 | F12 | View Transitions L2 (cross-doc) | Shipped for theme switch + config-panel | **Keep; expand to maximise-card flow** | v13. |
 | F13 | Speculation Rules API | Shipped (prefetch preview) | **Keep; audit complete (v13.2)** | Same-origin-only rule enforced; no external URLs; conservative prerender + moderate prefetch; 8 contract tests. |
 | F14 | Trusted Types + CSP L3 `require-trusted-types-for 'script'` | Shipped | **Keep** | Defence-in-depth; no offenders. |
-| F15 | Popover API | Not used | **Adopt in v13** | Replaces `<dialog>` for lightweight menus. |
+| F15 | Popover API | Not used | ✅ **Done in v13** | `stk-detail-popover` + `popovertarget` on stock rows; `fillStockDetailPopover()` calls `showPopover()`; CSS Anchor Positioning sets `--stk-row-anchor`. |
 | F16 | Document Picture-in-Picture (video-news card) | Not used | **Evaluate v13** | Gate on user request ≥ 3. |
 | F17 | Bundle analyzer — `check-bundle-size.mjs` with per-card breakdown | Shipped | **Keep; add per-card delta alert** | Fail CI on > 10 % growth per card (currently whole-bundle only). v13. |
 | F18 | Typed worker client from OpenAPI (ADR-021) | `src/core/worker-client.ts` shipped | **Keep; regenerate on every worker OpenAPI change** | Add pre-commit check that compares hash of generated file to checked-in. v13. |
@@ -309,16 +309,16 @@ Finish what v12.1 started.
 
 | Card | Action |
 | --- | --- |
-| stocks | Finnhub → primary; Yahoo → tertiary; 7-day history sparkline (already shipped); add volume sparkline. |
-| news | SimHash v2 with embeddings (see V13-AI). |
-| weather | 7-day history sparkline (temp + precip). `api.weather.gov` for US-travel mode (opt-in). |
-| currency | 7-day history sparkline (XAU / XAG / USD / EUR / GBP). |
-| crypto | 7-day price history sparkline. |
-| alerts | DO-SSE live count + 7-day history sparkline (incidents/day). |
-| hebrew-cal | Next-year holiday pre-warm audit (29 Elul trigger). |
+| stocks | Finnhub → primary; Yahoo → tertiary; ✅ 7-day history sparkline (shipped); ✅ volume sparkline (Sprint 24); ✅ Popover API stock detail panel (`stk-detail-popover`, Sprint 24). |
+| news | SimHash v2 with embeddings (see V13-AI). ✅ SimHash v2 shipped (Sprint 6). |
+| weather | ✅ 7-day history sparkline — temp + precip probability (Sprint 22). `api.weather.gov` for US-travel mode (opt-in). |
+| currency | ✅ 7-day history sparkline XAU/XAG/USD/EUR/GBP (Sprint 24). |
+| crypto | ✅ 7-day price history sparkline via `historyAppend("stk:BTC-USD", ...)` in stocks card (Sprint 24). |
+| alerts | ✅ DO-SSE live count + 7-day history sparkline incidents/day (Sprint 22). |
+| hebrew-cal | ✅ Next-year holiday pre-warm — `is29Elul()` + `prewarmNextYearHolidays()` trigger (Sprint 31). |
 | calendar | icalendar-rfc5545 fuzz tests 13 → 25+ cases (✅ 79 cases). |
-| sefaria | Valibot strict mode (currently lenient). |
-| motivation | Worker-AI Hebrew quote (see V13-AI, opt-in). |
+| sefaria | ✅ Valibot strict mode — `v.looseObject()` + 502 on validation failure + KV stale fallback + 17 schema tests (Sprint 19). |
+| motivation | ✅ Worker-AI Hebrew quote (see V13-AI, opt-in). |
 | tasks | Recurring weekly/monthly tasks (config-driven). ✅ recurrence badge added (Sprint 15). |
 | system-info | Connection-type + downlink sparkline. ✅ both implemented (Sprint 12). |
 
