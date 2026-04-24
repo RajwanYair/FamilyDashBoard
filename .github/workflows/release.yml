@@ -80,6 +80,12 @@ jobs:
       - name: Release notes CHANGELOG check (V13-OPS)
         run: node scripts/check-release-notes.mjs
 
+      - name: Reading-level audit (V13-A11Y)
+        run: node scripts/check-reading-level.mjs
+
+      - name: Release checklist in step summary (V13-OPS)
+        run: node scripts/release-checklist.mjs
+
       - name: Release readiness report (V13-OPS)
         run: node scripts/release-report.mjs --no-gates | tee -a "$GITHUB_STEP_SUMMARY"
 
