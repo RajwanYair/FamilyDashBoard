@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD013 MD033 MD024 MD036 -->
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-24 · **Shipped baseline**: v12.9.0 → v13.2.0 — 4295 tests / 151 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 35 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
+> **Refresh date**: 2026-04-24 · **Shipped baseline**: v12.9.0 → v13.3.0 — 4346 tests / 149 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 36 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
 > **Scope**: every architectural decision is reopened — including the ones that ship cleanly — against the 2026-Q2 web-platform landscape, then charted toward v13, v14 and v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit.
 
 ---
@@ -421,7 +421,13 @@ Ships Stream V13-DATA. Hard gate:
 
 - Every card: provider-redundant + validated + stale-fallback + (where applicable) 7-day history.
 
-### 4.5 v13.3 — **Accessibility AAA & cognitive** (target: 2026-Q4)
+### 4.5 v13.3 — **Coverage + Worker + Docs** (shipped 2026-04-24)
+
+Shipped: Hebrew-cal 29 Elul pre-warm · scrollend/animLevel coverage · handleWeather NWS branch tests ·
+feeds.ts route coverage (handleNewsAggregate, handleCalendar, Sefaria) · ADR-036 WebRTC mirror design ·
+V14-HARMONISE CI composite action · branches threshold 78% · simhash flake fix. 4346 tests / 149 suites / 0 failures.
+
+### 4.6 v13.4 — **Accessibility AAA & cognitive** (target: 2026-Q4)
 
 Ships Stream V13-A11Y. Hard gate:
 

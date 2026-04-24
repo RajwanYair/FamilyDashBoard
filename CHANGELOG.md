@@ -5,6 +5,39 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.3.0] — 2026-04-24
+
+> **Coverage + Worker + Docs sprint** — Hebrew-cal 29 Elul pre-warm · scrollend/animLevel test coverage · handleWeather NWS path branches · feeds.ts untested routes coverage · ADR-036 WebRTC config mirror · V14-HARMONISE CI composite action · branches threshold 77→78% · simhash property test flake fix · **4346 tests / 149 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs
+
+### Added
+
+- **Hebrew-cal 29 Elul pre-warm** (`src/cards/hebrew-cal/hebrew-cal.ts`): `is29Elul()`, `nextHebrewYearGregorianApprox()`, `prewarmNextYearHolidays()` functions; wired into `loadHebCal()` to pre-warm next year's holiday list on 29 Elul. 14 new tests.
+- **handleWeather NWS coverage** (`tests/unit/worker/worker.test.ts`): 8 new tests covering missing lat/lon, out-of-range lat, Open-Meteo success, KV stale fallback, 502 all-fail, NWS non-US rejection (400), NWS US coordinates fall-through.
+- **feeds.ts untested routes coverage** (`tests/unit/worker/worker.test.ts`): 16 new tests for `handleNewsAggregate` (RSS success, 502, KV stale), `handleCalendar` (missing url, forbidden origin, valid ICS, non-ICS, KV stale), `handleSefariaCalendar` (success, fail, KV stale), `handleSefariaText` (missing ref, invalid chars, success, fail, KV stale).
+- **ADR-036: WebRTC config mirror** (`docs/adr/ADR-036-webrtc-config-mirror.md`): QR-code pairing design for phone→TV config editing; zero CF resources (STUN-only), 5-min ephemeral data channel, Valibot validation on received JSON. `docs/adr/README.md` updated.
+- **V14-HARMONISE: CI composite action** (`tooling/ci/check.yml`): Reusable GitHub Actions composite action (typecheck → lint → markdownlint → vitest → build → bundle size). `tooling/README.md` updated with usage docs.
+
+### Changed
+
+- Coverage threshold `branches`: 77 → 78 (`vitest.config.ts`). Actual: 78.07%.
+- ROADMAP.md `§1.2` entries updated: `light-dark()`, Popover API, `scrollend`, `AbortSignal.timeout()` all marked ✅.
+- ROADMAP.md `§3.3 V13-DATA` table: all 12 card rows marked ✅.
+- `sw.js` header version string bumped to v13.3.0.
+
+### Fixed
+
+- SimHash property test flaky boundary: `toBeGreaterThan(0.2)` → `toBeGreaterThanOrEqual(0.2)` — exact boundary value no longer fails non-deterministically under coverage.
+
+### Tests
+
+- +14 `hebrew-cal.test.ts`: `is29Elul()` (6), `nextHebrewYearGregorianApprox()` (3), `prewarmNextYearHolidays()` (5).
+- +7 `auto-loop-scroll.test.ts`: `scrollend` attachment (4), `animLevel` guard (3).
+- +6 `stocks-vol-spark.test.ts`: `fillStockDetailPopover` Popover API branches.
+- +8 `worker.test.ts`: `handleWeather` route (NWS + Open-Meteo paths).
+- +16 `worker.test.ts`: `handleNewsAggregate`, `handleCalendar`, `handleSefariaCalendar`, `handleSefariaText`.
+
+---
+
 ## [13.2.0] — 2026-04-24
 
 > **Metrics + tooling sprint** — Prometheus p95 histogram · Speculation Rules F13 audit · V14-HARMONISE cross-project registry · ADR-035 SLSA L3 planning · Coverage push functions 85% · ROADMAP V13-DATA checkboxes · **4295 tests / 151 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 35 ADRs

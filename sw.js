@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v13.2.0
+/* FamilyDashBoard ServiceWorker — v13.3.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v13.2.0: Prometheus p95 histogram (B10), Speculation Rules F13 audit, V14-HARMONISE tooling docs, ADR-035 SLSA L3, coverage functions 85%, +30 tests (Sprint 24-29)
+ * v13.3.0: Hebrew-cal 29 Elul pre-warm · scrollend/animLevel coverage · handleWeather NWS branches · feeds.ts coverage · ADR-036 WebRTC mirror · tooling/ci composite action · branches 78% · +51 tests (Sprint 31-39)
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";
