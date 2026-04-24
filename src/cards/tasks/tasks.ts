@@ -374,6 +374,20 @@ export function renderTasksCard(): void {
         row.appendChild(chip);
       }
 
+      // V13-DATA: Recurrence badge (daily/weekly/monthly)
+      if (item.recurrence) {
+        const recBadge = document.createElement("span");
+        recBadge.className = `tasks-recurrence tasks-recur-${item.recurrence}`;
+        const RECUR_ICONS: Record<string, string> = {
+          daily: "🔄 יומי",
+          weekly: "📅 שבועי",
+          monthly: "📆 חודשי",
+        };
+        recBadge.textContent = RECUR_ICONS[item.recurrence] ?? "🔄";
+        recBadge.title = `משימה חוזרת: ${item.recurrence}`;
+        row.appendChild(recBadge);
+      }
+
       row.append(cb, label);
       fragment.appendChild(row);
     }

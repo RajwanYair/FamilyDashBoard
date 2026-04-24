@@ -1358,3 +1358,66 @@ describe("checkRecurringReset", () => {
     expect(done[fp]).toBe(true);
   });
 });
+
+// ── V13-DATA: recurrence badge rendering ─────────────────────────────────────
+
+describe("Tasks — recurrence badge (V13-DATA)", () => {
+  function setup(recurrence?: ChoreItem["recurrence"]) {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>`;
+    const chores: ChoreItem[] = [
+      { person: "עמרי", chore: "🧹 ניקיון", ...(recurrence ? { recurrence } : {}) },
+    ];
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+    renderTasksCard();
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("renders tasks-recurrence badge for daily chore", () => {
+    setup("daily");
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent).toContain("יומי");
+  });
+
+  it("renders tasks-recurrence badge for weekly chore", () => {
+    setup("weekly");
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent).toContain("שבועי");
+  });
+
+  it("renders tasks-recurrence badge for monthly chore", () => {
+    setup("monthly");
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent).toContain("חודשי");
+  });
+
+  it("does not render tasks-recurrence badge when no recurrence is set", () => {
+    setup(undefined);
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge).toBeNull();
+  });
+
+  it("recurrence badge has tasks-recur-daily class for daily recurrence", () => {
+    setup("daily");
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge?.classList.contains("tasks-recur-daily")).toBe(true);
+  });
+
+  it("recurrence badge has title attribute describing the recurrence", () => {
+    setup("weekly");
+    const badge = document.querySelector(".tasks-recurrence") as HTMLElement | null;
+    expect(badge?.title).toContain("weekly");
+  });
+});
