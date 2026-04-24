@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD013 MD033 MD024 MD036 -->
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-24 · **Shipped baseline**: v12.9.0 → v13.0.0-rc — ~4100 tests / 137 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 34 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
+> **Refresh date**: 2026-04-24 · **Shipped baseline**: v12.9.0 → v13.2.0 — 4295 tests / 151 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 35 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
 > **Scope**: every architectural decision is reopened — including the ones that ship cleanly — against the 2026-Q2 web-platform landscape, then charted toward v13, v14 and v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit.
 
 ---

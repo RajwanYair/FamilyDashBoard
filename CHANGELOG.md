@@ -5,6 +5,33 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.2.0] — 2026-04-24
+
+> **Metrics + tooling sprint** — Prometheus p95 histogram · Speculation Rules F13 audit · V14-HARMONISE cross-project registry · ADR-035 SLSA L3 planning · Coverage push functions 85% · ROADMAP V13-DATA checkboxes · **4295 tests / 151 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 35 ADRs
+
+### Added
+
+- **B10: Prometheus provider-health p95 histogram** (`worker/src/routes/metrics.ts`): `fdb_provider_health_p95_ms` gauge added to `/api/metrics` endpoint via `toProviderHealthPrometheus()`; queries `queryP95ByRoute` and concatenates with hits output. 7 new tests (`tests/unit/worker/metrics.test.ts`).
+- **F13: Speculation Rules same-origin audit** (`tests/unit/html/dom-contract.test.ts`): 2 new contract tests enforce no external URLs and all `speculationrules` URLs must be same-origin paths. ROADMAP row updated to "audit complete (v13.2)".
+- **V14-HARMONISE: Cross-project tooling registry** (`tooling/README.md`): Added "Cross-Project Registry" section with project table (5 entries), 7-step "Adding a New Project" guide, and CI integration YAML snippet.
+- **ADR-035: SLSA Level 3 upgrade path** (`docs/adr/ADR-035-slsa-l3-upgrade-path.md`): Plans signed provenance attestations via `slsa-framework/slsa-github-generator` for v14.x; current Level 2 maintained. Added reference in `docs/security.md` and `docs/adr/README.md` index row.
+
+### Changed
+
+- Coverage threshold `functions`: 84 → 85 (`vitest.config.ts`). Actual: stmts 85.22 / branches 77.11 / funcs 85.33 / lines 86.5.
+- ROADMAP.md: B5 (D1 p95 latency), B10 (Prometheus histogram), F13 (Speculation Rules), RUM rows marked complete. Renovate worker dependabot item checked.
+- `sw.js` header version string bumped to v13.2.0.
+
+### Tests
+
+- +7 `metrics.test.ts`: `toProviderHealthPrometheus` edge cases (empty, HELP/TYPE lines, escape chars, trailing newline) + p95 integration.
+- +2 `dom-contract.test.ts`: F13 same-origin speculation rules enforcement.
+- +3 `rss-parser.test.ts`: `&nbsp;` and numeric/hex entity decoding branches.
+- +4 `nws-normalize.test.ts`: night-then-day ordering and NEGATIVE_INFINITY `maxC` branch.
+- +1 `worker.test.ts`: `proxyResponse` null Content-Type fallback to `application/json`.
+
+---
+
 ## [13.1.0] — 2026-07-25
 
 > **V13 completion sprint** — V13-EDGE OpenAPI TTL annotations · DATA connection-type sparkline + recurrence badge · A11Y WCAG 1.4.12 text-spacing + screen-reader dialog audit · SEC SLSA provenance docs · OPS coverage thresholds raised · NWS property tests · **4224 tests / 147 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 35 ADRs
