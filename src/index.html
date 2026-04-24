@@ -102,7 +102,7 @@
           <div class="tour-key-row" role="listitem"><span>S</span><span>פתיחת הגדרות</span></div>
           <div class="tour-key-row" role="listitem"><span>? / H</span><span>עזרה מלאה</span></div>
         </div>
-        <button type="button" id="tour-dismiss-btn" class="tour-dismiss-btn">הבנתי! נתחיל</button>
+        <button type="button" id="tour-dismiss-btn" class="tour-dismiss-btn" aria-label="סגור מדריך הכניסה">הבנתי! נתחיל</button>
       </div>
     </dialog>
     <dialog id="help-overlay" aria-labelledby="help-dialog-title">
@@ -217,24 +217,24 @@
           <!-- F160: News font size slider -->
           <div class="cfg-row">
             <span class="cfg-label">📰 גודל טקסט חדשות (%)</span>
-            <input id="cfg-news-fontsize" type="range" min="70" max="130" step="5" style="width:100px;direction:ltr" >
+            <input id="cfg-news-fontsize" aria-label="גודל טקסט חדשות אחוז" type="range" min="70" max="130" step="5" style="width:100px;direction:ltr" >
             <span id="cfg-news-fontsize-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
           </div>
           <!-- Night dimmer intensity slider -->
           <div class="cfg-row">
             <span class="cfg-label">🌑 עוצמת החשיכה (%)</span>
-            <input id="cfg-dim-level" type="range" min="10" max="95" step="5" style="width:110px;direction:ltr" title="כמה כהה המסך בזמן החשיכה">
+            <input id="cfg-dim-level" aria-label="עוצמת החשיכה אחוז" type="range" min="10" max="95" step="5" style="width:110px;direction:ltr" title="כמה כהה המסך בזמן החשיכה">
             <span id="cfg-dim-level-val" style="font-size:0.75em;margin-right:6px;min-width:32px">55%</span>
           </div>
           <!-- Font scale slider -->
           <div class="cfg-row">
             <span class="cfg-label">🔡 גודל גופן (+/- כדי לשנות)</span>
-            <input id="cfg-font-scale" type="range" min="70" max="150" step="5" style="width:110px;direction:ltr" title="גודל גופן גלובלי (%)">
+            <input id="cfg-font-scale" aria-label="גודל גופן גלובלי אחוז" type="range" min="70" max="150" step="5" style="width:110px;direction:ltr" title="גודל גופן גלובלי (%)">
             <span id="cfg-font-scale-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🎞 מהירות גוּלֵל ההלכה</span>
-            <input id="cfg-ticker-speed" type="range" min="1" max="5" step="1" style="width:100px;direction:ltr" title="1=איטי מאוד … 5=מהיר מאוד">
+            <input id="cfg-ticker-speed" aria-label="מהירות גלילת ההלכה" type="range" min="1" max="5" step="1" style="width:100px;direction:ltr" title="1=איטי מאוד … 5=מהיר מאוד">
             <span id="cfg-ticker-speed-val" style="font-size:0.75em;margin-right:6px;min-width:20px">3</span>
           </div>
           <!-- F7 (v7.3): Motivation auto-advance interval -->
@@ -342,7 +342,7 @@
           <p style="font-size:0.75em;color:var(--text-muted);margin:0 0 6px">הסתר/הצג כרטיסיות ובחר גודל. גרור כרטיסייה בלוח הראשי לשינוי סדר/עמודה. השינויים נכנסים לתוקף לאחר שמירה.</p>
           <div id="cfg-cards-list" class="cfg-cards-list"></div>
           <div class="cfg-row" style="margin-top:8px">
-            <button type="button" id="cfg-reset-layout-btn" class="cfg-input" style="cursor:pointer;font-size:0.8em" title="איפוס סדר הכרטיסיות לברירת המחדל המקורית">↩ איפוס סידור כרטיסיות</button>
+            <button type="button" id="cfg-reset-layout-btn" class="cfg-input" aria-label="איפוס סדר כרטיסיות לברירת מחדל" style="cursor:pointer;font-size:0.8em" title="איפוס סדר הכרטיסיות לברירת המחדל המקורית">↩ איפוס סידור כרטיסיות</button>
           </div>
           <!-- Sprint 17: Per-card settings accordion -->
           <details class="cfg-percard-details" style="margin-top:12px">
@@ -544,19 +544,19 @@
             <input class="cfg-input" id="cfg-tasks-reset-hour" type="number" min="0" max="23" step="1" style="width:70px;direction:ltr" placeholder="6" title="שעה (0-23) לאיפוס יומי של רשימת המשימות. ברירת מחדל: 6 (6:00 בבוקר)">
           </div>
           <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
-            <button type="button" class="cfg-btn" id="cfg-export-btn" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
-            <button type="button" class="cfg-btn" id="cfg-import-btn" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
+            <button type="button" class="cfg-btn" id="cfg-export-btn" aria-label="ייצוא הגדרות כקובץ JSON" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
+            <button type="button" class="cfg-btn" id="cfg-import-btn" aria-label="ייבוא הגדרות מקובץ JSON" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
             <!-- F120: Dashboard URL share -->
-            <button type="button" class="cfg-btn" id="cfg-share-btn" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
+            <button type="button" class="cfg-btn" id="cfg-share-btn" aria-label="שתף קישור הגדרות" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
             <!-- F4 (v7.2): Reset all to defaults -->
-            <button type="button" id="cfg-reset-all-btn" style="background:#c33;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:0.82em;cursor:pointer" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
+            <button type="button" id="cfg-reset-all-btn" aria-label="איפוס כל ההגדרות" style="background:#c33;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:0.82em;cursor:pointer" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
           </div>
           <input type="file" id="cfg-import-file" accept=".json" style="display:none" >
         </div>
         <!-- Always-visible actions -->
         <div class="cfg-row" style="justify-content:center;gap:10px;margin-top:8px;border-top:1px solid var(--accent-border);padding-top:8px">
-          <button type="button" class="cfg-btn" id="cfg-save-btn" title="שמור את כל השינויים ורענן">שמור</button>
-          <button type="button" class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)" id="cfg-close-btn" title="סגור ללא שמירה — לחץ S או Escape">סגור</button>
+          <button type="button" class="cfg-btn" id="cfg-save-btn" aria-label="שמור הגדרות" title="שמור את כל השינויים ורענן">שמור</button>
+          <button type="button" class="cfg-btn" id="cfg-close-btn" aria-label="סגור הגדרות ללא שמירה" style="background:var(--bg-card-inner);color:var(--text-primary)" title="סגור ללא שמירה — לחץ S או Escape">סגור</button>
         </div>
         <div style="text-align:center;margin-top:8px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
       </div>
@@ -629,7 +629,7 @@
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
             <section class="card" role="region" data-card-id="news" aria-labelledby="card-title-news">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge blue">📰</span> <span id="card-title-news">חדשות</span> <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge blue">📰</span> <span id="card-title-news">חדשות</span> <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית חדשות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
@@ -646,7 +646,7 @@
               </div>
             </section>
             <section class="card" role="region" data-card-id="weather" aria-labelledby="wx-city-label">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-wx" role="status" aria-label="מצב סנכרון מזג אוויר" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span><span class="card-mini-info" id="mini-weather"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-wx" role="status" aria-label="מצב סנכרון מזג אוויר" title="סנכרון מזג אוויר — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge cyan">🌤️</span> <span id="wx-city-label">מזג אויר — ירושלים</span> <span id="wx-sky-pill" class="wx-sky-pill"></span><span class="card-mini-info" id="mini-weather"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית מזג אוויר" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="weather-body" aria-live="polite" aria-label="נתוני מזג אוויר">
                 <!-- Feature 45: Multi-city tabs -->
                 <div class="wx-city-tabs" id="wx-city-tabs">
@@ -706,7 +706,7 @@
           <!-- ── Middle Column: Hebrew Calendar + Google Calendar + Currency ── -->
           <div class="grid-col grid-col-mid">
             <section class="card" role="region" data-card-id="hebrew-cal" aria-labelledby="card-title-hebrew-cal">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge yellow">🕍</span> <span id="card-title-hebrew-cal">לוח עברי</span><span class="card-mini-info" id="mini-hebrew-cal"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-hebcal" role="status" aria-label="מצב סנכרון לוח עברי" title="סנכרון לוח עברי — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge yellow">🕍</span> <span id="card-title-hebrew-cal">לוח עברי</span><span class="card-mini-info" id="mini-hebrew-cal"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית לוח עברי" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="hebcal-body" id="hebcal-body" aria-live="polite" aria-label="לוח עברי ושבת">
                 <!-- Main content column (right side in RTL) -->
                 <div class="hc-main-col">
@@ -750,7 +750,7 @@
               </div>
             </section>
             <section class="card" role="region" data-card-id="calendar" aria-labelledby="card-title-calendar" style="position:relative">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית לוח שנה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="cal-wrapper">
                 <div class="cal-week-grid" id="cal-week-grid" role="list" aria-live="polite" aria-label="תצוגת שבוע קרוב">
                   <div class="cal-empty">טוען לוח שנה...</div>
@@ -758,7 +758,7 @@
               </div>
             </section>
             <section class="card" role="region" data-card-id="currency" aria-labelledby="card-title-currency">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-cur" role="status" aria-label="מצב סנכרון מטבעות" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge green">🪙</span> <span id="card-title-currency">שערי מטבע</span><span class="card-mini-info" id="mini-currency"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-cur" role="status" aria-label="מצב סנכרון מטבעות" title="סנכרון מטבעות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge green">🪙</span> <span id="card-title-currency">שערי מטבע</span><span class="card-mini-info" id="mini-currency"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית מטבעות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="currency-body" id="currency-body" aria-live="polite" aria-label="שערי מטבע" role="region">
                 <div class="cur-item"><div class="cur-flag">🇺🇸</div><div class="cur-pair">USD / ₪</div><div class="cur-rate skeleton" id="curUsd">--</div><div class="cur-chg" id="curUsdChg"></div><svg class="cur-spark" id="cur-usd-spark" viewBox="0 0 60 22"></svg></div>
                 <div class="cur-item"><div class="cur-flag">🇪🇺</div><div class="cur-pair">EUR / ₪</div><div class="cur-rate skeleton" id="curEur">--</div><div class="cur-chg" id="curEurChg"></div><svg class="cur-spark" id="cur-eur-spark" viewBox="0 0 60 22"></svg></div>
@@ -782,7 +782,7 @@
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
           <div class="grid-col grid-col-right">
             <section class="card" role="region" data-card-id="stocks" aria-labelledby="card-title-stocks">
-            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-stk" role="status" aria-label="מצב סנכרון מניות" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge orange">📈</span> <span id="card-title-stocks">מניות</span> <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+            <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-stk" role="status" aria-label="מצב סנכרון מניות" title="סנכרון מניות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge orange">📈</span> <span id="card-title-stocks">מניות</span> <span class="market-badge" id="market-badge" title="סטטוס בורסה — 🟢 פתוח 🔴 סגור"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית מניות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="stocks-body">
                 <div class="stocks-scroll" id="stocks-body" role="list" aria-live="polite" aria-label="נתוני מניות">
                   <!-- Stock rows are rendered dynamically by initStocksCard() in stocks.ts -->
@@ -814,7 +814,7 @@
               </div>
             </div>
             <section class="card" role="region" data-card-id="alerts" aria-labelledby="card-title-alerts">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-alerts" role="status" aria-label="מצב סנכרון התראות" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span><span id="card-title-alerts">צבע אדום</span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-alerts" role="status" aria-label="מצב סנכרון התראות" title="סנכרון התראות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge red">🚨</span> <span id="alerts-badge" class="alerts-badge"></span><span id="card-title-alerts">צבע אדום</span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית צבע אדום" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="alerts-body">
                 <div class="alerts-scroll" id="alerts-scroll" aria-live="assertive" aria-label="התרעות צבע אדום" role="log">
                   <div class="alert-count">טוען התרעות...</div>
@@ -823,7 +823,7 @@
               </div>
             </section>
             <section class="card" role="region" data-card-id="motivation" aria-labelledby="card-title-motivation">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge pink">✨</span> <span id="card-title-motivation">מוטיבציה</span><span class="card-mini-info" id="mini-motivation"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge pink">✨</span> <span id="card-title-motivation">מוטיבציה</span><span class="card-mini-info" id="mini-motivation"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית מוטיבציה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="moti-body">
                 <div class="moti-card">
                   <div class="moti-text" id="moti-text" aria-live="polite">טוען השראה...</div>
@@ -836,7 +836,7 @@
             </section>
             <!-- Countdown card -->
             <section class="card" role="region" data-card-id="countdown" aria-labelledby="card-title-countdown">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge pink">💍</span> <span id="card-title-countdown">ספירה לאחור</span><span class="card-mini-info" id="mini-countdown"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge pink">💍</span> <span id="card-title-countdown">ספירה לאחור</span><span class="card-mini-info" id="mini-countdown"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית ספירה לאחור" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="countdown-body" aria-live="polite" aria-label="ספירה לאחור">
                 <div class="cd-title" id="cd-wedding-title">חתונת אליאור וטובה</div>
                 <div class="cd-tiles">
@@ -875,7 +875,7 @@
               </div>
             </section>
             <section class="card" role="region" data-card-id="tasks" aria-labelledby="card-title-tasks">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge green">✅</span> <span id="card-title-tasks">משימות</span> <span id="tasks-pending-badge" style="display:none;font-size:0.65em;background:var(--warning);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle"></span><span id="tasks-overdue-badge" style="display:none;font-size:0.65em;background:var(--negative,#f87171);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle" title="משימות באיחור"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge green">✅</span> <span id="card-title-tasks">משימות</span> <span id="tasks-pending-badge" style="display:none;font-size:0.65em;background:var(--warning);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle"></span><span id="tasks-overdue-badge" style="display:none;font-size:0.65em;background:var(--negative,#f87171);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle" title="משימות באיחור"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית משימות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="tasks-body">
                 <div class="tasks-actions">
                   <button type="button" id="tasks-mark-all-btn" class="tasks-action-btn" title="סמן הכל כבוצע">✅ סמן הכל</button>
@@ -898,7 +898,7 @@
             </section>
             <!-- System Info card -->
             <section class="card" role="region" data-card-id="system-info" aria-labelledby="card-title-system-info">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge cyan">🖥</span> <span id="card-title-system-info">מצב מערכת</span><span class="card-mini-info" id="mini-system-info"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסייה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge cyan">🖥</span> <span id="card-title-system-info">מצב מערכת</span><span class="card-mini-info" id="mini-system-info"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית מצב מערכת" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="sysinfo-grid" id="sysinfo-body" tabindex="0" aria-live="polite" aria-label="נתוני מערכת">
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-online">—</span><span class="sysinfo-tile-label">🛰️ מצב</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-battery">—</span><span class="sysinfo-tile-label">🔋 סוללה</span></div>
