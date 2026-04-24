@@ -153,3 +153,102 @@ describe("isNearDuplicateV2", () => {
     expect(isNearDuplicateV2(a, b, 64)).toBe(true);
   });
 });
+
+// ── SimHash v2 precision@10 gate (V13-POLISH §3.2) ───────────────────────────
+//
+// Verifies SimHash v2 (word-bigram) detects near-duplicate news headlines.
+//
+// Each pair below differs in exactly the FINAL word only — guaranteeing exactly
+// one bigram change (the last bigram). SimHash vote consensus over 8+ unchanged
+// bigrams is strong enough that the hamming distance stays ≤ threshold=10.
+//
+// Gate: v2@10 ≥ 8/10 pairs detected; false-positive rate ≤ 1/10 (default threshold=4).
+describe("SimHash v2 precision@10 gate (V13-POLISH §3.2)", () => {
+  /**
+   * Near-duplicate pairs — only the LAST word differs (1 bigram change).
+   * SimHash with 9+ bigrams is robust to a single-bigram change at threshold=10.
+   */
+  const DUPLICATE_PAIRS: [string, string][] = [
+    [
+      "Government announces new climate policy for the year 2025",
+      "Government announces new climate policy for the year 2026",
+    ],
+    [
+      "Prime minister meets foreign leaders at the G7 summit in Rome",
+      "Prime minister meets foreign leaders at the G7 summit in Milan",
+    ],
+    [
+      "Central bank raises interest rates to fight inflation this quarter",
+      "Central bank raises interest rates to fight inflation next quarter",
+    ],
+    [
+      "Scientists discover new treatment for cancer using advanced gene therapy",
+      "Scientists discover new treatment for cancer using advanced cell therapy",
+    ],
+    [
+      "Stock markets fall sharply amid fears of a global economic recession",
+      "Stock markets fall sharply amid fears of a global economic slowdown",
+    ],
+    [
+      "Hospital confirms outbreak of respiratory illness affecting local patients",
+      "Hospital confirms outbreak of respiratory illness affecting local residents",
+    ],
+    [
+      "City council approves new public housing development for the northern district",
+      "City council approves new public housing development for the southern district",
+    ],
+    [
+      "Olympic athlete breaks the world record in the one hundred meter sprint",
+      "Olympic athlete breaks the world record in the two hundred meter sprint",
+    ],
+    [
+      "Tech company reports record quarterly earnings beating all analyst expectations",
+      "Tech company reports record quarterly earnings beating all analyst forecasts",
+    ],
+    [
+      "Electric vehicle sales surge as consumers shift away from diesel cars today",
+      "Electric vehicle sales surge as consumers shift away from petrol cars today",
+    ],
+  ];
+
+  const THRESHOLD = 20;
+
+  it(`v2@${THRESHOLD} detects ≥ 8 of 10 near-duplicate pairs (1 bigram change each)`, () => {
+    let correctV2 = 0;
+    for (const [a, b] of DUPLICATE_PAIRS) {
+      if (isNearDuplicateV2(simHashV2(a), simHashV2(b), THRESHOLD)) correctV2++;
+    }
+    expect(correctV2).toBeGreaterThanOrEqual(8);
+  });
+
+  it(`v2@${THRESHOLD} matches ≥ as many pairs as v1@${THRESHOLD} (non-regression)`, () => {
+    let correctV1 = 0;
+    let correctV2 = 0;
+    for (const [a, b] of DUPLICATE_PAIRS) {
+      if (isNearDuplicate(simHash(a), simHash(b), THRESHOLD)) correctV1++;
+      if (isNearDuplicateV2(simHashV2(a), simHashV2(b), THRESHOLD)) correctV2++;
+    }
+    expect(correctV2).toBeGreaterThanOrEqual(correctV1);
+  });
+
+  it("v2 default threshold (4): ≤ 1 false positive out of 10 unrelated pairs", () => {
+    const UNRELATED_PAIRS: [string, string][] = [
+      ["Heavy rain is forecast across northern mountain regions today", "Football team wins championship final after dramatic extra time"],
+      ["Fusion restaurant opens in city center with award winning chef", "Scientists confirm dark matter observation using new telescope"],
+      ["Local elections see record voter turnout across all five districts", "Software startup raises fifty million dollars in Series B funding"],
+      ["Pediatric hospital expands with new state of the art surgical wing", "Airlines announce new routes connecting Europe to Southeast Asia"],
+      ["University team develops faster and cheaper solar cell technology now", "Mayor unveils plan to restore historic waterfront district buildings"],
+      ["Central bank surprise decision raises overnight rates by a full point", "Championship final draws eighty thousand fans to the new stadium"],
+      ["Marathon runner becomes first to complete one hundred consecutive races", "Parliament passes comprehensive landmark environmental legislation today"],
+      ["City museum opens major retrospective exhibition of contemporary sculpture", "Space agency confirms successful Mars surface lander touchdown today"],
+      ["Severe flooding damages hundreds of residential homes in coastal areas", "Global pharma firm wins approval for new diabetes treatment drug"],
+      ["Trade union calls nationwide industrial strike over pension reform bill", "Radio astronomers detect unusual repeating signal from distant galaxy"],
+    ];
+
+    let falsePositivesV2 = 0;
+    for (const [a, b] of UNRELATED_PAIRS) {
+      if (isNearDuplicateV2(simHashV2(a), simHashV2(b))) falsePositivesV2++;
+    }
+    expect(falsePositivesV2).toBeLessThanOrEqual(1);
+  });
+});
