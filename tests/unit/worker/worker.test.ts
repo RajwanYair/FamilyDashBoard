@@ -2054,3 +2054,140 @@ describe("Worker — handleErrorsExport route", () => {
     expect(res.headers.get("Cache-Control")).toBe("no-store");
   });
 });
+
+// ── Sprint 47: feeds.ts missing branches ──────────────────────────────────────
+
+describe("Worker — handleStocks with FINNHUB_API_KEY (Finnhub primary path)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns Finnhub normalised data when FINNHUB_API_KEY is set and response is valid", async () => {
+    const finnhubData = { c: 185.5, d: 1.23, dp: 0.67, t: 1700000000 };
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(finnhubData), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const envWithFinnhub: Env = { ...mockEnv, FINNHUB_API_KEY: "test-finnhub-key" };
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url, envWithFinnhub);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { chart: { result: Array<{ meta: { symbol: string } }> } };
+    expect(body.chart.result[0]?.meta.symbol).toBe("AAPL");
+  });
+
+  it("falls through to Yahoo when Finnhub returns ok but invalid schema", async () => {
+    const invalidFinnhub = { bad: "schema" };
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(invalidFinnhub), { status: 200 }), // Finnhub — invalid
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(VALID_STOCKS), { status: 200 }), // Yahoo query1 — valid
+      );
+    const envWithFinnhub: Env = { ...mockEnv, FINNHUB_API_KEY: "test-finnhub-key" };
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url, envWithFinnhub);
+    expect(res.status).toBe(200);
+  });
+
+  it("falls through to Yahoo when Finnhub fetch throws", async () => {
+    vi.spyOn(globalThis, "fetch")
+      .mockRejectedValueOnce(new Error("Finnhub unreachable")) // Finnhub throws
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(VALID_STOCKS), { status: 200 }), // Yahoo — valid
+      );
+    const envWithFinnhub: Env = { ...mockEnv, FINNHUB_API_KEY: "test-finnhub-key" };
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url, envWithFinnhub);
+    expect(res.status).toBe(200);
+  });
+
+  it("falls through to Yahoo when Finnhub returns non-ok status", async () => {
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response("gateway timeout", { status: 504 })) // Finnhub 504
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(VALID_STOCKS), { status: 200 }), // Yahoo — valid
+      );
+    const envWithFinnhub: Env = { ...mockEnv, FINNHUB_API_KEY: "test-finnhub-key" };
+    const url = new URL("https://worker.example.com/api/stocks?sym=AAPL");
+    const res = await handleStocks(url, envWithFinnhub);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe("Worker — handleSefariaCalendar invalid schema branches", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 502 with detail when upstream returns invalid schema and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ not_calendar_items: [] }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const res = await handleSefariaCalendar(mockEnv);
+    expect(res.status).toBe(502);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain("validation");
+  });
+
+  it("returns stale KV when upstream returns invalid schema and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ broken: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const staleData = { calendar_items: [{ title: { en: "Daf Yomi", he: "דף יומי" }, displayValue: { en: "Berakhot 2a" }, url: "Berakhot.2a", order: 1 }] };
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const res = await handleSefariaCalendar(envWithKv);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe("Worker — handleSefariaText invalid schema branches", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 502 with detail when upstream returns invalid schema and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ not_sefaria: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.dev/api/sefaria/text?ref=Berakhot.2a.1");
+    const res = await handleSefariaText(url, mockEnv);
+    expect(res.status).toBe(502);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain("validation");
+  });
+
+  it("returns stale KV when upstream returns invalid schema and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ invalid: "response" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const staleData = { ref: "Berakhot 2a:1", versions: [{ text: "From what time...", language: "en", versionTitle: "Sefaria Community" }] };
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const url = new URL("https://worker.dev/api/sefaria/text?ref=Berakhot.2a.1");
+    const res = await handleSefariaText(url, envWithKv);
+    expect(res.status).toBe(200);
+  });
+});
