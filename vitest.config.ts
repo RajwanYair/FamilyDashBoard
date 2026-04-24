@@ -1,10 +1,14 @@
 import { defineConfig } from "vitest/config";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdirSync } from "node:fs";
 import { sharedVitestTestConfig, sharedVitestPoolConfig } from "./tooling/vitest/base.mjs";
 
 const tempBase = join(tmpdir(), "fdb-dev");
+
+// Pre-create the coverage .tmp directory to avoid a race-condition ENOENT on
+// Windows when 150+ v8 workers all try to create it simultaneously.
+mkdirSync(join(tempBase, "coverage", ".tmp"), { recursive: true });
 
 const appVersion: string = (
   JSON.parse(readFileSync(resolve(__dirname, "package.json"), "utf-8")) as {
@@ -64,12 +68,14 @@ export default defineConfig({
         //   dialog-audit, openapi routes, SRI docs — all new paths covered.
         // Sprint 28: response.ts null-CT + rss-parser entity branches + nws night-day-order
         // Sprint 49: branches 78→79 (actual 79.16% after nws-normalize + feeds.ts coverage)
-        // Actual: stmts≈87.14 / branches≈79.16 / funcs≈86.65 / lines≈88.41
-        // Target v13 final: 95/90/95/96 (multi-sprint increments)
-        statements: 85,
-        branches: 79,
-        functions: 85,
-        lines: 86,
+        // Sprint 59: ratchet — confirmed actuals 88.84 / 80.72 / 88.21 / 90.12
+        //   New tests: calendar RFC-5545 fuzz (59 tests), tasks yearly (3), simhash (3),
+        //   config-panel network-mode (4) — each adds statement + function coverage.
+        // Target v13 final: 95/90/95/96 (multi-sprint increments, +1 per minor release)
+        statements: 88,
+        branches: 80,
+        functions: 88,
+        lines: 90,
       },
     },
   },
