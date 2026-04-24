@@ -431,4 +431,33 @@ describe("DOM Contract — F13 Speculation Rules API audit", () => {
     const coversDashboard = allUrls.some((u) => u.includes("/FamilyDashBoard"));
     expect(coversDashboard).toBe(true);
   });
+
+  it("no external (cross-origin) URLs appear in index.html speculationrules (F13 audit)", () => {
+    // External links like Sefaria, Hebcal, IDF Tzeva-Adom cannot be targeted by Speculation Rules
+    // Verify no http(s):// URLs slip into the JSON block
+    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
+    expect(srMatch).not.toBeNull();
+    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
+    const allRulesets = [
+      ...(srJson["prerender"] as Array<{ urls?: string[] }> ?? []),
+      ...(srJson["prefetch"] as Array<{ urls?: string[] }> ?? []),
+    ];
+    const allUrls = allRulesets.flatMap((r) => r.urls ?? []);
+    const externalUrls = allUrls.filter((u) => u.startsWith("http://") || u.startsWith("https://"));
+    expect(externalUrls).toHaveLength(0);
+  });
+
+  it("all speculationrules URLs in index.html are same-origin paths (start with /)", () => {
+    const srMatch = html.match(/<script type="speculationrules">([\s\S]*?)<\/script>/);
+    expect(srMatch).not.toBeNull();
+    const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
+    const allRulesets = [
+      ...(srJson["prerender"] as Array<{ urls?: string[] }> ?? []),
+      ...(srJson["prefetch"] as Array<{ urls?: string[] }> ?? []),
+    ];
+    const allUrls = allRulesets.flatMap((r) => r.urls ?? []);
+    allUrls.forEach((u) => {
+      expect(u).toMatch(/^\//); // must be a root-relative path
+    });
+  });
 });

@@ -129,7 +129,7 @@ All 29 ADRs re-litigated, plus decisions not yet formalised. Every row is stampe
 | F10 | CSS `@scope` per card (ADR-022) | Shipped | **Keep** | 16 unit tests enforce it. |
 | F11 | CSS `light-dark()`, `@property`, scroll-driven animations, Anchor Positioning | Not used | **Adopt in v13** | All zero-cost; progressive-enhancement only. |
 | F12 | View Transitions L2 (cross-doc) | Shipped for theme switch + config-panel | **Keep; expand to maximise-card flow** | v13. |
-| F13 | Speculation Rules API | Shipped (prefetch preview) | **Keep; audit coverage** | Audit every external link for `moderate` vs `conservative`. v13. |
+| F13 | Speculation Rules API | Shipped (prefetch preview) | **Keep; audit complete (v13.2)** | Same-origin-only rule enforced; no external URLs; conservative prerender + moderate prefetch; 8 contract tests. |
 | F14 | Trusted Types + CSP L3 `require-trusted-types-for 'script'` | Shipped | **Keep** | Defence-in-depth; no offenders. |
 | F15 | Popover API | Not used | **Adopt in v13** | Replaces `<dialog>` for lightweight menus. |
 | F16 | Document Picture-in-Picture (video-news card) | Not used | **Evaluate v13** | Gate on user request ≥ 3. |
