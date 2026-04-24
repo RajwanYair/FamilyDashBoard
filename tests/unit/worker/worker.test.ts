@@ -1460,3 +1460,208 @@ describe("checkRateLimitAsync — in-memory fallback (no DO)", () => {
     expect(result.remaining).toBe(0);
   });
 });
+
+// ── Worker — feeds.ts untested routes (Sprint 36) ────────────────────────────
+
+import {
+  handleNewsAggregate,
+  handleCalendar,
+  handleSefariaCalendar,
+  handleSefariaText,
+} from "../../../worker/src/routes/feeds";
+
+describe("Worker — handleNewsAggregate route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 200 with news-agg provider when feeds return valid RSS", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(VALID_RSS_2, {
+        status: 200,
+        headers: { "Content-Type": "application/rss+xml" },
+      }),
+    );
+    const res = await handleNewsAggregate(mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    expect(body.provider).toBe("news-agg");
+  });
+
+  it("returns 502 when all feeds fail and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad", { status: 502 }));
+    const res = await handleNewsAggregate(mockEnv);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns stale KV envelope when all feeds fail and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad", { status: 502 }));
+    const staleItems = [{ title: "Old news", link: "https://news.example.com/1", pubDate: "2024-01-01T00:00:00Z", source: "ynet" }];
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleItems));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const res = await handleNewsAggregate(envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { stale: boolean; provider: string };
+    expect(body.stale).toBe(true);
+    expect(body.provider).toBe("news-agg-kv-stale");
+  });
+});
+
+describe("Worker — handleCalendar route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 400 when url param is missing", async () => {
+    const url = new URL("https://worker.dev/api/calendar");
+    const res = await handleCalendar(url, mockEnv);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 403 when calendar origin is not permitted", async () => {
+    const url = new URL("https://worker.dev/api/calendar?url=https%3A%2F%2Fevil.com%2Fcal.ics");
+    const res = await handleCalendar(url, mockEnv);
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain("not permitted");
+  });
+
+  it("returns 200 text/calendar for valid ICS upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR", {
+        status: 200,
+        headers: { "Content-Type": "text/calendar; charset=utf-8" },
+      }),
+    );
+    const urlParam = encodeURIComponent("https://calendar.google.com/cal.ics");
+    const url = new URL(`https://worker.dev/api/calendar?url=${urlParam}`);
+    const res = await handleCalendar(url, mockEnv);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toContain("text/calendar");
+  });
+
+  it("returns 502 when upstream returns non-ICS text", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("<html>Not a calendar</html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      }),
+    );
+    const urlParam = encodeURIComponent("https://calendar.google.com/cal.ics");
+    const url = new URL(`https://worker.dev/api/calendar?url=${urlParam}`);
+    const res = await handleCalendar(url, mockEnv);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns stale KV when upstream fails", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const icsData = "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR";
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify({ ics: icsData }));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const urlParam = encodeURIComponent("https://calendar.google.com/cal.ics");
+    const url = new URL(`https://worker.dev/api/calendar?url=${urlParam}`);
+    const res = await handleCalendar(url, envWithKv);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("X-Cache")).toBe("kv-stale");
+  });
+});
+
+describe("Worker — handleSefariaCalendar route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 200 with valid Sefaria calendar upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          calendar_items: [
+            { title: { en: "Daf Yomi", he: "דף יומי" }, displayValue: { en: "Berakhot 2a" }, url: "Berakhot.2a", order: 1 },
+          ],
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+    );
+    const res = await handleSefariaCalendar(mockEnv);
+    expect(res.status).toBe(200);
+  });
+
+  it("returns 502 when upstream fails and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const res = await handleSefariaCalendar(mockEnv);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns stale KV when upstream fails and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const staleData = { calendar_items: [] };
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const res = await handleSefariaCalendar(envWithKv);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe("Worker — handleSefariaText route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 400 when ref param is missing", async () => {
+    const url = new URL("https://worker.dev/api/sefaria/text");
+    const res = await handleSefariaText(url, mockEnv);
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { param: string };
+    expect(body.param).toBe("ref");
+  });
+
+  it("returns 400 when ref contains invalid characters", async () => {
+    const url = new URL("https://worker.dev/api/sefaria/text?ref=" + encodeURIComponent("'; DROP TABLE--"));
+    const res = await handleSefariaText(url, mockEnv);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 200 with valid Sefaria text upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          ref: "Berakhot 2a:1",
+          versions: [{ text: "From what time...", language: "en", versionTitle: "Sefaria Community" }],
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+    );
+    const url = new URL("https://worker.dev/api/sefaria/text?ref=Berakhot.2a.1");
+    const res = await handleSefariaText(url, mockEnv);
+    expect(res.status).toBe(200);
+  });
+
+  it("returns 502 when upstream fails and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const url = new URL("https://worker.dev/api/sefaria/text?ref=Berakhot.2a.1");
+    const res = await handleSefariaText(url, mockEnv);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns stale KV when upstream fails and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const staleData = { ref: "Berakhot 2a:1", versions: [] };
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const url = new URL("https://worker.dev/api/sefaria/text?ref=Berakhot.2a.1");
+    const res = await handleSefariaText(url, envWithKv);
+    expect(res.status).toBe(200);
+  });
+});
