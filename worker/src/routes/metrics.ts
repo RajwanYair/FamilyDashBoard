@@ -1,7 +1,9 @@
 /**
  * FamilyDashBoard Worker — GET /api/metrics (V12-EDGE-4)
  *
- * Returns Prometheus text-format metrics for route hit counts queried from D1.
+ * Returns Prometheus text-format metrics for:
+ *   - Route hit counts (D1 last 7 days)
+ *   - Per-route p95 latency histogram (D1 last 7 days, Sprint 24 — B10)
  *
  * Security:
  *   Requires `Authorization: Bearer <METRICS_TOKEN>` header where METRICS_TOKEN
@@ -13,12 +15,15 @@
  *   # HELP fdb_route_hits_total Total hits per route in the last 7 days
  *   # TYPE fdb_route_hits_total counter
  *   fdb_route_hits_total{route="/api/weather"} 142
- *   fdb_route_hits_total{route="/api/currency"} 88
+ *
+ *   # HELP fdb_provider_health_p95_ms Route p95 response latency in ms (last 7 days)
+ *   # TYPE fdb_provider_health_p95_ms gauge
+ *   fdb_provider_health_p95_ms{route="/api/weather",samples="14"} 320
  *
  * See ADR-024 for the telemetry storage rationale.
  */
 
-import { queryTotalsByRoute } from "../utils/d1-telemetry";
+import { queryTotalsByRoute, queryP95ByRoute, type RouteP95 } from "../utils/d1-telemetry";
 import { CORS_HEADERS } from "../utils/response";
 import type { Env } from "../types";
 
@@ -37,6 +42,24 @@ function toPrometheusText(totals: Record<string, number>): string {
     lines.push(`fdb_route_hits_total{route="${safe}"} ${count}`);
   }
   // Final newline required by the Prometheus text format
+  lines.push("");
+  return lines.join("\n");
+}
+
+/**
+ * Serialize per-route p95 latency data to Prometheus gauge format (Sprint 24 — B10).
+ * Exported for unit testing.
+ */
+export function toProviderHealthPrometheus(p95Rows: ReadonlyArray<RouteP95>): string {
+  if (p95Rows.length === 0) return "";
+  const lines: string[] = [
+    "# HELP fdb_provider_health_p95_ms Route p95 response latency in ms (last 7 days)",
+    "# TYPE fdb_provider_health_p95_ms gauge",
+  ];
+  for (const { route, p95ms, sampleCount } of p95Rows) {
+    const safe = route.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/"/g, '\\"');
+    lines.push(`fdb_provider_health_p95_ms{route="${safe}",samples="${sampleCount}"} ${p95ms}`);
+  }
   lines.push("");
   return lines.join("\n");
 }
@@ -60,8 +83,12 @@ export async function handleMetrics(req: Request, env: Env): Promise<Response> {
     });
   }
 
-  const totals = await queryTotalsByRoute(env.DB);
-  const body = toPrometheusText(totals);
+  const [totals, p95Rows] = await Promise.all([
+    queryTotalsByRoute(env.DB),
+    queryP95ByRoute(env.DB),
+  ]);
+
+  const body = toPrometheusText(totals) + toProviderHealthPrometheus(p95Rows);
 
   return new Response(body, {
     status: 200,
