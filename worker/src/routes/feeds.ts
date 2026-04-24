@@ -13,7 +13,7 @@ import {
 import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema, AlertsSchema, SefariaCalendarSchema, SefariaTextSchema, FinnhubQuoteSchema } from "../utils/schemas";
 import { kvGetStale, kvPut } from "../utils/kv";
 import { parseRss } from "../utils/rss-parser";
-import { simHash, isNearDuplicate } from "../utils/simhash";
+import { simHash, isNearDuplicate, getEmbedding, isNearDuplicateByEmbedding } from "../utils/simhash";
 import type { Env } from "../types";
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
@@ -200,14 +200,45 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
     return true;
   });
 
+  // V13-AI-2: Optional embedding-based near-duplicate fallback pass.
+  // Only runs when Workers AI is bound (env.AI) — if not bound, skip silently.
+  // Runs after SimHash to catch semantically-similar headlines that differ in wording.
+  // Uses @cf/baai/bge-small-en-v1.5 (384-dim, ~33 ms per item on Workers Free).
+  // Bounded to the first 40 items to avoid excessive AI inference cost.
+  let embeddingDeduped: NewsAggItem[] = unique;
+  if (env.AI) {
+    const EMBED_LIMIT = 40;
+    const toEmbed = unique.slice(0, EMBED_LIMIT);
+    const rest = unique.slice(EMBED_LIMIT);
+    const embeddings: (number[] | null)[] = await Promise.all(
+      toEmbed.map((item) => getEmbedding(env.AI!, item.title)),
+    );
+    const embeddingPassed: NewsAggItem[] = [];
+    const embeddingVecs: number[][] = [];
+    for (let i = 0; i < toEmbed.length; i++) {
+      const vec = embeddings[i];
+      if (!vec) {
+        // Embedding failed for this item — keep it (fail-open)
+        embeddingPassed.push(toEmbed[i]!);
+        continue;
+      }
+      const isDup = embeddingVecs.some((seen) => isNearDuplicateByEmbedding(vec, seen));
+      if (!isDup) {
+        embeddingPassed.push(toEmbed[i]!);
+        embeddingVecs.push(vec);
+      }
+    }
+    embeddingDeduped = [...embeddingPassed, ...rest];
+  }
+
   // Sort newest-first (items without a valid date go to end)
-  unique.sort((a, b) => {
+  embeddingDeduped.sort((a, b) => {
     const da = a.pubDate ? new Date(a.pubDate).getTime() : 0;
     const db = b.pubDate ? new Date(b.pubDate).getTime() : 0;
     return db - da;
   });
 
-  const payload = unique.slice(0, 100);
+  const payload = embeddingDeduped.slice(0, 100);
 
   if (payload.length === 0) {
     const stale = await kvGetStale(env.CACHE_KV, KV_KEY);

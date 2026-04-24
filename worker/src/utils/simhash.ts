@@ -199,3 +199,72 @@ export function simHashV2(text: string): bigint {
 export function isNearDuplicateV2(a: bigint, b: bigint, threshold = 4): boolean {
   return hammingDistance(a, b) <= threshold;
 }
+
+// ── V13-AI-2: Embedding-based near-duplicate detection ───────────────────────
+
+/**
+ * Compute the cosine similarity between two embedding vectors.
+ * Returns a value in [-1, 1] where 1 = identical direction.
+ *
+ * @param a - First embedding vector (non-empty float array).
+ * @param b - Second embedding vector (same length as `a`).
+ */
+export function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length === 0 || a.length !== b.length) return 0;
+  let dot = 0;
+  let magA = 0;
+  let magB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i]! * b[i]!;
+    magA += a[i]! * a[i]!;
+    magB += b[i]! * b[i]!;
+  }
+  const denom = Math.sqrt(magA) * Math.sqrt(magB);
+  return denom === 0 ? 0 : dot / denom;
+}
+
+/**
+ * Minimal AiBinding subset needed for embedding operations.
+ * Avoids a direct import of the full Env type from this utility module.
+ */
+export interface EmbeddingAiBinding {
+  run(model: string, input: { text: string | string[] }): Promise<{ shape: number[]; data: number[][] }>;
+}
+
+/**
+ * Fetch a text embedding vector from Workers AI for a single string.
+ * Returns `null` on any error (network failure, model unavailable, etc.)
+ * so the caller can silently fall back to SimHash-only dedup.
+ *
+ * @param ai   - The Workers AI binding (env.AI).
+ * @param text - The string to embed (typically a news headline, ≤512 tokens).
+ */
+export async function getEmbedding(
+  ai: EmbeddingAiBinding,
+  text: string,
+): Promise<number[] | null> {
+  try {
+    const result = await ai.run("@cf/baai/bge-small-en-v1.5", { text });
+    const vec = result.data?.[0];
+    return Array.isArray(vec) && vec.length > 0 ? (vec as number[]) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Return `true` when two embedding vectors are considered near-duplicates.
+ * Uses cosine similarity; threshold defaults to 0.92 (empirically good for
+ * news headlines from the same story published by different outlets).
+ *
+ * @param a          Embedding vector for the first item.
+ * @param b          Embedding vector for the second item.
+ * @param threshold  Minimum cosine similarity to treat as duplicate. Default: 0.92.
+ */
+export function isNearDuplicateByEmbedding(
+  a: number[],
+  b: number[],
+  threshold = 0.92,
+): boolean {
+  return cosineSimilarity(a, b) >= threshold;
+}

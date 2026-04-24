@@ -127,11 +127,24 @@ export interface AiTextGenerationInput {
 export interface AiTextGenerationOutput {
   response?: string;
 }
+
+/** Input for text-embedding models (e.g. @cf/baai/bge-small-en-v1.5). */
+export interface AiEmbeddingInput {
+  text: string | string[];
+}
+
+/** Output for text-embedding models. */
+export interface AiEmbeddingOutput {
+  shape: number[];
+  data: number[][];
+}
+
 export interface AiBinding {
   run(
     model: string,
     input: AiTextGenerationInput,
   ): Promise<AiTextGenerationOutput | ReadableStream>;
+  run(model: string, input: AiEmbeddingInput): Promise<AiEmbeddingOutput>;
 }
 
 /**
