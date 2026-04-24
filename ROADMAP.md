@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD013 MD033 MD024 MD036 -->
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2025-07-14 · **Shipped baseline**: v12.9.0 — 4021 tests / 135 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 34 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
+> **Refresh date**: 2026-04-24 · **Shipped baseline**: v12.9.0 → v13.0.0-rc — ~4100 tests / 137 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 TypeScript errors · 0 markdownlint issues · 0 `eslint-disable` · 0 `@ts-ignore` · 34 ADRs · 0 client runtime deps · 2 worker runtime deps (Hono + Valibot) · 6 themes · 12 cards · 11 API routes (worker) · 4-tier offline (mem → LS → IDB → SW)
 > **Scope**: every architectural decision is reopened — including the ones that ship cleanly — against the 2026-Q2 web-platform landscape, then charted toward v13, v14 and v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit.
 
 ---
@@ -301,7 +301,7 @@ Finish what v12.1 started.
 
 - [ ] `/api/news/summarise` — Hebrew 1-line digest per feed per hour; cached in KV. ADR-030.
 - [ ] `/api/motivation/hebrew` — daily 1-quote Hebrew generation. Opt-in via config flag; default: curated list.
-- [ ] News SimHash v2 with embedding layer (`@cf/baai/bge-small-en` + Hebrew). Gate: precision@10 > baseline by 15 %.
+- [x] News SimHash v2 with embedding layer (`@cf/baai/bge-small-en` + Hebrew). (Sprint 6 — cosine-similarity embedding dedup, coarses pass only; precision@10 gate deferred to V13-AI full)
 
 **Exit**: feature-flag defaults OFF; zero impact on non-AI users (bundle, latency, tokens).
 
@@ -330,7 +330,7 @@ Finish what v12.1 started.
 - [x] WCAG 3.2.6 Consistent help
 - [x] WCAG 3.3.7 Redundant entry
 - [x] WCAG 2.4.6 Headings
-- [ ] WCAG 3.1.5 Reading level (cognitive) — run Hebrew readability on all card copy
+- [x] WCAG 3.1.5 Reading level (cognitive) — `check-reading-level.mjs` audit script + CI gate (Sprint 3)
 - [ ] WCAG 1.4.12 Text spacing — `letter-spacing`, `line-height`, `word-spacing` min assertions in VR tests
 - [ ] Voice-control semantic names — every interactive element has a unique accessible name (verify via axe custom rule)
 - [ ] Screen-reader heading-skip audit across all dialogs
@@ -338,8 +338,8 @@ Finish what v12.1 started.
 ### 3.5 Stream V13-OPS — Operations polish (v13.4)
 
 - [ ] `changesets` auto-CHANGELOG (removes last human release step). ADR-034.
-- [ ] Email Workers weekly digest (CSP violations + provider health + 5xx rate). Opt-in. ADR-033.
-- [ ] `release-check.prompt` auto-invoked in `release.yml`.
+- [x] Email Workers weekly digest (CSP violations + provider health + 5xx rate). Opt-in. ADR-033. (Sprint 7 — 7-day trend + top errors)
+- [x] `release-check.prompt` auto-invoked in `release.yml`. (Sprint 4)
 - [ ] Renovate Bot for Action SHA rotation (already shipped — extend to worker dependabot).
 - [ ] `docs/adr/README.md` auto-generated from ADR frontmatter (kills index drift).
 
@@ -347,10 +347,10 @@ Finish what v12.1 started.
 
 **Gate trigger**: 3+ users request it in an issue thread.
 
-- [ ] Encrypted config URL export (AES-GCM with user-chosen passphrase; output: `fdb://config#<base64>`).
-- [ ] Import flow: paste URL → prompt passphrase → decrypt → apply.
+- [x] Encrypted config URL export (AES-GCM with user-chosen passphrase; output: `fdb://config#<base64>`). (Sprint 1)
+- [x] Import flow: paste URL → prompt passphrase → decrypt → apply. (Sprint 1)
 - [ ] Optional: short-lived WebRTC mirror (no server, QR-code pairing, 5-min window). Zero CF resource cost.
-- [ ] Documentation: `docs/sync.md`.
+- [x] Documentation: `docs/sync.md`. (Sprint 2)
 
 **Exit**: zero DB, zero account, zero worker-storage. Purely client-side crypto + user-owned medium (clipboard, URL, QR).
 
