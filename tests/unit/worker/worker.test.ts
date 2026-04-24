@@ -642,6 +642,118 @@ describe("Worker — handleHebcalHolidays route", () => {
   });
 });
 
+// ── Worker — handleWeather route (Sprint 35 — V13-DATA NWS coverage) ──────────
+
+import { handleWeather } from "../../../worker/src/routes/data";
+
+/** Minimal Open-Meteo response that satisfies WeatherSchema */
+const validOpenMeteoData = {
+  current: {
+    temperature_2m: 22,
+    apparent_temperature: 20,
+    weather_code: 1,
+    wind_speed_10m: 10,
+    wind_direction_10m: 180,
+    relative_humidity_2m: 55,
+    uv_index: 3,
+  },
+  hourly: {
+    temperature_2m: [22, 23],
+    precipitation_probability: [10, 20],
+    weather_code: [1, 2],
+  },
+  daily: {
+    temperature_2m_max: [25],
+    temperature_2m_min: [18],
+    weather_code: [1],
+    sunrise: ["2024-01-01T06:00"],
+    sunset: ["2024-01-01T18:00"],
+    precipitation_probability_max: [20],
+    uv_index_max: [5],
+  },
+};
+
+describe("Worker — handleWeather route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 400 when lat is missing", async () => {
+    const url = new URL("https://worker.dev/api/weather?lon=34.78");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 when lon is missing", async () => {
+    const url = new URL("https://worker.dev/api/weather?lat=32.08");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 when lat is out of range", async () => {
+    const url = new URL("https://worker.dev/api/weather?lat=95&lon=34.78");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 200 with open-meteo provider on valid upstream", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify(validOpenMeteoData), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.dev/api/weather?lat=32.08&lon=34.78");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    expect(body.provider).toBe("open-meteo");
+  });
+
+  it("returns stale KV envelope when Open-Meteo fails and KV has data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("bad gateway", { status: 502 }),
+    );
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(validOpenMeteoData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const url = new URL("https://worker.dev/api/weather?lat=32.08&lon=34.78");
+    const res = await handleWeather(url, envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean };
+    expect(body.stale).toBe(true);
+  });
+
+  it("returns 502 when all providers fail and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("bad gateway", { status: 502 }),
+    );
+    const url = new URL("https://worker.dev/api/weather?lat=32.08&lon=34.78");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns 400 for NWS provider with non-US coordinates", async () => {
+    const url = new URL("https://worker.dev/api/weather?lat=32.08&lon=34.78&provider=nws");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain("NWS provider only supports US coordinates");
+  });
+
+  it("accepts NWS provider for US coordinates (falls through when NWS fails)", async () => {
+    // NWS points returns 503 (non-ok) → skip NWS, fall through to Open-Meteo
+    // Open-Meteo also returns 503 → met.no also 503 → no KV stale → 502
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    // US coordinate: New York City
+    const url = new URL("https://worker.dev/api/weather?lat=40.71&lon=-74.01&provider=nws");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(502);
+  });
+});
+
 // ── Worker — handleAlerts route (Stream W.4) ──────────────────────────────────
 
 import {
