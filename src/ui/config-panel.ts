@@ -7,7 +7,8 @@
  */
 
 import "./config-panel.css";
-import { loadConfig, saveConfig, shareConfigHash } from "../core/config";
+import { loadConfig, saveConfig, shareConfigHash, validateImportedConfig } from "../core/config";
+import { encryptConfig, decryptConfig } from "../core/config-crypto";
 import type { DashboardConfig } from "../types/config";
 import type { CardConfigField } from "../types/card";
 import { listCards, loadCard } from "../core/card-registry";
@@ -926,6 +927,101 @@ export function shareSettings(): void {
   diagLog("[config-panel] share link copied");
 }
 
+// ── V13-CONTINUITY: Encrypted config URL (AES-GCM) ────────────────────────────
+
+/** Resolve/reject for the active dialog promise. */
+let _ecfgResolve: ((passphrase: string | null) => void) | null = null;
+
+/** Show the passphrase dialog and return the entered passphrase (or null on cancel). */
+function openEcfgDialog(mode: "export" | "import"): Promise<string | null> {
+  return new Promise<string | null>((resolve) => {
+    _ecfgResolve = resolve;
+    const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement | null;
+    const desc = document.getElementById("ecfg-dialog-desc");
+    const input = document.getElementById("ecfg-passphrase-input") as HTMLInputElement | null;
+    const errEl = document.getElementById("ecfg-dialog-error");
+    if (!dlg) { resolve(null); return; }
+    if (desc) desc.textContent = t(mode === "export" ? "ecfgDialogExportDesc" : "ecfgDialogImportDesc");
+    if (input) input.value = "";
+    if (errEl) { errEl.textContent = ""; errEl.hidden = true; }
+    dlg.showModal();
+    input?.focus();
+  });
+}
+
+/** Called by confirm button or Enter key inside the dialog. */
+export function confirmEcfgDialog(): void {
+  const input = document.getElementById("ecfg-passphrase-input") as HTMLInputElement | null;
+  const passphrase = input?.value?.trim() ?? "";
+  if (!passphrase) {
+    const errEl = document.getElementById("ecfg-dialog-error");
+    if (errEl) { errEl.textContent = "יש להזין סיסמה"; errEl.hidden = false; }
+    return;
+  }
+  const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement | null;
+  dlg?.close();
+  _ecfgResolve?.(passphrase);
+  _ecfgResolve = null;
+}
+
+/** Called by cancel button or Escape key. */
+export function cancelEcfgDialog(): void {
+  const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement | null;
+  dlg?.close();
+  _ecfgResolve?.(null);
+  _ecfgResolve = null;
+}
+
+/**
+ * Encrypt current config and copy URL to clipboard.
+ * V13-CONTINUITY export flow.
+ */
+export function encryptedShareSettings(): void {
+  void openEcfgDialog("export").then(async (passphrase) => {
+    if (!passphrase) return;
+    try {
+      const config = loadConfig();
+      const fragment = await encryptConfig(config, passphrase);
+      const url = window.location.href.split("#")[0] + fragment;
+      await navigator.clipboard.writeText(url);
+      showToast(t("encryptedShareCopied"));
+      diagLog("[config-panel] encrypted share link copied");
+    } catch {
+      showToast(t("encryptedImportFailed"), 4000);
+      diagLog("[config-panel] encrypt failed");
+    }
+  });
+}
+
+/**
+ * Open the passphrase dialog to import an encrypted config URL.
+ * Called from main.ts when a #ecfg= hash is detected at startup,
+ * or from the config panel import button (not yet wired to UI import button).
+ * @param fragment - The full URL hash including #ecfg= prefix.
+ */
+export function openEcfgImportDialog(fragment: string): void {
+  void openEcfgDialog("import").then(async (passphrase) => {
+    if (!passphrase) return;
+    try {
+      const raw = await decryptConfig(fragment, passphrase);
+      const result = validateImportedConfig(raw);
+      if (!result.ok || !result.config) {
+        showToast(t("encryptedImportFailed"), 4000);
+        diagLog("[config-panel] ecfg import validation failed: " + result.message);
+        return;
+      }
+      saveConfig(result.config);
+      // Strip the #ecfg= hash so the next reload doesn't re-prompt
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+      showToast(t("encryptedImportSuccess"));
+      diagLog("[config-panel] ecfg import succeeded");
+    } catch {
+      showToast(t("encryptedImportFailed"), 4000);
+      diagLog("[config-panel] ecfg decryption failed — wrong passphrase or corrupt fragment");
+    }
+  });
+}
+
 // ── Tab switching ──
 export function switchCfgTab(tab: string): void {
   document.querySelectorAll<HTMLElement>(".cfg-section").forEach((s) => {
@@ -1106,6 +1202,17 @@ export function initConfigPanel(): void {
   document.getElementById("cfg-export-btn")?.addEventListener("click", exportSettings);
   document.getElementById("cfg-import-btn")?.addEventListener("click", importSettings);
   document.getElementById("cfg-share-btn")?.addEventListener("click", shareSettings);
+  document.getElementById("cfg-encrypt-share-btn")?.addEventListener("click", encryptedShareSettings);
+
+  // Encrypted config passphrase dialog buttons (V13-CONTINUITY)
+  document.getElementById("ecfg-dialog-confirm")?.addEventListener("click", confirmEcfgDialog);
+  document.getElementById("ecfg-dialog-cancel")?.addEventListener("click", cancelEcfgDialog);
+  document.getElementById("ecfg-passphrase-input")?.addEventListener("keydown", (e) => {
+    if ((e as KeyboardEvent).key === "Enter") confirmEcfgDialog();
+  });
+  // Close on backdrop click (Escape is handled natively by dialog)
+  const ecfgDlg = document.getElementById("ecfg-dialog") as HTMLDialogElement | null;
+  ecfgDlg?.addEventListener("cancel", cancelEcfgDialog);
 
   // Reset card layout button
   document.getElementById("cfg-reset-layout-btn")?.addEventListener("click", () => {

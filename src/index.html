@@ -91,6 +91,20 @@
     </div>
     <!-- Feature 101: SW Update notification banner -->
     <div id="sw-update-banner" title="גרסה חדשה של הדשבורד זמינה להתקנה" aria-live="polite"><span id="sw-update-status">🔄 מוריד עדכון...</span> — <button type="button" id="sw-update-reload-btn" aria-label="עדכן עכשיו — יטען את הגרסה החדשה" title="לחץ לעדכון מיידי" hidden>↻ עדכן עכשיו</button></div>
+    <!-- V13-CONTINUITY: Encrypted config URL passphrase dialog (AES-GCM) -->
+    <dialog id="ecfg-dialog" aria-labelledby="ecfg-dialog-title" aria-modal="true">
+      <div class="ecfg-dialog-inner">
+        <h2 id="ecfg-dialog-title">🔐 הגדרות מוצפנות</h2>
+        <p id="ecfg-dialog-desc" class="ecfg-dialog-desc"></p>
+        <label for="ecfg-passphrase-input" class="ecfg-dialog-label">סיסמה:</label>
+        <input type="password" id="ecfg-passphrase-input" class="ecfg-dialog-input" autocomplete="off" placeholder="הזן סיסמה…" dir="ltr">
+        <p id="ecfg-dialog-error" class="ecfg-dialog-error" hidden></p>
+        <div class="ecfg-dialog-actions">
+          <button type="button" id="ecfg-dialog-confirm" class="cfg-btn">אישור</button>
+          <button type="button" id="ecfg-dialog-cancel" class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)">ביטול</button>
+        </div>
+      </div>
+    </dialog>
     <!-- Sprint 8 (v11.0-PWA-1): First-run welcome tour dialog -->
     <dialog id="tour-overlay" aria-labelledby="tour-dialog-title" aria-modal="true">
       <div class="tour-inner">
@@ -548,6 +562,8 @@
             <button type="button" class="cfg-btn" id="cfg-import-btn" aria-label="ייבוא הגדרות מקובץ JSON" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
             <!-- F120: Dashboard URL share -->
             <button type="button" class="cfg-btn" id="cfg-share-btn" aria-label="שתף קישור הגדרות" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
+            <!-- V13-CONTINUITY: Encrypted URL share (AES-GCM) -->
+            <button type="button" class="cfg-btn" id="cfg-encrypt-share-btn" aria-label="שתף קישור הגדרות מוצפן" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור מוצפן עם סיסמה — בטוח לשיתוף">🔐 שתף מוצפן</button>
             <!-- F4 (v7.2): Reset all to defaults -->
             <button type="button" id="cfg-reset-all-btn" aria-label="איפוס כל ההגדרות" style="background:#c33;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:0.82em;cursor:pointer" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
           </div>

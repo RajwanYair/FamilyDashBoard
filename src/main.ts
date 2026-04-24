@@ -29,6 +29,7 @@ import { cEvict, hydrateFromIdb, migrateLocalStorageToIdb, cEvictIdb } from "./c
 import { initVisibility } from "./core/idle";
 import { registerSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
+import { ECFG_PREFIX } from "./core/config-crypto";
 import { applyInterfaceLanguage, t } from "./core/i18n";
 import { MS_PER_MIN } from "./core/constants";
 import { state } from "./core/state";
@@ -46,6 +47,7 @@ import {
   toggleConfigPanel,
   openConfigPanel,
   switchCfgTab,
+  openEcfgImportDialog,
 } from "./ui/config-panel";
 import { initScreenMode, stepFontScale } from "./ui/screen-mode";
 import {
@@ -430,6 +432,10 @@ export function init(): void {
       history.replaceState(null, "", window.location.pathname + window.location.search);
       diagLog("[init] FDB-007: config imported from URL hash");
     }
+  }
+  // ── V13-CONTINUITY: Encrypted config URL import (#ecfg= fragment) ──
+  if (_urlHash.startsWith(ECFG_PREFIX)) {
+    openEcfgImportDialog(_urlHash);
   }
 
   // ── Night dimmer auto-schedule (uses config v2 schedule fields) ──

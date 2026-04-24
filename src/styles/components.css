@@ -772,6 +772,60 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   background: transparent;
 }
 
+/* V13-CONTINUITY: Encrypted config passphrase dialog */
+#ecfg-dialog {
+  background: var(--card-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  padding: 0;
+  max-width: 360px;
+  width: 90vw;
+}
+#ecfg-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+.ecfg-dialog-inner {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ecfg-dialog-inner h2 {
+  margin: 0 0 4px;
+  font-size: 1.1em;
+}
+.ecfg-dialog-desc {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.ecfg-dialog-label {
+  font-size: 0.9em;
+  font-weight: 600;
+}
+.ecfg-dialog-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+  font-size: 1em;
+  box-sizing: border-box;
+}
+.ecfg-dialog-error {
+  font-size: 0.8em;
+  color: var(--negative, #e44);
+  margin: 0;
+}
+.ecfg-dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
 /* ── Weather ── */
 .weather-body {
   flex: 1;

@@ -29,6 +29,13 @@ type TranslationKey =
   | "exportSettings"
   | "importSettings"
   | "shareLink"
+  | "encryptedShareLink"
+  | "encryptedImportLink"
+  | "encryptedShareCopied"
+  | "encryptedImportSuccess"
+  | "encryptedImportFailed"
+  | "ecfgDialogExportDesc"
+  | "ecfgDialogImportDesc"
   | "resetAll"
   | "resetLayout"
   | "settingsCloseHint"
@@ -107,6 +114,13 @@ const UI_TEXT: Record<InterfaceLanguage, Record<TranslationKey, string>> = {
     exportSettings: "📥 ייצוא הגדרות",
     importSettings: "📤 ייבוא הגדרות",
     shareLink: "🔗 שתף קישור",
+    encryptedShareLink: "🔐 שתף מוצפן",
+    encryptedImportLink: "🔐 ייבוא מוצפן",
+    encryptedShareCopied: "🔐 קישור מוצפן הועתק ללוח",
+    encryptedImportSuccess: "✅ הגדרות מוצפנות יובאו בהצלחה",
+    encryptedImportFailed: "⚠️ פענוח נכשל — סיסמה שגויה או קישור פגום",
+    ecfgDialogExportDesc: "בחר סיסמה לאנצפציה של ההגדרות. שמור אותה — תצטרך אותה בייבוא.",
+    ecfgDialogImportDesc: "הזן את הסיסמה שבה השתמשת לייצוא ההגדרות המוצפנות.",
     resetAll: "⚠️ אפס הכל",
     resetLayout: "↩ איפוס סידור כרטיסיות",
     settingsCloseHint: "לחץ S או Escape לסגירה",
@@ -184,6 +198,13 @@ const UI_TEXT: Record<InterfaceLanguage, Record<TranslationKey, string>> = {
     exportSettings: "📥 Export settings",
     importSettings: "📤 Import settings",
     shareLink: "🔗 Share link",
+    encryptedShareLink: "🔐 Share encrypted",
+    encryptedImportLink: "🔐 Import encrypted",
+    encryptedShareCopied: "🔐 Encrypted config link copied to clipboard",
+    encryptedImportSuccess: "✅ Encrypted settings imported successfully",
+    encryptedImportFailed: "⚠️ Decryption failed — wrong passphrase or corrupt link",
+    ecfgDialogExportDesc: "Choose a passphrase to encrypt your settings. Keep it safe — you will need it when importing.",
+    ecfgDialogImportDesc: "Enter the passphrase you used when exporting the encrypted settings.",
     resetAll: "⚠️ Reset all",
     resetLayout: "↩ Reset card layout",
     settingsCloseHint: "Press S or Escape to close",
