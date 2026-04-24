@@ -63,6 +63,13 @@ describe("trustedHTML — trustedTypes.createPolicy present", () => {
     expect(typeof result).toBe("string");
     expect(result.length).toBeGreaterThan(0);
   });
+
+  it("reuses the cached policy on repeated calls (covers _policy return path at line 33)", async () => {
+    const { trustedHTML } = await import("../../../src/core/trusted-types");
+    trustedHTML("first-call"); // creates _policy (or uses cached if already set)
+    const result = trustedHTML("second-call"); // hits _policy cache: if (_policy) return _policy;
+    expect(typeof result).toBe("string");
+  });
 });
 
 describe("trustedHTML — trustedTypes exists but createPolicy is absent", () => {

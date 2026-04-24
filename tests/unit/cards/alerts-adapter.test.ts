@@ -65,6 +65,13 @@ describe("AlertsAdapter (Sprint 92)", () => {
     if (!result.ok) expect(result.error).toBe("blocked");
   });
 
+  it("returns failure on non-Error rejection (String(err) path)", async () => {
+    vi.mocked(fetchJSONWithWorker).mockRejectedValueOnce("network-error");
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBe("network-error");
+  });
+
   it("status() returns current health", () => {
     expect(adapter.status()).toBe("ok");
   });

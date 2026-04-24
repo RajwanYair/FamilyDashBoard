@@ -150,6 +150,16 @@ describe("errorRate", () => {
     // Rate is errors / minutes since first error; since both in same ms, returns count
     expect(errorRate()).toBeGreaterThanOrEqual(2);
   });
+
+  it("returns buffer length when spanMs is 0 (all errors in same millisecond)", () => {
+    vi.useFakeTimers();
+    recordError("err1");
+    recordError("err2");
+    const rate = errorRate();
+    vi.useRealTimers();
+    clearErrors();
+    expect(rate).toBe(2); // spanMs === 0 → returns _buffer.length
+  });
 });
 
 // ── Sprint 38: sampleErrorTrend / getErrorTrend tests ────────────────────────
@@ -202,5 +212,59 @@ describe("getErrorTrend", () => {
     snapshot.push(999);
     // Internal buffer should still only have 1 item
     expect(getErrorTrend()).toHaveLength(1);
+  });
+});
+
+// ── installGlobalErrorHandlers — branch coverage for event callbacks ──────────
+
+describe("installGlobalErrorHandlers — event handler branches", () => {
+  beforeEach(() => {
+    clearErrors();
+    _resetInstalledFlag();
+  });
+
+  it("unhandledrejection with string reason (non-Error path)", () => {
+    installGlobalErrorHandlers();
+    const ev = Object.assign(new Event("unhandledrejection"), {
+      reason: "string reason",
+      promise: Promise.resolve(),
+    });
+    window.dispatchEvent(ev);
+    const errs = getErrors();
+    expect(errs.some((e) => e.message === "string reason")).toBe(true);
+  });
+
+  it("unhandledrejection with Error reason (Error path)", () => {
+    installGlobalErrorHandlers();
+    const ev = Object.assign(new Event("unhandledrejection"), {
+      reason: new Error("error-reason"),
+      promise: Promise.resolve(),
+    });
+    window.dispatchEvent(ev);
+    const errs = getErrors();
+    expect(errs.some((e) => e.message === "error-reason")).toBe(true);
+  });
+
+  it("unhandledrejection with null reason (null-coalescing fallback path)", () => {
+    installGlobalErrorHandlers();
+    const ev = Object.assign(new Event("unhandledrejection"), {
+      reason: null,
+      promise: Promise.resolve(),
+    });
+    window.dispatchEvent(ev);
+    const errs = getErrors();
+    expect(errs.some((e) => e.message === "Unhandled rejection")).toBe(true);
+  });
+
+  it("error event handler records the message", () => {
+    installGlobalErrorHandlers();
+    const ev = new ErrorEvent("error", {
+      message: "global-error",
+      filename: "test.ts",
+      lineno: 42,
+    });
+    window.dispatchEvent(ev);
+    const errs = getErrors();
+    expect(errs.some((e) => e.message === "global-error")).toBe(true);
   });
 });

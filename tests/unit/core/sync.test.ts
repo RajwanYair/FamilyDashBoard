@@ -9,8 +9,10 @@ import {
   recordFailure,
   recordSuccess,
   getBackoffDelay,
+  getFailedPanes,
   syncBurst,
   updateCardMiniInfo,
+  clearSyncDots,
 } from "@/core/sync";
 
 describe("Sync Indicators", () => {
@@ -255,5 +257,100 @@ describe("updateCardMiniInfo", () => {
       <span id="mini-weather"></span>`;
     updateCardMiniInfo("weather");
     expect(document.getElementById("mini-weather")!.textContent).toBe("");
+  });
+});
+
+// ── getFailedPanes ────────────────────────────────────────────────────────────
+describe("getFailedPanes", () => {
+  beforeEach(() => {
+    // Reset all keys that other tests and our own tests may dirty
+    for (const k of ["fp-a", "fp-b", "fp-c", "test", "reset-test", "cap-test", "three", "fresh-key"]) {
+      recordSuccess(k);
+    }
+  });
+
+  it("includes no fp-* entries when none were recorded yet", () => {
+    const keys = getFailedPanes().map((p) => p.key);
+    expect(keys).not.toContain("fp-a");
+    expect(keys).not.toContain("fp-b");
+    expect(keys).not.toContain("fp-c");
+  });
+
+  it("returns entry for a pane with one failure", () => {
+    recordFailure("fp-a");
+    const panes = getFailedPanes();
+    expect(panes.some((p) => p.key === "fp-a")).toBe(true);
+    const entry = panes.find((p) => p.key === "fp-a")!;
+    expect(entry.delay).toBe(2); // 2^1
+  });
+
+  it("returns correct delay after multiple failures", () => {
+    recordFailure("fp-b");
+    recordFailure("fp-b");
+    recordFailure("fp-b"); // 3 failures → delay 2^3 = 8
+    const panes = getFailedPanes();
+    const entry = panes.find((p) => p.key === "fp-b")!;
+    expect(entry.delay).toBe(8);
+  });
+
+  it("omits panes with 0 failures (after recordSuccess reset)", () => {
+    recordFailure("fp-c");
+    recordSuccess("fp-c"); // reset
+    const panes = getFailedPanes();
+    expect(panes.some((p) => p.key === "fp-c")).toBe(false);
+  });
+
+  it("returns multiple entries when multiple panes have failures", () => {
+    recordFailure("fp-a");
+    recordFailure("fp-b");
+    const panes = getFailedPanes();
+    expect(panes.some((p) => p.key === "fp-a")).toBe(true);
+    expect(panes.some((p) => p.key === "fp-b")).toBe(true);
+  });
+});
+
+// ── clearSyncDots ─────────────────────────────────────────────────────────────
+describe("clearSyncDots", () => {
+  it("removes all registered sync dots without throwing", () => {
+    document.body.innerHTML = '<div id="sync-clear"></div>';
+    const dot = document.getElementById("sync-clear")!;
+    registerSyncDot("clear-test", dot);
+    expect(() => clearSyncDots()).not.toThrow();
+    // After clearing, setSync should be a no-op
+    expect(() => setSync("clear-test", "ok")).not.toThrow();
+  });
+});
+
+// ── syncBurst with card DOM element (covers flashCardRefresh body) ────────────
+describe("syncBurst — with card DOM element present", () => {
+  it("adds card--refreshed class to the matching card element", () => {
+    document.body.innerHTML = `
+      <div id="sync-wx2"></div>
+      <div class="card" data-card-id="weather">
+        <span id="mini-weather"></span>
+        <span id="wx-temp">22°C</span>
+        <span id="wx-desc">שמש</span>
+      </div>`;
+    const dot = document.getElementById("sync-wx2")!;
+    registerSyncDot("wx", dot);
+    syncBurst("wx");
+    const card = document.querySelector('[data-card-id="weather"]')!;
+    expect(card.classList.contains("card--refreshed")).toBe(true);
+  });
+
+  it("covers flashCardRefresh with SYNC_TO_CARD_ID mapping (wx → weather)", () => {
+    document.body.innerHTML = `
+      <div id="sync-wx3"></div>
+      <div class="card" data-card-id="weather"></div>`;
+    const dot = document.getElementById("sync-wx3")!;
+    registerSyncDot("wx", dot);
+    expect(() => syncBurst("wx")).not.toThrow();
+  });
+
+  it("does not throw when card element is absent (covers early return path)", () => {
+    document.body.innerHTML = '<div id="sync-wx4"></div>';
+    const dot = document.getElementById("sync-wx4")!;
+    registerSyncDot("wx", dot);
+    expect(() => syncBurst("wx")).not.toThrow();
   });
 });
