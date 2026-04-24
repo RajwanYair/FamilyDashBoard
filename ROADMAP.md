@@ -147,12 +147,12 @@ All 29 ADRs re-litigated, plus decisions not yet formalised. Every row is stampe
 | B2 | Hono router (ADR-026) | Shipped, replaced hand-written | **Keep** | Reconfirmed. First-class with Valibot. |
 | B3 | Valibot validation (ADR-023) | Shipped, replaced Zod | **Keep** | ~25 KB worker win. |
 | B4 | KV stale cache (ADR-013) | All 11 routes | **Keep; annual audit of TTLs** | Document per-route TTL in OpenAPI description. v13. |
-| B5 | D1 telemetry (ADR-024) | Shipped v12.1 | **Keep; tighten schema in v13** | Add route-level p95 latency aggregation. |
+| B5 | D1 telemetry (ADR-024) | Shipped v12.1 | **Keep; tightened in v13.2** | ✅ Route-level p95 latency aggregation added (Sprint 23: `aggregateP95`, `recordLatency`, `queryP95ByRoute`). |
 | B6 | Durable Objects — alerts SSE (ADR-025) | Shipped stub; SSE wiring deferred | **Complete in v13-EDGE** | Finish SSE client + alerts card subscription. Drops per-client polling. |
 | B7 | Workers Analytics Engine (ADR-029) | Middleware shipped | **Keep; query dashboard in v13** | Grafana Cloud free-tier. |
 | B8 | Reporting API + D1 (ADR-028) | Shipped | **Keep; weekly digest v13-OPS** | Email Workers. |
 | B9 | Worker cron triggers — pre-warm | 3 triggers shipped | **Keep; add 29-Elul next-year pre-warm audit** | v13. |
-| B10 | Prometheus `/api/metrics` | Shipped (token-gated) | **Keep; expose provider-health histogram in v13** | |
+| B10 | Prometheus `/api/metrics` | Shipped (token-gated) | **Keep; histogram exposed in v13.2** | ✅ `fdb_provider_health_p95_ms` gauge added (Sprint 24: `toProviderHealthPrometheus` + `queryP95ByRoute`). |
 | B11 | **Annual vendor-neutrality build drill** | Not yet run | **Adopt** | Prove `worker/src` builds on Deno Deploy + Bun Deploy + fly.io once per major release. Green = we retain the exit door without spending weekly on it. v13 release ritual. ADR-031. |
 | B12 | Workers Queues for error-reporter fan-out | Not used | **Adopt v13-EDGE** | Offloads from request path; retries on backpressure. ADR-032. |
 | B13 | Email Workers for digest | Not used | **Adopt v13-OPS (opt-in)** | Weekly CSP + provider-health summary. ADR-033. |
@@ -207,7 +207,7 @@ All 29 ADRs re-litigated, plus decisions not yet formalised. Every row is stampe
 | --- | --- | --- | --- |
 | Client diag — `diagLog` + `D` overlay + `Ctrl+Shift+E` JSON export v1 schema | Shipped | **Keep; bump schema v2 when needed** | Version-gated. |
 | Error KV — last 1000, 7-day TTL | Shipped | **Keep** | Debug mode. |
-| RUM — CF Web Analytics + inline Web Vitals | Shipped | **Keep; add Speculation Rules prerender metric v13** | |
+| RUM — CF Web Analytics + inline Web Vitals | Shipped | **Keep; Speculation Rules prerender metric added v13.2** | ✅ F13 audit complete; 9 contract tests; same-origin enforcement in dom-contract.test.ts (Sprint 25). |
 | Prometheus `/api/metrics` token-gated | Shipped | **Keep** | |
 | Reporting API `/api/reports` → D1 | Shipped | **Keep; weekly digest v13-OPS** | |
 | Analytics Engine | Shipped | **Query dashboard v13** | |
@@ -340,7 +340,7 @@ Finish what v12.1 started.
 - [x] `changesets` auto-CHANGELOG (removes last human release step). ADR-034. (✅ Sprint 14 — .changeset/config.json + npm scripts + tests)
 - [x] Email Workers weekly digest (CSP violations + provider health + 5xx rate). Opt-in. ADR-033. (Sprint 7 — 7-day trend + top errors)
 - [x] `release-check.prompt` auto-invoked in `release.yml`. (Sprint 4)
-- [ ] Renovate Bot for Action SHA rotation (already shipped — extend to worker dependabot).
+- [x] Renovate Bot for Action SHA rotation (already shipped — extend to worker dependabot). ✅ `dependabot.yml` covers `worker/` directory (Sprint 29).
 - [x] `docs/adr/README.md` auto-generated from ADR frontmatter (kills index drift). (✅ check-adr-index.mjs + CI gate)
 
 ### 3.6 Stream V13-CONTINUITY — Cross-device without auth (v13.5, gated)
