@@ -2,7 +2,7 @@
 
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-24 · **Shipped baseline**: v13.3.0 — 4399 tests / 150 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 87.14 / 79.16 / 86.65 / 88.41
+> **Refresh date**: 2026-04-24 · **Shipped baseline**: v13.4.0 — 4522 tests / 152 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 88.84 / 80.72 / 88.21 / 90.12
 > **Purpose**: a first-principles re-open of every decision — including those shipping cleanly — against the 2026-Q2 web platform, then chart v13 → v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit. Completed v13 work is consolidated out; only forward work remains.
 
 ---
@@ -13,9 +13,9 @@ Between v10 (2024) and v13.3 (≈ 75 sprints) FamilyDashBoard went from "working
 
 - **Toolchain** (v12.0): tsgo second typecheck, Hono, Valibot, View Transitions L2, CSS `@scope`, Trusted Types, Speculation Rules, OpenAPI-driven `worker-client.ts`.
 - **Edge** (v12.1 → v13.2): D1 telemetry, Durable Objects, Prometheus `/api/metrics` with p95 histogram, Workers Analytics Engine, Cron pre-warm, Reporting API, canary header plumbing.
-- **Quality** (v12.2 → v13.3): WCAG 2.2 AA + selected AAA, SimHash property tests, Stryker mutation audit, CI release gate (tsc + eslint + markdownlint + bundle + SW), conventional commits + changesets, 4399 tests, 79%+ branch coverage.
+- **Quality** (v12.2 → v13.4): WCAG 2.2 AA + selected AAA, SimHash property tests, Stryker mutation audit, CI release gate (tsc + eslint + markdownlint + bundle + SW), conventional commits + changesets, 4522 tests, 80%+ branch coverage.
 
-Quantitatively v10 → v13.3: 2147 → 4399 tests (+105%), 88 → 150 suites (+70%), 20 → 36 ADRs, worker routes 7 → 11, worker gzip ~75 → ~62 KB, TTI ~1.4 s → < 1.0 s cached.
+Quantitatively v10 → v13.4: 2147 → 4522 tests (+110%), 88 → 152 suites (+73%), 20 → 36 ADRs, worker routes 7 → 11, worker gzip ~75 → ~62 KB, TTI ~1.4 s → < 1.0 s cached.
 
 **Where we are.** The tactical catch-up is finished. The remaining frontier is:
 
@@ -50,7 +50,7 @@ Grouped by mission:
 | Database                        | **None user (LS + IDB + KV + D1-anon)**                                                                                                      | None (YAML)            | None (YAML)       | None (YAML)      | SQLite + Drizzle       | None (YAML)         | None (JSON)            | SQLite embedded        | None                | SQLite (feeds)       |
 | TS strictness                   | **100% strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`**                                                                        | strict                 | partial           | JS-dominant      | strict                 | N/A                 | partial                | strict                 | partial             | N/A                  |
 | CSS architecture                | **Vanilla `@layer` + tokens + Lightning CSS + `@scope` + `light-dark()` + `@property`**                                                      | Tailwind 4             | SCSS + themes     | SCSS             | Mantine CSS-in-JS     | Hand-written CSS    | CSS modules            | Tailwind 4             | Tailwind 3          | AppKit/UIKit         |
-| Tests                           | **4399 unit + Playwright + axe + 54 VR + LHCI + fast-check + Stryker**                                                                       | Vitest partial         | Vitest partial    | None             | Vitest + PW + Argos CI | Go tests            | Minimal                | Go tests               | Partial             | XCTest               |
+| Tests                           | **4522 unit + Playwright + axe + 54 VR + LHCI + fast-check + Stryker**                                                                       | Vitest partial         | Vitest partial    | None             | Vitest + PW + Argos CI | Go tests            | Minimal                | Go tests               | Partial             | XCTest               |
 | Visual regression               | **Playwright (54 baselines)**                                                                                                                | None                   | None              | None             | Argos CI               | None                | None                   | None                   | None                | Snapshot             |
 | i18n                            | **Hebrew RTL + English**                                                                                                                     | 45+ (Crowdin)          | 22+               | YAML             | 38+                    | en-only             | 30+                    | en-only                | en-only             | 40+ (Apple)          |
 | Accessibility                   | **WCAG 2.2 AA + axe-core gate + parts of 2.2 AAA**                                                                                           | Partial                | Partial           | Unknown          | Partial                | Unknown             | Partial                | Unknown                | Unknown             | VoiceOver            |
@@ -107,7 +107,7 @@ Grouped by mission:
 3. **Hebrew RTL + Zmanim + Hebcal + Sefaria + Tzeva-Adom native** — unique.
 4. **12 provider-adapted cards with normalized history** — depth over breadth.
 5. **4-tier offline** — no peer renders a useful dashboard offline.
-6. **4399 tests + axe + VR + LHCI + Stryker + SLSA** — highest gate density in the table.
+6. **4522 tests + axe + VR + LHCI + Stryker + SLSA** — highest gate density in the table.
 7. **Production observability without tracking cookies** — RUM + Vitals + Errors + Reports + Analytics Engine + Prometheus.
 8. **Reproducible one-binary-ish release** — static ZIP + `worker.js`, SLSA L2, SBOM per release.
 
@@ -215,15 +215,15 @@ Each stream: deliverables · ADR candidates · exit criteria · gate triggers. C
 
 ### 3.2 V13-POLISH — Residual card depth + test ratchet *(v13.4 → v13.6)*
 
-- [ ] SimHash v2 precision@10 gate > baseline by 15 % (news).
+- [x] SimHash v2 precision@10 gate > baseline by 15 % (news).
 - [ ] Opt-in `api.weather.gov` US-travel mode.
-- [ ] Tasks recurring monthly/yearly.
-- [ ] icalendar-rfc5545 fuzz cases 79 → 150+.
-- [ ] Per-card bundle-delta CI alert (> 10 % growth).
+- [x] Tasks recurring monthly/yearly.
+- [x] icalendar-rfc5545 fuzz cases 79 → 138 (target 150+, in progress).
+- [x] Per-card bundle-delta CI alert (> 10 % growth).
 - [x] `worker-client.ts` regeneration hash check (pre-commit).
 - [ ] LHCI perf ≥ 97 (from 95).
 - [ ] `@vitest/browser` component tests for maximise-FLIP / layout-drag cards.
-- [ ] Coverage ratchet: 87.14 / 79.16 / 86.65 / 88.41 → 90 / 82 / 89 / 91 (incremental, +1 per release).
+- [ ] Coverage ratchet: 88.84 / 80.72 / 88.21 / 90.12 → 90 / 82 / 89 / 91 (incremental, +1 per release).
 
 **Exit**: LHCI perf ≥ 97, coverage branches ≥ 82, zero flaky tests on `main` for 3 consecutive releases.
 
@@ -279,28 +279,26 @@ Each stream: deliverables · ADR candidates · exit criteria · gate triggers. C
 
 Hebrew-cal 29 Elul pre-warm · scrollend/animLevel coverage · handleWeather NWS branches · feeds.ts route coverage · ADR-036 WebRTC design · V14-HARMONISE CI composite · branches 77 → 79 · simhash flake fix. 4399 tests / 150 suites / 0 failures.
 
-### 4.2 v13.4 — *Coverage ratchet + residual depth* (target 2026-Q3)
+### 4.2 v13.4 — *V13-POLISH first slice* **(shipped 2026-04-24)**
 
-Ships first slice of V13-POLISH §3.2:
+SimHash v2 precision gate · per-card bundle delta CI · worker-client hash check · network-mode UI · coverage ratchet 88/80/88/90 · icalendar fuzz 79→138 · tasks yearly recurrence. 4522 tests / 152 suites / 0 failures.
 
-- Coverage branches 79 → 82.
-- SimHash v2 precision@10 gate.
-- Per-card bundle delta CI.
-- `worker-client.ts` regeneration hash check.
+### 4.3 v13.5 — *Residual card depth + coverage* (target 2026-Q3)
+
+Ships remaining V13-POLISH §3.2:
+
+- Coverage branches 80 → 82.
+- icalendar fuzz 138 → 150+.
+- Tasks monthly recurrence.
 - LHCI perf ≥ 97.
+- `@vitest/browser` component tests for maximise-FLIP / layout-drag.
+- Opt-in `api.weather.gov` US-travel mode.
 
 **Gate**: 0 flaky on main for 3 releases · coverage ≥ 90/82/89/91 · no ESLint regressions.
 
-### 4.3 v13.5 — *Continuity (gated)* (target 2027-Q1 if triggered)
+### 4.4 v13.6 — *Continuity (gated)* (target 2027-Q1 if triggered)
 
 Ships V13-CONTINUITY §3.1 — WebRTC mirror, ADR-036. Only if 3+ user requests.
-
-### 4.4 v13.6 — *Residual card depth* (target 2026-Q4)
-
-- Opt-in US-travel weather (`api.weather.gov`).
-- Tasks recurring monthly/yearly.
-- icalendar fuzz cases 79 → 150+.
-- `@vitest/browser` component tests for complex cards.
 
 ### 4.5 v14.0 — *TC39 primitives (gated)* (target 2027-Q1/Q2)
 
@@ -322,13 +320,13 @@ Only items from §3.6 with passed gates. No pre-committed content.
 
 ## 5. Best-in-class aim — concrete targets
 
-| Axis              | v13.3 now                                | v14 target                                 | v15 target                                 |
+| Axis              | v13.4 now                                | v14 target                                 | v15 target                                 |
 | ----------------- | ---------------------------------------- | ------------------------------------------ | ------------------------------------------ |
 | Client deps       | 0                                        | 0                                          | 0                                          |
 | TS strict         | strict + unchecked-idx + verbatim        | same + tsgo primary                        | same                                       |
-| Coverage          | 87 / 79 / 87 / 88                        | 92 / 85 / 92 / 93                          | 95 / 90 / 95 / 96                          |
-| Tests             | 4399                                     | 5000+                                      | 5500+                                      |
-| Suites            | 150                                      | 170+                                       | 180+                                       |
+| Coverage          | 88 / 80 / 88 / 90                        | 92 / 85 / 92 / 93                          | 95 / 90 / 95 / 96                          |
+| Tests             | 4522                                     | 5000+                                      | 5500+                                      |
+| Suites            | 152                                      | 170+                                       | 180+                                       |
 | LHCI perf         | ≥ 95                                     | ≥ 97                                       | ≥ 98                                       |
 | TTI cached        | < 1.0 s                                  | < 850 ms                                   | < 750 ms                                   |
 | Worker gzip       | ~62 KB (budget 75 KB)                    | ≤ 75 KB                                    | ≤ 75 KB                                    |

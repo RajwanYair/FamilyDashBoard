@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v13.3.0
+/* FamilyDashBoard ServiceWorker — v13.4.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v13.3.0: Hebrew-cal 29 Elul pre-warm · scrollend/animLevel coverage · handleWeather NWS branches · feeds.ts coverage · ADR-036 WebRTC mirror · tooling/ci composite action · branches 78% · +51 tests (Sprint 31-39)
+ * v13.4.0: SimHash v2 precision gate · per-card bundle-delta CI · network-mode settings UI · coverage ratchet 88/80/88/90 · +176 tests (Sprints 53-59)
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

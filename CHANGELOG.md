@@ -5,6 +5,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.4.0] — 2026-04-24
+
+> **V13-POLISH sprint** — SimHash v2 precision gate · per-card bundle-delta CI · worker-client regen hash check · network-mode settings UI · coverage ratchet 85→88/79→80/85→88/86→90 · icalendar RFC-5545 fuzz 79→138 · tasks yearly recurrence · Windows coverage ENOENT fix · **4522 tests / 152 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs
+
+### Added
+
+- **SimHash v2 precision@20 gate** (`tests/unit/worker/simhash.test.ts`): 3 new tests validating word-bigram SimHash precision@10 at threshold=20 for ~10-word news headlines; THRESHOLD constant documented as 20 (vs v1 char-4gram THRESHOLD=10).
+- **Per-card bundle-delta CI** (`.github/workflows/ci.yml`, `scripts/check-bundle-size.mjs`): CI fails on any single-card JS chunk growing > 10% between builds; per-card byte map logged as CI annotation.
+- **worker-client.ts regen hash check** (`scripts/git-hooks/pre-commit`, `scripts/install-git-hooks.mjs`): pre-commit hook compares `worker/openapi.yaml` SHA against committed `src/core/worker-client.ts` header hash; blocks stale-client commits.
+- **Network-mode settings UI** (`src/index.html`, `src/ui/config-panel.ts`): Advanced tab gains a `<select id="cfg-network-mode">` with 4 values (auto / worker-only / no-worker / no-proxy); persisted to `LS_NETWORK_MODE`; 4 new tests.
+- **icalendar RFC-5545 fuzz cases** (`tests/unit/cards/calendar.test.ts`): fuzz coverage expanded from 79 → 138 test cases covering DURATION, RRULE edge cases, timezone overlap, and malformed inputs.
+- **Tasks yearly recurrence** (`src/cards/tasks/tasks.ts`, `tests/unit/cards/tasks.test.ts`): `yearly` recurrence type fully implemented alongside existing `weekly`/`monthly`; 3 new tests.
+
+### Changed
+
+- Coverage thresholds raised: statements 85→88, branches 79→80, functions 85→88, lines 86→90 (actual: 88.84/80.72/88.21/90.12).
+- `vitest.config.ts`: `mkdirSync({ recursive: true })` pre-creates `coverage/.tmp` to fix Windows ENOENT race with 150+ workers.
+- ROADMAP.md: checked off SimHash v2, per-card bundle delta, worker-client hash check, icalendar fuzz (138/150+), tasks yearly.
+
+### Tests
+
+- +3 `simhash.test.ts`: SimHash v2 precision@20 gate — 27 total.
+- +4 `config-panel.test.ts`: network-mode selector populate + collect — 75 total.
+- +59 `calendar.test.ts` (approx): icalendar RFC-5545 fuzz expansion 79→138.
+- +3 `tasks.test.ts`: yearly recurrence.
+- 4522 total / 152 suites / 0 failures.
+
+---
+
 ## [13.3.0] — 2026-04-24
 
 > **Coverage + Worker + Docs sprint** — Hebrew-cal 29 Elul pre-warm · scrollend/animLevel test coverage · handleWeather NWS path branches · feeds.ts untested routes coverage · ADR-036 WebRTC config mirror · V14-HARMONISE CI composite action · branches threshold 77→78% · simhash property test flake fix · **4346 tests / 149 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs
