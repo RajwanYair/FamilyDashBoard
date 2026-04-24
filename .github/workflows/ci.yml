@@ -183,6 +183,8 @@ jobs:
         run: npx vite build
       - name: Bundle size check
         run: node scripts/check-bundle-size.mjs
+      - name: Per-card bundle delta check (Sprint 55)
+        run: node scripts/check-card-bundle-delta.mjs
       - name: SW version check
         run: node scripts/check-sw-version.mjs
       - name: Worker-client / OpenAPI sync check (F18)

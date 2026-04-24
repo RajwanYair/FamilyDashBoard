@@ -46,6 +46,7 @@
         "check": "npm run typecheck && npm run typecheck:sw && npm run lint && npm run lint:md && npm run lint:instructions && npm run check:sw && npm run check:worker-client && npm run check:adr && npm run check:openapi-ttl && npm run check:release-notes && npm run check:reading-level && npm run test",
         "check:reading-level": "node scripts/check-reading-level.mjs",
         "check:bundle": "node scripts/check-bundle-size.mjs",
+        "check:card-bundle": "node scripts/check-card-bundle-delta.mjs",
         "bundle:trend": "node scripts/bundle-trend.mjs",
         "mutate": "stryker run scripts/stryker.config.mjs",
         "arch:table": "node scripts/generate-arch-table.mjs",
