@@ -193,6 +193,8 @@ jobs:
         run: node scripts/check-openapi-ttl.mjs
       - name: Release notes CHANGELOG check (V13-OPS)
         run: node scripts/check-release-notes.mjs
+      - name: Reading-level audit (V13-A11Y)
+        run: node scripts/check-reading-level.mjs
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)
