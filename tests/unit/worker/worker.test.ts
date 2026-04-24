@@ -547,6 +547,50 @@ describe("Worker — handleCurrency route", () => {
     expect(fetchMock).toHaveBeenNthCalledWith(2, "https://api.exchangerate-api.com/v4/latest/ILS");
     expect(res.status).toBe(200);
   });
+
+  it("returns KV stale when both upstreams fail and stale data exists", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("fail", { status: 503 }));
+    const staleData = { rates: { USD: 0.26 } };
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const res = await handleCurrency(envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { stale: boolean; provider: string };
+    expect(body.stale).toBe(true);
+    expect(body.provider).toBe("currency-kv-stale");
+  });
+
+  it("returns error envelope when both upstreams fail and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("fail", { status: 503 }));
+    const res = await handleCurrency(mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { stale: boolean; provider: string };
+    expect(body.stale).toBe(true);
+    expect(body.provider).toBe("none");
+  });
+
+  it("falls through to next upstream when primary returns invalid schema", async () => {
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ wrong: "shape" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ rates: { USD: 0.27 } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const res = await handleCurrency(mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    expect(body.provider).toBe("exchangerate-api.com");
+  });
 });
 
 // ── Worker — handleHebcal + handleHebcalHolidays routes (Stream W.3) ─────────
@@ -596,6 +640,48 @@ describe("Worker — handleHebcal route", () => {
     const res = await handleHebcal(url, envWithKv);
     expect(res.status).toBe(200);
   });
+
+  it("passes through upstream error response when no KV stale available", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
+    const url = new URL("https://worker.dev/api/hebcal?geonameid=293397");
+    const res = await handleHebcal(url, mockEnv);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns KV stale when upstream returns invalid schema shape", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ wrong: "shape" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const kvGet = vi.fn().mockResolvedValue(
+      JSON.stringify({
+        items: [{ date: "2024-01-05", title: "Candles", category: "candles", hebrew: "" }],
+      }),
+    );
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const url = new URL("https://worker.dev/api/hebcal?geonameid=293397");
+    const res = await handleHebcal(url, envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { stale: boolean };
+    expect(body.stale).toBe(true);
+  });
+
+  it("returns 502 when upstream returns invalid schema and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ wrong: "shape" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.dev/api/hebcal?geonameid=293397");
+    const res = await handleHebcal(url, mockEnv);
+    expect(res.status).toBe(502);
+  });
 });
 
 describe("Worker — handleHebcalHolidays route", () => {
@@ -639,6 +725,48 @@ describe("Worker — handleHebcalHolidays route", () => {
     const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
     const res = await handleHebcalHolidays(url, envWithKv);
     expect(res.status).toBe(200);
+  });
+
+  it("passes through upstream error response when no KV stale available", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
+    const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
+    const res = await handleHebcalHolidays(url, mockEnv);
+    expect(res.status).toBe(502);
+  });
+
+  it("returns KV stale when upstream returns invalid schema shape", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ wrong: "shape" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const kvGet = vi.fn().mockResolvedValue(
+      JSON.stringify({
+        items: [{ date: "2024-01-05", title: "Rosh Hashana", category: "holiday", hebrew: "" }],
+      }),
+    );
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
+    const res = await handleHebcalHolidays(url, envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { stale: boolean };
+    expect(body.stale).toBe(true);
+  });
+
+  it("returns 502 when upstream returns invalid schema and no KV stale", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ wrong: "shape" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const url = new URL("https://worker.dev/api/hebcal/holidays?year=2024");
+    const res = await handleHebcalHolidays(url, mockEnv);
+    expect(res.status).toBe(502);
   });
 });
 
