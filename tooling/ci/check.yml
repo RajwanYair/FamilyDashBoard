@@ -1,0 +1,75 @@
+name: "FamilyDashBoard — Full CI Check"
+description: |
+  Reusable composite action: typecheck → lint → test → build.
+  Run this in any repo that extends the shared tooling preset.
+
+inputs:
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "22"
+  working-directory:
+    description: "Repo root (where package.json lives)"
+    required: false
+    default: "."
+  run-build:
+    description: "Whether to run the Vite build step"
+    required: false
+    default: "true"
+  build-command:
+    description: "npm script name for the build step"
+    required: false
+    default: "build"
+  bundle-size-limit-kb:
+    description: "Maximum allowed gzip bundle size in KB (0 = skip check)"
+    required: false
+    default: "300"
+
+outputs:
+  test-result:
+    description: "Vitest exit code (0 = all passed)"
+    value: ${{ steps.vitest.outputs.exit-code }}
+
+runs:
+  using: "composite"
+  steps:
+    # ── 1. Typecheck ─────────────────────────────────────────────────────────
+    - name: "TypeScript typecheck"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npx tsc --noEmit
+
+    # ── 2. Lint ───────────────────────────────────────────────────────────────
+    - name: "ESLint (zero warnings)"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npx eslint src tests --max-warnings 0
+
+    # ── 3. Markdown lint ──────────────────────────────────────────────────────
+    - name: "Markdownlint"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm run lint:md
+
+    # ── 4. Unit tests ─────────────────────────────────────────────────────────
+    - name: "Vitest unit tests"
+      id: vitest
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        npx vitest run
+        echo "exit-code=0" >> "$GITHUB_OUTPUT"
+
+    # ── 5. Build (optional) ───────────────────────────────────────────────────
+    - name: "Vite build"
+      if: inputs.run-build == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm run ${{ inputs.build-command }}
+
+    # ── 6. Bundle size check (optional) ──────────────────────────────────────
+    - name: "Bundle size check"
+      if: inputs.run-build == 'true' && inputs.bundle-size-limit-kb != '0'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm run check:bundle

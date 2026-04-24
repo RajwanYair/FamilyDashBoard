@@ -12,6 +12,8 @@ Each project extends these shared configs and adds only project-specific overrid
 
 ```text
 tooling/
+  ci/
+    check.yml           ← Composite GitHub Actions action (typecheck → lint → test → build)
   eslint/
     web-ts-app.mjs      ← Browser TypeScript apps (FamilyDashBoard)
     node-ts-app.mjs     ← Node.js / Cloudflare Worker TypeScript apps
@@ -24,6 +26,52 @@ tooling/
     happy-dom.mjs       ← DOM test preset (extends base, environment: happy-dom)
     node.mjs            ← Node.js test preset (extends base, environment: node)
 ```
+
+---
+
+## CI Composite Action — `ci/check.yml`
+
+A reusable [composite GitHub Actions action](https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-composite-action)
+that runs the full check suite in order: typecheck → lint → markdownlint → tests → build → bundle size.
+
+### Usage
+
+```yaml
+# .github/workflows/ci.yml  (or any caller workflow)
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "../MyScripts/package-lock.json"
+      - run: npm install
+        working-directory: ../MyScripts
+      - uses: ./tooling/ci/check.yml
+        with:
+          working-directory: .
+          run-build: "true"
+          bundle-size-limit-kb: "300"
+```
+
+### Inputs
+
+| Input                  | Default    | Description                                       |
+| ---------------------- | ---------- | ------------------------------------------------- |
+| `node-version`         | `"22"`     | Node.js version (informational — caller installs) |
+| `working-directory`    | `"."`      | Repo root where `package.json` lives              |
+| `run-build`            | `"true"`   | Whether to run the Vite build step                |
+| `build-command`        | `"build"`  | npm script name for the build step                |
+| `bundle-size-limit-kb` | `"300"`    | Max gzip bundle size in KB (`"0"` = skip)         |
+
+### Outputs
+
+| Output        | Description                              |
+| ------------- | ---------------------------------------- |
+| `test-result` | Vitest exit code (`0` = all tests passed) |
 
 ---
 
