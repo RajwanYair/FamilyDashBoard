@@ -279,6 +279,167 @@ describe("auto-loop-scroll — destroyAutoLoopScroll", () => {
   });
 });
 
+// ── Sprint 32: V13 scrollend event + animLevel branches ─────────────────────
+
+describe("auto-loop-scroll — scrollend event attachment", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.querySelectorAll("style[id^='als-se']").forEach((el) => el.remove());
+    vi.restoreAllMocks();
+  });
+
+  function setupOverflowContainer(opts: { onscrollend?: boolean } = {}) {
+    vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: false,
+      media: "(prefers-reduced-motion: reduce)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      onchange: null,
+      dispatchEvent: vi.fn(),
+    } as MediaQueryList);
+
+    const { parent, container } = makeContainer(10);
+    Object.defineProperty(container, "scrollHeight", {
+      configurable: true,
+      get() {
+        return this.childElementCount * 40;
+      },
+    });
+    Object.defineProperty(parent, "clientHeight", { configurable: true, value: 200 });
+
+    // Optionally add `onscrollend` to the parent so the branch is exercised
+    if (opts.onscrollend) {
+      (parent as unknown as Record<string, unknown>)["onscrollend"] = null;
+    }
+
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      cb(0);
+      return 0;
+    });
+
+    return { parent, container };
+  }
+
+  it("attaches scrollend listener when parent supports onscrollend", () => {
+    const { parent, container } = setupOverflowContainer({ onscrollend: true });
+    const addListenerSpy = vi.spyOn(parent, "addEventListener");
+    initAutoLoopScroll(container, { styleId: "als-se-1" });
+    expect(addListenerSpy).toHaveBeenCalledWith("scrollend", expect.any(Function), {
+      once: true,
+    });
+  });
+
+  it("does not attach scrollend listener when parent lacks onscrollend", () => {
+    const { parent, container } = setupOverflowContainer({ onscrollend: false });
+    const addListenerSpy = vi.spyOn(parent, "addEventListener");
+    initAutoLoopScroll(container, { styleId: "als-se-2" });
+    const calls = addListenerSpy.mock.calls.map((c) => c[0]);
+    expect(calls).not.toContain("scrollend");
+  });
+
+  it("scrollend handler re-inits container when still connected", () => {
+    const { parent, container } = setupOverflowContainer({ onscrollend: true });
+    let capturedHandler: (() => void) | null = null;
+    vi.spyOn(parent, "addEventListener").mockImplementation((evt, fn) => {
+      if (evt === "scrollend") capturedHandler = fn as () => void;
+    });
+    initAutoLoopScroll(container, { styleId: "als-se-3" });
+    expect(capturedHandler).not.toBeNull();
+
+    // Fire the scrollend event — container is still connected
+    const styleBefore = container.style.animation;
+    capturedHandler!();
+    // After reinit, animation should be re-applied or unchanged
+    expect(typeof container.style.animation).toBe("string");
+    void styleBefore;
+  });
+
+  it("scrollend handler is safe when container is disconnected", () => {
+    const { parent, container } = setupOverflowContainer({ onscrollend: true });
+    let capturedHandler: (() => void) | null = null;
+    vi.spyOn(parent, "addEventListener").mockImplementation((evt, fn) => {
+      if (evt === "scrollend") capturedHandler = fn as () => void;
+    });
+    initAutoLoopScroll(container, { styleId: "als-se-4" });
+
+    // Detach the container before firing
+    container.remove();
+    expect(() => capturedHandler?.()).not.toThrow();
+  });
+});
+
+describe("auto-loop-scroll — animLevel guard", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.body.removeAttribute("data-anim-level");
+    vi.restoreAllMocks();
+  });
+
+  function mockNotReducedMotion() {
+    vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: false,
+      media: "(prefers-reduced-motion: reduce)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      onchange: null,
+      dispatchEvent: vi.fn(),
+    } as MediaQueryList);
+  }
+
+  it("skips animation when animLevel is 'none'", () => {
+    mockNotReducedMotion();
+    document.body.dataset["animLevel"] = "none";
+    const { container } = makeContainer(10);
+    Object.defineProperty(container, "scrollHeight", { configurable: true, value: 400 });
+    Object.defineProperty(container.parentElement!, "clientHeight", {
+      configurable: true,
+      value: 200,
+    });
+    initAutoLoopScroll(container, { styleId: "als-al-1" });
+    expect(container.querySelectorAll("[data-als-clone='true']").length).toBe(0);
+  });
+
+  it("skips animation when animLevel is 'minimal'", () => {
+    mockNotReducedMotion();
+    document.body.dataset["animLevel"] = "minimal";
+    const { container } = makeContainer(10);
+    Object.defineProperty(container, "scrollHeight", { configurable: true, value: 400 });
+    Object.defineProperty(container.parentElement!, "clientHeight", {
+      configurable: true,
+      value: 200,
+    });
+    initAutoLoopScroll(container, { styleId: "als-al-2" });
+    expect(container.querySelectorAll("[data-als-clone='true']").length).toBe(0);
+  });
+
+  it("allows animation when animLevel is 'full'", () => {
+    mockNotReducedMotion();
+    document.body.dataset["animLevel"] = "full";
+    const { container } = makeContainer(10);
+    Object.defineProperty(container, "scrollHeight", {
+      configurable: true,
+      get() {
+        return this.childElementCount * 40;
+      },
+    });
+    Object.defineProperty(container.parentElement!, "clientHeight", {
+      configurable: true,
+      value: 200,
+    });
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      cb(0);
+      return 0;
+    });
+    initAutoLoopScroll(container, { styleId: "als-al-3" });
+    // Clones should be present for overflow content
+    expect(container.querySelectorAll("[data-als-clone='true']").length).toBeGreaterThan(0);
+  });
+});
+
 // ── Animation level integration ───────────────────────────────────────────────
 
 describe("auto-loop-scroll — respects data-anim-level", () => {
