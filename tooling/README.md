@@ -238,3 +238,45 @@ When a new tooling version is released:
 4. Bump the version comment at the top of each modified file
 5. Update the **Tool Versions** table in this README
 6. Run `npm run check` from each workspace to verify
+
+---
+
+## Cross-Project Registry (V14-HARMONISE)
+
+All active `MyScripts/` workspaces that consume these shared configs:
+
+| Project | Package name | Stack | ESLint factory | Vitest preset |
+| --- | --- | --- | --- | --- |
+| **FamilyDashBoard** | `family-dashboard` | Vite 8 · TS 6 · Browser PWA · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` |
+| **BudgetManager** | `budget-manager` | Vite · TS · Browser PWA · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` |
+| **CrossTideWeb** | `crosstide-web` | Vite · TS · Stock monitoring dashboard | `web-ts-app.mjs` | `happy-dom.mjs` |
+| **Wedding** | `wedding-manager` | Vite · TS · RSVP/seating app · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` |
+| **FamilyDashBoard/worker** | (inlined) | Cloudflare Worker · Hono · Valibot | `node-ts-app.mjs` | `node.mjs` |
+
+### Adding a New Project
+
+1. Create your project directory under `MyScripts/`.
+2. In `package.json` set `"type": "module"` — no `devDependencies` here (they live in `MyScripts/package.json`).
+3. In `eslint.config.mjs` extend the appropriate factory (`web-ts-app.mjs` or `node-ts-app.mjs`).
+4. In `tsconfig.json` extend `../tooling/tsconfig/base-typescript.json` (browser) or `../tooling/tsconfig/base-node.json` (Node/Worker).
+5. In `vitest.config.ts` spread the matching preset (`sharedHappyDomTestConfig` or `sharedNodeTestConfig`).
+6. Add the project to the **Cross-Project Registry** table above.
+7. Run `npm run check` from the project root to verify the wiring is correct.
+
+### CI Integration Pattern
+
+Each project's CI workflow should follow the same gate order to prevent drift:
+
+```yaml
+steps:
+  - name: Type check
+    run: npx tsc --noEmit
+  - name: Lint
+    run: npx eslint src tests --max-warnings 0
+  - name: Test
+    run: npx vitest run
+  - name: Build
+    run: npx vite build
+```
+
+Use `actions/checkout@v4` and `actions/setup-node@v4`. Set `node-version` to the same LTS as `MyScripts/package.json`. Never install deps inside a project workspace — always `cd MyScripts && npm ci`.
