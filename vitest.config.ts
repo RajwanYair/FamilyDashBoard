@@ -60,12 +60,14 @@ export default defineConfig({
         // V13-OPS/AI: calibrated after Sprint 6-7 added new worker code
         // (feeds.ts embedding pass + cron.ts weekly digest) which expanded
         // coverage surface. New tests added for cron handlers + trusted-types.
-        // Actual: stmts≈85 / branches≈77 / funcs≈84 / lines≈86
-        // Target: feeds.ts integration tests in a future sprint → raise to 88+
-        statements: 84,
-        branches: 76,
-        functions: 83,
-        lines: 85,
+        // Sprints 11-17: encodeConnType, recurrence badge, a11y text-spacing,
+        //   dialog-audit, openapi routes, SRI docs — all new paths covered.
+        // Actual: stmts≈86 / branches≈77 / funcs≈85 / lines≈87
+        // Target v13 final: 95/90/95/96 (multi-sprint increments)
+        statements: 85,
+        branches: 77,
+        functions: 84,
+        lines: 86,
       },
     },
   },
