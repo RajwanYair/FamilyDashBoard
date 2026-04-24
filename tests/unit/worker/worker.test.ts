@@ -1665,3 +1665,216 @@ describe("Worker — handleSefariaText route", () => {
     expect(res.status).toBe(200);
   });
 });
+
+// ── Worker — handleErrors with KV + handleErrorsExport (Sprint 42) ────────────
+
+import { handleErrorsExport } from "../../../worker/src/routes/errors";
+
+describe("Worker — handleErrors with KV persistence", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 204 and writes to KV when env.CACHE_KV is present", async () => {
+    const kvPut = vi.fn().mockResolvedValue(undefined);
+    const kvGet = vi.fn().mockResolvedValue("0"); // daily count = 0
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet, put: kvPut } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([{ ts: Date.now(), message: "kv test" }]),
+    });
+    const res = await handleErrors(req, envWithKv);
+    expect(res.status).toBe(204);
+    expect(kvPut).toHaveBeenCalled();
+  });
+
+  it("still returns 204 when daily count >= MAX and skips KV write", async () => {
+    const kvPut = vi.fn().mockResolvedValue(undefined);
+    const kvGet = vi.fn().mockResolvedValue("1000"); // daily count at limit
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet, put: kvPut } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([{ ts: Date.now(), message: "overflow" }]),
+    });
+    const res = await handleErrors(req, envWithKv);
+    expect(res.status).toBe(204);
+    // kvPut should not be called for new error entries (limit exceeded)
+    expect(kvPut).not.toHaveBeenCalled();
+  });
+
+  it("handles KV daily count returning null (first entry of day)", async () => {
+    const kvPut = vi.fn().mockResolvedValue(undefined);
+    const kvGet = vi.fn().mockResolvedValue(null); // no counter key yet
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet, put: kvPut } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([{ ts: Date.now(), message: "first entry" }]),
+    });
+    const res = await handleErrors(req, envWithKv);
+    expect(res.status).toBe(204);
+  });
+
+  it("handles KV daily count returning non-numeric string", async () => {
+    const kvPut = vi.fn().mockResolvedValue(undefined);
+    const kvGet = vi.fn().mockResolvedValue("NaN-garbage");
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet, put: kvPut } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([{ ts: Date.now(), message: "bad count" }]),
+    });
+    const res = await handleErrors(req, envWithKv);
+    expect(res.status).toBe(204);
+  });
+
+  it("enqueues to ERRORS_QUEUE when present alongside KV", async () => {
+    const kvPut = vi.fn().mockResolvedValue(undefined);
+    const kvGet = vi.fn().mockResolvedValue("0");
+    const queueSend = vi.fn().mockResolvedValue(undefined);
+    const envWithQueue: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet, put: kvPut } as unknown as KVStore,
+      ERRORS_QUEUE: { send: queueSend } as unknown as Env["ERRORS_QUEUE"],
+    };
+    const req = new Request("https://worker.dev/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([{ ts: Date.now(), message: "queue test" }]),
+    });
+    const res = await handleErrors(req, envWithQueue);
+    expect(res.status).toBe(204);
+    expect(queueSend).toHaveBeenCalledOnce();
+  });
+});
+
+describe("Worker — handleErrorsExport route", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns 405 for non-GET requests", async () => {
+    const req = new Request("https://worker.dev/api/errors/export", { method: "POST" });
+    const res = await handleErrorsExport(req, mockEnv);
+    expect(res.status).toBe(405);
+  });
+
+  it("returns 501 when ERROR_REPORTING_TOKEN is not configured", async () => {
+    const envNoToken: Env = { ...mockEnv, ERROR_REPORTING_TOKEN: undefined };
+    const req = new Request("https://worker.dev/api/errors/export?token=x");
+    const res = await handleErrorsExport(req, envNoToken);
+    expect(res.status).toBe(501);
+  });
+
+  it("returns 401 when token is missing", async () => {
+    const envWithToken: Env = { ...mockEnv, ERROR_REPORTING_TOKEN: "secret123" };
+    const req = new Request("https://worker.dev/api/errors/export");
+    const res = await handleErrorsExport(req, envWithToken);
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 401 when token does not match", async () => {
+    const envWithToken: Env = { ...mockEnv, ERROR_REPORTING_TOKEN: "secret123" };
+    const req = new Request("https://worker.dev/api/errors/export?token=wrong");
+    const res = await handleErrorsExport(req, envWithToken);
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 200 with empty entries when no errors stored today", async () => {
+    const kvList = vi.fn().mockResolvedValue({ keys: [] });
+    const envWithToken: Env = {
+      ...mockEnv,
+      ERROR_REPORTING_TOKEN: "secret123",
+      CACHE_KV: { ...mockEnv.CACHE_KV, list: kvList } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors/export?token=secret123");
+    const res = await handleErrorsExport(req, envWithToken);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { count: number; entries: unknown[] };
+    expect(body.count).toBe(0);
+    expect(body.entries).toEqual([]);
+  });
+
+  it("returns 200 with stored entries sorted newest first", async () => {
+    const entry1 = { ts: 1000, message: "old error" };
+    const entry2 = { ts: 2000, message: "new error" };
+    const kvList = vi.fn().mockResolvedValue({
+      keys: [{ name: "errors:2026-04-24:aaa" }, { name: "errors:2026-04-24:bbb" }],
+    });
+    const kvGet = vi
+      .fn()
+      .mockResolvedValueOnce(JSON.stringify(entry1))
+      .mockResolvedValueOnce(JSON.stringify(entry2));
+    const envWithToken: Env = {
+      ...mockEnv,
+      ERROR_REPORTING_TOKEN: "secret123",
+      CACHE_KV: { ...mockEnv.CACHE_KV, list: kvList, get: kvGet } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors/export?token=secret123");
+    const res = await handleErrorsExport(req, envWithToken);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { count: number; entries: Array<{ ts: number }> };
+    expect(body.count).toBe(2);
+    // sorted newest first
+    expect(body.entries[0]!.ts).toBe(2000);
+    expect(body.entries[1]!.ts).toBe(1000);
+  });
+
+  it("skips null KV entries in list results", async () => {
+    const kvList = vi.fn().mockResolvedValue({
+      keys: [{ name: "errors:2026-04-24:aaa" }, { name: "errors:2026-04-24:bbb" }],
+    });
+    const kvGet = vi
+      .fn()
+      .mockResolvedValueOnce(null) // first key: KV miss
+      .mockResolvedValueOnce(JSON.stringify({ ts: 9000, message: "only one" }));
+    const envWithToken: Env = {
+      ...mockEnv,
+      ERROR_REPORTING_TOKEN: "secret123",
+      CACHE_KV: { ...mockEnv.CACHE_KV, list: kvList, get: kvGet } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors/export?token=secret123");
+    const res = await handleErrorsExport(req, envWithToken);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { count: number };
+    expect(body.count).toBe(1);
+  });
+
+  it("returns 502 when KV list throws", async () => {
+    const kvList = vi.fn().mockRejectedValue(new Error("KV unavailable"));
+    const envWithToken: Env = {
+      ...mockEnv,
+      ERROR_REPORTING_TOKEN: "secret123",
+      CACHE_KV: { ...mockEnv.CACHE_KV, list: kvList } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors/export?token=secret123");
+    const res = await handleErrorsExport(req, envWithToken);
+    expect(res.status).toBe(502);
+  });
+
+  it("sets Cache-Control: no-store header", async () => {
+    const kvList = vi.fn().mockResolvedValue({ keys: [] });
+    const envWithToken: Env = {
+      ...mockEnv,
+      ERROR_REPORTING_TOKEN: "secret123",
+      CACHE_KV: { ...mockEnv.CACHE_KV, list: kvList } as unknown as KVStore,
+    };
+    const req = new Request("https://worker.dev/api/errors/export?token=secret123");
+    const res = await handleErrorsExport(req, envWithToken);
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+  });
+});
