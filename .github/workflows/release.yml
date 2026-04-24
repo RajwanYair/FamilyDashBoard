@@ -68,6 +68,15 @@ jobs:
       - name: SW version check
         run: node scripts/check-sw-version.mjs
 
+      - name: Worker-client / OpenAPI sync check (F18)
+        run: node scripts/check-worker-client.mjs
+
+      - name: ADR index staleness check (V13-OPS)
+        run: node scripts/check-adr-index.mjs
+
+      - name: Release readiness report (V13-OPS)
+        run: node scripts/release-report.mjs --no-gates
+
       - name: Package dist
         run: zip -r dist.zip dist/ -x "dist/**/*.map"
 
