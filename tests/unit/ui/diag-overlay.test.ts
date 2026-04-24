@@ -497,3 +497,140 @@ describe("renderProviderHealthHtml (Sprint 93)", () => {
     expect(renderProviderHealthHtml()).toBe("");
   });
 });
+
+// ── Sprint 52: renderStats via openDiagOverlay (lines 59-200) ─────────────
+
+function buildFullDiagDOM(): void {
+  document.body.innerHTML = `
+    <dialog id="diag-overlay">
+      <button id="diag-copy-btn">📋 העתק לוג</button>
+      <button id="diag-clear-btn">🗑 נקה לוג</button>
+      <button id="diag-clear-errors-btn">🗑 נקה שגיאות</button>
+      <div id="diag-log"></div>
+      <div id="diag-panes"></div>
+      <div id="diag-error-log"></div>
+      <div id="diag-build-time"></div>
+    </dialog>
+  `;
+  const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & {
+    show?: () => void; close?: () => void;
+  };
+  if (typeof dlg.show !== "function") {
+    dlg.show = function () { this.setAttribute("open", ""); };
+    dlg.showModal = function () { this.setAttribute("open", ""); };
+    dlg.close = function () { this.removeAttribute("open"); };
+  }
+}
+
+describe("DiagOverlay — renderStats via openDiagOverlay (Sprint 52)", () => {
+  beforeEach(() => {
+    buildFullDiagDOM();
+    clearDiag();
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    });
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    clearDiag();
+    vi.restoreAllMocks();
+  });
+
+  it("openDiagOverlay populates #diag-panes with HTML", () => {
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes");
+    expect(panes?.innerHTML.length).toBeGreaterThan(0);
+  });
+
+  it("diag-panes contains LocalStorage usage text", () => {
+    openDiagOverlay();
+    const text = document.getElementById("diag-panes")?.textContent ?? "";
+    expect(text).toContain("LocalStorage");
+  });
+
+  it("diag-panes contains worker status text", () => {
+    openDiagOverlay();
+    const text = document.getElementById("diag-panes")?.textContent ?? "";
+    expect(text).toMatch(/Worker/i);
+  });
+
+  it("diag-panes contains cache hit information", () => {
+    openDiagOverlay();
+    const text = document.getElementById("diag-panes")?.textContent ?? "";
+    expect(text).toMatch(/Cache/i);
+  });
+
+  it("openDiagOverlay sets open attribute on overlay", () => {
+    openDiagOverlay();
+    expect(document.getElementById("diag-overlay")?.hasAttribute("open")).toBe(true);
+    closeDiagOverlay();
+  });
+});
+
+describe("DiagOverlay — renderErrors (Sprint 52)", () => {
+  beforeEach(() => {
+    buildFullDiagDOM();
+    clearDiag();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    clearDiag();
+  });
+
+  it("openDiagOverlay populates #diag-error-log", () => {
+    openDiagOverlay();
+    const errLog = document.getElementById("diag-error-log");
+    expect(errLog).not.toBeNull();
+    // When no errors: shows success message
+    expect(errLog?.textContent).toContain("אין שגיאות");
+    closeDiagOverlay();
+  });
+
+  it("clear-errors-btn calls clearErrors and re-renders", () => {
+    initDiagOverlay();
+    openDiagOverlay();
+    const clearErrBtn = document.getElementById("diag-clear-errors-btn")!;
+    expect(() => clearErrBtn.click()).not.toThrow();
+    closeDiagOverlay();
+  });
+});
+
+describe("DiagOverlay — diag-build-time stamp (Sprint 52, lines 378-382)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("stamps #diag-build-time when element is present", () => {
+    buildFullDiagDOM();
+    initDiagOverlay();
+    const buildEl = document.getElementById("diag-build-time");
+    // Should contain some text (date or raw build time string)
+    expect(buildEl?.textContent?.length ?? 0).toBeGreaterThan(0);
+  });
+
+  it("does not throw when #diag-build-time is absent", () => {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <button id="diag-copy-btn">📋</button>
+        <button id="diag-clear-btn">🗑</button>
+        <div id="diag-log"></div>
+      </dialog>
+    `;
+    const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & {
+      show?: () => void; close?: () => void;
+    };
+    if (typeof dlg.show !== "function") {
+      dlg.show = function () { this.setAttribute("open", ""); };
+      dlg.close = function () { this.removeAttribute("open"); };
+    }
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    });
+    expect(() => initDiagOverlay()).not.toThrow();
+    vi.restoreAllMocks();
+  });
+});
