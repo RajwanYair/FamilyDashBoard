@@ -690,6 +690,18 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 .stk-detail-popover::backdrop {
   background: rgba(0, 0, 0, 0.4);
 }
+
+/* F11 — CSS Anchor Positioning: position popover near trigger button.
+   Progressive enhancement — falls back to screen-centered for unsupported browsers. */
+@supports (anchor-name: --test) {
+  .stk-detail-popover {
+    position-anchor: --stk-row-anchor;
+    top: anchor(bottom);
+    left: anchor(left);
+    transform: none;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+}
 .stk-dp-header {
   display: flex;
   gap: 8px;

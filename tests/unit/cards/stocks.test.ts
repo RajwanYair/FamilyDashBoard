@@ -2296,3 +2296,53 @@ describe("Stocks — fillStockDetailPopover", () => {
     expect(() => fillStockDetailPopover("AAPL")).not.toThrow();
   });
 });
+
+// ── CSS Anchor Positioning (F11) ──────────────────────────────────────────────
+describe("Stocks — CSS Anchor Positioning on detail button click (F11)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("sets anchor-name on the clicked detail button", () => {
+    document.body.innerHTML = `
+      <div id="stocks-body"></div>
+      <div id="stk-detail-popover" class="stk-detail-popover">
+        <span id="stk-dp-sym"></span>
+        <span id="stk-dp-name"></span>
+        <span id="stk-dp-price"></span>
+        <span id="stk-dp-chg"></span>
+        <span id="stk-dp-time"></span>
+      </div>`;
+    renderStocksShell();
+
+    const btn = document.querySelector<HTMLElement>(".stk-detail-btn");
+    expect(btn).not.toBeNull();
+    btn!.dispatchEvent(new MouseEvent("click", { bubbles: false }));
+    expect(btn!.style.getPropertyValue("anchor-name")).toBe("--stk-row-anchor");
+  });
+
+  it("clears anchor-name from other buttons when a new button is clicked", () => {
+    document.body.innerHTML = `
+      <div id="stocks-body"></div>
+      <div id="stk-detail-popover" class="stk-detail-popover">
+        <span id="stk-dp-sym"></span>
+        <span id="stk-dp-name"></span>
+        <span id="stk-dp-price"></span>
+        <span id="stk-dp-chg"></span>
+        <span id="stk-dp-time"></span>
+      </div>`;
+    renderStocksShell();
+
+    const buttons = Array.from(document.querySelectorAll<HTMLElement>(".stk-detail-btn"));
+    if (buttons.length < 2) return; // need at least 2 buttons
+
+    // Click first button
+    buttons[0]!.dispatchEvent(new MouseEvent("click", { bubbles: false }));
+    expect(buttons[0]!.style.getPropertyValue("anchor-name")).toBe("--stk-row-anchor");
+
+    // Click second button — first should lose anchor-name
+    buttons[1]!.dispatchEvent(new MouseEvent("click", { bubbles: false }));
+    expect(buttons[1]!.style.getPropertyValue("anchor-name")).toBe("--stk-row-anchor");
+    expect(buttons[0]!.style.getPropertyValue("anchor-name")).toBe("");
+  });
+});

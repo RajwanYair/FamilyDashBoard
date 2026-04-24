@@ -384,6 +384,13 @@ export function renderStocksShell(): void {
     detailBtn.textContent = "ℹ";
     detailBtn.addEventListener("click", (e) => {
       e.stopPropagation();
+      // F11 CSS Anchor Positioning: move --stk-row-anchor to the clicked button
+      // so the popover appears near the trigger. Harmlessly ignored in browsers
+      // that don't support anchor-name (CSS @supports handles the fallback).
+      document.querySelectorAll<HTMLElement>(".stk-detail-btn").forEach((btn) => {
+        btn.style.removeProperty("anchor-name");
+      });
+      detailBtn.style.setProperty("anchor-name", "--stk-row-anchor");
       fillStockDetailPopover(symbol);
     });
 
