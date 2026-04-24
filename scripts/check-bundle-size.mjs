@@ -237,3 +237,99 @@ if (baseline && baseline.cards && cardRows.length > 0) {
     process.exit(1);
   }
 }
+
+// ── Per-card SOURCE folder size delta (F17) ────────────────────────────────
+// Measures uncompressed source bytes in src/cards/<name>/ for early warning
+// before a build.  Fails CI if any card's source grew > 10% vs baseline.
+
+const SRC_CARDS_DIR = resolve(process.cwd(), "src", "cards");
+const SOURCE_EXTS = [".ts", ".css", ".html"];
+
+/**
+ * Sum the sizes of all source files (by extension) inside a directory tree.
+ * @param {string} dir
+ * @returns {number} total bytes
+ */
+function cardSourceBytes(dir) {
+  let total = 0;
+  let entries;
+  try {
+    entries = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return 0;
+  }
+  for (const entry of entries) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      total += cardSourceBytes(fullPath);
+    } else if (entry.isFile() && SOURCE_EXTS.some((ext) => entry.name.endsWith(ext))) {
+      try {
+        total += statSync(fullPath).size;
+      } catch {
+        // skip unreadable
+      }
+    }
+  }
+  return total;
+}
+
+console.log("📂 Per-card source folder sizes\n");
+
+/** @type {Array<{name: string, sourceKb: number}>} */
+const cardSourceRows = [];
+let srcEntries;
+try {
+  srcEntries = readdirSync(SRC_CARDS_DIR, { withFileTypes: true });
+} catch {
+  srcEntries = [];
+}
+
+for (const entry of srcEntries) {
+  if (!entry.isDirectory()) continue;
+  if (entry.name === "base-card.ts") continue; // file, not dir
+  const bytes = cardSourceBytes(join(SRC_CARDS_DIR, entry.name));
+  if (bytes === 0) continue;
+  cardSourceRows.push({ name: entry.name, sourceKb: bytes / 1024 });
+}
+
+cardSourceRows.sort((a, b) => b.sourceKb - a.sourceKb);
+const srcColW = 14;
+const srcHeader = `  ${"Card".padEnd(srcColW)} ${"Source (KB)".padStart(12)}`;
+console.log(srcHeader);
+console.log("  " + "─".repeat(srcColW + 14));
+for (const { name, sourceKb } of cardSourceRows) {
+  console.log(`  ${name.padEnd(srcColW)} ${sourceKb.toFixed(1).padStart(12)}`);
+}
+console.log();
+
+// ── Per-card source delta gate ────────────────────────────────────────────────
+
+if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
+  console.log(`📈 Per-card source growth check vs baseline v${baseline.version} (${baseline.date})\n`);
+  let srcGrowthOk = true;
+
+  for (const { name, sourceKb } of cardSourceRows) {
+    const baseKb = baseline.cardSource[name];
+    if (typeof baseKb !== "number" || baseKb === 0) {
+      console.log(`  ℹ️   ${name.padEnd(srcColW)} no baseline — skipping`);
+      continue;
+    }
+    const delta = (sourceKb - baseKb) / baseKb;
+    const pct = (delta * 100).toFixed(1);
+    const sign = delta >= 0 ? "+" : "";
+    if (delta > GROWTH_THRESHOLD) {
+      console.error(
+        `  ❌  ${name.padEnd(srcColW)} source grew ${sign}${pct}% (${baseKb.toFixed(1)} → ${sourceKb.toFixed(1)} KB) — exceeds ${GROWTH_THRESHOLD * 100}% limit`,
+      );
+      srcGrowthOk = false;
+    } else {
+      console.log(
+        `  ✅  ${name.padEnd(srcColW)} ${sign}${pct}% (${baseKb.toFixed(1)} → ${sourceKb.toFixed(1)} KB)`,
+      );
+    }
+  }
+  console.log();
+  if (!srcGrowthOk) {
+    process.exit(1);
+  }
+}

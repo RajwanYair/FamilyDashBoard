@@ -84,12 +84,43 @@ for (const [label, pattern] of CARD_CHUNKS) {
   cardSizes[label] = toKb(totalGz);
 }
 
+// ── Per-card source folder sizes (F17) ────────────────────────────────────
+
+const SRC_CARDS_DIR = resolve(process.cwd(), "src", "cards");
+const SOURCE_EXTS = [".ts", ".css", ".html"];
+
+function cardSourceBytes(dir) {
+  let total = 0;
+  let entries;
+  try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return 0; }
+  for (const entry of entries) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      total += cardSourceBytes(fullPath);
+    } else if (entry.isFile() && SOURCE_EXTS.some((ext) => entry.name.endsWith(ext))) {
+      try { total += statSync(fullPath).size; } catch { /* skip */ }
+    }
+  }
+  return total;
+}
+
+/** @type {Record<string, number>} */
+const cardSourceSizes = {};
+let srcDirs;
+try { srcDirs = readdirSync(SRC_CARDS_DIR, { withFileTypes: true }); } catch { srcDirs = []; }
+for (const entry of srcDirs) {
+  if (!entry.isDirectory()) continue;
+  const bytes = cardSourceBytes(join(SRC_CARDS_DIR, entry.name));
+  if (bytes > 0) cardSourceSizes[entry.name] = parseFloat((bytes / 1024).toFixed(1));
+}
+
 const record = {
   date: new Date().toISOString().slice(0, 10),
   version: process.argv[2] ?? pkg.version,
   jsKb: toKb(jsBytes),
   cssKb: toKb(cssBytes),
   ...(Object.keys(cardSizes).length > 0 && { cards: cardSizes }),
+  ...(Object.keys(cardSourceSizes).length > 0 && { cardSource: cardSourceSizes }),
 };
 
 // ── Read+append or create ──────────────────────────────────────────────────
