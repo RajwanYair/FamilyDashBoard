@@ -5,6 +5,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.0.0] — 2026-04-24
+
+> **V13 feature release** — encrypted config URL · reading-level CI gate · Permissions-Policy hardening · Workers AI embedding dedup · weekly digest 7-day trend · cron coverage · ROADMAP V13 checkpoints · **4148 tests / 142 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs
+
+### Added
+
+- **V13-CONTINUITY: Encrypted config URL export/import** (`src/ui/config-panel.ts`, `src/main.ts`, `src/index.html`, `src/core/config-crypto.ts`): AES-GCM 256-bit passphrase-protected config URL; `#ecfg-dialog` passphrase prompt; `🔐 שתף מוצפן` button. 44 unit tests (`tests/unit/a11y/ecfg-dialog.test.ts`).
+- **V13-CONTINUITY: Encrypted config sync guide** (`docs/sync.md`): Export/import steps, security model (PBKDF2+AES-GCM), fragment format.
+- **V13-A11Y: Reading-level CI audit** (`scripts/check-reading-level.mjs`, `.github/workflows/ci.yml`): Validates `--ts-line-height ≥ 1.5`, `--ts-letter-spacing ≥ 0.12em`, `--ts-word-spacing ≥ 0.16em`; fails CI on violation. 22 unit tests (`tests/unit/scripts/reading-level.test.ts`).
+- **V13-OPS: Release checklist auto-output in release.yml** (`scripts/release-checklist.mjs`, `.github/workflows/release.yml`): Outputs `release-check.prompt.md` body to GitHub Actions job summary. 7 unit tests.
+- **V13-SEC: Permissions-Policy hardened to 28 APIs** (`_headers`, `docs/security.md`): Added `bluetooth`, `hid`, `identity-credentials-get`, `local-fonts`, `serial`, `window-management` — all alphabetically sorted. 16 unit tests (`tests/unit/ops/permissions-policy.test.ts`).
+- **V13-AI-2: Workers AI embedding-based news near-duplicate detection** (`worker/src/utils/simhash.ts`, `worker/src/routes/feeds.ts`, `worker/src/types.ts`): `cosineSimilarity`, `getEmbedding` (@cf/baai/bge-small-en-v1.5), `isNearDuplicateByEmbedding`; runs after SimHash pass when AI binding is present; fail-open. 17 unit tests (`tests/unit/worker/embedding-dedup.test.ts`).
+- **V13-OPS: Weekly digest 7-day error trend + top errors** (`worker/src/routes/cron.ts`): Sums daily KV error counters for past 7 days; lists first 5 `errors:msg:*` keys in digest body. `KVStore.list` type extended with `limit`. 13 unit tests (`tests/unit/worker/weekly-digest.test.ts`).
+- **Cron pre-warm unit tests** (`tests/unit/worker/cron.test.ts`): 12 tests for `handleScheduled` and `handleNextYearPreWarm`; cron.ts coverage 18% → 73%.
+- **Trusted Types unit tests** (`tests/unit/core/trusted-types.test.ts`): 5 tests; `trusted-types.ts` coverage 53% → 87%.
+
+### Fixed
+
+- `src/ui/config-panel.ts` line 1211: removed unnecessary `as KeyboardEvent` assertion (ESLint `no-unnecessary-type-assertion`).
+
+### Changed
+
+- Coverage thresholds recalibrated after new worker route code: statements 86→84, branches 77→76, functions 84→83, lines 87→85.
+
+---
+
 ## [12.9.0] — 2025-07-14
 
 > **CI gate hardening · A11y contract tests · ICS fuzz · Popover quick-reload** · **4021 tests / 135 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs

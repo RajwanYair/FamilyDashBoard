@@ -1208,7 +1208,7 @@ export function initConfigPanel(): void {
   document.getElementById("ecfg-dialog-confirm")?.addEventListener("click", confirmEcfgDialog);
   document.getElementById("ecfg-dialog-cancel")?.addEventListener("click", cancelEcfgDialog);
   document.getElementById("ecfg-passphrase-input")?.addEventListener("keydown", (e) => {
-    if ((e as KeyboardEvent).key === "Enter") confirmEcfgDialog();
+    if (e.key === "Enter") confirmEcfgDialog();
   });
   // Close on backdrop click (Escape is handled natively by dialog)
   const ecfgDlg = document.getElementById("ecfg-dialog") as HTMLDialogElement | null;
