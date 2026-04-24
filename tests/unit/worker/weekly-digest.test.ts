@@ -5,6 +5,8 @@
  *  - skips when EMAIL_SEND_FROM/TO not set
  *  - skips when send_email binding absent (logs instead)
  *  - sends email with correct subject and body when configured
+ *  - includes 7-day error trend in body
+ *  - includes top error messages in body
  *  - does not throw when send_email.send() fails
  */
 
@@ -14,14 +16,30 @@ import type { Env } from "../../../worker/src/types";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-function makeKV(errorCount = 0) {
+function makeKV(
+  dailyCounts: Record<string, number> = {},
+  errorMsgKeys: string[] = [],
+) {
   return {
     get: vi.fn(async (key: string) => {
-      if (key.startsWith("errors:count:")) return errorCount > 0 ? String(errorCount) : null;
+      if (key.startsWith("errors:count:")) {
+        const date = key.replace("errors:count:", "");
+        const val = dailyCounts[date];
+        return val != null ? String(val) : null;
+      }
       return null;
     }),
     put: vi.fn(async () => undefined),
-    list: vi.fn(async () => ({ keys: [], list_complete: true, cacheStatus: null })),
+    list: vi.fn(async ({ prefix = "" }: { prefix?: string; limit?: number } = {}) => {
+      if (prefix === "errors:msg:") {
+        return {
+          keys: errorMsgKeys.map((k) => ({ name: `errors:msg:${k}` })),
+          list_complete: true,
+          cacheStatus: null,
+        };
+      }
+      return { keys: [], list_complete: true, cacheStatus: null };
+    }),
   };
 }
 
@@ -98,17 +116,64 @@ describe("handleWeeklyDigest — send_email binding present", () => {
     expect(String(call["subject"])).toContain(today);
   });
 
-  it("body includes the error count from KV", async () => {
-    const kvWithErrors = makeKV(42);
+  it("body includes today's error count from KV", async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const kv = makeKV({ [today]: 42 });
     const envWithErrors = makeEnv({
       EMAIL_SEND_FROM: "digest@fdb.example.com",
       EMAIL_SEND_TO: "family@example.com",
-      CACHE_KV: kvWithErrors,
+      CACHE_KV: kv,
       send_email: { send: sendMock },
     });
     await handleWeeklyDigest(envWithErrors);
     const call = sendMock.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(String(call["text"])).toContain("42");
+  });
+
+  it("body includes 7-day error total label", async () => {
+    await handleWeeklyDigest(env);
+    const call = sendMock.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(String(call["text"])).toContain("7 days");
+  });
+
+  it("body sums 7-day error counts correctly", async () => {
+    // Simulate 3 days with errors
+    const today = new Date().toISOString().slice(0, 10);
+    const dayMs = 86_400_000;
+    const day1 = new Date(Date.now() - dayMs).toISOString().slice(0, 10);
+    const day2 = new Date(Date.now() - 2 * dayMs).toISOString().slice(0, 10);
+    const kv = makeKV({ [today]: 5, [day1]: 10, [day2]: 7 });
+    const envWithMulti = makeEnv({
+      EMAIL_SEND_FROM: "digest@fdb.example.com",
+      EMAIL_SEND_TO: "family@example.com",
+      CACHE_KV: kv,
+      send_email: { send: sendMock },
+    });
+    await handleWeeklyDigest(envWithMulti);
+    const call = sendMock.mock.calls[0]?.[0] as Record<string, unknown>;
+    // Total = 5 + 10 + 7 = 22
+    expect(String(call["text"])).toContain("22");
+  });
+
+  it("body includes top error messages when present", async () => {
+    const kv = makeKV({}, ["TypeError: null ref", "NetworkError"]);
+    const envWithErrors = makeEnv({
+      EMAIL_SEND_FROM: "digest@fdb.example.com",
+      EMAIL_SEND_TO: "family@example.com",
+      CACHE_KV: kv,
+      send_email: { send: sendMock },
+    });
+    await handleWeeklyDigest(envWithErrors);
+    const call = sendMock.mock.calls[0]?.[0] as Record<string, unknown>;
+    const text = String(call["text"]);
+    expect(text).toContain("TypeError: null ref");
+    expect(text).toContain("NetworkError");
+  });
+
+  it("body omits top-errors section when there are none", async () => {
+    await handleWeeklyDigest(env);
+    const call = sendMock.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(String(call["text"])).not.toContain("Top errors");
   });
 
   it("does not throw when send_email.send() rejects", async () => {

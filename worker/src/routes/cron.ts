@@ -81,6 +81,8 @@ export async function handleNextYearPreWarm(env: Env): Promise<void> {
  * Current summary includes:
  *  - Today's UTC date
  *  - Error count for today (from KV daily counter)
+ *  - 7-day error trend (sum of daily error counts for the past 7 days)
+ *  - Top error messages (first 5 error message keys from KV prefix `errors:msg:`)
  *  - Browser report count (from D1 — placeholder)
  *  - A reminder to review the dashboard
  */
@@ -92,14 +94,47 @@ export async function handleWeeklyDigest(env: Env): Promise<void> {
 
   const today = new Date().toISOString().slice(0, 10);
 
-  // Collect stats
-  let errorCount = 0;
+  // ── Collect stats ───────────────────────────────────────────────────────────
+  let todayErrorCount = 0;
+  let weeklyErrorTotal = 0;
+  const topErrors: string[] = [];
+
   if (env.CACHE_KV) {
+    // Today's error count
     try {
       const raw = await env.CACHE_KV.get(`errors:count:${today}`);
       if (raw) {
         const n = parseInt(raw, 10);
-        if (!isNaN(n)) errorCount = n;
+        if (!isNaN(n)) todayErrorCount = n;
+      }
+    } catch {
+      // non-fatal
+    }
+
+    // 7-day error trend (sum daily counters for past 7 days, inclusive)
+    try {
+      const dayMs = 86_400_000;
+      const now = Date.now();
+      let sum = 0;
+      for (let i = 0; i < 7; i++) {
+        const dateKey = new Date(now - i * dayMs).toISOString().slice(0, 10);
+        const raw = await env.CACHE_KV.get(`errors:count:${dateKey}`);
+        if (raw) {
+          const n = parseInt(raw, 10);
+          if (!isNaN(n)) sum += n;
+        }
+      }
+      weeklyErrorTotal = sum;
+    } catch {
+      // non-fatal
+    }
+
+    // Top error messages (KV prefix `errors:msg:` — first 5 keys)
+    try {
+      const list = await env.CACHE_KV.list({ prefix: "errors:msg:", limit: 5 });
+      for (const key of list.keys) {
+        const name = key.name.replace("errors:msg:", "");
+        topErrors.push(name);
       }
     } catch {
       // non-fatal
@@ -107,19 +142,27 @@ export async function handleWeeklyDigest(env: Env): Promise<void> {
   }
 
   const subject = `FamilyDashBoard Weekly Digest — ${today}`;
+  const topErrorsSection =
+    topErrors.length > 0
+      ? ["", "⚠️  Top errors this week:", ...topErrors.map((e) => `  • ${e}`)].join("\n")
+      : "";
   const body = [
     `FamilyDashBoard Weekly Digest`,
     `Generated: ${new Date().toISOString()}`,
     ``,
     `📊 Stats for ${today}:`,
-    `  • Client errors (KV counter): ${errorCount}`,
+    `  • Client errors today (KV counter): ${todayErrorCount}`,
+    `  • Client errors past 7 days: ${weeklyErrorTotal}`,
     `  • Browser reports (D1): see /api/reports/digest`,
+    topErrorsSection,
     ``,
     `🔗 Dashboard: https://rajwanyair.github.io/FamilyDashBoard/`,
     `🔗 Worker: https://fdb.rajwanyair.workers.dev/health`,
     ``,
     `-- FamilyDashBoard automated digest`,
-  ].join("\n");
+  ]
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n");
 
   // Email Workers send_email (ADR-033)
   // The send_email binding is injected by Cloudflare at runtime.

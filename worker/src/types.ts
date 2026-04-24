@@ -14,7 +14,7 @@
 export interface KVStore {
   get(key: string): Promise<string | null>;
   put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
-  list(options?: { prefix?: string }): Promise<{
+  list(options?: { prefix?: string; limit?: number }): Promise<{
     keys: Array<{ name: string }>;
     list_complete: boolean;
     cacheStatus: null | "HIT" | "MISS" | "EXPIRED";
