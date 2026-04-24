@@ -189,6 +189,8 @@ jobs:
         run: node scripts/check-worker-client.mjs
       - name: ADR index staleness check (V13-OPS)
         run: node scripts/check-adr-index.mjs
+      - name: OpenAPI x-kv-ttl annotation check (V13-EDGE)
+        run: node scripts/check-openapi-ttl.mjs
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)

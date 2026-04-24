@@ -37,6 +37,7 @@ paths:
     get:
       tags: [health]
       summary: Worker health check
+      x-kv-ttl: 0
       operationId: getHealth
       responses:
         "200":
@@ -555,6 +556,7 @@ paths:
     get:
       tags: [health]
       summary: Export today's stored error entries (token-gated)
+      x-kv-ttl: 0
       description: |
         Returns all error entries persisted to KV today (UTC), newest-first.
         Requires the `ERROR_REPORTING_TOKEN` worker secret via `?token=`.
@@ -611,6 +613,7 @@ paths:
     get:
       tags: [health]
       summary: Prometheus-format route hit metrics (token-gated)
+      x-kv-ttl: 0
       description: |
         Returns Prometheus text-format counters for D1-backed route hit telemetry.
         Requires the `METRICS_TOKEN` worker secret via `?token=`.
@@ -699,6 +702,7 @@ paths:
     get:
       tags: [health]
       summary: Report count digest (token-gated, last 30 days)
+      x-kv-ttl: 0
       description: |
         Returns a JSON summary of stored browser reports grouped by type and UTC day
         for the last 30 days. Useful for weekly operational reviews.

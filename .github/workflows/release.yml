@@ -74,6 +74,9 @@ jobs:
       - name: ADR index staleness check (V13-OPS)
         run: node scripts/check-adr-index.mjs
 
+      - name: OpenAPI x-kv-ttl annotation check (V13-EDGE)
+        run: node scripts/check-openapi-ttl.mjs
+
       - name: Release readiness report (V13-OPS)
         run: node scripts/release-report.mjs --no-gates
 
