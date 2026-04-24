@@ -220,7 +220,7 @@ Each stream: deliverables · ADR candidates · exit criteria · gate triggers. C
 - [ ] Tasks recurring monthly/yearly.
 - [ ] icalendar-rfc5545 fuzz cases 79 → 150+.
 - [ ] Per-card bundle-delta CI alert (> 10 % growth).
-- [ ] `worker-client.ts` regeneration hash check (pre-commit).
+- [x] `worker-client.ts` regeneration hash check (pre-commit).
 - [ ] LHCI perf ≥ 97 (from 95).
 - [ ] `@vitest/browser` component tests for maximise-FLIP / layout-drag cards.
 - [ ] Coverage ratchet: 87.14 / 79.16 / 86.65 / 88.41 → 90 / 82 / 89 / 91 (incremental, +1 per release).

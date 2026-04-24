@@ -1,0 +1,6 @@
+#!/bin/sh
+# FamilyDashBoard pre-commit hook
+# Checks that src/core/worker-client.ts is in sync with worker/openapi.yaml.
+# Install: node scripts/install-git-hooks.mjs
+
+node scripts/check-worker-client.mjs

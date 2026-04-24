@@ -48,6 +48,7 @@
         "check:bundle": "node scripts/check-bundle-size.mjs",
         "check:card-bundle": "node scripts/check-card-bundle-delta.mjs",
         "bundle:trend": "node scripts/bundle-trend.mjs",
+        "install:hooks": "node scripts/install-git-hooks.mjs",
         "mutate": "stryker run scripts/stryker.config.mjs",
         "arch:table": "node scripts/generate-arch-table.mjs",
         "adr:index": "node scripts/generate-adr-index.mjs",
