@@ -250,4 +250,33 @@ describe("real worker/openapi.yaml compliance (V13-EDGE)", () => {
     const route = routes.find((r) => r.path === "/api/weather");
     expect(route?.hasKvTtl).toBe(true);
   });
+
+  // V13-EDGE-7: new routes added for SSE and canary
+  it("/api/alerts/subscribe route exists (V13-EDGE-1 SSE endpoint)", () => {
+    const route = routes.find((r) => r.path === "/api/alerts/subscribe");
+    expect(route).toBeDefined();
+  });
+
+  it("/api/alerts/subscribe has x-kv-ttl: 0 (uncached SSE stream)", () => {
+    const route = routes.find((r) => r.path === "/api/alerts/subscribe");
+    expect(route?.hasKvTtl).toBe(true);
+  });
+
+  it("/api/canary route exists (V13-EDGE-5 canary status)", () => {
+    const route = routes.find((r) => r.path === "/api/canary");
+    expect(route).toBeDefined();
+  });
+
+  it("/api/canary has x-kv-ttl: 0 (uncached)", () => {
+    const route = routes.find((r) => r.path === "/api/canary");
+    expect(route?.hasKvTtl).toBe(true);
+  });
+
+  it("openapi info.version is 13.0.0 (V13-EDGE-7)", () => {
+    expect(yaml).toMatch(/version:\s*"13\.0\.0"/);
+  });
+
+  it("at least 20 GET routes exist (includes V13 additions)", () => {
+    expect(routes.length).toBeGreaterThanOrEqual(20);
+  });
 });

@@ -5,7 +5,7 @@ info:
     Cloudflare Worker API proxy for the FamilyDashBoard dashboard.
     All routes enforce CORS (any origin), per-IP rate limiting (120 req/min),
     and SSRF allowlists on URL parameters.
-  version: "12.3.0"
+  version: "13.0.0"
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard
@@ -695,6 +695,74 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
+  /api/alerts/subscribe:
+    get:
+      tags: [alerts]
+      summary: Server-Sent Events stream for real-time alert push (DO-backed)
+      x-kv-ttl: 0
+      description: |
+        Opens a persistent SSE connection backed by the AlertsOrchestrator
+        Durable Object. The client receives `event: ping` on connect and
+        `event: alert` on each new Tzeva Adom broadcast. Falls back to polling
+        if ALERTS_DO binding is not present. Not cached (x-kv-ttl: 0).
+        Requires ALERTS_DO binding. See ADR-025.
+      operationId: getAlertsSubscribe
+      responses:
+        "200":
+          description: SSE stream (text/event-stream)
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Newline-separated SSE events. Known event types:
+                  `ping` (on connect), `alert` (on new Tzeva Adom broadcast).
+        "503":
+          description: ALERTS_DO not bound or DO unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+
+  /api/canary:
+    get:
+      tags: [health]
+      summary: Canary traffic tagging status
+      x-kv-ttl: 0
+      description: |
+        Returns whether the current request was tagged as canary traffic
+        and the configured canary percentage. Controlled by the `CANARY_PCT`
+        environment variable (0–100). Useful for validating canary routing
+        after a new Worker deployment. Not cached (x-kv-ttl: 0).
+      operationId: getCanary
+      responses:
+        "200":
+          description: Canary status object
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [canary, pct, ts]
+                properties:
+                  canary:
+                    type: boolean
+                    description: Whether this request is tagged as canary traffic
+                    example: false
+                  pct:
+                    type: integer
+                    minimum: 0
+                    maximum: 100
+                    description: Configured canary percentage (CANARY_PCT)
+                    example: 10
+                  ts:
+                    type: integer
+                    description: Unix timestamp in milliseconds
+                    example: 1750000000000
         "429":
           $ref: "#/components/responses/RateLimitError"
 
