@@ -77,8 +77,11 @@ jobs:
       - name: OpenAPI x-kv-ttl annotation check (V13-EDGE)
         run: node scripts/check-openapi-ttl.mjs
 
+      - name: Release notes CHANGELOG check (V13-OPS)
+        run: node scripts/check-release-notes.mjs
+
       - name: Release readiness report (V13-OPS)
-        run: node scripts/release-report.mjs --no-gates
+        run: node scripts/release-report.mjs --no-gates | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Package dist
         run: zip -r dist.zip dist/ -x "dist/**/*.map"
