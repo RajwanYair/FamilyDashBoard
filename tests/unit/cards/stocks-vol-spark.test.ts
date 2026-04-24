@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { renderStocksShell, renderStock } from "@/cards/stocks/stocks";
+import { renderStocksShell, renderStock, fillStockDetailPopover } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS } from "@/core/constants";
 import type { YahooChartResponse } from "@/types/api";
 
@@ -178,5 +178,90 @@ describe("Stocks vol-spark — stk-vol-spark count matches STOCK_SYMBOLS count",
     renderStocksShell();
     const sparks = document.querySelectorAll(".stk-vol-spark");
     expect(sparks.length).toBe(STOCK_SYMBOLS.length);
+  });
+});
+
+// ── Sprint 34: V13-DATA Popover API — fillStockDetailPopover ─────────────────
+
+describe("Stocks Popover API — fillStockDetailPopover", () => {
+  function setupPopoverDom(price = "$190.00", chg = "▲ +2.50%"): void {
+    document.body.innerHTML = `
+      <div id="stocks-body"></div>
+      <div id="stk-detail-popover">
+        <span id="stk-dp-sym"></span>
+        <span id="stk-dp-name"></span>
+        <span id="stk-dp-price"></span>
+        <span id="stk-dp-chg"></span>
+        <span id="stk-dp-time"></span>
+      </div>
+    `;
+    renderStocksShell();
+    // Populate the AAPL row with realistic data
+    const blk = document.querySelector<HTMLElement>('[data-symbol="AAPL"]');
+    if (blk) {
+      const priceEl = blk.querySelector<HTMLElement>(".stk-price");
+      if (priceEl) priceEl.textContent = price;
+      const chgEl = blk.querySelector<HTMLElement>(".stk-chg");
+      if (chgEl) chgEl.textContent = chg;
+    }
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("populates stk-dp-sym from STOCK_META", () => {
+    setupPopoverDom();
+    fillStockDetailPopover("AAPL");
+    const symEl = document.getElementById("stk-dp-sym");
+    expect(symEl?.textContent).toBeTruthy();
+  });
+
+  it("populates stk-dp-price from the row's .stk-price element", () => {
+    setupPopoverDom("$192.50");
+    fillStockDetailPopover("AAPL");
+    const priceEl = document.getElementById("stk-dp-price");
+    expect(priceEl?.textContent).toBe("$192.50");
+  });
+
+  it("falls back to '---' for price when row is missing", () => {
+    // Set up popover DOM but no stocks-body rows
+    document.body.innerHTML = `
+      <div id="stk-detail-popover">
+        <span id="stk-dp-sym"></span>
+        <span id="stk-dp-name"></span>
+        <span id="stk-dp-price"></span>
+        <span id="stk-dp-chg"></span>
+        <span id="stk-dp-time"></span>
+      </div>
+    `;
+    fillStockDetailPopover("AAPL");
+    const priceEl = document.getElementById("stk-dp-price");
+    expect(priceEl?.textContent).toBe("---");
+  });
+
+  it("calls showPopover() when the method is available", () => {
+    setupPopoverDom();
+    const popoverEl = document.getElementById("stk-detail-popover") as HTMLElement & {
+      showPopover?: () => void;
+    };
+    const spy = vi.fn();
+    popoverEl.showPopover = spy;
+    fillStockDetailPopover("AAPL");
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it("does not throw when popover element is absent", () => {
+    document.body.innerHTML = `<div id="stocks-body"></div>`;
+    renderStocksShell();
+    expect(() => fillStockDetailPopover("AAPL")).not.toThrow();
+  });
+
+  it("handles unknown symbol gracefully", () => {
+    setupPopoverDom();
+    expect(() => fillStockDetailPopover("UNKNOWN_XYZ")).not.toThrow();
+    const symEl = document.getElementById("stk-dp-sym");
+    expect(symEl?.textContent).toBe("UNKNOWN_XYZ");
   });
 });
