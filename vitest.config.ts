@@ -66,7 +66,7 @@ export default defineConfig({
         // Actual: stmts≈85.22 / branches≈77.11 / funcs≈85.33 / lines≈86.5
         // Target v13 final: 95/90/95/96 (multi-sprint increments)
         statements: 85,
-        branches: 77,
+        branches: 78,
         functions: 85,
         lines: 86,
       },

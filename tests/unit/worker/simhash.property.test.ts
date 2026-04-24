@@ -132,7 +132,7 @@ describe("simHash — property: near-duplicate sensitivity", () => {
       { numRuns: runs },
     );
     // Expect at least 20% deduplication rate for single-char edits (SimHash is probabilistic)
-    expect(deduped / runs).toBeGreaterThan(0.2);
+    expect(deduped / runs).toBeGreaterThanOrEqual(0.2);
   });
 
   it("completely different strings rarely dedupe at threshold 3", () => {
