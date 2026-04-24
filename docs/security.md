@@ -72,7 +72,7 @@ All Cloudflare Worker responses include:
 | `X-Content-Type-Options`       | `nosniff`                                  |
 | `X-Frame-Options`              | `DENY`                                     |
 | `Referrer-Policy`              | `strict-origin-when-cross-origin`          |
-| `Permissions-Policy`           | `geolocation=(), microphone=(), camera=()` |
+| `Permissions-Policy`           | 28 APIs explicitly denied — see `_headers` |
 | `Cross-Origin-Resource-Policy` | `cross-origin`                             |
 | `Access-Control-Allow-Origin`  | `*` (public read-only API)                 |
 
