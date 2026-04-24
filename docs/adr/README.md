@@ -40,3 +40,4 @@
 | [ADR-033](ADR-033-email-workers-weekly-digest.md)                                         | Email Workers Weekly Digest                              | 2026-04-23 | Accepted |
 | [ADR-034](ADR-034-changesets-auto-changelog.md)                                           | Changesets Auto-CHANGELOG                                | 2026-04-23 | Accepted |
 | [ADR-035](ADR-035-slsa-l3-upgrade-path.md)                                               | SLSA Level 3 Upgrade Path                                | 2026-04-24 | Accepted |
+| [ADR-036](ADR-036-webrtc-config-mirror.md)                                               | WebRTC Config Mirror (QR-Code Pairing)                   | 2026-04-24 | Proposed |
