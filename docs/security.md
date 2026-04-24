@@ -1,7 +1,7 @@
-# Security Model — FamilyDashBoard v12.5.0
+# Security Model — FamilyDashBoard v13.1.0
 
 > This document describes the security posture, threat model, and mitigation decisions for the
-> FamilyDashBoard project. Updated: 2026-07-13.
+> FamilyDashBoard project. Updated: 2026-07-25.
 
 ---
 
@@ -189,21 +189,40 @@ prohibit third-party embedding will not be supported.
 
 ---
 
-## 11. SRI Policy
+## 11. SRI Policy and SLSA Provenance
+
+### Sub-Resource Integrity (SRI)
 
 FamilyDashBoard has **zero third-party scripts or styles loaded at runtime** (Rule 1 from
 `copilot-instructions.md`). No Content-Delivery-Network (CDN) URLs appear in `index.html`.
 All JavaScript and CSS is bundled from source by Vite into a single IIFE served from the same
-origin. Sub-Resource Integrity (SRI) hashes are therefore not required and not generated.
+origin. Sub-Resource Integrity (SRI) hashes are therefore **not required and not generated**.
 
 **Policy statement:**
 
 - No `<script src="https://…">` or `<link rel="stylesheet" href="https://…">` are ever added.
 - Any PR introducing a CDN reference will fail CI via the `eslint` rule `no-external-script-src`.
 - This policy extends to the Cloudflare Worker: all dependencies are bundled by `wrangler build`.
+- The CI pipeline checks for external script/style references on every push (`.github/workflows/ci.yml`).
 
 If a future release requires a trusted third-party resource, the SRI hash (`integrity=`) must be
 computed with `openssl dgst -sha384 | base64` and reviewed in the release checklist.
+
+### SLSA Provenance (Equivalent Controls)
+
+Since SRI is N/A for bundled build artifacts, the equivalent supply-chain integrity controls are:
+
+| Control                   | Implementation                                                                   |
+| ------------------------- | -------------------------------------------------------------------------------- |
+| Source integrity           | All commits signed via GitHub; branch protection requires PR review               |
+| Build reproducibility      | Vite build is deterministic per `package-lock.json` at `MyScripts/` parent      |
+| Dependency pinning         | Dependabot opens PRs for `package.json` updates (`.github/dependabot.yml`)      |
+| Dependency audit           | `npm audit --audit-level=high` runs in CI on every push                          |
+| SBOM                       | `npm sbom --sbom-format cyclonedx` can be run per ADR-027                       |
+| Worker bundle integrity    | Cloudflare verifies bundle hash on deploy; `wrangler deploy --dry-run` in CI    |
+| Release provenance         | GitHub Releases are tagged from a protected branch; release notes auto-generated |
+
+For a full SLSA Level 2 upgrade path, see ADR-027 (SBOM Generation and Automated Dependency Updates).
 
 ---
 
