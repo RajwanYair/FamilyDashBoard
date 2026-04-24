@@ -23,7 +23,7 @@ export interface ChoreItem {
   person: string;
   chore: string;
   /** Optional recurrence — if set, the task auto-resets after each cycle. */
-  recurrence?: "daily" | "weekly" | "monthly";
+  recurrence?: "daily" | "weekly" | "monthly" | "yearly";
 }
 
 // LS_TASKS_DONE and LS_CHORES imported from constants
@@ -86,6 +86,7 @@ export function recurrenceResetKey(
   const y = now.getFullYear();
   const m = String(now.getMonth() + 1).padStart(2, "0");
   const d = String(now.getDate()).padStart(2, "0");
+  if (recurrence === "yearly") return `${y}`;
   if (recurrence === "monthly") return `${y}-${m}`;
   if (recurrence === "weekly") {
     // ISO week: day 4 (Thursday) of the week sets the year
@@ -382,6 +383,7 @@ export function renderTasksCard(): void {
           daily: "🔄 יומי",
           weekly: "📅 שבועי",
           monthly: "📆 חודשי",
+          yearly: "📅 שנתי",
         };
         recBadge.textContent = RECUR_ICONS[item.recurrence] ?? "🔄";
         recBadge.title = `משימה חוזרת: ${item.recurrence}`;

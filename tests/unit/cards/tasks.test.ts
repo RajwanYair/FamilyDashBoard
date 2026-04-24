@@ -1311,6 +1311,21 @@ describe("recurrenceResetKey", () => {
     const date = new Date("2025-03-15T10:00:00");
     expect(recurrenceResetKey(undefined, date)).toBe("2025-03-15");
   });
+
+  it("returns YYYY for yearly recurrence", () => {
+    const date = new Date("2025-03-15T10:00:00");
+    expect(recurrenceResetKey("yearly", date)).toBe("2025");
+  });
+
+  it("returns YYYY for yearly recurrence at year end", () => {
+    const date = new Date("2025-12-31T23:59:00");
+    expect(recurrenceResetKey("yearly", date)).toBe("2025");
+  });
+
+  it("returns new YYYY for yearly recurrence on Jan 1", () => {
+    const date = new Date("2026-01-01T00:00:00");
+    expect(recurrenceResetKey("yearly", date)).toBe("2026");
+  });
 });
 
 describe("checkRecurringReset", () => {
