@@ -792,4 +792,42 @@ describe("Calendar — parseICS edge cases", () => {
     const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Test//Test//EN\nEND:VCALENDAR";
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
+
+  // ── V13-DATA sprint 7: fuzz cases 24-28 ─────────────────────────────────
+
+  it("handles DTSTART with TZID parameter (non-UTC timezone-qualified)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;TZID=Asia/Jerusalem:20250920T100000\nSUMMARY:Jerusalem Meeting\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    // Parser should produce at least the event (or skip — either is safe)
+    const events = parseICS(ics, 0);
+    expect(Array.isArray(events)).toBe(true);
+  });
+
+  it("handles truncated ICS (VEVENT without END:VEVENT) without throwing", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250921T090000Z\nSUMMARY:Truncated";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles DURATION property without DTEND gracefully", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250922T100000Z\nSUMMARY:Duration Event\nDURATION:PT1H30M\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    const events = parseICS(ics, 0);
+    // Event should be parseable (duration-only is valid ICS)
+    expect(events).toHaveLength(1);
+  });
+
+  it("handles URL property inside VEVENT without affecting event data", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250923T140000Z\nSUMMARY:URL Event\nURL:https://example.com/event/42\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("URL Event");
+  });
+
+  it("handles Hebrew (Unicode) text in SUMMARY and LOCATION", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250924T180000Z\nSUMMARY:ישיבת משפחה\nLOCATION:ירושלים\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("ישיבת משפחה");
+    expect(events[0]!.location).toBe("ירושלים");
+  });
 });
