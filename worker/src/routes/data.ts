@@ -10,11 +10,14 @@ import {
 import {
   WeatherSchema,
   MetNoWeatherSchema,
+  NwsPointsSchema,
+  NwsForecastSchema,
   CurrencySchema,
   HebcalSchema,
   HebcalHolidaysSchema,
   safeParse,
 } from "../utils/schemas";
+import { normalizeNwsToWeatherSchema, isUsCoordinate } from "../utils/nws-normalize";
 import { kvGetStale, kvPut } from "../utils/kv";
 import type { Env } from "../types";
 
@@ -27,6 +30,62 @@ export async function handleWeather(url: URL, env: Env): Promise<Response> {
     return validationErrorResponse(err as ValidationError);
   }
   const kvKey = `weather:${latNum.toFixed(4)}:${lonNum.toFixed(4)}`;
+  const requestedProvider = url.searchParams.get("provider");
+
+  // ── Opt-in: NWS (api.weather.gov) — US-travel mode ────────────────────────
+  if (requestedProvider === "nws") {
+    if (!isUsCoordinate(latNum, lonNum)) {
+      return jsonResponse(
+        { error: "NWS provider only supports US coordinates", param: "provider" },
+        400,
+      );
+    }
+    try {
+      const pointsRes = await fetch(
+        `https://api.weather.gov/points/${latNum.toFixed(4)},${lonNum.toFixed(4)}`,
+        { headers: { "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard", Accept: "application/json" } },
+      );
+      if (pointsRes.ok) {
+        const pointsData: unknown = await pointsRes.json();
+        const points = safeParse(NwsPointsSchema, pointsData);
+        if (points.ok) {
+          const [hourlyRes, dailyRes] = await Promise.all([
+            fetch(points.data.properties.forecastHourly, {
+              headers: { "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard", Accept: "application/json" },
+            }),
+            fetch(points.data.properties.forecast, {
+              headers: { "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard", Accept: "application/json" },
+            }),
+          ]);
+          if (hourlyRes.ok && dailyRes.ok) {
+            const [hourlyData, dailyData] = await Promise.all([
+              hourlyRes.json() as Promise<unknown>,
+              dailyRes.json() as Promise<unknown>,
+            ]);
+            const parsedHourly = safeParse(NwsForecastSchema, hourlyData);
+            const parsedDaily = safeParse(NwsForecastSchema, dailyData);
+            if (parsedHourly.ok && parsedDaily.ok) {
+              const normalized = normalizeNwsToWeatherSchema(
+                parsedHourly.data.properties.periods,
+                parsedDaily.data.properties.periods,
+              );
+              const nwsKey = `weather-nws:${latNum.toFixed(4)}:${lonNum.toFixed(4)}`;
+              void kvPut(env.CACHE_KV, nwsKey, normalized, 3600);
+              return workerEnvelope(normalized, "nws", false, 1800);
+            }
+          }
+        }
+      }
+    } catch {
+      // NWS unreachable — fall through to Open-Meteo
+    }
+    // NWS failed: try KV stale for this location
+    const nwsStale = await kvGetStale(
+      env.CACHE_KV,
+      `weather-nws:${latNum.toFixed(4)}:${lonNum.toFixed(4)}`,
+    );
+    if (nwsStale) return workerEnvelope(nwsStale, "nws-kv-stale", true, 60);
+  }
 
   // ── Primary: Open-Meteo ────────────────────────────────────────────────────
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latNum}&longitude=${lonNum}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;

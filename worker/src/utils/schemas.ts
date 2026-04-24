@@ -180,6 +180,52 @@ export const AlertItemSchema = v.looseObject({
  */
 export const AlertsSchema = v.array(AlertItemSchema);
 
+// ── NWS (api.weather.gov) — US-travel mode (V13-DATA) ────────────────────────
+
+/**
+ * NWS /points/{lat},{lon} response — returns forecast endpoint URLs.
+ */
+export const NwsPointsSchema = v.looseObject({
+  properties: v.looseObject({
+    forecast: v.string(),
+    forecastHourly: v.string(),
+    timeZone: v.string(),
+  }),
+});
+
+/**
+ * Quantitative value used for humidity, precipitation probability, dewpoint.
+ */
+export const NwsQuantValueSchema = v.looseObject({
+  value: v.nullable(v.number()),
+  unitCode: v.optional(v.string()),
+});
+
+/**
+ * Single forecast period returned by NWS /gridpoints/.../forecast
+ * and /gridpoints/.../forecast/hourly.
+ */
+export const NwsForecastPeriodSchema = v.looseObject({
+  number: v.number(),
+  startTime: v.string(),
+  endTime: v.string(),
+  isDaytime: v.boolean(),
+  temperature: v.number(),
+  temperatureUnit: v.string(), // "F" or "C"
+  windSpeed: v.string(),       // e.g. "5 mph" or "5 to 10 mph"
+  windDirection: v.string(),   // e.g. "S", "NW"
+  shortForecast: v.string(),
+  probabilityOfPrecipitation: v.optional(NwsQuantValueSchema),
+  dewpoint: v.optional(NwsQuantValueSchema),
+  relativeHumidity: v.optional(NwsQuantValueSchema),
+});
+
+export const NwsForecastSchema = v.looseObject({
+  properties: v.looseObject({
+    periods: v.pipe(v.array(NwsForecastPeriodSchema), v.minLength(1)),
+  }),
+});
+
 // ── Sefaria Calendar (strict mode — V13-DATA) ────────────────────────────────
 // v.looseObject() passes through unknown fields so new Sefaria API additions
 // do not break validation, while still enforcing the required shape.
