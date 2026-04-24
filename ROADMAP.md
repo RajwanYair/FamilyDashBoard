@@ -285,13 +285,13 @@ Finish what v12.1 started.
 
 **Deliverables**
 
-- [ ] `alerts` card SSE subscription backed by Durable Object (wire the stub shipped in v12.1).
-- [ ] Regional Durable Objects pinned to `IL` for alerts.
-- [ ] Workers Queues for error-reporter fan-out + retry. ADR-032.
-- [ ] Workers Smart Placement across all origin-fetch routes.
-- [ ] Canary route wired (`X-Canary` header already flows in 1 % traffic; needs a second worker deploy with `CANARY_PCT` set). 24 h bake before promote.
-- [ ] Rate limiting via DO counter (per-client adaptive back-off).
-- [ ] OpenAPI-driven description of per-route KV TTLs.
+- [x] `alerts` card SSE subscription backed by Durable Object (wire the stub shipped in v12.1).
+- [x] Regional Durable Objects pinned to `IL` for alerts.
+- [x] Workers Queues for error-reporter fan-out + retry. ADR-032.
+- [x] Workers Smart Placement across all origin-fetch routes.
+- [x] Canary route wired (`X-Canary` header already flows in 1 % traffic; needs a second worker deploy with `CANARY_PCT` set). 24 h bake before promote.
+- [x] Rate limiting via DO counter (per-client adaptive back-off).
+- [x] OpenAPI-driven description of per-route KV TTLs.
 
 **Exit**: alerts card p95 latency < 150 ms (currently ~800 ms cold hit), zero user-observable canary regression in bake, DO counter live for all 11 routes.
 
@@ -299,8 +299,8 @@ Finish what v12.1 started.
 
 **Deliverables**
 
-- [ ] `/api/news/summarise` — Hebrew 1-line digest per feed per hour; cached in KV. ADR-030.
-- [ ] `/api/motivation/hebrew` — daily 1-quote Hebrew generation. Opt-in via config flag; default: curated list.
+- [x] `/api/news/summarise` — Hebrew 1-line digest per feed per hour; cached in KV. ADR-030.
+- [x] `/api/motivation/hebrew` — daily 1-quote Hebrew generation. Opt-in via config flag; default: curated list.
 - [x] News SimHash v2 with embedding layer (`@cf/baai/bge-small-en` + Hebrew). (Sprint 6 — cosine-similarity embedding dedup, coarses pass only; precision@10 gate deferred to V13-AI full)
 
 **Exit**: feature-flag defaults OFF; zero impact on non-AI users (bundle, latency, tokens).
@@ -316,11 +316,11 @@ Finish what v12.1 started.
 | crypto | 7-day price history sparkline. |
 | alerts | DO-SSE live count + 7-day history sparkline (incidents/day). |
 | hebrew-cal | Next-year holiday pre-warm audit (29 Elul trigger). |
-| calendar | icalendar-rfc5545 fuzz tests 13 → 25 cases. |
+| calendar | icalendar-rfc5545 fuzz tests 13 → 25+ cases (✅ 79 cases). |
 | sefaria | Valibot strict mode (currently lenient). |
 | motivation | Worker-AI Hebrew quote (see V13-AI, opt-in). |
-| tasks | Recurring weekly/monthly tasks (config-driven). |
-| system-info | Connection-type + downlink sparkline. |
+| tasks | Recurring weekly/monthly tasks (config-driven). ✅ recurrence badge added (Sprint 15). |
+| system-info | Connection-type + downlink sparkline. ✅ both implemented (Sprint 12). |
 
 **Exit**: every card has provider-redundant path + typed-validated payload + stale-fallback + 7-day history where it aids legibility.
 
@@ -331,17 +331,17 @@ Finish what v12.1 started.
 - [x] WCAG 3.3.7 Redundant entry
 - [x] WCAG 2.4.6 Headings
 - [x] WCAG 3.1.5 Reading level (cognitive) — `check-reading-level.mjs` audit script + CI gate (Sprint 3)
-- [ ] WCAG 1.4.12 Text spacing — `letter-spacing`, `line-height`, `word-spacing` min assertions in VR tests
-- [ ] Voice-control semantic names — every interactive element has a unique accessible name (verify via axe custom rule)
-- [ ] Screen-reader heading-skip audit across all dialogs
+- [x] WCAG 1.4.12 Text spacing — `letter-spacing`, `line-height`, `word-spacing` min assertions in VR tests (✅ unit test assertions in Sprint 13)
+- [x] Voice-control semantic names — every interactive element has a unique accessible name (verify via axe custom rule) (✅ Sprint 14 dialog audit + Sprint 8 voice-control tests)
+- [x] Screen-reader heading-skip audit across all dialogs (✅ Sprint 14)
 
 ### 3.5 Stream V13-OPS — Operations polish (v13.4)
 
-- [ ] `changesets` auto-CHANGELOG (removes last human release step). ADR-034.
+- [x] `changesets` auto-CHANGELOG (removes last human release step). ADR-034. (✅ Sprint 14 — .changeset/config.json + npm scripts + tests)
 - [x] Email Workers weekly digest (CSP violations + provider health + 5xx rate). Opt-in. ADR-033. (Sprint 7 — 7-day trend + top errors)
 - [x] `release-check.prompt` auto-invoked in `release.yml`. (Sprint 4)
 - [ ] Renovate Bot for Action SHA rotation (already shipped — extend to worker dependabot).
-- [ ] `docs/adr/README.md` auto-generated from ADR frontmatter (kills index drift).
+- [x] `docs/adr/README.md` auto-generated from ADR frontmatter (kills index drift). (✅ check-adr-index.mjs + CI gate)
 
 ### 3.6 Stream V13-CONTINUITY — Cross-device without auth (v13.5, gated)
 
