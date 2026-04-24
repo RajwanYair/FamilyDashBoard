@@ -139,9 +139,9 @@
       </div>
     </dialog>
     <!-- Feature 33: Config overlay -->
-    <div id="config-overlay">
+    <div id="config-overlay" role="dialog" aria-modal="true" aria-labelledby="cfg-panel-title">
       <div id="config-panel">
-        <h2>⚙️ הגדרות</h2>
+        <h2 id="cfg-panel-title">⚙️ הגדרות</h2>
         <!-- F119: Config panel section tabs -->
         <div class="cfg-tabs" role="tablist" aria-label="לשוניות הגדרות">
           <button type="button" id="cfg-tab-display" class="cfg-tab active" data-tab="display" role="tab" aria-selected="true" aria-controls="cfg-section-display" title="הגדרות תצוגה: ערכת נושא, מצב מסך, גופן">🖥️ תצוגה Display</button>
@@ -562,7 +562,7 @@
       </div>
     </div>
     <dialog class="diag-overlay" id="diag-overlay" aria-labelledby="diag-dialog-title" aria-modal="true">
-        <h3 id="diag-dialog-title">🛠 Dashboard Diagnostics (press D to close)</h3>
+        <h2 id="diag-dialog-title">🛠 Dashboard Diagnostics (press D to close)</h2>
         <!-- Feature 70: Copy diagnostics log to clipboard -->
         <button type="button" id="diag-copy-btn" aria-label="העתק לוג אבחון ללוח" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
         <!-- F1 (v7.3): Clear diagnostics log -->
