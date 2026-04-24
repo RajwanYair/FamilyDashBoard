@@ -1378,3 +1378,51 @@ describe("Config Panel — dirty indicator (Sprint 19)", () => {
     expect(gearBtn.textContent).not.toContain("*");
   });
 });
+
+// ── Sprint 58: Network-mode selector populate + collect ──────────────────────
+
+describe("Config Panel — network-mode selector (Sprint 58)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("populateForm: defaults to 'auto' when LS_NETWORK_MODE is unset", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.openConfigPanel();
+    const sel = document.getElementById("cfg-network-mode") as HTMLSelectElement | null;
+    expect(sel?.value).toBe("auto");
+  });
+
+  it("populateForm: reads persisted value from localStorage", async () => {
+    setupDOM();
+    localStorage.setItem("dash_network_mode", "worker-only");
+    const mod = await freshCfg();
+    mod.openConfigPanel();
+    const sel = document.getElementById("cfg-network-mode") as HTMLSelectElement | null;
+    expect(sel?.value).toBe("worker-only");
+  });
+
+  it("collectForm (via save): persists selected value to localStorage", async () => {
+    setupDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const sel = document.getElementById("cfg-network-mode") as HTMLSelectElement | null;
+    if (sel) sel.value = "no-worker";
+    document.getElementById("cfg-save-btn")!.click();
+    expect(localStorage.getItem("dash_network_mode")).toBe("no-worker");
+  });
+
+  it("collectForm (via save): removes key for invalid value", async () => {
+    setupDOM();
+    localStorage.setItem("dash_network_mode", "worker-only");
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const sel = document.getElementById("cfg-network-mode") as HTMLSelectElement | null;
+    if (sel) sel.value = "bogus" as string;
+    document.getElementById("cfg-save-btn")!.click();
+    expect(localStorage.getItem("dash_network_mode")).toBeNull();
+  });
+});

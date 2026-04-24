@@ -36,6 +36,7 @@ import {
   LS_NEWS_FONT,
   LS_CHORES,
   LS_PORTFOLIO,
+  LS_NETWORK_MODE,
 } from "../core/constants";
 // ── Extra localStorage keys now imported from core/constants ──
 
@@ -288,6 +289,10 @@ function populateForm(): void {
 
   const proxy = g("cfg-custom-proxy");
   if (proxy) proxy.value = c.customProxy;
+
+  // Sprint 58: Network mode
+  const netMode = g("cfg-network-mode") as HTMLSelectElement | null;
+  if (netMode) netMode.value = localStorage.getItem(LS_NETWORK_MODE) ?? "auto";
 
   const cdate = g("cfg-countdown-date");
   if (cdate) cdate.value = c.countdownDate;
@@ -611,6 +616,17 @@ function collectForm(): DashboardConfig {
 
   const proxy = g("cfg-custom-proxy");
   if (proxy) c.customProxy = proxy.value.trim();
+
+  // Sprint 58: Network mode
+  const netModeEl = g("cfg-network-mode") as HTMLSelectElement | null;
+  if (netModeEl) {
+    const nm = netModeEl.value;
+    if (nm === "auto" || nm === "worker-only" || nm === "no-worker" || nm === "no-proxy") {
+      localStorage.setItem(LS_NETWORK_MODE, nm);
+    } else {
+      localStorage.removeItem(LS_NETWORK_MODE);
+    }
+  }
 
   const cdate = g("cfg-countdown-date");
   if (cdate) c.countdownDate = cdate.value;

@@ -478,6 +478,16 @@
             <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
             <input class="cfg-input" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" style="direction:ltr;font-size:0.8em" >
           </div>
+          <!-- Sprint 58: Network mode selector (worker / proxy fetch path) -->
+          <div class="cfg-row">
+            <span class="cfg-label">🔌 מצב רשת (Worker / Proxy)</span>
+            <select class="cfg-input cfg-select" id="cfg-network-mode" style="direction:ltr">
+              <option value="auto">auto — ברירת מחדל (Worker + Proxy fallback)</option>
+              <option value="worker-only">worker-only — Worker בלבד (ללא proxy)</option>
+              <option value="no-worker">no-worker — ישיר / Proxy בלבד (ללא Worker)</option>
+              <option value="no-proxy">no-proxy — ישיר בלבד (ללא proxy)</option>
+            </select>
+          </div>
           <!-- F139: Custom countdown chip config -->
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — תאריך</span>

@@ -49,6 +49,12 @@ export function setupConfigPanelTestDOM(): void {
           <input id="cfg-home-lon" type="number" />
           <input id="cfg-home-name" type="text" />
           <input id="cfg-custom-proxy" type="url" />
+          <select id="cfg-network-mode">
+            <option value="auto">auto</option>
+            <option value="worker-only">worker-only</option>
+            <option value="no-worker">no-worker</option>
+            <option value="no-proxy">no-proxy</option>
+          </select>
           <input id="cfg-countdown-date" type="date" />
           <input id="cfg-countdown-label" type="text" />
           <input id="cfg-cd-card-title" type="text" />
