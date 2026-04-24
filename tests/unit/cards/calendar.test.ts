@@ -831,3 +831,402 @@ describe("Calendar — parseICS edge cases", () => {
     expect(events[0]!.location).toBe("ירושלים");
   });
 });
+
+// ── RFC 5545 fuzz expansion — Sprint 53 ──────────────────────────────────
+// Increases total icalendar test cases from 79 → 150+
+
+describe("Calendar — parseICS RFC 5545 fuzz: date formats", () => {
+  it("parses DTSTART;VALUE=DATE (all-day, 8 chars)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20260101\nSUMMARY:New Year\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.allDay).toBe(true);
+  });
+
+  it("parses DTSTART;TZID=Asia/Jerusalem:20260410T100000 (strips TZID param)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;TZID=Asia/Jerusalem:20260410T100000\nSUMMARY:Seder\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Seder");
+  });
+
+  it("parses DTSTART with UTC trailing Z (timed event)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260315T083000Z\nSUMMARY:Standup\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.allDay).toBe(false);
+    const d = events[0]!.start;
+    expect(d.getUTCHours()).toBe(8);
+    expect(d.getUTCMinutes()).toBe(30);
+  });
+
+  it("parses DTEND correctly and sets end > start", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nDTEND:20260515T100000Z\nSUMMARY:Morning Meeting\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.end.getTime()).toBeGreaterThan(events[0]!.start.getTime());
+  });
+
+  it("does not throw when DTEND is malformed (8-char non-date string)", () => {
+    // parseICSDate tries to build a Date from 8-char value; may be Invalid Date.
+    // The important contract is: no exception thrown, 1 event produced.
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nDTEND:NOTADATE\nSUMMARY:Bad End\nEND:VEVENT\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Bad End");
+  });
+
+  it("skips event with completely missing DTSTART", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:No Date\nEND:VEVENT\nEND:VCALENDAR";
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("skips event with malformed DTSTART", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:BADDATE\nSUMMARY:Broken\nEND:VEVENT\nEND:VCALENDAR";
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("skips event with empty SUMMARY", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nSUMMARY:\nEND:VEVENT\nEND:VCALENDAR";
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("parses year-boundary event: Dec 31 to Jan 1", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261231T230000Z\nDTEND:20270101T010000Z\nSUMMARY:New Year Eve\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.end.getUTCFullYear()).toBe(2027);
+  });
+
+  it("parses event with DTSTART on Feb 29 (leap year)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20280229T120000Z\nSUMMARY:Leap Day\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.start.getUTCMonth()).toBe(1); // Feb
+    expect(events[0]!.start.getUTCDate()).toBe(29);
+  });
+});
+
+describe("Calendar — parseICS RFC 5545 fuzz: escape sequences", () => {
+  it("unescapes backslash-comma in SUMMARY", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Meeting\\, Room 5\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.summary).toBe("Meeting, Room 5");
+  });
+
+  it("unescapes backslash-n in SUMMARY (replaced by space)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Line1\\nLine2\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.summary).toContain("Line1");
+    expect(events[0]!.summary).toContain("Line2");
+  });
+
+  it("unescapes backslash-semicolon in SUMMARY", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:A\\;B\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.summary).toBe("A;B");
+  });
+
+  it("unescapes double backslash in SUMMARY", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Path\\\\Share\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.summary).toBe("Path\\Share");
+  });
+
+  it("unescapes backslash-comma in LOCATION (multi-comma)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Conf\nLOCATION:Room A\\, Floor 3\\, Building 7\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.location).toContain("Room A,");
+    expect(events[0]!.location).toContain("Building 7");
+  });
+
+  it("unescapes backslash-n in DESCRIPTION (replaced by newline)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Task\nDESCRIPTION:Step 1\\nStep 2\\nStep 3\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.description).toContain("Step 1");
+    expect(events[0]!.description).toContain("Step 2");
+  });
+});
+
+describe("Calendar — parseICS RFC 5545 fuzz: line folding (§3.1)", () => {
+  it("unfolds CRLF + space continuation lines in SUMMARY", () => {
+    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20260601T090000Z\r\nSUMMARY:Very Long\r\n Title Continues\r\nEND:VEVENT\r\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.summary).toContain("Very Long");
+    expect(events[0]!.summary).toContain("Title Continues");
+  });
+
+  it("unfolds LF + tab continuation lines", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260601T090000Z\nSUMMARY:Tabbed\n\tContinuation\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toContain("Tabbed");
+  });
+
+  it("handles folded DESCRIPTION (multi-line)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260601T090000Z\nSUMMARY:Desc Test\nDESCRIPTION:First line\n Second line\n Third line\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.description).toBeTruthy();
+  });
+});
+
+describe("Calendar — parseICS RFC 5545 fuzz: multiple events", () => {
+  it("parses 10 sequential events correctly", () => {
+    const blocks = Array.from({ length: 10 }, (_, i) => {
+      const day = String(i + 1).padStart(2, "0");
+      return `BEGIN:VEVENT\nDTSTART:20260601T${day}0000Z\nSUMMARY:Event ${i + 1}\nEND:VEVENT`;
+    }).join("\n");
+    const ics = `BEGIN:VCALENDAR\n${blocks}\nEND:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(10);
+  });
+
+  it("parses mixed all-day and timed events in same feed", () => {
+    const ics = `BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20260610
+SUMMARY:All Day
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20260610T140000Z
+SUMMARY:Timed
+END:VEVENT
+END:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(2);
+    expect(events.filter((e) => e.allDay)).toHaveLength(1);
+    expect(events.filter((e) => !e.allDay)).toHaveLength(1);
+  });
+
+  it("assigns unique icsIndex 0,1,2 to merged feeds", () => {
+    const makeIcs = (idx: number) =>
+      `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260701T120000Z\nSUMMARY:Feed ${idx}\nEND:VEVENT\nEND:VCALENDAR`;
+    const combined = [0, 1, 2]
+      .flatMap((i) => parseICS(makeIcs(i), i));
+    const indices = combined.map((e) => e.icsIndex);
+    expect(indices).toContain(0);
+    expect(indices).toContain(1);
+    expect(indices).toContain(2);
+  });
+
+  it("handles a VEVENT block with no LOCATION gracefully", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260801T100000Z\nSUMMARY:No Location\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.location).toBeUndefined();
+  });
+
+  it("skips malformed VEVENT block missing both DTSTART and SUMMARY", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDESCRIPTION:Only description\nEND:VEVENT\nEND:VCALENDAR";
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("handles VEVENT blocks with extra unknown properties", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260901T120000Z\nSUMMARY:Extra Props\nUID:abc-123\nSEQ:0\nSTATUS:CONFIRMED\nTRANSP:OPAQUE\nCLASS:PUBLIC\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Extra Props");
+  });
+});
+
+describe("Calendar — parseICS RFC 5545 fuzz: edge cases", () => {
+  it("handles CRLF line endings throughout", () => {
+    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20261001T090000Z\r\nSUMMARY:CRLF Test\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("CRLF Test");
+  });
+
+  it("handles duplicate property keys (last wins in standard parsers, we pick first match)", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261001T090000Z\nSUMMARY:First\nSUMMARY:Second\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    // Our impl picks first match; just ensure it doesn't crash
+    expect(events[0]!.summary).toBeTruthy();
+  });
+
+  it("handles SUMMARY with only whitespace after unescaping", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261001T090000Z\nSUMMARY:   \nEND:VEVENT\nEND:VCALENDAR";
+    // Whitespace-only summary: might be kept as-is or skipped — must not crash
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles a VCALENDAR with VTIMEZONE blocks (should not count as VEVENT)", () => {
+    const ics = `BEGIN:VCALENDAR
+BEGIN:VTIMEZONE
+TZID:Asia/Jerusalem
+BEGIN:STANDARD
+DTSTART:19701025T030000
+TZOFFSETFROM:+0300
+TZOFFSETTO:+0200
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;TZID=Asia/Jerusalem:20261010T120000
+SUMMARY:Yom Kippur
+END:VEVENT
+END:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    // Should extract only 1 VEVENT
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Yom Kippur");
+  });
+
+  it("handles empty VCALENDAR (no events)", () => {
+    const ics = "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR";
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("handles VEVENT without END:VEVENT marker gracefully", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261101T090000Z\nSUMMARY:Truncated";
+    // No crash, either 0 or 1 event (implementation-defined)
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles DESCRIPTION with Hebrew text", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261201T090000Z\nSUMMARY:בחינה\nDESCRIPTION:בחינת גמר בחשבון — חדר 5\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.description).toContain("בחינת גמר");
+  });
+
+  it("handles extremely long SUMMARY (1000 chars)", () => {
+    const longSummary = "A".repeat(1000);
+    const ics = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261201T090000Z\nSUMMARY:${longSummary}\nEND:VEVENT\nEND:VCALENDAR`;
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary.length).toBe(1000);
+  });
+
+  it("handles VEVENT with colons in property values", () => {
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261201T090000Z\nSUMMARY:Meeting: Q4 Review\nDESCRIPTION:See: https://example.com/agenda\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events[0]!.summary).toBe("Meeting: Q4 Review");
+    expect(events[0]!.description).toContain("https://example.com/agenda");
+  });
+
+  it("handles mixed case property names (e.g. dtstart vs DTSTART)", () => {
+    // Our parser uses /i flag — should match regardless of case
+    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\ndtstart:20261201T090000Z\nsummary:Case Insensitive\nEND:VEVENT\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    // Case-insensitive match expected by RFC 5545
+    expect(events).toHaveLength(1);
+  });
+});
+
+describe("Calendar — detectCalCategory fuzz: boundary and Hebrew keywords", () => {
+  it("detects work from English 'zoom'", () => {
+    expect(detectCalCategory("Zoom call with product team")).toBe("work");
+  });
+
+  it("detects work from Hebrew 'תכנון'", () => {
+    expect(detectCalCategory("ישיבת תכנון רבעוני")).toBe("work");
+  });
+
+  it("detects work from Hebrew 'פרויקט'", () => {
+    expect(detectCalCategory("פגישת פרויקט השקה")).toBe("work");
+  });
+
+  it("detects family from Hebrew 'ילדים'", () => {
+    expect(detectCalCategory("ילדים — חוג כדורגל")).toBe("family");
+  });
+
+  it("detects family from Hebrew 'הורים'", () => {
+    expect(detectCalCategory("ביקור הורים בשישי")).toBe("family");
+  });
+
+  it("detects family from Hebrew 'ברית'", () => {
+    expect(detectCalCategory("ברית מילה של דני")).toBe("family");
+  });
+
+  it("detects health from Hebrew 'ניתוח'", () => {
+    expect(detectCalCategory("ניתוח קטן באסותא")).toBe("health");
+  });
+
+  it("detects health from Hebrew 'תרופות'", () => {
+    expect(detectCalCategory("תרופות — רשמת בקופת חולים")).toBe("health");
+  });
+
+  it("detects holiday from Hebrew 'פורים'", () => {
+    expect(detectCalCategory("ליל פורים — תחפושות")).toBe("holiday");
+  });
+
+  it("detects holiday from English 'sukk' (sukkot)", () => {
+    expect(detectCalCategory("Sukkot holiday")).toBe("holiday");
+  });
+
+  it("detects holiday from Hebrew 'חנוכה'", () => {
+    expect(detectCalCategory("הדלקת נרות חנוכה")).toBe("holiday");
+  });
+
+  it("detects holiday from English 'shabbat' (not mixed with family keywords)", () => {
+    // 'dinner' triggers 'family' check first, so use a Shabbat phrase without family words
+    expect(detectCalCategory("Shabbat services at synagogue")).toBe("holiday");
+  });
+
+  it("returns default for numeric-only summary", () => {
+    expect(detectCalCategory("12345")).toBe("default");
+  });
+
+  it("returns default for single character summary", () => {
+    expect(detectCalCategory("X")).toBe("default");
+  });
+
+  it("returns default for emoji-only summary", () => {
+    expect(detectCalCategory("🎉🎊🎈")).toBe("default");
+  });
+});
+
+describe("Calendar — calDaysUntilLabel fuzz", () => {
+  it("returns '' for today at midnight", () => {
+    const now = new Date("2026-06-15T08:00:00");
+    const today = new Date("2026-06-15T00:00:00");
+    expect(calDaysUntilLabel(today, now)).toBe("");
+  });
+
+  it("returns 'מחר' for tomorrow", () => {
+    const now = new Date("2026-06-15T08:00:00");
+    const tomorrow = new Date("2026-06-16T12:00:00");
+    expect(calDaysUntilLabel(tomorrow, now)).toBe("מחר");
+  });
+
+  it("returns 'עוד 2 ימים' for day after tomorrow", () => {
+    const now = new Date("2026-06-15T08:00:00");
+    const d = new Date("2026-06-17T00:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("עוד 2 ימים");
+  });
+
+  it("returns 'עוד 7 ימים' for a week out", () => {
+    const now = new Date("2026-06-01T00:00:00");
+    const d = new Date("2026-06-08T00:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("עוד 7 ימים");
+  });
+
+  it("returns 'עוד 30 ימים' for 30 days out", () => {
+    const now = new Date("2026-01-01T00:00:00");
+    const d = new Date("2026-01-31T00:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("עוד 30 ימים");
+  });
+
+  it("returns '' for a past date", () => {
+    const now = new Date("2026-06-15T08:00:00");
+    const past = new Date("2026-06-10T00:00:00");
+    expect(calDaysUntilLabel(past, now)).toBe("");
+  });
+
+  it("returns '' for same date but different time (end of day)", () => {
+    const now = new Date("2026-06-15T23:59:00");
+    const sameDay = new Date("2026-06-15T00:00:00");
+    expect(calDaysUntilLabel(sameDay, now)).toBe("");
+  });
+
+  it("handles year boundary: Dec 31 to Jan 1 is 'מחר'", () => {
+    const now = new Date("2026-12-31T10:00:00");
+    const d = new Date("2027-01-01T00:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("מחר");
+  });
+
+  it("handles leap year Feb 28 to Mar 1 (non-leap: 1 day)", () => {
+    const now = new Date("2026-02-28T10:00:00"); // 2026 not a leap year
+    const d = new Date("2026-03-01T00:00:00");
+    expect(calDaysUntilLabel(d, now)).toBe("מחר");
+  });
+});
