@@ -73,6 +73,60 @@ export function getParashat(items: HebcalItem[]): string | null {
 }
 
 /**
+ * V13-DATA: Returns true when the given date falls on 29 Elul in the Hebrew calendar.
+ * 29 Elul is the last day of the Hebrew year — the trigger for pre-warming next-year
+ * holiday data from the Hebcal API so it is available immediately on Rosh Hashana.
+ * Uses `Intl.DateTimeFormat` with `ca-hebrew` extension (rule 28).
+ */
+export function is29Elul(date: Date = new Date()): boolean {
+  const fmt = new Intl.DateTimeFormat("he-u-ca-hebrew", {
+    day: "numeric",
+    month: "long",
+  });
+  const parts = fmt.formatToParts(date);
+  const day = parts.find((p) => p.type === "day")?.value ?? "";
+  const month = parts.find((p) => p.type === "month")?.value ?? "";
+  // Hebrew month name for Elul — "אלול"
+  return day === "29" && month === "אלול";
+}
+
+/**
+ * V13-DATA: Returns the Gregorian year + 1 that will be the next Hebrew year
+ * when called on 29 Elul. Used to build the pre-warm Hebcal URL for next year's
+ * holidays. Returns the current Gregorian year + 1 as a simple approximation
+ * (Rosh Hashana always falls in Sept–Oct, so next Hebrew year maps to next Gregorian year).
+ */
+export function nextHebrewYearGregorianApprox(date: Date = new Date()): number {
+  return date.getFullYear() + 1;
+}
+
+/**
+ * V13-DATA: Fire-and-forget pre-warm for next year's holiday list.
+ * Called on 29 Elul so Rosh Hashana data is cached before midnight rollover.
+ * The result is stored under a dedicated 30-day key to avoid evicting the
+ * current-year entry. Safe to call multiple times — skips if already cached.
+ */
+export async function prewarmNextYearHolidays(
+  dateFn: () => Date = () => new Date(),
+): Promise<void> {
+  const nextYear = nextHebrewYearGregorianApprox(dateFn());
+  const key = `holidays-prewarm-${nextYear}`;
+  const existing = await cGetAsync<HebcalResponse>(key, MS_PER_DAY * 30);
+  if (existing !== null) return;
+  try {
+    const d = await fetchJSONWithWorker<HebcalResponse>(
+      `${API.HEBCAL}?v=1&cfg=json&maj=on&min=on&year=${nextYear}&month=x`,
+    );
+    if (d.items) {
+      await cSetAsync(key, d);
+      diagLog(`FDB-029: [hebrew-cal] Pre-warmed ${d.items.length} holidays for ${nextYear}`);
+    }
+  } catch {
+    diagLog(`FDB-029: [hebrew-cal] Pre-warm for ${nextYear} failed (will retry next load)`);
+  }
+}
+
+/**
  * Format a zmanim time string (ISO or HH:MM) to a fixed "HH:MM" display,
  * with AM/PM stripped. Returns "--" on parse failure.
  */
@@ -628,6 +682,11 @@ async function loadHebCal(): Promise<void> {
     }
     // Re-evaluate event row now that holiday/special names are known
     renderNextCalEvent();
+    // V13-DATA: If today is 29 Elul (last day of Hebrew year), fire-and-forget
+    // a background pre-warm of next year's holiday data.
+    if (is29Elul()) {
+      void prewarmNextYearHolidays();
+    }
     diagLog("FDB-035: [hebrew-cal] Load complete");
   } catch (err) {
     diagLog(`FDB-036: [hebrew-cal] Error: ${String(err)}`);

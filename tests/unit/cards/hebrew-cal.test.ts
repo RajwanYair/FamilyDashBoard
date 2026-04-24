@@ -21,6 +21,9 @@ import {
   hebrewMonthName,
   getParashat,
   zmanimTimeLabel,
+  is29Elul,
+  nextHebrewYearGregorianApprox,
+  prewarmNextYearHolidays,
 } from "@/cards/hebrew-cal/hebrew-cal";
 import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
@@ -2202,5 +2205,102 @@ describe("zmanimTimeLabel", () => {
   it("parses ISO date-time and returns HH:MM", () => {
     const result = zmanimTimeLabel("2024-01-01T06:30:00+00:00");
     expect(result).toMatch(/^\d{1,2}:\d{2}$/);
+  });
+});
+
+// ── Sprint 31: V13-DATA — 29 Elul pre-warm trigger ──────────────────────────
+
+describe("Hebrew Calendar — is29Elul", () => {
+  it("returns a boolean", () => {
+    expect(typeof is29Elul(new Date())).toBe("boolean");
+  });
+
+  it("returns false for a date known to be outside Elul (January)", () => {
+    // 1 January 2025 is not 29 Elul
+    expect(is29Elul(new Date(2025, 0, 1))).toBe(false);
+  });
+
+  it("returns false for 1 Tishrei (Rosh Hashana 2024 = 3 Oct 2024)", () => {
+    // 3 October 2024 is 1 Tishrei 5785 — NOT 29 Elul
+    expect(is29Elul(new Date(2024, 9, 3))).toBe(false);
+  });
+
+  it("returns true for 29 Elul 5784 (2 October 2024)", () => {
+    // 2 October 2024 is 29 Elul 5784 — last day before Rosh Hashana 5785
+    // (verified via https://www.hebcal.com/converter)
+    expect(is29Elul(new Date(2024, 9, 2))).toBe(true);
+  });
+
+  it("returns false for 28 Elul 5784 (1 October 2024)", () => {
+    expect(is29Elul(new Date(2024, 9, 1))).toBe(false);
+  });
+
+  it("uses today's date by default (smoke)", () => {
+    // Just verify it doesn't throw with no argument
+    expect(() => is29Elul()).not.toThrow();
+  });
+});
+
+describe("Hebrew Calendar — nextHebrewYearGregorianApprox", () => {
+  it("returns date.getFullYear() + 1", () => {
+    expect(nextHebrewYearGregorianApprox(new Date(2024, 9, 2))).toBe(2025);
+  });
+
+  it("works for arbitrary years", () => {
+    expect(nextHebrewYearGregorianApprox(new Date(2000, 0, 1))).toBe(2001);
+  });
+
+  it("uses today by default (smoke)", () => {
+    const result = nextHebrewYearGregorianApprox();
+    expect(result).toBeGreaterThan(2024);
+  });
+});
+
+describe("Hebrew Calendar — prewarmNextYearHolidays", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(cGetAsync).mockResolvedValue(null);
+    vi.mocked(cSetAsync).mockResolvedValue(undefined);
+    vi.mocked(fetchJSONWithWorker).mockResolvedValue({
+      items: [
+        { category: "holiday", hebrew: "ראש השנה", title: "Rosh Hashana", date: "2025-09-22" },
+      ],
+    });
+  });
+
+  it("calls fetchJSONWithWorker with next year's URL when no cache", async () => {
+    await prewarmNextYearHolidays(() => new Date(2024, 9, 2));
+    expect(fetchJSONWithWorker).toHaveBeenCalledWith(
+      expect.stringContaining("year=2025"),
+    );
+  });
+
+  it("calls cSetAsync to store pre-warmed data", async () => {
+    await prewarmNextYearHolidays(() => new Date(2024, 9, 2));
+    expect(cSetAsync).toHaveBeenCalledWith(
+      expect.stringContaining("prewarm-2025"),
+      expect.objectContaining({ items: expect.any(Array) }),
+    );
+  });
+
+  it("skips fetch when cache already has prewarm data", async () => {
+    vi.mocked(cGetAsync).mockResolvedValue({
+      items: [{ category: "holiday", hebrew: "ראש השנה", title: "Rosh Hashana", date: "2025-09-22" }],
+    });
+    await prewarmNextYearHolidays(() => new Date(2024, 9, 2));
+    expect(fetchJSONWithWorker).not.toHaveBeenCalled();
+  });
+
+  it("does not throw when fetch fails", async () => {
+    vi.mocked(fetchJSONWithWorker).mockRejectedValue(new Error("network error"));
+    await expect(
+      prewarmNextYearHolidays(() => new Date(2024, 9, 2)),
+    ).resolves.not.toThrow();
+  });
+
+  it("does not store cache when API returns no items", async () => {
+    vi.mocked(fetchJSONWithWorker).mockResolvedValue({});
+    await prewarmNextYearHolidays(() => new Date(2024, 9, 2));
+    expect(cSetAsync).not.toHaveBeenCalled();
   });
 });
