@@ -98,6 +98,21 @@ function setText(id: string, text: string): void {
 
 // ── Render ─────────────────────────────────────────────────────────────────
 
+// ── V13-DATA: connection-type numeric encoding for sparkline ─────────────
+
+/** Encode NetworkInformation.effectiveType as an ordinal for sparkline history.
+ *  "slow-2g" → 1, "2g" → 2, "3g" → 3, "4g" → 4, unknown → 0
+ */
+export function encodeConnType(effectiveType: string): number {
+  switch (effectiveType) {
+    case "slow-2g": return 1;
+    case "2g":      return 2;
+    case "3g":      return 3;
+    case "4g":      return 4;
+    default:        return 0;
+  }
+}
+
 export async function renderSystemInfo(): Promise<void> {
   // Online status
   setText("sysinfo-online", navigator.onLine ? "🟢 מחובר" : "🔴 מנותק");
@@ -129,6 +144,18 @@ export async function renderSystemInfo(): Promise<void> {
         const sparkEl = document.getElementById("sysinfo-downlink-spark");
         if (sparkEl !== null && vals.length >= 2) {
           sparkEl.innerHTML = trustedHTML(sparklineSvg(vals, "var(--accent-2, var(--accent))", 44, 12));
+        }
+      })();
+    }
+
+    // V13-DATA: 7-reading connection-type sparkline (encodes 4g→4, 3g→3, …)
+    if (conn.effectiveType) {
+      void (async () => {
+        await historyAppend("sysinfo:conntype", encodeConnType(conn.effectiveType as string));
+        const vals = await historyGet("sysinfo:conntype", 7);
+        const sparkEl = document.getElementById("sysinfo-conntype-spark");
+        if (sparkEl !== null && vals.length >= 2) {
+          sparkEl.innerHTML = trustedHTML(sparklineSvg(vals, "var(--accent, #8f8)", 44, 12));
         }
       })();
     }
