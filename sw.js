@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v13.0.0
+/* FamilyDashBoard ServiceWorker — v13.1.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v12.5.0: V13-EDGE SSE+DO+rate-limiter, DATA sparklines (weather/sysinfo), A11Y text-spacing, ICS fuzz, changesets, ADR index
+ * v13.1.0: V13-EDGE openapi TTLs, DATA conn-type sparkline+recurrence badge, A11Y text-spacing+dialog audit, OPS SLSA provenance+coverage thresholds, NWS property tests
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

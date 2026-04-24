@@ -5,7 +5,7 @@ info:
     Cloudflare Worker API proxy for the FamilyDashBoard dashboard.
     All routes enforce CORS (any origin), per-IP rate limiting (120 req/min),
     and SSRF allowlists on URL parameters.
-  version: "13.0.0"
+  version: "13.1.0"
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard

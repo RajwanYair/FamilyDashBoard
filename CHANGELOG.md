@@ -5,6 +5,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.1.0] — 2026-07-25
+
+> **V13 completion sprint** — V13-EDGE OpenAPI TTL annotations · DATA connection-type sparkline + recurrence badge · A11Y WCAG 1.4.12 text-spacing + screen-reader dialog audit · SEC SLSA provenance docs · OPS coverage thresholds raised · NWS property tests · **4224 tests / 147 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 35 ADRs
+
+### Added
+
+- **V13-EDGE-7: OpenAPI per-route KV TTL annotations** (`worker/openapi.yaml`): All 20 GET routes annotated with `x-kv-ttl`; `/api/alerts/subscribe` (SSE) and `/api/canary` routes added; version bumped to 13.1.0. 8 new unit tests (`tests/unit/scripts/openapi-ttl.test.ts`).
+- **V13-DATA: Connection-type sparkline** (`src/cards/system-info/system-info.ts`, `src/index.html`): `encodeConnType()` maps `effectiveType` (slow-2g/2g/3g/4g) to numeric; 7-point sparkline in `sysinfo-conntype-spark` SVG. 11 unit tests (`tests/unit/cards/system-info-conntype-spark.test.ts`).
+- **V13-DATA: Tasks recurrence badge** (`src/cards/tasks/tasks.ts`): Renders 🔄 יומי / 📅 שבועי / 📆 חודשי badge for recurring chores; CSS classes `tasks-recur-daily|weekly|monthly`; `title` attribute. 6 new unit tests (`tests/unit/cards/tasks.test.ts`).
+- **V13-A11Y: WCAG 1.4.12 text-spacing token assertions** (`tests/unit/a11y/text-spacing.test.ts`): 15 tests verifying `--ts-line-height ≥ 1.5`, `--ts-letter-spacing ≥ 0.12em`, `--ts-word-spacing ≥ 0.16em`, `--ts-paragraph-spacing ≥ 2.0em` in `tokens.css`.
+- **V13-A11Y: Screen-reader dialog audit** (`tests/unit/a11y/dialog-audit.test.ts`, `src/index.html`): 17 tests for skip-link, `<dialog>` presence, `aria-labelledby` targets, close buttons; added `aria-label="הלכה יומית"` to `halacha-overlay`.
+- **V13-SEC: SLSA provenance controls documentation** (`docs/security.md`): §11 expanded with SRI policy rationale + SLSA Level 2 controls table (source integrity, build reproducibility, dependency pinning, npm audit, SBOM, worker bundle integrity, release provenance); references ADR-027. 9 unit tests (`tests/unit/ops/security-doc.test.ts`).
+- **V13-DATA: NWS normalizer property tests** (`tests/unit/worker/nws-normalize.property.test.ts`): 12 fast-check property tests — fToC round-trip, mphToKph monotonicity, WMO code range for any string, windDirToDeg range, isUsCoordinate boundary invariants.
+
+### Changed
+
+- `worker/openapi.yaml` `info.version`: `13.0.0` → `13.1.0`
+- Coverage thresholds raised: `statements: 85, branches: 77, functions: 84, lines: 86` (Sprint 17)
+- ROADMAP.md: all V13-EDGE/AI/DATA/A11Y/OPS deliverables marked `[x]` complete
+
+---
+
 ## [13.0.0] — 2026-04-24
 
 > **V13 feature release** — encrypted config URL · reading-level CI gate · Permissions-Policy hardening · Workers AI embedding dedup · weekly digest 7-day trend · cron coverage · ROADMAP V13 checkpoints · **4148 tests / 142 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 34 ADRs

@@ -272,8 +272,8 @@ describe("real worker/openapi.yaml compliance (V13-EDGE)", () => {
     expect(route?.hasKvTtl).toBe(true);
   });
 
-  it("openapi info.version is 13.0.0 (V13-EDGE-7)", () => {
-    expect(yaml).toMatch(/version:\s*"13\.0\.0"/);
+  it("openapi info.version is 13.1.0 (V13-EDGE-7)", () => {
+    expect(yaml).toMatch(/version:\s*"13\.1\.0"/);
   });
 
   it("at least 20 GET routes exist (includes V13 additions)", () => {
