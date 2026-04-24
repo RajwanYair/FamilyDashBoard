@@ -880,6 +880,54 @@ describe("Worker — handleWeather route", () => {
     const res = await handleWeather(url, mockEnv);
     expect(res.status).toBe(502);
   });
+
+  it("returns NWS KV stale when NWS fails and KV has NWS stale data", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("error", { status: 503 }));
+    const staleData = { ...validOpenMeteoData, _nws: true };
+    const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
+    const envWithKv: Env = {
+      ...mockEnv,
+      CACHE_KV: { ...mockEnv.CACHE_KV, get: kvGet } as unknown as KVStore,
+    };
+    const url = new URL("https://worker.dev/api/weather?lat=40.71&lon=-74.01&provider=nws");
+    const res = await handleWeather(url, envWithKv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { stale: boolean; provider: string };
+    expect(body.stale).toBe(true);
+    expect(body.provider).toBe("nws-kv-stale");
+  });
+
+  it("returns met.no data when Open-Meteo fails and met.no succeeds", async () => {
+    const validMetNoData = {
+      properties: {
+        timeseries: [
+          {
+            time: "2024-01-01T00:00:00Z",
+            data: {
+              instant: { details: { air_temperature: 15, wind_speed: 5, relative_humidity: 70 } },
+              next_1_hours: { summary: { symbol_code: "clearsky_day" } },
+            },
+          },
+        ],
+      },
+    };
+    vi
+      .spyOn(globalThis, "fetch")
+      // Open-Meteo fails
+      .mockResolvedValueOnce(new Response("fail", { status: 503 }))
+      // met.no succeeds
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(validMetNoData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const url = new URL("https://worker.dev/api/weather?lat=32.08&lon=34.78");
+    const res = await handleWeather(url, mockEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string };
+    expect(body.provider).toBe("met.no");
+  });
 });
 
 // ── Worker — handleAlerts route (Stream W.4) ──────────────────────────────────
