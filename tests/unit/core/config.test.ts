@@ -528,7 +528,7 @@ describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
   });
 
   it("CONFIG_VERSION constant is 5", () => {
-    expect(CONFIG_VERSION).toBe(11);
+    expect(CONFIG_VERSION).toBe(12);
   });
 
   it("DEFAULT_CONFIG has all v3 fields with correct defaults", () => {
@@ -954,7 +954,7 @@ describe("Config — migrateConfig v9→v10 (animLevel)", () => {
   });
 
   it("CONFIG_VERSION is 10", () => {
-    expect(CONFIG_VERSION).toBe(11);
+    expect(CONFIG_VERSION).toBe(12);
   });
 
   it("migrates v0 all the way to v10 including animLevel", () => {

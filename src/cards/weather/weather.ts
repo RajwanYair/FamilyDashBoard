@@ -27,6 +27,7 @@ import { cGet, cGetStale, cSet } from "../../core/cache";
 import { setSync } from "../../core/sync";
 import { loadConfig, saveConfig } from "../../core/config";
 import { fetchJSONWithWorker } from "../../core/fetch";
+import { fetchNWS } from "./nws-adapter";
 import { state } from "../../core/state";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
 import type { CardConfigField, CardDefinition } from "../../types/card";
@@ -334,6 +335,15 @@ export function renderHourlyStrip(d: WeatherResponse): void {
 async function fetchWeather(): Promise<WeatherResponse> {
   const lat = _activeLat;
   const lon = _activeLon;
+  const cfg = loadConfig();
+  // Sprint 68: US-travel mode — try api.weather.gov first, fall back to Open-Meteo
+  if (cfg.weatherUsTravelMode) {
+    try {
+      return await fetchNWS(lat, lon);
+    } catch (e) {
+      diagLog(`[weather] NWS fetch failed, falling back to Open-Meteo: ${String(e)}`);
+    }
+  }
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m,cloud_cover&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
   return fetchJSONWithWorker<WeatherResponse>(url);
 }

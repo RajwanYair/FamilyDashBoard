@@ -212,6 +212,13 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v10 → v11: countdownCard2 defaults set");
   }
 
+  // v11 → v12: introduced weatherUsTravelMode (default false).
+  if (version < 12) {
+    if (typeof cfg.weatherUsTravelMode !== "boolean") cfg.weatherUsTravelMode = false;
+    cfg.configVersion = 12;
+    diagLog("[config] migrated v11 → v12: weatherUsTravelMode defaulted to false");
+  }
+
   return cfg;
 }
 

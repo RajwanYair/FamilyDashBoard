@@ -364,6 +364,8 @@ function populateForm(): void {
   if (wxSunrise) wxSunrise.value = (c.weatherShowSunrise ?? true) ? "on" : "off";
   const wxDetails = g("cfg-weather-details") as HTMLSelectElement | null;
   if (wxDetails) wxDetails.value = (c.weatherShowDetails ?? true) ? "on" : "off";
+  const wxUsTravel = g("cfg-weather-us-travel") as HTMLSelectElement | null;
+  if (wxUsTravel) wxUsTravel.value = (c.weatherUsTravelMode ?? false) ? "on" : "off";
   const newsSource = g("cfg-news-show-source") as HTMLSelectElement | null;
   if (newsSource) newsSource.value = (c.newsShowSource ?? true) ? "on" : "off";
   const newsMaxItems = g("cfg-news-max-items");
@@ -714,6 +716,8 @@ function collectForm(): DashboardConfig {
   c.weatherShowWind = (g("cfg-weather-wind") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowSunrise = (g("cfg-weather-sunrise") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowDetails = (g("cfg-weather-details") as HTMLSelectElement | null)?.value !== "off";
+  c.weatherUsTravelMode =
+    (g("cfg-weather-us-travel") as HTMLSelectElement | null)?.value === "on";
   c.newsShowSource = (g("cfg-news-show-source") as HTMLSelectElement | null)?.value !== "off";
   const newsMaxEl = g("cfg-news-max-items");
   if (newsMaxEl) {

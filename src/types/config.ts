@@ -243,6 +243,15 @@ export interface DashboardConfig {
 
   // ── Config v10 additions ──
 
+  // ── Config v12 additions (v13.6) — US-travel mode ──
+
+  /**
+   * Weather card: opt-in to api.weather.gov (NWS) data source for US locations.
+   * When true, `fetchNWS()` is attempted first; falls back to Open-Meteo on error.
+   * Default: false (Israel-first dashboard — most users are not in the US).
+   */
+  weatherUsTravelMode: boolean;
+
   /**
    * Global animation level — controls how much motion is shown on the dashboard.
    * - "none"    : all animations and transitions disabled (accessibility / minimal distraction)
@@ -303,7 +312,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCard3StartDate: "",
   motivationInterval: 0,
   motivationAiHebrew: false,
-  configVersion: 11,
+  configVersion: 12,
 
   // Config v2 defaults
   newsMaxItems: 5,
@@ -336,10 +345,13 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 
   // Config v10 defaults
   animLevel: "normal",
+
+  // Config v12 defaults
+  weatherUsTravelMode: false,
 };
 
 /** Current config schema version — bump when shape changes. */
-export const CONFIG_VERSION = 11;
+export const CONFIG_VERSION = 12;
 
 /** Type guard: checks if a string is a valid animation level. */
 export function isValidAnimLevel(v: unknown): v is DashboardConfig["animLevel"] {
