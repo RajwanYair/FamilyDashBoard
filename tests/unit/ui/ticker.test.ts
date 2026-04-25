@@ -1349,3 +1349,131 @@ describe("Ticker — applyTickerSpeed (v7.1.7)", () => {
     expect(document.documentElement.style.getPropertyValue("--ticker-duration")).toBe("12s");
   });
 });
+
+// ── Sprint 89: applyTickerSpeed elTicker branch, same-day skip, overlay open/close ──
+
+const HALACHA_WITH_FAMILY: typeof SAMPLE_HALACHA = {
+  ref: "Shabbat 1:1",
+  heRef: "שבת א׳:א׳",
+  category: "משפחה",
+  url: "https://www.sefaria.org/Shabbat.1.1",
+  texts: ["טהרת המשפחה"],
+};
+
+function buildOverlayDOM(): void {
+  document.body.innerHTML = `
+    <div id="halacha-ticker" class="ticker-inner"></div>
+    <div id="hc-halacha-row" style="display:none"><div id="hc-halacha"></div></div>
+    <div id="halacha-overlay">
+      <div id="halacha-overlay-ref"></div>
+      <div id="halacha-overlay-text"></div>
+    </div>
+  `;
+}
+
+describe("Ticker — Sprint 89 applyTickerSpeed with live elTicker", () => {
+  beforeEach(() => {
+    buildFullDOM();
+    vi.mocked(cGet).mockReturnValue(SAMPLE_HALACHA);
+  });
+
+  afterEach(() => {
+    document.documentElement.style.removeProperty("--ticker-duration");
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("applyTickerSpeed updates animationDuration on elTicker when scrollWidth > 0", () => {
+    initTicker(); // sets elTicker
+    const ticker = document.getElementById("halacha-ticker") as HTMLElement;
+    // Mock scrollWidth so w > 0
+    Object.defineProperty(ticker, "scrollWidth", { get: () => 560, configurable: true });
+    applyTickerSpeed(1); // slowest → 60s base
+    // animation duration should be set (scrollWidth=560 → w=280, base=max(30, 280/140)=2, dur=round(2/0.5)=4s)
+    expect(ticker.style.animationDuration).toBeTruthy();
+  });
+
+  it("applyTickerSpeed skips animation update when matchMedia prefers reduced motion", () => {
+    initTicker();
+    const ticker = document.getElementById("halacha-ticker") as HTMLElement;
+    Object.defineProperty(ticker, "scrollWidth", { get: () => 560, configurable: true });
+    // Clear any animation set by initTicker
+    ticker.style.animationDuration = "";
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query.includes("prefers-reduced-motion"),
+      media: query,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    applyTickerSpeed(3);
+    // Reduced motion → inner branch skipped → animationDuration stays empty
+    expect(ticker.style.animationDuration).toBe("");
+    vi.unstubAllGlobals();
+  });
+
+  it("renderTicker same-day ref skip: second initTicker call with same ref skips DOM rebuild", () => {
+    initTicker(); // first render — sets _halachaData
+    const ticker = document.getElementById("halacha-ticker") as HTMLElement;
+    // Add a child to simulate non-zero childElementCount
+    ticker.innerHTML = "<span>existing</span>";
+    const childCountBefore = ticker.childElementCount;
+    // Second call with same ref → renderTicker skips DOM rebuild
+    initTicker();
+    // childElementCount should be unchanged (no rebuild)
+    expect(ticker.childElementCount).toBe(childCountBefore);
+  });
+});
+
+describe("Ticker — Sprint 89 overlay open and close", () => {
+  beforeEach(() => {
+    buildOverlayDOM();
+    vi.mocked(cGet).mockReturnValue(SAMPLE_HALACHA);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.mocked(cGet).mockReturnValue(null);
+    vi.clearAllMocks();
+  });
+
+  it("clicking the ticker opens the halacha overlay (adds 'visible' class)", () => {
+    initTicker();
+    const ticker = document.getElementById("halacha-ticker") as HTMLElement;
+    ticker.click();
+    const overlay = document.getElementById("halacha-overlay")!;
+    expect(overlay.classList.contains("visible")).toBe(true);
+  });
+
+  it("overlay shows category·ref when category is non-empty", () => {
+    initTicker();
+    const ticker = document.getElementById("halacha-ticker") as HTMLElement;
+    ticker.click();
+    const refEl = document.getElementById("halacha-overlay-ref")!;
+    expect(refEl.textContent).toContain("שבת");
+    expect(refEl.textContent).toContain("Shabbat 1:1");
+  });
+
+  it("overlay shows ref only when category is empty string", () => {
+    vi.mocked(cGet).mockReturnValue({ ...SAMPLE_HALACHA, category: "" });
+    initTicker();
+    const ticker = document.getElementById("halacha-ticker") as HTMLElement;
+    ticker.click();
+    const refEl = document.getElementById("halacha-overlay-ref")!;
+    expect(refEl.textContent).toBe("Shabbat 1:1");
+    expect(refEl.textContent).not.toContain("·");
+  });
+
+  it("clicking the overlay closes it (removes 'visible' class)", () => {
+    initTicker();
+    const ticker = document.getElementById("halacha-ticker") as HTMLElement;
+    ticker.click();
+    const overlay = document.getElementById("halacha-overlay")!;
+    expect(overlay.classList.contains("visible")).toBe(true);
+    overlay.click(); // close
+    expect(overlay.classList.contains("visible")).toBe(false);
+  });
+});
