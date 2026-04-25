@@ -186,9 +186,16 @@ describe("Calendar — groupEventsByDay", () => {
 
 // ── renderCalendar — weekly tiled grid ────────────────────────────────────
 describe("Calendar — renderCalendar (weekly tiled view)", () => {
-  beforeEach(makeCalDOM);
+  beforeEach(() => {
+    // Sprint 62 fix: pin to Wednesday so 'tomorrow' falls inside the
+    // current Sunday–Saturday week grid (independent of real system date).
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-17T12:00:00")); // Wednesday
+    makeCalDOM();
+  });
   afterEach(() => {
     document.body.innerHTML = "";
+    vi.useRealTimers();
   });
 
   it("renders 7 day tiles even when no events", () => {
@@ -381,9 +388,15 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
 
 // ── countdown + header count ──────────────────────────────────────────────
 describe("Calendar — countdown + header count", () => {
-  beforeEach(makeCalDOM);
+  beforeEach(() => {
+    // Sprint 62 fix: pin to Wednesday so countdown tests are deterministic.
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-17T12:00:00")); // Wednesday
+    makeCalDOM();
+  });
   afterEach(() => {
     document.body.innerHTML = "";
+    vi.useRealTimers();
   });
 
   it("countdown visible when next event is within 7 days", () => {

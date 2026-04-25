@@ -1435,4 +1435,139 @@ describe("Tasks — recurrence badge (V13-DATA)", () => {
     const badge = document.querySelector(".tasks-recurrence") as HTMLElement | null;
     expect(badge?.title).toContain("weekly");
   });
+
+  it("renders yearly recurrence badge with שנתי text", () => {
+    setup("yearly");
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent).toContain("שנתי");
+  });
+
+  it("recurrence badge has tasks-recur-monthly class for monthly recurrence", () => {
+    setup("monthly");
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge?.classList.contains("tasks-recur-monthly")).toBe(true);
+  });
+
+  it("recurrence badge has tasks-recur-yearly class for yearly recurrence", () => {
+    setup("yearly");
+    const badge = document.querySelector(".tasks-recurrence");
+    expect(badge?.classList.contains("tasks-recur-yearly")).toBe(true);
+  });
+});
+
+// ── Sprint 62: Monthly recurrence edge cases ───────────────────────────────
+
+describe("recurrenceResetKey — monthly edge cases", () => {
+  it("returns zero-padded month for January", () => {
+    const date = new Date("2026-01-15T10:00:00");
+    expect(recurrenceResetKey("monthly", date)).toBe("2026-01");
+  });
+
+  it("returns zero-padded month for September", () => {
+    const date = new Date("2026-09-01T00:00:00");
+    expect(recurrenceResetKey("monthly", date)).toBe("2026-09");
+  });
+
+  it("returns December correctly", () => {
+    const date = new Date("2026-12-31T23:59:59");
+    expect(recurrenceResetKey("monthly", date)).toBe("2026-12");
+  });
+
+  it("returns new month key on the 1st (month boundary: Dec 31 → Jan 1)", () => {
+    const dec31 = new Date("2026-12-31T12:00:00");
+    const jan1 = new Date("2027-01-01T12:00:00");
+    expect(recurrenceResetKey("monthly", dec31)).toBe("2026-12");
+    expect(recurrenceResetKey("monthly", jan1)).toBe("2027-01");
+    // Keys differ → monthly reset should fire
+    expect(recurrenceResetKey("monthly", dec31)).not.toBe(
+      recurrenceResetKey("monthly", jan1),
+    );
+  });
+
+  it("returns same key for two dates in the same month", () => {
+    const d1 = new Date("2026-06-01T06:00:00");
+    const d2 = new Date("2026-06-30T23:59:59");
+    expect(recurrenceResetKey("monthly", d1)).toBe(recurrenceResetKey("monthly", d2));
+  });
+
+  it("differs across consecutive months (Apr → May)", () => {
+    const apr = new Date("2026-04-30T12:00:00");
+    const may = new Date("2026-05-01T12:00:00");
+    expect(recurrenceResetKey("monthly", apr)).toBe("2026-04");
+    expect(recurrenceResetKey("monthly", may)).toBe("2026-05");
+  });
+});
+
+describe("checkRecurringReset — monthly cross-month", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    localStorage.clear();
+  });
+
+  it("clears done state for monthly chore when new month starts", () => {
+    // Simulate: it is now March 1 at 8am (past reset hour 6)
+    vi.setSystemTime(new Date("2026-03-01T08:00:00"));
+    const item: ChoreItem = { person: "עמרי", chore: "קניות חודשיות", recurrence: "monthly" };
+    const fp = "עמרי::קניות חודשיות";
+    const lsResetKey = `tasks-reset::${fp}`;
+    // Last reset was in February
+    localStorage.setItem(lsResetKey, "2026-02");
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
+    checkRecurringReset(item);
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    expect(done[fp]).toBeUndefined(); // cleared by new month
+  });
+
+  it("does not clear done state when still in the same month", () => {
+    vi.setSystemTime(new Date("2026-03-15T08:00:00"));
+    const item: ChoreItem = { person: "עמרי", chore: "קניות חודשיות", recurrence: "monthly" };
+    const fp = "עמרי::קניות חודשיות";
+    const lsResetKey = `tasks-reset::${fp}`;
+    localStorage.setItem(lsResetKey, "2026-03"); // same month
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
+    checkRecurringReset(item);
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    expect(done[fp]).toBe(true); // preserved
+  });
+
+  it("does not clear done state before reset hour for monthly chore", () => {
+    // 5am — before default reset hour (6am)
+    vi.setSystemTime(new Date("2026-04-01T05:00:00"));
+    const item: ChoreItem = { person: "דנה", chore: "כביסה חודשית", recurrence: "monthly" };
+    const fp = "דנה::כביסה חודשית";
+    const lsResetKey = `tasks-reset::${fp}`;
+    localStorage.setItem(lsResetKey, "2026-03"); // old month
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
+    checkRecurringReset(item);
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    expect(done[fp]).toBe(true); // not cleared yet (before reset hour)
+  });
+
+  it("updates the LS reset key to the current month after reset", () => {
+    vi.setSystemTime(new Date("2026-05-01T07:00:00"));
+    const item: ChoreItem = { person: "יאיר", chore: "גיבוי חודשי", recurrence: "monthly" };
+    const fp = "יאיר::גיבוי חודשי";
+    const lsResetKey = `tasks-reset::${fp}`;
+    localStorage.setItem(lsResetKey, "2026-04"); // previous month
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
+    checkRecurringReset(item);
+    // After reset, the LS key should reflect the current month
+    expect(localStorage.getItem(lsResetKey)).toBe("2026-05");
+  });
+
+  it("handles missing LS reset key (first-ever reset) for monthly chore", () => {
+    vi.setSystemTime(new Date("2026-06-01T08:00:00"));
+    const item: ChoreItem = { person: "מיכל", chore: "סידור ארגזים", recurrence: "monthly" };
+    const fp = "מיכל::סידור ארגזים";
+    // No previous reset key in LS
+    localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
+    expect(() => checkRecurringReset(item)).not.toThrow();
+    // After first run, LS reset key should be set to current month
+    expect(localStorage.getItem(`tasks-reset::${fp}`)).toBe("2026-06");
+  });
 });
