@@ -2139,3 +2139,144 @@ describe("Weather — loadWeather uses createAsyncCardLoader (Stream D2.2)", () 
     expect(typeof wc.init).toBe("function");
   });
 });
+
+// ── Sprint 91: branch coverage gaps ──────────────────────────────────────────
+
+describe("Weather — Sprint 91 renderHourlyStrip branch gaps", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    localStorage.setItem("dash_v2_config", JSON.stringify({ weatherShowHourly: true }));
+    document.body.innerHTML = '<div id="wx-hourly-strip"></div>';
+    cacheDom();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("startIdx resets to 0 when all hourly times are in the past (startIdx === -1 branch)", () => {
+    // Build times all 48 hours ago → no match for >= nowHour → findIndex returns -1
+    const past: string[] = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - 2);
+      d.setHours(i, 0, 0, 0);
+      past.push(d.toISOString().slice(0, 16));
+    }
+    const data = makeWeather();
+    data.hourly = {
+      time: past,
+      temperature_2m: [20, 21, 22, 23, 24, 25],
+      precipitation_probability: [0, 0, 0, 0, 0, 0],
+      weather_code: [0, 0, 0, 0, 0, 0],
+    };
+    // Should render from index 0 without throwing
+    expect(() => renderHourlyStrip(data)).not.toThrow();
+    const strip = document.getElementById("wx-hourly-strip")!;
+    expect(strip.querySelectorAll(".wx-h-tile").length).toBe(6);
+  });
+
+  it("renders empty hourLabel when time string is shorter than 16 chars (t.length < 16 branch)", () => {
+    const data = makeWeather();
+    // "2024-01-01T14" is 13 chars — triggers the false branch of t.length >= 16
+    data.hourly = {
+      time: ["2024-01-01T14", "2024-01-01T15", "2024-01-01T16", "2024-01-01T17", "2024-01-01T18", "2024-01-01T19"],
+      temperature_2m: [20, 21, 22, 23, 24, 25],
+      precipitation_probability: [0, 0, 0, 0, 0, 0],
+      weather_code: [0, 0, 0, 0, 0, 0],
+    };
+    renderHourlyStrip(data);
+    const strip = document.getElementById("wx-hourly-strip")!;
+    const timeCells = strip.querySelectorAll(".wx-h-time");
+    // All time labels should be empty strings (false branch)
+    expect(timeCells[0]?.textContent).toBe("");
+  });
+
+  it("uses fallback emoji '🌡️' for unknown WX code (WX_EMOJI[wc] ?? '🌡️' branch)", () => {
+    const now = new Date();
+    const times: string[] = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(now);
+      d.setHours(now.getHours() + i, 0, 0, 0);
+      times.push(d.toISOString().slice(0, 16));
+    }
+    const data = makeWeather();
+    data.hourly = {
+      time: times,
+      temperature_2m: [20, 21, 22, 23, 24, 25],
+      precipitation_probability: [0, 0, 0, 0, 0, 0],
+      weather_code: [9999, 9999, 9999, 9999, 9999, 9999], // unknown code → fallback
+    };
+    renderHourlyStrip(data);
+    const strip = document.getElementById("wx-hourly-strip")!;
+    const icons = strip.querySelectorAll(".wx-h-icon");
+    expect(icons[0]?.textContent).toBe("🌡️");
+  });
+});
+
+describe("Weather — Sprint 91 initWeatherCities branch gaps", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("skips active lat/lon update when active tab has invalid lat/lon (NaN branch)", () => {
+    document.body.innerHTML = `
+      <button class="wx-city-tab active" data-city="1" data-lat="bad" data-lon="worse">City</button>
+    `;
+    // Should not throw — invalid coords are ignored silently
+    expect(() => initWeatherCities()).not.toThrow();
+  });
+
+  it("skips text update when entry.name is empty (if entry.name false branch)", () => {
+    document.body.innerHTML = `
+      <button class="wx-city-tab" data-city="1" data-lat="31" data-lon="35">Original</button>
+    `;
+    // Entry with empty name: "|32.08|34.78" → entry.name = "" → if (entry.name) is false
+    localStorage.setItem("dash_v2_city_1", "|32.08|34.78");
+    initWeatherCities();
+    const tab = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']");
+    // Text should remain unchanged (empty name → skip text update)
+    expect(tab?.textContent).toBe("Original");
+    // But coords should update
+    expect(tab?.dataset["lat"]).toBe("32.08");
+  });
+
+  it("skips home coord update when homeLat/homeLon are NaN (!isNaN false branch)", () => {
+    document.body.innerHTML = `
+      <button class="wx-city-tab" data-city="1" data-lat="31" data-lon="35">City</button>
+    `;
+    // LS_CITY_1 not set → falls into home fallback, but home coords are invalid
+    localStorage.setItem("dash_v2_home_lat", "not-a-number");
+    localStorage.setItem("dash_v2_home_lon", "also-bad");
+    expect(() => initWeatherCities()).not.toThrow();
+    const tab = document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']");
+    // Coords should NOT have changed (NaN guard prevents update)
+    expect(tab?.dataset["lat"]).toBe("31");
+  });
+});
+
+describe("Weather — Sprint 91 renderWeather wind-tile display", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("hides wind tile when weatherShowWind is false (wxWindTile branch)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, weatherShowWind: false }),
+    );
+    document.body.innerHTML = `
+      <div class="wx-detail"><div id="wx-wind"></div></div>
+      <div id="wx-temp"></div><div id="wx-desc"></div><div id="wx-icon"></div>
+      <div id="wx-hum"></div><div id="wx-uv"></div><div id="wx-rise"></div>
+      <div id="wx-forecast"><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div><div class="wx-fday"></div></div>
+      <div id="wx-minmax"></div><div id="wx-week-summary"></div><div id="wx-feels"></div>
+      <span id="wx-sky-pill"></span><div id="top-temp"></div>
+    `;
+    cacheDom();
+    renderWeather(makeWeather());
+    const windDetail = document.querySelector<HTMLElement>(".wx-detail")!;
+    expect(windDetail.style.display).toBe("none");
+  });
+});
