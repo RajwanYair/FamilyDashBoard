@@ -254,3 +254,87 @@ describe("simHash — property: prefix sensitivity", () => {
     expect(unchanged / runs).toBeLessThan(0.05);
   });
 });
+
+// ── Sprint 80: additional SimHash property assertions ─────────────────────
+
+describe("simHash — property: whitespace normalization (Sprint 80)", () => {
+  it("strings differing only in internal whitespace have the same fingerprint", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 2, maxLength: 10 }),
+        (words) => {
+          const joined1 = words.join(" ");
+          const joined2 = words.join("  "); // double space
+          expect(simHash(joined1)).toBe(simHash(joined2));
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  it("strings differing only in leading/trailing whitespace are identical", () => {
+    fc.assert(
+      fc.property(printableStr, (s) => {
+        expect(simHash(s)).toBe(simHash(`   ${s}   `));
+      }),
+      { numRuns: 200 },
+    );
+  });
+});
+
+describe("simHash — property: case normalization (Sprint 80)", () => {
+  it("uppercase and lowercase variants produce the same fingerprint", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 100 }).filter((s) => /^[a-z ]+$/i.test(s)),
+        (s) => {
+          expect(simHash(s.toLowerCase())).toBe(simHash(s.toUpperCase()));
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+describe("simHash — property: hamming distance non-negativity (Sprint 80)", () => {
+  it("hammingDistance is always a non-negative integer", () => {
+    fc.assert(
+      fc.property(printableStr, printableStr, (s1, s2) => {
+        const d = hammingDistance(simHash(s1), simHash(s2));
+        expect(Number.isInteger(d)).toBe(true);
+        expect(d).toBeGreaterThanOrEqual(0);
+      }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("simHash — property: isNearDuplicate threshold boundary (Sprint 80)", () => {
+  it("threshold equal to hammingDistance returns true", () => {
+    fc.assert(
+      fc.property(printableStr, printableStr, (s1, s2) => {
+        const h1 = simHash(s1);
+        const h2 = simHash(s2);
+        const dist = hammingDistance(h1, h2);
+        // At threshold == exact distance, should be near-duplicate
+        expect(isNearDuplicate(h1, h2, dist)).toBe(true);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it("threshold one below hammingDistance returns false when dist > 0", () => {
+    fc.assert(
+      fc.property(printableStr, printableStr, (s1, s2) => {
+        const h1 = simHash(s1);
+        const h2 = simHash(s2);
+        const dist = hammingDistance(h1, h2);
+        if (dist > 0) {
+          expect(isNearDuplicate(h1, h2, dist - 1)).toBe(false);
+        }
+      }),
+      { numRuns: 200 },
+    );
+  });
+});
+
