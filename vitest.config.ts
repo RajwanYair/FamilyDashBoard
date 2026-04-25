@@ -73,10 +73,14 @@ export default defineConfig({
         //   config-panel network-mode (4) — each adds statement + function coverage.
         // Sprint 66: measured actuals 88.81/80.65/88.21/90.06 — thresholds held at 88/80/88/90.
         //   To ratchet further, tests must cover LOW-coverage files (branches < 70%).
+        // Sprint 86: actuals 88.95/81.01/88.56/90.18 — ratchet +1 per metric.
+        //   New tests Sprints 77-85: calendar fuzz, NWS travel-mode, system-info,
+        //   simhash, nws-normalize, config-panel, countdown, tasks addQuickChore,
+        //   motivation branches, diag-overlay, theme, config resetCardConfig.
         // Target v13 final: 95/90/95/96 (multi-sprint increments, +1 per minor release)
-        statements: 88,
-        branches: 80,
-        functions: 88,
+        statements: 89,
+        branches: 81,
+        functions: 89,
         lines: 90,
       },
     },

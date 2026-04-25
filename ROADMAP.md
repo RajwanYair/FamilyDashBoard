@@ -223,7 +223,7 @@ Each stream: deliverables · ADR candidates · exit criteria · gate triggers. C
 - [x] `worker-client.ts` regeneration hash check (pre-commit).
 - [ ] LHCI perf ≥ 97 (from 95).
 - [ ] `@vitest/browser` component tests for maximise-FLIP / layout-drag cards.
-- [ ] Coverage ratchet: 88.84 / 80.72 / 88.21 / 90.12 → 90 / 82 / 89 / 91 (incremental, +1 per release).
+- [x] Coverage ratchet: 88.84 / 80.72 / 88.21 / 90.12 → 89 / 81 / 89 / 90 (Sprint 86 actuals: 88.95/81.01/88.56/90.18).
 
 **Exit**: LHCI perf ≥ 97, coverage branches ≥ 82, zero flaky tests on `main` for 3 consecutive releases.
 
