@@ -291,15 +291,16 @@ When a new tooling version is released:
 
 ## Cross-Project Registry (V14-HARMONISE)
 
-All active `MyScripts/` workspaces that consume these shared configs:
+All active `MyScripts/` workspaces that consume these shared configs.
+This table is the source of truth for Sprint 73+ V14-HARMONISE alignment work.
 
-| Project | Package name | Stack | ESLint factory | Vitest preset |
-| --- | --- | --- | --- | --- |
-| **FamilyDashBoard** | `family-dashboard` | Vite 8 · TS 6 · Browser PWA · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` |
-| **BudgetManager** | `budget-manager` | Vite · TS · Browser PWA · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` |
-| **CrossTideWeb** | `crosstide-web` | Vite · TS · Stock monitoring dashboard | `web-ts-app.mjs` | `happy-dom.mjs` |
-| **Wedding** | `wedding-manager` | Vite · TS · RSVP/seating app · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` |
-| **FamilyDashBoard/worker** | (inlined) | Cloudflare Worker · Hono · Valibot | `node-ts-app.mjs` | `node.mjs` |
+| Project | Package name | Stack | ESLint factory | Vitest preset | Status |
+| --- | --- | --- | --- | --- | --- |
+| **FamilyDashBoard** | `family-dashboard` | Vite 8 · TS 6 · Browser PWA · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` | ✅ v13.6 |
+| **BudgetManager** | `budget-manager` | Vite · TS · Browser PWA · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` | ⏳ needs audit |
+| **CrossTideWeb** | `crosstide-web` | Vite · TS · Stock monitoring dashboard | `web-ts-app.mjs` | `happy-dom.mjs` | ⏳ needs audit |
+| **Wedding** | `wedding-manager` | Vite · TS · RSVP/seating app · Hebrew RTL | `web-ts-app.mjs` | `happy-dom.mjs` | ⏳ needs audit |
+| **FamilyDashBoard/worker** | (inlined) | Cloudflare Worker · Hono · Valibot | `node-ts-app.mjs` | `node.mjs` | ✅ v13.6 |
 
 ### Adding a New Project
 
@@ -328,3 +329,24 @@ steps:
 ```
 
 Use `actions/checkout@v4` and `actions/setup-node@v4`. Set `node-version` to the same LTS as `MyScripts/package.json`. Never install deps inside a project workspace — always `cd MyScripts && npm ci`.
+
+### V14-HARMONISE Roadmap
+
+V14 unification goal: all four sibling projects use the same shared preset versions with zero
+per-project overrides to ESLint rules or TypeScript strictness settings.
+
+**Planned steps (tracked in ROADMAP.md):**
+
+| Sprint | Task |
+| --- | --- |
+| 73 | Document cross-project registry + status column ← **done** |
+| 74+ | Audit BudgetManager eslint config vs `web-ts-app.mjs` |
+| 74+ | Audit CrossTideWeb tsconfig vs `base-typescript.json` |
+| 74+ | Audit Wedding tsconfig + eslint vs shared presets |
+| V14 | Bump all four repos to `tooling@v14`, single `npm install` pass |
+| V14 | Enforce `tooling-version` field in each project's `package.json` |
+| V14 | CI gate: fail if `tooling-version` in any project doesn't match `tooling/VERSION` |
+
+**Blocking constraint:** sibling repos are not submodules — they exist as peer directories under
+`MyScripts/` on the developer machine only. V14 audit must be done locally; CI enforces only
+`FamilyDashBoard/` and its `worker/` inlined sub-project.
