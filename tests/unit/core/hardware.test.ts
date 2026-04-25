@@ -9,6 +9,7 @@ import {
   getOptimalConcurrency,
   getCPUCores,
   getDeviceMemoryGB,
+  getGPUInfo,
   formatHardwareProfile,
   applyHardwareTier,
   _resetHardwareProfile,
@@ -223,5 +224,40 @@ describe("applyHardwareTier()", () => {
   it("is a no-op in non-browser environments", () => {
     // Just verify it doesn't throw when document exists (happy-dom env)
     expect(() => applyHardwareTier()).not.toThrow();
+  });
+
+  it("returns early when document is undefined (SSR guard)", () => {
+    vi.stubGlobal("document", undefined);
+    _resetHardwareProfile();
+    // Must not throw — early return guard prevents DOM access
+    expect(() => applyHardwareTier()).not.toThrow();
+    vi.unstubAllGlobals();
+    _resetHardwareProfile();
+  });
+});
+
+// ── getGPUInfo() ───────────────────────────────────────────────────
+
+describe("getGPUInfo()", () => {
+  it("returns an object with renderer, vendor and tier fields", () => {
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    expect(gpu).toHaveProperty("renderer");
+    expect(gpu).toHaveProperty("vendor");
+    expect(gpu).toHaveProperty("tier");
+    expect(["high", "mid", "low"] as HardwareTier[]).toContain(gpu.tier);
+  });
+
+  it("returns 'unknown' renderer when WebGL is unavailable (happy-dom)", () => {
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    // happy-dom does not expose WebGL — detectGPU falls back to 'unknown'
+    expect(gpu.renderer).toBe("unknown");
+    expect(gpu.vendor).toBe("unknown");
+  });
+
+  it("tier is 'mid' for unknown GPU (default WebGL fallback)", () => {
+    _resetHardwareProfile();
+    expect(getGPUInfo().tier).toBe("mid");
   });
 });

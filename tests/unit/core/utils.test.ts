@@ -191,4 +191,50 @@ describe("computeMoonPhase", () => {
     const result = computeMoonPhase();
     expect(result.emoji).toMatch(/^[\u{1F311}-\u{1F318}]$/u);
   });
+
+  // ── Cover all 8 phase bins explicitly ──────────────────────────────────
+  // Reference new moon: 2000-01-06T18:14:00Z (KNOWN_NEW_MOON_MS).
+  // Phases offset by N days from that anchor.
+
+  it("phase 1 — waxing crescent (day 3 after new moon)", () => {
+    // frac ≈ 0.1016 → MOON_PHASES[1]
+    const result = computeMoonPhase(new Date("2000-01-09T18:14:00Z"));
+    expect(result.emoji).toBe("🌒");
+    expect(result.label).toBe("ירח גדל");
+  });
+
+  it("phase 3 — waxing gibbous (day 11 after new moon)", () => {
+    // frac ≈ 0.3725 → MOON_PHASES[3]
+    const result = computeMoonPhase(new Date("2000-01-17T18:14:00Z"));
+    expect(result.emoji).toBe("🌔");
+    expect(result.label).toBe("ירח כמעט מלא");
+  });
+
+  it("phase 5 — waning gibbous (day 18 after new moon)", () => {
+    // frac ≈ 0.6095 → MOON_PHASES[5]
+    const result = computeMoonPhase(new Date("2000-01-24T18:14:00Z"));
+    expect(result.emoji).toBe("🌖");
+    expect(result.label).toBe("ירח פוחת");
+  });
+
+  it("phase 6 — last quarter (day 22 after new moon)", () => {
+    // frac ≈ 0.7451 → MOON_PHASES[6]
+    const result = computeMoonPhase(new Date("2000-01-28T18:14:00Z"));
+    expect(result.emoji).toBe("🌗");
+    expect(result.label).toBe("רבע אחרון");
+  });
+
+  it("phase 7 — waning crescent (day 26 after new moon)", () => {
+    // frac ≈ 0.8804 → MOON_PHASES[7]
+    const result = computeMoonPhase(new Date("2000-02-01T18:14:00Z"));
+    expect(result.emoji).toBe("🌘");
+    expect(result.label).toBe("ירח דועך");
+  });
+
+  it("wrap-around — new moon again (day 28.5 after, frac ≥ 0.9375)", () => {
+    // frac ≈ 0.9651 → falls back to MOON_PHASES[0] (new moon)
+    const result = computeMoonPhase(new Date("2000-02-04T09:14:00Z"));
+    expect(result.emoji).toBe("🌑");
+    expect(result.label).toBe("ירח חדש");
+  });
 });
