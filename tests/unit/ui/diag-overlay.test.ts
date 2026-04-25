@@ -19,6 +19,9 @@ import {
 } from "@/ui/diag-overlay";
 import { diagLog, clearDiag } from "@/core/diag";
 import { recordProviderSuccess, recordProviderFailure, _resetProviderHealth } from "@/core/provider";
+import * as fetchMod from "@/core/fetch";
+import * as errorTrackerMod from "@/core/error-tracker";
+import * as perfMod from "@/core/perf";
 
 function polyfillDialog(dlg: Element | null): void {
   // happy-dom does not implement HTMLDialogElement methods.
@@ -665,5 +668,94 @@ describe("DiagOverlay — diag-build-time stamp (Sprint 52, lines 378-382)", () 
     });
     expect(() => initDiagOverlay()).not.toThrow();
     vi.restoreAllMocks();
+  });
+});
+
+// ── Sprint 95: renderStats branch coverage via vi.spyOn ─────────────────────
+
+describe("DiagOverlay — Sprint 95 renderStats network tier + trend branches", () => {
+  function buildStatsDom(): void {
+    document.body.innerHTML = `
+      <dialog id="diag-overlay">
+        <button id="diag-copy-btn">📋 העתק לוג</button>
+        <button id="diag-clear-btn">🗑 נקה לוג</button>
+        <div id="diag-log"></div>
+        <div id="diag-panes"></div>
+        <div id="diag-error-log"></div>
+      </dialog>`;
+    const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & {
+      show?: () => void; close?: () => void;
+    };
+    if (typeof dlg.show !== "function") {
+      dlg.show = function () { this.setAttribute("open", ""); };
+      dlg.close = function () { this.removeAttribute("open"); };
+    }
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    clearDiag();
+    vi.restoreAllMocks();
+  });
+
+  it("renders 🟡 when network tier is slow", () => {
+    buildStatsDom();
+    vi.spyOn(fetchMod, "getNetworkQualityTier").mockReturnValue("slow");
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.innerHTML).toContain("🟡");
+    closeDiagOverlay();
+  });
+
+  it("renders 🔴 when network tier is bad", () => {
+    buildStatsDom();
+    vi.spyOn(fetchMod, "getNetworkQualityTier").mockReturnValue("bad");
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.innerHTML).toContain("🔴");
+    closeDiagOverlay();
+  });
+
+  it("appends (offline) when isNetworkOffline returns true", () => {
+    buildStatsDom();
+    vi.spyOn(fetchMod, "isNetworkOffline").mockReturnValue(true);
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.textContent).toContain("offline");
+    closeDiagOverlay();
+  });
+
+  it("renders ×N consecutive fails in renderStats", () => {
+    buildStatsDom();
+    vi.spyOn(fetchMod, "getConsecutiveFailures").mockReturnValue(5);
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.innerHTML).toContain("×5");
+    closeDiagOverlay();
+  });
+
+  it("renders error trend sparkline when getErrorTrend returns 2+ items", () => {
+    buildStatsDom();
+    // trend.length >= 2 → renderErrorTrendHtml renders bars
+    // v === 0 → "var(--positive)", v < 1 → "var(--warning)", v >= 1 → "var(--negative)"
+    vi.spyOn(errorTrackerMod, "getErrorTrend").mockReturnValue([0, 0.5, 2]);
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.innerHTML).toContain("Error Rate Trend");
+    closeDiagOverlay();
+  });
+
+  it("renders card timing table when getCardTimings returns non-empty map", () => {
+    buildStatsDom();
+    const timings = new Map<string, number>([
+      ["weather", 3],   // < 5 → positive
+      ["news", 12],     // < 20 → warning
+      ["stocks", 50],   // >= 20 → negative
+    ]);
+    vi.spyOn(perfMod, "getCardTimings").mockReturnValue(timings);
+    openDiagOverlay();
+    const panes = document.getElementById("diag-panes")!;
+    expect(panes.innerHTML).toContain("Card Init Timing");
+    closeDiagOverlay();
   });
 });
