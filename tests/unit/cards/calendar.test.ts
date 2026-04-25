@@ -1723,4 +1723,488 @@ describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
     expect(() => parseICS(ics, 0)).not.toThrow();
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
+
+  // ── Sprint 77 — icalendar fuzz expansion 171 → 200+ ──────────────────────
+
+  it("handles VTODO component inside VCALENDAR without crashing", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VTODO",
+      "DTSTART:20280601T080000Z",
+      "DUE:20280601T090000Z",
+      "SUMMARY:Task Item",
+      "STATUS:NEEDS-ACTION",
+      "PRIORITY:5",
+      "END:VTODO",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles VFREEBUSY component without crashing", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VFREEBUSY",
+      "DTSTART:20280101T000000Z",
+      "DTEND:20280101T230000Z",
+      "FREEBUSY;FBTYPE=BUSY:20280101T090000Z/20280101T100000Z",
+      "END:VFREEBUSY",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles PRODID-only VCALENDAR (no events)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "PRODID:-//Test Corp//Test//EN",
+      "VERSION:2.0",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
+
+  it("handles VEVENT with only DTSTART and SUMMARY (minimal valid event)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280715T100000Z",
+      "SUMMARY:Minimal Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Minimal Event");
+  });
+
+  it("handles DTSTART with DATE-only format (no time component)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART;VALUE=DATE:20280820",
+      "SUMMARY:All-Day Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("All-Day Event");
+  });
+
+  it("handles DTEND with DATE-only format", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART;VALUE=DATE:20280901",
+      "DTEND;VALUE=DATE:20280903",
+      "SUMMARY:Multi-Day Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Multi-Day Event");
+  });
+
+  it("handles RRULE FREQ=WEEKLY with BYDAY", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280101T090000Z",
+      "SUMMARY:Weekly Standup",
+      "RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    expect(parseICS(ics, 0)).toHaveLength(1);
+  });
+
+  it("handles RRULE FREQ=MONTHLY with COUNT", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280115T120000Z",
+      "SUMMARY:Monthly Review",
+      "RRULE:FREQ=MONTHLY;COUNT=12",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles multiple EXDATE entries on same line", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280201T090000Z",
+      "SUMMARY:Weekly With Exceptions",
+      "RRULE:FREQ=WEEKLY",
+      "EXDATE:20280208T090000Z,20280215T090000Z,20280222T090000Z",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles ORGANIZER with CN parameter", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280301T140000Z",
+      "SUMMARY:Planning Session",
+      "ORGANIZER;CN=Alice Smith:mailto:alice@example.com",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Planning Session");
+  });
+
+  it("handles multiple ATTENDEE with PARTSTAT", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280401T100000Z",
+      "SUMMARY:Team Meeting",
+      "ATTENDEE;PARTSTAT=ACCEPTED:mailto:alice@example.com",
+      "ATTENDEE;PARTSTAT=DECLINED:mailto:bob@example.com",
+      "ATTENDEE;PARTSTAT=TENTATIVE:mailto:carol@example.com",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+  });
+
+  it("handles LAST-MODIFIED and CREATED properties", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280501T090000Z",
+      "SUMMARY:Tracked Event",
+      "CREATED:20280101T000000Z",
+      "LAST-MODIFIED:20280201T120000Z",
+      "SEQUENCE:3",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Tracked Event");
+  });
+
+  it("handles GEO property without crashing", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280601T100000Z",
+      "SUMMARY:Located Event",
+      "GEO:31.7767;35.2345",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    expect(parseICS(ics, 0)).toHaveLength(1);
+  });
+
+  it("handles RELATED-TO property without crashing", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280701T140000Z",
+      "SUMMARY:Follow-up Meeting",
+      "RELATED-TO:PARENT-UID-12345",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+  });
+
+  it("handles X-MICROSOFT-CDO-BUSYSTATUS custom property", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280801T090000Z",
+      "SUMMARY:Outlook Event",
+      "X-MICROSOFT-CDO-BUSYSTATUS:BUSY",
+      "X-MICROSOFT-CDO-ALLDAYEVENT:FALSE",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Outlook Event");
+  });
+
+  it("handles CATEGORIES property with multiple categories", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280901T110000Z",
+      "SUMMARY:Categorized Event",
+      "CATEGORIES:WORK,MEETING,IMPORTANT",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+  });
+
+  it("handles TRANSP property OPAQUE and TRANSPARENT", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20281001T100000Z",
+      "SUMMARY:Opaque Event",
+      "TRANSP:OPAQUE",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART:20281002T100000Z",
+      "SUMMARY:Transparent Event",
+      "TRANSP:TRANSPARENT",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(2);
+  });
+
+  it("handles PRIORITY values 1-9 without crashing", () => {
+    const priorities = [1, 3, 5, 7, 9];
+    for (const priority of priorities) {
+      const ics = [
+        "BEGIN:VCALENDAR",
+        "BEGIN:VEVENT",
+        "DTSTART:20281101T090000Z",
+        `SUMMARY:Priority ${priority} Event`,
+        `PRIORITY:${priority}`,
+        "END:VEVENT",
+        "END:VCALENDAR",
+      ].join("\n");
+      expect(() => parseICS(ics, 0)).not.toThrow();
+      const events = parseICS(ics, 0);
+      expect(events[0]!.summary).toContain(`Priority ${priority}`);
+    }
+  });
+
+  it("handles URL property in VEVENT without crashing", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20281201T100000Z",
+      "SUMMARY:Event With URL",
+      "URL:https://example.com/meeting/12345",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Event With URL");
+  });
+
+  it("handles DESCRIPTION property without crashing", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290101T100000Z",
+      "SUMMARY:Described Event",
+      "DESCRIPTION:This is a long description\\nWith multiple lines\\nof text.",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Described Event");
+  });
+
+  it("handles STATUS:CONFIRMED and STATUS:TENTATIVE events", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290201T090000Z",
+      "SUMMARY:Confirmed Event",
+      "STATUS:CONFIRMED",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART:20290202T090000Z",
+      "SUMMARY:Tentative Event",
+      "STATUS:TENTATIVE",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(2);
+  });
+
+  it("handles VEVENT with UID property", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "UID:uid-test-12345@example.com",
+      "DTSTART:20290301T140000Z",
+      "SUMMARY:UID Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("UID Event");
+  });
+
+  it("handles VEVENT with multi-value RDATE property", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290401T100000Z",
+      "SUMMARY:Multi-Date Event",
+      "RDATE:20290408T100000Z,20290415T100000Z",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    expect(parseICS(ics, 0)).toHaveLength(1);
+  });
+
+  it("handles VEVENT with ATTACH property (binary data)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290501T090000Z",
+      "SUMMARY:Attached Event",
+      "ATTACH;FMTTYPE=text/plain:aGVsbG8gd29ybGQ=",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Attached Event");
+  });
+
+  it("handles calendar with VTIMEZONE + VEVENT pair", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VTIMEZONE",
+      "TZID:America/New_York",
+      "BEGIN:STANDARD",
+      "DTSTART:19671029T020000",
+      "TZOFFSETFROM:-0400",
+      "TZOFFSETTO:-0500",
+      "TZNAME:EST",
+      "END:STANDARD",
+      "END:VTIMEZONE",
+      "BEGIN:VEVENT",
+      "DTSTART;TZID=America/New_York:20290601T090000",
+      "SUMMARY:NY Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("NY Event");
+  });
+
+  it("handles DTSTART with Z suffix (UTC) vs local time without Z", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290701T120000Z",
+      "SUMMARY:UTC Event",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART:20290702T120000",
+      "SUMMARY:Local Time Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(2);
+  });
+
+  it("handles VEVENT with percent-encoded summary characters", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290801T090000Z",
+      "SUMMARY:Test & Conference <2029>",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toContain("Conference");
+  });
+
+  it("handles VEVENT with emoji in SUMMARY", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290901T090000Z",
+      "SUMMARY:🎉 Birthday Party 🎂",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toContain("Birthday Party");
+  });
+
+  it("handles multiple empty VEVENTs (no DTSTART or SUMMARY)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles ICS with CRLF line endings", () => {
+    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20291001T100000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR";
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("CRLF Event");
+  });
+
+  it("handles ICS with mixed LF and CRLF line endings", () => {
+    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\nDTSTART:20291101T100000Z\r\nSUMMARY:Mixed Endings\nEND:VEVENT\r\nEND:VCALENDAR";
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles calendar with 10+ VEVENTs correctly", () => {
+    const events = Array.from({ length: 12 }, (_, i) => [
+      "BEGIN:VEVENT",
+      `DTSTART:2029${String(i + 1).padStart(2, "0")}01T090000Z`,
+      `SUMMARY:Event ${i + 1}`,
+      "END:VEVENT",
+    ].join("\n")).join("\n");
+    const ics = `BEGIN:VCALENDAR\n${events}\nEND:VCALENDAR`;
+    const result = parseICS(ics, 0);
+    expect(result.length).toBeGreaterThanOrEqual(12);
+  });
+
+  it("parseICS ignores VEVENT after malformed BEGIN:VEVENT without matching END", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20291201T090000Z",
+      "SUMMARY:Good Event",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART:20291202T090000Z",
+      "SUMMARY:Unclosed Event",
+      // Missing END:VEVENT
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
 });
+
