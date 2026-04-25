@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.8.1] — 2026-04-26
+
+> **PRODUCTION CLEANUP** — removed tracked junk file `coverage_output.txt`, removed stray `.mypy_cache/` and `test_output.txt` artifacts, verified all quality gates green · **4802 tests / 154 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 dead config · 0 dead doc
+
+### Removed
+
+- `coverage_output.txt` (tracked stale Vitest console capture leftover)
+- `.mypy_cache/` (untracked stray Python cache from accidental tooling)
+- `test_output.txt` (untracked stale)
+
+### Verified
+
+- Typecheck · ESLint · markdownlint · Vitest · Vite build · SW version gate — all green
+
+---
+
 ## [13.8.0] — 2026-06-05
 
 > **V13-COVERAGE EXPANSION** — branch coverage across 7 cards/modules: cache IDB, weather, calendar, stocks, hebrew-cal, bg-images, diag-overlay · animationend listener + buildMiniText empty title · card-registry countdown+video-news+render fn · coverage ratchet maintained 89/81/89/90 · **4802 tests / 154 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
