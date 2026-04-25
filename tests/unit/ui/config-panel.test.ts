@@ -1426,3 +1426,92 @@ describe("Config Panel — network-mode selector (Sprint 58)", () => {
     expect(localStorage.getItem("dash_network_mode")).toBeNull();
   });
 });
+
+// ── Sprint 82: weatherUsTravelMode load/save paths (cfg-weather-us-travel) ───
+
+describe("Config Panel — weatherUsTravelMode populateForm (Sprint 82)", () => {
+  function buildTravelDOM(): void {
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <div id="config-panel">
+          <div class="cfg-tabs">
+            <button class="cfg-tab active" data-tab="feeds">Feeds</button>
+          </div>
+          <div class="cfg-section active" data-tab="feeds">
+            <select id="cfg-weather-us-travel">
+              <option value="on">On</option>
+              <option value="off" selected>Off</option>
+            </select>
+          </div>
+          <input id="cfg-family-name" type="text" />
+          <button id="cfg-save-btn">Save</button>
+          <button id="cfg-close-btn">Close</button>
+        </div>
+      </div>
+      <button id="cfg-gear-btn">⚙️</button>
+    `;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it("populateForm sets cfg-weather-us-travel to 'on' when weatherUsTravelMode=true", async () => {
+    buildTravelDOM();
+    localStorage.setItem("dash_v2_config", JSON.stringify({ weatherUsTravelMode: true }));
+    const mod = await freshCfg();
+    mod.openConfigPanel();
+    const sel = document.getElementById("cfg-weather-us-travel") as HTMLSelectElement | null;
+    expect(sel?.value).toBe("on");
+  });
+
+  it("populateForm sets cfg-weather-us-travel to 'off' when weatherUsTravelMode=false", async () => {
+    buildTravelDOM();
+    localStorage.setItem("dash_v2_config", JSON.stringify({ weatherUsTravelMode: false }));
+    const mod = await freshCfg();
+    mod.openConfigPanel();
+    const sel = document.getElementById("cfg-weather-us-travel") as HTMLSelectElement | null;
+    expect(sel?.value).toBe("off");
+  });
+
+  it("collectForm persists weatherUsTravelMode=true when select value is 'on'", async () => {
+    buildTravelDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const sel = document.getElementById("cfg-weather-us-travel") as HTMLSelectElement | null;
+    if (sel) sel.value = "on";
+    document.getElementById("cfg-save-btn")!.click();
+    const stored = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    expect(stored.weatherUsTravelMode).toBe(true);
+  });
+
+  it("collectForm persists weatherUsTravelMode=false when select value is 'off'", async () => {
+    buildTravelDOM();
+    const mod = await freshCfg();
+    mod.initConfigPanel();
+    const sel = document.getElementById("cfg-weather-us-travel") as HTMLSelectElement | null;
+    if (sel) sel.value = "off";
+    document.getElementById("cfg-save-btn")!.click();
+    const stored = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    expect(stored.weatherUsTravelMode).toBe(false);
+  });
+
+  it("does not throw when cfg-weather-us-travel element is absent (null guard)", async () => {
+    // DOM without cfg-weather-us-travel element
+    document.body.innerHTML = `
+      <div id="config-overlay">
+        <div id="config-panel">
+          <input id="cfg-family-name" type="text" />
+          <button id="cfg-save-btn">Save</button>
+          <button id="cfg-close-btn">Close</button>
+        </div>
+      </div>
+      <button id="cfg-gear-btn">⚙️</button>
+    `;
+    const mod = await freshCfg();
+    expect(() => mod.initConfigPanel()).not.toThrow();
+    expect(() => mod.openConfigPanel()).not.toThrow();
+  });
+});
