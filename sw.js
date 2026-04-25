@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v13.5.0
+/* FamilyDashBoard ServiceWorker — v13.6.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v13.5.0: icalendar RFC-5545 fuzz 138→157 · tasks monthly recurrence depth · MCP matrix GitKraken+Azure rows · calendar weekday-flake fix · +33 tests (Sprints 61-63)
+ * v13.6.0: coverage ratchet (moon-phase+GPU) · LHCI perf ≥0.97 · NWS US-travel mode · @vitest/browser scaffold · motivation non-repeat window · icalendar fuzz 157→171 · Stryker→error-reporter+diag · V14-HARMONISE README (+41 tests, Sprints 66-73)
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

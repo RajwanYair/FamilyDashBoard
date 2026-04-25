@@ -2,7 +2,7 @@
 
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-25 · **Shipped baseline**: v13.5.0 — 4555 tests / 152 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 88.84 / 80.72 / 88.21 / 90.12
+> **Refresh date**: 2026-05-12 · **Shipped baseline**: v13.6.0 — 4596 tests / 152 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 88.81 / 80.65 / 88.21 / 90.06
 > **Purpose**: a first-principles re-open of every decision — including those shipping cleanly — against the 2026-Q2 web platform, then chart v13 → v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit. Completed v13 work is consolidated out; only forward work remains.
 
 ---

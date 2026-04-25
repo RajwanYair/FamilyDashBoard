@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.6.0] — 2026-05-12
+
+> **V13-RESIDUAL COVERAGE + TOOLING** — coverage ratchet (moon-phase + GPU) · LHCI perf ≥ 0.97 · NWS US-travel mode adapter · @vitest/browser scaffold · motivation non-repeat window (8-quote rolling dedup) · icalendar fuzz 157 → 171 · Stryker scope → error-reporter + diag · V14-HARMONISE tooling README · **4596 tests / 152 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs
+
+### Added
+
+- **NWS (api.weather.gov) US-travel mode** (`src/cards/weather/nws-adapter.ts`): opt-in adapter fetches NOAA `/points/{lat},{lon}` → `forecastHourly`, converts `NWSPeriod[]` to `WeatherResponse` (fToC, nwsPhraseToWmoCode), 10-min cache via `cGet`/`cSet`, falls back to Open-Meteo on error. Enabled by `weatherUsTravelMode: boolean` in `DashboardConfig` (config version 11→12) with settings UI in the weather card config accordion.
+- **Motivation non-repeat window** (`src/cards/motivation/motivation.ts`): `pickNextQuoteIndex(poolSize, usedIndices)` picks from indices NOT in the last 8 (`MOTIVATION_NO_REPEAT_WINDOW=8`); `markIndexUsed` persists rolling list to `localStorage`; category change clears the window. +9 unit tests (49→58).
+- **icalendar fuzz expansion** (`tests/unit/cards/calendar.test.ts`): +14 edge cases — VALARM DISPLAY/EMAIL, multiple VALARMs, TZID variants (Asia/Jerusalem, Europe/London), multi-byte UTF-8 SUMMARY (Hebrew+emoji, Arabic), DTEND without DTSTART, VEVENT without SUMMARY, RFC 5545 folded lines, RECURRENCE-ID with TZID, LOCATION with backslash-escaped commas + Hebrew, DURATION instead of DTEND, calendar with only VTIMEZONE. Total 157→171.
+- **@vitest/browser scaffold** (`vitest.browser.config.ts`, `tests/browser/maximize.spec.ts`): browser-mode config targeting playwright/chromium headless; seed spec documenting planned maximize/FLIP/drag assertions. `test:browser` script added to `package.json` (not wired to CI — requires `@vitest/browser` install at MyScripts level).
+- **V14-HARMONISE tooling README** (`tooling/README.md`): cross-project registry table with Status column (FamilyDashBoard ✅ v13.6, BudgetManager/CrossTideWeb/Wedding ⏳ needs audit), Adding a New Project guide, CI Integration Pattern, and V14-HARMONISE roadmap table with sprint-by-sprint tasks.
+
+### Changed
+
+- **LHCI perf threshold** (`.lighthouserc.json`): `categories:performance` minScore raised 0.95→0.97.
+- **Config version** (`src/types/config.ts`, `src/core/config.ts`): `CONFIG_VERSION` 11→12; v11→v12 migration defaults `weatherUsTravelMode` to `false`.
+- **Stryker mutation scope** (`scripts/stryker.config.mjs`): added `src/core/error-reporter.ts` (target ≥ 75%) and `src/core/diag.ts` (target ≥ 70%) to `mutate` array.
+
+### Tests
+
+- 4555 → 4596 unit tests (+41), 152 suites unchanged, 0 failures.
+- moon-phase all-8-bins + `getGPUInfo` branch coverage added (Sprint 66).
+
+---
+
 ## [13.5.0] — 2026-04-25
 
 > **V13-RESIDUAL DEPTH** — icalendar RFC-5545 fuzz 138 → 157 · tasks monthly recurrence depth · MCP matrix GitKraken + Azure rows · calendar weekday-flake fix · **4555 tests / 152 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs

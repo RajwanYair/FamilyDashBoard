@@ -431,13 +431,13 @@ describe("Status Bar — SW VERSION_ACTIVATED message", () => {
     // Simulate the SW postMessage event via serviceWorker.dispatchEvent
     if ("serviceWorker" in navigator && navigator.serviceWorker) {
       const fakeEvent = new MessageEvent("message", {
-        data: { type: "VERSION_ACTIVATED", version: "familydashboard-v13.5.0" },
+        data: { type: "VERSION_ACTIVATED", version: "familydashboard-v13.6.0" },
       });
       navigator.serviceWorker.dispatchEvent(fakeEvent);
       const chip = document.getElementById("sw-version");
       // In happy-dom, serviceWorker.addEventListener may fire synchronously
       if (chip && !chip.hidden) {
-        expect(chip.textContent).toContain("v13.5.0");
+        expect(chip.textContent).toContain("v13.6.0");
       } else {
         // SW API not fully implemented in happy-dom; just confirm no throw
         expect(true).toBe(true);
