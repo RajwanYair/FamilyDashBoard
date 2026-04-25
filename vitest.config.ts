@@ -56,7 +56,7 @@ export default defineConfig({
 
     coverage: {
       provider: "v8",
-      reporter: ["text", "lcov", "html"],
+      reporter: ["text", "lcov", "html", "json-summary"],
       reportsDirectory: join(tempBase, "coverage"),
       include: ["src/**/*.ts"],
       exclude: ["src/vite-env.d.ts", "src/**/*.d.ts"],
