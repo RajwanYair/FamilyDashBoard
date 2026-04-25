@@ -1499,4 +1499,228 @@ describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
     expect(() => parseICS(ics, 0)).not.toThrow();
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
+
+  // ── Sprint 71: icalendar fuzz 157 → 170+ ─────────────────────────────────
+
+  it("handles VALARM component inside VEVENT without crashing", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280301T090000Z",
+      "SUMMARY:Reminder Event",
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      "DESCRIPTION:Reminder",
+      "TRIGGER:-PT15M",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Reminder Event");
+  });
+
+  it("handles VALARM with EMAIL action inside VEVENT", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280401T140000Z",
+      "SUMMARY:Email Alarm Event",
+      "BEGIN:VALARM",
+      "ACTION:EMAIL",
+      "TRIGGER:-PT1H",
+      "SUMMARY:Reminder",
+      "DESCRIPTION:You have a meeting in 1 hour.",
+      "ATTENDEE:mailto:user@example.com",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Email Alarm Event");
+  });
+
+  it("handles multiple VALARM components in one VEVENT", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280501T100000Z",
+      "SUMMARY:Multi Alarm",
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      "TRIGGER:-PT30M",
+      "DESCRIPTION:30 min reminder",
+      "END:VALARM",
+      "BEGIN:VALARM",
+      "ACTION:DISPLAY",
+      "TRIGGER:-PT5M",
+      "DESCRIPTION:5 min reminder",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Multi Alarm");
+  });
+
+  it("handles TZID variations — DTSTART with Israel timezone ID", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART;TZID=Asia/Jerusalem:20280601T190000",
+      "SUMMARY:Jerusalem TZ Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    const events = parseICS(ics, 0);
+    expect(events.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("handles TZID variations — DTSTART with Europe/London", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART;TZID=Europe/London:20280701T120000",
+      "SUMMARY:London TZ Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles multi-byte UTF-8 in SUMMARY (Hebrew text)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280801T080000Z",
+      "SUMMARY:שבת שלום - 🕍 ביכנסת הגדולה",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toContain("שבת שלום");
+  });
+
+  it("handles multi-byte UTF-8 in SUMMARY (Arabic text)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20280901T100000Z",
+      "SUMMARY:اجتماع مهم جداً — عند الساعة العاشرة",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toContain("اجتماع");
+  });
+
+  it("handles DTEND without DTSTART (malformed — should not throw)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTEND:20281001T110000Z",
+      "SUMMARY:No Start Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles VEVENT with no SUMMARY field", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20281101T090000Z",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles folded (CRLF + whitespace) property lines", () => {
+    // RFC 5545 §3.1: long lines are folded with CRLF + single whitespace
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20281201T100000Z",
+      "SUMMARY:Long Summary That Is Folded Acros\r\n s Multiple Lines In The ICS Feed",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles RECURRENCE-ID with TZID parameter", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290101T090000Z",
+      "SUMMARY:Base Recurring",
+      "RRULE:FREQ=WEEKLY",
+      "UID:sprint71-recurrence-tzid@test",
+      "END:VEVENT",
+      "BEGIN:VEVENT",
+      "DTSTART;TZID=America/New_York:20290108T040000",
+      "SUMMARY:Exception Instance",
+      "RECURRENCE-ID;TZID=America/New_York:20290108T040000",
+      "UID:sprint71-recurrence-tzid@test",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+  });
+
+  it("handles LOCATION property with special characters", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290201T120000Z",
+      "SUMMARY:Office Event",
+      "LOCATION:Room 301 / פינת עמלק & הרצל\\, תל אביב",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Office Event");
+  });
+
+  it("handles VEVENT with DURATION instead of DTEND", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20290301T080000Z",
+      "DURATION:PT2H",
+      "SUMMARY:Duration Event",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    expect(events[0]!.summary).toBe("Duration Event");
+  });
+
+  it("handles calendar with only VTIMEZONE components (no VEVENT)", () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VTIMEZONE",
+      "TZID:America/New_York",
+      "BEGIN:STANDARD",
+      "DTSTART:19671029T020000",
+      "TZOFFSETFROM:-0400",
+      "TZOFFSETTO:-0500",
+      "END:STANDARD",
+      "END:VTIMEZONE",
+      "END:VCALENDAR",
+    ].join("\n");
+    expect(() => parseICS(ics, 0)).not.toThrow();
+    expect(parseICS(ics, 0)).toHaveLength(0);
+  });
 });
