@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 /**
  * check-sw-version.mjs — Sprint 1, Item 5 (v7.4)
  *

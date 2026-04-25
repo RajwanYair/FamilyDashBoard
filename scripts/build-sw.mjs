@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Stream SW.4 — Compile sw.ts → dist/sw.js using TypeScript's transpileModule.
  *

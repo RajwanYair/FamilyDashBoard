@@ -44,6 +44,8 @@ jobs:
         run: npx tsc --project tsconfig.sw.json --noEmit
       - name: Worker typecheck
         run: npx tsc --project worker/tsconfig.json --noEmit
+      - name: Scripts typecheck (@ts-check opt-in)
+        run: npx tsc --project tsconfig.scripts.json --noEmit
 
   lint:
     name: ESLint + Markdown

@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * generate-precache.mjs — Stream SW.1
  *

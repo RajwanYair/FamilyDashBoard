@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 /**
  * install-git-hooks.mjs — Sprint 56
  *

@@ -1,0 +1,14 @@
+{
+    "extends": "./tooling/tsconfig/base-typescript.json",
+    "compilerOptions": {
+        "lib": ["ES2022"],
+        "allowJs": true,
+        "checkJs": false,
+        "noEmit": true,
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "types": ["node"]
+    },
+    "include": ["scripts/**/*.mjs"],
+    "exclude": ["node_modules", "dist", "scripts/git-hooks/**"]
+}

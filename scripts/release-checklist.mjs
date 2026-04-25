@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 /**
  * release-checklist.mjs — V13-OPS
  *
