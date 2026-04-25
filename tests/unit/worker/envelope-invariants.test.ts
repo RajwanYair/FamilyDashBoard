@@ -200,11 +200,12 @@ describe("workerEnvelope — E11: stale field is an exact identity round-trip", 
 // ── E12: null scalar data round-trips ────────────────────────────────────────
 
 describe("workerEnvelope — E12: null and primitive scalar data round-trips", () => {
+  // JSON does not preserve -0 (JSON.stringify(-0) === "0"), so exclude it.
   const primitiveArb = fc.oneof(
     fc.constant(null),
     fc.boolean(),
     fc.integer(),
-    fc.float({ noNaN: true }),
+    fc.float({ noNaN: true, noDefaultInfinity: true }).filter((n) => !Object.is(n, -0)),
     fc.string(),
   );
 
@@ -275,6 +276,129 @@ describe("workerEnvelope — E16: ttl=0 produces max-age=0 in Cache-Control", ()
       fc.property(jsonValue, providerArb, fc.boolean(), (data, provider, stale) => {
         const res = workerEnvelope(data, provider, stale, 0);
         expect(res.headers.get("Cache-Control")).toBe("public, max-age=0");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E17: Security — X-Frame-Options is always "DENY" (Sprint 76) ─────────────
+
+describe("workerEnvelope — E17: X-Frame-Options is always 'DENY'", () => {
+  it("X-Frame-Options header is 'DENY' for any input", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), ttlArb, (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        expect(res.headers.get("X-Frame-Options")).toBe("DENY");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E18: Security — Referrer-Policy is always "strict-origin-when-cross-origin"
+
+describe("workerEnvelope — E18: Referrer-Policy is always strict", () => {
+  it("Referrer-Policy is 'strict-origin-when-cross-origin' for any input", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), ttlArb, (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        expect(res.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E19: Security — Permissions-Policy denies geo/mic/cam ────────────────────
+
+describe("workerEnvelope — E19: Permissions-Policy denies sensitive APIs", () => {
+  it("Permissions-Policy includes geolocation=() microphone=() camera=()", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), ttlArb, (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        const pp = res.headers.get("Permissions-Policy") ?? "";
+        expect(pp).toContain("geolocation=()");
+        expect(pp).toContain("microphone=()");
+        expect(pp).toContain("camera=()");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E20: Security — Cross-Origin-Resource-Policy is "cross-origin" ────────────
+
+describe("workerEnvelope — E20: Cross-Origin-Resource-Policy is 'cross-origin'", () => {
+  it("Cross-Origin-Resource-Policy header is 'cross-origin' for any input", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), ttlArb, (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        expect(res.headers.get("Cross-Origin-Resource-Policy")).toBe("cross-origin");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E21: timestamp monotonicity — body.timestamp ≤ Date.now() ────────────────
+
+describe("workerEnvelope — E21: timestamp is always ≤ current time", () => {
+  it("body.timestamp is a finite positive integer not in the future", async () => {
+    await fc.assert(
+      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
+        const before = Date.now();
+        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+        const after = Date.now();
+        expect(body.timestamp).toBeGreaterThanOrEqual(before);
+        expect(body.timestamp).toBeLessThanOrEqual(after);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── E22: large TTL — max-age reflects exact value ────────────────────────────
+
+describe("workerEnvelope — E22: Cache-Control max-age reflects any positive TTL", () => {
+  it("Cache-Control is 'public, max-age=<ttl>' for any ttl > 0", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), fc.integer({ min: 1, max: 86400 }), (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        expect(res.headers.get("Cache-Control")).toBe(`public, max-age=${ttl}`);
+      }),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// ── E23: provider exact identity — whitespace preserved ───────────────────────
+
+describe("workerEnvelope — E23: provider string exact identity (no trimming)", () => {
+  it("provider round-trips exactly including leading/trailing whitespace", async () => {
+    const whitespaceProviderArb = fc.string({ minLength: 1, maxLength: 40 });
+    await fc.assert(
+      fc.asyncProperty(jsonValue, whitespaceProviderArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
+        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+        expect(body.provider).toBe(provider);
+      }),
+      { numRuns: 80 },
+    );
+  });
+});
+
+// ── E24: deeply nested JSON data round-trips without loss ─────────────────────
+
+describe("workerEnvelope — E24: deeply nested object data survives JSON round-trip", () => {
+  // Use jsonValue (JSON-safe) instead of fc.object() which can emit undefined values.
+  // JSON converts undefined array entries to null — use only JSON-safe values here.
+  const deepJsonArb = fc.jsonValue({ depthSize: "medium" });
+
+  it("deeply nested JSON-safe data is preserved after JSON serialisation", async () => {
+    await fc.assert(
+      fc.asyncProperty(deepJsonArb, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
+        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+        expect(body.data).toEqual(data);
       }),
       { numRuns: 50 },
     );
