@@ -1,7 +1,7 @@
-/* FamilyDashBoard ServiceWorker — v13.4.0
+/* FamilyDashBoard ServiceWorker — v13.5.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
- * v13.4.0: SimHash v2 precision gate · per-card bundle-delta CI · network-mode settings UI · coverage ratchet 88/80/88/90 · +176 tests (Sprints 53-59)
+ * v13.5.0: icalendar RFC-5545 fuzz 138→157 · tasks monthly recurrence depth · MCP matrix GitKraken+Azure rows · calendar weekday-flake fix · +33 tests (Sprints 61-63)
  * See CHANGELOG.md for full version history. */
 
 const CACHE_NAME = "familydashboard-v__APP_VERSION__";

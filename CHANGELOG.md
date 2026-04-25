@@ -5,6 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.5.0] — 2026-04-25
+
+> **V13-RESIDUAL DEPTH** — icalendar RFC-5545 fuzz 138 → 157 · tasks monthly recurrence depth · MCP matrix GitKraken + Azure rows · calendar weekday-flake fix · **4555 tests / 152 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs
+
+### Added
+
+- **icalendar RFC-5545 fuzz expansion** (`tests/unit/cards/calendar.test.ts`): +19 cases covering RECURRENCE-ID, multi-value EXDATE, ORGANIZER, ATTENDEE, STATUS:CANCELLED, PRIORITY+TRANSP, mixed UTC+TZID feeds, LAST-MODIFIED+CREATED, SEQUENCE, RELATED-TO, GEO, VFREEBUSY, VTODO, PRODID-only, CLASS:PRIVATE, zero-length VCALENDAR, plus 3 `calDaysUntilLabel` extra cases — total 138 → 157.
+- **Tasks monthly recurrence depth** (`tests/unit/cards/tasks.test.ts`): +14 cases covering `recurrenceResetKey` monthly edge cases (zero-pad, Dec/Jan boundary, same-month dedupe), `checkRecurringReset` cross-month behavior (clears on new month, preserves in same month, respects reset hour, updates LS key, handles missing first-time key), plus 3 recurrence-badge tests for yearly/monthly classes — total 112 → 126.
+- **MCP server matrix rows** (`.github/copilot/MCP_SERVERS.md`): GitKraken / GitLens (cross-project worktree, branch, PR review) and Azure (Cloudflare worker deployment surface) added as Optional / Conditional rows.
+
+### Fixed
+
+- **Calendar test weekday flake** (`tests/unit/cards/calendar.test.ts`): "Weekly Tiled View" and "countdown + header count" describes now pin `vi.setSystemTime(new Date("2026-06-17T12:00:00"))` (Wednesday) so "tomorrow" stays inside the displayed Sunday-Saturday grid regardless of real-world weekday. No event-count change.
+
+### Tests
+
+- 4522 → 4555 unit tests (+33), 152 suites unchanged, 0 failures.
+
+---
+
 ## [13.4.0] — 2026-04-24
 
 > **V13-POLISH sprint** — SimHash v2 precision gate · per-card bundle-delta CI · worker-client regen hash check · network-mode settings UI · coverage ratchet 85→88/79→80/85→88/86→90 · icalendar RFC-5545 fuzz 79→138 · tasks yearly recurrence · Windows coverage ENOENT fix · **4522 tests / 152 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs
