@@ -177,7 +177,7 @@
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(*),
     ::view-transition-new(*) {
-      animation: none !important; /* stylelint-disable-line declaration-no-important */
+      animation: none !important;
     }
   }
 }

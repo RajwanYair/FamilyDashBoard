@@ -1,10 +1,12 @@
 # ADR-021: TypeScript-Go (tsgo) as Second CI Typecheck
 
 **Date:** 2026-04-23
-**Status:** Accepted
+**Status:** Withdrawn (v13.8.2 — production-ready cleanup)
 **Deciders:** Project maintainer
 **Supersedes:** Nothing — additive
 **Context:** V12-MODERNISE-1
+
+> **Withdrawn 2026-04-26 (v13.8.2):** The `typecheck-tsgo` CI job was removed because it was running with `continue-on-error: true` (purely informational). The production-ready posture forbids non-blocking CI stages. The canonical `tsc --noEmit` gate is the single source of truth. tsgo will be re-evaluated only when (a) it ships ≥ 1.0, and (b) it can replace `tsc` outright as a blocking gate.
 
 ---
 

@@ -1,8 +1,6 @@
-<!-- markdownlint-disable MD013 MD033 MD024 MD036 -->
-
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-26 · **Shipped baseline**: v13.8.1 — 4802 tests / 154 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 89.35 / 81.84 / 89.02 / 90.51
+> **Refresh date**: 2026-04-26 · **Shipped baseline**: v13.8.2 — 4802 tests / 154 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 89.35 / 81.84 / 89.02 / 90.51
 > **Purpose**: a first-principles re-open of every decision — including those shipping cleanly — against the 2026-Q2 web platform, then chart v13 → v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit. Completed v13 work is consolidated out; only forward work remains.
 
 ---
@@ -229,13 +227,13 @@ Each stream: deliverables · ADR candidates · exit criteria · gate triggers. C
 
 ### 3.3 V14-TC39 — Platform primitives *(gated, v14.0)*
 
-**Triggers**
+#### Triggers
 
 - Signals: TC39 Stage 3 + polyfill < 1.5 KB + concrete card benefit.
 - Temporal: TC39 Stage 3 + polyfill < 10 KB gzip.
 - Shared Element Transitions L3 (cross-doc): Chrome + Safari both ship.
 
-**Deliverables (if triggers fire)**
+#### Deliverables (if triggers fire)
 
 - [ ] `state.ts` → Signals (incremental, card-at-a-time).
 - [ ] hebrew-cal + calendar date arithmetic → Temporal.

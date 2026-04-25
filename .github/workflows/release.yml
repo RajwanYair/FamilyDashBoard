@@ -95,8 +95,8 @@ jobs:
       - name: Generate checksums
         run: |
           sha256sum dist.zip > dist.zip.sha256
-          sha256sum sw.js >> dist.zip.sha256 || true
-          sha256sum icon.svg >> dist.zip.sha256 || true
+          sha256sum sw.js >> dist.zip.sha256
+          sha256sum icon.svg >> dist.zip.sha256
           cat dist.zip.sha256
 
       - name: Generate changelog

@@ -1,7 +1,5 @@
 # ADR-027 — SBOM Generation and Automated Dependency Updates
 
-<!-- markdownlint-disable MD013 -->
-
 | Field      | Value                                |
 | ---------- | ------------------------------------ |
 | Status     | Accepted                             |

@@ -5,6 +5,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.8.2] — 2026-04-26
+
+> **PRODUCTION-READY HARDENING** — removed all CI-suspended/disabled options. No `continue-on-error`, no `|| true` masking, no `skipLibCheck` in SW typecheck, no `stylelint-disable-line` in CSS, no `markdownlint-disable` in ROADMAP/ADR-027. All gates are now blocking. · **4802 tests / 154 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 stylelint · 0 suppressions
+
+### Removed (suspended/disabled options eliminated)
+
+- `.github/workflows/ci.yml`: removed `typecheck-tsgo` job (was `continue-on-error: true` — informational only). Canonical `tsc --noEmit` is the single source of truth.
+- `.github/workflows/release.yml`: removed `|| true` from `sha256sum sw.js` and `sha256sum icon.svg` — checksum failures now fail the release.
+- `tsconfig.sw.json`: removed `skipLibCheck: true` — SW typecheck now validates lib types fully.
+- `src/styles/transitions.css`: removed `/* stylelint-disable-line declaration-no-important */` — the `!important` in `prefers-reduced-motion` block is allowed by base config; comment was redundant.
+- `ROADMAP.md`: removed `<!-- markdownlint-disable MD013 MD033 MD024 MD036 -->`; fixed root-cause MD036 violations (Triggers/Deliverables now `####` headings).
+- `docs/adr/ADR-027-sbom-renovate.md`: removed `<!-- markdownlint-disable MD013 -->`.
+
+### Changed
+
+- `docs/adr/ADR-021-tsgo-second-typecheck.md`: status → **Withdrawn** with rationale (no informational/non-blocking CI gates allowed in production posture).
+
+### Verified
+
+- `npx tsc --noEmit` → 0 errors
+- `npx tsc --project tsconfig.sw.json --noEmit` → 0 errors (without `skipLibCheck`)
+- `npx eslint src tests --max-warnings 0` → 0
+- `npm run lint:md` → 0 errors across 95 files
+- `npx stylelint "src/**/*.css"` → 0
+- `npx vitest run` → 4802 / 154 / 0
+- `npx vite build` → clean
+- `node scripts/check-sw-version.mjs` → v13.8.2
+
+---
+
 ## [13.8.1] — 2026-04-26
 
 > **PRODUCTION CLEANUP** — removed tracked junk file `coverage_output.txt`, removed stray `.mypy_cache/` and `test_output.txt` artifacts, verified all quality gates green · **4802 tests / 154 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 dead config · 0 dead doc
