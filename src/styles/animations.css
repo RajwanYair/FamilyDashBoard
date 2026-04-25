@@ -539,6 +539,74 @@ body.shabbat-mode #shabbat-mode-banner {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────
+ * Sprint 99 — Native @starting-style entrance for <dialog> overlays.
+ * Replaces JS-driven enter animations with pure-CSS state machine:
+ *   closed → open: opacity 0 + scale(0.96) + translateY(8px) → 1 / 1 / 0
+ *   ::backdrop fades in via the same starting-style.
+ * Honoured automatically by .showModal() and .show() — no JS needed.
+ * Falls back to instant-show on browsers without @starting-style.
+ * ────────────────────────────────────────────────────────────────── */
+@supports (transition-behavior: allow-discrete) {
+  dialog.diag-overlay,
+  #help-overlay,
+  #card-settings-dialog,
+  #tour-overlay,
+  dialog#config-overlay {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition:
+      opacity 0.18s ease,
+      transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+      overlay 0.22s allow-discrete,
+      display 0.22s allow-discrete;
+  }
+  dialog.diag-overlay:not([open]),
+  #help-overlay:not([open]),
+  #card-settings-dialog:not([open]),
+  #tour-overlay:not([open]),
+  dialog#config-overlay:not([open]) {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  @starting-style {
+    dialog.diag-overlay[open],
+    #help-overlay[open],
+    #card-settings-dialog[open],
+    #tour-overlay[open],
+    dialog#config-overlay[open] {
+      opacity: 0;
+      transform: scale(0.96) translateY(8px);
+    }
+  }
+  dialog.diag-overlay::backdrop,
+  #help-overlay::backdrop,
+  #card-settings-dialog::backdrop,
+  #tour-overlay::backdrop {
+    transition: background-color 0.18s ease;
+  }
+  @starting-style {
+    dialog.diag-overlay[open]::backdrop,
+    #help-overlay[open]::backdrop,
+    #card-settings-dialog[open]::backdrop,
+    #tour-overlay[open]::backdrop {
+      background-color: transparent;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @supports (transition-behavior: allow-discrete) {
+    dialog.diag-overlay,
+    #help-overlay,
+    #card-settings-dialog,
+    #tour-overlay,
+    dialog#config-overlay {
+      transition: none;
+    }
+  }
+}
+
 /* ── Enhanced card entrance stagger ── */
 .grid-col-left .card:nth-child(1) {
   animation-name: cardSlideRight;
