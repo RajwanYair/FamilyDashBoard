@@ -2,7 +2,7 @@
 
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-05-12 · **Shipped baseline**: v13.6.0 — 4596 tests / 152 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 88.81 / 80.65 / 88.21 / 90.06
+> **Refresh date**: 2026-05-26 · **Shipped baseline**: v13.7.0 — 4736 tests / 154 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 88.95 / 81.01 / 88.56 / 90.18
 > **Purpose**: a first-principles re-open of every decision — including those shipping cleanly — against the 2026-Q2 web platform, then chart v13 → v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit. Completed v13 work is consolidated out; only forward work remains.
 
 ---
@@ -283,28 +283,27 @@ Hebrew-cal 29 Elul pre-warm · scrollend/animLevel coverage · handleWeather NWS
 
 SimHash v2 precision gate · per-card bundle delta CI · worker-client hash check · network-mode UI · coverage ratchet 88/80/88/90 · icalendar fuzz 79→138 · tasks yearly recurrence. 4522 tests / 152 suites / 0 failures.
 
-### 4.3 v13.5 — *Residual card depth + coverage* (target 2026-Q3)
+### 4.3 v13.5 — *Residual card depth + coverage* **(shipped 2026-05-12)**
 
-Ships remaining V13-POLISH §3.2:
+icalendar RFC-5545 fuzz 138→157 · tasks monthly recurrence depth · MCP matrix GitKraken+Azure · calendar weekday-flake fix. 4555 tests / 152 suites / 0 failures.
 
-- Coverage branches 80 → 82.
-- icalendar fuzz 138 → 150+.
-- Tasks monthly recurrence.
-- LHCI perf ≥ 97.
-- `@vitest/browser` component tests for maximise-FLIP / layout-drag.
-- Opt-in `api.weather.gov` US-travel mode.
+### 4.4 v13.6 — *NWS adapter + motivation non-repeat + LHCI ratchet* **(shipped 2026-05-12)**
 
-**Gate**: 0 flaky on main for 3 releases · coverage ≥ 90/82/89/91 · no ESLint regressions.
+NWS US-travel mode adapter · motivation non-repeat window (8-quote rolling dedup) · icalendar fuzz 157→171 · @vitest/browser scaffold · LHCI perf ≥ 0.97 · Stryker scope → error-reporter+diag. 4596 tests / 152 suites / 0 failures. coverage 88.81/80.65/88.21/90.06.
 
-### 4.4 v13.6 — *Continuity (gated)* (target 2027-Q1 if triggered)
+### 4.5 v13.7 — *Coverage ratchet + test depth* **(shipped 2026-05-26)**
+
+icalendar fuzz 171→204 · NWS travel-mode tests · system-info encodeConnType · SimHash property expansion · NWS-normalize properties · config-panel weatherUsTravelMode · addQuickChore + countdown edge cases · motivation/diag-overlay/theme/config branch coverage · coverage ratchet 89/81/89/90. 4736 tests / 154 suites / 0 failures. coverage 88.95/81.01/88.56/90.18.
+
+### 4.6 v13.8 — *Continuity (gated)* (target 2027-Q1 if triggered)
 
 Ships V13-CONTINUITY §3.1 — WebRTC mirror, ADR-036. Only if 3+ user requests.
 
-### 4.5 v14.0 — *TC39 primitives (gated)* (target 2027-Q1/Q2)
+### 4.7 v14.0 — *TC39 primitives (gated)* (target 2027-Q1/Q2)
 
 Ships V14-TC39 §3.3. Only if triggers fire. Annual vendor-neutrality drill (ADR-031) first run.
 
-### 4.6 v14.1 — *Mono-repo reference* (target 2027-Q2)
+### 4.8 v14.1 — *Mono-repo reference* (target 2027-Q2)
 
 Ships V14-HARMONISE §3.4. Hard gate: all three sibling repos green under shared presets.
 
