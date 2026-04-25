@@ -18,6 +18,10 @@ import {
   loadMotivation,
   fetchAiMotivationQuote,
   _resetMotivationForTest,
+  pickNextQuoteIndex,
+  getUsedIndices,
+  markIndexUsed,
+  MOTIVATION_NO_REPEAT_WINDOW,
 } from "@/cards/motivation/motivation";
 
 describe("Motivation — MOTIVATIONS array", () => {
@@ -637,3 +641,76 @@ describe("Motivation — fetchAiMotivationQuote", () => {
     expect(field!.defaultValue).toBe(false);
   });
 });
+
+// ── Sprint 70: Non-repeat window ─────────────────────────────────────────────
+describe("Motivation — non-repeat window (Sprint 70)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("MOTIVATION_NO_REPEAT_WINDOW is at least 5", () => {
+    expect(MOTIVATION_NO_REPEAT_WINDOW).toBeGreaterThanOrEqual(5);
+  });
+
+  it("getUsedIndices returns [] when localStorage is empty", () => {
+    expect(getUsedIndices()).toEqual([]);
+  });
+
+  it("markIndexUsed stores an index and getUsedIndices retrieves it", () => {
+    markIndexUsed(3, 10);
+    expect(getUsedIndices()).toContain(3);
+  });
+
+  it("markIndexUsed trims to the window size", () => {
+    // Mark MOTIVATION_NO_REPEAT_WINDOW + 2 indices
+    for (let i = 0; i < MOTIVATION_NO_REPEAT_WINDOW + 2; i++) {
+      markIndexUsed(i, 20);
+    }
+    const used = getUsedIndices();
+    expect(used.length).toBeLessThanOrEqual(MOTIVATION_NO_REPEAT_WINDOW);
+  });
+
+  it("pickNextQuoteIndex returns 0 for pool size 1", () => {
+    expect(pickNextQuoteIndex(1, [])).toBe(0);
+    expect(pickNextQuoteIndex(1, [0, 0, 0])).toBe(0);
+  });
+
+  it("pickNextQuoteIndex avoids recently used indices (large pool)", () => {
+    // Mark indices 0..7 as used
+    const used = [0, 1, 2, 3, 4, 5, 6, 7];
+    for (let i = 0; i < 50; i++) {
+      const idx = pickNextQuoteIndex(20, used);
+      expect(idx).toBeGreaterThanOrEqual(MOTIVATION_NO_REPEAT_WINDOW);
+    }
+  });
+
+  it("pickNextQuoteIndex falls back to any index when pool is tiny", () => {
+    // Pool of 2, both 'used' — must still return a valid index
+    const used = [0, 1];
+    const idx = pickNextQuoteIndex(2, used);
+    expect(idx === 0 || idx === 1).toBe(true);
+  });
+
+  it("renderMotivation updates used-indices in localStorage", () => {
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    initMotivationCard();
+    _resetMotivationForTest();
+    localStorage.clear();
+    renderMotivation();
+    expect(getUsedIndices().length).toBeGreaterThan(0);
+    document.body.innerHTML = "";
+  });
+
+  it("getCurrentQuote returns the quote at the current index", () => {
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+    initMotivationCard();
+    _resetMotivationForTest();
+    localStorage.clear();
+    renderMotivation();
+    const q = getCurrentQuote();
+    expect(q).not.toBeNull();
+    expect(typeof q!.text).toBe("string");
+    document.body.innerHTML = "";
+  });
+});
+

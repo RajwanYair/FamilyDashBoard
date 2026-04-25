@@ -56,6 +56,64 @@ let motiIdx = 0;
 let elText: HTMLElement | null = null;
 let elAuthor: HTMLElement | null = null;
 
+// ── Sprint 70: Non-repeat window ──────────────────────────────────────────────
+
+/** localStorage key for the rolling used-index list. */
+const LS_MOTI_USED = "moti-used-indices";
+
+/**
+ * Max number of recently shown quote indices to remember.
+ * For pools smaller than this, the effective window is pool.length - 1.
+ */
+export const MOTIVATION_NO_REPEAT_WINDOW = 8;
+
+/** Read the rolling used-indices list from localStorage. */
+export function getUsedIndices(): number[] {
+  try {
+    const raw = localStorage.getItem(LS_MOTI_USED);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return (parsed as unknown[]).filter((x): x is number => typeof x === "number");
+  } catch {
+    return [];
+  }
+}
+
+/** Append `idx` to the rolling used list, trimming to the window size. */
+export function markIndexUsed(idx: number, poolSize: number): void {
+  const used = getUsedIndices();
+  used.push(idx);
+  const maxWindow = Math.min(MOTIVATION_NO_REPEAT_WINDOW, Math.max(poolSize - 1, 1));
+  while (used.length > maxWindow) used.shift();
+  try {
+    localStorage.setItem(LS_MOTI_USED, JSON.stringify(used));
+  } catch {
+    // ignore localStorage quota errors
+  }
+}
+
+/**
+ * Pick the next quote index, skipping recently used ones.
+ * Exported for unit testing.
+ */
+export function pickNextQuoteIndex(poolSize: number, usedIndices: number[]): number {
+  if (poolSize <= 1) return 0;
+  const windowSize = Math.min(MOTIVATION_NO_REPEAT_WINDOW, poolSize - 1);
+  const recentUsed = usedIndices.slice(-windowSize);
+  const available: number[] = [];
+  for (let i = 0; i < poolSize; i++) {
+    if (!recentUsed.includes(i)) available.push(i);
+  }
+  if (available.length === 0) {
+    // All in window (tiny pool) — pick any index uniformly
+    return Math.floor(Math.random() * poolSize);
+  }
+  return available[Math.floor(Math.random() * available.length)]!;
+}
+
+// ── end Sprint 70 ────────────────────────────────────────────────────────────
+
 /** Sprint 23: Active category filter — null = show all categories. */
 let _activeCategory: MotivationCategory | null = null;
 
@@ -76,6 +134,8 @@ export function getQuotesByCategory(
 export function setMotivationCategory(category: MotivationCategory | null): void {
   _activeCategory = category;
   motiIdx = 0;
+  // Sprint 70: clear used-index window when category changes (new pool = fresh start)
+  try { localStorage.removeItem(LS_MOTI_USED); } catch { /* ignore */ }
   diagLog(`FDB-039b: [motivation] Category set to ${category ?? "all"}`);
   renderMotivation();
 }
@@ -105,8 +165,7 @@ export function setMotivationInterval(minutes: number): void {
 
 export function getCurrentQuote(): MotivationQuote | null {
   const pool = getQuotesByCategory(_activeCategory);
-  const lastIdx = (motiIdx - 1 + pool.length) % pool.length;
-  return pool[lastIdx] ?? null;
+  return pool[motiIdx] ?? null;
 }
 
 /**
@@ -130,7 +189,11 @@ function renderMotivationQuote(m: MotivationQuote): void {
 export function renderMotivation(): void {
   const pool = getQuotesByCategory(_activeCategory);
   if (!pool.length) return;
-  const m = pool[motiIdx++ % pool.length];
+  // Sprint 70: pick via non-repeat window instead of simple sequential index
+  const usedIndices = getUsedIndices();
+  motiIdx = pickNextQuoteIndex(pool.length, usedIndices);
+  markIndexUsed(motiIdx, pool.length);
+  const m = pool[motiIdx];
   if (!m) return;
   renderMotivationQuote(m);
   setSync("moti", "ok");
@@ -165,8 +228,11 @@ async function fetchMotivation(): Promise<MotivationQuote> {
     if (ai) return ai;
   }
   const pool = getQuotesByCategory(_activeCategory);
-  const m = pool[motiIdx++ % Math.max(pool.length, 1)];
-  return Promise.resolve(m ?? MOTIVATIONS[0]!);
+  const usedIndices = getUsedIndices();
+  const idx = pickNextQuoteIndex(pool.length, usedIndices);
+  markIndexUsed(idx, pool.length);
+  motiIdx = idx;
+  return Promise.resolve(pool[idx] ?? MOTIVATIONS[0]!);
 }
 
 /** Stream D2.4: Standard async card loader with visibility + lock lifecycle. */
