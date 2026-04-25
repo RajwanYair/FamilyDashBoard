@@ -154,3 +154,129 @@ describe("workerEnvelope — E8: Content-Type is application/json", () => {
     );
   });
 });
+
+// ── E9: CORS — Access-Control-Allow-Origin is always "*" ─────────────────────
+
+describe("workerEnvelope — E9: CORS Access-Control-Allow-Origin is always '*'", () => {
+  it("Access-Control-Allow-Origin is '*' for any input", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), ttlArb, (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        expect(res.headers.get("Access-Control-Allow-Origin")).toBe("*");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E10: Security — X-Content-Type-Options is always "nosniff" ───────────────
+
+describe("workerEnvelope — E10: X-Content-Type-Options is always 'nosniff'", () => {
+  it("X-Content-Type-Options is 'nosniff' for any input", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), ttlArb, (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E11: stale identity — body.stale strictly equals input stale ──────────────
+
+describe("workerEnvelope — E11: stale field is an exact identity round-trip", () => {
+  it("body.stale === stale passed in (true stays true, false stays false)", async () => {
+    await fc.assert(
+      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
+        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+        expect(body.stale).toBe(stale);
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E12: null scalar data round-trips ────────────────────────────────────────
+
+describe("workerEnvelope — E12: null and primitive scalar data round-trips", () => {
+  const primitiveArb = fc.oneof(
+    fc.constant(null),
+    fc.boolean(),
+    fc.integer(),
+    fc.float({ noNaN: true }),
+    fc.string(),
+  );
+
+  it("null/boolean/number/string data survives JSON round-trip", async () => {
+    await fc.assert(
+      fc.asyncProperty(primitiveArb, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
+        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+        expect(body.data).toEqual(data);
+      }),
+      { numRuns: 80 },
+    );
+  });
+});
+
+// ── E13: array data round-trips ──────────────────────────────────────────────
+
+describe("workerEnvelope — E13: array data round-trips through JSON", () => {
+  const arrayArb = fc.array(fc.oneof(fc.string(), fc.integer(), fc.boolean(), fc.constant(null)), {
+    maxLength: 20,
+  });
+
+  it("arrays survive JSON serialisation/deserialisation unchanged", async () => {
+    await fc.assert(
+      fc.asyncProperty(arrayArb, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
+        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+        expect(body.data).toEqual(data);
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E14: response body is always valid JSON (never throws) ────────────────────
+
+describe("workerEnvelope — E14: response body is always parseable JSON", () => {
+  it("JSON.parse on the response text never throws", async () => {
+    await fc.assert(
+      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        const text = await res.text();
+        expect(() => JSON.parse(text)).not.toThrow();
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E15: Cache-Control always contains "public" directive ─────────────────────
+
+describe("workerEnvelope — E15: Cache-Control always contains 'public' directive", () => {
+  it("Cache-Control includes 'public' for any ttl", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), ttlArb, (data, provider, stale, ttl) => {
+        const res = workerEnvelope(data, provider, stale, ttl);
+        const cc = res.headers.get("Cache-Control") ?? "";
+        expect(cc).toContain("public");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── E16: TTL boundary — ttl=0 produces max-age=0 in Cache-Control ─────────────
+
+describe("workerEnvelope — E16: ttl=0 produces max-age=0 in Cache-Control", () => {
+  it("Cache-Control is 'public, max-age=0' when ttl is 0", () => {
+    fc.assert(
+      fc.property(jsonValue, providerArb, fc.boolean(), (data, provider, stale) => {
+        const res = workerEnvelope(data, provider, stale, 0);
+        expect(res.headers.get("Cache-Control")).toBe("public, max-age=0");
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
