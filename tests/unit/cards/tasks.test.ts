@@ -25,6 +25,7 @@ import {
   taskPriorityIcon,
   recurrenceResetKey,
   checkRecurringReset,
+  addQuickChore,
 } from "@/cards/tasks/tasks";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
@@ -1569,5 +1570,53 @@ describe("checkRecurringReset — monthly cross-month", () => {
     expect(() => checkRecurringReset(item)).not.toThrow();
     // After first run, LS reset key should be set to current month
     expect(localStorage.getItem(`tasks-reset::${fp}`)).toBe("2026-06");
+  });
+});
+
+// ── Sprint 83: addQuickChore edge cases ───────────────────────────────────
+
+describe("Tasks — addQuickChore (Sprint 83)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("adds a chore to localStorage and renders", () => {
+    addQuickChore("דנה", "לשטוף כלים");
+    const stored = JSON.parse(localStorage.getItem("dash_chores") ?? "[]") as ChoreItem[];
+    expect(stored.some((c) => c.chore === "לשטוף כלים" && c.person === "דנה")).toBe(true);
+  });
+
+  it("trims whitespace from person and chore", () => {
+    addQuickChore("  דנה  ", "  כביסה  ");
+    const stored = JSON.parse(localStorage.getItem("dash_chores") ?? "[]") as ChoreItem[];
+    expect(stored.some((c) => c.person === "דנה" && c.chore === "כביסה")).toBe(true);
+  });
+
+  it("defaults person to 'משפחה' when person is empty string", () => {
+    addQuickChore("", "נקיון כללי");
+    const stored = JSON.parse(localStorage.getItem("dash_chores") ?? "[]") as ChoreItem[];
+    expect(stored.some((c) => c.person === "משפחה")).toBe(true);
+  });
+
+  it("appends to existing chores (does not overwrite)", () => {
+    const existing: ChoreItem[] = [{ person: "יאיר", chore: "אשפה" }];
+    localStorage.setItem("dash_chores", JSON.stringify(existing));
+    addQuickChore("מיכל", "קניות");
+    const stored = JSON.parse(localStorage.getItem("dash_chores") ?? "[]") as ChoreItem[];
+    expect(stored).toHaveLength(2);
+    expect(stored[0]!.chore).toBe("אשפה");
+    expect(stored[1]!.chore).toBe("קניות");
+  });
+
+  it("does not throw when tasks-list element is absent", () => {
+    document.body.innerHTML = "";
+    expect(() => addQuickChore("יאיר", "בדיקה")).not.toThrow();
   });
 });

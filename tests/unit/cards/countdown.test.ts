@@ -894,3 +894,49 @@ describe("Countdown — tick() primary progress bar", () => {
     expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");
   });
 });
+
+// ── Sprint 83: computeProgress edge cases ─────────────────────────────────
+
+describe("Countdown — computeProgress edge cases (Sprint 83)", () => {
+  it("clamps to 0 when elapsed is negative (start in the future)", () => {
+    const now = Date.now();
+    const start = now + 100_000; // start in future
+    const target = now + 1_000_000;
+    const result = computeProgress(start, target);
+    // start < target so not null, but elapsed (now - start) is negative → clamps to 0
+    expect(result).toBe(0);
+  });
+
+  it("clamps to 1 when elapsed exceeds total (event is past target)", () => {
+    const now = Date.now();
+    const start = now - 2_000_000;
+    const target = now - 100_000; // target in the past
+    const result = computeProgress(start, target);
+    // elapsed > total → progress should be 1 (100% complete, clamped)
+    expect(result).toBe(1);
+  });
+
+  it("returns exactly 0 when start === now", () => {
+    // freeze time
+    vi.useFakeTimers();
+    const now = new Date("2029-01-01T12:00:00").getTime();
+    vi.setSystemTime(now);
+    const target = now + 10_000_000;
+    const result = computeProgress(now, target);
+    expect(result).toBe(0);
+    vi.useRealTimers();
+  });
+});
+
+// ── Sprint 83: getDaysSince — future targets clamp to 0 ──────────────────
+
+describe("Countdown — getDaysSince future target clamp (Sprint 83)", () => {
+  it("returns 0 when targetMs is in the future", () => {
+    const future = Date.now() + 24 * 60 * 60 * 1000;
+    expect(getDaysSince(future)).toBe(0);
+  });
+
+  it("returns 0 when targetMs is exactly now", () => {
+    expect(getDaysSince(Date.now())).toBe(0);
+  });
+});
