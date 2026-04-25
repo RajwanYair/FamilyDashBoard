@@ -1,0 +1,206 @@
+/**
+ * tests/unit/core/signals.test.ts — Sprint 101
+ *
+ * Verifies the zero-dep Signal/Computed/Effect primitive in src/core/signals.ts.
+ */
+
+import { describe, it, expect, vi } from "vitest";
+import {
+  signal,
+  computed,
+  effect,
+  batch,
+  untrack,
+  isSignal,
+} from "@/core/signals";
+
+describe("signal()", () => {
+  it("returns the initial value", () => {
+    const s = signal(42);
+    expect(s.value).toBe(42);
+  });
+
+  it("updates the stored value when assigned", () => {
+    const s = signal("a");
+    s.value = "b";
+    expect(s.value).toBe("b");
+  });
+
+  it("does not notify when set to a value equal under Object.is", () => {
+    const s = signal(1);
+    const fn = vi.fn();
+    effect(() => {
+      void s.value;
+      fn();
+    });
+    expect(fn).toHaveBeenCalledTimes(1);
+    s.value = 1;
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("treats NaN as equal to NaN (Object.is)", () => {
+    const s = signal(Number.NaN);
+    const fn = vi.fn();
+    effect(() => {
+      void s.value;
+      fn();
+    });
+    s.value = Number.NaN;
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("peek() reads without registering a dependency", () => {
+    const s = signal(1);
+    const fn = vi.fn();
+    effect(() => {
+      void s.peek();
+      fn();
+    });
+    s.value = 2;
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("computed()", () => {
+  it("derives lazily from signal sources", () => {
+    const a = signal(2);
+    const b = signal(3);
+    const sum = computed(() => a.value + b.value);
+    expect(sum.value).toBe(5);
+    a.value = 10;
+    expect(sum.value).toBe(13);
+  });
+
+  it("caches the value until a dependency changes", () => {
+    const a = signal(1);
+    const fn = vi.fn(() => a.value * 2);
+    const c = computed(fn);
+    expect(c.value).toBe(2);
+    expect(c.value).toBe(2);
+    expect(fn).toHaveBeenCalledTimes(1);
+    a.value = 5;
+    expect(c.value).toBe(10);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it("supports nested computeds", () => {
+    const a = signal(1);
+    const double = computed(() => a.value * 2);
+    const quad = computed(() => double.value * 2);
+    expect(quad.value).toBe(4);
+    a.value = 3;
+    expect(quad.value).toBe(12);
+  });
+});
+
+describe("effect()", () => {
+  it("runs synchronously on creation", () => {
+    const fn = vi.fn();
+    effect(fn);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("re-runs when a tracked signal changes", () => {
+    const s = signal(0);
+    const fn = vi.fn(() => {
+      void s.value;
+    });
+    effect(fn);
+    s.value = 1;
+    s.value = 2;
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+
+  it("dispose() detaches from all dependencies", () => {
+    const s = signal(0);
+    const fn = vi.fn(() => {
+      void s.value;
+    });
+    const dispose = effect(fn);
+    dispose();
+    s.value = 99;
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("dispose() is idempotent", () => {
+    const s = signal(0);
+    const dispose = effect(() => {
+      void s.value;
+    });
+    dispose();
+    expect(() => dispose()).not.toThrow();
+  });
+});
+
+describe("batch()", () => {
+  it("collapses multiple writes into a single effect run", () => {
+    const a = signal(1);
+    const b = signal(2);
+    const fn = vi.fn(() => {
+      void a.value;
+      void b.value;
+    });
+    effect(fn);
+    batch(() => {
+      a.value = 10;
+      b.value = 20;
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it("returns the value produced by the inner function", () => {
+    expect(batch(() => 7)).toBe(7);
+  });
+
+  it("nested batches collapse to the outermost", () => {
+    const a = signal(0);
+    const fn = vi.fn(() => {
+      void a.value;
+    });
+    effect(fn);
+    batch(() => {
+      batch(() => {
+        a.value = 1;
+        a.value = 2;
+      });
+      a.value = 3;
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(a.value).toBe(3);
+  });
+});
+
+describe("untrack()", () => {
+  it("reads without registering a dependency", () => {
+    const a = signal(1);
+    const b = signal(2);
+    const fn = vi.fn(() => {
+      void a.value;
+      untrack(() => {
+        void b.value;
+      });
+    });
+    effect(fn);
+    b.value = 99;
+    expect(fn).toHaveBeenCalledTimes(1);
+    a.value = 5;
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("isSignal()", () => {
+  it("returns true for signal()", () => {
+    expect(isSignal(signal(0))).toBe(true);
+  });
+
+  it("returns true for computed()", () => {
+    expect(isSignal(computed(() => 1))).toBe(true);
+  });
+
+  it("returns false for plain values", () => {
+    expect(isSignal(0)).toBe(false);
+    expect(isSignal({ value: 1 })).toBe(false);
+    expect(isSignal(null)).toBe(false);
+    expect(isSignal(undefined)).toBe(false);
+  });
+});
