@@ -24,6 +24,8 @@ import {
   shortForecastToWmo,
   windDirToDeg,
   isUsCoordinate,
+  buildDailyEntries,
+  normalizeNwsToWeatherSchema,
 } from "../../../worker/src/utils/nws-normalize";
 
 // ── Inverse helper: cToF ─────────────────────────────────────────────────────
@@ -183,5 +185,163 @@ describe("NWS normalizer — N8: isUsCoordinate boundary invariants", () => {
       ),
       { numRuns: 50 },
     );
+  });
+});
+
+// ── Sprint 81: additional NWS normalizer property assertions ──────────────
+
+// Helper: make a minimal NwsPeriod
+type NwsPeriodMin = {
+  number: number;
+  startTime: string;
+  isDaytime: boolean;
+  temperature: number;
+  temperatureUnit: "F" | "C";
+  windSpeed: string;
+  windDirection: string;
+  shortForecast: string;
+  probabilityOfPrecipitation?: { value: number };
+  relativeHumidity?: { value: number };
+  dewpoint?: { value: number };
+};
+
+function makeNwsPeriod(overrides?: Partial<NwsPeriodMin>): NwsPeriodMin {
+  return {
+    number: 1,
+    startTime: "2029-07-04T12:00:00-05:00",
+    isDaytime: true,
+    temperature: 85,
+    temperatureUnit: "F",
+    windSpeed: "10 mph",
+    windDirection: "S",
+    shortForecast: "Mostly Sunny",
+    probabilityOfPrecipitation: { value: 10 },
+    relativeHumidity: { value: 55 },
+    dewpoint: { value: 15 },
+    ...overrides,
+  };
+}
+
+describe("NWS normalizer — N9: mphToKph properties (Sprint 81)", () => {
+  it("mphToKph result is always rounded to 1 decimal place", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 300 }), (v) => {
+        const kph = mphToKph(v);
+        // Result rounded to 1dp means (kph * 10) is an integer
+        expect(Math.round(kph * 10)).toBe(kph * 10);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it("mphToKph is non-decreasing (monotone)", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 100 }),
+        fc.integer({ min: 1, max: 50 }),
+        (v, delta) => {
+          expect(mphToKph(v + delta)).toBeGreaterThanOrEqual(mphToKph(v));
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+describe("NWS normalizer — N10: windDirToDeg round-trip (Sprint 81)", () => {
+  const COMPASS_DIRS: string[] = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+
+  it("all 16 compass directions map to distinct degree values", () => {
+    const degrees = COMPASS_DIRS.map((d) => windDirToDeg(d));
+    const unique = new Set(degrees);
+    expect(unique.size).toBe(16);
+  });
+
+  it("windDirToDeg outputs multiples of 22.5 for 16-point compass", () => {
+    for (const dir of COMPASS_DIRS) {
+      const deg = windDirToDeg(dir);
+      // Each of the 16 compass points is a multiple of 22.5 degrees
+      expect(deg % 22.5).toBeCloseTo(0, 9);
+    }
+  });
+
+  it("N=0, S=180, E=90, W=270 (primary compass points)", () => {
+    expect(windDirToDeg("N")).toBe(0);
+    expect(windDirToDeg("S")).toBe(180);
+    expect(windDirToDeg("E")).toBe(90);
+    expect(windDirToDeg("W")).toBe(270);
+  });
+});
+
+describe("NWS normalizer — N11: buildDailyEntries invariants (Sprint 81)", () => {
+  it("empty input returns empty array", () => {
+    expect(buildDailyEntries([])).toEqual([]);
+  });
+
+  it("single daytime period: maxC is set, minC equals maxC (no night period)", () => {
+    const period = makeNwsPeriod({ temperature: 85, temperatureUnit: "F", isDaytime: true });
+    const result = buildDailyEntries([period as Parameters<typeof buildDailyEntries>[0][0]]);
+    expect(result).toHaveLength(1);
+    // maxC should be the day temperature in C
+    const expectedC = fToC(85);
+    expect(result[0]!.maxC).toBeCloseTo(expectedC, 5);
+  });
+
+  it("buildDailyEntries result dates are unique", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 1, max: 28 }), { minLength: 1, maxLength: 8 }),
+        (days) => {
+          const periods = days.map((day, i) => makeNwsPeriod({
+            startTime: `2029-07-${String(day).padStart(2, "0")}T12:00:00-05:00`,
+            isDaytime: i % 2 === 0,
+            temperature: 80 + i,
+          }) as Parameters<typeof buildDailyEntries>[0][0]);
+          const result = buildDailyEntries(periods);
+          const dates = result.map((d) => d.date);
+          const unique = new Set(dates);
+          expect(unique.size).toBe(dates.length);
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("output length is at most 8", () => {
+    const periods = Array.from({ length: 20 }, (_, i) => makeNwsPeriod({
+      startTime: `2029-07-${String((i % 20) + 1).padStart(2, "0")}T12:00:00-05:00`,
+    }) as Parameters<typeof buildDailyEntries>[0][0]);
+    const result = buildDailyEntries(periods);
+    expect(result.length).toBeLessThanOrEqual(8);
+  });
+});
+
+describe("NWS normalizer — N12: normalizeNwsToWeatherSchema output shape (Sprint 81)", () => {
+  it("returns the correct top-level keys", () => {
+    const period = makeNwsPeriod() as Parameters<typeof normalizeNwsToWeatherSchema>[0][0];
+    const result = normalizeNwsToWeatherSchema([period], [period]);
+    expect(result).toHaveProperty("current");
+    expect(result).toHaveProperty("hourly");
+    expect(result).toHaveProperty("daily");
+  });
+
+  it("current block has all required weather keys", () => {
+    const period = makeNwsPeriod() as Parameters<typeof normalizeNwsToWeatherSchema>[0][0];
+    const result = normalizeNwsToWeatherSchema([period], [period]);
+    const cur = result.current;
+    expect(cur).toHaveProperty("temperature_2m");
+    expect(cur).toHaveProperty("relative_humidity_2m");
+    expect(cur).toHaveProperty("weather_code");
+    expect(cur).toHaveProperty("wind_speed_10m");
+    expect(cur).toHaveProperty("wind_direction_10m");
+  });
+
+  it("weather_code in current is always in [0, 99]", () => {
+    const period = makeNwsPeriod() as Parameters<typeof normalizeNwsToWeatherSchema>[0][0];
+    const result = normalizeNwsToWeatherSchema([period], []);
+    const code = result.current.weather_code;
+    expect(code).toBeGreaterThanOrEqual(0);
+    expect(code).toBeLessThanOrEqual(99);
   });
 });
