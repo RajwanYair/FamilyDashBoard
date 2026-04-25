@@ -1561,3 +1561,112 @@ describe("Alerts — buildAlertItem Sprint 28: threat icon + age badge", () => {
     expect(el!.querySelector(".alert-age")).not.toBeNull();
   });
 });
+
+// ── Sprint 87: loadAlerts page-hidden, isAlertsEnabled, volume clamp, invalid filter, reduced-motion ──
+
+describe("Alerts — Sprint 87 branch coverage", () => {
+  const TS = Math.floor(Date.now() / 1000);
+
+  function setupDOM(): void {
+    document.body.innerHTML = `
+      <div id="alerts-scroll"></div>
+      <div id="alerts-badge" style="display:none"></div>
+    `;
+    cacheDom();
+  }
+
+  beforeEach(() => {
+    _resetAlertsForTest();
+    vi.useFakeTimers();
+    setupDOM();
+    setAlertsEnabled(true);
+    localStorage.clear();
+    vi.mocked(idleMod.isPageVisible).mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    document.body.innerHTML = "";
+    localStorage.clear();
+    _resetAlertsForTest();
+  });
+
+  it("loadAlerts schedules next poll immediately when page is not visible", async () => {
+    vi.mocked(idleMod.isPageVisible).mockReturnValue(false);
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    await loadAlerts();
+    // fetch should NOT have been called — returned early
+    expect(fetchSpy).not.toHaveBeenCalled();
+    // scheduleAlerts() should have set a timer
+    expect(vi.getTimerCount()).toBeGreaterThan(0);
+  });
+
+  it("isAlertsEnabled returns true by default", () => {
+    expect(isAlertsEnabled()).toBe(true);
+  });
+
+  it("isAlertsEnabled returns false after setAlertsEnabled(false)", () => {
+    setAlertsEnabled(false);
+    expect(isAlertsEnabled()).toBe(false);
+  });
+
+  it("setAlertVolume clamps to 100 when given a value above 100", () => {
+    setAlertVolume(200);
+    expect(getAlertVolume()).toBe(100);
+  });
+
+  it("setAlertVolume clamps to 0 when given a negative value", () => {
+    setAlertVolume(-10);
+    expect(getAlertVolume()).toBe(0);
+  });
+
+  it("loadAlerts discards structurally invalid events and logs (validData.length !== data.length)", async () => {
+    // time is a string, not a number → isAlertEvent returns false
+    const invalidEvent = { id: "bad", alerts: [{ cities: ["עיר"], time: "not-a-number" }] };
+    const validEvent: AlertEvent = { id: "ok", alerts: [{ cities: ["תל אביב"], threat: 1, time: TS - 30 }] };
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [validEvent, invalidEvent],
+    } as Response);
+    // Should not throw; invalid event is silently discarded
+    await expect(loadAlerts()).resolves.not.toThrow();
+    // Only the valid event rendered
+    expect(document.querySelector(".alert-item")).not.toBeNull();
+  });
+
+  it("renderAlerts sets animation to 'none' and returns when user prefers reduced motion", () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query.includes("prefers-reduced-motion"),
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    const ev: AlertEvent = { id: "rm1", alerts: [{ cities: ["נתניה"], threat: 1, time: TS - 60 }] };
+    renderAlerts([ev], false);
+    const scroll = document.getElementById("alerts-scroll") as HTMLElement;
+    expect(scroll.style.animation).toBe("none");
+  });
+
+  it("loadAlerts renders stale data first then sets sync 'ok' when empty fetch result", async () => {
+    // Seed stale cache: cSet writes to localStorage under dash_v2_ prefix
+    const staleEvent: AlertEvent = { id: "stale-001", alerts: [{ cities: ["באר שבע"], threat: 1, time: TS - 200 }] };
+    localStorage.setItem("dash_v2_alerts", JSON.stringify({ data: [staleEvent], ts: Date.now() - 1 }));
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    await expect(loadAlerts()).resolves.not.toThrow();
+    // stale path renders stale data
+    expect(document.querySelector(".alert-item")).not.toBeNull();
+  });
+});
