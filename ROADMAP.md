@@ -2,7 +2,7 @@
 
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-05-26 · **Shipped baseline**: v13.7.0 — 4736 tests / 154 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 88.95 / 81.01 / 88.56 / 90.18
+> **Refresh date**: 2026-06-05 · **Shipped baseline**: v13.8.0 — 4802 tests / 154 suites / 0 failures · 0 ESLint errors · 0 warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint issues · 36 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 11 worker routes · 4-tier offline (mem → LS → IDB → SW) · coverage 89.35 / 81.84 / 89.02 / 90.51
 > **Purpose**: a first-principles re-open of every decision — including those shipping cleanly — against the 2026-Q2 web platform, then chart v13 → v15. Nothing is grandfathered. Decisions survive only when they still justify themselves on merit. Completed v13 work is consolidated out; only forward work remains.
 
 ---
@@ -295,7 +295,11 @@ NWS US-travel mode adapter · motivation non-repeat window (8-quote rolling dedu
 
 icalendar fuzz 171→204 · NWS travel-mode tests · system-info encodeConnType · SimHash property expansion · NWS-normalize properties · config-panel weatherUsTravelMode · addQuickChore + countdown edge cases · motivation/diag-overlay/theme/config branch coverage · coverage ratchet 89/81/89/90. 4736 tests / 154 suites / 0 failures. coverage 88.95/81.01/88.56/90.18.
 
-### 4.6 v13.8 — *Continuity (gated)* (target 2027-Q1 if triggered)
+### 4.6 v13.8 — *Branch coverage expansion* **(shipped 2026-06-05)**
+
+cache IDB hydrateFromIdb · weather/calendar/stocks/hebrew-cal/diag-overlay/bg-images branch gaps · sync animationend listener + buildMiniText empty title · card-registry countdown+video-news+legacyAdapter render · coverage 89.35/81.84/89.02/90.51 (thresholds maintained). 4802 tests / 154 suites / 0 failures.
+
+### 4.7 v13.9 — *Continuity (gated)* (target 2027-Q1 if triggered)
 
 Ships V13-CONTINUITY §3.1 — WebRTC mirror, ADR-036. Only if 3+ user requests.
 

@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.8.0] — 2026-06-05
+
+> **V13-COVERAGE EXPANSION** — branch coverage across 7 cards/modules: cache IDB, weather, calendar, stocks, hebrew-cal, bg-images, diag-overlay · animationend listener + buildMiniText empty title · card-registry countdown+video-news+render fn · coverage ratchet maintained 89/81/89/90 · **4802 tests / 154 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint
+
+### Added
+
+- **Cache IDB hydrateFromIdb branch coverage — Sprint 90** (`tests/unit/core/cache.test.ts`): +5 tests — `hydrateFromIdb` skips warm-in-memory keys (`mem.has` branch), skips null IDB entry, skips stale entries (ts > LS_MAX_AGE), loads fresh entry, returns 0 when `idbKeys` throws. Uses `vi.spyOn(idbMod, "idbKeys")`.
+- **Weather branch coverage — Sprint 91** (`tests/unit/cards/weather.test.ts`): +30 tests — `startIdx=-1` (renderHourlyStrip renders from index 0), short time string < 16 chars (hourLabel=""), unknown WX code 9999 (`?? "🌡️"` fallback), `initWeatherCities` with no active tab, entry.name empty, NaN home coords, wind tile hidden when `weatherShowWind: false`.
+- **Calendar branch coverage — Sprint 92** (`tests/unit/cards/calendar.test.ts`): +6 tests — `isSoon=true` adds `event-soon` class, all-day events excluded from isSoon, countdown shows `עוד N ימים`, `renderCalendar` without `#cal-week-grid` guard, without `#cal-countdown` guard, `parseICS` with DTEND invalid date → null fallback.
+- **Stocks branch coverage — Sprint 93** (`tests/unit/cards/stocks.test.ts`): +9 tests — `checkStockAlerts` with `<=` operator triggered/not-triggered, `marketStatusLabel` English pre-market/after-hours, Hebrew after-hours/closed, `getMarketStatus` midnight ET, `priceInRange52w` null low/high inputs.
+- **Hebrew-cal branch coverage — Sprint 94** (`tests/unit/cards/hebrew-cal.test.ts`): +7 tests — `isShabbat()` heuristic Saturday (day===6), Friday evening (day===5 && h>=18), Wednesday (false), Friday before 18:00 (false), null candlesMs uses heuristic; `nextHolidayName` title fallback when hebrew absent; `renderMoonPhase` without `#hc-moon-row` (moonRow null branch).
+- **Diag-overlay Sprint 95 branch coverage** (`tests/unit/ui/diag-overlay.test.ts`): +6 tests — `renderStats` network tier slow (🟡), bad (🔴), offline suffix, consecutive fails (×N), error trend sparkline (trend.length >= 2), card timing table (non-empty Map). Uses `vi.spyOn` on `fetchMod`, `errorTrackerMod`, `perfMod`.
+- **Sync animationend listener + buildMiniText empty title — Sprint 96** (`tests/unit/core/sync.test.ts`): +2 tests — `animationend` event fires listener and removes `card--refreshed` class; countdown with empty title returns "".
+- **Card-registry countdown/video-news/render — Sprint 96** (`tests/unit/core/card-registry.test.ts`): +3 tests — `loadCard("countdown")`, `loadCard("video-news")` (both now in parameterized suite); `def.render()` for legacy card covers `legacyAdapter` inner render fn.
+
+### Changed
+
+- **Coverage thresholds maintained** (`vitest.config.ts`): actuals 89.35/81.84/89.02/90.51 — thresholds held at 89/81/89/90 after Sprint 96 expansion.
+
+### Tests
+
+- 4736 → 4802 unit tests (+66), 154 suites unchanged, 0 failures.
+
+---
+
 ## [13.7.0] — 2026-05-26
 
 > **V13-COVERAGE RATCHET + TEST DEPTH** — calendar fuzz 171→204 · NWS travel-mode tests · system-info `encodeConnType` branches · SimHash property expansion · NWS-normalize properties · config-panel weatherUsTravelMode · addQuickChore + computeProgress edge cases · motivation/diag-overlay/theme/config branch coverage · coverage ratchet 88/80/88/90 → 89/81/89/90 · **4736 tests / 154 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 36 ADRs
