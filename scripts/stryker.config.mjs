@@ -8,13 +8,15 @@
  *   npm install -D @stryker-mutator/core @stryker-mutator/vitest-runner
  *   (from MyScripts/ directory — never add devDeps to FamilyDashBoard/package.json)
  *
- * Score targets (Sprint 33 + V13 Sprint 12 additions):
+ * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 additions):
  *   - simhash.ts            : mutation score ≥ 85%
  *   - d1-reports.ts         : mutation score ≥ 75%
  *   - analytics.ts          : mutation score ≥ 80%
  *   - canary.ts             : mutation score ≥ 90%
  *   - error-tracker.ts      : mutation score ≥ 80%  (V13)
  *   - config.ts             : mutation score ≥ 75%  (V13)
+ *   - error-reporter.ts     : mutation score ≥ 75%  (Sprint 72)
+ *   - diag.ts               : mutation score ≥ 70%  (Sprint 72)
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -34,6 +36,9 @@ export default {
     // V13 Sprint 12: expand coverage to client-side core modules
     "src/core/error-tracker.ts",
     "src/core/config.ts",
+    // Sprint 72: extend to error-reporter + diag (client-side error pipeline)
+    "src/core/error-reporter.ts",
+    "src/core/diag.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
