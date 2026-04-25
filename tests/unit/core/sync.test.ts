@@ -353,4 +353,31 @@ describe("syncBurst — with card DOM element present", () => {
     registerSyncDot("wx", dot);
     expect(() => syncBurst("wx")).not.toThrow();
   });
+
+  it("animationend listener removes card--refreshed class (covers the once-listener arrow fn)", () => {
+    document.body.innerHTML = `
+      <div id="sync-wx5"></div>
+      <div class="card" data-card-id="weather"></div>`;
+    const dot = document.getElementById("sync-wx5")!;
+    registerSyncDot("wx", dot);
+    syncBurst("wx");
+    const card = document.querySelector<HTMLElement>('[data-card-id="weather"]')!;
+    // syncBurst adds card--refreshed and registers a once-listener for animationend
+    expect(card.classList.contains("card--refreshed")).toBe(true);
+    // Dispatch animationend to fire the listener → removes card--refreshed
+    card.dispatchEvent(new Event("animationend"));
+    expect(card.classList.contains("card--refreshed")).toBe(false);
+  });
+});
+
+// ── Sprint 96: buildMiniText — countdown empty title branch ──────────────────
+describe("buildMiniText countdown — empty title branch", () => {
+  it("returns empty string for countdown when title element is absent", () => {
+    // No #cd-wedding-title → title = "" → !title → return ""
+    document.body.innerHTML = `
+      <span id="cd-days">5</span>
+      <span id="mini-countdown"></span>`;
+    updateCardMiniInfo("countdown");
+    expect(document.getElementById("mini-countdown")!.textContent).toBe("");
+  });
 });

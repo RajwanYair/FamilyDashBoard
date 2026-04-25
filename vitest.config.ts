@@ -78,6 +78,10 @@ export default defineConfig({
         //   simhash, nws-normalize, config-panel, countdown, tasks addQuickChore,
         //   motivation branches, diag-overlay, theme, config resetCardConfig.
         // Target v13 final: 95/90/95/96 (multi-sprint increments, +1 per minor release)
+        // Sprint 96 (v13.8.0): actuals 89.35/81.84/89.02/90.51 — ratchet to 89/81/89/90.
+        //   New tests Sprints 87-96: cache IDB, weather, calendar, stocks, hebrew-cal,
+        //   bg-images, diag-overlay (network tier/trend), sync animationend, card-registry
+        //   countdown+video-news loadCard, legacyAdapter render fn. +66 tests = 4802 total.
         statements: 89,
         branches: 81,
         functions: 89,

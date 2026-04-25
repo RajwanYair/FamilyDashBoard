@@ -130,7 +130,7 @@ const ceCards = [
 ] as const;
 
 // Cards that use legacyAdapter without render-tag assertions
-const legacyOnlyCards = ["hebrew-cal", "calendar", "currency", "alerts", "motivation"] as const;
+const legacyOnlyCards = ["hebrew-cal", "calendar", "currency", "alerts", "motivation", "countdown", "video-news"] as const;
 
 describe("Card Registry — loadCard (parameterized)", () => {
   beforeEach(() => {
@@ -158,6 +158,14 @@ describe("Card Registry — loadCard (parameterized)", () => {
     const el = def.render();
     expect(el).toBeInstanceOf(HTMLElement);
     expect(el.tagName).toBe(expectedTag);
+  });
+
+  it("legacy card render() returns an HTMLElement (covers legacyAdapter render fn)", async () => {
+    // Calls render() for a legacy-only card — covers the inner render function
+    // in legacyAdapter (returns querySelector result ?? new section)
+    const def = await loadCard("motivation");
+    const el = def.render();
+    expect(el).toBeInstanceOf(HTMLElement);
   });
 });
 
