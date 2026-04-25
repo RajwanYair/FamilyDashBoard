@@ -33,6 +33,7 @@
         "postbuild": "node scripts/generate-precache.mjs",
         "preview": "vite preview",
         "test": "vitest run",
+        "test:browser": "vitest --config vitest.browser.config.ts",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
         "lint": "eslint . --max-warnings 0 --cache --cache-strategy content",
