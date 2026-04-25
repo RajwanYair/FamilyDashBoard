@@ -2304,3 +2304,65 @@ describe("Hebrew Calendar — prewarmNextYearHolidays", () => {
     expect(cSetAsync).not.toHaveBeenCalled();
   });
 });
+
+// ── Sprint 94: branch coverage gaps ──────────────────────────────────────────
+
+describe("Hebrew Calendar — Sprint 94 isShabbat heuristic day branches", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns true on Saturday (day === 6 heuristic branch)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-06T10:00:00Z")); // Saturday 10:00 UTC
+    expect(isShabbat()).toBe(true);
+  });
+
+  it("returns true on Friday evening ≥ 18:00 (day === 5 && h >= 18 branch)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-05T18:30:00Z")); // Friday 18:30 UTC
+    expect(isShabbat()).toBe(true);
+  });
+
+  it("returns false on Wednesday (heuristic false branch)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-10T12:00:00Z")); // Wednesday 12:00 UTC
+    expect(isShabbat()).toBe(false);
+  });
+
+  it("returns false on Friday before 18:00 (day === 5 && h < 18 → false)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-05T10:00:00Z")); // Friday 10:00 UTC
+    expect(isShabbat()).toBe(false);
+  });
+
+  it("uses heuristic when candlesMs is null (one-null branch)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-06T10:00:00Z")); // Saturday
+    // candlesMs = null → candlesMs != null = false → heuristic path → day 6 → true
+    expect(isShabbat(null, Date.now() + 3_600_000)).toBe(true);
+  });
+});
+
+describe("Hebrew Calendar — Sprint 94 nextHolidayName title fallback", () => {
+  it("uses title when hebrew is absent (title fallback branch)", () => {
+    const items = [
+      { category: "holiday", date: "2099-04-15", title: "Passover Festival" },
+    ] as never;
+    // upcoming[0]?.hebrew = undefined → ?? title = "Passover Festival"
+    expect(nextHolidayName(items, new Date("2099-01-01"))).toBe("Passover Festival");
+  });
+});
+
+describe("Hebrew Calendar — Sprint 94 renderMoonPhase without moon-row", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("does not throw when #hc-moon-row is absent (moonRow null branch)", () => {
+    // #hc-moon present but no #hc-moon-row → if (moonRow) is false
+    document.body.innerHTML = '<div id="hc-moon">--</div>';
+    expect(() => renderMoonPhase()).not.toThrow();
+    expect(document.getElementById("hc-moon")!.textContent!.length).toBeGreaterThan(2);
+  });
+});
