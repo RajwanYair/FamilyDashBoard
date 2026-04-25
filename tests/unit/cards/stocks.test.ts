@@ -2346,3 +2346,98 @@ describe("Stocks — CSS Anchor Positioning on detail button click (F11)", () =>
     expect(buttons[0]!.style.getPropertyValue("anchor-name")).toBe("");
   });
 });
+
+// ── Sprint 93: branch coverage gaps ─────────────────────────────────────────
+
+describe("Stocks — Sprint 93 checkStockAlerts <= operator", () => {
+  beforeEach(() => {
+    resetStockAlertSession();
+    vi.mocked(showToast).mockClear();
+    localStorage.removeItem("dash_v2_stock_alerts");
+  });
+  afterEach(() => {
+    resetStockAlertSession();
+    localStorage.removeItem("dash_v2_stock_alerts");
+  });
+
+  it("fires toast when <= threshold is met (op === '<=' branch)", () => {
+    cSet("stk-SPY", makeStockCache(450));
+    localStorage.setItem("dash_v2_stock_alerts", "SPY<=500");
+    checkStockAlerts();
+    expect(vi.mocked(showToast)).toHaveBeenCalledOnce();
+    expect(vi.mocked(showToast).mock.calls[0]?.[0]).toContain("SPY");
+  });
+
+  it("does not fire when <= threshold is not met", () => {
+    cSet("stk-QQQ", makeStockCache(600));
+    localStorage.setItem("dash_v2_stock_alerts", "QQQ<=500");
+    checkStockAlerts();
+    expect(vi.mocked(showToast)).not.toHaveBeenCalled();
+  });
+});
+
+describe("Stocks — Sprint 93 marketStatusLabel English branch", () => {
+  afterEach(() => {
+    document.documentElement.lang = "";
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("returns English pre-market label when lang='en' and market is pre", () => {
+    document.documentElement.lang = "en";
+    vi.setSystemTime(new Date("2024-01-08T13:00:00Z")); // Mon 08:00 ET → pre
+    const label = marketStatusLabel();
+    expect(label).toBe("Pre-market");
+  });
+
+  it("returns English after-hours label when lang='en' and market is after", () => {
+    document.documentElement.lang = "en";
+    vi.setSystemTime(new Date("2024-01-08T22:00:00Z")); // Mon 17:00 ET → after
+    const label = marketStatusLabel();
+    expect(label).toBe("After-hours");
+  });
+
+  it("returns Hebrew after-hours label when lang is not 'en'", () => {
+    document.documentElement.lang = "he";
+    vi.setSystemTime(new Date("2024-01-08T22:00:00Z")); // Mon 17:00 ET → after
+    const label = marketStatusLabel();
+    expect(label).toBe("אחרי-שוק");
+  });
+
+  it("returns Hebrew closed label for weekends", () => {
+    document.documentElement.lang = "he";
+    vi.setSystemTime(new Date("2024-01-06T17:00:00Z")); // Saturday
+    const label = marketStatusLabel();
+    expect(label).toBe("שוק סגור");
+  });
+});
+
+describe("Stocks — Sprint 93 getMarketStatus midnight (nyMins < 240)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("returns 'closed' at midnight ET (nyMins < 240 branch)", () => {
+    // 00:30 ET = 05:30 UTC (Eastern Standard Time, UTC-5)
+    vi.setSystemTime(new Date("2024-01-09T05:30:00Z")); // Mon 00:30 ET → closed
+    expect(getMarketStatus()).toBe("closed");
+  });
+
+  it("returns 'closed' at 3:59 AM ET (still nyMins < 240)", () => {
+    // 03:59 ET = 08:59 UTC
+    vi.setSystemTime(new Date("2024-01-09T08:59:00Z")); // Mon 03:59 ET → closed
+    expect(getMarketStatus()).toBe("closed");
+  });
+});
+
+describe("Stocks — Sprint 93 priceInRange52w null inputs", () => {
+  it("returns null when low52 is null (null coalescing check)", () => {
+    // TypeScript says number, but JS runtime may have null from API
+    expect(priceInRange52w(150, null as unknown as number, 200)).toBeNull();
+  });
+
+  it("returns null when high52 is null", () => {
+    expect(priceInRange52w(150, 100, null as unknown as number)).toBeNull();
+  });
+});
