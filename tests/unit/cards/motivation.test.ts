@@ -714,3 +714,79 @@ describe("Motivation — non-repeat window (Sprint 70)", () => {
   });
 });
 
+// ── Sprint 84: getUsedIndices branch coverage ─────────────────────────────
+
+describe("Motivation — getUsedIndices branch coverage (Sprint 84)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns [] when stored value is not an array (e.g. JSON number)", () => {
+    localStorage.setItem("moti-used-indices", "42");
+    expect(getUsedIndices()).toEqual([]);
+  });
+
+  it("returns [] when stored value is JSON null", () => {
+    localStorage.setItem("moti-used-indices", "null");
+    expect(getUsedIndices()).toEqual([]);
+  });
+
+  it("returns [] when stored value is invalid JSON (catch branch)", () => {
+    localStorage.setItem("moti-used-indices", "{invalid json}}}");
+    expect(getUsedIndices()).toEqual([]);
+  });
+
+  it("filters out non-number entries from a mixed array", () => {
+    localStorage.setItem("moti-used-indices", JSON.stringify([0, "bad", 2, null, 5]));
+    expect(getUsedIndices()).toEqual([0, 2, 5]);
+  });
+});
+
+// ── Sprint 84: fetchAiMotivationQuote edge cases ──────────────────────────
+
+describe("Motivation — fetchAiMotivationQuote edge cases (Sprint 84)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns null when response.ok is false", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
+    const result = await fetchAiMotivationQuote();
+    expect(result).toBeNull();
+  });
+
+  it("returns null when data.text is an empty string", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ text: "", author: "someone" }),
+      }),
+    );
+    const result = await fetchAiMotivationQuote();
+    expect(result).toBeNull();
+  });
+
+  it("returns null when data.text is not a string", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ text: 42, author: "" }),
+      }),
+    );
+    const result = await fetchAiMotivationQuote();
+    expect(result).toBeNull();
+  });
+
+  it("returns null and logs when fetch throws", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
+    const result = await fetchAiMotivationQuote();
+    expect(result).toBeNull();
+  });
+});
+

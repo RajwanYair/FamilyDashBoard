@@ -18,6 +18,7 @@ import {
   renderProviderHealthHtml,
 } from "@/ui/diag-overlay";
 import { diagLog, clearDiag } from "@/core/diag";
+import { recordProviderSuccess, recordProviderFailure, _resetProviderHealth } from "@/core/provider";
 
 function polyfillDialog(dlg: Element | null): void {
   // happy-dom does not implement HTMLDialogElement methods.
@@ -493,8 +494,40 @@ describe("providerStatusIcon (Sprint 93)", () => {
 });
 
 describe("renderProviderHealthHtml (Sprint 93)", () => {
+  afterEach(() => {
+    _resetProviderHealth();
+  });
+
   it("returns empty string when no providers recorded", () => {
     expect(renderProviderHealthHtml()).toBe("");
+  });
+
+  it("returns HTML string when a provider has been recorded", () => {
+    recordProviderSuccess("news");
+    const html = renderProviderHealthHtml();
+    expect(html).toContain("news");
+    expect(html).toContain("🟢");
+  });
+
+  it("shows consecutive fails count when consecutiveFails > 0", () => {
+    recordProviderFailure("weather");
+    recordProviderFailure("weather");
+    const html = renderProviderHealthHtml();
+    expect(html).toContain("×2");
+  });
+
+  it("omits consecutive fails marker when consecutiveFails is 0", () => {
+    recordProviderSuccess("stocks");
+    const html = renderProviderHealthHtml();
+    // No consecutive fails marker
+    expect(html).not.toContain("×");
+  });
+
+  it("includes lastOkAt timestamp when provider has succeeded", () => {
+    recordProviderSuccess("calendar");
+    const html = renderProviderHealthHtml();
+    // lastOkAt is set on success; should show ok@ timestamp
+    expect(html).toContain("ok@");
   });
 });
 
