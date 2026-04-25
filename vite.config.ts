@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { execSync } from "node:child_process";
 
 const tempBase = join(tmpdir(), "fdb-dev");
@@ -88,11 +89,67 @@ const removeCrossOrigin: Plugin = {
   },
 };
 
+/**
+ * V14-FOUNDATIONS Sprint 97: Subresource Integrity (SRI) auto-injection.
+ *
+ * Adds `integrity="sha384-…"` to every emitted `<script src=…>` and
+ * `<link rel="stylesheet" href=…>` referencing a build asset. Skipped for
+ * local file:// builds because the `crossorigin` attribute is also stripped
+ * (browsers require both for SRI verification on cross-origin loads).
+ *
+ * Zero-dep: uses Node's built-in `node:crypto`. No runtime cost — the hash
+ * is embedded in the served HTML and verified by the browser before exec.
+ */
+const injectSri: Plugin = {
+  name: "inject-sri",
+  apply: "build",
+  enforce: "post",
+  generateBundle(_options, bundle): void {
+    if (isLocalBuild) return;
+    const integrityByFile = new Map<string, string>();
+    for (const [fileName, asset] of Object.entries(bundle)) {
+      let payload: string | Uint8Array | null = null;
+      if (asset.type === "chunk") {
+        payload = asset.code;
+      } else if (asset.type === "asset") {
+        payload =
+          typeof asset.source === "string" ? asset.source : (asset.source as Uint8Array);
+      }
+      if (payload === null) continue;
+      const digest = createHash("sha384").update(payload).digest("base64");
+      integrityByFile.set(fileName, `sha384-${digest}`);
+    }
+    const html = bundle["index.html"];
+    if (!html || html.type !== "asset" || typeof html.source !== "string") return;
+    const stripBase = (url: string): string =>
+      url.replace(/^\/FamilyDashBoard\//, "").replace(/^\.\//, "");
+    let updated = html.source.replace(
+      /<script([^>]*?)\ssrc="([^"]+)"([^>]*)>/g,
+      (match, before: string, src: string, after: string) => {
+        if (/\sintegrity=/.test(match)) return match;
+        const sri = integrityByFile.get(stripBase(src));
+        if (!sri) return match;
+        return `<script${before} src="${src}" integrity="${sri}"${after}>`;
+      },
+    );
+    updated = updated.replace(
+      /<link([^>]*?)\srel="stylesheet"([^>]*?)\shref="([^"]+)"([^>]*)>/g,
+      (match, before: string, mid: string, href: string, after: string) => {
+        if (/\sintegrity=/.test(match)) return match;
+        const sri = integrityByFile.get(stripBase(href));
+        if (!sri) return match;
+        return `<link${before} rel="stylesheet"${mid} href="${href}" integrity="${sri}"${after}>`;
+      },
+    );
+    html.source = updated;
+  },
+};
+
 export default defineConfig(({ command }) => ({
   root: "src",
   base: "/FamilyDashBoard/",
   cacheDir: join(tempBase, ".vite"),
-  plugins: [removeCrossOrigin, injectCfAnalytics, injectSwVersion],
+  plugins: [removeCrossOrigin, injectCfAnalytics, injectSwVersion, injectSri],
 
   // v11.0-PERF-1: Use Lightning CSS for faster, smaller CSS builds.
   // Targets modern evergreen browsers that support all dashboard CSS features.
