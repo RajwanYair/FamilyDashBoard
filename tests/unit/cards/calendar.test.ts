@@ -2208,3 +2208,87 @@ describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
   });
 });
 
+// ── Sprint 92: branch coverage gaps ─────────────────────────────────────────
+
+describe("Calendar — Sprint 92 isSoon and countdown branches", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="cal-week-grid"></div>
+      <div id="cal-countdown"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom();
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("applies event-soon class to event starting within 1 hour (isSoon branch)", () => {
+    // Event starts 20 minutes from now → isSoon = true
+    const soon = new Date(Date.now() + 20 * 60 * 1000);
+    const end = new Date(soon.getTime() + 30 * 60 * 1000);
+    renderCalendar([
+      { summary: "Upcoming Soon", start: soon, end, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
+    expect(document.querySelector(".cal-event.event-soon")).not.toBeNull();
+  });
+
+  it("all-day event does not get event-soon class (isSoon = false branch)", () => {
+    const soon = new Date(Date.now() + 20 * 60 * 1000);
+    const end = new Date(soon.getTime() + 30 * 60 * 1000);
+    renderCalendar([
+      { summary: "All Day Soon", start: soon, end, allDay: true, icsIndex: 0, category: "default" as const },
+    ]);
+    // allDay events are excluded from isSoon check
+    expect(document.querySelector(".cal-event.event-soon")).toBeNull();
+  });
+
+  it("countdown shows 'עוד N ימים' when next event is 2+ days away", () => {
+    const start = new Date(Date.now() + 2.5 * 24 * 3_600_000); // 2.5 days out
+    const end = new Date(start.getTime() + 3_600_000);
+    renderCalendar([
+      { summary: "Future Trip", start, end, allDay: false, icsIndex: 0, category: "default" as const },
+    ]);
+    const countdown = document.getElementById("cal-countdown")!;
+    // days > 1 → "עוד N ימים"
+    expect(countdown.textContent).toContain("עוד");
+  });
+
+  it("renderCalendar does not throw when grid element is missing", () => {
+    document.body.innerHTML = `
+      <div id="cal-countdown"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom(); // els.grid = null
+    expect(() => renderCalendar([])).not.toThrow();
+  });
+
+  it("renderCalendar does not throw when countdown element is missing", () => {
+    document.body.innerHTML = `
+      <div id="cal-week-grid"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom(); // els.countdown = null → renderCalCountdown returns early
+    expect(() => renderCalendar([])).not.toThrow();
+  });
+});
+
+describe("Calendar — Sprint 92 parseICS DTEND invalid date branch", () => {
+  it("falls back to start when DTEND has an invalid date string (non-8-char, non-ISO)", () => {
+    // DTEND value that is not 8 chars and doesn't match ISO → parseICSDate returns null → end = start
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      "DTSTART:20291201T090000Z",
+      "DTEND:BADDATE-LONGVALUE",
+      "SUMMARY:Bad End Date",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const events = parseICS(ics, 0);
+    expect(events).toHaveLength(1);
+    // end === start (nullish coalescing fallback since parseICSDate returns null)
+    expect(events[0]?.end.getTime()).toBe(events[0]?.start.getTime());
+  });
+});
+
