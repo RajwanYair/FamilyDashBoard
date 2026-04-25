@@ -27,6 +27,7 @@ import {
   cEvictIdb,
   _resetForTest,
 } from "@/core/cache";
+import * as idbMod from "@/core/idb-cache";
 
 describe("Cache — cSet / cGet", () => {
   beforeEach(() => {
@@ -888,5 +889,59 @@ describe("Cache — _resetForTest", () => {
   it("can be called when cache is already empty", () => {
     cClear();
     expect(() => _resetForTest()).not.toThrow();
+  });
+});
+
+// ── Sprint 90: hydrateFromIdb IDB-tier branches via vi.spyOn ─────────────────
+
+describe("Cache — Sprint 90 hydrateFromIdb IDB-tier branches", () => {
+  beforeEach(() => {
+    _resetForTest();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    _resetForTest();
+  });
+
+  it("skips entries already warm in memory (mem.has branch)", async () => {
+    // Seed memory via cSet, then spy so idbKeys returns the same key
+    cSet("warm-key", { v: 1 });
+    vi.spyOn(idbMod, "idbKeys").mockResolvedValue(["warm-key"]);
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue(null);
+    const count = await hydrateFromIdb();
+    // 'warm-key' is already in memory → skip → count stays 0
+    expect(count).toBe(0);
+  });
+
+  it("skips IDB entry when idbGetEntry returns null (!entry branch)", async () => {
+    vi.spyOn(idbMod, "idbKeys").mockResolvedValue(["idb-null-key"]);
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue(null);
+    const count = await hydrateFromIdb();
+    expect(count).toBe(0);
+  });
+
+  it("skips stale IDB entries (ts > LS_MAX_AGE branch)", async () => {
+    const staleTs = Date.now() - 8 * 24 * 60 * 60 * 1000; // 8 days ago > 7-day max
+    vi.spyOn(idbMod, "idbKeys").mockResolvedValue(["stale-idb-key"]);
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: "old", ts: staleTs } as never);
+    const count = await hydrateFromIdb();
+    expect(count).toBe(0);
+  });
+
+  it("loads fresh IDB entry into memory and returns count", async () => {
+    const freshTs = Date.now() - 60_000; // 1 min ago — fresh
+    vi.spyOn(idbMod, "idbKeys").mockResolvedValue(["fresh-idb-key"]);
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: { loaded: true }, ts: freshTs } as never);
+    const count = await hydrateFromIdb();
+    expect(count).toBe(1);
+    // Data should be warm in memory now
+    expect(cGet("fresh-idb-key", 60 * 60_000)).toEqual({ loaded: true });
+  });
+
+  it("returns 0 when idbKeys throws (catch branch)", async () => {
+    vi.spyOn(idbMod, "idbKeys").mockRejectedValue(new Error("IDB unavailable"));
+    const count = await hydrateFromIdb();
+    expect(count).toBe(0);
   });
 });
