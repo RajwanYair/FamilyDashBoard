@@ -19,6 +19,7 @@ import {
   categorizeDevice,
   formatHeapMb,
   gpuShortName,
+  encodeConnType,
 } from "@/cards/system-info/system-info";
 
 // ── DOM setup ──────────────────────────────────────────────────────────────
@@ -807,5 +808,60 @@ describe("SystemInfo — rttTile display toggle (line 187)", () => {
     // loadConfig default has sysInfoShowRtt: true → tile display should be ""
     await renderSystemInfo();
     expect(tile.style.display).toBe("");
+  });
+});
+
+// ── Sprint 79: encodeConnType — all branches ──────────────────────────────
+
+describe("SystemInfo — encodeConnType (Sprint 79)", () => {
+  it("encodes slow-2g as 1", () => {
+    expect(encodeConnType("slow-2g")).toBe(1);
+  });
+
+  it("encodes 2g as 2", () => {
+    expect(encodeConnType("2g")).toBe(2);
+  });
+
+  it("encodes 3g as 3", () => {
+    expect(encodeConnType("3g")).toBe(3);
+  });
+
+  it("encodes 4g as 4", () => {
+    expect(encodeConnType("4g")).toBe(4);
+  });
+
+  it("encodes unknown/unrecognized type as 0", () => {
+    expect(encodeConnType("wifi")).toBe(0);
+    expect(encodeConnType("")).toBe(0);
+    expect(encodeConnType("5g")).toBe(0);
+  });
+});
+
+// ── Sprint 79: getConnectionInfo — with stubbed navigator.connection ──────
+
+describe("SystemInfo — getConnectionInfo stubs (Sprint 79)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns effectiveType when navigator.connection is present", () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      connection: { effectiveType: "4g" },
+    });
+    expect(getConnectionInfo()).toBe("4g");
+  });
+
+  it("returns 'unknown' when navigator.connection is absent", () => {
+    vi.stubGlobal("navigator", { ...navigator, connection: undefined });
+    expect(getConnectionInfo()).toBe("unknown");
+  });
+
+  it("returns 'unknown' when effectiveType is undefined", () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      connection: { effectiveType: undefined },
+    });
+    expect(getConnectionInfo()).toBe("unknown");
   });
 });
