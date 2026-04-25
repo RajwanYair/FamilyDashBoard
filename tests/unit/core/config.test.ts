@@ -16,6 +16,8 @@ import {
   buildExportEnvelope,
   serializeConfigExport,
   readFeatureFlag,
+  validateExportPayload,
+  resetCardConfig,
 } from "@/core/config";
 import {
   DEFAULT_CONFIG,
@@ -985,5 +987,50 @@ describe("Config — migrateConfig v10→v11 (countdownCard2 defaults)", () => {
   it("DEFAULT_CONFIG has countdownCard2 pre-set", () => {
     expect(DEFAULT_CONFIG.countdownCard2Date).toBe("2026-06-19");
     expect(DEFAULT_CONFIG.countdownCard2Title).toBe("ספירת הגומר");
+  });
+});
+
+// ── Sprint 85: resetCardConfig ─────────────────────────────────────────────
+
+describe("Config — resetCardConfig (Sprint 85)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns false when cardId is not in config.cards", () => {
+    const result = resetCardConfig("nonExistentCard");
+    expect(result).toBe(false);
+  });
+
+  it("returns true and removes the card settings when cardId exists", () => {
+    const cfg = loadConfig();
+    cfg.cards["weather"] = { visible: false };
+    saveConfig(cfg);
+    const result = resetCardConfig("weather");
+    expect(result).toBe(true);
+    // Card should no longer exist in config
+    const newCfg = loadConfig();
+    expect(newCfg.cards["weather"]).toBeUndefined();
+  });
+});
+
+// ── Sprint 85: validateExportPayload edge cases ────────────────────────────
+
+describe("Config — validateExportPayload edge cases (Sprint 85)", () => {
+  it("fails when envelope is null", () => {
+    const result = validateExportPayload(null);
+    expect(result.ok).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+  });
+
+  it("fails when envelope is a string", () => {
+    const result = validateExportPayload("bad");
+    expect(result.ok).toBe(false);
+  });
+
+  it("fails when required appVersion is missing from envelope", () => {
+    const result = validateExportPayload({ config: {} });
+    expect(result.ok).toBe(false);
+    expect(result.errors.some((e) => e.includes("appVersion"))).toBe(true);
   });
 });

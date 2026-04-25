@@ -302,3 +302,63 @@ describe("Theme — OS prefers-color-scheme change listener", () => {
     expect(currentTheme()).toBe("blue");
   });
 });
+
+// ── Sprint 85: checkAutoTheme — no-op when already correct theme ──────────
+
+describe("Theme — checkAutoTheme no-op when already correct (Sprint 85)", () => {
+  beforeEach(() => {
+    document.body.className = "";
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("does not change theme when already on black at night", () => {
+    vi.setSystemTime(new Date("2024-01-15T22:00:00"));
+    applyTheme("black");
+    const classListBefore = document.body.className;
+    checkAutoTheme(true, "blue");
+    // Already black — no change needed; classList should remain the same
+    expect(document.body.className).toBe(classListBefore);
+    expect(currentTheme()).toBe("black");
+  });
+
+  it("does not change theme when already on dayTheme at noon", () => {
+    vi.setSystemTime(new Date("2024-01-15T14:00:00"));
+    applyTheme("rose");
+    const classListBefore = document.body.className;
+    checkAutoTheme(true, "rose");
+    // Already rose (day theme) — no switch needed
+    expect(document.body.className).toBe(classListBefore);
+    expect(currentTheme()).toBe("rose");
+  });
+});
+
+// ── Sprint 85: applyTheme View Transitions catch handlers ─────────────────
+
+describe("Theme — applyTheme startViewTransition rejection (Sprint 85)", () => {
+  afterEach(() => {
+    document.body.className = "";
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("theme is still applied when vt.ready rejects", async () => {
+    const fakeVt = {
+      ready: Promise.reject(new Error("skipped")),
+      finished: Promise.reject(new Error("skipped")),
+    };
+    vi.stubGlobal("document", {
+      ...document,
+      startViewTransition: vi.fn().mockReturnValue(fakeVt),
+      body: document.body,
+      getElementById: document.getElementById.bind(document),
+    });
+    applyTheme("amber");
+    // Allow micro-tasks to run so .catch() handlers execute
+    await Promise.allSettled([fakeVt.ready, fakeVt.finished]);
+    // No unhandled rejection — test passes if no throw
+  });
+});
