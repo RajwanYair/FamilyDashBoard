@@ -19,7 +19,7 @@ Confirm `vX.Y.Z` appears consistently in ALL of:
 - `CLAUDE.md` → version reference
 - `.github/copilot-instructions.md` → heading
 - `.github/instructions/workspace.instructions.md` → heading
-- `ARCHITECTURE.md` → version reference
+- `docs/ARCHITECTURE.md` → version reference
 
 ## 2. Type Check
 

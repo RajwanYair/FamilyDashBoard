@@ -7,8 +7,8 @@ This directory is the canonical entry point for product documentation in FamilyD
 | File                                                                     | Purpose                                                          |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
 | [../README.md](../README.md)                                             | Operator-friendly overview, setup, features, and release summary |
-| [../ARCHITECTURE.md](../ARCHITECTURE.md)                                 | Runtime structure, cache layers, worker topology, and invariants |
-| [../ROADMAP.md](../ROADMAP.md)                                           | Current strategy, stream priorities, and release direction       |
+| [ARCHITECTURE.md](ARCHITECTURE.md)                                       | Runtime structure, cache layers, worker topology, and invariants |
+| [ROADMAP.md](ROADMAP.md)                                                 | Current strategy, stream priorities, and release direction       |
 | [adr/README.md](adr/README.md)                                           | Accepted architectural decisions and their rationale             |
 | [../CHANGELOG.md](../CHANGELOG.md)                                       | Versioned release history                                        |
 | [../CLAUDE.md](../CLAUDE.md)                                             | Lean contributor context that points back to canonical rules     |
@@ -18,7 +18,7 @@ This directory is the canonical entry point for product documentation in FamilyD
 
 | File                                           | Status                                                                                                                              |
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [../BestDashBoard.html](../BestDashBoard.html) | Archived legacy dashboard artifact. Preserve for historical reference only; do not treat as the current runtime or source of truth. |
+| [legacy/BestDashBoard.html](legacy/BestDashBoard.html) | Archived legacy dashboard artifact. Preserve for historical reference only; do not treat as the current runtime or source of truth. |
 
 ## Release And Operations Docs
 
@@ -27,8 +27,8 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [../.github/instructions/workspace.instructions.md](../.github/instructions/workspace.instructions.md)     | Environment, file map, and current tooling context |
 | [../.github/instructions/pre-release.instructions.md](../.github/instructions/pre-release.instructions.md) | Mandatory pre-release checklist before tagging     |
 | [../.github/CONTRIBUTING.md](../.github/CONTRIBUTING.md)                                                   | Contributor workflow and development expectations  |
-| [../SUPPORT.md](../SUPPORT.md)                                                                             | Support and operator guidance                      |
-| [../SECURITY.md](../SECURITY.md)                                                                           | Security policy                                    |
+| [../.github/SUPPORT.md](../.github/SUPPORT.md)                                                                             | Support and operator guidance                      |
+| [../.github/SECURITY.md](../.github/SECURITY.md)                                                                           | Security policy                                    |
 
 ## Technical Guides
 
@@ -42,5 +42,5 @@ This directory is the canonical entry point for product documentation in FamilyD
 ## Documentation Rules
 
 - Top-level docs must describe the modular TypeScript app, not the archived single-file dashboard.
-- If architecture changes, update [../ARCHITECTURE.md](../ARCHITECTURE.md), [adr/README.md](adr/README.md), and any impacted ADR in the same sprint.
+- If architecture changes, update [ARCHITECTURE.md](ARCHITECTURE.md), [adr/README.md](adr/README.md), and any impacted ADR in the same sprint.
 - If a fact is duplicated across docs, the canonical source is [../.github/copilot-instructions.md](../.github/copilot-instructions.md).

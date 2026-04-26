@@ -21,17 +21,17 @@ Update ALL of these (search current version string, e.g. `7.9.0`):
 | 5   | `CLAUDE.md`                                      | Header `v7.X.Y`, test count (×2), suite count         | Lines 1, 17, 48                                  |
 | 6   | `.github/copilot-instructions.md`                | Header version + test count                           | Lines 1, 6                                       |
 | 7   | `.github/instructions/workspace.instructions.md` | Header version + test count                           | Line 6                                           |
-| 8   | `ARCHITECTURE.md`                                | Test count in stack table + constraint list           | Lines ~14, ~195                                  |
+| 8   | `docs/ARCHITECTURE.md`                           | Test count in stack table + constraint list           | Lines ~14, ~195                                  |
 | 9   | `.github/assets/banner.svg`                      | Version string + test count in footer text            | Line ~34                                         |
 | 10  | `.github/assets/architecture.svg`                | Version (×3: title, sw.js label, footer) + test count | Lines ~15, 25, 124, 142                          |
 | 11  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                        | Line ~156                                        |
 | 12  | `.github/assets/data-sources.svg`                | `Data Sources… — vX.Y.Z` title                        | Line ~9                                          |
 | 13  | `.github/assets/roadmap.svg`                     | Test count progression line                           | Line ~90                                         |
-| 14  | `ROADMAP.md`                                     | New row in the version history table                  | Bottom of the released versions table            |
+| 14  | `docs/ROADMAP.md`                                | New row in the version history table                  | Bottom of the released versions table            |
 | 15  | `.github/skills/release/SKILL.md`                | Verification guidance if the baseline changed         | Keep it aligned with current repo state          |
 
 > `BestDashBoard.html` is legacy/archived — do NOT update its version.
-> `ROADMAP.md` comment `<!-- Last updated: vX.Y.Z -->` at the bottom should also be bumped.
+> `docs/ROADMAP.md` comment `<!-- Last updated: vX.Y.Z -->` at the bottom should also be bumped.
 
 ## CHANGELOG Format
 

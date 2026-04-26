@@ -335,7 +335,7 @@ Use `actions/checkout@v4` and `actions/setup-node@v4`. Set `node-version` to the
 V14 unification goal: all four sibling projects use the same shared preset versions with zero
 per-project overrides to ESLint rules or TypeScript strictness settings.
 
-**Planned steps (tracked in ROADMAP.md):**
+**Planned steps (tracked in docs/ROADMAP.md):**
 
 | Sprint | Task |
 | --- | --- |

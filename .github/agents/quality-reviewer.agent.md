@@ -35,7 +35,7 @@ You are the quality gate for FamilyDashBoard. Your job is to verify that the cod
 | `.github/instructions/pre-release.instructions.md` | Full pre-release checklist                            |
 | `.github/prompts/release-check.prompt.md`          | Release readiness prompt                              |
 | `vitest.config.ts`                                 | Test aliases: `@` → `src/`, `@tests` → `tests/unit/`  |
-| `ROADMAP.md`                                       | Sprint status, stream progress                        |
+| `docs/ROADMAP.md`                                  | Sprint status, stream progress                        |
 
 ## Mission
 

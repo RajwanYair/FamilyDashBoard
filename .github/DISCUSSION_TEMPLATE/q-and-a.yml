@@ -5,7 +5,7 @@ body:
     attributes:
       value: |
         Ask a question about setting up or using the dashboard.
-        Check [SUPPORT.md](https://github.com/RajwanYair/FamilyDashBoard/blob/main/SUPPORT.md) first!
+        Check [SUPPORT.md](https://github.com/RajwanYair/FamilyDashBoard/blob/main/.github/SUPPORT.md) first!
 
   - type: textarea
     id: question

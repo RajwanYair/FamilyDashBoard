@@ -15,7 +15,7 @@
  *   node scripts/generate-arch-table.mjs --check   (exit 1 if any card has no test)
  *
  * Output goes to stdout so it can be piped:
- *   node scripts/generate-arch-table.mjs >> ARCHITECTURE.md
+ *   node scripts/generate-arch-table.mjs >> docs/ARCHITECTURE.md
  */
 
 import { readdirSync, existsSync, statSync } from "node:fs";

@@ -1,16 +1,16 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-26 · **Shipped baseline**: v13.9.0 — V14-FOUNDATIONS first wave (SRI auto-injection, @ts-check on scripts, native @starting-style for <dialog>, zero-dep signals primitive, PR coverage delta + SBOM diff bots, fast-check property tests for signals)
+> **Refresh date**: 2026-04-26 · **Shipped baseline**: v13.10.0 — V14-FOUNDATIONS continued + production-ready restructuring (Sprint 111–115: container-query guard, Native FS Access, signals idle migration, Stryker extension, docs/ layout cleanup, ADR-039/040)
 >
-> **Inventory**: 4802 tests / 154 suites / 0 failures · 0 ESLint errors / warnings / `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint / stylelint issues · 37 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 7 worker route files (`ai`, `cron`, `data`, `errors`, `feeds`, `metrics`, `reports`) · 4-tier offline cache (mem → LS → IDB → SW) · 90 source `.ts` · 171 test `.ts` · 27 worker `.ts` · 15 CSS modules · 50 docs · coverage 89.35 / 81.84 / 89.02 / 90.51
+> **Inventory**: 4835 tests / 157 suites / 0 failures · 0 ESLint errors / warnings / `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint / stylelint issues · 39 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 7 worker route files (`ai`, `cron`, `data`, `errors`, `feeds`, `metrics`, `reports`) · 4-tier offline cache (mem → LS → IDB → SW) · 90 source `.ts` · 171 test `.ts` · 27 worker `.ts` · 15 CSS modules · 50 docs · coverage 89.35 / 81.84 / 89.02 / 90.51
 >
-> **Purpose**: a *first-principles* re-litigation of every decision in this project — frontend, backend, language, tooling, docs, methods, architecture, infrastructure, external sources, data plane — against the 2026-Q2 web platform. No grandfathering. The goal is **best-in-class** for a household always-on TV dashboard. Historical sprint and release entries previously in this file have been consolidated into [CHANGELOG.md](CHANGELOG.md); only forward decisions and gate triggers remain here.
+> **Purpose**: a *first-principles* re-litigation of every decision in this project — frontend, backend, language, tooling, docs, methods, architecture, infrastructure, external sources, data plane — against the 2026-Q2 web platform. No grandfathering. The goal is **best-in-class** for a household always-on TV dashboard. Historical sprint and release entries previously in this file have been consolidated into [CHANGELOG.md](../CHANGELOG.md); only forward decisions and gate triggers remain here.
 
 ---
 
 ## 0. Executive Summary
 
-After 106 sprints across v10 → v13.9.0 the project reached a stable, opinionated, production-hardened plateau: zero client deps, edge-only backend, four-tier offline, comprehensive observability without tracking, and the highest CI gate density in its peer table.
+After 115 sprints across v10 → v13.10.0 the project reached a stable, opinionated, production-hardened plateau: zero client deps, edge-only backend, four-tier offline, comprehensive observability without tracking, and the highest CI gate density in its peer table.
 
 The **strategic frontier** for v14 → v15 is no longer breadth or feature catch-up. It is:
 
@@ -30,7 +30,7 @@ Every line below is a decision, gate, or trigger. No aspiration decoration.
 
 Grouped by mission. Rows are facts at the date listed; if a peer ships a new version this matrix is re-litigated annually.
 
-| Dimension                     | **FamilyDashBoard v13.9.0**                                                                | Homepage              | Dashy             | Homer             | Homarr v2              | Glance              | MagicMirror²            | Beszel              | Dashdot           | NetNewsWire          | Feedly                | Apple Home Hub          |
+| Dimension                     | **FamilyDashBoard v13.10.0**                                                               | Homepage              | Dashy             | Homer             | Homarr v2              | Glance              | MagicMirror²            | Beszel              | Dashdot           | NetNewsWire          | Feedly                | Apple Home Hub          |
 | ----------------------------- | ------------------------------------------------------------------------------------------ | --------------------- | ----------------- | ----------------- | ---------------------- | ------------------- | ----------------------- | ------------------- | ----------------- | -------------------- | --------------------- | ----------------------- |
 | Audience                      | Always-on family TV                                                                        | Homelab launcher      | Homelab dashboard | Static startpage  | Homelab mgmt           | News/feed dashboard | Smart-mirror display    | Server monitor      | Server monitor    | News reader          | News reader (paid)    | Apple smart-home hub    |
 | Stars (Apr 2026 est.)         | ~95                                                                                        | 47 K                  | 30 K              | 12 K              | 18 K                   | 27 K                | 19 K                    | 9 K                 | 6 K               | 7 K                  | n/a (closed)          | n/a (closed)            |
@@ -264,7 +264,7 @@ Client framework rewrite · Shadow DOM · user-facing DB · OIDC/passkey · 40+ 
 
 ## 3. Strategic Streams (v14 → v15)
 
-Each stream lists deliverables · ADR candidates · exit criteria · gate triggers. Completed work is dropped — see [CHANGELOG.md](CHANGELOG.md).
+Each stream lists deliverables · ADR candidates · exit criteria · gate triggers. Completed work is dropped — see [CHANGELOG.md](../CHANGELOG.md).
 
 ### 3.1 V14-FOUNDATIONS — Tooling acceleration & supply-chain tightening
 
@@ -363,11 +363,11 @@ Target: **v15+** (no pre-committed content).
 
 ## 4. Forward Release Plan
 
-Past releases live in [CHANGELOG.md](CHANGELOG.md). This section is forward-only.
+Past releases live in [CHANGELOG.md](../CHANGELOG.md). This section is forward-only.
 
 | Version    | Theme                                          | Window         | Scope link                       |
 | ---------- | ---------------------------------------------- | -------------- | -------------------------------- |
-| **v13.9**  | Optional residual polish (no new ADRs)         | 2026-Q3        | Bug fixes only                   |
+| **v13.10** | Sprint 115 — production restructuring, ADR-039/040, FS Access, signals idle, container-query guard | 2026-Q2 | Shipped ✓        |
 | **v14.0**  | V14-FOUNDATIONS + V14-SEMANTIC                 | 2027-Q1        | §3.1, §3.2                       |
 | **v14.1**  | V14-HARMONISE                                  | 2027-Q2        | §3.5                             |
 | **v14.2**  | V14-SECURITY-L3 + V14-EDGE                     | 2027-Q3        | §3.6, §3.4                       |
@@ -378,7 +378,7 @@ Past releases live in [CHANGELOG.md](CHANGELOG.md). This section is forward-only
 
 ## 5. Best-in-class targets
 
-| Axis              | v13.9.0 (now)                            | v14 target                                 | v15 target                                 |
+| Axis              | v13.10.0 (now)                           | v14 target                                 | v15 target                                 |
 | ----------------- | ---------------------------------------- | ------------------------------------------ | ------------------------------------------ |
 | Client deps       | 0                                        | 0                                          | 0                                          |
 | Worker deps       | 2 (Hono + Valibot)                       | 2                                          | 2                                          |
@@ -389,8 +389,8 @@ Past releases live in [CHANGELOG.md](CHANGELOG.md). This section is forward-only
 | News dedup        | SimHash v2                               | Vectorize embeddings                       | Vectorize + multi-stage                    |
 | Stocks transport  | HTTP polling                             | DO Hibernatable WebSocket                  | same                                       |
 | Coverage          | 89 / 81 / 89 / 90                        | 92 / 85 / 92 / 93                          | 95 / 90 / 95 / 96                          |
-| Tests             | 4802                                     | 5000+                                      | 5500+                                      |
-| Suites            | 154                                      | 170+                                       | 180+                                       |
+| Tests             | 4835                                     | 5000+                                      | 5500+                                      |
+| Suites            | 157                                      | 170+                                       | 180+                                       |
 | LHCI perf         | ≥ 0.97                                   | ≥ 0.98                                     | ≥ 0.98                                     |
 | TTI cached        | < 1.0 s                                  | < 850 ms                                   | < 750 ms                                   |
 | Worker gzip       | ~62 KB (budget 75 KB)                    | ≤ 75 KB                                    | ≤ 75 KB                                    |

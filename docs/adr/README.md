@@ -42,3 +42,5 @@
 | [ADR-035](ADR-035-slsa-l3-upgrade-path.md)                                                | SLSA Level 3 Upgrade Path                                       | 2026-04-24 | Accepted                                       |
 | [ADR-036](ADR-036-webrtc-config-mirror.md)                                                | WebRTC Config Mirror (QR-Code Pairing)                          | 2026-04-24 | Proposed                                       |
 | [ADR-038](ADR-038-in-house-signals.md)                                                    | In-house Signals Primitive (Zero-dep TC39 / Lit Signals Mirror) | 2026-04-26 | Accepted                                       |
+| [ADR-039](ADR-039-oxlint-fast-prepass.md)                                                 | oxlint as Fast CI Pre-Pass                                      | 2026-04-26 | Accepted                                       |
+| [ADR-040](ADR-040-mermaid-static-validator.md)                                            | Mermaid Static Validator in CI                                  | 2026-04-26 | Accepted                                       |

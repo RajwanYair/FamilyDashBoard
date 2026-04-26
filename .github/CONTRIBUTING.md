@@ -150,7 +150,7 @@ Follow all rules in `.github/copilot-instructions.md` — that is the canonical 
 
 ## Architecture Overview
 
-See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full system diagram and file structure.
+See [ARCHITECTURE.md](../docs/ARCHITECTURE.md) for the full system diagram and file structure.
 
 ---
 

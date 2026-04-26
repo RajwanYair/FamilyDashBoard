@@ -19,8 +19,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-34d399?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
-![Version](https://img.shields.io/badge/Version-13.9.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-4802_passing-34d399?style=flat-square)
+![Version](https://img.shields.io/badge/Version-13.10.0-a78bfa?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-4835_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -208,7 +208,7 @@ All APIs are free and require no API keys. Data goes through the **Cloudflare Wo
 <img src=".github/assets/architecture.svg" alt="Architecture Diagram" width="100%">
 </div>
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full architecture guide and [docs/adr/README.md](docs/adr/README.md) for accepted architecture decisions.
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full architecture guide and [docs/adr/README.md](docs/adr/README.md) for accepted architecture decisions.
 
 ### Modular TypeScript Architecture
 
@@ -370,7 +370,7 @@ This project leverages extensive GitHub features:
 | v7.17   | Worker Normalization — FdbCard helpers, release tooling, doc updates                 | ✅     |
 | v8.0    | Architecture Convergence — registry-driven shells, namespaced config                 | 💡     |
 
-See [ROADMAP.md](ROADMAP.md) for the full strategic plan and stream priorities.
+See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorities.
 
 > **Release convention:** Each version bump commits to `main`, runs `npm run check` (0 errors), tags `vX.Y.Z`, and deploys via GitHub Actions.
 

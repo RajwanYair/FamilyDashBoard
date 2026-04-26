@@ -1,4 +1,4 @@
-# CLAUDE.md — FamilyDashBoard v13.9.0
+# CLAUDE.md — FamilyDashBoard v13.10.0
 
 > Context file for Claude Code / Claude agents.
 > **Canonical rules live in `.github/copilot-instructions.md`** — this file is a lean entry point.
@@ -34,5 +34,5 @@ sw.js                  # ServiceWorker output (compiled artifact, do not edit di
 For full rules, gotchas, architecture, and naming conventions see:
 
 - **Rules & Naming**: `.github/copilot-instructions.md`
-- **Architecture**: `ARCHITECTURE.md`
+- **Architecture**: `docs/ARCHITECTURE.md`
 - **File details**: `.github/instructions/workspace.instructions.md`

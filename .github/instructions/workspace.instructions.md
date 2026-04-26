@@ -3,12 +3,12 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v13.9.0
+# FamilyDashBoard — v13.10.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
-> **Tests**: 4826 / 156 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Tests**: 4835 / 157 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
 
 ## Shell / Terminal
 
@@ -33,10 +33,13 @@ TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RT
 ```text
 src/                        # TypeScript v7 modular source (Vite build)
 src/public/                 # Vite static dir — icon.svg, manifest.webmanifest (NOT src/assets/)
-tests/unit/                 # Vitest unit tests — 3193 tests / 94 suites
-sw.js                       # ServiceWorker v10.0.0 (offline + API cache)
+tests/unit/                 # Vitest unit tests
+sw.js                       # ServiceWorker (compiled artifact)
 icon.svg                    # App icon (root copy; manifest in src/public/)
-BestDashBoard.html is archived to `docs/legacy/`
+docs/ARCHITECTURE.md        # Runtime structure, cache layers, worker topology
+docs/ROADMAP.md             # Strategic plan, stream priorities, forward release plan
+docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-038)
+.github/SUPPORT.md          # Support and operator guidance (GitHub community health file)
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer
 .github/copilot/            # Copilot repo config + MCP/server guidance docs

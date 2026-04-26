@@ -1,11 +1,11 @@
-# FamilyDashBoard — Architecture (v13.1.0)
+# FamilyDashBoard — Architecture (v13.10.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
 
-Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README.md), and [docs/adr/README.md](docs/adr/README.md). The archived `BestDashBoard.html` artifact is not part of the current runtime architecture.
+Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.md), and [docs/adr/README.md](adr/README.md). The archived `BestDashBoard.html` artifact is not part of the current runtime architecture.
 
-![Architecture diagram](.github/assets/architecture.svg)
+![Architecture diagram](../.github/assets/architecture.svg)
 
 ## Stack
 
@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](README.md), [docs/README.md](docs/README
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                                    | Vite-native, real DOM simulation, 4802 tests / 154 suites      |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                                    | Vite-native, real DOM simulation, 4835 tests / 157 suites      |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |

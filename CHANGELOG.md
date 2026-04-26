@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.10.0] — 2026-04-26
+
+> **V14-FOUNDATIONS continued + production-ready restructuring** · **4835 tests / 157 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+### Added
+
+- **Sprint 111** — `scripts/check-container-queries.mjs`: CI guard that blocks viewport `@media (min-width|max-width)` in `src/cards/**/*.css` — 12 card stylesheets verified clean. Wired into CI build job.
+- **Sprint 112** — `src/core/fs-access.ts`: Native File System Access wrapper (`saveTextFile`/`pickTextFile`) with `showSaveFilePicker`/`showOpenFilePicker` + graceful fallback (blob-anchor / hidden `<input type="file">`). Config export/import in `config-panel.ts` migrated to use it. 7 unit tests.
+- **Sprint 113** — `src/core/idle.ts`: page-visibility flag migrated to `signal()` primitive; exports `pageVisibleSignal: ReadonlySignal<boolean>` with backwards-compatible `isPageVisible()`/`onVisibilityChange()` shims. 2 new tests.
+- **Sprint 114** — Stryker mutation scope extended to `src/core/signals.ts` (≥ 85 %), `src/core/fs-access.ts` (≥ 75 %), `src/core/idle.ts` (≥ 75 %).
+- **Sprint 115** — Production-ready file restructuring: `ARCHITECTURE.md` → `docs/ARCHITECTURE.md`, `ROADMAP.md` → `docs/ROADMAP.md`, `SUPPORT.md` → `.github/SUPPORT.md` (GitHub community health canonical location). Dead script `scripts/serve-local.ps1` removed. All cross-references updated across 15 files. `docs/adr/ADR-039-oxlint-fast-prepass.md` and `docs/adr/ADR-040-mermaid-static-validator.md` written. ADR index regenerated (39 entries).
+
+---
+
 ## [13.9.0] — 2026-04-26
 
 > **V14-FOUNDATIONS first wave** — SRI auto-injection, @ts-check on scripts, native `@starting-style` for `<dialog>` overlays, zero-dep Signals primitive (TC39/Lit API mirror), PR coverage-delta bot, PR SBOM-diff bot, fast-check property tests for the signals reactive system. · **4826 tests / 156 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 stylelint · 0 suppressions
