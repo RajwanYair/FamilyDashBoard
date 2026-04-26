@@ -1,0 +1,112 @@
+# =============================================================================
+# Markdown Link Check — Sprint 108 (V14-FOUNDATIONS)
+#
+# Monthly cron + manual dispatch. **Never blocks PRs** by design — link rot
+# is a non-deterministic, network-dependent failure mode that should be
+# triaged on a slow cadence rather than gating every commit.
+#
+# Output: opens an issue if dead links are found; otherwise runs silently.
+# =============================================================================
+name: Markdown Link Check
+
+on:
+  schedule:
+    # 04:17 UTC on the 1st of each month — odd minute to avoid the hourly stampede.
+    - cron: "17 4 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  link-check:
+    name: markdown-link-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      - name: Run markdown-link-check
+        id: lc
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock markdown-link-check@^3.13.0 >/dev/null
+
+          echo "→ Scanning .md files (excluding node_modules, dist, coverage)…"
+          FAILED=0
+          REPORT=""
+          # Collect target files
+          mapfile -t FILES < <(find . -type f -name "*.md" \
+            -not -path "./node_modules/*" \
+            -not -path "./worker/node_modules/*" \
+            -not -path "./dist/*" \
+            -not -path "./coverage/*" \
+            -not -path "./test-results/*")
+
+          for f in "${FILES[@]}"; do
+            OUT=$(npx markdown-link-check --quiet --config .github/link-check.config.json "$f" 2>&1 || true)
+            if echo "$OUT" | grep -qE "ERROR:|✖"; then
+              REPORT+="### $f"$'\n```\n'"$OUT"$'\n```\n\n'
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            {
+              echo "report<<__EOF__"
+              echo "$REPORT"
+              echo "__EOF__"
+            } >> "$GITHUB_OUTPUT"
+            echo "::warning::Dead links detected — see issue body."
+          else
+            echo "✅ No dead links."
+          fi
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+
+      - name: Open issue on failure
+        if: steps.lc.outputs.failed == '1'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v8.0.0
+        with:
+          script: |
+            const report = `${{ steps.lc.outputs.report }}`;
+            const today = new Date().toISOString().slice(0, 10);
+            const title = `chore(docs): dead markdown links detected (${today})`;
+            const body = [
+              "Automated monthly markdown-link-check run found broken links.",
+              "",
+              "Triage: a stale link is *not* a bug — verify the resource still exists",
+              "before editing. If a domain is permanently gone, replace with a Wayback",
+              "archive URL. Close this issue once all listed files are clean.",
+              "",
+              "---",
+              "",
+              report,
+            ].join("\n");
+
+            // Skip duplicate issue if one is already open with the same title prefix.
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: "docs,link-rot",
+              per_page: 50,
+            });
+            if (open.some(i => i.title.startsWith("chore(docs): dead markdown links detected"))) {
+              core.info("Existing link-rot issue is open — skipping duplicate.");
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ["docs", "link-rot"],
+            });
