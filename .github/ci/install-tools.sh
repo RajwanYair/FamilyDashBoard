@@ -24,6 +24,7 @@ npm install --no-save --no-package-lock \
   "vitest@^4.1.5" \
   "@vitest/coverage-v8@^4.1.5" \
   "eslint@^10.2.1" \
+  "oxlint@^1.61.0" \
   "typescript-eslint@^8.59.0" \
   "@eslint/js@^10.0.1" \
   "happy-dom@^20.9.0" \

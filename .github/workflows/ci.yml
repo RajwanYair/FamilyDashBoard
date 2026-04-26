@@ -60,6 +60,8 @@ jobs:
           node-version: "22"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
+      - name: oxlint (fast Rust pre-pass, errors only)
+        run: npx oxlint --quiet src tests
       - name: ESLint (0 warnings allowed)
         run: npx eslint src tests --max-warnings 0
       - name: Prettier format check
