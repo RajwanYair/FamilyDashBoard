@@ -179,6 +179,8 @@ jobs:
         run: node scripts/check-reading-level.mjs
       - name: Mermaid diagram validation (Sprint 109)
         run: node scripts/check-mermaid.mjs
+      - name: Container-query audit (Sprint 111)
+        run: node scripts/check-container-queries.mjs
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)
