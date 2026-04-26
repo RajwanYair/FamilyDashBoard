@@ -239,3 +239,67 @@ describe("Idle — initVisibility", () => {
     expect(isPageVisible()).toBe(true);
   });
 });
+
+describe("Idle — pageVisibleSignal (Sprint 113)", () => {
+  afterEach(() => {
+    Object.defineProperty(document, "hidden", {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  it("exposes a reactive signal that mirrors visibility state", async () => {
+    const { pageVisibleSignal, initVisibility } = await freshIdle();
+    const { effect } = await import("@/core/signals");
+    initVisibility();
+
+    const seen: boolean[] = [];
+    const dispose = effect(() => {
+      seen.push(pageVisibleSignal.value);
+    });
+    expect(seen).toEqual([true]);
+
+    Object.defineProperty(document, "hidden", {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(seen).toEqual([true, false]);
+
+    Object.defineProperty(document, "hidden", {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(seen).toEqual([true, false, true]);
+
+    dispose();
+  });
+
+  it("isPageVisible() does not subscribe its caller via .peek()", async () => {
+    const { isPageVisible, initVisibility } = await freshIdle();
+    const { effect } = await import("@/core/signals");
+    initVisibility();
+
+    let runs = 0;
+    const dispose = effect(() => {
+      isPageVisible();
+      runs += 1;
+    });
+    expect(runs).toBe(1);
+
+    Object.defineProperty(document, "hidden", {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    // Effect should NOT re-run because isPageVisible uses peek().
+    expect(runs).toBe(1);
+
+    dispose();
+  });
+});

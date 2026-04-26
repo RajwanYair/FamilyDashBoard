@@ -1,9 +1,17 @@
 /**
  * FamilyDashBoard v7 — Idle Scheduler & Page Visibility
+ *
+ * Sprint 113 (V14-FOUNDATIONS): the page-visibility flag is now backed by a
+ * `signal()` from `core/signals.ts` so new consumers can subscribe via
+ * `effect()` / `computed()`. The legacy `isPageVisible()` /
+ * `onVisibilityChange()` callback API is preserved as a thin shim — no
+ * existing call site changes. New consumers should import
+ * `pageVisibleSignal` directly.
  */
 
 import { WAKE_REFRESH_MS } from "./constants";
 import { diagLog } from "./diag";
+import { signal, type ReadonlySignal } from "./signals";
 
 // ── scheduleIdle: requestIdleCallback wrapper ──
 export const scheduleIdle: (fn: () => void) => void =
@@ -12,12 +20,16 @@ export const scheduleIdle: (fn: () => void) => void =
     : (fn) => setTimeout(fn, 1);
 
 // ── Page Visibility ──
-let pageVisible = true;
+const _pageVisible = signal<boolean>(true);
+/** Reactive read-only view of `document.visibilityState !== "hidden"`. */
+export const pageVisibleSignal: ReadonlySignal<boolean> = _pageVisible;
 let lastHiddenAt: number | null = null;
 const visibilityCallbacks: Array<(visible: boolean) => void> = [];
 
 export function isPageVisible(): boolean {
-  return pageVisible;
+  // Use peek() so callers that happen to be inside an active effect do NOT
+  // accidentally subscribe — call sites use this as a one-shot guard.
+  return _pageVisible.peek();
 }
 
 export function onVisibilityChange(cb: (visible: boolean) => void): void {
@@ -29,9 +41,10 @@ export function shouldWakeRefresh(): boolean {
 }
 
 function handleVisibilityChange(): void {
-  pageVisible = !document.hidden;
+  const visible = !document.hidden;
+  _pageVisible.value = visible;
 
-  if (!pageVisible) {
+  if (!visible) {
     lastHiddenAt = Date.now();
     diagLog("[visibility] Page hidden");
   } else {
@@ -42,7 +55,7 @@ function handleVisibilityChange(): void {
   }
 
   for (const cb of visibilityCallbacks) {
-    cb(pageVisible);
+    cb(visible);
   }
 }
 
