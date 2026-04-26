@@ -65,6 +65,35 @@ function flush(): void {
   }
 }
 
+/**
+ * Run `fn` under reactive tracking for the given `subscriber`.
+ * Unsubscribes from `oldDeps`, collects new deps during the run, then
+ * subscribes to them.  Returns the new dep set and the computed value.
+ * If `fn` throws, context is restored and the exception re-propagates.
+ */
+function runTracked<T>(
+  subscriber: Subscriber,
+  oldDeps: Set<Source<unknown>>,
+  fn: () => T,
+): { value: T; deps: Set<Source<unknown>> } {
+  for (const dep of oldDeps) dep._unsubscribe(subscriber);
+  const newDeps = new Set<Source<unknown>>();
+  const prevSub = activeSubscriber;
+  const prevReads = activeReads;
+  activeSubscriber = subscriber;
+  activeReads = newDeps;
+  let value!: T;
+  try {
+    value = fn();
+  } finally {
+    activeSubscriber = prevSub;
+    activeReads = prevReads;
+  }
+  // Only reached when fn() returned without throwing.
+  for (const dep of newDeps) dep._subscribe(subscriber);
+  return { value, deps: newDeps };
+}
+
 class SignalImpl<T> implements Source<T> {
   private _value: T;
   private _subs = new Set<Subscriber>();
@@ -133,20 +162,10 @@ class ComputedImpl<T> implements Source<T>, Subscriber {
   }
 
   private _recompute(): void {
-    for (const dep of this._deps) dep._unsubscribe(this);
-    this._deps = new Set();
-    const prevSub = activeSubscriber;
-    const prevReads = activeReads;
-    activeSubscriber = this;
-    activeReads = this._deps;
-    try {
-      this._value = this._fn();
-      this._dirty = false;
-    } finally {
-      activeSubscriber = prevSub;
-      activeReads = prevReads;
-    }
-    for (const dep of this._deps) dep._subscribe(this);
+    const tracked = runTracked(this, this._deps, this._fn);
+    this._value = tracked.value;
+    this._dirty = false;
+    this._deps = tracked.deps;
   }
 }
 
@@ -165,19 +184,8 @@ class EffectImpl implements Subscriber {
 
   _run(): void {
     if (this._disposed) return;
-    for (const dep of this._deps) dep._unsubscribe(this);
-    this._deps = new Set();
-    const prevSub = activeSubscriber;
-    const prevReads = activeReads;
-    activeSubscriber = this;
-    activeReads = this._deps;
-    try {
-      this._fn();
-    } finally {
-      activeSubscriber = prevSub;
-      activeReads = prevReads;
-    }
-    for (const dep of this._deps) dep._subscribe(this);
+    const tracked = runTracked(this, this._deps, this._fn);
+    this._deps = tracked.deps;
   }
 
   dispose(): void {
