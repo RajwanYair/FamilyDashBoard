@@ -342,23 +342,21 @@ describe("Config Panel — importSettings", () => {
     expect(() => importSettings()).not.toThrow();
   });
 
-  it("calls click() on the file input", () => {
-    document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
-    const clickSpy = vi.spyOn(input, "click").mockImplementation(() => {});
+  it("calls click() on a dynamically created file input (Sprint 112)", () => {
+    // After Sprint 112 the import flow creates a fresh <input type="file"> and
+    // calls click() on it (or uses showOpenFilePicker — unavailable in happy-dom).
+    const clickSpy = vi
+      .spyOn(HTMLInputElement.prototype, "click")
+      .mockImplementation(() => {});
     importSettings();
     expect(clickSpy).toHaveBeenCalledOnce();
   });
 
-  it("saves config when FileReader.onload fires with valid JSON", () => {
-    document.body.innerHTML = '<input type="file" id="cfg-import-file" />';
-    const input = document.getElementById("cfg-import-file") as HTMLInputElement;
-    // Prevent real click from opening OS dialog
-    vi.spyOn(input, "click").mockImplementation(() => {});
-
-    // Spy on FileReader to fire onload synchronously
+  it("saves config when the picked file contains valid JSON (Sprint 112)", async () => {
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
     class MockFileReader {
       onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      onerror: ((e: ProgressEvent<FileReader>) => void) | null = null;
       result: string | ArrayBuffer | null = null;
       readAsText(_file: Blob): void {
         this.result = '{"familyName":"טסט","configVersion":1}';
@@ -372,8 +370,8 @@ describe("Config Panel — importSettings", () => {
     vi.stubGlobal("FileReader", MockFileReader);
 
     importSettings();
-
-    // Simulate file selection and onchange fire
+    const input = clickSpy.mock.contexts[0] as unknown as HTMLInputElement;
+    expect(input).toBeDefined();
     const mockFile = new File(['{"familyName":"טסט","configVersion":1}'], "cfg.json", {
       type: "application/json",
     });
@@ -382,6 +380,8 @@ describe("Config Panel — importSettings", () => {
       configurable: true,
     });
     input.onchange?.(new Event("change"));
+    // Allow the pickTextFile Promise + the .then chain in importSettings to resolve.
+    for (let i = 0; i < 10; i += 1) await Promise.resolve();
 
     const saved = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as {
       familyName?: string;

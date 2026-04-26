@@ -9,6 +9,7 @@
 import "./config-panel.css";
 import { loadConfig, saveConfig, shareConfigHash, validateImportedConfig } from "../core/config";
 import { encryptConfig, decryptConfig } from "../core/config-crypto";
+import { saveTextFile, pickTextFile } from "../core/fs-access";
 import type { DashboardConfig } from "../types/config";
 import type { CardConfigField } from "../types/card";
 import { listCards, loadCard } from "../core/card-registry";
@@ -884,26 +885,34 @@ export function isConfigPanelOpen(): boolean {
 export function exportSettings(): void {
   const c = loadConfig();
   const json = JSON.stringify(c, null, 2);
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "dashboard-config.json";
-  a.click();
-  URL.revokeObjectURL(url);
-  diagLog("[config-panel] exported settings");
+  // Sprint 112: prefer Native File System Access (showSaveFilePicker) when
+  // available; fall back to the legacy anchor-download path inside saveTextFile.
+  void saveTextFile(json, {
+    suggestedName: "dashboard-config.json",
+    mimeType: "application/json",
+    extensions: [".json"],
+    description: "FamilyDashBoard config",
+  })
+    .then((written) => {
+      if (written) diagLog("[config-panel] exported settings");
+    })
+    .catch((err) => {
+      diagLog("[config-panel] export failed: " + String(err));
+      showToast(t("settingsImportFailed"), 4000);
+    });
 }
 
 export function importSettings(): void {
-  const input = document.getElementById("cfg-import-file") as HTMLInputElement | null;
-  if (!input) return;
-  input.onchange = () => {
-    const file = input.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
+  // Sprint 112: prefer Native File System Access (showOpenFilePicker) when
+  // available; fall back to a hidden <input type="file"> via pickTextFile.
+  void pickTextFile({
+    mimeType: "application/json",
+    extensions: [".json"],
+    description: "FamilyDashBoard config",
+  })
+    .then((text) => {
+      if (text == null) return;
       try {
-        const text = e.target?.result as string;
         const parsed: unknown = JSON.parse(text);
         if (typeof parsed !== "object" || parsed === null) {
           showToast(t("settingsImportFailed"), 4000);
@@ -911,7 +920,6 @@ export function importSettings(): void {
           return;
         }
         const cfg = parsed as Record<string, unknown>;
-        // Schema validation: configVersion must be a positive integer
         if (
           typeof cfg["configVersion"] !== "number" ||
           !Number.isInteger(cfg["configVersion"]) ||
@@ -931,10 +939,11 @@ export function importSettings(): void {
         showToast(t("settingsImportFailed"), 4000);
         diagLog("[config-panel] import failed: invalid JSON");
       }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
+    })
+    .catch((err) => {
+      diagLog("[config-panel] import failed: " + String(err));
+      showToast(t("settingsImportFailed"), 4000);
+    });
 }
 
 export function shareSettings(): void {
