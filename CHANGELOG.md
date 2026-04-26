@@ -5,6 +5,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.9.0] — 2026-04-26
+
+> **V14-FOUNDATIONS first wave** — SRI auto-injection, @ts-check on scripts, native `@starting-style` for `<dialog>` overlays, zero-dep Signals primitive (TC39/Lit API mirror), PR coverage-delta bot, PR SBOM-diff bot, fast-check property tests for the signals reactive system. · **4826 tests / 156 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 stylelint · 0 suppressions
+
+### Added
+
+- **Sprint 97** — `vite.config.ts`: `injectSri` Vite plugin (zero-dep, `node:crypto` sha384) auto-injects `integrity="sha384-…"` on all `<script src=…>` and `<link rel="stylesheet" href=…>` tags in the Pages build. 6 integrity attributes per build. Skipped on local `file://` builds. (`vite.config.ts`)
+- **Sprint 98** — `@ts-check` directive added to 5 scripts (`build-sw.mjs`, `check-sw-version.mjs`, `generate-precache.mjs`, `install-git-hooks.mjs`, `release-checklist.mjs`). New `tsconfig.scripts.json` (extends base, `allowJs: true`, `checkJs: false`) brings opted-in scripts into the typecheck gate. CI step added.
+- **Sprint 99** — `src/styles/animations.css`: native `@starting-style` entrance animation for all `<dialog>` overlays (`dialog.diag-overlay`, `#help-overlay`, `#card-settings-dialog`, `#tour-overlay`, `dialog#config-overlay`). Uses `transition-behavior: allow-discrete` + `@starting-style`. Exits use same transition. `prefers-reduced-motion` block disables transitions. Replaces JS-driven enter-animation state.
+- **Sprint 100** — `src/core/signals.ts`: zero-dep ~1 KB reactive primitive (`signal`, `computed`, `effect`, `batch`, `untrack`, `isSignal`). Mirrors TC39 Signals Stage-3 and Lit Signals API exactly — migration to either is a one-line import swap. Push-pull lazy semantics, glitch-free batching, Object.is equality, synchronous disposal.
+- **Sprint 101** — `tests/unit/core/signals.test.ts`: 19 unit tests for all public primitives. `docs/adr/ADR-038-in-house-signals.md`: decision record for zero-dep signals over `@lit-labs/signals` / `@preact/signals-core`.
+- **Sprint 102** — `.github/workflows/pr-coverage.yml`: PR coverage-delta bot. Generates `json-summary` on each PR run, compares against `coverage-baseline` artefact from `main`, posts sticky comment with 🟢/⚪/🔴 delta per metric. Zero SaaS. Also adds `json-summary` reporter to `vitest.config.ts`.
+- **Sprint 103** — `.github/workflows/pr-sbom-diff.yml`: PR SBOM-diff bot. Generates CycloneDX JSON for PR head, diffs against `sbom-cyclonedx` artefact from `main`, posts sticky comment enumerating ➕ added / ⬆️ upgraded / ➖ removed packages. Zero SaaS.
+- **Sprint 104** — `tests/unit/core/signals-property.test.ts`: 5 fast-check property tests verifying glitch-free notification, equality short-circuit, batch collapse, computed correctness, and disposed-effect isolation across 50 random input sequences each.
+
+---
+
 ## [13.8.2] — 2026-04-26
 
 > **PRODUCTION-READY HARDENING** — removed all CI-suspended/disabled options. No `continue-on-error`, no `|| true` masking, no `skipLibCheck` in SW typecheck, no `stylelint-disable-line` in CSS, no `markdownlint-disable` in ROADMAP/ADR-027. All gates are now blocking. · **4802 tests / 154 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 stylelint · 0 suppressions

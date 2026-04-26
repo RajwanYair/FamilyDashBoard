@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-26 · **Shipped baseline**: v13.8.2 — production-hardened, zero suppressions, zero waivers
+> **Refresh date**: 2026-04-26 · **Shipped baseline**: v13.9.0 — V14-FOUNDATIONS first wave (SRI auto-injection, @ts-check on scripts, native @starting-style for <dialog>, zero-dep signals primitive, PR coverage delta + SBOM diff bots, fast-check property tests for signals)
 >
 > **Inventory**: 4802 tests / 154 suites / 0 failures · 0 ESLint errors / warnings / `eslint-disable` · 0 `@ts-ignore` · 0 TypeScript errors · 0 markdownlint / stylelint issues · 37 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 7 worker route files (`ai`, `cron`, `data`, `errors`, `feeds`, `metrics`, `reports`) · 4-tier offline cache (mem → LS → IDB → SW) · 90 source `.ts` · 171 test `.ts` · 27 worker `.ts` · 15 CSS modules · 50 docs · coverage 89.35 / 81.84 / 89.02 / 90.51
 >
@@ -10,7 +10,7 @@
 
 ## 0. Executive Summary
 
-After 96 sprints across v10 → v13.8.2 the project reached a stable, opinionated, production-hardened plateau: zero client deps, edge-only backend, four-tier offline, comprehensive observability without tracking, and the highest CI gate density in its peer table.
+After 106 sprints across v10 → v13.9.0 the project reached a stable, opinionated, production-hardened plateau: zero client deps, edge-only backend, four-tier offline, comprehensive observability without tracking, and the highest CI gate density in its peer table.
 
 The **strategic frontier** for v14 → v15 is no longer breadth or feature catch-up. It is:
 
@@ -30,7 +30,7 @@ Every line below is a decision, gate, or trigger. No aspiration decoration.
 
 Grouped by mission. Rows are facts at the date listed; if a peer ships a new version this matrix is re-litigated annually.
 
-| Dimension                     | **FamilyDashBoard v13.8.2**                                                                | Homepage              | Dashy             | Homer             | Homarr v2              | Glance              | MagicMirror²            | Beszel              | Dashdot           | NetNewsWire          | Feedly                | Apple Home Hub          |
+| Dimension                     | **FamilyDashBoard v13.9.0**                                                                | Homepage              | Dashy             | Homer             | Homarr v2              | Glance              | MagicMirror²            | Beszel              | Dashdot           | NetNewsWire          | Feedly                | Apple Home Hub          |
 | ----------------------------- | ------------------------------------------------------------------------------------------ | --------------------- | ----------------- | ----------------- | ---------------------- | ------------------- | ----------------------- | ------------------- | ----------------- | -------------------- | --------------------- | ----------------------- |
 | Audience                      | Always-on family TV                                                                        | Homelab launcher      | Homelab dashboard | Static startpage  | Homelab mgmt           | News/feed dashboard | Smart-mirror display    | Server monitor      | Server monitor    | News reader          | News reader (paid)    | Apple smart-home hub    |
 | Stars (Apr 2026 est.)         | ~95                                                                                        | 47 K                  | 30 K              | 12 K              | 18 K                   | 27 K                | 19 K                    | 9 K                 | 6 K               | 7 K                  | n/a (closed)          | n/a (closed)            |
@@ -378,7 +378,7 @@ Past releases live in [CHANGELOG.md](CHANGELOG.md). This section is forward-only
 
 ## 5. Best-in-class targets
 
-| Axis              | v13.8.2 (now)                            | v14 target                                 | v15 target                                 |
+| Axis              | v13.9.0 (now)                            | v14 target                                 | v15 target                                 |
 | ----------------- | ---------------------------------------- | ------------------------------------------ | ------------------------------------------ |
 | Client deps       | 0                                        | 0                                          | 0                                          |
 | Worker deps       | 2 (Hono + Valibot)                       | 2                                          | 2                                          |
