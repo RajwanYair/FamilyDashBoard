@@ -16,6 +16,17 @@
  */
 
 @layer animations {
+  /* ── Cross-doc View Transitions (Sprint 110, V14-FOUNDATIONS) ───────────
+     Enables navigation transitions between same-origin documents
+     (index.html ↔ preview.html). Browsers without `@view-transition`
+     ignore the rule; reduced-motion users get the instant fallback at the
+     end of this file. The named groups below participate in cross-doc
+     transitions automatically when the matching elements appear in both
+     documents. */
+  @view-transition {
+    navigation: auto;
+  }
+
   /* ── Named capture groups ───────────────────────────────────────────────── */
 
   /* Root background — slower full-page cross-fade */
