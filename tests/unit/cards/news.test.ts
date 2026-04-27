@@ -1390,25 +1390,38 @@ describe("News — saveBookmarks quota exceeded (line 151)", () => {
 // ── markVisited sessionStorage quota catch (line 141) ────────────────────────
 
 describe("News — markVisited sessionStorage quota catch", () => {
-  let setItemSpy: ReturnType<typeof vi.spyOn> | undefined;
   afterEach(() => {
-    setItemSpy?.mockRestore();
-    setItemSpy = undefined;
-    vi.restoreAllMocks();
-    sessionStorage.clear();
+    // Use vi.unstubAllGlobals so vitest's own cleanup mechanism restores
+    // sessionStorage — vi.spyOn on happy-dom Storage isn't reliably tracked
+    // by restoreMocks:true, which caused spy leakage into sibling describes.
+    vi.unstubAllGlobals();
   });
 
+  const makeThrowingStorage = (): Storage => {
+    const data = new Map<string, string>();
+    return {
+      get length() {
+        return data.size;
+      },
+      setItem: () => {
+        throw new DOMException("QuotaExceededError");
+      },
+      getItem: (k: string) => data.get(k) ?? null,
+      removeItem: (k: string) => {
+        data.delete(k);
+      },
+      clear: () => data.clear(),
+      key: (i: number) => [...data.keys()][i] ?? null,
+    };
+  };
+
   it("does not throw when sessionStorage.setItem throws", () => {
-    setItemSpy = vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
-      throw new DOMException("QuotaExceededError");
-    });
+    vi.stubGlobal("sessionStorage", makeThrowingStorage());
     expect(() => markVisited("some-key")).not.toThrow();
   });
 
   it("markVisited still records the key in memory even if storage fails", () => {
-    setItemSpy = vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
-      throw new DOMException("QuotaExceededError");
-    });
+    vi.stubGlobal("sessionStorage", makeThrowingStorage());
     markVisited("mem-key");
     expect(isVisited("mem-key")).toBe(true);
   });
@@ -1472,11 +1485,6 @@ describe("News — fetchAllNews deduplication via renderNews", () => {
 // ── loadVisited sessionStorage catch (line 141) ────────────────────────────────
 
 describe("News — loadVisited sessionStorage catch", () => {
-  beforeEach(() => {
-    // Defensive: ensure no leftover sessionStorage spy from a sibling describe
-    // (vitest can preserve mock state across describes when run order varies in CI).
-    vi.restoreAllMocks();
-  });
   afterEach(() => {
     document.body.innerHTML = "";
     sessionStorage.clear();
