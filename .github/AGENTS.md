@@ -2,7 +2,7 @@
 
 This repository uses the current VS Code Copilot customization model:
 
-- Always-on instructions via `.github/copilot-instructions.md`, `AGENTS.md`, and `CLAUDE.md`
+- Always-on instructions via `.github/copilot-instructions.md` and `AGENTS.md`
 - File-scoped rules via `.github/instructions/*.instructions.md`
 - Reusable slash prompts via `.github/prompts/*.prompt.md`
 - Custom agents via `.github/agents/*.agent.md`
@@ -17,7 +17,6 @@ Custom agents are the current term for what older tooling and docs sometimes cal
 | ----------------------- | ---------------------------------------- | --------------------------------------------- | --------------------------------------------------------- |
 | Repository instructions | `.github/copilot-instructions.md`        | All chats in this workspace                   | Core coding rules, architecture, naming, hard constraints |
 | Agent-wide instructions | `AGENTS.md`                              | All chats in this workspace                   | How AI customizations are organized in this repo          |
-| Claude compatibility    | `CLAUDE.md`                              | Claude-compatible tools and VS Code           | Cross-tool compatibility with the same conventions        |
 | File instructions       | `.github/instructions/*.instructions.md` | Matching files or semantically relevant tasks | CI/CD, HTML, release work, workspace map                  |
 | Prompt files            | `.github/prompts/*.prompt.md`            | Manual `/prompt-name` invocation              | Repeatable task scaffolds                                 |
 | Custom agents           | `.github/agents/*.agent.md`              | Manual agent selection or subagent use        | Specialized personas with narrower guidance               |

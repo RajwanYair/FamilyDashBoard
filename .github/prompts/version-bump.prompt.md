@@ -1,6 +1,6 @@
 ---
 mode: "agent"
-description: "Bump the project version number consistently across all files that reference it: package.json, sw.js, CHANGELOG.md, README.md, CLAUDE.md, instruction files, copilot-instructions.md, docs/ARCHITECTURE.md."
+description: "Bump the project version number consistently across all files that reference it: package.json, sw.js, CHANGELOG.md, README.md, instruction files, copilot-instructions.md, docs/ARCHITECTURE.md."
 tools: ["read_file", "replace_string_in_file", "grep_search", "run_in_terminal"]
 ---
 
@@ -18,7 +18,6 @@ Run `grep -r "8\.[0-9]\+\.[0-9]\+" --include="*.{md,json,js,ts}"` to locate all 
 | `sw.js`                                          | Comment header + `CACHE_NAME` constant   |
 | `CHANGELOG.md`                                   | New top-level `## vX.Y.Z` heading + date |
 | `README.md`                                      | Version badge URL + inline references    |
-| `CLAUDE.md`                                      | Version heading                          |
 | `.github/copilot-instructions.md`                | Heading line                             |
 | `.github/instructions/workspace.instructions.md` | Version reference                        |
 | `docs/ARCHITECTURE.md`                           | Version reference                        |

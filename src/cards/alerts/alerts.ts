@@ -343,7 +343,7 @@ export async function loadAlerts(): Promise<void> {
 
   const key = "alerts";
   const stale = cGetStale<AlertsResponse>(key);
-  if (stale && Array.isArray(stale)) renderAlerts(stale as AlertEvent[], false);
+  if (stale && Array.isArray(stale)) renderAlerts(stale, false);
 
   try {
     const data = await fetchAlerts();

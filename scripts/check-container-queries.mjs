@@ -53,22 +53,22 @@ async function main() {
       if (VIEWPORT_RE.test(line)) {
         violations += 1;
         const rel = file.replace(process.cwd() + "\\", "").replace(process.cwd() + "/", "");
-        // eslint-disable-next-line no-console
+         
         console.error(`${rel}:${idx + 1}: viewport @media query in card stylesheet — use @container instead`);
       }
     });
   }
   if (violations > 0) {
-    // eslint-disable-next-line no-console
+     
     console.error(`✖ Container-query audit: ${violations} viewport query/queries in src/cards/**`);
     process.exit(1);
   }
-  // eslint-disable-next-line no-console
+   
   console.log(`✅ Container-query audit: ${files.length} card stylesheet(s) clean`);
 }
 
 main().catch((err) => {
-  // eslint-disable-next-line no-console
+   
   console.error("check-container-queries failed:", err);
   process.exit(1);
 });

@@ -79,7 +79,7 @@ class FdbStateStore extends EventTarget {
   on<T = unknown>(key: StateKey, callback: StateChangeCallback<T>): void {
     this.addEventListener(key, ((e: Event) => {
       callback((e as CustomEvent<T>).detail, key);
-    }) as EventListener);
+    }));
   }
 
   /**
@@ -97,7 +97,7 @@ class FdbStateStore extends EventTarget {
    */
   seedConfig(cfg: Record<string, unknown>): void {
     for (const [field, value] of Object.entries(cfg)) {
-      this.set(`config.${field}` as StateKey, value);
+      this.set(`config.${field}`, value);
     }
   }
 

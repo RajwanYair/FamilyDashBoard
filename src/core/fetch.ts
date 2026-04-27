@@ -309,7 +309,7 @@ export async function fetchJSONDeduped<T = unknown>(url: string): Promise<T> {
   const p = fetchJSON<T>(url).finally(() => {
     _inflightRequests.delete(url);
   });
-  _inflightRequests.set(url, p as Promise<unknown>);
+  _inflightRequests.set(url, p);
   return p;
 }
 

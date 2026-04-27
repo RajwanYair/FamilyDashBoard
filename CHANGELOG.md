@@ -5,6 +5,40 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.12.0] — 2026-04-27
+
+> **Sprint 117 — production-ready cleanup** · **4835 tests / 157 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 stylelint · 0 inline styles · 0 suppressions
+
+### Removed
+
+- **Root duplicates** — deleted `CLAUDE.md` (cross-tool compat copy collapsed into `.github/copilot-instructions.md` + `.github/AGENTS.md`) and root `icon.svg` (identical 2742-byte duplicate of `src/public/icon.svg`, which Vite copies verbatim into `dist/icon.svg`).
+- **Dead artefacts** — gitignored `vitest_output.txt` and `tsconfig.tsbuildinfo` purged from the working tree.
+
+### Changed
+
+- **Inline styles → utility classes** — extracted **103** inline `style="…"` attributes from `src/index.html` (48 unique declaration sets) into a new dedicated cascade-layered stylesheet `src/styles/inline-utils.css`. New utility classes follow the `.cfg-*` and `.is-hidden` / `.is-invisible` naming conventions and live inside `@layer components`. Eliminates every HTMLHint *"CSS inline styles should not be used"* warning.
+- **`link-check.yml` strict mode** — the monthly link-rot workflow no longer silently passes when broken links are found; after the issue-opener step a follow-up `Fail job on dead links` step runs `exit 1`. Matches Rule 32 ("no `continue-on-error` shadow gates").
+- **`release.yml`** — checksum and release-asset paths updated from `icon.svg` (root) → `dist/icon.svg` (build output) so the SLSA-attested artefact references the actual deployed icon.
+- **Documentation rewire** — every `CLAUDE.md` reference removed from `.github/AGENTS.md`, `docs/README.md`, `.github/skills/release/SKILL.md`, `.github/instructions/pre-release.instructions.md`, `.github/instructions/workspace.instructions.md`, `.github/prompts/version-bump.prompt.md`, `.github/prompts/release-check.prompt.md`. Version-bump file lists drop from 15 → 14 anchors.
+
+### Operations
+
+- All eight version anchors bumped to v13.12.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, plus all 5 SVGs (`architecture`, `banner`, `preview`, `data-sources`, `roadmap`).
+
+---
+
+## [13.11.0] — 2026-04-27
+
+> **Sprint 116 — 20-task platform hardening** · **4835 tests / 157 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+- **Task 1 / Task 20** — Added `scripts/check-dead-exports.mjs`: developer tool that scans `src/**/*.ts` for exported symbols with no imports anywhere in `src/` or `tests/`; exits 0 (informational; use `--fail-on-dead` for CI gate opt-in)
+- **Task 3 / Task 17** — `docs/ARCHITECTURE.md`: added `signals.ts` (zero-dep TC39 Signals primitives, ADR-038, v13.9) and `fs-access.ts` (Native File System Access, v13.10) to the `src/core/` module table; updated `idle.ts` entry to document `pageVisibleSignal: ReadonlySignal<boolean>` (v13.10)
+- **Task 10 / Task 11** — `release.yml` hardened: added SW typecheck (`tsconfig.sw.json`), scripts typecheck (`tsconfig.scripts.json`), `oxlint` fast pre-pass, Prettier format check, per-card bundle delta check, Mermaid validation, and container-query audit — release gate now has parity with `ci.yml` coverage
+- **Task 13** — `.github/PULL_REQUEST_TEMPLATE.md`: replaced legacy single-page-app checklist ("Auto-refresh meta tag preserved", "CORS proxy fallback intact") with TypeScript/modular architecture quality checklist aligned to current codebase conventions
+- **Task 14** — `.github/CODEOWNERS`: removed stale `/BestDashBoard.html` reference (file moved to `docs/legacy/` in v13.10.0), added explicit ownership for `src/`, `tests/`, `docs/`, `worker/`, `scripts/`, and all config root files
+- **Task 7 / Task 8** — Coverage thresholds: ratchet deferred — actuals 89.35/81.84/89.02/90.51 have insufficient margin to safely increase any threshold by 1% (81.84 < 82, 90.51 < 91). Thresholds held at 89/81/89/90; ratchet deferred to Sprint 117 after targeted branch/line tests are added. Comment updated in `vitest.config.ts` to document this.
+- **Tasks 2, 4, 5, 6, 9, 12, 15, 16, 18, 19** — Verified already fully implemented: no Python scripts (pure TypeScript), standardised `npm` build pipeline, clean project structure (`dist/`, `scripts/`, `docs/`), zero redundant configs, ESLint + Prettier + Stylelint all in CI, comprehensive `ci.yml`, complete `.vscode/` workspace config, Dependabot configured, README comprehensive with badges and usage, CHANGELOG maintained, all Mermaid diagrams validated in CI
+
 ## [13.10.0] — 2026-04-26
 
 > **V14-FOUNDATIONS continued + production-ready restructuring** · **4835 tests / 157 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions

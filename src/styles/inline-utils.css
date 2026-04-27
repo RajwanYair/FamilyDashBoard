@@ -1,0 +1,272 @@
+/**
+ * Inline-Style Utilities (v13.12.0)
+ *
+ * Stable utility classes generated from the previously-inline `style="..."`
+ * attributes that lived in `src/index.html`.  Owned by the `components`
+ * cascade layer because every selector here targets bespoke configuration-
+ * panel widgets, not page-level layout.
+ *
+ * Maintenance rule:
+ *   Do **not** add new classes here for ad-hoc inline styles.  Prefer
+ *   adding the rule to the relevant component CSS (e.g. `components.css`,
+ *   `cards/<name>/<name>.css`).  This file exists strictly to retire the
+ *   legacy inline `style=` attributes that pre-dated the CSS-layer
+ *   architecture (ADR-008).
+ */
+
+@layer components {
+  /* ── Visibility (display:none / visibility:hidden) ─────────────────── */
+  .is-hidden {
+    display: none;
+  }
+  .is-invisible {
+    visibility: hidden;
+  }
+
+  /* ── Generic widths ────────────────────────────────────────────────── */
+  .cfg-w-auto {
+    width: auto;
+  }
+  .cfg-w-0 {
+    width: 0%;
+  }
+  .cfg-w-70 {
+    width: 70px;
+  }
+  .cfg-w-110 {
+    width: 110px;
+  }
+
+  /* ── LTR numeric / time / date inputs ──────────────────────────────── */
+  .cfg-ltr {
+    direction: ltr;
+  }
+  .cfg-num-65 {
+    direction: ltr;
+    width: 65px;
+  }
+  .cfg-num-70 {
+    direction: ltr;
+    width: 70px;
+  }
+  .cfg-num-90 {
+    direction: ltr;
+    width: 90px;
+  }
+  .cfg-num-100 {
+    direction: ltr;
+    width: 100px;
+  }
+  .cfg-num-110 {
+    direction: ltr;
+    width: 110px;
+  }
+  .cfg-num-140 {
+    direction: ltr;
+    width: 140px;
+  }
+
+  /* ── Range value labels ────────────────────────────────────────────── */
+  .cfg-range-val {
+    font-size: 0.75em;
+    margin-right: 6px;
+    min-width: 32px;
+  }
+  .cfg-range-val--narrow {
+    font-size: 0.75em;
+    margin-right: 6px;
+    min-width: 20px;
+  }
+
+  /* ── Code / textarea blocks ────────────────────────────────────────── */
+  .cfg-code-area {
+    width: 100%;
+    direction: ltr;
+    font-size: 0.78em;
+    font-family: monospace;
+    resize: vertical;
+  }
+  .cfg-code-area--auto {
+    height: auto;
+    font-size: 0.78em;
+    direction: ltr;
+    resize: vertical;
+  }
+
+  /* ── Hint / help text ──────────────────────────────────────────────── */
+  .cfg-hint-block {
+    margin-top: 8px;
+    font-size: 0.8em;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .cfg-help-center {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.75em;
+    color: var(--text-muted);
+  }
+  .cfg-hint-mini {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.7em;
+    color: var(--text-muted);
+  }
+  .cfg-hint-row {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    margin: 0 0 6px;
+  }
+  .cfg-hint-inline {
+    font-size: 0.72em;
+    opacity: 0.7;
+  }
+  .cfg-hint-tiny {
+    font-size: 0.65em;
+    opacity: 0.55;
+    margin-inline-start: 4px;
+  }
+
+  /* ── Themed input helpers ──────────────────────────────────────────── */
+  .cfg-input-themed {
+    background: var(--bg-card-inner);
+    color: var(--text-primary);
+  }
+  .cfg-input-themed--sm {
+    background: var(--bg-card-inner);
+    color: var(--text-primary);
+    font-size: 0.82em;
+  }
+
+  /* ── Layout helpers ────────────────────────────────────────────────── */
+  .cfg-flex-col-stretch {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .cfg-row-divider-hidden {
+    display: none;
+    margin-top: 10px;
+    border-top: 1px solid var(--accent-border);
+    padding-top: 8px;
+  }
+  .cfg-row-divider {
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    border-top: 1px solid var(--accent-border);
+    padding-top: 8px;
+  }
+  .cfg-row-center-wrap {
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .cfg-relative {
+    position: relative;
+  }
+
+  /* ── Spacing ───────────────────────────────────────────────────────── */
+  .cfg-mt-6 {
+    margin-top: 6px;
+  }
+  .cfg-mt-8 {
+    margin-top: 8px;
+  }
+  .cfg-mt-12 {
+    margin-top: 12px;
+  }
+
+  /* ── Inline tweaks ─────────────────────────────────────────────────── */
+  .cfg-fs-082 {
+    font-size: 0.82em;
+  }
+  .cfg-ltr-08 {
+    direction: ltr;
+    font-size: 0.8em;
+  }
+  .cfg-link-mini {
+    cursor: pointer;
+    font-size: 0.8em;
+  }
+  .cfg-link-secondary {
+    font-size: 0.8em;
+    cursor: pointer;
+    color: var(--text-secondary);
+  }
+  .cfg-list-scroll {
+    max-height: 100px;
+    margin-top: 4px;
+  }
+
+  /* ── Badges / pills ────────────────────────────────────────────────── */
+  .cfg-badge-accent {
+    display: none;
+    font-size: 0.62em;
+    background: var(--accent);
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+  .cfg-badge-warning {
+    display: none;
+    font-size: 0.65em;
+    background: var(--warning);
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .cfg-badge-neg {
+    display: none;
+    font-size: 0.65em;
+    background: var(--negative, #f87171);
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .cfg-badge-static {
+    font-size: 0.72em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+  .cfg-pill-danger {
+    background: #c33;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.82em;
+    cursor: pointer;
+  }
+  .cfg-pill-accent-hidden {
+    display: none;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 0.72em;
+    cursor: pointer;
+  }
+  .cfg-success-banner-hidden {
+    display: none;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 1.1em;
+    color: var(--success-color, #4caf50);
+  }
+  .cfg-saved-tag-hidden {
+    display: none;
+    font-size: 0.8em;
+  }
+}

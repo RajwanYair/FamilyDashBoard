@@ -16,7 +16,6 @@ Confirm `vX.Y.Z` appears consistently in ALL of:
 - `sw.ts` → `SW_VERSION` / `CACHE_NAME` constant (must match `sw.js`)
 - `CHANGELOG.md` → top entry heading
 - `README.md` → badge / version reference
-- `CLAUDE.md` → version reference
 - `.github/copilot-instructions.md` → heading
 - `.github/instructions/workspace.instructions.md` → heading
 - `docs/ARCHITECTURE.md` → version reference

@@ -82,6 +82,9 @@ export default defineConfig({
         //   New tests Sprints 87-96: cache IDB, weather, calendar, stocks, hebrew-cal,
         //   bg-images, diag-overlay (network tier/trend), sync animationend, card-registry
         //   countdown+video-news loadCard, legacyAdapter render fn. +66 tests = 4802 total.
+        // Sprint 116 (v13.11.0): actuals 89.35/81.84/89.02/90.51 — margins too tight to ratchet
+        //   (81.84 < 82, 90.51 < 91). Held at Sprint-96 values; ratchet deferred to next sprint
+        //   once branch/line coverage improves by adding targeted tests.
         statements: 89,
         branches: 81,
         functions: 89,

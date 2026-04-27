@@ -6,11 +6,26 @@
 # Default: all files
 * @RajwanYair
 
-# GitHub configs
+# GitHub configs and CI
 /.github/ @RajwanYair
 
-# Dashboard source
-/BestDashBoard.html @RajwanYair
+# TypeScript source
+/src/ @RajwanYair
 
-# Documentation
+# Tests
+/tests/ @RajwanYair
+
+# Documentation (moved from root in Sprint 115)
+/docs/ @RajwanYair
 /README.md @RajwanYair
+/CHANGELOG.md @RajwanYair
+
+# Worker (Cloudflare edge)
+/worker/ @RajwanYair
+
+# Build + tooling
+/vite.config.ts @RajwanYair
+/vitest.config.ts @RajwanYair
+/tsconfig*.json @RajwanYair
+/eslint.config.mjs @RajwanYair
+/scripts/ @RajwanYair

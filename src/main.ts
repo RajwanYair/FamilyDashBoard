@@ -10,6 +10,7 @@ import "./styles/themes.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/components.css";
+import "./styles/inline-utils.css"; // v13.12.0: utility classes extracted from index.html inline styles
 import "./styles/scroll.css";
 import "./styles/animations.css";
 import "./styles/transitions.css"; // ADR-022 companion: VT Level 2 named transitions (v12.0)

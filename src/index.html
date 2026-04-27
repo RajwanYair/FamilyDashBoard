@@ -101,7 +101,7 @@
         <p id="ecfg-dialog-error" class="ecfg-dialog-error" hidden></p>
         <div class="ecfg-dialog-actions">
           <button type="button" id="ecfg-dialog-confirm" class="cfg-btn">אישור</button>
-          <button type="button" id="ecfg-dialog-cancel" class="cfg-btn" style="background:var(--bg-card-inner);color:var(--text-primary)">ביטול</button>
+          <button type="button" id="ecfg-dialog-cancel" class="cfg-btn cfg-input-themed">ביטול</button>
         </div>
       </div>
     </dialog>
@@ -148,8 +148,8 @@
           <div class="help-row"><span>גוון חם לדימר לילה (on/off)</span><span class="help-key">L</span></div>
         </div>
         <!-- F10 (v7.3): Dynamically populated shortcuts from getKeyboardActions() -->
-        <div id="help-dynamic-keys" style="margin-top:8px;font-size:0.8em;color:var(--text-muted);text-align:center"></div>
-        <div style="text-align:center;margin-top:10px;font-size:0.75em;color:var(--text-muted)">לחץ Escape / ? / H לסגירה</div>
+        <div class="cfg-hint-block" id="help-dynamic-keys"></div>
+        <div class="cfg-help-center">לחץ Escape / ? / H לסגירה</div>
       </div>
     </dialog>
     <!-- Feature 33: Config overlay -->
@@ -218,11 +218,11 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌑 החשיכה אוטומטית — שעת התחלה (H)</span>
-            <input class="cfg-input" id="cfg-dim-start" type="number" min="0" max="23" placeholder="23" style="direction:ltr;width:70px" >
+            <input class="cfg-input cfg-num-70" id="cfg-dim-start" type="number" min="0" max="23" placeholder="23" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌅 החשיכה אוטומטית — שעת סיום (H)</span>
-            <input class="cfg-input" id="cfg-dim-end" type="number" min="0" max="23" placeholder="6" style="direction:ltr;width:70px" >
+            <input class="cfg-input cfg-num-70" id="cfg-dim-end" type="number" min="0" max="23" placeholder="6" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🌡️ יחידת טמפרטורה</span>
@@ -231,30 +231,30 @@
           <!-- F160: News font size slider -->
           <div class="cfg-row">
             <span class="cfg-label">📰 גודל טקסט חדשות (%)</span>
-            <input id="cfg-news-fontsize" aria-label="גודל טקסט חדשות אחוז" type="range" min="70" max="130" step="5" style="width:100px;direction:ltr" >
-            <span id="cfg-news-fontsize-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
+            <input class="cfg-num-100" id="cfg-news-fontsize" aria-label="גודל טקסט חדשות אחוז" type="range" min="70" max="130" step="5" >
+            <span class="cfg-range-val" id="cfg-news-fontsize-val">100%</span>
           </div>
           <!-- Night dimmer intensity slider -->
           <div class="cfg-row">
             <span class="cfg-label">🌑 עוצמת החשיכה (%)</span>
-            <input id="cfg-dim-level" aria-label="עוצמת החשיכה אחוז" type="range" min="10" max="95" step="5" style="width:110px;direction:ltr" title="כמה כהה המסך בזמן החשיכה">
-            <span id="cfg-dim-level-val" style="font-size:0.75em;margin-right:6px;min-width:32px">55%</span>
+            <input class="cfg-num-110" id="cfg-dim-level" aria-label="עוצמת החשיכה אחוז" type="range" min="10" max="95" step="5" title="כמה כהה המסך בזמן החשיכה">
+            <span class="cfg-range-val" id="cfg-dim-level-val">55%</span>
           </div>
           <!-- Font scale slider -->
           <div class="cfg-row">
             <span class="cfg-label">🔡 גודל גופן (+/- כדי לשנות)</span>
-            <input id="cfg-font-scale" aria-label="גודל גופן גלובלי אחוז" type="range" min="70" max="150" step="5" style="width:110px;direction:ltr" title="גודל גופן גלובלי (%)">
-            <span id="cfg-font-scale-val" style="font-size:0.75em;margin-right:6px;min-width:32px">100%</span>
+            <input class="cfg-num-110" id="cfg-font-scale" aria-label="גודל גופן גלובלי אחוז" type="range" min="70" max="150" step="5" title="גודל גופן גלובלי (%)">
+            <span class="cfg-range-val" id="cfg-font-scale-val">100%</span>
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🎞 מהירות גוּלֵל ההלכה</span>
-            <input id="cfg-ticker-speed" aria-label="מהירות גלילת ההלכה" type="range" min="1" max="5" step="1" style="width:100px;direction:ltr" title="1=איטי מאוד … 5=מהיר מאוד">
-            <span id="cfg-ticker-speed-val" style="font-size:0.75em;margin-right:6px;min-width:20px">3</span>
+            <input class="cfg-num-100" id="cfg-ticker-speed" aria-label="מהירות גלילת ההלכה" type="range" min="1" max="5" step="1" title="1=איטי מאוד … 5=מהיר מאוד">
+            <span class="cfg-range-val--narrow" id="cfg-ticker-speed-val">3</span>
           </div>
           <!-- F7 (v7.3): Motivation auto-advance interval -->
           <div class="cfg-row">
             <span class="cfg-label">💬 מחזור ציטוטים אוטומטי (דקות, 0=כבוי)</span>
-            <input id="cfg-moti-interval" class="cfg-input" type="number" min="0" max="60" step="1" style="width:70px;direction:ltr" placeholder="0" title="4-60 דקות — 0 = ידני בלבד">
+            <input id="cfg-moti-interval" class="cfg-input cfg-num-70" type="number" min="0" max="60" step="1" placeholder="0" title="4-60 דקות — 0 = ידני בלבד">
           </div>
           <!-- Animation level -->
           <div class="cfg-row">
@@ -288,7 +288,7 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🕍 geonameid (Hebcal / Zmanim)</span>
-            <input class="cfg-input" id="cfg-heb-geonameid" type="text" placeholder="281184 = ירושלים" dir="ltr" style="width:110px" >
+            <input class="cfg-input cfg-w-110" id="cfg-heb-geonameid" type="text" placeholder="281184 = ירושלים" dir="ltr" >
           </div>
         </div>
         <!-- Tab: Feeds -->
@@ -339,8 +339,8 @@
           <!-- F2 (v7.2): Alert beep volume slider -->
           <div class="cfg-row">
             <span class="cfg-label">🔊 עוצמת צליל התראה (%)</span>
-            <input id="cfg-alert-volume" type="range" min="0" max="100" step="5" style="width:100px;direction:ltr" title="עוצמת יציאת הקול לצלילי התראות">
-            <span id="cfg-alert-volume-val" style="font-size:0.75em;margin-right:6px;min-width:32px">18%</span>
+            <input class="cfg-num-100" id="cfg-alert-volume" type="range" min="0" max="100" step="5" title="עוצמת יציאת הקול לצלילי התראות">
+            <span class="cfg-range-val" id="cfg-alert-volume-val">18%</span>
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⚡ התראות מיידיות 10 שניות</span>
@@ -348,51 +348,51 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">📊 התראות מחיר מניה</span>
-            <textarea class="cfg-input" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" style="height:auto;font-size:0.78em;direction:ltr;resize:vertical" title="JSON: {&quot;SYMBOL&quot;:{&quot;above&quot;:N}} או {&quot;below&quot;:N} — התראה כשמחיר עובר או יורד מתחת לסף"></textarea>
+            <textarea class="cfg-input cfg-code-area--auto" id="cfg-stock-alerts" rows="2" placeholder="{&quot;AAPL&quot;:{&quot;above&quot;:220},&quot;NVDA&quot;:{&quot;below&quot;:100}}" title="JSON: {&quot;SYMBOL&quot;:{&quot;above&quot;:N}} או {&quot;below&quot;:N} — התראה כשמחיר עובר או יורד מתחת לסף"></textarea>
           </div>
         </div>
         <!-- Tab: Cards visibility + size -->
         <div class="cfg-section" id="cfg-section-cards" role="tabpanel" aria-labelledby="cfg-tab-cards" data-tab="cards">
-          <p style="font-size:0.75em;color:var(--text-muted);margin:0 0 6px">הסתר/הצג כרטיסיות ובחר גודל. גרור כרטיסייה בלוח הראשי לשינוי סדר/עמודה. השינויים נכנסים לתוקף לאחר שמירה.</p>
+          <p class="cfg-hint-row">הסתר/הצג כרטיסיות ובחר גודל. גרור כרטיסייה בלוח הראשי לשינוי סדר/עמודה. השינויים נכנסים לתוקף לאחר שמירה.</p>
           <div id="cfg-cards-list" class="cfg-cards-list"></div>
-          <div class="cfg-row" style="margin-top:8px">
-            <button type="button" id="cfg-reset-layout-btn" class="cfg-input" aria-label="איפוס סדר כרטיסיות לברירת מחדל" style="cursor:pointer;font-size:0.8em" title="איפוס סדר הכרטיסיות לברירת המחדל המקורית">↩ איפוס סידור כרטיסיות</button>
+          <div class="cfg-row cfg-mt-8">
+            <button type="button" id="cfg-reset-layout-btn" class="cfg-input cfg-link-mini" aria-label="איפוס סדר כרטיסיות לברירת מחדל" title="איפוס סדר הכרטיסיות לברירת המחדל המקורית">↩ איפוס סידור כרטיסיות</button>
           </div>
           <!-- Sprint 17: Per-card settings accordion -->
-          <details class="cfg-percard-details" style="margin-top:12px">
+          <details class="cfg-percard-details cfg-mt-12">
             <summary class="cfg-percard-summary">🌤️ מזג אוויר</summary>
             <div class="cfg-percard-body">
               <div class="cfg-row">
                 <span class="cfg-label">תחזית שעתית</span>
-                <select id="cfg-weather-hourly" class="cfg-input" style="width:auto">
+                <select id="cfg-weather-hourly" class="cfg-input cfg-w-auto">
                   <option value="on">מופעל</option>
                   <option value="off">כבוי</option>
                 </select>
               </div>
               <div class="cfg-row">
                 <span class="cfg-label">רוח</span>
-                <select id="cfg-weather-wind" class="cfg-input" style="width:auto">
+                <select id="cfg-weather-wind" class="cfg-input cfg-w-auto">
                   <option value="on">מופעל</option>
                   <option value="off">כבוי</option>
                 </select>
               </div>
               <div class="cfg-row">
                 <span class="cfg-label">זריחה/שקיעה</span>
-                <select id="cfg-weather-sunrise" class="cfg-input" style="width:auto">
+                <select id="cfg-weather-sunrise" class="cfg-input cfg-w-auto">
                   <option value="on">מופעל</option>
                   <option value="off">כבוי</option>
                 </select>
               </div>
               <div class="cfg-row">
                 <span class="cfg-label">פרטים מורחבים</span>
-                <select id="cfg-weather-details" class="cfg-input" style="width:auto">
+                <select id="cfg-weather-details" class="cfg-input cfg-w-auto">
                   <option value="on">מופעל</option>
                   <option value="off">כבוי</option>
                 </select>
               </div>
               <div class="cfg-row">
                 <span class="cfg-label">מצב נסיעה לארה"ב (NWS)</span>
-                <select id="cfg-weather-us-travel" class="cfg-input" style="width:auto">
+                <select id="cfg-weather-us-travel" class="cfg-input cfg-w-auto">
                   <option value="off">כבוי</option>
                   <option value="on">מופעל</option>
                 </select>
@@ -404,14 +404,14 @@
             <div class="cfg-percard-body">
               <div class="cfg-row">
                 <span class="cfg-label">הצגת מקור/אתר</span>
-                <select id="cfg-news-show-source" class="cfg-input" style="width:auto">
+                <select id="cfg-news-show-source" class="cfg-input cfg-w-auto">
                   <option value="on">מוצג</option>
                   <option value="off">מוסתר</option>
                 </select>
               </div>
               <div class="cfg-row">
                 <span class="cfg-label">מקסימום פריטים</span>
-                <input id="cfg-news-max-items" class="cfg-input" type="number" min="5" max="50" step="1" style="width:65px;direction:ltr" placeholder="20">
+                <input id="cfg-news-max-items" class="cfg-input cfg-num-65" type="number" min="5" max="50" step="1" placeholder="20">
               </div>
             </div>
           </details>
@@ -420,14 +420,14 @@
             <div class="cfg-percard-body">
               <div class="cfg-row">
                 <span class="cfg-label">קיבוץ לפי ענף</span>
-                <select id="cfg-stocks-group-sector" class="cfg-input" style="width:auto">
+                <select id="cfg-stocks-group-sector" class="cfg-input cfg-w-auto">
                   <option value="off">ללא קיבוץ</option>
                   <option value="on">קיבוץ לפי ענף</option>
                 </select>
               </div>
               <div class="cfg-row">
                 <span class="cfg-label">הצגת תיק השקעות</span>
-                <select id="cfg-stocks-show-portfolio" class="cfg-input" style="width:auto">
+                <select id="cfg-stocks-show-portfolio" class="cfg-input cfg-w-auto">
                   <option value="on">מוצג</option>
                   <option value="off">מוסתר</option>
                 </select>
@@ -439,14 +439,14 @@
             <div class="cfg-percard-body">
               <div class="cfg-row">
                 <span class="cfg-label">הצגת משימות שהושלמו</span>
-                <select id="cfg-tasks-show-done" class="cfg-input" style="width:auto">
+                <select id="cfg-tasks-show-done" class="cfg-input cfg-w-auto">
                   <option value="on">מוצג</option>
                   <option value="off">מוסתר</option>
                 </select>
               </div>
               <div class="cfg-row">
                 <span class="cfg-label">הצגת קטגוריות</span>
-                <select id="cfg-tasks-show-categories" class="cfg-input" style="width:auto">
+                <select id="cfg-tasks-show-categories" class="cfg-input cfg-w-auto">
                   <option value="on">מוצג</option>
                   <option value="off">מוסתר</option>
                 </select>
@@ -458,7 +458,7 @@
             <div class="cfg-percard-body">
               <div class="cfg-row">
                 <span class="cfg-label">זמן תגובה לרשת (RTT)</span>
-                <select id="cfg-sysinfo-show-rtt" class="cfg-input" style="width:auto">
+                <select id="cfg-sysinfo-show-rtt" class="cfg-input cfg-w-auto">
                   <option value="on">מוצג</option>
                   <option value="off">מוסתר</option>
                 </select>
@@ -470,11 +470,11 @@
         <div class="cfg-section" id="cfg-section-advanced" role="tabpanel" aria-labelledby="cfg-tab-advanced" data-tab="advanced">
           <div class="cfg-row">
             <span class="cfg-label">🏠 קו רוחב — עיר ביתי</span>
-            <input class="cfg-input" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" style="direction:ltr;width:90px" >
+            <input class="cfg-input cfg-num-90" id="cfg-home-lat" type="number" step="0.0001" placeholder="31.7683" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🏠 קו אורך — עיר ביתי</span>
-            <input class="cfg-input" id="cfg-home-lon" type="number" step="0.0001" placeholder="35.2137" style="direction:ltr;width:90px" >
+            <input class="cfg-input cfg-num-90" id="cfg-home-lon" type="number" step="0.0001" placeholder="35.2137" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">🏠 שם העיר (ביתי)</span>
@@ -483,12 +483,12 @@
           <!-- Custom CORS proxy for corporate/restricted networks -->
           <div class="cfg-row">
             <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
-            <input class="cfg-input" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" style="direction:ltr;font-size:0.8em" >
+            <input class="cfg-input cfg-ltr-08" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" >
           </div>
           <!-- Sprint 58: Network mode selector (worker / proxy fetch path) -->
           <div class="cfg-row">
             <span class="cfg-label">🔌 מצב רשת (Worker / Proxy)</span>
-            <select class="cfg-input cfg-select" id="cfg-network-mode" style="direction:ltr">
+            <select class="cfg-input cfg-select cfg-ltr" id="cfg-network-mode">
               <option value="auto">auto — ברירת מחדל (Worker + Proxy fallback)</option>
               <option value="worker-only">worker-only — Worker בלבד (ללא proxy)</option>
               <option value="no-worker">no-worker — ישיר / Proxy בלבד (ללא Worker)</option>
@@ -498,7 +498,7 @@
           <!-- F139: Custom countdown chip config -->
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — תאריך</span>
-            <input class="cfg-input" id="cfg-countdown-date" type="date" style="direction:ltr;width:140px" >
+            <input class="cfg-input cfg-num-140" id="cfg-countdown-date" type="date" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — שם</span>
@@ -510,11 +510,11 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — תאריך</span>
-            <input class="cfg-input" id="cfg-cd-card-date" type="date" style="direction:ltr;width:140px" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd-card-date" type="date" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — שעה</span>
-            <input class="cfg-input" id="cfg-cd-card-time" type="time" style="direction:ltr;width:100px" >
+            <input class="cfg-input cfg-num-100" id="cfg-cd-card-time" type="time" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — הודעת סיום</span>
@@ -522,7 +522,7 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — תאריך התחלה (לסרגל התקדמות)</span>
-            <input class="cfg-input" id="cfg-cd-card-start-date" type="date" style="direction:ltr;width:140px" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd-card-start-date" type="date" >
           </div>
           <!-- F8 (v7.2): Countdown card 2nd event -->
           <div class="cfg-row">
@@ -531,11 +531,11 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 2 — תאריך</span>
-            <input class="cfg-input" id="cfg-cd2-date" type="date" style="direction:ltr;width:140px" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd2-date" type="date" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 2 — שעה</span>
-            <input class="cfg-input" id="cfg-cd2-time" type="time" style="direction:ltr;width:100px" >
+            <input class="cfg-input cfg-num-100" id="cfg-cd2-time" type="time" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 2 — הודעת סיום</span>
@@ -548,11 +548,11 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 3 — תאריך</span>
-            <input class="cfg-input" id="cfg-cd3-date" type="date" style="direction:ltr;width:140px" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd3-date" type="date" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 3 — שעה</span>
-            <input class="cfg-input" id="cfg-cd3-time" type="time" style="direction:ltr;width:100px" >
+            <input class="cfg-input cfg-num-100" id="cfg-cd3-time" type="time" >
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 3 — הודעת סיום</span>
@@ -560,38 +560,38 @@
           </div>
           <!-- F107: Settings export/import -->
           <!-- Chores / Tasks editor (reads/writes localStorage dash_chores) -->
-          <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:4px">
+          <div class="cfg-row cfg-flex-col-stretch">
             <span class="cfg-label">📋 משימות משפחתיות (JSON)</span>
-            <textarea class="cfg-input" id="cfg-chores" rows="4" style="width:100%;direction:ltr;font-size:0.78em;font-family:monospace;resize:vertical" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;},{&quot;person&quot;:&quot;ריבה&quot;,&quot;chore&quot;:&quot;🛒 קניות&quot;}]" title="רשימת משימות משפחתיות — כל רשומה עם שדות person ו-chore. JSON תקני בלבד."></textarea>
+            <textarea class="cfg-input cfg-code-area" id="cfg-chores" rows="4" placeholder="[{&quot;person&quot;:&quot;עמרי&quot;,&quot;chore&quot;:&quot;🧹 לנקות&quot;},{&quot;person&quot;:&quot;ריבה&quot;,&quot;chore&quot;:&quot;🛒 קניות&quot;}]" title="רשימת משימות משפחתיות — כל רשומה עם שדות person ו-chore. JSON תקני בלבד."></textarea>
           </div>
           <!-- Portfolio editor (reads/writes localStorage dash_v2_portfolio) -->
-          <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:4px">
+          <div class="cfg-row cfg-flex-col-stretch">
             <span class="cfg-label">💼 תיק השקעות (JSON) — שדות: symbol, shares, cost</span>
-            <textarea class="cfg-input" id="cfg-portfolio" rows="3" style="width:100%;direction:ltr;font-size:0.78em;font-family:monospace;resize:vertical" placeholder="{&quot;AAPL&quot;:{&quot;shares&quot;:10,&quot;cost&quot;:150},&quot;MSFT&quot;:{&quot;shares&quot;:5,&quot;cost&quot;:300}}" title="תיק השקעות: מפתח = סימן מניה, ערך = {shares, cost}. JSON תקני."></textarea>
+            <textarea class="cfg-input cfg-code-area" id="cfg-portfolio" rows="3" placeholder="{&quot;AAPL&quot;:{&quot;shares&quot;:10,&quot;cost&quot;:150},&quot;MSFT&quot;:{&quot;shares&quot;:5,&quot;cost&quot;:300}}" title="תיק השקעות: מפתח = סימן מניה, ערך = {shares, cost}. JSON תקני."></textarea>
           </div>
           <!-- Tasks daily reset hour -->
           <div class="cfg-row">
             <span class="cfg-label">⏰ שעת איפוס משימות (0-23)</span>
-            <input class="cfg-input" id="cfg-tasks-reset-hour" type="number" min="0" max="23" step="1" style="width:70px;direction:ltr" placeholder="6" title="שעה (0-23) לאיפוס יומי של רשימת המשימות. ברירת מחדל: 6 (6:00 בבוקר)">
+            <input class="cfg-input cfg-num-70" id="cfg-tasks-reset-hour" type="number" min="0" max="23" step="1" placeholder="6" title="שעה (0-23) לאיפוס יומי של רשימת המשימות. ברירת מחדל: 6 (6:00 בבוקר)">
           </div>
-          <div class="cfg-row" style="justify-content:center;gap:6px;flex-wrap:wrap">
-            <button type="button" class="cfg-btn" id="cfg-export-btn" aria-label="ייצוא הגדרות כקובץ JSON" style="font-size:0.82em" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
-            <button type="button" class="cfg-btn" id="cfg-import-btn" aria-label="ייבוא הגדרות מקובץ JSON" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
+          <div class="cfg-row cfg-row-center-wrap">
+            <button type="button" class="cfg-btn cfg-fs-082" id="cfg-export-btn" aria-label="ייצוא הגדרות כקובץ JSON" title="הורד את כל ההגדרות כקובץ JSON">📥 ייצוא הגדרות</button>
+            <button type="button" class="cfg-btn cfg-input-themed--sm" id="cfg-import-btn" aria-label="ייבוא הגדרות מקובץ JSON" title="טען הגדרות מקובץ JSON שנשמר">📤 ייבוא הגדרות</button>
             <!-- F120: Dashboard URL share -->
-            <button type="button" class="cfg-btn" id="cfg-share-btn" aria-label="שתף קישור הגדרות" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
+            <button type="button" class="cfg-btn cfg-input-themed--sm" id="cfg-share-btn" aria-label="שתף קישור הגדרות" title="צור קישור עם ההגדרות שלך מוטמעות בתוכו">🔗 שתף קישור</button>
             <!-- V13-CONTINUITY: Encrypted URL share (AES-GCM) -->
-            <button type="button" class="cfg-btn" id="cfg-encrypt-share-btn" aria-label="שתף קישור הגדרות מוצפן" style="background:var(--bg-card-inner);color:var(--text-primary);font-size:0.82em" title="צור קישור מוצפן עם סיסמה — בטוח לשיתוף">🔐 שתף מוצפן</button>
+            <button type="button" class="cfg-btn cfg-input-themed--sm" id="cfg-encrypt-share-btn" aria-label="שתף קישור הגדרות מוצפן" title="צור קישור מוצפן עם סיסמה — בטוח לשיתוף">🔐 שתף מוצפן</button>
             <!-- F4 (v7.2): Reset all to defaults -->
-            <button type="button" id="cfg-reset-all-btn" aria-label="איפוס כל ההגדרות" style="background:#c33;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:0.82em;cursor:pointer" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
+            <button class="cfg-pill-danger" type="button" id="cfg-reset-all-btn" aria-label="איפוס כל ההגדרות" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
           </div>
-          <input type="file" id="cfg-import-file" accept=".json" style="display:none" >
+          <input class="is-hidden" type="file" id="cfg-import-file" accept=".json" >
         </div>
         <!-- Always-visible actions -->
-        <div class="cfg-row" style="justify-content:center;gap:10px;margin-top:8px;border-top:1px solid var(--accent-border);padding-top:8px">
+        <div class="cfg-row cfg-row-divider">
           <button type="button" class="cfg-btn" id="cfg-save-btn" aria-label="שמור הגדרות" title="שמור את כל השינויים ורענן">שמור</button>
-          <button type="button" class="cfg-btn" id="cfg-close-btn" aria-label="סגור הגדרות ללא שמירה" style="background:var(--bg-card-inner);color:var(--text-primary)" title="סגור ללא שמירה — לחץ S או Escape">סגור</button>
+          <button type="button" class="cfg-btn cfg-input-themed" id="cfg-close-btn" aria-label="סגור הגדרות ללא שמירה" title="סגור ללא שמירה — לחץ S או Escape">סגור</button>
         </div>
-        <div style="text-align:center;margin-top:8px;font-size:0.7em;color:var(--text-muted)">לחץ S או Escape לסגירה</div>
+        <div class="cfg-hint-mini">לחץ S או Escape לסגירה</div>
       </div>
     </div>
     <dialog class="diag-overlay" id="diag-overlay" aria-labelledby="diag-dialog-title" aria-modal="true">
@@ -604,9 +604,9 @@
         <button type="button" id="diag-clear-errors-btn" aria-label="נקה שגיאות זמן-ריצה" title="נקה שגיאות זמן-ריצה — Clear errors">🧹 נקה שגיאות</button>
         <div id="diag-panes"></div>
         <!-- Sprint 39: Runtime error log section -->
-        <details style="margin-top:6px">
-          <summary style="font-size:0.8em;cursor:pointer;color:var(--text-secondary)">⚠️ שגיאות זמן-ריצה</summary>
-          <div class="diag-log" id="diag-error-log" style="max-height:100px;margin-top:4px"></div>
+        <details class="cfg-mt-6">
+          <summary class="cfg-link-secondary">⚠️ שגיאות זמן-ריצה</summary>
+          <div class="diag-log cfg-list-scroll" id="diag-error-log"></div>
         </details>
         <div class="diag-log" id="diag-log"></div>
     </dialog>
@@ -629,8 +629,8 @@
                 <div class="clock" id="clock" role="timer" aria-label="שעה" title="לחץ ? או H לתפריט קיצורי מקלדת">00:00</div>
                 <div class="greeting" id="greeting"></div>
                 <div class="time-progress-bars" aria-hidden="true">
-                  <div class="progress-bar day-progress"><div class="progress-fill" id="day-bar" style="width:0%"></div></div>
-                  <div class="progress-bar year-progress"><div class="progress-fill" id="year-bar" style="width:0%"></div></div>
+                  <div class="progress-bar day-progress"><div class="progress-fill cfg-w-0" id="day-bar"></div></div>
+                  <div class="progress-bar year-progress"><div class="progress-fill cfg-w-0" id="year-bar"></div></div>
                 </div>
             </div>
             <div class="header-right">
@@ -662,7 +662,7 @@
           <!-- ── Left Column: News + Weather ── -->
           <div class="grid-col grid-col-left">
             <section class="card" role="region" data-card-id="news" aria-labelledby="card-title-news">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge blue">📰</span> <span id="card-title-news">חדשות</span> <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span id="news-bkm-count" title="כמות פריטים שמורים" style="display:none;font-size:0.62em;background:var(--accent);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:3px;vertical-align:middle"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית חדשות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-news" role="status" aria-label="מצב סנכרון חדשות" title="סנכרון חדשות — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge blue">📰</span> <span id="card-title-news">חדשות</span> <span class="news-count-badge" id="news-count"></span><span class="news-bkm-pill" id="news-bkm-pill" title="מוצג: מועדפים בלבד — לחץ לביטול">🔖 מועדפים</span><span class="cfg-badge-accent" id="news-bkm-count" title="כמות פריטים שמורים"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית חדשות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="news-body" id="news-body">
                 <!-- Feature 39: News source filter chips -->
                 <div class="news-filter-bar" id="news-filter-bar"></div>
@@ -744,45 +744,45 @@
                 <!-- Main content column (right side in RTL) -->
                 <div class="hc-main-col">
                   <div class="hc-row hc-shab-row" id="hc-shabbat"><span class="hc-label">🕯️ נרות</span><span class="hc-val skeleton" id="hc-candles">טוען...</span><span class="hc-sep"> | </span><span class="hc-label">✨ הבדלה</span><span class="hc-val" id="hc-havdala">--</span></div>
-                  <div class="hc-row" id="hc-countdown-row" style="display:none"><span class="hc-label">⏱ כניסה בעוד</span><span class="hc-val hc-countdown" id="hc-countdown">--:--:--</span></div>
-                  <div class="hc-row" id="hc-holiday-row" style="display:none"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
-                  <div class="hc-row hc-special-row" id="hc-special-row" style="display:none"><span class="hc-val hc-special" id="hc-special"></span></div>
-                  <div class="hc-row" id="hc-school-row" style="display:none"><span class="hc-label">🎒 חופשה</span><span class="hc-val hc-school-val" id="hc-school">--</span></div>
-                  <div class="hc-row" id="hc-parasha-row" style="display:none"><span class="hc-label">📖 פרשה</span><span class="hc-val hc-parasha-val" id="hc-parasha">--</span><span class="hc-parasha-ref" id="hc-parasha-ref"></span></div>
-                  <div class="hc-row" id="hc-daf-row" style="display:none"><span class="hc-label">📚 דף יומי</span><span class="hc-val hc-daf-val" id="hc-daf">--</span></div>
+                  <div class="hc-row is-hidden" id="hc-countdown-row"><span class="hc-label">⏱ כניסה בעוד</span><span class="hc-val hc-countdown" id="hc-countdown">--:--:--</span></div>
+                  <div class="hc-row is-hidden" id="hc-holiday-row"><span class="hc-label">🎉 חג</span><span class="hc-val" id="hc-holiday">--</span></div>
+                  <div class="hc-row hc-special-row is-hidden" id="hc-special-row"><span class="hc-val hc-special" id="hc-special"></span></div>
+                  <div class="hc-row is-hidden" id="hc-school-row"><span class="hc-label">🎒 חופשה</span><span class="hc-val hc-school-val" id="hc-school">--</span></div>
+                  <div class="hc-row is-hidden" id="hc-parasha-row"><span class="hc-label">📖 פרשה</span><span class="hc-val hc-parasha-val" id="hc-parasha">--</span><span class="hc-parasha-ref" id="hc-parasha-ref"></span></div>
+                  <div class="hc-row is-hidden" id="hc-daf-row"><span class="hc-label">📚 דף יומי</span><span class="hc-val hc-daf-val" id="hc-daf">--</span></div>
                   <!-- Feature 53: Daf Yomi Sefaria link -->
-                  <div class="hc-row" id="hc-daf-link-row" style="display:none">
-                    <span class="hc-label" style="visibility:hidden">.</span>
+                  <div class="hc-row is-hidden" id="hc-daf-link-row">
+                    <span class="hc-label is-invisible">.</span>
                     <button type="button" class="hc-parasha-link" id="hc-daf-link" aria-label="פתח דף יומי בספריה" title="פתח את דף היומי בספריא — Open in Sefaria">📚 ספריה</button>
                   </div>
                   <!-- Feature 23: Psalm of the Day -->
-                  <div class="hc-row" id="hc-psalm-row" style="display:none"><span class="hc-label">🎵 שיר</span><span class="hc-val hc-psalm-val" id="hc-psalm">--</span></div>
+                  <div class="hc-row is-hidden" id="hc-psalm-row"><span class="hc-label">🎵 שיר</span><span class="hc-val hc-psalm-val" id="hc-psalm">--</span></div>
                   <!-- Feature 28: Upcoming calendar event countdown -->
-                  <div class="hc-row" id="hc-event-row" style="display:none"><span class="hc-label">📆 הבא</span><span class="hc-val" id="hc-event">--</span></div>
+                  <div class="hc-row is-hidden" id="hc-event-row"><span class="hc-label">📆 הבא</span><span class="hc-val" id="hc-event">--</span></div>
                   <!-- F151: Sefirat HaOmer count -->
-                  <div class="hc-row" id="hc-omer-row" style="display:none"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="hc-omer"></span></div>
+                  <div class="hc-row is-hidden" id="hc-omer-row"><span class="hc-label">🌾 עומר</span><span class="omer-count" id="hc-omer"></span></div>
                   <!-- Feature 44: Parasha Sefaria link -->
-                  <div class="hc-row" id="hc-parasha-link-row" style="display:none"><span class="hc-label" style="visibility:hidden">.</span><button type="button" class="hc-parasha-link" id="hc-parasha-link" aria-label="פתח פרשת השבוע בספריה" title="פתח את פרשת השבוע בספריא — Open in Sefaria">📖 ספרייה</button></div>
+                  <div class="hc-row is-hidden" id="hc-parasha-link-row"><span class="hc-label is-invisible">.</span><button type="button" class="hc-parasha-link" id="hc-parasha-link" aria-label="פתח פרשת השבוע בספריה" title="פתח את פרשת השבוע בספריא — Open in Sefaria">📖 ספרייה</button></div>
                   <div class="hc-divider"></div>
                   <!-- Feature 30: Halacha excerpt -->
-                  <div class="hc-row" id="hc-halacha-row" style="display:none"><span class="hc-label">⚖️ הלכה</span><span class="hc-val hc-halacha-val" id="hc-halacha">--</span></div>
+                  <div class="hc-row is-hidden" id="hc-halacha-row"><span class="hc-label">⚖️ הלכה</span><span class="hc-val hc-halacha-val" id="hc-halacha">--</span></div>
                   <div class="hc-saying" id="hc-saying">טוען...</div>
-                  <div class="hc-birthday" id="hc-birthday" style="display:none"></div>
+                  <div class="hc-birthday is-hidden" id="hc-birthday"></div>
                   <!-- v7: Pending tasks strip -->
-                  <div class="hc-tasks-strip" id="hc-tasks-strip" style="display:none"></div>
+                  <div class="hc-tasks-strip is-hidden" id="hc-tasks-strip"></div>
                 </div>
                 <!-- Side column: moon + zmanim (left side in RTL) -->
                 <div class="hc-side-col">
                   <div class="hc-moon-block" id="hc-moon-row">
                     <div class="hc-moon-val" id="hc-moon">--</div>
                   </div>
-                  <div class="zmanim-section" id="zmanim-section" style="display:none">
+                  <div class="zmanim-section is-hidden" id="zmanim-section">
                     <div class="zmanim-grid" id="zmanim-grid"></div>
                   </div>
                 </div>
               </div>
             </section>
-            <section class="card" role="region" data-card-id="calendar" aria-labelledby="card-title-calendar" style="position:relative">
+            <section class="card cfg-relative" role="region" data-card-id="calendar" aria-labelledby="card-title-calendar">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית לוח שנה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="cal-wrapper">
                 <div class="cal-week-grid" id="cal-week-grid" role="list" aria-live="polite" aria-label="תצוגת שבוע קרוב">
@@ -811,7 +811,7 @@
             </section>
 
             <!-- Video News Card — hidden by default; enable in Settings → Cards -->
-            <fdb-video-news data-card-id="video-news" data-card-size="lg" style="display:none" class="card" aria-label="📺 ערוץ חדשות"></fdb-video-news>
+            <fdb-video-news data-card-id="video-news" data-card-size="lg" class="card is-hidden" aria-label="📺 ערוץ חדשות"></fdb-video-news>
           </div>
 
           <!-- ── Right Column: Stocks + Alerts + Motivation ── -->
@@ -826,7 +826,7 @@
               <!-- F155: Stocks gainers/losers summary -->
               <div id="stk-summary" class="stk-summary"></div>
               <!-- Feature 51: Portfolio Total Value Row -->
-              <div id="stk-total-row" class="stk-total-row" style="display:none" title="סה״כ שווי תיק — הגדר מניות בהגדרות → מתקדם">
+              <div id="stk-total-row" class="stk-total-row is-hidden" title="סה״כ שווי תיק — הגדר מניות בהגדרות → מתקדם">
                 <span class="stk-total-label">💼 תיק:</span>
                 <span id="stk-total-val">--</span>
                 <span id="stk-total-pnl"></span>
@@ -881,11 +881,11 @@
                   <div class="cd-tile"><span class="cd-num" id="cd-secs">--</span><span class="cd-unit">שניות</span></div>
                 </div>
                 <div class="cd-msg" id="cd-msg"></div>
-                <div class="cd-progress-wrap" id="cd-progress-wrap" style="display:none">
+                <div class="cd-progress-wrap is-hidden" id="cd-progress-wrap">
                   <div class="cd-progress-bar" id="cd-progress-bar"></div>
                 </div>
                 <!-- F8 (v7.2): Second countdown event -->
-                <div class="cd2-section" id="cd2-section" style="display:none;margin-top:10px;border-top:1px solid var(--accent-border);padding-top:8px">
+                <div class="cd2-section cfg-row-divider-hidden" id="cd2-section">
                   <div class="cd-title cd2-title" id="cd2-title"></div>
                   <div class="cd-tiles cd2-tiles">
                     <div class="cd-tile"><span class="cd-num" id="cd2-days">--</span><span class="cd-unit">ימים</span></div>
@@ -894,9 +894,9 @@
                     <div class="cd-tile"><span class="cd-num" id="cd2-secs">--</span><span class="cd-unit">שניות</span></div>
                   </div>
                   <div class="cd-msg cd2-msg" id="cd2-msg"></div>
-                  <div class="cd-progress-wrap" id="cd2-progress-wrap" style="display:none"><div class="cd-progress-bar" id="cd2-progress-bar"></div></div>
+                  <div class="cd-progress-wrap is-hidden" id="cd2-progress-wrap"><div class="cd-progress-bar" id="cd2-progress-bar"></div></div>
                 </div>
-                <div class="cd2-section" id="cd3-section" style="display:none;margin-top:10px;border-top:1px solid var(--accent-border);padding-top:8px">
+                <div class="cd2-section cfg-row-divider-hidden" id="cd3-section">
                   <div class="cd-title cd2-title" id="cd3-title"></div>
                   <div class="cd-tiles cd2-tiles">
                     <div class="cd-tile"><span class="cd-num" id="cd3-days">--</span><span class="cd-unit">ימים</span></div>
@@ -905,12 +905,12 @@
                     <div class="cd-tile"><span class="cd-num" id="cd3-secs">--</span><span class="cd-unit">שניות</span></div>
                   </div>
                   <div class="cd-msg cd2-msg" id="cd3-msg"></div>
-                  <div class="cd-progress-wrap" id="cd3-progress-wrap" style="display:none"><div class="cd-progress-bar" id="cd3-progress-bar"></div></div>
+                  <div class="cd-progress-wrap is-hidden" id="cd3-progress-wrap"><div class="cd-progress-bar" id="cd3-progress-bar"></div></div>
                 </div>
               </div>
             </section>
             <section class="card" role="region" data-card-id="tasks" aria-labelledby="card-title-tasks">
-              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge green">✅</span> <span id="card-title-tasks">משימות</span> <span id="tasks-pending-badge" style="display:none;font-size:0.65em;background:var(--warning);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle"></span><span id="tasks-overdue-badge" style="display:none;font-size:0.65em;background:var(--negative,#f87171);color:#fff;padding:1px 5px;border-radius:4px;font-weight:700;margin-right:4px;vertical-align:middle" title="משימות באיחור"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית משימות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
+              <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"></div><div class="card-hd-title"><span class="icon-badge green">✅</span> <span id="card-title-tasks">משימות</span> <span class="cfg-badge-warning" id="tasks-pending-badge"></span><span class="cfg-badge-neg" id="tasks-overdue-badge" title="משימות באיחור"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית משימות" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="tasks-body">
                 <div class="tasks-actions">
                   <button type="button" id="tasks-mark-all-btn" class="tasks-action-btn" title="סמן הכל כבוצע">✅ סמן הכל</button>
@@ -923,12 +923,12 @@
                 <!-- F7 (v7.2): Quick-add task without opening config -->
                 <div class="tasks-quick-add" id="tasks-quick-add">
                   <input type="text" id="tasks-quick-input" placeholder="📝 משימה חדשה..." autocomplete="off" >
-                  <input type="text" id="tasks-quick-person" placeholder="שם" style="width:70px" >
+                  <input class="cfg-w-70" type="text" id="tasks-quick-person" placeholder="שם" >
                   <button type="button" id="tasks-quick-add-btn" aria-label="הוסף משימה" title="הוסף משימה">➕</button>
                 </div>
                 <div class="tasks-list" id="tasks-list" aria-live="polite" aria-label="רשימת משימות"></div>
                 <!-- Celebratory message when all tasks are done -->
-                <div id="tasks-all-done-msg" style="display:none;text-align:center;padding:10px 0;font-size:1.1em;color:var(--success-color,#4caf50)">🎉 כל המשימות הושלמו! כל הכבוד!</div>
+                <div class="cfg-success-banner-hidden" id="tasks-all-done-msg">🎉 כל המשימות הושלמו! כל הכבוד!</div>
               </div>
             </section>
             <!-- System Info card -->
@@ -959,25 +959,25 @@
         <footer class="status-bar">
             <span id="version-badge">Dashboard v6.0.0 — משפחת רגואן</span>
             <div class="progress-group">
-                <div class="progress-bar" title="אחוז התקדמות היום"><span>יום</span> <span class="progress-track"><span class="progress-fill day" id="day-progress" style="width:0%"></span></span> <span id="day-pct">0%</span></div>
-                <div class="progress-bar" title="אחוז התקדמות השנה"><span>שנה</span> <span class="progress-track"><span class="progress-fill year" id="year-progress" style="width:0%"></span></span> <span id="year-pct">0%</span></div>
+                <div class="progress-bar" title="אחוז התקדמות היום"><span>יום</span> <span class="progress-track"><span class="progress-fill day cfg-w-0" id="day-progress"></span></span> <span id="day-pct">0%</span></div>
+                <div class="progress-bar" title="אחוז התקדמות השנה"><span>שנה</span> <span class="progress-track"><span class="progress-fill year cfg-w-0" id="year-progress"></span></span> <span id="year-pct">0%</span></div>
             </div>
             <span class="status-uptime" id="uptime-display"></span>
             <!-- Feature 40: Connectivity indicator -->
             <span id="conn-indicator" title="סטטוס חיבור אינטרנט"></span>
             <!-- Market status chip (updated by stocks card) -->
-            <span id="status-market-chip" title="סטטוס שוק המניות NYSE" style="font-size:0.72em;padding:1px 5px;border-radius:3px;font-weight:700"></span>
+            <span class="cfg-badge-static" id="status-market-chip" title="סטטוס שוק המניות NYSE"></span>
             <!-- Night dimmer active indicator -->
-            <span id="dim-indicator" style="display:none;font-size:0.8em" title="עמעום לילה פעיל — לחץ N לכיבוי">🌙</span>
+            <span class="cfg-saved-tag-hidden" id="dim-indicator" title="עמעום לילה פעיל — לחץ N לכיבוי">🌙</span>
             <!-- Feature 49: Font scale indicator -->
             <span id="font-scale-indicator" title="גודל גופן נוכחי — לחץ +/- לשינוי"></span>
             <!-- F165: PWA install prompt button -->
-            <button type="button" id="btn-install" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:0.72em;cursor:pointer" title="התקן כאפליקציה עצמאית">📲 התקן</button>
+            <button class="cfg-pill-accent-hidden" type="button" id="btn-install" title="התקן כאפליקציה עצמאית">📲 התקן</button>
             <span id="refresh-stamp" title="שעת רענון נתונים אחרונה">רענון: --:--</span>
             <!-- F6 (v7.2): Oldest cached data age -->
-            <span id="cache-age" style="font-size:0.72em;opacity:0.7" title="גיל הנתונים המאוכסנים ביותר"></span>
+            <span class="cfg-hint-inline" id="cache-age" title="גיל הנתונים המאוכסנים ביותר"></span>
             <!-- F5 (v7.3): Service Worker version chip -->
-            <span id="sw-version" hidden style="font-size:0.65em;opacity:0.55;margin-inline-start:4px" title="גרסת ה-Service Worker הפעילה"></span>
+            <span class="cfg-hint-tiny" id="sw-version" hidden title="גרסת ה-Service Worker הפעילה"></span>
         </footer>
     </div>
 

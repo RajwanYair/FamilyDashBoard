@@ -268,7 +268,7 @@ export function loadConfig(): DashboardConfig {
     if (!raw) return { ...DEFAULT_CONFIG };
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return { ...DEFAULT_CONFIG };
-    const migrated = migrateConfig(parsed as Partial<DashboardConfig>);
+    const migrated = migrateConfig(parsed);
     const config: DashboardConfig = { ...DEFAULT_CONFIG, ...migrated };
     // Log if schema is behind current version
     if (config.configVersion !== CONFIG_VERSION) {
@@ -428,7 +428,7 @@ export function validateImportedConfig(raw: unknown): ConfigImportResult {
 
   // Run migration + merge with defaults + sanitize
   try {
-    const migrated = migrateConfig(obj as Partial<DashboardConfig>);
+    const migrated = migrateConfig(obj);
     const merged: DashboardConfig = { ...DEFAULT_CONFIG, ...migrated };
     const clean = sanitize(merged);
     diagLog("[config] import validated and merged OK");
@@ -566,7 +566,7 @@ export function diffConfigs(a: DashboardConfig, b: DashboardConfig): ConfigDiffE
     const va = (a as unknown as Record<string, unknown>)[key as string];
     const vb = (b as unknown as Record<string, unknown>)[key as string];
     if (JSON.stringify(va) !== JSON.stringify(vb)) {
-      diffs.push({ key: key as string, oldValue: va, newValue: vb });
+      diffs.push({ key: key, oldValue: va, newValue: vb });
     }
   }
 

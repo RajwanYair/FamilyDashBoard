@@ -50,7 +50,7 @@ const pendingEffects = new Set<EffectImpl>();
 
 function track<T>(source: Source<T>): void {
   if (activeReads !== null) {
-    activeReads.add(source as Source<unknown>);
+    activeReads.add(source);
   }
 }
 

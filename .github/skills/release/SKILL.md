@@ -18,17 +18,16 @@ Update ALL of these (search current version string, e.g. `7.9.0`):
 | 2   | `sw.js`                                          | Comment header version string                         | e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z` |
 | 3   | `CHANGELOG.md`                                   | New `## [X.Y.Z]` section at top; test count line      | Move `[Unreleased]` → versioned section          |
 | 4   | `README.md`                                      | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge   | Lines ~22-23                                     |
-| 5   | `CLAUDE.md`                                      | Header `v7.X.Y`, test count (×2), suite count         | Lines 1, 17, 48                                  |
-| 6   | `.github/copilot-instructions.md`                | Header version + test count                           | Lines 1, 6                                       |
-| 7   | `.github/instructions/workspace.instructions.md` | Header version + test count                           | Line 6                                           |
-| 8   | `docs/ARCHITECTURE.md`                           | Test count in stack table + constraint list           | Lines ~14, ~195                                  |
-| 9   | `.github/assets/banner.svg`                      | Version string + test count in footer text            | Line ~34                                         |
-| 10  | `.github/assets/architecture.svg`                | Version (×3: title, sw.js label, footer) + test count | Lines ~15, 25, 124, 142                          |
-| 11  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                        | Line ~156                                        |
-| 12  | `.github/assets/data-sources.svg`                | `Data Sources… — vX.Y.Z` title                        | Line ~9                                          |
-| 13  | `.github/assets/roadmap.svg`                     | Test count progression line                           | Line ~90                                         |
-| 14  | `docs/ROADMAP.md`                                | New row in the version history table                  | Bottom of the released versions table            |
-| 15  | `.github/skills/release/SKILL.md`                | Verification guidance if the baseline changed         | Keep it aligned with current repo state          |
+| 5   | `.github/copilot-instructions.md`                | Header version + test count                           | Lines 1, 6                                       |
+| 6   | `.github/instructions/workspace.instructions.md` | Header version + test count                           | Line 6                                           |
+| 7   | `docs/ARCHITECTURE.md`                           | Test count in stack table + constraint list           | Lines ~14, ~195                                  |
+| 8   | `.github/assets/banner.svg`                      | Version string + test count in footer text            | Line ~34                                         |
+| 9   | `.github/assets/architecture.svg`                | Version (×3: title, sw.js label, footer) + test count | Lines ~15, 25, 124, 142                          |
+| 10  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                        | Line ~156                                        |
+| 11  | `.github/assets/data-sources.svg`                | `Data Sources… — vX.Y.Z` title                        | Line ~9                                          |
+| 12  | `.github/assets/roadmap.svg`                     | Test count progression line                           | Line ~90                                         |
+| 13  | `docs/ROADMAP.md`                                | New row in the version history table                  | Bottom of the released versions table            |
+| 14  | `.github/skills/release/SKILL.md`                | Verification guidance if the baseline changed         | Keep it aligned with current repo state          |
 
 > `BestDashBoard.html` is legacy/archived — do NOT update its version.
 > `docs/ROADMAP.md` comment `<!-- Last updated: vX.Y.Z -->` at the bottom should also be bumped.
@@ -90,7 +89,7 @@ git tag vX.Y.Z
 git push origin main --tags
 ```
 
-`release.yml` auto-creates GitHub Release + attaches dist.zip + sw.js + icon.svg on `v*.*.*` tags.
+`release.yml` auto-creates GitHub Release + attaches `dist.zip`, `sw.js`, and `dist/icon.svg` on `v*.*.*` tags.
 
 ## Verification
 
@@ -107,7 +106,7 @@ node scripts/check-sw-version.mjs
 ```
 
 Zero tolerance: 0 type errors · 0 lint errors/warnings · 0 markdownlint errors ·
-0 test failures · JS gzip ≤ 100 KB · CSS gzip ≤ 25 KB · SW version matches `package.json`.
+0 test failures · JS gzip ≤ 100 KB · CSS gzip ≤ 26 KB · SW version matches `package.json`.
 
 Read `.github/instructions/workspace.instructions.md` before updating any
 hardcoded test-count or toolchain text. Do not carry forward stale totals.

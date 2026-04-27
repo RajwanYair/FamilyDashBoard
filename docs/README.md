@@ -11,7 +11,6 @@ This directory is the canonical entry point for product documentation in FamilyD
 | [ROADMAP.md](ROADMAP.md)                                                 | Current strategy, stream priorities, and release direction       |
 | [adr/README.md](adr/README.md)                                           | Accepted architectural decisions and their rationale             |
 | [../CHANGELOG.md](../CHANGELOG.md)                                       | Versioned release history                                        |
-| [../CLAUDE.md](../CLAUDE.md)                                             | Lean contributor context that points back to canonical rules     |
 | [../.github/copilot-instructions.md](../.github/copilot-instructions.md) | Canonical coding rules and project constraints                   |
 
 ## Legacy And Archive Boundary

@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v13.10.0)
+# FamilyDashBoard — Architecture (v13.12.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -43,12 +43,20 @@ src/
 │   ├── state.ts                # EventTarget-based reactive pub/sub store — state.get/set/on/off/seedConfig/snapshot
 │   ├── error-reporter.ts       # Debounced client error batching → POST /api/errors (best-effort telemetry)
 │   ├── error-tracker.ts        # Window error/unhandledrejection listeners, error bucketing
+│   ├── signals.ts              # Zero-dep reactive primitives: signal/computed/effect/batch/untrack/isSignal (TC39 Signals API mirror, ADR-038, v13.9)
+│   ├── fs-access.ts            # Native File System Access: saveTextFile/pickTextFile with showSaveFilePicker fallback → blob-anchor (v13.10)
 │   ├── card-registry.ts        # Map-based card registry, lazy dynamic import() (v7)
 │   ├── fdb-card.ts             # FdbCard base class implementing CardRuntime interface (v7.13)
 │   ├── diag.ts                 # diagLog() + diagnostic overlay
 │   ├── config.ts               # Settings load/save/export/import — migrateConfig() · sanitize() (v7.4)
 │   ├── sync.ts                 # setSync(id, state) — sync dots + health
-│   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper
+│   ├── idle.ts                 # scheduleIdle(), requestIdleCallback wrapper; pageVisibleSignal: ReadonlySignal<boolean> (v13.10)
+│   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers + card init timing (v7.19)
+│   ├── provider.ts             # Per-provider health tracking: success/failure counts + latency histogram (v7.19)
+│   ├── utils.ts                # Shared utility functions (formatters, helpers)
+│   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
+│   ├── sw-constants.ts         # SW version/cache name constants shared between sw.ts and src/
+│   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED + 10s auto-reload countdown + 60min periodic update
 │   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers + card init timing (v7.19)
 │   ├── provider.ts             # Per-provider health tracking: success/failure counts + latency histogram (v7.19)
 │   ├── utils.ts                # Shared utility functions (formatters, helpers)

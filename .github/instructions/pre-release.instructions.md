@@ -60,19 +60,18 @@ Update ALL of these on every version bump. Search the old version string (e.g. `
 | 2   | `sw.js`                                          | Comment header version string (e.g. `/* FamilyDashBoard ServiceWorker — vX.Y.Z`) |
 | 3   | `CHANGELOG.md`                                   | New `## [X.Y.Z]` section with test count; move `[Unreleased]` block              |
 | 4   | `README.md`                                      | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge (~lines 22-23)               |
-| 5   | `CLAUDE.md`                                      | Header line 1, test count ×2 (lines ~17 and ~48)                                 |
-| 6   | `.github/copilot-instructions.md`                | Header version (line 1) + test count (line 6)                                    |
-| 7   | `.github/instructions/workspace.instructions.md` | Header version + test count (line 6)                                             |
-| 8   | `docs/ARCHITECTURE.md`                           | Test count in stack table (~line 14) + constraint list (~line 195)               |
-| 9   | `.github/assets/banner.svg`                      | Version string + test count in footer text                                       |
-| 10  | `.github/assets/architecture.svg`                | Version ×3 (title, sw.js label, footer) + test count                             |
-| 11  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                                                   |
-| 12  | `.github/assets/data-sources.svg`                | Title line `— vX.Y.Z`                                                            |
-| 13  | `.github/assets/roadmap.svg`                     | Test count progression line                                                      |
-| 14  | `docs/ROADMAP.md`                                | New row in released-versions table + `<!-- Last updated: vX.Y.Z -->` comment     |
-| 15  | `.github/skills/release/SKILL.md`                | `All N+ tests / M+ suites` verification line                                     |
+| 5   | `.github/copilot-instructions.md`                | Header version (line 1) + test count (line 6)                                    |
+| 6   | `.github/instructions/workspace.instructions.md` | Header version + test count (line 6)                                             |
+| 7   | `docs/ARCHITECTURE.md`                           | Test count in stack table (~line 14) + constraint list (~line 195)               |
+| 8   | `.github/assets/banner.svg`                      | Version string + test count in footer text                                       |
+| 9   | `.github/assets/architecture.svg`                | Version ×3 (title, sw.js label, footer) + test count                             |
+| 10  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                                                   |
+| 11  | `.github/assets/data-sources.svg`                | Title line `— vX.Y.Z`                                                            |
+| 12  | `.github/assets/roadmap.svg`                     | Test count progression line                                                      |
+| 13  | `docs/ROADMAP.md`                                | New row in released-versions table + `<!-- Last updated: vX.Y.Z -->` comment     |
+| 14  | `.github/skills/release/SKILL.md`                | `All N+ tests / M+ suites` verification line                                     |
 
-- [ ] All 15 files above have been updated with the new version and/or test count
+- [ ] All 14 files above have been updated with the new version and/or test count
 - [ ] `CHANGELOG.md` — unreleased items moved to new version section; old sprints collapsed to one line each
 - [ ] `docs/ARCHITECTURE.md` — reflects current card list (11 cards), module graph, CSS layer order
 
@@ -132,7 +131,7 @@ git push origin main --tags
 ```
 
 - Tag format: `vMAJOR.MINOR.PATCH` — CI (`release.yml`) auto-creates GitHub Release on push
-- Attach `dist.zip`, `sw.js`, `icon.svg` — handled by `release.yml` automatically
+- Attach `dist.zip`, `sw.js`, `dist/icon.svg` — handled by `release.yml` automatically
 - After tag push: verify GitHub Actions `ci.yml` passes on the tag run
 
 ---

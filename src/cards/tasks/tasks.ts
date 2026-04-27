@@ -533,20 +533,20 @@ export function initTasksCard(): void {
     document.getElementById("tasks-mark-all-btn"),
     "click",
     "fdbTasksClickBound",
-    markAllDone as EventListener,
+    markAllDone,
   );
   bindOnce(
     document.getElementById("tasks-reset-btn"),
     "click",
     "fdbTasksClickBound",
-    resetDoneToday as EventListener,
+    resetDoneToday,
   );
   // F3 (v7.3): Remove done tasks button
   bindOnce(
     document.getElementById("tasks-remove-done-btn"),
     "click",
     "fdbTasksClickBound",
-    removeDoneTasks as EventListener,
+    removeDoneTasks,
   );
 
   // F7 (v7.2): Quick-add task
@@ -561,10 +561,10 @@ export function initTasksCard(): void {
       addQuickChore(person, chore);
       quickInput.value = "";
       if (quickPerson) quickPerson.value = "";
-    }) as EventListener);
+    }));
     bindOnce(quickInput, "keydown", "fdbTasksKeydownBound", ((e: Event) => {
       if ((e as KeyboardEvent).key === "Enter") quickBtn.click();
-    }) as EventListener);
+    }));
   }
 }
 

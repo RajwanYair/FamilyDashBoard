@@ -23,25 +23,29 @@ Closes #
 
 ## Testing
 
-- [ ] Tested in Chrome (desktop)
-- [ ] Tested in Firefox
-- [ ] Tested in full-screen / TV mode
-- [ ] RTL layout verified
-- [ ] Responsive layout verified (desktop, tablet, mobile)
-- [ ] All API sections load correctly (news ticker, news card, weather, stocks, calendar, currency, motivation)
-- [ ] No console errors
-- [ ] Unit tests pass: `npx vitest run`
+- [ ] `npx vitest run` — 0 failures
+- [ ] `npx tsc --noEmit` — 0 errors
+- [ ] `npx eslint src tests --max-warnings 0` — 0 warnings
+- [ ] Tested in Chrome (desktop full-screen, 1920×1080)
+- [ ] RTL Hebrew layout verified
+- [ ] All relevant cards load correctly
+- [ ] No `console.log` left in `src/` (use `diagLog()`)
 
 ## Quality Checklist
 
 - [ ] No hardcoded API keys or secrets
-- [ ] No `eval()` or `innerHTML` with unsanitized data
-- [ ] Uses CSS custom properties (no hardcoded colors)
-- [ ] Fonts readable on TV from 3m distance
-- [ ] Auto-refresh meta tag preserved
-- [ ] CORS proxy fallback mechanism intact
-- [ ] No external JS/CSS framework dependencies added
+- [ ] No `eval()` or `innerHTML` with unsanitized data — use `textContent`
+- [ ] No hardcoded colors — uses CSS custom properties (`--accent`, etc.)
+- [ ] No external JS/CSS libraries or CDN dependencies added (zero-dep rule)
+- [ ] All async loaders have `if (!_pageVisible) return;` guard
+- [ ] All fetches: try/catch + proxy fallback + `diagLog()`
+- [ ] All API data: `cSet`/`cGet`/`cGetStale` dual-layer cache
+- [ ] New cards registered in `src/core/card-registry.ts`
+- [ ] New overlays use `<dialog>` + `showModal()` / `close()`
+- [ ] New CSS rules go in the correct `@layer` (tokens/themes/base/layout/components/animations)
+- [ ] Dev deps go in `MyScripts/package.json`, never in `FamilyDashBoard/package.json`
+- [ ] No `eslint-disable`, `@ts-ignore`, or `@ts-expect-error` added
 
 ## Screenshots
 
-<!-- If this is a visual change, add before/after screenshots -->
+<!-- If this is a visual change, add before/after screenshots. TV-readable font size (≥18px). -->

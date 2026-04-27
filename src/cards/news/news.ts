@@ -745,13 +745,13 @@ function initNewsSearch(): void {
   bindOnce(elSearchInput, "input", "fdbNewsInputBound", (() => {
     _searchQuery = elSearchInput!.value;
     renderNews(_lastItems);
-  }) as EventListener);
+  }));
   if (elSearchClear) {
     bindOnce(elSearchClear, "click", "fdbNewsClickBound", (() => {
       _searchQuery = "";
       if (elSearchInput) elSearchInput.value = "";
       renderNews(_lastItems);
-    }) as EventListener);
+    }));
   }
 }
 

@@ -16,7 +16,7 @@
  * All functions throw on non-2xx HTTP or network error.
  * Callers must wrap in try/catch + stale-fallback (see fetch.ts pattern).
  */
-// @openapi-paths-hash: 04fc60d0f43411481db0c10a61a57a9b2c1d5ddda503649fbe98895d29b3da6f
+// @openapi-paths-hash: 7ee296bf5cc9b94fc531aae39da0ecae236c60de10dccd8c92361694967b7ab3
 
 import { WORKER_BASE_URL } from "./constants";
 import { fetchWithTimeout } from "./fetch";

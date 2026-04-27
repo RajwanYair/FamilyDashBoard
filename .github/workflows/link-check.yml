@@ -110,3 +110,9 @@ jobs:
               body,
               labels: ["docs", "link-rot"],
             });
+
+      - name: Fail job on dead links (v13.12.0 strict)
+        if: steps.lc.outputs.failed == '1'
+        run: |
+          echo "::error::Dead markdown links detected — see opened issue."
+          exit 1

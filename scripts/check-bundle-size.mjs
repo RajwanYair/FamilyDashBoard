@@ -4,7 +4,10 @@
  *
  * Validates that the GitHub Pages production build stays within budget:
  *   JS gzipped:  ≤ 100 KB
- *   CSS gzipped: ≤ 25 KB
+ *   CSS gzipped: ≤ 26 KB  (raised from 25 KB in v13.12.0 to absorb
+ *                          src/styles/inline-utils.css — the utility classes
+ *                          that retired 103 inline style="…" attributes
+ *                          from src/index.html)
  *
  * Also checks for 10% growth regression against the last baseline recorded
  * in scripts/bundle-trend.json.  Exit 1 on budget exceeded OR on > 10% growth.
@@ -23,7 +26,7 @@ const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
 const JS_BUDGET_KB = 100;
-const CSS_BUDGET_KB = 25;
+const CSS_BUDGET_KB = 26;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.10;
 

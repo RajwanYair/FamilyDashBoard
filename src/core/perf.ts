@@ -131,7 +131,7 @@ export function initPerfObserver(): void {
         if (_vitals.inp === null || duration > _vitals.inp) _vitals.inp = duration;
       }
     });
-    obs.observe({ type: "event", buffered: true } as PerformanceObserverInit);
+    obs.observe({ type: "event", buffered: true });
   } catch {
     /* browser may not support */
   }

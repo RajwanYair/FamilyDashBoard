@@ -3,7 +3,7 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v13.10.0
+# FamilyDashBoard — v13.12.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes
 
@@ -34,8 +34,7 @@ TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RT
 src/                        # TypeScript v7 modular source (Vite build)
 src/public/                 # Vite static dir — icon.svg, manifest.webmanifest (NOT src/assets/)
 tests/unit/                 # Vitest unit tests
-sw.js                       # ServiceWorker (compiled artifact)
-icon.svg                    # App icon (root copy; manifest in src/public/)
+sw.js                       # ServiceWorker reference (compiled to dist/sw.js by build-sw.mjs)
 docs/ARCHITECTURE.md        # Runtime structure, cache layers, worker topology
 docs/ROADMAP.md             # Strategic plan, stream priorities, forward release plan
 docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-038)

@@ -58,7 +58,7 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 
 - it re-runs validation relevant to tagged builds
 - it packages `dist.zip`
-- it attaches `dist.zip`, `sw.js`, and `icon.svg`
+- it attaches `dist.zip`, `sw.js`, and `dist/icon.svg`
 - it uses generated release notes plus the repository release-note configuration in `.github/release.yml`
 
 ## Change Rules

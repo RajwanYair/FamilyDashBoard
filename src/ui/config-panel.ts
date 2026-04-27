@@ -1223,7 +1223,7 @@ export function initConfigPanel(): void {
   const themeSelectLive = gSel("theme-select");
   if (themeSelectLive) {
     themeSelectLive.addEventListener("change", () => {
-      applyTheme(themeSelectLive.value as DashboardConfig["theme"]);
+      applyTheme(themeSelectLive.value);
     });
   }
 

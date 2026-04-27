@@ -47,11 +47,23 @@ jobs:
       - name: Type-check
         run: npx tsc --noEmit
 
+      - name: SW type-check
+        run: npx tsc --project tsconfig.sw.json --noEmit
+
       - name: Worker type-check
         run: npx tsc --project worker/tsconfig.json --noEmit
 
+      - name: Scripts type-check (@ts-check opt-in)
+        run: npx tsc --project tsconfig.scripts.json --noEmit
+
+      - name: oxlint (fast Rust pre-pass, Sprint 107)
+        run: npx oxlint --quiet src tests
+
       - name: ESLint (0 warnings allowed)
         run: npx eslint src tests --max-warnings 0
+
+      - name: Prettier format check
+        run: npx prettier --check .
 
       - name: Markdownlint
         run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**" "#**/dist/**"
@@ -65,8 +77,17 @@ jobs:
       - name: Bundle size check
         run: node scripts/check-bundle-size.mjs
 
+      - name: Per-card bundle delta check
+        run: node scripts/check-card-bundle-delta.mjs
+
       - name: SW version check
         run: node scripts/check-sw-version.mjs
+
+      - name: Mermaid diagram validation (Sprint 109)
+        run: node scripts/check-mermaid.mjs
+
+      - name: Container-query audit (Sprint 111)
+        run: node scripts/check-container-queries.mjs
 
       - name: Worker-client / OpenAPI sync check (F18)
         run: node scripts/check-worker-client.mjs
@@ -96,7 +117,7 @@ jobs:
         run: |
           sha256sum dist.zip > dist.zip.sha256
           sha256sum sw.js >> dist.zip.sha256
-          sha256sum icon.svg >> dist.zip.sha256
+          sha256sum dist/icon.svg >> dist.zip.sha256
           cat dist.zip.sha256
 
       - name: Generate changelog
@@ -127,7 +148,7 @@ jobs:
             dist.zip
             dist.zip.sha256
             sw.js
-            icon.svg
+            dist/icon.svg
 
       - name: Attest build provenance (SLSA)
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0

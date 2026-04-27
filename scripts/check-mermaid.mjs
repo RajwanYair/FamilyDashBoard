@@ -163,22 +163,22 @@ async function main() {
       for (const issue of issues) {
         totalIssues += 1;
         const rel = file.replace(ROOT + "\\", "").replace(ROOT + "/", "");
-        // eslint-disable-next-line no-console
+         
         console.error(`${rel}:${start}: ${issue}`);
       }
     }
   }
   if (totalIssues > 0) {
-    // eslint-disable-next-line no-console
+     
     console.error(`✖ Mermaid validation: ${totalIssues} issue(s) across ${totalBlocks} block(s)`);
     process.exit(1);
   }
-  // eslint-disable-next-line no-console
+   
   console.log(`✅ Mermaid validation: ${totalBlocks} block(s) clean`);
 }
 
 main().catch((err) => {
-  // eslint-disable-next-line no-console
+   
   console.error("check-mermaid failed:", err);
   process.exit(1);
 });

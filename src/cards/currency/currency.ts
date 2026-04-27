@@ -451,9 +451,7 @@ export function initCurrencyCard(): void {
   scheduleCurrencyRefresh();
   // F15: Popover API quick-reload button wiring
   const reloadBtn = document.getElementById("cur-reload-btn");
-  const reloadPopover = document.getElementById("cur-reload-popover") as
-    | (HTMLElement & { showPopover?: () => void; hidePopover?: () => void })
-    | null;
+  const reloadPopover = document.getElementById("cur-reload-popover");
   if (reloadBtn && reloadPopover) {
     reloadBtn.addEventListener("click", () => {
       if (typeof reloadPopover.showPopover === "function") reloadPopover.showPopover();
