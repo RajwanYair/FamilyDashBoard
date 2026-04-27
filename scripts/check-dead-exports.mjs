@@ -18,7 +18,7 @@
  * --fail-on-dead is passed.  This keeps CI green while still surfacing debt.
  */
 
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join, relative, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
@@ -60,9 +60,10 @@ const EXPORT_NAMED_RE = /^export\s*\{([^}]+)\}/gm;
 function extractExports(src) {
   /** @type {string[]} */
   const names = [];
-  for (const m of src.matchAll(EXPORT_RE)) names.push(m[1]);
+  for (const m of src.matchAll(EXPORT_RE)) if (m[1]) names.push(m[1]);
   for (const m of src.matchAll(EXPORT_DEFAULT_RE)) if (m[1]) names.push(m[1]);
   for (const m of src.matchAll(EXPORT_NAMED_RE)) {
+    if (!m[1]) continue;
     for (const part of m[1].split(",")) {
       const name = part
         .trim()
