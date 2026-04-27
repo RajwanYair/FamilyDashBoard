@@ -2179,7 +2179,14 @@ describe("Weather — Sprint 91 renderHourlyStrip branch gaps", () => {
     const data = makeWeather();
     // "2024-01-01T14" is 13 chars — triggers the false branch of t.length >= 16
     data.hourly = {
-      time: ["2024-01-01T14", "2024-01-01T15", "2024-01-01T16", "2024-01-01T17", "2024-01-01T18", "2024-01-01T19"],
+      time: [
+        "2024-01-01T14",
+        "2024-01-01T15",
+        "2024-01-01T16",
+        "2024-01-01T17",
+        "2024-01-01T18",
+        "2024-01-01T19",
+      ],
       temperature_2m: [20, 21, 22, 23, 24, 25],
       precipitation_probability: [0, 0, 0, 0, 0, 0],
       weather_code: [0, 0, 0, 0, 0, 0],

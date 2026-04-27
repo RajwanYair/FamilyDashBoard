@@ -124,10 +124,7 @@ export interface RouteStat {
  * @param db   D1 binding
  * @param days Number of past days to include (default 7)
  */
-export async function queryRecentHits(
-  db: D1Database,
-  days = 7,
-): Promise<RouteStat[]> {
+export async function queryRecentHits(db: D1Database, days = 7): Promise<RouteStat[]> {
   const since = utcDay(Date.now() - days * 86_400_000);
   try {
     await ensureSchema(db);
@@ -179,9 +176,7 @@ export interface RouteP95 {
  *
  * Exported so callers can unit-test it without a D1 binding.
  */
-export function aggregateP95(
-  samples: ReadonlyArray<{ route: string; ms: number }>,
-): RouteP95[] {
+export function aggregateP95(samples: ReadonlyArray<{ route: string; ms: number }>): RouteP95[] {
   const byRoute = new Map<string, number[]>();
   for (const { route, ms } of samples) {
     const arr = byRoute.get(route) ?? [];
@@ -210,17 +205,12 @@ export function aggregateP95(
  * @param db   D1 binding
  * @param days Number of past days to include (default 7)
  */
-export async function queryP95ByRoute(
-  db: D1Database,
-  days = 7,
-): Promise<RouteP95[]> {
+export async function queryP95ByRoute(db: D1Database, days = 7): Promise<RouteP95[]> {
   const since = utcDay(Date.now() - days * 86_400_000);
   try {
     await ensureLatencySchema(db);
     const result = await db
-      .prepare(
-        `SELECT route, ms FROM route_latency WHERE day >= ? ORDER BY route, ms ASC`,
-      )
+      .prepare(`SELECT route, ms FROM route_latency WHERE day >= ? ORDER BY route, ms ASC`)
       .bind(since)
       .all<{ route: string; ms: number }>();
     return aggregateP95(result.results);

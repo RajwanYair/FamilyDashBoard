@@ -207,17 +207,14 @@ describe("Property: parseICS — never throws, always returns array (fast-check)
     ].join("\r\n");
 
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 0, max: 5 }),
-        async (icsIndex) => {
-          const events = parseICS(validIcs, icsIndex);
-          for (const event of events) {
-            expect(typeof event.summary).toBe("string");
-            expect(typeof event.icsIndex).toBe("number");
-            expect(event.icsIndex).toBe(icsIndex);
-          }
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 0, max: 5 }), async (icsIndex) => {
+        const events = parseICS(validIcs, icsIndex);
+        for (const event of events) {
+          expect(typeof event.summary).toBe("string");
+          expect(typeof event.icsIndex).toBe("number");
+          expect(event.icsIndex).toBe(icsIndex);
+        }
+      }),
       { numRuns: 20 },
     );
   });

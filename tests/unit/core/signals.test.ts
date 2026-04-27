@@ -5,14 +5,7 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import {
-  signal,
-  computed,
-  effect,
-  batch,
-  untrack,
-  isSignal,
-} from "@/core/signals";
+import { signal, computed, effect, batch, untrack, isSignal } from "@/core/signals";
 
 describe("signal()", () => {
   it("returns the initial value", () => {

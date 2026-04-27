@@ -553,7 +553,7 @@ export function initWeatherCard(): void {
   _weatherRefreshInterval = scheduleCard(loadWeather, INTERVALS.WEATHER);
 
   // Wire chart toggle button — persist view mode to localStorage
-  bindOnce(document.getElementById("wx-chart-toggle"), "click", "fdbWxClickBound", (() => {
+  bindOnce(document.getElementById("wx-chart-toggle"), "click", "fdbWxClickBound", () => {
     const chart = document.getElementById("wx-hourly");
     if (chart) {
       chart.classList.toggle("wx-chart-rain");
@@ -566,18 +566,17 @@ export function initWeatherCard(): void {
         /* quota */
       }
     }
-  }));
+  });
   // Restore persisted chart mode
   if (localStorage.getItem(LS_WX_CHART_MODE) === "rain") {
     document.getElementById("wx-hourly")?.classList.add("wx-chart-rain");
   }
 
   // Wire temperature unit toggle (°C ↔ °F)
-  bindOnce(document.getElementById("wx-temp"), "click", "fdbWxClickBound", (() =>
-    toggleTempUnit()));
+  bindOnce(document.getElementById("wx-temp"), "click", "fdbWxClickBound", () => toggleTempUnit());
 
   // Wire city tab clicks
-  bindOnce(document.getElementById("wx-city-tabs"), "click", "fdbWxClickBound", ((e: Event) => {
+  bindOnce(document.getElementById("wx-city-tabs"), "click", "fdbWxClickBound", (e: Event) => {
     const tab = (e.target as HTMLElement).closest<HTMLButtonElement>(".wx-city-tab");
     if (!tab) return;
     const lat = parseFloat(tab.dataset["lat"] ?? "");
@@ -586,7 +585,7 @@ export function initWeatherCard(): void {
     document.querySelectorAll(".wx-city-tab").forEach((t) => t.classList.remove("active"));
     tab.classList.add("active");
     void switchWeatherCity(lat, lon);
-  }));
+  });
 
   // Subscribe to reactive state: re-render when tempUnit changes externally (v8.0)
   if (!_tempUnitSubscribed) {

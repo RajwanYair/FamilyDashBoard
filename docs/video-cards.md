@@ -10,12 +10,12 @@
 The **video-news** card renders a muted, auto-playing live news channel from a
 configurable list of Israeli news channels:
 
-| Channel | Hebrew name  | Default |
-| ------- | ------------ | ------- |
-| `c14`   | ערוץ 14     | ✅ Yes  |
-| `i24`   | i24NEWS      | No      |
-| `now14` | NOW14        | No      |
-| `arutz7`| ערוץ 7      | No      |
+| Channel  | Hebrew name | Default |
+| -------- | ----------- | ------- |
+| `c14`    | ערוץ 14     | ✅ Yes  |
+| `i24`    | i24NEWS     | No      |
+| `now14`  | NOW14       | No      |
+| `arutz7` | ערוץ 7      | No      |
 
 The card is hidden by default to avoid CSP/bandwidth overhead for users who
 don't need it. Enable it from **Settings → Cards → ערוץ חדשות**.
@@ -36,17 +36,17 @@ on-screen.
 
 ## Configuration
 
-Open **Settings (S) → Cards** and enable the video-news card.  Available settings
+Open **Settings (S) → Cards** and enable the video-news card. Available settings
 (accessible in the card's config section):
 
-| Setting              | Type    | Default | Description                                             |
-| -------------------- | ------- | ------- | ------------------------------------------------------- |
-| `channel`            | select  | `c14`   | Active channel                                          |
-| `autoplay`           | boolean | `true`  | Start playing when the card initialises                 |
-| `defaultMuted`       | boolean | `true`  | Required by browser autoplay policy                     |
-| `showOverlay`        | boolean | `true`  | RTL caption strip at the bottom of the video            |
-| `pauseOnReducedMotion` | boolean | `true` | Pause when `prefers-reduced-motion: reduce` is active  |
-| `pauseAtNight`       | boolean | `true`  | Pause during the night-dimmer schedule                  |
+| Setting                | Type    | Default | Description                                           |
+| ---------------------- | ------- | ------- | ----------------------------------------------------- |
+| `channel`              | select  | `c14`   | Active channel                                        |
+| `autoplay`             | boolean | `true`  | Start playing when the card initialises               |
+| `defaultMuted`         | boolean | `true`  | Required by browser autoplay policy                   |
+| `showOverlay`          | boolean | `true`  | RTL caption strip at the bottom of the video          |
+| `pauseOnReducedMotion` | boolean | `true`  | Pause when `prefers-reduced-motion: reduce` is active |
+| `pauseAtNight`         | boolean | `true`  | Pause during the night-dimmer schedule                |
 
 ---
 
@@ -71,12 +71,12 @@ Open **Settings (S) → Cards** and enable the video-news card.  Available setti
 
 ## Integration Modes
 
-| Mode | Mechanism | When used |
-|------|-----------|-----------|
-| A — `hls` | Native `<video src=".m3u8">` | CORS open, HLS native (Safari) |
-| B — `worker-hls` | Worker proxy `/api/video/c14/manifest.m3u8` | CORS blocked |
-| C — `iframe` | Provider embed `<iframe>` | Only if no HLS available |
-| D — vendored `hls.js` | `src/vendor/hls.min.js` | Chromium + no CORS + Mode B fails |
+| Mode                  | Mechanism                                   | When used                         |
+| --------------------- | ------------------------------------------- | --------------------------------- |
+| A — `hls`             | Native `<video src=".m3u8">`                | CORS open, HLS native (Safari)    |
+| B — `worker-hls`      | Worker proxy `/api/video/c14/manifest.m3u8` | CORS blocked                      |
+| C — `iframe`          | Provider embed `<iframe>`                   | Only if no HLS available          |
+| D — vendored `hls.js` | `src/vendor/hls.min.js`                     | Chromium + no CORS + Mode B fails |
 
 See [ADR-019](adr/ADR-019-video-card-csp.md) for the full decision tree.
 
@@ -84,11 +84,11 @@ See [ADR-019](adr/ADR-019-video-card-csp.md) for the full decision tree.
 
 ## Error States
 
-| State                     | UI                                                       |
-| ------------------------- | -------------------------------------------------------- |
-| Stream unavailable        | Poster + "שידור לא זמין · נסיון חוזר בקרוב"              |
-| Stream URL not configured | "שידור בבנייה · Stream URL pending research"             |
-| Autoplay blocked          | Large ▶ overlay — single click starts playback           |
+| State                     | UI                                                        |
+| ------------------------- | --------------------------------------------------------- |
+| Stream unavailable        | Poster + "שידור לא זמין · נסיון חוזר בקרוב"               |
+| Stream URL not configured | "שידור בבנייה · Stream URL pending research"              |
+| Autoplay blocked          | Large ▶ overlay — single click starts playback            |
 | Offline                   | Poster shown; no retry while `navigator.onLine === false` |
 
 Retry schedule: 30 s → 2 min → 10 min (3 attempts total then gives up).

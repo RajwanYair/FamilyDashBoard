@@ -20,9 +20,7 @@ import { resolve } from "node:path";
 
 export default defineConfig({
   resolve: {
-    alias: [
-      { find: "@", replacement: resolve(__dirname, "src") },
-    ],
+    alias: [{ find: "@", replacement: resolve(__dirname, "src") }],
   },
   test: {
     // Browser mode — requires @vitest/browser + playwright to be installed

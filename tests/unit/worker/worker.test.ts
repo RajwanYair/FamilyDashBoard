@@ -839,9 +839,7 @@ describe("Worker — handleWeather route", () => {
   });
 
   it("returns stale KV envelope when Open-Meteo fails and KV has data", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("bad gateway", { status: 502 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
     const kvGet = vi.fn().mockResolvedValue(JSON.stringify(validOpenMeteoData));
     const envWithKv: Env = {
       ...mockEnv,
@@ -855,9 +853,7 @@ describe("Worker — handleWeather route", () => {
   });
 
   it("returns 502 when all providers fail and no KV stale", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("bad gateway", { status: 502 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad gateway", { status: 502 }));
     const url = new URL("https://worker.dev/api/weather?lat=32.08&lon=34.78");
     const res = await handleWeather(url, mockEnv);
     expect(res.status).toBe(502);
@@ -911,8 +907,7 @@ describe("Worker — handleWeather route", () => {
         ],
       },
     };
-    vi
-      .spyOn(globalThis, "fetch")
+    vi.spyOn(globalThis, "fetch")
       // Open-Meteo fails
       .mockResolvedValueOnce(new Response("fail", { status: 503 }))
       // met.no succeeds
@@ -1597,7 +1592,11 @@ describe("checkRateLimitAsync — in-memory fallback (no DO)", () => {
   it("falls back to in-memory when DO stub throws", async () => {
     const badDO = {
       idFromName: () => "id",
-      get: () => ({ fetch: async () => { throw new Error("DO unavailable"); } }),
+      get: () => ({
+        fetch: async () => {
+          throw new Error("DO unavailable");
+        },
+      }),
     };
     const result = await checkRateLimitAsync("10.0.0.3", badDO as never);
     expect(result.limited).toBe(false);
@@ -1672,7 +1671,14 @@ describe("Worker — handleNewsAggregate route", () => {
 
   it("returns stale KV envelope when all feeds fail and KV has data", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("bad", { status: 502 }));
-    const staleItems = [{ title: "Old news", link: "https://news.example.com/1", pubDate: "2024-01-01T00:00:00Z", source: "ynet" }];
+    const staleItems = [
+      {
+        title: "Old news",
+        link: "https://news.example.com/1",
+        pubDate: "2024-01-01T00:00:00Z",
+        source: "ynet",
+      },
+    ];
     const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleItems));
     const envWithKv: Env = {
       ...mockEnv,
@@ -1758,7 +1764,12 @@ describe("Worker — handleSefariaCalendar route", () => {
       new Response(
         JSON.stringify({
           calendar_items: [
-            { title: { en: "Daf Yomi", he: "דף יומי" }, displayValue: { en: "Berakhot 2a" }, url: "Berakhot.2a", order: 1 },
+            {
+              title: { en: "Daf Yomi", he: "דף יומי" },
+              displayValue: { en: "Berakhot 2a" },
+              url: "Berakhot.2a",
+              order: 1,
+            },
           ],
         }),
         { status: 200, headers: { "Content-Type": "application/json" } },
@@ -1801,7 +1812,9 @@ describe("Worker — handleSefariaText route", () => {
   });
 
   it("returns 400 when ref contains invalid characters", async () => {
-    const url = new URL("https://worker.dev/api/sefaria/text?ref=" + encodeURIComponent("'; DROP TABLE--"));
+    const url = new URL(
+      "https://worker.dev/api/sefaria/text?ref=" + encodeURIComponent("'; DROP TABLE--"),
+    );
     const res = await handleSefariaText(url, mockEnv);
     expect(res.status).toBe(400);
   });
@@ -1811,7 +1824,9 @@ describe("Worker — handleSefariaText route", () => {
       new Response(
         JSON.stringify({
           ref: "Berakhot 2a:1",
-          versions: [{ text: "From what time...", language: "en", versionTitle: "Sefaria Community" }],
+          versions: [
+            { text: "From what time...", language: "en", versionTitle: "Sefaria Community" },
+          ],
         }),
         { status: 200, headers: { "Content-Type": "application/json" } },
       ),
@@ -2143,7 +2158,16 @@ describe("Worker — handleSefariaCalendar invalid schema branches", () => {
         headers: { "Content-Type": "application/json" },
       }),
     );
-    const staleData = { calendar_items: [{ title: { en: "Daf Yomi", he: "דף יומי" }, displayValue: { en: "Berakhot 2a" }, url: "Berakhot.2a", order: 1 }] };
+    const staleData = {
+      calendar_items: [
+        {
+          title: { en: "Daf Yomi", he: "דף יומי" },
+          displayValue: { en: "Berakhot 2a" },
+          url: "Berakhot.2a",
+          order: 1,
+        },
+      ],
+    };
     const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
     const envWithKv: Env = {
       ...mockEnv,
@@ -2180,7 +2204,10 @@ describe("Worker — handleSefariaText invalid schema branches", () => {
         headers: { "Content-Type": "application/json" },
       }),
     );
-    const staleData = { ref: "Berakhot 2a:1", versions: [{ text: "From what time...", language: "en", versionTitle: "Sefaria Community" }] };
+    const staleData = {
+      ref: "Berakhot 2a:1",
+      versions: [{ text: "From what time...", language: "en", versionTitle: "Sefaria Community" }],
+    };
     const kvGet = vi.fn().mockResolvedValue(JSON.stringify(staleData));
     const envWithKv: Env = {
       ...mockEnv,

@@ -105,7 +105,7 @@ describe("<dialog> ARIA completeness (V13-A11Y)", () => {
 
 // ── role="dialog" divs: ARIA completeness ────────────────────────────────────
 
-describe("role=\"dialog\" elements ARIA completeness (V13-A11Y)", () => {
+describe('role="dialog" elements ARIA completeness (V13-A11Y)', () => {
   function roleDivTags(): string[] {
     const re = /<div[^>]+role="dialog"[^>]*>/g;
     const out: string[] = [];
@@ -114,7 +114,7 @@ describe("role=\"dialog\" elements ARIA completeness (V13-A11Y)", () => {
     return out;
   }
 
-  it("all role=\"dialog\" divs have aria-modal", () => {
+  it('all role="dialog" divs have aria-modal', () => {
     const divs = roleDivTags();
     if (divs.length === 0) return; // no div-dialogs is also fine
     // Popover API elements (with `popover` attribute) are managed by the browser — skip aria-modal
@@ -123,7 +123,7 @@ describe("role=\"dialog\" elements ARIA completeness (V13-A11Y)", () => {
     expect(missing).toHaveLength(0);
   });
 
-  it("all role=\"dialog\" divs have aria-label or aria-labelledby", () => {
+  it('all role="dialog" divs have aria-label or aria-labelledby', () => {
     const divs = roleDivTags();
     if (divs.length === 0) return;
     const missing = divs.filter(

@@ -25,9 +25,7 @@ test.describe("Card interactions — maximize", () => {
 });
 
 test.describe("Card interactions — collapse", () => {
-  test("collapse button toggles the `.collapsed` class and persists", async ({
-    dashboardPage,
-  }) => {
+  test("collapse button toggles the `.collapsed` class and persists", async ({ dashboardPage }) => {
     const btn = dashboardPage.locator(".card-collapse-btn").first();
     const card = btn.locator("xpath=ancestor::section[contains(@class,'card')][1]");
     const cardId = await card.getAttribute("data-card-id");

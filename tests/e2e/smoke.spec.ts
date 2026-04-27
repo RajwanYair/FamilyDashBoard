@@ -43,8 +43,7 @@ test.describe("Smoke — theme cycling", () => {
     );
     await dashboardPage.keyboard.press("t");
     await dashboardPage.waitForFunction(
-      (prev) =>
-        (document.documentElement.dataset["theme"] ?? document.body.className) !== prev,
+      (prev) => (document.documentElement.dataset["theme"] ?? document.body.className) !== prev,
       before,
       { timeout: 2_000 },
     );

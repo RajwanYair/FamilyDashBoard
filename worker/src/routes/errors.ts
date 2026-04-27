@@ -233,9 +233,9 @@ export async function handleErrorsExport(request: Request, env: Env): Promise<Re
  * Current behaviour: logs the batch metadata to the Worker console.
  * Future: route to email alert, PagerDuty, Slack webhook, etc.
  */
-export async function handleErrorsQueue(
-  batch: { messages: Array<{ body: unknown; ack(): void }> },
-): Promise<void> {
+export async function handleErrorsQueue(batch: {
+  messages: Array<{ body: unknown; ack(): void }>;
+}): Promise<void> {
   for (const msg of batch.messages) {
     try {
       const data =
@@ -252,4 +252,3 @@ export async function handleErrorsQueue(
     msg.ack();
   }
 }
-

@@ -71,14 +71,16 @@ function expandCard(card: HTMLElement): void {
   if ("startViewTransition" in document) {
     // F12: View Transitions — browser morphs card from grid position to fullscreen.
     card.style.setProperty("view-transition-name", cardVtName(card));
-    void document.startViewTransition(() => {
-      const first = card.getBoundingClientRect();
-      card.classList.add("maximized");
-      const last = card.getBoundingClientRect();
-      card.style.setProperty("--max-font-scale", String(computeFontScale(first, last)));
-    }).finished.then(() => {
-      card.style.removeProperty("view-transition-name");
-    });
+    void document
+      .startViewTransition(() => {
+        const first = card.getBoundingClientRect();
+        card.classList.add("maximized");
+        const last = card.getBoundingClientRect();
+        card.style.setProperty("--max-font-scale", String(computeFontScale(first, last)));
+      })
+      .finished.then(() => {
+        card.style.removeProperty("view-transition-name");
+      });
   } else {
     // FLIP fallback for browsers without View Transitions
     const first = card.getBoundingClientRect();
@@ -103,13 +105,15 @@ function expandCard(card: HTMLElement): void {
 
   card.setAttribute("aria-expanded", "true");
   maximizedCard = card;
-  diagLog(`[maximize] Expanded card via ${"startViewTransition" in document ? "ViewTransition" : "FLIP"}`);
+  diagLog(
+    `[maximize] Expanded card via ${"startViewTransition" in document ? "ViewTransition" : "FLIP"}`,
+  );
 }
 
 function collapseCard(card: HTMLElement): void {
   // Check whether this card was persisted as collapsed, so we can restore the
   // minimized state after the animation (it was removed by expandCard).
-  const collapseId = (card.dataset["cardId"] ?? card.id ?? (card.querySelector("[id]")?.id ?? ""));
+  const collapseId = card.dataset["cardId"] ?? card.id ?? card.querySelector("[id]")?.id ?? "";
   const wasCollapsed = collapseId ? loadCollapsedCards().has(collapseId) : false;
 
   const afterCollapse = (): void => {
@@ -129,12 +133,14 @@ function collapseCard(card: HTMLElement): void {
   if ("startViewTransition" in document) {
     // F12: View Transitions — browser morphs card from fullscreen back to grid position.
     card.style.setProperty("view-transition-name", cardVtName(card));
-    void document.startViewTransition(() => {
-      card.classList.remove("maximized");
-    }).finished.then(() => {
-      card.style.removeProperty("view-transition-name");
-      afterCollapse();
-    });
+    void document
+      .startViewTransition(() => {
+        card.classList.remove("maximized");
+      })
+      .finished.then(() => {
+        card.style.removeProperty("view-transition-name");
+        afterCollapse();
+      });
   } else {
     // FLIP fallback for browsers without View Transitions
     const first = card.getBoundingClientRect();
@@ -213,7 +219,7 @@ export function initCardCollapse(): void {
 
   // Restore persisted state and set initial aria-expanded
   document.querySelectorAll<HTMLElement>(".card").forEach((card) => {
-    const id = card.dataset["cardId"] || (card.id || (card.querySelector("[id]")?.id ?? ""));
+    const id = card.dataset["cardId"] || card.id || (card.querySelector("[id]")?.id ?? "");
     const btn = card.querySelector<HTMLElement>(".card-collapse-btn");
     if (id && collapsed.has(id)) {
       card.classList.add("collapsed");
@@ -237,7 +243,7 @@ export function initCardCollapse(): void {
         const isNowCollapsed = card.classList.contains("collapsed");
         btn.textContent = isNowCollapsed ? "▶" : "▼";
         btn.setAttribute("aria-expanded", String(!isNowCollapsed));
-        const cardId = card.dataset["cardId"] || (card.id || (card.querySelector("[id]")?.id ?? ""));
+        const cardId = card.dataset["cardId"] || card.id || (card.querySelector("[id]")?.id ?? "");
         if (cardId) {
           const set = loadCollapsedCards();
           if (isNowCollapsed) set.add(cardId);
@@ -252,7 +258,7 @@ export function initCardCollapse(): void {
           const dataCardId = card.dataset["cardId"] ?? "";
           if (dataCardId) updateCardMiniInfo(dataCardId);
         }
-      };;
+      };
 
       if ("startViewTransition" in document) {
         void document.startViewTransition(doToggle);

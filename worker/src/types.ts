@@ -198,11 +198,7 @@ export interface DurableObjectStub {
  * Cloudflare's AnalyticsEngineDataset satisfies this via structural typing.
  */
 export interface AnalyticsEngineDataset {
-  writeDataPoint(event: {
-    blobs?: string[];
-    doubles?: number[];
-    indexes?: string[];
-  }): void;
+  writeDataPoint(event: { blobs?: string[]; doubles?: number[]; indexes?: string[] }): void;
 }
 
 /**

@@ -36,7 +36,8 @@ describe("DOM Contract — SW update banner", () => {
 
 describe("DOM Contract — First-run tour (v11.0-PWA-1)", () => {
   it("has #tour-overlay dialog element", () => expect(hasId("tour-overlay")).toBe(true));
-  it("has #tour-dialog-title for aria-labelledby", () => expect(hasId("tour-dialog-title")).toBe(true));
+  it("has #tour-dialog-title for aria-labelledby", () =>
+    expect(hasId("tour-dialog-title")).toBe(true));
   it("has #tour-dismiss-btn", () => expect(hasId("tour-dismiss-btn")).toBe(true));
   it("tour-overlay has aria-labelledby=tour-dialog-title", () => {
     expect(html).toContain('aria-labelledby="tour-dialog-title"');
@@ -249,10 +250,9 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
 
   it("all 11 cards have role=region", () => {
     for (const id of CARD_IDS) {
-      expect(
-        html,
-        `card[data-card-id="${id}"] should have role="region"`,
-      ).toContain(`role="region" data-card-id="${id}"`);
+      expect(html, `card[data-card-id="${id}"] should have role="region"`).toContain(
+        `role="region" data-card-id="${id}"`,
+      );
     }
   });
 
@@ -336,10 +336,9 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
 
   it("all 6 cfg-section tabpanels reference their tab via aria-labelledby", () => {
     for (const tab of ["display", "calendar", "feeds", "alerts-tab", "cards", "advanced"]) {
-      expect(
-        html,
-        `cfg-section-${tab} should have aria-labelledby="cfg-tab-${tab}"`,
-      ).toContain(`aria-labelledby="cfg-tab-${tab}"`);
+      expect(html, `cfg-section-${tab} should have aria-labelledby="cfg-tab-${tab}"`).toContain(
+        `aria-labelledby="cfg-tab-${tab}"`,
+      );
     }
   });
 });
@@ -395,7 +394,7 @@ describe("DOM Contract — F13 Speculation Rules API audit", () => {
 
   it("index.html speculationrules has prerender for preview.html", () => {
     expect(html).toContain('"prerender"');
-    expect(html).toContain('/FamilyDashBoard/preview.html');
+    expect(html).toContain("/FamilyDashBoard/preview.html");
   });
 
   it("index.html prerender eagerness is conservative (avoids wasted bandwidth)", () => {
@@ -439,8 +438,8 @@ describe("DOM Contract — F13 Speculation Rules API audit", () => {
     expect(srMatch).not.toBeNull();
     const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
     const allRulesets = [
-      ...(srJson["prerender"] as Array<{ urls?: string[] }> ?? []),
-      ...(srJson["prefetch"] as Array<{ urls?: string[] }> ?? []),
+      ...((srJson["prerender"] as Array<{ urls?: string[] }>) ?? []),
+      ...((srJson["prefetch"] as Array<{ urls?: string[] }>) ?? []),
     ];
     const allUrls = allRulesets.flatMap((r) => r.urls ?? []);
     const externalUrls = allUrls.filter((u) => u.startsWith("http://") || u.startsWith("https://"));
@@ -452,8 +451,8 @@ describe("DOM Contract — F13 Speculation Rules API audit", () => {
     expect(srMatch).not.toBeNull();
     const srJson = JSON.parse(srMatch![1].trim()) as Record<string, unknown>;
     const allRulesets = [
-      ...(srJson["prerender"] as Array<{ urls?: string[] }> ?? []),
-      ...(srJson["prefetch"] as Array<{ urls?: string[] }> ?? []),
+      ...((srJson["prerender"] as Array<{ urls?: string[] }>) ?? []),
+      ...((srJson["prefetch"] as Array<{ urls?: string[] }>) ?? []),
     ];
     const allUrls = allRulesets.flatMap((r) => r.urls ?? []);
     allUrls.forEach((u) => {

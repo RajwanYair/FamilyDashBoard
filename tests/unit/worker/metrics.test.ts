@@ -244,9 +244,7 @@ describe("toProviderHealthPrometheus", () => {
   });
 
   it("ends with a trailing newline", () => {
-    const result = toProviderHealthPrometheus([
-      { route: "/api/x", p95ms: 50, sampleCount: 5 },
-    ]);
+    const result = toProviderHealthPrometheus([{ route: "/api/x", p95ms: 50, sampleCount: 5 }]);
     expect(result.endsWith("\n")).toBe(true);
   });
 });

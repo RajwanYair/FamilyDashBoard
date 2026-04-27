@@ -1344,7 +1344,10 @@ describe("checkRecurringReset", () => {
     // set done state
     localStorage.setItem("dash_tasks_done", JSON.stringify({ "דנה::ניקיון": true }));
     checkRecurringReset(item);
-    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(done["דנה::ניקיון"]).toBe(true);
   });
 
@@ -1357,7 +1360,10 @@ describe("checkRecurringReset", () => {
     localStorage.setItem(lsResetKey, "2025-W10");
     localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
     checkRecurringReset(item);
-    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(done[fp]).toBeUndefined();
   });
 
@@ -1370,7 +1376,10 @@ describe("checkRecurringReset", () => {
     localStorage.setItem(lsResetKey, "2025-03");
     localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
     checkRecurringReset(item);
-    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(done[fp]).toBe(true);
   });
 });
@@ -1481,9 +1490,7 @@ describe("recurrenceResetKey — monthly edge cases", () => {
     expect(recurrenceResetKey("monthly", dec31)).toBe("2026-12");
     expect(recurrenceResetKey("monthly", jan1)).toBe("2027-01");
     // Keys differ → monthly reset should fire
-    expect(recurrenceResetKey("monthly", dec31)).not.toBe(
-      recurrenceResetKey("monthly", jan1),
-    );
+    expect(recurrenceResetKey("monthly", dec31)).not.toBe(recurrenceResetKey("monthly", jan1));
   });
 
   it("returns same key for two dates in the same month", () => {
@@ -1520,7 +1527,10 @@ describe("checkRecurringReset — monthly cross-month", () => {
     localStorage.setItem(lsResetKey, "2026-02");
     localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
     checkRecurringReset(item);
-    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(done[fp]).toBeUndefined(); // cleared by new month
   });
 
@@ -1532,7 +1542,10 @@ describe("checkRecurringReset — monthly cross-month", () => {
     localStorage.setItem(lsResetKey, "2026-03"); // same month
     localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
     checkRecurringReset(item);
-    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(done[fp]).toBe(true); // preserved
   });
 
@@ -1545,7 +1558,10 @@ describe("checkRecurringReset — monthly cross-month", () => {
     localStorage.setItem(lsResetKey, "2026-03"); // old month
     localStorage.setItem("dash_tasks_done", JSON.stringify({ [fp]: true }));
     checkRecurringReset(item);
-    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<string, boolean>;
+    const done = JSON.parse(localStorage.getItem("dash_tasks_done") ?? "{}") as Record<
+      string,
+      boolean
+    >;
     expect(done[fp]).toBe(true); // not cleared yet (before reset hour)
   });
 

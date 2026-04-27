@@ -86,28 +86,20 @@ describe("fetchJSON — network mode gating (v13.4)", () => {
 
   it("throws without trying proxies when mode is 'no-proxy' and direct fails", async () => {
     localStorage.setItem(LS_NETWORK_MODE, "no-proxy");
-    const fetchSpy = vi
-      .fn()
-      .mockResolvedValue({ ok: false, status: 500 } as Response);
+    const fetchSpy = vi.fn().mockResolvedValue({ ok: false, status: 500 } as Response);
     vi.stubGlobal("fetch", fetchSpy);
 
-    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(
-      /mode=no-proxy/,
-    );
+    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(/mode=no-proxy/);
     // Only ONE call (direct) — no proxy attempts
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
   it("throws without trying proxies when mode is 'worker-only' and direct fails", async () => {
     localStorage.setItem(LS_NETWORK_MODE, "worker-only");
-    const fetchSpy = vi
-      .fn()
-      .mockResolvedValue({ ok: false, status: 500 } as Response);
+    const fetchSpy = vi.fn().mockResolvedValue({ ok: false, status: 500 } as Response);
     vi.stubGlobal("fetch", fetchSpy);
 
-    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(
-      /mode=worker-only/,
-    );
+    await expect(fetchJSON("https://example.com/api")).rejects.toThrow(/mode=worker-only/);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -133,9 +125,7 @@ describe("fetchJSON — network mode gating (v13.4)", () => {
       }),
     );
 
-    const result = await fetchJSON<{ result: string }>(
-      "https://example.com/api",
-    );
+    const result = await fetchJSON<{ result: string }>("https://example.com/api");
     expect(result.result).toBe("via-proxy");
     expect(callCount).toBeGreaterThanOrEqual(2);
   });
@@ -160,9 +150,7 @@ describe("fetchJSON — network mode gating (v13.4)", () => {
       }),
     );
 
-    const result = await fetchJSON<{ got: string }>(
-      "https://example.com/api",
-    );
+    const result = await fetchJSON<{ got: string }>("https://example.com/api");
     expect(result.got).toBe("proxy");
   });
 });
@@ -217,15 +205,11 @@ describe("fetchViaWorker circuit breaker (v13.4)", () => {
     expect(ok).toEqual({ ok: true });
 
     // After success, breaker is closed — next failure starts counter fresh
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("down again")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down again")));
     expect(await fetchViaWorker(url)).toBeNull();
     // Still CLOSED (only 1 failure since reset) — fetch was attempted
-    expect(
-      (globalThis.fetch as unknown as { mock: { calls: unknown[] } }).mock.calls
-        .length,
-    ).toBe(1);
+    expect((globalThis.fetch as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBe(
+      1,
+    );
   });
 });

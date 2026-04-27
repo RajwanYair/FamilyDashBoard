@@ -161,4 +161,3 @@ export async function handleMotivationHebrew(env: Env): Promise<Response> {
     });
   }
 }
-

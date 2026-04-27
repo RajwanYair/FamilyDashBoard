@@ -16,10 +16,7 @@ import type { Env } from "../../../worker/src/types";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-function makeKV(
-  dailyCounts: Record<string, number> = {},
-  errorMsgKeys: string[] = [],
-) {
+function makeKV(dailyCounts: Record<string, number> = {}, errorMsgKeys: string[] = []) {
   return {
     get: vi.fn(async (key: string) => {
       if (key.startsWith("errors:count:")) {

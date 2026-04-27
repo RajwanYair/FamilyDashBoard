@@ -699,7 +699,10 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
     top: anchor(bottom);
     left: anchor(left);
     transform: none;
-    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
   }
 }
 .stk-dp-header {

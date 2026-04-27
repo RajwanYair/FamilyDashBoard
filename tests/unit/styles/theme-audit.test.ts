@@ -117,14 +117,23 @@ describe("tokens.css — @property registrations (V13-DATA)", () => {
   });
 
   it("themes.css locks explicit themes to color-scheme: dark (F11)", () => {
-    const themeClasses = ["theme-black", "theme-blue", "theme-matrix", "theme-amber", "theme-purple", "theme-rose"];
+    const themeClasses = [
+      "theme-black",
+      "theme-blue",
+      "theme-matrix",
+      "theme-amber",
+      "theme-purple",
+      "theme-rose",
+    ];
     for (const cls of themeClasses) {
       expect(css, `${cls} should be present in themes.css`).toContain(`body.${cls}`);
     }
     // Each theme body block should contain color-scheme: dark
     const blocks = css.match(/body\.theme-\w+\s*\{[^}]+\}/gs) ?? [];
     for (const block of blocks) {
-      expect(block, `Theme block missing color-scheme: dark: ${block.slice(0, 80)}`).toContain("color-scheme: dark");
+      expect(block, `Theme block missing color-scheme: dark: ${block.slice(0, 80)}`).toContain(
+        "color-scheme: dark",
+      );
     }
   });
 });

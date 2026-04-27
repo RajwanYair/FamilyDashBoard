@@ -82,18 +82,13 @@ const A11Y_CSS = resolve(ROOT, "src", "styles", "a11y.css");
 
 /** @type {{ token: string; min: number; unit: string }[]} */
 const REQUIRED_TOKENS = [
-  { token: "--ts-line-height",     min: 1.5,  unit: "number" },
-  { token: "--ts-letter-spacing",  min: 0.12, unit: "em" },
-  { token: "--ts-word-spacing",    min: 0.16, unit: "em" },
-  { token: "--reading-lh",         min: 1.5,  unit: "number" },
+  { token: "--ts-line-height", min: 1.5, unit: "number" },
+  { token: "--ts-letter-spacing", min: 0.12, unit: "em" },
+  { token: "--ts-word-spacing", min: 0.16, unit: "em" },
+  { token: "--reading-lh", min: 1.5, unit: "number" },
 ];
 
-const PROSE_SELECTORS = [
-  ".moti-text",
-  ".news-desc",
-  ".alert-item-desc",
-  ".hcal-parasha-text",
-];
+const PROSE_SELECTORS = [".moti-text", ".news-desc", ".alert-item-desc", ".hcal-parasha-text"];
 
 const isMain =
   process.argv[1] != null &&

@@ -1,10 +1,10 @@
 # ADR-036 — WebRTC Config Mirror (QR-Code Pairing)
 
-| Field        | Value                                                         |
-| ------------ | ------------------------------------------------------------- |
-| **Date**     | 2026-04-24                                                    |
-| **Status**   | Proposed                                                      |
-| **Deciders** | @RajwanYair                                                   |
+| Field        | Value                                                        |
+| ------------ | ------------------------------------------------------------ |
+| **Date**     | 2026-04-24                                                   |
+| **Status**   | Proposed                                                     |
+| **Deciders** | @RajwanYair                                                  |
 | **Tags**     | config, webrtc, mobile, qr-code, v13-continuity, zero-server |
 
 ---
@@ -54,15 +54,15 @@ TV browser                           Phone browser
 
 ### Key design constraints
 
-| Constraint | Decision |
-| --- | --- |
-| Zero CF resources | Use public STUN servers only (no TURN). Connection limited to same LAN or NAT-friendly networks. |
+| Constraint        | Decision                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Zero CF resources | Use public STUN servers only (no TURN). Connection limited to same LAN or NAT-friendly networks.                          |
 | No QR library dep | Encode offer SDP as a `data:` URI `<canvas>` QR using a tiny self-contained QR encoder (< 2 KB, vendored into `src/ui/`). |
-| Session lifetime | Data channel auto-closes after 5 minutes (`setTimeout`) — prevents stale pairing. |
-| Config delta only | Phone sends only changed keys, not the full config blob — reduces attack surface. |
-| Input validation | All received JSON validated with Valibot schema before `localStorage` write. |
-| Activation | Triggered via keyboard shortcut `M` (mirror) in the keyboard handler (`src/ui/keyboard.ts`). |
-| Overlay | Rendered in a `<dialog>` modal (`showModal()`) — consistent with overlay architecture (Rule 17). |
+| Session lifetime  | Data channel auto-closes after 5 minutes (`setTimeout`) — prevents stale pairing.                                         |
+| Config delta only | Phone sends only changed keys, not the full config blob — reduces attack surface.                                         |
+| Input validation  | All received JSON validated with Valibot schema before `localStorage` write.                                              |
+| Activation        | Triggered via keyboard shortcut `M` (mirror) in the keyboard handler (`src/ui/keyboard.ts`).                              |
+| Overlay           | Rendered in a `<dialog>` modal (`showModal()`) — consistent with overlay architecture (Rule 17).                          |
 
 ### Non-goals
 
@@ -96,9 +96,9 @@ TV browser                           Phone browser
 
 ## Alternatives Considered
 
-| Alternative | Reason rejected |
-| --- | --- |
-| Cloud relay (WebSocket via CF Worker) | Requires CF subscription, violates zero-server constraint |
-| BLE (Web Bluetooth) | Not supported in all TV browsers (Samsung Tizen, LG webOS) |
-| Local REST server (Node.js) | Requires running a server process — violates static PWA model |
-| Shared `localStorage` via BroadcastChannel | Only works within same browser origin/tab — not cross-device |
+| Alternative                                | Reason rejected                                               |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| Cloud relay (WebSocket via CF Worker)      | Requires CF subscription, violates zero-server constraint     |
+| BLE (Web Bluetooth)                        | Not supported in all TV browsers (Samsung Tizen, LG webOS)    |
+| Local REST server (Node.js)                | Requires running a server process — violates static PWA model |
+| Shared `localStorage` via BroadcastChannel | Only works within same browser origin/tab — not cross-device  |

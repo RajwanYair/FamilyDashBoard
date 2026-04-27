@@ -1,11 +1,11 @@
 # ADR-033 — Email Workers Weekly Digest
 
-| Field       | Value                                            |
-| ----------- | ------------------------------------------------ |
-| **Date**    | 2026-04-23                                       |
-| **Status**  | Accepted                                         |
-| **Deciders** | @RajwanYair                                     |
-| **Tags**    | worker, email, observability, ops, opt-in        |
+| Field        | Value                                     |
+| ------------ | ----------------------------------------- |
+| **Date**     | 2026-04-23                                |
+| **Status**   | Accepted                                  |
+| **Deciders** | @RajwanYair                               |
+| **Tags**     | worker, email, observability, ops, opt-in |
 
 ---
 

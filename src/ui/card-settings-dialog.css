@@ -11,7 +11,9 @@
   opacity: 0.55;
   padding: 2px 4px;
   border-radius: 4px;
-  transition: opacity 0.15s ease, color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
   flex-shrink: 0;
 }
 .card__settings-btn:hover,

@@ -105,11 +105,16 @@ function setText(id: string, text: string): void {
  */
 export function encodeConnType(effectiveType: string): number {
   switch (effectiveType) {
-    case "slow-2g": return 1;
-    case "2g":      return 2;
-    case "3g":      return 3;
-    case "4g":      return 4;
-    default:        return 0;
+    case "slow-2g":
+      return 1;
+    case "2g":
+      return 2;
+    case "3g":
+      return 3;
+    case "4g":
+      return 4;
+    default:
+      return 0;
   }
 }
 
@@ -143,7 +148,9 @@ export async function renderSystemInfo(): Promise<void> {
         const vals = await historyGet("sysinfo:downlink", 7);
         const sparkEl = document.getElementById("sysinfo-downlink-spark");
         if (sparkEl !== null && vals.length >= 2) {
-          sparkEl.innerHTML = trustedHTML(sparklineSvg(vals, "var(--accent-2, var(--accent))", 44, 12));
+          sparkEl.innerHTML = trustedHTML(
+            sparklineSvg(vals, "var(--accent-2, var(--accent))", 44, 12),
+          );
         }
       })();
     }
@@ -373,7 +380,9 @@ export const systemInfoCard: CardDefinition = {
     section.className = "card";
     section.dataset.cardId = "system-info";
     section.setAttribute("aria-label", "System Info");
-    section.innerHTML = trustedHTML(`<div class="card-header"><span class="icon-badge cyan">🖥</span> מצב מערכת</div><div class="sysinfo-body" id="sysinfo-body"></div>`);
+    section.innerHTML = trustedHTML(
+      `<div class="card-header"><span class="icon-badge cyan">🖥</span> מצב מערכת</div><div class="sysinfo-body" id="sysinfo-body"></div>`,
+    );
     return section;
   },
   init: initSystemInfoCard,

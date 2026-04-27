@@ -203,7 +203,8 @@ const UI_TEXT: Record<InterfaceLanguage, Record<TranslationKey, string>> = {
     encryptedShareCopied: "🔐 Encrypted config link copied to clipboard",
     encryptedImportSuccess: "✅ Encrypted settings imported successfully",
     encryptedImportFailed: "⚠️ Decryption failed — wrong passphrase or corrupt link",
-    ecfgDialogExportDesc: "Choose a passphrase to encrypt your settings. Keep it safe — you will need it when importing.",
+    ecfgDialogExportDesc:
+      "Choose a passphrase to encrypt your settings. Keep it safe — you will need it when importing.",
     ecfgDialogImportDesc: "Enter the passphrase you used when exporting the encrypted settings.",
     resetAll: "⚠️ Reset all",
     resetLayout: "↩ Reset card layout",

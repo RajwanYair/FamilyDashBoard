@@ -36,24 +36,24 @@ are exempt and MUST continue using `proxyResponse` to preserve byte-for-byte pas
 
 ### In-scope routes (must use envelope)
 
-| Route                        | Provider name       | KV key                       |
-| ---------------------------- | ------------------- | ---------------------------- |
-| `GET /api/weather`           | `open-meteo`        | `weather:{lat}:{lon}`        |
-| `GET /api/currency`          | `er-api`            | `currency:ILS`               |
-| `GET /api/hebcal`            | `hebcal`            | `hebcal:{geonameid}`         |
-| `GET /api/hebcal/holidays`   | `hebcal`            | `hebcal-holidays:{year}`     |
-| `GET /api/alerts`            | `tzevaadom`         | _(no KV — TTL 60 s)_         |
-| `GET /api/news/aggregate`    | `rss-aggregate`     | `news-aggregate`             |
+| Route                      | Provider name   | KV key                   |
+| -------------------------- | --------------- | ------------------------ |
+| `GET /api/weather`         | `open-meteo`    | `weather:{lat}:{lon}`    |
+| `GET /api/currency`        | `er-api`        | `currency:ILS`           |
+| `GET /api/hebcal`          | `hebcal`        | `hebcal:{geonameid}`     |
+| `GET /api/hebcal/holidays` | `hebcal`        | `hebcal-holidays:{year}` |
+| `GET /api/alerts`          | `tzevaadom`     | _(no KV — TTL 60 s)_     |
+| `GET /api/news/aggregate`  | `rss-aggregate` | `news-aggregate`         |
 
 ### Exempt routes (pass-through)
 
-| Route                       | Reason                                                                           |
-| --------------------------- | -------------------------------------------------------------------------------- |
-| `GET /api/stocks`           | Yahoo Finance returns JSON but shape is consumed directly by the client adapter  |
-| `GET /api/news`             | Returns RSS XML                                                                  |
-| `GET /api/calendar`         | Returns ICS text                                                                 |
-| `GET /api/sefaria/calendar` | Returns JSON but consumed by a dedicated client adapter                          |
-| `GET /api/sefaria/text`     | Returns Sefaria v3 JSON consumed by a dedicated client adapter                   |
+| Route                       | Reason                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `GET /api/stocks`           | Yahoo Finance returns JSON but shape is consumed directly by the client adapter |
+| `GET /api/news`             | Returns RSS XML                                                                 |
+| `GET /api/calendar`         | Returns ICS text                                                                |
+| `GET /api/sefaria/calendar` | Returns JSON but consumed by a dedicated client adapter                         |
+| `GET /api/sefaria/text`     | Returns Sefaria v3 JSON consumed by a dedicated client adapter                  |
 
 ---
 
@@ -74,11 +74,11 @@ Each item is mapped to:
 
 ```ts
 interface NewsItem {
-  title:       string;   // HTML-entity-decoded
-  link:        string;   // absolute HTTPS URL
-  pubDate:     string;   // ISO-8601 (parsed from RFC 822 or ISO input)
-  description: string;   // first 300 chars of content, plain text
-  source:      string;   // publisher name from feed <title> or meta
+  title: string; // HTML-entity-decoded
+  link: string; // absolute HTTPS URL
+  pubDate: string; // ISO-8601 (parsed from RFC 822 or ISO input)
+  description: string; // first 300 chars of content, plain text
+  source: string; // publisher name from feed <title> or meta
 }
 ```
 

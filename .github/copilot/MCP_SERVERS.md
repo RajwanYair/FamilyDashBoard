@@ -14,15 +14,15 @@ This matches the broader tooling policy for `MyScripts/`: common tools belong at
 
 ## Recommended Server Types
 
-| Server Type                    | Good Fit Here | Notes                                               |
-| ------------------------------ | ------------- | --------------------------------------------------- |
-| GitHub                         | Yes           | PRs, issues, labels, release and review workflows   |
-| Fetch / web                    | Yes           | Docs lookup, API verification, release-note context |
-| Filesystem                     | Yes           | Workspace-aware browsing and read/write tooling     |
-| Playwright                     | Optional      | UI validation and screenshot workflows when needed  |
-| GitKraken / GitLens            | Optional      | Cross-project worktree, branch, PR review and "start work" flows. Useful when juggling multiple `MyScripts/` repos. |
+| Server Type                    | Good Fit Here | Notes                                                                                                                                                       |
+| ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub                         | Yes           | PRs, issues, labels, release and review workflows                                                                                                           |
+| Fetch / web                    | Yes           | Docs lookup, API verification, release-note context                                                                                                         |
+| Filesystem                     | Yes           | Workspace-aware browsing and read/write tooling                                                                                                             |
+| Playwright                     | Optional      | UI validation and screenshot workflows when needed                                                                                                          |
+| GitKraken / GitLens            | Optional      | Cross-project worktree, branch, PR review and "start work" flows. Useful when juggling multiple `MyScripts/` repos.                                         |
 | Azure (Cloud / Wrangler-side)  | Conditional   | Only when interacting with the Cloudflare worker's deployment surface or comparable Azure resources. Disabled by default; not required for static-PWA work. |
-| Repo-specific internal servers | Conditional   | Commit only if the whole team needs the same config |
+| Repo-specific internal servers | Conditional   | Commit only if the whole team needs the same config                                                                                                         |
 
 ## Current VS Code MCP Concepts To Account For
 

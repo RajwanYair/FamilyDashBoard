@@ -15,7 +15,9 @@ function makeDOState(): Parameters<typeof AlertsOrchestrator>[0] {
   return {
     storage: {
       get: async <T>(key: string) => store.get(key) as T | undefined,
-      put: async <T>(key: string, value: T) => { store.set(key, value); },
+      put: async <T>(key: string, value: T) => {
+        store.set(key, value);
+      },
     },
   };
 }
@@ -27,7 +29,7 @@ describe("AlertsOrchestrator — Durable Object stub", () => {
     const do_ = new AlertsOrchestrator(makeDOState());
     const res = await do_.fetch(new Request("https://do/state"));
     expect(res.status).toBe(200);
-    const body = await res.json() as { alarmCount: number; lastAlarmAt: null };
+    const body = (await res.json()) as { alarmCount: number; lastAlarmAt: null };
     expect(body.alarmCount).toBe(0);
     expect(body.lastAlarmAt).toBeNull();
   });
@@ -36,7 +38,7 @@ describe("AlertsOrchestrator — Durable Object stub", () => {
     const do_ = new AlertsOrchestrator(makeDOState());
     const res = await do_.fetch(new Request("https://do/alarm", { method: "POST" }));
     expect(res.status).toBe(200);
-    const body = await res.json() as { ok: boolean; alarmCount: number };
+    const body = (await res.json()) as { ok: boolean; alarmCount: number };
     expect(body.ok).toBe(true);
     expect(body.alarmCount).toBe(1);
   });
@@ -47,7 +49,7 @@ describe("AlertsOrchestrator — Durable Object stub", () => {
     await do_.fetch(new Request("https://do/alarm", { method: "POST" }));
     await do_.fetch(new Request("https://do/alarm", { method: "POST" }));
     const res = await do_.fetch(new Request("https://do/state"));
-    const body = await res.json() as { alarmCount: number };
+    const body = (await res.json()) as { alarmCount: number };
     expect(body.alarmCount).toBe(2);
   });
 
@@ -59,7 +61,7 @@ describe("AlertsOrchestrator — Durable Object stub", () => {
     // New instance same state (simulating DO eviction + reload)
     const do2 = new AlertsOrchestrator(state);
     const res = await do2.fetch(new Request("https://do/state"));
-    const body = await res.json() as { alarmCount: number };
+    const body = (await res.json()) as { alarmCount: number };
     expect(body.alarmCount).toBe(1);
   });
 
@@ -74,7 +76,7 @@ describe("AlertsOrchestrator — Durable Object stub", () => {
     const do_ = new AlertsOrchestrator(makeDOState());
     await do_.fetch(new Request("https://do/alarm", { method: "POST" }));
     const res = await do_.fetch(new Request("https://do/state"));
-    const body = await res.json() as { lastAlarmAt: number };
+    const body = (await res.json()) as { lastAlarmAt: number };
     expect(body.lastAlarmAt).toBeGreaterThanOrEqual(before);
     expect(body.lastAlarmAt).toBeLessThanOrEqual(Date.now() + 100);
   });
@@ -86,9 +88,7 @@ describe("AlertsOrchestrator — SSE subscribe and broadcast", () => {
   it("GET /subscribe returns 200 with text/event-stream content-type", async () => {
     const do_ = new AlertsOrchestrator(makeDOState());
     const ac = new AbortController();
-    const res = await do_.fetch(
-      new Request("https://do/subscribe", { signal: ac.signal }),
-    );
+    const res = await do_.fetch(new Request("https://do/subscribe", { signal: ac.signal }));
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toContain("text/event-stream");
     // Clean up: abort to release writer
@@ -98,9 +98,7 @@ describe("AlertsOrchestrator — SSE subscribe and broadcast", () => {
   it("GET /subscribe sends initial 'event: ping' to the stream", async () => {
     const do_ = new AlertsOrchestrator(makeDOState());
     const ac = new AbortController();
-    const res = await do_.fetch(
-      new Request("https://do/subscribe", { signal: ac.signal }),
-    );
+    const res = await do_.fetch(new Request("https://do/subscribe", { signal: ac.signal }));
     expect(res.body).not.toBeNull();
     // Read at least the ping frame from the stream
     const reader = res.body!.getReader();
@@ -123,7 +121,7 @@ describe("AlertsOrchestrator — SSE subscribe and broadcast", () => {
       }),
     );
     expect(res.status).toBe(200);
-    const body = await res.json() as { ok: boolean; connections: number };
+    const body = (await res.json()) as { ok: boolean; connections: number };
     expect(body.ok).toBe(true);
     expect(body.connections).toBe(0);
   });
@@ -132,7 +130,11 @@ describe("AlertsOrchestrator — SSE subscribe and broadcast", () => {
     const do_ = new AlertsOrchestrator(makeDOState());
     const res = await do_.fetch(new Request("https://do/state"));
     expect(res.status).toBe(200);
-    const body = await res.json() as { alarmCount: number; lastAlarmAt: null; connections: number };
+    const body = (await res.json()) as {
+      alarmCount: number;
+      lastAlarmAt: null;
+      connections: number;
+    };
     expect(body).toHaveProperty("connections");
     expect(body.connections).toBe(0);
   });

@@ -218,16 +218,16 @@ Use this section alongside the standard steps above.
 
 ### Key differences
 
-| Aspect           | Data card                            | Video-card                                          |
-| ---------------- | ------------------------------------ | --------------------------------------------------- |
-| DOM element      | `<article>` with tile grid           | `<article>` wrapping `<video>` + overlay            |
-| Data fetching    | `cGet` / `cSet` / `fetchWithTimeout` | `StreamDescriptor` from `video-news-adapter.ts`     |
-| State            | `cGet()` / `cSet()` cache            | Module-level `_muted`, `_activeChannel`, retry state |
-| Refresh          | Polling interval                     | HLS manifest (no-store); `onerror` retry with back-off |
-| CSP              | `connect-src` only                   | `connect-src` + `media-src` + `blob:`               |
-| Autoplay         | N/A                                  | Always `muted` by default; play-prompt overlay on block |
-| Reduced motion   | N/A                                  | Pause + show poster on `prefers-reduced-motion: reduce` |
-| Testing          | Unit + integration                   | Unit (adapter) + integration (404 fallback) + Playwright |
+| Aspect         | Data card                            | Video-card                                               |
+| -------------- | ------------------------------------ | -------------------------------------------------------- |
+| DOM element    | `<article>` with tile grid           | `<article>` wrapping `<video>` + overlay                 |
+| Data fetching  | `cGet` / `cSet` / `fetchWithTimeout` | `StreamDescriptor` from `video-news-adapter.ts`          |
+| State          | `cGet()` / `cSet()` cache            | Module-level `_muted`, `_activeChannel`, retry state     |
+| Refresh        | Polling interval                     | HLS manifest (no-store); `onerror` retry with back-off   |
+| CSP            | `connect-src` only                   | `connect-src` + `media-src` + `blob:`                    |
+| Autoplay       | N/A                                  | Always `muted` by default; play-prompt overlay on block  |
+| Reduced motion | N/A                                  | Pause + show poster on `prefers-reduced-motion: reduce`  |
+| Testing        | Unit + integration                   | Unit (adapter) + integration (404 fallback) + Playwright |
 
 ### `StreamDescriptor` type
 
@@ -235,11 +235,11 @@ Every channel is described by a `StreamDescriptor` (see `src/types/stream.ts`):
 
 ```typescript
 interface StreamDescriptor {
-  id:       VideoChannelId;   // "c14" | "i24" | "now14" | "arutz7"
-  url:      string;           // HLS manifest URL (or "" if pending)
-  mode:     "hls-native" | "hls-worker" | "hls-js" | "iframe";
-  titleHe:  string;           // Hebrew channel name
-  poster:   string;           // Poster image URL (shown while loading)
+  id: VideoChannelId; // "c14" | "i24" | "now14" | "arutz7"
+  url: string; // HLS manifest URL (or "" if pending)
+  mode: "hls-native" | "hls-worker" | "hls-js" | "iframe";
+  titleHe: string; // Hebrew channel name
+  poster: string; // Poster image URL (shown while loading)
   cspHosts: { connect: string[]; media: string[] }; // hosts for CSP extension
 }
 ```

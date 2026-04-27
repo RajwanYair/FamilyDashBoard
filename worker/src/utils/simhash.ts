@@ -228,7 +228,10 @@ export function cosineSimilarity(a: number[], b: number[]): number {
  * Avoids a direct import of the full Env type from this utility module.
  */
 export interface EmbeddingAiBinding {
-  run(model: string, input: { text: string | string[] }): Promise<{ shape: number[]; data: number[][] }>;
+  run(
+    model: string,
+    input: { text: string | string[] },
+  ): Promise<{ shape: number[]; data: number[][] }>;
 }
 
 /**
@@ -239,10 +242,7 @@ export interface EmbeddingAiBinding {
  * @param ai   - The Workers AI binding (env.AI).
  * @param text - The string to embed (typically a news headline, ≤512 tokens).
  */
-export async function getEmbedding(
-  ai: EmbeddingAiBinding,
-  text: string,
-): Promise<number[] | null> {
+export async function getEmbedding(ai: EmbeddingAiBinding, text: string): Promise<number[] | null> {
   try {
     const result = await ai.run("@cf/baai/bge-small-en-v1.5", { text });
     const vec = result.data?.[0];
@@ -261,10 +261,6 @@ export async function getEmbedding(
  * @param b          Embedding vector for the second item.
  * @param threshold  Minimum cosine similarity to treat as duplicate. Default: 0.92.
  */
-export function isNearDuplicateByEmbedding(
-  a: number[],
-  b: number[],
-  threshold = 0.92,
-): boolean {
+export function isNearDuplicateByEmbedding(a: number[], b: number[], threshold = 0.92): boolean {
   return cosineSimilarity(a, b) >= threshold;
 }

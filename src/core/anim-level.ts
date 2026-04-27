@@ -23,9 +23,7 @@ type AnimLevel = (typeof ANIM_LEVELS)[number];
  * so components can query it without re-parsing CSS.
  */
 export function applyAnimLevel(level: DashboardConfig["animLevel"]): void {
-  const safe: AnimLevel = ANIM_LEVELS.includes(level)
-    ? level
-    : "normal";
+  const safe: AnimLevel = ANIM_LEVELS.includes(level) ? level : "normal";
   document.body.dataset["animLevel"] = safe;
 }
 
@@ -43,8 +41,7 @@ export function effectiveAnimLevel(
   configLevel: DashboardConfig["animLevel"],
 ): DashboardConfig["animLevel"] {
   const prefersReduced =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (configLevel === "full") return "full";
   if (prefersReduced && configLevel === "normal") return "minimal";

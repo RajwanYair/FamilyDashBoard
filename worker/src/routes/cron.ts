@@ -189,4 +189,3 @@ export async function handleWeeklyDigest(env: Env): Promise<void> {
     console.error("[FDB-digest] Failed to send weekly digest:", err);
   }
 }
-

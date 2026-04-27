@@ -93,12 +93,12 @@ A full migration of all card rules is a v12.1 follow-up.
 
 ## Alternatives considered
 
-| Option | Verdict |
-| --- | --- |
-| Shadow DOM for isolation | Rejected (ADR-001 — breaks global `@layer` theming) |
-| CSS Modules | Rejected — requires build-time class mangling, incompatible with our runtime DOM refs |
-| BEM naming (`.card__weather__wind-dir`) | Rejected — verbose, still social contract, no cascade containment |
-| Full `@scope` migration in one sprint | Deferred — too large; additive approach ships faster |
+| Option                                  | Verdict                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------- |
+| Shadow DOM for isolation                | Rejected (ADR-001 — breaks global `@layer` theming)                                   |
+| CSS Modules                             | Rejected — requires build-time class mangling, incompatible with our runtime DOM refs |
+| BEM naming (`.card__weather__wind-dir`) | Rejected — verbose, still social contract, no cascade containment                     |
+| Full `@scope` migration in one sprint   | Deferred — too large; additive approach ships faster                                  |
 
 ---
 

@@ -2270,9 +2270,7 @@ describe("Hebrew Calendar — prewarmNextYearHolidays", () => {
 
   it("calls fetchJSONWithWorker with next year's URL when no cache", async () => {
     await prewarmNextYearHolidays(() => new Date(2024, 9, 2));
-    expect(fetchJSONWithWorker).toHaveBeenCalledWith(
-      expect.stringContaining("year=2025"),
-    );
+    expect(fetchJSONWithWorker).toHaveBeenCalledWith(expect.stringContaining("year=2025"));
   });
 
   it("calls cSetAsync to store pre-warmed data", async () => {
@@ -2285,7 +2283,9 @@ describe("Hebrew Calendar — prewarmNextYearHolidays", () => {
 
   it("skips fetch when cache already has prewarm data", async () => {
     vi.mocked(cGetAsync).mockResolvedValue({
-      items: [{ category: "holiday", hebrew: "ראש השנה", title: "Rosh Hashana", date: "2025-09-22" }],
+      items: [
+        { category: "holiday", hebrew: "ראש השנה", title: "Rosh Hashana", date: "2025-09-22" },
+      ],
     });
     await prewarmNextYearHolidays(() => new Date(2024, 9, 2));
     expect(fetchJSONWithWorker).not.toHaveBeenCalled();
@@ -2293,9 +2293,7 @@ describe("Hebrew Calendar — prewarmNextYearHolidays", () => {
 
   it("does not throw when fetch fails", async () => {
     vi.mocked(fetchJSONWithWorker).mockRejectedValue(new Error("network error"));
-    await expect(
-      prewarmNextYearHolidays(() => new Date(2024, 9, 2)),
-    ).resolves.not.toThrow();
+    await expect(prewarmNextYearHolidays(() => new Date(2024, 9, 2))).resolves.not.toThrow();
   });
 
   it("does not store cache when API returns no items", async () => {

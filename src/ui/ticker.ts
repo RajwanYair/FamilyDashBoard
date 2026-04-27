@@ -284,9 +284,7 @@ function openHalachaOverlay(): void {
   refEl.textContent = _halachaData.category
     ? `${_halachaData.category} · ${_halachaData.ref}`
     : _halachaData.ref;
-  txtEl.textContent = _halachaData.texts
-    .map((t, i) => `(${i + 1}) ${t}`)
-    .join("\n\n");
+  txtEl.textContent = _halachaData.texts.map((t, i) => `(${i + 1}) ${t}`).join("\n\n");
   ov.classList.add("visible");
   diagLog("[ticker] Opened halacha overlay");
 }

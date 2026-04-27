@@ -23,21 +23,21 @@ const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
 /** Fail CI if a card grows more than this fraction vs the baseline. */
-const DELTA_THRESHOLD = 0.10;
+const DELTA_THRESHOLD = 0.1;
 
 const CARD_PATTERNS = [
-  ["weather",     "weather"],
-  ["stocks",      "stocks"],
-  ["currency",    "currency"],
-  ["calendar",    "calendar"],
-  ["hebrew-cal",  "hebrew-cal"],
-  ["alerts",      "alerts"],
-  ["motivation",  "motivation"],
-  ["tasks",       "tasks"],
+  ["weather", "weather"],
+  ["stocks", "stocks"],
+  ["currency", "currency"],
+  ["calendar", "calendar"],
+  ["hebrew-cal", "hebrew-cal"],
+  ["alerts", "alerts"],
+  ["motivation", "motivation"],
+  ["tasks", "tasks"],
   ["system-info", "system-info"],
-  ["countdown",   "countdown"],
-  ["news",        "news"],
-  ["video-news",  "video-news"],
+  ["countdown", "countdown"],
+  ["news", "news"],
+  ["video-news", "video-news"],
 ];
 
 function gzipSize(filePath) {
@@ -116,8 +116,8 @@ for (const row of rows) console.log(row);
 if (failed) {
   console.error(
     `\n❌  One or more card chunks grew by more than ${DELTA_THRESHOLD * 100}%.` +
-    `\n    Investigate the delta, then update the baseline with:\n` +
-    `    node scripts/bundle-trend.mjs\n`,
+      `\n    Investigate the delta, then update the baseline with:\n` +
+      `    node scripts/bundle-trend.mjs\n`,
   );
   process.exit(1);
 }

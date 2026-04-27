@@ -90,12 +90,12 @@ export async function storeReport(
     const ts = Date.now();
     const safeUrl = stripUrl(url);
     // Remove any fields that could contain PII before persisting
-    const { userAgent: _ua, ...safeBody } = body as Record<string, unknown> & { userAgent?: unknown };
+    const { userAgent: _ua, ...safeBody } = body as Record<string, unknown> & {
+      userAgent?: unknown;
+    };
     const detail = JSON.stringify(safeBody);
     await db
-      .prepare(
-        `INSERT INTO browser_reports (ts, type, url, detail, day) VALUES (?, ?, ?, ?, ?)`,
-      )
+      .prepare(`INSERT INTO browser_reports (ts, type, url, detail, day) VALUES (?, ?, ?, ?, ?)`)
       .bind(ts, type, safeUrl, detail, utcDay(ts))
       .run();
   } catch {
@@ -110,10 +110,7 @@ export async function storeReport(
  * @param db   D1 binding
  * @param days Number of past days to include (default 30)
  */
-export async function queryReportSummary(
-  db: D1Database,
-  days = 30,
-): Promise<ReportSummaryItem[]> {
+export async function queryReportSummary(db: D1Database, days = 30): Promise<ReportSummaryItem[]> {
   const since = utcDay(Date.now() - days * 86_400_000);
   try {
     await ensureSchema(db);

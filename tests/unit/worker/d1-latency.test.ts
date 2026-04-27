@@ -49,7 +49,7 @@ function makeLatencyStub(rows: LatencyRow[] = []): D1Database {
   };
 
   return {
-    exec: async () => ({ results: [], success: true, meta: {} } as D1Result),
+    exec: async () => ({ results: [], success: true, meta: {} }) as D1Result,
     prepare: stmtStub,
     batch: async () => [],
     dump: async () => new ArrayBuffer(0),

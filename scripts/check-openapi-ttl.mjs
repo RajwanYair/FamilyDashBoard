@@ -75,7 +75,11 @@ export function parseGetRoutes(yamlText) {
       const lineIndent = indentMatch ? indentMatch[1].length : 0;
 
       // Once indentation drops back to getIndent or less, we've left the get block
-      if (trimmed.length > 0 && lineIndent <= getIndent && !trimmed.startsWith(" ".repeat(getIndent + 1))) {
+      if (
+        trimmed.length > 0 &&
+        lineIndent <= getIndent &&
+        !trimmed.startsWith(" ".repeat(getIndent + 1))
+      ) {
         inGet = false;
         continue;
       }
@@ -110,18 +114,12 @@ if (isMain) {
   const missing = findMissingTtl(routes);
 
   if (missing.length === 0) {
-    console.log(
-      `✅ openapi-ttl: all ${routes.length} GET route(s) have x-kv-ttl annotation`
-    );
+    console.log(`✅ openapi-ttl: all ${routes.length} GET route(s) have x-kv-ttl annotation`);
     process.exit(0);
   } else {
-    console.error(
-      `❌ openapi-ttl: ${missing.length} GET route(s) missing x-kv-ttl annotation:`
-    );
+    console.error(`❌ openapi-ttl: ${missing.length} GET route(s) missing x-kv-ttl annotation:`);
     for (const p of missing) console.error(`   ${p}`);
-    console.error(
-      "   Add x-kv-ttl: <seconds> (0 = uncached) to each route in worker/openapi.yaml"
-    );
+    console.error("   Add x-kv-ttl: <seconds> (0 = uncached) to each route in worker/openapi.yaml");
     process.exit(1);
   }
 }

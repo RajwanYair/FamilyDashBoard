@@ -103,31 +103,31 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 
 ### ₿ Bitcoin — `coingecko`
 
-| Property     | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
-| Provider     | [CoinGecko](https://www.coingecko.com/) — free tier                     |
-| Worker route | `GET /api/crypto?ids=bitcoin&vs_currencies=usd`                         |
-| Upstream URL | `https://api.coingecko.com/api/v3/simple/price`                         |
+| Property       | Value                                                                   |
+| -------------- | ----------------------------------------------------------------------- |
+| Provider       | [CoinGecko](https://www.coingecko.com/) — free tier                     |
+| Worker route   | `GET /api/crypto?ids=bitcoin&vs_currencies=usd`                         |
+| Upstream URL   | `https://api.coingecko.com/api/v3/simple/price`                         |
 | Valibot schema | `CoinGeckoSchema` in `worker/src/utils/schemas.ts`                      |
-| Cache TTL    | 5 min (`Cache-Control: max-age=300` on worker response)                 |
-| Cache key    | (stock cache key `stk-BTC-USD`)                                         |
-| Failure mode | Worker returns 502 if schema invalid; 400 if unsupported coin requested |
-| Note         | Only `bitcoin` is accepted by the worker (`ids` allowlist)              |
+| Cache TTL      | 5 min (`Cache-Control: max-age=300` on worker response)                 |
+| Cache key      | (stock cache key `stk-BTC-USD`)                                         |
+| Failure mode   | Worker returns 502 if schema invalid; 400 if unsupported coin requested |
+| Note           | Only `bitcoin` is accepted by the worker (`ids` allowlist)              |
 
 ---
 
 ### 📰 News — RSS feeds
 
-| Property       | Value                                                                      |
-| -------------- | -------------------------------------------------------------------------- |
+| Property       | Value                                                                                                                                                                            |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Provider       | 17 RSS feeds (Ynet, Walla, Mako, Kan, N12, Rotter, Israel Hayom, Globes, Calcalist, Makor Rishon, Kikar HaShabbat, ICE, Geektime, Channel 14, Arutz 7, Srugim, Behadrei Haredim) |
-| Worker route   | `GET /api/news?url=<encoded-rss-url>`                                      |
-| Upstream       | Direct RSS proxy (allowlisted origins only) — tried **first** before proxy chain |
-| Cache TTL      | 15 min (`INTERVALS.NEWS`)                                                  |
-| Cache key      | `news-<hash>`                                                              |
-| Stale fallback | `cGetStale` on error                                                       |
-| Time display   | Each item: `.news-pub-time` (HH:MM / אתמול HH:MM / DD/MM HH:MM) + `.news-age` (MM:SS / HH:MM:SS / D:HH:MM:SS) |
-| Failure mode   | Worker returns 403 if origin not in `ALLOWED_NEWS_ORIGINS`                 |
+| Worker route   | `GET /api/news?url=<encoded-rss-url>`                                                                                                                                            |
+| Upstream       | Direct RSS proxy (allowlisted origins only) — tried **first** before proxy chain                                                                                                 |
+| Cache TTL      | 15 min (`INTERVALS.NEWS`)                                                                                                                                                        |
+| Cache key      | `news-<hash>`                                                                                                                                                                    |
+| Stale fallback | `cGetStale` on error                                                                                                                                                             |
+| Time display   | Each item: `.news-pub-time` (HH:MM / אתמול HH:MM / DD/MM HH:MM) + `.news-age` (MM:SS / HH:MM:SS / D:HH:MM:SS)                                                                    |
+| Failure mode   | Worker returns 403 if origin not in `ALLOWED_NEWS_ORIGINS`                                                                                                                       |
 
 ---
 
@@ -147,15 +147,15 @@ Finance crypto quotes are unreliable in browser CORS contexts.
 
 ### 🗓 Calendar — Google ICS
 
-| Property     | Value                                                                                |
-| ------------ | ------------------------------------------------------------------------------------ |
-| Provider     | Google Calendar (ICS export)                                                         |
+| Property     | Value                                                                                 |
+| ------------ | ------------------------------------------------------------------------------------- |
+| Provider     | Google Calendar (ICS export)                                                          |
 | Worker route | `GET /api/calendar?url=<encoded-ics-url>` — tried **first** before direct/proxy chain |
-| Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                       |
-| Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                        |
-| Cache key    | `cal-ics-<index>`                                                                    |
-| Validation   | Server validates `BEGIN:VCALENDAR` presence                                          |
-| Failure mode | Worker returns 403 if origin not in `ALLOWED_CALENDAR_ORIGINS`, 502 if not valid ICS |
+| Upstream     | ICS URL (allowlisted origins: `google.com`, `apple.com`, etc.)                        |
+| Cache TTL    | 15 min (`INTERVALS.CALENDAR`)                                                         |
+| Cache key    | `cal-ics-<index>`                                                                     |
+| Validation   | Server validates `BEGIN:VCALENDAR` presence                                           |
+| Failure mode | Worker returns 403 if origin not in `ALLOWED_CALENDAR_ORIGINS`, 502 if not valid ICS  |
 
 ---
 

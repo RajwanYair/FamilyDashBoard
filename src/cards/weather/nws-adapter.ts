@@ -31,7 +31,7 @@ interface NWSPointMeta {
 interface NWSPeriod {
   temperature: number;
   temperatureUnit: "F" | "C";
-  windSpeed: string;   // e.g. "10 mph"
+  windSpeed: string; // e.g. "10 mph"
   windDirection: string;
   shortForecast: string;
   probabilityOfPrecipitation: { value: number | null };
@@ -100,12 +100,12 @@ export async function fetchNWS(lat: number, lon: number): Promise<WeatherRespons
   const result: WeatherResponse = {
     current: {
       temperature_2m: tempC,
-      relative_humidity_2m: 0,         // NWS hourly doesn't include RH; leave as 0
+      relative_humidity_2m: 0, // NWS hourly doesn't include RH; leave as 0
       weather_code: wmoCode,
       wind_speed_10m: parseFloat(now.windSpeed) || 0,
-      wind_direction_10m: 0,            // direction is compass text — omit
+      wind_direction_10m: 0, // direction is compass text — omit
       wind_gusts_10m: 0,
-      apparent_temperature: tempC,      // NWS doesn't provide feels-like in hourly
+      apparent_temperature: tempC, // NWS doesn't provide feels-like in hourly
       uv_index: 0,
       dew_point_2m: 0,
       cloud_cover: 0,

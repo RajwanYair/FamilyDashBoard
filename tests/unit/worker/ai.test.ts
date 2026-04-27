@@ -99,7 +99,11 @@ describe("handleNewsSummarise — AI enabled with binding", () => {
     const env = makeEnv({
       AI_ENABLED: "true",
       AI: ai,
-      CACHE_KV: { get: async () => null, put: mockPut, list: async () => ({ keys: [], list_complete: true, cacheStatus: null }) },
+      CACHE_KV: {
+        get: async () => null,
+        put: mockPut,
+        list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
+      },
     });
     await handleNewsSummarise(env);
     expect(mockPut).toHaveBeenCalledOnce();
@@ -112,7 +116,11 @@ describe("handleNewsSummarise — AI enabled with binding", () => {
     const env = makeEnv({
       AI_ENABLED: "true",
       AI: ai,
-      CACHE_KV: { get: async () => cachedData, put: async () => undefined, list: async () => ({ keys: [], list_complete: true, cacheStatus: null }) },
+      CACHE_KV: {
+        get: async () => cachedData,
+        put: async () => undefined,
+        list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
+      },
     });
     const res = await handleNewsSummarise(env);
     expect(res.status).toBe(200);
@@ -196,7 +204,11 @@ describe("handleMotivationHebrew — AI enabled with binding", () => {
     const env = makeEnv({
       AI_ENABLED: "true",
       AI: ai,
-      CACHE_KV: { get: async () => null, put: mockPut, list: async () => ({ keys: [], list_complete: true, cacheStatus: null }) },
+      CACHE_KV: {
+        get: async () => null,
+        put: mockPut,
+        list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
+      },
     });
     await handleMotivationHebrew(env);
     expect(mockPut).toHaveBeenCalledOnce();
@@ -209,7 +221,11 @@ describe("handleMotivationHebrew — AI enabled with binding", () => {
     const env = makeEnv({
       AI_ENABLED: "true",
       AI: ai,
-      CACHE_KV: { get: async () => cachedData, put: async () => undefined, list: async () => ({ keys: [], list_complete: true, cacheStatus: null }) },
+      CACHE_KV: {
+        get: async () => cachedData,
+        put: async () => undefined,
+        list: async () => ({ keys: [], list_complete: true, cacheStatus: null }),
+      },
     });
     const res = await handleMotivationHebrew(env);
     expect(res.status).toBe(200);
@@ -226,4 +242,3 @@ describe("handleMotivationHebrew — AI enabled with binding", () => {
     expect(body).toEqual({ ok: false, error: "ai_error" });
   });
 });
-

@@ -34,10 +34,7 @@ export function shouldTagCanary(canaryPct: string | undefined): boolean {
  * @param response   - The Hono/fetch Response object.
  * @param canaryPct  - The CANARY_PCT env var value.
  */
-export function applyCanaryHeader(
-  response: Response,
-  canaryPct: string | undefined,
-): void {
+export function applyCanaryHeader(response: Response, canaryPct: string | undefined): void {
   if (shouldTagCanary(canaryPct)) {
     try {
       response.headers.set("X-Canary", "true");

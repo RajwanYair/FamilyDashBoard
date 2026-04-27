@@ -92,8 +92,6 @@ describe("SefariaCalendarSchema — strict object parsing", () => {
     }
   });
 
-
-
   it("passes through extra top-level fields (looseObject — forward-compatible)", () => {
     const input = {
       calendar_items: [

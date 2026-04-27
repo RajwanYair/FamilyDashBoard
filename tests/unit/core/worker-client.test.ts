@@ -174,7 +174,13 @@ describe("worker-client — wc", () => {
   });
 
   it("wc.sefariaText() appends ref param", async () => {
-    const body = makeEnvelope({ ref: "Berakhot.2a.1", heRef: "ברכות ב א", text: "...", he: "...", book: "Berakhot" });
+    const body = makeEnvelope({
+      ref: "Berakhot.2a.1",
+      heRef: "ברכות ב א",
+      text: "...",
+      he: "...",
+      book: "Berakhot",
+    });
     fetchSpy.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(body) });
     const { wc } = await import("@/core/worker-client");
     await wc.sefariaText({ ref: "Berakhot.2a.1" });

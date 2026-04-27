@@ -27,7 +27,10 @@ function parseAdrContent(fileText: string, fileName: string) {
   for (const l of lines) {
     for (const pat of datePatterns) {
       const m = l.match(pat);
-      if (m) { date = m[1]; break; }
+      if (m) {
+        date = m[1];
+        break;
+      }
     }
     if (date !== "—") break;
   }
@@ -37,7 +40,10 @@ function parseAdrContent(fileText: string, fileName: string) {
   for (const l of lines) {
     for (const pat of statusPatterns) {
       const m = l.match(pat);
-      if (m) { status = m[1].trim(); break; }
+      if (m) {
+        status = m[1].trim();
+        break;
+      }
     }
     if (status !== "—") break;
   }
@@ -49,8 +55,13 @@ function pad(str: string, width: number): string {
   return str + " ".repeat(Math.max(0, width - str.length));
 }
 
-function buildAdrIndex(adrs: Array<{ file: string; title: string; date: string; status: string }>): string {
-  const linkWidth = Math.max(...adrs.map((a) => `[${a.file.replace(".md", "")}](${a.file})`.length), 3);
+function buildAdrIndex(
+  adrs: Array<{ file: string; title: string; date: string; status: string }>,
+): string {
+  const linkWidth = Math.max(
+    ...adrs.map((a) => `[${a.file.replace(".md", "")}](${a.file})`.length),
+    3,
+  );
   const titleWidth = Math.max(...adrs.map((a) => a.title.length), 5);
   const dateWidth = Math.max(...adrs.map((a) => a.date.length), 4);
   const statusWidth = Math.max(...adrs.map((a) => a.status.length), 6);
@@ -86,7 +97,8 @@ describe("parseAdrContent — extract ADR metadata (V13-OPS)", () => {
   });
 
   it("parses title with em-dash separator", () => {
-    const text = "# ADR-007 — News Aggregation Strategy\n\n**Date:** 2026-07-10\n**Status:** Accepted\n";
+    const text =
+      "# ADR-007 — News Aggregation Strategy\n\n**Date:** 2026-07-10\n**Status:** Accepted\n";
     const result = parseAdrContent(text, "ADR-007-news.md");
     expect(result.title).toBe("News Aggregation Strategy");
   });
@@ -161,7 +173,12 @@ describe("pad — column padding utility (V13-OPS)", () => {
 
 describe("buildAdrIndex — generate README.md content (V13-OPS)", () => {
   const ONE_ADR = [
-    { file: "ADR-001-shadow-dom.md", title: "No Shadow DOM in FdbCard", date: "2026-04-17", status: "Accepted" },
+    {
+      file: "ADR-001-shadow-dom.md",
+      title: "No Shadow DOM in FdbCard",
+      date: "2026-04-17",
+      status: "Accepted",
+    },
   ];
 
   it("includes the standard ADR index header", () => {
@@ -193,7 +210,12 @@ describe("buildAdrIndex — generate README.md content (V13-OPS)", () => {
   it("produces different output when a new ADR is added", () => {
     const twoAdrs = [
       ...ONE_ADR,
-      { file: "ADR-002-zero-deps.md", title: "Zero Client-Side Deps", date: "2026-04-18", status: "Accepted" },
+      {
+        file: "ADR-002-zero-deps.md",
+        title: "Zero Client-Side Deps",
+        date: "2026-04-18",
+        status: "Accepted",
+      },
     ];
     expect(buildAdrIndex(ONE_ADR)).not.toBe(buildAdrIndex(twoAdrs));
   });

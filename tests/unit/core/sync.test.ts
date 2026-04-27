@@ -264,7 +264,16 @@ describe("updateCardMiniInfo", () => {
 describe("getFailedPanes", () => {
   beforeEach(() => {
     // Reset all keys that other tests and our own tests may dirty
-    for (const k of ["fp-a", "fp-b", "fp-c", "test", "reset-test", "cap-test", "three", "fresh-key"]) {
+    for (const k of [
+      "fp-a",
+      "fp-b",
+      "fp-c",
+      "test",
+      "reset-test",
+      "cap-test",
+      "three",
+      "fresh-key",
+    ]) {
       recordSuccess(k);
     }
   });

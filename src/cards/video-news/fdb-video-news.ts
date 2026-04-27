@@ -20,7 +20,6 @@ import { LS_COLLAPSED } from "../../core/constants";
 import type { VideoChannelId } from "../../types/stream";
 
 export class FdbVideoNewsCard extends FdbCard {
-
   override connect(): void {
     const { header, body } = this.buildShell("📺", "ערוץ חדשות", "Video News");
 
@@ -87,7 +86,9 @@ export class FdbVideoNewsCard extends FdbCard {
   private _loadCollapsedIds(): Set<string> {
     try {
       return new Set(JSON.parse(localStorage.getItem(LS_COLLAPSED) ?? "[]") as string[]);
-    } catch { return new Set(); }
+    } catch {
+      return new Set();
+    }
   }
 }
 

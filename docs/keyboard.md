@@ -7,34 +7,34 @@
 ## Keyboard Shortcuts
 
 All shortcuts are single-key (no modifier required) and fire from the global
-`keydown` handler in `src/ui/keyboard.ts`.  Shortcuts are silenced when focus
+`keydown` handler in `src/ui/keyboard.ts`. Shortcuts are silenced when focus
 is inside an `<input>`, `<textarea>`, or `<select>`.
 
-| Key         | Action                          | Notes                                          |
-| ----------- | ------------------------------- | ---------------------------------------------- |
-| `T`         | Cycle theme                     | Cycles through 6 themes: black→blue→matrix→amber→purple→rose |
-| `D`         | Toggle diagnostics overlay      | Shows provider health, error log, version      |
-| `A`         | Toggle alerts pane              | Flashes the Tzeva Adom alert card              |
-| `S`         | Open Settings / Config panel    | `<dialog>` opened via `showModal()`            |
-| `N`         | Toggle night dimmer             | Overlay that reduces screen brightness         |
-| `M`         | Toggle video mute               | Mute / unmute the video-news card audio        |
-| `V`         | Cycle video channel             | Cycle through news channels (C14 → i24 → …)   |
-| `+` / `=`   | Increase font size              | Step +1px on `<html>` font-size                |
-| `-`         | Decrease font size              | Step -1px on `<html>` font-size                |
-| `P`         | Print                           | Opens browser print dialog                     |
-| `B`         | Toggle bookmarks sidebar        | Quick-access bookmark panel                    |
-| `H` / `?`  | Help overlay                    | Shows this key table in a `<dialog>`           |
-| `Esc`       | Close active overlay            | Closes config, help, diag, dimmer              |
+| Key       | Action                       | Notes                                                        |
+| --------- | ---------------------------- | ------------------------------------------------------------ |
+| `T`       | Cycle theme                  | Cycles through 6 themes: black→blue→matrix→amber→purple→rose |
+| `D`       | Toggle diagnostics overlay   | Shows provider health, error log, version                    |
+| `A`       | Toggle alerts pane           | Flashes the Tzeva Adom alert card                            |
+| `S`       | Open Settings / Config panel | `<dialog>` opened via `showModal()`                          |
+| `N`       | Toggle night dimmer          | Overlay that reduces screen brightness                       |
+| `M`       | Toggle video mute            | Mute / unmute the video-news card audio                      |
+| `V`       | Cycle video channel          | Cycle through news channels (C14 → i24 → …)                  |
+| `+` / `=` | Increase font size           | Step +1px on `<html>` font-size                              |
+| `-`       | Decrease font size           | Step -1px on `<html>` font-size                              |
+| `P`       | Print                        | Opens browser print dialog                                   |
+| `B`       | Toggle bookmarks sidebar     | Quick-access bookmark panel                                  |
+| `H` / `?` | Help overlay                 | Shows this key table in a `<dialog>`                         |
+| `Esc`     | Close active overlay         | Closes config, help, diag, dimmer                            |
 
 > **TV remote / smart display**: Most Samsung/LG smart TVs map the color buttons
-> and D-pad to standard keyboard events.  `Enter`/`OK` activates focused elements;
+> and D-pad to standard keyboard events. `Enter`/`OK` activates focused elements;
 > arrow keys move focus between cards.
 
 ---
 
 ## Focus Order
 
-The tab order follows the natural DOM order in `src/index.html`.  Interactive
+The tab order follows the natural DOM order in `src/index.html`. Interactive
 elements and their tab order are:
 
 1. **Skip-to-content link** (visually hidden, first in DOM) — jumps focus to
@@ -56,14 +56,14 @@ provides built-in focus-trap and `Esc`-to-close behavior without any custom code
 
 ## ARIA Landmarks
 
-| Landmark          | Element                        | Role / label                    |
-| ----------------- | ------------------------------ | ------------------------------- |
-| `<header>`        | Top bar                        | `banner`                        |
-| `<main>`          | Card grid area                 | `main` — `aria-label="לוח"`    |
-| `<nav>` (header)  | Keyboard shortcut hints strip  | `navigation`                    |
-| `<footer>`        | Version / status row           | `contentinfo`                   |
-| Cards             | `<article>` elements           | `region` + `aria-labelledby`    |
-| Overlays          | `<dialog>` elements            | `dialog` (implicit) + `aria-label` |
+| Landmark         | Element                       | Role / label                       |
+| ---------------- | ----------------------------- | ---------------------------------- |
+| `<header>`       | Top bar                       | `banner`                           |
+| `<main>`         | Card grid area                | `main` — `aria-label="לוח"`        |
+| `<nav>` (header) | Keyboard shortcut hints strip | `navigation`                       |
+| `<footer>`       | Version / status row          | `contentinfo`                      |
+| Cards            | `<article>` elements          | `region` + `aria-labelledby`       |
+| Overlays         | `<dialog>` elements           | `dialog` (implicit) + `aria-label` |
 
 ---
 
@@ -71,11 +71,11 @@ provides built-in focus-trap and `Esc`-to-close behavior without any custom code
 
 ### Recommended settings
 
-| Setting          | Value                  |
-| ---------------- | ---------------------- |
-| Browse/read mode | **Forms/Application mode** — use Tab to navigate interactive elements |
+| Setting          | Value                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------ |
+| Browse/read mode | **Forms/Application mode** — use Tab to navigate interactive elements                                  |
 | Language         | Hebrew (`he`) — the page is `lang="he" dir="rtl"`. NVDA reads RTL text correctly in Hebrew locale mode |
-| Verbosity        | Medium — `aria-live` regions announce card refreshes; High verbosity will be noisy |
+| Verbosity        | Medium — `aria-live` regions announce card refreshes; High verbosity will be noisy                     |
 
 ### Key landmarks to jump to
 
@@ -87,23 +87,23 @@ provides built-in focus-trap and `Esc`-to-close behavior without any custom code
 
 ### Live regions
 
-| Region                  | Element            | Verbosity              |
-| ----------------------- | ------------------ | ---------------------- |
-| Alert ticker            | `#alerts-body`     | `aria-live="assertive"` — announced immediately |
-| System info             | `#sysinfo-body`    | `aria-live="polite"` — announced after current speech |
-| Clock                   | `#clock`           | `aria-live="off"` — not announced (updates every second) |
-| Stock prices            | `#stocks-body`     | `aria-live="off"` — not announced automatically |
-| Weather summary         | `#wx-summary`      | `aria-live="polite"` |
+| Region          | Element         | Verbosity                                                |
+| --------------- | --------------- | -------------------------------------------------------- |
+| Alert ticker    | `#alerts-body`  | `aria-live="assertive"` — announced immediately          |
+| System info     | `#sysinfo-body` | `aria-live="polite"` — announced after current speech    |
+| Clock           | `#clock`        | `aria-live="off"` — not announced (updates every second) |
+| Stock prices    | `#stocks-body`  | `aria-live="off"` — not announced automatically          |
+| Weather summary | `#wx-summary`   | `aria-live="polite"`                                     |
 
 ### Known limitations
 
 - **Clock updates**: The clock updates every second. `aria-live="off"` is intentional;
-  enabling live announcements would create unacceptable noise.  A screen-reader user
+  enabling live announcements would create unacceptable noise. A screen-reader user
   can navigate to the `#clock` element manually to hear the current time.
 - **Stock ticker**: Price changes are not announced automatically. Navigate to the
   stocks card to hear current values.
 - **Reduced motion**: All CSS animations and View Transitions respect
-  `@media (prefers-reduced-motion: reduce)`.  The theme-switch animation is
+  `@media (prefers-reduced-motion: reduce)`. The theme-switch animation is
   completely suppressed when reduced motion is preferred.
 
 ---
@@ -124,14 +124,14 @@ the `screen-tablet` and `screen-phone` CSS layers.
 All 6 themes satisfy WCAG 2.1 AA (contrast ratio ≥ 4.5:1 for normal text,
 ≥ 3:1 for large text) against the respective dark background:
 
-| Theme   | Background | Foreground | Ratio   |
-| ------- | ---------- | ---------- | ------- |
-| black   | `#0a0a0a`  | `#e2e8f0`  | 15.3:1  |
-| blue    | `#0d1b2a`  | `#e2e8f0`  | 13.8:1  |
-| matrix  | `#000d00`  | `#00ff41`  | 15.1:1  |
-| amber   | `#100800`  | `#ffd700`  | 12.4:1  |
-| purple  | `#0d0818`  | `#e2d9f3`  | 13.1:1  |
-| rose    | `#120008`  | `#fde8f0`  | 14.9:1  |
+| Theme  | Background | Foreground | Ratio  |
+| ------ | ---------- | ---------- | ------ |
+| black  | `#0a0a0a`  | `#e2e8f0`  | 15.3:1 |
+| blue   | `#0d1b2a`  | `#e2e8f0`  | 13.8:1 |
+| matrix | `#000d00`  | `#00ff41`  | 15.1:1 |
+| amber  | `#100800`  | `#ffd700`  | 12.4:1 |
+| purple | `#0d0818`  | `#e2d9f3`  | 13.1:1 |
+| rose   | `#120008`  | `#fde8f0`  | 14.9:1 |
 
 Verified with the Lighthouse accessibility audit (target: ≥ 0.98, see `.lighthouserc.json`).
 

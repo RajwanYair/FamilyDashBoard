@@ -46,12 +46,16 @@ function fireMouseEvent(
  * Stub getBoundingClientRect on a DOM element for the duration of a test.
  * Returns a DOMRect-like object with the given values.
  */
-function stubRect(
-  el: Element,
-  rect: Partial<DOMRect>,
-): void {
+function stubRect(el: Element, rect: Partial<DOMRect>): void {
   vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
-    top: 0, right: 100, bottom: 200, left: 0, width: 100, height: 200, x: 0, y: 0,
+    top: 0,
+    right: 100,
+    bottom: 200,
+    left: 0,
+    width: 100,
+    height: 200,
+    x: 0,
+    y: 0,
     toJSON: () => ({}),
     ...rect,
   } as DOMRect);

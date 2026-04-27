@@ -717,8 +717,7 @@ function collectForm(): DashboardConfig {
   c.weatherShowWind = (g("cfg-weather-wind") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowSunrise = (g("cfg-weather-sunrise") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowDetails = (g("cfg-weather-details") as HTMLSelectElement | null)?.value !== "off";
-  c.weatherUsTravelMode =
-    (g("cfg-weather-us-travel") as HTMLSelectElement | null)?.value === "on";
+  c.weatherUsTravelMode = (g("cfg-weather-us-travel") as HTMLSelectElement | null)?.value === "on";
   c.newsShowSource = (g("cfg-news-show-source") as HTMLSelectElement | null)?.value !== "off";
   const newsMaxEl = g("cfg-news-max-items");
   if (newsMaxEl) {
@@ -969,10 +968,17 @@ function openEcfgDialog(mode: "export" | "import"): Promise<string | null> {
     const desc = document.getElementById("ecfg-dialog-desc");
     const input = document.getElementById("ecfg-passphrase-input") as HTMLInputElement | null;
     const errEl = document.getElementById("ecfg-dialog-error");
-    if (!dlg) { resolve(null); return; }
-    if (desc) desc.textContent = t(mode === "export" ? "ecfgDialogExportDesc" : "ecfgDialogImportDesc");
+    if (!dlg) {
+      resolve(null);
+      return;
+    }
+    if (desc)
+      desc.textContent = t(mode === "export" ? "ecfgDialogExportDesc" : "ecfgDialogImportDesc");
     if (input) input.value = "";
-    if (errEl) { errEl.textContent = ""; errEl.hidden = true; }
+    if (errEl) {
+      errEl.textContent = "";
+      errEl.hidden = true;
+    }
     dlg.showModal();
     input?.focus();
   });
@@ -984,7 +990,10 @@ export function confirmEcfgDialog(): void {
   const passphrase = input?.value?.trim() ?? "";
   if (!passphrase) {
     const errEl = document.getElementById("ecfg-dialog-error");
-    if (errEl) { errEl.textContent = "יש להזין סיסמה"; errEl.hidden = false; }
+    if (errEl) {
+      errEl.textContent = "יש להזין סיסמה";
+      errEl.hidden = false;
+    }
     return;
   }
   const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement | null;
@@ -1231,7 +1240,9 @@ export function initConfigPanel(): void {
   document.getElementById("cfg-export-btn")?.addEventListener("click", exportSettings);
   document.getElementById("cfg-import-btn")?.addEventListener("click", importSettings);
   document.getElementById("cfg-share-btn")?.addEventListener("click", shareSettings);
-  document.getElementById("cfg-encrypt-share-btn")?.addEventListener("click", encryptedShareSettings);
+  document
+    .getElementById("cfg-encrypt-share-btn")
+    ?.addEventListener("click", encryptedShareSettings);
 
   // Encrypted config passphrase dialog buttons (V13-CONTINUITY)
   document.getElementById("ecfg-dialog-confirm")?.addEventListener("click", confirmEcfgDialog);

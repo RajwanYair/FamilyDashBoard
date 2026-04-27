@@ -30,8 +30,9 @@ const checkMode = process.argv.includes("--check");
 /** @param {string} dir */
 function countTs(dir) {
   try {
-    return readdirSync(dir, { recursive: true })
-      .filter((f) => typeof f === "string" && f.endsWith(".ts") && !f.endsWith(".d.ts")).length;
+    return readdirSync(dir, { recursive: true }).filter(
+      (f) => typeof f === "string" && f.endsWith(".ts") && !f.endsWith(".d.ts"),
+    ).length;
   } catch {
     return 0;
   }
@@ -60,7 +61,7 @@ function hasTestFile(cardId) {
   // Tests may be named <card-id>.test.ts or <card-id>-*.test.ts
   try {
     return readdirSync(TESTS_DIR).some(
-      (f) => f.startsWith(cardId.replace(/-/g, "")) || f.startsWith(cardId)
+      (f) => f.startsWith(cardId.replace(/-/g, "")) || f.startsWith(cardId),
     );
   } catch {
     return false;
@@ -91,13 +92,21 @@ const rows = cardDirs.map((id) => {
 
 const header = "| Card ID | TS files | Worker adapter | CSS | Tests |";
 const sep = "|---------|----------|----------------|-----|-------|";
-const tableLines = [header, sep, ...rows.map((r) => `| \`${r.id}\` | ${r.src} | ${icon(r.adapter)} | ${icon(r.css)} | ${icon(r.test)} |`)];
+const tableLines = [
+  header,
+  sep,
+  ...rows.map(
+    (r) => `| \`${r.id}\` | ${r.src} | ${icon(r.adapter)} | ${icon(r.css)} | ${icon(r.test)} |`,
+  ),
+];
 
 console.log(tableLines.join("\n"));
 
 // ── Summary ────────────────────────────────────────────────────────────────
 const untested = rows.filter((r) => !r.test);
 if (untested.length > 0) {
-  console.error(`\n⚠️  ${untested.length} card(s) have no unit test file: ${untested.map((r) => r.id).join(", ")}`);
+  console.error(
+    `\n⚠️  ${untested.length} card(s) have no unit test file: ${untested.map((r) => r.id).join(", ")}`,
+  );
   if (checkMode) process.exit(1);
 }

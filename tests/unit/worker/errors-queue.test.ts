@@ -23,9 +23,7 @@ function makeKV(
   return {
     get: overrides.get ?? (async () => null),
     put: overrides.put ?? (async () => undefined),
-    list:
-      overrides.list ??
-      (async () => ({ keys: [], list_complete: true, cacheStatus: null })),
+    list: overrides.list ?? (async () => ({ keys: [], list_complete: true, cacheStatus: null })),
   };
 }
 
@@ -116,8 +114,24 @@ describe("handleErrorsQueue — consumer", () => {
     const ack2 = vi.fn();
     const batch = {
       messages: [
-        { body: { count: 3, dateKey: "2026-07-13", enqueuedAt: "2026-07-13T00:00:00Z", kvPrefix: "errors:2026-07-13:" } as ErrorQueueMessage, ack: ack1 },
-        { body: { count: 1, dateKey: "2026-07-13", enqueuedAt: "2026-07-13T01:00:00Z", kvPrefix: "errors:2026-07-13:" } as ErrorQueueMessage, ack: ack2 },
+        {
+          body: {
+            count: 3,
+            dateKey: "2026-07-13",
+            enqueuedAt: "2026-07-13T00:00:00Z",
+            kvPrefix: "errors:2026-07-13:",
+          } as ErrorQueueMessage,
+          ack: ack1,
+        },
+        {
+          body: {
+            count: 1,
+            dateKey: "2026-07-13",
+            enqueuedAt: "2026-07-13T01:00:00Z",
+            kvPrefix: "errors:2026-07-13:",
+          } as ErrorQueueMessage,
+          ack: ack2,
+        },
       ],
     };
 

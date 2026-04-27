@@ -10,7 +10,9 @@ describe("encryptConfig", () => {
   });
 
   it("throws when passphrase is empty", async () => {
-    await expect(encryptConfig({ theme: "blue" }, "")).rejects.toThrow("Passphrase must not be empty");
+    await expect(encryptConfig({ theme: "blue" }, "")).rejects.toThrow(
+      "Passphrase must not be empty",
+    );
   });
 
   it("produces different ciphertexts for the same input (fresh IV each time)", async () => {
@@ -44,9 +46,7 @@ describe("decryptConfig", () => {
 
   it("throws when passphrase is wrong", async () => {
     const encrypted = await encryptConfig({ theme: "amber" }, PASSPHRASE);
-    await expect(decryptConfig(encrypted, "wrong-password")).rejects.toThrow(
-      "Decryption failed",
-    );
+    await expect(decryptConfig(encrypted, "wrong-password")).rejects.toThrow("Decryption failed");
   });
 
   it("throws when fragment has wrong prefix", async () => {
@@ -57,9 +57,7 @@ describe("decryptConfig", () => {
 
   it("throws on truncated payload", async () => {
     // Only the prefix + a few bytes — too short to contain salt + iv + ciphertext
-    await expect(decryptConfig("#ecfg=dGVzdA", PASSPHRASE)).rejects.toThrow(
-      "Payload too short",
-    );
+    await expect(decryptConfig("#ecfg=dGVzdA", PASSPHRASE)).rejects.toThrow("Payload too short");
   });
 
   it("round-trips Hebrew and multilingual strings faithfully", async () => {

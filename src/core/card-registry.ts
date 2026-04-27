@@ -255,13 +255,11 @@ registerCard({
   titleHe: "לוח עברי",
   titleEn: "Hebrew Calendar",
   load: async (): Promise<FdbCardDefinition> => {
-    const [
-      { hebrewCalConfigSchema, destroyHebrewCalCard },
-      { FdbHebrewCalCard },
-    ] = await Promise.all([
-      import("@/cards/hebrew-cal/hebrew-cal"),
-      import("@/cards/hebrew-cal/fdb-hebrew-cal"),
-    ]);
+    const [{ hebrewCalConfigSchema, destroyHebrewCalCard }, { FdbHebrewCalCard }] =
+      await Promise.all([
+        import("@/cards/hebrew-cal/hebrew-cal"),
+        import("@/cards/hebrew-cal/fdb-hebrew-cal"),
+      ]);
     // init is a no-op here — lifecycle owned by FdbHebrewCalCard.connect()
     const def = legacyAdapter(
       "hebrew-cal",
@@ -298,11 +296,10 @@ registerCard({
   titleHe: "יומן",
   titleEn: "Calendar",
   load: async (): Promise<FdbCardDefinition> => {
-    const [{ calendarConfigSchema, destroyCalendarCard }, { FdbCalendarCard }] =
-      await Promise.all([
-        import("@/cards/calendar/calendar"),
-        import("@/cards/calendar/fdb-calendar"),
-      ]);
+    const [{ calendarConfigSchema, destroyCalendarCard }, { FdbCalendarCard }] = await Promise.all([
+      import("@/cards/calendar/calendar"),
+      import("@/cards/calendar/fdb-calendar"),
+    ]);
     // init is a no-op here — lifecycle owned by FdbCalendarCard.connect()
     const def = legacyAdapter(
       "calendar",
@@ -339,11 +336,10 @@ registerCard({
   titleHe: "מטבעות",
   titleEn: "Currency",
   load: async (): Promise<FdbCardDefinition> => {
-    const [{ currencyConfigSchema, destroyCurrencyCard }, { FdbCurrencyCard }] =
-      await Promise.all([
-        import("@/cards/currency/currency"),
-        import("@/cards/currency/fdb-currency"),
-      ]);
+    const [{ currencyConfigSchema, destroyCurrencyCard }, { FdbCurrencyCard }] = await Promise.all([
+      import("@/cards/currency/currency"),
+      import("@/cards/currency/fdb-currency"),
+    ]);
     // init is a no-op here — lifecycle owned by FdbCurrencyCard.connect()
     const def = legacyAdapter(
       "currency",
@@ -411,8 +407,10 @@ registerCard({
   titleHe: "התראות",
   titleEn: "Alerts",
   load: async (): Promise<FdbCardDefinition> => {
-    const [{ alertsConfigSchema, destroyAlertsCard }, { FdbAlertsCard }] =
-      await Promise.all([import("@/cards/alerts/alerts"), import("@/cards/alerts/fdb-alerts")]);
+    const [{ alertsConfigSchema, destroyAlertsCard }, { FdbAlertsCard }] = await Promise.all([
+      import("@/cards/alerts/alerts"),
+      import("@/cards/alerts/fdb-alerts"),
+    ]);
     // init is a no-op here — lifecycle owned by FdbAlertsCard.connect()
     const def = legacyAdapter(
       "alerts",

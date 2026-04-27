@@ -1313,12 +1313,18 @@ class MockEventSource {
   addEventListener(event: string, fn: () => void): void {
     this._listeners.set(event, fn);
   }
-  fireEvent(event: string): void { this._listeners.get(event)?.(); }
-  close(): void { this.closeCalled = true; }
+  fireEvent(event: string): void {
+    this._listeners.get(event)?.();
+  }
+  close(): void {
+    this.closeCalled = true;
+  }
 }
 
 describe("Alerts — initAlertsSSE and destroyAlertsSSE", () => {
-  beforeEach(() => { MockEventSource.instances = []; });
+  beforeEach(() => {
+    MockEventSource.instances = [];
+  });
   afterEach(() => {
     _resetAlertsForTest();
     vi.unstubAllGlobals();
@@ -1628,7 +1634,10 @@ describe("Alerts — Sprint 87 branch coverage", () => {
   it("loadAlerts discards structurally invalid events and logs (validData.length !== data.length)", async () => {
     // time is a string, not a number → isAlertEvent returns false
     const invalidEvent = { id: "bad", alerts: [{ cities: ["עיר"], time: "not-a-number" }] };
-    const validEvent: AlertEvent = { id: "ok", alerts: [{ cities: ["תל אביב"], threat: 1, time: TS - 30 }] };
+    const validEvent: AlertEvent = {
+      id: "ok",
+      alerts: [{ cities: ["תל אביב"], threat: 1, time: TS - 30 }],
+    };
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
       json: async () => [validEvent, invalidEvent],
@@ -1658,8 +1667,14 @@ describe("Alerts — Sprint 87 branch coverage", () => {
 
   it("loadAlerts renders stale data first then sets sync 'ok' when empty fetch result", async () => {
     // Seed stale cache: cSet writes to localStorage under dash_v2_ prefix
-    const staleEvent: AlertEvent = { id: "stale-001", alerts: [{ cities: ["באר שבע"], threat: 1, time: TS - 200 }] };
-    localStorage.setItem("dash_v2_alerts", JSON.stringify({ data: [staleEvent], ts: Date.now() - 1 }));
+    const staleEvent: AlertEvent = {
+      id: "stale-001",
+      alerts: [{ cities: ["באר שבע"], threat: 1, time: TS - 200 }],
+    };
+    localStorage.setItem(
+      "dash_v2_alerts",
+      JSON.stringify({ data: [staleEvent], ts: Date.now() - 1 }),
+    );
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,

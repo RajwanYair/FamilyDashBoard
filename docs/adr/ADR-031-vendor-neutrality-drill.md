@@ -1,11 +1,11 @@
 # ADR-031 — Annual Vendor-Neutrality Build Drill
 
-| Field       | Value                                            |
-| ----------- | ------------------------------------------------ |
-| **Date**    | 2026-04-23                                       |
-| **Status**  | Accepted                                         |
-| **Deciders** | @RajwanYair                                     |
-| **Tags**    | infra, vendor, cloudflare, deno, bun, fly         |
+| Field        | Value                                     |
+| ------------ | ----------------------------------------- |
+| **Date**     | 2026-04-23                                |
+| **Status**   | Accepted                                  |
+| **Deciders** | @RajwanYair                               |
+| **Tags**     | infra, vendor, cloudflare, deno, bun, fly |
 
 ---
 
@@ -28,11 +28,11 @@ The mitigation is NOT to maintain parallel deploys (expensive, high maintenance)
 Before each major version tag (`git tag vX.0.0`), run one of the three vendor drill targets in
 rotation, document the result (pass/fail/delta), and commit the notes:
 
-| Target | Runtime | Notes |
-| --- | --- | --- |
-| **Deno Deploy** | Deno 2 | `worker/src/index.ts` via `deno task serve`; no `wrangler.toml` |
-| **Bun Deploy** | Bun 1.2 | `bun serve worker/src/index.ts`; Hono compatible |
-| **fly.io** | Node 22 / Docker | `Dockerfile` + fly.toml; Hono Node adapter |
+| Target          | Runtime          | Notes                                                           |
+| --------------- | ---------------- | --------------------------------------------------------------- |
+| **Deno Deploy** | Deno 2           | `worker/src/index.ts` via `deno task serve`; no `wrangler.toml` |
+| **Bun Deploy**  | Bun 1.2          | `bun serve worker/src/index.ts`; Hono compatible                |
+| **fly.io**      | Node 22 / Docker | `Dockerfile` + fly.toml; Hono Node adapter                      |
 
 Drill process:
 

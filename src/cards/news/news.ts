@@ -417,7 +417,9 @@ export async function fetchFeed(feed: NewsFeed): Promise<NewsItem[]> {
         const items = parseFeedItems(await res.text(), feed.src);
         if (items.length) return items;
       }
-    } catch { /* fall through to proxy chain */ }
+    } catch {
+      /* fall through to proxy chain */
+    }
   }
 
   // 1–N. CORS proxy chain
@@ -742,16 +744,16 @@ export function applyNewsFontSize(): void {
 // ── News search ──
 function initNewsSearch(): void {
   if (!elSearchInput) return;
-  bindOnce(elSearchInput, "input", "fdbNewsInputBound", (() => {
+  bindOnce(elSearchInput, "input", "fdbNewsInputBound", () => {
     _searchQuery = elSearchInput!.value;
     renderNews(_lastItems);
-  }));
+  });
   if (elSearchClear) {
-    bindOnce(elSearchClear, "click", "fdbNewsClickBound", (() => {
+    bindOnce(elSearchClear, "click", "fdbNewsClickBound", () => {
       _searchQuery = "";
       if (elSearchInput) elSearchInput.value = "";
       renderNews(_lastItems);
-    }));
+    });
   }
 }
 

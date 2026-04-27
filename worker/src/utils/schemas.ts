@@ -160,10 +160,10 @@ export const MetNoWeatherSchema = v.looseObject({
  *   { c: currentPrice, d: change, dp: changePercent, h, l, o, pc, t }
  */
 export const FinnhubQuoteSchema = v.looseObject({
-  c: v.number(),  // current price
-  d: v.number(),  // change
+  c: v.number(), // current price
+  d: v.number(), // change
   dp: v.number(), // percent change
-  t: v.number(),  // unix timestamp
+  t: v.number(), // unix timestamp
 });
 
 // ── Tzeva Adom (Red Alerts) ──────────────────────────────────────────────────
@@ -212,8 +212,8 @@ export const NwsForecastPeriodSchema = v.looseObject({
   isDaytime: v.boolean(),
   temperature: v.number(),
   temperatureUnit: v.string(), // "F" or "C"
-  windSpeed: v.string(),       // e.g. "5 mph" or "5 to 10 mph"
-  windDirection: v.string(),   // e.g. "S", "NW"
+  windSpeed: v.string(), // e.g. "5 mph" or "5 to 10 mph"
+  windDirection: v.string(), // e.g. "S", "NW"
   shortForecast: v.string(),
   probabilityOfPrecipitation: v.optional(NwsQuantValueSchema),
   dewpoint: v.optional(NwsQuantValueSchema),
@@ -244,9 +244,7 @@ export const SefariaCalendarSchema = v.looseObject({
 
 export const SefariaTextSchema = v.looseObject({
   ref: v.string(),
-  versions: v.optional(
-    v.array(v.looseObject({ text: v.optional(v.string()) })),
-  ),
+  versions: v.optional(v.array(v.looseObject({ text: v.optional(v.string()) }))),
   he: v.optional(v.union([v.string(), v.array(v.unknown())])),
   text: v.optional(v.union([v.string(), v.array(v.unknown())])),
 });

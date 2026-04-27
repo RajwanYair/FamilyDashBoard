@@ -883,7 +883,11 @@ describe("Maximize — View Transitions path (F12)", () => {
   function stubViewTransition(): ReturnType<typeof vi.fn> {
     const vtSpy = vi.fn((cb: () => void) => {
       cb();
-      return { finished: Promise.resolve(), ready: Promise.resolve(), updateCallbackDone: Promise.resolve() };
+      return {
+        finished: Promise.resolve(),
+        ready: Promise.resolve(),
+        updateCallbackDone: Promise.resolve(),
+      };
     });
     Object.defineProperty(document, "startViewTransition", {
       value: vtSpy,
@@ -974,7 +978,11 @@ describe("Maximize — Sprint 88 branch coverage", () => {
     Object.defineProperty(document, "startViewTransition", {
       value: (cb: () => void) => {
         cb();
-        return { finished: Promise.resolve(), ready: Promise.resolve(), updateCallbackDone: Promise.resolve() };
+        return {
+          finished: Promise.resolve(),
+          ready: Promise.resolve(),
+          updateCallbackDone: Promise.resolve(),
+        };
       },
       configurable: true,
       writable: true,
@@ -982,7 +990,11 @@ describe("Maximize — Sprint 88 branch coverage", () => {
   }
 
   function removeViewTransition(): void {
-    try { Reflect.deleteProperty(document, "startViewTransition"); } catch { /* non-configurable */ }
+    try {
+      Reflect.deleteProperty(document, "startViewTransition");
+    } catch {
+      /* non-configurable */
+    }
   }
 
   afterEach(() => {
@@ -1054,7 +1066,7 @@ describe("Maximize — Sprint 88 branch coverage", () => {
   it("initCardCollapse: restores collapsed class on card with no collapse button (btn=null)", async () => {
     localStorage.setItem("dash_v2_collapsed_cards", JSON.stringify(["no-btn-card"]));
     vi.resetModules();
-    const mod2 = await import("@/ui/maximize") as { initCardCollapse: () => void };
+    const mod2 = (await import("@/ui/maximize")) as { initCardCollapse: () => void };
 
     // Card has id but NO collapse button
     document.body.innerHTML = `<div class="card" id="no-btn-card"><div class="card-body"></div></div>`;
@@ -1067,7 +1079,9 @@ describe("Maximize — Sprint 88 branch coverage", () => {
 
   it("collapseCard: wasCollapsed is false when card has no id (ternary false branch)", async () => {
     vi.resetModules();
-    const mod2 = await import("@/ui/maximize") as { toggleCardMaximize: (c: HTMLElement) => void };
+    const mod2 = (await import("@/ui/maximize")) as {
+      toggleCardMaximize: (c: HTMLElement) => void;
+    };
     Element.prototype.animate = vi.fn().mockReturnValue({ finished: Promise.resolve() });
 
     // Card with no id, no data-card-id, no children with id

@@ -18,7 +18,11 @@ import {
   renderProviderHealthHtml,
 } from "@/ui/diag-overlay";
 import { diagLog, clearDiag } from "@/core/diag";
-import { recordProviderSuccess, recordProviderFailure, _resetProviderHealth } from "@/core/provider";
+import {
+  recordProviderSuccess,
+  recordProviderFailure,
+  _resetProviderHealth,
+} from "@/core/provider";
 import * as fetchMod from "@/core/fetch";
 import * as errorTrackerMod from "@/core/error-tracker";
 import * as perfMod from "@/core/perf";
@@ -549,12 +553,19 @@ function buildFullDiagDOM(): void {
     </dialog>
   `;
   const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & {
-    show?: () => void; close?: () => void;
+    show?: () => void;
+    close?: () => void;
   };
   if (typeof dlg.show !== "function") {
-    dlg.show = function () { this.setAttribute("open", ""); };
-    dlg.showModal = function () { this.setAttribute("open", ""); };
-    dlg.close = function () { this.removeAttribute("open"); };
+    dlg.show = function () {
+      this.setAttribute("open", "");
+    };
+    dlg.showModal = function () {
+      this.setAttribute("open", "");
+    };
+    dlg.close = function () {
+      this.removeAttribute("open");
+    };
   }
 }
 
@@ -656,11 +667,16 @@ describe("DiagOverlay — diag-build-time stamp (Sprint 52, lines 378-382)", () 
       </dialog>
     `;
     const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & {
-      show?: () => void; close?: () => void;
+      show?: () => void;
+      close?: () => void;
     };
     if (typeof dlg.show !== "function") {
-      dlg.show = function () { this.setAttribute("open", ""); };
-      dlg.close = function () { this.removeAttribute("open"); };
+      dlg.show = function () {
+        this.setAttribute("open", "");
+      };
+      dlg.close = function () {
+        this.removeAttribute("open");
+      };
     }
     vi.stubGlobal("navigator", {
       ...navigator,
@@ -684,11 +700,16 @@ describe("DiagOverlay — Sprint 95 renderStats network tier + trend branches", 
         <div id="diag-error-log"></div>
       </dialog>`;
     const dlg = document.getElementById("diag-overlay") as HTMLDialogElement & {
-      show?: () => void; close?: () => void;
+      show?: () => void;
+      close?: () => void;
     };
     if (typeof dlg.show !== "function") {
-      dlg.show = function () { this.setAttribute("open", ""); };
-      dlg.close = function () { this.removeAttribute("open"); };
+      dlg.show = function () {
+        this.setAttribute("open", "");
+      };
+      dlg.close = function () {
+        this.removeAttribute("open");
+      };
     }
   }
 
@@ -748,9 +769,9 @@ describe("DiagOverlay — Sprint 95 renderStats network tier + trend branches", 
   it("renders card timing table when getCardTimings returns non-empty map", () => {
     buildStatsDom();
     const timings = new Map<string, number>([
-      ["weather", 3],   // < 5 → positive
-      ["news", 12],     // < 20 → warning
-      ["stocks", 50],   // >= 20 → negative
+      ["weather", 3], // < 5 → positive
+      ["news", 12], // < 20 → warning
+      ["stocks", 50], // >= 20 → negative
     ]);
     vi.spyOn(perfMod, "getCardTimings").mockReturnValue(timings);
     openDiagOverlay();

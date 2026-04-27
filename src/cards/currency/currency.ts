@@ -394,7 +394,10 @@ function getCurrencyTTL(): number {
   const day = nyDate.getDay();
   if (day === 0 || day === 6) return INTERVALS.CURRENCY;
   const nyTimeStr = new Date().toLocaleTimeString("en-US", {
-    hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/New_York",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "America/New_York",
   });
   const [h, m] = nyTimeStr.split(":");
   const nyMins = parseInt(h!, 10) * 60 + parseInt(m!, 10);

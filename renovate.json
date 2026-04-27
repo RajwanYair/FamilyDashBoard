@@ -1,91 +1,82 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":semanticCommits",
-    ":separatePatchReleases"
-  ],
-  "description": "FamilyDashBoard v12 — Renovate dependency update configuration",
-  "assignees": ["RajwanYair"],
-  "labels": ["dependencies"],
-  "reviewers": ["RajwanYair"],
-  "schedule": ["on saturday"],
-  "timezone": "Asia/Jerusalem",
-  "prConcurrentLimit": 5,
-  "prHourlyLimit": 3,
-  "automerge": false,
-  "semanticCommitType": "chore",
-  "semanticCommitScope": "deps",
-  "commitMessagePrefix": "chore(deps):",
-  "packageRules": [
-    {
-      "description": "Group all TypeScript updates together",
-      "matchPackageNames": ["typescript", "@typescript/*", "@types/*"],
-      "groupName": "TypeScript & Types",
-      "automerge": false
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:recommended", ":semanticCommits", ":separatePatchReleases"],
+    "description": "FamilyDashBoard v12 — Renovate dependency update configuration",
+    "assignees": ["RajwanYair"],
+    "labels": ["dependencies"],
+    "reviewers": ["RajwanYair"],
+    "schedule": ["on saturday"],
+    "timezone": "Asia/Jerusalem",
+    "prConcurrentLimit": 5,
+    "prHourlyLimit": 3,
+    "automerge": false,
+    "semanticCommitType": "chore",
+    "semanticCommitScope": "deps",
+    "commitMessagePrefix": "chore(deps):",
+    "packageRules": [
+        {
+            "description": "Group all TypeScript updates together",
+            "matchPackageNames": ["typescript", "@typescript/*", "@types/*"],
+            "groupName": "TypeScript & Types",
+            "automerge": false
+        },
+        {
+            "description": "Group Vite and Vitest together (they share versioning)",
+            "matchPackageNames": ["vite", "vitest", "@vitest/*", "vite-plugin-*"],
+            "groupName": "Vite/Vitest toolchain",
+            "automerge": false
+        },
+        {
+            "description": "Group ESLint + plugins",
+            "matchPackageNames": ["eslint", "@eslint/*", "typescript-eslint", "eslint-plugin-*"],
+            "groupName": "ESLint + plugins",
+            "automerge": true,
+            "automergeType": "branch",
+            "automergeStrategy": "squash"
+        },
+        {
+            "description": "Worker dependencies — Hono + Valibot",
+            "matchFileNames": ["worker/package.json"],
+            "groupName": "Worker (Hono + Valibot)",
+            "automerge": false,
+            "labels": ["dependencies", "worker"]
+        },
+        {
+            "description": "Minor + patch updates for CI scripts (low risk, auto-merge)",
+            "matchDepTypes": ["devDependencies"],
+            "matchUpdateTypes": ["minor", "patch"],
+            "matchFileNames": ["package.json"],
+            "automerge": true,
+            "automergeType": "branch",
+            "automergeStrategy": "squash"
+        },
+        {
+            "description": "Major bumps always require manual review",
+            "matchUpdateTypes": ["major"],
+            "automerge": false,
+            "labels": ["dependencies", "major-upgrade"]
+        },
+        {
+            "description": "Pin GitHub Actions to exact SHA (supply-chain hardening)",
+            "matchManagers": ["github-actions"],
+            "pinDigests": true,
+            "automerge": true,
+            "automergeType": "branch",
+            "automergeStrategy": "squash",
+            "groupName": "GitHub Actions"
+        }
+    ],
+    "vulnerabilityAlerts": {
+        "labels": ["security", "vulnerability"],
+        "automerge": true,
+        "automergeType": "branch",
+        "automergeStrategy": "squash",
+        "schedule": ["at any time"]
     },
-    {
-      "description": "Group Vite and Vitest together (they share versioning)",
-      "matchPackageNames": ["vite", "vitest", "@vitest/*", "vite-plugin-*"],
-      "groupName": "Vite/Vitest toolchain",
-      "automerge": false
-    },
-    {
-      "description": "Group ESLint + plugins",
-      "matchPackageNames": ["eslint", "@eslint/*", "typescript-eslint", "eslint-plugin-*"],
-      "groupName": "ESLint + plugins",
-      "automerge": true,
-      "automergeType": "branch",
-      "automergeStrategy": "squash"
-    },
-    {
-      "description": "Worker dependencies — Hono + Valibot",
-      "matchFileNames": ["worker/package.json"],
-      "groupName": "Worker (Hono + Valibot)",
-      "automerge": false,
-      "labels": ["dependencies", "worker"]
-    },
-    {
-      "description": "Minor + patch updates for CI scripts (low risk, auto-merge)",
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchFileNames": ["package.json"],
-      "automerge": true,
-      "automergeType": "branch",
-      "automergeStrategy": "squash"
-    },
-    {
-      "description": "Major bumps always require manual review",
-      "matchUpdateTypes": ["major"],
-      "automerge": false,
-      "labels": ["dependencies", "major-upgrade"]
-    },
-    {
-      "description": "Pin GitHub Actions to exact SHA (supply-chain hardening)",
-      "matchManagers": ["github-actions"],
-      "pinDigests": true,
-      "automerge": true,
-      "automergeType": "branch",
-      "automergeStrategy": "squash",
-      "groupName": "GitHub Actions"
+    "ignorePaths": ["**/node_modules/**", "**/dist/**", "**/coverage/**", "tooling/**"],
+    "rangeStrategy": "bump",
+    "lockFileMaintenance": {
+        "enabled": true,
+        "schedule": ["on the first day of the month"]
     }
-  ],
-  "vulnerabilityAlerts": {
-    "labels": ["security", "vulnerability"],
-    "automerge": true,
-    "automergeType": "branch",
-    "automergeStrategy": "squash",
-    "schedule": ["at any time"]
-  },
-  "ignorePaths": [
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/coverage/**",
-    "tooling/**"
-  ],
-  "rangeStrategy": "bump",
-  "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["on the first day of the month"]
-  }
 }

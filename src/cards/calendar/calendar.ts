@@ -9,7 +9,15 @@
 
 import { scheduleCard } from "../base-card";
 import "./calendar.css";
-import { INTERVALS, PROXIES, LS_ICS_URL, MS_PER_DAY, MS_PER_MIN, WORKER_BASE_URL, isWorkerEnabled } from "../../core/constants";
+import {
+  INTERVALS,
+  PROXIES,
+  LS_ICS_URL,
+  MS_PER_DAY,
+  MS_PER_MIN,
+  WORKER_BASE_URL,
+  isWorkerEnabled,
+} from "../../core/constants";
 import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
@@ -269,7 +277,9 @@ function renderDayTile(
 
   const dayName = document.createElement("span");
   dayName.className = "cal-day-name";
-  dayName.textContent = isToday ? "היום" : (CAL_WEEK_DAY_HE[date.getDay()] ?? CAL_WEEK_DAY_SHORT_HE[date.getDay()] ?? "");
+  dayName.textContent = isToday
+    ? "היום"
+    : (CAL_WEEK_DAY_HE[date.getDay()] ?? CAL_WEEK_DAY_SHORT_HE[date.getDay()] ?? "");
   hdr.appendChild(dayName);
 
   const dateLbl = document.createElement("span");

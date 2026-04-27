@@ -47,9 +47,7 @@ export function withErrorBoundary<T>(
  * Idempotent — won't add a second error if one is already displayed.
  */
 function _renderCardError(cardId: string, message: string): void {
-  const body = document.querySelector<HTMLElement>(
-    `[data-card-id="${cardId}"] .card__body`,
-  );
+  const body = document.querySelector<HTMLElement>(`[data-card-id="${cardId}"] .card__body`);
   if (!body) return;
   // Avoid duplicate error tiles
   if (body.querySelector(".card-error")) return;

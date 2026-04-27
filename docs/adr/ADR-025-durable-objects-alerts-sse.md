@@ -19,12 +19,12 @@ client-side rendering code.
 
 ## Options Considered
 
-| Option | Latency | Complexity | Cost |
-|---|---|---|---|
-| **Status quo — polling** | ~60s | Low | Minimal |
-| **Server-Sent Events via DO** | <5s | Medium | CF Paid plan |
-| **WebSocket via DO** | <1s | High | CF Paid plan |
-| **Cloudflare Queues** | ~1s | Medium | CF Paid plan |
+| Option                        | Latency | Complexity | Cost         |
+| ----------------------------- | ------- | ---------- | ------------ |
+| **Status quo — polling**      | ~60s    | Low        | Minimal      |
+| **Server-Sent Events via DO** | <5s     | Medium     | CF Paid plan |
+| **WebSocket via DO**          | <1s     | High       | CF Paid plan |
+| **Cloudflare Queues**         | ~1s     | Medium     | CF Paid plan |
 
 ## Decision
 

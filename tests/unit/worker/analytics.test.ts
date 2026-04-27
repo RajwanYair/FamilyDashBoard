@@ -34,7 +34,9 @@ describe("normaliseRoute", () => {
 describe("writeAnalyticsHit", () => {
   it("is a no-op when dataset is undefined", () => {
     // Should not throw
-    expect(() => writeAnalyticsHit(undefined, "GET", "/api/weather", 200, "production")).not.toThrow();
+    expect(() =>
+      writeAnalyticsHit(undefined, "GET", "/api/weather", 200, "production"),
+    ).not.toThrow();
   });
 
   it("calls writeDataPoint with correct blobs and doubles", () => {

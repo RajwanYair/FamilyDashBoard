@@ -932,7 +932,10 @@ describe("Cache — Sprint 90 hydrateFromIdb IDB-tier branches", () => {
   it("loads fresh IDB entry into memory and returns count", async () => {
     const freshTs = Date.now() - 60_000; // 1 min ago — fresh
     vi.spyOn(idbMod, "idbKeys").mockResolvedValue(["fresh-idb-key"]);
-    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({ data: { loaded: true }, ts: freshTs } as never);
+    vi.spyOn(idbMod, "idbGetEntry").mockResolvedValue({
+      data: { loaded: true },
+      ts: freshTs,
+    } as never);
     const count = await hydrateFromIdb();
     expect(count).toBe(1);
     // Data should be warm in memory now

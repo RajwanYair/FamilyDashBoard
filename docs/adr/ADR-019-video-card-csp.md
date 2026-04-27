@@ -10,7 +10,7 @@
 ## Context
 
 Stream V11-CARD-VIDEO introduces the first video-content card to FamilyDashBoard.
-A live news channel renders inside a `<video>` or `<iframe>` element.  Unlike the
+A live news channel renders inside a `<video>` or `<iframe>` element. Unlike the
 existing data cards, a live stream:
 
 1. Loads media bytes from third-party origins (HLS manifest + `.ts` segments)
@@ -32,12 +32,12 @@ Mode A (native <video> + HLS) ──preferred──► Mode B (worker-proxied HL
                                                        └──► Mode C (<iframe>)  ← last resort
 ```
 
-| Mode | Condition                                            |
-|------|------------------------------------------------------|
+| Mode | Condition                                                |
+| ---- | -------------------------------------------------------- |
 | A    | Provider stream is CORS-open for our GitHub Pages origin |
-| B    | CORS blocked; stream is HLS and worker can proxy it  |
-| D    | Mode A+B insufficient on Chromium (HLS not native)   |
-| C    | Only if the provider only offers an official embed   |
+| B    | CORS blocked; stream is HLS and worker can proxy it      |
+| D    | Mode A+B insufficient on Chromium (HLS not native)       |
+| C    | Only if the provider only offers an official embed       |
 
 The Cloudflare Worker free tier provides 10 GB/day egress — adequate for a
 family home display watching a few hours per day at 3–5 Mb/s HLS quality.
@@ -58,7 +58,7 @@ manifest still fails without a JS HLS client), `hls.js` may be vendored into
 ### CSP Policy Extensions
 
 Each `StreamDescriptor` carries a `cspHosts` field that lists the hosts required
-for that channel.  The video-news card must contribute these hosts to the
+for that channel. The video-news card must contribute these hosts to the
 Content-Security-Policy **only when the card is enabled**.
 
 Planned CSP additions when video-news is enabled (exact hosts TBD after research):

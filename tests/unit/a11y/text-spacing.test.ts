@@ -118,10 +118,7 @@ describe("check-reading-level.mjs: validates WCAG 1.4.12 thresholds (V13-A11Y)",
   let scriptSrc = "";
 
   beforeAll(() => {
-    scriptSrc = readFileSync(
-      resolve(ROOT, "scripts", "check-reading-level.mjs"),
-      "utf8",
-    );
+    scriptSrc = readFileSync(resolve(ROOT, "scripts", "check-reading-level.mjs"), "utf8");
   });
 
   it("script checks --ts-line-height with min 1.5", () => {

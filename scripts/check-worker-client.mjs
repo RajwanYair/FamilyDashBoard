@@ -84,10 +84,7 @@ if (isMain) {
       );
     } else {
       // Insert the annotation after the opening `/**` block comment
-      newClientText = clientText.replace(
-        /^( \*\/)\n/m,
-        `$1\n${HASH_TAG} ${computedHash}\n`,
-      );
+      newClientText = clientText.replace(/^( \*\/)\n/m, `$1\n${HASH_TAG} ${computedHash}\n`);
     }
     writeFileSync(CLIENT_PATH, newClientText, "utf8");
     console.log(`✅  Updated @openapi-paths-hash → ${computedHash}`);

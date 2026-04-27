@@ -14,7 +14,9 @@ function makeDOState(): Parameters<typeof RateLimiterDO>[0] {
   return {
     storage: {
       get: async <T>(key: string) => store.get(key) as T | undefined,
-      put: async <T>(key: string, value: T) => { store.set(key, value); },
+      put: async <T>(key: string, value: T) => {
+        store.set(key, value);
+      },
     },
   };
 }
@@ -30,7 +32,7 @@ describe("RateLimiterDO — sliding window", () => {
   it("allows first request (limited=false, remaining=max-1)", async () => {
     const do_ = new RateLimiterDO(makeDOState());
     const res = await do_.fetch(makeCheckRequest("1.1.1.1", 3));
-    const body = await res.json() as { limited: boolean; remaining: number };
+    const body = (await res.json()) as { limited: boolean; remaining: number };
     expect(body.limited).toBe(false);
     expect(body.remaining).toBe(2); // max-1
   });
@@ -41,7 +43,7 @@ describe("RateLimiterDO — sliding window", () => {
     await do_.fetch(makeCheckRequest("2.2.2.2", 3));
     await do_.fetch(makeCheckRequest("2.2.2.2", 3));
     const res = await do_.fetch(makeCheckRequest("2.2.2.2", 3));
-    const body = await res.json() as { limited: boolean; remaining: number };
+    const body = (await res.json()) as { limited: boolean; remaining: number };
     expect(body.limited).toBe(false);
     expect(body.remaining).toBe(0); // 3rd request = max (index 2)
   });
@@ -53,7 +55,7 @@ describe("RateLimiterDO — sliding window", () => {
       await do_.fetch(makeCheckRequest("3.3.3.3", 2));
     }
     const res = await do_.fetch(makeCheckRequest("3.3.3.3", 2));
-    const body = await res.json() as { limited: boolean; remaining: number };
+    const body = (await res.json()) as { limited: boolean; remaining: number };
     expect(body.limited).toBe(true);
     expect(body.remaining).toBe(0);
   });
@@ -66,8 +68,8 @@ describe("RateLimiterDO — sliding window", () => {
     }
     const resA = await do_.fetch(makeCheckRequest("4.4.4.4", 2));
     const resB = await do_.fetch(makeCheckRequest("5.5.5.5", 2));
-    const bodyA = await resA.json() as { limited: boolean };
-    const bodyB = await resB.json() as { limited: boolean };
+    const bodyA = (await resA.json()) as { limited: boolean };
+    const bodyB = (await resB.json()) as { limited: boolean };
     expect(bodyA.limited).toBe(true);
     expect(bodyB.limited).toBe(false);
   });
@@ -80,7 +82,7 @@ describe("RateLimiterDO — sliding window", () => {
       await do_.fetch(makeCheckRequest("6.6.6.6", 2));
     }
     // Simulate expired window: put stale entry manually
-    const store = (state.storage as unknown as { _map?: Map<string, unknown> });
+    const store = state.storage as unknown as { _map?: Map<string, unknown> };
     if (store._map) {
       store._map.set("rl:6.6.6.6", { count: 5, windowStart: Date.now() - 120_000 });
     } else {
@@ -88,7 +90,7 @@ describe("RateLimiterDO — sliding window", () => {
       await state.storage.put("rl:6.6.6.6", { count: 5, windowStart: Date.now() - 120_000 });
     }
     const res = await do_.fetch(makeCheckRequest("6.6.6.6", 2, 60_000));
-    const body = await res.json() as { limited: boolean };
+    const body = (await res.json()) as { limited: boolean };
     expect(body.limited).toBe(false); // new window started
   });
 

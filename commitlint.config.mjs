@@ -66,7 +66,19 @@ export default {
     "type-enum": [
       2,
       "always",
-      ["feat", "fix", "chore", "docs", "test", "refactor", "perf", "style", "ci", "build", "revert"],
+      [
+        "feat",
+        "fix",
+        "chore",
+        "docs",
+        "test",
+        "refactor",
+        "perf",
+        "style",
+        "ci",
+        "build",
+        "revert",
+      ],
     ],
   },
   // Ignore merge commits, Renovate bumps, and GitHub release commits

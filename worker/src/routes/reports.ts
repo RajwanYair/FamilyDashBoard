@@ -98,13 +98,10 @@ export async function handleReportsIngest(req: Request, env: Env): Promise<Respo
 export async function handleReportsDigest(req: Request, env: Env): Promise<Response> {
   // 501 when the feature is not provisioned
   if (!env.REPORTS_TOKEN || !env.DB) {
-    return new Response(
-      JSON.stringify({ error: "Reporting digest not configured" }),
-      {
-        status: 501,
-        headers: { "Content-Type": "application/json", ...CORS_HEADERS },
-      },
-    );
+    return new Response(JSON.stringify({ error: "Reporting digest not configured" }), {
+      status: 501,
+      headers: { "Content-Type": "application/json", ...CORS_HEADERS },
+    });
   }
 
   // Token gate

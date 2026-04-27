@@ -35,8 +35,7 @@ function extractAriaLabels(pattern: RegExp): string[] {
 // ── Card collapse buttons ─────────────────────────────────────────────────────
 
 describe("card-collapse-btn aria-labels (V13-A11Y)", () => {
-  const collapsePattern =
-    /class="card-collapse-btn"\s+aria-label="([^"]+)"/g;
+  const collapsePattern = /class="card-collapse-btn"\s+aria-label="([^"]+)"/g;
 
   let collapseLabels: string[];
 
@@ -94,31 +93,45 @@ describe("card-collapse-btn aria-labels (V13-A11Y)", () => {
 
 describe("config panel button aria-labels (V13-A11Y)", () => {
   it("cfg-save-btn has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-save-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-save-btn"/);
+    expect(HTML).toMatch(
+      /id="cfg-save-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-save-btn"/,
+    );
   });
 
   it("cfg-close-btn has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-close-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-close-btn"/);
+    expect(HTML).toMatch(
+      /id="cfg-close-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-close-btn"/,
+    );
   });
 
   it("cfg-export-btn has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-export-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-export-btn"/);
+    expect(HTML).toMatch(
+      /id="cfg-export-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-export-btn"/,
+    );
   });
 
   it("cfg-import-btn has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-import-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-import-btn"/);
+    expect(HTML).toMatch(
+      /id="cfg-import-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-import-btn"/,
+    );
   });
 
   it("cfg-share-btn has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-share-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-share-btn"/);
+    expect(HTML).toMatch(
+      /id="cfg-share-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-share-btn"/,
+    );
   });
 
   it("cfg-reset-all-btn has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-reset-all-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-reset-all-btn"/);
+    expect(HTML).toMatch(
+      /id="cfg-reset-all-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-reset-all-btn"/,
+    );
   });
 
   it("cfg-reset-layout-btn has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-reset-layout-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-reset-layout-btn"/);
+    expect(HTML).toMatch(
+      /id="cfg-reset-layout-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-reset-layout-btn"/,
+    );
   });
 });
 
@@ -126,19 +139,27 @@ describe("config panel button aria-labels (V13-A11Y)", () => {
 
 describe("range slider input aria-labels (V13-A11Y)", () => {
   it("cfg-news-fontsize slider has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-news-fontsize"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-news-fontsize"/);
+    expect(HTML).toMatch(
+      /id="cfg-news-fontsize"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-news-fontsize"/,
+    );
   });
 
   it("cfg-dim-level slider has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-dim-level"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-dim-level"/);
+    expect(HTML).toMatch(
+      /id="cfg-dim-level"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-dim-level"/,
+    );
   });
 
   it("cfg-font-scale slider has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-font-scale"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-font-scale"/);
+    expect(HTML).toMatch(
+      /id="cfg-font-scale"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-font-scale"/,
+    );
   });
 
   it("cfg-ticker-speed slider has aria-label", () => {
-    expect(HTML).toMatch(/id="cfg-ticker-speed"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-ticker-speed"/);
+    expect(HTML).toMatch(
+      /id="cfg-ticker-speed"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-ticker-speed"/,
+    );
   });
 });
 

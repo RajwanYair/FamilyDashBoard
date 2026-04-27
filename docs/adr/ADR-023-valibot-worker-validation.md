@@ -14,13 +14,13 @@ The Cloudflare Worker uses Zod 3.24 to validate upstream API responses in
 
 Key constraints for a Cloudflare Worker dependency:
 
-| Metric | Zod 3.24 | Valibot 1.x |
-| --- | --- | --- |
-| Bundle size (minified + gzip) | ~14 KB | ~1.5 KB |
-| Tree-shakeable | No | Yes |
-| TypeScript 6 / ESM | Yes | Yes |
-| Validation semantics | Same (parse/safeParse) | Same |
-| Bundle cost per unused schema | Full Zod bundle | Zero (tree-shaken) |
+| Metric                        | Zod 3.24               | Valibot 1.x        |
+| ----------------------------- | ---------------------- | ------------------ |
+| Bundle size (minified + gzip) | ~14 KB                 | ~1.5 KB            |
+| Tree-shakeable                | No                     | Yes                |
+| TypeScript 6 / ESM            | Yes                    | Yes                |
+| Validation semantics          | Same (parse/safeParse) | Same               |
+| Bundle cost per unused schema | Full Zod bundle        | Zero (tree-shaken) |
 
 **Valibot 1.0** (stable release) uses a modular API where each schema builder
 (`v.object`, `v.string`, `v.array`, etc.) is a standalone export. Only the
@@ -45,25 +45,25 @@ and delegate to Valibot's `v.safeParse(schema, data)`.
 
 ## Migration Map
 
-| Zod | Valibot 1.x |
-| --- | --- |
-| `z.object({}).passthrough()` | `v.looseObject({})` |
-| `z.string()` | `v.string()` |
-| `z.number()` | `v.number()` |
-| `z.number().finite()` | `v.pipe(v.number(), v.finite())` |
-| `z.number().optional()` | `v.optional(v.number())` |
-| `z.array(X)` | `v.array(X)` |
-| `z.array(X).min(1)` | `v.pipe(v.array(X), v.minLength(1))` |
-| `z.null().optional()` | `v.optional(v.null_())` |
-| `z.record(z.string(), z.number())` | `v.record(v.string(), v.number())` |
-| `z.union([A, B])` | `v.union([A, B])` |
-| `z.string().refine(fn, msg)` | `v.pipe(v.string(), v.check(fn, msg))` |
-| `z.unknown()` | `v.unknown()` |
-| `schema.safeParse(data)` | `v.safeParse(schema, data)` |
-| `result.success` | `result.success` |
-| `result.data` | `result.output` |
-| `result.error.issues[].message` | `result.issues[].message` |
-| `z.infer<typeof S>` | `v.InferOutput<typeof S>` |
+| Zod                                | Valibot 1.x                            |
+| ---------------------------------- | -------------------------------------- |
+| `z.object({}).passthrough()`       | `v.looseObject({})`                    |
+| `z.string()`                       | `v.string()`                           |
+| `z.number()`                       | `v.number()`                           |
+| `z.number().finite()`              | `v.pipe(v.number(), v.finite())`       |
+| `z.number().optional()`            | `v.optional(v.number())`               |
+| `z.array(X)`                       | `v.array(X)`                           |
+| `z.array(X).min(1)`                | `v.pipe(v.array(X), v.minLength(1))`   |
+| `z.null().optional()`              | `v.optional(v.null_())`                |
+| `z.record(z.string(), z.number())` | `v.record(v.string(), v.number())`     |
+| `z.union([A, B])`                  | `v.union([A, B])`                      |
+| `z.string().refine(fn, msg)`       | `v.pipe(v.string(), v.check(fn, msg))` |
+| `z.unknown()`                      | `v.unknown()`                          |
+| `schema.safeParse(data)`           | `v.safeParse(schema, data)`            |
+| `result.success`                   | `result.success`                       |
+| `result.data`                      | `result.output`                        |
+| `result.error.issues[].message`    | `result.issues[].message`              |
+| `z.infer<typeof S>`                | `v.InferOutput<typeof S>`              |
 
 ### Passthrough vs looseObject
 

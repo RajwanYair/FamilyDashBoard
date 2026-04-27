@@ -38,7 +38,8 @@ describe("mphToKph", () => {
 
 describe("parseWindKph", () => {
   it('parses "5 mph"', () => expect(parseWindKph("5 mph")).toBeCloseTo(8.0, 0));
-  it('parses "5 to 10 mph" (lower bound)', () => expect(parseWindKph("5 to 10 mph")).toBeCloseTo(8.0, 0));
+  it('parses "5 to 10 mph" (lower bound)', () =>
+    expect(parseWindKph("5 to 10 mph")).toBeCloseTo(8.0, 0));
   it('parses "Calm" → 0', () => expect(parseWindKph("Calm")).toBe(0));
   it('parses "0 mph" → 0', () => expect(parseWindKph("0 mph")).toBe(0));
 });
@@ -46,14 +47,14 @@ describe("parseWindKph", () => {
 // ── windDirToDeg ──────────────────────────────────────────────────────────────
 
 describe("windDirToDeg", () => {
-  it('N → 0', () => expect(windDirToDeg("N")).toBe(0));
-  it('S → 180', () => expect(windDirToDeg("S")).toBe(180));
-  it('E → 90', () => expect(windDirToDeg("E")).toBe(90));
-  it('W → 270', () => expect(windDirToDeg("W")).toBe(270));
-  it('NW → 315', () => expect(windDirToDeg("NW")).toBe(315));
-  it('SW → 225', () => expect(windDirToDeg("SW")).toBe(225));
-  it('NNE → 22.5', () => expect(windDirToDeg("NNE")).toBe(22.5));
-  it('unknown → 0', () => expect(windDirToDeg("XYZ")).toBe(0));
+  it("N → 0", () => expect(windDirToDeg("N")).toBe(0));
+  it("S → 180", () => expect(windDirToDeg("S")).toBe(180));
+  it("E → 90", () => expect(windDirToDeg("E")).toBe(90));
+  it("W → 270", () => expect(windDirToDeg("W")).toBe(270));
+  it("NW → 315", () => expect(windDirToDeg("NW")).toBe(315));
+  it("SW → 225", () => expect(windDirToDeg("SW")).toBe(225));
+  it("NNE → 22.5", () => expect(windDirToDeg("NNE")).toBe(22.5));
+  it("unknown → 0", () => expect(windDirToDeg("XYZ")).toBe(0));
   it('case-insensitive: "nw" → 315', () => expect(windDirToDeg("nw")).toBe(315));
 });
 
@@ -114,8 +115,18 @@ describe("buildDailyEntries", () => {
 
   it("uses higher precipPct from day/night pair", () => {
     const periods = [
-      makePeriod({ startTime: "2025-01-02T06:00:00", isDaytime: true, temperature: 70, precipPct: 20 }),
-      makePeriod({ startTime: "2025-01-02T18:00:00", isDaytime: false, temperature: 50, precipPct: 80 }),
+      makePeriod({
+        startTime: "2025-01-02T06:00:00",
+        isDaytime: true,
+        temperature: 70,
+        precipPct: 20,
+      }),
+      makePeriod({
+        startTime: "2025-01-02T18:00:00",
+        isDaytime: false,
+        temperature: 50,
+        precipPct: 80,
+      }),
     ];
     const daily = buildDailyEntries(periods);
     expect(daily[0]!.precipPct).toBe(80);
@@ -170,8 +181,18 @@ describe("buildDailyEntries", () => {
   it("night period first then day period updates maxC and code (covers lines 97-98)", () => {
     // Night creates entry with maxC=NEGATIVE_INFINITY; Day updates existing.maxC + existing.code
     const periods = [
-      makePeriod({ startTime: "2025-01-06T18:00:00", isDaytime: false, temperature: 50, shortForecast: "Light Rain" }),
-      makePeriod({ startTime: "2025-01-06T06:00:00", isDaytime: true, temperature: 72, shortForecast: "Sunny" }),
+      makePeriod({
+        startTime: "2025-01-06T18:00:00",
+        isDaytime: false,
+        temperature: 50,
+        shortForecast: "Light Rain",
+      }),
+      makePeriod({
+        startTime: "2025-01-06T06:00:00",
+        isDaytime: true,
+        temperature: 72,
+        shortForecast: "Sunny",
+      }),
     ];
     const daily = buildDailyEntries(periods);
     expect(daily[0]!.date).toBe("2025-01-06");
@@ -202,10 +223,30 @@ function makeHourlyPeriods(count = 24) {
 
 function makeDailyPeriods() {
   return [
-    makePeriod({ startTime: "2025-01-01T06:00:00", isDaytime: true, temperature: 72, precipPct: 15 }),
-    makePeriod({ startTime: "2025-01-01T18:00:00", isDaytime: false, temperature: 48, precipPct: 5 }),
-    makePeriod({ startTime: "2025-01-02T06:00:00", isDaytime: true, temperature: 65, precipPct: 30 }),
-    makePeriod({ startTime: "2025-01-02T18:00:00", isDaytime: false, temperature: 45, precipPct: 20 }),
+    makePeriod({
+      startTime: "2025-01-01T06:00:00",
+      isDaytime: true,
+      temperature: 72,
+      precipPct: 15,
+    }),
+    makePeriod({
+      startTime: "2025-01-01T18:00:00",
+      isDaytime: false,
+      temperature: 48,
+      precipPct: 5,
+    }),
+    makePeriod({
+      startTime: "2025-01-02T06:00:00",
+      isDaytime: true,
+      temperature: 65,
+      precipPct: 30,
+    }),
+    makePeriod({
+      startTime: "2025-01-02T18:00:00",
+      isDaytime: false,
+      temperature: 45,
+      precipPct: 20,
+    }),
   ];
 }
 
@@ -321,9 +362,10 @@ describe("buildDailyEntries — Celsius temperatureUnit branch (line 83 else pat
       windSpeed: "5 mph",
       windDirection: "N",
       shortForecast: opts.shortForecast ?? "Sunny",
-      probabilityOfPrecipitation: opts.precipPct !== undefined
-        ? { value: opts.precipPct, unitCode: "wmoUnit:percent" }
-        : undefined,
+      probabilityOfPrecipitation:
+        opts.precipPct !== undefined
+          ? { value: opts.precipPct, unitCode: "wmoUnit:percent" }
+          : undefined,
       dewpoint: undefined,
       relativeHumidity: undefined,
     };
@@ -331,8 +373,18 @@ describe("buildDailyEntries — Celsius temperatureUnit branch (line 83 else pat
 
   it("passes temperature through as-is when temperatureUnit is C (line 83 else branch)", () => {
     const periods = [
-      makeCelsiusPeriod({ startTime: "2025-01-01T06:00:00", isDaytime: true, temperature: 20, precipPct: 10 }),
-      makeCelsiusPeriod({ startTime: "2025-01-01T18:00:00", isDaytime: false, temperature: 8, precipPct: 5 }),
+      makeCelsiusPeriod({
+        startTime: "2025-01-01T06:00:00",
+        isDaytime: true,
+        temperature: 20,
+        precipPct: 10,
+      }),
+      makeCelsiusPeriod({
+        startTime: "2025-01-01T18:00:00",
+        isDaytime: false,
+        temperature: 8,
+        precipPct: 5,
+      }),
     ];
     const daily = buildDailyEntries(periods);
     expect(daily[0]!.maxC).toBe(20); // not converted — stays as-is
@@ -361,21 +413,41 @@ describe("normalizeNwsToWeatherSchema — Celsius + missing optional fields (lin
       windDirection: "SW",
       shortForecast: "Mostly Sunny",
       probabilityOfPrecipitation: undefined, // ← triggers ?? 0 in hourly map
-      dewpoint: undefined,           // ← triggers ?? 0 for dew_point_2m
-      relativeHumidity: undefined,   // ← triggers ?? 50 for relative_humidity_2m
+      dewpoint: undefined, // ← triggers ?? 0 for dew_point_2m
+      relativeHumidity: undefined, // ← triggers ?? 50 for relative_humidity_2m
     }));
   }
 
   function makeCelsiusDailyPeriods() {
     return [
-      { number: 1, startTime: "2025-01-01T06:00:00Z", endTime: "2025-01-01T18:00:00Z",
-        isDaytime: true, temperature: 20, temperatureUnit: "C" as const,
-        windSpeed: "5 mph", windDirection: "N", shortForecast: "Sunny",
-        probabilityOfPrecipitation: undefined, dewpoint: undefined, relativeHumidity: undefined },
-      { number: 2, startTime: "2025-01-01T18:00:00Z", endTime: "2025-01-02T06:00:00Z",
-        isDaytime: false, temperature: 8, temperatureUnit: "C" as const,
-        windSpeed: "5 mph", windDirection: "N", shortForecast: "Clear",
-        probabilityOfPrecipitation: undefined, dewpoint: undefined, relativeHumidity: undefined },
+      {
+        number: 1,
+        startTime: "2025-01-01T06:00:00Z",
+        endTime: "2025-01-01T18:00:00Z",
+        isDaytime: true,
+        temperature: 20,
+        temperatureUnit: "C" as const,
+        windSpeed: "5 mph",
+        windDirection: "N",
+        shortForecast: "Sunny",
+        probabilityOfPrecipitation: undefined,
+        dewpoint: undefined,
+        relativeHumidity: undefined,
+      },
+      {
+        number: 2,
+        startTime: "2025-01-01T18:00:00Z",
+        endTime: "2025-01-02T06:00:00Z",
+        isDaytime: false,
+        temperature: 8,
+        temperatureUnit: "C" as const,
+        windSpeed: "5 mph",
+        windDirection: "N",
+        shortForecast: "Clear",
+        probabilityOfPrecipitation: undefined,
+        dewpoint: undefined,
+        relativeHumidity: undefined,
+      },
     ];
   }
 

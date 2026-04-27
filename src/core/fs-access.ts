@@ -96,15 +96,16 @@ export async function pickTextFile(opts: FilePickerOptions): Promise<string | nu
   if (isPickerAvailable()) {
     const w = window as FsaWindow;
     try {
-      const [handle] = (await w.showOpenFilePicker?.({
-        multiple: false,
-        types: [
-          {
-            description: opts.description ?? "Files",
-            accept: { [mimeType]: opts.extensions ?? [] },
-          },
-        ],
-      })) ?? [];
+      const [handle] =
+        (await w.showOpenFilePicker?.({
+          multiple: false,
+          types: [
+            {
+              description: opts.description ?? "Files",
+              accept: { [mimeType]: opts.extensions ?? [] },
+            },
+          ],
+        })) ?? [];
       if (!handle) return null;
       const file = await handle.getFile();
       return await file.text();

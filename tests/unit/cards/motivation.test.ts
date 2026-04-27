@@ -607,9 +607,7 @@ describe("Motivation — fetchAiMotivationQuote", () => {
   });
 
   it("returns null on non-ok response", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(null, { status: 500 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 500 }));
     const result = await fetchAiMotivationQuote();
     expect(result).toBeNull();
   });
@@ -789,4 +787,3 @@ describe("Motivation — fetchAiMotivationQuote edge cases (Sprint 84)", () => {
     expect(result).toBeNull();
   });
 });
-

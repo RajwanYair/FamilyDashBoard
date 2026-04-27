@@ -135,7 +135,11 @@ export function setMotivationCategory(category: MotivationCategory | null): void
   _activeCategory = category;
   motiIdx = 0;
   // Sprint 70: clear used-index window when category changes (new pool = fresh start)
-  try { localStorage.removeItem(LS_MOTI_USED); } catch { /* ignore */ }
+  try {
+    localStorage.removeItem(LS_MOTI_USED);
+  } catch {
+    /* ignore */
+  }
   diagLog(`FDB-039b: [motivation] Category set to ${category ?? "all"}`);
   renderMotivation();
 }

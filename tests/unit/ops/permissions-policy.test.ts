@@ -22,7 +22,12 @@ function getPermissionsPolicy(): string {
 
 /** Parse individual API names from a Permissions-Policy value string. */
 function parseAPIs(policy: string): string[] {
-  return policy.split(",").map((s) => s.trim().replace(/=\(\)$/, "").trim());
+  return policy.split(",").map((s) =>
+    s
+      .trim()
+      .replace(/=\(\)$/, "")
+      .trim(),
+  );
 }
 
 describe("_headers: Permissions-Policy — legacy APIs", () => {

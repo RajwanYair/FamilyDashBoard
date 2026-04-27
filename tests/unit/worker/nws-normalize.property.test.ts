@@ -72,13 +72,33 @@ describe("NWS normalizer — N3: zero speed invariant", () => {
 
 describe("NWS normalizer — N4: WMO code range invariant", () => {
   const FORECAST_PATTERNS = [
-    "Sunny", "Clear", "Mostly Sunny", "Mostly Clear",
-    "Partly Sunny", "Partly Cloudy", "Mostly Cloudy",
-    "Cloudy", "Overcast", "Foggy", "Rain", "Light Rain",
-    "Heavy Rain", "Showers", "Thunderstorms", "Isolated Thunderstorms",
-    "Snow", "Light Snow", "Heavy Snow", "Blizzard",
-    "Freezing Rain", "Sleet", "Wintry Mix",
-    "Breezy", "Windy", "Hot", "Cold",
+    "Sunny",
+    "Clear",
+    "Mostly Sunny",
+    "Mostly Clear",
+    "Partly Sunny",
+    "Partly Cloudy",
+    "Mostly Cloudy",
+    "Cloudy",
+    "Overcast",
+    "Foggy",
+    "Rain",
+    "Light Rain",
+    "Heavy Rain",
+    "Showers",
+    "Thunderstorms",
+    "Isolated Thunderstorms",
+    "Snow",
+    "Light Snow",
+    "Heavy Snow",
+    "Blizzard",
+    "Freezing Rain",
+    "Sleet",
+    "Wintry Mix",
+    "Breezy",
+    "Windy",
+    "Hot",
+    "Cold",
     "Unknown weather pattern XYZ123",
   ];
 
@@ -139,7 +159,24 @@ describe("NWS normalizer — N6: parseWindKph matches mphToKph", () => {
 // ── N7: windDirToDeg output is always in [0, 360) ────────────────────────────
 
 describe("NWS normalizer — N7: windDirToDeg range invariant", () => {
-  const WIND_DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+  const WIND_DIRS = [
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW",
+  ];
 
   it("windDirToDeg is in [0, 360) for all 16 compass directions", () => {
     for (const dir of WIND_DIRS) {
@@ -236,21 +273,33 @@ describe("NWS normalizer — N9: mphToKph properties (Sprint 81)", () => {
 
   it("mphToKph is non-decreasing (monotone)", () => {
     fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 100 }),
-        fc.integer({ min: 1, max: 50 }),
-        (v, delta) => {
-          expect(mphToKph(v + delta)).toBeGreaterThanOrEqual(mphToKph(v));
-        },
-      ),
+      fc.property(fc.integer({ min: 0, max: 100 }), fc.integer({ min: 1, max: 50 }), (v, delta) => {
+        expect(mphToKph(v + delta)).toBeGreaterThanOrEqual(mphToKph(v));
+      }),
       { numRuns: 200 },
     );
   });
 });
 
 describe("NWS normalizer — N10: windDirToDeg round-trip (Sprint 81)", () => {
-  const COMPASS_DIRS: string[] = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  const COMPASS_DIRS: string[] = [
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW",
+  ];
 
   it("all 16 compass directions map to distinct degree values", () => {
     const degrees = COMPASS_DIRS.map((d) => windDirToDeg(d));
@@ -293,11 +342,14 @@ describe("NWS normalizer — N11: buildDailyEntries invariants (Sprint 81)", () 
       fc.property(
         fc.array(fc.integer({ min: 1, max: 28 }), { minLength: 1, maxLength: 8 }),
         (days) => {
-          const periods = days.map((day, i) => makeNwsPeriod({
-            startTime: `2029-07-${String(day).padStart(2, "0")}T12:00:00-05:00`,
-            isDaytime: i % 2 === 0,
-            temperature: 80 + i,
-          }) as Parameters<typeof buildDailyEntries>[0][0]);
+          const periods = days.map(
+            (day, i) =>
+              makeNwsPeriod({
+                startTime: `2029-07-${String(day).padStart(2, "0")}T12:00:00-05:00`,
+                isDaytime: i % 2 === 0,
+                temperature: 80 + i,
+              }) as Parameters<typeof buildDailyEntries>[0][0],
+          );
           const result = buildDailyEntries(periods);
           const dates = result.map((d) => d.date);
           const unique = new Set(dates);
@@ -309,9 +361,13 @@ describe("NWS normalizer — N11: buildDailyEntries invariants (Sprint 81)", () 
   });
 
   it("output length is at most 8", () => {
-    const periods = Array.from({ length: 20 }, (_, i) => makeNwsPeriod({
-      startTime: `2029-07-${String((i % 20) + 1).padStart(2, "0")}T12:00:00-05:00`,
-    }) as Parameters<typeof buildDailyEntries>[0][0]);
+    const periods = Array.from(
+      { length: 20 },
+      (_, i) =>
+        makeNwsPeriod({
+          startTime: `2029-07-${String((i % 20) + 1).padStart(2, "0")}T12:00:00-05:00`,
+        }) as Parameters<typeof buildDailyEntries>[0][0],
+    );
     const result = buildDailyEntries(periods);
     expect(result.length).toBeLessThanOrEqual(8);
   });

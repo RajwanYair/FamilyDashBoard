@@ -78,9 +78,7 @@ test.describe("Accessibility — WCAG 1.4.12 Text Spacing", () => {
    * and assert that key card containers have not clipped their content.
    * See: https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html
    */
-  test("card content is not clipped under WCAG 1.4.12 text-spacing overrides", async ({
-    page,
-  }) => {
+  test("card content is not clipped under WCAG 1.4.12 text-spacing overrides", async ({ page }) => {
     await gotoWithSeed(page, {});
 
     // Inject the WCAG 1.4.12 text-spacing override inline (mirrors .text-spacing-override)
@@ -129,8 +127,9 @@ test.describe("Accessibility — WCAG 1.4.12 Text Spacing", () => {
       return el ? el.scrollWidth - el.clientWidth : 0;
     });
     // Allow up to 2px for subpixel rounding
-    expect(scrollWidth, "Stocks body overflows horizontally under text-spacing").toBeLessThanOrEqual(
-      2,
-    );
+    expect(
+      scrollWidth,
+      "Stocks body overflows horizontally under text-spacing",
+    ).toBeLessThanOrEqual(2);
   });
 });

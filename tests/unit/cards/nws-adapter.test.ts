@@ -37,14 +37,16 @@ import { cGet, cSet } from "@/core/cache";
 type MockedFn = ReturnType<typeof vi.fn>;
 
 /** Build a minimal NWS hourly period */
-function makePeriod(overrides: {
-  temperature?: number;
-  windSpeed?: string;
-  windDirection?: string;
-  shortForecast?: string;
-  precipProb?: number | null;
-  startTime?: string;
-} = {}) {
+function makePeriod(
+  overrides: {
+    temperature?: number;
+    windSpeed?: string;
+    windDirection?: string;
+    shortForecast?: string;
+    precipProb?: number | null;
+    startTime?: string;
+  } = {},
+) {
   return {
     temperature: overrides.temperature ?? 68,
     temperatureUnit: "F" as const,
@@ -72,12 +74,7 @@ function makeHourlyForecast(periods: ReturnType<typeof makePeriod>[]) {
 }
 
 /** Stub global fetch with two sequential responses: point then hourly */
-function stubFetch(
-  pointJson: unknown,
-  hourlyJson: unknown,
-  pointOk = true,
-  hourlyOk = true,
-) {
+function stubFetch(pointJson: unknown, hourlyJson: unknown, pointOk = true, hourlyOk = true) {
   let callCount = 0;
   global.fetch = vi.fn().mockImplementation(async () => {
     callCount++;
@@ -201,12 +198,29 @@ describe("NWS adapter — Sprint 75", () => {
   describe("fetchNWS — cache hit", () => {
     it("returns cached value and skips fetch when cache is warm", async () => {
       const cached = {
-        current: { temperature_2m: 25, weather_code: 0, relative_humidity_2m: 0,
-          wind_speed_10m: 0, wind_direction_10m: 0, wind_gusts_10m: 0,
-          apparent_temperature: 25, uv_index: 0, dew_point_2m: 0, cloud_cover: 0 },
+        current: {
+          temperature_2m: 25,
+          weather_code: 0,
+          relative_humidity_2m: 0,
+          wind_speed_10m: 0,
+          wind_direction_10m: 0,
+          wind_gusts_10m: 0,
+          apparent_temperature: 25,
+          uv_index: 0,
+          dew_point_2m: 0,
+          cloud_cover: 0,
+        },
         hourly: { time: [], temperature_2m: [], precipitation_probability: [], weather_code: [] },
-        daily: { time: [], temperature_2m_max: [], temperature_2m_min: [], weather_code: [],
-          sunrise: [], sunset: [], precipitation_probability_max: [], uv_index_max: [] },
+        daily: {
+          time: [],
+          temperature_2m_max: [],
+          temperature_2m_min: [],
+          weather_code: [],
+          sunrise: [],
+          sunset: [],
+          precipitation_probability_max: [],
+          uv_index_max: [],
+        },
       };
       (cGet as MockedFn).mockReturnValue(cached);
       global.fetch = vi.fn();
@@ -221,13 +235,18 @@ describe("NWS adapter — Sprint 75", () => {
 
   describe("fetchNWS — happy path (point + hourly)", () => {
     it("returns correct WeatherResponse shape from 1 period", async () => {
-      const period = makePeriod({ temperature: 77, shortForecast: "Sunny", precipProb: 10, windSpeed: "15 mph" });
+      const period = makePeriod({
+        temperature: 77,
+        shortForecast: "Sunny",
+        precipProb: 10,
+        windSpeed: "15 mph",
+      });
       stubFetch(makePointMeta(), makeHourlyForecast([period]));
 
       const res = await fetchNWS(38.8977, -77.0365);
 
       expect(res.current.temperature_2m).toBe(25); // 77°F → 25°C
-      expect(res.current.weather_code).toBe(0);    // Sunny → 0
+      expect(res.current.weather_code).toBe(0); // Sunny → 0
       expect(res.current.wind_speed_10m).toBe(15); // parseFloat("15 mph")
       expect(res.hourly.temperature_2m).toHaveLength(1);
       expect(res.hourly.precipitation_probability[0]).toBe(10);
@@ -235,7 +254,10 @@ describe("NWS adapter — Sprint 75", () => {
 
     it("limits hourly data to 24 periods even if more are returned", async () => {
       const periods = Array.from({ length: 30 }, (_, i) =>
-        makePeriod({ temperature: 60 + i, startTime: `2026-01-01T${String(i).padStart(2, "0")}:00:00Z` }),
+        makePeriod({
+          temperature: 60 + i,
+          startTime: `2026-01-01T${String(i).padStart(2, "0")}:00:00Z`,
+        }),
       );
       stubFetch(makePointMeta(), makeHourlyForecast(periods));
 
@@ -290,12 +312,30 @@ describe("NWS adapter — Sprint 75", () => {
       await fetchNWS(38.0, -77.0); // populates cache
 
       // Simulate cache now warm
-      const fakeResult = { current: { temperature_2m: 20, weather_code: 0, relative_humidity_2m: 0,
-        wind_speed_10m: 0, wind_direction_10m: 0, wind_gusts_10m: 0,
-        apparent_temperature: 20, uv_index: 0, dew_point_2m: 0, cloud_cover: 0 },
+      const fakeResult = {
+        current: {
+          temperature_2m: 20,
+          weather_code: 0,
+          relative_humidity_2m: 0,
+          wind_speed_10m: 0,
+          wind_direction_10m: 0,
+          wind_gusts_10m: 0,
+          apparent_temperature: 20,
+          uv_index: 0,
+          dew_point_2m: 0,
+          cloud_cover: 0,
+        },
         hourly: { time: [], temperature_2m: [], precipitation_probability: [], weather_code: [] },
-        daily: { time: [], temperature_2m_max: [], temperature_2m_min: [], weather_code: [],
-          sunrise: [], sunset: [], precipitation_probability_max: [], uv_index_max: [] },
+        daily: {
+          time: [],
+          temperature_2m_max: [],
+          temperature_2m_min: [],
+          weather_code: [],
+          sunrise: [],
+          sunset: [],
+          precipitation_probability_max: [],
+          uv_index_max: [],
+        },
       };
       (cGet as MockedFn).mockReturnValue(fakeResult);
       global.fetch = vi.fn();
@@ -335,11 +375,11 @@ describe("NWS adapter — Sprint 75", () => {
   describe("fetchNWS — hourly weather_code array populated correctly", () => {
     it("each period's shortForecast maps to correct WMO code in hourly array", async () => {
       const periods = [
-        makePeriod({ shortForecast: "Thunderstorm" }),   // 95
-        makePeriod({ shortForecast: "Heavy Snow" }),     // 71
-        makePeriod({ shortForecast: "Rain" }),           // 61
+        makePeriod({ shortForecast: "Thunderstorm" }), // 95
+        makePeriod({ shortForecast: "Heavy Snow" }), // 71
+        makePeriod({ shortForecast: "Rain" }), // 61
         makePeriod({ shortForecast: "Mostly Cloudy" }), // 3
-        makePeriod({ shortForecast: "Clear" }),          // 0
+        makePeriod({ shortForecast: "Clear" }), // 0
       ];
       stubFetch(makePointMeta(), makeHourlyForecast(periods));
 

@@ -120,9 +120,9 @@ Do NOT proceed to the tag step if any gate fails.
 
 ## v13 Gate Summary (added V13-OPS)
 
-| New gate | Command | Threshold |
-|---|---|---|
-| Worker typecheck | `cd worker && npx tsc --noEmit` | 0 errors |
-| sw.ts version | `npm run check:sw` | matches `package.json` |
-| A11Y contract | `npx vitest run tests/unit/html/dom-contract.test.ts` | 0 failures |
-| AI routes (when `AI_ENABLED=true`) | `npx vitest run tests/unit/worker/ai.test.ts` | 0 failures |
+| New gate                           | Command                                               | Threshold              |
+| ---------------------------------- | ----------------------------------------------------- | ---------------------- |
+| Worker typecheck                   | `cd worker && npx tsc --noEmit`                       | 0 errors               |
+| sw.ts version                      | `npm run check:sw`                                    | matches `package.json` |
+| A11Y contract                      | `npx vitest run tests/unit/html/dom-contract.test.ts` | 0 failures             |
+| AI routes (when `AI_ENABLED=true`) | `npx vitest run tests/unit/worker/ai.test.ts`         | 0 failures             |

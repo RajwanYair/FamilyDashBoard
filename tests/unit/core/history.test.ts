@@ -5,7 +5,12 @@
  * Uses an in-memory IDB mock (same pattern as idb-cache.test.ts).
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { _resetHistoryDb, historyAppend, historyGet, sparklineSvg } from "../../../src/core/history";
+import {
+  _resetHistoryDb,
+  historyAppend,
+  historyGet,
+  sparklineSvg,
+} from "../../../src/core/history";
 
 // ── Minimal in-memory IDB mock ────────────────────────────────────────────────
 
@@ -31,7 +36,9 @@ function makeMockIdb() {
             return makeReq<undefined>(undefined);
           },
           continue: () => {
-            setTimeout(() => { (req.onsuccess as ((e: unknown) => void))?.({ target: { result: makeCursor() } }); }, 0);
+            setTimeout(() => {
+              (req.onsuccess as (e: unknown) => void)?.({ target: { result: makeCursor() } });
+            }, 0);
           },
         } as unknown as IDBCursorWithValue;
       };
@@ -83,7 +90,10 @@ function makeMockIdb() {
 
   function open(_name: string, _version: number): IDBOpenDBRequest {
     const r = { ...openReq } as IDBOpenDBRequest;
-    setTimeout(() => (r.onsuccess as unknown as ((e: unknown) => void))?.({ target: { result: db } }), 0);
+    setTimeout(
+      () => (r.onsuccess as unknown as (e: unknown) => void)?.({ target: { result: db } }),
+      0,
+    );
     return r;
   }
 

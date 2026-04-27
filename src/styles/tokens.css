@@ -110,12 +110,12 @@
     --bg-primary: light-dark(#1a1410, #f5f0ea);
     --bg-card: light-dark(rgba(42, 34, 26, 0.82), rgba(255, 252, 248, 0.96));
     --bg-card-header: light-dark(rgba(56, 46, 36, 0.88), rgba(244, 238, 232, 0.98));
-    --bg-card-inner: light-dark(rgba(48, 40, 30, 0.55), rgba(248, 244, 240, 0.80));
+    --bg-card-inner: light-dark(rgba(48, 40, 30, 0.55), rgba(248, 244, 240, 0.8));
     --bg-card-hover: light-dark(rgba(66, 54, 42, 0.65), rgba(235, 230, 224, 0.98));
     --accent: light-dark(#c8a87a, #8a6020);
     --accent-bright: light-dark(#d9bc9e, #704a10);
     --accent-glow: rgba(200, 168, 122, 0.18);
-    --accent-border: rgba(200, 168, 122, 0.20);
+    --accent-border: rgba(200, 168, 122, 0.2);
     --text-primary: light-dark(#faf5ef, #1c1008);
     --text-secondary: light-dark(#c4b8a8, #4a3d30);
     --text-muted: light-dark(#8a7e70, #6a5e50);
@@ -204,9 +204,9 @@
 
     /* ── WCAG 1.4.12 Text Spacing Tokens ── */
     /* Minimum values required by WCAG 2.1 SC 1.4.12 (AA) when overridden by user styles */
-    --ts-line-height: 1.5;       /* ≥ 1.5 × font-size */
+    --ts-line-height: 1.5; /* ≥ 1.5 × font-size */
     --ts-letter-spacing: 0.12em; /* ≥ 0.12 × font-size */
-    --ts-word-spacing: 0.16em;   /* ≥ 0.16 × font-size */
+    --ts-word-spacing: 0.16em; /* ≥ 0.16 × font-size */
     --ts-paragraph-spacing: 2em; /* ≥ 2 × font-size */
 
     /* ── WCAG 3.1.5 Reading Level Token ── */

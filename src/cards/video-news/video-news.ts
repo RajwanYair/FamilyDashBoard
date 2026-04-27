@@ -119,7 +119,9 @@ function buildChannelTabs(onSwitch: (id: VideoChannelId) => void): HTMLElement {
     btn.textContent = desc.titleHe;
     if (id === _activeChannel) btn.classList.add("video-news__tab--active");
 
-    btn.addEventListener("click", () => { onSwitch(id); });
+    btn.addEventListener("click", () => {
+      onSwitch(id);
+    });
     tabs.appendChild(btn);
   });
 

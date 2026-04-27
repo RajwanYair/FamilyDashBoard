@@ -12,7 +12,7 @@ import { describe, it, expect } from "vitest";
 
 // ── Pure helper: compute delta and decide if CI should fail ──────────────────
 
-const GROWTH_THRESHOLD = 0.10;
+const GROWTH_THRESHOLD = 0.1;
 
 /**
  * Given current KB and baseline KB, returns:
@@ -142,8 +142,8 @@ describe("runCardDeltaGate — full per-card gate (F17)", () => {
   it("reports multiple failures simultaneously", () => {
     const cards = [
       { name: "weather", sourceKb: 20.0 }, // +33%
-      { name: "news", sourceKb: 14.0 },    // +16.7%
-      { name: "stocks", sourceKb: 23.0 },   // +2.2% — ok
+      { name: "news", sourceKb: 14.0 }, // +16.7%
+      { name: "stocks", sourceKb: 23.0 }, // +2.2% — ok
     ];
     const result = runCardDeltaGate(cards, baseline);
     expect(result.ok).toBe(false);

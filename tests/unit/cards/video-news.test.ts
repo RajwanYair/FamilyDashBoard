@@ -109,7 +109,9 @@ describe("video-news module — channel state (headless)", () => {
 
   it("toggleMute is a no-op and does not throw", () => {
     loadChannel("c14");
-    expect(() => { toggleMute(); }).not.toThrow();
+    expect(() => {
+      toggleMute();
+    }).not.toThrow();
     // mute state is controlled by iframe URL params — stays per-channel
     expect(isMuted()).toBe(false); // still c14
   });
@@ -139,6 +141,8 @@ describe("video-news module — channel state (headless)", () => {
   });
 
   it("destroyVideoNews does not throw", () => {
-    expect(() => { destroyVideoNews(); }).not.toThrow();
+    expect(() => {
+      destroyVideoNews();
+    }).not.toThrow();
   });
 });

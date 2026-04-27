@@ -17,14 +17,14 @@ and request-logging middleware are wired by hand before and after the chain.
 **Hono** is a lightweight web framework built for edge runtimes (Cloudflare
 Workers, Deno Deploy, Bun). Its design goals match this project's constraints:
 
-| Metric | Hand-written router | Hono 4.x |
-| --- | --- | --- |
-| Bundle size (gzip) | ~0 KB overhead | ~12 KB (full) / ~3 KB (router only) |
-| Type-safe `c.req`, `c.json()` | No | Yes |
-| Middleware system | Manual pre/post | `app.use()` |
-| Route matching | String equality only | Pattern + param extraction |
-| Cloudflare Workers support | Native | First-class (`hono/cloudflare-workers`) |
-| Bindings / env access | `env` param | `c.env` |
+| Metric                        | Hand-written router  | Hono 4.x                                |
+| ----------------------------- | -------------------- | --------------------------------------- |
+| Bundle size (gzip)            | ~0 KB overhead       | ~12 KB (full) / ~3 KB (router only)     |
+| Type-safe `c.req`, `c.json()` | No                   | Yes                                     |
+| Middleware system             | Manual pre/post      | `app.use()`                             |
+| Route matching                | String equality only | Pattern + param extraction              |
+| Cloudflare Workers support    | Native               | First-class (`hono/cloudflare-workers`) |
+| Bindings / env access         | `env` param          | `c.env`                                 |
 
 Hono replaces the hand-written `if/else` chain while keeping all existing
 route handler functions in `routes/*.ts` unchanged. The Hono app becomes a

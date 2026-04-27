@@ -91,7 +91,10 @@ const adrs = files.map((f) => parseAdr(join(ADR_DIR, f)));
 
 // ── Compute column widths ─────────────────────────────────────────────────────
 
-const linkWidth = Math.max(...adrs.map((a) => `[${a.file.replace(".md", "")}](${a.file})`.length), 6);
+const linkWidth = Math.max(
+  ...adrs.map((a) => `[${a.file.replace(".md", "")}](${a.file})`.length),
+  6,
+);
 const titleWidth = Math.max(...adrs.map((a) => a.title.length), 5);
 const dateWidth = Math.max(...adrs.map((a) => a.date.length), 4);
 const statusWidth = Math.max(...adrs.map((a) => a.status.length), 6);

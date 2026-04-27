@@ -30,10 +30,7 @@ export interface AutoLoopScrollOptions {
  * Initialize (or re-initialize) seamless loop scroll on a container.
  * Safe to call multiple times — cleans up previous state on each call.
  */
-export function initAutoLoopScroll(
-  container: HTMLElement,
-  opts: AutoLoopScrollOptions,
-): void {
+export function initAutoLoopScroll(container: HTMLElement, opts: AutoLoopScrollOptions): void {
   // Always clean up first (handles re-render case)
   destroyAutoLoopScroll(container, opts.styleId);
 
@@ -115,8 +112,6 @@ export function initAutoLoopScroll(
  */
 export function destroyAutoLoopScroll(container: HTMLElement, styleId: string): void {
   container.style.animation = "";
-  container
-    .querySelectorAll(`[${CLONE_ATTR}="true"]`)
-    .forEach((el) => el.remove());
+  container.querySelectorAll(`[${CLONE_ATTR}="true"]`).forEach((el) => el.remove());
   document.getElementById(styleId)?.remove();
 }

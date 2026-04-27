@@ -1,11 +1,11 @@
 # ADR-027 — SBOM Generation and Automated Dependency Updates
 
-| Field      | Value                                |
-| ---------- | ------------------------------------ |
-| Status     | Accepted                             |
-| Date       | 2026-05-19                           |
-| Sprint     | V12-OPS-1                            |
-| Supersedes | —                                    |
+| Field      | Value                                                       |
+| ---------- | ----------------------------------------------------------- |
+| Status     | Accepted                                                    |
+| Date       | 2026-05-19                                                  |
+| Sprint     | V12-OPS-1                                                   |
+| Supersedes | —                                                           |
 | See also   | ADR-014 (shared tooling), ADR-023 (Valibot), ADR-026 (Hono) |
 
 ---
@@ -14,7 +14,7 @@
 
 With v12.0 shipping Valibot + Hono in the worker (Sprint 7–8) and a growing supply-chain posture, two gaps remain in the CI/CD pipeline:
 
-1. **No machine-readable software bill of materials (SBOM)**. GitHub's dependency graph gives a UI view but no auditable artifact pinned to each release. SLSA v1.0 provenance (already shipped in v11) covers the build process; SBOM covers *what was in the build*.
+1. **No machine-readable software bill of materials (SBOM)**. GitHub's dependency graph gives a UI view but no auditable artifact pinned to each release. SLSA v1.0 provenance (already shipped in v11) covers the build process; SBOM covers _what was in the build_.
 2. **No automated dependency update bot**. Current workflow is manual: developer bumps versions ad-hoc. With `noUncheckedIndexedAccess` and TypeScript-Go parity as goals, staying on current minor/patch versions matters for type-safety correctness.
 
 ### Forces
@@ -79,9 +79,9 @@ With v12.0 shipping Valibot + Hono in the worker (Sprint 7–8) and a growing su
 
 ## Alternatives Considered
 
-| Option | Reason Rejected |
-| --- | --- |
-| SPDX JSON | Less native npm tooling; CycloneDX has better GitHub integration |
-| Dependabot | Less configurable than Renovate for monorepo/shared-tooling patterns; no CycloneDX |
-| Manual SBOM (anchore/syft) | Requires Docker; heavier than `@cyclonedx/cyclonedx-npm` for an npm project |
-| Attach SBOM to release in same sprint | Deferred (needs `gh release upload` step) — planned V12-OPS-2 |
+| Option                                | Reason Rejected                                                                    |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| SPDX JSON                             | Less native npm tooling; CycloneDX has better GitHub integration                   |
+| Dependabot                            | Less configurable than Renovate for monorepo/shared-tooling patterns; no CycloneDX |
+| Manual SBOM (anchore/syft)            | Requires Docker; heavier than `@cyclonedx/cyclonedx-npm` for an npm project        |
+| Attach SBOM to release in same sprint | Deferred (needs `gh release upload` step) — planned V12-OPS-2                      |

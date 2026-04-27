@@ -2177,10 +2177,17 @@ describe("Stocks — cSetAsync (Stream D2.3)", () => {
 describe("Stocks — V13-DATA-1 worker-first fetch (isWorkerEnabled path)", () => {
   const makeYahooResp = (price: number, prev: number): YahooChartResponse => ({
     chart: {
-      result: [{
-        meta: { regularMarketPrice: price, previousClose: prev, currency: "USD", regularMarketVolume: 0 },
-        indicators: { quote: [{ close: [prev, price] }] },
-      }],
+      result: [
+        {
+          meta: {
+            regularMarketPrice: price,
+            previousClose: prev,
+            currency: "USD",
+            regularMarketVolume: 0,
+          },
+          indicators: { quote: [{ close: [prev, price] }] },
+        },
+      ],
       error: null,
     },
   });
@@ -2236,8 +2243,7 @@ describe("Stocks — V13-DATA-1 worker-first fetch (isWorkerEnabled path)", () =
     cClear();
 
     vi.mocked(fetchJSONWithWorker).mockImplementation(async (url: string) => {
-      if (url.includes("coingecko.com"))
-        return { bitcoin: { usd: 65000, usd_24h_change: 2.5 } };
+      if (url.includes("coingecko.com")) return { bitcoin: { usd: 65000, usd_24h_change: 2.5 } };
       if (url.includes("/api/stocks?sym=")) return makeYahooResp(190, 185);
       return makeYahooResp(190, 185);
     });

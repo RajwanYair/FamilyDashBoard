@@ -16,7 +16,14 @@ import type { Env, D1Database, D1PreparedStatement, D1Result } from "../../../wo
 
 // ── D1 stub ───────────────────────────────────────────────────────────────────
 
-type ReportRow = { id?: number; ts: number; type: string; url: string; detail: string; day: string };
+type ReportRow = {
+  id?: number;
+  ts: number;
+  type: string;
+  url: string;
+  detail: string;
+  day: string;
+};
 
 function makeD1Stub(rows: ReportRow[] = []): D1Database {
   const stored: ReportRow[] = [...rows];
@@ -31,7 +38,13 @@ function makeD1Stub(rows: ReportRow[] = []): D1Database {
       },
       run: async () => {
         if (query.includes("INSERT INTO browser_reports")) {
-          const [ts, type, url, detail, day] = boundArgs as [number, string, string, string, string];
+          const [ts, type, url, detail, day] = boundArgs as [
+            number,
+            string,
+            string,
+            string,
+            string,
+          ];
           stored.push({ id: nextId++, ts, type, url, detail, day });
         } else if (query.includes("DELETE FROM browser_reports")) {
           const cutoff = boundArgs[0] as string;
@@ -117,7 +130,9 @@ describe("d1-reports — storeReport", () => {
       prepare: () => {
         throw new Error("D1 failure");
       },
-      exec: async () => { throw new Error("D1 failure"); },
+      exec: async () => {
+        throw new Error("D1 failure");
+      },
     };
     await expect(storeReport(badDb, "csp-violation", "", {})).resolves.toBeUndefined();
   });
@@ -146,8 +161,12 @@ describe("d1-reports — queryReportSummary", () => {
 
   it("swallows D1 errors and returns empty array", async () => {
     const badDb: D1Database = {
-      prepare: () => { throw new Error("D1 offline"); },
-      exec: async () => { throw new Error("D1 offline"); },
+      prepare: () => {
+        throw new Error("D1 offline");
+      },
+      exec: async () => {
+        throw new Error("D1 offline");
+      },
     };
     const summary = await queryReportSummary(badDb);
     expect(summary).toEqual([]);
@@ -157,8 +176,12 @@ describe("d1-reports — queryReportSummary", () => {
 describe("d1-reports — pruneOldReports", () => {
   it("does not throw even when D1 fails", async () => {
     const badDb: D1Database = {
-      prepare: () => { throw new Error("D1 failure"); },
-      exec: async () => { throw new Error("D1 failure"); },
+      prepare: () => {
+        throw new Error("D1 failure");
+      },
+      exec: async () => {
+        throw new Error("D1 failure");
+      },
     };
     await expect(pruneOldReports(badDb, 30)).resolves.toBeUndefined();
   });
@@ -298,7 +321,7 @@ describe("handleReportsDigest — GET /api/reports/digest", () => {
     });
     const res = await handleReportsDigest(req, env);
     expect(res.status).toBe(200);
-    const json = await res.json() as { ok: boolean; summary: unknown[]; generatedAt: string };
+    const json = (await res.json()) as { ok: boolean; summary: unknown[]; generatedAt: string };
     expect(json.ok).toBe(true);
     expect(Array.isArray(json.summary)).toBe(true);
     expect(typeof json.generatedAt).toBe("string");
@@ -310,7 +333,7 @@ describe("handleReportsDigest — GET /api/reports/digest", () => {
       headers: { Authorization: "Bearer test-reports-token" },
     });
     const res = await handleReportsDigest(req, env);
-    const json = await res.json() as { summary: unknown[] };
+    const json = (await res.json()) as { summary: unknown[] };
     expect(json.summary).toEqual([]);
   });
 

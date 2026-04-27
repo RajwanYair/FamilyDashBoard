@@ -58,17 +58,17 @@ for (const file of files) {
 // ── Per-card chunk sizes ───────────────────────────────────────────────────
 
 const CARD_CHUNKS = [
-  ["weather",     "weather"],
-  ["stocks",      "stocks"],
-  ["currency",    "currency"],
-  ["calendar",    "calendar"],
-  ["hebrew-cal",  "hebrew-cal"],
-  ["alerts",      "alerts"],
-  ["motivation",  "motivation"],
-  ["tasks",       "tasks"],
+  ["weather", "weather"],
+  ["stocks", "stocks"],
+  ["currency", "currency"],
+  ["calendar", "calendar"],
+  ["hebrew-cal", "hebrew-cal"],
+  ["alerts", "alerts"],
+  ["motivation", "motivation"],
+  ["tasks", "tasks"],
   ["system-info", "system-info"],
-  ["countdown",   "countdown"],
-  ["news",        "news"],
+  ["countdown", "countdown"],
+  ["news", "news"],
 ];
 
 const jsFiles = files.filter((f) => f.endsWith(".js"));
@@ -92,13 +92,21 @@ const SOURCE_EXTS = [".ts", ".css", ".html"];
 function cardSourceBytes(dir) {
   let total = 0;
   let entries;
-  try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return 0; }
+  try {
+    entries = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return 0;
+  }
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       total += cardSourceBytes(fullPath);
     } else if (entry.isFile() && SOURCE_EXTS.some((ext) => entry.name.endsWith(ext))) {
-      try { total += statSync(fullPath).size; } catch { /* skip */ }
+      try {
+        total += statSync(fullPath).size;
+      } catch {
+        /* skip */
+      }
     }
   }
   return total;
@@ -107,7 +115,11 @@ function cardSourceBytes(dir) {
 /** @type {Record<string, number>} */
 const cardSourceSizes = {};
 let srcDirs;
-try { srcDirs = readdirSync(SRC_CARDS_DIR, { withFileTypes: true }); } catch { srcDirs = []; }
+try {
+  srcDirs = readdirSync(SRC_CARDS_DIR, { withFileTypes: true });
+} catch {
+  srcDirs = [];
+}
 for (const entry of srcDirs) {
   if (!entry.isDirectory()) continue;
   const bytes = cardSourceBytes(join(SRC_CARDS_DIR, entry.name));

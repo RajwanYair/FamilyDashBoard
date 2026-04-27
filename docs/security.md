@@ -11,17 +11,17 @@ FamilyDashBoard is a **private, single-household, always-on family display**. It
 served from GitHub Pages with no authentication, no user accounts, and no server-side session
 management. The realistic threat surface is small but non-zero.
 
-| Threat                        | Likelihood                        | Impact                   | Mitigation                                                                                  |
-| ----------------------------- | --------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------- |
-| XSS via injected script tag   | Low (zero third-party scripts)    | High (full page control) | `script-src 'self'` CSP blocks inline scripts                                               |
-| XSS via unsanitized innerHTML | Low (codebase uses `textContent`) | High                     | Code rule + ESLint no-innerHTML check                                                       |
-| Clickjacking                  | Very low (no auth, no money)      | Low                      | `X-Frame-Options: DENY` + `frame-ancestors 'none'`                                          |
-| Upstream API data injection   | Low (validated with Valibot)       | Medium                   | Valibot schema validation on all worker routes                                               |
-| CORS abuse                    | Low (read-only public data)       | Low                      | Worker rate-limits per IP; `connect-src` allowlist                                          |
-| Sensitive data leakage        | N/A                               | N/A                      | No PII stored beyond family name & calendar URL (user-entered, stays in localStorage)       |
+| Threat                        | Likelihood                        | Impact                   | Mitigation                                                                                           |
+| ----------------------------- | --------------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| XSS via injected script tag   | Low (zero third-party scripts)    | High (full page control) | `script-src 'self'` CSP blocks inline scripts                                                        |
+| XSS via unsanitized innerHTML | Low (codebase uses `textContent`) | High                     | Code rule + ESLint no-innerHTML check                                                                |
+| Clickjacking                  | Very low (no auth, no money)      | Low                      | `X-Frame-Options: DENY` + `frame-ancestors 'none'`                                                   |
+| Upstream API data injection   | Low (validated with Valibot)      | Medium                   | Valibot schema validation on all worker routes                                                       |
+| CORS abuse                    | Low (read-only public data)       | Low                      | Worker rate-limits per IP; `connect-src` allowlist                                                   |
+| Sensitive data leakage        | N/A                               | N/A                      | No PII stored beyond family name & calendar URL (user-entered, stays in localStorage)                |
 | Dependency supply chain       | Very low (0 runtime client deps)  | High if occurred         | 0 client deps; 1 worker dep (Hono/Valibot); Dependabot monthly; `npm audit --audit-level=high` in CI |
-| Stale credentials             | N/A                               | N/A                      | No auth tokens or session secrets in the client                                             |
-| Secret in source              | Very low                          | High                     | Worker uses `wrangler secret put ERROR_REPORTING_TOKEN`; checked by GitHub secret scanning  |
+| Stale credentials             | N/A                               | N/A                      | No auth tokens or session secrets in the client                                                      |
+| Secret in source              | Very low                          | High                     | Worker uses `wrangler secret put ERROR_REPORTING_TOKEN`; checked by GitHub secret scanning           |
 
 ---
 
@@ -156,27 +156,27 @@ When enabled, it plays a live HLS stream inside a `<video>` element.
 
 ### CSP extension when video-news is enabled
 
-The current base CSP sets `media-src 'none'`.  When the card is enabled and stream
+The current base CSP sets `media-src 'none'`. When the card is enabled and stream
 URLs are confirmed (pending research sprint v11.1-sprint-1), the following extensions
 will be required:
 
-| Directive    | Current value           | Extended value (video-news enabled)                              |
-| ------------ | ----------------------- | ---------------------------------------------------------------- |
-| `connect-src`| `'self' <worker-base>`  | `+ <hls-manifest-host>` (exact host from `StreamDescriptor.cspHosts.connect`) |
-| `media-src`  | `'none'`                | `'self' blob: <hls-segment-host>` (exact host from `StreamDescriptor.cspHosts.media`) |
-| `frame-src`  | `https://calendar.google.com` | Stays unchanged unless Mode C (iframe embed) is chosen |
+| Directive     | Current value                 | Extended value (video-news enabled)                                                   |
+| ------------- | ----------------------------- | ------------------------------------------------------------------------------------- |
+| `connect-src` | `'self' <worker-base>`        | `+ <hls-manifest-host>` (exact host from `StreamDescriptor.cspHosts.connect`)         |
+| `media-src`   | `'none'`                      | `'self' blob: <hls-segment-host>` (exact host from `StreamDescriptor.cspHosts.media`) |
+| `frame-src`   | `https://calendar.google.com` | Stays unchanged unless Mode C (iframe embed) is chosen                                |
 
 The exact hosts are documented in `docs/adr/ADR-019-video-card-csp.md` and will be
 locked in before the card ships to production. All hosts must be explicit — no wildcards.
 
 ### Integration modes (ADR-019)
 
-| Mode | Description                              | CSP delta       |
-| ---- | ---------------------------------------- | --------------- |
-| A    | Native `<video>` + HLS (CORS-open stream) | `connect-src` + `media-src` + `blob:` |
-| B    | Worker-proxied HLS manifest + segments  | `connect-src` worker only (no external host) |
-| C    | `<iframe>` embed (last resort)           | `frame-src` + embed host |
-| D    | Vendored `hls.js` + Mode A              | Same as Mode A + < 35 KB bundle growth |
+| Mode | Description                               | CSP delta                                    |
+| ---- | ----------------------------------------- | -------------------------------------------- |
+| A    | Native `<video>` + HLS (CORS-open stream) | `connect-src` + `media-src` + `blob:`        |
+| B    | Worker-proxied HLS manifest + segments    | `connect-src` worker only (no external host) |
+| C    | `<iframe>` embed (last resort)            | `frame-src` + embed host                     |
+| D    | Vendored `hls.js` + Mode A                | Same as Mode A + < 35 KB bundle growth       |
 
 Mode B is the most restrictive CSP option because all external requests are routed
 through the Cloudflare Worker, which is already in the `connect-src` allowlist.
@@ -212,15 +212,15 @@ computed with `openssl dgst -sha384 | base64` and reviewed in the release checkl
 
 Since SRI is N/A for bundled build artifacts, the equivalent supply-chain integrity controls are:
 
-| Control                   | Implementation                                                                   |
-| ------------------------- | -------------------------------------------------------------------------------- |
-| Source integrity           | All commits signed via GitHub; branch protection requires PR review               |
-| Build reproducibility      | Vite build is deterministic per `package-lock.json` at `MyScripts/` parent      |
-| Dependency pinning         | Dependabot opens PRs for `package.json` updates (`.github/dependabot.yml`)      |
-| Dependency audit           | `npm audit --audit-level=high` runs in CI on every push                          |
-| SBOM                       | `npm sbom --sbom-format cyclonedx` can be run per ADR-027                       |
-| Worker bundle integrity    | Cloudflare verifies bundle hash on deploy; `wrangler deploy --dry-run` in CI    |
-| Release provenance         | GitHub Releases are tagged from a protected branch; release notes auto-generated |
+| Control                 | Implementation                                                                   |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| Source integrity        | All commits signed via GitHub; branch protection requires PR review              |
+| Build reproducibility   | Vite build is deterministic per `package-lock.json` at `MyScripts/` parent       |
+| Dependency pinning      | Dependabot opens PRs for `package.json` updates (`.github/dependabot.yml`)       |
+| Dependency audit        | `npm audit --audit-level=high` runs in CI on every push                          |
+| SBOM                    | `npm sbom --sbom-format cyclonedx` can be run per ADR-027                        |
+| Worker bundle integrity | Cloudflare verifies bundle hash on deploy; `wrangler deploy --dry-run` in CI     |
+| Release provenance      | GitHub Releases are tagged from a protected branch; release notes auto-generated |
 
 For a full SLSA Level 2 upgrade path, see ADR-027 (SBOM Generation and Automated Dependency Updates).
 For the SLSA Level 3 upgrade path (signed provenance attestations via GitHub Actions), see ADR-035.
@@ -229,13 +229,13 @@ For the SLSA Level 3 upgrade path (signed provenance attestations via GitHub Act
 
 ## 12. Secret Rotation Schedule
 
-| Secret                   | Storage                          | Rotation cadence          | Owner                |
-| ------------------------ | -------------------------------- | ------------------------- | -------------------- |
-| `ERROR_REPORTING_TOKEN`  | Cloudflare Worker secret         | Annually or on suspicion  | Project maintainer   |
-| `METRICS_TOKEN`          | Cloudflare Worker secret         | Annually or on suspicion  | Project maintainer   |
-| `REPORTS_TOKEN`          | Cloudflare Worker secret         | Annually or on suspicion  | Project maintainer   |
-| `FINNHUB_API_KEY`        | Cloudflare Worker secret         | Per Finnhub terms (1 yr)  | Project maintainer   |
-| GitHub PAT (Dependabot)  | GitHub Actions secret            | Annually                  | Project maintainer   |
+| Secret                  | Storage                  | Rotation cadence         | Owner              |
+| ----------------------- | ------------------------ | ------------------------ | ------------------ |
+| `ERROR_REPORTING_TOKEN` | Cloudflare Worker secret | Annually or on suspicion | Project maintainer |
+| `METRICS_TOKEN`         | Cloudflare Worker secret | Annually or on suspicion | Project maintainer |
+| `REPORTS_TOKEN`         | Cloudflare Worker secret | Annually or on suspicion | Project maintainer |
+| `FINNHUB_API_KEY`       | Cloudflare Worker secret | Per Finnhub terms (1 yr) | Project maintainer |
+| GitHub PAT (Dependabot) | GitHub Actions secret    | Annually                 | Project maintainer |
 
 **Rotation procedure:**
 

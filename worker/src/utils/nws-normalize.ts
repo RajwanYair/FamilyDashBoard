@@ -14,7 +14,7 @@ type NwsPeriod = v.InferOutput<typeof NwsForecastPeriodSchema>;
 
 /** Fahrenheit → Celsius, rounded to one decimal. */
 export function fToC(f: number): number {
-  return Math.round(((f - 32) * 5) / 9 * 10) / 10;
+  return Math.round((((f - 32) * 5) / 9) * 10) / 10;
 }
 
 /** mph → km/h, rounded to one decimal. */
@@ -35,10 +35,22 @@ export function parseWindKph(windSpeed: string): number {
 
 /** Cardinal/intercardinal wind direction → degrees 0–360. */
 const DIR_DEG: Record<string, number> = {
-  N: 0, NNE: 22.5, NE: 45, ENE: 67.5,
-  E: 90, ESE: 112.5, SE: 135, SSE: 157.5,
-  S: 180, SSW: 202.5, SW: 225, WSW: 247.5,
-  W: 270, WNW: 292.5, NW: 315, NNW: 337.5,
+  N: 0,
+  NNE: 22.5,
+  NE: 45,
+  ENE: 67.5,
+  E: 90,
+  ESE: 112.5,
+  SE: 135,
+  SSE: 157.5,
+  S: 180,
+  SSW: 202.5,
+  SW: 225,
+  WSW: 247.5,
+  W: 270,
+  WNW: 292.5,
+  NW: 315,
+  NNW: 337.5,
 };
 
 export function windDirToDeg(dir: string): number {
@@ -189,7 +201,7 @@ export function normalizeNwsToWeatherSchema(
       temperature_2m_max: daily.map((d) => d.maxC),
       temperature_2m_min: daily.map((d) => d.minC),
       weather_code: daily.map((d) => d.code),
-      sunrise: daily.map(() => ""),   // NWS forecast endpoints omit sunrise
+      sunrise: daily.map(() => ""), // NWS forecast endpoints omit sunrise
       sunset: daily.map(() => ""),
       precipitation_probability_max: daily.map((d) => d.precipPct),
       uv_index_max: daily.map(() => 0),

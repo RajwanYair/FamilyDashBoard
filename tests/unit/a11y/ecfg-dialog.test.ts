@@ -55,7 +55,9 @@ describe("V13-CONTINUITY: #ecfg-dialog HTML structure", () => {
 
   it("ecfg-passphrase-input has type='password'", () => {
     // type may appear before or after the id attribute; check the full input tag
-    const inputTag = HTML.match(/<input[^>]*id="ecfg-passphrase-input"[^>]*>|<input[^>]*type="password"[^>]*id="ecfg-passphrase-input"[^>]*>/);
+    const inputTag = HTML.match(
+      /<input[^>]*id="ecfg-passphrase-input"[^>]*>|<input[^>]*type="password"[^>]*id="ecfg-passphrase-input"[^>]*>/,
+    );
     expect(inputTag?.[0] ?? HTML).toContain('type="password"');
   });
 

@@ -77,9 +77,7 @@ describe("withErrorBoundary — sync error", () => {
       throw new Error("boom");
     });
     await fn();
-    expect(diagLog).toHaveBeenCalledWith(
-      expect.stringContaining("test-card"),
-    );
+    expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("test-card"));
     expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("boom"));
   });
 
@@ -142,9 +140,7 @@ describe("withErrorBoundary — async error", () => {
       throw new Error("async error message");
     });
     await fn();
-    expect(diagLog).toHaveBeenCalledWith(
-      expect.stringContaining("async-card"),
-    );
+    expect(diagLog).toHaveBeenCalledWith(expect.stringContaining("async-card"));
   });
 
   it("handles non-Error thrown values (string)", async () => {

@@ -180,9 +180,10 @@ describe("FdbMotivationCard", () => {
 
   it("nextQuote is a no-op when pool[idx] is undefined (if !q branch)", async () => {
     const { getQuotesByCategory } = await import("@/cards/motivation/motivation");
-    vi.mocked(getQuotesByCategory).mockReturnValue(
-      [undefined] as unknown as { text: string; author?: string }[],
-    );
+    vi.mocked(getQuotesByCategory).mockReturnValue([undefined] as unknown as {
+      text: string;
+      author?: string;
+    }[]);
     const card = mountCard();
     // pool has length 1 but pool[0] is undefined — nextQuote returns early
     expect(card.querySelector(".moti-text")?.textContent).toBe("refreshing");

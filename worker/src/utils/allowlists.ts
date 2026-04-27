@@ -23,7 +23,10 @@ export const NEWS_FEED_URLS: Array<{ url: string; src: string }> = [
   { url: "https://www.kan.org.il/podcast/2578/", src: "כאן חדשות" },
   { url: "https://www.n12.co.il/cmlink/1.6017730", src: "N12" },
   { url: "https://www.israelhayom.co.il/rss.xml", src: "ישראל היום" },
-  { url: "https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=585", src: "גלובס" },
+  {
+    url: "https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=585",
+    src: "גלובס",
+  },
   { url: "https://www.calcalist.co.il/GeneralRSS/0,16335,L-8,00.xml", src: "כלכליסט" },
   { url: "https://www.makorrishon.co.il/feed/", src: "מקור ראשון" },
   { url: "https://www.kikar.co.il/rss", src: "כיכר השבת" },

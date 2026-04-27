@@ -78,25 +78,17 @@ if (isMain) {
   }
 
   if (!hasChangelogEntry(changelog, version)) {
-    console.error(
-      `❌ release-notes: No ## [${version}] entry found in CHANGELOG.md`,
-    );
-    console.error(
-      `   Add a ## [${version}] section before tagging v${version}`,
-    );
+    console.error(`❌ release-notes: No ## [${version}] entry found in CHANGELOG.md`);
+    console.error(`   Add a ## [${version}] section before tagging v${version}`);
     process.exit(1);
   }
 
   const section = extractChangelogSection(changelog, version);
   if (!sectionHasContent(section)) {
-    console.error(
-      `❌ release-notes: ## [${version}] section in CHANGELOG.md is empty`,
-    );
+    console.error(`❌ release-notes: ## [${version}] section in CHANGELOG.md is empty`);
     process.exit(1);
   }
 
-  console.log(
-    `✅ release-notes: CHANGELOG.md has a populated entry for v${version}`,
-  );
+  console.log(`✅ release-notes: CHANGELOG.md has a populated entry for v${version}`);
   process.exit(0);
 }

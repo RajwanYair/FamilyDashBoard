@@ -1,7 +1,7 @@
 # Error Viewer — FamilyDashBoard
 
 > The error viewer surfaces client-side runtime errors that were captured by the
-> dashboard and persisted to Cloudflare KV by the worker.  It is the primary
+> dashboard and persisted to Cloudflare KV by the worker. It is the primary
 > debugging tool for production issues reported by family members.
 
 ---
@@ -50,12 +50,12 @@ HTTP 200, `Content-Type: application/json` — an array of error entries, newest
 ]
 ```
 
-| Field     | Type             | Description                               |
-| --------- | ---------------- | ----------------------------------------- |
-| `ts`      | `number`         | Unix timestamp (ms) of the error          |
-| `message` | `string`         | Error message (truncated to 500 chars)    |
-| `source`  | `string?`        | Source file where the error occurred      |
-| `lineno`  | `number?`        | Line number in the source file            |
+| Field     | Type      | Description                            |
+| --------- | --------- | -------------------------------------- |
+| `ts`      | `number`  | Unix timestamp (ms) of the error       |
+| `message` | `string`  | Error message (truncated to 500 chars) |
+| `source`  | `string?` | Source file where the error occurred   |
+| `lineno`  | `number?` | Line number in the source file         |
 
 ### Setting the Token
 
@@ -107,7 +107,7 @@ To check how many errors were stored today without listing all entries:
 curl "https://fdb.rajwanyair.workers.dev/api/errors/export?token=<TOKEN>" | jq 'length'
 ```
 
-KV also stores a counter at `errors:count:YYYY-MM-DD`.  You can read it via the
+KV also stores a counter at `errors:count:YYYY-MM-DD`. You can read it via the
 Cloudflare dashboard (**Workers → KV → CACHE_KV → Filter: errors:count**).
 
 ---
@@ -115,7 +115,7 @@ Cloudflare dashboard (**Workers → KV → CACHE_KV → Filter: errors:count**).
 ## Retention
 
 Error entries are stored for **7 days** (Cloudflare KV `expirationTtl = 604800`).
-After 7 days they are automatically evicted.  There is no manual deletion endpoint.
+After 7 days they are automatically evicted. There is no manual deletion endpoint.
 
 ---
 

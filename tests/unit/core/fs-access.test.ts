@@ -24,9 +24,7 @@ describe("fs-access — saveTextFile fallback (no picker)", () => {
   it("falls back to anchor-download when showSaveFilePicker is unavailable", async () => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
-    const clickSpy = vi
-      .spyOn(HTMLAnchorElement.prototype, "click")
-      .mockImplementation(() => {});
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
     const written = await saveTextFile("hello", {
       suggestedName: "hello.txt",
       mimeType: "text/plain",

@@ -18,7 +18,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const tokensCSS = readFileSync(resolve(__dirname, "../../../src/styles/tokens.css"), "utf-8");
-const a11yCSS   = readFileSync(resolve(__dirname, "../../../src/styles/a11y.css"),   "utf-8");
+const a11yCSS = readFileSync(resolve(__dirname, "../../../src/styles/a11y.css"), "utf-8");
 
 // ── tokens.css — token declarations ──────────────────────────────────────────
 

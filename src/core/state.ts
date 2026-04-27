@@ -77,9 +77,9 @@ class FdbStateStore extends EventTarget {
    * @param callback - Called with (newValue, key) on each change
    */
   on<T = unknown>(key: StateKey, callback: StateChangeCallback<T>): void {
-    this.addEventListener(key, ((e: Event) => {
+    this.addEventListener(key, (e: Event) => {
       callback((e as CustomEvent<T>).detail, key);
-    }));
+    });
   }
 
   /**

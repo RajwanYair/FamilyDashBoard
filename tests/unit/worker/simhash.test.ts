@@ -233,16 +233,46 @@ describe("SimHash v2 precision@10 gate (V13-POLISH §3.2)", () => {
 
   it("v2 default threshold (4): ≤ 1 false positive out of 10 unrelated pairs", () => {
     const UNRELATED_PAIRS: [string, string][] = [
-      ["Heavy rain is forecast across northern mountain regions today", "Football team wins championship final after dramatic extra time"],
-      ["Fusion restaurant opens in city center with award winning chef", "Scientists confirm dark matter observation using new telescope"],
-      ["Local elections see record voter turnout across all five districts", "Software startup raises fifty million dollars in Series B funding"],
-      ["Pediatric hospital expands with new state of the art surgical wing", "Airlines announce new routes connecting Europe to Southeast Asia"],
-      ["University team develops faster and cheaper solar cell technology now", "Mayor unveils plan to restore historic waterfront district buildings"],
-      ["Central bank surprise decision raises overnight rates by a full point", "Championship final draws eighty thousand fans to the new stadium"],
-      ["Marathon runner becomes first to complete one hundred consecutive races", "Parliament passes comprehensive landmark environmental legislation today"],
-      ["City museum opens major retrospective exhibition of contemporary sculpture", "Space agency confirms successful Mars surface lander touchdown today"],
-      ["Severe flooding damages hundreds of residential homes in coastal areas", "Global pharma firm wins approval for new diabetes treatment drug"],
-      ["Trade union calls nationwide industrial strike over pension reform bill", "Radio astronomers detect unusual repeating signal from distant galaxy"],
+      [
+        "Heavy rain is forecast across northern mountain regions today",
+        "Football team wins championship final after dramatic extra time",
+      ],
+      [
+        "Fusion restaurant opens in city center with award winning chef",
+        "Scientists confirm dark matter observation using new telescope",
+      ],
+      [
+        "Local elections see record voter turnout across all five districts",
+        "Software startup raises fifty million dollars in Series B funding",
+      ],
+      [
+        "Pediatric hospital expands with new state of the art surgical wing",
+        "Airlines announce new routes connecting Europe to Southeast Asia",
+      ],
+      [
+        "University team develops faster and cheaper solar cell technology now",
+        "Mayor unveils plan to restore historic waterfront district buildings",
+      ],
+      [
+        "Central bank surprise decision raises overnight rates by a full point",
+        "Championship final draws eighty thousand fans to the new stadium",
+      ],
+      [
+        "Marathon runner becomes first to complete one hundred consecutive races",
+        "Parliament passes comprehensive landmark environmental legislation today",
+      ],
+      [
+        "City museum opens major retrospective exhibition of contemporary sculpture",
+        "Space agency confirms successful Mars surface lander touchdown today",
+      ],
+      [
+        "Severe flooding damages hundreds of residential homes in coastal areas",
+        "Global pharma firm wins approval for new diabetes treatment drug",
+      ],
+      [
+        "Trade union calls nationwide industrial strike over pension reform bill",
+        "Radio astronomers detect unusual repeating signal from distant galaxy",
+      ],
     ];
 
     let falsePositivesV2 = 0;

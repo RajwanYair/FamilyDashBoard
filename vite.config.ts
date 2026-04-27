@@ -112,8 +112,7 @@ const injectSri: Plugin = {
       if (asset.type === "chunk") {
         payload = asset.code;
       } else if (asset.type === "asset") {
-        payload =
-          typeof asset.source === "string" ? asset.source : (asset.source as Uint8Array);
+        payload = typeof asset.source === "string" ? asset.source : (asset.source as Uint8Array);
       }
       if (payload === null) continue;
       const digest = createHash("sha384").update(payload).digest("base64");

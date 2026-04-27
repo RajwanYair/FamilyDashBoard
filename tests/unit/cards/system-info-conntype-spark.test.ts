@@ -121,9 +121,7 @@ describe("renderSystemInfo: connection-type sparkline (V13-DATA)", () => {
     await vi.runAllTimersAsync?.().catch(() => undefined);
     await new Promise((r) => setTimeout(r, 0));
 
-    const conntypeCalls = mockAppend.mock.calls.filter(
-      (c) => c[0] === "sysinfo:conntype",
-    );
+    const conntypeCalls = mockAppend.mock.calls.filter((c) => c[0] === "sysinfo:conntype");
     expect(conntypeCalls.length).toBeGreaterThanOrEqual(1);
     expect(conntypeCalls[0][1]).toBe(4);
   });
@@ -165,9 +163,7 @@ describe("renderSystemInfo: connection-type sparkline (V13-DATA)", () => {
     await renderSystemInfo();
     await new Promise((r) => setTimeout(r, 0));
 
-    const conntypeCalls = mockAppend.mock.calls.filter(
-      (c) => c[0] === "sysinfo:conntype",
-    );
+    const conntypeCalls = mockAppend.mock.calls.filter((c) => c[0] === "sysinfo:conntype");
     expect(conntypeCalls.length).toBe(0);
   });
 });

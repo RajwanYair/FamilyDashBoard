@@ -1,11 +1,11 @@
 # ADR-032 — Workers Queues for Error-Reporter Fan-out
 
-| Field       | Value                                            |
-| ----------- | ------------------------------------------------ |
-| **Date**    | 2026-04-23                                       |
-| **Status**  | Accepted                                         |
-| **Deciders** | @RajwanYair                                     |
-| **Tags**    | worker, queues, errors, observability, resilience |
+| Field        | Value                                             |
+| ------------ | ------------------------------------------------- |
+| **Date**     | 2026-04-23                                        |
+| **Status**   | Accepted                                          |
+| **Deciders** | @RajwanYair                                       |
+| **Tags**     | worker, queues, errors, observability, resilience |
 
 ---
 

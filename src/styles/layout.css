@@ -22,10 +22,18 @@
     flex: 1 1 0;
   }
   /* Data-rich fill cards — claim proportionally more vertical space */
-  .grid-col > [data-card-id="news"]       { flex: 3 1 0; } /* large scrolling news list */
-  .grid-col > [data-card-id="calendar"]   { flex: 2 1 0; } /* agenda with many events */
-  .grid-col > [data-card-id="stocks"]     { flex: 2 1 0; } /* scrollable stock rows */
-  .grid-col > [data-card-id="video-news"] { flex: 2 1 0; } /* video player needs height */
+  .grid-col > [data-card-id="news"] {
+    flex: 3 1 0;
+  } /* large scrolling news list */
+  .grid-col > [data-card-id="calendar"] {
+    flex: 2 1 0;
+  } /* agenda with many events */
+  .grid-col > [data-card-id="stocks"] {
+    flex: 2 1 0;
+  } /* scrollable stock rows */
+  .grid-col > [data-card-id="video-news"] {
+    flex: 2 1 0;
+  } /* video player needs height */
   /* Bounded-content cards — shrink to natural content height; surplus redistributes to fill cards */
   .grid-col > [data-card-id="motivation"],
   .grid-col > [data-card-id="countdown"],
@@ -33,8 +41,12 @@
     flex: 0 1 auto;
   }
   /* Moderate-content cards — half the default weight */
-  .grid-col > [data-card-id="tasks"]       { flex: 0.5 1 0; }
-  .grid-col > [data-card-id="system-info"] { flex: 0.5 1 0; }
+  .grid-col > [data-card-id="tasks"] {
+    flex: 0.5 1 0;
+  }
+  .grid-col > [data-card-id="system-info"] {
+    flex: 0.5 1 0;
+  }
 
   /* ── Responsive (R1.7) ── */
   @media (max-width: 1200px) {

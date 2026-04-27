@@ -22,7 +22,9 @@
   font-size: 0.78em;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
   white-space: nowrap;
   direction: rtl;
 }
@@ -129,7 +131,8 @@
 /* Maximized: scale tab strip fonts with card size */
 .card.maximized .video-news__tab {
   font-size: calc(0.78em * min(1.4, var(--max-font-scale, 1)));
-  padding: calc(0.25em * min(1.4, var(--max-font-scale, 1))) calc(0.65em * min(1.4, var(--max-font-scale, 1)));
+  padding: calc(0.25em * min(1.4, var(--max-font-scale, 1)))
+    calc(0.65em * min(1.4, var(--max-font-scale, 1)));
 }
 
 /* ── Reduced-motion ──────────────────────────────────────────────────────── */
@@ -139,7 +142,6 @@
     transition: none;
   }
 }
-
 
 /* ── Container ───────────────────────────────────────────────────────────── */
 

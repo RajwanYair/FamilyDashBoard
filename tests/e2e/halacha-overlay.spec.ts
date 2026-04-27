@@ -56,9 +56,7 @@ test.describe("Halacha overlay", () => {
   test("clicking the ticker opens the full-text overlay", async ({ page }) => {
     await page.click(SEL.halachaTicker);
     await expect(page.locator(SEL.halachaOverlay)).toBeVisible();
-    await expect(page.locator(SEL.halachaOverlayText)).toContainText(
-      "כשניעור משנתו",
-    );
+    await expect(page.locator(SEL.halachaOverlayText)).toContainText("כשניעור משנתו");
   });
 
   test("Enter on the focused ticker opens the overlay (keyboard a11y)", async ({ page }) => {

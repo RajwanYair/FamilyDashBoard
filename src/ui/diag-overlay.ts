@@ -169,11 +169,11 @@ function renderStats(): void {
 
   panes.innerHTML = trustedHTML(
     html +
-    vitalsHtml +
-    hwHtml +
-    renderCardTimingsHtml() +
-    renderErrorTrendHtml() +
-    renderProviderHealthHtml(),
+      vitalsHtml +
+      hwHtml +
+      renderCardTimingsHtml() +
+      renderErrorTrendHtml() +
+      renderProviderHealthHtml(),
   );
 
   // Async IDB size + inventory update (v7.10 — non-blocking, Sprint 179 — key count)
@@ -181,7 +181,9 @@ function renderStats(): void {
     const idbEl = document.getElementById("diag-idb-size");
     if (!idbEl) return;
     const idbMB = (bytes / (1024 * 1024)).toFixed(2);
-    idbEl.innerHTML = trustedHTML(`💾 IDB: <b>${idbMB} MB</b> · ${String(inv.idbEntries)} keys · LS ${(inv.lsBytes / 1024).toFixed(1)} KB`);
+    idbEl.innerHTML = trustedHTML(
+      `💾 IDB: <b>${idbMB} MB</b> · ${String(inv.idbEntries)} keys · LS ${(inv.lsBytes / 1024).toFixed(1)} KB`,
+    );
   });
 }
 

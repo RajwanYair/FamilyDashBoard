@@ -28,7 +28,7 @@ const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 const JS_BUDGET_KB = 100;
 const CSS_BUDGET_KB = 26;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
-const GROWTH_THRESHOLD = 0.10;
+const GROWTH_THRESHOLD = 0.1;
 
 function toKb(bytes) {
   return (bytes / 1024).toFixed(1);
@@ -157,17 +157,17 @@ console.log("\n📊 Per-card chunk breakdown (gzip)\n");
 
 /** Card chunk patterns — maps display label → filename substring. */
 const CARD_CHUNKS = [
-  ["weather",     "weather"],
-  ["stocks",      "stocks"],
-  ["currency",    "currency"],
-  ["calendar",    "calendar"],
-  ["hebrew-cal",  "hebrew-cal"],
-  ["alerts",      "alerts"],
-  ["motivation",  "motivation"],
-  ["tasks",       "tasks"],
+  ["weather", "weather"],
+  ["stocks", "stocks"],
+  ["currency", "currency"],
+  ["calendar", "calendar"],
+  ["hebrew-cal", "hebrew-cal"],
+  ["alerts", "alerts"],
+  ["motivation", "motivation"],
+  ["tasks", "tasks"],
   ["system-info", "system-info"],
-  ["countdown",   "countdown"],
-  ["news",        "news"],
+  ["countdown", "countdown"],
+  ["news", "news"],
 ];
 
 let chunkFiles;
@@ -186,7 +186,7 @@ for (const [label, pattern] of CARD_CHUNKS) {
   for (const f of matching) {
     const fp = join(DIST_ASSETS, f);
     totalRaw += statSync(fp).size;
-    totalGz  += gzipSize(fp);
+    totalGz += gzipSize(fp);
   }
   cardRows.push({ label, rawKb: totalRaw / 1024, gzKb: totalGz / 1024 });
 }
@@ -308,7 +308,9 @@ console.log();
 // ── Per-card source delta gate ────────────────────────────────────────────────
 
 if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
-  console.log(`📈 Per-card source growth check vs baseline v${baseline.version} (${baseline.date})\n`);
+  console.log(
+    `📈 Per-card source growth check vs baseline v${baseline.version} (${baseline.date})\n`,
+  );
   let srcGrowthOk = true;
 
   for (const { name, sourceKb } of cardSourceRows) {

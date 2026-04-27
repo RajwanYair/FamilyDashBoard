@@ -337,4 +337,3 @@ describe("simHash — property: isNearDuplicate threshold boundary (Sprint 80)",
     );
   });
 });
-

@@ -10,7 +10,7 @@
 ## Context
 
 FamilyDashBoard initialises 11 cards synchronously in `main.ts` on every page
-load.  Profiling showed that all 11 `initXxxCard()` calls were dispatched on the
+load. Profiling showed that all 11 `initXxxCard()` calls were dispatched on the
 same microtask tick, competing for the main thread during the critical render path
 and delaying Time to Interactive (TTI).
 
@@ -32,25 +32,25 @@ wasteful.
 
 Cards are split into three init tiers:
 
-| Tier     | Cards                                         | Dispatch method                       |
-| -------- | --------------------------------------------- | ------------------------------------- |
-| HIGH     | Weather, News, Alerts, Hebrew-cal, Calendar   | Synchronous, immediately              |
-| NORMAL   | Stocks, Currency, Tasks, Countdown            | Synchronous, immediately after HIGH   |
-| LOW      | Motivation, System-info, Ticker               | Deferred via `requestIdleCallback`    |
+| Tier   | Cards                                       | Dispatch method                     |
+| ------ | ------------------------------------------- | ----------------------------------- |
+| HIGH   | Weather, News, Alerts, Hebrew-cal, Calendar | Synchronous, immediately            |
+| NORMAL | Stocks, Currency, Tasks, Countdown          | Synchronous, immediately after HIGH |
+| LOW    | Motivation, System-info, Ticker             | Deferred via `requestIdleCallback`  |
 
 ### Implementation pattern
 
 ```typescript
 const _lowPriorityInit = (): void => {
-  timedInit("motivation",    initMotivationCard);
-  timedInit("system-info",   initSystemInfoCard);
+  timedInit("motivation", initMotivationCard);
+  timedInit("system-info", initSystemInfoCard);
   initTicker();
 };
 
 if (typeof requestIdleCallback !== "undefined") {
   requestIdleCallback(_lowPriorityInit, { timeout: 2000 });
 } else {
-  setTimeout(_lowPriorityInit, 200);  // Safari / older Firefox fallback
+  setTimeout(_lowPriorityInit, 200); // Safari / older Firefox fallback
 }
 ```
 
@@ -112,12 +112,12 @@ if (typeof requestIdleCallback !== "undefined") {
 
 ## Alternatives Rejected
 
-| Alternative                                           | Reason rejected                                                                                              |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `IntersectionObserver` lazy-init                      | Cards are always in the viewport on a TV dashboard — no meaningful lazy trigger                              |
-| Dynamic `import()` code-split per tier                | Increases network waterfall; bundle is already a single IIFE for `file://` support                           |
-| Web Worker offload for init logic                     | Card init touches DOM; Web Workers have no DOM access                                                        |
-| Preserving fully synchronous init                     | Measured 220 ms TTI improvement is worth the marginal test complexity cost                                   |
+| Alternative                            | Reason rejected                                                                    |
+| -------------------------------------- | ---------------------------------------------------------------------------------- |
+| `IntersectionObserver` lazy-init       | Cards are always in the viewport on a TV dashboard — no meaningful lazy trigger    |
+| Dynamic `import()` code-split per tier | Increases network waterfall; bundle is already a single IIFE for `file://` support |
+| Web Worker offload for init logic      | Card init touches DOM; Web Workers have no DOM access                              |
+| Preserving fully synchronous init      | Measured 220 ms TTI improvement is worth the marginal test complexity cost         |
 
 ---
 

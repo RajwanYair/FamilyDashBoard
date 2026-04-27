@@ -96,10 +96,7 @@ function check(filePath, requiredKeys) {
 // ────────────────────────────────────────────────────────────────────────────
 // Collect all files to lint
 
-const instructionFiles = globFiles(
-  join(GH, "instructions"),
-  ".instructions.md",
-);
+const instructionFiles = globFiles(join(GH, "instructions"), ".instructions.md");
 const agentFiles = globFiles(join(GH, "agents"), ".agent.md");
 const promptFiles = globFiles(join(GH, "prompts"), ".prompt.md");
 const skillFileList = skillFiles(join(GH, "skills"));

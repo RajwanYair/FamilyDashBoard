@@ -98,11 +98,11 @@ No changes to existing `npm run check` or `npx tsc` workflow.
 
 ## Alternatives considered
 
-| Option | Verdict |
-| --- | --- |
-| Promote tsgo to primary immediately | Rejected — alpha stability not proven on our exact tsconfig/plugin set |
-| Ignore tsgo entirely until 1.0 | Rejected — early signal is cheap and valuable |
-| Run tsgo only on PR, not on main | Considered — rejected because main pushes benefit most from fast feedback |
+| Option                              | Verdict                                                                   |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| Promote tsgo to primary immediately | Rejected — alpha stability not proven on our exact tsconfig/plugin set    |
+| Ignore tsgo entirely until 1.0      | Rejected — early signal is cheap and valuable                             |
+| Run tsgo only on PR, not on main    | Considered — rejected because main pushes benefit most from fast feedback |
 
 ---
 

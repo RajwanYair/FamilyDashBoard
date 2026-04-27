@@ -40,13 +40,13 @@ const MIN_CARD_PX = 60;
 
 interface DragState {
   type: "col" | "row";
-  startCoord: number;        // clientX (col) or clientY (row) at mousedown
-  gapIndex: number;          // index of the left/top sibling in the pair
-  gridsArea: HTMLElement;    // for col resize
-  colEl: HTMLElement;        // for row resize
-  siblings: HTMLElement[];   // grid-col elements (col) or card elements (row)
-  startSizePx: number[];     // pixel widths/heights at drag start for all siblings
-  startGrow: number[];       // flex-grow values at drag start (row only)
+  startCoord: number; // clientX (col) or clientY (row) at mousedown
+  gapIndex: number; // index of the left/top sibling in the pair
+  gridsArea: HTMLElement; // for col resize
+  colEl: HTMLElement; // for row resize
+  siblings: HTMLElement[]; // grid-col elements (col) or card elements (row)
+  startSizePx: number[]; // pixel widths/heights at drag start for all siblings
+  startGrow: number[]; // flex-grow values at drag start (row only)
 }
 
 let _state: DragState | null = null;
@@ -121,17 +121,11 @@ function setCursorMode(mode: "col" | "row" | null): void {
  * Returns the 0-based index of the column gap the cursor is over,
  * or -1 if the cursor is not near any column gap.
  */
-function detectColumnGap(
-  gridsArea: HTMLElement,
-  cx: number,
-  cy: number
-): number {
+function detectColumnGap(gridsArea: HTMLElement, cx: number, cy: number): number {
   const areaBounds = gridsArea.getBoundingClientRect();
   if (cy < areaBounds.top || cy > areaBounds.bottom) return -1;
 
-  const cols = Array.from(
-    gridsArea.querySelectorAll<HTMLElement>(":scope > .grid-col")
-  );
+  const cols = Array.from(gridsArea.querySelectorAll<HTMLElement>(":scope > .grid-col"));
 
   for (let i = 0; i < cols.length - 1; i++) {
     const colA = cols[i];
@@ -171,7 +165,7 @@ function detectRowGap(col: HTMLElement, cx: number, cy: number): number {
 /** Direct card/split children of a column that are currently visible. */
 function getCards(col: HTMLElement): HTMLElement[] {
   return Array.from(
-    col.querySelectorAll<HTMLElement>(":scope > .card, :scope > .col-split")
+    col.querySelectorAll<HTMLElement>(":scope > .card, :scope > .col-split"),
   ).filter((el) => !el.classList.contains("card-hidden"));
 }
 
@@ -209,9 +203,7 @@ function onMouseMove(e: MouseEvent): void {
     }
   }
 
-  const cols = Array.from(
-    document.querySelectorAll<HTMLElement>(".grid-col")
-  );
+  const cols = Array.from(document.querySelectorAll<HTMLElement>(".grid-col"));
   for (const col of cols) {
     const rowGap = detectRowGap(col, e.clientX, e.clientY);
     if (rowGap >= 0) {
@@ -233,12 +225,8 @@ function onMouseDown(e: MouseEvent): void {
     const colGap = detectColumnGap(gridsArea, e.clientX, e.clientY);
     if (colGap >= 0) {
       e.preventDefault();
-      const cols = Array.from(
-        gridsArea.querySelectorAll<HTMLElement>(":scope > .grid-col")
-      );
-      const startSizePx = cols.map(
-        (c) => c.getBoundingClientRect().width
-      );
+      const cols = Array.from(gridsArea.querySelectorAll<HTMLElement>(":scope > .grid-col"));
+      const startSizePx = cols.map((c) => c.getBoundingClientRect().width);
 
       _state = {
         type: "col",
@@ -258,17 +246,13 @@ function onMouseDown(e: MouseEvent): void {
   }
 
   // ── Row gap ──
-  const cols = Array.from(
-    document.querySelectorAll<HTMLElement>(".grid-col")
-  );
+  const cols = Array.from(document.querySelectorAll<HTMLElement>(".grid-col"));
   for (const col of cols) {
     const rowGap = detectRowGap(col, e.clientX, e.clientY);
     if (rowGap >= 0) {
       e.preventDefault();
       const cards = getCards(col);
-      const startSizePx = cards.map(
-        (c) => c.getBoundingClientRect().height
-      );
+      const startSizePx = cards.map((c) => c.getBoundingClientRect().height);
       const startGrow = cards.map(flexGrowOf);
 
       _state = {

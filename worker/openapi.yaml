@@ -922,7 +922,6 @@ paths:
             sourceFile:
               type: string
 
-
   responses:
     ValidationError:
       description: Missing or invalid query parameter

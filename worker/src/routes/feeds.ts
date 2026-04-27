@@ -10,10 +10,24 @@ import {
   requireSymbol,
   requireHttpsUrl,
 } from "../utils/validation";
-import { safeParse, StocksChartSchema, CoinGeckoSchema, NewsRssSchema, AlertsSchema, SefariaCalendarSchema, SefariaTextSchema, FinnhubQuoteSchema } from "../utils/schemas";
+import {
+  safeParse,
+  StocksChartSchema,
+  CoinGeckoSchema,
+  NewsRssSchema,
+  AlertsSchema,
+  SefariaCalendarSchema,
+  SefariaTextSchema,
+  FinnhubQuoteSchema,
+} from "../utils/schemas";
 import { kvGetStale, kvPut } from "../utils/kv";
 import { parseRss } from "../utils/rss-parser";
-import { simHash, isNearDuplicate, getEmbedding, isNearDuplicateByEmbedding } from "../utils/simhash";
+import {
+  simHash,
+  isNearDuplicate,
+  getEmbedding,
+  isNearDuplicateByEmbedding,
+} from "../utils/simhash";
 import type { Env } from "../types";
 
 export async function handleStocks(url: URL, env: Env): Promise<Response> {
@@ -30,7 +44,11 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
   const rawChartResponse = (data: unknown, maxAge: number): Response =>
     new Response(JSON.stringify(data), {
       status: 200,
-      headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${maxAge}`, ...CORS_HEADERS },
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `public, max-age=${maxAge}`,
+        ...CORS_HEADERS,
+      },
     });
 
   // ── Primary: Finnhub (requires FINNHUB_API_KEY Worker secret) ────────────
@@ -47,16 +65,24 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
           // Normalise to Yahoo chart envelope so the client needs no changes.
           const normalised = {
             chart: {
-              result: [{
-                meta: {
-                  symbol: sym.toUpperCase(),
-                  currency: "USD",
-                  regularMarketPrice: finnhubParsed.data.c,
-                  previousClose: finnhubParsed.data.c - finnhubParsed.data.d,
-                  regularMarketChangePercent: finnhubParsed.data.dp,
+              result: [
+                {
+                  meta: {
+                    symbol: sym.toUpperCase(),
+                    currency: "USD",
+                    regularMarketPrice: finnhubParsed.data.c,
+                    previousClose: finnhubParsed.data.c - finnhubParsed.data.d,
+                    regularMarketChangePercent: finnhubParsed.data.dp,
+                  },
+                  indicators: {
+                    quote: [
+                      {
+                        close: [finnhubParsed.data.c - finnhubParsed.data.d, finnhubParsed.data.c],
+                      },
+                    ],
+                  },
                 },
-                indicators: { quote: [{ close: [finnhubParsed.data.c - finnhubParsed.data.d, finnhubParsed.data.c] }] },
-              }],
+              ],
               error: null,
             },
           };
@@ -103,12 +129,15 @@ export async function handleStocks(url: URL, env: Env): Promise<Response> {
   const staleKv = await kvGetStale(env.CACHE_KV, kvKey);
   if (staleKv) return rawChartResponse(staleKv, 60);
 
-  return jsonResponse({
-    error: lastSchemaError
-      ? `Upstream stocks schema invalid — all providers failed`
-      : "All stock providers failed",
-    ...(lastSchemaError ? { detail: lastSchemaError } : {}),
-  }, 502);
+  return jsonResponse(
+    {
+      error: lastSchemaError
+        ? `Upstream stocks schema invalid — all providers failed`
+        : "All stock providers failed",
+      ...(lastSchemaError ? { detail: lastSchemaError } : {}),
+    },
+    502,
+  );
 }
 
 export async function handleNews(url: URL): Promise<Response> {
@@ -171,7 +200,10 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
   const results = await Promise.allSettled(
     NEWS_FEED_URLS.map(async ({ url, src }) => {
       const res = await fetch(url, {
-        headers: { "User-Agent": "FamilyDashBoard/11.0", Accept: "application/rss+xml, text/xml, application/xml" },
+        headers: {
+          "User-Agent": "FamilyDashBoard/11.0",
+          Accept: "application/rss+xml, text/xml, application/xml",
+        },
         signal: AbortSignal.timeout(8000),
       });
       if (!res.ok) return [] as NewsAggItem[];
@@ -335,7 +367,10 @@ export async function handleSefariaCalendar(env: Env): Promise<Response> {
     console.error(`[sefaria:calendar] Valibot strict validation failed: ${validated.error}`);
     const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
     if (stale) return jsonResponse(stale, 200);
-    return jsonResponse({ error: "Upstream response failed validation", detail: validated.error }, 502);
+    return jsonResponse(
+      { error: "Upstream response failed validation", detail: validated.error },
+      502,
+    );
   }
   void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
   return new Response(JSON.stringify(validated.data), {
@@ -376,7 +411,10 @@ export async function handleSefariaText(url: URL, env: Env): Promise<Response> {
     console.error(`[sefaria:text] Valibot strict validation failed: ${validated.error}`);
     const stale = await kvGetStale<Record<string, unknown>>(env.CACHE_KV, kvKey);
     if (stale) return jsonResponse(stale, 200);
-    return jsonResponse({ error: "Upstream response failed validation", detail: validated.error }, 502);
+    return jsonResponse(
+      { error: "Upstream response failed validation", detail: validated.error },
+      502,
+    );
   }
   void kvPut(env.CACHE_KV, kvKey, validated.data, 86400);
   return new Response(JSON.stringify(validated.data), {

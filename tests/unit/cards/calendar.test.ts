@@ -323,7 +323,14 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
     const end2 = new Date(start2.getTime() + 3_600_000);
     renderCalendar([
       { summary: "A", start, end, allDay: false, icsIndex: 0, category: "default" as const },
-      { summary: "B", start: start2, end: end2, allDay: false, icsIndex: 0, category: "default" as const },
+      {
+        summary: "B",
+        start: start2,
+        end: end2,
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     expect(document.querySelector(".cal-event.has-conflict")).not.toBeNull();
   });
@@ -338,7 +345,14 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
     const end2 = new Date(start2.getTime() + 1_800_000);
     renderCalendar([
       { summary: "A", start, end, allDay: false, icsIndex: 0, category: "default" as const },
-      { summary: "B", start: start2, end: end2, allDay: false, icsIndex: 0, category: "default" as const },
+      {
+        summary: "B",
+        start: start2,
+        end: end2,
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     expect(document.querySelector(".cal-event.has-conflict")).toBeNull();
   });
@@ -368,7 +382,14 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
     tomorrow.setHours(10, 0, 0, 0);
     const end = new Date(tomorrow.getTime() + 90 * 60_000);
     renderCalendar([
-      { summary: "Long", start: tomorrow, end, allDay: false, icsIndex: 0, category: "default" as const },
+      {
+        summary: "Long",
+        start: tomorrow,
+        end,
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     const time = document.querySelector(".cal-event-time");
     expect(time?.textContent).toContain("–");
@@ -379,7 +400,14 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(10, 0, 0, 0);
     renderCalendar([
-      { summary: "Zero", start: tomorrow, end: tomorrow, allDay: false, icsIndex: 0, category: "default" as const },
+      {
+        summary: "Zero",
+        start: tomorrow,
+        end: tomorrow,
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     const time = document.querySelector(".cal-event-time");
     expect(time?.textContent).not.toContain("–");
@@ -424,7 +452,14 @@ describe("Calendar — countdown + header count", () => {
     const soon = new Date(Date.now() + 2 * 3_600_000);
     const end = new Date(soon.getTime() + 1_800_000);
     renderCalendar([
-      { summary: "Soon", start: soon, end, allDay: false, icsIndex: 0, category: "default" as const },
+      {
+        summary: "Soon",
+        start: soon,
+        end,
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     expect(document.getElementById("cal-countdown")!.textContent).toContain("מחר");
   });
@@ -573,13 +608,21 @@ describe("Calendar — loadCalendar paths", () => {
     vi.mocked(fetchCore.fetchWithTimeout).mockImplementation(async (url: string) => {
       callCount++;
       const urlStr = String(url);
-      if (!urlStr.includes("allorigins") && !urlStr.includes("codetabs") && !urlStr.includes("corsproxy")) {
+      if (
+        !urlStr.includes("allorigins") &&
+        !urlStr.includes("codetabs") &&
+        !urlStr.includes("corsproxy")
+      ) {
         throw new Error("direct fail");
       }
       if (urlStr.includes("allorigins")) {
         return { ok: false, text: async () => "" } as Response;
       }
-      return { ok: true, json: async () => ({}), text: async () => "not a calendar response" } as Response;
+      return {
+        ok: true,
+        json: async () => ({}),
+        text: async () => "not a calendar response",
+      } as Response;
     });
     initCalendarCard();
     await new Promise<void>((r) => setTimeout(r, 80));
@@ -601,7 +644,10 @@ describe("Calendar — loadCalendar paths", () => {
     vi.mocked(fetchCore.acquireLock).mockReturnValueOnce(true);
     const futureDate = new Date(Date.now() + 86_400_000 * 30);
     const dtStr =
-      futureDate.toISOString().replace(/-|:|\.\d+/g, "").slice(0, 15) + "Z";
+      futureDate
+        .toISOString()
+        .replace(/-|:|\.\d+/g, "")
+        .slice(0, 15) + "Z";
     vi.mocked(fetchCore.fetchWithTimeout).mockResolvedValue({
       ok: true,
       text: async () =>
@@ -656,36 +702,42 @@ describe("Calendar — parseICS edge cases", () => {
   });
 
   it("handles Windows CRLF line endings", () => {
-    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20251201T120000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    const ics =
+      "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20251201T120000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
   it("handles null bytes without crashing", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Null\x00Byte\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Null\x00Byte\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
   it("handles duplicate DTSTART lines", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nDTSTART:20251202T120000Z\nSUMMARY:Dup\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nDTSTART:20251202T120000Z\nSUMMARY:Dup\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
   it("handles negative icsIndex", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Neg\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20251201T120000Z\nSUMMARY:Neg\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, -1)).not.toThrow();
   });
 
   // ── V13-DATA: 12 additional ICS fuzz cases ──────────────────────────────
 
   it("handles RRULE line without crashing (parser ignores recurrence rules)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250901T090000Z\nSUMMARY:Weekly\nRRULE:FREQ=WEEKLY;BYDAY=MO\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250901T090000Z\nSUMMARY:Weekly\nRRULE:FREQ=WEEKLY;BYDAY=MO\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
     // Parser parses the base event even if it cannot expand recurrences
     expect(parseICS(ics, 0)).toHaveLength(1);
   });
 
   it("handles EXDATE line without crashing", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250901T090000Z\nSUMMARY:Recurring\nEXDATE:20250908T090000Z\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250901T090000Z\nSUMMARY:Recurring\nEXDATE:20250908T090000Z\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
@@ -731,21 +783,24 @@ describe("Calendar — parseICS edge cases", () => {
   });
 
   it("parses all-day event with DATE-only DTSTART (8-digit format)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20250915\nSUMMARY:All Day\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20250915\nSUMMARY:All Day\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.allDay).toBe(true);
   });
 
   it("parses multi-day event and end date is after start date", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250903T080000Z\nDTEND:20250905T180000Z\nSUMMARY:Multi Day\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250903T080000Z\nDTEND:20250905T180000Z\nSUMMARY:Multi Day\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.end.getTime()).toBeGreaterThan(events[0]!.start.getTime());
   });
 
   it("falls back to start date when DTEND is absent", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250904T120000Z\nSUMMARY:No End\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250904T120000Z\nSUMMARY:No End\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.end.getTime()).toBe(events[0]!.start.getTime());
@@ -769,7 +824,8 @@ describe("Calendar — parseICS edge cases", () => {
   });
 
   it("unescapes backslash-comma and backslash-semicolon in SUMMARY", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250911T120000Z\nSUMMARY:Hello\\, World\\; Test\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250911T120000Z\nSUMMARY:Hello\\, World\\; Test\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.summary).toBe("Hello, World; Test");
   });
@@ -795,7 +851,8 @@ describe("Calendar — parseICS edge cases", () => {
   });
 
   it("handles CATEGORIES property without affecting summary or start date", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250914T120000Z\nSUMMARY:Tagged\nCATEGORIES:WORK,IMPORTANT\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250914T120000Z\nSUMMARY:Tagged\nCATEGORIES:WORK,IMPORTANT\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toBe("Tagged");
@@ -809,7 +866,8 @@ describe("Calendar — parseICS edge cases", () => {
   // ── V13-DATA sprint 7: fuzz cases 24-28 ─────────────────────────────────
 
   it("handles DTSTART with TZID parameter (non-UTC timezone-qualified)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;TZID=Asia/Jerusalem:20250920T100000\nSUMMARY:Jerusalem Meeting\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;TZID=Asia/Jerusalem:20250920T100000\nSUMMARY:Jerusalem Meeting\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
     // Parser should produce at least the event (or skip — either is safe)
     const events = parseICS(ics, 0);
@@ -822,7 +880,8 @@ describe("Calendar — parseICS edge cases", () => {
   });
 
   it("handles DURATION property without DTEND gracefully", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250922T100000Z\nSUMMARY:Duration Event\nDURATION:PT1H30M\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250922T100000Z\nSUMMARY:Duration Event\nDURATION:PT1H30M\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
     const events = parseICS(ics, 0);
     // Event should be parseable (duration-only is valid ICS)
@@ -830,14 +889,16 @@ describe("Calendar — parseICS edge cases", () => {
   });
 
   it("handles URL property inside VEVENT without affecting event data", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250923T140000Z\nSUMMARY:URL Event\nURL:https://example.com/event/42\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250923T140000Z\nSUMMARY:URL Event\nURL:https://example.com/event/42\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toBe("URL Event");
   });
 
   it("handles Hebrew (Unicode) text in SUMMARY and LOCATION", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250924T180000Z\nSUMMARY:ישיבת משפחה\nLOCATION:ירושלים\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20250924T180000Z\nSUMMARY:ישיבת משפחה\nLOCATION:ירושלים\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toBe("ישיבת משפחה");
@@ -850,21 +911,24 @@ describe("Calendar — parseICS edge cases", () => {
 
 describe("Calendar — parseICS RFC 5545 fuzz: date formats", () => {
   it("parses DTSTART;VALUE=DATE (all-day, 8 chars)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20260101\nSUMMARY:New Year\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;VALUE=DATE:20260101\nSUMMARY:New Year\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.allDay).toBe(true);
   });
 
   it("parses DTSTART;TZID=Asia/Jerusalem:20260410T100000 (strips TZID param)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;TZID=Asia/Jerusalem:20260410T100000\nSUMMARY:Seder\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART;TZID=Asia/Jerusalem:20260410T100000\nSUMMARY:Seder\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toBe("Seder");
   });
 
   it("parses DTSTART with UTC trailing Z (timed event)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260315T083000Z\nSUMMARY:Standup\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260315T083000Z\nSUMMARY:Standup\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.allDay).toBe(false);
     const d = events[0]!.start;
@@ -873,7 +937,8 @@ describe("Calendar — parseICS RFC 5545 fuzz: date formats", () => {
   });
 
   it("parses DTEND correctly and sets end > start", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nDTEND:20260515T100000Z\nSUMMARY:Morning Meeting\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nDTEND:20260515T100000Z\nSUMMARY:Morning Meeting\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.end.getTime()).toBeGreaterThan(events[0]!.start.getTime());
   });
@@ -881,7 +946,8 @@ describe("Calendar — parseICS RFC 5545 fuzz: date formats", () => {
   it("does not throw when DTEND is malformed (8-char non-date string)", () => {
     // parseICSDate tries to build a Date from 8-char value; may be Invalid Date.
     // The important contract is: no exception thrown, 1 event produced.
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nDTEND:NOTADATE\nSUMMARY:Bad End\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nDTEND:NOTADATE\nSUMMARY:Bad End\nEND:VEVENT\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
@@ -894,24 +960,28 @@ describe("Calendar — parseICS RFC 5545 fuzz: date formats", () => {
   });
 
   it("skips event with malformed DTSTART", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:BADDATE\nSUMMARY:Broken\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:BADDATE\nSUMMARY:Broken\nEND:VEVENT\nEND:VCALENDAR";
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
 
   it("skips event with empty SUMMARY", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nSUMMARY:\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260515T090000Z\nSUMMARY:\nEND:VEVENT\nEND:VCALENDAR";
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
 
   it("parses year-boundary event: Dec 31 to Jan 1", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261231T230000Z\nDTEND:20270101T010000Z\nSUMMARY:New Year Eve\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261231T230000Z\nDTEND:20270101T010000Z\nSUMMARY:New Year Eve\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.end.getUTCFullYear()).toBe(2027);
   });
 
   it("parses event with DTSTART on Feb 29 (leap year)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20280229T120000Z\nSUMMARY:Leap Day\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20280229T120000Z\nSUMMARY:Leap Day\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.start.getUTCMonth()).toBe(1); // Feb
@@ -921,39 +991,45 @@ describe("Calendar — parseICS RFC 5545 fuzz: date formats", () => {
 
 describe("Calendar — parseICS RFC 5545 fuzz: escape sequences", () => {
   it("unescapes backslash-comma in SUMMARY", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Meeting\\, Room 5\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Meeting\\, Room 5\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.summary).toBe("Meeting, Room 5");
   });
 
   it("unescapes backslash-n in SUMMARY (replaced by space)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Line1\\nLine2\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Line1\\nLine2\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.summary).toContain("Line1");
     expect(events[0]!.summary).toContain("Line2");
   });
 
   it("unescapes backslash-semicolon in SUMMARY", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:A\\;B\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:A\\;B\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.summary).toBe("A;B");
   });
 
   it("unescapes double backslash in SUMMARY", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Path\\\\Share\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Path\\\\Share\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.summary).toBe("Path\\Share");
   });
 
   it("unescapes backslash-comma in LOCATION (multi-comma)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Conf\nLOCATION:Room A\\, Floor 3\\, Building 7\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Conf\nLOCATION:Room A\\, Floor 3\\, Building 7\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.location).toContain("Room A,");
     expect(events[0]!.location).toContain("Building 7");
   });
 
   it("unescapes backslash-n in DESCRIPTION (replaced by newline)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Task\nDESCRIPTION:Step 1\\nStep 2\\nStep 3\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260101T090000Z\nSUMMARY:Task\nDESCRIPTION:Step 1\\nStep 2\\nStep 3\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.description).toContain("Step 1");
     expect(events[0]!.description).toContain("Step 2");
@@ -962,21 +1038,24 @@ describe("Calendar — parseICS RFC 5545 fuzz: escape sequences", () => {
 
 describe("Calendar — parseICS RFC 5545 fuzz: line folding (§3.1)", () => {
   it("unfolds CRLF + space continuation lines in SUMMARY", () => {
-    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20260601T090000Z\r\nSUMMARY:Very Long\r\n Title Continues\r\nEND:VEVENT\r\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20260601T090000Z\r\nSUMMARY:Very Long\r\n Title Continues\r\nEND:VEVENT\r\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.summary).toContain("Very Long");
     expect(events[0]!.summary).toContain("Title Continues");
   });
 
   it("unfolds LF + tab continuation lines", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260601T090000Z\nSUMMARY:Tabbed\n\tContinuation\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260601T090000Z\nSUMMARY:Tabbed\n\tContinuation\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toContain("Tabbed");
   });
 
   it("handles folded DESCRIPTION (multi-line)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260601T090000Z\nSUMMARY:Desc Test\nDESCRIPTION:First line\n Second line\n Third line\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260601T090000Z\nSUMMARY:Desc Test\nDESCRIPTION:First line\n Second line\n Third line\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.description).toBeTruthy();
@@ -1014,8 +1093,7 @@ END:VCALENDAR`;
   it("assigns unique icsIndex 0,1,2 to merged feeds", () => {
     const makeIcs = (idx: number) =>
       `BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260701T120000Z\nSUMMARY:Feed ${idx}\nEND:VEVENT\nEND:VCALENDAR`;
-    const combined = [0, 1, 2]
-      .flatMap((i) => parseICS(makeIcs(i), i));
+    const combined = [0, 1, 2].flatMap((i) => parseICS(makeIcs(i), i));
     const indices = combined.map((e) => e.icsIndex);
     expect(indices).toContain(0);
     expect(indices).toContain(1);
@@ -1023,18 +1101,21 @@ END:VCALENDAR`;
   });
 
   it("handles a VEVENT block with no LOCATION gracefully", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260801T100000Z\nSUMMARY:No Location\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260801T100000Z\nSUMMARY:No Location\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.location).toBeUndefined();
   });
 
   it("skips malformed VEVENT block missing both DTSTART and SUMMARY", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDESCRIPTION:Only description\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDESCRIPTION:Only description\nEND:VEVENT\nEND:VCALENDAR";
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
 
   it("handles VEVENT blocks with extra unknown properties", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260901T120000Z\nSUMMARY:Extra Props\nUID:abc-123\nSEQ:0\nSTATUS:CONFIRMED\nTRANSP:OPAQUE\nCLASS:PUBLIC\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20260901T120000Z\nSUMMARY:Extra Props\nUID:abc-123\nSEQ:0\nSTATUS:CONFIRMED\nTRANSP:OPAQUE\nCLASS:PUBLIC\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toBe("Extra Props");
@@ -1043,14 +1124,16 @@ END:VCALENDAR`;
 
 describe("Calendar — parseICS RFC 5545 fuzz: edge cases", () => {
   it("handles CRLF line endings throughout", () => {
-    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20261001T090000Z\r\nSUMMARY:CRLF Test\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    const ics =
+      "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20261001T090000Z\r\nSUMMARY:CRLF Test\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toBe("CRLF Test");
   });
 
   it("handles duplicate property keys (last wins in standard parsers, we pick first match)", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261001T090000Z\nSUMMARY:First\nSUMMARY:Second\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261001T090000Z\nSUMMARY:First\nSUMMARY:Second\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     // Our impl picks first match; just ensure it doesn't crash
@@ -1058,7 +1141,8 @@ describe("Calendar — parseICS RFC 5545 fuzz: edge cases", () => {
   });
 
   it("handles SUMMARY with only whitespace after unescaping", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261001T090000Z\nSUMMARY:   \nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261001T090000Z\nSUMMARY:   \nEND:VEVENT\nEND:VCALENDAR";
     // Whitespace-only summary: might be kept as-is or skipped — must not crash
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
@@ -1096,7 +1180,8 @@ END:VCALENDAR`;
   });
 
   it("handles DESCRIPTION with Hebrew text", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261201T090000Z\nSUMMARY:בחינה\nDESCRIPTION:בחינת גמר בחשבון — חדר 5\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261201T090000Z\nSUMMARY:בחינה\nDESCRIPTION:בחינת גמר בחשבון — חדר 5\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.description).toContain("בחינת גמר");
   });
@@ -1110,7 +1195,8 @@ END:VCALENDAR`;
   });
 
   it("handles VEVENT with colons in property values", () => {
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261201T090000Z\nSUMMARY:Meeting: Q4 Review\nDESCRIPTION:See: https://example.com/agenda\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\nDTSTART:20261201T090000Z\nSUMMARY:Meeting: Q4 Review\nDESCRIPTION:See: https://example.com/agenda\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events[0]!.summary).toBe("Meeting: Q4 Review");
     expect(events[0]!.description).toContain("https://example.com/agenda");
@@ -1118,7 +1204,8 @@ END:VCALENDAR`;
 
   it("handles mixed case property names (e.g. dtstart vs DTSTART)", () => {
     // Our parser uses /i flag — should match regardless of case
-    const ics = "BEGIN:VCALENDAR\nBEGIN:VEVENT\ndtstart:20261201T090000Z\nsummary:Case Insensitive\nEND:VEVENT\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\nBEGIN:VEVENT\ndtstart:20261201T090000Z\nsummary:Case Insensitive\nEND:VEVENT\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     // Case-insensitive match expected by RFC 5545
     expect(events).toHaveLength(1);
@@ -2168,24 +2255,28 @@ describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
   });
 
   it("handles ICS with CRLF line endings", () => {
-    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20291001T100000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20291001T100000Z\r\nSUMMARY:CRLF Event\r\nEND:VEVENT\r\nEND:VCALENDAR";
     const events = parseICS(ics, 0);
     expect(events).toHaveLength(1);
     expect(events[0]!.summary).toBe("CRLF Event");
   });
 
   it("handles ICS with mixed LF and CRLF line endings", () => {
-    const ics = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\nDTSTART:20291101T100000Z\r\nSUMMARY:Mixed Endings\nEND:VEVENT\r\nEND:VCALENDAR";
+    const ics =
+      "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\nDTSTART:20291101T100000Z\r\nSUMMARY:Mixed Endings\nEND:VEVENT\r\nEND:VCALENDAR";
     expect(() => parseICS(ics, 0)).not.toThrow();
   });
 
   it("handles calendar with 10+ VEVENTs correctly", () => {
-    const events = Array.from({ length: 12 }, (_, i) => [
-      "BEGIN:VEVENT",
-      `DTSTART:2029${String(i + 1).padStart(2, "0")}01T090000Z`,
-      `SUMMARY:Event ${i + 1}`,
-      "END:VEVENT",
-    ].join("\n")).join("\n");
+    const events = Array.from({ length: 12 }, (_, i) =>
+      [
+        "BEGIN:VEVENT",
+        `DTSTART:2029${String(i + 1).padStart(2, "0")}01T090000Z`,
+        `SUMMARY:Event ${i + 1}`,
+        "END:VEVENT",
+      ].join("\n"),
+    ).join("\n");
     const ics = `BEGIN:VCALENDAR\n${events}\nEND:VCALENDAR`;
     const result = parseICS(ics, 0);
     expect(result.length).toBeGreaterThanOrEqual(12);
@@ -2228,7 +2319,14 @@ describe("Calendar — Sprint 92 isSoon and countdown branches", () => {
     const soon = new Date(Date.now() + 20 * 60 * 1000);
     const end = new Date(soon.getTime() + 30 * 60 * 1000);
     renderCalendar([
-      { summary: "Upcoming Soon", start: soon, end, allDay: false, icsIndex: 0, category: "default" as const },
+      {
+        summary: "Upcoming Soon",
+        start: soon,
+        end,
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     expect(document.querySelector(".cal-event.event-soon")).not.toBeNull();
   });
@@ -2237,7 +2335,14 @@ describe("Calendar — Sprint 92 isSoon and countdown branches", () => {
     const soon = new Date(Date.now() + 20 * 60 * 1000);
     const end = new Date(soon.getTime() + 30 * 60 * 1000);
     renderCalendar([
-      { summary: "All Day Soon", start: soon, end, allDay: true, icsIndex: 0, category: "default" as const },
+      {
+        summary: "All Day Soon",
+        start: soon,
+        end,
+        allDay: true,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     // allDay events are excluded from isSoon check
     expect(document.querySelector(".cal-event.event-soon")).toBeNull();
@@ -2247,7 +2352,14 @@ describe("Calendar — Sprint 92 isSoon and countdown branches", () => {
     const start = new Date(Date.now() + 2.5 * 24 * 3_600_000); // 2.5 days out
     const end = new Date(start.getTime() + 3_600_000);
     renderCalendar([
-      { summary: "Future Trip", start, end, allDay: false, icsIndex: 0, category: "default" as const },
+      {
+        summary: "Future Trip",
+        start,
+        end,
+        allDay: false,
+        icsIndex: 0,
+        category: "default" as const,
+      },
     ]);
     const countdown = document.getElementById("cal-countdown")!;
     // days > 1 → "עוד N ימים"
@@ -2291,4 +2403,3 @@ describe("Calendar — Sprint 92 parseICS DTEND invalid date branch", () => {
     expect(events[0]?.end.getTime()).toBe(events[0]?.start.getTime());
   });
 });
-

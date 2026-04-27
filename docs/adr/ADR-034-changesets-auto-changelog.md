@@ -1,11 +1,11 @@
 # ADR-034 — Changesets Auto-CHANGELOG
 
-| Field       | Value                                            |
-| ----------- | ------------------------------------------------ |
-| **Date**    | 2026-04-23                                       |
-| **Status**  | Accepted                                         |
-| **Deciders** | @RajwanYair                                     |
-| **Tags**    | ops, dx, changelog, release, automation          |
+| Field        | Value                                   |
+| ------------ | --------------------------------------- |
+| **Date**     | 2026-04-23                              |
+| **Status**   | Accepted                                |
+| **Deciders** | @RajwanYair                             |
+| **Tags**     | ops, dx, changelog, release, automation |
 
 ---
 

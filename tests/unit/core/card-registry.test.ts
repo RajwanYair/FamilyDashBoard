@@ -6,7 +6,14 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { registerCard, getCard, listCards, loadCard, createShell, mountRegisteredCards } from "@/core/card-registry";
+import {
+  registerCard,
+  getCard,
+  listCards,
+  loadCard,
+  createShell,
+  mountRegisteredCards,
+} from "@/core/card-registry";
 import { isValidCardSize, assertCardSize } from "@/types/card";
 import type { CardDefinition } from "@/types/card";
 
@@ -130,7 +137,15 @@ const ceCards = [
 ] as const;
 
 // Cards that use legacyAdapter without render-tag assertions
-const legacyOnlyCards = ["hebrew-cal", "calendar", "currency", "alerts", "motivation", "countdown", "video-news"] as const;
+const legacyOnlyCards = [
+  "hebrew-cal",
+  "calendar",
+  "currency",
+  "alerts",
+  "motivation",
+  "countdown",
+  "video-news",
+] as const;
 
 describe("Card Registry — loadCard (parameterized)", () => {
   beforeEach(() => {
@@ -296,7 +311,18 @@ describe("mountRegisteredCards", () => {
       titleHe: "בדיקה",
       titleEn: "Mount Test",
       defaultSlot: { col: 0, order: 0, flexGrow: 20, hidden: false },
-      load: vi.fn().mockResolvedValue({ id, icon: "🔬", titleHe: "בדיקה", titleEn: "Mount Test", defaultSlot: { col: 0, order: 0, flexGrow: 20 }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+      load: vi
+        .fn()
+        .mockResolvedValue({
+          id,
+          icon: "🔬",
+          titleHe: "בדיקה",
+          titleEn: "Mount Test",
+          defaultSlot: { col: 0, order: 0, flexGrow: 20 },
+          defaultSize: "md",
+          render: () => document.createElement("section"),
+          init: vi.fn(),
+        }),
     });
 
     mountRegisteredCards();
@@ -314,7 +340,18 @@ describe("mountRegisteredCards", () => {
       titleHe: "מוסתר",
       titleEn: "Hidden Test",
       defaultSlot: { col: 1, order: 0, flexGrow: 25, hidden: true },
-      load: vi.fn().mockResolvedValue({ id, icon: "🙈", titleHe: "מוסתר", titleEn: "Hidden Test", defaultSlot: { col: 1, order: 0, flexGrow: 25, hidden: true }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+      load: vi
+        .fn()
+        .mockResolvedValue({
+          id,
+          icon: "🙈",
+          titleHe: "מוסתר",
+          titleEn: "Hidden Test",
+          defaultSlot: { col: 1, order: 0, flexGrow: 25, hidden: true },
+          defaultSize: "md",
+          render: () => document.createElement("section"),
+          init: vi.fn(),
+        }),
     });
 
     mountRegisteredCards();
@@ -336,7 +373,18 @@ describe("mountRegisteredCards", () => {
       titleHe: "קיים",
       titleEn: "Already There",
       defaultSlot: { col: 0, order: 0, flexGrow: 20, hidden: false },
-      load: vi.fn().mockResolvedValue({ id, icon: "✅", titleHe: "קיים", titleEn: "Already There", defaultSlot: { col: 0, order: 0, flexGrow: 20 }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+      load: vi
+        .fn()
+        .mockResolvedValue({
+          id,
+          icon: "✅",
+          titleHe: "קיים",
+          titleEn: "Already There",
+          defaultSlot: { col: 0, order: 0, flexGrow: 20 },
+          defaultSize: "md",
+          render: () => document.createElement("section"),
+          init: vi.fn(),
+        }),
     });
 
     mountRegisteredCards();
@@ -352,7 +400,18 @@ describe("mountRegisteredCards", () => {
       icon: "❓",
       titleHe: "ללא סלוט",
       titleEn: "No Slot",
-      load: vi.fn().mockResolvedValue({ id, icon: "❓", titleHe: "ללא סלוט", titleEn: "No Slot", defaultSlot: { col: 0, order: 0, flexGrow: 20 }, defaultSize: "md", render: () => document.createElement("section"), init: vi.fn() }),
+      load: vi
+        .fn()
+        .mockResolvedValue({
+          id,
+          icon: "❓",
+          titleHe: "ללא סלוט",
+          titleEn: "No Slot",
+          defaultSlot: { col: 0, order: 0, flexGrow: 20 },
+          defaultSize: "md",
+          render: () => document.createElement("section"),
+          init: vi.fn(),
+        }),
     });
 
     mountRegisteredCards();

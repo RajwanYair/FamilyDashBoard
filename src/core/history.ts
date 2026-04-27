@@ -134,12 +134,7 @@ export async function historyGet(key: string, limit = 100): Promise<number[]> {
  * @param h       Viewbox height (default: 22)
  * @returns       SVG string ready for `innerHTML` assignment (wrapped in trustedHTML)
  */
-export function sparklineSvg(
-  values: number[],
-  color: string,
-  w = 60,
-  h = 22,
-): string {
+export function sparklineSvg(values: number[], color: string, w = 60, h = 22): string {
   if (values.length < 2) return "";
   const pad = 2;
   const min = Math.min(...values);

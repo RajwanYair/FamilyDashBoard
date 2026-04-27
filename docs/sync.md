@@ -26,16 +26,16 @@ FamilyDashBoard lets you export your full configuration as an **encrypted URL fr
 
 ## Security Model
 
-| Property | Detail |
-|---|---|
-| Algorithm | AES-GCM 256-bit |
-| Key derivation | PBKDF2 · SHA-256 · 200 000 iterations |
-| Salt | 16 random bytes, prepended to ciphertext |
-| IV | 12 random bytes, prepended after salt |
-| Encoding | Base64url (URL-safe, no padding issues) |
-| Passphrase storage | **Never stored** — not in localStorage, not in memory after use |
-| Server involvement | **None** — purely client-side Web Crypto API |
-| Hash stripping | After successful import, `history.replaceState` removes `#ecfg=` from the URL so the dialog does not re-appear on refresh |
+| Property           | Detail                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Algorithm          | AES-GCM 256-bit                                                                                                           |
+| Key derivation     | PBKDF2 · SHA-256 · 200 000 iterations                                                                                     |
+| Salt               | 16 random bytes, prepended to ciphertext                                                                                  |
+| IV                 | 12 random bytes, prepended after salt                                                                                     |
+| Encoding           | Base64url (URL-safe, no padding issues)                                                                                   |
+| Passphrase storage | **Never stored** — not in localStorage, not in memory after use                                                           |
+| Server involvement | **None** — purely client-side Web Crypto API                                                                              |
+| Hash stripping     | After successful import, `history.replaceState` removes `#ecfg=` from the URL so the dialog does not re-appear on refresh |
 
 ### Threat Model
 
@@ -56,13 +56,13 @@ FamilyDashBoard lets you export your full configuration as an **encrypted URL fr
 
 ## Related Files
 
-| File | Role |
-|---|---|
-| `src/core/config-crypto.ts` | `encryptConfig()`, `decryptConfig()`, `ECFG_PREFIX` |
-| `src/ui/config-panel.ts` | `encryptedShareSettings()`, `openEcfgImportDialog()` |
-| `src/main.ts` | Startup `#ecfg=` detection → `openEcfgImportDialog()` |
-| `src/index.html` | `#ecfg-dialog` passphrase `<dialog>`, `#cfg-encrypt-share-btn` |
-| `src/styles/components.css` | Passphrase dialog styles |
+| File                        | Role                                                           |
+| --------------------------- | -------------------------------------------------------------- |
+| `src/core/config-crypto.ts` | `encryptConfig()`, `decryptConfig()`, `ECFG_PREFIX`            |
+| `src/ui/config-panel.ts`    | `encryptedShareSettings()`, `openEcfgImportDialog()`           |
+| `src/main.ts`               | Startup `#ecfg=` detection → `openEcfgImportDialog()`          |
+| `src/index.html`            | `#ecfg-dialog` passphrase `<dialog>`, `#cfg-encrypt-share-btn` |
+| `src/styles/components.css` | Passphrase dialog styles                                       |
 
 ## ADR Reference
 

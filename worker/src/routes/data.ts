@@ -43,7 +43,12 @@ export async function handleWeather(url: URL, env: Env): Promise<Response> {
     try {
       const pointsRes = await fetch(
         `https://api.weather.gov/points/${latNum.toFixed(4)},${lonNum.toFixed(4)}`,
-        { headers: { "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard", Accept: "application/json" } },
+        {
+          headers: {
+            "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard",
+            Accept: "application/json",
+          },
+        },
       );
       if (pointsRes.ok) {
         const pointsData: unknown = await pointsRes.json();
@@ -51,10 +56,16 @@ export async function handleWeather(url: URL, env: Env): Promise<Response> {
         if (points.ok) {
           const [hourlyRes, dailyRes] = await Promise.all([
             fetch(points.data.properties.forecastHourly, {
-              headers: { "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard", Accept: "application/json" },
+              headers: {
+                "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard",
+                Accept: "application/json",
+              },
             }),
             fetch(points.data.properties.forecast, {
-              headers: { "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard", Accept: "application/json" },
+              headers: {
+                "User-Agent": "FamilyDashBoard/12.8 https://github.com/RajwanYair/FamilyDashBoard",
+                Accept: "application/json",
+              },
             }),
           ]);
           if (hourlyRes.ok && dailyRes.ok) {

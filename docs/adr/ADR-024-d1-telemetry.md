@@ -15,10 +15,10 @@ upstreams are failing most often, or how traffic changes over time.
 
 Two options were considered for lightweight telemetry storage:
 
-| Option | Pros | Cons |
-|---|---|---|
-| **KV** | Already provisioned | String-only, no aggregation, TTL overwrite loses history |
-| **D1 (SQLite)** | SQL aggregates, persistent, cheap | New binding to provision |
+| Option          | Pros                              | Cons                                                     |
+| --------------- | --------------------------------- | -------------------------------------------------------- |
+| **KV**          | Already provisioned               | String-only, no aggregation, TTL overwrite loses history |
+| **D1 (SQLite)** | SQL aggregates, persistent, cheap | New binding to provision                                 |
 
 Workers Analytics Engine (WAE) was also considered but requires a paid plan
 and a separate dashboard; D1 delivers the same data for free within CF's

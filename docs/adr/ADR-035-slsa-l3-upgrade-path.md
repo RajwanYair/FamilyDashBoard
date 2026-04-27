@@ -1,11 +1,11 @@
 # ADR-035 — SLSA Level 3 Upgrade Path
 
-| Field        | Value                                                    |
-| ------------ | -------------------------------------------------------- |
-| **Date**     | 2026-04-24                                               |
-| **Status**   | Accepted                                                 |
-| **Deciders** | @RajwanYair                                              |
-| **Tags**     | security, supply-chain, slsa, provenance, ci             |
+| Field        | Value                                        |
+| ------------ | -------------------------------------------- |
+| **Date**     | 2026-04-24                                   |
+| **Status**   | Accepted                                     |
+| **Deciders** | @RajwanYair                                  |
+| **Tags**     | security, supply-chain, slsa, provenance, ci |
 
 ---
 
@@ -88,13 +88,13 @@ The upgrade is deferred to v14.x to avoid disrupting the v13.x release cycle. St
 
 ## Status Tracking
 
-| Step | Target version | Status |
-| ---- | -------------- | ------ |
-| ADR drafted | v13.2 | ✅ Done |
-| `.github/workflows/release-provenance.yml` created | v14.0 | ⏳ Deferred |
-| `dist.tgz` bundle script | v14.0 | ⏳ Deferred |
-| README provenance section | v14.0 | ⏳ Deferred |
-| First signed release | v14.0 | ⏳ Deferred |
+| Step                                               | Target version | Status      |
+| -------------------------------------------------- | -------------- | ----------- |
+| ADR drafted                                        | v13.2          | ✅ Done     |
+| `.github/workflows/release-provenance.yml` created | v14.0          | ⏳ Deferred |
+| `dist.tgz` bundle script                           | v14.0          | ⏳ Deferred |
+| README provenance section                          | v14.0          | ⏳ Deferred |
+| First signed release                               | v14.0          | ⏳ Deferred |
 
 ---
 

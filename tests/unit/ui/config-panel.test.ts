@@ -345,9 +345,7 @@ describe("Config Panel — importSettings", () => {
   it("calls click() on a dynamically created file input (Sprint 112)", () => {
     // After Sprint 112 the import flow creates a fresh <input type="file"> and
     // calls click() on it (or uses showOpenFilePicker — unavailable in happy-dom).
-    const clickSpy = vi
-      .spyOn(HTMLInputElement.prototype, "click")
-      .mockImplementation(() => {});
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
     importSettings();
     expect(clickSpy).toHaveBeenCalledOnce();
   });
@@ -1483,7 +1481,10 @@ describe("Config Panel — weatherUsTravelMode populateForm (Sprint 82)", () => 
     const sel = document.getElementById("cfg-weather-us-travel") as HTMLSelectElement | null;
     if (sel) sel.value = "on";
     document.getElementById("cfg-save-btn")!.click();
-    const stored = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    const stored = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(stored.weatherUsTravelMode).toBe(true);
   });
 
@@ -1494,7 +1495,10 @@ describe("Config Panel — weatherUsTravelMode populateForm (Sprint 82)", () => 
     const sel = document.getElementById("cfg-weather-us-travel") as HTMLSelectElement | null;
     if (sel) sel.value = "off";
     document.getElementById("cfg-save-btn")!.click();
-    const stored = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<string, unknown>;
+    const stored = JSON.parse(localStorage.getItem("dash_v2_config") ?? "{}") as Record<
+      string,
+      unknown
+    >;
     expect(stored.weatherUsTravelMode).toBe(false);
   });
 

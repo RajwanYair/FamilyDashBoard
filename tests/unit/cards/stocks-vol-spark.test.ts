@@ -49,15 +49,17 @@ vi.mock("@/core/history", () => ({
 function makeYahooResp(price: number, prev: number, volume = 0): YahooChartResponse {
   return {
     chart: {
-      result: [{
-        meta: {
-          regularMarketPrice: price,
-          previousClose: prev,
-          currency: "USD",
-          regularMarketVolume: volume,
+      result: [
+        {
+          meta: {
+            regularMarketPrice: price,
+            previousClose: prev,
+            currency: "USD",
+            regularMarketVolume: volume,
+          },
+          indicators: { quote: [{ close: [prev, price] }] },
         },
-        indicators: { quote: [{ close: [prev, price] }] },
-      }],
+      ],
       error: null,
     },
   };
@@ -116,9 +118,7 @@ describe("Stocks vol-spark — renderStock with volume > 0 appends to IDB histor
     // Wait for async fire-and-forget
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    const volCalls = mockAppend.mock.calls.filter(
-      ([key]: [string]) => key === "stk:vol:AAPL",
-    );
+    const volCalls = mockAppend.mock.calls.filter(([key]: [string]) => key === "stk:vol:AAPL");
     expect(volCalls.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -127,9 +127,7 @@ describe("Stocks vol-spark — renderStock with volume > 0 appends to IDB histor
     renderStock(blk, makeYahooResp(190, 185, 0), "AAPL");
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    const volCalls = mockAppend.mock.calls.filter(
-      ([key]: [string]) => key === "stk:vol:AAPL",
-    );
+    const volCalls = mockAppend.mock.calls.filter(([key]: [string]) => key === "stk:vol:AAPL");
     expect(volCalls.length).toBe(0);
   });
 

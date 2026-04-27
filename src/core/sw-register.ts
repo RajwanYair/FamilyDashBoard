@@ -203,5 +203,3 @@ function showUpdateBannerState(state: "downloading" | "installing" | "ready"): v
     banner.setAttribute("data-sw-state", state);
   }
 }
-
-

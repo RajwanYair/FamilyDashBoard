@@ -91,9 +91,7 @@ export function recurrenceResetKey(
   if (recurrence === "weekly") {
     // ISO week: day 4 (Thursday) of the week sets the year
     const jan1 = new Date(y, 0, 1);
-    const week = Math.ceil(
-      ((now.getTime() - jan1.getTime()) / 86_400_000 + jan1.getDay() + 1) / 7,
-    );
+    const week = Math.ceil(((now.getTime() - jan1.getTime()) / 86_400_000 + jan1.getDay() + 1) / 7);
     return `${y}-W${String(week).padStart(2, "0")}`;
   }
   return `${y}-${m}-${d}`;
@@ -554,17 +552,17 @@ export function initTasksCard(): void {
   const quickPerson = document.getElementById("tasks-quick-person") as HTMLInputElement | null;
   const quickBtn = document.getElementById("tasks-quick-add-btn");
   if (quickBtn && quickInput) {
-    bindOnce(quickBtn, "click", "fdbTasksClickBound", (() => {
+    bindOnce(quickBtn, "click", "fdbTasksClickBound", () => {
       const chore = quickInput.value.trim();
       const person = quickPerson?.value.trim() || "משפחה";
       if (!chore) return;
       addQuickChore(person, chore);
       quickInput.value = "";
       if (quickPerson) quickPerson.value = "";
-    }));
-    bindOnce(quickInput, "keydown", "fdbTasksKeydownBound", ((e: Event) => {
+    });
+    bindOnce(quickInput, "keydown", "fdbTasksKeydownBound", (e: Event) => {
       if ((e as KeyboardEvent).key === "Enter") quickBtn.click();
-    }));
+    });
   }
 }
 
@@ -634,7 +632,9 @@ export const tasksCard: CardDefinition = {
     section.className = "card";
     section.dataset.cardId = "tasks";
     section.setAttribute("aria-label", "Tasks");
-    section.innerHTML = trustedHTML(`<div class="card-header"><span class="icon-badge green">✅</span> משימות</div><div class="tasks-body"><div class="tasks-list" id="tasks-list"></div></div>`);
+    section.innerHTML = trustedHTML(
+      `<div class="card-header"><span class="icon-badge green">✅</span> משימות</div><div class="tasks-body"><div class="tasks-list" id="tasks-list"></div></div>`,
+    );
     return section;
   },
   init: initTasksCard,

@@ -61,21 +61,23 @@ describe("worker-client — fast-check property tests", () => {
   it("P2: wc.stocks() always includes sym in the URL (arbitrary ticker strings)", async () => {
     const { wc } = await import("@/core/worker-client");
     await fc.assert(
-      fc.asyncProperty(
-        fc.stringMatching(/^[A-Z]{1,5}(-USD)?$/),
-        async (sym) => {
-          fetchSpy.mockResolvedValue({
-            ok: true,
-            status: 200,
-            json: () =>
-              Promise.resolve({ data: { chart: { result: [] } }, source: "test", stale: false, ts: 0 }),
-          });
-          await wc.stocks({ sym });
-          const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
-          const parsed = new URL(url);
-          expect(parsed.searchParams.get("sym")).toBe(sym);
-        },
-      ),
+      fc.asyncProperty(fc.stringMatching(/^[A-Z]{1,5}(-USD)?$/), async (sym) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              data: { chart: { result: [] } },
+              source: "test",
+              stale: false,
+              ts: 0,
+            }),
+        });
+        await wc.stocks({ sym });
+        const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(url);
+        expect(parsed.searchParams.get("sym")).toBe(sym);
+      }),
       { numRuns: 20 },
     );
   });
@@ -85,17 +87,14 @@ describe("worker-client — fast-check property tests", () => {
   it("P3: wc.currency() always throws on non-2xx HTTP status (4xx/5xx range)", async () => {
     const { wc } = await import("@/core/worker-client");
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 400, max: 599 }),
-        async (status) => {
-          fetchSpy.mockResolvedValue({
-            ok: false,
-            status,
-            json: () => Promise.resolve({ error: `HTTP ${status}` }),
-          });
-          await expect(wc.currency()).rejects.toThrow(String(status));
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 400, max: 599 }), async (status) => {
+        fetchSpy.mockResolvedValue({
+          ok: false,
+          status,
+          json: () => Promise.resolve({ error: `HTTP ${status}` }),
+        });
+        await expect(wc.currency()).rejects.toThrow(String(status));
+      }),
       { numRuns: 20 },
     );
   });
@@ -133,20 +132,17 @@ describe("worker-client — fast-check property tests", () => {
   it("P5: wc.hebcal() geonameid is always present as a query param for any numeric value", async () => {
     const { wc } = await import("@/core/worker-client");
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 1, max: 9_999_999 }),
-        async (geonameid) => {
-          fetchSpy.mockResolvedValue({
-            ok: true,
-            status: 200,
-            json: () => Promise.resolve({ data: {}, source: "test", stale: false, ts: 0 }),
-          });
-          await wc.hebcal({ geonameid });
-          const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
-          const parsed = new URL(url);
-          expect(parsed.searchParams.get("geonameid")).toBe(String(geonameid));
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 1, max: 9_999_999 }), async (geonameid) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ data: {}, source: "test", stale: false, ts: 0 }),
+        });
+        await wc.hebcal({ geonameid });
+        const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(url);
+        expect(parsed.searchParams.get("geonameid")).toBe(String(geonameid));
+      }),
       { numRuns: 20 },
     );
   });
@@ -156,19 +152,16 @@ describe("worker-client — fast-check property tests", () => {
   it("P6: all wc routes target the correct worker base URL", async () => {
     const { wc } = await import("@/core/worker-client");
     await fc.assert(
-      fc.asyncProperty(
-        fc.integer({ min: 2000, max: 2100 }),
-        async (year) => {
-          fetchSpy.mockResolvedValue({
-            ok: true,
-            status: 200,
-            json: () => Promise.resolve({ data: {}, source: "test", stale: false, ts: 0 }),
-          });
-          await wc.hebcalHolidays({ year });
-          const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
-          expect(url.startsWith(WORKER_BASE)).toBe(true);
-        },
-      ),
+      fc.asyncProperty(fc.integer({ min: 2000, max: 2100 }), async (year) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ data: {}, source: "test", stale: false, ts: 0 }),
+        });
+        await wc.hebcalHolidays({ year });
+        const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        expect(url.startsWith(WORKER_BASE)).toBe(true);
+      }),
       { numRuns: 15 },
     );
   });

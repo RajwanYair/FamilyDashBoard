@@ -164,4 +164,3 @@ export function buildDiagExport(limit?: number): DiagExport {
 export function exportDiagJson(limit?: number): string {
   return JSON.stringify(buildDiagExport(limit), null, 2);
 }
-

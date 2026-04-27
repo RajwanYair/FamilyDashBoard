@@ -133,10 +133,7 @@ async function workerGet<T>(
   return res.json() as Promise<WorkerEnvelope<T>>;
 }
 
-async function workerPost<T>(
-  path: string,
-  body: unknown,
-): Promise<T> {
+async function workerPost<T>(path: string, body: unknown): Promise<T> {
   const url = `${WORKER_BASE_URL}${path}`;
   const res = await fetchWithTimeout(url, TIMEOUT_MS, {
     method: "POST",

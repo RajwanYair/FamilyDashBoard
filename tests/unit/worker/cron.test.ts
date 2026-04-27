@@ -28,7 +28,11 @@ vi.mock("../../../worker/src/utils/d1-reports", () => ({
 }));
 
 import { handleScheduled, handleNextYearPreWarm } from "../../../worker/src/routes/cron";
-import { handleCurrency, handleHebcal, handleHebcalHolidays } from "../../../worker/src/routes/data";
+import {
+  handleCurrency,
+  handleHebcal,
+  handleHebcalHolidays,
+} from "../../../worker/src/routes/data";
 import { handleStocks } from "../../../worker/src/routes/feeds";
 import { pruneOldReports } from "../../../worker/src/utils/d1-reports";
 
@@ -112,9 +116,7 @@ describe("handleScheduled", () => {
   });
 
   it("does not throw when pruneOldReports rejects", async () => {
-    (pruneOldReports as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error("D1 error"),
-    );
+    (pruneOldReports as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("D1 error"));
     const env = makeEnv({ DB: { prepare: vi.fn() } });
     await expect(handleScheduled(env)).resolves.toBeUndefined();
   });

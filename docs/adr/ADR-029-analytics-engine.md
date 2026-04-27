@@ -1,11 +1,11 @@
 # ADR-029 — Workers Analytics Engine Request Tracking
 
-| Field    | Value                   |
-| -------- | ----------------------- |
-| Status   | Accepted                |
-| Date     | 2025-07-13              |
-| Sprint   | 29                      |
-| Roadmap  | V12-EDGE-2b             |
+| Field   | Value       |
+| ------- | ----------- |
+| Status  | Accepted    |
+| Date    | 2025-07-13  |
+| Sprint  | 29          |
+| Roadmap | V12-EDGE-2b |
 
 ## Context
 
@@ -26,13 +26,13 @@ is handled. The call is fire-and-forget — it never delays the response.
 
 The data point schema is:
 
-| Field        | Value                                    |
-| ------------ | ---------------------------------------- |
+| Field        | Value                                     |
+| ------------ | ----------------------------------------- |
 | `blobs[0]`   | Normalised pathname (e.g. `/api/weather`) |
-| `blobs[1]`   | HTTP method (`GET`, `POST`, …)           |
-| `blobs[2]`   | `ENVIRONMENT` label                      |
-| `doubles[0]` | HTTP response status code                |
-| `indexes[0]` | Same as `blobs[0]` (primary index key)   |
+| `blobs[1]`   | HTTP method (`GET`, `POST`, …)            |
+| `blobs[2]`   | `ENVIRONMENT` label                       |
+| `doubles[0]` | HTTP response status code                 |
+| `indexes[0]` | Same as `blobs[0]` (primary index key)    |
 
 The `ANALYTICS` binding is optional — the middleware is a no-op when not configured. This allows
 development and preview deployments to operate without provisioning the dataset.
@@ -69,12 +69,12 @@ dataset = "fdb_requests"
 
 ## Alternatives Considered
 
-| Option                          | Reason Rejected                                                         |
-| ------------------------------- | ----------------------------------------------------------------------- |
-| D1 for hit counting             | High write volume; D1 write latency adds to response time               |
-| KV for counters                 | KV has no atomic increment in Workers; race conditions on busy routes   |
-| Logpush + external analytics    | Adds external dependency; violates zero-runtime-deps constraint         |
-| Client-side analytics (GA, etc) | Requires CDN dependency; violates rule 1 of copilot-instructions        |
+| Option                          | Reason Rejected                                                       |
+| ------------------------------- | --------------------------------------------------------------------- |
+| D1 for hit counting             | High write volume; D1 write latency adds to response time             |
+| KV for counters                 | KV has no atomic increment in Workers; race conditions on busy routes |
+| Logpush + external analytics    | Adds external dependency; violates zero-runtime-deps constraint       |
+| Client-side analytics (GA, etc) | Requires CDN dependency; violates rule 1 of copilot-instructions      |
 
 ## Related
 

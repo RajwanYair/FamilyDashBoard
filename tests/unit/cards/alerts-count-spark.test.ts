@@ -125,9 +125,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     buildDom();
     stubFetch(makeAlerts(3));
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
 
@@ -140,9 +138,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     buildDom();
     stubFetch(makeAlerts(2));
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();
@@ -155,9 +151,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     stubFetch(makeAlerts(1));
     mockGet.mockResolvedValue([1, 2, 3, 4, 5]);
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();
@@ -172,9 +166,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     stubFetch(makeAlerts(1));
     mockGet.mockResolvedValue([5]); // only 1 value
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();
@@ -189,9 +181,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     stubFetch(makeAlerts(2));
     mockGet.mockResolvedValue([1, 2, 3]);
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
 
@@ -203,26 +193,19 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     stubFetch(makeAlerts(1));
     mockGet.mockResolvedValue([3, 7]);
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();
 
-    expect(mockSparklineSvg).toHaveBeenCalledWith(
-      expect.any(Array),
-      "var(--negative)",
-    );
+    expect(mockSparklineSvg).toHaveBeenCalledWith(expect.any(Array), "var(--negative)");
   });
 
   it("does NOT call historyAppend when fetch returns empty array", async () => {
     buildDom();
     stubFetch([]); // no alerts
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();
@@ -234,9 +217,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     buildDom();
     stubFetch([]); // empty
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();
@@ -253,9 +234,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     buildDom();
     stubFetch(payload);
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();
@@ -270,9 +249,7 @@ describe("Alerts 7-day count sparkline (V13-DATA)", () => {
     const sparkVals = [2, 3, 5, 1, 4, 2, 5];
     mockGet.mockResolvedValue(sparkVals);
 
-    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import(
-      "@/cards/alerts/alerts"
-    );
+    const { cacheDom, loadAlerts, _resetAlertsForTest } = await import("@/cards/alerts/alerts");
     _resetAlertsForTest();
     cacheDom();
     await loadAlerts();

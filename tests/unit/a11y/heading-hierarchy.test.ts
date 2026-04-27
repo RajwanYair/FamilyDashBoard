@@ -42,11 +42,15 @@ function allIds(): Set<string> {
 
 describe("config-overlay ARIA attributes (V13-A11Y)", () => {
   it('has role="dialog"', () => {
-    expect(HTML).toMatch(/id="config-overlay"[^>]*role="dialog"|role="dialog"[^>]*id="config-overlay"/);
+    expect(HTML).toMatch(
+      /id="config-overlay"[^>]*role="dialog"|role="dialog"[^>]*id="config-overlay"/,
+    );
   });
 
   it('has aria-modal="true"', () => {
-    expect(HTML).toMatch(/id="config-overlay"[^>]*aria-modal="true"|aria-modal="true"[^>]*id="config-overlay"/);
+    expect(HTML).toMatch(
+      /id="config-overlay"[^>]*aria-modal="true"|aria-modal="true"[^>]*id="config-overlay"/,
+    );
   });
 
   it("has aria-labelledby pointing to cfg-panel-title", () => {
@@ -81,15 +85,21 @@ describe("<dialog> elements heading hierarchy (V13-A11Y)", () => {
   });
 
   it("tour-overlay has aria-labelledby", () => {
-    expect(HTML).toMatch(/id="tour-overlay"[^>]*aria-labelledby=|aria-labelledby=[^>]*id="tour-overlay"/);
+    expect(HTML).toMatch(
+      /id="tour-overlay"[^>]*aria-labelledby=|aria-labelledby=[^>]*id="tour-overlay"/,
+    );
   });
 
   it("help-overlay has aria-labelledby", () => {
-    expect(HTML).toMatch(/id="help-overlay"[^>]*aria-labelledby=|aria-labelledby=[^>]*id="help-overlay"/);
+    expect(HTML).toMatch(
+      /id="help-overlay"[^>]*aria-labelledby=|aria-labelledby=[^>]*id="help-overlay"/,
+    );
   });
 
   it("diag-overlay has aria-labelledby", () => {
-    expect(HTML).toMatch(/id="diag-overlay"[^>]*aria-labelledby=|aria-labelledby=[^>]*id="diag-overlay"/);
+    expect(HTML).toMatch(
+      /id="diag-overlay"[^>]*aria-labelledby=|aria-labelledby=[^>]*id="diag-overlay"/,
+    );
   });
 });
 
@@ -114,9 +124,7 @@ describe("aria-labelledby targets exist in DOM (V13-A11Y)", () => {
 
   it("no aria-labelledby references a missing id", () => {
     const labelledby = attrValues("aria-labelledby");
-    const missingRefs = labelledby.flatMap((v) =>
-      v.split(/\s+/).filter((id) => !ids.has(id))
-    );
+    const missingRefs = labelledby.flatMap((v) => v.split(/\s+/).filter((id) => !ids.has(id)));
     expect(missingRefs).toHaveLength(0);
   });
 });

@@ -13,9 +13,9 @@ export type VideoChannelId = "c14" | "i24he" | "kan11" | "n12" | "keshet13" | "a
 
 /** Integration mode — determines how the stream is loaded. */
 export type VideoIntegrationMode =
-  | "hls"             // Native <video> + HLS manifest (Safari or hls.js on Chromium)
-  | "iframe"          // Provider's own embed <iframe> (Mode C)
-  | "worker-hls";     // Worker-proxied HLS via /api/video/<id>/manifest.m3u8 (Mode B)
+  | "hls" // Native <video> + HLS manifest (Safari or hls.js on Chromium)
+  | "iframe" // Provider's own embed <iframe> (Mode C)
+  | "worker-hls"; // Worker-proxied HLS via /api/video/<id>/manifest.m3u8 (Mode B)
 
 /**
  * CSP host lists contributed by a channel's StreamDescriptor.

@@ -1,11 +1,11 @@
 # ADR-028 — Browser Reporting API + D1 Storage
 
-| Field    | Value                   |
-| -------- | ----------------------- |
-| Status   | Accepted                |
-| Date     | 2025-07-13              |
-| Sprint   | 28                      |
-| Roadmap  | V12-OPS                 |
+| Field   | Value      |
+| ------- | ---------- |
+| Status  | Accepted   |
+| Date    | 2025-07-13 |
+| Sprint  | 28         |
+| Roadmap | V12-OPS    |
 
 ## Context
 
@@ -61,12 +61,12 @@ need for a separate migration step.
 
 ## Alternatives Considered
 
-| Option                        | Reason Rejected                                                     |
-| ----------------------------- | ------------------------------------------------------------------- |
-| KV-backed storage             | KV is not queryable by range/type — can't produce a useful digest   |
-| Workers Analytics Engine only | AE has no SQL query interface for structured digest                 |
-| Discard all reports           | Provides no security/deprecation visibility                         |
-| Third-party SIEM              | Adds external dependency; this project is zero-runtime-deps         |
+| Option                        | Reason Rejected                                                   |
+| ----------------------------- | ----------------------------------------------------------------- |
+| KV-backed storage             | KV is not queryable by range/type — can't produce a useful digest |
+| Workers Analytics Engine only | AE has no SQL query interface for structured digest               |
+| Discard all reports           | Provides no security/deprecation visibility                       |
+| Third-party SIEM              | Adds external dependency; this project is zero-runtime-deps       |
 
 ## Related
 

@@ -127,7 +127,9 @@ function checkBlock(body) {
   } else {
     const head = firstReal.split(/\s/)[0] ?? "";
     if (!RECOGNIZED.has(head)) {
-      issues.push(`unrecognized diagram type "${head}" (expected one of: ${[...RECOGNIZED].slice(0, 5).join(", ")}, …)`);
+      issues.push(
+        `unrecognized diagram type "${head}" (expected one of: ${[...RECOGNIZED].slice(0, 5).join(", ")}, …)`,
+      );
     }
   }
   // Balance check on body excluding text inside double-quoted node labels.
@@ -163,22 +165,20 @@ async function main() {
       for (const issue of issues) {
         totalIssues += 1;
         const rel = file.replace(ROOT + "\\", "").replace(ROOT + "/", "");
-         
+
         console.error(`${rel}:${start}: ${issue}`);
       }
     }
   }
   if (totalIssues > 0) {
-     
     console.error(`✖ Mermaid validation: ${totalIssues} issue(s) across ${totalBlocks} block(s)`);
     process.exit(1);
   }
-   
+
   console.log(`✅ Mermaid validation: ${totalBlocks} block(s) clean`);
 }
 
 main().catch((err) => {
-   
   console.error("check-mermaid failed:", err);
   process.exit(1);
 });

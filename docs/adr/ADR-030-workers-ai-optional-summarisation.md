@@ -1,11 +1,11 @@
 # ADR-030 — Workers AI: Optional Hebrew Summarisation
 
-| Field       | Value                                                    |
-| ----------- | -------------------------------------------------------- |
-| **Date**    | 2026-04-23                                               |
-| **Status**  | Accepted                                                 |
-| **Deciders** | @RajwanYair                                             |
-| **Tags**    | worker, ai, news, motivation, feature-flag               |
+| Field        | Value                                      |
+| ------------ | ------------------------------------------ |
+| **Date**     | 2026-04-23                                 |
+| **Status**   | Accepted                                   |
+| **Deciders** | @RajwanYair                                |
+| **Tags**     | worker, ai, news, motivation, feature-flag |
 
 ---
 

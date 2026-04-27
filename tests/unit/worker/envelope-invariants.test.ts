@@ -33,7 +33,12 @@ const ttlArb = fc.integer({ min: 0, max: 86400 });
 async function parseEnvelope(
   res: Response,
 ): Promise<{ data: unknown; stale: boolean; timestamp: number; provider: string }> {
-  return res.json() as Promise<{ data: unknown; stale: boolean; timestamp: number; provider: string }>;
+  return res.json() as Promise<{
+    data: unknown;
+    stale: boolean;
+    timestamp: number;
+    provider: string;
+  }>;
 }
 
 // ── E1: always 200 ────────────────────────────────────────────────────────────
@@ -55,13 +60,19 @@ describe("workerEnvelope — E1: always returns HTTP 200", () => {
 describe("workerEnvelope — E2: JSON body contains data, stale, timestamp, provider", () => {
   it("all four required fields are present", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(body).toHaveProperty("data");
-        expect(body).toHaveProperty("stale");
-        expect(body).toHaveProperty("timestamp");
-        expect(body).toHaveProperty("provider");
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(body).toHaveProperty("data");
+          expect(body).toHaveProperty("stale");
+          expect(body).toHaveProperty("timestamp");
+          expect(body).toHaveProperty("provider");
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -72,10 +83,16 @@ describe("workerEnvelope — E2: JSON body contains data, stale, timestamp, prov
 describe("workerEnvelope — E3: stale is a boolean in serialised JSON", () => {
   it("typeof stale === 'boolean' for any input", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(typeof body.stale).toBe("boolean");
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(typeof body.stale).toBe("boolean");
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -86,12 +103,18 @@ describe("workerEnvelope — E3: stale is a boolean in serialised JSON", () => {
 describe("workerEnvelope — E4: timestamp is a positive integer (ms since epoch)", () => {
   it("timestamp > 0 and is a finite integer", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(typeof body.timestamp).toBe("number");
-        expect(Number.isFinite(body.timestamp)).toBe(true);
-        expect(body.timestamp).toBeGreaterThan(0);
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(typeof body.timestamp).toBe("number");
+          expect(Number.isFinite(body.timestamp)).toBe(true);
+          expect(body.timestamp).toBeGreaterThan(0);
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -102,10 +125,16 @@ describe("workerEnvelope — E4: timestamp is a positive integer (ms since epoch
 describe("workerEnvelope — E5: provider round-trips as an exact string", () => {
   it("provider in body equals the provider passed in", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(body.provider).toBe(provider);
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(body.provider).toBe(provider);
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -116,11 +145,17 @@ describe("workerEnvelope — E5: provider round-trips as an exact string", () =>
 describe("workerEnvelope — E6: data round-trips through JSON serialisation", () => {
   it("body.data deeply equals the original data", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        // JSON round-trip: serialise the original then parse — must match
-        expect(body.data).toEqual(JSON.parse(JSON.stringify(data)));
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          // JSON round-trip: serialise the original then parse — must match
+          expect(body.data).toEqual(JSON.parse(JSON.stringify(data)));
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -188,10 +223,16 @@ describe("workerEnvelope — E10: X-Content-Type-Options is always 'nosniff'", (
 describe("workerEnvelope — E11: stale field is an exact identity round-trip", () => {
   it("body.stale === stale passed in (true stays true, false stays false)", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(body.stale).toBe(stale);
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(body.stale).toBe(stale);
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -211,10 +252,16 @@ describe("workerEnvelope — E12: null and primitive scalar data round-trips", (
 
   it("null/boolean/number/string data survives JSON round-trip", async () => {
     await fc.assert(
-      fc.asyncProperty(primitiveArb, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(body.data).toEqual(data);
-      }),
+      fc.asyncProperty(
+        primitiveArb,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(body.data).toEqual(data);
+        },
+      ),
       { numRuns: 80 },
     );
   });
@@ -229,10 +276,16 @@ describe("workerEnvelope — E13: array data round-trips through JSON", () => {
 
   it("arrays survive JSON serialisation/deserialisation unchanged", async () => {
     await fc.assert(
-      fc.asyncProperty(arrayArb, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(body.data).toEqual(data);
-      }),
+      fc.asyncProperty(
+        arrayArb,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(body.data).toEqual(data);
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -243,11 +296,17 @@ describe("workerEnvelope — E13: array data round-trips through JSON", () => {
 describe("workerEnvelope — E14: response body is always parseable JSON", () => {
   it("JSON.parse on the response text never throws", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const res = workerEnvelope(data, provider, stale, ttl);
-        const text = await res.text();
-        expect(() => JSON.parse(text)).not.toThrow();
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const res = workerEnvelope(data, provider, stale, ttl);
+          const text = await res.text();
+          expect(() => JSON.parse(text)).not.toThrow();
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -346,13 +405,19 @@ describe("workerEnvelope — E20: Cross-Origin-Resource-Policy is 'cross-origin'
 describe("workerEnvelope — E21: timestamp is always ≤ current time", () => {
   it("body.timestamp is a finite positive integer not in the future", async () => {
     await fc.assert(
-      fc.asyncProperty(jsonValue, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const before = Date.now();
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        const after = Date.now();
-        expect(body.timestamp).toBeGreaterThanOrEqual(before);
-        expect(body.timestamp).toBeLessThanOrEqual(after);
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const before = Date.now();
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          const after = Date.now();
+          expect(body.timestamp).toBeGreaterThanOrEqual(before);
+          expect(body.timestamp).toBeLessThanOrEqual(after);
+        },
+      ),
       { numRuns: 30 },
     );
   });
@@ -363,10 +428,16 @@ describe("workerEnvelope — E21: timestamp is always ≤ current time", () => {
 describe("workerEnvelope — E22: Cache-Control max-age reflects any positive TTL", () => {
   it("Cache-Control is 'public, max-age=<ttl>' for any ttl > 0", () => {
     fc.assert(
-      fc.property(jsonValue, providerArb, fc.boolean(), fc.integer({ min: 1, max: 86400 }), (data, provider, stale, ttl) => {
-        const res = workerEnvelope(data, provider, stale, ttl);
-        expect(res.headers.get("Cache-Control")).toBe(`public, max-age=${ttl}`);
-      }),
+      fc.property(
+        jsonValue,
+        providerArb,
+        fc.boolean(),
+        fc.integer({ min: 1, max: 86400 }),
+        (data, provider, stale, ttl) => {
+          const res = workerEnvelope(data, provider, stale, ttl);
+          expect(res.headers.get("Cache-Control")).toBe(`public, max-age=${ttl}`);
+        },
+      ),
       { numRuns: 100 },
     );
   });
@@ -378,10 +449,16 @@ describe("workerEnvelope — E23: provider string exact identity (no trimming)",
   it("provider round-trips exactly including leading/trailing whitespace", async () => {
     const whitespaceProviderArb = fc.string({ minLength: 1, maxLength: 40 });
     await fc.assert(
-      fc.asyncProperty(jsonValue, whitespaceProviderArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(body.provider).toBe(provider);
-      }),
+      fc.asyncProperty(
+        jsonValue,
+        whitespaceProviderArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(body.provider).toBe(provider);
+        },
+      ),
       { numRuns: 80 },
     );
   });
@@ -396,10 +473,16 @@ describe("workerEnvelope — E24: deeply nested object data survives JSON round-
 
   it("deeply nested JSON-safe data is preserved after JSON serialisation", async () => {
     await fc.assert(
-      fc.asyncProperty(deepJsonArb, providerArb, fc.boolean(), ttlArb, async (data, provider, stale, ttl) => {
-        const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-        expect(body.data).toEqual(data);
-      }),
+      fc.asyncProperty(
+        deepJsonArb,
+        providerArb,
+        fc.boolean(),
+        ttlArb,
+        async (data, provider, stale, ttl) => {
+          const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
+          expect(body.data).toEqual(data);
+        },
+      ),
       { numRuns: 50 },
     );
   });

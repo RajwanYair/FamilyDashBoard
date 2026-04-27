@@ -125,8 +125,13 @@ body.slideshow-fade::after {
   }
 }
 @keyframes swPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.55; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
 }
 
 /* F122: UV pill color levels */

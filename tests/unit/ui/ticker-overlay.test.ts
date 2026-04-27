@@ -34,7 +34,10 @@ vi.mock("@/core/diag", () => ({
 }));
 
 vi.mock("@/core/constants", () => ({
-  API: { SEFARIA_CALENDAR: "https://www.sefaria.org/api/calendars", SEFARIA_TEXT: "https://www.sefaria.org/api/texts/" },
+  API: {
+    SEFARIA_CALENDAR: "https://www.sefaria.org/api/calendars",
+    SEFARIA_TEXT: "https://www.sefaria.org/api/texts/",
+  },
   PROXIES: [],
   LS_TICKER_MSG: "dash_v2_ticker_msg",
   INTERVALS: { HALACHA: 43200000 },
@@ -115,7 +118,7 @@ describe("Ticker overlay — openHalachaOverlay via ticker click", () => {
     // Provide cached halacha data so _halachaData gets set
     vi.mocked(cGet).mockReturnValue({
       ref: "SA.OC.1",
-      heRef: "שו\"ע א",
+      heRef: 'שו"ע א',
       category: "Halakhah",
       url: "https://www.sefaria.org/SA.OC.1",
       texts: ["test text"],
@@ -134,7 +137,7 @@ describe("Ticker overlay — openHalachaOverlay via ticker click", () => {
     buildFullTickerDOM();
     vi.mocked(cGet).mockReturnValue({
       ref: "SA.OC.1",
-      heRef: "שו\"ע א",
+      heRef: 'שו"ע א',
       category: "Halakhah",
       url: "https://www.sefaria.org/SA.OC.1",
       texts: ["test text"],
@@ -150,7 +153,7 @@ describe("Ticker overlay — openHalachaOverlay via ticker click", () => {
     buildFullTickerDOM();
     vi.mocked(cGet).mockReturnValue({
       ref: "SA.OC.2",
-      heRef: "שו\"ע ב",
+      heRef: 'שו"ע ב',
       category: "",
       url: "",
       texts: ["text b"],
@@ -166,7 +169,7 @@ describe("Ticker overlay — openHalachaOverlay via ticker click", () => {
     buildFullTickerDOM();
     vi.mocked(cGet).mockReturnValue({
       ref: "SA.OC.3",
-      heRef: "שו\"ע ג",
+      heRef: 'שו"ע ג',
       category: "",
       url: "",
       texts: ["text c"],
@@ -182,7 +185,7 @@ describe("Ticker overlay — openHalachaOverlay via ticker click", () => {
     buildFullTickerDOM();
     vi.mocked(cGet).mockReturnValue({
       ref: "SA.OC.4",
-      heRef: "שו\"ע ד",
+      heRef: 'שו"ע ד',
       category: "",
       url: "",
       texts: ["text d"],
@@ -205,7 +208,7 @@ describe("Ticker overlay — hc-halacha-row keydown opens overlay", () => {
     buildFullTickerDOM();
     vi.mocked(cGet).mockReturnValue({
       ref: "SA.OC.5",
-      heRef: "שו\"ע ה",
+      heRef: 'שו"ע ה',
       category: "",
       url: "",
       texts: ["text e"],
@@ -232,7 +235,7 @@ describe("Ticker — applyTickerSpeed with live elTicker (branch w > 0)", () => 
     Object.defineProperty(ticker, "scrollWidth", { value: 2800, configurable: true });
     vi.mocked(cGet).mockReturnValue({
       ref: "SA.OC.X",
-      heRef: "שו\"ע",
+      heRef: 'שו"ע',
       category: "",
       url: "",
       texts: ["ticker text for scrollWidth test"],
