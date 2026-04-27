@@ -33,4 +33,12 @@ npm install --no-save --no-package-lock \
   "zod@^3.24.0" \
   "@cloudflare/workers-types@^4.0.0"
 
+echo "→ Installing worker runtime deps (for worker typecheck + worker tests)…"
+# Worker source imports `hono` and `valibot`; both are required for
+# `tsc --project worker/tsconfig.json --noEmit` to resolve modules.
+# Versions kept in sync with worker/package.json — bump in both places.
+npm install --no-save --no-package-lock \
+  "hono@^4.12.14" \
+  "valibot@^1.3.1"
+
 echo "✅ CI toolchain installed"

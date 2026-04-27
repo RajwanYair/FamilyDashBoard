@@ -21,6 +21,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 - **`release.yml`** — checksum and release-asset paths updated from `icon.svg` (root) → `dist/icon.svg` (build output) so the SLSA-attested artefact references the actual deployed icon.
 - **Documentation rewire** — every `CLAUDE.md` reference removed from `.github/AGENTS.md`, `docs/README.md`, `.github/skills/release/SKILL.md`, `.github/instructions/pre-release.instructions.md`, `.github/instructions/workspace.instructions.md`, `.github/prompts/version-bump.prompt.md`, `.github/prompts/release-check.prompt.md`. Version-bump file lists drop from 15 → 14 anchors.
 
+### Fixed
+
+- **CI worker-typecheck regression** — `ci.yml` and `release.yml` were both red on main since v13.8.1 because the Worker typecheck step ran `npx tsc --project worker/tsconfig.json --noEmit` without first installing the worker's runtime deps (`hono`, `valibot`). `.github/ci/install-tools.sh` now installs both modules alongside the rest of the CI toolchain. Verified locally that the canonical `npm run check` gate has been green throughout — only the GitHub-hosted runners were failing.
+
 ### Operations
 
 - All eight version anchors bumped to v13.12.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, plus all 5 SVGs (`architecture`, `banner`, `preview`, `data-sources`, `roadmap`).
