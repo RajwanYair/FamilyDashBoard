@@ -11,6 +11,10 @@ coverage/
 tsconfig.tsbuildinfo
 *.log
 
+# ADR index: auto-generated with precise table padding — prettier reformatting
+# breaks the byte-for-byte comparison done by check-adr-index.mjs.
+docs/adr/README.md
+
 # Shell scripts (no Prettier parser)
 **/*.sh
 
