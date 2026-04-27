@@ -1469,6 +1469,11 @@ describe("News — fetchAllNews deduplication via renderNews", () => {
 // ── loadVisited sessionStorage catch (line 141) ────────────────────────────────
 
 describe("News — loadVisited sessionStorage catch", () => {
+  beforeEach(() => {
+    // Defensive: ensure no leftover sessionStorage spy from a sibling describe
+    // (vitest can preserve mock state across describes when run order varies in CI).
+    vi.restoreAllMocks();
+  });
   afterEach(() => {
     document.body.innerHTML = "";
     sessionStorage.clear();
