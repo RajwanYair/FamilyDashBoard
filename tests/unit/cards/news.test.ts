@@ -1390,20 +1390,23 @@ describe("News — saveBookmarks quota exceeded (line 151)", () => {
 // ── markVisited sessionStorage quota catch (line 141) ────────────────────────
 
 describe("News — markVisited sessionStorage quota catch", () => {
+  let setItemSpy: ReturnType<typeof vi.spyOn> | undefined;
   afterEach(() => {
+    setItemSpy?.mockRestore();
+    setItemSpy = undefined;
     vi.restoreAllMocks();
     sessionStorage.clear();
   });
 
   it("does not throw when sessionStorage.setItem throws", () => {
-    vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
+    setItemSpy = vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
       throw new DOMException("QuotaExceededError");
     });
     expect(() => markVisited("some-key")).not.toThrow();
   });
 
   it("markVisited still records the key in memory even if storage fails", () => {
-    vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
+    setItemSpy = vi.spyOn(globalThis.sessionStorage, "setItem").mockImplementation(() => {
       throw new DOMException("QuotaExceededError");
     });
     markVisited("mem-key");
