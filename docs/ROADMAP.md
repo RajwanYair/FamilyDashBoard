@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-05-04 · **Shipped baseline**: v13.14.0 (in flight: VT L2 typed transitions, HTTP Early Hints, signals migration ≥50%, coverage ratchet 81.8, Stryker break ≥85, smart-contrast audit clean, LHCI perf warn 0.80).
+> **Refresh date**: 2026-04-28 · **Shipped baseline**: v13.14.0 → v13.15.0 in flight (Sprint 129–140: app-signals tests + functions threshold anchor 88.9, .github docs refresh for VS Code/Copilot 2026-Q2 features, ECB/Frankfurter 3rd currency fallback, PiP for video-news, network-blocked diagnostic toast, OWASP rotation refresh, ADR-039 CSP wildcard narrowing plan, ADR-040 LHCI tighten plan, corp-proxy dev quickstart).
 >
-> **Inventory**: 4910 tests / 158 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 39 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache.
+> **Inventory**: 4925+ tests / 159+ suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 40+ ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache.
 >
 > **Purpose**: a deliberate, _first-principles re-litigation of every decision_ — including the ones that look clean. No grandfathering. The bar is **best-in-class** for an always-on family TV dashboard. Historical sprint and release entries live in [CHANGELOG.md](../CHANGELOG.md); this file is forward-looking only.
 
