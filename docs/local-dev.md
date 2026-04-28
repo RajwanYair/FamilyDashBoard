@@ -111,7 +111,53 @@ npm run check
 # Runs: tsc + tsc sw + lint + markdownlint + sw-version check + vitest
 ```
 
-Expected output: all green, **3193 tests / 94 suites / 0 failures**.
+Expected output: all green, **4925+ tests / 159+ suites / 0 failures**.
+
+---
+
+## Corp-Proxy Quickstart (Sprint 135 / Roadmap V14-RESILIENCE)
+
+If you're behind a hostile corporate forward proxy (e.g. Intel, Cisco AnyConnect
+with TLS-MITM) where public origins are blocked or rewritten, follow this exact
+sequence:
+
+1. **Use the dev server**, not the production build:
+
+   ```powershell
+   cd FamilyDashBoard
+   npx vite
+   ```
+
+   The `stripDevCsp` Vite plugin (see `vite.config.ts`, `apply: "serve"`) removes
+   the strict CSP `<meta>` tag in dev mode so corp-proxy hosts (e.g.
+   `*.intel.com` — see [ADR-041](adr/ADR-041-csp-wildcard-narrowing.md)) can
+   serve internal API mirrors without CSP rejection.
+
+2. **Bypass the Service Worker on built `dist/`**: append `?nosw=1` to the URL
+   to skip SW registration entirely:
+
+   ```text
+   http://localhost:4173/?nosw=1
+   ```
+
+3. **Purge a stale SW + caches** in DevTools console:
+
+   ```js
+   await __fdbUnregisterSW();
+   ```
+
+   This unregisters every FDB Service Worker and clears all FDB caches in one
+   call. Reload after.
+
+4. **Per-card "blocked by network" diagnostic**: when an upstream is firewalled,
+   the affected card surfaces a non-blocking diag toast (Sprint 136 /
+   `core/diag.ts`) instead of silently spinning forever. Open `?diag=1` to
+   inspect the full provider chain.
+
+5. **CSP allowlist**: `https://*.intel.com` is currently in `connect-src` for
+   corp-proxy environments. The phased narrowing plan is documented in
+   [ADR-041](adr/ADR-041-csp-wildcard-narrowing.md). When you observe a new
+   subdomain in the dev console, add it to the inventory table in that ADR.
 
 ---
 
