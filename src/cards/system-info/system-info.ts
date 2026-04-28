@@ -40,6 +40,14 @@ interface NavigatorUABrandVersion {
 interface NavigatorUAData {
   brands: NavigatorUABrandVersion[];
   platform: string;
+  // Sprint 118 (Roadmap #18): high-entropy hints (Chromium-only, async)
+  getHighEntropyValues?: (hints: string[]) => Promise<{
+    architecture?: string;
+    bitness?: string;
+    model?: string;
+    platformVersion?: string;
+    fullVersionList?: NavigatorUABrandVersion[];
+  }>;
 }
 type NavigatorWithExtras = Navigator & {
   getBattery?: () => Promise<BatteryManager>;
@@ -196,6 +204,18 @@ export async function renderSystemInfo(): Promise<void> {
         )
         .map((b: NavigatorUABrandVersion) => `${b.brand} ${b.version}`)
         .join(", ") || ua.platform;
+    // Roadmap #18: opportunistically enrich with high-entropy hints (Chromium-only).
+    // Failures are non-fatal — UA-CH may be denied by Permissions-Policy or feature-flagged.
+    if (typeof ua.getHighEntropyValues === "function") {
+      try {
+        const hints = await ua.getHighEntropyValues(["platformVersion", "architecture", "bitness"]);
+        const arch = hints.architecture && hints.bitness ? ` ${hints.architecture}${hints.bitness}` : "";
+        const ver = hints.platformVersion ? ` ${ua.platform} ${hints.platformVersion}` : "";
+        if (arch || ver) platform = `${platform}${ver}${arch}`;
+      } catch {
+        /* hints unavailable — leave basic platform string in place */
+      }
+    }
   } else {
     // Fallback: parse navigator.userAgent
     const m = navigator.userAgent?.match(/(Chrome|Firefox|Safari|Edge)\/(\d+)/);
