@@ -54,6 +54,21 @@
     view-transition-name: vt-status;
   }
 
+  /* Config dialog — Sprint 5 (Roadmap #10): named VT for open/close + theme swap */
+  #config-panel {
+    view-transition-name: vt-config-panel;
+  }
+
+  /* Diagnostics overlay */
+  #diag-overlay {
+    view-transition-name: vt-diag-overlay;
+  }
+
+  /* Help dialog */
+  #help-dialog {
+    view-transition-name: vt-help-dialog;
+  }
+
   /* ── Transition durations ───────────────────────────────────────────────── */
 
   /* Root: longer, dreamy fade for the background color change */
@@ -108,6 +123,26 @@
 
   ::view-transition-new(vt-grid) {
     animation-name: vt-drift-fade-in;
+  }
+
+  /* Sprint 5 (Roadmap #10): config / diag / help dialogs — soft scale+fade */
+  ::view-transition-group(vt-config-panel),
+  ::view-transition-group(vt-diag-overlay),
+  ::view-transition-group(vt-help-dialog) {
+    animation-duration: 0.28s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  ::view-transition-old(vt-config-panel),
+  ::view-transition-old(vt-diag-overlay),
+  ::view-transition-old(vt-help-dialog) {
+    animation-name: vt-dialog-out;
+  }
+
+  ::view-transition-new(vt-config-panel),
+  ::view-transition-new(vt-diag-overlay),
+  ::view-transition-new(vt-help-dialog) {
+    animation-name: vt-dialog-in;
   }
 
   /* ── Keyframe definitions ───────────────────────────────────────────────── */
@@ -181,6 +216,31 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  /* Sprint 5: dialog open/close — soft scale + fade */
+  @keyframes vt-dialog-out {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+
+  @keyframes vt-dialog-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 

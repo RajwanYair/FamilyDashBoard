@@ -843,7 +843,15 @@ export function openConfigPanel(): void {
   const ov = overlay();
   if (!ov) return;
   populateForm();
-  ov.classList.add("visible");
+  const doOpen = (): void => {
+    ov.classList.add("visible");
+  };
+  // Sprint 5 (Roadmap #10): cross-doc View Transitions for dialog open/close
+  if ("startViewTransition" in document) {
+    document.startViewTransition(doOpen);
+  } else {
+    doOpen();
+  }
   // Auto-focus first text input for immediate keyboard access
   setTimeout(() => {
     const first = ov.querySelector<HTMLElement>("input[type='text']:not([disabled])");
@@ -864,7 +872,15 @@ export function closeConfigPanel(): void {
     _formDirty = false; // allow second close without warning
     return;
   }
-  overlay()?.classList.remove("visible");
+  const ov = overlay();
+  const doClose = (): void => {
+    ov?.classList.remove("visible");
+  };
+  if ("startViewTransition" in document) {
+    document.startViewTransition(doClose);
+  } else {
+    doClose();
+  }
   clearDirty();
 }
 
