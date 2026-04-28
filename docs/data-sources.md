@@ -71,14 +71,14 @@ Direct → allorigins → codetabs → corsproxy.io
 
 | Property          | Value                                                                                                    |
 | ----------------- | -------------------------------------------------------------------------------------------------------- |
-| Provider          | [ExchangeRate-API](https://www.exchangerate-api.com/) (ILS base)                                         |
+| Provider          | [open.er-api.com](https://www.exchangerate-api.com/) → exchangerate-api.com → ECB ([Frankfurter](https://frankfurter.dev)) |
 | Worker route      | `GET /api/currency`                                                                                      |
-| Upstream URL      | `https://v6.exchangerate-api.com/v6/<KEY>/latest/ILS` + `https://open.er-api.com/v6/latest/ILS` fallback |
+| Upstream URL      | `https://open.er-api.com/v6/latest/ILS` → `https://api.exchangerate-api.com/v4/latest/ILS` → `https://api.frankfurter.dev/v1/latest?base=ILS` |
 | Valibot schema    | `CurrencySchema` in `worker/src/utils/schemas.ts`                                                        |
 | Cache TTL         | 1 hour (`INTERVALS.CURRENCY`)                                                                            |
 | Cache key         | `curr`                                                                                                   |
-| KV stale fallback | Yes (`data.ts` — `handleCurrency`)                                                                       |
-| Failure mode      | Worker returns 502 on shape mismatch                                                                     |
+| KV stale fallback | Yes (`data.ts` — `handleCurrency`); 48 h KV TTL on the stale tier                                        |
+| Failure mode      | All 3 upstreams + KV stale exhausted → envelope `{stale:true, provider:"none"}`                          |
 
 ---
 
