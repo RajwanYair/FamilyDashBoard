@@ -93,9 +93,13 @@ paths:
   /api/currency:
     get:
       tags: [finance]
-      summary: Exchange rates (USD base)
-      description: Proxies open.er-api.com. Cached 1 h.
+      summary: Exchange rates (ILS base)
+      description: |
+        Tiered upstreams: open.er-api.com → exchangerate-api.com → ECB via
+        Frankfurter (api.frankfurter.dev). KV stale fallback if all fail.
+        Cached 1 h.
       x-kv-ttl: 3600
+      x-kv-stale-ttl: 172800
       operationId: getCurrency
       responses:
         "200":

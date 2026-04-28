@@ -147,6 +147,8 @@ export async function handleCurrency(env: Env): Promise<Response> {
   const upstreams: Array<{ url: string; provider: string }> = [
     { url: "https://open.er-api.com/v6/latest/ILS", provider: "open.er-api.com" },
     { url: "https://api.exchangerate-api.com/v4/latest/ILS", provider: "exchangerate-api.com" },
+    // Roadmap #19: ECB-sourced rates via Frankfurter (zero-key, ECB daily reference, ILS base supported)
+    { url: "https://api.frankfurter.dev/v1/latest?base=ILS", provider: "frankfurter-ecb" },
   ];
 
   for (const { url, provider } of upstreams) {

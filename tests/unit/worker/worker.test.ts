@@ -591,6 +591,25 @@ describe("Worker — handleCurrency route", () => {
     const body = (await res.json()) as { provider: string };
     expect(body.provider).toBe("exchangerate-api.com");
   });
+
+  it("falls back to ECB (frankfurter) when both primary upstreams fail (Roadmap #19)", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response("fail", { status: 502 }))
+      .mockResolvedValueOnce(new Response("fail", { status: 502 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ rates: { USD: 0.27, EUR: 0.25 } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const res = await handleCurrency(mockEnv);
+    expect(fetchMock).toHaveBeenNthCalledWith(3, "https://api.frankfurter.dev/v1/latest?base=ILS");
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean };
+    expect(body.provider).toBe("frankfurter-ecb");
+    expect(body.stale).toBe(false);
+  });
 });
 
 // ── Worker — handleHebcal + handleHebcalHolidays routes (Stream W.3) ─────────
