@@ -38,6 +38,7 @@ import {
   _resetVitalsReporter,
 } from "../../../src/core/vitals-reporter";
 import { isWorkerEnabled } from "../../../src/core/constants";
+import { getPerfVitals } from "../../../src/core/perf";
 import { reportErrors } from "../../../src/core/error-reporter";
 
 describe("vitals-reporter", () => {
@@ -117,5 +118,59 @@ describe("vitals-reporter", () => {
     expect(msg).toContain("fcp=900 ms");
     expect(msg).toContain("ttfb=200 ms");
     expect(msg).toContain("startup=3500 ms");
+  });
+
+  it("does not report when all vitals are null (parts.length === 0)", () => {
+    vi.mocked(getPerfVitals).mockReturnValueOnce({
+      lcp: null,
+      cls: null,
+      inp: null,
+      fcp: null,
+      ttfb: null,
+      startup: null,
+    });
+    flushVitalsReport();
+    expect(reportErrors).not.toHaveBeenCalled();
+  });
+
+  it("reports partial vitals when only lcp is available", () => {
+    vi.mocked(getPerfVitals).mockReturnValueOnce({
+      lcp: 1200,
+      cls: null,
+      inp: null,
+      fcp: null,
+      ttfb: null,
+      startup: null,
+    });
+    flushVitalsReport();
+    expect(reportErrors).toHaveBeenCalledOnce();
+    const batch = _reportedBatches[0] as Array<{ message: string }>;
+    expect(batch[0].message).toContain("lcp=");
+    expect(batch[0].message).not.toContain("cls=");
+    expect(batch[0].message).not.toContain("startup=");
+  });
+
+  it("reports partial vitals when only cls is available", () => {
+    vi.mocked(getPerfVitals).mockReturnValueOnce({
+      lcp: null,
+      cls: 0.05,
+      inp: null,
+      fcp: null,
+      ttfb: null,
+      startup: null,
+    });
+    flushVitalsReport();
+    expect(reportErrors).toHaveBeenCalledOnce();
+    const batch = _reportedBatches[0] as Array<{ message: string }>;
+    expect(batch[0].message).toContain("cls=");
+    expect(batch[0].message).not.toContain("lcp=");
+  });
+
+  it("does not schedule a report when worker is disabled (second call)", () => {
+    vi.mocked(isWorkerEnabled).mockReturnValue(false);
+    scheduleVitalsReport(); // first call blocked
+    scheduleVitalsReport(); // second call also blocked
+    vi.advanceTimersByTime(30_000);
+    expect(reportErrors).not.toHaveBeenCalled();
   });
 });

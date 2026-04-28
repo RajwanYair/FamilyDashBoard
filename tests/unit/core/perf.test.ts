@@ -16,6 +16,8 @@ import {
   checkPerfBudget,
   checkAllVitalBudgets,
   VITAL_BUDGETS,
+  recordCardInitTime,
+  getCardTimings,
 } from "@/core/perf";
 
 beforeEach(() => {
@@ -183,5 +185,61 @@ describe("checkAllVitalBudgets", () => {
     const results = checkAllVitalBudgets({ startup: 99999 });
     const entry = results.find((r) => r.key === "startup");
     expect(entry?.status).toBe("pass");
+  });
+
+  it("marks startup as fail when startup exceeds budget", () => {
+    markDomReady();
+    markStartupComplete();
+    const results = checkAllVitalBudgets({ startup: 0 }); // budget=0 → always fail
+    const entry = results.find((r) => r.key === "startup");
+    expect(entry?.status).toBe("fail");
+    expect(entry?.measured).not.toBeNull();
+  });
+
+  it("VITAL_BUDGETS has fcp and ttfb and startup defaults", () => {
+    expect(VITAL_BUDGETS.fcp).toBe(1800);
+    expect(VITAL_BUDGETS.ttfb).toBe(800);
+    expect(VITAL_BUDGETS.startup).toBe(3000);
+  });
+});
+
+// ── rateVital — startup key (Sprint 120) ─────────────────────────────────────
+
+describe("rateVital — startup key", () => {
+  it("good ≤ 3000ms", () => expect(rateVital("startup", 2000)).toBe("good"));
+  it("good at exactly 3000ms", () => expect(rateVital("startup", 3000)).toBe("good"));
+  it("needs-improvement ≤ 6000ms", () => expect(rateVital("startup", 4000)).toBe("needs-improvement"));
+  it("poor > 6000ms", () => expect(rateVital("startup", 7000)).toBe("poor"));
+});
+
+// ── markStartupComplete — idempotency (Sprint 120) ────────────────────────────
+
+describe("markStartupComplete — idempotency", () => {
+  it("does not overwrite startup if already measured", () => {
+    markDomReady();
+    markStartupComplete();
+    const first = getPerfVitals().startup;
+    markStartupComplete(); // second call — must be a no-op
+    expect(getPerfVitals().startup).toBe(first);
+  });
+});
+
+// ── recordCardInitTime + getCardTimings (Sprint 120) ─────────────────────────
+
+describe("recordCardInitTime + getCardTimings", () => {
+  it("records a card timing and retrieves it", () => {
+    recordCardInitTime("weather", 123.456);
+    expect(getCardTimings().get("weather")).toBe(123.46);
+  });
+
+  it("rounds duration to 2 decimal places", () => {
+    recordCardInitTime("news", 99.999);
+    expect(getCardTimings().get("news")).toBe(100);
+  });
+
+  it("overwrites an existing timing for the same card", () => {
+    recordCardInitTime("clock", 50.0);
+    recordCardInitTime("clock", 75.555);
+    expect(getCardTimings().get("clock")).toBe(75.56);
   });
 });

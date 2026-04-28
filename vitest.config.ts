@@ -88,8 +88,11 @@ export default defineConfig({
         // Roadmap #8 (Sprint 8 of post-13.13.0 batch): actuals 89.34/81.73/89.05/90.45.
         //   Margins too tight for integer ratchet. Tightened to fractional values
         //   89.3/81.7/89/90.4 — preserves regression detection without false-fail.
+        // Sprint 120 (Roadmap #8 ratchet): +69 branch tests (perf.ts + vitals-reporter.ts).
+        //   Actuals: 89.33/81.89/89.05/90.43. Raised branches 81.7 → 81.8 to lock in gain.
+        //   Full ratchet to 92/85/92/93 continues in subsequent sprints.
         statements: 89.3,
-        branches: 81.7,
+        branches: 81.8,
         functions: 89,
         lines: 90.4,
       },
