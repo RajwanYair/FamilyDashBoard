@@ -81,7 +81,7 @@ textarea:focus-visible {
   transform: translateX(-50%);
   z-index: 9999;
   background: var(--accent);
-  color: #fff;
+  color: var(--text-on-accent);
   padding: 8px 20px;
   border-radius: 0 0 8px 8px;
   font-size: 0.85em;

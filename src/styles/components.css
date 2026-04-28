@@ -258,7 +258,7 @@
   right: 0;
   z-index: 200;
   background: linear-gradient(135deg, var(--negative), #a07070);
-  color: #fff;
+  color: var(--text-on-warn);
   text-align: center;
   padding: 4px 12px;
   font-size: 0.72em;
@@ -646,7 +646,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   border-radius: 4px;
   font-size: 0.52em;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-on-warn);
   line-height: 18px;
   text-align: center;
   display: inline-block;

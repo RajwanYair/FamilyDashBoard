@@ -6,7 +6,7 @@
   display: none;
   font-size: 0.6em;
   background: var(--accent);
-  color: #000;
+  color: var(--text-on-accent);
   padding: 1px 6px;
   border-radius: 4px;
   font-weight: 700;

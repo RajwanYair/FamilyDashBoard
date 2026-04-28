@@ -94,7 +94,7 @@ body::before {
 }
 .ticker-label {
   background: linear-gradient(135deg, #ef4444, #f97316);
-  color: #fff;
+  color: var(--text-on-warn);
   font-weight: 800;
   font-size: 0.75em;
   padding: 0 12px;

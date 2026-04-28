@@ -7,7 +7,7 @@
     padding: 1px 5px;
     border-radius: 8px;
     background: var(--negative);
-    color: #fff;
+    color: var(--text-on-warn);
     font-weight: 700;
     display: none;
     margin-left: 5px;

@@ -25,7 +25,7 @@
 #wx-alert-banner {
   display: none;
   background: var(--negative);
-  color: #fff;
+  color: var(--text-on-warn);
   font-weight: 700;
   font-size: 0.74em;
   padding: 3px 10px;
@@ -68,7 +68,7 @@
 }
 .wx-city-tab.active {
   background: var(--cyan);
-  color: #000;
+  color: var(--text-on-accent);
   font-weight: 700;
   border-color: var(--cyan);
 }

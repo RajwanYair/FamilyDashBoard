@@ -128,6 +128,17 @@
     --negative: light-dark(#8b2020, #c89090);
     --negative-glow: rgba(200, 144, 144, 0.18);
     --warning: light-dark(#8a6520, #d4b870);
+    /* Semantic contrast tokens — for text/icons placed on colored or
+     * always-dark backgrounds (badges, accents, video panels, dimmer overlay,
+     * skip-link). These are intentionally not light-dark()-flipping because
+     * the underlying surface is itself non-flipping. Use these instead of
+     * hardcoded #fff/#000 (audited by scripts/check-smart-contrast.mjs).
+     *   --text-on-accent: text on golden/cyan/amber accent surfaces (light)
+     *   --text-on-warn:   text on red/negative/red-gradient surfaces (dark)
+     *   --text-on-dark:   generic white text on always-dark overlays */
+    --text-on-accent: #000;
+    --text-on-warn: #fff;
+    --text-on-dark: #fff;
     --purple: #b8aad4;
     --pink: #d4a4b4;
     --orange: #c8a880;

@@ -147,7 +147,7 @@ describe("Calendar — groupEventsByDay", () => {
     expect(buckets[0]!.date.getDate()).toBe(10);
     // 2024-06-10 + 20 days = 2024-06-30
     expect(buckets[20]!.date.getDate()).toBe(30);
-  };);
+  });
 
   it("drops events outside the 21-day window", () => {
     const now = new Date("2024-06-10T08:00:00");
