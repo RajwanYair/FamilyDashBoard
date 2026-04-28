@@ -344,14 +344,14 @@ Target: **v14.0** (Q1 2027).
 - [x] PR SBOM-diff bot (v13.9).
 - [x] Mermaid pre-commit validator (v13.10).
 - [x] Container-query audit script (v13.10).
-- [ ] `oxlint` as fast pre-pass (~50–100× ESLint).
+- [x] `oxlint` as fast pre-pass (~50–100× ESLint) (v13.13).
+- [x] `markdown-link-check` monthly cron (v13.13).
+- [x] Cross-doc View Transitions opt-in via `<meta name="view-transition">` (v13.13).
 - [ ] `@vitest/browser` component tests for `maximize.ts` + `layout-drag.ts`.
 - [ ] CSS Anchor Positioning expansion (Diag-Overlay + Help dialog).
 - [ ] Cross-doc View Transitions for theme switch + maximise-card.
 - [ ] Stryker scope extension: error-tracker + config + diag, threshold ≥ 85 %.
 - [ ] Coverage ratchet: 89/81/89/90 → 92/85/92/93.
-- [ ] `markdown-link-check` monthly cron.
-
 **Exit**: oxlint green on first pass; CI deltas live; coverage at 92/85/92/93; LHCI perf still ≥ 0.97.
 
 ### 4.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals
@@ -442,7 +442,7 @@ Past releases live in [CHANGELOG.md](../CHANGELOG.md). Forward-only.
 | ------------ | ------------------------------------------------------------------------------------ | -------------- | ---------- |
 | **v13.11.0** | Sprint 116 — platform hardening                                                      | 2026-Q2        | Shipped ✓  |
 | **v13.12.0** | Sprint 117 — production-ready cleanup (inline-styles, dead files, strict link-check) | 2026-Q2        | Shipped ✓  |
-| **v13.13**   | Sprint 118 — coverage ratchet (S116 deferred), oxlint introduction prep              | 2026-Q3        | §4.1       |
+| **v13.13.0** | Sprint 118 — cross-doc View Transitions opt-in, ECB currency fallback, UA-CH hints, worker preconnect, currency docs sync | 2026-Q2 | Shipped ✓ |
 | **v14.0**    | V14-FOUNDATIONS + V14-SEMANTIC                                                       | 2027-Q1        | §4.1, §4.2 |
 | **v14.1**    | V14-HARMONISE                                                                        | 2027-Q2        | §4.5       |
 | **v14.2**    | V14-SECURITY-L3 + V14-EDGE                                                           | 2027-Q3        | §4.6, §4.4 |
