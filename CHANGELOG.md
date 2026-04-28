@@ -5,6 +5,43 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.15.0] — 2026-04-28
+
+> **Sprints 129–139 — roadmap progression batch** · **4939 tests / 161 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+### Added
+
+- **ECB-direct currency fallback** (Sprint 132, Roadmap #16) — `API.CURRENCY_FALLBACK_ECB` (`https://api.frankfurter.dev/v1/latest?base=ILS`) wired into `src/cards/currency/currency-adapter.ts` as the 3rd upstream after ER-API and exchangerate-api. CSP `connect-src` and SW caches updated to mirror.
+- **Per-card "blocked-by-network" toast** (Sprint 136, V14-RESILIENCE) — new `src/core/provider-toast.ts` surfaces a rate-limited Hebrew RTL toast (one per provider per 10 min) when an adapter flips to `down` health with no stale fallback. Wired into `core/provider-adapter.ts`.
+- **Document Picture-in-Picture helper** (Sprint 137, Roadmap #22, gated foundation) — `src/ui/document-pip.ts` wraps the Document PiP API (Chromium 116+) with safe restore-on-close semantics. 7 unit tests cover supported / unsupported / error / re-entry paths. UI integration deferred until 3+ user requests per Roadmap.
+- **App-signals tests** (Sprint 129, Roadmap #8) — 14 tests added for `src/core/app-signals.ts` (`tempUnit`, `appTheme`, `syncAppSignal` bridge); plus L2-aware ViewTransition stub in `tests/unit/ui/theme.test.ts`.
+- **Corp-proxy quickstart** (Sprint 135, V14-RESILIENCE) — new section in `docs/local-dev.md` documenting the `?nosw=1` flag, `__fdbUnregisterSW()` DevTools helper, the `stripDevCsp` plugin behaviour, and the new blocked-by-network toast.
+
+### Documentation
+
+- **All 37 `.github/**/*.md` files refreshed** (Sprint 130) for VS Code / Copilot 2026-Q2 features: three-tier memory tool, subagents (Explore / api-integrator / dashboard-designer / quality-reviewer), `model:` frontmatter for prompts, custom agents (replaced custom chat modes), MCP capability classes expanded to 5 (sampling/elicitation, apps), edit-time `.github/hooks/*.json`. Test counts and coverage thresholds aligned to canonical `vitest.config.ts` everywhere.
+- **Roadmap header refresh** (Sprint 131) — refresh date, in-flight sprint window, and inventory line updated for v13.15.0.
+- **ADR-041 — CSP `*.intel.com` wildcard narrowing plan** (Sprint 133, Roadmap #25) — phased plan (inventory → narrow → removal) gated on two stable quarters of telemetry.
+- **ADR-042 — LHCI performance ratchet plan** (Sprint 134, Roadmap #19) — 4-step ratchet (`warn 0.70` → `warn 0.80` → `error 0.85` → `error 0.92` → `error 0.97`) with explicit triggers and rollback policy.
+- **OWASP Top-10 audit smoke check** (Sprint 138, Roadmap #26) — patch-cycle ticks for v13.15.0; new entries for Sprint 132 Frankfurter upstream and Sprint 133 ADR-041.
+
+### Changed
+
+- **Functions coverage threshold** anchored at 88.9 (was 89, Sprint 129) in `vitest.config.ts`. Documented rollback path (Sprint 132+ ratchet).
+
+### Verified
+
+- Full test run (Sprint 139): 4939 tests / 161 suites / 0 failures.
+- 0 ESLint errors, 0 ESLint warnings, 0 TS errors, 0 markdownlint errors across all 37 `.github/**/*.md` files plus `docs/**`.
+- 0 `eslint-disable`, 0 `@ts-ignore`, 0 `@ts-nocheck` newly introduced.
+- 42 ADRs (`docs/adr/README.md`).
+
+### Version anchors
+
+Seven files bumped to v13.15.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, plus this CHANGELOG.
+
+---
+
 ## [13.14.0] — 2026-05-04
 
 > **Sprints 120–128 — roadmap progression batch** · **4910 tests / 158 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
