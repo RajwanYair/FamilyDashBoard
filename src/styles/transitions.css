@@ -55,7 +55,7 @@
   }
 
   /* Config dialog — Sprint 5 (Roadmap #10): named VT for open/close + theme swap */
-  #config-panel {
+  #config-overlay {
     view-transition-name: vt-config-panel;
   }
 
@@ -65,7 +65,7 @@
   }
 
   /* Help dialog */
-  #help-dialog {
+  #help-overlay {
     view-transition-name: vt-help-dialog;
   }
 

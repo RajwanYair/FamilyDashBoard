@@ -294,6 +294,23 @@ dialog.diag-overlay {
 dialog.diag-overlay::backdrop {
   background: transparent;
 }
+
+/* Sprint 6 (Roadmap #11): Diagnostic overlay anchored to #status-bar.
+   When supported, the overlay floats above the status bar and uses
+   position-try-fallbacks to flip if there's not enough vertical space.
+   Browsers without anchor positioning keep the legacy fixed bottom-right. */
+@supports (anchor-name: --status-bar-anchor) {
+  dialog.diag-overlay[open] {
+    position-anchor: --status-bar-anchor;
+    bottom: anchor(top);
+    right: anchor(right);
+    inset-block-start: auto;
+    inset-inline-start: auto;
+    margin: 0 0 6px 0;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+}
+
 .diag-overlay h3 {
   margin: 0 0 6px;
   color: var(--accent);
@@ -1206,6 +1223,16 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   font-size: 0.55em;
   color: var(--text-muted);
   padding: 1px 12px;
+}
+
+/* Sprint 6 (Roadmap #11): Anchor positioning expansion.
+   #status-bar is the anchor source for the Diagnostic overlay so it visually
+   tethers to the bar regardless of viewport size. Falls back to fixed bottom-
+   right corner in browsers without anchor positioning support. */
+@supports (anchor-name: --status-bar-anchor) {
+  #status-bar {
+    anchor-name: --status-bar-anchor;
+  }
 }
 .progress-group {
   display: flex;
