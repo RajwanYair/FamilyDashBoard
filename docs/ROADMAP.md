@@ -261,7 +261,7 @@ Categories: **TV/Family dashboards** · **Homelab dashboards** · **News/feed re
 | **TC39 Signals**                                 | TC39 Stage 3       | **Adopt when polyfill ≤ 1.5 KB**     | Drop-in for in-house signals.                                                  |
 | **TC39 Temporal**                                | TC39 Stage 3       | **Adopt when polyfill ≤ 10 KB gzip** | Replaces date math in `hebrew-cal`, `calendar`, `countdown`.                   |
 | **CSS `@starting-style`**                        | Browser 2025       | **Shipped v13.9**                    | Replaces JS enter animations on overlays.                                      |
-| **CSS Anchor Positioning expansion**             | Browser 2025       | **Expand v14.0**                     | Already in Stocks Popover; expand to Diag-Overlay + Help dialog.               |
+| **CSS Anchor Positioning expansion**             | Browser 2025       | **Shipped v13.15.0**                 | Diag-Overlay (Sprint 6) + Help dialog (Sprint 140) both anchored to `--status-bar-anchor`. |
 | **HTTP Early Hints (103) via Worker**            | RFC 8297           | **Adopt v14.x**                      | Push critical CSS + main JS earlier; expected −80 ms TTI.                      |
 | **Subresource Integrity (auto-injected)**        | W3C SRI            | **Shipped v13.9**                    | Vite plugin emits `<script integrity="…">` per build.                          |
 | **Speculation Rules expansion**                  | Browser 2024       | **Audit v13.x**                      | Verify all SPA-style transitions list `prerender`.                             |
@@ -328,7 +328,7 @@ Concrete work items. **P** = priority (P0 next-release blocker, P1 same-cycle, P
 | 8   | Enhance  | Coverage ratchet 89/81/89/90 → 92/85/92/93                                                          | P0  | M   | Mid | v14.0   | Add targeted branch tests on error-tracker + diag.                   |
 | 9   | ~~Enhance~~ | ~~Stryker scope: error-tracker + config + diag, threshold ≥ 85 %~~ | P1  | M   | Mid | ~~v14.0~~ **Done** | ✅ Sprint 126: error-tracker + config + diag confirmed in scope; break threshold raised 75 → 85. |
 | 10  | Enhance  | Cross-doc View Transitions for theme switch + maximise-card                                         | P1  | S   | Lo  | v14.0   | Native browser support live Q1 2026.                                 |
-| 11  | Enhance  | Anchor Positioning for Diag-Overlay + Help dialog                                                   | P2  | S   | Lo  | v14.0   |                                                                      |
+| 11  | ~~Enhance~~  | ~~Anchor Positioning for Diag-Overlay + Help dialog~~                                             | P2  | S   | Lo  | ~~v14.0~~ **Done** | ✅ Sprint 6 (diag-overlay) + Sprint 140 (help dialog), both anchored to `--status-bar-anchor`. |
 | 12  | Refactor | Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io)                            | P1  | L   | Hi  | v14.0   | First run unlocks ADR-031.                                           |
 | 13  | Enhance  | OpenTelemetry from Worker (opt-in, self-host collector)                                             | P2  | L   | Mid | v14.2   |                                                                      |
 | 14  | Enhance  | SLSA L3 hermetic build + Sigstore/cosign provenance                                                 | P0  | L   | Hi  | v14.2   | ADR-035. Third-party rebuilder must produce byte-identical artefact. |
@@ -370,10 +370,10 @@ Target: **v14.0** (Q1 2027).
 - [x] Smart text contrast via corrected `light-dark()` token order (v13.13.1).
 - [x] Dev-mode SW kill switches (`?nosw=1`, `__fdbUnregisterSW()`) (v13.13.1).
 - [ ] `@vitest/browser` component tests for `maximize.ts` + `layout-drag.ts`.
-- [ ] CSS Anchor Positioning expansion (Diag-Overlay + Help dialog).
+- [x] CSS Anchor Positioning expansion (Diag-Overlay + Help dialog). (v13.15.0)
 - [x] Cross-doc View Transitions for theme switch + maximise-card.
 - [x] Stryker scope extension: error-tracker + config + diag, threshold ≥ 85 % (Sprint 126).
-- [ ] Coverage ratchet: 89/81/89/90 → 92/85/92/93.
+- [x] Coverage ratchet: 89/81/89/90 → 93.5/85.0/92.5/94.7. (Sprint 143, v13.15.0)
 - [x] `vite-plugin-dev-csp-strip` for proxy-blocked devs (Sprint 127).
 
 **Exit**: oxlint green on first pass; CI deltas live; coverage at 92/85/92/93; LHCI perf back to `error ≥ 0.97`.
