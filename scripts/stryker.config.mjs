@@ -20,6 +20,9 @@
  *   - signals.ts            : mutation score ≥ 85%  (Sprint 114)
  *   - fs-access.ts          : mutation score ≥ 75%  (Sprint 114)
  *   - idle.ts               : mutation score ≥ 75%  (Sprint 114)
+ *   - cache.ts              : mutation score ≥ 85%  (Roadmap #9)
+ *
+ * Roadmap #9: floor raised — break 60 → 75, low 70 → 80, high stays 85.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -46,6 +49,8 @@ export default {
     "src/core/signals.ts",
     "src/core/fs-access.ts",
     "src/core/idle.ts",
+    // Roadmap #9: dual-layer cache primitive (high blast-radius if mutated)
+    "src/core/cache.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
@@ -53,8 +58,8 @@ export default {
   coverageAnalysis: "perTest",
   thresholds: {
     high: 85,
-    low: 70,
-    break: 60,
+    low: 80,
+    break: 75,
   },
   htmlReporter: {
     // Output to temp area per project patterns (never in project dir for CI)
