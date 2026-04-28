@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { state } from "@/core/state";
+import { motivationInterval } from "@/core/app-signals";
 import { FdbMotivationCard } from "@/cards/motivation/fdb-motivation";
 
 vi.mock("@/core/diag", () => ({
@@ -26,6 +27,9 @@ describe("FdbMotivationCard", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     document.body.innerHTML = "";
+    // Reset the motivationInterval signal directly (source of truth after Sprint 140 migration)
+    motivationInterval.value = 0;
+    // Also reset via state so bridge stays consistent in tests that use state.set()
     state.set("config.motivationInterval", 0);
   });
 
@@ -66,6 +70,29 @@ describe("FdbMotivationCard", () => {
     await vi.advanceTimersByTimeAsync(60_000);
 
     expect(card.querySelector(".moti-text")?.textContent).toBe("Quote B");
+  });
+
+  it("reacts to motivationInterval signal written directly (Sprint 140 signals migration)", async () => {
+    const card = mountCard();
+
+    motivationInterval.value = 1;
+    await vi.advanceTimersByTimeAsync(60_000);
+
+    expect(card.querySelector(".moti-text")?.textContent).toBe("Quote B");
+  });
+
+  it("disposes the signal effect on disconnect (no stale subscriptions)", async () => {
+    const card = mountCard();
+
+    motivationInterval.value = 1;
+    // disconnect disposes the effect
+    card.remove();
+    // Now change the signal — should NOT affect the removed card
+    motivationInterval.value = 2;
+    await vi.advanceTimersByTimeAsync(60_000);
+
+    // Card is disconnected — no timer should fire
+    expect(card.querySelector(".moti-text")?.textContent).toBe("Quote A");
   });
 
   it("clears the auto-advance timer on disconnect", async () => {

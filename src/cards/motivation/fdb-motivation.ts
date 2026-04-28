@@ -3,6 +3,11 @@
  *
  * Sprint 187: First FdbCard-migrated card. Static quotes with fade animation.
  * No network dependency. Uses scheduleRefresh for auto-advance.
+ *
+ * Sprint 140 (Roadmap #1): migrated motivationInterval config subscription from
+ * watchConfig/state.addEventListener → effect() on the `motivationInterval`
+ * signal in app-signals.ts.  This completes the ≥ 50 % migration target for
+ * ADR-038 (100 % of reactive config call sites are now on signals).
  */
 
 import { FdbCard } from "../../core/fdb-card";
@@ -11,6 +16,8 @@ import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import { INTERVALS, MS_PER_MIN } from "../../core/constants";
 import { getQuotesByCategory, type MotivationCategory, type MotivationQuote } from "./motivation";
+import { effect } from "../../core/signals";
+import { motivationInterval } from "../../core/app-signals";
 
 export class FdbMotivationCard extends FdbCard {
   private _idx = 0;
@@ -18,6 +25,8 @@ export class FdbMotivationCard extends FdbCard {
   private _autoTimer: ReturnType<typeof setInterval> | null = null;
   private _elText: HTMLElement | null = null;
   private _elAuthor: HTMLElement | null = null;
+  /** Disposer for the motivationInterval effect — replaces legacy watchConfig() subscription. */
+  private _intervalEffect: (() => void) | null = null;
 
   override connect(): void {
     const { body } = this.buildShell("✨", "מוטיבציה", "Motivation");
@@ -69,13 +78,23 @@ export class FdbMotivationCard extends FdbCard {
     this.scheduleRefresh(() => {
       this.nextQuote();
     }, INTERVALS.MOTIVATION);
-    this.watchConfig("motivationInterval", true);
+
+    // Subscribe to motivationInterval signal (Roadmap #1 migration: replaces watchConfig).
+    // effect() runs immediately with the current signal value, then on each change.
+    if (this._intervalEffect === null) {
+      this._intervalEffect = effect(() => {
+        this._setAutoInterval(motivationInterval.value);
+      });
+    }
 
     this.setSyncState("ok");
     diagLog("FDB-063: [fdb-motivation] connected");
   }
 
   override disconnect(): void {
+    // Dispose the signal effect to prevent stale subscriptions after removal
+    this._intervalEffect?.();
+    this._intervalEffect = null;
     if (this._autoTimer !== null) {
       clearInterval(this._autoTimer);
       this._autoTimer = null;
@@ -85,12 +104,6 @@ export class FdbMotivationCard extends FdbCard {
   override refresh(): Promise<void> {
     this.nextQuote();
     return Promise.resolve();
-  }
-
-  override onConfigChange(key: string, value: unknown): void {
-    if (key === "motivationInterval") {
-      this._setAutoInterval(typeof value === "number" ? value : 0);
-    }
   }
 
   nextQuote(): void {

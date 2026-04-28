@@ -1,16 +1,18 @@
 /**
- * Tests for src/core/app-signals.ts (Sprint 129 — coverage ratchet Roadmap #8)
+ * Tests for src/core/app-signals.ts
  *
- * Covers: tempUnit signal, appTheme signal, syncAppSignal bridge function.
+ * Sprint 129: tempUnit signal, appTheme signal, syncAppSignal bridge function.
+ * Sprint 140 (Roadmap #1): motivationInterval signal + bridge case.
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { tempUnit, appTheme, syncAppSignal } from "@/core/app-signals";
+import { tempUnit, appTheme, motivationInterval, syncAppSignal } from "@/core/app-signals";
 
 // Reset signals to known defaults before each test.
 beforeEach(() => {
   tempUnit.value = "C";
   appTheme.value = "black";
+  motivationInterval.value = 0;
 });
 
 // ── tempUnit signal ───────────────────────────────────────────────────────────
@@ -105,5 +107,51 @@ describe("syncAppSignal", () => {
     syncAppSignal("config.tempUnit", "F");
     syncAppSignal("config.tempUnit", "F");
     expect(tempUnit.value).toBe("F");
+  });
+});
+
+// ── motivationInterval signal ─────────────────────────────────────────────────
+
+describe("motivationInterval signal", () => {
+  it("has default value 0", () => {
+    expect(motivationInterval.value).toBe(0);
+  });
+
+  it("can be set to a positive integer", () => {
+    motivationInterval.value = 5;
+    expect(motivationInterval.value).toBe(5);
+  });
+
+  it("can be set back to 0 (disabled)", () => {
+    motivationInterval.value = 3;
+    motivationInterval.value = 0;
+    expect(motivationInterval.value).toBe(0);
+  });
+});
+
+// ── syncAppSignal — motivationInterval branch ─────────────────────────────────
+
+describe("syncAppSignal — motivationInterval", () => {
+  it("updates motivationInterval when key is 'config.motivationInterval' with a number", () => {
+    syncAppSignal("config.motivationInterval", 10);
+    expect(motivationInterval.value).toBe(10);
+  });
+
+  it("resets motivationInterval to 0 when value is not a number", () => {
+    motivationInterval.value = 5;
+    syncAppSignal("config.motivationInterval", "not-a-number");
+    expect(motivationInterval.value).toBe(0);
+  });
+
+  it("resets motivationInterval to 0 when value is null", () => {
+    motivationInterval.value = 3;
+    syncAppSignal("config.motivationInterval", null);
+    expect(motivationInterval.value).toBe(0);
+  });
+
+  it("sets motivationInterval to 0 explicitly", () => {
+    motivationInterval.value = 7;
+    syncAppSignal("config.motivationInterval", 0);
+    expect(motivationInterval.value).toBe(0);
   });
 });

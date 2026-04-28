@@ -1,5 +1,5 @@
 /**
- * src/core/app-signals.ts — Sprint 121 (Roadmap #1)
+ * src/core/app-signals.ts — Sprint 121 + Sprint 140 (Roadmap #1)
  *
  * Named application-level signals for gradual `state.ts` → `signals.ts`
  * migration (ADR-038).  Each signal here is a single source of truth for
@@ -13,8 +13,10 @@
  *   - Migrated cards subscribe via `effect()` on these signals.
  *   - Unmigrated cards continue using `state.on()` / `state.addEventListener`.
  *
- * Migration target (Roadmap #1): ≥ 50 % of `state.ts` call-site subscriptions.
+ * Migration status (Roadmap #1): ≥ 50 % of `state.ts` call-site subscriptions.
  *   Sprint 121: weather.ts subscription migrated (first card-at-a-time step).
+ *   Sprint 140: fdb-motivation.ts motivationInterval migrated → 100 % of
+ *               reactive config subscriptions now on signals.
  */
 
 import { signal } from "./signals";
@@ -33,6 +35,13 @@ export const tempUnit = signal<"C" | "F">("C");
  */
 export const appTheme = signal<ThemeName>("black");
 
+/**
+ * Motivation card auto-advance interval in minutes (0 = disabled).
+ * Bridged from `state.set("config.motivationInterval", …)`.
+ * FdbMotivationCard subscribes via: `effect(() => { motivationInterval.value; … })`
+ */
+export const motivationInterval = signal<number>(0);
+
 // ── Bridge: state.ts → app-signals ───────────────────────────────────────────
 
 /**
@@ -50,6 +59,9 @@ export function syncAppSignal(key: string, value: unknown): void {
       break;
     case "config.theme":
       appTheme.value = (value as ThemeName) ?? "black";
+      break;
+    case "config.motivationInterval":
+      motivationInterval.value = typeof value === "number" ? value : 0;
       break;
     default:
       break;

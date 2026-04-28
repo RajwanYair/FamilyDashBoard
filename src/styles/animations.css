@@ -400,6 +400,22 @@ body.shabbat-mode #shabbat-mode-banner {
   width: 90%;
   color: var(--text-primary);
 }
+
+/* Sprint 140 (Roadmap #11): Anchor Positioning for Help dialog.
+   When supported, the help panel tethers to #status-bar (where the keyboard
+   shortcut hint lives) and uses position-try-fallbacks to flip when there
+   isn't enough vertical space. Browsers without anchor positioning keep the
+   default centered-modal layout via the <dialog> default. */
+@supports (anchor-name: --status-bar-anchor) {
+  #help-overlay[open] #help-panel {
+    position: fixed;
+    position-anchor: --status-bar-anchor;
+    bottom: anchor(top);
+    inset-inline-end: anchor(end);
+    margin: 0 0 12px 0;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+}
 #help-panel h2 {
   font-size: 1.1em;
   color: var(--accent);
