@@ -124,6 +124,7 @@ Expected output: all green, **3193 tests / 94 suites / 0 failures**.
 | Blank screen on `file://`     | Use `npm run build:local`, not `npm run build`                                                |
 | SW not updating               | DevTools → Application → Service Workers → "Update on reload"                                 |
 | Hebrew text garbled           | Ensure `<html lang="he" dir="rtl">` is present in `src/index.html`                            |
+| Behind a corporate proxy      | Dev server auto-strips CSP meta (`stripDevCsp` plugin). For built `dist/`, append `?nosw=1` to bypass the SW; in DevTools console run `await __fdbUnregisterSW()` to purge prior registrations + caches. |
 
 ---
 

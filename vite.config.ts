@@ -144,11 +144,36 @@ const injectSri: Plugin = {
   },
 };
 
+/**
+ * V14-RESILIENCE Roadmap #23: Strip CSP meta in dev mode for proxy-blocked
+ * developers. CI/production keep the full CSP L3 + Trusted Types policy.
+ *
+ * Activation: `vite` (dev server), `npx vite --mode development`, or any
+ * `mode === 'development'`. Has no effect on `vite build` (production CSP
+ * intact in dist/index.html).
+ *
+ * Why: Some corporate proxies inject HTML/JS into responses (telemetry,
+ * captive-portal interstitials, dev-tooling shims) that the strict CSP
+ * blocks. Rather than weakening the production policy, we strip CSP only
+ * during local iteration so that devs behind hostile networks can still
+ * see card output. Pair with `?nosw=1` URL flag to also bypass the SW.
+ */
+const stripDevCsp: Plugin = {
+  name: "strip-dev-csp",
+  apply: "serve",
+  transformIndexHtml(html: string): string {
+    return html.replace(
+      /<meta[^>]*http-equiv=["']Content-Security-Policy["'][^>]*\/?>/gi,
+      "<!-- CSP stripped in dev mode by stripDevCsp plugin (Roadmap #23) -->",
+    );
+  },
+};
+
 export default defineConfig(({ command }) => ({
   root: "src",
   base: "/FamilyDashBoard/",
   cacheDir: join(tempBase, ".vite"),
-  plugins: [removeCrossOrigin, injectCfAnalytics, injectSwVersion, injectSri],
+  plugins: [stripDevCsp, removeCrossOrigin, injectCfAnalytics, injectSwVersion, injectSri],
 
   // v11.0-PERF-1: Use Lightning CSS for faster, smaller CSS builds.
   // Targets modern evergreen browsers that support all dashboard CSS features.
