@@ -188,8 +188,10 @@ describe("Theme — applyTheme edge cases", () => {
     expect(document.body.classList.contains("theme-blue")).toBe(true);
   });
 
-  it("uses startViewTransition when available", () => {
-    const startVT = vi.fn((cb: () => void) => {
+  it("uses startViewTransition when available (L2 object form)", () => {
+    // L2-aware stub: accepts both callback (L1) and options object (L2).
+    const startVT = vi.fn((cbOrOpts: (() => void) | { update: () => void; types?: string[] }) => {
+      const cb = typeof cbOrOpts === "function" ? cbOrOpts : cbOrOpts.update;
       cb();
       return { ready: Promise.resolve(), finished: Promise.resolve() };
     });
@@ -199,7 +201,7 @@ describe("Theme — applyTheme edge cases", () => {
       writable: true,
     });
     applyTheme("amber");
-    expect(startVT).toHaveBeenCalled();
+    expect(startVT).toHaveBeenCalledOnce();
     expect(document.body.classList.contains("theme-amber")).toBe(true);
     // Cleanup: remove startViewTransition
     delete (document as Record<string, unknown>)["startViewTransition"];
@@ -360,5 +362,35 @@ describe("Theme — applyTheme startViewTransition rejection (Sprint 85)", () =>
     // Allow micro-tasks to run so .catch() handlers execute
     await Promise.allSettled([fakeVt.ready, fakeVt.finished]);
     // No unhandled rejection — test passes if no throw
+  });
+});
+
+// ── Sprint 129: applyTheme L2 try/catch branch (Roadmap #10) ──────────────
+
+describe("Theme — applyTheme L2 fallback to L1 when object form throws (Sprint 129)", () => {
+  afterEach(() => {
+    document.body.className = "";
+    try { Reflect.deleteProperty(document, "startViewTransition"); } catch { /* ok */ }
+    vi.restoreAllMocks();
+  });
+
+  it("falls back to L1 callback form when L2 object call throws TypeError", () => {
+    let callCount = 0;
+    // Simulate an L1-only browser: calling with an object throws TypeError.
+    const l1OnlyStub = vi.fn((cbOrOpts: unknown) => {
+      callCount++;
+      if (typeof cbOrOpts !== "function") throw new TypeError("L1 only");
+      (cbOrOpts as () => void)();
+      return { ready: Promise.resolve(), finished: Promise.resolve() };
+    });
+    Object.defineProperty(document, "startViewTransition", {
+      value: l1OnlyStub,
+      configurable: true,
+      writable: true,
+    });
+    applyTheme("purple");
+    // Called twice: first with object (throws), then with function (succeeds)
+    expect(callCount).toBe(2);
+    expect(document.body.classList.contains("theme-purple")).toBe(true);
   });
 });
