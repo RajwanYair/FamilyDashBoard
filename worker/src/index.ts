@@ -55,6 +55,7 @@ import {
 } from "./middleware/rate-limit";
 import { logRequest } from "./middleware/log";
 import { applyCanaryHeader, shouldTagCanary } from "./middleware/canary";
+import { earlyHintsMiddleware } from "./middleware/early-hints";
 import { writeAnalyticsHit, normaliseRoute } from "./utils/analytics";
 import type { Env } from "./types";
 
@@ -105,7 +106,7 @@ app.use("*", async (c, next) => {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-app.get("/health", (c) => c.json({ ok: true, status: "healthy", ts: Date.now() }));
+app.get("/health", earlyHintsMiddleware, (c) => c.json({ ok: true, status: "healthy", ts: Date.now() }));
 
 // V13-EDGE-5: Canary health endpoint — reveals canary percentage and current tag status
 app.get("/api/canary", (c) => {
@@ -114,23 +115,23 @@ app.get("/api/canary", (c) => {
   return c.json({ canary: tagged, pct: isNaN(pct) ? 0 : pct, ts: Date.now() });
 });
 
-app.get("/api/weather", (c) => handleWeather(new URL(c.req.url), c.env));
+app.get("/api/weather", earlyHintsMiddleware, (c) => handleWeather(new URL(c.req.url), c.env));
 
-app.get("/api/currency", (c) => handleCurrency(c.env));
+app.get("/api/currency", earlyHintsMiddleware, (c) => handleCurrency(c.env));
 
 app.get("/api/hebcal/holidays", (c) => handleHebcalHolidays(new URL(c.req.url), c.env));
 
-app.get("/api/hebcal", (c) => handleHebcal(new URL(c.req.url), c.env));
+app.get("/api/hebcal", earlyHintsMiddleware, (c) => handleHebcal(new URL(c.req.url), c.env));
 
 app.get("/api/stocks", (c) => handleStocks(new URL(c.req.url), c.env));
 
-app.get("/api/news/aggregate", (c) => handleNewsAggregate(c.env));
+app.get("/api/news/aggregate", earlyHintsMiddleware, (c) => handleNewsAggregate(c.env));
 
 app.get("/api/news/summarise", (c) => handleNewsSummarise(c.env));
 
 app.get("/api/news", (c) => handleNews(new URL(c.req.url)));
 
-app.get("/api/alerts", (c) => handleAlerts(c.env));
+app.get("/api/alerts", earlyHintsMiddleware, (c) => handleAlerts(c.env));
 
 // V13-EDGE-1: SSE fan-out via ALERTS_DO Durable Object (ADR-025)
 app.get("/api/alerts/subscribe", (c) => {
@@ -148,7 +149,7 @@ app.get("/api/sefaria/calendar", (c) => handleSefariaCalendar(c.env));
 
 app.get("/api/sefaria/text", (c) => handleSefariaText(new URL(c.req.url), c.env));
 
-app.get("/api/crypto", (c) => handleCrypto(new URL(c.req.url), c.env));
+app.get("/api/crypto", earlyHintsMiddleware, (c) => handleCrypto(new URL(c.req.url), c.env));
 
 app.get("/api/motivation/hebrew", (c) => handleMotivationHebrew(c.env));
 
