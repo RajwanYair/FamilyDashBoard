@@ -8,21 +8,22 @@
  *   npm install -D @stryker-mutator/core @stryker-mutator/vitest-runner
  *   (from MyScripts/ directory — never add devDeps to FamilyDashBoard/package.json)
  *
- * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 additions):
+ * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 + Sprint 126 additions):
  *   - simhash.ts            : mutation score ≥ 85%
  *   - d1-reports.ts         : mutation score ≥ 75%
  *   - analytics.ts          : mutation score ≥ 80%
  *   - canary.ts             : mutation score ≥ 90%
- *   - error-tracker.ts      : mutation score ≥ 80%  (V13)
- *   - config.ts             : mutation score ≥ 75%  (V13)
+ *   - error-tracker.ts      : mutation score ≥ 85%  (V13 + raised Sprint 126 Roadmap #9)
+ *   - config.ts             : mutation score ≥ 85%  (V13 + raised Sprint 126 Roadmap #9)
  *   - error-reporter.ts     : mutation score ≥ 75%  (Sprint 72)
- *   - diag.ts               : mutation score ≥ 70%  (Sprint 72)
+ *   - diag.ts               : mutation score ≥ 85%  (Sprint 72 + raised Sprint 126 Roadmap #9)
  *   - signals.ts            : mutation score ≥ 85%  (Sprint 114)
  *   - fs-access.ts          : mutation score ≥ 75%  (Sprint 114)
  *   - idle.ts               : mutation score ≥ 75%  (Sprint 114)
  *   - cache.ts              : mutation score ≥ 85%  (Roadmap #9)
  *
- * Roadmap #9: floor raised — break 60 → 75, low 70 → 80, high stays 85.
+ * Sprint 126 (Roadmap #9): hard break threshold raised 75 → 85.
+ * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -59,7 +60,7 @@ export default {
   thresholds: {
     high: 85,
     low: 80,
-    break: 75,
+    break: 85,
   },
   htmlReporter: {
     // Output to temp area per project patterns (never in project dir for CI)
