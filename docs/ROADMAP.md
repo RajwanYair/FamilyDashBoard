@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-27 · **Shipped baseline**: v13.12.0 (Sprint 117 — production-ready cleanup: 103 inline styles extracted to utility classes; root duplicates `CLAUDE.md` + `icon.svg` removed; `link-check.yml` strict-mode; documentation/SVG/instruction references rewired).
+> **Refresh date**: 2026-04-28 · **Shipped baseline**: v13.13.0 (Sprint 118 — cross-doc View Transitions opt-in; ECB/Frankfurter as 3rd currency fallback; UA-CH high-entropy hints in system-info; preconnect to worker origin; CHANGELOG/ROADMAP/data-sources docs sync).
 >
 > **Inventory**: 4835 tests / 157 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 39 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · 90 source `.ts` · 171 test `.ts` · 27 worker `.ts` · 15 CSS modules · 50 docs · coverage 89.35 / 81.84 / 89.02 / 90.51.
 >
