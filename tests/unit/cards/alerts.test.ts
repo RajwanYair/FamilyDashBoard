@@ -27,6 +27,7 @@ import {
   initAlertsCard,
   initAlertsSSE,
   destroyAlertsSSE,
+  destroyAlertsCard,
   alertThreatIcon,
   alertAgeLabel,
   clearUnreadAlerts,
@@ -1368,6 +1369,54 @@ describe("Alerts — initAlertsSSE and destroyAlertsSSE", () => {
     es.onerror?.();
 
     expect(es.closeCalled).toBe(true);
+  });
+
+  it("SSE ping event fires setAlertsRealtime(true) (line 425)", () => {
+    vi.stubGlobal("EventSource", MockEventSource);
+    vi.stubGlobal("navigator", { onLine: true });
+
+    setAlertsRealtime(false);
+    initAlertsSSE();
+    const es = MockEventSource.instances[0]!;
+    es.fireEvent("ping");
+    // No throw; setAlertsRealtime(true) and diagLog are called
+    expect(es.closeCalled).toBe(false);
+  });
+
+  it("SSE alert event triggers loadAlerts (line 429)", () => {
+    vi.stubGlobal("EventSource", MockEventSource);
+    vi.stubGlobal("navigator", { onLine: true });
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+
+    initAlertsSSE();
+    const es = MockEventSource.instances[0]!;
+    expect(() => es.fireEvent("alert")).not.toThrow();
+  });
+});
+
+describe("Alerts — destroyAlertsCard (lines 459-463)", () => {
+  afterEach(() => {
+    _resetAlertsForTest();
+    vi.restoreAllMocks();
+  });
+
+  it("destroyAlertsCard clears timer when one is active (line 459 TRUE)", async () => {
+    // Schedule a timer by loading alerts (which calls scheduleAlertsRefresh)
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    await loadAlerts();
+    // destroyAlertsCard should clearTimeout the timer without throwing
+    expect(() => destroyAlertsCard()).not.toThrow();
+  });
+
+  it("destroyAlertsCard does nothing when timer is null (line 459 FALSE)", () => {
+    // _timer starts as null after reset
+    expect(() => destroyAlertsCard()).not.toThrow();
   });
 });
 

@@ -59,7 +59,7 @@ export default defineConfig({
       reporter: ["text", "lcov", "html", "json-summary"],
       reportsDirectory: join(tempBase, "coverage"),
       include: ["src/**/*.ts"],
-      exclude: ["src/vite-env.d.ts", "src/**/*.d.ts"],
+      exclude: ["src/vite-env.d.ts", "src/**/*.d.ts", "src/preview.ts"],
       thresholds: {
         // V13-OPS/AI: calibrated after Sprint 6-7 added new worker code
         // (feeds.ts embedding pass + cron.ts weekly digest) which expanded
@@ -95,11 +95,18 @@ export default defineConfig({
         //   in state.ts (new async .then/.catch callbacks). Actual functions 88.98% — threshold
         //   temporarily anchored at 88.9 to unblock CI. Sprint 132 will add branch+function tests
         //   to ratchet functions back to 89.0+ alongside branches 81.8→82.0.
-        statements: 89.3,
-        branches: 81.8,
-        functions: 88.9,
-        lines: 90.4,
+        // Sprint 143 (Roadmap #8 coverage): excluded src/preview.ts (dev-only, 0% cover).
+        //   Added: fdb-video-news.test.ts (+12), main (+7 branch tests), diag-overlay (+1 interval)
+        //   fdb-weather/news/stocks (+2 each). Actuals: 93.62/85.39/92.63/94.87.
+        //   Raised thresholds to 93.5/85.0/92.5/94.7.
+        statements: 93.5,
+        branches: 85.0,
+        functions: 92.5,
+        lines: 94.7,
       },
     },
   },
 });
+
+
+

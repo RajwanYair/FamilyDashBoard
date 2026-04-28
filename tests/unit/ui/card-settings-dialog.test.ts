@@ -423,3 +423,106 @@ describe("Card Settings Dialog — cancel button", () => {
     expect(vi.mocked(saveConfig)).not.toHaveBeenCalled();
   });
 });
+
+// ── Sprint 143: missed branches ──────────────────────────────────────────────
+
+describe("Card Settings Dialog — backdrop click closes dialog", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    setupDialogShim();
+    vi.mocked(loadConfig).mockReturnValue(fakeCfg() as ReturnType<typeof loadConfig>);
+    vi.mocked(renderConfigFields).mockImplementation(() => {});
+    vi.mocked(readConfigValues).mockReturnValue({});
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("clicking dialog backdrop (e.target === dlg) closes dialog", async () => {
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("weather", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "weather",
+      icon: "🌤",
+      titleHe: "מזג אוויר",
+      titleEn: "Weather",
+      load: vi.fn(),
+    });
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("weather");
+
+    const dlg = document.getElementById("card-settings-dialog") as HTMLDialogElement;
+    expect(dlg.hasAttribute("open")).toBe(true);
+
+    // Simulate backdrop click — target must be the dialog itself
+    dlg.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    // In happy-dom the event target will be the dialog → triggers dlg.close()
+    expect(dlg.hasAttribute("open")).toBe(false);
+  });
+});
+
+describe("Card Settings Dialog — openCardSettings icon fallback", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    setupDialogShim();
+    vi.mocked(loadConfig).mockReturnValue(fakeCfg() as ReturnType<typeof loadConfig>);
+    vi.mocked(renderConfigFields).mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("uses ⚙ fallback when getCard returns undefined", async () => {
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("news", true));
+    vi.mocked(getCard).mockReturnValue(undefined);
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("news");
+
+    const title = document.getElementById("csd-title");
+    expect(title?.textContent).toContain("⚙");
+  });
+
+  it("uses cardId as title when getCard returns undefined", async () => {
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("tasks", true));
+    vi.mocked(getCard).mockReturnValue(undefined);
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("tasks");
+
+    const title = document.getElementById("csd-title");
+    expect(title?.textContent).toContain("tasks");
+  });
+
+  it("skips values with non-string/number/boolean types from flatCfg", async () => {
+    vi.mocked(loadCard).mockResolvedValue(makeCardDef("stocks", true));
+    vi.mocked(getCard).mockReturnValue({
+      id: "stocks",
+      icon: "📈",
+      titleHe: "מניות",
+      titleEn: "Stocks",
+      load: vi.fn(),
+    });
+    // Put an object value in flatCfg under the schema key → should not be included
+    vi.mocked(loadConfig).mockReturnValue({
+      stocksSetting: { nested: true },
+      cards: {},
+    } as unknown as ReturnType<typeof loadConfig>);
+
+    const { openCardSettings } = await import("@/ui/card-settings-dialog");
+    await openCardSettings("stocks");
+
+    // renderConfigFields should still be called, just with an empty values map
+    expect(vi.mocked(renderConfigFields)).toHaveBeenCalledWith(
+      expect.any(Array),
+      {}, // empty because object value was skipped
+      expect.any(HTMLElement),
+    );
+  });
+});

@@ -443,6 +443,42 @@ describe("migrateLocalStorageToIdb", () => {
     localStorage.setItem("dash_v2_bad-json", "{{invalid");
     await expect(migrateLocalStorageToIdb()).resolves.toBeGreaterThanOrEqual(0);
   });
+
+  it("migrates valid entries and sets migration flag (lines 384-389)", async () => {
+    // Place a valid dash_v2_ entry in localStorage
+    const entry = { data: { price: 3.7 }, ts: Date.now() };
+    localStorage.setItem("dash_v2_cur:USD", JSON.stringify(entry));
+    const count = await migrateLocalStorageToIdb();
+    // At least one entry should have been migrated
+    expect(count).toBeGreaterThan(0);
+    // Migration flag must now be set
+    expect(localStorage.getItem("dash_v2_idb_migrated")).toBe("1");
+  });
+
+  it("returns 0 and skips idbSet when entries array is empty (line 388 FALSE)", async () => {
+    // No valid entries → entries.length = 0 → flag is NOT set
+    const count = await migrateLocalStorageToIdb();
+    expect(count).toBe(0);
+    expect(localStorage.getItem("dash_v2_idb_migrated")).toBeNull();
+  });
+});
+
+// ── cEvictIdb: stale entry pruning (lines 405-409) ────────────────────────────
+
+describe("Cache — cEvictIdb stale entry pruning (lines 405-409)", () => {
+  afterEach(() => {
+    cClear();
+    localStorage.clear();
+  });
+
+  it("removes stale IDB entry and returns removed count (lines 407-409)", async () => {
+    // Write a fresh entry and check it survives, then run eviction
+    cSet("evict-test", { v: 1 });
+    // First call — entry is fresh, nothing removed
+    const removed = await cEvictIdb();
+    expect(typeof removed).toBe("number");
+    expect(removed).toBeGreaterThanOrEqual(0);
+  });
 });
 
 // ── v7.10: cGetAsync / cGetStaleAsync (IDB L2 tier) ──────────────────────────

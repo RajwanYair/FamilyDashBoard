@@ -608,3 +608,95 @@ describe("idbEvictStale", () => {
     expect(evicted).toBe(0);
   });
 });
+
+// ── Sprint 143: catch-block branches (lines 165, 192) ─────────────────────────
+
+function makeThrowingMockIdb() {
+  const throwingDb = {
+    transaction: () => {
+      throw new Error("IDB transaction error");
+    },
+    objectStoreNames: { contains: () => true },
+  };
+  const throwingOpen = {
+    result: throwingDb,
+    onsuccess: null as ((e: Event) => void) | null,
+    onerror: null as ((e: Event) => void) | null,
+    onupgradeneeded: null as ((e: IDBVersionChangeEvent) => void) | null,
+  } as unknown as IDBOpenDBRequest;
+  setTimeout(() => throwingOpen.onsuccess?.({ target: throwingOpen } as unknown as Event), 0);
+  return { open: () => throwingOpen } as unknown as IDBFactory;
+}
+
+describe("IDB Cache — idbKeys catch branch (line 165)", () => {
+  it("resolves with [] when db.transaction() throws", async () => {
+    _resetIdb();
+    vi.stubGlobal("indexedDB", makeThrowingMockIdb());
+    const result = await idbKeys();
+    expect(result).toEqual([]);
+  });
+});
+
+describe("IDB Cache — idbGetEntry catch branch (line 192)", () => {
+  it("resolves with null when db.transaction() throws", async () => {
+    _resetIdb();
+    vi.stubGlobal("indexedDB", makeThrowingMockIdb());
+    const result = await idbGetEntry("any-key");
+    expect(result).toBeNull();
+  });
+});
+
+// ── Sprint 143: idbEvictLRU size-check after 5 deletions (lines 254-256) ──────
+
+describe("IDB Cache — idbEvictLRU size re-check at 5 deletions (line 255 TRUE)", () => {
+  beforeEach(async () => {
+    _resetIdb();
+    vi.stubGlobal("indexedDB", makeMockIdb());
+    await idbClear();
+  });
+
+  it("checks size after every 5 deletions and breaks when under limit", async () => {
+    // Seed exactly 5 entries
+    for (let i = 0; i < 5; i++) {
+      await idbSet(`lru-k${i}`, `value${i}`);
+    }
+    let estimateCalls = 0;
+    vi.stubGlobal("navigator", {
+      storage: {
+        estimate: vi.fn().mockImplementation(() => {
+          estimateCalls++;
+          // First call: over limit; second call (after 5 removals): under limit
+          const usage = estimateCalls === 1 ? 60 * 1024 * 1024 : 1024;
+          return Promise.resolve({ usage });
+        }),
+      },
+    });
+
+    const removed = await idbEvictLRU(IDB_MAX_BYTES);
+    // All 5 deleted; at removed=5, size check fires (line 255 TRUE) and breaks (line 256 TRUE)
+    expect(removed).toBe(5);
+    expect(estimateCalls).toBe(2);
+  });
+
+  it("continues evicting when size is still over limit at the 5-deletion checkpoint", async () => {
+    // Seed 10 entries so we pass the first checkpoint at 5 and keep going
+    for (let i = 0; i < 10; i++) {
+      await idbSet(`lru2-k${i}`, `v${i}`);
+    }
+    let estimateCalls = 0;
+    vi.stubGlobal("navigator", {
+      storage: {
+        estimate: vi.fn().mockImplementation(() => {
+          estimateCalls++;
+          // Still over limit at first checkpoint (call 2), under at second (call 3)
+          const usage = estimateCalls <= 2 ? 60 * 1024 * 1024 : 1024;
+          return Promise.resolve({ usage });
+        }),
+      },
+    });
+
+    const removed = await idbEvictLRU(IDB_MAX_BYTES);
+    // Removed at least 5 (first checkpoint size still over) then more until under
+    expect(removed).toBeGreaterThanOrEqual(5);
+  });
+});

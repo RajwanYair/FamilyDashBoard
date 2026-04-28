@@ -260,4 +260,42 @@ describe("getGPUInfo()", () => {
     _resetHardwareProfile();
     expect(getGPUInfo().tier).toBe("mid");
   });
+
+  it("returns unknown renderer when WEBGL_debug_renderer_info extension is absent (line 54-57)", () => {
+    // Mock canvas to have a WebGL context that lacks WEBGL_debug_renderer_info
+    const mockGl = {
+      getExtension: vi.fn().mockImplementation((name: string) => {
+        if (name === "WEBGL_debug_renderer_info") return null;
+        if (name === "WEBGL_lose_context") return { loseContext: vi.fn() };
+        return null;
+      }),
+      getParameter: vi.fn(),
+    };
+    const mockCanvas = {
+      getContext: vi.fn().mockImplementation((type: string) => {
+        if (type === "webgl") return mockGl;
+        return null;
+      }),
+    };
+    const origCreate = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag === "canvas") return mockCanvas as unknown as HTMLElement;
+      return origCreate(tag);
+    });
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    expect(gpu.renderer).toBe("unknown");
+    expect(gpu.vendor).toBe("unknown");
+    vi.restoreAllMocks();
+  });
+
+  it("returns unknown when detectGPU throws (line 73 catch branch)", () => {
+    vi.spyOn(document, "createElement").mockImplementation(() => {
+      throw new Error("canvas not allowed");
+    });
+    _resetHardwareProfile();
+    const gpu = getGPUInfo();
+    expect(gpu.renderer).toBe("unknown");
+    vi.restoreAllMocks();
+  });
 });

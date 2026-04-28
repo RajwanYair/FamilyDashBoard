@@ -56,4 +56,10 @@ describe("FdbCurrencyCard", () => {
   it("is registered as the fdb-currency custom element", () => {
     expect(customElements.get("fdb-currency")).toBeDefined();
   });
+  it("does not re-register when already defined (if-FALSE branch)", async () => {
+    vi.resetModules();
+    await import("@/cards/currency/fdb-currency");
+    expect(customElements.get("fdb-currency")).toBeDefined();
+  });
 });
+

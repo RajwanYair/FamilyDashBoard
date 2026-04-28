@@ -67,4 +67,10 @@ describe("FdbTasksCard", () => {
 
     expect(card.querySelectorAll(".tasks-row")).toHaveLength(3);
   });
+
+  it("does not re-register when already defined (if-FALSE branch, line 127)", async () => {
+    vi.resetModules();
+    await import("@/cards/tasks/fdb-tasks");
+    expect(customElements.get("fdb-tasks")).toBeDefined();
+  });
 });

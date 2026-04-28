@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 
 // ── Mock ALL modules that init() imports ──
-vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
+vi.mock("@/core/diag", () => ({ diagLog: vi.fn(), getDiagEntries: vi.fn().mockReturnValue([]) }));
 vi.mock("@/core/cache", () => ({
   cEvict: vi.fn(),
   hydrateFromIdb: vi.fn().mockResolvedValue(0),
@@ -58,6 +58,9 @@ vi.mock("@/ui/ticker", () => ({ initTicker: vi.fn(), applyTickerSpeed: vi.fn() }
 vi.mock("@/ui/config-panel", () => ({
   initConfigPanel: vi.fn(),
   toggleConfigPanel: vi.fn(),
+  openConfigPanel: vi.fn(),
+  switchCfgTab: vi.fn(),
+  openEcfgImportDialog: vi.fn(),
 }));
 vi.mock("@/ui/screen-mode", () => ({
   initScreenMode: vi.fn(),
@@ -68,6 +71,7 @@ vi.mock("@/ui/night-dimmer", () => ({
   initNightDimmer: vi.fn(),
   setWarmTint: vi.fn(),
   isWarmTint: vi.fn().mockReturnValue(false),
+  setIdleAutoDimMinutes: vi.fn(),
 }));
 vi.mock("@/ui/diag-overlay", () => ({
   initDiagOverlay: vi.fn(),
@@ -101,9 +105,20 @@ vi.mock("@/cards/tasks/tasks", () => ({ initTasksCard: vi.fn() }));
 vi.mock("@/cards/system-info/system-info", () => ({
   initSystemInfoCard: vi.fn(),
 }));
+vi.mock("@/core/perf", () => ({
+  initPerfObserver: vi.fn(),
+  markDomReady: vi.fn(),
+  markStartupComplete: vi.fn(),
+  recordCardInitTime: vi.fn(),
+}));
+vi.mock("@/core/vitals-reporter", () => ({
+  scheduleVitalsReport: vi.fn(),
+  flushVitalsReport: vi.fn(),
+}));
 
 import { applySeasonClass, applyHiddenCards, applyCardLayout, applyCardSizes, init } from "@/main";
-import { diagLog } from "@/core/diag";
+import { diagLog, getDiagEntries } from "@/core/diag";
+import { flushVitalsReport } from "@/core/vitals-reporter";
 import { cEvict } from "@/core/cache";
 import { initVisibility } from "@/core/idle";
 import { registerSW } from "@/core/sw-register";
@@ -114,11 +129,11 @@ import { initHeader } from "@/ui/header";
 import { initCardMaximize, initCardCollapse } from "@/ui/maximize";
 import { initStatusBar, stampRefresh } from "@/ui/status-bar";
 import { initTicker } from "@/ui/ticker";
-import { initConfigPanel } from "@/ui/config-panel";
+import { initConfigPanel, openEcfgImportDialog, openConfigPanel, switchCfgTab } from "@/ui/config-panel";
 import { initDiagOverlay } from "@/ui/diag-overlay";
 import { initBgImages } from "@/ui/bg-images";
 import { initScreenMode, stepFontScale } from "@/ui/screen-mode";
-import { initNightDimmer, toggleNightDim } from "@/ui/night-dimmer";
+import { initNightDimmer, toggleNightDim, setIdleAutoDimMinutes } from "@/ui/night-dimmer";
 import { initWeatherCard } from "@/cards/weather/weather";
 import { initNewsCard, toggleBookmarkMode } from "@/cards/news/news";
 import { initStocksCard } from "@/cards/stocks/stocks";
@@ -499,6 +514,94 @@ describe("Main — init() keyboard shortcuts", () => {
   });
 });
 
+// ── Ctrl+Shift+E diagnostic export handler (lines 358-370) ───────────────────
+
+describe("Main — init() Ctrl+Shift+E diagnostic export (lines 359-369)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = "";
+    // Mock URL.createObjectURL / revokeObjectURL (not implemented in jsdom)
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn().mockReturnValue("blob:fake"),
+      revokeObjectURL: vi.fn(),
+    });
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+    vi.unstubAllGlobals();
+  });
+
+  it("Ctrl+Shift+E dispatches export (lines 359-369 TRUE branch)", () => {
+    vi.mocked(getDiagEntries).mockReturnValue([{ ts: 0, tag: "test", msg: "hello" }] as ReturnType<typeof getDiagEntries>);
+    init();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => { /* noop */ });
+    const evt = new KeyboardEvent("keydown", { ctrlKey: true, shiftKey: true, key: "E", bubbles: true });
+    window.dispatchEvent(evt);
+    expect(getDiagEntries).toHaveBeenCalledWith(500);
+    expect((URL as unknown as { createObjectURL: ReturnType<typeof vi.fn> }).createObjectURL).toHaveBeenCalled();
+    expect(clickSpy).toHaveBeenCalled();
+    clickSpy.mockRestore();
+  });
+
+  it("non-matching keydown does NOT trigger export (line 359 FALSE branch)", () => {
+    init();
+    const evt = new KeyboardEvent("keydown", { ctrlKey: false, shiftKey: false, key: "A", bubbles: true });
+    window.dispatchEvent(evt);
+    expect(getDiagEntries).not.toHaveBeenCalled();
+  });
+});
+
+// ── init() aria-label on collapse buttons (lines 262-263) ────────────────────
+
+describe("Main — init() aria-label on collapse buttons (lines 262-263)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+    } as ReturnType<typeof loadConfig>);
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    document.body.className = "";
+  });
+
+  it("sets aria-label on collapse buttons that have none (line 262 TRUE)", () => {
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    document.body.appendChild(btn);
+    init();
+    expect(btn.getAttribute("aria-label")).toBe("מזער/הרחב כרטיסית");
+  });
+
+  it("does not override aria-label on buttons that already have one (line 262 FALSE)", () => {
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.setAttribute("aria-label", "custom-label");
+    document.body.appendChild(btn);
+    init();
+    expect(btn.getAttribute("aria-label")).toBe("custom-label");
+  });
+});
+
 describe("Main — init() online/offline handlers", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -740,6 +843,12 @@ describe("Main — init() keyboard lambda callbacks", () => {
       value: null,
       configurable: true,
     });
+  });
+
+  it("'v' handler calls openConfigPanel and switchCfgTab('cards') (lines 376-377)", () => {
+    extractHandler("v")();
+    expect(openConfigPanel).toHaveBeenCalled();
+    expect(switchCfgTab).toHaveBeenCalledWith("cards");
   });
 });
 
@@ -1282,5 +1391,144 @@ describe("Main — dynamic help overlay (F10 v7.3)", () => {
     handler();
     const dynEl = document.getElementById("help-dynamic-keys")!;
     expect(dynEl.textContent).toBe("");
+  });
+});
+
+// ── init() ECFG_PREFIX branch (line 439) ─────────────────────────────────────
+
+describe("Main — init() ECFG import dialog (line 439)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+    } as ReturnType<typeof loadConfig>);
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+    // Reset hash back to empty
+    try { window.location.hash = ""; } catch { /* jsdom may not support */ }
+  });
+
+  it("calls openEcfgImportDialog when URL hash starts with #ecfg= (line 438-439 TRUE)", () => {
+    Object.defineProperty(window, "location", {
+      value: { hash: "#ecfg=abc123", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+    init();
+    expect(openEcfgImportDialog).toHaveBeenCalledWith("#ecfg=abc123");
+  });
+
+  it("does NOT call openEcfgImportDialog when hash is empty (line 438 FALSE)", () => {
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+    init();
+    expect(openEcfgImportDialog).not.toHaveBeenCalled();
+  });
+});
+
+// ── init() nightDimIdleMinutes branch (line 450-451) ─────────────────────────
+
+describe("Main — init() setIdleAutoDimMinutes (line 450-451)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.body.innerHTML = "";
+    Object.defineProperty(window, "location", {
+      value: { hash: "", pathname: "/", search: "" },
+      configurable: true,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+  });
+
+  it("calls setIdleAutoDimMinutes when nightDimIdleMinutes > 0 (line 450 TRUE)", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+      nightDimIdleMinutes: 5,
+    } as ReturnType<typeof loadConfig>);
+    init();
+    expect(setIdleAutoDimMinutes).toHaveBeenCalledWith(5);
+  });
+
+  it("does NOT call setIdleAutoDimMinutes when nightDimIdleMinutes is 0 (line 450 FALSE)", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+      nightDimIdleMinutes: 0,
+    } as ReturnType<typeof loadConfig>);
+    init();
+    expect(setIdleAutoDimMinutes).not.toHaveBeenCalled();
+  });
+
+  it("does NOT call setIdleAutoDimMinutes when nightDimIdleMinutes is undefined (line 450 FALSE)", () => {
+    vi.mocked(loadConfig).mockReturnValue({
+      nightDimLevel: 0.5,
+      alertsEnabled: true,
+      realtimeAlerts: false,
+      autoTheme: false,
+      theme: "warm-dark",
+      hiddenCards: [],
+      cardSizes: {},
+    } as ReturnType<typeof loadConfig>);
+    init();
+    expect(setIdleAutoDimMinutes).not.toHaveBeenCalled();
+  });
+});
+
+// ── module-level visibilitychange handler (line 123) ─────────────────────────
+
+describe("Main — module-level visibilitychange handler (line 123)", () => {
+  afterEach(() => {
+    Object.defineProperty(document, "visibilityState", {
+      value: "visible",
+      configurable: true,
+      writable: true,
+    });
+    vi.mocked(flushVitalsReport).mockClear();
+  });
+
+  it("calls flushVitalsReport when visibilityState is hidden (line 123 TRUE)", () => {
+    Object.defineProperty(document, "visibilityState", {
+      value: "hidden",
+      configurable: true,
+      writable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(flushVitalsReport).toHaveBeenCalled();
+  });
+
+  it("does NOT call flushVitalsReport when visibilityState is visible (line 123 FALSE)", () => {
+    Object.defineProperty(document, "visibilityState", {
+      value: "visible",
+      configurable: true,
+      writable: true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(flushVitalsReport).not.toHaveBeenCalled();
   });
 });

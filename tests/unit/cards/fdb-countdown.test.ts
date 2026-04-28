@@ -91,4 +91,10 @@ describe("FdbCountdownCard", () => {
     const card = new FdbCountdownCard();
     expect(() => (card as unknown as { disconnect(): void }).disconnect()).not.toThrow();
   });
+
+  it("does not re-register when already defined (if-FALSE branch, line 48)", async () => {
+    vi.resetModules();
+    await import("@/cards/countdown/fdb-countdown");
+    expect(customElements.get("fdb-countdown")).toBeDefined();
+  });
 });

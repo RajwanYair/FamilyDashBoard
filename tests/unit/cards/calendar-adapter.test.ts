@@ -78,4 +78,30 @@ describe("Calendar Provider Adapter (Sprint 129)", () => {
     const adapter = createCalendarAdapter("https://example.com/cal.ics");
     expect(adapter.status()).toBe("ok");
   });
+
+  it("returns cached data when cache hit (line 42 TRUE branch)", async () => {
+    // First fetch populates cache
+    vi.mocked(fetch).mockResolvedValue(new Response(VALID_ICS, { status: 200 }));
+    const adapter = createCalendarAdapter("https://example.com/cal.ics");
+    await adapter.fetch(); // populates cache
+
+    // Second fetch should hit cache without calling fetch again
+    vi.mocked(fetch).mockClear();
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data).toContain("BEGIN:VCALENDAR");
+    }
+    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
+  });
+
+  it("returns ok:false when HTTP response is not OK (line 48, !resp.ok branch)", async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response("Not Found", { status: 404 }));
+    const adapter = createCalendarAdapter("https://example.com/cal.ics");
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("HTTP 404");
+    }
+  });
 });

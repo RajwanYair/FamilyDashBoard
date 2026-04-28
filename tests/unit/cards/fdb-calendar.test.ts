@@ -53,4 +53,10 @@ describe("FdbCalendarCard", () => {
   it("is registered as the fdb-calendar custom element", () => {
     expect(customElements.get("fdb-calendar")).toBeDefined();
   });
+  it("does not re-register when already defined (if-FALSE branch)", async () => {
+    vi.resetModules();
+    await import("@/cards/calendar/fdb-calendar");
+    expect(customElements.get("fdb-calendar")).toBeDefined();
+  });
 });
+

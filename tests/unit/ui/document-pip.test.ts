@@ -144,4 +144,85 @@ describe("document-pip (Sprint 137)", () => {
     expect(requestWindow).toHaveBeenCalledTimes(2);
     document.body.removeChild(host);
   });
+
+  // Sprint 143: missed branches
+
+  it("exitDocumentPip is a no-op when no PiP window is active", () => {
+    _resetDocumentPip();
+    expect(() => exitDocumentPip()).not.toThrow();
+    expect(isPipActive()).toBe(false);
+  });
+
+  it("enterDocumentPip with orphan element (no parentNode) sets placeholder to null", async () => {
+    const fake = makeFakePipWindow();
+    Object.defineProperty(window, "documentPictureInPicture", {
+      configurable: true,
+      value: { requestWindow: vi.fn().mockResolvedValue(fake), window: null },
+    });
+
+    // Orphan element — not in the DOM, no parentNode
+    const el = document.createElement("div");
+    const ok = await enterDocumentPip(el);
+    expect(ok).toBe(true);
+    expect(isPipActive()).toBe(true);
+
+    // exitDocumentPip should not throw when no placeholder
+    exitDocumentPip();
+    expect(isPipActive()).toBe(false);
+  });
+
+  it("_onPipClose uses appendChild when nextSibling is null", async () => {
+    const fake = makeFakePipWindow();
+    Object.defineProperty(window, "documentPictureInPicture", {
+      configurable: true,
+      value: { requestWindow: vi.fn().mockResolvedValue(fake), window: null },
+    });
+
+    const host = document.createElement("section");
+    const el = document.createElement("div");
+    host.appendChild(el);
+    document.body.appendChild(host);
+
+    // At this point el.nextSibling is null (last child)
+    await enterDocumentPip(el);
+    exitDocumentPip();
+
+    // el should be back in host (via appendChild since nextSibling was null)
+    expect(host.contains(el)).toBe(true);
+    document.body.removeChild(host);
+  });
+
+  it("exitDocumentPip survives when pipWindow.close() throws", async () => {
+    const fake = makeFakePipWindow();
+    // Override close to throw
+    fake.close = () => { throw new Error("already closed"); };
+    Object.defineProperty(window, "documentPictureInPicture", {
+      configurable: true,
+      value: { requestWindow: vi.fn().mockResolvedValue(fake), window: null },
+    });
+
+    const host = document.createElement("section");
+    const el = document.createElement("div");
+    host.appendChild(el);
+    document.body.appendChild(host);
+
+    await enterDocumentPip(el);
+    expect(() => exitDocumentPip()).not.toThrow();
+    expect(isPipActive()).toBe(false);
+    document.body.removeChild(host);
+  });
+
+  it("isPipActive returns false after PiP window is closed externally", async () => {
+    const fake = makeFakePipWindow();
+    Object.defineProperty(window, "documentPictureInPicture", {
+      configurable: true,
+      value: { requestWindow: vi.fn().mockResolvedValue(fake), window: null },
+    });
+
+    const el = document.createElement("div");
+    await enterDocumentPip(el);
+    // Simulate external close
+    fake.closed = true;
+    expect(isPipActive()).toBe(false);
+  });
 });

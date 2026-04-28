@@ -14,8 +14,11 @@ import {
   storeCurrencyHistory,
   get7DayTrend,
   initCurrencyCard,
+  destroyCurrencyCard,
+  loadCurrency,
   _resetCurrencyForTest,
 } from "@/cards/currency/currency";
+import { clearFetchLocks } from "@/core/fetch";
 
 const MOCK_RATES: Record<string, number> = {
   USD: 0.2667, // 1 ILS = 0.2667 USD → 1 USD ≈ 3.75 ILS
@@ -298,6 +301,38 @@ describe("Currency — initCurrencyCard", () => {
   it("does not throw with empty DOM", () => {
     document.body.innerHTML = "";
     expect(() => initCurrencyCard()).not.toThrow();
+  });
+
+  it("destroyCurrencyCard clears the schedule timer (lines 470-472)", () => {
+    vi.useFakeTimers();
+    initCurrencyCard();
+    // Should not throw and should clear the timeout
+    expect(() => destroyCurrencyCard()).not.toThrow();
+    vi.useRealTimers();
+  });
+
+  it("destroyCurrencyCard is safe when called before init (line 470 FALSE branch)", () => {
+    _resetCurrencyForTest();
+    // _curScheduleId is null — destroyCurrencyCard should be a no-op
+    expect(() => destroyCurrencyCard()).not.toThrow();
+  });
+
+  it("reload button triggers showPopover and loadCurrency (lines 459-462)", () => {
+    document.body.innerHTML += `
+      <button id="cur-reload-btn"></button>
+      <div id="cur-reload-popover"></div>
+    `;
+    const popover = document.getElementById("cur-reload-popover") as HTMLElement & {
+      showPopover?: () => void;
+      hidePopover?: () => void;
+    };
+    popover.showPopover = vi.fn();
+    popover.hidePopover = vi.fn();
+    cacheDom();
+    initCurrencyCard();
+    const btn = document.getElementById("cur-reload-btn") as HTMLButtonElement;
+    btn.click();
+    expect(popover.showPopover).toHaveBeenCalledOnce();
   });
 });
 
@@ -605,5 +640,45 @@ describe("Currency — get7DayTrend (Sprint 24)", () => {
       { date: "2024-01-07", rates: { EUR: 0.25 } },
     ];
     expect(get7DayTrend("USD", history)).toBeNull();
+  });
+});
+
+// ── loadCurrency async paths (lines 426-436, 446-447) ────────────────────────
+
+describe("Currency — loadCurrency async coverage", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="curUsd"></div><div id="curUsdChg"></div>
+      <div id="curEur"></div><div id="curEurChg"></div>
+      <div id="curGbp"></div><div id="curGbpChg"></div>
+      <div id="curGold"></div><div id="curGoldChg"></div>
+      <div id="curSilver"></div><div id="curSilverChg"></div>
+      <div id="currency-body"></div>
+    `;
+    _resetCurrencyForTest();
+    cacheDom();
+    clearFetchLocks();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    _resetCurrencyForTest();
+    vi.restoreAllMocks();
+  });
+
+  it("loadCurrency success path (lines 426-430) — awaited directly", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ rates: { USD: 0.27, EUR: 0.24, GBP: 0.21, XAU: 0.000115, XAG: 0.009 } }),
+    }));
+    await loadCurrency();
+    const el = document.getElementById("curUsd");
+    expect(el?.textContent).toContain("₪");
+  });
+
+  it("loadCurrency error path (lines 432-434) — fetch throws", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
+    // Should not throw — just record failure
+    await expect(loadCurrency()).resolves.toBeUndefined();
   });
 });

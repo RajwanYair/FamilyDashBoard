@@ -193,6 +193,18 @@ describe("tick — proximity messages", () => {
     tick();
     expect(document.getElementById("cd-msg")?.textContent).toContain("יום");
   });
+
+  it("shows empty message when more than 7 days remain (line 187 FALSE branch)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2099-01-01T00:00:00"));
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCardDate: "2099-12-31",
+      countdownCardTime: "00:00",
+    } as DashboardConfig);
+    tick();
+    expect(document.getElementById("cd-msg")?.textContent).toBe("");
+  });
 });
 
 // ── tick — no DOM ──────────────────────────────────────────────────────────
@@ -483,6 +495,30 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
     } as DashboardConfig);
     expect(() => tick2()).not.toThrow();
   });
+
+  it("skips null element updates when tickSecondary elements are absent (lines 245, 249-262 FALSE)", () => {
+    // Only create cd2-section — all inner elements are absent
+    document.body.innerHTML = `<div id="cd2-section"></div>`;
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2099-01-01",
+      countdownCard2Title: "Test",
+      countdownCard2Time: "12:00",
+      countdownCard2DoneMsg: "done",
+    } as DashboardConfig);
+    // Should not throw
+    expect(() => tick2()).not.toThrow();
+  });
+
+  it("skips null element updates when event passed and elements absent (lines 249-253 FALSE branches)", () => {
+    document.body.innerHTML = `<div id="cd2-section"></div>`;
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2000-01-01", // past
+      countdownCard2Title: "Past",
+      countdownCard2Time: "00:00",
+      countdownCard2DoneMsg: "done",
+    } as DashboardConfig);
+    expect(() => tick2()).not.toThrow();
+  });
 });
 
 // ── Sprint 23: urgencyClass ──────────────────────────────────────────────────
@@ -720,6 +756,21 @@ describe("Countdown — tick2 progress bar (Sprint 31)", () => {
     expect(pct).toBeGreaterThan(30);
     expect(pct).toBeLessThan(70);
   });
+
+  it("hides progress wrap when startDate is after target (line 273 — now < target, startMs >= targetMs)", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildCD2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCard2Date: "2026-12-31",
+      countdownCard2Time: "00:00",
+      countdownCard2Title: "אירוע 2",
+      countdownCard2DoneMsg: "done",
+      countdownCard2StartDate: "2027-01-01", // startMs > targetMs → computeProgress returns null
+    } as DashboardConfig);
+    tick2();
+    expect(document.getElementById("cd2-progress-wrap")?.style.display).toBe("none");
+  });
 });
 
 describe("Countdown — tick3 progress bar (Sprint 31)", () => {
@@ -889,6 +940,22 @@ describe("Countdown — tick() primary progress bar", () => {
       countdownCardTitle: "Test",
       countdownCardDoneMsg: "done",
       countdownCardStartDate: "2025-12-01", // start > target → computeProgress returns null
+    } as DashboardConfig);
+    tick();
+    expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");
+  });
+
+  it("hides progress wrap when startDate is after target (line 208 — now < target, startMs >= targetMs)", () => {
+    vi.useFakeTimers();
+    // now is BEFORE target so we don't return early, but startDate is after target
+    vi.setSystemTime(new Date("2025-06-01T00:00:00"));
+    buildProgressDOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2026-12-31", // target is in the future (now < target)
+      countdownCardTime: "00:00",
+      countdownCardTitle: "Test",
+      countdownCardDoneMsg: "done",
+      countdownCardStartDate: "2027-01-01", // startMs > targetMs → computeProgress returns null
     } as DashboardConfig);
     tick();
     expect(document.getElementById("cd-progress-wrap")?.style.display).toBe("none");

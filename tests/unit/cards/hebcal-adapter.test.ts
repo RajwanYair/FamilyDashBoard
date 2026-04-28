@@ -20,7 +20,7 @@ vi.mock("@/core/fetch", () => ({
 }));
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
 
-import { cGet } from "@/core/cache";
+import { cGet, cGetStale } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
 import { recordProviderSuccess, recordProviderFailure } from "@/core/provider";
 
@@ -62,5 +62,21 @@ describe("HebcalAdapter (Sprint 90)", () => {
 
   it("status() delegates to getProviderHealth", () => {
     expect(adapter.status()).toBe("ok");
+  });
+
+  it("returns ok:false with stale data when response has no items array (lines 56-58)", async () => {
+    // Malformed response: data exists but no items
+    vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce({ events: [] });
+    // Provide stale cache
+    const staleData = { items: [{ title: "Stale Event", date: "2025-01-01" }] };
+    vi.mocked(cGetStale).mockReturnValueOnce(staleData);
+
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("Invalid response shape");
+      expect(result.stale).toBe(staleData);
+    }
+    expect(recordProviderFailure).toHaveBeenCalledWith("hebcal");
   });
 });

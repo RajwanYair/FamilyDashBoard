@@ -59,4 +59,27 @@ describe("FdbNewsCard", () => {
 
     expect(newsModule.destroyNewsCard).toHaveBeenCalled();
   });
+
+  it("is registered as the fdb-news custom element", () => {
+    expect(customElements.get("fdb-news")).toBeDefined();
+  });
+
+  it("does not re-register when already defined (if-FALSE branch)", async () => {
+    vi.resetModules();
+    await import("@/cards/news/fdb-news");
+    expect(customElements.get("fdb-news")).toBeDefined();
+  });
+
+  it("skips body init when body already has children (line 9 FALSE branch)", () => {
+    const card = mountCard();
+    // Pre-populate the body so reconnect skips initialization
+    const body = card.querySelector(".card__body")!;
+    const sentinel = document.createElement("div");
+    sentinel.id = "news-skip-sentinel";
+    body.appendChild(sentinel);
+    card.remove();
+    document.body.appendChild(card);
+    // The sentinel should still be there (body not rebuilt)
+    expect(document.getElementById("news-skip-sentinel")).not.toBeNull();
+  });
 });

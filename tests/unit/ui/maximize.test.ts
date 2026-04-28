@@ -1101,3 +1101,144 @@ describe("Maximize — Sprint 88 branch coverage", () => {
     expect(card.classList.contains("collapsed")).toBe(false);
   });
 });
+
+// ── Sprint 143: startVtWithTypes TypeError fallback (lines 41-44) ─────────────
+
+describe("Maximize — startVtWithTypes L1 TypeError fallback (lines 41-44)", () => {
+  beforeEach(() => {
+    stubAnimate();
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    try {
+      Reflect.deleteProperty(document, "startViewTransition");
+    } catch { /* non-configurable */ }
+  });
+
+  it("falls back to L1 when L2 call throws TypeError (line 41 TRUE branch)", async () => {
+    vi.resetModules();
+    const mod2 = (await import("@/ui/maximize")) as {
+      toggleCardMaximize: (c: HTMLElement) => void;
+    };
+    const l1UpdateFn = vi.fn();
+    let callCount = 0;
+
+    // First call (L2 style — options object) throws TypeError; second call (L1 — function) succeeds
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      writable: true,
+      value: (cbOrOpts: unknown) => {
+        callCount++;
+        if (typeof cbOrOpts === "object" && cbOrOpts !== null) {
+          throw new TypeError("Options form not supported");
+        }
+        // L1 fallback call: cbOrOpts is a function
+        if (typeof cbOrOpts === "function") {
+          (cbOrOpts as () => void)();
+          l1UpdateFn();
+        }
+        return { finished: Promise.resolve(), ready: Promise.resolve(), updateCallbackDone: Promise.resolve() };
+      },
+    });
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = "vt-l1-card";
+    document.body.appendChild(card);
+
+    expect(() => mod2.toggleCardMaximize(card)).not.toThrow();
+    // L1 fallback was called (callCount >= 2 — first the L2 attempt, then the L1 fallback)
+    expect(l1UpdateFn).toHaveBeenCalled();
+  });
+
+  it("re-throws non-TypeError from startViewTransition (line 44 throw branch)", async () => {
+    vi.resetModules();
+    const mod2 = (await import("@/ui/maximize")) as {
+      toggleCardMaximize: (c: HTMLElement) => void;
+    };
+
+    // Throw a non-TypeError error
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      writable: true,
+      value: () => {
+        throw new RangeError("unexpected error");
+      },
+    });
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = "vt-range-card";
+    document.body.appendChild(card);
+
+    expect(() => mod2.toggleCardMaximize(card)).toThrow(RangeError);
+  });
+});
+
+// ── initCardCollapse: lines 260 (no data-card-id), 261 (btn+not-collapsed), 290 ──
+
+describe("Maximize — initCardCollapse missing data-card-id branches (lines 260-261, 290)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("collapsed card with no data-card-id skips updateCardMiniInfo (line 260 FALSE)", async () => {
+    vi.resetModules();
+    const freshMod = (await import("@/ui/maximize")) as { initCardCollapse: () => void };
+    localStorage.setItem("dash_v2_collapsed_cards", JSON.stringify(["old-id"]));
+    // Card with id="old-id" but NO data-card-id → dataCardId is "" → if(dataCardId) is FALSE
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = "old-id"; // recognized by id, not data-card-id
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    card.appendChild(btn);
+    document.body.appendChild(card);
+    // Should not throw even though dataCardId is empty
+    expect(() => freshMod.initCardCollapse()).not.toThrow();
+    expect(card.classList.contains("collapsed")).toBe(true);
+    // data-card-id was not set → line 260 FALSE branch hit
+    expect(card.dataset["cardId"]).toBeUndefined();
+  });
+
+  it("non-collapsed card with collapse btn sets aria-expanded=true (line 261)", async () => {
+    vi.resetModules();
+    const freshMod = (await import("@/ui/maximize")) as { initCardCollapse: () => void };
+    // Card NOT in localStorage (not collapsed) but has a collapse btn → line 261 else-if
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = "open-card";
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.textContent = "▼";
+    card.appendChild(btn);
+    document.body.appendChild(card);
+    freshMod.initCardCollapse();
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("collapse toggle: card with no data-card-id skips updateCardMiniInfo (line 290 FALSE)", async () => {
+    vi.resetModules();
+    const freshMod = (await import("@/ui/maximize")) as { initCardCollapse: () => void };
+    // Card with id but NO data-card-id
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = "toggle-no-dataid";
+    const btn = document.createElement("button");
+    btn.className = "card-collapse-btn";
+    btn.textContent = "▼";
+    card.appendChild(btn);
+    document.body.appendChild(card);
+    freshMod.initCardCollapse();
+    // Click to collapse — triggers doToggle → isNowCollapsed=true → dataCardId="" → FALSE
+    expect(() => btn.click()).not.toThrow();
+    expect(card.classList.contains("collapsed")).toBe(true);
+    // dataCardId is empty → line 290 if(dataCardId) FALSE branch covered
+    expect(card.dataset["cardId"]).toBeUndefined();
+  });
+});

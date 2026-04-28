@@ -54,4 +54,14 @@ describe("FdbAlertsCard", () => {
   it("is registered as the fdb-alerts custom element", () => {
     expect(customElements.get("fdb-alerts")).toBeDefined();
   });
+
+  it("does not re-register when already defined (if-FALSE branch)", async () => {
+    // Element is already registered from the module-level import above.
+    // Re-importing the module after resetModules() will find it already registered
+    // and skip the customElements.define call (covers the FALSE branch of line 26).
+    vi.resetModules();
+    await import("@/cards/alerts/fdb-alerts");
+    // Still defined — no error about duplicate registration
+    expect(customElements.get("fdb-alerts")).toBeDefined();
+  });
 });

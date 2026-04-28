@@ -1636,3 +1636,103 @@ describe("Tasks — addQuickChore (Sprint 83)", () => {
     expect(() => addQuickChore("יאיר", "בדיקה")).not.toThrow();
   });
 });
+
+// ── updateTasksBadges: overdueBadge DOM branches (lines 414-422) ─────────────
+
+describe("Tasks — overdueBadge display when overdue tasks exist (lines 414-422)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("shows overdueBadge with count when overdue tasks exist (lines 416-418)", () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const dueYest = yesterday.toISOString().split("T")[0]!;
+    const chores: ChoreItem[] = [
+      { person: "יאיר", chore: `להוריד אשפה @${dueYest}` },
+    ];
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>
+      <div id="tasks-overdue-badge" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    renderTasksCard();
+    const badge = document.getElementById("tasks-overdue-badge") as HTMLElement;
+    expect(badge.style.display).toBe("");
+    expect(badge.textContent).toContain("באיחור");
+  });
+
+  it("hides overdueBadge when no overdue tasks (line 420)", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dueTomorrow = tomorrow.toISOString().split("T")[0]!;
+    const chores: ChoreItem[] = [
+      { person: "יאיר", chore: `🟡 [due:${dueTomorrow}] קניות` },
+    ];
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>
+      <div id="tasks-overdue-badge" style="display:"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    renderTasksCard();
+    const badge = document.getElementById("tasks-overdue-badge") as HTMLElement;
+    expect(badge.style.display).toBe("none");
+  });
+
+  it("skips overdueBadge update when element absent (line 414 FALSE branch)", () => {
+    // No tasks-overdue-badge element in DOM → line 414 if(overdueBadge) is FALSE
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify([{ person: "יאיר", chore: "עבודה" }]));
+    expect(() => renderTasksCard()).not.toThrow();
+  });
+});
+
+// ── Quick-add keydown Enter handler (line 564) ────────────────────────────────
+
+describe("Tasks — quickInput keydown Enter triggers quickBtn.click (line 564)", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("Enter key on quickInput fires quickBtn click (line 564 TRUE branch)", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>
+      <input id="tasks-quick-input" type="text" value="כביסה" />
+      <input id="tasks-quick-person" type="text" value="דנה" />
+      <button id="tasks-quick-add-btn">הוסף</button>`;
+    initTasksCard();
+    const clickSpy = vi.fn();
+    const btn = document.getElementById("tasks-quick-add-btn") as HTMLButtonElement;
+    btn.addEventListener("click", clickSpy);
+    const input = document.getElementById("tasks-quick-input") as HTMLInputElement;
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    expect(clickSpy).toHaveBeenCalled();
+  });
+
+  it("non-Enter key on quickInput does NOT fire quickBtn click (line 564 FALSE branch)", () => {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <span id="tasks-pending-badge"></span>
+      <div id="tasks-all-done-msg" style="display:none"></div>
+      <input id="tasks-quick-input" type="text" value="כביסה" />
+      <input id="tasks-quick-person" type="text" value="דנה" />
+      <button id="tasks-quick-add-btn">הוסף</button>`;
+    initTasksCard();
+    const clickSpy = vi.fn();
+    const btn = document.getElementById("tasks-quick-add-btn") as HTMLButtonElement;
+    btn.addEventListener("click", clickSpy);
+    const input = document.getElementById("tasks-quick-input") as HTMLInputElement;
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+});

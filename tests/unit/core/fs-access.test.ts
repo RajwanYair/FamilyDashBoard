@@ -102,6 +102,40 @@ describe("fs-access — picker-available path", () => {
     ).resolves.toBe(false);
   });
 
+  it("saveTextFile re-throws non-AbortError from picker", async () => {
+    (window as FsaWindow).showSaveFilePicker = vi
+      .fn()
+      .mockRejectedValue(new Error("write failed"));
+    (window as FsaWindow).showOpenFilePicker = vi.fn();
+    await expect(saveTextFile("x", { extensions: [".json"] })).rejects.toThrow("write failed");
+  });
+
+  it("saveTextFile returns false when picker resolves with null handle", async () => {
+    (window as FsaWindow).showSaveFilePicker = vi.fn().mockResolvedValue(undefined);
+    (window as FsaWindow).showOpenFilePicker = vi.fn();
+    const result = await saveTextFile("data", { extensions: [".txt"] });
+    expect(result).toBe(false);
+  });
+
+  it("saveTextFile uses default mimeType when not provided", async () => {
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    // No showSaveFilePicker → uses fallback (no mimeType provided)
+    const ok = await saveTextFile("data", { suggestedName: "out.bin" });
+    expect(ok).toBe(true);
+  });
+
+  it("saveTextFile fallback uses 'download.txt' when suggestedName is not provided", async () => {
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    // No suggestedName → defaults to "download.txt"
+    await saveTextFile("content", { mimeType: "text/plain" });
+    const anchor = clickSpy.mock.contexts[0] as unknown as HTMLAnchorElement;
+    expect(anchor.download).toBe("download.txt");
+  });
+
   it("pickTextFile reads file content via showOpenFilePicker", async () => {
     const file = new File(["{}"], "cfg.json");
     file.text = (): Promise<string> => Promise.resolve("{}");
@@ -117,5 +151,44 @@ describe("fs-access — picker-available path", () => {
       .mockRejectedValue(new DOMException("cancel", "AbortError"));
     (window as FsaWindow).showSaveFilePicker = vi.fn();
     await expect(pickTextFile({ extensions: [".json"] })).resolves.toBeNull();
+  });
+
+  it("pickTextFile returns null when picker resolves with empty array", async () => {
+    (window as FsaWindow).showOpenFilePicker = vi.fn().mockResolvedValue([]);
+    (window as FsaWindow).showSaveFilePicker = vi.fn();
+    const result = await pickTextFile({ extensions: [".json"] });
+    expect(result).toBeNull();
+  });
+
+  it("pickTextFile re-throws non-AbortError from picker", async () => {
+    (window as FsaWindow).showOpenFilePicker = vi
+      .fn()
+      .mockRejectedValue(new Error("read failed"));
+    (window as FsaWindow).showSaveFilePicker = vi.fn();
+    await expect(pickTextFile({ extensions: [".json"] })).rejects.toThrow("read failed");
+  });
+
+  it("pickTextFile fallback with FileReader onerror rejects the promise", async () => {
+    const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
+    const fakeError = new Error("read error");
+    class MockReaderError {
+      onload: null = null;
+      onerror: ((e: ProgressEvent<FileReader>) => void) | null = null;
+      result: null = null;
+      error: Error = fakeError;
+      readAsText(): void {
+        this.onerror?.({ target: this as unknown as FileReader } as ProgressEvent<FileReader>);
+      }
+    }
+    vi.stubGlobal("FileReader", MockReaderError);
+    const p = pickTextFile({ extensions: [".json"] });
+    const input = clickSpy.mock.contexts[0] as unknown as HTMLInputElement;
+    Object.defineProperty(input, "files", {
+      value: { 0: new File(["x"], "x.json"), length: 1 },
+      configurable: true,
+    });
+    input.onchange?.(new Event("change"));
+    await expect(p).rejects.toBe(fakeError);
+    vi.unstubAllGlobals();
   });
 });

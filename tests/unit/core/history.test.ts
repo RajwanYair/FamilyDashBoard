@@ -223,3 +223,213 @@ describe("historyAppend + historyGet — with mock IDB", () => {
     expect(vals.length).toBeLessThanOrEqual(3);
   });
 });
+
+// ── IDB upgrade: both branches of line 42 (store exists / store missing) ──────
+
+describe("openHistoryDB — onupgradeneeded branches (line 42 TRUE and FALSE)", () => {
+  afterEach(() => {
+    _resetHistoryDb();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  function makeFullMockIdb(opts: { storeAlreadyExists: boolean }) {
+    let autoKey = 0;
+    const storeMap = new Map<number, unknown>();
+    const createIndexSpy = vi.fn();
+    const createObjectStoreSpy = vi.fn().mockReturnValue({ createIndex: createIndexSpy });
+
+    const byTsIndex = {
+      openCursor: vi.fn(() => {
+        const r = { result: null as IDBCursorWithValue | null, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
+        setTimeout(() => r.onsuccess?.({ target: r }), 0);
+        return r as unknown as IDBRequest<IDBCursorWithValue | null>;
+      }),
+    };
+    const byKeyTsIndex = {
+      getAll: vi.fn(() => {
+        const r = { result: [] as unknown[], onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
+        setTimeout(() => r.onsuccess?.({ target: r }), 0);
+        return r as unknown as IDBRequest<unknown[]>;
+      }),
+    };
+    const objectStore = {
+      add: vi.fn((value: unknown) => {
+        storeMap.set(++autoKey, value);
+        const r = { result: autoKey, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
+        setTimeout(() => { r.onsuccess?.({ target: r }); tx.oncomplete?.(); }, 5);
+        return r as unknown as IDBRequest<number>;
+      }),
+      index: vi.fn((name: string) => {
+        if (name === "by_ts") return byTsIndex;
+        if (name === "by_key_ts") return byKeyTsIndex;
+        throw new Error(`bad index: ${name}`);
+      }),
+    };
+    const tx = { objectStore: vi.fn(() => objectStore), oncomplete: null as (() => void) | null, onerror: null as (() => void) | null };
+    const db = {
+      transaction: vi.fn(() => tx),
+      objectStoreNames: { contains: vi.fn().mockReturnValue(opts.storeAlreadyExists) },
+      createObjectStore: createObjectStoreSpy,
+    };
+    const openReq = { result: db as unknown as IDBDatabase, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null, onupgradeneeded: null as ((e: unknown) => void) | null };
+    const mockIdb = {
+      open: vi.fn().mockImplementation((_n: string, _v: number) => {
+        setTimeout(() => {
+          (openReq.onupgradeneeded as unknown as ((e: unknown) => void))?.(
+            { target: { result: db } }
+          );
+          (openReq.onsuccess as unknown as ((e: unknown) => void))?.(
+            { target: { result: db } }
+          );
+        }, 0);
+        return openReq as unknown as IDBOpenDBRequest;
+      }),
+    };
+    return { mockIdb, createObjectStoreSpy, createIndexSpy };
+  }
+
+  it("creates the object store when it does NOT exist yet (line 42 TRUE)", async () => {
+    vi.useFakeTimers();
+    const { mockIdb, createObjectStoreSpy } = makeFullMockIdb({ storeAlreadyExists: false });
+    vi.stubGlobal("indexedDB", mockIdb);
+    vi.stubGlobal("IDBKeyRange", { upperBound: (v: number, e: boolean) => ({ upper: v, upperOpen: e }), bound: (l: unknown, u: unknown) => ({ lower: l, upper: u }) });
+    _resetHistoryDb();
+    const p = historyAppend("upgrade:key", 1);
+    await vi.runAllTimersAsync();
+    await p;
+    expect(createObjectStoreSpy).toHaveBeenCalled();
+  });
+
+  it("skips createObjectStore when store already exists (line 42 FALSE)", async () => {
+    vi.useFakeTimers();
+    const { mockIdb, createObjectStoreSpy } = makeFullMockIdb({ storeAlreadyExists: true });
+    vi.stubGlobal("indexedDB", mockIdb);
+    vi.stubGlobal("IDBKeyRange", { upperBound: (v: number, e: boolean) => ({ upper: v, upperOpen: e }), bound: (l: unknown, u: unknown) => ({ lower: l, upper: u }) });
+    _resetHistoryDb();
+    const p = historyAppend("upgrade:key", 1);
+    await vi.runAllTimersAsync();
+    await p;
+    expect(createObjectStoreSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ── Cursor delete path (lines 88-90): old entries get pruned ─────────────────
+
+describe("historyAppend — cursor delete/continue path (lines 88-90)", () => {
+  afterEach(() => {
+    _resetHistoryDb();
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("calls cursor.delete() and cursor.continue() for old entries during append", async () => {
+    vi.useFakeTimers();
+
+    let autoKey = 0;
+    const storeMap = new Map<number, unknown>();
+    const deleteSpy = vi.fn();
+    const continueSpy = vi.fn();
+
+    // Build byTsIndex that properly updates cursorReq.result on continue()
+    const byTsIndex = {
+      openCursor: vi.fn((range: IDBKeyRange | null) => {
+        const cutoff = (range as IDBKeyRange & { upper: number }).upper;
+        const keysToDelete: number[] = [];
+        for (const [k, v] of storeMap.entries()) {
+          const entry = v as { ts: number };
+          if (entry.ts <= cutoff) keysToDelete.push(k);
+        }
+        let i = 0;
+        const cursorReq = {
+          result: null as IDBCursorWithValue | null,
+          onsuccess: null as ((e: unknown) => void) | null,
+          onerror: null as ((e: unknown) => void) | null,
+        };
+        const makeCursor = (): IDBCursorWithValue | null => {
+          if (i >= keysToDelete.length) return null;
+          const key = keysToDelete[i++]!;
+          return {
+            delete: () => {
+              deleteSpy();
+              storeMap.delete(key);
+              return { result: undefined, onsuccess: null };
+            },
+            continue: () => {
+              continueSpy();
+              const next = makeCursor();
+              setTimeout(() => {
+                // CRITICAL: update result before firing onsuccess so history.ts sees null
+                cursorReq.result = next;
+                cursorReq.onsuccess?.({ target: cursorReq });
+              }, 0);
+            },
+          } as unknown as IDBCursorWithValue;
+        };
+        cursorReq.result = makeCursor();
+        setTimeout(() => cursorReq.onsuccess?.({ target: cursorReq }), 0);
+        return cursorReq as unknown as IDBRequest<IDBCursorWithValue | null>;
+      }),
+    };
+
+    const objectStore = {
+      add: vi.fn((value: unknown) => {
+        storeMap.set(++autoKey, value);
+        const r = { result: autoKey, onsuccess: null as ((e: unknown) => void) | null, onerror: null as ((e: unknown) => void) | null };
+        setTimeout(() => {
+          r.onsuccess?.({ target: r });
+          tx.oncomplete?.();
+        }, 5);
+        return r as unknown as IDBRequest<number>;
+      }),
+      index: vi.fn((name: string) => {
+        if (name === "by_ts") return byTsIndex;
+        throw new Error(`bad index: ${name}`);
+      }),
+    };
+
+    const tx = {
+      objectStore: vi.fn(() => objectStore),
+      oncomplete: null as (() => void) | null,
+      onerror: null as (() => void) | null,
+    };
+
+    const db = { transaction: vi.fn(() => tx) };
+
+    const openReq = {
+      result: db as unknown as IDBDatabase,
+      onsuccess: null as ((e: unknown) => void) | null,
+      onerror: null as ((e: unknown) => void) | null,
+      onupgradeneeded: null as ((e: unknown) => void) | null,
+    };
+
+    const mockIdb = {
+      open: vi.fn().mockImplementation((_n: string, _v: number) => {
+        setTimeout(() => (openReq.onsuccess as unknown as (e: unknown) => void)?.({ target: { result: db } }), 0);
+        return openReq as unknown as IDBOpenDBRequest;
+      }),
+    };
+
+    vi.stubGlobal("indexedDB", mockIdb);
+    vi.stubGlobal("IDBKeyRange", {
+      upperBound: (value: number, exclusive: boolean) => ({ upper: value, upperOpen: exclusive }),
+      bound: (lower: unknown, upper: unknown) => ({ lower, upper }),
+    });
+
+    _resetHistoryDb();
+
+    // Insert one entry at a timestamp 8 days ago (old, should be pruned)
+    const OLD_TS = Date.now() - 8 * 24 * 60 * 60 * 1000;
+    storeMap.set(++autoKey, { key: "prune:test", ts: OLD_TS, v: 10 });
+
+    // Append a new entry now — triggers cursor prune which should hit the old entry
+    const appendPromise = historyAppend("prune:test", 20);
+    await vi.runAllTimersAsync();
+    await appendPromise;
+
+    // Cursor delete and continue should have been called on the old entry
+    expect(deleteSpy).toHaveBeenCalled();
+    expect(continueSpy).toHaveBeenCalled();
+  });
+});

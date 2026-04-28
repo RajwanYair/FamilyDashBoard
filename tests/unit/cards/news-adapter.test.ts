@@ -24,6 +24,8 @@ vi.mock("@/cards/news/news", async (importOriginal) => {
   };
 });
 
+import { fetchFeed } from "@/cards/news/news";
+
 vi.mock("@/core/config", () => ({
   loadConfig: () => ({}),
   getConfig: () => ({}),
@@ -66,5 +68,15 @@ describe("createNewsAdapter (Sprint 97)", () => {
 
   it("status() returns provider health status", () => {
     expect(adapter.status()).toBe("ok");
+  });
+
+  it("returns ok:false when all feeds return empty items (line 44 — no news items)", async () => {
+    // Make fetchFeed return empty arrays for all feeds
+    vi.mocked(fetchFeed).mockResolvedValue([]);
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("No news items");
+    }
   });
 });

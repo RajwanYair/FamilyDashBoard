@@ -57,4 +57,10 @@ describe("FdbSystemInfoCard", () => {
   it("is registered as the fdb-system-info custom element", () => {
     expect(customElements.get("fdb-system-info")).toBeDefined();
   });
+  it("does not re-register when already defined (if-FALSE branch)", async () => {
+    vi.resetModules();
+    await import("@/cards/system-info/fdb-system-info");
+    expect(customElements.get("fdb-system-info")).toBeDefined();
+  });
 });
+

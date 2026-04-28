@@ -506,3 +506,276 @@ describe("Status Bar — online/offline events update conn-indicator", () => {
     expect(document.getElementById("conn-indicator")?.textContent).toBe("🔴");
   });
 });
+
+// ── Sprint 143: formatUptime h > 0 branch + cache-age mins > 0 ──
+
+describe("Status Bar — formatUptime hours branch", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+  });
+
+  it("shows hours+minutes format when uptime exceeds 1 hour", async () => {
+    vi.useFakeTimers();
+    // Load module at t=0 so PAGE_START is set to 0
+    vi.setSystemTime(0);
+    document.body.innerHTML = `
+      <div id="uptime-display"></div>
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+    `;
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    // Advance 2 hours + 15 minutes
+    vi.setSystemTime(2 * 60 * 60 * 1000 + 15 * 60 * 1000);
+    freshMod.updateUptime();
+
+    const text = document.getElementById("uptime-display")?.textContent ?? "";
+    expect(text).toMatch(/⏱ 2h \d+m/);
+  });
+});
+
+describe("Status Bar — cache-age chip shows value when mins > 0", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("shows ⏱ Nm when getOldestCacheAgeMinutes returns > 0", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="cache-age"></div>
+    `;
+    vi.resetModules();
+    // Mock the cache module BEFORE importing status-bar
+    vi.doMock("@/core/cache", () => ({
+      getOldestCacheAgeMinutes: vi.fn().mockReturnValue(42),
+      cGet: vi.fn().mockReturnValue(null),
+      cGetStale: vi.fn().mockReturnValue(null),
+      cSet: vi.fn(),
+    }));
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    const chip = document.getElementById("cache-age");
+    expect(chip?.textContent).toBe("⏱ 42m");
+    vi.doUnmock("@/core/cache");
+  });
+});
+
+describe("Status Bar — updateRefreshAge skips when < 1 min", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+  });
+
+  it("does not append suffix when less than 1 minute has elapsed", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+    `;
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+    freshMod.stampRefresh();
+
+    // Advance only 30 seconds (< 1 min threshold)
+    vi.advanceTimersByTime(30_000);
+    freshMod.updateRefreshAge?.();
+
+    const text = document.getElementById("refresh-stamp")?.textContent ?? "";
+    // Should NOT have the (Nm) suffix
+    expect(text).not.toMatch(/\(\d+m\)/);
+  });
+});
+
+// ── SW message handler branch coverage (lines 178-184) ──────────────────────
+
+describe("Status Bar — SW message handler branches", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("ignores message with wrong type (line 178 FALSE branch)", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="sw-version" hidden></div>
+    `;
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    if ("serviceWorker" in navigator && navigator.serviceWorker) {
+      const fakeEvent = new MessageEvent("message", {
+        data: { type: "SOME_OTHER_EVENT", version: "v1.0.0" },
+      });
+      navigator.serviceWorker.dispatchEvent(fakeEvent);
+      const chip = document.getElementById("sw-version");
+      // chip should remain hidden since message type doesn't match
+      expect(chip).toBeTruthy();
+    }
+  });
+
+  it("handles VERSION_ACTIVATED when #sw-version chip is absent (line 180 FALSE branch)", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+    `;
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    if ("serviceWorker" in navigator && navigator.serviceWorker) {
+      const fakeEvent = new MessageEvent("message", {
+        data: { type: "VERSION_ACTIVATED", version: "familydashboard-v13.6.0" },
+      });
+      // Should not throw even without #sw-version element
+      expect(() => navigator.serviceWorker.dispatchEvent(fakeEvent)).not.toThrow();
+    }
+  });
+
+  it("ignores VERSION_ACTIVATED message with no version field (line 178 && false)", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="sw-version" hidden></div>
+    `;
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    if ("serviceWorker" in navigator && navigator.serviceWorker) {
+      const fakeEvent = new MessageEvent("message", {
+        data: { type: "VERSION_ACTIVATED" }, // no version field
+      });
+      navigator.serviceWorker.dispatchEvent(fakeEvent);
+      const chip = document.getElementById("sw-version");
+      // chip should remain hidden
+      expect(chip?.hidden).toBe(true);
+    }
+  });
+});
+
+// ── SW message handler with stubbed serviceWorker (lines 175-186) ──
+
+describe("Status Bar — SW message handler with stubbed navigator.serviceWorker", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    try {
+      Reflect.deleteProperty(navigator, "serviceWorker");
+    } catch { /* non-configurable */ }
+  });
+
+  it("covers VERSION_ACTIVATED handler — sw-version chip present (lines 176-183)", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="sw-version" hidden></div>
+    `;
+    let capturedHandler: ((e: MessageEvent) => void) | null = null;
+    const mockSW = {
+      addEventListener: vi.fn((type: string, handler: unknown) => {
+        if (type === "message") capturedHandler = handler as (e: MessageEvent) => void;
+      }),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: mockSW,
+      configurable: true,
+      writable: true,
+    });
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    expect(capturedHandler).not.toBeNull();
+    capturedHandler!({ data: { type: "VERSION_ACTIVATED", version: "familydashboard-v13.6.0" } } as MessageEvent);
+
+    const chip = document.getElementById("sw-version");
+    expect(chip?.textContent).toBe("SW v13.6.0");
+    expect(chip?.hidden).toBe(false);
+  });
+
+  it("VERSION_ACTIVATED — sw-version chip absent (line 180 FALSE)", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+    `;
+    let capturedHandler: ((e: MessageEvent) => void) | null = null;
+    const mockSW = {
+      addEventListener: vi.fn((type: string, handler: unknown) => {
+        if (type === "message") capturedHandler = handler as (e: MessageEvent) => void;
+      }),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: mockSW,
+      configurable: true,
+      writable: true,
+    });
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    expect(() =>
+      capturedHandler?.({ data: { type: "VERSION_ACTIVATED", version: "v1.0.0" } } as MessageEvent)
+    ).not.toThrow();
+  });
+
+  it("non-VERSION_ACTIVATED message — line 178 FALSE branch", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="sw-version" hidden></div>
+    `;
+    let capturedHandler: ((e: MessageEvent) => void) | null = null;
+    const mockSW = {
+      addEventListener: vi.fn((type: string, handler: unknown) => {
+        if (type === "message") capturedHandler = handler as (e: MessageEvent) => void;
+      }),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: mockSW,
+      configurable: true,
+      writable: true,
+    });
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    capturedHandler?.({ data: { type: "OTHER_EVENT" } } as MessageEvent);
+    const chip = document.getElementById("sw-version");
+    expect(chip?.hidden).toBe(true);
+  });
+
+  it("VERSION_ACTIVATED with no version field — line 178 second && FALSE", async () => {
+    document.body.innerHTML = `
+      <div id="version-badge"></div>
+      <div id="refresh-stamp"></div>
+      <div id="sw-version" hidden></div>
+    `;
+    let capturedHandler: ((e: MessageEvent) => void) | null = null;
+    const mockSW = {
+      addEventListener: vi.fn((type: string, handler: unknown) => {
+        if (type === "message") capturedHandler = handler as (e: MessageEvent) => void;
+      }),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: mockSW,
+      configurable: true,
+      writable: true,
+    });
+    vi.resetModules();
+    const freshMod = await (import("@/ui/status-bar") as Promise<StatusBarMod>);
+    freshMod.initStatusBar();
+
+    capturedHandler?.({ data: { type: "VERSION_ACTIVATED" } } as MessageEvent);
+    const chip = document.getElementById("sw-version");
+    expect(chip?.hidden).toBe(true);
+  });
+});

@@ -373,7 +373,7 @@ describe("runConcurrent", () => {
   });
 });
 
-import { fetchViaWorker, fetchJSONWithWorker } from "@/core/fetch";
+import { fetchViaWorker, fetchJSONWithWorker, resetWorkerBreaker } from "@/core/fetch";
 import { API, WORKER_BASE_URL, resetWorkerEnabledCache } from "@/core/constants";
 
 // \u2500\u2500 fetchViaWorker \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -1006,5 +1006,116 @@ describe("getNetworkQualityTier — navigator.connection rtt branches", () => {
   it("returns 'bad' when rtt >= 600", () => {
     stubConnection({ rtt: 800 });
     expect(getNetworkQualityTier()).toBe("bad");
+  });
+});
+
+// ── Worker circuit breaker: cooldown / half-open (lines 213-217) ──────────────
+
+describe("Worker circuit breaker — cooldown half-open path (lines 213-217)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+    resetWorkerBreaker();
+    resetWorkerEnabledCache();
+  });
+
+  it("worker returns null when breaker is open and cooldown has NOT elapsed", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    // Trigger 3 failures to open the breaker
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 503 } as Response));
+    await fetchViaWorker(API.CURRENCY_PRIMARY);
+    await fetchViaWorker(API.CURRENCY_PRIMARY);
+    await fetchViaWorker(API.CURRENCY_PRIMARY);
+    // Breaker is now open — next call should be skipped
+    (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mockClear();
+    const result = await fetchViaWorker(API.CURRENCY_PRIMARY);
+    expect(result).toBeNull();
+    // Fetch should NOT have been called (breaker blocked it)
+    expect(vi.mocked(global.fetch)).not.toHaveBeenCalled();
+  });
+
+  it("worker passes through when cooldown HAS elapsed (lines 215-217 half-open path)", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    // Trigger 3 failures to open the breaker
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 503 } as Response));
+    await fetchViaWorker(API.CURRENCY_PRIMARY);
+    await fetchViaWorker(API.CURRENCY_PRIMARY);
+    await fetchViaWorker(API.CURRENCY_PRIMARY);
+    // Advance time past cooldown (5 min + 1s)
+    vi.advanceTimersByTime(5 * 60_000 + 1000);
+    // Now mock a successful response
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: "recovered" }),
+    } as Response));
+    const result = await fetchViaWorker<{ data: string }>(API.CURRENCY_PRIMARY);
+    // Breaker should be in half-open state, so request passes through
+    expect(result).not.toBeNull();
+  });
+
+  it("fetchViaWorker returns null on HTTP error response (lines 263-265)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    resetWorkerBreaker();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 502 } as Response));
+    const result = await fetchViaWorker(API.CURRENCY_PRIMARY);
+    expect(result).toBeNull();
+  });
+});
+
+// ── buildWorkerRoute: Sefaria calendar / text / coingecko (lines 70, 74-82) ──
+
+describe("fetchViaWorker — Sefaria and Coingecko routes (lines 70, 74-82)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    resetWorkerBreaker();
+    resetWorkerEnabledCache();
+  });
+
+  it("routes SEFARIA_CALENDAR to worker /api/sefaria/calendar (line 70)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ calendar: "data" }),
+    } as Response));
+    const result = await fetchViaWorker(API.SEFARIA_CALENDAR);
+    expect(result).not.toBeNull();
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    expect(calledUrl).toContain("/api/sefaria/calendar");
+  });
+
+  it("routes SEFARIA_TEXT with ref to worker /api/sefaria/text (line 76)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ text: "verse data" }),
+    } as Response));
+    const textUrl = API.SEFARIA_TEXT + encodeURIComponent("Genesis 1.1");
+    const result = await fetchViaWorker(textUrl);
+    expect(result).not.toBeNull();
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    expect(calledUrl).toContain("/api/sefaria/text");
+  });
+
+  it("returns null when SEFARIA_TEXT has empty ref (line 75)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    // Pass SEFARIA_TEXT base URL directly (no ref suffix) → ref will be empty → returns null
+    const result = await fetchViaWorker(API.SEFARIA_TEXT);
+    expect(result).toBeNull();
+  });
+
+  it("routes coingecko URL to worker /api/crypto (lines 80-82)", async () => {
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ bitcoin: { usd: 50000 } }),
+    } as Response));
+    const result = await fetchViaWorker(API.COINGECKO_BTC);
+    expect(result).not.toBeNull();
+    const calledUrl = (vi.mocked(global.fetch) as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    expect(calledUrl).toContain("/api/crypto");
   });
 });

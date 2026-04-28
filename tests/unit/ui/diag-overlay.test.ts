@@ -780,3 +780,34 @@ describe("DiagOverlay — Sprint 95 renderStats network tier + trend branches", 
     closeDiagOverlay();
   });
 });
+
+// ── openDiagOverlay interval callback (lines 313-315) ────────────────────────
+
+describe("DiagOverlay — openDiagOverlay auto-refresh interval (lines 312-316)", () => {
+  beforeEach(() => {
+    buildFullDiagDOM();
+    clearDiag();
+    vi.useFakeTimers();
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    });
+  });
+
+  afterEach(() => {
+    closeDiagOverlay();
+    document.body.innerHTML = "";
+    clearDiag();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("setInterval callback rerenders log/stats/errors (lines 313-315 TRUE)", () => {
+    openDiagOverlay();
+    // Add a log entry after open to verify re-render
+    diagLog("[test] after-open entry");
+    vi.advanceTimersByTime(5000);
+    const logEl = document.getElementById("diag-log");
+    expect(logEl?.textContent).toContain("[test] after-open entry");
+  });
+});

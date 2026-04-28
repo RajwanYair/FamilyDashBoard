@@ -57,4 +57,10 @@ describe("FdbHebrewCalCard", () => {
   it("is registered as the fdb-hebrew-cal custom element", () => {
     expect(customElements.get("fdb-hebrew-cal")).toBeDefined();
   });
+  it("does not re-register when already defined (if-FALSE branch)", async () => {
+    vi.resetModules();
+    await import("@/cards/hebrew-cal/fdb-hebrew-cal");
+    expect(customElements.get("fdb-hebrew-cal")).toBeDefined();
+  });
 });
+

@@ -72,4 +72,15 @@ describe("CurrencyAdapter (Sprint 91)", () => {
   it("status() returns current health", () => {
     expect(adapter.status()).toBe("ok");
   });
+
+  it("returns ok:false when all endpoints return data without valid rates (line 34 FALSE)", async () => {
+    // All endpoints return data but without a valid 'rates' object
+    vi.mocked(fetchJSONWithWorker)
+      .mockResolvedValueOnce({ error: "no rates" })
+      .mockResolvedValueOnce({ error: "no rates" })
+      .mockResolvedValueOnce({ error: "no rates" });
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    expect(recordProviderFailure).toHaveBeenCalledWith("currency");
+  });
 });
