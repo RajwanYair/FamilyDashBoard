@@ -2,7 +2,7 @@
  * FamilyDashBoard v7 — Google Calendar ICS Card
  *
  * Fetches up to 3 Google Calendar ICS feeds, parses VEVENT blocks,
- * and renders a 7-day weekly tiled grid — one tile per day, each tile lists
+ * and renders a 21-day (3-week) tiled grid — one tile per day, each tile lists
  * that day's events (or a muted placeholder when empty).
  * Refresh: INTERVALS.CALENDAR (15 minutes).
  */
@@ -27,7 +27,7 @@ import type { CalendarEvent } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
 // ── Constants ──
-const CAL_WEEK_DAYS = 7;
+const CAL_WEEK_DAYS = 21;
 const CAL_DIRECT_TIMEOUT = 10_000;
 const CAL_PROXY_TIMEOUT = 12_000;
 const CAL_WEEK_DAY_HE = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];

@@ -28,7 +28,7 @@ import "./cards/countdown/countdown.css";
 import { diagLog, getDiagEntries } from "./core/diag";
 import { cEvict, hydrateFromIdb, migrateLocalStorageToIdb, cEvictIdb } from "./core/cache";
 import { initVisibility } from "./core/idle";
-import { registerSW } from "./core/sw-register";
+import { registerSW, unregisterSW } from "./core/sw-register";
 import { loadConfig, saveConfig, loadConfigFromHash } from "./core/config";
 import { ECFG_PREFIX } from "./core/config-crypto";
 import { applyInterfaceLanguage, t } from "./core/i18n";
@@ -499,6 +499,12 @@ export function init(): void {
 
   // Service Worker
   void registerSW(refreshAllCardsStaggered);
+
+  // Dev escape hatch: expose `__fdbUnregisterSW()` on globalThis so users
+  // behind a corporate proxy can detach a stale SW from DevTools without
+  // navigating Application → Service Workers. See sw-register.ts.
+  (globalThis as unknown as { __fdbUnregisterSW?: () => Promise<number> }).__fdbUnregisterSW =
+    unregisterSW;
 
   // ── Network reconnect: auto-refresh after connectivity loss ──
   let _wenOffline = false;

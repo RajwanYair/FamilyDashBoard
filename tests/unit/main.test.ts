@@ -17,6 +17,7 @@ vi.mock("@/core/cache", () => ({
 vi.mock("@/core/idle", () => ({ initVisibility: vi.fn() }));
 vi.mock("@/core/sw-register", () => ({
   registerSW: vi.fn().mockResolvedValue(undefined),
+  unregisterSW: vi.fn().mockResolvedValue(0),
 }));
 vi.mock("@/core/config", () => ({
   loadConfig: vi.fn().mockReturnValue({

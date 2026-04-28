@@ -140,18 +140,19 @@ describe("Calendar — detectCalCategory", () => {
 
 // ── groupEventsByDay ──────────────────────────────────────────────────────
 describe("Calendar — groupEventsByDay", () => {
-  it("returns 7 buckets starting at today midnight", () => {
+  it("returns 21 buckets starting at today midnight", () => {
     const now = new Date("2024-06-10T15:00:00");
     const buckets = groupEventsByDay([], now);
-    expect(buckets).toHaveLength(7);
+    expect(buckets).toHaveLength(21);
     expect(buckets[0]!.date.getDate()).toBe(10);
-    expect(buckets[6]!.date.getDate()).toBe(16);
-  });
+    // 2024-06-10 + 20 days = 2024-06-30
+    expect(buckets[20]!.date.getDate()).toBe(30);
+  };);
 
-  it("drops events outside the 7-day window", () => {
+  it("drops events outside the 21-day window", () => {
     const now = new Date("2024-06-10T08:00:00");
     const past = new Date("2024-06-05T10:00:00");
-    const far = new Date("2024-07-01T10:00:00");
+    const far = new Date("2024-07-15T10:00:00");
     const ev = (date: Date, s = "x") => ({
       summary: s,
       start: date,
@@ -198,10 +199,10 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
     vi.useRealTimers();
   });
 
-  it("renders 7 day tiles even when no events", () => {
+  it("renders 21 day tiles even when no events", () => {
     renderCalendar([]);
     const grid = document.getElementById("cal-week-grid");
-    expect(grid?.querySelectorAll(".cal-day-tile").length).toBe(7);
+    expect(grid?.querySelectorAll(".cal-day-tile").length).toBe(21);
   });
 
   it("marks all tiles as empty when no events", () => {
@@ -637,7 +638,7 @@ describe("Calendar — loadCalendar paths", () => {
     initCalendarCard();
     await new Promise<void>((r) => setTimeout(r, 50));
     const grid = document.getElementById("cal-week-grid");
-    expect(grid?.querySelectorAll(".cal-day-tile").length).toBe(7);
+    expect(grid?.querySelectorAll(".cal-day-tile").length).toBe(21);
   });
 
   it("outer catch fires when syncBurst throws after allEvents > 0", async () => {

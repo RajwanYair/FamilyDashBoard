@@ -35,6 +35,16 @@ export async function registerSW(onActivated?: () => void): Promise<void> {
     return;
   }
 
+  // Dev escape hatch: ?nosw=1 in URL skips SW registration.
+  // Useful when developing behind a corporate proxy/firewall where the SW
+  // intercepts requests and serves stale offline-fallback HTML for blocked
+  // origins. Combine with the global `__fdbUnregisterSW()` helper to fully
+  // detach: open `…/?nosw=1`, then run `await __fdbUnregisterSW()` in DevTools.
+  if (new URLSearchParams(window.location.search).has("nosw")) {
+    diagLog("[sw] Skipping SW registration (?nosw=1 URL flag)");
+    return;
+  }
+
   // Capture controller state synchronously BEFORE any async operations.
   // On first install the controller is null; clients.claim() in the SW
   // activate handler fires controllerchange (null→SW) which must NOT
@@ -119,6 +129,41 @@ export async function registerSW(onActivated?: () => void): Promise<void> {
   } catch (err) {
     diagLog(`[sw] Registration failed: ${String(err)}`);
   }
+}
+
+/**
+ * Dev helper: unregister all service workers and purge FamilyDashBoard caches.
+ *
+ * Returns the number of registrations that were unregistered. Useful when a
+ * stale SW is serving offline-fallback HTML behind a corporate proxy. After
+ * calling this, reload the page (or open with `?nosw=1`) to verify the issue.
+ *
+ * Exposed on `globalThis.__fdbUnregisterSW` from `main.ts` for DevTools use.
+ */
+export async function unregisterSW(): Promise<number> {
+  if (!("serviceWorker" in navigator)) return 0;
+  let count = 0;
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const r of regs) {
+      const ok = await r.unregister();
+      if (ok) count++;
+    }
+    diagLog(`[sw] Unregistered ${count} registration(s)`);
+  } catch (err) {
+    diagLog(`[sw] Unregister failed: ${String(err)}`);
+  }
+  try {
+    if ("caches" in self) {
+      const keys = await caches.keys();
+      const fdbKeys = keys.filter((k) => k.startsWith("familydashboard-"));
+      await Promise.all(fdbKeys.map((k) => caches.delete(k)));
+      diagLog(`[sw] Purged ${fdbKeys.length} cache(s)`);
+    }
+  } catch (err) {
+    diagLog(`[sw] Cache purge failed: ${String(err)}`);
+  }
+  return count;
 }
 
 /**

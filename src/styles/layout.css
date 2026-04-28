@@ -35,6 +35,7 @@
     flex: 2 1 0;
   } /* video player needs height */
   /* Bounded-content cards — shrink to natural content height; surplus redistributes to fill cards */
+  .grid-col > [data-card-id="weather"],
   .grid-col > [data-card-id="motivation"],
   .grid-col > [data-card-id="countdown"],
   .grid-col > [data-card-id="currency"] {

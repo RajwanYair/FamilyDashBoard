@@ -831,12 +831,10 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 
 /* ── Weather ── */
 .weather-body {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   padding: 3px 6px;
-  min-height: 0;
-  overflow: hidden;
 }
 .wx-top-row {
   display: flex;
@@ -875,8 +873,9 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 .wx-details {
   flex: 1 1 50%;
   display: grid;
-  grid-template-columns: repeat(3, minmax(min-content, 1fr));
-  grid-template-rows: 1fr 1fr;
+  /* 4 tiles per row — 7 detail cells fit in a 4×2 grid (last cell empty). */
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
   gap: 3px;
   font-size: 0.68em;
 }
@@ -925,11 +924,13 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
 }
 .wx-forecast {
   display: grid;
-  grid-template-columns: repeat(7, minmax(min-content, 1fr));
+  /* All 7 day tiles share the same width — equal tracks sized to fit the
+   * widest tile's content. `1fr` distributes evenly; `min-width: 0` on
+   * children prevents content-driven width skew. */
+  grid-template-columns: repeat(7, 1fr);
   gap: 3px;
   flex: 0 0 auto;
   padding: 2px 0;
-  margin-top: auto;
 }
 .wx-fday {
   background: var(--bg-card-inner);
@@ -938,6 +939,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   display: flex;
   align-items: center;
   gap: 3px;
+  min-width: 0;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;

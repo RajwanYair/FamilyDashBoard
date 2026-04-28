@@ -39,12 +39,15 @@
   opacity: 0.5;
 }
 
-/* ── Weekly tiled grid (7 day tiles, Sunday–Saturday) ── */
+/* ── 21-day tiled grid (3 weeks, 7 columns × 3 rows, today → +20 days) ── */
 .cal-week-grid {
   flex: 1;
   min-height: 0;
   display: grid;
+  /* Equal-width tiles — every column is the same fraction of the container,
+   * so all day tiles render at the size of the widest day's content. */
   grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
   gap: 6px;
   padding: 6px 8px;
   overflow: auto;

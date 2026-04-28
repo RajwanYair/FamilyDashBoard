@@ -108,8 +108,9 @@
   text-anchor: middle;
 }
 
-/* F128: Hourly chart toggle button */
+/* F128: Hourly chart toggle button — hidden: middle hourly section removed */
 #wx-chart-toggle {
+  display: none;
   font-size: 0.62em;
   padding: 1px 6px;
   border-radius: 5px;
@@ -165,9 +166,9 @@
   line-height: 1.2;
 }
 
-/* Sprint 46: Hourly next-6-hours strip */
+/* Sprint 46: Hourly next-6-hours strip — hidden: middle hourly section removed */
 .wx-hourly-strip {
-  display: flex;
+  display: none;
   gap: 4px;
   overflow-x: auto;
   padding: 4px 0 2px;
@@ -211,6 +212,11 @@
   font-weight: 600;
 }
 
+/* Middle hourly section hidden — chart toggle, strip tiles, and SVG chart */
+.wx-hourly-chart {
+  display: none;
+}
+
 /* Sprint 11: Maximize — expand weather layout for large (≥900px) container */
 @container card (min-width: 900px) {
   .wx-top-row {
@@ -234,8 +240,8 @@
     font-size: 0.9em;
   }
   .wx-details {
-    grid-template-columns: repeat(7, minmax(min-content, 1fr));
-    grid-template-rows: 1fr;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
     font-size: 0.82em;
     flex: 1 1 auto;
     min-height: 90px;

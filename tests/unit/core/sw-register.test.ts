@@ -17,6 +17,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 type SwMod = {
   registerSW: () => Promise<void>;
   swSkipWaiting: () => void;
+  unregisterSW: () => Promise<number>;
 };
 
 async function freshMod(): Promise<SwMod> {
@@ -1012,5 +1013,85 @@ describe("SW Register — periodic SW update check", () => {
 
     vi.advanceTimersByTime(120 * 60 * 1000);
     expect(updateSpy).toHaveBeenCalledTimes(2);
+  });
+});
+
+// ── ?nosw=1 dev escape hatch & unregisterSW helper (v13.13.1) ──
+
+describe("SW Register — ?nosw=1 URL flag", () => {
+  let mod: SwMod;
+  const originalSearch = window.location.search;
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    Object.defineProperty(window.location, "search", {
+      value: originalSearch,
+      configurable: true,
+    });
+  });
+
+  it("skips registration when URL has ?nosw=1", async () => {
+    Object.defineProperty(window.location, "search", {
+      value: "?nosw=1",
+      configurable: true,
+    });
+    stubServiceWorker();
+    mod = await freshMod();
+    await mod.registerSW();
+    expect(navigator.serviceWorker.register).not.toHaveBeenCalled();
+  });
+
+  it("registers normally when URL has no nosw param", async () => {
+    Object.defineProperty(window.location, "search", { value: "", configurable: true });
+    stubServiceWorker();
+    mod = await freshMod();
+    await mod.registerSW();
+    expect(navigator.serviceWorker.register).toHaveBeenCalledOnce();
+  });
+});
+
+describe("SW Register — unregisterSW", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("returns 0 when serviceWorker is unsupported", async () => {
+    removeServiceWorker();
+    const mod = await freshMod();
+    await expect(mod.unregisterSW()).resolves.toBe(0);
+  });
+
+  it("unregisters all registrations and purges familydashboard caches", async () => {
+    const reg1 = { unregister: vi.fn().mockResolvedValue(true) };
+    const reg2 = { unregister: vi.fn().mockResolvedValue(true) };
+    const swContainer = {
+      getRegistrations: vi.fn().mockResolvedValue([reg1, reg2]),
+      addEventListener: vi.fn(),
+      controller: null,
+      register: vi.fn(),
+    };
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: swContainer,
+      writable: true,
+      configurable: true,
+    });
+    const cachesDelete = vi.fn().mockResolvedValue(true);
+    vi.stubGlobal("caches", {
+      keys: vi
+        .fn()
+        .mockResolvedValue(["familydashboard-v13", "familydashboard-api-v13", "other-cache"]),
+      delete: cachesDelete,
+    });
+    const mod = await freshMod();
+    const count = await mod.unregisterSW();
+    expect(count).toBe(2);
+    expect(reg1.unregister).toHaveBeenCalled();
+    expect(reg2.unregister).toHaveBeenCalled();
+    // Should delete only familydashboard-* caches, not other-cache
+    expect(cachesDelete).toHaveBeenCalledTimes(2);
+    expect(cachesDelete).toHaveBeenCalledWith("familydashboard-v13");
+    expect(cachesDelete).toHaveBeenCalledWith("familydashboard-api-v13");
   });
 });
