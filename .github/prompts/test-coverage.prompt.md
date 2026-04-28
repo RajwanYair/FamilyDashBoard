@@ -1,6 +1,6 @@
 ---
 mode: "agent"
-description: "Identify gaps in test coverage for a given module or card and add targeted tests to meet the 90%/81%/90%/92% thresholds."
+description: "Identify gaps in test coverage for a given module or card and add targeted tests to meet the 89.3%/81.8%/88.9%/90.4% thresholds (canonical source: vitest.config.ts)."
 ---
 
 # Test Coverage — FamilyDashBoard
@@ -11,10 +11,12 @@ Analyse the current test coverage for the specified module and add the minimum s
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Statements | 90%       |
-| Branches   | 81%       |
-| Functions  | 90%       |
-| Lines      | 92%       |
+| Statements | 89.3%     |
+| Branches   | 81.8%     |
+| Functions  | 88.9%     |
+| Lines      | 90.4%     |
+
+Canonical source: `vitest.config.ts`. The thresholds ratchet upward each sprint — see Roadmap #8.
 
 ## Steps
 

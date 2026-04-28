@@ -1,10 +1,11 @@
 # GitHub Copilot Instructions — FamilyDashBoard v13.14.0
 
-> TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · Vite 8 + TS 6.0.3 + Vitest 4.1.5
+> TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · 12 Cards · Vite 8 + TS 6.0.3 + Vitest 4.1.5
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
-> Tests: `npx vitest run` — 4910 / 158 suites / 0 failures
+> Tests: `npx vitest run` — 4925 / 159 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
+> Coverage thresholds: `89.3 / 81.8 / 88.9 / 90.4` (statements / branches / functions / lines) — see `vitest.config.ts`
 
 ## Mandatory Rules
 
@@ -54,3 +55,8 @@
 31. **PowerShell-only terminal** — The developer OS is **Windows / PowerShell**. Every terminal command MUST use PowerShell syntax. NEVER use Unix/bash commands. Forbidden: `tail`, `grep`, `cat`, `head`, `find`, `ls`, `rm`, `cp`, `mv`, `touch`, `export VAR=`, `&&` (use `;` instead). Use instead: `Select-Object -Last N`, `Select-String`, `Get-Content`, `Get-ChildItem`, `Remove-Item`, `Copy-Item`, `Move-Item`, `New-Item`, `$env:VAR =`. Chain commands with `;` not `&&`. Pipe with `|`.
 32. **Pre-release gate**: Before every `git tag vX.Y.Z`, run the full checklist in `.github/instructions/pre-release.instructions.md`. Zero tolerance: 0 type errors · 0 lint errors · 0 lint warnings · 0 test failures · 0 markdown errors · no `eslint-disable` · no `@ts-ignore` · no dead code · no dead config files. All GitHub issues for the milestone must be closed with a commit hash before tagging.
 33. **card `data-card-id` must match registry ID exactly** — use `"hebrew-cal"`, `"calendar"`, `"motivation"` (never short aliases `hcal`, `cal`, `moti`). The registry ID is the canonical identifier used for hide/show, layout persistence, and size config.
+34. **Memory tool — three-tier scope**: persistent insights live in `/memories/` (cross-workspace user notes), session-only context in `/memories/session/`, and repo-scoped facts in `/memories/repo/`. Before creating new memory files, view the directory to avoid duplicates. Keep entries terse — bullets and one-line facts, not prose.
+35. **Subagents** — invoke via `runSubagent` for read-only exploration (`Explore`), data flow work (`api-integrator`), UI work (`dashboard-designer`), or pre-release gating (`quality-reviewer`). Subagents are stateless: pass the full task description in one prompt and ask for the exact return shape you need.
+36. **Skills auto-discovery** — repository skills under `.github/skills/*/SKILL.md` are surfaced to chat by description match. When a skill applies to the request, load it with `read_file` BEFORE acting. Do not just mention skills — read them.
+37. **Custom agents replaced custom chat modes** — agents live in `.github/agents/*.agent.md` with `tools:` allowlist, `handoffs:` to peer agents, and `user-invocable: true`. Older docs that say "chat mode" should now say "custom agent".
+38. **Model selection in prompts** — prompt files may set `model: "<Display Name> (copilot)"` frontmatter to lock a specific model (e.g. for release gating). When omitted, the active chat model is used.

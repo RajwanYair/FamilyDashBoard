@@ -72,12 +72,12 @@ Use this agent when the task is primarily about one of the following:
 - Stored in `localStorage` as `dash_theme`, cycled with `T` key
 - Auto-theme hook (AM/PM switch) in `src/ui/theme.ts`
 
-## Layout (v7.10)
+## Layout (current)
 
 - **Grid**: 3-column `38fr 33fr 29fr` via `src/styles/layout.css`
 - **Header**: Clock, Hebrew + English dates, greeting, temperature, market badge — `src/ui/header.ts + .css`
 - **Ticker bar**: Daily halacha — `src/ui/ticker.ts + .css`
-- **Cards (11)**: news · weather · stocks · currency · calendar · hebrew-cal · alerts · motivation · tasks · system-info · countdown
+- **Cards (12)**: news · weather · stocks · currency · calendar · hebrew-cal · alerts · motivation · tasks · system-info · countdown · video-news
 - **Status bar**: Version, sync dots — `src/ui/status-bar.ts + .css`
 - **Hardware tier**: `data-hw-tier` on `<html>` gates GPU compositing hints (high/mid/low)
 

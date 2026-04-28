@@ -10,7 +10,7 @@ Use this skill only when you are doing an actual versioned release or preparing 
 
 ## Version Bump Locations
 
-Update ALL of these (search current version string, e.g. `7.9.0`):
+Update ALL of these (search current version string, e.g. `13.14.0`):
 
 | #   | File                                             | Field / location                                      | Notes                                            |
 | --- | ------------------------------------------------ | ----------------------------------------------------- | ------------------------------------------------ |

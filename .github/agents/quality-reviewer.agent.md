@@ -66,7 +66,7 @@ Use this agent when:
 | Type errors   | `npx tsc --noEmit`                                      | 0 errors                                |
 | Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                   |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                |
-| Test failures | `npx vitest run`                                        | 0 failures (3080+ / 88 suites baseline) |
+| Test failures | `npx vitest run`                                        | 0 failures (4925+ / 159 suites baseline) |
 | Build         | `npm run build`                                         | 0 errors                                |
 | Bundle size   | `npm run check:bundle`                                  | within limits                           |
 
@@ -74,10 +74,12 @@ Use this agent when:
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Statements | 90%       |
-| Branches   | 81%       |
-| Functions  | 90%       |
-| Lines      | 92%       |
+| Statements | 89.3%     |
+| Branches   | 81.8%     |
+| Functions  | 88.9%     |
+| Lines      | 90.4%     |
+
+Canonical source: `vitest.config.ts`. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
 
 ## Security Checklist
 
@@ -113,7 +115,7 @@ Use this agent when:
 
 ### Type Check      ✅ / ❌
 ### Lint            ✅ / ❌
-### Tests           ✅ / ❌  (N passed / 88 suites, M failed)
+### Tests           ✅ / ❌  (N passed / 159 suites, M failed)
 ### Coverage        ✅ / ❌  (statements: X%, branches: Y%)
 ### Security        ✅ / ❌  (list any findings)
 ### Dead Code       ✅ / ❌  (list any orphaned exports)

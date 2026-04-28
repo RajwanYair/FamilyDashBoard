@@ -142,7 +142,7 @@ Use PowerShell commands in this repository:
 npx tsc --noEmit
 npx eslint src tests --max-warnings 0
 npx vitest run tests/unit/cards/<name>.test.ts
-npx vitest run   # full suite — confirm 3080+ tests
+npx vitest run   # full suite — confirm 4925+ tests / 159 suites
 ```
 
 Escalate to broader test coverage only after the focused path is green.

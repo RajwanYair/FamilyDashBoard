@@ -73,7 +73,7 @@ Update ALL of these on every version bump. Search the old version string (e.g. `
 
 - [ ] All 14 files above have been updated with the new version and/or test count
 - [ ] `CHANGELOG.md` — unreleased items moved to new version section; old sprints collapsed to one line each
-- [ ] `docs/ARCHITECTURE.md` — reflects current card list (11 cards), module graph, CSS layer order
+- [ ] `docs/ARCHITECTURE.md` — reflects current card list (12 cards), module graph, CSS layer order
 
 **Deduplication rule:** If a fact appears in more than one file, keep it only in `copilot-instructions.md` (the single source of truth) and replace duplicates with a reference: `See copilot-instructions.md`.
 

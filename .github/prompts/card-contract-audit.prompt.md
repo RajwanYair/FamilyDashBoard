@@ -1,6 +1,6 @@
 ---
 mode: "agent"
-description: "Audit all 11 cards for a specific contract requirement (configSchema, FdbCard, destroy lifecycle, etc.) and produce a gap report with fixes."
+description: "Audit all 12 cards for a specific contract requirement (configSchema, FdbCard, destroy lifecycle, etc.) and produce a gap report with fixes."
 tools: ["grep_search", "read_file", "replace_string_in_file", "semantic_search"]
 ---
 

@@ -12,7 +12,7 @@ argument-hint: "Describe what changed: new card name, changed CSS property, upda
 - **Location**: `tests/unit/` — one file per source file
 - **Current baseline**: read `.github/instructions/workspace.instructions.md` or the latest CI report before hardcoding counts in docs
 - **Baseline command**: `npx vitest run` (must exit 0, 0 failures)
-- **Coverage**: `npx vitest run --coverage` → target ≥95% per file
+- **Coverage**: `npx vitest run --coverage` → repo thresholds 89.3 / 81.8 / 88.9 / 90.4 (statements / branches / functions / lines), canonical source `vitest.config.ts`. Target ≥95% per file when adding new modules.
 
 ## How to Run
 

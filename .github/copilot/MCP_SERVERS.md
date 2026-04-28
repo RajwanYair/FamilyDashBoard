@@ -26,14 +26,15 @@ This matches the broader tooling policy for `MyScripts/`: common tools belong at
 
 ## Current VS Code MCP Concepts To Account For
 
-MCP servers can provide more than tools:
+MCP servers can provide more than tools. When choosing or documenting a server, consider all five capability classes:
 
-- Tools for chat and agent execution
-- Resources that can be attached as context
-- Prompt templates exposed by the server
-- MCP apps rendered inline in chat when supported
+- **Tools** — callable functions surfaced to chat and agent execution
+- **Resources** — read-only context attachments (files, URIs, database rows)
+- **Prompts** — templated prompt scaffolds exposed by the server
+- **Sampling / elicitation** — the server can request structured input from the user mid-task
+- **MCP apps** — inline-rendered UI in chat where supported by the host
 
-When documenting or choosing a server, consider all four capabilities, not just tools.
+VS Code surfaces MCP capabilities through the Chat Customizations editor, the `MCP: List Servers` command, the Extensions view's MCP section, and the MCP output log. Disabled servers do not load tools, resources, or prompts — keep enable/disable state user-specific.
 
 ## Security Rules
 
