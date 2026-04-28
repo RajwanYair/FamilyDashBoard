@@ -32,7 +32,8 @@ npm install --no-save --no-package-lock \
   "markdownlint-cli2@^0.22.0" \
   "zod@^3.24.0" \
   "@cloudflare/workers-types@^4.0.0" \
-  "fast-check@^4.7.0"
+  "fast-check@^4.7.0" \
+  "@lhci/cli@^0.14.0"
 
 echo "→ Installing worker runtime + type deps (for worker typecheck + worker tests)…"
 # Worker source imports `hono` and `valibot`; both need to resolve from

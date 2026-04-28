@@ -201,10 +201,6 @@ jobs:
           node-version: "22"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
-      - name: Install Lighthouse CI
-        # --no-package-lock prevents npm from recreating the lockfile and evicting
-        # the --no-save toolchain installed by install-tools.sh (vite, etc.)
-        run: npm install --no-save --no-package-lock @lhci/cli@0.14.x
       - name: Build for Lighthouse
         run: npx vite build
       - name: Run Lighthouse CI
