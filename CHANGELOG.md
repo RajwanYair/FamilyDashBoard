@@ -5,6 +5,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.14.0] — 2026-05-04
+
+> **Sprints 120–128 — roadmap progression batch** · **4910 tests / 158 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+### Added
+
+- **View Transitions L2 typed transitions** (Sprint 123, Roadmap #10) — `startVtWithTypes()` helper in `src/ui/maximize.ts` enables `html:active-view-transition-type(card-maximize)` CSS targeting; `src/ui/theme.ts` gains `html:active-view-transition-type(theme-change)` with brightness-flash keyframes in `src/styles/transitions.css`. Single-call design: one `startViewTransition` call at all times — L2 object form attempted first, TypeError catch falls back to L1 with no double-call.
+- **HTTP Early Hints 103 middleware** (Sprint 122, Roadmap #7) — `worker/src/middleware/early-hints.ts` preloads 6 API endpoints (`/api/weather`, `/api/currency`, `/api/hebcal`, `/api/news/aggregate`, `/api/crypto`, `/api/alerts`) via `Link` headers on eligible GET responses. Wired to all dashboard routes in `worker/src/index.ts`.
+- **App-level signals bridge** (Sprint 121, Roadmap #1) — `src/core/app-signals.ts` ships `tempUnit` and `appTheme` named signals. `state.ts` lazily bridges `config.tempUnit` and `config.theme` mutations into these signals. Weather card migrated from `state.on()` → `effect()` as first signals call-site.
+- **`stripDevCsp` Vite plugin** confirmed active (Sprint 127, Roadmap #23) — `apply: "serve"` strips the CSP `<meta>` tag in dev mode only; production CSP is unchanged.
+
+### Changed
+
+- **Coverage ratchet** (Sprint 120, Roadmap #8) — `branches` threshold raised 81.7 → 81.8; 69 targeted branch tests added for `perf.ts` and `vitals-reporter.ts`.
+- **LHCI perf threshold** (Sprint 124, Roadmap #19) — `.lighthouserc.json` performance assertion tightened from `warn ≥ 0.70` → `warn ≥ 0.80`; annotated path to final `error ≥ 0.97` target for v14.x.
+- **Stryker break threshold** (Sprint 126, Roadmap #9) — `scripts/stryker.config.mjs` hard-break raised 75 → 85; `error-tracker.ts`, `config.ts`, `diag.ts` confirmed in scope.
+- **View Transitions test stubs** — all three `stubViewTransition` helpers in `tests/unit/ui/maximize.test.ts` updated to support both L1 (callback) and L2 (options object) call styles.
+
+### Verified (no code change needed)
+
+- **Smart-contrast audit** (Sprint 125, Roadmap #24) — `node scripts/check-smart-contrast.mjs` → 0 violations across 37 CSS files. All 6 themes clean.
+- **Calendar fuzz coverage** (Sprint 128, Roadmap #17) — 258 test cases (target ≥ 250). RFC-5545 edge cases complete.
+- **`vite-plugin-dev-csp-strip`** (Sprint 127, Roadmap #23) — pre-existing `stripDevCsp` plugin confirmed in `vite.config.ts`.
+
+### Version anchors
+
+Seven files bumped to v13.14.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, plus this CHANGELOG.
+
+---
+
 ## [13.13.0] — 2026-04-28
 
 > **Sprint 118 — roadmap progression** · **4837 tests / 157 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 stylelint · 0 suppressions

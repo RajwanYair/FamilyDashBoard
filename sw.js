@@ -1,4 +1,4 @@
-/* FamilyDashBoard ServiceWorker — v13.13.0
+/* FamilyDashBoard ServiceWorker — v13.14.0
  * APP_SHELL pre-cache · API network-first with offline fallback
  * NETWORK_BACK broadcast on reconnection · VERSION_ACTIVATED on activate
  * v13.6.0: coverage ratchet (moon-phase+GPU) · LHCI perf ≥0.97 · NWS US-travel mode · @vitest/browser scaffold · motivation non-repeat window · icalendar fuzz 157→171 · Stryker→error-reporter+diag · V14-HARMONISE README (+41 tests, Sprints 66-73)
