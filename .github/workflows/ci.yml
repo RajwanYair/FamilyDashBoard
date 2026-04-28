@@ -112,8 +112,11 @@ jobs:
               FOUND=1
             fi
           done
-          [ "$FOUND" -eq 0 ] && echo "✅ No hardcoded secrets detected"
-          [ "$FOUND" -eq 1 ] && exit 1
+          if [ "$FOUND" -eq 0 ]; then
+            echo "✅ No hardcoded secrets detected"
+          else
+            exit 1
+          fi
       - name: Scan for dangerous JS patterns
         run: |
           echo "🔍 Scanning for dangerous JS patterns in src/..."
@@ -126,7 +129,9 @@ jobs:
             echo "::error::document.write() detected in src/ — security risk"
             FAILED=1
           fi
-          [ "$FAILED" -eq 0 ] && echo "✅ No dangerous patterns found"
+          if [ "$FAILED" -eq 0 ]; then
+            echo "✅ No dangerous patterns found"
+          fi
           exit $FAILED
 
   worker-tests:
@@ -197,7 +202,9 @@ jobs:
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Install Lighthouse CI
-        run: npm install --no-save @lhci/cli@0.14.x
+        # --no-package-lock prevents npm from recreating the lockfile and evicting
+        # the --no-save toolchain installed by install-tools.sh (vite, etc.)
+        run: npm install --no-save --no-package-lock @lhci/cli@0.14.x
       - name: Build for Lighthouse
         run: npx vite build
       - name: Run Lighthouse CI
