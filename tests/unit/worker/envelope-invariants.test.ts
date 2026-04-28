@@ -259,7 +259,8 @@ describe("workerEnvelope — E12: null and primitive scalar data round-trips", (
         ttlArb,
         async (data, provider, stale, ttl) => {
           const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-          expect(body.data).toEqual(data);
+          // Normalise via JSON to canonicalise -0 → 0, etc.
+          expect(body.data).toEqual(JSON.parse(JSON.stringify(data)));
         },
       ),
       { numRuns: 80 },
@@ -283,7 +284,8 @@ describe("workerEnvelope — E13: array data round-trips through JSON", () => {
         ttlArb,
         async (data, provider, stale, ttl) => {
           const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-          expect(body.data).toEqual(data);
+          // Normalise via JSON to canonicalise -0 → 0, etc.
+          expect(body.data).toEqual(JSON.parse(JSON.stringify(data)));
         },
       ),
       { numRuns: 50 },
@@ -469,8 +471,6 @@ describe("workerEnvelope — E23: provider string exact identity (no trimming)",
 describe("workerEnvelope — E24: deeply nested object data survives JSON round-trip", () => {
   // Use jsonValue (JSON-safe) instead of fc.object() which can emit undefined values.
   // JSON converts undefined array entries to null — use only JSON-safe values here.
-  // depthSize "small" (not "medium") avoids Response.json() stream edge-cases in
-  // happy-dom on Node 22 while still covering nested object round-trip correctness.
   const deepJsonArb = fc.jsonValue({ depthSize: "small" });
 
   it("deeply nested JSON-safe data is preserved after JSON serialisation", async () => {
@@ -482,7 +482,10 @@ describe("workerEnvelope — E24: deeply nested object data survives JSON round-
         ttlArb,
         async (data, provider, stale, ttl) => {
           const body = await parseEnvelope(workerEnvelope(data, provider, stale, ttl));
-          expect(body.data).toEqual(data);
+          // Normalise both sides through JSON to canonicalise edge cases that
+          // JSON itself collapses (e.g. -0 → 0). The property under test is
+          // round-trip *through* JSON, so the input must be measured post-JSON.
+          expect(body.data).toEqual(JSON.parse(JSON.stringify(data)));
         },
       ),
       { numRuns: 50 },
