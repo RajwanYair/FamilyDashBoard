@@ -209,7 +209,8 @@ export async function renderSystemInfo(): Promise<void> {
     if (typeof ua.getHighEntropyValues === "function") {
       try {
         const hints = await ua.getHighEntropyValues(["platformVersion", "architecture", "bitness"]);
-        const arch = hints.architecture && hints.bitness ? ` ${hints.architecture}${hints.bitness}` : "";
+        const arch =
+          hints.architecture && hints.bitness ? ` ${hints.architecture}${hints.bitness}` : "";
         const ver = hints.platformVersion ? ` ${ua.platform} ${hints.platformVersion}` : "";
         if (arch || ver) platform = `${platform}${ver}${arch}`;
       } catch {

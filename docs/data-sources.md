@@ -69,16 +69,16 @@ Direct → allorigins → codetabs → corsproxy.io
 
 ### 💱 Currency — `er-api`
 
-| Property          | Value                                                                                                    |
-| ----------------- | -------------------------------------------------------------------------------------------------------- |
-| Provider          | [open.er-api.com](https://www.exchangerate-api.com/) → exchangerate-api.com → ECB ([Frankfurter](https://frankfurter.dev)) |
-| Worker route      | `GET /api/currency`                                                                                      |
+| Property          | Value                                                                                                                                         |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Provider          | [open.er-api.com](https://www.exchangerate-api.com/) → exchangerate-api.com → ECB ([Frankfurter](https://frankfurter.dev))                    |
+| Worker route      | `GET /api/currency`                                                                                                                           |
 | Upstream URL      | `https://open.er-api.com/v6/latest/ILS` → `https://api.exchangerate-api.com/v4/latest/ILS` → `https://api.frankfurter.dev/v1/latest?base=ILS` |
-| Valibot schema    | `CurrencySchema` in `worker/src/utils/schemas.ts`                                                        |
-| Cache TTL         | 1 hour (`INTERVALS.CURRENCY`)                                                                            |
-| Cache key         | `curr`                                                                                                   |
-| KV stale fallback | Yes (`data.ts` — `handleCurrency`); 48 h KV TTL on the stale tier                                        |
-| Failure mode      | All 3 upstreams + KV stale exhausted → envelope `{stale:true, provider:"none"}`                          |
+| Valibot schema    | `CurrencySchema` in `worker/src/utils/schemas.ts`                                                                                             |
+| Cache TTL         | 1 hour (`INTERVALS.CURRENCY`)                                                                                                                 |
+| Cache key         | `curr`                                                                                                                                        |
+| KV stale fallback | Yes (`data.ts` — `handleCurrency`); 48 h KV TTL on the stale tier                                                                             |
+| Failure mode      | All 3 upstreams + KV stale exhausted → envelope `{stale:true, provider:"none"}`                                                               |
 
 ---
 

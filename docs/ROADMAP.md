@@ -352,7 +352,7 @@ Target: **v14.0** (Q1 2027).
 - [ ] Cross-doc View Transitions for theme switch + maximise-card.
 - [ ] Stryker scope extension: error-tracker + config + diag, threshold ≥ 85 %.
 - [ ] Coverage ratchet: 89/81/89/90 → 92/85/92/93.
-**Exit**: oxlint green on first pass; CI deltas live; coverage at 92/85/92/93; LHCI perf still ≥ 0.97.
+      **Exit**: oxlint green on first pass; CI deltas live; coverage at 92/85/92/93; LHCI perf still ≥ 0.97.
 
 ### 4.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals
 
@@ -438,16 +438,16 @@ Target: **v15+** (no pre-committed content).
 
 Past releases live in [CHANGELOG.md](../CHANGELOG.md). Forward-only.
 
-| Version      | Theme                                                                                | Window         | Scope link |
-| ------------ | ------------------------------------------------------------------------------------ | -------------- | ---------- |
-| **v13.11.0** | Sprint 116 — platform hardening                                                      | 2026-Q2        | Shipped ✓  |
-| **v13.12.0** | Sprint 117 — production-ready cleanup (inline-styles, dead files, strict link-check) | 2026-Q2        | Shipped ✓  |
-| **v13.13.0** | Sprint 118 — cross-doc View Transitions opt-in, ECB currency fallback, UA-CH hints, worker preconnect, currency docs sync | 2026-Q2 | Shipped ✓ |
-| **v14.0**    | V14-FOUNDATIONS + V14-SEMANTIC                                                       | 2027-Q1        | §4.1, §4.2 |
-| **v14.1**    | V14-HARMONISE                                                                        | 2027-Q2        | §4.5       |
-| **v14.2**    | V14-SECURITY-L3 + V14-EDGE                                                           | 2027-Q3        | §4.6, §4.4 |
-| **v14.x**    | V14-CONTINUITY (gated)                                                               | when triggered | §4.3       |
-| **v15.0**    | V15-PRODUCT (gated only)                                                             | 2027-Q4+       | §4.7       |
+| Version      | Theme                                                                                                                     | Window         | Scope link |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------- | -------------- | ---------- |
+| **v13.11.0** | Sprint 116 — platform hardening                                                                                           | 2026-Q2        | Shipped ✓  |
+| **v13.12.0** | Sprint 117 — production-ready cleanup (inline-styles, dead files, strict link-check)                                      | 2026-Q2        | Shipped ✓  |
+| **v13.13.0** | Sprint 118 — cross-doc View Transitions opt-in, ECB currency fallback, UA-CH hints, worker preconnect, currency docs sync | 2026-Q2        | Shipped ✓  |
+| **v14.0**    | V14-FOUNDATIONS + V14-SEMANTIC                                                                                            | 2027-Q1        | §4.1, §4.2 |
+| **v14.1**    | V14-HARMONISE                                                                                                             | 2027-Q2        | §4.5       |
+| **v14.2**    | V14-SECURITY-L3 + V14-EDGE                                                                                                | 2027-Q3        | §4.6, §4.4 |
+| **v14.x**    | V14-CONTINUITY (gated)                                                                                                    | when triggered | §4.3       |
+| **v15.0**    | V15-PRODUCT (gated only)                                                                                                  | 2027-Q4+       | §4.7       |
 
 ---
 
