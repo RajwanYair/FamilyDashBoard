@@ -27,7 +27,8 @@ export function createCurrencyAdapter(): ProviderAdapter<CurrencyRateResponse> {
     cacheKey: CACHE_KEY,
     cacheTtl,
     async fetchFresh(): Promise<CurrencyRateResponse> {
-      for (const url of [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK]) {
+      // Sprint 132 (Roadmap #16): ECB-direct via Frankfurter as 3rd fallback for redundancy.
+      for (const url of [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK, API.CURRENCY_FALLBACK_ECB]) {
         try {
           const data = await fetchJSONWithWorker<CurrencyRateResponse>(url);
           if (data?.rates && typeof data.rates === "object") {

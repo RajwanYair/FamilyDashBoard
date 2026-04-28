@@ -51,11 +51,22 @@ describe("CurrencyAdapter (Sprint 91)", () => {
     expect(recordProviderSuccess).toHaveBeenCalledWith("currency");
   });
 
-  it("falls back and reports failure when both endpoints fail", async () => {
+  it("falls back and reports failure when all endpoints fail", async () => {
     vi.mocked(fetchJSONWithWorker).mockRejectedValue(new Error("fail"));
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);
     expect(recordProviderFailure).toHaveBeenCalledWith("currency");
+  });
+
+  it("Sprint 132 (Roadmap #16): tries 3 endpoints (primary + ER fallback + ECB Frankfurter)", async () => {
+    vi.mocked(fetchJSONWithWorker)
+      .mockRejectedValueOnce(new Error("primary down"))
+      .mockRejectedValueOnce(new Error("er-fallback down"))
+      .mockResolvedValueOnce({ rates: { USD: 0.27, EUR: 0.25 } });
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(true);
+    expect(fetchJSONWithWorker).toHaveBeenCalledTimes(3);
+    expect(vi.mocked(fetchJSONWithWorker).mock.calls[2]?.[0]).toContain("frankfurter.dev");
   });
 
   it("status() returns current health", () => {

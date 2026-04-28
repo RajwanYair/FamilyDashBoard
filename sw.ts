@@ -56,6 +56,7 @@ const API_CACHE_ORIGINS: string[] = [
   "api.open-meteo.com",
   "www.hebcal.com",
   "open.er-api.com",
+  "api.frankfurter.dev",
   "exchangerate-api.com",
   // F162 additions — CORS proxies & data providers
   "api.allorigins.win",
@@ -77,6 +78,7 @@ const CACHE_TTL_BY_ORIGIN: Readonly<Record<string, number>> = {
   "api.coingecko.com": 300,
   "api.open-meteo.com": 1800,
   "open.er-api.com": 1800,
+  "api.frankfurter.dev": 1800,
   "exchangerate-api.com": 1800,
   "www.hebcal.com": 21600,
   "sefaria.org": 21600,

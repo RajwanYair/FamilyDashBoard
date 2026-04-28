@@ -68,6 +68,9 @@ export const API = {
   SEFARIA_TEXT: "https://www.sefaria.org/api/v3/texts/",
   CURRENCY_PRIMARY: "https://open.er-api.com/v6/latest/ILS",
   CURRENCY_FALLBACK: "https://api.exchangerate-api.com/v4/latest/ILS",
+  // Sprint 132 (Roadmap #16): ECB-direct mirror via Frankfurter (no key, daily ECB rates).
+  // Returns shape compatible with CurrencyRateResponse: { amount, base, date, rates }.
+  CURRENCY_FALLBACK_ECB: "https://api.frankfurter.dev/v1/latest?base=ILS",
   YAHOO_CHART: "https://query1.finance.yahoo.com/v8/finance/chart/",
   // V13-DATA-1: Worker stocks endpoint — Finnhub primary, Yahoo secondary (feeds.ts)
   WORKER_STOCKS: `${WORKER_BASE_URL}/api/stocks`,

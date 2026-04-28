@@ -43,6 +43,7 @@ export const CACHE_TTL_BY_ORIGIN: Readonly<Record<string, number>> = {
   // Weather + exchange rates: 30 minutes
   "api.open-meteo.com": 1800,
   "open.er-api.com": 1800,
+  "api.frankfurter.dev": 1800,
   "exchangerate-api.com": 1800,
   // Calendars + civic alerts: 6 hours
   "www.hebcal.com": 21600,
