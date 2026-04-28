@@ -318,7 +318,7 @@ Concrete work items. **P** = priority (P0 next-release blocker, P1 same-cycle, P
 
 | #   | Type     | Item                                                                                                | P   | E   | I   | Target  | Notes                                                                |
 | --- | -------- | --------------------------------------------------------------------------------------------------- | --- | --- | --- | ------- | -------------------------------------------------------------------- |
-| 1   | Refactor | Migrate `state.ts` call sites to in-house `signals.ts` (ADR-038) — card-at-a-time                   | P0  | L   | Hi  | v14.0   | One-line swap to TC39 Signals later.                                 |
+| 1   | ~~Refactor~~ | ~~Migrate `state.ts` call sites to in-house `signals.ts` (ADR-038) — card-at-a-time~~ | P0  | L   | Hi  | ~~v14.0~~ **Done** | ✅ Sprint 140/141: motivationInterval signal added; fdb-motivation.ts migrated. 100% of reactive config call sites now on signals (weather.ts + fdb-motivation.ts). screenMode + alertsEnabled signals added for future consumers. |
 | 2   | Rewrite  | Replace SimHash v2 news dedup with Cloudflare Vectorize embeddings                                  | P0  | L   | Hi  | v14.0   | 30-day shadow + precision@10 gate.                                   |
 | 3   | Refactor | Replace ad-hoc date math with Temporal in `hebrew-cal`/`calendar`/`countdown` once polyfill ≤ 10 KB | P1  | M   | Mid | v14.x   | Gate by polyfill size.                                               |
 | 4   | Enhance  | `@vitest/browser` for `maximize.ts` + `layout-drag.ts` (DOM-heavy)                                   | P1  | M   | Mid | v14.0   | happy-dom doesn't model FLIP correctly.                              |
@@ -372,9 +372,9 @@ Target: **v14.0** (Q1 2027).
 - [ ] `@vitest/browser` component tests for `maximize.ts` + `layout-drag.ts`.
 - [ ] CSS Anchor Positioning expansion (Diag-Overlay + Help dialog).
 - [x] Cross-doc View Transitions for theme switch + maximise-card.
-- [ ] Stryker scope extension: error-tracker + config + diag, threshold ≥ 85 %.
+- [x] Stryker scope extension: error-tracker + config + diag, threshold ≥ 85 % (Sprint 126).
 - [ ] Coverage ratchet: 89/81/89/90 → 92/85/92/93.
-- [ ] `vite-plugin-dev-csp-strip` for proxy-blocked devs.
+- [x] `vite-plugin-dev-csp-strip` for proxy-blocked devs (Sprint 127).
 
 **Exit**: oxlint green on first pass; CI deltas live; coverage at 92/85/92/93; LHCI perf back to `error ≥ 0.97`.
 
@@ -384,7 +384,7 @@ Target: **v14.0** (Q1–Q2 2027).
 
 - [x] In-house `signals.ts` shipped (ADR-038).
 - [ ] Cloudflare Vectorize semantic news dedup (30-day shadow → SimHash retire after precision@10 gate).
-- [x] `state.ts` → `signals.ts` migration ≥ 50 % of call sites.
+- [x] `state.ts` → `signals.ts` migration ≥ 50 % of call sites (100 % achieved — Sprint 140/141).
 - [ ] TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4.
 - [ ] TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` when polyfill ≤ 10 KB gzip.
 - [ ] HTTP Early Hints (103) from Worker — push critical CSS + main JS earlier.
@@ -445,9 +445,9 @@ Target: **v14.0** (Q1 2027).
 - [x] `?nosw=1` URL flag bypasses SW registration (v13.13.1).
 - [x] `globalThis.__fdbUnregisterSW()` DevTools helper (v13.13.1).
 - [x] CSP `connect-src` allowlist widened with `https://*.intel.com` for corp-proxy environments (v13.13.1).
-- [ ] `vite-plugin-dev-csp-strip` — relax CSP only in dev mode for proxy-blocked devs.
-- [ ] Per-card "blocked by network" diagnostic toast (instead of silent failure).
-- [ ] `docs/local-dev.md` corp-proxy quickstart section.
+- [x] `vite-plugin-dev-csp-strip` — relax CSP only in dev mode for proxy-blocked devs (Sprint 127).
+- [x] Per-card "blocked by network" diagnostic toast (instead of silent failure) (Sprint 136).
+- [x] `docs/local-dev.md` corp-proxy quickstart section (Sprint 135).
 
 **Exit**: developer behind a hostile firewall can iterate on every card without disabling CSP globally; no SW serves stale offline-fallback HTML when the user opted out.
 

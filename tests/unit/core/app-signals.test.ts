@@ -6,13 +6,15 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { tempUnit, appTheme, motivationInterval, syncAppSignal } from "@/core/app-signals";
+import { tempUnit, appTheme, motivationInterval, screenMode, alertsEnabled, syncAppSignal } from "@/core/app-signals";
 
 // Reset signals to known defaults before each test.
 beforeEach(() => {
   tempUnit.value = "C";
   appTheme.value = "black";
   motivationInterval.value = 0;
+  screenMode.value = "tv";
+  alertsEnabled.value = true;
 });
 
 // ── tempUnit signal ───────────────────────────────────────────────────────────
@@ -153,5 +155,91 @@ describe("syncAppSignal — motivationInterval", () => {
     motivationInterval.value = 7;
     syncAppSignal("config.motivationInterval", 0);
     expect(motivationInterval.value).toBe(0);
+  });
+});
+
+// ── screenMode signal ─────────────────────────────────────────────────────────
+
+describe("screenMode signal", () => {
+  it("has default value 'tv'", () => {
+    expect(screenMode.value).toBe("tv");
+  });
+
+  it("can be set to 'tablet'", () => {
+    screenMode.value = "tablet";
+    expect(screenMode.value).toBe("tablet");
+  });
+
+  it("can be set to 'phone'", () => {
+    screenMode.value = "phone";
+    expect(screenMode.value).toBe("phone");
+  });
+});
+
+// ── alertsEnabled signal ──────────────────────────────────────────────────────
+
+describe("alertsEnabled signal", () => {
+  it("has default value true", () => {
+    expect(alertsEnabled.value).toBe(true);
+  });
+
+  it("can be set to false", () => {
+    alertsEnabled.value = false;
+    expect(alertsEnabled.value).toBe(false);
+  });
+
+  it("can be toggled back to true", () => {
+    alertsEnabled.value = false;
+    alertsEnabled.value = true;
+    expect(alertsEnabled.value).toBe(true);
+  });
+});
+
+// ── syncAppSignal — screenMode + alertsEnabled branches ─────────────────────
+
+describe("syncAppSignal — screenMode", () => {
+  it("updates screenMode when key is 'config.screenMode' and value is 'tablet'", () => {
+    syncAppSignal("config.screenMode", "tablet");
+    expect(screenMode.value).toBe("tablet");
+  });
+
+  it("updates screenMode when value is 'phone'", () => {
+    syncAppSignal("config.screenMode", "phone");
+    expect(screenMode.value).toBe("phone");
+  });
+
+  it("updates screenMode when value is 'tv'", () => {
+    screenMode.value = "phone";
+    syncAppSignal("config.screenMode", "tv");
+    expect(screenMode.value).toBe("tv");
+  });
+
+  it("ignores invalid screenMode value (no change)", () => {
+    syncAppSignal("config.screenMode", "desktop");
+    expect(screenMode.value).toBe("tv"); // unchanged
+  });
+});
+
+describe("syncAppSignal — alertsEnabled", () => {
+  it("sets alertsEnabled to false when value is false", () => {
+    syncAppSignal("config.alertsEnabled", false);
+    expect(alertsEnabled.value).toBe(false);
+  });
+
+  it("sets alertsEnabled to true when value is true", () => {
+    alertsEnabled.value = false;
+    syncAppSignal("config.alertsEnabled", true);
+    expect(alertsEnabled.value).toBe(true);
+  });
+
+  it("coerces truthy values to true", () => {
+    alertsEnabled.value = false;
+    syncAppSignal("config.alertsEnabled", 1);
+    expect(alertsEnabled.value).toBe(true);
+  });
+
+  it("coerces falsy values to false", () => {
+    syncAppSignal("config.alertsEnabled", 0);
+    expect(alertsEnabled.value).toBe(false);
   });
 });

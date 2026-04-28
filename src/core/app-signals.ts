@@ -20,7 +20,7 @@
  */
 
 import { signal } from "./signals";
-import type { ThemeName } from "./constants";
+import type { ThemeName, ScreenModeName } from "./constants";
 
 // ── Config signals ────────────────────────────────────────────────────────────
 
@@ -42,6 +42,20 @@ export const appTheme = signal<ThemeName>("black");
  */
 export const motivationInterval = signal<number>(0);
 
+/**
+ * Current screen mode ("tv" | "tablet" | "phone").
+ * Bridged from `state.set("config.screenMode", …)`.
+ * Consumers subscribe via: `effect(() => { screenMode.value; … })`
+ */
+export const screenMode = signal<ScreenModeName>("tv");
+
+/**
+ * Whether the red-alerts card is enabled.
+ * Bridged from `state.set("config.alertsEnabled", …)`.
+ * Consumers subscribe via: `effect(() => { alertsEnabled.value; … })`
+ */
+export const alertsEnabled = signal<boolean>(true);
+
 // ── Bridge: state.ts → app-signals ───────────────────────────────────────────
 
 /**
@@ -62,6 +76,13 @@ export function syncAppSignal(key: string, value: unknown): void {
       break;
     case "config.motivationInterval":
       motivationInterval.value = typeof value === "number" ? value : 0;
+      break;
+    case "config.screenMode":
+      if (value === "tv" || value === "tablet" || value === "phone")
+        screenMode.value = value;
+      break;
+    case "config.alertsEnabled":
+      alertsEnabled.value = Boolean(value);
       break;
     default:
       break;
