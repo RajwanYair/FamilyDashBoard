@@ -154,6 +154,31 @@ describe("historyGet — without IDB (IDB unavailable)", () => {
   });
 });
 
+describe("historyGet — IDB open error", () => {
+  beforeEach(() => {
+    _resetHistoryDb();
+    vi.stubGlobal("IDBKeyRange", {
+      upperBound: (value: number, exclusive: boolean) => ({ upper: value, upperOpen: exclusive }),
+      bound: (lower: unknown, upper: unknown) => ({ lower, upper }),
+    });
+  });
+
+  it("returns empty array when DB open fails (onerror path)", async () => {
+    vi.stubGlobal("indexedDB", {
+      open(_name: string, _version: number): IDBOpenDBRequest {
+        const r: Partial<IDBOpenDBRequest> & {
+          onerror?: ((e: unknown) => void) | null;
+        } = {};
+        setTimeout(() => r.onerror?.({ target: r }), 0);
+        return r as IDBOpenDBRequest;
+      },
+    });
+    _resetHistoryDb();
+    const result = await historyGet("test:key");
+    expect(result).toEqual([]);
+  });
+});
+
 describe("historyAppend — without IDB (IDB unavailable)", () => {
   beforeEach(() => {
     _resetHistoryDb();

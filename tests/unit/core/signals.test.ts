@@ -84,6 +84,19 @@ describe("computed()", () => {
     a.value = 3;
     expect(quad.value).toBe(12);
   });
+
+  it("notify() is a no-op when already dirty (unread computed changed twice)", () => {
+    // computed starts dirty; two consecutive signal writes both call notify()
+    // the second notify() should hit the `if (this._dirty) return` early path.
+    const a = signal(0);
+    const fn = vi.fn(() => a.value * 2);
+    const c = computed(fn);
+    // Do NOT read c — it remains dirty.
+    a.value = 1; // notify() with _dirty=true → early return
+    a.value = 2; // notify() with _dirty=true → early return again
+    expect(c.value).toBe(4); // reads once — recomputes with latest value
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("effect()", () => {
@@ -122,6 +135,37 @@ describe("effect()", () => {
     });
     dispose();
     expect(() => dispose()).not.toThrow();
+  });
+
+  it("disposed effect ignores notifications from re-subscribed deps (notify guards)", () => {
+    // When an effect self-disposes during a re-run, runTracked may
+    // re-subscribe it to deps after dispose().  A subsequent signal write
+    // calls notify() on the (disposed) effect — which must return early.
+    const a = signal(0);
+    let callCount = 0;
+    // Use a ref so the closure picks up the real disposer after effect() returns.
+    const ref = { dispose: (() => void 0) as () => void };
+
+    ref.dispose = effect(() => {
+      void a.value; // subscribe to a
+      callCount++;
+      // First call: ref.dispose is the initial no-op (effect not created yet).
+      // Second call (re-run): ref.dispose is the real disposer → self-dispose.
+      ref.dispose();
+    });
+
+    // Initial run: callCount=1, effect still active (no-op dispose called).
+    expect(callCount).toBe(1);
+
+    // Trigger re-run: effect's fn calls real dispose (_disposed=true),
+    // but runTracked re-subscribes a AFTER fn returns.
+    a.value = 1;
+    expect(callCount).toBe(2); // re-ran and self-disposed
+
+    // Now effect is _disposed=true but still subscribed to a via runTracked.
+    // Changing a calls notify() on the disposed effect → guard returns early.
+    a.value = 2;
+    expect(callCount).toBe(2); // must NOT re-run
   });
 });
 

@@ -317,6 +317,118 @@ describe("CardAutoScroll — wheel event pauses scroll", () => {
   });
 });
 
+// ── rAF tick: bottom reached and paused ────────────────────────────────────
+
+describe("CardAutoScroll — rAF tick reaches bottom", () => {
+  let mod: Mod;
+
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    _rafCbs = [];
+    mod = await freshMod();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it("marks atBottom and does not scroll further when scrollTop is near max", () => {
+    const { body } = makeCard("weather", 200);
+    // Set scrollTop to max - 1 so the very next tick triggers atBottom
+    Object.defineProperty(body, "scrollTop", { value: 199, configurable: true, writable: true });
+    mod.evaluateAll();
+
+    // Frame 1: sets lastTs
+    _rafCbs[0]?.(1000);
+    // Frame 2: small dt → tries to scroll → scrollTop >= max-1 → atBottom = true
+    _rafCbs[1]?.(1050);
+    // Frame 3: ticker.atBottom = true → tick returns early (atBottom path)
+    _rafCbs[2]?.(1100);
+
+    expect(body.scrollTop).toBeGreaterThanOrEqual(0);
+  });
+
+  it("does not scroll when paused (atBottom pause timer running)", () => {
+    const { body } = makeCard("weather", 200);
+    mod.evaluateAll();
+
+    // Reach bottom
+    Object.defineProperty(body, "scrollTop", { value: 199, configurable: true, writable: true });
+    _rafCbs[0]?.(1000);
+    _rafCbs[1]?.(1050);
+
+    // atBottom is now true; next tick should take the atBottom early return
+    const scrollAfterBottom = body.scrollTop;
+    _rafCbs[2]?.(1100);
+    expect(body.scrollTop).toBe(scrollAfterBottom);
+  });
+
+  it("skips frame when dt > 200 ms (tab was hidden)", () => {
+    const { body } = makeCard("weather", 200);
+    mod.evaluateAll();
+
+    // Frame 1: sets lastTs=1000
+    _rafCbs[0]?.(1000);
+    // Frame 2: dt = 300 ms (> 0.2 s) → skips (dt > 0.2 branch)
+    _rafCbs[1]?.(1300);
+
+    // scrollTop should still be 0 since large-gap frame was skipped
+    expect(body.scrollTop).toBe(0);
+  });
+
+  it("cancels existing resume timer when wheel fires twice", () => {
+    const { body } = makeCard("weather", 200);
+    mod.evaluateAll();
+
+    // First wheel — sets a resumeTimer
+    body.dispatchEvent(new Event("wheel", { bubbles: true }));
+
+    // Second wheel before timer fires — should clearTimeout existing timer
+    body.dispatchEvent(new Event("wheel", { bubbles: true }));
+
+    // Advance by less than RESUME_DELAY; scroll still paused
+    vi.advanceTimersByTime(1_000);
+    _rafCbs[0]?.(1000);
+    _rafCbs[1]?.(1100);
+    expect(body.scrollTop).toBe(0);
+  });
+});
+
+// ── unwire cleanup ──────────────────────────────────────────────────────────
+
+describe("CardAutoScroll — unwire clears resumeTimer", () => {
+  let mod: Mod;
+
+  beforeEach(async () => {
+    vi.useFakeTimers();
+    _rafCbs = [];
+    mod = await freshMod();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it("clears active resumeTimer when unwired after a wheel event", () => {
+    const { body } = makeCard("weather", 200);
+    mod.evaluateAll();
+
+    // Start a resume timer via wheel event
+    body.dispatchEvent(new Event("wheel", { bubbles: true }));
+
+    // Resolve overflow so unwire() runs (which should clearTimeout resumeTimer)
+    Object.defineProperty(body, "scrollHeight", { value: 200, configurable: true });
+    mod.evaluateAll(); // triggers unwire
+
+    // Body should be unwired
+    expect(body.classList.contains("card-body-auto-scroll")).toBe(false);
+  });
+});
+
 // ── initCardAutoScroll ─────────────────────────────────────────────────────
 
 describe("CardAutoScroll — initCardAutoScroll", () => {
