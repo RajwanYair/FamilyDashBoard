@@ -45,3 +45,4 @@
 | [ADR-039](ADR-039-oxlint-fast-prepass.md)                                                 | oxlint as Fast CI Pre-Pass                                      | 2026-04-26 | Accepted                                       |
 | [ADR-040](ADR-040-mermaid-static-validator.md)                                            | Mermaid Static Validator in CI                                  | 2026-04-26 | Accepted                                       |
 | [ADR-041](ADR-041-csp-wildcard-narrowing.md)                                              | CSP `https://*.intel.com` Wildcard Narrowing Plan               | 2026-04-28 | Accepted (Plan)                                |
+| [ADR-042](ADR-042-lhci-tighten-ratchet.md)                                                | LHCI Performance Threshold Tightening Plan                      | 2026-04-28 | Accepted (Plan)                                |
