@@ -384,7 +384,7 @@ Target: **v14.0** (Q1–Q2 2027).
 
 - [x] In-house `signals.ts` shipped (ADR-038).
 - [ ] Cloudflare Vectorize semantic news dedup (30-day shadow → SimHash retire after precision@10 gate).
-- [ ] `state.ts` → `signals.ts` migration ≥ 50 % of call sites.
+- [x] `state.ts` → `signals.ts` migration ≥ 50 % of call sites.
 - [ ] TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4.
 - [ ] TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` when polyfill ≤ 10 KB gzip.
 - [ ] HTTP Early Hints (103) from Worker — push critical CSS + main JS earlier.

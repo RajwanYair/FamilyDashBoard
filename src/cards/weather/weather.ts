@@ -28,7 +28,8 @@ import { setSync } from "../../core/sync";
 import { loadConfig, saveConfig } from "../../core/config";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import { fetchNWS } from "./nws-adapter";
-import { state } from "../../core/state";
+import { effect } from "../../core/signals";
+import { tempUnit as tempUnitSignal } from "../../core/app-signals";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 
@@ -159,7 +160,8 @@ const el = {
 };
 
 let _weatherRefreshInterval: number | null = null;
-let _tempUnitSubscribed = false;
+/** Disposer for the tempUnit effect — replaces legacy state.on() subscription. */
+let _tempUnitEffect: (() => void) | null = null;
 
 export function cacheDom(): void {
   el.topTemp = document.getElementById("top-temp");
@@ -587,10 +589,10 @@ export function initWeatherCard(): void {
     void switchWeatherCity(lat, lon);
   });
 
-  // Subscribe to reactive state: re-render when tempUnit changes externally (v8.0)
-  if (!_tempUnitSubscribed) {
-    _tempUnitSubscribed = true;
-    state.on<string>("config.tempUnit", () => {
+  // Subscribe to tempUnit signal: re-render when tempUnit changes (Roadmap #1 migration)
+  if (_tempUnitEffect === null) {
+    _tempUnitEffect = effect(() => {
+      void tempUnitSignal.value; // track dependency — fires on every tempUnit change
       const fresh = cGet<WeatherResponse>("wx", INTERVALS.WEATHER);
       const data = fresh ?? cGetStale<WeatherResponse>("wx");
       if (data) renderWeather(data);
@@ -605,6 +607,8 @@ export function destroyWeatherCard(): void {
     clearInterval(_weatherRefreshInterval);
     _weatherRefreshInterval = null;
   }
+  _tempUnitEffect?.();
+  _tempUnitEffect = null;
 }
 
 // ── Sprint 87: configSchema ────────────────────────────────────────────────
