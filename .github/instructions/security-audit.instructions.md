@@ -16,10 +16,10 @@ description: "OWASP Top 10:2021 audit checklist mapped to FamilyDashBoard's stat
 
 ## Last full audit
 
-- **Release**: v13.14.0 (patch-cycle smoke check — full v14.0.0 audit pending)
+- **Release**: v13.15.0 (patch-cycle smoke check — full v14.0.0 audit pending)
 - **Auditor**: self
 - **Date**: 2026-04-28
-- **Commit hash range**: 6c93f17 → (Sprint 119 HEAD)
+- **Commit hash range**: 6c93f17 → (Sprint 138 HEAD)
 
 ## OWASP Top 10:2021 mapping to FamilyDashBoard
 
@@ -46,6 +46,8 @@ Run on every patch release (`vX.Y.Z` with `Z > 0`):
 - [x] `npm audit --audit-level=high` — exits 0. ✓ 2026-04-28 (parent dir; 0 vulnerabilities)
 - [x] `node scripts/check-smart-contrast.mjs` — exits 0. ✓ 2026-04-28 (0 violations / 37 CSS files)
 - [x] CSP `connect-src` allowlist matches between `src/index.html` and `_headers`. ✓ 2026-04-28
+- [x] Sprint 132: new `https://api.frankfurter.dev` upstream added; both `connect-src` and SW caches mirrored. ✓ 2026-04-28
+- [x] Sprint 133: ADR-041 plan ratifies `https://*.intel.com` wildcard narrowing path. ✓ 2026-04-28
 - [ ] No `eslint-disable`, `@ts-ignore`, or `@ts-nocheck` newly introduced.
 - [ ] No `localStorage` write of secrets, OAuth tokens, JWTs, or session IDs.
 
