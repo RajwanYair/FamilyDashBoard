@@ -225,6 +225,35 @@ describe("SystemInfo — renderSystemInfo browser/UA", () => {
     // May be "—" or Chrome info, just ensure it doesn't throw
     expect(typeof text).toBe("string");
   });
+
+  it("enriches platform with UA-CH high-entropy hints when available (Roadmap #18)", async () => {
+    (navigator as Record<string, unknown>).userAgentData = {
+      brands: [{ brand: "Google Chrome", version: "126" }],
+      platform: "Windows",
+      getHighEntropyValues: vi.fn().mockResolvedValue({
+        platformVersion: "11.0.0",
+        architecture: "x86",
+        bitness: "64",
+      }),
+    };
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-browser")?.textContent ?? "";
+    expect(text).toContain("Google Chrome 126");
+    expect(text).toContain("Windows 11.0.0");
+    expect(text).toContain("x8664");
+  });
+
+  it("ignores UA-CH high-entropy hint failures gracefully (Roadmap #18)", async () => {
+    (navigator as Record<string, unknown>).userAgentData = {
+      brands: [{ brand: "Google Chrome", version: "126" }],
+      platform: "Linux",
+      getHighEntropyValues: vi.fn().mockRejectedValue(new Error("Permissions-Policy denies UA-CH")),
+    };
+    await renderSystemInfo();
+    const text = document.getElementById("sysinfo-browser")?.textContent ?? "";
+    // Should still show basic brand string without throwing
+    expect(text).toContain("Google Chrome 126");
+  });
 });
 
 // ── initSystemInfoCard ──────────────────────────────────────────────────────
