@@ -371,7 +371,7 @@ Target: **v14.0** (Q1 2027).
 - [x] Dev-mode SW kill switches (`?nosw=1`, `__fdbUnregisterSW()`) (v13.13.1).
 - [ ] `@vitest/browser` component tests for `maximize.ts` + `layout-drag.ts`.
 - [ ] CSS Anchor Positioning expansion (Diag-Overlay + Help dialog).
-- [ ] Cross-doc View Transitions for theme switch + maximise-card.
+- [x] Cross-doc View Transitions for theme switch + maximise-card.
 - [ ] Stryker scope extension: error-tracker + config + diag, threshold ≥ 85 %.
 - [ ] Coverage ratchet: 89/81/89/90 → 92/85/92/93.
 - [ ] `vite-plugin-dev-csp-strip` for proxy-blocked devs.

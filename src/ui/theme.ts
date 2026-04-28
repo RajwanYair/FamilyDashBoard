@@ -35,7 +35,21 @@ export function applyTheme(theme: string): void {
   };
 
   if ("startViewTransition" in document) {
-    const vt = document.startViewTransition(doApply);
+    // Roadmap #10 (Sprint 123): View Transitions L2 — typed transition for theme-change.
+    // Allows CSS to distinguish theme-change from default navigation cross-fade.
+    const doc = document as Document & {
+      startViewTransition(
+        callbackOrOpts:
+          | (() => void)
+          | { update: () => void; types?: string[] },
+      ): ViewTransition;
+    };
+    let vt: ViewTransition;
+    try {
+      vt = doc.startViewTransition({ update: doApply, types: ["theme-change"] });
+    } catch {
+      vt = doc.startViewTransition(doApply);
+    }
     vt.ready.catch(() => {
       /* transition was skipped — benign */
     });

@@ -251,4 +251,61 @@
       animation: none !important;
     }
   }
+
+  /* ── View Transitions L2: typed transitions (Roadmap #10, Sprint 123) ──── */
+
+  /* Theme change: brief brightness flash + fade — distinguishes it from
+     the default navigation cross-fade and the config-panel open animation. */
+  @keyframes vt-theme-out {
+    from {
+      opacity: 1;
+      filter: brightness(1);
+    }
+
+    to {
+      opacity: 0;
+      filter: brightness(1.12);
+    }
+  }
+
+  @keyframes vt-theme-in {
+    from {
+      opacity: 0;
+      filter: brightness(1.12);
+    }
+
+    to {
+      opacity: 1;
+      filter: brightness(1);
+    }
+  }
+
+  html:active-view-transition-type(theme-change) {
+    &::view-transition-old(vt-root) {
+      animation: vt-theme-out 0.35s ease-in-out;
+    }
+
+    &::view-transition-new(vt-root) {
+      animation: vt-theme-in 0.35s ease-in-out;
+    }
+
+    /* Suppress per-element animations during theme change — root handles it */
+    &::view-transition-group(vt-header),
+    &::view-transition-group(vt-clock),
+    &::view-transition-group(vt-grid) {
+      animation: none;
+    }
+  }
+
+  /* Card maximize/collapse: snappy morph — suppress grid animation so only
+     the card element (card-max-<id>) participates in the transition. */
+  html:active-view-transition-type(card-maximize) {
+    &::view-transition-group(vt-grid) {
+      animation: none;
+    }
+
+    &::view-transition-group(vt-header) {
+      animation: none;
+    }
+  }
 }

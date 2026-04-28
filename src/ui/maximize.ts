@@ -12,6 +12,39 @@ import { updateCardMiniInfo } from "../core/sync";
 
 let maximizedCard: HTMLElement | null = null;
 
+// ── View Transitions L2 helper (Roadmap #10, Sprint 123) ─────────────────────
+
+type VtL2Doc = Document & {
+  startViewTransition(
+    opts: { update: () => void | Promise<void>; types?: string[] },
+  ): ViewTransition;
+};
+
+/**
+ * Start a View Transition with an optional `types` array (L2 API).
+ * Prefers the L2 options form `{ update, types }` when available.
+ * Always makes exactly ONE call to `document.startViewTransition`.
+ *
+ * L1 implementations (and legacy test stubs) only accept a function argument.
+ * If calling with an options object throws (TypeError from trying to invoke the
+ * object as a function), we fall back to the L1 callback form.
+ * The fallback is only reached when the L2 call itself throws — so the
+ * total call count is always 1.
+ */
+function startVtWithTypes(
+  update: () => void | Promise<void>,
+  types: string[],
+): ViewTransition {
+  try {
+    return (document as VtL2Doc).startViewTransition({ update, types });
+  } catch (err) {
+    if (err instanceof TypeError) {
+      return document.startViewTransition(update);
+    }
+    throw err;
+  }
+}
+
 /**
  * Get the currently maximized card (or null).
  */
@@ -69,15 +102,14 @@ function expandCard(card: HTMLElement): void {
   card.style.setProperty("--maximize-height", `${availableHeight}px`);
 
   if ("startViewTransition" in document) {
-    // F12: View Transitions — browser morphs card from grid position to fullscreen.
+    // F12/Sprint-123: View Transitions L2 — browser morphs card from grid position to fullscreen.
     card.style.setProperty("view-transition-name", cardVtName(card));
-    void document
-      .startViewTransition(() => {
+    void startVtWithTypes(() => {
         const first = card.getBoundingClientRect();
         card.classList.add("maximized");
         const last = card.getBoundingClientRect();
         card.style.setProperty("--max-font-scale", String(computeFontScale(first, last)));
-      })
+      }, ["card-maximize"])
       .finished.then(() => {
         card.style.removeProperty("view-transition-name");
       });
@@ -131,12 +163,11 @@ function collapseCard(card: HTMLElement): void {
   };
 
   if ("startViewTransition" in document) {
-    // F12: View Transitions — browser morphs card from fullscreen back to grid position.
+    // F12/Sprint-123: View Transitions L2 — morphs card from fullscreen back to grid position.
     card.style.setProperty("view-transition-name", cardVtName(card));
-    void document
-      .startViewTransition(() => {
+    void startVtWithTypes(() => {
         card.classList.remove("maximized");
-      })
+      }, ["card-maximize"])
       .finished.then(() => {
         card.style.removeProperty("view-transition-name");
         afterCollapse();
@@ -261,7 +292,7 @@ export function initCardCollapse(): void {
       };
 
       if ("startViewTransition" in document) {
-        void document.startViewTransition(doToggle);
+        void startVtWithTypes(doToggle, ["card-maximize"]);
       } else {
         doToggle();
       }

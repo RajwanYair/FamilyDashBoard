@@ -380,9 +380,10 @@ describe("Maximize — initCardCollapse with startViewTransition", () => {
   });
 
   it("executes doToggle via startViewTransition when available", () => {
-    // Stub startViewTransition on document
+    // Stub startViewTransition on document — supports both VT L1 and L2 call styles.
     Object.defineProperty(document, "startViewTransition", {
-      value: (cb: () => void) => {
+      value: (cbOrOpts: (() => void) | { update: () => void; types?: string[] }) => {
+        const cb = typeof cbOrOpts === "function" ? cbOrOpts : cbOrOpts.update;
         cb();
         return {
           finished: Promise.resolve(),
@@ -881,7 +882,9 @@ describe("Maximize — View Transitions path (F12)", () => {
   let mod: MaxMod;
 
   function stubViewTransition(): ReturnType<typeof vi.fn> {
-    const vtSpy = vi.fn((cb: () => void) => {
+    const vtSpy = vi.fn((cbOrOpts: (() => void) | { update: () => void; types?: string[] }) => {
+      // Support both VT L1 (callback) and L2 (options object) call styles.
+      const cb = typeof cbOrOpts === "function" ? cbOrOpts : cbOrOpts.update;
       cb();
       return {
         finished: Promise.resolve(),
@@ -975,8 +978,10 @@ describe("Maximize — View Transitions path (F12)", () => {
 
 describe("Maximize — Sprint 88 branch coverage", () => {
   function stubViewTransition(): void {
+    // Supports both VT L1 callback and L2 options-object call styles.
     Object.defineProperty(document, "startViewTransition", {
-      value: (cb: () => void) => {
+      value: (cbOrOpts: (() => void) | { update: () => void; types?: string[] }) => {
+        const cb = typeof cbOrOpts === "function" ? cbOrOpts : cbOrOpts.update;
         cb();
         return {
           finished: Promise.resolve(),
