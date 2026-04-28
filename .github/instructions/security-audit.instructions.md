@@ -63,3 +63,22 @@ their mitigation. Record commit hashes in the table.
   containing `Roadmap #25` and a follow-up issue link.
 - Trusted Types policy regression (`require-trusted-types-for 'script'`
   removed or disabled).
+
+## CSP wildcard quarterly-narrow policy (Roadmap #25)
+
+Wildcards in CSP directives (e.g. `https://*.intel.com` in `connect-src`) **must**
+be reviewed once per quarter (Mar / Jun / Sep / Dec) and narrowed to the
+minimum subdomain set actually contacted by the deployed worker. Procedure:
+
+1. Pull last 90 days of unique `connect-src` hostnames from the worker
+   analytics pipeline (or browser `Report-Only` violation logs).
+2. Replace `https://*.intel.com` with the explicit list (e.g.
+   `https://api.intel.com https://cdn.intel.com`).
+3. Update both `src/index.html` meta CSP and `_headers` in the same commit.
+4. Open a follow-up issue tagged `security:csp-narrow` with the diff and
+   the previous wildcard's last-seen-by date.
+5. Tick the `CSP wildcard review` row in the audit table with the commit
+   hash and date.
+
+Reviewer rubric: any wildcard older than **120 days** without a narrow-or-renew
+commit auto-blocks the next minor release.
