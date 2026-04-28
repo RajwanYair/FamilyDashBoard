@@ -341,7 +341,7 @@ Concrete work items. **P** = priority (P0 next-release blocker, P1 same-cycle, P
 | 21  | Enhance  | WebRTC mirror with QR pairing (gated: 3+ user requests)                                             | P2  | L   | Mid | v14.x   | ADR-036.                                                             |
 | 22  | Enhance  | Document Picture-in-Picture for video-news (gated: 3+ user requests)                                | P2  | S   | Lo  | v14.x   |                                                                      |
 | 23  | Enhance  | `vite-plugin-dev-csp-strip` — relax CSP only in dev mode                                            | P2  | S   | Mid | v14.0   | Companion to `?nosw=1` for corp-proxy devs.                          |
-| 24  | Enhance  | Smart-contrast audit — verify all 6 themes use `var(--text-primary)` exclusively (no hardcoded `#fff`/`#000`) | P1  | S   | Mid | v14.0   | Follow-up to v13.13.1 `light-dark()` fix.                            |
+| 24  | ~~Enhance~~ | ~~Smart-contrast audit — verify all 6 themes use `var(--text-primary)` exclusively (no hardcoded `#fff`/`#000`)~~ | P1  | S   | Mid | ~~v14.0~~ **Done** | ✅ Sprint 125: `node scripts/check-smart-contrast.mjs` → 0 violations across 37 CSS files. |
 | 25  | Refactor | Narrow CSP `https://*.intel.com` wildcard to specific corp hosts when alternatives surface          | P2  | S   | Lo  | v14.x   |                                                                      |
 | 26  | Enhance  | OWASP Top 10 audit (rotate per major release)                                                       | P0  | M   | Hi  | v14.0   | Auto-rotated checklist in `.github/instructions/security-audit.md`.  |
 
