@@ -85,10 +85,13 @@ export default defineConfig({
         // Sprint 116 (v13.11.0): actuals 89.35/81.84/89.02/90.51 — margins too tight to ratchet
         //   (81.84 < 82, 90.51 < 91). Held at Sprint-96 values; ratchet deferred to next sprint
         //   once branch/line coverage improves by adding targeted tests.
-        statements: 89,
-        branches: 81,
+        // Roadmap #8 (Sprint 8 of post-13.13.0 batch): actuals 89.34/81.73/89.05/90.45.
+        //   Margins too tight for integer ratchet. Tightened to fractional values
+        //   89.3/81.7/89/90.4 — preserves regression detection without false-fail.
+        statements: 89.3,
+        branches: 81.7,
         functions: 89,
-        lines: 90,
+        lines: 90.4,
       },
     },
   },
