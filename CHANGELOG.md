@@ -5,6 +5,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.19.0] — 2026-04-29
+
+> **Sprint 170 — Footprint reduction & community-health dedup** · 5155 tests / 0 failures · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+### Removed
+
+- **Root `CONTRIBUTING.md`** (2.0 KB stale duplicate of `.github/CONTRIBUTING.md` 5.4 KB) — README and `docs/README.md` already point to the `.github/` canonical version. GitHub auto-discovery resolves community-health docs from `.github/` first; root copy had drifted.
+- **Root `SECURITY.md`** (2.1 KB stale duplicate of `.github/SECURITY.md` 2.3 KB) — same drift; `.github/` is canonical.
+
+### Changed
+
+- **Audit of generic 20-task release prompt vs current state** — confirmed the project already satisfies 17 of 20 generic tasks (single eslint/prettier/stylelint config, 0 Python files, ARCHITECTURE.md, full `.vscode/`, full `.github/` hygiene, Dependabot, CI + Release workflows, README, CHANGELOG, Mermaid diagrams). Sprint 170 closes the remaining footprint gap (Task #19 docs dedup + Task #20 footprint reduction).
+- **ROADMAP comprehensive rewrite** (commit `16d8711`, refresh date 2026-04-29) — full first-principles re-litigation of stack, peer comparison matrix, per-card deep-dive against best-in-class peers (NetNewsWire/Feedly, Apple Weather/Carrot, TradingView, Fantastical, Hebcal/Sefaria, Pikud Ha-Oref, Todoist/Things 3, iStat Menus, Countdown+, YouTube TV/Apple News+) with ~50 per-card enhancement items + 10 cross-card synergy items.
+
+### Notes
+
+- `tsconfig.tsbuildinfo` and `coverage-out*.txt` were already gitignored; cleanup was local-only (~165 KB freed on developer disks).
+- No CI workflow changes in this release — CI already enforces 0 warnings (eslint `--max-warnings 0`, tsc strict, markdownlint, stylelint).
+- Quality gates: lint clean · typecheck clean · 0 markdownlint errors after rewrite.
+
+---
+
 ## [13.18.0] — 2026-05-01
 
 > **Sprints 160–169 — roadmap progression batch** · **5155 tests / 162 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
