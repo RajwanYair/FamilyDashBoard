@@ -199,3 +199,58 @@ describe("video-news — listPinnedChannels (Sprint 183 V1)", () => {
     expect(result.length).toBe(6);
   });
 });
+
+// ── Sprint 215 / V2: Document PiP ─────────────────────────────────────────
+
+import { isPipSupported, requestDocumentPip } from "@/cards/video-news/video-news";
+import { vi } from "vitest";
+
+describe("isPipSupported (Sprint 215 / V2)", () => {
+  it("returns false when documentPictureInPicture is absent", () => {
+    const orig = (window as Record<string, unknown>)["documentPictureInPicture"];
+    delete (window as Record<string, unknown>)["documentPictureInPicture"];
+    expect(isPipSupported()).toBe(false);
+    (window as Record<string, unknown>)["documentPictureInPicture"] = orig;
+  });
+
+  it("returns true when documentPictureInPicture is present", () => {
+    (window as Record<string, unknown>)["documentPictureInPicture"] = {};
+    expect(isPipSupported()).toBe(true);
+    delete (window as Record<string, unknown>)["documentPictureInPicture"];
+  });
+});
+
+describe("requestDocumentPip (Sprint 215 / V2)", () => {
+  it("returns null when element is null", async () => {
+    expect(await requestDocumentPip(null)).toBeNull();
+  });
+
+  it("returns null when API is not supported", async () => {
+    delete (window as Record<string, unknown>)["documentPictureInPicture"];
+    const el = document.createElement("div");
+    expect(await requestDocumentPip(el)).toBeNull();
+  });
+
+  it("returns PiP window when API resolves successfully", async () => {
+    const mockPipWindow = {
+      document: { body: { appendChild: vi.fn() } },
+    };
+    (window as Record<string, unknown>)["documentPictureInPicture"] = {
+      requestWindow: vi.fn().mockResolvedValue(mockPipWindow),
+    };
+    const el = document.createElement("video");
+    const result = await requestDocumentPip(el);
+    expect(result).toBe(mockPipWindow);
+    expect(mockPipWindow.document.body.appendChild).toHaveBeenCalledWith(el);
+    delete (window as Record<string, unknown>)["documentPictureInPicture"];
+  });
+
+  it("returns null when requestWindow rejects", async () => {
+    (window as Record<string, unknown>)["documentPictureInPicture"] = {
+      requestWindow: vi.fn().mockRejectedValue(new Error("not allowed")),
+    };
+    const el = document.createElement("div");
+    expect(await requestDocumentPip(el)).toBeNull();
+    delete (window as Record<string, unknown>)["documentPictureInPicture"];
+  });
+});

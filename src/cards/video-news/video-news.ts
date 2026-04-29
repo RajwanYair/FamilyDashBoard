@@ -240,3 +240,40 @@ export const videoNewsConfigSchema: CardConfigField[] = [
     tab: "display",
   },
 ];
+
+// ── Sprint 215 / V2: Document Picture-in-Picture (gated) ──────────────────
+
+/**
+ * Return true when the Document Picture-in-Picture API is available in the
+ * current browser (Chrome 116+, Edge 116+).
+ *
+ * @see https://developer.chrome.com/docs/web-platform/document-picture-in-picture/
+ */
+export function isPipSupported(): boolean {
+  return typeof window !== "undefined" && "documentPictureInPicture" in window;
+}
+
+/**
+ * Open an element in a Document PiP window.
+ * Resolves to the PiP `Window` on success, or `null` when the API is
+ * unavailable, the request is rejected, or `element` is null.
+ *
+ * Must be called from a user-gesture handler (click / keydown).
+ */
+export async function requestDocumentPip(
+  element: HTMLElement | null,
+): Promise<Window | null> {
+  if (!element || !isPipSupported()) return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pip = window as any;
+    const pipWindow: Window = await pip.documentPictureInPicture.requestWindow({
+      width: element.clientWidth || 640,
+      height: element.clientHeight || 360,
+    });
+    pipWindow.document.body.appendChild(element);
+    return pipWindow;
+  } catch {
+    return null;
+  }
+}
