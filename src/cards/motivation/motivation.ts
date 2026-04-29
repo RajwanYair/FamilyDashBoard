@@ -13,6 +13,7 @@ import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import { loadConfig } from "../../core/config";
 import type { CardConfigField } from "../../types/card";
+import { idbGet, idbSet } from "../../core/idb-store";
 
 /** Sprint 23: Category labels for motivation quotes. */
 export type MotivationCategory =
@@ -353,10 +354,19 @@ export function initMotivationCard(): void {
 
   document.getElementById("moti-next-btn")?.addEventListener("click", () => {
     renderMotivation();
+    void refreshHeartState();
   });
   document.getElementById("moti-share-btn")?.addEventListener("click", () => {
     shareMotivation();
   });
+
+  // Sprint 197 / M3: Heart (favorite) button
+  _favHeartBtn = document.getElementById("moti-fav-btn");
+  _favHeartBtn?.addEventListener("click", () => {
+    const q = getCurrentQuote();
+    if (q) void toggleFavorite(q);
+  });
+  void refreshHeartState();
 
   // M2 (Sprint 176): Apply theme-by-day when no manual category is set
   if (_activeCategory === null) {
@@ -372,6 +382,74 @@ export function initMotivationCard(): void {
   setMotivationInterval(loadConfig().motivationInterval ?? 0);
   diagLog("FDB-041: [motivation] Initialized");
 }
+
+// ── Sprint 197 / M3: Motivation favorites (IDB, ≤50 entries) ─────────────────
+
+const MOTI_IDB_DB = "fdb-motivation";
+const MOTI_IDB_STORE = "favorites";
+const MOTI_FAV_KEY = "list";
+const MOTI_FAV_MAX = 50;
+
+let _favHeartBtn: HTMLElement | null = null;
+
+/** Load favorites array from IDB (via in-memory fallback). */
+export async function loadFavorites(): Promise<MotivationQuote[]> {
+  const stored = await idbGet<MotivationQuote[]>(MOTI_IDB_DB, MOTI_IDB_STORE, MOTI_FAV_KEY);
+  return stored ?? [];
+}
+
+/** Persist favorites array to IDB. */
+async function saveFavorites(favs: MotivationQuote[]): Promise<void> {
+  await idbSet(MOTI_IDB_DB, MOTI_IDB_STORE, MOTI_FAV_KEY, favs);
+}
+
+/** Returns true if the quote is already in favorites. */
+export async function isFavorite(quote: MotivationQuote): Promise<boolean> {
+  const favs = await loadFavorites();
+  return favs.some((f) => f.text === quote.text);
+}
+
+/**
+ * Toggle the current quote in/out of favorites.
+ * Caps the list at MOTI_FAV_MAX entries.
+ */
+export async function toggleFavorite(quote: MotivationQuote): Promise<boolean> {
+  const favs = await loadFavorites();
+  const idx = favs.findIndex((f) => f.text === quote.text);
+  if (idx !== -1) {
+    favs.splice(idx, 1);
+    await saveFavorites(favs);
+    updateHeartBtn(false);
+    diagLog("FDB-M3: [motivation] Removed favorite");
+    return false;
+  }
+  if (favs.length >= MOTI_FAV_MAX) {
+    showToast("מגבלת 50 ציטוטים מועדפים הושגה");
+    return false;
+  }
+  favs.push(quote);
+  await saveFavorites(favs);
+  updateHeartBtn(true);
+  diagLog("FDB-M3: [motivation] Added favorite");
+  return true;
+}
+
+function updateHeartBtn(fav: boolean): void {
+  if (_favHeartBtn) {
+    _favHeartBtn.textContent = fav ? "❤️" : "🤍";
+    _favHeartBtn.title = fav ? "הסר ממועדפים" : "הוסף למועדפים";
+    _favHeartBtn.setAttribute("aria-pressed", String(fav));
+  }
+}
+
+async function refreshHeartState(): Promise<void> {
+  const q = getCurrentQuote();
+  if (!q) return;
+  const fav = await isFavorite(q);
+  updateHeartBtn(fav);
+}
+
+// ── end M3 ──────────────────────────────────────────────────────────────────
 
 // ── Sprint 83: configSchema ────────────────────────────────────────────────
 
@@ -414,6 +492,7 @@ export function _resetMotivationForTest(): void {
   elAuthor = null;
   elSrc = null;
   _activeCategory = null;
+  _favHeartBtn = null;
   if (_motiAutoInterval !== null) {
     clearInterval(_motiAutoInterval);
     _motiAutoInterval = null;

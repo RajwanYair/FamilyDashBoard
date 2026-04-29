@@ -906,3 +906,61 @@ describe("Motivation — M2 theme-by-day", () => {
     }
   });
 });
+
+// ── Sprint 197 / M3: Motivation favorites ────────────────────────────────
+
+import {
+  toggleFavorite,
+  isFavorite,
+  loadFavorites,
+} from "@/cards/motivation/motivation";
+import { _idbClearFallback } from "@/core/idb-store";
+
+describe("Motivation — favorites (Sprint 197 / M3)", () => {
+  beforeEach(() => {
+    _idbClearFallback();
+    _resetMotivationForTest();
+  });
+
+  const q1 = { text: "היהלום נוצר ממשך לחץ", author: "מקור לא ידוע", category: "courage" as const };
+  const q2 = { text: "כל מסע מתחיל בצעד אחד", author: "לאו-טסה", category: "courage" as const };
+
+  it("loadFavorites returns empty array initially", async () => {
+    const favs = await loadFavorites();
+    expect(favs).toEqual([]);
+  });
+
+  it("toggleFavorite adds a quote to favorites", async () => {
+    const added = await toggleFavorite(q1);
+    expect(added).toBe(true);
+    const favs = await loadFavorites();
+    expect(favs.some((f) => f.text === q1.text)).toBe(true);
+  });
+
+  it("toggleFavorite removes a quote already in favorites", async () => {
+    await toggleFavorite(q1);
+    const removed = await toggleFavorite(q1);
+    expect(removed).toBe(false);
+    const favs = await loadFavorites();
+    expect(favs.length).toBe(0);
+  });
+
+  it("isFavorite returns true after adding", async () => {
+    await toggleFavorite(q2);
+    expect(await isFavorite(q2)).toBe(true);
+  });
+
+  it("isFavorite returns false when not in favorites", async () => {
+    expect(await isFavorite(q1)).toBe(false);
+  });
+
+  it("caps favorites at 50 entries", async () => {
+    for (let i = 0; i < 50; i++) {
+      await toggleFavorite({ text: `quote-${i}`, author: "", category: "courage" as const });
+    }
+    const over = await toggleFavorite({ text: "quote-extra", author: "", category: "courage" as const });
+    expect(over).toBe(false);
+    const favs = await loadFavorites();
+    expect(favs.length).toBe(50);
+  });
+});
