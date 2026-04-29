@@ -10,16 +10,16 @@
         "assert": {
             "_comment": [
                 "Sprint 124 (Roadmap #19): HTTP Early Hints shipped (Sprint 122).",
-                "Sprint 147 (v13.16.0): perf warn ratcheted 0.80 → 0.85.",
-                "Sprint 161 (v13.18.0): ADR-042 step 2 — promoted warn 0.85 → error 0.85.",
-                "Next step (step 3): error 0.92 — triggers when SLSA L3 hermetic build (ADR-035) live.",
+                "Sprint 147 (v13.16.0): perf warn ratcheted 0.80 -> 0.85.",
+                "Sprint 161 (v13.18.0): ADR-042 step 2 — promoted warn 0.85 -> error 0.85.",
+                "Sprint 217 (v13.24.0): ADR-042 step 3 — ratcheted error 0.85 -> error 0.92.",
                 "Final target (step 4): error 0.97 at v14.2.",
-                "accessibility: error ≥ 0.85 (a11y regressions block CI).",
-                "best-practices: error ≥ 0.90 (security/best-practice regressions block CI)."
+                "accessibility: error >= 0.90 (a11y regressions block CI).",
+                "best-practices: error >= 0.90 (security/best-practice regressions block CI)."
             ],
             "assertions": {
-                "categories:accessibility": ["error", { "minScore": 0.85 }],
-                "categories:performance": ["error", { "minScore": 0.85 }],
+                "categories:accessibility": ["error", { "minScore": 0.90 }],
+                "categories:performance": ["error", { "minScore": 0.92 }],
                 "categories:best-practices": ["error", { "minScore": 0.9 }],
                 "total-blocking-time": ["warn", { "maxNumericValue": 300 }],
                 "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],

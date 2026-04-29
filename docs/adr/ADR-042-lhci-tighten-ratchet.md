@@ -39,7 +39,7 @@ Adopt a four-step ratchet plan for the LHCI `performance` category assertion in
 Each ratchet step is gated on a PR that updates this ADR's "Current step" line
 below and the LHCI config. No two ratchets ship in the same release.
 
-**Current step**: 2 (`error 0.85`) — HTTP Early Hints shipped Sprint 122 (v13.14.0); trigger met; ratcheted Sprint 161 (v13.18.0).
+**Current step**: 3 (`error 0.92`) — Ratcheted Sprint 217 (v13.24.0); accessibility also raised to 0.90.
 
 ### Rollback
 
