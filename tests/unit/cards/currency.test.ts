@@ -19,6 +19,7 @@ import {
   _resetCurrencyForTest,
   calcCurrency,
   initCalcWidget,
+  applyPairVisibility,
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
 
@@ -803,5 +804,108 @@ describe("Currency — initCalcWidget DOM wiring (Sprint 184 C1)", () => {
   it("does not throw when DOM elements are missing", () => {
     document.body.innerHTML = "<div></div>";
     expect(() => initCalcWidget()).not.toThrow();
+  });
+});
+
+// ── Sprint 189 / C2: applyPairVisibility ────────────────────────────────────
+
+function makeCurDOM(): void {
+  document.body.innerHTML = `
+    <div class="currency-body" id="currency-body">
+      <div class="cur-item"><div class="cur-rate" id="curUsd">--</div><div class="cur-chg" id="curUsdChg"></div></div>
+      <div class="cur-item"><div class="cur-rate" id="curEur">--</div><div class="cur-chg" id="curEurChg"></div></div>
+      <div class="cur-item"><div class="cur-rate" id="curGbp">--</div><div class="cur-chg" id="curGbpChg"></div></div>
+      <div class="cur-item"><div class="cur-rate" id="curGold">--</div><div class="cur-chg" id="curGoldChg"></div></div>
+      <div class="cur-item"><div class="cur-rate" id="curSilver">--</div><div class="cur-chg" id="curSilverChg"></div></div>
+      <div class="cur-item"><div class="cur-rate" id="curOil">--</div><div class="cur-chg" id="curOilChg"></div></div>
+      <div class="cur-item"><div class="cur-rate" id="curBtc">--</div><div class="cur-chg" id="curBtcChg"></div></div>
+      <div id="cur-last-fetch"></div>
+    </div>`;
+  cacheDom();
+}
+
+describe("Currency — applyPairVisibility (Sprint 189 C2)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    _resetCurrencyForTest();
+    makeCurDOM();
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("shows all 7 pairs by default (no config)", () => {
+    applyPairVisibility();
+    const items = document.querySelectorAll(".cur-item");
+    const hidden = Array.from(items).filter((el) => el.classList.contains("is-hidden"));
+    expect(hidden).toHaveLength(0);
+  });
+
+  it("hides a single pair (XAG)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, currencyHiddenPairs: "XAG" }),
+    );
+    applyPairVisibility();
+    const silverItem = document.getElementById("curSilver")?.closest(".cur-item");
+    expect(silverItem?.classList.contains("is-hidden")).toBe(true);
+  });
+
+  it("hides multiple pairs (XAG,BTC)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, currencyHiddenPairs: "XAG,BTC" }),
+    );
+    applyPairVisibility();
+    expect(
+      document.getElementById("curSilver")?.closest(".cur-item")?.classList.contains("is-hidden"),
+    ).toBe(true);
+    expect(
+      document.getElementById("curBtc")?.closest(".cur-item")?.classList.contains("is-hidden"),
+    ).toBe(true);
+    expect(
+      document.getElementById("curUsd")?.closest(".cur-item")?.classList.contains("is-hidden"),
+    ).toBe(false);
+  });
+
+  it("restores hidden pairs when config cleared", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, currencyHiddenPairs: "XAG,BTC" }),
+    );
+    applyPairVisibility();
+    // now clear hidden pairs
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, currencyHiddenPairs: "" }),
+    );
+    applyPairVisibility();
+    const items = document.querySelectorAll(".cur-item");
+    const hidden = Array.from(items).filter((el) => el.classList.contains("is-hidden"));
+    expect(hidden).toHaveLength(0);
+  });
+
+  it("is case-insensitive (accepts 'xag,btc' lowercase)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, currencyHiddenPairs: "xag,btc" }),
+    );
+    applyPairVisibility();
+    expect(
+      document.getElementById("curSilver")?.closest(".cur-item")?.classList.contains("is-hidden"),
+    ).toBe(true);
+    expect(
+      document.getElementById("curBtc")?.closest(".cur-item")?.classList.contains("is-hidden"),
+    ).toBe(true);
+  });
+
+  it("does not throw when DOM elements are missing", () => {
+    document.body.innerHTML = "<div></div>";
+    cacheDom();
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, currencyHiddenPairs: "XAG,BTC" }),
+    );
+    expect(() => applyPairVisibility()).not.toThrow();
   });
 });

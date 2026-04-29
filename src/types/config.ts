@@ -131,6 +131,8 @@ export interface DashboardConfig {
   calendarPrivacy: boolean;
   disabledFeeds: string[];
   hiddenStocks: string[];
+  /** Sprint 189 / C2: Comma-separated pair keys to hide (e.g. "XAG,BTC"). */
+  currencyHiddenPairs: string;
   customProxy: string;
   familyName: string;
   members: string[];
@@ -286,6 +288,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   calendarPrivacy: false,
   disabledFeeds: [],
   hiddenStocks: [],
+  currencyHiddenPairs: "",
   customProxy: "",
   familyName: "",
   members: [
