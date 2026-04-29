@@ -413,6 +413,7 @@ describe("Worker response helpers — workerEnvelope", () => {
 
 import { handleErrors } from "../../../worker/src/routes/errors";
 import { handleCurrency } from "../../../worker/src/routes/data";
+import { parseEcbXml } from "../../../worker/src/utils/ecb-adapter";
 import type { Env } from "../../../worker/src/index";
 import type { KVStore } from "../../../worker/src/types";
 import { makeKv, makeWorkerEnv } from "@tests/worker-helpers";
@@ -609,6 +610,100 @@ describe("Worker — handleCurrency route", () => {
     const body = (await res.json()) as { provider: string; stale: boolean };
     expect(body.provider).toBe("frankfurter-ecb");
     expect(body.stale).toBe(false);
+  });
+
+  it("falls back to ECB direct XML when all JSON upstreams fail (Roadmap #16 Sprint 162)", async () => {
+    const ecbXml = `<?xml version="1.0"?>
+<gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01" xmlns="http://www.ecb.int/vocabulary/2002-08-01/eurofxref">
+  <Cube><Cube time="2026-04-29">
+    <Cube currency="USD" rate="1.0982"/>
+    <Cube currency="GBP" rate="0.8620"/>
+    <Cube currency="ILS" rate="4.0738"/>
+    <Cube currency="JPY" rate="160.20"/>
+  </Cube></Cube>
+</gesmes:Envelope>`;
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response("fail", { status: 502 }))
+      .mockResolvedValueOnce(new Response("fail", { status: 502 }))
+      .mockResolvedValueOnce(new Response("fail", { status: 502 }))
+      .mockResolvedValueOnce(
+        new Response(ecbXml, { status: 200, headers: { "Content-Type": "application/xml" } }),
+      );
+    const res = await handleCurrency(mockEnv);
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      4,
+      "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { provider: string; stale: boolean; data: { rates: Record<string, number> } };
+    expect(body.provider).toBe("ecb-direct");
+    expect(body.stale).toBe(false);
+    expect(body.data.rates["ILS"]).toBe(1.0);
+    expect(body.data.rates["USD"]).toBeCloseTo(1.0982 / 4.0738, 5);
+    expect(body.data.rates["EUR"]).toBeCloseTo(1 / 4.0738, 5);
+  });
+});
+
+// ── ECB XML adapter (Sprint 162, Roadmap #16) ─────────────────────────────────
+
+describe("parseEcbXml — ECB eurofxref-daily.xml adapter", () => {
+  const sampleXml = `<?xml version="1.0"?>
+<gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01" xmlns="http://www.ecb.int/vocabulary/2002-08-01/eurofxref">
+  <Cube><Cube time="2026-04-29">
+    <Cube currency="USD" rate="1.0982"/>
+    <Cube currency="GBP" rate="0.8620"/>
+    <Cube currency="ILS" rate="4.0738"/>
+    <Cube currency="JPY" rate="160.20"/>
+    <Cube currency="EUR" rate="1.0000"/>
+  </Cube></Cube>
+</gesmes:Envelope>`;
+
+  it("returns an object with rates keyed by currency code", () => {
+    const result = parseEcbXml(sampleXml);
+    expect(result).not.toBeNull();
+    expect(typeof result!.rates).toBe("object");
+  });
+
+  it("sets ILS rate to exactly 1.0", () => {
+    const result = parseEcbXml(sampleXml);
+    expect(result!.rates["ILS"]).toBe(1.0);
+  });
+
+  it("computes EUR rate as 1/ILS_per_EUR", () => {
+    const result = parseEcbXml(sampleXml);
+    // EUR/ILS = 1 / (ILS/EUR) = 1 / 4.0738
+    expect(result!.rates["EUR"]).toBeCloseTo(1 / 4.0738, 5);
+  });
+
+  it("computes USD rate correctly (USD_per_EUR / ILS_per_EUR)", () => {
+    const result = parseEcbXml(sampleXml);
+    expect(result!.rates["USD"]).toBeCloseTo(1.0982 / 4.0738, 5);
+  });
+
+  it("computes GBP rate correctly", () => {
+    const result = parseEcbXml(sampleXml);
+    expect(result!.rates["GBP"]).toBeCloseTo(0.862 / 4.0738, 5);
+  });
+
+  it("returns null when ILS is absent from the dataset", () => {
+    const xmlNoIls = sampleXml.replace('<Cube currency="ILS" rate="4.0738"/>', "");
+    expect(parseEcbXml(xmlNoIls)).toBeNull();
+  });
+
+  it("returns null for empty string", () => {
+    expect(parseEcbXml("")).toBeNull();
+  });
+
+  it("returns null for malformed XML with no Cube entries", () => {
+    expect(parseEcbXml("<garbage>no rates here</garbage>")).toBeNull();
+  });
+
+  it("ignores entries with non-positive rates", () => {
+    const xmlBad = sampleXml.replace('rate="1.0982"', 'rate="-5.0"');
+    const result = parseEcbXml(xmlBad);
+    // USD should be absent since its rate was negative
+    expect(result!.rates["USD"]).toBeUndefined();
   });
 });
 

@@ -18,6 +18,7 @@ import {
   safeParse,
 } from "../utils/schemas";
 import { normalizeNwsToWeatherSchema, isUsCoordinate } from "../utils/nws-normalize";
+import { parseEcbXml } from "../utils/ecb-adapter";
 import { kvGetStale, kvPut } from "../utils/kv";
 import type { Env } from "../types";
 
@@ -162,6 +163,22 @@ export async function handleCurrency(env: Env): Promise<Response> {
         return workerEnvelope(parsed.data, provider, false, 3600); // 1 h
       }
     }
+  }
+
+  // All JSON-based upstreams failed — try ECB direct (eurofxref-daily.xml, EUR-base → ILS cross-rate)
+  // Sprint 162, Roadmap #16: independent of all JSON providers; always fetches from ecb.europa.eu
+  try {
+    const ecbRes = await fetch("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
+    if (ecbRes.ok) {
+      const xml = await ecbRes.text();
+      const ecbData = parseEcbXml(xml);
+      if (ecbData !== null) {
+        void kvPut(env.CACHE_KV, kvKey, ecbData, 172800);
+        return workerEnvelope(ecbData, "ecb-direct", false, 3600);
+      }
+    }
+  } catch {
+    // ECB direct unreachable — fall through to KV stale
   }
 
   // All upstreams failed — try KV stale fallback

@@ -71,14 +71,14 @@ Direct → allorigins → codetabs → corsproxy.io
 
 | Property          | Value                                                                                                                                         |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Provider          | [open.er-api.com](https://www.exchangerate-api.com/) → exchangerate-api.com → ECB ([Frankfurter](https://frankfurter.dev))                    |
+| Provider          | [open.er-api.com](https://www.exchangerate-api.com/) → exchangerate-api.com → ECB ([Frankfurter](https://frankfurter.dev)) → ECB direct       |
 | Worker route      | `GET /api/currency`                                                                                                                           |
-| Upstream URL      | `https://open.er-api.com/v6/latest/ILS` → `https://api.exchangerate-api.com/v4/latest/ILS` → `https://api.frankfurter.dev/v1/latest?base=ILS` |
-| Valibot schema    | `CurrencySchema` in `worker/src/utils/schemas.ts`                                                                                             |
+| Upstream URL      | `https://open.er-api.com/v6/latest/ILS` → `https://api.exchangerate-api.com/v4/latest/ILS` → `https://api.frankfurter.dev/v1/latest?base=ILS` → `https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml` (XML, Sprint 162) |
+| Valibot schema    | `CurrencySchema` in `worker/src/utils/schemas.ts` (JSON upstreams); `parseEcbXml()` in `worker/src/utils/ecb-adapter.ts` (ECB direct)        |
 | Cache TTL         | 1 hour (`INTERVALS.CURRENCY`)                                                                                                                 |
 | Cache key         | `curr`                                                                                                                                        |
 | KV stale fallback | Yes (`data.ts` — `handleCurrency`); 48 h KV TTL on the stale tier                                                                             |
-| Failure mode      | All 3 upstreams + KV stale exhausted → envelope `{stale:true, provider:"none"}`                                                               |
+| Failure mode      | All 4 upstreams + KV stale exhausted → envelope `{stale:true, provider:"none"}`                                                               |
 
 ---
 
