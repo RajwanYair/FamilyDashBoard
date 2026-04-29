@@ -16,10 +16,10 @@ description: "OWASP Top 10:2021 audit checklist mapped to FamilyDashBoard's stat
 
 ## Last full audit
 
-- **Release**: v13.15.0 (patch-cycle smoke check — full v14.0.0 audit pending)
+- **Release**: v13.16.0 (patch-cycle smoke check — full v14.0.0 audit pending)
 - **Auditor**: self
-- **Date**: 2026-04-28
-- **Commit hash range**: 6c93f17 → (Sprint 138 HEAD)
+- **Date**: 2026-04-29
+- **Commit hash range**: 6c93f17 → 3754ea2 (Sprint 150)
 
 ## OWASP Top 10:2021 mapping to FamilyDashBoard
 
@@ -42,14 +42,14 @@ Run on every patch release (`vX.Y.Z` with `Z > 0`):
 
 - [x] `Select-String -Pattern 'innerHTML','outerHTML' -Path src -Recurse` — **0 hits** outside test fixtures. ✓ 2026-04-28
 - [x] `Select-String -Pattern 'eval','new Function' -Path src -Recurse` — **0 hits**. ✓ 2026-04-28
-- [ ] `Select-String -Pattern 'fetch\(`' -Path src -Recurse` — **0 hits** (URLs must be `URL` objects or template-safe).
+- [x] `Select-String -Pattern 'fetch\(`' -Path src -Recurse` — **0 hits** (URLs must be `URL` objects or template-safe). ✓ 2026-04-29
 - [x] `npm audit --audit-level=high` — exits 0. ✓ 2026-04-28 (parent dir; 0 vulnerabilities)
 - [x] `node scripts/check-smart-contrast.mjs` — exits 0. ✓ 2026-04-28 (0 violations / 37 CSS files)
 - [x] CSP `connect-src` allowlist matches between `src/index.html` and `_headers`. ✓ 2026-04-28
 - [x] Sprint 132: new `https://api.frankfurter.dev` upstream added; both `connect-src` and SW caches mirrored. ✓ 2026-04-28
 - [x] Sprint 133: ADR-041 plan ratifies `https://*.intel.com` wildcard narrowing path. ✓ 2026-04-28
-- [ ] No `eslint-disable`, `@ts-ignore`, or `@ts-nocheck` newly introduced.
-- [ ] No `localStorage` write of secrets, OAuth tokens, JWTs, or session IDs.
+- [x] No `eslint-disable`, `@ts-ignore`, or `@ts-nocheck` newly introduced. ✓ 2026-04-29 (0 suppressions)
+- [x] No `localStorage` write of secrets, OAuth tokens, JWTs, or session IDs. ✓ 2026-04-29 (static PWA, no auth)
 
 ## Quarterly drill (any 3 random items from the table above)
 
