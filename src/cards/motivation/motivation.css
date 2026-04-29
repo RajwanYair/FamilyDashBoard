@@ -34,6 +34,20 @@
     color: var(--accent);
   }
 
+  /* Sprint 197 / M3: Favorites heart button */
+  #moti-fav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 2px 4px;
+    margin-inline-start: 2px;
+    line-height: 1;
+    vertical-align: middle;
+    transition: transform 0.15s ease;
+  }
+  #moti-fav-btn:hover { transform: scale(1.3); }
+
   /* Quote text */
   .moti-text {
     font-size: 1.15em;
