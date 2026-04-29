@@ -34,6 +34,9 @@ import {
   setAlertVolume,
   getAlertVolume,
   _resetAlertsForTest,
+  alertRingAppend,
+  alertRingGet,
+  renderAlertHistory,
 } from "@/cards/alerts/alerts";
 import * as idleMod from "@/core/idle";
 import type { AlertEvent } from "@/types/api";
@@ -1732,5 +1735,95 @@ describe("Alerts — Sprint 87 branch coverage", () => {
     await expect(loadAlerts()).resolves.not.toThrow();
     // stale path renders stale data
     expect(document.querySelector(".alert-item")).not.toBeNull();
+  });
+});
+
+// ── Sprint 185 / A2: alertRingAppend, alertRingGet, renderAlertHistory ───────
+
+describe("Alerts — alertRingAppend / alertRingGet (Sprint 185 A2)", () => {
+  const RING_KEY = "fdb_alert_ring";
+  const nowSec = Math.floor(Date.now() / 1000);
+
+  const makeEvent = (id: string, offsetSec = 0): AlertEvent => ({
+    id,
+    alerts: [{ time: nowSec - offsetSec, threat: 0, cities: ["תל אביב"] }],
+  });
+
+  beforeEach(() => localStorage.removeItem(RING_KEY));
+  afterEach(() => localStorage.removeItem(RING_KEY));
+
+  it("appends events to an empty ring", () => {
+    alertRingAppend([makeEvent("a1"), makeEvent("a2")]);
+    const ring = alertRingGet();
+    expect(ring.length).toBe(2);
+  });
+
+  it("deduplicates by event ID", () => {
+    alertRingAppend([makeEvent("a1"), makeEvent("a2")]);
+    alertRingAppend([makeEvent("a1")]); // duplicate
+    const ring = alertRingGet();
+    expect(ring.length).toBe(2);
+  });
+
+  it("prunes events older than 24h", () => {
+    const old = makeEvent("stale", 90_000); // >24h ago
+    alertRingAppend([old, makeEvent("fresh")]);
+    const ring = alertRingGet();
+    expect(ring.every((e) => e.id !== "stale")).toBe(true);
+    expect(ring.some((e) => e.id === "fresh")).toBe(true);
+  });
+
+  it("caps at 100 entries", () => {
+    const batch: AlertEvent[] = Array.from({ length: 110 }, (_, i) =>
+      makeEvent(`ev${i}`, i),
+    );
+    alertRingAppend(batch);
+    const ring = alertRingGet();
+    expect(ring.length).toBeLessThanOrEqual(100);
+  });
+
+  it("returns empty array when localStorage is empty", () => {
+    expect(alertRingGet()).toEqual([]);
+  });
+
+  it("returns empty array when localStorage has invalid JSON", () => {
+    localStorage.setItem(RING_KEY, "not-json{");
+    expect(alertRingGet()).toEqual([]);
+  });
+
+  it("returns empty array when localStorage has non-array value", () => {
+    localStorage.setItem(RING_KEY, JSON.stringify({ not: "array" }));
+    expect(alertRingGet()).toEqual([]);
+  });
+});
+
+describe("Alerts — renderAlertHistory (Sprint 185 A2)", () => {
+  const RING_KEY = "fdb_alert_ring";
+  const nowSec = Math.floor(Date.now() / 1000);
+
+  beforeEach(() => {
+    localStorage.removeItem(RING_KEY);
+    document.body.innerHTML = '<div id="hist-container"></div>';
+  });
+  afterEach(() => {
+    localStorage.removeItem(RING_KEY);
+    document.body.innerHTML = "";
+  });
+
+  it("renders empty message when ring is empty", () => {
+    const container = document.getElementById("hist-container") as HTMLElement;
+    renderAlertHistory(container);
+    expect(container.textContent).toContain("אין התרעות");
+  });
+
+  it("renders alert items when ring has events", () => {
+    const ev: AlertEvent = {
+      id: "r1",
+      alerts: [{ time: nowSec - 60, threat: 0, cities: ["חיפה"] }],
+    };
+    localStorage.setItem(RING_KEY, JSON.stringify([ev]));
+    const container = document.getElementById("hist-container") as HTMLElement;
+    renderAlertHistory(container);
+    expect(container.querySelector(".alert-item")).not.toBeNull();
   });
 });
