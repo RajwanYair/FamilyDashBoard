@@ -28,6 +28,7 @@ import {
   stocksCard,
   loadAllStocks,
   fillStockDetailPopover,
+  getTopMovers,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear, cSetAsync } from "@/core/cache";
@@ -2445,5 +2446,74 @@ describe("Stocks — Sprint 93 priceInRange52w null inputs", () => {
 
   it("returns null when high52 is null", () => {
     expect(priceInRange52w(150, 100, null as unknown as number)).toBeNull();
+  });
+});
+
+// ── Sprint 187 / S3: getTopMovers ────────────────────────────────────────────
+
+describe("Stocks — getTopMovers (Sprint 187 S3)", () => {
+  function makeStockEl(sym: string, pct: number): HTMLElement {
+    const el = document.createElement("div");
+    el.className = "stk " + (pct > 0.1 ? "stk-up" : pct < -0.1 ? "stk-down" : "");
+    el.dataset["symbol"] = sym;
+    el.dataset["pct"] = pct.toFixed(4);
+    return el;
+  }
+
+  it("returns top gainers first, then top losers", () => {
+    const els = [
+      makeStockEl("AAPL", 2.5),
+      makeStockEl("MSFT", 1.2),
+      makeStockEl("TSLA", -3.1),
+      makeStockEl("AMZN", 0.0), // flat — excluded
+      makeStockEl("NVDA", -0.5),
+    ];
+    const result = getTopMovers(els);
+    expect(result[0]?.sym).toBe("AAPL");
+    expect(result[1]?.sym).toBe("MSFT");
+    expect(result[2]?.sym).toBe("TSLA");
+    expect(result[3]?.sym).toBe("NVDA");
+  });
+
+  it("caps gainers at 3", () => {
+    const els = [
+      makeStockEl("A", 5),
+      makeStockEl("B", 4),
+      makeStockEl("C", 3),
+      makeStockEl("D", 2),
+      makeStockEl("E", 1),
+    ];
+    const gainers = getTopMovers(els).filter((m) => m.dir === "up");
+    expect(gainers.length).toBeLessThanOrEqual(3);
+  });
+
+  it("caps losers at 3", () => {
+    const els = [
+      makeStockEl("A", -5),
+      makeStockEl("B", -4),
+      makeStockEl("C", -3),
+      makeStockEl("D", -2),
+    ];
+    const losers = getTopMovers(els).filter((m) => m.dir === "down");
+    expect(losers.length).toBeLessThanOrEqual(3);
+  });
+
+  it("returns empty array for empty input", () => {
+    expect(getTopMovers([])).toEqual([]);
+  });
+
+  it("excludes flat stocks (|pct| < 0.1)", () => {
+    const els = [makeStockEl("X", 0.05), makeStockEl("Y", 0.0)];
+    expect(getTopMovers(els)).toEqual([]);
+  });
+
+  it("sets dir=up for positive pct", () => {
+    const els = [makeStockEl("AAPL", 2.5)];
+    expect(getTopMovers(els)[0]?.dir).toBe("up");
+  });
+
+  it("sets dir=down for negative pct", () => {
+    const els = [makeStockEl("TSLA", -2.5)];
+    expect(getTopMovers(els)[0]?.dir).toBe("down");
   });
 });
