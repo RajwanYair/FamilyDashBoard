@@ -360,6 +360,8 @@ export async function loadAlerts(): Promise<void> {
 
       await cSetAsync(key, validData);
       renderAlerts(validData, isNew);
+      // Sprint 185 / A2: persist to ring buffer
+      alertRingAppend(validData);
       setSync("alerts", "ok");
       syncBurst("alerts");
       recordSuccess("alerts");
@@ -448,10 +450,96 @@ export function destroyAlertsSSE(): void {
   setAlertsRealtime(false);
 }
 
+// ── Sprint 185 / A2: 24-h alert history ring buffer ──────────────────────
+
+const ALERT_RING_KEY = "fdb_alert_ring";
+const ALERT_RING_MAX = 100;
+const ALERT_RING_TTL = 86_400_000; // 24h in ms
+
+/**
+ * Append new alert events to the localStorage ring buffer.
+ * Deduplicates by event ID, prunes entries older than 24h, caps at 100.
+ */
+export function alertRingAppend(events: AlertEvent[]): void {
+  const ring = alertRingGet();
+  const cutoff = Date.now() - ALERT_RING_TTL;
+  // Add new events not already in ring
+  const existingIds = new Set(ring.map((e) => String(e.id ?? "")));
+  for (const ev of events) {
+    const evId = String(ev.id ?? "");
+    if (evId && existingIds.has(evId)) continue;
+    const evTime = (ev.alerts?.[0]?.time ?? 0) * 1000;
+    if (evTime < cutoff) continue;
+    ring.unshift(ev);
+    if (evId) existingIds.add(evId);
+  }
+  // Prune stale entries and cap
+  const fresh = ring.filter((e) => (e.alerts?.[0]?.time ?? 0) * 1000 >= cutoff);
+  const capped = fresh.slice(0, ALERT_RING_MAX);
+  try {
+    localStorage.setItem(ALERT_RING_KEY, JSON.stringify(capped));
+  } catch {
+    // localStorage full — skip silently
+  }
+}
+
+/**
+ * Read the 24-h ring buffer from localStorage.
+ * Returns up to 100 AlertEvent entries from the last 24 hours.
+ */
+export function alertRingGet(): AlertEvent[] {
+  try {
+    const raw = localStorage.getItem(ALERT_RING_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    const cutoff = Date.now() - ALERT_RING_TTL;
+    return (parsed as AlertEvent[]).filter(
+      (e) => isAlertEvent(e) && (e.alerts?.[0]?.time ?? 0) * 1000 >= cutoff,
+    );
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Render the 24-h ring buffer into the given container element.
+ * Shows a message when empty.
+ */
+export function renderAlertHistory(container: HTMLElement): void {
+  const ring = alertRingGet();
+  const frag = document.createDocumentFragment();
+
+  if (!ring.length) {
+    const empty = document.createElement("div");
+    empty.className = "alert-history-empty";
+    empty.textContent = "✅ אין התרעות ב-24 שעות האחרונות";
+    frag.appendChild(empty);
+  } else {
+    const now = Date.now() / 1000;
+    for (const ev of ring) {
+      const item = buildAlertItem(ev, now, false, false);
+      if (item) frag.appendChild(item);
+    }
+  }
+  container.replaceChildren(frag);
+}
+
 export function initAlertsCard(): void {
   cacheDom();
   initAlertsSSE();
   void loadAlerts();
+  // Sprint 185 / A2: wire history toggle button
+  const histBtn = document.getElementById("alerts-history-btn");
+  const histPanel = document.getElementById("alerts-history-panel");
+  if (histBtn && histPanel) {
+    histBtn.addEventListener("click", () => {
+      const isOpen = !histPanel.classList.contains("is-hidden");
+      histPanel.classList.toggle("is-hidden", isOpen);
+      histBtn.setAttribute("aria-expanded", String(!isOpen));
+      if (!isOpen) renderAlertHistory(histPanel);
+    });
+  }
   diagLog("FDB-022: [alerts] Initialized");
 }
 
