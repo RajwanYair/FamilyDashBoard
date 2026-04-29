@@ -123,10 +123,7 @@ describe("document-pip (Sprint 137)", () => {
   it("re-entering PiP closes the existing window first", async () => {
     const fake1 = makeFakePipWindow();
     const fake2 = makeFakePipWindow();
-    const requestWindow = vi
-      .fn()
-      .mockResolvedValueOnce(fake1)
-      .mockResolvedValueOnce(fake2);
+    const requestWindow = vi.fn().mockResolvedValueOnce(fake1).mockResolvedValueOnce(fake2);
     Object.defineProperty(window, "documentPictureInPicture", {
       configurable: true,
       value: { requestWindow, window: null },
@@ -195,7 +192,9 @@ describe("document-pip (Sprint 137)", () => {
   it("exitDocumentPip survives when pipWindow.close() throws", async () => {
     const fake = makeFakePipWindow();
     // Override close to throw
-    fake.close = () => { throw new Error("already closed"); };
+    fake.close = () => {
+      throw new Error("already closed");
+    };
     Object.defineProperty(window, "documentPictureInPicture", {
       configurable: true,
       value: { requestWindow: vi.fn().mockResolvedValue(fake), window: null },
@@ -224,5 +223,35 @@ describe("document-pip (Sprint 137)", () => {
     // Simulate external close
     fake.closed = true;
     expect(isPipActive()).toBe(false);
+  });
+
+  // Sprint 167: _onPipClose uses insertBefore when nextSibling is still in the same parent
+  it("_onPipClose uses insertBefore when nextSibling still belongs to the same parent", async () => {
+    const fake = makeFakePipWindow();
+    Object.defineProperty(window, "documentPictureInPicture", {
+      configurable: true,
+      value: { requestWindow: vi.fn().mockResolvedValue(fake), window: null },
+    });
+
+    const host = document.createElement("section");
+    const el = document.createElement("div");
+    el.id = "pip-target";
+    const sibling = document.createElement("div");
+    sibling.id = "pip-sibling";
+    host.appendChild(el);
+    host.appendChild(sibling);
+    document.body.appendChild(host);
+
+    // el is first child; sibling is second — so el.nextSibling === sibling
+    await enterDocumentPip(el);
+    // el has been moved into the PiP window; sibling remains in host
+    // On exit, _onPipClose should call insertBefore(el, sibling) since sibling.parentNode === host
+    exitDocumentPip();
+
+    expect(host.contains(el)).toBe(true);
+    // el should be re-inserted before sibling (or at least back in host)
+    const children = [...host.children];
+    expect(children.indexOf(el)).toBeLessThan(children.indexOf(sibling));
+    document.body.removeChild(host);
   });
 });

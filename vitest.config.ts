@@ -102,8 +102,10 @@ export default defineConfig({
         // Sprint 153 (coverage ratchet batch): +16 tests across 5 files — rate-limiter-do,
         //   rss-parser, open-meteo-adapter, hebcal-adapter, ai (worker). Actuals:
         //   93.68/85.63/92.63/94.92. Raised branches 85.0 → 85.5.
+        // Sprint 167 (coverage ratchet): +18 tests — tasks ArrowDown/ArrowUp, signals peek-dirty,
+        //   document-pip insertBefore. Actuals: 93.82/85.75/92.76/95.08. Raised branches 85.5 → 85.7.
         statements: 93.5,
-        branches: 85.5,
+        branches: 85.7,
         functions: 92.5,
         lines: 94.7,
       },

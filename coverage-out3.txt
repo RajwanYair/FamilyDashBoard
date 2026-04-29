@@ -1,0 +1,394 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90mC:/Users/ryair/OneDrive - Intel Corporation/Documents/MyScripts/FamilyDashBoard[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32mΓ£ô[39m tests/unit/core/config-crypto.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 1652[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m round-trips Hebrew and multilingual strings faithfully [33m 306[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/calendar.test.ts [2m([22m[2m258 tests[22m[2m)[22m[33m 1307[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather.test.ts [2m([22m[2m173 tests[22m[2m)[22m[33m 1220[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idb-cache.test.ts [2m([22m[2m67 tests[22m[2m)[22m[33m 2961[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m continues evicting when size is still over limit at the 5-deletion checkpoint [33m 488[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks.test.ts [2m([22m[2m203 tests[22m[2m)[22m[33m 2446[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/simhash.property.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 2914[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m completely different strings rarely dedupe at threshold 3 [33m 732[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m strings differing only in internal whitespace have the same fingerprint [33m 347[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-panel.test.ts [2m([22m[2m80 tests[22m[2m)[22m[33m 2933[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/card-registry.test.ts [2m([22m[2m54 tests[22m[2m)[22m[33m 1966[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads tasks CardDefinition via dynamic import [33m 576[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m loads system-info CardDefinition via dynamic import [33m 491[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news.test.ts [2m([22m[2m188 tests[22m[2m)[22m[33m 1409[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/envelope-invariants.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 1358[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/header.test.ts [2m([22m[2m72 tests[22m[2m)[22m[33m 1233[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebrew-cal.test.ts [2m([22m[2m160 tests[22m[2m)[22m[33m 1611[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts.test.ts [2m([22m[2m108 tests[22m[2m)[22m[33m 1030[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/main.test.ts [2m([22m[2m112 tests[22m[2m)[22m[33m 1313[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/maximize.test.ts [2m([22m[2m70 tests[22m[2m)[22m[33m 887[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/status-bar.test.ts [2m([22m[2m44 tests[22m[2m)[22m[33m 934[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/nws-normalize.property.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 589[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/tasks.test.ts [2m([22m[2m141 tests[22m[2m)[22m[33m 1223[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/ticker.test.ts [2m([22m[2m74 tests[22m[2m)[22m[33m 840[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks-vol-spark.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 960[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m calls historyAppend with stk:vol: key when volume > 0 [33m 411[2mms[22m[39m
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > returns 204 for a valid single error entry
+[FDB-error] 2026-04-29T12:12:59.724Z test error
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > returns 204 for multiple valid error entries
+[FDB-error] 2026-04-29T12:12:59.730Z @ main.ts:42 err1
+[FDB-error] 2026-04-29T12:12:59.730Z err2
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > accepts entries with optional source and lineno
+[FDB-error] 2001-09-09T01:46:40.000Z @ file.ts:10 m
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors route > truncates messages longer than 500 characters
+[FDB-error] 2026-04-29T12:12:59.744Z aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleAlerts route > returns 200 with workerEnvelope when upstream succeeds
+[alerts] Valibot validation warning: Invalid key: Expected "time" but received undefined; Invalid key: Expected "threat" but received undefined; Invalid key: Expected "cities" but received undefined
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors with KV persistence > returns 204 and writes to KV when env.CACHE_KV is present
+[FDB-error] 2026-04-29T12:12:59.944Z kv test
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors with KV persistence > still returns 204 when daily count >= MAX and skips KV write
+[FDB-error] 2026-04-29T12:12:59.946Z overflow
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors with KV persistence > handles KV daily count returning null (first entry of day)
+[FDB-error] 2026-04-29T12:12:59.948Z first entry
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors with KV persistence > handles KV daily count returning non-numeric string
+[FDB-error] 2026-04-29T12:12:59.949Z bad count
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleErrors with KV persistence > enqueues to ERRORS_QUEUE when present alongside KV
+[FDB-error] 2026-04-29T12:12:59.950Z queue test
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleSefariaCalendar invalid schema branches > returns 502 with detail when upstream returns invalid schema and no KV stale
+[sefaria:calendar] Valibot strict validation failed: Invalid key: Expected "calendar_items" but received undefined
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleSefariaCalendar invalid schema branches > returns stale KV when upstream returns invalid schema and KV has data
+[sefaria:calendar] Valibot strict validation failed: Invalid key: Expected "calendar_items" but received undefined
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleSefariaText invalid schema branches > returns 502 with detail when upstream returns invalid schema and no KV stale
+[sefaria:text] Valibot strict validation failed: Invalid key: Expected "ref" but received undefined
+
+stderr | tests/unit/worker/worker.test.ts > Worker ΓÇö handleSefariaText invalid schema branches > returns stale KV when upstream returns invalid schema and KV has data
+[sefaria:text] Valibot strict validation failed: Invalid key: Expected "ref" but received undefined
+
+ [32mΓ£ô[39m tests/unit/worker/worker.test.ts [2m([22m[2m215 tests[22m[2m)[22m[33m 410[2mms[22m[39m
+(node:36140) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [32mΓ£ô[39m tests/unit/core/history.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 903[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m respects the limit parameter [33m 666[2mms[22m[39m
+Error: getaddrinfo ENOTFOUND fdb.rajwanyair.workers.dev
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:121:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'fdb.rajwanyair.workers.dev'
+}
+ [32mΓ£ô[39m tests/unit/cards/currency.test.ts [2m([22m[2m51 tests[22m[2m)[22m[33m 896[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m does not throw with full DOM [33m 454[2mms[22m[39m
+DOMException [AbortError]: The operation was aborted.
+    at Fetch.onAsyncTaskManagerAbort (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/happy-dom/lib/fetch/Fetch.js:546:23)
+    at Object.<anonymous> (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/happy-dom/lib/fetch/Fetch.js:416:101)
+    at AsyncTaskManager.abortAll (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/happy-dom/lib/async-task-manager/AsyncTaskManager.js:292:30)
+    at AsyncTaskManager.abort (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/happy-dom/lib/async-task-manager/AsyncTaskManager.js:52:21)
+    at DetachedBrowserFrame.abort (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/happy-dom/lib/browser/detached-browser/DetachedBrowserFrame.js:112:58)
+    at DetachedWindowAPI.abort (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/happy-dom/lib/window/DetachedWindowAPI.js:51:35)
+    at teardownWindow (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vitest/dist/chunks/index.DC7d2Pf8.js:331:22)
+    at Object.teardown (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vitest/dist/chunks/index.DC7d2Pf8.js:392:10)
+    at file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vitest/dist/chunks/base.RR7zL1h0.js:168:65
+    at Traces.$ (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vitest/dist/chunks/traces.DT5aQ62U.js:142:27)
+ [32mΓ£ô[39m tests/unit/core/fdb-card.test.ts [2m([22m[2m80 tests[22m[2m)[22m[33m 458[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/fetch.test.ts [2m([22m[2m80 tests[22m[2m)[22m[32m 247[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/auto-loop-scroll.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 331[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/countdown.test.ts [2m([22m[2m73 tests[22m[2m)[22m[33m 491[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/diag-overlay.test.ts [2m([22m[2m55 tests[22m[2m)[22m[33m 670[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather-precip-spark.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 273[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info.test.ts [2m([22m[2m77 tests[22m[2m)[22m[33m 553[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/motivation.test.ts [2m([22m[2m66 tests[22m[2m)[22m[33m 370[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/weather-travel-mode.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 297[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/card-settings-dialog.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 168[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw-register.test.ts [2m([22m[2m34 tests[22m[2m)[22m[33m 364[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/cache.test.ts [2m([22m[2m102 tests[22m[2m)[22m[33m 370[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/property-based.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 618[2mms[22m[39m
+[vitest-pool]: Timeout terminating forks worker for test files C:/Users/ryair/OneDrive - Intel Corporation/Documents/MyScripts/FamilyDashBoard/tests/unit/cards/currency.test.ts.
+ [32mΓ£ô[39m tests/unit/ui/night-dimmer.test.ts [2m([22m[2m51 tests[22m[2m)[22m[33m 780[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/ls-discipline.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 196[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/resizer.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 253[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/theme.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 145[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/worker-client-props.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 327[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config.test.ts [2m([22m[2m126 tests[22m[2m)[22m[32m 247[2mms[22m[39m
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2mcalls send_email.send() once
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2msends the correct from/to addresses
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2msubject contains today's UTC date
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2mbody includes today's error count from KV
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2mbody includes 7-day error total label
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2mbody sums 7-day error counts correctly
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2mbody includes top error messages when present
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+[90mstdout[2m | tests/unit/worker/weekly-digest.test.ts[2m > [22m[2mhandleWeeklyDigest ΓÇö send_email binding present[2m > [22m[2mbody omits top-errors section when there are none
+[22m[39m[FDB-digest] Weekly digest sent to family@example.com
+
+stderr | tests/unit/worker/weekly-digest.test.ts > handleWeeklyDigest ΓÇö send_email binding present > does not throw when send_email.send() rejects
+[FDB-digest] Failed to send weekly digest: Error: email send failed
+    at C:/Users/ryair/OneDrive - Intel Corporation/Documents/MyScripts/FamilyDashBoard/tests/unit/worker/weekly-digest.test.ts:177:36
+    at file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)
+    at file:///C:/Users/ryair/OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/@vitest/runner/dist/chunk-artifact.js:2955:64
+
+ [32mΓ£ô[39m tests/unit/worker/weekly-digest.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts-count-spark.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 253[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/worker-client.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 228[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/layout-drag.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 229[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/card-auto-scroll.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 170[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-motivation.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-weather.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 174[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info-conntype-spark.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 113[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/theme-audit.test.ts [2m([22m[2m128 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/toast.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/perf.test.ts [2m([22m[2m56 tests[22m[2m)[22m[32m 123[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/simhash.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 207[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-tasks.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 218[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-auto-render.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/system-info-downlink-spark.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 126[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/idle.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 121[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/alerts-orchestrator.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/screen-mode.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 167[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/signals-property.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 136[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/base-card.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 97[2mms[22m[39m
+AggregateError: 
+    at internalConnectMultiple (node:net:1193:18)
+    at afterConnectMultiple (node:net:1783:7) {
+  code: 'ETIMEDOUT',
+  [errors]: [
+    Error: connect ETIMEDOUT 104.21.58.226:443
+        at createConnectionError (node:net:1746:14)
+        at Timeout.internalConnectMultipleTimeout (node:net:1805:38)
+        at listOnTimeout (node:internal/timers:607:11)
+        at processTimers (node:internal/timers:541:7) {
+      errno: -4039,
+      code: 'ETIMEDOUT',
+      syscall: 'connect',
+      address: '104.21.58.226',
+      port: 443
+    },
+    Error: connect ETIMEDOUT 172.67.209.158:443
+        at createConnectionError (node:net:1746:14)
+        at afterConnectMultiple (node:net:1776:16) {
+      errno: -4039,
+      code: 'ETIMEDOUT',
+      syscall: 'connect',
+      address: '172.67.209.158',
+      port: 443
+    }
+  ]
+}
+ [32mΓ£ô[39m tests/unit/core/diag.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 120[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/ticker-overlay.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 103[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/scroll.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 116[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/html/dom-contract.test.ts [2m([22m[2m120 tests[22m[2m)[22m[32m 186[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/constants.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sync.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 92[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-news.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/utils.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 107[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-video-news.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 149[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/keyboard.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/d1-latency.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 127[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-tracker.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/api-validators.test.ts [2m([22m[2m80 tests[22m[2m)[22m[32m 154[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/app-signals.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-stocks.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/nws-adapter.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-countdown.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/hardware.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-boundary.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/bg-images.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/provider.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/video-news.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/i18n.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-hebrew-cal.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/fs-access.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/state.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/reports.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 106[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/nws-normalize.test.ts [2m([22m[2m60 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/cron.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 98[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/provider-lifecycle.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/ai.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/rss-parser.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/metrics.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 175[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/error-reporter.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 164[2mms[22m[39m
+stderr | tests/unit/worker/errors-queue.test.ts > handleErrors ΓÇö ERRORS_QUEUE enqueue > calls queue.send() once when ERRORS_QUEUE is present and entries are valid
+[FDB-error] 2026-04-29T12:13:42.207Z test error
+
+stderr | tests/unit/worker/errors-queue.test.ts > handleErrors ΓÇö ERRORS_QUEUE enqueue > sends a valid ErrorQueueMessage with correct fields
+[FDB-error] 2026-04-29T12:13:42.223Z first
+[FDB-error] 2026-04-29T12:13:42.223Z second
+
+stderr | tests/unit/worker/errors-queue.test.ts > handleErrors ΓÇö ERRORS_QUEUE enqueue > still returns 204 when queue.send() throws
+[FDB-error] 2026-04-29T12:13:42.228Z err
+
+[90mstdout[2m | tests/unit/worker/errors-queue.test.ts[2m > [22m[2mhandleErrorsQueue ΓÇö consumer[2m > [22m[2macks all messages in the batch
+[22m[39m[FDB-queue] errors batch: 3 entries @ 2026-07-13 (enqueued 2026-07-13T00:00:00Z)
+[FDB-queue] errors batch: 1 entries @ 2026-07-13 (enqueued 2026-07-13T01:00:00Z)
+
+[90mstdout[2m | tests/unit/worker/errors-queue.test.ts[2m > [22m[2mhandleErrorsQueue ΓÇö consumer[2m > [22m[2mhandles malformed message body without throwing
+[22m[39m[FDB-queue] errors batch: ? entries @ ? (enqueued ?)
+
+stderr | tests/unit/worker/errors-queue.test.ts > handleErrors ΓÇö ERRORS_QUEUE enqueue > does NOT call queue.send() when ERRORS_QUEUE is absent
+[FDB-error] 2026-04-29T12:13:42.230Z test
+
+ [32mΓ£ô[39m tests/unit/worker/errors-queue.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/provider-adapter.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/scripts/reading-level.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/a11y/ecfg-dialog.test.ts [2m([22m[2m44 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/first-run-tour.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/scripts/openapi-ttl.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/scripts/bundle-delta.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/vitals-reporter.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/sync-dots.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+AggregateError: 
+    at internalConnectMultiple (node:net:1193:18)
+    at afterConnectMultiple (node:net:1783:7) {
+  code: 'ETIMEDOUT',
+  [errors]: [
+    Error: connect ETIMEDOUT 104.26.7.163:443
+        at createConnectionError (node:net:1746:14)
+        at Timeout.internalConnectMultipleTimeout (node:net:1805:38)
+        at listOnTimeout (node:internal/timers:607:11)
+        at processTimers (node:internal/timers:541:7) {
+      errno: -4039,
+      code: 'ETIMEDOUT',
+      syscall: 'connect',
+      address: '104.26.7.163',
+      port: 443
+    },
+    Error: connect ETIMEDOUT 172.67.73.211:443
+        at createConnectionError (node:net:1746:14)
+        at Timeout.internalConnectMultipleTimeout (node:net:1805:38)
+        at listOnTimeout (node:internal/timers:607:11)
+        at processTimers (node:internal/timers:541:7) {
+      errno: -4039,
+      code: 'ETIMEDOUT',
+      syscall: 'connect',
+      address: '172.67.73.211',
+      port: 443
+    },
+    Error: connect ETIMEDOUT 104.26.6.163:443
+        at createConnectionError (node:net:1746:14)
+        at afterConnectMultiple (node:net:1776:16) {
+      errno: -4039,
+      code: 'ETIMEDOUT',
+      syscall: 'connect',
+      address: '104.26.6.163',
+      port: 443
+    }
+  ]
+}
+ [32mΓ£ô[39m tests/unit/worker/analytics.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/signals.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ui/config-accordion.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/config-schemas.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/fetch-network-mode.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/api-normalized.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/a11y/voice-control.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/rate-limiter-do.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/css-components.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/a11y/dialog-audit.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/embedding-dedup.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/canary.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/scripts/adr-index.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/worker-fetch.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/sefaria-schemas.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/anim-level.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/stocks-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/text-spacing-a11y.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/calendar-adapter.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ops/security-doc.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/scripts/worker-client-hash.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ops/permissions-policy.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/css/scope.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw-constants.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/a11y/heading-hierarchy.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/cache-stale.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/hebcal-adapter.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-calendar.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/config-save.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-alerts.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/news-adapter.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/sw.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/open-meteo-adapter.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/worker/early-hints.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-currency.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/fdb-system-info.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/a11y/text-spacing.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-export-validation.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/theme-switch.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/config-export-import.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/ops/changesets-config.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/scripts/release-checklist.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/currency-adapter.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/scripts/release-notes.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/cards/alerts-adapter.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-reset-card.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/ls-audit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/trusted-types.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/card-config-map.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/classify-fetch-error.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [31mΓ¥»[39m tests/unit/ui/document-pip.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32mΓ£ô[39m tests/unit/core/provider-toast.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/core/config-diff.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/health-snapshot.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32mΓ£ô[39m tests/integration/backoff-sequence.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/styles/print.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32mΓ£ô[39m tests/unit/types/provider.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Suites 1 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  tests/unit/ui/document-pip.test.ts [ tests/unit/ui/document-pip.test.ts ]
+Error: Transform failed with 1 error:
+
+[PARSE_ERROR] Error: Expected `,` or `)` but found `;`
+     Γò¡ΓöÇ[ tests/unit/ui/document-pip.test.ts:257:2 ]
+     Γöé
+  41 Γöé describe("document-pip (Sprint 137)", () => {
+     Γöé         Γö¼  
+     Γöé         Γò░ΓöÇΓöÇ Opened here
+     Γöé 
+ 257 Γöé };);
+     Γöé  Γö¼  
+     Γöé  Γò░ΓöÇΓöÇ `,` or `)` expected
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+  Plugin: vite:oxc
+  File: C:/Users/ryair/OneDrive - Intel Corporation/Documents/MyScripts/FamilyDashBoard/tests/unit/ui/document-pip.test.ts
+ Γ¥» transformWithOxc ../../../../OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vite/dist/node/chunks/node.js:3343:19
+ Γ¥» TransformPluginContext.transform ../../../../OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vite/dist/node/chunks/node.js:3411:26
+ Γ¥» EnvironmentPluginContainer.transform ../../../../OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vite/dist/node/chunks/node.js:30164:51
+ Γ¥» loadAndTransform ../../../../OneDrive%20-%20Intel%20Corporation/Documents/MyScripts/node_modules/vite/dist/node/chunks/node.js:24512:26
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/1]ΓÄ»
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m161 passed[39m[22m[90m (162)[39m
+[2m      Tests [22m [1m[32m5142 passed[39m[22m[90m (5142)[39m
+[2m   Start at [22m 15:12:42
+[2m   Duration [22m 95.78s[2m (transform 24.15s, setup 4.26s, import 31.31s, tests 47.99s, environment 307.53s)[22m
+

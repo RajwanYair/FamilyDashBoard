@@ -241,3 +241,34 @@ describe("isSignal()", () => {
     expect(isSignal(undefined)).toBe(false);
   });
 });
+
+// ── Sprint 167: peek() on dirty Computed ─────────────────────────────────────
+
+describe("computed().peek() on dirty signal (Sprint 167)", () => {
+  it("peek() recomputes when called on a dirty computed (dependency changed, not yet read)", () => {
+    const a = signal(1);
+    const fn = vi.fn(() => a.value * 3);
+    const c = computed(fn);
+    // Read once to prime the value
+    expect(c.value).toBe(3);
+    expect(fn).toHaveBeenCalledTimes(1);
+
+    // Change dependency — makes c dirty without reading it
+    a.value = 5;
+    // Call peek() — the _dirty branch in peek() must trigger _recompute()
+    const result = c.peek();
+    expect(result).toBe(15);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it("peek() on never-read computed triggers initial computation via dirty branch", () => {
+    const a = signal(7);
+    const fn = vi.fn(() => a.value + 10);
+    const c = computed(fn);
+    // Do not call c.value — c is dirty from creation
+    // peek() should trigger _recompute via the _dirty branch
+    const result = c.peek();
+    expect(result).toBe(17);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+});

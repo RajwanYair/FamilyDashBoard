@@ -1736,3 +1736,80 @@ describe("Tasks — quickInput keydown Enter triggers quickBtn.click (line 564)"
     expect(clickSpy).not.toHaveBeenCalled();
   });
 });
+
+// ── Task row ArrowDown / ArrowUp keyboard navigation ─────────────────────────
+
+describe("Tasks — row ArrowDown/ArrowUp keyboard navigation (Sprint 167)", () => {
+  const chores = [
+    { person: "עמרי", chore: "🧹 לנקות" },
+    { person: "עמרי", chore: "🛒 קניות" },
+    { person: "עמרי", chore: "🍳 בישול" },
+  ];
+
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="tasks-list"></div>`;
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+    localStorage.removeItem("dash_tasks_done");
+    localStorage.removeItem("dash_tasks_reset_date");
+  });
+  afterEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it("ArrowDown focuses the next sibling row", () => {
+    renderTasksCard();
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    expect(rows.length).toBeGreaterThanOrEqual(2);
+    const focusSpy = vi.spyOn(rows[1]!, "focus");
+    rows[0]!.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true })
+    );
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("ArrowUp focuses the previous sibling row", () => {
+    renderTasksCard();
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    expect(rows.length).toBeGreaterThanOrEqual(2);
+    const focusSpy = vi.spyOn(rows[0]!, "focus");
+    rows[1]!.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true })
+    );
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("ArrowDown on last row does not throw (no next sibling)", () => {
+    renderTasksCard();
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    const last = rows[rows.length - 1]!;
+    expect(() =>
+      last.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true })
+      )
+    ).not.toThrow();
+  });
+
+  it("ArrowUp on first row does not throw (no previous sibling)", () => {
+    renderTasksCard();
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    const first = rows[0]!;
+    expect(() =>
+      first.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true })
+      )
+    ).not.toThrow();
+  });
+
+  it("other key (Tab) is not handled by the row keydown listener", () => {
+    renderTasksCard();
+    const rows = document.querySelectorAll<HTMLElement>(".tasks-row");
+    // Should not throw and should not call focus on adjacent rows
+    const focusSpy = vi.spyOn(rows[1]!, "focus");
+    rows[0]!.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true })
+    );
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+});
