@@ -2950,3 +2950,143 @@ describe("Calendar — per-source class in renderCalendar (Sprint 181 CAL2)", ()
     expect(eventEl?.classList.contains("cal-src-1")).toBe(true);
   });
 });
+// ── Sprint 188 / CAL3: Privacy mode ─────────────────────────────────────────
+describe("Calendar — privacy mode (Sprint 188 CAL3)", () => {
+  beforeEach(() => {
+    makeCalDOM();
+    localStorage.clear();
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  function makeFutureEvent(offsetDays = 0): import("@/types/api").CalendarEvent {
+    const now = new Date();
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const start = new Date(todayMidnight.getTime() + offsetDays * 86400000);
+    const end = new Date(start.getTime() + 3600000);
+    return { summary: "Secret Meeting", start, end, allDay: false, icsIndex: 0 };
+  }
+
+  it("renders normal summary when privacy is off (default)", () => {
+    const ev = makeFutureEvent(0);
+    renderCalendar([ev]);
+    const texts = Array.from(document.querySelectorAll(".cal-event-title")).map(
+      (el) => el.textContent,
+    );
+    expect(texts.some((t) => t?.includes("Secret Meeting"))).toBe(true);
+  });
+
+  it("replaces summary with 'עסוק' when calendarPrivacy = true", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, calendarPrivacy: true }),
+    );
+    const ev = makeFutureEvent(0);
+    renderCalendar([ev]);
+    const texts = Array.from(document.querySelectorAll(".cal-event-title")).map(
+      (el) => el.textContent,
+    );
+    expect(texts.some((t) => t?.includes("עסוק"))).toBe(true);
+    expect(texts.every((t) => !t?.includes("Secret Meeting"))).toBe(true);
+  });
+
+  it("does not mask when calendarPrivacy = false", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, calendarPrivacy: false }),
+    );
+    const ev = makeFutureEvent(0);
+    renderCalendar([ev]);
+    const texts = Array.from(document.querySelectorAll(".cal-event-title")).map(
+      (el) => el.textContent,
+    );
+    expect(texts.some((t) => t?.includes("Secret Meeting"))).toBe(true);
+  });
+
+  it("masks multiple events when privacy is on", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, calendarPrivacy: true }),
+    );
+    const evs = [makeFutureEvent(0), makeFutureEvent(1), makeFutureEvent(2)];
+    renderCalendar(evs);
+    const texts = Array.from(document.querySelectorAll(".cal-event-title")).map(
+      (el) => el.textContent,
+    );
+    expect(texts.every((t) => t?.includes("עסוק") || t === null)).toBe(true);
+  });
+});
+
+// ── Sprint 188 / CAL4: Configurable horizon ──────────────────────────────────
+describe("Calendar — configurable horizon (Sprint 188 CAL4)", () => {
+  beforeEach(() => {
+    makeCalDOM();
+    localStorage.clear();
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  /** Create event at weekStart + offsetFromWeekStart days (day-of-week neutral). */
+  function makeEventAtWeekOffset(offsetFromWeekStart: number): import("@/types/api").CalendarEvent {
+    const now = new Date();
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dayOfWeek = todayMidnight.getDay(); // 0 = Sunday
+    const offsetFromToday = offsetFromWeekStart - dayOfWeek;
+    const start = new Date(todayMidnight.getTime() + offsetFromToday * 86400000);
+    const end = new Date(start.getTime() + 3600000);
+    return { summary: `WS+${offsetFromWeekStart}`, start, end, allDay: false, icsIndex: 0 };
+  }
+
+  it("uses default 21 days when calendarDaysAhead is not set", () => {
+    // WS+0 and WS+20 are within 21-day window; WS+22 is outside
+    const evs = [makeEventAtWeekOffset(0), makeEventAtWeekOffset(20), makeEventAtWeekOffset(22)];
+    const count = renderCalendar(evs);
+    expect(count).toBe(2);
+  });
+
+  it("respects calendarDaysAhead = 7 (1 week)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, calendarDaysAhead: 7 }),
+    );
+    // WS+0 and WS+6 are within 7-day window; WS+8 is outside
+    const evs = [makeEventAtWeekOffset(0), makeEventAtWeekOffset(6), makeEventAtWeekOffset(8)];
+    const count = renderCalendar(evs);
+    expect(count).toBe(2);
+  });
+
+  it("respects calendarDaysAhead = 28 (4 weeks)", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, calendarDaysAhead: 28 }),
+    );
+    // WS+0 and WS+27 are within 28-day window; WS+29 is outside
+    const evs = [makeEventAtWeekOffset(0), makeEventAtWeekOffset(27), makeEventAtWeekOffset(29)];
+    const count = renderCalendar(evs);
+    expect(count).toBe(2);
+  });
+
+  it("clamps out-of-range config value to minimum 7", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, calendarDaysAhead: 3 }),
+    );
+    // Clamped to 7: WS+0 and WS+6 included, WS+8 excluded
+    const evs = [makeEventAtWeekOffset(0), makeEventAtWeekOffset(6), makeEventAtWeekOffset(8)];
+    const count = renderCalendar(evs);
+    expect(count).toBe(2);
+  });
+
+  it("clamps out-of-range config value to maximum 60", () => {
+    localStorage.setItem(
+      "dash_v2_config",
+      JSON.stringify({ configVersion: 12, calendarDaysAhead: 90 }),
+    );
+    // Clamped to 60: WS+0 and WS+59 included, WS+61 excluded
+    const evs = [makeEventAtWeekOffset(0), makeEventAtWeekOffset(59), makeEventAtWeekOffset(61)];
+    const count = renderCalendar(evs);
+    expect(count).toBe(2);
+  });
+});

@@ -18,6 +18,7 @@ import {
   WORKER_BASE_URL,
   isWorkerEnabled,
 } from "../../core/constants";
+import { loadConfig } from "../../core/config";
 import { cGetStale, cGetAsync, cGetStaleAsync, cSetAsync } from "../../core/cache";
 import { fetchWithTimeout } from "../../core/fetch";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
@@ -355,11 +356,20 @@ export function renderCalendar(events: CalendarEvent[]): number {
   const now = new Date();
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+  // Sprint 188 / CAL4: read horizon from config (default 21)
+  const cfg = loadConfig();
+  const horizonDays = Math.max(7, Math.min(60, cfg.calendarDaysAhead ?? CAL_WEEK_DAYS));
+  // Sprint 188 / CAL3: privacy mode — replace event summaries with "עסוק"
+  const privacy = cfg.calendarPrivacy ?? false;
+  const maskedEvents: CalendarEvent[] = privacy
+    ? events.map((e) => ({ ...e, summary: "עסוק" }))
+    : events;
+
   // Week window: always Sunday → Saturday of the current week
   const dayOfWeek = todayMidnight.getDay(); // 0 = Sunday
   const weekStart = new Date(todayMidnight.getTime() - dayOfWeek * MS_PER_DAY);
-  const weekEnd = new Date(weekStart.getTime() + CAL_WEEK_DAYS * MS_PER_DAY);
-  const upcoming = events
+  const weekEnd = new Date(weekStart.getTime() + horizonDays * MS_PER_DAY);
+  const upcoming = maskedEvents
     .filter((e) => e.start >= weekStart && e.start < weekEnd)
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
@@ -568,5 +578,14 @@ export const calendarConfigSchema: CardConfigField[] = [
     step: 7,
     group: "תצוגה",
     groupOpenByDefault: true,
+  },
+  // Sprint 188 / CAL3: Privacy mode toggle
+  {
+    key: "calendarPrivacy",
+    labelHe: "מצב פרטיות (הסתר פרטי אירועים)",
+    labelEn: "Privacy mode (hide event details)",
+    type: "boolean",
+    defaultValue: false,
+    group: "פרטיות",
   },
 ];

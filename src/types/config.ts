@@ -127,6 +127,8 @@ export interface DashboardConfig {
   calendarUrls: string[];
   /** Number of days ahead to display in calendar (default: 21; range 7–60). */
   calendarDaysAhead: number;
+  /** Sprint 188 / CAL3: Replace event titles with "עסוק" when true. */
+  calendarPrivacy: boolean;
   disabledFeeds: string[];
   hiddenStocks: string[];
   customProxy: string;
@@ -281,6 +283,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   geonameid: "281184",
   calendarUrls: [],
   calendarDaysAhead: 21,
+  calendarPrivacy: false,
   disabledFeeds: [],
   hiddenStocks: [],
   customProxy: "",
