@@ -457,6 +457,8 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
   blk.classList.remove("stk-up", "stk-down");
   if (trend === "positive") blk.classList.add("stk-up");
   else if (trend === "negative") blk.classList.add("stk-down");
+  // Sprint 187 / S3: store pct for daily-mover pills
+  (blk as HTMLElement).dataset["pct"] = isFinite(chgPct) ? chgPct.toFixed(4) : "0";
 
   const symEl = blk.querySelector<HTMLElement>(".stk-sym");
   if (symEl) symEl.style.color = brandColor;
@@ -748,10 +750,36 @@ export async function loadAllStocks(): Promise<void> {
   }
 }
 
+// ── Sprint 187 / S3: Top daily-mover pills ────────────────────────────────
+
+interface MoverPill {
+  sym: string;
+  pct: number;
+  dir: "up" | "down";
+}
+
+/**
+ * Extract top 3 gainers and top 3 losers from stock DOM elements.
+ * Reads `data-symbol` and `data-pct` attributes set by `renderStock()`.
+ * Returns the 3 biggest absolute movers (gainers first, then losers).
+ */
+export function getTopMovers(stocks: HTMLElement[]): MoverPill[] {
+  const movers: MoverPill[] = [];
+  for (const el of stocks) {
+    const sym = el.dataset["symbol"] ?? "";
+    const rawPct = parseFloat(el.dataset["pct"] ?? "0");
+    if (!sym || !isFinite(rawPct) || Math.abs(rawPct) < 0.1) continue;
+    movers.push({ sym, pct: rawPct, dir: rawPct > 0 ? "up" : "down" });
+  }
+  const gainers = movers.filter((m) => m.dir === "up").sort((a, b) => b.pct - a.pct).slice(0, 3);
+  const losers = movers.filter((m) => m.dir === "down").sort((a, b) => a.pct - b.pct).slice(0, 3);
+  return [...gainers, ...losers];
+}
+
 function updateStockSummary(): void {
   const summaryEl = document.getElementById("stk-summary");
   if (!summaryEl) return;
-  const stocks = document.querySelectorAll("#stocks-body .stk");
+  const stocks = document.querySelectorAll<HTMLElement>("#stocks-body .stk");
   let up = 0,
     dn = 0,
     flat = 0;
@@ -764,7 +792,24 @@ function updateStockSummary(): void {
     summaryEl.textContent = "";
     return;
   }
-  summaryEl.textContent = `📈 ${up} עולות  •  📉 ${dn} יורדות  •  ➡️ ${flat} יציבות`;
+
+  // Sprint 187 / S3: build daily-mover pills
+  const movers = getTopMovers(Array.from(stocks));
+  const frag = document.createDocumentFragment();
+
+  const countsEl = document.createElement("span");
+  countsEl.className = "stk-summary-counts";
+  countsEl.textContent = `📈 ${up} עולות  •  📉 ${dn} יורדות  •  ➡️ ${flat} יציבות`;
+  frag.appendChild(countsEl);
+
+  for (const { sym, pct, dir } of movers) {
+    const pill = document.createElement("span");
+    pill.className = `stk-mover-pill stk-mover-${dir}`;
+    pill.textContent = `${sym} ${dir === "up" ? "▲" : "▼"}${Math.abs(pct).toFixed(1)}%`;
+    frag.appendChild(pill);
+  }
+
+  summaryEl.replaceChildren(frag);
 }
 
 // ── Stock Price Alerts ──

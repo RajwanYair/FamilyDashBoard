@@ -249,3 +249,41 @@
     padding: 5px 12px;
   }
 }
+
+/* Sprint 187 / S3: Daily-mover pills */
+@layer components {
+  .stk-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px 6px;
+  }
+
+  .stk-summary-counts {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    flex-basis: 100%;
+  }
+
+  .stk-mover-pill {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .stk-mover-pill.stk-mover-up {
+    background: color-mix(in srgb, var(--positive) 15%, transparent);
+    color: var(--positive);
+    border: 1px solid var(--positive);
+  }
+
+  .stk-mover-pill.stk-mover-down {
+    background: color-mix(in srgb, var(--negative) 15%, transparent);
+    color: var(--negative);
+    border: 1px solid var(--negative);
+  }
+}
