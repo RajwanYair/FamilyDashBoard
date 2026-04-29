@@ -23,6 +23,9 @@ import {
   hebrewDayOfWeek,
   daysLabel,
   advanceAnnualDate,
+  advanceMonthlyDate,
+  getNextYomTov,
+  getNextCalEventForCountdown,
   countdownConfigSchema,
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
@@ -1005,5 +1008,114 @@ describe("Countdown — getDaysSince future target clamp (Sprint 83)", () => {
 
   it("returns 0 when targetMs is exactly now", () => {
     expect(getDaysSince(Date.now())).toBe(0);
+  });
+});
+
+// ── Sprint 180 / CD3: advanceMonthlyDate ─────────────────────────────────
+
+describe("Countdown — advanceMonthlyDate (Sprint 180 CD3)", () => {
+  it("returns future date unchanged", () => {
+    const future = new Date();
+    future.setMonth(future.getMonth() + 2);
+    const str = `${future.getFullYear()}-${String(future.getMonth() + 1).padStart(2, "0")}-15`;
+    expect(advanceMonthlyDate(str)).toBe(str);
+  });
+
+  it("advances past date by one or more months", () => {
+    const result = advanceMonthlyDate("2000-01-15");
+    const d = new Date(`${result}T00:00:00`);
+    expect(d.getTime()).toBeGreaterThanOrEqual(Date.now());
+    expect(d.getDate()).toBe(15); // same day of month preserved
+  });
+
+  it("handles invalid date string gracefully", () => {
+    expect(advanceMonthlyDate("not-a-date")).toBe("not-a-date");
+  });
+
+  it("advances a date in the recent past by 1 month", () => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 1); // last month
+    const pastStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const result = advanceMonthlyDate(pastStr);
+    const resultDate = new Date(`${result}T00:00:00`);
+    expect(resultDate.getTime()).toBeGreaterThan(Date.now() - 1);
+  });
+});
+
+// ── Sprint 180 / CD1: getNextYomTov ─────────────────────────────────────
+
+describe("Countdown — getNextYomTov (Sprint 180 CD1)", () => {
+  const now = new Date("2025-09-01T12:00:00");
+
+  it("returns null for empty items", () => {
+    expect(getNextYomTov([], now)).toBeNull();
+  });
+
+  it("returns null when no holidays within maxDays", () => {
+    const items = [
+      { title: "Passover", date: "2025-04-13", category: "holiday", hebrew: "פסח" },
+    ];
+    expect(getNextYomTov(items, now)).toBeNull();
+  });
+
+  it("returns the nearest upcoming holiday", () => {
+    const items = [
+      { title: "Rosh Hashana", date: "2025-09-23", category: "holiday", hebrew: "ראש השנה" },
+      { title: "Yom Kippur", date: "2025-10-02", category: "holiday", hebrew: "יום כיפור" },
+    ];
+    const result = getNextYomTov(items, now);
+    expect(result).not.toBeNull();
+    expect(result?.title).toBe("ראש השנה");
+    expect(result?.date).toBe("2025-09-23");
+  });
+
+  it("ignores non-holiday categories", () => {
+    const items = [
+      { title: "Shabbat Parshat", date: "2025-09-06", category: "parashat", hebrew: "בראשית" },
+    ];
+    expect(getNextYomTov(items, now)).toBeNull();
+  });
+
+  it("returns null when holiday is beyond maxDays", () => {
+    const items = [
+      { title: "Passover", date: "2026-04-01", category: "holiday", hebrew: "פסח" },
+    ];
+    expect(getNextYomTov(items, now, 90)).toBeNull();
+  });
+});
+
+// ── Sprint 180 / CD2: getNextCalEventForCountdown ───────────────────────
+
+describe("Countdown — getNextCalEventForCountdown (Sprint 180 CD2)", () => {
+  it("returns null for empty ICS text", () => {
+    expect(getNextCalEventForCountdown("BEGIN:VCALENDAR\nEND:VCALENDAR")).toBeNull();
+  });
+
+  it("returns null when all events are too soon (< 7 days)", () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const d = tomorrow.toISOString().slice(0, 10).replace(/-/g, "");
+    const ics = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:Near event\nDTSTART:${d}T120000\nEND:VEVENT\nEND:VCALENDAR`;
+    expect(getNextCalEventForCountdown(ics, 7)).toBeNull();
+  });
+
+  it("returns the soonest event that is at least minDaysAhead away", () => {
+    const future = new Date();
+    future.setDate(future.getDate() + 14);
+    const d = future.toISOString().slice(0, 10).replace(/-/g, "");
+    const ics = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:Family Trip\nDTSTART:${d}\nEND:VEVENT\nEND:VCALENDAR`;
+    const result = getNextCalEventForCountdown(ics, 7);
+    expect(result).not.toBeNull();
+    expect(result?.title).toBe("Family Trip");
+  });
+
+  it("returns the nearer of two qualifying events", () => {
+    const d1 = new Date(); d1.setDate(d1.getDate() + 10);
+    const d2 = new Date(); d2.setDate(d2.getDate() + 20);
+    const s1 = d1.toISOString().slice(0, 10).replace(/-/g, "");
+    const s2 = d2.toISOString().slice(0, 10).replace(/-/g, "");
+    const ics = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:Event B\nDTSTART:${s2}\nEND:VEVENT\nBEGIN:VEVENT\nSUMMARY:Event A\nDTSTART:${s1}\nEND:VEVENT\nEND:VCALENDAR`;
+    const result = getNextCalEventForCountdown(ics, 7);
+    expect(result?.title).toBe("Event A");
   });
 });

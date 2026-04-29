@@ -11,6 +11,8 @@ import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
 import { MS_PER_DAY } from "../../core/constants";
 import { decomposeDuration, pad2 } from "../../core/utils";
+import { cGetStale } from "../../core/cache";
+import type { HebcalItem } from "../../types/api";
 import type { DurationParts } from "../../core/utils";
 import type { CardConfigField } from "../../types/card";
 
@@ -18,8 +20,15 @@ import type { CardConfigField } from "../../types/card";
 
 export function getCountdownTargetDate(): Date {
   const c = loadConfig();
-  const d = c.countdownCardDate || "2026-05-07";
+  let d = c.countdownCardDate || "2026-05-07";
   const t = c.countdownCardTime || "18:00";
+  // Sprint 180 / CD3: advance past recurring dates
+  const recurrence = (c as unknown as Record<string, unknown>).countdownCardRecurrence as string | undefined;
+  if (recurrence === "annual") {
+    d = advanceAnnualDate(d);
+  } else if (recurrence === "monthly") {
+    d = advanceMonthlyDate(d);
+  }
   return new Date(`${d}T${t}:00`);
 }
 
@@ -139,6 +148,92 @@ export function advanceAnnualDate(dateStr: string): string {
     year += 1;
   }
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Sprint 180 / CD3: When the target date is in the past and recurrence is monthly,
+ * advance it to the same day-of-month in the next upcoming calendar month.
+ * Returns the updated YYYY-MM-DD string.
+ */
+export function advanceMonthlyDate(dateStr: string): string {
+  const parts = dateStr.split("-");
+  if (parts.length < 3) return dateStr;
+  const day = parts[2] ?? "01";
+  let d = new Date(`${dateStr}T00:00:00`);
+  if (isNaN(d.getTime())) return dateStr;
+  const now = Date.now();
+  while (d.getTime() < now) {
+    // Advance by one month
+    const nextMonth = d.getMonth() + 1;
+    const nextYear = nextMonth > 11 ? d.getFullYear() + 1 : d.getFullYear();
+    const wrappedMonth = nextMonth > 11 ? 0 : nextMonth;
+    d = new Date(nextYear, wrappedMonth, parseInt(day, 10));
+  }
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
+}
+
+/**
+ * Sprint 180 / CD1: Find the next upcoming Yom Tov (holiday) from Hebcal items
+ * within the next `maxDays` days (default 90). Returns title + YYYY-MM-DD date string,
+ * or null when no holiday is found in range.
+ */
+export function getNextYomTov(
+  items: HebcalItem[],
+  now: Date = new Date(),
+  maxDays = 90,
+): { title: string; date: string } | null {
+  const nowMs = now.setHours(0, 0, 0, 0);
+  const cutoff = nowMs + maxDays * MS_PER_DAY;
+  const upcoming = items
+    .filter((i) => {
+      if (i.category !== "holiday") return false;
+      const d = new Date(i.date).setHours(0, 0, 0, 0);
+      return d >= nowMs && d <= cutoff;
+    })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const first = upcoming[0];
+  if (!first) return null;
+  const dateStr = first.date.slice(0, 10);
+  return { title: first.hebrew ?? first.title, date: dateStr };
+}
+
+/**
+ * Sprint 180 / CD2: Parse ICS text and find the next calendar event that is
+ * at least `minDaysAhead` days in the future (default 7). Returns title + date,
+ * or null when none found.
+ */
+export function getNextCalEventForCountdown(
+  icsText: string,
+  minDaysAhead = 7,
+): { title: string; date: string } | null {
+  const minMs = Date.now() + minDaysAhead * MS_PER_DAY;
+  const blocks = icsText.split("BEGIN:VEVENT");
+  const events: Array<{ title: string; date: string; ms: number }> = [];
+  for (const block of blocks.slice(1)) {
+    const sumMatch = /^SUMMARY[^:]*:(.+)/m.exec(block);
+    const dtMatch = /^DTSTART(?:;[^:]+)?:(\d{8}(?:T\d{6}Z?)?)/m.exec(block);
+    if (!sumMatch || !dtMatch) continue;
+    const title = (sumMatch[1] ?? "").replace(/\\,/g, ",").replace(/\\n/g, " ").trim();
+    const raw = dtMatch[1] ?? "";
+    let d: Date;
+    if (raw.length === 8) {
+      d = new Date(`${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}T00:00:00`);
+    } else {
+      d = new Date(
+        raw.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/, "$1-$2-$3T$4:$5:$6$7"),
+      );
+    }
+    if (!isNaN(d.getTime()) && d.getTime() >= minMs) {
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      events.push({ title, date: dateStr, ms: d.getTime() });
+    }
+  }
+  events.sort((a, b) => a.ms - b.ms);
+  const first = events[0];
+  return first ? { title: first.title, date: first.date } : null;
 }
 
 // ── Tick ─────────────────────────────────────────────────────────────────────
@@ -309,6 +404,63 @@ export function initCountdownCard(): void {
   tick();
   tick2();
   tick3();
+
+  // Sprint 180 / CD1: Auto-populate slot 2 with next Yom Tov if unset
+  const cfg2 = loadConfig();
+  if (!cfg2.countdownCard2Date) {
+    const now = new Date();
+    const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
+    const holData = cGetStale<{ items: HebcalItem[] }>(holKey);
+    if (holData?.items) {
+      const yomTov = getNextYomTov(holData.items, now);
+      if (yomTov) {
+        const section2 = document.getElementById("cd2-section");
+        const title2 = document.getElementById("cd2-title");
+        if (section2 && title2) {
+          title2.textContent = yomTov.title;
+          section2.style.display = "";
+          const daysEl = document.getElementById("cd2-days");
+          const hoursEl = document.getElementById("cd2-hours");
+          const minsEl = document.getElementById("cd2-mins");
+          const secsEl = document.getElementById("cd2-secs");
+          const targetMs = new Date(`${yomTov.date}T18:00:00`).getTime();
+          const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
+          if (daysEl) daysEl.textContent = String(days);
+          if (hoursEl) hoursEl.textContent = pad2(hours);
+          if (minsEl) minsEl.textContent = pad2(minutes);
+          if (secsEl) secsEl.textContent = pad2(seconds);
+        }
+      }
+    }
+  }
+
+  // Sprint 180 / CD2: Auto-populate slot 3 with next calendar event (≥ 7 days) if unset
+  const cfg3 = loadConfig();
+  if (!cfg3.countdownCard3Date) {
+    const icsText = cGetStale<string>("cal-ics");
+    if (icsText) {
+      const calEvent = getNextCalEventForCountdown(icsText);
+      if (calEvent) {
+        const section3 = document.getElementById("cd3-section");
+        const title3 = document.getElementById("cd3-title");
+        if (section3 && title3) {
+          title3.textContent = calEvent.title;
+          section3.style.display = "";
+          const daysEl = document.getElementById("cd3-days");
+          const hoursEl = document.getElementById("cd3-hours");
+          const minsEl = document.getElementById("cd3-mins");
+          const secsEl = document.getElementById("cd3-secs");
+          const targetMs = new Date(`${calEvent.date}T18:00:00`).getTime();
+          const { days, hours, minutes, seconds } = getTimeComponents(targetMs);
+          if (daysEl) daysEl.textContent = String(days);
+          if (hoursEl) hoursEl.textContent = pad2(hours);
+          if (minsEl) minsEl.textContent = pad2(minutes);
+          if (secsEl) secsEl.textContent = pad2(seconds);
+        }
+      }
+    }
+  }
+
   if (_cdInterval !== null) clearInterval(_cdInterval);
   _cdInterval = setInterval(() => {
     tick();
@@ -371,6 +523,20 @@ export const countdownConfigSchema: CardConfigField[] = [
     labelEn: "Start Date (progress bar)",
     type: "date",
     defaultValue: "",
+    tab: "calendar",
+    group: "countdown",
+  },
+  {
+    key: "countdownCardRecurrence",
+    labelHe: "חזרתיות",
+    labelEn: "Recurrence",
+    type: "select",
+    defaultValue: "",
+    options: [
+      { value: "", label: "ללא" },
+      { value: "annual", label: "שנתי" },
+      { value: "monthly", label: "חודשי" },
+    ],
     tab: "calendar",
     group: "countdown",
   },
