@@ -26,7 +26,13 @@ import {
   prewarmNextYearHolidays,
   getHaftarah,
   getRoshChodesh,
+  addYahrzeit,
+  removeYahrzeit,
+  getYahrzeits,
+  getUpcomingYahrzeits,
+  todayHebrewMD,
 } from "@/cards/hebrew-cal/hebrew-cal";
+import { _idbClearFallback } from "@/core/idb-store";
 import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
 
@@ -2429,5 +2435,49 @@ describe("Hebrew-cal — H5 getRoshChodesh (Sprint 178)", () => {
 
   it("returns null for empty items", () => {
     expect(getRoshChodesh([], new Date())).toBeNull();
+  });
+});
+
+// ── Sprint 210 / H6: Yahrzeit IDB list ────────────────────────────────
+describe("HebrewCal — Yahrzeit IDB (Sprint 210)", () => {
+  beforeEach(() => { _idbClearFallback(); });
+
+  it("getYahrzeits returns empty array initially", async () => {
+    expect(await getYahrzeits()).toEqual([]);
+  });
+
+  it("addYahrzeit persists an entry", async () => {
+    const entry = await addYahrzeit("Test Name", 7, 3);
+    expect(entry.name).toBe("Test Name");
+    expect(entry.hebrewMonth).toBe(7);
+    expect(entry.hebrewDay).toBe(3);
+    const all = await getYahrzeits();
+    expect(all).toHaveLength(1);
+  });
+
+  it("removeYahrzeit removes an entry", async () => {
+    const e = await addYahrzeit("Delete Me", 5, 10);
+    await removeYahrzeit(e.id);
+    expect(await getYahrzeits()).toHaveLength(0);
+  });
+
+  it("addYahrzeit deduplicates by id", async () => {
+    await addYahrzeit("Avi", 3, 15);
+    await addYahrzeit("Avi", 3, 15);
+    expect(await getYahrzeits()).toHaveLength(1);
+  });
+
+  it("todayHebrewMD returns valid month and day", () => {
+    const { month, day } = todayHebrewMD(new Date("2024-01-15"));
+    expect(month).toBeGreaterThanOrEqual(1);
+    expect(day).toBeGreaterThanOrEqual(1);
+  });
+
+  it("getUpcomingYahrzeits returns entry matching today", async () => {
+    const now = new Date("2024-01-15");
+    const { month, day } = todayHebrewMD(now);
+    await addYahrzeit("Today's", month, day);
+    const upcoming = await getUpcomingYahrzeits(7, now);
+    expect(upcoming.some((e) => e.name === "Today's")).toBe(true);
   });
 });

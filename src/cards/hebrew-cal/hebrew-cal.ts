@@ -14,6 +14,7 @@ import { fetchJSONWithWorker } from "../../core/fetch";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
+import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
 import { getTasksForToday } from "../tasks/tasks";
 import { decomposeDuration, pad2, computeMoonPhase } from "../../core/utils";
 import type { HebcalResponse, HebcalItem } from "../../types/api";
@@ -978,6 +979,82 @@ function renderTasksStrip(): void {
   });
   strip.appendChild(frag);
   strip.style.display = "";
+}
+
+// ── Sprint 206 / H6: Yahrzeit IDB list ────────────────────────────────────
+
+const IDB_HC_DB = "fdb-hebrew-cal";
+const IDB_YZ_STORE = "yahrzeits";
+const YZ_MAX = 20;
+
+/** A persisted yahrzeit entry (Hebrew calendar month + day). */
+export interface YahrzeitEntry {
+  id: string;       // unique stable key
+  name: string;     // person's name
+  hebrewMonth: number; // 1–13
+  hebrewDay: number;   // 1–30
+  addedAt: string;  // ISO-8601
+}
+
+/** Return today's Hebrew {month, day} using Intl API. */
+export function todayHebrewMD(now: Date = new Date()): { month: number; day: number } {
+  const fmt = new Intl.DateTimeFormat("he-u-ca-hebrew", { month: "numeric", day: "numeric" });
+  const parts = fmt.formatToParts(now);
+  const month = parseInt(parts.find((p) => p.type === "month")?.value ?? "1", 10);
+  const day = parseInt(parts.find((p) => p.type === "day")?.value ?? "1", 10);
+  return { month: isNaN(month) ? 1 : month, day: isNaN(day) ? 1 : day };
+}
+
+/** Persist a new yahrzeit (max 20 entries). */
+export async function addYahrzeit(
+  name: string,
+  hebrewMonth: number,
+  hebrewDay: number,
+): Promise<YahrzeitEntry> {
+  const existing = await getYahrzeits();
+  const id = `yz-${hebrewMonth}-${hebrewDay}-${name.trim().toLowerCase().replace(/\s+/g, "-")}`;
+  const entry: YahrzeitEntry = {
+    id,
+    name: name.trim(),
+    hebrewMonth,
+    hebrewDay,
+    addedAt: new Date().toISOString(),
+  };
+  const updated = [entry, ...existing.filter((e) => e.id !== id)].slice(0, YZ_MAX);
+  await idbSet<YahrzeitEntry[]>(IDB_HC_DB, IDB_YZ_STORE, "__list__", updated);
+  return entry;
+}
+
+/** Remove a yahrzeit by id. */
+export async function removeYahrzeit(id: string): Promise<void> {
+  const existing = await getYahrzeits();
+  const updated = existing.filter((e) => e.id !== id);
+  await idbSet<YahrzeitEntry[]>(IDB_HC_DB, IDB_YZ_STORE, "__list__", updated);
+  await idbDelete(IDB_HC_DB, IDB_YZ_STORE, id);
+}
+
+/** Return all stored yahrzeits. */
+export async function getYahrzeits(): Promise<YahrzeitEntry[]> {
+  const raw = await idbGet<YahrzeitEntry[]>(IDB_HC_DB, IDB_YZ_STORE, "__list__");
+  return Array.isArray(raw) ? raw : [];
+}
+
+/**
+ * Return yahrzeits whose Hebrew date falls within `days` days from today
+ * (using a simple month+day window — month rollover is not handled).
+ */
+export async function getUpcomingYahrzeits(
+  days = 7,
+  now: Date = new Date(),
+): Promise<YahrzeitEntry[]> {
+  const all = await getYahrzeits();
+  const today = todayHebrewMD(now);
+  return all.filter((yz) => {
+    const monthDiff = yz.hebrewMonth - today.month;
+    const dayDiff =
+      monthDiff === 0 ? yz.hebrewDay - today.day : monthDiff === 1 ? 30 - today.day + yz.hebrewDay : -1;
+    return dayDiff >= 0 && dayDiff < days;
+  });
 }
 
 // ── Sprint 140: configSchema ────────────────────────────────────────────────
