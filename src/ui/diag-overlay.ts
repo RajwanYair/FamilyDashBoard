@@ -18,6 +18,7 @@ import {
   cacheInventory,
   lastHitLayer,
 } from "../core/cache";
+import { downloadSnapshot } from "../core/snapshot";
 import { getConsecutiveFailures, isNetworkOffline, getNetworkQualityTier } from "../core/fetch";
 import {
   getErrors,
@@ -373,6 +374,15 @@ export function initDiagOverlay(): void {
   }
 
   diagLog("[diag] Overlay initialized");
+
+  // Sprint 201 / X8: Snapshot export button
+  const snapBtn = document.getElementById("diag-snapshot-btn");
+  if (snapBtn) {
+    snapBtn.addEventListener("click", () => {
+      downloadSnapshot();
+      diagLog("[diag] Snapshot exported");
+    });
+  }
 
   // Stamp build time into the overlay header (if the element exists)
   const buildEl = document.getElementById("diag-build-time");
