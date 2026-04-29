@@ -239,16 +239,8 @@ export async function renderSystemInfo(): Promise<void> {
   setText("sysinfo-cpu", cores ? `×${cores} ליבות` : "—");
 
   // F2 (v7.3): Storage quota estimate (StorageManager API)
-  if (navigator.storage?.estimate) {
-    try {
-      const est = await navigator.storage.estimate();
-      const usedMb = ((est.usage ?? 0) / 1_048_576).toFixed(1);
-      const quotaMb = ((est.quota ?? 0) / 1_048_576).toFixed(0);
-      setText("sysinfo-storage", `${usedMb} / ${quotaMb} MB`);
-    } catch {
-      setText("sysinfo-storage", "—");
-    }
-  }
+  const storageLabel = await getStorageQuota();
+  setText("sysinfo-storage", storageLabel);
 
   // F9 (v7.3): Network RTT tile — prefer Connection API, fallback to navigation timing
   const rttTile =
@@ -385,6 +377,23 @@ export function categorizeDevice(): "tv" | "desktop" | "tablet" | "mobile" {
   if (width >= 1024) return "desktop";
   if (width >= 600) return "tablet";
   return "mobile";
+}
+
+/**
+ * Sprint 205 / SI1: Return a formatted storage usage string using the
+ * StorageManager API (`navigator.storage.estimate()`).
+ * Returns "used / quota MB" (e.g. "12.3 / 512 MB") or "—" when unavailable.
+ */
+export async function getStorageQuota(): Promise<string> {
+  if (!navigator.storage?.estimate) return "—";
+  try {
+    const est = await navigator.storage.estimate();
+    const usedMb = ((est.usage ?? 0) / 1_048_576).toFixed(1);
+    const quotaMb = ((est.quota ?? 0) / 1_048_576).toFixed(0);
+    return `${usedMb} / ${quotaMb} MB`;
+  } catch {
+    return "—";
+  }
 }
 
 /**

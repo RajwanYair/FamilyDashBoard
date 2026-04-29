@@ -21,6 +21,7 @@ import {
   gpuShortName,
   encodeConnType,
   getSwState,
+  getStorageQuota,
 } from "@/cards/system-info/system-info";
 
 // ── DOM setup ──────────────────────────────────────────────────────────────
@@ -973,5 +974,49 @@ describe("System-info — getSwState (Sprint 179)", () => {
     });
     const result = await getSwState();
     expect(result).toBe("none");
+  });
+});
+
+// ── Sprint 205 / SI1: getStorageQuota ──────────────────────────────
+describe("System-info — getStorageQuota (Sprint 205)", () => {
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it("returns formatted string when estimate succeeds", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      storage: {
+        estimate: vi.fn().mockResolvedValue({ usage: 12_582_912, quota: 536_870_912 }),
+      },
+    });
+    const result = await getStorageQuota();
+    expect(result).toBe("12.0 / 512 MB");
+  });
+
+  it("returns dash when navigator.storage.estimate is absent", async () => {
+    vi.stubGlobal("navigator", { ...navigator, storage: undefined });
+    const result = await getStorageQuota();
+    expect(result).toBe("—");
+  });
+
+  it("returns dash when estimate rejects", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      storage: {
+        estimate: vi.fn().mockRejectedValue(new Error("denied")),
+      },
+    });
+    const result = await getStorageQuota();
+    expect(result).toBe("—");
+  });
+
+  it("handles zero usage and quota gracefully", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      storage: {
+        estimate: vi.fn().mockResolvedValue({ usage: 0, quota: 0 }),
+      },
+    });
+    const result = await getStorageQuota();
+    expect(result).toBe("0.0 / 0 MB");
   });
 });
