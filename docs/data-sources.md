@@ -1,6 +1,6 @@
 # Data Sources
 
-> Last updated: v12.5.0
+> Last updated: v13.17.0 (Sprint 155 — KV TTL annual audit 2026-04-29)
 
 This document describes every external data source used by FamilyDashBoard, its
 caching strategy, worker route, and known failure modes.
@@ -227,3 +227,36 @@ All worker routes share a per-IP rate limit (configured in
 `worker/src/middleware/rate-limit.ts`). Clients receive
 `X-RateLimit-Limit` and `X-RateLimit-Remaining` headers on every response.
 Exceeding the limit returns HTTP 429.
+
+---
+
+## KV TTL Annual Audit — 2026-04-29 (Sprint 155 / v13.17.0)
+
+All 22 routes in `worker/openapi.yaml` reviewed. Verdict: **no changes required**.
+
+| Route | `x-kv-ttl` | Stale TTL | Verdict |
+| --- | --- | --- | --- |
+| `GET /health` | 0 (no-cache) | — | ✅ Live-only; correct |
+| `GET /api/weather` | 1 800 s (30 min) | — | ✅ Appropriate for hourly forecasts |
+| `GET /api/currency` | 3 600 s (1 h) | 172 800 s (2 d) | ✅ FX rates stable over hours |
+| `GET /api/stocks` | 300 s (5 min) | 86 400 s (1 d) | ✅ Market-open polling cadence |
+| `GET /api/hebcal` | 21 600 s (6 h) | — | ✅ Shabbat times change weekly |
+| `GET /api/hebcal/holidays` | 43 200 s (12 h) | — | ✅ Holiday list changes annually |
+| `GET /api/calendar` | 900 s (15 min) | — | ✅ ICS feeds updated ~hourly max |
+| `GET /api/news` | 900 s (15 min) | — | ✅ News refresh cadence |
+| `GET /api/news/aggregate` | 900 s (15 min) | — | ✅ Aggregate follows same cadence |
+| `GET /api/news/summarise` | 900 s (15 min) | — | ✅ AI summary refreshes with news |
+| `GET /api/alerts` | 60 s (1 min) | 3 600 s (1 h) | ✅ Emergency data; must be fresh |
+| `GET /api/alerts/subscribe` | 0 (SSE, no-cache) | — | ✅ Real-time stream |
+| `GET /api/sefaria/calendar` | 86 400 s (24 h) | — | ✅ Changes once per UTC day |
+| `GET /api/sefaria/text` | 86 400 s (24 h) | — | ✅ Talmud text is stable |
+| `GET /api/crypto` | 300 s (5 min) | 86 400 s (1 d) | ✅ Aligns with stocks cadence |
+| `GET /api/motivation/hebrew` | 86 400 s (24 h) | — | ✅ Daily Hebrew quote |
+| `GET /api/errors/export` | 0 (no-cache) | — | ✅ Live query |
+| `GET /api/metrics` | 0 (no-cache) | — | ✅ Live query |
+| `GET /api/canary` | 0 (no-cache) | — | ✅ Real-time routing tag |
+| `GET /api/reports/digest` | 0 (no-cache) | — | ✅ Live query |
+| `POST /api/errors` | — (write-only) | — | ✅ Not applicable |
+| `POST /api/reports` | — (write-only) | — | ✅ Not applicable |
+
+Next review: **2027-Q1** (with v14.0 release).

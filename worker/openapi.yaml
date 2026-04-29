@@ -9,6 +9,17 @@ info:
   contact:
     name: FamilyDashBoard
     url: https://github.com/RajwanYair/FamilyDashBoard
+  x-ttl-audit:
+    last-audit: "2026-04-29"
+    auditor: "Sprint 155 / v13.17.0"
+    verdict: >
+      All 22 routes reviewed — all x-kv-ttl values are appropriate for their
+      data volatility and upstream rate-limit budgets. No TTL changes required.
+      Weather (1800s) and alerts (60s) remain the highest-churn routes; crypto and
+      stocks (300s) are correctly aligned with market-open polling cadence. Static
+      content (Sefaria text, motivation) correctly at 86400s.
+    routes-audited: 22
+    next-audit: "2027-Q1 (with v14.0)"
 
 servers:
   - url: https://fdb.rajwanyair.workers.dev
