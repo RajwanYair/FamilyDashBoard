@@ -43,6 +43,7 @@ import { initCardMaximize, initCardCollapse } from "./ui/maximize";
 import { initCardAutoScroll } from "./ui/card-auto-scroll";
 import { initStatusBar, stampRefresh } from "./ui/status-bar";
 import { initTicker, applyTickerSpeed } from "./ui/ticker";
+import { initTodayPane } from "./ui/today-pane";
 import {
   initConfigPanel,
   toggleConfigPanel,
@@ -251,6 +252,7 @@ export function init(): void {
   initCardDragDrop();
   initResizers();
   initStatusBar();
+  initTodayPane(); // Sprint 190 / X1
   initConfigPanel();
   initDiagOverlay();
   initScrollShadows();
