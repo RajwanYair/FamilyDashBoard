@@ -295,13 +295,13 @@ When a new tooling version is released:
 All active `MyScripts/` workspaces that consume these shared configs.
 This table is the source of truth for Sprint 73+ V14-HARMONISE alignment work.
 
-| Project                    | Package name       | Stack                                     | ESLint factory    | Vitest preset   | Status         |
-| -------------------------- | ------------------ | ----------------------------------------- | ----------------- | --------------- | -------------- |
-| **FamilyDashBoard**        | `family-dashboard` | Vite 8 · TS 6 · Browser PWA · Hebrew RTL  | `web-ts-app.mjs`  | `happy-dom.mjs` | ✅ v13.6       |
-| **BudgetManager**          | `budget-manager`   | Vite · TS · Browser PWA · Hebrew RTL      | `web-ts-app.mjs`  | `happy-dom.mjs` | ⏳ needs audit |
-| **CrossTideWeb**           | `crosstide-web`    | Vite · TS · Stock monitoring dashboard    | `web-ts-app.mjs`  | `happy-dom.mjs` | ⏳ needs audit |
-| **Wedding**                | `wedding-manager`  | Vite · TS · RSVP/seating app · Hebrew RTL | `web-ts-app.mjs`  | `happy-dom.mjs` | ⏳ needs audit |
-| **FamilyDashBoard/worker** | (inlined)          | Cloudflare Worker · Hono · Valibot        | `node-ts-app.mjs` | `node.mjs`      | ✅ v13.6       |
+| Project                    | Package name       | Stack                                     | ESLint factory    | Vitest preset   | Status                                   |
+| -------------------------- | ------------------ | ----------------------------------------- | ----------------- | --------------- | ---------------------------------------- |
+| **FamilyDashBoard**        | `family-dashboard` | Vite 8 · TS 6 · Browser PWA · Hebrew RTL  | `web-ts-app.mjs`  | `happy-dom.mjs` | ✅ v13.17                                |
+| **BudgetManager**          | `budget-manager`   | Vite · TS · Browser PWA · Hebrew RTL      | `web-ts-app.mjs`  | `base.mjs`      | ⚠️ eslint+tsconfig ✅ — vitest uses `base.mjs` not `happy-dom.mjs` |
+| **CrossTideWeb**           | `crosstide-web`    | Vite · TS · Stock monitoring dashboard    | ❌ custom         | ❌ custom       | ❌ custom eslint+vitest — needs migration |
+| **Wedding**                | `wedding-manager`  | Vite · TS · RSVP/seating app · Hebrew RTL | ⚠️ `base.mjs`    | ❌ not present  | ⚠️ partial — using older base.mjs; no vitest config |
+| **FamilyDashBoard/worker** | (inlined)          | Cloudflare Worker · Hono · Valibot        | `node-ts-app.mjs` | `node.mjs`      | ✅ v13.17                                |
 
 ### Adding a New Project
 
@@ -341,9 +341,12 @@ per-project overrides to ESLint rules or TypeScript strictness settings.
 | Sprint | Task                                                                              |
 | ------ | --------------------------------------------------------------------------------- |
 | 73     | Document cross-project registry + status column ← **done**                        |
-| 74+    | Audit BudgetManager eslint config vs `web-ts-app.mjs`                             |
-| 74+    | Audit CrossTideWeb tsconfig vs `base-typescript.json`                             |
-| 74+    | Audit Wedding tsconfig + eslint vs shared presets                                 |
+| 168    | Sprint 168: audit all three sibling repos; update registry with actual status ← **done** |
+| 74+    | Migrate BudgetManager vitest to `happy-dom.mjs` preset                            |
+| 74+    | Migrate CrossTideWeb eslint to `web-ts-app.mjs` factory                           |
+| 74+    | Migrate CrossTideWeb vitest to `happy-dom.mjs` preset                             |
+| 74+    | Migrate Wedding eslint to `web-ts-app.mjs` factory                                |
+| 74+    | Add `vitest.config.ts` to Wedding using `happy-dom.mjs` preset                    |
 | V14    | Bump all four repos to `tooling@v14`, single `npm install` pass                   |
 | V14    | Enforce `tooling-version` field in each project's `package.json`                  |
 | V14    | CI gate: fail if `tooling-version` in any project doesn't match `tooling/VERSION` |
@@ -351,3 +354,52 @@ per-project overrides to ESLint rules or TypeScript strictness settings.
 **Blocking constraint:** sibling repos are not submodules — they exist as peer directories under
 `MyScripts/` on the developer machine only. V14 audit must be done locally; CI enforces only
 `FamilyDashBoard/` and its `worker/` inlined sub-project.
+
+---
+
+### Sibling Repo Audit Findings (Sprint 168)
+
+Audited 2026-05. Three sibling repos under `MyScripts/` assessed against shared preset baseline.
+
+#### BudgetManager — ⚠️ Partially Aligned
+
+| Config | Status | Notes |
+| ------ | ------ | ----- |
+| ESLint | ✅ | `createWebTsAppEslintConfig` from `../tooling/eslint/web-ts-app.mjs` |
+| tsconfig | ✅ | Extends `../tooling/tsconfig/base-typescript.json` |
+| Vitest | ⚠️ | Uses `sharedVitestTestConfig` from `../tooling/vitest/base.mjs` — should switch to `sharedHappyDomTestConfig` from `happy-dom.mjs` (sets `environment: "happy-dom"` automatically) |
+
+**Migration step:** In `vitest.config.ts` replace import of `base.mjs` → `happy-dom.mjs`
+and drop the manual `environment: "node"` override if tests are browser-targeted.
+
+---
+
+#### CrossTideWeb — ❌ Not Aligned
+
+| Config | Status | Notes |
+| ------ | ------ | ----- |
+| ESLint | ❌ | Custom flat config using `@eslint/js` + `typescript-eslint` directly — no `createWebTsAppEslintConfig` |
+| tsconfig | ⚠️ | Uses its own base settings, not extending shared `base-typescript.json` |
+| Vitest | ❌ | Custom config — no shared preset spread |
+
+**Migration steps:**
+
+1. Replace `eslint.config.mjs` with `createWebTsAppEslintConfig({ tsconfigRootDir, ... })`.
+2. Add `"extends": "../tooling/tsconfig/base-typescript.json"` to `tsconfig.json`.
+3. Spread `sharedHappyDomTestConfig` (or `sharedNodeTestConfig`) in `vitest.config.ts`.
+
+---
+
+#### Wedding — ⚠️ Partially Aligned
+
+| Config | Status | Notes |
+| ------ | ------ | ----- |
+| ESLint | ⚠️ | Tries to import `../tooling/eslint/base.mjs` (older file) with try/catch fallback — should migrate to `web-ts-app.mjs` factory |
+| tsconfig | Unknown | Not audited yet |
+| Vitest | ❌ | No `vitest.config.ts` present |
+
+**Migration steps:**
+
+1. Replace `eslint.config.mjs` with `createWebTsAppEslintConfig({ tsconfigRootDir, ... })` — no try/catch needed.
+2. Create `vitest.config.ts` spreading `sharedHappyDomTestConfig`.
+3. Update tsconfig to extend `../tooling/tsconfig/base-typescript.json`.

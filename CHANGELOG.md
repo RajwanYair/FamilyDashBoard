@@ -29,6 +29,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ### Version anchors
 
+Thirteen files bumped to v13.17.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `.github/assets/banner.svg`, `.github/assets/architecture.svg`, `.github/assets/preview.svg`, `.github/assets/data-sources.svg`, `.github/assets/roadmap.svg`, plus this CHANGELOG.
+
+---
+
+## [13.16.0] — 2026-04-28
+
 > **Sprints 140–149 — roadmap progression batch** · **5121 tests / 162 suites / 0 failures** (commit `bbd87c7`) · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
 
 ### Added

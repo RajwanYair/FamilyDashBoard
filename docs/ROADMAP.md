@@ -332,7 +332,7 @@ Concrete work items. **P** = priority (P0 next-release blocker, P1 same-cycle, P
 | 12  | Refactor | Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io)                            | P1  | L   | Hi  | v14.0   | First run unlocks ADR-031.                                           |
 | 13  | Enhance  | OpenTelemetry from Worker (opt-in, self-host collector)                                             | P2  | L   | Mid | v14.2   |                                                                      |
 | 14  | Enhance  | SLSA L3 hermetic build + Sigstore/cosign provenance                                                 | P0  | L   | Hi  | v14.2   | ADR-035. Third-party rebuilder must produce byte-identical artefact. |
-| 15  | Refactor | Promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding                                | P1  | M   | Hi  | v14.1   | Cross-project release gate.                                          |
+| 15  | Refactor | Promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding                                | P1  | M   | Hi  | v14.1   | Sprint 168: sibling repo audit complete — BudgetManager (partial: eslint ✅ vitest ⚠️), CrossTideWeb (❌ custom configs), Wedding (⚠️ partial eslint, no vitest). Migration steps documented in `tooling/README.md`. |
 | 16  | ~~Refactor~~ | ~~Add ECB direct as 3rd currency fallback~~ | P2  | S   | Lo  | ~~v14.x~~ **Done** | ✅ Sprint 132: Frankfurter (`api.frankfurter.dev`) = ECB daily reference rates, wired as 3rd upstream. Sprint 162: added ECB's own `eurofxref-daily.xml` as 4th independent fallback (EUR-base cross-rate → ILS). 4 providers + KV stale. |
 | 17  | ~~Enhance~~ | ~~Calendar fuzz-case set 204 → 250+~~ | P2  | S   | Lo  | ~~v14.0~~ **Done** | ✅ Sprint 128: 258 tests confirmed (>250). RFC-5545 edge cases complete. |
 | 18  | Enhance  | Visual-regression baselines 54 → 80+ (DO-SSE + video-news + maximise-FLIP + 21-day cal + 4×2 wx)    | P1  | M   | Mid | v14.0   | Sprint 154: 18 → 30 test scenarios. Sprint 164: 30 → 45 scenarios (+collapsed-card +bookmarks-overlay +font-enlarged +dimmer-overlay +compact-maximized). 45×3-OS = 135 baseline files. Target: 80+. |
@@ -419,6 +419,7 @@ Target: **v14.1** (Q2 2027).
 
 - [x] Composite `tooling/ci/check.yml`.
 - [x] Cross-project tooling registry.
+- [x] Sprint 168: audit BudgetManager / CrossTideWeb / Wedding — findings + per-repo migration steps in `tooling/README.md`.
 - [ ] BudgetManager / CrossTideWeb / Wedding on `tooling/eslint/web-ts-app.mjs` + `tooling/tsconfig/base-typescript.json`.
 - [ ] Shared `tooling/vitest/happy-dom.mjs` preset across all three.
 - [ ] Cross-project release gate (each repo's `release.yml` extends shared composite).
