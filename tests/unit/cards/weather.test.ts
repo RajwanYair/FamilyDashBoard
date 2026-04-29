@@ -2516,3 +2516,63 @@ describe("Weather — renderNowcastStrip (Sprint 194 / W3)", () => {
     expect(document.getElementById("wx-nowcast")!.innerHTML).toBe("");
   });
 });
+
+// ── W5 / Sprint 195: SVG wind compass ────────────────────────────────────────
+
+import { compassGustArc, renderWindCompass } from "@/cards/weather/weather";
+
+describe("Weather — compassGustArc (Sprint 195 / W5)", () => {
+  it("returns a valid SVG arc path string", () => {
+    const path = compassGustArc(0, 60);
+    expect(path).toMatch(/^M /);
+    expect(path).toContain("A 16 16");
+  });
+
+  it("caps sweep at 359.9 to prevent full-circle artifact", () => {
+    const path = compassGustArc(0, 400);
+    expect(path).toContain("A 16 16");
+    // large-arc flag = 1 when sweep > 180
+    expect(path).toContain(" 1 1 ");
+  });
+
+  it("uses custom radius when provided", () => {
+    const path = compassGustArc(90, 90, 10);
+    expect(path).toContain("A 10 10");
+  });
+});
+
+describe("Weather — renderWindCompass (Sprint 195 / W5)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <svg id="wx-compass">
+        <line id="wx-compass-needle"/>
+        <path id="wx-compass-gust" visibility="hidden"/>
+      </svg>`;
+    cacheDom();
+  });
+
+  it("sets rotate transform on needle", () => {
+    renderWindCompass(270, 20, 10);
+    const needle = document.getElementById("wx-compass-needle")!;
+    expect(needle.getAttribute("transform")).toBe("rotate(270)");
+  });
+
+  it("shows gust arc when gust > speed + 5", () => {
+    renderWindCompass(90, 15, 25);
+    const gust = document.getElementById("wx-compass-gust")!;
+    expect(gust.getAttribute("visibility")).toBe("visible");
+    expect(gust.getAttribute("d")).toBeTruthy();
+  });
+
+  it("hides gust arc when gust ≤ speed + 5", () => {
+    renderWindCompass(90, 20, 20);
+    const gust = document.getElementById("wx-compass-gust")!;
+    expect(gust.getAttribute("visibility")).toBe("hidden");
+  });
+
+  it("does nothing when needle element is absent", () => {
+    document.body.innerHTML = "";
+    cacheDom();
+    expect(() => renderWindCompass(180, 10, 30)).not.toThrow();
+  });
+});

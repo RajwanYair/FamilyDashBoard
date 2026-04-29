@@ -186,6 +186,13 @@ body.slideshow-fade::after {
 .nc-med     { background: #ffb30066; color: var(--text); }
 .nc-high    { background: #e53935; color: #fff; }
 
+/* Sprint 195 / W5: SVG wind compass */
+.wx-compass  { display: inline-block; vertical-align: middle; margin-inline-start: 4px; }
+.wc-ring     { fill: none; stroke: var(--border, #444); stroke-width: 1.5; }
+.wc-center   { fill: var(--accent, #4fc3f7); }
+.wc-needle   { stroke: var(--accent, #4fc3f7); stroke-width: 2.5; stroke-linecap: round; }
+.wc-gust     { fill: none; stroke: #ff7043; stroke-width: 2; stroke-linecap: round; opacity: 0.8; }
+
 /* Motivation buttons — see src/cards/motivation/motivation.css */
 
 /* F139: Custom countdown chip */
