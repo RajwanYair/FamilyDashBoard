@@ -20,8 +20,8 @@ import {
   LS_HOME_NAME,
   LS_WX_CHART_MODE,
 } from "../../core/constants";
-import type { WeatherResponse, AirQualityResponse } from "../../types/api";
-import { isWeatherResponse, isAirQualityResponse } from "../../types/api";
+import type { WeatherResponse, AirQualityResponse, NowcastResponse } from "../../types/api";
+import { isWeatherResponse, isAirQualityResponse, isNowcastResponse } from "../../types/api";
 import { diagLog } from "../../core/diag";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { setSync } from "../../core/sync";
@@ -154,6 +154,7 @@ const el = {
   wxHourlyStrip: null as HTMLElement | null,
   wxCloud: null as HTMLElement | null,
   wxAqi: null as HTMLElement | null,
+  wxNowcast: null as HTMLElement | null,
   wxWindTile: null as HTMLElement | null,
   wxRiseTile: null as HTMLElement | null,
   wxTempSpark: null as SVGElement | null,
@@ -186,6 +187,7 @@ export function cacheDom(): void {
   el.wxHourlyStrip = document.getElementById("wx-hourly-strip");
   el.wxCloud = document.getElementById("wx-cloud");
   el.wxAqi = document.getElementById("wx-aqi");
+  el.wxNowcast = document.getElementById("wx-nowcast");
   el.wxWindTile = (el.wxWind?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxTempSpark = document.getElementById("wx-temp-spark") as SVGElement | null;
@@ -238,6 +240,50 @@ export function renderAqiTile(aqi: number): void {
 }
 
 // ── end W4 ──────────────────────────────────────────────────────────────────────────
+
+// ── Sprint 194 / W3: Hyperlocal nowcast (next 60 min) ────────────────────────────────
+
+/** Fetch next-60-min precipitation probability using Open-Meteo minutely_15. */
+export async function fetchNowcast(
+  lat: number,
+  lon: number,
+): Promise<NowcastResponse | null> {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&minutely_15=precipitation_probability&forecast_minutely_15=4&timezone=auto`;
+    const data = await fetchJSONWithWorker<NowcastResponse>(url);
+    if (!isNowcastResponse(data)) return null;
+    return data;
+  } catch {
+    diagLog("FDB-W3: [weather] Nowcast fetch failed");
+    return null;
+  }
+}
+
+/**
+ * Render the next-60-min precip probability as a compact bar strip.
+ * Each of the 4 × 15-min slots becomes one segment coloured by intensity.
+ */
+export function renderNowcastStrip(data: NowcastResponse): void {
+  const target = el.wxNowcast ?? document.getElementById("wx-nowcast");
+  if (!target) return;
+  const probs = data.minutely_15.precipitation_probability.slice(0, 4);
+  if (probs.length === 0) return;
+
+  const segments = probs
+    .map((p, i) => {
+      const label = `${i * 15}–${(i + 1) * 15} דק׳`;
+      const cls = p >= 70 ? "nc-high" : p >= 40 ? "nc-med" : "nc-low";
+      return `<div class="nc-seg ${cls}" title="${label}: ${p}%" aria-label="${label}: ${p}%"><span class="nc-pct">${p}%</span></div>`;
+    })
+    .join("");
+
+  target.innerHTML = trustedHTML(
+    `<span class="nc-label">גשם 60 דק׳:</span><div class="nc-bar">${segments}</div>`,
+  );
+  target.removeAttribute("hidden");
+}
+
+// ── end W3 ──────────────────────────────────────────────────────────────────────────
 
 /**
  * Map WMO weather code to a sky condition label and CSS class.
@@ -642,6 +688,12 @@ export function initWeatherCard(): void {
   void (async () => {
     const aq = await fetchAirQuality(_activeLat, _activeLon);
     if (aq !== null) renderAqiTile(aq.current.european_aqi);
+  })();
+
+  // Sprint 194 / W3: Async nowcast fetch (parallel, non-blocking)
+  void (async () => {
+    const nc = await fetchNowcast(_activeLat, _activeLon);
+    if (nc !== null) renderNowcastStrip(nc);
   })();
 
   // Wire chart toggle button — persist view mode to localStorage

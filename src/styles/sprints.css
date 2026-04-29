@@ -176,6 +176,16 @@ body.slideshow-fade::after {
 .aqi-pill.aqi-vpoor   { background: #880e4f; }
 .aqi-pill.aqi-extreme { background: #7b1fa2; }
 
+/* Sprint 194 / W3: Nowcast 60-min precipitation bar */
+.wx-nowcast { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 0.78em; }
+.nc-label   { color: var(--text-muted, #888); white-space: nowrap; }
+.nc-bar     { display: flex; flex: 1; gap: 3px; }
+.nc-seg     { flex: 1; border-radius: 4px; padding: 3px 0; text-align: center; font-weight: 700; }
+.nc-pct     { font-size: 0.9em; }
+.nc-low     { background: #4caf5033; color: var(--text); }
+.nc-med     { background: #ffb30066; color: var(--text); }
+.nc-high    { background: #e53935; color: #fff; }
+
 /* Motivation buttons — see src/cards/motivation/motivation.css */
 
 /* F139: Custom countdown chip */
