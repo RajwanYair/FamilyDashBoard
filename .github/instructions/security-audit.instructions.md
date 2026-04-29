@@ -45,7 +45,7 @@ Run on every patch release (`vX.Y.Z` with `Z > 0`):
 - [x] `Select-String -Pattern 'fetch\(`' -Path src -Recurse` — all template literals use constants or `encodeURIComponent`. ✓ 2026-04-29 (Sprint 160, 49df655)
 - [x] `npm audit --audit-level=high` — exits 0 (parent dir; 0 vulnerabilities). ✓ 2026-04-29 (Sprint 160, 49df655)
 - [x] `node scripts/check-smart-contrast.mjs` — exits 0 (0 violations / 37 CSS files). ✓ 2026-04-29 (Sprint 160, 49df655)
-- [x] CSP `connect-src` allowlist reviewed: `https://*.intel.com` wildcard present, tracked under Roadmap #25 for narrowing. ✓ 2026-04-29
+- [x] CSP `connect-src` allowlist reviewed: `https://*.intel.com` wildcard present, tracked under Roadmap #25 for narrowing. Sprint 163 (Q2 2026): no new subdomains observed (1/2 stable quarters). \u2713 2026-04-29
 - [x] Sprint 132: `https://api.frankfurter.dev` upstream added; both `connect-src` and SW caches mirrored. ✓
 - [x] Sprint 133: ADR-041 ratifies `https://*.intel.com` wildcard narrowing path. ✓
 - [x] Sprint 158: `--ignore-scripts` on all CI installs (SLSA L3 hermetic build). ✓ 2026-04-29

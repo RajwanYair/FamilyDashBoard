@@ -84,3 +84,12 @@ When the dashboard is no longer being developed primarily on the corporate netwo
   `.github/instructions/security-audit.instructions.md`.
 - Phase 2 trigger: `gh issue` opened with title `CSP wildcard narrowing — Phase 2`
   citing this ADR and the two-quarter telemetry window.
+
+## Quarterly review log
+
+| Quarter | Date       | Sprint | Reviewer | New subdomains observed | Stable? | Phase-2 gate progress |
+| ------- | ---------- | ------ | -------- | ----------------------- | ------- | --------------------- |
+| 2026-Q2 | 2026-04-29 | 163    | self     | None                    | ✅ Yes  | **1 of 2** stable quarters |
+
+> **Phase 2 readiness**: 1 of 2 required stable quarters completed. Re-review in 2026-Q3. If Q3 is
+> also stable, open the narrowing PR replacing `https://*.intel.com` with the 3 explicit hosts above.
