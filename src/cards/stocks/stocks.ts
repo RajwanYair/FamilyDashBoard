@@ -27,6 +27,7 @@ import { loadConfig } from "../../core/config";
 import { t } from "../../core/i18n";
 import { showToast } from "../../ui/toast";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
+import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 import { getLastCurrencyRates } from "../currency/currency";
@@ -1132,3 +1133,68 @@ export const stocksCard: CardDefinition = {
   destroy: destroyStocksCard,
   configSchema: stocksConfigSchema,
 };
+
+// ── Sprint 213 / S4: Watchlist groups (IDB-backed) ────────────────────────
+
+const IDB_STK_DB = "fdb-stocks";
+const IDB_GROUPS_STORE = "watchlist-groups";
+
+/** Maximum number of watchlist groups allowed. */
+export const WATCHLIST_GROUPS_MAX = 4;
+
+/** A persisted watchlist group (up to 4). */
+export interface WatchlistGroup {
+  /** Unique stable ID (UUID or short hash). */
+  id: string;
+  /** User-visible display name (max 30 chars). */
+  name: string;
+  /** List of stock symbols belonging to this group. */
+  symbols: string[];
+  /** ISO timestamp when the group was created. */
+  createdAt: string;
+}
+
+/** Return all stored watchlist groups (empty array when none exist). */
+export async function getWatchlistGroups(): Promise<WatchlistGroup[]> {
+  const raw = await idbGet<WatchlistGroup[]>(IDB_STK_DB, IDB_GROUPS_STORE, "__list__");
+  return raw ?? [];
+}
+
+/**
+ * Persist a watchlist group (insert or update by `id`).
+ * Enforces the 4-group cap: throws when adding a new group would exceed it.
+ */
+export async function saveWatchlistGroup(group: WatchlistGroup): Promise<void> {
+  const existing = await getWatchlistGroups();
+  const idx = existing.findIndex((g) => g.id === group.id);
+  let updated: WatchlistGroup[];
+  if (idx >= 0) {
+    // Update in-place
+    updated = existing.map((g, i) => (i === idx ? group : g));
+  } else {
+    if (existing.length >= WATCHLIST_GROUPS_MAX) {
+      throw new Error(`Maximum ${WATCHLIST_GROUPS_MAX} watchlist groups allowed`);
+    }
+    updated = [...existing, group];
+  }
+  await idbSet<WatchlistGroup[]>(IDB_STK_DB, IDB_GROUPS_STORE, "__list__", updated);
+  await idbSet<WatchlistGroup>(IDB_STK_DB, IDB_GROUPS_STORE, group.id, group);
+}
+
+/** Remove a watchlist group by id. No-op when the id is not found. */
+export async function removeWatchlistGroup(id: string): Promise<void> {
+  const existing = await getWatchlistGroups();
+  const updated = existing.filter((g) => g.id !== id);
+  await idbSet<WatchlistGroup[]>(IDB_STK_DB, IDB_GROUPS_STORE, "__list__", updated);
+  await idbDelete(IDB_STK_DB, IDB_GROUPS_STORE, id);
+}
+
+/**
+ * Return the first group that contains the given symbol, or null.
+ * Comparison is case-insensitive.
+ */
+export async function getGroupForSymbol(symbol: string): Promise<WatchlistGroup | null> {
+  const groups = await getWatchlistGroups();
+  const upper = symbol.toUpperCase();
+  return groups.find((g) => g.symbols.some((s) => s.toUpperCase() === upper)) ?? null;
+}

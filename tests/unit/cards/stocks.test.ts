@@ -32,6 +32,11 @@ import {
   isPreMarket,
   isPostMarket,
   getMarketStateForDisplay,
+  getWatchlistGroups,
+  saveWatchlistGroup,
+  removeWatchlistGroup,
+  getGroupForSymbol,
+  WATCHLIST_GROUPS_MAX,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear, cSetAsync } from "@/core/cache";
@@ -63,10 +68,18 @@ vi.mock("@/core/idle", () => ({
   isPageVisible: vi.fn().mockReturnValue(true),
 }));
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
+vi.mock("@/core/idb-store", () => ({
+  idbGet: vi.fn().mockResolvedValue(null),
+  idbSet: vi.fn().mockResolvedValue(undefined),
+  idbDelete: vi.fn().mockResolvedValue(undefined),
+  _idbClearFallback: vi.fn(),
+}));
 import { showToast } from "@/ui/toast";
 import { fetchJSONWithWorker, acquireLock } from "@/core/fetch";
 import { setSync, recordSuccess, recordFailure } from "@/core/sync";
 import { isPageVisible } from "@/core/idle";
+import { idbGet, idbSet, idbDelete } from "@/core/idb-store";
+import type { WatchlistGroup } from "@/cards/stocks/stocks";
 
 describe("Stocks — fmtPrice", () => {
   it.each([
@@ -2553,5 +2566,100 @@ describe("Stocks — S5 pre/post-market helpers (Sprint 208)", () => {
   it("getMarketStateForDisplay status matches getMarketStatus", () => {
     const s = getMarketStateForDisplay();
     expect(["pre", "open", "after", "closed"]).toContain(s.status);
+  });
+});
+
+// ── Sprint 213 / S4: Watchlist groups IDB ─────────────────────────────────
+
+describe("Stocks — Watchlist groups IDB (Sprint 213 / S4)", () => {
+  beforeEach(() => {
+    vi.mocked(idbGet).mockResolvedValue(null);
+    vi.mocked(idbSet).mockResolvedValue(undefined);
+    vi.mocked(idbDelete).mockResolvedValue(undefined);
+  });
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("WATCHLIST_GROUPS_MAX constant equals 4", () => {
+    expect(WATCHLIST_GROUPS_MAX).toBe(4);
+  });
+
+  it("getWatchlistGroups returns [] when IDB is empty", async () => {
+    vi.mocked(idbGet).mockResolvedValue(null);
+    expect(await getWatchlistGroups()).toEqual([]);
+  });
+
+  it("getWatchlistGroups returns stored array", async () => {
+    const groups: WatchlistGroup[] = [
+      { id: "g1", name: "Tech", symbols: ["AAPL", "MSFT"], createdAt: "2026-01-01T00:00:00Z" },
+    ];
+    vi.mocked(idbGet).mockResolvedValue(groups);
+    expect(await getWatchlistGroups()).toEqual(groups);
+  });
+
+  it("saveWatchlistGroup inserts new group", async () => {
+    vi.mocked(idbGet).mockResolvedValue(null);
+    const g: WatchlistGroup = { id: "g1", name: "Tech", symbols: ["AAPL"], createdAt: "2026-01-01T00:00:00Z" };
+    await saveWatchlistGroup(g);
+    expect(idbSet).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "__list__", [g]);
+  });
+
+  it("saveWatchlistGroup replaces existing group by id", async () => {
+    const original: WatchlistGroup = { id: "g1", name: "Tech", symbols: ["AAPL"], createdAt: "2026-01-01T00:00:00Z" };
+    vi.mocked(idbGet).mockResolvedValue([original]);
+    const updated: WatchlistGroup = { id: "g1", name: "Tech+", symbols: ["AAPL", "MSFT"], createdAt: "2026-01-01T00:00:00Z" };
+    await saveWatchlistGroup(updated);
+    expect(idbSet).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "__list__", [updated]);
+  });
+
+  it("saveWatchlistGroup throws when max 4 groups reached on new insert", async () => {
+    const groups: WatchlistGroup[] = [
+      { id: "g1", name: "A", symbols: [], createdAt: "2026-01-01T00:00:00Z" },
+      { id: "g2", name: "B", symbols: [], createdAt: "2026-01-01T00:00:00Z" },
+      { id: "g3", name: "C", symbols: [], createdAt: "2026-01-01T00:00:00Z" },
+      { id: "g4", name: "D", symbols: [], createdAt: "2026-01-01T00:00:00Z" },
+    ];
+    vi.mocked(idbGet).mockResolvedValue(groups);
+    await expect(
+      saveWatchlistGroup({ id: "g5", name: "E", symbols: [], createdAt: "2026-01-01T00:00:00Z" }),
+    ).rejects.toThrow("4");
+  });
+
+  it("removeWatchlistGroup removes group from list and calls idbDelete", async () => {
+    const g1: WatchlistGroup = { id: "g1", name: "Tech", symbols: ["AAPL"], createdAt: "2026-01-01T00:00:00Z" };
+    const g2: WatchlistGroup = { id: "g2", name: "Finance", symbols: ["JPM"], createdAt: "2026-01-01T00:00:00Z" };
+    vi.mocked(idbGet).mockResolvedValue([g1, g2]);
+    await removeWatchlistGroup("g1");
+    expect(idbSet).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "__list__", [g2]);
+    expect(idbDelete).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "g1");
+  });
+
+  it("removeWatchlistGroup is no-op when id not found", async () => {
+    vi.mocked(idbGet).mockResolvedValue([]);
+    await removeWatchlistGroup("notexist");
+    expect(idbSet).toHaveBeenCalledWith("fdb-stocks", "watchlist-groups", "__list__", []);
+  });
+
+  it("getGroupForSymbol returns matching group", async () => {
+    const groups: WatchlistGroup[] = [
+      { id: "g1", name: "Tech", symbols: ["AAPL", "MSFT"], createdAt: "2026-01-01T00:00:00Z" },
+    ];
+    vi.mocked(idbGet).mockResolvedValue(groups);
+    const result = await getGroupForSymbol("AAPL");
+    expect(result).toEqual(groups[0]);
+  });
+
+  it("getGroupForSymbol is case-insensitive", async () => {
+    const groups: WatchlistGroup[] = [
+      { id: "g1", name: "Tech", symbols: ["AAPL"], createdAt: "2026-01-01T00:00:00Z" },
+    ];
+    vi.mocked(idbGet).mockResolvedValue(groups);
+    expect(await getGroupForSymbol("aapl")).toEqual(groups[0]);
+  });
+
+  it("getGroupForSymbol returns null when symbol not in any group", async () => {
+    vi.mocked(idbGet).mockResolvedValue([]);
+    expect(await getGroupForSymbol("TSLA")).toBeNull();
   });
 });
