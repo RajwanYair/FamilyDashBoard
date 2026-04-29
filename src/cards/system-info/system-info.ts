@@ -256,6 +256,13 @@ export async function renderSystemInfo(): Promise<void> {
     if (navEntry) {
       const rttMs = Math.round(navEntry.responseEnd - navEntry.fetchStart);
       setText("sysinfo-rtt", rttMs > 0 ? `${rttMs}ms` : "—");
+      // Sprint 212 / SI3: accumulate in ring buffer + render sparkline
+      appendRttHistory(rttMs);
+      const rttHistory = getRttHistory();
+      const rttSparkEl = document.getElementById("sysinfo-rtt-spark");
+      if (rttSparkEl !== null && rttHistory.length >= 2) {
+        rttSparkEl.innerHTML = trustedHTML(sparklineSvg(Array.from(rttHistory), "var(--accent-2, var(--accent))", 44, 12));
+      }
     } else {
       setText("sysinfo-rtt", "—");
     }
@@ -394,6 +401,31 @@ export async function getStorageQuota(): Promise<string> {
   } catch {
     return "—";
   }
+}
+
+// Sprint 212 / SI3: In-memory RTT ring buffer (10-minute window) ──────────
+
+const RTT_RING_SIZE = 10;
+const _rttRing: number[] = [];
+
+/**
+ * Append an RTT measurement (ms) to the in-memory ring buffer.
+ * Non-positive values are ignored. Buffer is capped at RTT_RING_SIZE entries.
+ */
+export function appendRttHistory(rttMs: number): void {
+  if (rttMs <= 0 || !isFinite(rttMs)) return;
+  _rttRing.push(rttMs);
+  if (_rttRing.length > RTT_RING_SIZE) _rttRing.shift();
+}
+
+/** Return a copy of the current RTT ring buffer (oldest → newest). */
+export function getRttHistory(): readonly number[] {
+  return _rttRing.slice();
+}
+
+/** Reset the ring buffer — exposed for test isolation only. */
+export function _resetRttHistory(): void {
+  _rttRing.length = 0;
 }
 
 /**

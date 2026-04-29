@@ -22,6 +22,9 @@ import {
   encodeConnType,
   getSwState,
   getStorageQuota,
+  appendRttHistory,
+  getRttHistory,
+  _resetRttHistory,
 } from "@/cards/system-info/system-info";
 
 // ── DOM setup ──────────────────────────────────────────────────────────────
@@ -1018,5 +1021,41 @@ describe("System-info — getStorageQuota (Sprint 205)", () => {
     });
     const result = await getStorageQuota();
     expect(result).toBe("0.0 / 0 MB");
+  });
+});
+
+// ── Sprint 212 / SI3: RTT ring buffer ──────────────────────────────────
+describe("System-info — RTT ring buffer (Sprint 212)", () => {
+  beforeEach(() => { _resetRttHistory(); });
+
+  it("getRttHistory returns empty initially", () => {
+    expect(getRttHistory()).toEqual([]);
+  });
+
+  it("appendRttHistory adds values", () => {
+    appendRttHistory(100);
+    appendRttHistory(200);
+    expect(getRttHistory()).toEqual([100, 200]);
+  });
+
+  it("ignores non-positive values", () => {
+    appendRttHistory(0);
+    appendRttHistory(-5);
+    appendRttHistory(NaN);
+    expect(getRttHistory()).toHaveLength(0);
+  });
+
+  it("caps ring at 10 entries", () => {
+    for (let i = 1; i <= 15; i++) appendRttHistory(i * 10);
+    const hist = getRttHistory();
+    expect(hist).toHaveLength(10);
+    expect(hist[0]).toBe(60); // oldest retained: 6th entry
+  });
+
+  it("getRttHistory returns a copy (not a reference)", () => {
+    appendRttHistory(50);
+    const h1 = getRttHistory();
+    appendRttHistory(80);
+    expect(h1).toHaveLength(1); // copy not affected
   });
 });
