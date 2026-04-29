@@ -30,16 +30,16 @@ Adopt a four-step ratchet plan for the LHCI `performance` category assertion in
 
 | Step | Threshold       | Trigger to advance                                                     | Target sprint |
 | ---- | --------------- | ---------------------------------------------------------------------- | ------------- |
-| 0    | `warn 0.70`     | (current)                                                              | active        |
-| 1    | `warn 0.80`     | 30 consecutive PRs ≥ 0.85 measured                                     | v13.16        |
-| 2    | `error 0.85`    | HTTP Early Hints (Roadmap #7) live in production                       | v14.0         |
+| 0    | `warn 0.70`     | (original baseline)                                                    | ~~active~~ Done Sprint 124 |
+| 1    | `warn 0.80`     | 30 consecutive PRs ≥ 0.85 measured                                     | ~~v13.16~~ Done Sprint 147 |
+| 2    | `error 0.85`    | HTTP Early Hints (Roadmap #7) live in production                       | **v13.18 — Sprint 161 (triggered)** |
 | 3    | `error 0.92`    | SLSA L3 hermetic build (ADR-035) live; runner instance type pinned    | v14.1         |
 | 4    | `error 0.97`    | 60 consecutive PRs ≥ 0.97 measured; 14-day RUM Web Vitals ≥ 0.95 LCP   | v14.2         |
 
 Each ratchet step is gated on a PR that updates this ADR's "Current step" line
 below and the LHCI config. No two ratchets ship in the same release.
 
-**Current step**: 0 (`warn 0.70`).
+**Current step**: 2 (`error 0.85`) — HTTP Early Hints shipped Sprint 122 (v13.14.0); trigger met; ratcheted Sprint 161 (v13.18.0).
 
 ### Rollback
 
