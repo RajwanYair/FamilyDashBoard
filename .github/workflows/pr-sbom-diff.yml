@@ -18,6 +18,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: pr-sbom-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sbom-diff:
     name: SBOM Diff

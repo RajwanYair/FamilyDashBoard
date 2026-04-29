@@ -71,8 +71,9 @@ Update ALL of these on every version bump. Search the old version string (e.g. `
 | 13  | `.github/assets/roadmap.svg`                     | Test count progression line                                                      |
 | 14  | `docs/ROADMAP.md`                                | Refresh-date header `Shipped baseline: vX.Y.Z`                                   |
 | 15  | `.github/skills/release/SKILL.md`                | `All N+ tests / M+ suites` verification line                                     |
+| 16  | `docs/security.md`                               | Title `Security Model — FamilyDashBoard vX.Y.Z` (line 1)                         |
 
-- [ ] All 15 files above have been updated with the new version and/or test count
+- [ ] All 16 files above have been updated with the new version and/or test count
 - [ ] **Run `node scripts/check-version-consistency.mjs`** — must exit 0 (CI also enforces this)
 - [ ] `CHANGELOG.md` — unreleased items moved to new version section; old sprints collapsed to one line each
 - [ ] `docs/ARCHITECTURE.md` — reflects current card list (12 cards), module graph, CSS layer order

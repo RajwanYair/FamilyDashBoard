@@ -1,6 +1,6 @@
 # Data Sources
 
-> Last updated: v13.17.0 (Sprint 155 — KV TTL annual audit 2026-04-29)
+> Last updated: v13.19.0 (Sprint 155 KV TTL annual audit performed against v13.17.0 baseline; no source changes since)
 
 This document describes every external data source used by FamilyDashBoard, its
 caching strategy, worker route, and known failure modes.

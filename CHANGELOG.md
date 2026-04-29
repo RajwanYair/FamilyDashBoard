@@ -7,17 +7,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased]
 
-> **Sprint 171 — `.github/` modernization & version-drift guard**
+> **Sprint 171** — `.github/` modernization & version-drift guard
+> **Sprint 172** — Workflow hygiene & dependency-management consolidation
 
 ### Added
 
-- **`scripts/check-version-consistency.mjs`** — CI guard that fails when any tracked doc/instruction file disagrees with `package.json` version. Wired into `npm run check` and `.github/workflows/ci.yml`. Prevents the recurring problem of `.github/AGENTS.md` and similar files drifting multiple versions behind a release.
-- **`.github/workflows/copilot-setup-steps.yml`** — GitHub Copilot Coding Agent ephemeral environment bootstrap. Mirrors the parent-`MyScripts/` toolchain install so the Coding Agent can actually run `npx tsc`, `npx vitest`, `npx eslint` when working on issues/PRs.
-- **`.github/AGENTS.md`** added to the pre-release file list (was missing — root cause of its drift to v13.15.0).
+- **Sprint 171** · `scripts/check-version-consistency.mjs` — CI guard that fails when any tracked doc/instruction file disagrees with `package.json` version. Wired into `npm run check` and `.github/workflows/ci.yml`. Now covers 7 files: `sw.js`, `README.md`, `.github/copilot-instructions.md`, `.github/AGENTS.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/security.md`.
+- **Sprint 171** · `.github/workflows/copilot-setup-steps.yml` — GitHub Copilot Coding Agent ephemeral environment bootstrap. Mirrors the parent-`MyScripts/` toolchain install so the Coding Agent can run `npx tsc`, `npx vitest`, `npx eslint` when working on issues/PRs.
+- **Sprint 171** · `.github/AGENTS.md` added to the pre-release file list (was missing — root cause of its drift to v13.15.0).
+- **Sprint 172** · `concurrency:` blocks on `pr-coverage.yml`, `pr-sbom-diff.yml`, `link-check.yml` — prevents duplicate sticky comments from racing PR re-pushes and duplicate scheduled link-check runs.
+- **Sprint 172** · `engines.npm: ">=10.0.0"` to `package.json`.
+
+### Changed
+
+- **Sprint 172** · `.github/workflows/copilot-setup-steps.yml` actions now SHA-pinned (matches the rest of the workflow suite).
+- **Sprint 172** · Dependency-update ownership clarified — Renovate owns root npm (richer grouping: TypeScript+@types, Vite+Vitest, ESLint family); Dependabot owns GitHub Actions + Cloudflare Worker npm (`/worker`). Removed Dependabot's overlapping root-npm entry. Updated `renovate.json` description (was stale "v12").
 
 ### Fixed
 
-- **Version drift across `.github/`** — `.github/AGENTS.md` (was v13.15.0, 4 versions stale), `.github/copilot-instructions.md` (was v13.18.0), `.github/instructions/workspace.instructions.md` (was v13.18.0), `docs/ARCHITECTURE.md` title (was v13.17.0), `sw.js` header comment (was v13.18.0), `README.md` Version badge (was v13.18.0) — all now synced to v13.19.0 and locked by the new CI guard.
+- **Sprint 171** · Version drift across `.github/` — `.github/AGENTS.md` (was v13.15.0, 4 versions stale), `.github/copilot-instructions.md` (was v13.18.0), `.github/instructions/workspace.instructions.md` (was v13.18.0), `docs/ARCHITECTURE.md` title (was v13.17.0), `sw.js` header comment (was v13.18.0), `README.md` Version badge (was v13.18.0) — all now synced to v13.19.0 and locked by the new CI guard.
+- **Sprint 172** · `docs/security.md` title (was v13.1.0, **18 versions stale**); `docs/data-sources.md` "Last updated" header (was v13.17.0).
 
 ---
 

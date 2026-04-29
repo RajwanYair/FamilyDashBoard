@@ -1,7 +1,7 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:recommended", ":semanticCommits", ":separatePatchReleases"],
-    "description": "FamilyDashBoard v12 — Renovate dependency update configuration",
+    "description": "FamilyDashBoard — Renovate dependency update configuration. Owns npm dependency PRs; Dependabot owns GitHub Actions.",
     "assignees": ["RajwanYair"],
     "labels": ["dependencies"],
     "reviewers": ["RajwanYair"],

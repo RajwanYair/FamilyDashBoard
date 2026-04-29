@@ -61,6 +61,11 @@ const targets = [
     regex: /Architecture\s*\(v(\d+\.\d+\.\d+)\)/,
     label: "docs/ARCHITECTURE.md title",
   },
+  {
+    file: "docs/security.md",
+    regex: /Security Model\s+—\s+FamilyDashBoard\s+v(\d+\.\d+\.\d+)/,
+    label: "docs/security.md title",
+  },
 ];
 
 let failed = 0;
