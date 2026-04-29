@@ -23,6 +23,7 @@ import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/syn
 import { isPageVisible } from "../../core/idle";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { trustedHTML } from "../../core/trusted-types";
+import { loadConfig } from "../../core/config";
 import type { CurrencyResponse, YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
@@ -220,6 +221,36 @@ export function cacheDom(): void {
     body: document.getElementById("currency-body"),
     lastFetch: document.getElementById("cur-last-fetch"),
   };
+}
+
+// ── Sprint 189 / C2: Multi-pair watch — apply visibility from config ─────────
+
+/**
+ * Shows or hides `.cur-item` rows based on `currencyHiddenPairs` config.
+ * Reads comma-separated pair keys (e.g. "XAG,BTC") and adds/removes
+ * the `is-hidden` class on the parent `.cur-item` element.
+ */
+export function applyPairVisibility(): void {
+  const cfg = loadConfig();
+  const hiddenSet = new Set(
+    (cfg.currencyHiddenPairs ?? "")
+      .split(",")
+      .map((k) => k.trim().toUpperCase())
+      .filter(Boolean),
+  );
+  for (const tile of CUR_TILES) {
+    const elMap = TILE_EL_MAP[tile.key];
+    if (!elMap) continue;
+    const rateEl = curEls[elMap.rate];
+    if (!rateEl) continue;
+    const item = rateEl.closest(".cur-item") as HTMLElement | null;
+    if (!item) continue;
+    if (hiddenSet.has(tile.key)) {
+      item.classList.add("is-hidden");
+    } else {
+      item.classList.remove("is-hidden");
+    }
+  }
 }
 
 // ── Fetch gold & silver from Yahoo Finance (GC=F, SI=F) and inject into rates ──
@@ -433,6 +464,9 @@ export function renderCurrency(rates: Record<string, number>): void {
   // IDB history + sparklines (async — non-blocking)
   void renderCurrencySparklines(rates);
 
+  // Sprint 189 / C2: apply hidden-pair visibility after each render
+  applyPairVisibility();
+
   diagLog(`FDB-032: [currency] Rendered ${Object.keys(rates).length} rates`);
 }
 
@@ -499,6 +533,7 @@ function scheduleCurrencyRefresh(): void {
 
 export function initCurrencyCard(): void {
   cacheDom();
+  applyPairVisibility(); // Sprint 189 / C2: hide unconfigured pairs on init
   void loadCurrency();
   scheduleCurrencyRefresh();
   initCalcWidget(); // Sprint 184 / C1
@@ -537,6 +572,16 @@ export const currencyConfigSchema: CardConfigField[] = [
     step: 1,
     group: "תצוגה",
     groupOpenByDefault: true,
+  },
+  // Sprint 189 / C2: Multi-pair watch — hide individual pairs
+  {
+    key: "currencyHiddenPairs",
+    labelHe: "הסתר זוגות (מופרד בפסיקים, לדוגמה: XAG,BTC)",
+    labelEn: "Hidden pairs (comma-separated, e.g. XAG,BTC)",
+    type: "text",
+    defaultValue: "",
+    placeholder: "XAG,BTC",
+    group: "תצוגה",
   },
 ];
 
