@@ -285,6 +285,28 @@ export function groupEventsByDay(
   return buckets;
 }
 
+/**
+ * Sprint 209 / CAL6: Detect timed-event conflicts (overlapping start/end).
+ * Returns the set of CalendarEvent objects that overlap with at least one
+ * other timed event on the same day. All-day events are excluded.
+ * Pure function — safe to unit-test without DOM.
+ */
+export function findConflicts(events: readonly CalendarEvent[]): Set<CalendarEvent> {
+  const conflictSet = new Set<CalendarEvent>();
+  const timed = events
+    .filter((e) => !e.allDay && e.end > e.start)
+    .slice()
+    .sort((a, b) => a.start.getTime() - b.start.getTime());
+  for (let i = 0; i < timed.length; i++) {
+    for (let j = i + 1; j < timed.length; j++) {
+      if (timed[j]!.start >= timed[i]!.end) break;
+      conflictSet.add(timed[i]!);
+      conflictSet.add(timed[j]!);
+    }
+  }
+  return conflictSet;
+}
+
 /** Build a single day tile element. */
 function renderDayTile(
   date: Date,
@@ -374,15 +396,7 @@ export function renderCalendar(events: CalendarEvent[]): number {
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
   // Detect overlapping timed events (for conflict indicator)
-  const conflictSet = new Set<CalendarEvent>();
-  const timed = upcoming.filter((e) => !e.allDay && e.end > e.start);
-  for (let i = 0; i < timed.length; i++) {
-    for (let j = i + 1; j < timed.length; j++) {
-      if (timed[j]!.start >= timed[i]!.end) break;
-      conflictSet.add(timed[i]!);
-      conflictSet.add(timed[j]!);
-    }
-  }
+  const conflictSet = findConflicts(upcoming);
 
   const buckets = groupEventsByDay(upcoming, weekStart);
   const todayKey = now.toDateString();

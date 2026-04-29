@@ -15,6 +15,7 @@ import {
   calDaysUntilLabel,
   groupEventsByDay,
   getHolidaysByDate,
+  findConflicts,
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
@@ -3088,5 +3089,49 @@ describe("Calendar — configurable horizon (Sprint 188 CAL4)", () => {
     const evs = [makeEventAtWeekOffset(0), makeEventAtWeekOffset(59), makeEventAtWeekOffset(61)];
     const count = renderCalendar(evs);
     expect(count).toBe(2);
+  });
+});
+
+// ── Sprint 209 / CAL6: findConflicts ──────────────────────────────────
+describe("Calendar — findConflicts (Sprint 209)", () => {
+  function makeEv(startH: number, endH: number, allDay = false): import("@/types/api").CalendarEvent {
+    const base = new Date("2024-01-08T00:00:00");
+    return {
+      summary: `${startH}-${endH}`,
+      start: new Date(base.getTime() + startH * 3_600_000),
+      end: new Date(base.getTime() + endH * 3_600_000),
+      allDay,
+    };
+  }
+
+  it("returns empty set for no events", () => {
+    expect(findConflicts([])).toEqual(new Set());
+  });
+
+  it("returns empty set for non-overlapping events", () => {
+    const evs = [makeEv(9, 10), makeEv(10, 11), makeEv(12, 13)];
+    expect(findConflicts(evs).size).toBe(0);
+  });
+
+  it("detects two overlapping events", () => {
+    const a = makeEv(9, 11);
+    const b = makeEv(10, 12);
+    const set = findConflicts([a, b]);
+    expect(set.has(a)).toBe(true);
+    expect(set.has(b)).toBe(true);
+  });
+
+  it("excludes all-day events from conflict detection", () => {
+    const allDay = makeEv(0, 24, true);
+    const timed = makeEv(9, 10);
+    expect(findConflicts([allDay, timed]).size).toBe(0);
+  });
+
+  it("detects three-way conflict", () => {
+    const a = makeEv(9, 13);
+    const b = makeEv(10, 12);
+    const c = makeEv(11, 14);
+    const set = findConflicts([a, b, c]);
+    expect(set.size).toBe(3);
   });
 });
