@@ -136,7 +136,7 @@
     margin: 0;
     padding: 0;
     border: none;
-    background: color-mix(in srgb, var(--negative) 92%, black 8%);
+    background: color-mix(in sRGB, var(--negative) 92%, black 8%);
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -152,8 +152,8 @@
   }
 
   @keyframes takeover-pulse {
-    from { background: color-mix(in srgb, var(--negative) 92%, black 8%); }
-    to   { background: color-mix(in srgb, var(--negative) 75%, black 25%); }
+    from { background: color-mix(in sRGB, var(--negative) 92%, black 8%); }
+    to   { background: color-mix(in sRGB, var(--negative) 75%, black 25%); }
   }
 
   @media (prefers-reduced-motion: reduce) {
