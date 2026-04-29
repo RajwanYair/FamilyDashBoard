@@ -9,6 +9,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.21.0] — 2026-04-29
+
+> **5348 tests / 165 suites / 0 failures** (commit `2fd90b6`)
+
+### Added
+
+- **Sprint 188 / CAL3** · Calendar card: privacy mode — `calendarPrivacy: boolean` config replaces all event summaries with עסוק when enabled. 4 new tests.
+- **Sprint 188 / CAL4** · Calendar card: configurable horizon days (`calendarDaysAhead`) clamped 7–60. 5 new tests.
+- **Sprint 189 / C2** · Currency card: `applyPairVisibility()` — `currencyHiddenPairs` comma-separated list hides unwanted rate tiles via `.is-hidden`. 6 new tests.
+- **Sprint 190 / X1** · `src/ui/today-pane.ts` — cross-card urgency aggregator: collects alerts (1h), next calendar event (≤6h), countdown (≤24h), overdue tasks, stock movers (≥3%); renders `.today-pill` spans with `normal / warning / critical` urgency tiers, 60s auto-refresh. 25 new tests.
+- **Sprint 191 / CD4** · Countdown card: CSS-only confetti animation on T-0 — `setConfetti(active)` toggles `cd-confetti` class on `.countdown-body`; `@keyframes` with box-shadow particles, gated behind `prefers-reduced-motion: no-preference`. 6 new tests.
+
+---
+
 ## [13.20.0] — 2026-05-01
 
 > **5256 tests / 164 suites / 0 failures** (commit `9ef28b2`)
