@@ -620,7 +620,7 @@ registerCard({
   titleEn: "Daily AI Synthesis",
   defaultSlot: { col: 2, order: 99, flexGrow: 10, hidden: true },
   load: async (): Promise<CardDefinition> => {
-    const { initAiSynthesisCard, destroyAiSynthesisCard, aiSynthesisConfigSchema } =
+    const { initAiSynthesisCard, aiSynthesisConfigSchema } =
       await import("@/cards/ai-synthesis/ai-synthesis");
     return legacyAdapter(
       "ai-synthesis",
@@ -632,6 +632,6 @@ registerCard({
       10,
       initAiSynthesisCard,
       aiSynthesisConfigSchema,
-    ) as CardDefinition & { destroy: typeof destroyAiSynthesisCard };
+    );
   },
 });

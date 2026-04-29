@@ -243,7 +243,7 @@ export function applyPairVisibility(): void {
     if (!elMap) continue;
     const rateEl = curEls[elMap.rate];
     if (!rateEl) continue;
-    const item = rateEl.closest(".cur-item") as HTMLElement | null;
+    const item = rateEl.closest(".cur-item");
     if (!item) continue;
     if (hiddenSet.has(tile.key)) {
       item.classList.add("is-hidden");

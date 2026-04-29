@@ -194,7 +194,7 @@ function readStockMovers(): string[] {
 /** Read next calendar event from the countdown DOM element. */
 function readNextCalEvent(): { label: string; minutesUntil: number } | null {
   const el = document.getElementById("cal-countdown");
-  if (!el || !el.textContent) return null;
+  if (!el?.textContent) return null;
   const text = el.textContent.trim();
   if (!text) return null;
   // Try to extract minutes from data attribute if available

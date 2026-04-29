@@ -9,6 +9,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.22.0] — 2026-06-01
+
+> **5405 tests / 167 suites / 0 failures** (commit `592b928`)
+
+### Added
+
+- **Sprint 197 / M3** · Motivation card: IDB-backed favorites — `toggleFavorite()`, `isFavorite()`, `loadFavorites()` with ≤50 cap. Heart button `#moti-fav-btn` wired. 6 new tests. (`src/core/idb-store.ts` new thin wrapper with Map fallback)
+- **Sprint 198 / C4** · Currency card: rolling 30-day sparkline history (was 7 days). 1 test updated.
+- **Sprint 199 / S2** · Stocks card: `convertUsdToIls()` cross-card integration via `getLastCurrencyRates()` from currency card; `stocksShowIls` config toggle shows ILS sub-price per stock. 3 new tests.
+- **Sprint 200 / X7** · Config panel: live search box `#cfg-search-box` above tabs — filters `.cfg-row` items across all sections in real time. CSS added.
+- **Sprint 201 / X8** · Diagnostics overlay: `#diag-snapshot-btn` exports a JSON snapshot (`buildSnapshot()` in `src/core/snapshot.ts`) with version, config, localStorage summary, and diag log. 5 new tests.
+- **Sprint 202 / X9** · Daily AI synthesis card — new `src/cards/ai-synthesis/` card with `/api/ai/synthesis` worker endpoint (faith-safe Hebrew prompt, cached 4 h in KV). Opt-in via `synthesisEnabled` config. 5 new tests.
+
+### Fixed
+
+- `currency.ts` line 246: removed unnecessary `as HTMLElement | null` cast (`closest()` already returns `Element | null`).
+- `today-pane.ts` line 197: replaced `!el || !el.textContent` with optional-chain `!el?.textContent`.
+
+---
+
 ## [13.21.0] — 2026-04-29
 
 > **5348 tests / 165 suites / 0 failures** (commit `2fd90b6`)
