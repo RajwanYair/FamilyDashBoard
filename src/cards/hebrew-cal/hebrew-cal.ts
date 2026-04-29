@@ -73,6 +73,32 @@ export function getParashat(items: HebcalItem[]): string | null {
 }
 
 /**
+ * Sprint 178 / H4: Extract the Haftarah reference from Hebcal items.
+ * Hebcal returns items with `category === "haftara"` in the Shabbat feed.
+ * Returns null when absent (weekdays, Yom Tov without distinct Haftarah).
+ */
+export function getHaftarah(items: HebcalItem[]): string | null {
+  const h = items.find((i) => i.category === "haftara");
+  return h?.hebrew ?? h?.title ?? null;
+}
+
+/**
+ * Sprint 178 / H5: Find a Rosh Chodesh item from Hebcal items that occurs
+ * today or within the next 2 days (covers both days of a two-day Rosh Chodesh).
+ * Returns the Hebrew name, or null when not Rosh Chodesh period.
+ */
+export function getRoshChodesh(items: HebcalItem[], now: Date = new Date()): string | null {
+  const todayMs = new Date(now).setHours(0, 0, 0, 0);
+  const cutoffMs = todayMs + 2 * 86_400_000; // +2 days
+  const rc = items.find((i) => {
+    if (i.category !== "roshchodesh") return false;
+    const d = new Date(i.date).setHours(0, 0, 0, 0);
+    return d >= todayMs && d <= cutoffMs;
+  });
+  return rc?.hebrew ?? rc?.title ?? null;
+}
+
+/**
  * V13-DATA: Returns true when the given date falls on 29 Elul in the Hebrew calendar.
  * 29 Elul is the last day of the Hebrew year — the trigger for pre-warming next-year
  * holiday data from the Hebcal API so it is available immediately on Rosh Hashana.
@@ -180,6 +206,11 @@ interface HebCalEls {
   halacaRow: HTMLElement | null;
   school: HTMLElement | null;
   schoolRow: HTMLElement | null;
+  // Sprint 178: H4 Haftarah + H5 Rosh Chodesh
+  haftara: HTMLElement | null;
+  haftaraRow: HTMLElement | null;
+  roshChodesh: HTMLElement | null;
+  roshChodeshRow: HTMLElement | null;
 }
 
 let els: HebCalEls = {
@@ -208,6 +239,10 @@ let els: HebCalEls = {
   halacaRow: null,
   school: null,
   schoolRow: null,
+  haftara: null,
+  haftaraRow: null,
+  roshChodesh: null,
+  roshChodeshRow: null,
   zmanimSection: null,
   zmanimGrid: null,
   eventEl: null,
@@ -249,6 +284,10 @@ function cacheDom(): void {
     halacaRow: document.getElementById("hc-halacha-row"),
     school: document.getElementById("hc-school"),
     schoolRow: document.getElementById("hc-school-row"),
+    haftara: document.getElementById("hc-haftara"),
+    haftaraRow: document.getElementById("hc-haftara-row"),
+    roshChodesh: document.getElementById("hc-rosh-chodesh"),
+    roshChodeshRow: document.getElementById("hc-rosh-chodesh-row"),
   };
 }
 
@@ -401,6 +440,15 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
 
   // School vacation: show if any major holiday started in the last 7 days
   renderSchool(items, now);
+
+  // Sprint 178 / H5: Rosh Chodesh tile
+  const rcName = getRoshChodesh(items, now);
+  if (rcName && els.roshChodesh && els.roshChodeshRow) {
+    els.roshChodesh.textContent = rcName;
+    els.roshChodeshRow.style.display = "";
+  } else if (els.roshChodeshRow) {
+    els.roshChodeshRow.style.display = "none";
+  }
 }
 
 function renderSchool(items: HebcalItem[], now: Date): void {
@@ -527,6 +575,14 @@ function renderParasha(items: HebcalItem[]): void {
         "noopener,noreferrer",
       );
     els.parashaLinkRow.style.display = "";
+  }
+  // Sprint 178 / H4: Render Haftarah row when present
+  const haftarahName = getHaftarah(items);
+  if (haftarahName && els.haftara && els.haftaraRow) {
+    els.haftara.textContent = haftarahName;
+    els.haftaraRow.style.display = "";
+  } else if (els.haftaraRow) {
+    els.haftaraRow.style.display = "none";
   }
 }
 

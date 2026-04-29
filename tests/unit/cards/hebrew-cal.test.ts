@@ -24,6 +24,8 @@ import {
   is29Elul,
   nextHebrewYearGregorianApprox,
   prewarmNextYearHolidays,
+  getHaftarah,
+  getRoshChodesh,
 } from "@/cards/hebrew-cal/hebrew-cal";
 import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
@@ -2362,5 +2364,70 @@ describe("Hebrew Calendar — Sprint 94 renderMoonPhase without moon-row", () =>
     document.body.innerHTML = '<div id="hc-moon">--</div>';
     expect(() => renderMoonPhase()).not.toThrow();
     expect(document.getElementById("hc-moon")!.textContent!.length).toBeGreaterThan(2);
+  });
+});
+
+// ── Sprint 178 / H4: getHaftarah ─────────────────────────────────────────
+
+describe("Hebrew-cal — H4 getHaftarah (Sprint 178)", () => {
+  it("returns null when no haftara items present", () => {
+    const items = [
+      { title: "Shabbat", date: "2025-06-07", category: "parashat", hebrew: "בראשית" },
+    ];
+    expect(getHaftarah(items)).toBeNull();
+  });
+
+  it("returns hebrew name when haftara item is present", () => {
+    const items = [
+      { title: "Isaiah 40:27-41:16", date: "2025-06-07", category: "haftara", hebrew: "ישעיה מ׳" },
+    ];
+    expect(getHaftarah(items)).toBe("ישעיה מ׳");
+  });
+
+  it("falls back to title when hebrew is missing", () => {
+    const items = [{ title: "Isaiah 40:27", date: "2025-06-07", category: "haftara" }];
+    expect(getHaftarah(items)).toBe("Isaiah 40:27");
+  });
+
+  it("returns null for empty array", () => {
+    expect(getHaftarah([])).toBeNull();
+  });
+});
+
+// ── Sprint 178 / H5: getRoshChodesh ──────────────────────────────────────
+
+describe("Hebrew-cal — H5 getRoshChodesh (Sprint 178)", () => {
+  it("returns null when no roshchodesh items in range", () => {
+    const now = new Date("2025-06-10");
+    const items = [{ title: "Rosh Chodesh Tamuz", date: "2025-06-28", category: "roshchodesh", hebrew: "ראש חודש תמוז" }];
+    expect(getRoshChodesh(items, now)).toBeNull();
+  });
+
+  it("returns Hebrew name when roshchodesh is today", () => {
+    const now = new Date("2025-06-28");
+    const items = [{ title: "Rosh Chodesh Tamuz", date: "2025-06-28", category: "roshchodesh", hebrew: "ראש חודש תמוז" }];
+    expect(getRoshChodesh(items, now)).toBe("ראש חודש תמוז");
+  });
+
+  it("returns Hebrew name when roshchodesh is tomorrow (2-day cover)", () => {
+    const now = new Date("2025-06-27");
+    const items = [{ title: "Rosh Chodesh Tamuz", date: "2025-06-28", category: "roshchodesh", hebrew: "ראש חודש תמוז" }];
+    expect(getRoshChodesh(items, now)).toBe("ראש חודש תמוז");
+  });
+
+  it("returns null when roshchodesh is 3 days away", () => {
+    const now = new Date("2025-06-25");
+    const items = [{ title: "Rosh Chodesh Tamuz", date: "2025-06-28", category: "roshchodesh", hebrew: "ראש חודש תמוז" }];
+    expect(getRoshChodesh(items, now)).toBeNull();
+  });
+
+  it("falls back to title when hebrew missing", () => {
+    const now = new Date("2025-06-28");
+    const items = [{ title: "Rosh Chodesh Tamuz", date: "2025-06-28", category: "roshchodesh" }];
+    expect(getRoshChodesh(items, now)).toBe("Rosh Chodesh Tamuz");
+  });
+
+  it("returns null for empty items", () => {
+    expect(getRoshChodesh([], new Date())).toBeNull();
   });
 });
