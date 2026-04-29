@@ -13,13 +13,14 @@
                 "Sprint 147 (v13.16.0): perf warn ratcheted 0.80 -> 0.85.",
                 "Sprint 161 (v13.18.0): ADR-042 step 2 — promoted warn 0.85 -> error 0.85.",
                 "Sprint 217 (v13.24.0): ADR-042 step 3 — ratcheted error 0.85 -> error 0.92.",
-                "Final target (step 4): error 0.97 at v14.2.",
+                "Sprint 224 (v13.25.0): ADR-042 step 4 — ratcheted error 0.92 -> error 0.95.",
+                "Final target (step 5): error 0.97 at v14.2.",
                 "accessibility: error >= 0.90 (a11y regressions block CI).",
                 "best-practices: error >= 0.90 (security/best-practice regressions block CI)."
             ],
             "assertions": {
                 "categories:accessibility": ["error", { "minScore": 0.90 }],
-                "categories:performance": ["error", { "minScore": 0.92 }],
+                "categories:performance": ["error", { "minScore": 0.95 }],
                 "categories:best-practices": ["error", { "minScore": 0.9 }],
                 "total-blocking-time": ["warn", { "maxNumericValue": 300 }],
                 "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
