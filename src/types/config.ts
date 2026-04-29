@@ -88,6 +88,8 @@ export interface VideoNewsCardConfig extends CardConfig {
     pauseOnReducedMotion: boolean;
     /** Pause video during night-dimmer schedule. Default: true */
     pauseAtNight: boolean;
+    /** Sprint 183 / V1: Pinned channel IDs shown in normal mode (≤ 4, comma-separated). Empty = show all. */
+    pinnedChannels?: string;
   };
 }
 

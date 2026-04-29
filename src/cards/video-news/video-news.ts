@@ -13,13 +13,36 @@
 
 import "./video-news.css";
 import { diagLog } from "../../core/diag";
+import { loadConfig } from "../../core/config";
 import { getStreamDescriptor, listChannels } from "./video-news-adapter";
 import type { VideoChannelId } from "../../types/stream";
+import type { CardConfigField } from "../../types/card";
 
 // ── Internal state ─────────────────────────────────────────────────────────
 
 let _activeChannel: VideoChannelId = "c14";
 let _root: HTMLElement | null = null;
+
+// ── Sprint 183 / V1: Pinned-channel helper ─────────────────────────────────
+
+/**
+ * Return the ordered list of channel IDs to show, respecting the user's
+ * `pinnedChannels` config (≤ 4, comma-separated string). Falls back to all channels when empty.
+ * Always ensures at least one channel is shown.
+ */
+export function listPinnedChannels(): VideoChannelId[] {
+  const cfg = loadConfig();
+  const pinnedRaw = (cfg.cards?.["video-news"] as { settings?: { pinnedChannels?: string } } | undefined)
+    ?.settings?.pinnedChannels ?? "";
+  if (!pinnedRaw.trim()) return listChannels();
+  const all = listChannels();
+  const valid = pinnedRaw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((id): id is VideoChannelId => all.includes(id as VideoChannelId))
+    .slice(0, 4);
+  return valid.length > 0 ? valid : listChannels();
+}
 
 // ── DOM helpers ────────────────────────────────────────────────────────────
 
@@ -48,14 +71,14 @@ export function switchChannel(channelId: VideoChannelId): void {
   _activeChannel = channelId;
 
   // Update tile visibility
-  listChannels().forEach((id) => {
+  listPinnedChannels().forEach((id) => {
     const tile = getTile(id);
     if (!tile) return;
     tile.classList.toggle("video-news__tile--active", id === channelId);
   });
 
   // Update tab highlight
-  listChannels().forEach((id) => {
+  listPinnedChannels().forEach((id) => {
     const tab = getTab(id);
     if (!tab) return;
     tab.classList.toggle("video-news__tab--active", id === channelId);
@@ -66,9 +89,9 @@ export function switchChannel(channelId: VideoChannelId): void {
   diagLog(`[video-news] switched to channel: ${channelId}`);
 }
 
-/** Cycle to the next channel. */
+/** Cycle to the next channel (within pinned set). */
 export function cycleChannel(): void {
-  const channels = listChannels();
+  const channels = listPinnedChannels();
   const idx = channels.indexOf(_activeChannel);
   const next = channels[(idx + 1) % channels.length] ?? "c14";
   switchChannel(next);
@@ -107,7 +130,7 @@ function buildChannelTabs(onSwitch: (id: VideoChannelId) => void): HTMLElement {
   tabs.setAttribute("role", "tablist");
   tabs.setAttribute("aria-label", "ערוצי חדשות");
 
-  listChannels().forEach((id) => {
+  listPinnedChannels().forEach((id) => {
     const desc = getStreamDescriptor(id);
     const btn = document.createElement("button");
     btn.type = "button";
@@ -175,20 +198,20 @@ export function initVideoNews(root: HTMLElement, initialChannel: VideoChannelId 
   const tabs = buildChannelTabs(switchChannel);
   root.appendChild(tabs);
 
-  // Grid of all channel tiles
+  // Grid of all channel tiles (only pinned channels in normal mode)
   const grid = document.createElement("div");
   grid.className = "video-news__grid";
   grid.setAttribute("role", "region");
   grid.setAttribute("aria-label", "שידורים חיים");
 
-  listChannels().forEach((id) => {
+  listPinnedChannels().forEach((id) => {
     grid.appendChild(buildChannelTile(id));
   });
 
   root.appendChild(grid);
 
   updateMiniInfo();
-  diagLog(`[video-news] init complete — ${listChannels().length} channels loaded`);
+  diagLog(`[video-news] init complete — ${listPinnedChannels().length} channels loaded`);
 }
 
 /** Release all resources. Called on disconnectedCallback. */
@@ -202,3 +225,18 @@ export function destroyVideoNews(): void {
   _root = null;
   diagLog("[video-news] destroyed");
 }
+
+// ── Config schema ───────────────────────────────────────────────────────────
+
+/** Sprint 183 / V1 — channel pinning config field. */
+export const videoNewsConfigSchema: CardConfigField[] = [
+  {
+    key: "cards.video-news.settings.pinnedChannels",
+    labelHe: "ערוצים מוצמדים",
+    labelEn: "Pinned channels (≤ 4, comma-separated IDs)",
+    type: "text",
+    defaultValue: "",
+    placeholder: "c14,kan11",
+    tab: "display",
+  },
+];

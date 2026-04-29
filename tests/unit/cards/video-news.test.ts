@@ -146,3 +146,56 @@ describe("video-news module — channel state (headless)", () => {
     }).not.toThrow();
   });
 });
+
+// ── Sprint 183 / V1 — listPinnedChannels ─────────────────────────────────
+
+describe("video-news — listPinnedChannels (Sprint 183 V1)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns all 6 channels when no pinned config is set", async () => {
+    const { listPinnedChannels } = await import("@/cards/video-news/video-news");
+    expect(listPinnedChannels().length).toBe(6);
+  });
+
+  it("returns only pinned channels when config is set", async () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({
+      configVersion: 12,
+      cards: { "video-news": { settings: { pinnedChannels: "c14,kan11" } } },
+    }));
+    const { listPinnedChannels } = await import("@/cards/video-news/video-news");
+    const result = listPinnedChannels();
+    expect(result).toEqual(["c14", "kan11"]);
+  });
+
+  it("ignores invalid channel IDs in pinned config", async () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({
+      configVersion: 12,
+      cards: { "video-news": { settings: { pinnedChannels: "c14,invalid,kan11" } } },
+    }));
+    const { listPinnedChannels } = await import("@/cards/video-news/video-news");
+    const result = listPinnedChannels();
+    expect(result).toEqual(["c14", "kan11"]);
+  });
+
+  it("caps at 4 channels even if more are pinned", async () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({
+      configVersion: 12,
+      cards: { "video-news": { settings: { pinnedChannels: "c14,kan11,n12,keshet13,arutz7" } } },
+    }));
+    const { listPinnedChannels } = await import("@/cards/video-news/video-news");
+    const result = listPinnedChannels();
+    expect(result.length).toBe(4);
+  });
+
+  it("falls back to all channels if all pinned IDs are invalid", async () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({
+      configVersion: 12,
+      cards: { "video-news": { settings: { pinnedChannels: "invalid1,invalid2" } } },
+    }));
+    const { listPinnedChannels } = await import("@/cards/video-news/video-news");
+    const result = listPinnedChannels();
+    expect(result.length).toBe(6);
+  });
+});

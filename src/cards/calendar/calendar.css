@@ -220,14 +220,14 @@
 /* ── Sprint 181 / CAL1: Holiday overlay label ─────────────────────────── */
 @layer components {
   .cal-day-tile.has-holiday {
-    border-top: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+    border-top: 2px solid color-mix(in sRGB, var(--accent) 70%, transparent);
   }
 
   .cal-holiday-label {
     font-size: 0.68em;
     font-weight: 600;
-    color: color-mix(in srgb, var(--accent) 90%, var(--fg));
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: color-mix(in sRGB, var(--accent) 90%, var(--fg));
+    background: color-mix(in sRGB, var(--accent) 12%, transparent);
     border-radius: 4px;
     padding: 1px 6px;
     margin: 2px 4px 3px;
@@ -240,7 +240,7 @@
 /* ── Sprint 181 / CAL2: Per-source color bars ─────────────────────────── */
 @layer components {
   .cal-event.cal-src-0 {
-    border-right: 3px solid color-mix(in srgb, var(--accent) 80%, transparent);
+    border-right: 3px solid color-mix(in sRGB, var(--accent) 80%, transparent);
   }
 
   .cal-event.cal-src-1 {
