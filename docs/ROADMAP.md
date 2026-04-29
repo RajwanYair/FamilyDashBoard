@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-29 · **Shipped baseline**: v13.17.0 (Sprint 159). Active stream: v14.0 (Q1 2027) — V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE. Roadmap items #7, #8, #10 confirmed Done.
+> **Refresh date**: 2026-05-01 · **Shipped baseline**: v13.18.0 (Sprint 169). Active stream: v14.0 (Q1 2027) — V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE. Roadmap items #7, #8, #10 confirmed Done.
 >
-> **Inventory**: 5121+ tests / 162+ suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 42+ ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache.
+> **Inventory**: 5155 tests / 162 suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 45 ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache.
 >
 > **Purpose**: a deliberate, _first-principles re-litigation of every decision_ — including the ones that look clean. No grandfathering. The bar is **best-in-class** for an always-on family TV dashboard. Historical sprint and release entries live in [CHANGELOG.md](../CHANGELOG.md); this file is forward-looking only.
 

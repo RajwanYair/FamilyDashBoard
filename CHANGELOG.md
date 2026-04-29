@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.18.0] — 2026-05-01
+
+> **Sprints 160–169 — roadmap progression batch** · **5155 tests / 162 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+### Added
+
+- **VR baseline expansion 30→45** (Sprint 164, Roadmap #18) — 15 new scenarios: collapsed-card, bookmarks-overlay, font-enlarged, dimmer-overlay, compact-maximized. 45×3-OS = 135 baseline files. Target: 80+.
+- **Document PiP ADR-045** (Sprint 165, Roadmap #22) — `docs/adr/ADR-045-document-pip-video-news.md` created; `docs/video-cards.md` PiP section added. Gated on 3 user requests (currently 0/3).
+- **Temporal polyfill size gate** (Sprint 166, Roadmap #3) — `scripts/check-temporal-polyfill-size.mjs` created; gate CLOSED — `@js-temporal/polyfill` not yet installed; exits 0/1/2 (open/too-large/not-installed).
+
+### Changed
+
+- **OWASP patch-cycle smoke check** (Sprint 160, Roadmap #26) — all 10 OWASP Top 10 items re-verified for v13.17.0. Checklist in `.github/instructions/security-audit.instructions.md`.
+- **LHCI step 2 — `warn 0.85` → `error 0.85`** (Sprint 161, Roadmap #19, ADR-042) — HTTP Early Hints trigger met; promoted assertion from warn to error.
+- **ECB direct 4th currency fallback** (Sprint 162, Roadmap #16) — `eurofxref-daily.xml` added as 4th independent fallback; EUR-base cross-rate → ILS. 4 providers + KV stale.
+- **CSP wildcard Q2 2026 quarterly review** (Sprint 163, Roadmap #25) — 0 new subdomains, 1/2 stable quarters toward Phase 2. Phase 2 unlocks after Q3 2026 review.
+- **Branch coverage ratchet 85.5→85.7** (Sprint 167, Roadmap #8) — +18 tests: tasks ArrowDown/ArrowUp keyboard nav, signals `peek()` dirty, document-pip insertBefore. Actuals: 93.82/85.75/92.76/95.08.
+- **Tooling cross-project registry audit** (Sprint 168, Roadmap #15, V14-HARMONISE) — BudgetManager/CrossTideWeb/Wedding audited; per-repo migration steps documented in `tooling/README.md`. Fixed missing `## [13.16.0]` heading in CHANGELOG.
+
+### Version anchors
+
+Thirteen files bumped to v13.18.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `.github/assets/banner.svg`, `.github/assets/architecture.svg`, `.github/assets/preview.svg`, `.github/assets/data-sources.svg`, `.github/assets/roadmap.svg`, plus this CHANGELOG.
+
+---
+
 ## [13.17.0] — 2026-04-29
 
 > **Sprints 150–159 — roadmap progression batch** · **5137 tests / 162 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
