@@ -20,6 +20,7 @@ import {
   parseTaskDueDate,
   isOverdue,
   isDueToday,
+  isDueThisWeek,
   formatTaskDueDate,
   taskCompletionRatio,
   taskPriorityIcon,
@@ -1811,5 +1812,105 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation (Sprint 167)", () 
       new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true })
     );
     expect(focusSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ── Sprint 177 / T1: isDueThisWeek ────────────────────────────────────────
+
+describe("Tasks — isDueThisWeek (Sprint 177)", () => {
+  it("returns false for a past date (overdue)", () => {
+    expect(isDueThisWeek("2000-01-01")).toBe(false);
+  });
+
+  it("returns false for today (not strictly future)", () => {
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    expect(isDueThisWeek(todayStr)).toBe(false);
+  });
+
+  it("returns true for tomorrow", () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const s = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    expect(isDueThisWeek(s)).toBe(true);
+  });
+
+  it("returns true for 7 days from now", () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    const s = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    expect(isDueThisWeek(s)).toBe(true);
+  });
+
+  it("returns false for 8 days from now", () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 8);
+    const s = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    expect(isDueThisWeek(s)).toBe(false);
+  });
+
+  it("returns false for invalid date string", () => {
+    expect(isDueThisWeek("not-a-date")).toBe(false);
+  });
+});
+
+// ── Sprint 177 / T3: Tag chips rendering ─────────────────────────────────
+
+describe("Tasks — tag chips rendering (Sprint 177 T3)", () => {
+  function setupDom(): void {
+    document.body.innerHTML = `
+      <div id="tasks-list"></div>
+      <div id="tasks-pending-badge"></div>
+      <div id="tasks-all-done-msg" style="display:none"></div>
+      <div id="tasks-filter-bar"></div>
+    `;
+  }
+  function setChores(chores: ChoreItem[]): void {
+    localStorage.setItem("dash_chores", JSON.stringify(chores));
+  }
+
+  beforeEach(() => {
+    localStorage.clear();
+    setupDom();
+  });
+  afterEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = "";
+  });
+
+  it("renders tag chips when tags are present", () => {
+    setChores([{ person: "אלי", chore: "לנקות", tags: ["בית", "ניקיון"] }]);
+    renderTasksCard();
+    const chips = document.querySelectorAll(".tasks-tag");
+    expect(chips.length).toBe(2);
+    expect(chips[0]?.textContent).toBe("בית");
+    expect(chips[1]?.textContent).toBe("ניקיון");
+  });
+
+  it("renders at most 6 tag chips", () => {
+    setChores([{ person: "רון", chore: "עבודה", tags: ["א", "ב", "ג", "ד", "ה", "ו", "ז"] }]);
+    renderTasksCard();
+    const chips = document.querySelectorAll(".tasks-tag");
+    expect(chips.length).toBe(6);
+  });
+
+  it("renders no chips when tags are absent", () => {
+    setChores([{ person: "דנה", chore: "ספרים" }]);
+    renderTasksCard();
+    const chips = document.querySelectorAll(".tasks-tag");
+    expect(chips.length).toBe(0);
+  });
+
+  it("renders no chips when tags is empty array", () => {
+    setChores([{ person: "דנה", chore: "ספרים", tags: [] }]);
+    renderTasksCard();
+    const chips = document.querySelectorAll(".tasks-tag");
+    expect(chips.length).toBe(0);
+  });
+
+  it("applies tasks-tags wrapper class", () => {
+    setChores([{ person: "אלי", chore: "כביסה", tags: ["ניקיון"] }]);
+    renderTasksCard();
+    expect(document.querySelector(".tasks-tags")).not.toBeNull();
   });
 });

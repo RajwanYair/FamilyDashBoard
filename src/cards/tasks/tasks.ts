@@ -24,6 +24,8 @@ export interface ChoreItem {
   chore: string;
   /** Optional recurrence — if set, the task auto-resets after each cycle. */
   recurrence?: "daily" | "weekly" | "monthly" | "yearly";
+  /** Sprint 177 / T3: optional free-form tags for grouping/coloring (max 6 rendered). */
+  tags?: string[];
 }
 
 // LS_TASKS_DONE and LS_CHORES imported from constants
@@ -204,6 +206,20 @@ export function isDueToday(dueDateStr: string): boolean {
 }
 
 /**
+ * Sprint 177 / T1: Returns true when `dueDateStr` is within the next 7 days
+ * (not today, not overdue — strictly future within 7 days).
+ */
+export function isDueThisWeek(dueDateStr: string): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(dueDateStr + "T00:00:00");
+  if (isNaN(d.getTime())) return false;
+  const diff = d.getTime() - today.getTime();
+  // diff > 0 means strictly in future; 7 * 86400000 = 1 week
+  return diff > 0 && diff <= 7 * 86_400_000;
+}
+
+/**
  * Format a `YYYY-MM-DD` due-date string to a short Hebrew-locale string.
  */
 export function formatTaskDueDate(dueDateStr: string): string {
@@ -361,16 +377,35 @@ export function renderTasksCard(): void {
         row.appendChild(badge);
       }
 
-      // Due date chip + overdue / due-today class
+      // Due date chip + overdue / due-today / due-week class
       if (dueDate) {
         const overdue = isOverdue(dueDate);
         const dueToday = !overdue && isDueToday(dueDate);
+        const dueWeek = !overdue && !dueToday && isDueThisWeek(dueDate);
         if (overdue) row.classList.add("overdue");
         if (dueToday) row.classList.add("due-today");
+        if (dueWeek) row.classList.add("due-week");
         const chip = document.createElement("span");
-        chip.className = `tasks-due${overdue ? " tasks-due-overdue" : dueToday ? " tasks-due-today" : ""}`;
+        chip.className = `tasks-due${overdue ? " tasks-due-overdue" : dueToday ? " tasks-due-today" : dueWeek ? " tasks-due-week" : ""}`;
         chip.textContent = `📅 ${formatTaskDueDate(dueDate)}`;
         row.appendChild(chip);
+      }
+
+      // Sprint 177 / T3: Tag chips (max 6)
+      if (item.tags && item.tags.length > 0) {
+        const tagWrap = document.createElement("span");
+        tagWrap.className = "tasks-tags";
+        const maxTags = Math.min(item.tags.length, 6);
+        for (let ti = 0; ti < maxTags; ti++) {
+          const tag = item.tags[ti];
+          if (!tag) continue;
+          const chip = document.createElement("span");
+          chip.className = "tasks-tag";
+          chip.textContent = tag;
+          chip.title = tag;
+          tagWrap.appendChild(chip);
+        }
+        row.appendChild(tagWrap);
       }
 
       // V13-DATA: Recurrence badge (daily/weekly/monthly)

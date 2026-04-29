@@ -232,3 +232,35 @@
   background: color-mix(in srgb, var(--warning, #fbbf24) 8%, transparent);
   border-inline-start: 3px solid var(--warning, #fbbf24);
 }
+
+/* Sprint 177 / T1: task due within this week — subtle green hint */
+.tasks-due.tasks-due-week {
+  color: var(--positive, #34d399);
+  font-weight: 600;
+}
+
+.tasks-row.due-week {
+  background: color-mix(in srgb, var(--positive, #34d399) 6%, transparent);
+  border-inline-start: 3px solid var(--positive, #34d399);
+}
+
+/* Sprint 177 / T3: tag chips */
+.tasks-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-inline-start: auto;
+}
+
+.tasks-tag {
+  font-size: 0.6em;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  white-space: nowrap;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
