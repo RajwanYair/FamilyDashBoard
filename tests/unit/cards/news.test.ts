@@ -2084,3 +2084,55 @@ describe("News — loadNews uses createAsyncCardLoader (Stream D2.2)", () => {
     expect(newsCard.id).toBe("news");
   });
 });
+
+// ── Sprint 183 / N5 — ageFreshness ────────────────────────────────────────
+
+describe("News — ageFreshness (Sprint 183 N5)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns 'old' for empty string", async () => {
+    const { ageFreshness } = await import("@/cards/news/news");
+    expect(ageFreshness("")).toBe("old");
+  });
+
+  it("returns 'old' for invalid date", async () => {
+    const { ageFreshness } = await import("@/cards/news/news");
+    expect(ageFreshness("not-a-date")).toBe("old");
+  });
+
+  it("returns 'old' for future date", async () => {
+    const { ageFreshness } = await import("@/cards/news/news");
+    expect(ageFreshness("2024-01-10T11:00:00Z")).toBe("old");
+  });
+
+  it("returns 'fresh2m' for article < 2 minutes old", async () => {
+    const { ageFreshness } = await import("@/cards/news/news");
+    // 90 seconds old
+    expect(ageFreshness("2024-01-10T09:58:30Z")).toBe("fresh2m");
+  });
+
+  it("returns 'fresh1h' for article between 2 min and 1 hour old", async () => {
+    const { ageFreshness } = await import("@/cards/news/news");
+    // 30 minutes old
+    expect(ageFreshness("2024-01-10T09:30:00Z")).toBe("fresh1h");
+  });
+
+  it("returns 'fresh1d' for article between 1 hour and 1 day old", async () => {
+    const { ageFreshness } = await import("@/cards/news/news");
+    // 6 hours old
+    expect(ageFreshness("2024-01-10T04:00:00Z")).toBe("fresh1d");
+  });
+
+  it("returns 'old' for article >= 1 day old", async () => {
+    const { ageFreshness } = await import("@/cards/news/news");
+    // 2 days old
+    expect(ageFreshness("2024-01-08T10:00:00Z")).toBe("old");
+  });
+});

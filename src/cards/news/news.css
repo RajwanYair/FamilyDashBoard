@@ -118,6 +118,18 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
+/* Sprint 183 / N5 — freshness-bucket tinting */
+.news-age[data-freshness="fresh2m"] {
+  color: var(--positive, #4caf50);
+  font-weight: 700;
+}
+.news-age[data-freshness="fresh1h"] {
+  color: color-mix(in srgb, var(--accent) 80%, var(--positive, #4caf50) 20%);
+}
+.news-age[data-freshness="fresh1d"] {
+  color: var(--accent);
+}
+/* "old" bucket keeps default var(--text-muted) */
 .news-reading-time {
   font-size: 0.52em;
   color: var(--text-muted);

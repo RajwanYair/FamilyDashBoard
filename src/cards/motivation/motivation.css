@@ -65,7 +65,7 @@
   .src-tanakh { background: color-mix(in srgb, #5e60ce 25%, transparent); color: #5e60ce; border: 1px solid #5e60ce; }
   .src-hazal  { background: color-mix(in srgb, #2a9d8f 25%, transparent); color: #2a9d8f; border: 1px solid #2a9d8f; }
   .src-modern { background: color-mix(in srgb, #e76f51 25%, transparent); color: #e76f51; border: 1px solid #e76f51; }
-  .src-ai     { background: color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent); border: 1px solid var(--accent); }
+  .src-ai     { background: color-mix(in sRGB, var(--accent) 25%, transparent); color: var(--accent); border: 1px solid var(--accent); }
 } /* end @layer components */
 
 /* Sprint 11: Maximize — large motivation card layout */

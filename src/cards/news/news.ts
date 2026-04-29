@@ -161,6 +161,23 @@ export function relativeAge(pubDate: string): string {
   return days > 0 ? `${days}:${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
 }
 
+/**
+ * Sprint 183 / N5: Return an age-freshness bucket string for a pub-date.
+ * Used as `data-freshness` attribute on the `.news-age` element for CSS tinting.
+ * Buckets: "fresh2m" (< 2 min), "fresh1h" (< 1 h), "fresh1d" (< 1 d), "old" (≥ 1 d).
+ */
+export function ageFreshness(pubDate: string): "fresh2m" | "fresh1h" | "fresh1d" | "old" {
+  if (!pubDate) return "old";
+  const d = new Date(pubDate);
+  if (isNaN(d.getTime())) return "old";
+  const ageMs = Date.now() - d.getTime();
+  if (ageMs < 0) return "old";
+  if (ageMs < 2 * 60_000) return "fresh2m";
+  if (ageMs < 60 * 60_000) return "fresh1h";
+  if (ageMs < 24 * 60 * 60_000) return "fresh1d";
+  return "old";
+}
+
 // ── Visited articles (session-scoped) ──
 // LS_NEWS_VISITED imported from constants
 let _visited: Set<string> = new Set();
@@ -597,6 +614,7 @@ export function renderNews(items: NewsItem[]): void {
             const ageEl = document.createElement("span");
             ageEl.className = "news-age";
             ageEl.textContent = elapsed;
+            ageEl.dataset["freshness"] = ageFreshness(item.pubDate);
             timeWrap.appendChild(ageEl);
           }
           div.appendChild(timeWrap);
