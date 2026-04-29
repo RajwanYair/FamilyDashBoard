@@ -53,6 +53,8 @@ interface CdEls {
   msg: HTMLElement | null;
   progressWrap: HTMLElement | null;
   progressBar: HTMLElement | null;
+  /** Sprint 191 / CD4: body element for confetti class toggle */
+  body: HTMLElement | null;
 }
 
 let els: CdEls = {
@@ -64,6 +66,7 @@ let els: CdEls = {
   msg: null,
   progressWrap: null,
   progressBar: null,
+  body: null,
 };
 
 function cacheDom(): void {
@@ -76,6 +79,7 @@ function cacheDom(): void {
     msg: document.getElementById("cd-msg"),
     progressWrap: document.getElementById("cd-progress-wrap"),
     progressBar: document.getElementById("cd-progress-bar"),
+    body: document.querySelector(".countdown-body"),
   };
 }
 
@@ -236,6 +240,21 @@ export function getNextCalEventForCountdown(
   return first ? { title: first.title, date: first.date } : null;
 }
 
+// ── Sprint 191 / CD4: CSS Confetti ──────────────────────────────────────────
+
+const CD_CONFETTI_CLASS = "cd-confetti";
+
+/**
+ * Adds or removes the `cd-confetti` CSS class on the countdown body element.
+ * The animation is defined in countdown.css and only plays when the user has
+ * not opted in to `prefers-reduced-motion: reduce`.
+ */
+export function setConfetti(active: boolean): void {
+  const body = els.body ?? document.querySelector<HTMLElement>(".countdown-body");
+  if (!body) return;
+  body.classList.toggle(CD_CONFETTI_CLASS, active);
+}
+
 // ── Tick ─────────────────────────────────────────────────────────────────────
 
 export function tick(): void {
@@ -260,6 +279,8 @@ export function tick(): void {
     if (msgEl)
       msgEl.textContent =
         daysSince > 0 ? `${getCountdownDoneMsg()} · יום ${daysSince}` : getCountdownDoneMsg();
+    // Sprint 191 / CD4: show CSS confetti on the exact day of the event (T-0)
+    setConfetti(daysSince === 0);
     if (_cdInterval !== null) {
       clearInterval(_cdInterval);
       _cdInterval = null;
