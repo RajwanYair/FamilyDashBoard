@@ -267,6 +267,37 @@ export function formatCloudCover(cc: number): string {
   return `${cc}% מעונן אחיד`;
 }
 
+/**
+ * W1 (Sprint 175): Compute golden-hour window times from ISO sunrise/sunset strings.
+ * Morning golden hour ends ~1 h after sunrise.
+ * Evening golden hour starts ~1 h before sunset.
+ *
+ * @param sunriseIso  ISO-8601 datetime string (e.g. "2025-06-01T05:43").
+ * @param sunsetIso   ISO-8601 datetime string (e.g. "2025-06-01T19:52").
+ * @returns Object with `morningEnd` and `eveningStart` as "HH:MM" strings,
+ *          or null strings if the inputs are unparseable.
+ */
+export function computeGoldenHour(
+  sunriseIso: string,
+  sunsetIso: string,
+): { morningEnd: string; eveningStart: string } {
+  const fmt = (d: Date): string =>
+    d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", hour12: false });
+
+  const rise = new Date(sunriseIso);
+  const set = new Date(sunsetIso);
+
+  const morningEnd = isNaN(rise.getTime())
+    ? "--:--"
+    : fmt(new Date(rise.getTime() + 60 * 60_000));
+
+  const eveningStart = isNaN(set.getTime())
+    ? "--:--"
+    : fmt(new Date(set.getTime() - 60 * 60_000));
+
+  return { morningEnd, eveningStart };
+}
+
 /** localStorage key for persisting hourly chart view mode. */
 // LS_WX_CHART_MODE imported from constants
 
@@ -346,7 +377,7 @@ async function fetchWeather(): Promise<WeatherResponse> {
       diagLog(`[weather] NWS fetch failed, falling back to Open-Meteo: ${String(e)}`);
     }
   }
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m,cloud_cover&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=8`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m,cloud_cover&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=11`;
   return fetchJSONWithWorker<WeatherResponse>(url);
 }
 
@@ -448,10 +479,10 @@ export function renderWeather(d: WeatherResponse): void {
     el.wxCloud.textContent = formatCloudCover(cc);
   }
 
-  // Daily forecast
+  // Daily forecast (W2 Sprint 175: extended to 10 days)
   if (d.daily && el.wxForecast) {
     const fDays = el.wxForecast.querySelectorAll<HTMLElement>(".wx-fday");
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 10; i++) {
       const fDay = fDays[i - 1];
       const dateStr = d.daily.time[i];
       if (fDay && dateStr) {
@@ -479,11 +510,11 @@ export function renderWeather(d: WeatherResponse): void {
     }
   }
 
-  // Weekly weather summary (F148)
+  // Weekly weather summary (F148) — extended to 10-day range (W2, Sprint 175)
   if (d.daily && el.wxWeekSummary) {
-    const maxTemps = d.daily.temperature_2m_max.slice(1, 8).filter((v): v is number => v != null);
-    const minTemps = d.daily.temperature_2m_min.slice(1, 8).filter((v): v is number => v != null);
-    const codes = d.daily.weather_code.slice(1, 8).filter((v): v is number => v != null);
+    const maxTemps = d.daily.temperature_2m_max.slice(1, 11).filter((v): v is number => v != null);
+    const minTemps = d.daily.temperature_2m_min.slice(1, 11).filter((v): v is number => v != null);
+    const codes = d.daily.weather_code.slice(1, 11).filter((v): v is number => v != null);
     if (maxTemps.length && minTemps.length) {
       const weekMax = Math.round(Math.max(...maxTemps));
       const weekMin = Math.round(Math.min(...minTemps));
@@ -503,17 +534,25 @@ export function renderWeather(d: WeatherResponse): void {
     }
   }
 
-  // Sunrise/sunset + moon phase
+  // Sunrise/sunset + golden hour (W1, Sprint 175) + moon phase
   if (d.daily && el.wxRise) {
-    const ss = new Date(d.daily.sunset[0] ?? "");
-    if (!isNaN(ss.getTime())) {
-      const sunsetStr = ss.toLocaleTimeString("he-IL", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      const [moonEmoji] = moonPhase();
-      el.wxRise.textContent = `${sunsetStr} ${moonEmoji}`;
-    }
+    const riseIso = d.daily.sunrise[0] ?? "";
+    const setIso = d.daily.sunset[0] ?? "";
+    const riseDate = new Date(riseIso);
+    const setDate = new Date(setIso);
+    const fmtTime = (dt: Date): string =>
+      isNaN(dt.getTime())
+        ? "--:--"
+        : dt.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", hour12: false });
+    const { eveningStart } = computeGoldenHour(riseIso, setIso);
+    const [moonEmoji] = moonPhase();
+    const riseStr = fmtTime(riseDate);
+    const setStr = fmtTime(setDate);
+    // Format: "06:15 ↑ · 19:52 ↓ · ✨ 18:52 · 🌕"
+    el.wxRise.textContent = `${riseStr}↑ · ${setStr}↓ · ✨${eveningStart} ${moonEmoji}`;
+    // Update label to reflect combined content
+    const riseLabel = document.getElementById("wx-rise-label");
+    if (riseLabel) riseLabel.textContent = "🌅 שמש";
   }
 
   // Min/max today

@@ -27,6 +27,7 @@ import {
   formatCloudCover,
   weatherConfigSchema,
   weatherCard,
+  computeGoldenHour,
 } from "@/cards/weather/weather";
 import type { WeatherResponse } from "@/types/api";
 
@@ -1267,7 +1268,7 @@ describe("Weather — inline coverage: renderWeather sunrise/sunset (line 304)",
     expect(rise.textContent).toBeTruthy();
   });
 
-  it("skips sunset text when sunset[0] is null → ?? '' fallback (line 302)", () => {
+  it("shows '--:--' placeholders when sunset[0] is null (W1 Sprint 175)", () => {
     document.body.innerHTML = `
       <div id="top-temp"></div><div id="wx-temp"></div>
       <div id="wx-desc"></div><div id="wx-icon"></div>
@@ -1282,11 +1283,13 @@ describe("Weather — inline coverage: renderWeather sunrise/sunset (line 304)",
     `;
     cacheDom();
     const data = makeWeather();
-    // sunset[0] = null → new Date(null ?? "") = new Date("") → invalid → wx-rise stays empty
+    // sunset[0] = null → formatted as '--:--' with golden-hour fallback
     data.daily.sunset = [null as unknown as string, "2024-01-02T17:00:00"];
     renderWeather(data);
     const rise = document.getElementById("wx-rise")!;
-    expect(rise.textContent).toBe(""); // invalid date → no update
+    // New format: "HH:MM↑ · --:--↓ · ✨--:-- <moon>" (sunrise valid, sunset/golden-hour invalid)
+    expect(rise.textContent).toContain("--:--");
+    expect(rise.textContent).toContain("↑");
   });
 });
 
@@ -1465,12 +1468,12 @@ describe("Weather — renderWeather defensive branches", () => {
     localStorage.clear();
   });
 
-  it("skips sunrise rendering when sunset string is invalid", () => {
+  it("shows '--:--' fallback for invalid sunset string (W1 Sprint 175)", () => {
     const data = makeWeather();
     data.daily!.sunset = ["not-a-date", "also-bad"];
     renderWeather(data);
-    // wx-rise should remain empty — the isNaN guard prevents text update
-    expect(document.getElementById("wx-rise")?.textContent).toBe("");
+    // wx-rise always shows content now — invalid parts display as '--:--'
+    expect(document.getElementById("wx-rise")?.textContent).toContain("--:--");
   });
 
   it("skips min/max rendering when daily temp arrays are missing", () => {
@@ -2285,5 +2288,43 @@ describe("Weather — Sprint 91 renderWeather wind-tile display", () => {
     renderWeather(makeWeather());
     const windDetail = document.querySelector<HTMLElement>(".wx-detail")!;
     expect(windDetail.style.display).toBe("none");
+  });
+});
+
+// ── computeGoldenHour (W1, Sprint 175) ───────────────────────────────────────
+
+describe("computeGoldenHour", () => {
+  it("returns morningEnd as sunrise + 60 min", () => {
+    const { morningEnd } = computeGoldenHour("2025-06-01T05:00:00", "2025-06-01T20:00:00");
+    // 05:00 + 60 min = 06:00
+    expect(morningEnd).toMatch(/06:00/);
+  });
+
+  it("returns eveningStart as sunset - 60 min", () => {
+    const { eveningStart } = computeGoldenHour("2025-06-01T05:00:00", "2025-06-01T20:00:00");
+    // 20:00 - 60 min = 19:00
+    expect(eveningStart).toMatch(/19:00/);
+  });
+
+  it("returns '--:--' for invalid sunrise", () => {
+    const { morningEnd } = computeGoldenHour("bad-date", "2025-06-01T20:00:00");
+    expect(morningEnd).toBe("--:--");
+  });
+
+  it("returns '--:--' for invalid sunset", () => {
+    const { eveningStart } = computeGoldenHour("2025-06-01T05:00:00", "bad-date");
+    expect(eveningStart).toBe("--:--");
+  });
+
+  it("returns '--:--' for both when both are invalid", () => {
+    const { morningEnd, eveningStart } = computeGoldenHour("", "");
+    expect(morningEnd).toBe("--:--");
+    expect(eveningStart).toBe("--:--");
+  });
+
+  it("handles short ISO strings without seconds", () => {
+    const { morningEnd } = computeGoldenHour("2025-06-01T06:30", "2025-06-01T19:45");
+    // 06:30 + 60 = 07:30
+    expect(morningEnd).toMatch(/07:30/);
   });
 });
