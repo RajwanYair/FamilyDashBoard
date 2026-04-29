@@ -5,7 +5,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
-## [13.16.0] — 2026-04-29
+## [13.17.0] — 2026-04-29
+
+> **Sprints 150–159 — roadmap progression batch** · **5137 tests / 162 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+### Added
+
+- **Tooling vitest preset README** (Sprint 157) — `tooling/vitest/README.md` documents `sharedVitestPoolConfig`, `sharedVitestTestConfig`, `sharedHappyDomTestConfig`, `sharedNodeTestConfig` with full usage examples, option tables, and version history. Updated `tooling/README.md` layout map.
+- **VR baseline expansion** (Sprint 154) — Visual regression suite expanded from 18 → 30 scenarios. Four new `test.describe` blocks: config-panel, maximised-card, help-dialog, and diag-overlay state baselines (3 themes each). Total 30×3-OS = 90 baseline files.
+- **ADR-043 + ADR-044** (Sprint 152) — ADR-043: `@vitest/browser` real-Chromium rationale. ADR-044: `exactOptionalPropertyTypes: true` migration decision.
+
+### Changed
+
+- **Worker TTL annual audit** (Sprint 155) — All 22 routes in `worker/openapi.yaml` reviewed. All TTL values verified as appropriate. Added `x-ttl-audit` extension field to `openapi.yaml` info section. Added annual TTL audit table to `docs/data-sources.md`. Next review: 2027-Q1.
+- **Dead exports audit** (Sprint 156) — `check-dead-exports.mjs` updated to skip `interface`/`type` exports (zero-cost contract declarations). Removed 6 genuinely dead exports: `_recordCacheHit`, `_recordCacheMiss`, `_setHitLayer` from `cache.ts` (not used in tests); `SW_VERSION_KEY`, `CACHE_TTL_BY_ORIGIN`, `CACHE_TTL_DEFAULT_S` from `sw-constants.ts` (not imported anywhere). Candidates reduced from 75 → 3 false positives.
+- **SLSA L3 hermetic CI** (Sprint 158) — `--ignore-scripts` added to both `npm install` calls in `.github/ci/install-tools.sh`. Actions are already SHA-pinned. Prevents arbitrary `postinstall` scripts from executing in CI.
+- **Coverage ratchet** (Sprint 153) — branches threshold raised 85.0 → 85.5. +16 targeted branch tests across `rate-limiter-do`, `rss-parser`, `open-meteo-adapter`, `hebcal-adapter`, `ai` (worker). Actuals: 93.68/85.63/92.63/94.92.
+- **ROADMAP housekeeping** (Sprint 150) — header refresh date updated, items #7/#8/#10 marked Done.
+
+### Fixed
+
+- **OWASP patch-cycle smoke check** (Sprint 151) — security audit script added to `.github/instructions/security-audit.instructions.md`; documents all 10 OWASP Top 10 mitigations confirmed at v13.16.0.
+
+### Version anchors
 
 > **Sprints 140–149 — roadmap progression batch** · **5121 tests / 162 suites / 0 failures** (commit `bbd87c7`) · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
 
