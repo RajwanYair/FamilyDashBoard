@@ -2136,3 +2136,90 @@ describe("News — ageFreshness (Sprint 183 N5)", () => {
     expect(ageFreshness("2024-01-08T10:00:00Z")).toBe("old");
   });
 });
+
+// ── Sprint 196 / N3: Per-source mute window ───────────────────────────────
+
+import {
+  isMuted,
+  muteSource,
+  unmuteSource,
+  loadMutedSources,
+  getMutedSources,
+} from "@/cards/news/news";
+
+describe("News — isMuted / muteSource / unmuteSource (Sprint 196 / N3)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    loadMutedSources();
+  });
+
+  it("isMuted returns false for unknown source", () => {
+    expect(isMuted("כאן חדשות")).toBe(false);
+  });
+
+  it("isMuted returns true after muteSource", () => {
+    muteSource("גלובס", 60_000);
+    expect(isMuted("גלובס")).toBe(true);
+  });
+
+  it("isMuted returns false after expiry", () => {
+    muteSource("כלכליסט", -1); // already expired
+    expect(isMuted("כלכליסט")).toBe(false);
+  });
+
+  it("unmuteSource removes mute", () => {
+    muteSource("ערוץ 7", 60_000);
+    unmuteSource("ערוץ 7");
+    expect(isMuted("ערוץ 7")).toBe(false);
+  });
+
+  it("persists mute to localStorage", () => {
+    muteSource("רוטר סקופים", 60_000);
+    loadMutedSources(); // re-load to simulate page reload
+    expect(isMuted("רוטר סקופים")).toBe(true);
+  });
+
+  it("getMutedSources returns current map", () => {
+    muteSource("גיקטיים", 60_000);
+    const map = getMutedSources();
+    expect(map["גיקטיים"]).toBeGreaterThan(Date.now());
+  });
+});
+
+describe("News — renderNews mute filter (Sprint 196 / N3)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    loadMutedSources();
+    document.body.innerHTML = `
+      <div id="rss-scroll"></div>
+      <div id="news-ticker"></div>
+      <div id="news-count"></div>`;
+    cacheDom();
+  });
+
+  afterEach(() => {
+    _resetNewsForTest();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("hides items from muted sources", () => {
+    muteSource("גלובס", 60_000);
+    renderNews([
+      { title: "כותרת 1", link: "", pubDate: "", source: "גלובס" },
+      { title: "כותרת 2", link: "", pubDate: "", source: "כאן חדשות" },
+    ]);
+    const items = document.querySelectorAll(".rss-item:not(.clone)");
+    expect(Array.from(items).some((el) => el.textContent?.includes("כותרת 1"))).toBe(false);
+    expect(Array.from(items).some((el) => el.textContent?.includes("כותרת 2"))).toBe(true);
+  });
+
+  it("shows all items when no sources are muted", () => {
+    renderNews([
+      { title: "כותרת א׳", link: "", pubDate: "", source: "כאן חדשות" },
+      { title: "כותרת ב׳", link: "", pubDate: "", source: "גלובס" },
+    ]);
+    const items = document.querySelectorAll(".rss-item:not(.clone)");
+    expect(items.length).toBe(2);
+  });
+});

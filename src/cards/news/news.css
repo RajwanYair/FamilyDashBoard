@@ -52,6 +52,23 @@
   min-width: 24px;
 }
 
+/* Sprint 196 / N3: Muted source chip */
+.news-src-chip.news-src-muted {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+.news-mute-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  padding: 0 2px;
+  margin-inline-start: 3px;
+  opacity: 0.6;
+  line-height: 1;
+}
+.news-mute-btn:hover { opacity: 1; }
+
 /* Feature 57: News copy-to-clipboard button */
 .news-copy {
   font-size: 0.62em;
