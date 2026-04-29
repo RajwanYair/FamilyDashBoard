@@ -27,6 +27,7 @@ import {
   getNextYomTov,
   getNextCalEventForCountdown,
   countdownConfigSchema,
+  setConfetti,
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
 import type { DashboardConfig } from "@/types/config";
@@ -1117,5 +1118,84 @@ describe("Countdown — getNextCalEventForCountdown (Sprint 180 CD2)", () => {
     const ics = `BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:Event B\nDTSTART:${s2}\nEND:VEVENT\nBEGIN:VEVENT\nSUMMARY:Event A\nDTSTART:${s1}\nEND:VEVENT\nEND:VCALENDAR`;
     const result = getNextCalEventForCountdown(ics, 7);
     expect(result?.title).toBe("Event A");
+  });
+});
+
+// ── Sprint 191 / CD4: setConfetti ────────────────────────────────────────
+
+describe("Countdown — setConfetti (Sprint 191 CD4)", () => {
+  function buildConfettiDOM(): void {
+    document.body.innerHTML = `
+      <div id="cd-wedding-title"></div>
+      <div id="cd-days"></div>
+      <div id="cd-hours"></div>
+      <div id="cd-mins"></div>
+      <div id="cd-secs"></div>
+      <div id="cd-msg"></div>
+      <div class="countdown-body"></div>
+    `;
+  }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("adds cd-confetti class when active=true", () => {
+    buildConfettiDOM();
+    setConfetti(true);
+    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(true);
+  });
+
+  it("removes cd-confetti class when active=false", () => {
+    buildConfettiDOM();
+    const body = document.querySelector(".countdown-body") as HTMLElement;
+    body.classList.add("cd-confetti");
+    setConfetti(false);
+    expect(body.classList.contains("cd-confetti")).toBe(false);
+  });
+
+  it("does nothing when .countdown-body element is absent", () => {
+    document.body.innerHTML = "<div id='no-body'></div>";
+    expect(() => setConfetti(true)).not.toThrow();
+  });
+
+  it("tick() adds cd-confetti when event is today (daysSince === 0)", () => {
+    buildConfettiDOM();
+    vi.useFakeTimers();
+    // Set now to the exact event moment so daysSince === 0
+    const eventTime = new Date("2025-07-04T12:00:00");
+    vi.setSystemTime(eventTime);
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2025-07-04",
+      countdownCardTime: "12:00",
+      countdownCardTitle: "Test",
+      countdownCardDoneMsg: "🎉",
+    } as DashboardConfig);
+    tick();
+    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(true);
+  });
+
+  it("tick() does NOT add cd-confetti when event passed days ago (daysSince > 0)", () => {
+    buildConfettiDOM();
+    vi.useFakeTimers();
+    // Set now to 5 days after the event
+    vi.setSystemTime(new Date("2025-07-09T12:00:00"));
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2025-07-04",
+      countdownCardTime: "12:00",
+      countdownCardTitle: "Test",
+      countdownCardDoneMsg: "🎉",
+    } as DashboardConfig);
+    tick();
+    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(false);
+  });
+
+  it("tick() does NOT add cd-confetti when event is in the future", () => {
+    buildConfettiDOM();
+    vi.mocked(loadConfig).mockReturnValue(FUTURE_CFG);
+    tick();
+    expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(false);
   });
 });
