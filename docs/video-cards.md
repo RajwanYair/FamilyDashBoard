@@ -114,6 +114,37 @@ docs/adr/ADR-019-video-card-csp.md    Decision record
 ## See Also
 
 - [ADR-019: Video-Card CSP Strategy](adr/ADR-019-video-card-csp.md)
+- [ADR-045: Document PiP for video-news (Gated)](adr/ADR-045-document-pip-video-news.md)
 - [ADR-002: Zero Client-Side Runtime Dependencies](adr/ADR-002-zero-client-deps.md)
 - [docs/keyboard.md](keyboard.md) — M/V keyboard shortcuts
 - [docs/security.md](security.md) — CSP policy
+
+---
+
+## Picture-in-Picture (Planned — Gated)
+
+> **Status**: Gated on 3 user requests. See [ADR-045](adr/ADR-045-document-pip-video-news.md).
+
+The [Document Picture-in-Picture API](https://developer.chrome.com/docs/web-platform/document-picture-in-picture/)
+would let the video-news card pop out into an always-on-top floating window while
+the user continues to interact with the rest of the dashboard.
+
+### What it would look like
+
+- A **PiP button** appears in the video-news card header (Chrome 116+ only).
+- Clicking it opens a floating mini-window with the live stream + RTL caption
+  strip + mute/channel buttons — all using the active dashboard theme.
+- The main layout resumes normally while the stream plays in PiP.
+
+### Why it's gated
+
+Document PiP is Chromium-only (Chrome/Edge 116+). Until 3+ distinct users
+request it, the complexity trade-off (element-move lifecycle, keyboard
+reassignment, CSP review) isn't justified. Standard video PiP (native browser
+button on `<video>`) continues to work without any code changes.
+
+### To request this feature
+
+Open a GitHub issue with the title `[Feature Request] PiP for video-news` and
+reference ADR-045. Once the gate is met, the ADR moves to Active and a sprint
+is scheduled.
