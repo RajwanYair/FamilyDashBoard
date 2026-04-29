@@ -380,6 +380,28 @@ export function moonPhase(date: Date = new Date()): [string, string] {
 }
 
 /**
+ * Sprint 207 / W6: Return moon phase data plus the card ID to cross-link to.
+ * The weather card moon tile should navigate to `crossLinkTarget` when clicked.
+ */
+export function getMoonPhaseSummary(date: Date = new Date()): {
+  emoji: string;
+  label: string;
+  crossLinkTarget: string;
+} {
+  const { emoji, label } = _sharedMoonPhase(date);
+  return { emoji, label, crossLinkTarget: "hebrew-cal" };
+}
+
+/**
+ * Sprint 207 / W6: Scroll a cross-linked card into view by its data-card-id.
+ * No-op when the target card is not in the DOM.
+ */
+export function scrollToLinkedCard(cardId: string): void {
+  const card = document.querySelector(`[data-card-id="${cardId}"]`) as HTMLElement | null;
+  if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+/**
  * Return a Hebrew summary label for today's precipitation probability.
  * Shown in the rain/precip detail tile.
  */
@@ -690,6 +712,10 @@ export function renderWeather(d: WeatherResponse): void {
     // Update label to reflect combined content
     const riseLabel = document.getElementById("wx-rise-label");
     if (riseLabel) riseLabel.textContent = "🌅 שמש";
+    // Sprint 207 / W6: clicking the moon emoji tile cross-links to hebrew-cal
+    el.wxRise.title = "לחץ לפרטי לוח עברי";
+    el.wxRise.style.cursor = "pointer";
+    el.wxRise.onclick = (): void => { scrollToLinkedCard("hebrew-cal"); };
   }
 
   // Min/max today

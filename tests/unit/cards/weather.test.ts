@@ -28,6 +28,8 @@ import {
   weatherConfigSchema,
   weatherCard,
   computeGoldenHour,
+  getMoonPhaseSummary,
+  scrollToLinkedCard,
 } from "@/cards/weather/weather";
 import type { WeatherResponse } from "@/types/api";
 
@@ -2574,5 +2576,38 @@ describe("Weather — renderWindCompass (Sprint 195 / W5)", () => {
     document.body.innerHTML = "";
     cacheDom();
     expect(() => renderWindCompass(180, 10, 30)).not.toThrow();
+  });
+});
+
+// ── Sprint 207 / W6: getMoonPhaseSummary + scrollToLinkedCard ──────────
+describe("Weather — getMoonPhaseSummary (Sprint 207)", () => {
+  it("returns crossLinkTarget hebrew-cal", () => {
+    const result = getMoonPhaseSummary(new Date("2024-01-11"));
+    expect(result.crossLinkTarget).toBe("hebrew-cal");
+  });
+
+  it("returns non-empty emoji and label", () => {
+    const result = getMoonPhaseSummary(new Date("2024-01-11"));
+    expect(result.emoji.length).toBeGreaterThan(0);
+    expect(result.label.length).toBeGreaterThan(0);
+  });
+
+  it("known new moon date returns \u05d9\u05e8\u05d7 \u05d7\u05d3\u05e9", () => {
+    const result = getMoonPhaseSummary(new Date("2000-01-06T18:14:00Z"));
+    expect(result.emoji).toBe("🌑");
+    expect(result.label).toBe("ירח חדש");
+  });
+
+  it("scrollToLinkedCard is a no-op when element absent", () => {
+    document.body.innerHTML = "";
+    expect(() => scrollToLinkedCard("hebrew-cal")).not.toThrow();
+  });
+
+  it("scrollToLinkedCard calls scrollIntoView when card exists", () => {
+    document.body.innerHTML = '<section data-card-id="hebrew-cal"></section>';
+    const card = document.querySelector('[data-card-id="hebrew-cal"]') as HTMLElement;
+    const spy = vi.spyOn(card, "scrollIntoView").mockImplementation(() => undefined);
+    scrollToLinkedCard("hebrew-cal");
+    expect(spy).toHaveBeenCalledOnce();
   });
 });
