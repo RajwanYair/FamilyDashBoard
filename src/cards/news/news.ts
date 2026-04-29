@@ -22,6 +22,7 @@ import {
 import { runConcurrent } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
+import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
 import type { NewsItem } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 
@@ -333,6 +334,56 @@ export function getBookmarks(): Set<string> {
 
 export function isBookmarkMode(): boolean {
   return _bkmMode;
+}
+
+// ── Sprint 206 / N2: Star / read-later IDB ───────────────────────────────
+
+const IDB_NEWS_DB = "fdb-news";
+const IDB_STARRED_STORE = "starred";
+
+/** A saved read-later article. */
+export interface StarredArticle {
+  id: string;
+  title: string;
+  link: string;
+  source: string;
+  starredAt: string; // ISO-8601
+}
+
+/** Derive a stable id from a NewsItem. */
+export function getStarId(item: Pick<NewsItem, "link" | "title">): string {
+  return (item.link || item.title).trim().substring(0, 120);
+}
+
+/** Persist an article to the IDB read-later store. */
+export async function starArticle(item: NewsItem): Promise<void> {
+  const id = getStarId(item);
+  const entry: StarredArticle = {
+    id,
+    title: item.title,
+    link: item.link,
+    source: item.source,
+    starredAt: new Date().toISOString(),
+  };
+  await idbSet<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE, id, entry);
+}
+
+/** Remove an article from the IDB read-later store. */
+export async function unstarArticle(id: string): Promise<void> {
+  await idbDelete(IDB_NEWS_DB, IDB_STARRED_STORE, id);
+}
+
+/** Return all starred articles (single entry stored per id). */
+export async function getStarredArticles(): Promise<StarredArticle[]> {
+  const raw = await idbGet<StarredArticle[]>(IDB_NEWS_DB, IDB_STARRED_STORE, "__all__");
+  if (Array.isArray(raw)) return raw;
+  return [];
+}
+
+/** Check whether a specific article is starred. */
+export async function isStarred(id: string): Promise<boolean> {
+  const entry = await idbGet<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE, id);
+  return entry !== null;
 }
 
 export function cacheDom(): void {

@@ -34,7 +34,12 @@ import {
   getBookmarks,
   isBookmarkMode,
   _resetNewsForTest,
+  getStarId,
+  starArticle,
+  unstarArticle,
+  isStarred,
 } from "@/cards/news/news";
+import { _idbClearFallback } from "@/core/idb-store";
 
 describe("News — detectCategory", () => {
   it("detects security keywords", () => {
@@ -2221,5 +2226,38 @@ describe("News — renderNews mute filter (Sprint 196 / N3)", () => {
     ]);
     const items = document.querySelectorAll(".rss-item:not(.clone)");
     expect(items.length).toBe(2);
+  });
+});
+
+// ── Sprint 206 / N2: Star / read-later IDB ──────────────────────────
+describe("News — star/read-later IDB (Sprint 206)", () => {
+  beforeEach(() => { _idbClearFallback(); });
+
+  it("getStarId returns trimmed link", () => {
+    const id = getStarId({ link: "https://example.com/a", title: "Title" });
+    expect(id).toBe("https://example.com/a");
+  });
+
+  it("getStarId falls back to title when link is empty", () => {
+    const id = getStarId({ link: "", title: "My Article" });
+    expect(id).toBe("My Article");
+  });
+
+  it("starArticle + isStarred returns true", async () => {
+    const item = { title: "Test", link: "https://x.com/1", pubDate: "", source: "test" };
+    await starArticle(item);
+    expect(await isStarred(getStarId(item))).toBe(true);
+  });
+
+  it("unstarArticle removes article", async () => {
+    const item = { title: "Test2", link: "https://x.com/2", pubDate: "", source: "test" };
+    await starArticle(item);
+    const id = getStarId(item);
+    await unstarArticle(id);
+    expect(await isStarred(id)).toBe(false);
+  });
+
+  it("isStarred returns false for unknown id", async () => {
+    expect(await isStarred("no-such-id")).toBe(false);
   });
 });
