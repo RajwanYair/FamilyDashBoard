@@ -223,6 +223,8 @@ export interface DashboardConfig {
   weatherShowSunrise: boolean;
   /** Stocks card: group by sector in display. Default: false. */
   stocksGroupBySector: boolean;
+  /** Stocks card: show USD prices converted to ILS using live currency card rate. Default: false. */
+  stocksShowIls: boolean;
   /** Tasks card: enable category labels (freeform string per task). Default: false. */
   tasksShowCategories: boolean;
   /** News card: show source domain badge on each news item. Default: true. */
@@ -350,6 +352,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   weatherShowWind: true,
   weatherShowSunrise: true,
   stocksGroupBySector: true,
+  stocksShowIls: false,
   tasksShowCategories: true,
   newsShowSource: true,
   sysInfoShowRtt: true,

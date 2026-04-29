@@ -29,6 +29,7 @@ import { showToast } from "../../ui/toast";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
+import { getLastCurrencyRates } from "../currency/currency";
 
 // ── Helpers ──
 export function fmtPrice(price: number, sym: string): string {
@@ -36,6 +37,18 @@ export function fmtPrice(price: number, sym: string): string {
   if (price >= 10) return price.toFixed(2);
   if (sym === "^VIX") return price.toFixed(2);
   return price.toFixed(4);
+}
+
+/**
+ * Sprint 199 / S2: Convert a USD price to ILS using the live currency rate.
+ * Returns null when rates are unavailable or the USD rate is invalid.
+ */
+export function convertUsdToIls(usdPrice: number): number | null {
+  const rates = getLastCurrencyRates();
+  if (!rates) return null;
+  const usdRate = rates["USD"]; // ILS-based: 1 ILS = X USD, so 1 USD = 1/X ILS
+  if (!usdRate || usdRate <= 0) return null;
+  return usdPrice / usdRate;
 }
 
 /**
@@ -353,10 +366,14 @@ export function renderStocksShell(): void {
     const priceDiv = document.createElement("div");
     priceDiv.className = "stk-price skeleton";
     priceDiv.textContent = "---";
+    // Sprint 199 / S2: ILS sub-price display
+    const priceIlsDiv = document.createElement("div");
+    priceIlsDiv.className = "stk-price-ils";
+    priceIlsDiv.hidden = true;
     const chgDiv = document.createElement("div");
     chgDiv.className = "stk-chg";
     chgDiv.textContent = "-";
-    valsDiv.append(priceDiv, chgDiv);
+    valsDiv.append(priceDiv, priceIlsDiv, chgDiv);
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("class", "stk-chart");
@@ -470,6 +487,19 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
   if (priceEl) {
     priceEl.textContent = cur != null ? fmtPrice(cur, sym) : "N/A";
     priceEl.classList.remove("skeleton");
+
+    // Sprint 199 / S2: show ILS equivalent price below USD when enabled
+    const ilsSubEl = blk.querySelector<HTMLElement>(".stk-price-ils");
+    if (ilsSubEl) {
+      const showIls = loadConfig().stocksShowIls;
+      if (showIls && cur != null) {
+        const ilsVal = convertUsdToIls(cur);
+        ilsSubEl.textContent = ilsVal != null ? `₪${Math.round(ilsVal).toLocaleString("he-IL")}` : "";
+        ilsSubEl.hidden = ilsVal === null;
+      } else {
+        ilsSubEl.hidden = true;
+      }
+    }
   }
 
   const chgEl = blk.querySelector<HTMLElement>(".stk-chg");
@@ -1032,6 +1062,15 @@ export const stocksConfigSchema: CardConfigField[] = [
     labelEn: "Group by sector",
     type: "boolean",
     defaultValue: true,
+    group: "תצוגה",
+  },
+  // Sprint 199 / S2: cross-card ILS conversion
+  {
+    key: "stocksShowIls",
+    labelHe: "הצג מחיר בשקלים",
+    labelEn: "Show price in ILS",
+    type: "boolean",
+    defaultValue: false,
     group: "תצוגה",
   },
 ];
