@@ -62,16 +62,18 @@ Update ALL of these on every version bump. Search the old version string (e.g. `
 | 4   | `README.md`                                      | `Version-X.Y.Z` badge + `Vitest-NNNN_passing` badge (~lines 22-23)               |
 | 5   | `.github/copilot-instructions.md`                | Header version (line 1) + test count (line 6)                                    |
 | 6   | `.github/instructions/workspace.instructions.md` | Header version + test count (line 6)                                             |
-| 7   | `docs/ARCHITECTURE.md`                           | Test count in stack table (~line 14) + constraint list (~line 195)               |
-| 8   | `.github/assets/banner.svg`                      | Version string + test count in footer text                                       |
-| 9   | `.github/assets/architecture.svg`                | Version ×3 (title, sw.js label, footer) + test count                             |
-| 10  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                                                   |
-| 11  | `.github/assets/data-sources.svg`                | Title line `— vX.Y.Z`                                                            |
-| 12  | `.github/assets/roadmap.svg`                     | Test count progression line                                                      |
-| 13  | `docs/ROADMAP.md`                                | New row in released-versions table + `<!-- Last updated: vX.Y.Z -->` comment     |
-| 14  | `.github/skills/release/SKILL.md`                | `All N+ tests / M+ suites` verification line                                     |
+| 7   | `.github/AGENTS.md`                              | Header line `> Version: vX.Y.Z · Tests: NNNN / SS suites · Coverage: …`          |
+| 8   | `docs/ARCHITECTURE.md`                           | Title `(vX.Y.Z)` (line 1) + test count in stack table + constraint list          |
+| 9   | `.github/assets/banner.svg`                      | Version string + test count in footer text                                       |
+| 10  | `.github/assets/architecture.svg`                | Version ×3 (title, sw.js label, footer) + test count                             |
+| 11  | `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text                                                   |
+| 12  | `.github/assets/data-sources.svg`                | Title line `— vX.Y.Z`                                                            |
+| 13  | `.github/assets/roadmap.svg`                     | Test count progression line                                                      |
+| 14  | `docs/ROADMAP.md`                                | Refresh-date header `Shipped baseline: vX.Y.Z`                                   |
+| 15  | `.github/skills/release/SKILL.md`                | `All N+ tests / M+ suites` verification line                                     |
 
-- [ ] All 14 files above have been updated with the new version and/or test count
+- [ ] All 15 files above have been updated with the new version and/or test count
+- [ ] **Run `node scripts/check-version-consistency.mjs`** — must exit 0 (CI also enforces this)
 - [ ] `CHANGELOG.md` — unreleased items moved to new version section; old sprints collapsed to one line each
 - [ ] `docs/ARCHITECTURE.md` — reflects current card list (12 cards), module graph, CSS layer order
 

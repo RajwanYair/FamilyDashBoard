@@ -172,6 +172,8 @@ jobs:
         run: node scripts/check-card-bundle-delta.mjs
       - name: SW version check
         run: node scripts/check-sw-version.mjs
+      - name: Doc/instruction version consistency check (Sprint 171)
+        run: node scripts/check-version-consistency.mjs
       - name: Worker-client / OpenAPI sync check (F18)
         run: node scripts/check-worker-client.mjs
       - name: ADR index staleness check (V13-OPS)

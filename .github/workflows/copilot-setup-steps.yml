@@ -1,0 +1,41 @@
+name: Copilot Setup Steps
+# Bootstrap environment for the GitHub Copilot Coding Agent.
+# Reference: https://docs.github.com/en/copilot/customizing-copilot/customizing-the-development-environment-for-copilot-coding-agent
+#
+# This repository's tooling lives in the parent MyScripts/ folder (shared
+# node_modules across multiple sibling repos). The Coding Agent runs in an
+# isolated container that only checks out THIS repo, so we re-create a minimal
+# parent-folder layout that mirrors the local developer setup.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install shared toolchain (mirrors MyScripts/ parent install)
+        # Local devs run `npm install` from the parent MyScripts/ folder.
+        # In CI we reproduce this by using the project-local install-tools
+        # script, which fetches the same dev dependencies (vite, vitest, eslint,
+        # typescript, markdownlint-cli2, etc.) into ./node_modules.
+        run: bash .github/ci/install-tools.sh
+
+      - name: Verify toolchain
+        run: |
+          node --version
+          npx tsc --version
+          npx vitest --version
+          npx eslint --version

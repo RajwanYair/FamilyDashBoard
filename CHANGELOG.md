@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [Unreleased]
+
+> **Sprint 171 — `.github/` modernization & version-drift guard**
+
+### Added
+
+- **`scripts/check-version-consistency.mjs`** — CI guard that fails when any tracked doc/instruction file disagrees with `package.json` version. Wired into `npm run check` and `.github/workflows/ci.yml`. Prevents the recurring problem of `.github/AGENTS.md` and similar files drifting multiple versions behind a release.
+- **`.github/workflows/copilot-setup-steps.yml`** — GitHub Copilot Coding Agent ephemeral environment bootstrap. Mirrors the parent-`MyScripts/` toolchain install so the Coding Agent can actually run `npx tsc`, `npx vitest`, `npx eslint` when working on issues/PRs.
+- **`.github/AGENTS.md`** added to the pre-release file list (was missing — root cause of its drift to v13.15.0).
+
+### Fixed
+
+- **Version drift across `.github/`** — `.github/AGENTS.md` (was v13.15.0, 4 versions stale), `.github/copilot-instructions.md` (was v13.18.0), `.github/instructions/workspace.instructions.md` (was v13.18.0), `docs/ARCHITECTURE.md` title (was v13.17.0), `sw.js` header comment (was v13.18.0), `README.md` Version badge (was v13.18.0) — all now synced to v13.19.0 and locked by the new CI guard.
+
+---
+
 ## [13.19.0] — 2026-04-29
 
 > **Sprint 170 — Footprint reduction & community-health dedup** · 5155 tests / 0 failures · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
