@@ -33,6 +33,7 @@ vitest_results.txt
 tsc_output.txt
 output.txt
 run_output.txt
+coverage-out*.txt
 
 # Playwright
 test-results/
