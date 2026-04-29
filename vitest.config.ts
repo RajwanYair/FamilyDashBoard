@@ -108,10 +108,13 @@ export default defineConfig({
         //   Sprints 213-217 added new code paths. Largest coverage gaps: ai-synthesis.ts (35%)
         //   and video-news.ts DOM-heavy initVideoNews (44%). Thresholds calibrated to actuals
         //   with 0.3% safety margin. Raise once those files gain test coverage.
-        statements: 91.5,
-        branches: 83.5,
-        functions: 90.5,
-        lines: 93.0,
+        // Sprint 225 (coverage ratchet): added 8 ai-synthesis DOM-branch tests + 10 video-news
+        //   initVideoNews DOM tests. Actuals: 92.64/84.26/91.79/94.05.
+        //   Thresholds raised to actuals - 0.3% safety margin.
+        statements: 92.3,
+        branches: 84.0,
+        functions: 91.5,
+        lines: 93.7,
       },
     },
   },

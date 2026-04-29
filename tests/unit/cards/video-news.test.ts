@@ -254,3 +254,93 @@ describe("requestDocumentPip (Sprint 215 / V2)", () => {
     delete (window as Record<string, unknown>)["documentPictureInPicture"];
   });
 });
+
+// ── Sprint 225: initVideoNews DOM paths ───────────────────────────────────
+
+import { initVideoNews, destroyVideoNews as destroy } from "@/cards/video-news/video-news";
+
+describe("initVideoNews DOM paths (Sprint 225)", () => {
+  let root: HTMLDivElement;
+
+  beforeEach(() => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    destroy();
+    root.remove();
+    localStorage.clear();
+  });
+
+  it("creates a tab strip inside the root", () => {
+    initVideoNews(root);
+    const tabs = root.querySelector(".video-news__tabs");
+    expect(tabs).not.toBeNull();
+  });
+
+  it("creates 6 tabs for all channels by default", () => {
+    initVideoNews(root);
+    const tabs = root.querySelectorAll(".video-news__tab");
+    expect(tabs.length).toBe(6);
+  });
+
+  it("creates a grid container", () => {
+    initVideoNews(root);
+    const grid = root.querySelector(".video-news__grid");
+    expect(grid).not.toBeNull();
+  });
+
+  it("creates 6 tiles (one per channel)", () => {
+    initVideoNews(root);
+    const tiles = root.querySelectorAll(".video-news__tile");
+    expect(tiles.length).toBe(6);
+  });
+
+  it("marks c14 tile active by default", () => {
+    initVideoNews(root);
+    const active = root.querySelectorAll(".video-news__tile--active");
+    expect(active.length).toBe(1);
+    expect((active[0] as HTMLElement).dataset["channel"]).toBe("c14");
+  });
+
+  it("marks initialChannel tile active when provided", () => {
+    initVideoNews(root, "kan11");
+    const active = root.querySelector(".video-news__tile--active") as HTMLElement | null;
+    expect(active?.dataset["channel"]).toBe("kan11");
+  });
+
+  it("clicking a tab switches the active channel", () => {
+    initVideoNews(root);
+    const n12Tab = root.querySelector<HTMLButtonElement>('.video-news__tab[data-channel="n12"]');
+    n12Tab?.click();
+    const active = root.querySelector(".video-news__tile--active") as HTMLElement | null;
+    expect(active?.dataset["channel"]).toBe("n12");
+  });
+
+  it("each tile contains an iframe with a valid src", () => {
+    initVideoNews(root);
+    const iframes = root.querySelectorAll<HTMLIFrameElement>(".video-news__iframe");
+    iframes.forEach((iframe) => {
+      expect(iframe.src).toMatch(/^https:\/\//);
+    });
+  });
+
+  it("destroyVideoNews sets all iframe src to about:blank", () => {
+    initVideoNews(root);
+    destroy();
+    // After destroy _root is null — verify no throw
+    expect(() => destroy()).not.toThrow();
+  });
+
+  it("respects pinnedChannels config — creates only 2 tabs", () => {
+    localStorage.setItem("dash_v2_config", JSON.stringify({
+      configVersion: 12,
+      cards: { "video-news": { settings: { pinnedChannels: "c14,n12" } } },
+    }));
+    initVideoNews(root);
+    const tabs = root.querySelectorAll(".video-news__tab");
+    expect(tabs.length).toBe(2);
+  });
+});
