@@ -7,26 +7,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased]
 
-> **Sprint 171** — `.github/` modernization & version-drift guard
-> **Sprint 172** — Workflow hygiene & dependency-management consolidation
+---
+
+## [13.20.0] — 2026-05-01
+
+> **5256 tests / 164 suites / 0 failures** (commit `9ef28b2`)
 
 ### Added
 
-- **Sprint 171** · `scripts/check-version-consistency.mjs` — CI guard that fails when any tracked doc/instruction file disagrees with `package.json` version. Wired into `npm run check` and `.github/workflows/ci.yml`. Now covers 7 files: `sw.js`, `README.md`, `.github/copilot-instructions.md`, `.github/AGENTS.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/security.md`.
-- **Sprint 171** · `.github/workflows/copilot-setup-steps.yml` — GitHub Copilot Coding Agent ephemeral environment bootstrap. Mirrors the parent-`MyScripts/` toolchain install so the Coding Agent can run `npx tsc`, `npx vitest`, `npx eslint` when working on issues/PRs.
-- **Sprint 171** · `.github/AGENTS.md` added to the pre-release file list (was missing — root cause of its drift to v13.15.0).
-- **Sprint 172** · `concurrency:` blocks on `pr-coverage.yml`, `pr-sbom-diff.yml`, `link-check.yml` — prevents duplicate sticky comments from racing PR re-pushes and duplicate scheduled link-check runs.
-- **Sprint 172** · `engines.npm: ">=10.0.0"` to `package.json`.
-
-### Changed
-
-- **Sprint 172** · `.github/workflows/copilot-setup-steps.yml` actions now SHA-pinned (matches the rest of the workflow suite).
-- **Sprint 172** · Dependency-update ownership clarified — Renovate owns root npm (richer grouping: TypeScript+@types, Vite+Vitest, ESLint family); Dependabot owns GitHub Actions + Cloudflare Worker npm (`/worker`). Removed Dependabot's overlapping root-npm entry. Updated `renovate.json` description (was stale "v12").
+- **Sprint 173** · `src/core/event-bus.ts` — signals-based pub/sub: `globalSync`, `globalAlertChannel`, `globalThemeChannel`, `globalOffline`; `broadcastSync/Alert/Theme()`, `initOfflineTracking()`, `_resetBusForTesting()`. 23 new tests.
+- **Sprint 174** · `src/ui/offline-banner.ts` — reactive offline/online banner wired to `globalOffline` signal via `effect()`; `initOfflineBanner()` replaces inline handlers in main.ts. 13 new tests.
+- **Sprint 175 / W1** · Weather card: golden-hour computation (`computeGoldenHour()`), dawn/dusk/golden-hour row in weather tile. 6 new tests.
+- **Sprint 175 / W2** · Weather card: 10-day forecast (was 7-day); extended Open-Meteo URL, 3 extra `wx-fday` elements in index.html.
+- **Sprint 176 / M1** · Motivation card: source badge (`tanakh / hazal / modern / ai`) — `.moti-src` pill via `color-mix()`, `:empty → display:none`.
+- **Sprint 176 / M2** · Motivation card: theme-by-day map (`DAY_THEME_MAP`), `getThemeForDay(date?)`, `SOURCE_META`. 3 new categories: `gratitude / courage / calm`. 78 tests.
+- **Sprint 177 / T1** · Tasks card: `isDueThisWeek()` — `.tasks-due-week` green badge for tasks due within 7 days.
+- **Sprint 177 / T3** · Tasks card: `tags?: string[]` on `ChoreItem`; up to 6 `.tasks-tag` chips per row inside `.tasks-tags` flex wrapper. 152 tests.
+- **Sprint 178 / H4** · Hebrew-cal card: `getHaftarah()` pure export; `#hc-haftara-row` rendered via `renderParasha()`.
+- **Sprint 178 / H5** · Hebrew-cal card: `getRoshChodesh()` pure export (within today + 2 days window); `#hc-rosh-chodesh-row` rendered via `renderHoliday()`. 170 tests.
+- **Sprint 179 / SI2** · System-info card: `getSwState()` async pure export — inspects service worker registration state; `#sysinfo-sw` tile with Hebrew labels. 83 tests.
+- **Sprint 180 / CD1** · Countdown card: `getNextYomTov(items, now, maxDays)` — reads Hebcal stale cache; auto-populates slot 2 on init when `countdownCard2Date` unset.
+- **Sprint 180 / CD2** · Countdown card: `getNextCalEventForCountdown(icsText, minDays)` — parses ICS; auto-populates slot 3 on init when `countdownCard3Date` unset.
+- **Sprint 180 / CD3** · Countdown card: `advanceMonthlyDate()` pure export; `countdownCardRecurrence: "annual" | "monthly"` config field. 86 tests.
+- **Sprint 181 / CAL1** · Calendar card: `getHolidaysByDate(items, date)` — reads Hebcal stale cache; holiday label overlay (`#cal-holiday-label`) with accent-colored pill on `has-holiday` tiles.
+- **Sprint 181 / CAL2** · Calendar card: per-source color bars — `.cal-src-0/1/2` right-border on each event row matching ICS feed index. 265 tests.
 
 ### Fixed
 
-- **Sprint 171** · Version drift across `.github/` — `.github/AGENTS.md` (was v13.15.0, 4 versions stale), `.github/copilot-instructions.md` (was v13.18.0), `.github/instructions/workspace.instructions.md` (was v13.18.0), `docs/ARCHITECTURE.md` title (was v13.17.0), `sw.js` header comment (was v13.18.0), `README.md` Version badge (was v13.18.0) — all now synced to v13.19.0 and locked by the new CI guard.
-- **Sprint 172** · `docs/security.md` title (was v13.1.0, **18 versions stale**); `docs/data-sources.md` "Last updated" header (was v13.17.0).
+- **fix(main)** · Restored `globalOffline.value` guard on SW `NETWORK_BACK` handler (was removed when Sprint 174 deleted `_wenOffline`); added `cGetStale` to cache mock in main.test.ts.
 
 ---
 
