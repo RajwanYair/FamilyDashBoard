@@ -18,7 +18,10 @@ set -euo pipefail
 
 echo "→ Installing CI toolchain…"
 
-npm install --no-save --no-package-lock \
+# Sprint 158 (SLSA L3 hermetic build): --ignore-scripts added to both npm
+# install calls to prevent arbitrary postinstall scripts from running in CI.
+# Actions are already SHA-pinned in .github/workflows/ci.yml.
+npm install --no-save --no-package-lock --ignore-scripts \
   "typescript@^6.0.3" \
   "vite@^8.0.9" \
   "vitest@^4.1.5" \
@@ -43,7 +46,7 @@ echo "→ Installing worker runtime + type deps (for worker typecheck + worker t
 # worker/package.json — bump in both places.
 (
   cd worker
-  npm install --no-save --no-package-lock \
+  npm install --no-save --no-package-lock --ignore-scripts \
     "hono@^4.12.14" \
     "valibot@^1.3.1" \
     "@cloudflare/workers-types@^4.0.0" \
