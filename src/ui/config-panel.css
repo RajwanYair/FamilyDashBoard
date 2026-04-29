@@ -152,6 +152,26 @@
   opacity: 1;
 }
 
+/* Sprint 200 / X7: Config search box */
+.cfg-search-wrap {
+  margin-bottom: 8px;
+}
+.cfg-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-card-inner);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.88em;
+}
+.cfg-search-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 /* F119: Config panel section tabs */
 .cfg-tabs {
   display: flex;
