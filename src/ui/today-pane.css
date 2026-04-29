@@ -1,0 +1,79 @@
+/* Sprint 190 / X1: Today Pane */
+@layer components {
+  #today-pane {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--surface, rgba(0 0 0 / 0.3));
+    border-bottom: 1px solid var(--border, rgba(255 255 255 / 0.08));
+    flex-wrap: wrap;
+    min-height: 2.25rem;
+    transition: max-height 0.25s ease, opacity 0.25s ease;
+    direction: rtl;
+  }
+
+  #today-pane.is-hidden {
+    display: none;
+  }
+
+  #today-pane-items {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .today-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    background: var(--surface-2, rgba(255 255 255 / 0.06));
+    color: var(--text, #e0e0e0);
+  }
+
+  .today-pill--normal {
+    border-color: var(--border, rgba(255 255 255 / 0.12));
+  }
+
+  .today-pill--warning {
+    background: var(--warning-bg, rgba(251 191 36 / 0.15));
+    border-color: var(--warning, #fbbf24);
+    color: var(--warning, #fbbf24);
+  }
+
+  .today-pill--critical {
+    background: var(--danger-bg, rgba(239 68 68 / 0.2));
+    border-color: var(--danger, #ef4444);
+    color: var(--danger, #ef4444);
+    animation: today-pill-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes today-pill-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .today-pill--critical {
+      animation: none;
+    }
+  }
+
+  .today-pill-icon {
+    flex-shrink: 0;
+  }
+
+  .today-pill-label {
+    max-width: 20ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
