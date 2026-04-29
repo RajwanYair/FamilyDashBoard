@@ -295,6 +295,17 @@ export async function renderSystemInfo(): Promise<void> {
     // WebGL not available — leave "—"
   }
 
+  // Sprint 179 / SI2: Service Worker state
+  const swState = await getSwState();
+  const SW_LABELS: Record<string, string> = {
+    active: "🟢 פעיל",
+    installing: "🔄 מתקין",
+    waiting: "🟡 ממתין",
+    none: "⚪ אין",
+    unsupported: "—",
+  };
+  setText("sysinfo-sw", SW_LABELS[swState] ?? "—");
+
   diagLog("FDB-053: [system-info] Rendered");
 }
 
@@ -374,6 +385,25 @@ export function categorizeDevice(): "tv" | "desktop" | "tablet" | "mobile" {
   if (width >= 1024) return "desktop";
   if (width >= 600) return "tablet";
   return "mobile";
+}
+
+/**
+ * Sprint 179 / SI2: Resolve the current Service Worker registration state.
+ * Returns one of: "active" | "installing" | "waiting" | "none" | "unsupported".
+ * Safe to call in non-SW environments.
+ */
+export async function getSwState(): Promise<"active" | "installing" | "waiting" | "none" | "unsupported"> {
+  if (!("serviceWorker" in navigator)) return "unsupported";
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) return "none";
+    if (reg.installing) return "installing";
+    if (reg.waiting) return "waiting";
+    if (reg.active) return "active";
+    return "none";
+  } catch {
+    return "none";
+  }
 }
 
 // ── CardDefinition export (for registry) ─────────────────────────────────

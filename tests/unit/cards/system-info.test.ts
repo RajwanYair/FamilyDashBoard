@@ -20,6 +20,7 @@ import {
   formatHeapMb,
   gpuShortName,
   encodeConnType,
+  getSwState,
 } from "@/cards/system-info/system-info";
 
 // ── DOM setup ──────────────────────────────────────────────────────────────
@@ -892,5 +893,85 @@ describe("SystemInfo — getConnectionInfo stubs (Sprint 79)", () => {
       connection: { effectiveType: undefined },
     });
     expect(getConnectionInfo()).toBe("unknown");
+  });
+});
+
+// ── Sprint 179 / SI2: getSwState ──────────────────────────────────────────
+
+describe("System-info — getSwState (Sprint 179)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("returns 'unsupported' when serviceWorker not in navigator", async () => {
+    // happy-dom does not expose navigator.serviceWorker — so this passes natively
+    const result = await getSwState();
+    expect(result).toBe("unsupported");
+  });
+
+  it("returns 'none' when getRegistration resolves undefined", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      serviceWorker: { getRegistration: vi.fn().mockResolvedValue(undefined) },
+    });
+    const result = await getSwState();
+    expect(result).toBe("none");
+  });
+
+  it("returns 'active' when registration has active SW", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      serviceWorker: {
+        getRegistration: vi.fn().mockResolvedValue({
+          active: {} as ServiceWorker,
+          installing: null,
+          waiting: null,
+        }),
+      },
+    });
+    const result = await getSwState();
+    expect(result).toBe("active");
+  });
+
+  it("returns 'installing' when SW is installing", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      serviceWorker: {
+        getRegistration: vi.fn().mockResolvedValue({
+          active: null,
+          installing: {} as ServiceWorker,
+          waiting: null,
+        }),
+      },
+    });
+    const result = await getSwState();
+    expect(result).toBe("installing");
+  });
+
+  it("returns 'waiting' when SW is waiting", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      serviceWorker: {
+        getRegistration: vi.fn().mockResolvedValue({
+          active: null,
+          installing: null,
+          waiting: {} as ServiceWorker,
+        }),
+      },
+    });
+    const result = await getSwState();
+    expect(result).toBe("waiting");
+  });
+
+  it("returns 'none' on getRegistration rejection", async () => {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      serviceWorker: {
+        getRegistration: vi.fn().mockRejectedValue(new Error("denied")),
+      },
+    });
+    const result = await getSwState();
+    expect(result).toBe("none");
   });
 });
