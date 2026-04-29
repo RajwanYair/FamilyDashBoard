@@ -28,6 +28,9 @@ import {
   checkRecurringReset,
   addQuickChore,
   advanceRecurringDueDate,
+  addSubtask,
+  getSubtasks,
+  removeSubtask,
 } from "@/cards/tasks/tasks";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
@@ -1957,5 +1960,103 @@ describe("advanceRecurringDueDate", () => {
     const now = new Date("2025-03-10");
     const result = advanceRecurringDueDate(item, now);
     expect(result).toBe("2025-03-17");
+  });
+});
+
+// ── Sprint 214 / T4: 1-level subtasks ──────────────────────────────────────
+
+describe("Tasks — addSubtask (Sprint 214 / T4)", () => {
+  const parent: ChoreItem = { person: "אמא", chore: "קניות" };
+  const parentId = "אמא::קניות";
+  const sub: ChoreItem = { person: "אמא", chore: "חלב" };
+
+  it("returns new array with subtask appended", () => {
+    const result = addSubtask(parentId, sub, [parent]);
+    expect(result).toHaveLength(2);
+    expect(result[1]).toEqual({ ...sub, parentId });
+  });
+
+  it("does not mutate original items array", () => {
+    const items = [parent];
+    addSubtask(parentId, sub, items);
+    expect(items).toHaveLength(1);
+  });
+
+  it("sets parentId on the new child item", () => {
+    const result = addSubtask(parentId, sub, []);
+    expect(result[0]?.parentId).toBe(parentId);
+  });
+
+  it("preserves other fields on child", () => {
+    const withTag: ChoreItem = { person: "אמא", chore: "חלב", tags: ["🛒"] };
+    const result = addSubtask(parentId, withTag, []);
+    expect(result[0]?.tags).toEqual(["🛒"]);
+  });
+
+  it("adds multiple subtasks", () => {
+    const sub2: ChoreItem = { person: "אמא", chore: "לחם" };
+    let items = addSubtask(parentId, sub, [parent]);
+    items = addSubtask(parentId, sub2, items);
+    expect(items.filter((i) => i.parentId === parentId)).toHaveLength(2);
+  });
+});
+
+describe("Tasks — getSubtasks (Sprint 214 / T4)", () => {
+  const parentId = "אמא::קניות";
+  const child1: ChoreItem = { person: "אמא", chore: "חלב", parentId };
+  const child2: ChoreItem = { person: "אמא", chore: "לחם", parentId };
+  const other: ChoreItem = { person: "אבא", chore: "כלים", parentId: "אבא::כלים" };
+  const top: ChoreItem = { person: "אמא", chore: "קניות" };
+
+  it("returns only children with matching parentId", () => {
+    const result = getSubtasks(parentId, [top, child1, child2, other]);
+    expect(result).toEqual([child1, child2]);
+  });
+
+  it("returns empty array when no children", () => {
+    expect(getSubtasks(parentId, [top])).toEqual([]);
+  });
+
+  it("returns empty array for empty list", () => {
+    expect(getSubtasks(parentId, [])).toEqual([]);
+  });
+
+  it("does not return top-level tasks (no parentId)", () => {
+    expect(getSubtasks(parentId, [top])).toHaveLength(0);
+  });
+});
+
+describe("Tasks — removeSubtask (Sprint 214 / T4)", () => {
+  const parentId = "אמא::קניות";
+  const child: ChoreItem = { person: "אמא", chore: "חלב", parentId };
+  const other: ChoreItem = { person: "אבא", chore: "כלים" };
+
+  it("removes item whose fingerprint matches id", () => {
+    const result = removeSubtask("אמא::חלב", [child, other]);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(other);
+  });
+
+  it("returns copy of original when id not found", () => {
+    const result = removeSubtask("nonexistent::task", [child]);
+    expect(result).toEqual([child]);
+  });
+
+  it("does not mutate original array", () => {
+    const items = [child, other];
+    removeSubtask("אמא::חלב", items);
+    expect(items).toHaveLength(2);
+  });
+
+  it("removes only the first match when duplicates exist", () => {
+    const dup: ChoreItem = { person: "אמא", chore: "חלב", parentId };
+    const result = removeSubtask("אמא::חלב", [child, dup, other]);
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual(dup);
+  });
+
+  it("returns empty array when removing sole item", () => {
+    const result = removeSubtask("אמא::חלב", [child]);
+    expect(result).toHaveLength(0);
   });
 });

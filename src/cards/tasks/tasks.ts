@@ -26,6 +26,8 @@ export interface ChoreItem {
   recurrence?: "daily" | "weekly" | "monthly" | "yearly";
   /** Sprint 177 / T3: optional free-form tags for grouping/coloring (max 6 rendered). */
   tags?: string[];
+  /** Sprint 214 / T4: parent task fingerprint — set when this item is a subtask. */
+  parentId?: string;
 }
 
 // LS_TASKS_DONE and LS_CHORES imported from constants
@@ -744,3 +746,33 @@ export const tasksCard: CardDefinition = {
   destroy: destroyTasksCard,
   configSchema: tasksConfigSchema,
 };
+
+// ── Sprint 214 / T4: 1-level subtasks ─────────────────────────────────────
+
+/**
+ * Add a subtask to a parent chore list.
+ * The subtask is cloned and its `parentId` field is set to the parent's fingerprint.
+ * Returns a new array — does not mutate `items`.
+ */
+export function addSubtask(parentId: string, subtask: ChoreItem, items: ChoreItem[]): ChoreItem[] {
+  const child: ChoreItem = { ...subtask, parentId };
+  return [...items, child];
+}
+
+/**
+ * Return all direct children of `parentId` in the given list.
+ * Returns a new array (may be empty).
+ */
+export function getSubtasks(parentId: string, items: ChoreItem[]): ChoreItem[] {
+  return items.filter((item) => item.parentId === parentId);
+}
+
+/**
+ * Remove the first item in `items` whose fingerprint equals `id`.
+ * Returns a new array — does not mutate `items`.
+ */
+export function removeSubtask(id: string, items: ChoreItem[]): ChoreItem[] {
+  const idx = items.findIndex((item) => fingerprint(item) === id);
+  if (idx < 0) return items.slice();
+  return [...items.slice(0, idx), ...items.slice(idx + 1)];
+}
