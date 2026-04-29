@@ -1322,5 +1322,52 @@ export function initConfigPanel(): void {
     }
   });
 
+  // Sprint 200 / X7: Config search box
+  const cfgSearchBox = document.getElementById("cfg-search-box") as HTMLInputElement | null;
+  if (cfgSearchBox) {
+    cfgSearchBox.addEventListener("input", () => {
+      const q = cfgSearchBox.value.trim().toLowerCase();
+      const allRows = overlay()?.querySelectorAll<HTMLElement>(".cfg-row");
+      const allSections = overlay()?.querySelectorAll<HTMLElement>(".cfg-section");
+      const allSectionHdrs = overlay()?.querySelectorAll<HTMLElement>(".cfg-group-label");
+
+      if (!allRows) return;
+
+      if (!q) {
+        // Restore normal tab visibility
+        allRows.forEach((r) => r.removeAttribute("hidden"));
+        allSectionHdrs?.forEach((h) => h.removeAttribute("hidden"));
+        allSections?.forEach((s) => {
+          s.removeAttribute("hidden");
+          // Restore active state based on tabs
+          const isActive = s.classList.contains("active");
+          if (!isActive) s.setAttribute("hidden", "");
+          else s.removeAttribute("hidden");
+        });
+        return;
+      }
+
+      // Show all sections while searching
+      allSections?.forEach((s) => s.removeAttribute("hidden"));
+      allSectionHdrs?.forEach((h) => h.removeAttribute("hidden"));
+
+      allRows.forEach((row) => {
+        const text = (row.textContent ?? "").toLowerCase();
+        const match = text.includes(q);
+        if (match) row.removeAttribute("hidden");
+        else row.setAttribute("hidden", "");
+      });
+    });
+
+    // Clear search when panel closes
+    overlay()?.addEventListener("click", (e: Event) => {
+      const ov = overlay();
+      if (e.target === ov && cfgSearchBox.value) {
+        cfgSearchBox.value = "";
+        cfgSearchBox.dispatchEvent(new Event("input"));
+      }
+    });
+  }
+
   diagLog("[config-panel] initialized");
 }
