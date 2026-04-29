@@ -2328,3 +2328,104 @@ describe("computeGoldenHour", () => {
     expect(morningEnd).toMatch(/07:30/);
   });
 });
+
+// ── W4 / Sprint 193: Air quality ──────────────────────────────────────────────
+
+import { aqiLabel, renderAqiTile, fetchAirQuality } from "@/cards/weather/weather";
+import { isAirQualityResponse } from "@/types/api";
+
+describe("Weather — aqiLabel (Sprint 193 / W4)", () => {
+  it("returns aqi-good for AQI 0", () => {
+    expect(aqiLabel(0).cls).toBe("aqi-good");
+    expect(aqiLabel(0).label).toBe("טוב");
+  });
+  it("returns aqi-good for AQI 20", () => {
+    expect(aqiLabel(20).cls).toBe("aqi-good");
+  });
+  it("returns aqi-fair for AQI 21", () => {
+    expect(aqiLabel(21).cls).toBe("aqi-fair");
+  });
+  it("returns aqi-moderate for AQI 50", () => {
+    expect(aqiLabel(50).cls).toBe("aqi-moderate");
+  });
+  it("returns aqi-poor for AQI 70", () => {
+    expect(aqiLabel(70).cls).toBe("aqi-poor");
+  });
+  it("returns aqi-vpoor for AQI 90", () => {
+    expect(aqiLabel(90).cls).toBe("aqi-vpoor");
+  });
+  it("returns aqi-extreme for AQI 110", () => {
+    expect(aqiLabel(110).cls).toBe("aqi-extreme");
+  });
+});
+
+describe("Weather — renderAqiTile (Sprint 193 / W4)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="wx-aqi"></div>`;
+  });
+
+  it("renders AQI pill + Hebrew label in #wx-aqi", () => {
+    renderAqiTile(25);
+    const el = document.getElementById("wx-aqi")!;
+    expect(el.innerHTML).toContain("aqi-fair");
+    expect(el.innerHTML).toContain("25");
+    expect(el.textContent).toContain("סביר");
+  });
+
+  it("renders good label for AQI 10", () => {
+    renderAqiTile(10);
+    expect(document.getElementById("wx-aqi")!.innerHTML).toContain("aqi-good");
+  });
+
+  it("does nothing when #wx-aqi element is absent", () => {
+    document.body.innerHTML = "";
+    expect(() => renderAqiTile(30)).not.toThrow();
+  });
+});
+
+describe("Weather — fetchAirQuality (Sprint 193 / W4)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns AirQualityResponse on valid data", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ current: { european_aqi: 35, pm10: 20, pm2_5: 12 } }),
+      }),
+    );
+    const result = await fetchAirQuality(31.77, 35.21);
+    expect(result).not.toBeNull();
+    expect(result?.current.european_aqi).toBe(35);
+  });
+
+  it("returns null when response fails type guard", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ bad: true }) }),
+    );
+    const result = await fetchAirQuality(31.77, 35.21);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when fetch throws", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+    const result = await fetchAirQuality(31.77, 35.21);
+    expect(result).toBeNull();
+  });
+});
+
+describe("Weather — isAirQualityResponse type guard", () => {
+  it("accepts valid AQI object", () => {
+    expect(isAirQualityResponse({ current: { european_aqi: 30, pm10: 15, pm2_5: 8 } })).toBe(true);
+  });
+  it("rejects missing pm2_5 field", () => {
+    expect(isAirQualityResponse({ current: { european_aqi: 30, pm10: 15 } })).toBe(false);
+  });
+  it("rejects non-object", () => {
+    expect(isAirQualityResponse(null)).toBe(false);
+    expect(isAirQualityResponse("string")).toBe(false);
+  });
+});

@@ -36,6 +36,27 @@ export interface WeatherResponse {
   };
 }
 
+// ── Air Quality (Open-Meteo air-quality API) — Sprint 193 / W4 ──
+export interface AirQualityResponse {
+  current: {
+    european_aqi: number;
+    pm10: number;
+    pm2_5: number;
+  };
+}
+
+/** Type guard for AirQualityResponse. */
+export function isAirQualityResponse(v: unknown): v is AirQualityResponse {
+  if (!isObj(v)) return false;
+  const cur = v["current"];
+  if (!isObj(cur)) return false;
+  return (
+    typeof cur["european_aqi"] === "number" &&
+    typeof cur["pm10"] === "number" &&
+    typeof cur["pm2_5"] === "number"
+  );
+}
+
 // ── Stocks (Yahoo Finance v8 Chart) ──
 export interface YahooChartResponse {
   chart: {

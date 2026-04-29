@@ -20,8 +20,8 @@ import {
   LS_HOME_NAME,
   LS_WX_CHART_MODE,
 } from "../../core/constants";
-import type { WeatherResponse } from "../../types/api";
-import { isWeatherResponse } from "../../types/api";
+import type { WeatherResponse, AirQualityResponse } from "../../types/api";
+import { isWeatherResponse, isAirQualityResponse } from "../../types/api";
 import { diagLog } from "../../core/diag";
 import { cGet, cGetStale, cSet } from "../../core/cache";
 import { setSync } from "../../core/sync";
@@ -153,6 +153,7 @@ const el = {
   wxPrecip: null as HTMLElement | null,
   wxHourlyStrip: null as HTMLElement | null,
   wxCloud: null as HTMLElement | null,
+  wxAqi: null as HTMLElement | null,
   wxWindTile: null as HTMLElement | null,
   wxRiseTile: null as HTMLElement | null,
   wxTempSpark: null as SVGElement | null,
@@ -184,6 +185,7 @@ export function cacheDom(): void {
   el.wxPrecip = document.getElementById("wx-precip");
   el.wxHourlyStrip = document.getElementById("wx-hourly-strip");
   el.wxCloud = document.getElementById("wx-cloud");
+  el.wxAqi = document.getElementById("wx-aqi");
   el.wxWindTile = (el.wxWind?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxTempSpark = document.getElementById("wx-temp-spark") as SVGElement | null;
@@ -193,6 +195,49 @@ export function cacheDom(): void {
 function getTempUnit(): "C" | "F" {
   return loadConfig().tempUnit;
 }
+
+// ── Sprint 193 / W4: Air quality ─────────────────────────────────────────────────────
+
+/**
+ * W4 (Sprint 193): Map European AQI (0–100+) to a label + CSS class.
+ * Uses WHO/EEA 5-band scale.
+ */
+export function aqiLabel(aqi: number): { label: string; cls: string } {
+  if (aqi <= 20) return { label: "\u05d8\u05d5\u05d1", cls: "aqi-good" }; // טוב
+  if (aqi <= 40) return { label: "\u05e1\u05d1\u05d9\u05e8", cls: "aqi-fair" }; // סביר
+  if (aqi <= 60) return { label: "\u05d1\u05d9\u05e0\u05d5\u05e0\u05d9", cls: "aqi-moderate" }; // בינוני
+  if (aqi <= 80) return { label: "\u05d2\u05e8\u05d5\u05e2", cls: "aqi-poor" }; // גרוע
+  if (aqi <= 100) return { label: "\u05d2\u05e8\u05d5\u05e2 \u05de\u05d0\u05d5\u05d3", cls: "aqi-vpoor" }; // גרוע מאוד
+  return { label: "\u05e7\u05d9\u05e6\u05d5\u05e0\u05d9", cls: "aqi-extreme" }; // קיצוני
+}
+
+/** W4: Fetch air quality data for current lat/lon. Returns null on failure. */
+export async function fetchAirQuality(
+  lat: number,
+  lon: number,
+): Promise<AirQualityResponse | null> {
+  try {
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=european_aqi,pm10,pm2_5`;
+    const data = await fetchJSONWithWorker<AirQualityResponse>(url);
+    if (!isAirQualityResponse(data)) return null;
+    return data;
+  } catch {
+    diagLog("FDB-W4: [weather] Air quality fetch failed");
+    return null;
+  }
+}
+
+/** W4: Render the air quality tile. */
+export function renderAqiTile(aqi: number): void {
+  const target = el.wxAqi ?? document.getElementById("wx-aqi");
+  if (!target) return;
+  const { label, cls } = aqiLabel(aqi);
+  target.innerHTML = trustedHTML(
+    `<span class="aqi-pill ${cls}">${aqi}</span> ${label}`,
+  );
+}
+
+// ── end W4 ──────────────────────────────────────────────────────────────────────────
 
 /**
  * Map WMO weather code to a sky condition label and CSS class.
@@ -592,6 +637,12 @@ export function initWeatherCard(): void {
   void loadWeather();
   if (_weatherRefreshInterval !== null) clearInterval(_weatherRefreshInterval);
   _weatherRefreshInterval = scheduleCard(loadWeather, INTERVALS.WEATHER);
+
+  // Sprint 193 / W4: Async air quality fetch (parallel, non-blocking)
+  void (async () => {
+    const aq = await fetchAirQuality(_activeLat, _activeLon);
+    if (aq !== null) renderAqiTile(aq.current.european_aqi);
+  })();
 
   // Wire chart toggle button — persist view mode to localStorage
   bindOnce(document.getElementById("wx-chart-toggle"), "click", "fdbWxClickBound", () => {
