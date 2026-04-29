@@ -64,6 +64,7 @@ import { initCardDragDrop } from "./ui/layout-drag";
 import { initResizers } from "./ui/resizer";
 import { showToast } from "./ui/toast";
 import { initOfflineBanner } from "./ui/offline-banner";
+import { globalOffline } from "./core/event-bus";
 import { initScrollShadows } from "./ui/scroll";
 import { mountRegisteredCards } from "./core/card-registry";
 import { initCardSettingsButtons } from "./ui/card-settings-dialog";
@@ -513,7 +514,7 @@ export function init(): void {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
       const data = e.data as { type?: string };
-      if (data?.type === "NETWORK_BACK") {
+      if (data?.type === "NETWORK_BACK" && !globalOffline.value) {
         showToast(t("onlineRefreshing"), 2500);
         setTimeout(refreshAllCardsStaggered, 500);
       }

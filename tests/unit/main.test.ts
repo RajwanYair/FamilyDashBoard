@@ -10,6 +10,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn(), getDiagEntries: vi.fn().mockReturnValue([]) }));
 vi.mock("@/core/cache", () => ({
   cEvict: vi.fn(),
+  cGetStale: vi.fn().mockReturnValue(null),
   hydrateFromIdb: vi.fn().mockResolvedValue(0),
   migrateLocalStorageToIdb: vi.fn().mockResolvedValue(0),
   cEvictIdb: vi.fn().mockResolvedValue(0),
