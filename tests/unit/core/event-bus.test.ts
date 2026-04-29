@@ -1,0 +1,212 @@
+/**
+ * Tests for src/core/event-bus.ts
+ *
+ * Sprint 173 (X2 · V14-CROSS): signals-based pub/sub cross-card channels.
+ */
+
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import {
+  globalSync,
+  globalAlertChannel,
+  globalThemeChannel,
+  globalOffline,
+  broadcastSync,
+  broadcastAlert,
+  broadcastTheme,
+  initOfflineTracking,
+  _resetBusForTesting,
+  type AlertEvent,
+} from "@/core/event-bus";
+import { effect } from "@/core/signals";
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+
+/** Read the current value of a reactive signal as a snapshot. */
+function snapshot<T>(read: () => T): T {
+  return read();
+}
+
+// Full bus reset before each test — prevents state leaking between cases.
+beforeEach(() => {
+  _resetBusForTesting();
+});
+
+// ── globalSync ────────────────────────────────────────────────────────────────
+
+describe("globalSync", () => {
+  it("defaults to 'ok' when no cards are registered", () => {
+    expect(globalSync.value).toBe("ok");
+  });
+
+  it("returns 'loading' when any card is loading", () => {
+    broadcastSync("wx", "loading");
+    expect(globalSync.value).toBe("loading");
+  });
+
+  it("returns 'error' when a card errored (none loading)", () => {
+    broadcastSync("wx", "error");
+    expect(globalSync.value).toBe("error");
+  });
+
+  it("'loading' takes priority over 'error'", () => {
+    broadcastSync("wx", "error");
+    broadcastSync("cal", "loading");
+    expect(globalSync.value).toBe("loading");
+  });
+
+  it("returns 'ok' after all cards transition back to ok", () => {
+    broadcastSync("wx", "error");
+    broadcastSync("wx", "ok");
+    expect(globalSync.value).toBe("ok");
+  });
+
+  it("is a no-op when broadcasting the same state", () => {
+    broadcastSync("wx", "ok");
+    const reads: string[] = [];
+    const dispose = effect(() => {
+      reads.push(globalSync.value);
+    });
+    broadcastSync("wx", "ok"); // same state — should not re-trigger
+    dispose();
+    expect(reads).toHaveLength(1); // only the initial effect run
+  });
+
+  it("tracks multiple cards independently", () => {
+    broadcastSync("wx", "ok");
+    broadcastSync("cal", "error");
+    broadcastSync("cur", "loading");
+    expect(globalSync.value).toBe("loading");
+
+    broadcastSync("cur", "ok");
+    expect(globalSync.value).toBe("error");
+
+    broadcastSync("cal", "ok");
+    expect(globalSync.value).toBe("ok");
+  });
+});
+
+// ── globalAlertChannel ────────────────────────────────────────────────────────
+
+describe("globalAlertChannel", () => {
+  it("defaults to null", () => {
+    expect(globalAlertChannel.value).toBeNull();
+  });
+
+  it("broadcastAlert sets the channel value", () => {
+    const evt: AlertEvent = { source: "alerts", type: "pause" };
+    broadcastAlert(evt);
+    expect(globalAlertChannel.value).toEqual(evt);
+  });
+
+  it("broadcastAlert(null) clears the channel", () => {
+    broadcastAlert({ source: "alerts", type: "pause" });
+    broadcastAlert(null);
+    expect(globalAlertChannel.value).toBeNull();
+  });
+
+  it("supports both pause and resume types", () => {
+    broadcastAlert({ source: "alerts", type: "pause" });
+    expect(globalAlertChannel.value?.type).toBe("pause");
+
+    broadcastAlert({ source: "alerts", type: "resume" });
+    expect(globalAlertChannel.value?.type).toBe("resume");
+  });
+
+  it("notifies subscribers on change", () => {
+    const received: Array<AlertEvent | null> = [];
+    const dispose = effect(() => {
+      received.push(globalAlertChannel.value);
+    });
+    broadcastAlert({ source: "test", type: "pause" });
+    broadcastAlert(null);
+    dispose();
+    expect(received).toHaveLength(3); // initial + pause + null
+  });
+});
+
+// ── globalThemeChannel ────────────────────────────────────────────────────────
+
+describe("globalThemeChannel", () => {
+  it("defaults to 'black'", () => {
+    expect(globalThemeChannel.value).toBe("black");
+  });
+
+  it("broadcastTheme updates the channel", () => {
+    broadcastTheme("matrix");
+    expect(globalThemeChannel.value).toBe("matrix");
+  });
+
+  it("accepts all 6 theme names", () => {
+    const themes = ["black", "blue", "matrix", "amber", "purple", "rose"] as const;
+    for (const t of themes) {
+      broadcastTheme(t);
+      expect(globalThemeChannel.value).toBe(t);
+    }
+  });
+});
+
+// ── globalOffline ─────────────────────────────────────────────────────────────
+
+describe("globalOffline", () => {
+  it("defaults to false (online)", () => {
+    expect(globalOffline.value).toBe(false);
+  });
+
+  it("can be set to true to simulate offline", () => {
+    globalOffline.value = true;
+    expect(globalOffline.value).toBe(true);
+  });
+
+  it("can be restored to false", () => {
+    globalOffline.value = true;
+    globalOffline.value = false;
+    expect(globalOffline.value).toBe(false);
+  });
+});
+
+// ── initOfflineTracking ───────────────────────────────────────────────────────
+
+describe("initOfflineTracking", () => {
+  it("registers online/offline listeners on window", () => {
+    const addSpy = vi.spyOn(window, "addEventListener");
+    initOfflineTracking();
+    const calls = addSpy.mock.calls.map((c) => c[0]);
+    expect(calls).toContain("online");
+    expect(calls).toContain("offline");
+    addSpy.mockRestore();
+  });
+
+  it("sets globalOffline to true on 'offline' event", () => {
+    initOfflineTracking();
+    window.dispatchEvent(new Event("offline"));
+    expect(globalOffline.value).toBe(true);
+  });
+
+  it("sets globalOffline to false on 'online' event", () => {
+    globalOffline.value = true;
+    initOfflineTracking();
+    window.dispatchEvent(new Event("online"));
+    expect(globalOffline.value).toBe(false);
+  });
+});
+
+// ── reactivity cross-channel ──────────────────────────────────────────────────
+
+describe("reactivity", () => {
+  it("effect() on globalSync fires when state changes", () => {
+    const states: string[] = [];
+    const dispose = effect(() => {
+      states.push(globalSync.value);
+    });
+    broadcastSync("wx", "loading");
+    broadcastSync("wx", "ok");
+    dispose();
+    expect(states).toEqual(["ok", "loading", "ok"]);
+  });
+
+  it("snapshot helper reads without subscribing", () => {
+    broadcastSync("wx", "error");
+    const val = snapshot(() => globalSync.value);
+    expect(val).toBe("error");
+  });
+});
