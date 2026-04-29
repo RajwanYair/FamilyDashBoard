@@ -159,6 +159,8 @@ const el = {
   wxRiseTile: null as HTMLElement | null,
   wxTempSpark: null as SVGElement | null,
   wxPrecipSpark: null as SVGElement | null,
+  wxCompassNeedle: null as SVGElement | null,
+  wxCompassGust: null as SVGElement | null,
 };
 
 let _weatherRefreshInterval: number | null = null;
@@ -192,6 +194,8 @@ export function cacheDom(): void {
   el.wxRiseTile = (el.wxRise?.closest(".wx-detail") as HTMLElement) ?? null;
   el.wxTempSpark = document.getElementById("wx-temp-spark") as SVGElement | null;
   el.wxPrecipSpark = document.getElementById("wx-precip-spark") as SVGElement | null;
+  el.wxCompassNeedle = document.getElementById("wx-compass-needle") as SVGElement | null;
+  el.wxCompassGust = document.getElementById("wx-compass-gust") as SVGElement | null;
 }
 
 function getTempUnit(): "C" | "F" {
@@ -284,6 +288,45 @@ export function renderNowcastStrip(data: NowcastResponse): void {
 }
 
 // ── end W3 ──────────────────────────────────────────────────────────────────────────
+
+// ── Sprint 195 / W5: SVG wind compass ────────────────────────────────────────────────
+
+/**
+ * Compute an SVG arc path string for the gust ring.
+ * Draws a partial arc from startDeg to endDeg at radius r.
+ */
+export function compassGustArc(startDeg: number, sweepDeg: number, r = 16): string {
+  const toRad = (d: number): number => ((d - 90) * Math.PI) / 180;
+  const sweep = Math.min(sweepDeg, 359.9);
+  const x1 = r * Math.cos(toRad(startDeg));
+  const y1 = r * Math.sin(toRad(startDeg));
+  const x2 = r * Math.cos(toRad(startDeg + sweep));
+  const y2 = r * Math.sin(toRad(startDeg + sweep));
+  const large = sweep > 180 ? 1 : 0;
+  return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+}
+
+/**
+ * Rotate the SVG compass needle to the given wind direction and
+ * show/hide the gust arc ring.
+ */
+export function renderWindCompass(deg: number, speed: number, gust: number): void {
+  const needle = el.wxCompassNeedle ?? document.getElementById("wx-compass-needle") as SVGElement | null;
+  const gustEl = el.wxCompassGust ?? document.getElementById("wx-compass-gust") as SVGElement | null;
+  if (!needle) return;
+  needle.setAttribute("transform", `rotate(${deg})`);
+  if (gustEl) {
+    if (gust > speed + 5) {
+      const arc = compassGustArc(deg - 30, 60);
+      gustEl.setAttribute("d", arc);
+      gustEl.setAttribute("visibility", "visible");
+    } else {
+      gustEl.setAttribute("visibility", "hidden");
+    }
+  }
+}
+
+// ── end W5 ──────────────────────────────────────────────────────────────────────────
 
 /**
  * Map WMO weather code to a sky condition label and CSS class.
@@ -527,6 +570,9 @@ export function renderWeather(d: WeatherResponse): void {
       el.wxGust.style.display = "none";
     }
   }
+
+  // Sprint 195 / W5: SVG wind compass
+  renderWindCompass(cur.wind_direction_10m, Math.round(cur.wind_speed_10m), Math.round(cur.wind_gusts_10m));
 
   // UV index pill (F122)
   if (el.wxUv) {
