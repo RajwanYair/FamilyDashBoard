@@ -211,6 +211,45 @@ export function getMinutesToNextTransition(): number {
   return 0; // After 8:00 PM — don't show countdown
 }
 
+// Sprint 208 / S5: Pre/post-market state pure helpers ─────────────────────
+
+/** Returns true during the NYSE pre-market session (4:00–9:29 AM ET). */
+export function isPreMarket(): boolean {
+  return getMarketStatus() === "pre";
+}
+
+/** Returns true during the NYSE after-hours session (4:00–7:59 PM ET). */
+export function isPostMarket(): boolean {
+  return getMarketStatus() === "after";
+}
+
+/**
+ * Return a display-ready object for the current market state.
+ * Includes the raw status, human label, and convenience booleans.
+ */
+export function getMarketStateForDisplay(): {
+  status: MarketStatus;
+  label: string;
+  isPreMarket: boolean;
+  isPostMarket: boolean;
+  isOpen: boolean;
+} {
+  const status = getMarketStatus();
+  const LABELS: Record<MarketStatus, string> = {
+    open: "שוק פתוח",
+    pre: "טרום-שוק",
+    after: "אחרי-שוק",
+    closed: "שוק סגור",
+  };
+  return {
+    status,
+    label: LABELS[status],
+    isPreMarket: status === "pre",
+    isPostMarket: status === "after",
+    isOpen: status === "open",
+  };
+}
+
 let _marketBadgeEl: HTMLElement | null = null;
 let _statusMarketChip: HTMLElement | null = null;
 let _marketBadgeInterval: number | null = null;

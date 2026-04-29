@@ -29,6 +29,9 @@ import {
   loadAllStocks,
   fillStockDetailPopover,
   getTopMovers,
+  isPreMarket,
+  isPostMarket,
+  getMarketStateForDisplay,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear, cSetAsync } from "@/core/cache";
@@ -2515,5 +2518,40 @@ describe("Stocks — getTopMovers (Sprint 187 S3)", () => {
   it("sets dir=down for negative pct", () => {
     const els = [makeStockEl("TSLA", -2.5)];
     expect(getTopMovers(els)[0]?.dir).toBe("down");
+  });
+});
+
+// ── Sprint 208 / S5: isPreMarket, isPostMarket, getMarketStateForDisplay ────
+describe("Stocks — S5 pre/post-market helpers (Sprint 208)", () => {
+  afterEach(() => { vi.useRealTimers(); });
+
+  it("isPreMarket returns true at 7:00 AM ET Monday", () => {
+    // Monday 2024-01-08 07:00 ET = 12:00 UTC (7*60=420, 240≤420<570)
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-08T12:00:00Z"));
+    expect(isPreMarket()).toBe(true);
+  });
+
+  it("isPostMarket returns true at 5:00 PM ET Monday", () => {
+    // Monday 2024-01-08 17:00 ET = 22:00 UTC (17*60=1020, 960≤1020<1200)
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-08T22:00:00Z"));
+    expect(isPostMarket()).toBe(true);
+  });
+
+  it("getMarketStateForDisplay isOpen true during regular hours", () => {
+    // Monday 2024-01-08 11:00 ET = 16:00 UTC (11*60=660, 570≤660<960)
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-08T16:00:00Z"));
+    const s = getMarketStateForDisplay();
+    expect(s.isOpen).toBe(true);
+    expect(s.isPreMarket).toBe(false);
+    expect(s.isPostMarket).toBe(false);
+    expect(s.label).toBe("שוק פתוח");
+  });
+
+  it("getMarketStateForDisplay status matches getMarketStatus", () => {
+    const s = getMarketStateForDisplay();
+    expect(["pre", "open", "after", "closed"]).toContain(s.status);
   });
 });
