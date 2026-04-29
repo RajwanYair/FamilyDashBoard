@@ -27,6 +27,7 @@ import {
   recurrenceResetKey,
   checkRecurringReset,
   addQuickChore,
+  advanceRecurringDueDate,
 } from "@/cards/tasks/tasks";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
@@ -1912,5 +1913,49 @@ describe("Tasks — tag chips rendering (Sprint 177 T3)", () => {
     setChores([{ person: "אלי", chore: "כביסה", tags: ["ניקיון"] }]);
     renderTasksCard();
     expect(document.querySelector(".tasks-tags")).not.toBeNull();
+  });
+});
+
+// ── Sprint 203 / T2: advanceRecurringDueDate ──────────────────────────────
+describe("advanceRecurringDueDate", () => {
+  it("returns null for non-recurring item", () => {
+    const item: ChoreItem = { person: "אלי", chore: "ניקיון @2025-03-10" };
+    expect(advanceRecurringDueDate(item)).toBeNull();
+  });
+
+  it("returns null when no due date is embedded", () => {
+    const item: ChoreItem = { person: "אלי", chore: "ניקיון", recurrence: "weekly" };
+    expect(advanceRecurringDueDate(item)).toBeNull();
+  });
+
+  it("advances a daily task by 1 day from the due date", () => {
+    const item: ChoreItem = { person: "אלי", chore: "ניקיון @2025-03-10", recurrence: "daily" };
+    const result = advanceRecurringDueDate(item, new Date("2025-03-09"));
+    expect(result).toBe("2025-03-11");
+  });
+
+  it("advances a weekly task by 7 days", () => {
+    const item: ChoreItem = { person: "אלי", chore: "ניקיון @2025-03-10", recurrence: "weekly" };
+    const result = advanceRecurringDueDate(item, new Date("2025-03-09"));
+    expect(result).toBe("2025-03-17");
+  });
+
+  it("advances a monthly task by 1 month", () => {
+    const item: ChoreItem = { person: "אלי", chore: "ניקיון @2025-03-15", recurrence: "monthly" };
+    const result = advanceRecurringDueDate(item, new Date("2025-03-10"));
+    expect(result).toBe("2025-04-15");
+  });
+
+  it("advances a yearly task by 1 year", () => {
+    const item: ChoreItem = { person: "אלי", chore: "ניקיון @2025-01-01", recurrence: "yearly" };
+    const result = advanceRecurringDueDate(item, new Date("2025-01-01"));
+    expect(result).toBe("2026-01-01");
+  });
+
+  it("advances from today when due date is in the past", () => {
+    const item: ChoreItem = { person: "אלי", chore: "ניקיון @2025-01-01", recurrence: "weekly" };
+    const now = new Date("2025-03-10");
+    const result = advanceRecurringDueDate(item, now);
+    expect(result).toBe("2025-03-17");
   });
 });

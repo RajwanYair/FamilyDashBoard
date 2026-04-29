@@ -242,6 +242,49 @@ export function countOverdueTasks(chores: ChoreItem[]): number {
 }
 
 /**
+ * Sprint 203 / T2: Compute the next due-date for a recurring task by advancing
+ * the existing embedded due date by the recurrence interval.
+ * - daily → +1 day, weekly → +7 days, monthly → +1 month, yearly → +1 year.
+ * Advances from max(existing due date, today) so the result is always ≥ tomorrow.
+ * Returns the new YYYY-MM-DD string, or null if the item has no recurrence / no due date.
+ */
+export function advanceRecurringDueDate(item: ChoreItem, now: Date = new Date()): string | null {
+  if (!item.recurrence) return null;
+  const { dueDate } = parseTaskDueDate(item.chore);
+  if (!dueDate) return null;
+  const base = new Date(dueDate + "T00:00:00");
+  if (isNaN(base.getTime())) return null;
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const from = base < today ? today : base;
+  let next: Date;
+  switch (item.recurrence) {
+    case "daily":
+      next = new Date(from.getTime() + 86_400_000);
+      break;
+    case "weekly":
+      next = new Date(from.getTime() + 7 * 86_400_000);
+      break;
+    case "monthly": {
+      next = new Date(from);
+      next.setMonth(next.getMonth() + 1);
+      break;
+    }
+    case "yearly": {
+      next = new Date(from);
+      next.setFullYear(next.getFullYear() + 1);
+      break;
+    }
+    default:
+      return null;
+  }
+  const y = next.getFullYear();
+  const m = String(next.getMonth() + 1).padStart(2, "0");
+  const d = String(next.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+/**
  * Compute the completion ratio for a list of chores + done-map.
  * Returns `{ done, total, pct }` (pct is 0–100, rounded).
  */
@@ -352,6 +395,31 @@ export function renderTasksCard(): void {
           doneMsg.style.display = pending2 === 0 ? "" : "none";
         }
         diagLog(`FDB-048: [tasks] ${fp} = ${String(cb.checked)}`);
+        // Sprint 203 / T2: auto-advance due date for recurring tasks when marked done
+        if (cb.checked && item.recurrence) {
+          const newDate = advanceRecurringDueDate(item);
+          if (newDate !== null) {
+            const allChores = loadChores();
+            const { dueDate: oldDate } = parseTaskDueDate(item.chore);
+            const updatedChores = allChores.map((c) => {
+              if (fingerprint(c) !== fp) return c;
+              const newChore = oldDate
+                ? c.chore.replace(/@\d{4}-\d{2}-\d{2}$/u, `@${newDate}`)
+                : c.chore + ` @${newDate}`;
+              return { ...c, chore: newChore };
+            });
+            try {
+              localStorage.setItem(LS_CHORES, JSON.stringify(updatedChores));
+            } catch {
+              /* quota */
+            }
+            // Clear old fingerprint's done state so re-render picks up fresh task
+            const freshMap = loadDoneMap();
+            delete freshMap[fp];
+            saveDoneMap(freshMap);
+            renderTasksCard();
+          }
+        }
       });
 
       const label = document.createElement("span");
