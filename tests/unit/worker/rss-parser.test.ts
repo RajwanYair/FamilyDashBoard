@@ -150,3 +150,61 @@ describe("parseRss — entity decoding", () => {
     expect(item.title).toBe("Hello");
   });
 });
+
+describe("parseRss — Atom edge-case branches (Sprint 153)", () => {
+  it("uses extractText link fallback when no href attr in Atom entry", () => {
+    // Atom entry uses <link>url</link> text content, not <link href="..."/>
+    const xml = `<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <title>Text Link Entry</title>
+    <link>https://example.com/text-link</link>
+    <published>2026-04-01T10:00:00Z</published>
+  </entry>
+</feed>`;
+    const [item] = parseRss(xml, "Atom");
+    expect(item.link).toBe("https://example.com/text-link");
+  });
+
+  it("uses dc:date when published and updated absent in Atom entry", () => {
+    const xml = `<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <entry>
+    <title>DC Date Entry</title>
+    <link href="https://example.com/dc"/>
+    <dc:date>2026-03-15T08:00:00Z</dc:date>
+  </entry>
+</feed>`;
+    const [item] = parseRss(xml, "Atom");
+    expect(item.pubDate).toContain("2026-03-15");
+  });
+
+  it("uses content tag as description when summary is absent in Atom entry", () => {
+    const xml = `<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <title>Content Entry</title>
+    <link href="https://example.com/content"/>
+    <published>2026-04-01T10:00:00Z</published>
+    <content>Full content text for this entry</content>
+  </entry>
+</feed>`;
+    const [item] = parseRss(xml, "Atom");
+    expect(item.description).toContain("Full content text");
+  });
+
+  it("handles RSS item with dc:date fallback when pubDate absent", () => {
+    const xml = `<?xml version="1.0"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <item>
+      <title>DC Date RSS</title>
+      <link>https://example.com/dc-rss</link>
+      <dc:date>2026-03-20</dc:date>
+    </item>
+  </channel>
+</rss>`;
+    const [item] = parseRss(xml, "Test");
+    expect(item.pubDate).toContain("2026-03-20");
+  });
+});

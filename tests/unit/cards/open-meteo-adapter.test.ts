@@ -23,9 +23,10 @@ vi.mock("@/types/api", () => ({
   isWeatherResponse: vi.fn().mockReturnValue(true),
 }));
 
-import { cGet } from "@/core/cache";
+import { cGet, cGetStale } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
 import { recordProviderSuccess, recordProviderFailure } from "@/core/provider";
+import { isWeatherResponse } from "@/types/api";
 
 describe("OpenMeteoAdapter (Sprint 89)", () => {
   const adapter = createOpenMeteoAdapter(31.77, 35.21);
@@ -65,5 +66,35 @@ describe("OpenMeteoAdapter (Sprint 89)", () => {
 
   it("status() returns current health", () => {
     expect(adapter.status()).toBe("ok");
+  });
+
+  it("returns ok:false with stale when isWeatherResponse returns false and stale exists (Sprint 153)", async () => {
+    vi.mocked(isWeatherResponse).mockReturnValueOnce(false);
+    vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce({ invalid: true });
+    const stale = { current: { temperature_2m: 20 } };
+    vi.mocked(cGetStale).mockReturnValueOnce(stale);
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toBe("Invalid response shape");
+      expect(result.stale).toBe(stale);
+    }
+    expect(recordProviderFailure).toHaveBeenCalledWith("open-meteo");
+  });
+
+  it("returns ok:false with stale=undefined when isWeatherResponse false and no stale (Sprint 153)", async () => {
+    vi.mocked(isWeatherResponse).mockReturnValueOnce(false);
+    vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce(null);
+    vi.mocked(cGetStale).mockReturnValueOnce(null);
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.stale).toBeUndefined();
+  });
+
+  it("returns error string for non-Error exception (Sprint 153)", async () => {
+    vi.mocked(fetchJSONWithWorker).mockRejectedValueOnce("plain string error");
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBe("plain string error");
   });
 });

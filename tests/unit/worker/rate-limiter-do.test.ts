@@ -105,4 +105,35 @@ describe("RateLimiterDO — sliding window", () => {
     const res = await do_.fetch(new Request("https://do/check?ip=1.1.1.1&max=10&window=60000"));
     expect(res.status).toBe(404);
   });
+
+  it("uses default ip='unknown' when ip param absent", async () => {
+    const do_ = new RateLimiterDO(makeDOState());
+    const res = await do_.fetch(
+      new Request("https://do/check?max=5&window=60000", { method: "POST" }),
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { limited: boolean; remaining: number };
+    expect(body.limited).toBe(false);
+    expect(body.remaining).toBe(4); // max(5) - 1
+  });
+
+  it("uses default max=120 when max param absent", async () => {
+    const do_ = new RateLimiterDO(makeDOState());
+    const res = await do_.fetch(
+      new Request("https://do/check?ip=9.9.9.9&window=60000", { method: "POST" }),
+    );
+    const body = (await res.json()) as { limited: boolean; remaining: number };
+    expect(body.limited).toBe(false);
+    expect(body.remaining).toBe(119); // default max=120
+  });
+
+  it("uses default window=60000 when window param absent", async () => {
+    const do_ = new RateLimiterDO(makeDOState());
+    const res = await do_.fetch(
+      new Request("https://do/check?ip=8.8.8.8&max=3", { method: "POST" }),
+    );
+    const body = (await res.json()) as { limited: boolean; remaining: number };
+    expect(body.limited).toBe(false);
+    expect(body.remaining).toBe(2);
+  });
 });

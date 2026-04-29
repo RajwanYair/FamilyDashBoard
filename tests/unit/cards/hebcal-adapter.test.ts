@@ -79,4 +79,20 @@ describe("HebcalAdapter (Sprint 90)", () => {
     }
     expect(recordProviderFailure).toHaveBeenCalledWith("hebcal");
   });
+
+  it("returns ok:false with stale=undefined when no stale on invalid response (Sprint 153)", async () => {
+    vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce({ events: [] });
+    vi.mocked(cGetStale).mockReturnValueOnce(null);
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.stale).toBeUndefined();
+  });
+
+  it("returns error string for non-Error exception (Sprint 153)", async () => {
+    vi.mocked(fetchJSONWithWorker).mockRejectedValueOnce("network refused");
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBe("network refused");
+    expect(recordProviderFailure).toHaveBeenCalledWith("hebcal");
+  });
 });

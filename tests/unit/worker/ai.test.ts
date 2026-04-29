@@ -136,9 +136,25 @@ describe("handleNewsSummarise — AI enabled with binding", () => {
     const body = await res.json<{ ok: boolean; error: string }>();
     expect(body).toEqual({ ok: false, error: "ai_error" });
   });
-});
 
-// ── /api/motivation/hebrew — AI disabled ─────────────────────────────────────
+  it("returns 502 ai_empty_response when AI returns undefined response (Sprint 153)", async () => {
+    const emptyAi: AiBinding = { run: vi.fn().mockResolvedValue({}) };
+    const res = await handleNewsSummarise(makeEnv({ AI_ENABLED: "true", AI: emptyAi }));
+    expect(res.status).toBe(502);
+    const body = await res.json<{ ok: boolean; error: string }>();
+    expect(body).toEqual({ ok: false, error: "ai_empty_response" });
+  });
+
+  it("returns 502 ai_empty_response when AI returns a ReadableStream (Sprint 153)", async () => {
+    const streamAi: AiBinding = {
+      run: vi.fn().mockResolvedValue(new ReadableStream()),
+    };
+    const res = await handleNewsSummarise(makeEnv({ AI_ENABLED: "true", AI: streamAi }));
+    expect(res.status).toBe(502);
+    const body = await res.json<{ ok: boolean; error: string }>();
+    expect(body).toEqual({ ok: false, error: "ai_empty_response" });
+  });
+});
 
 describe("handleMotivationHebrew — AI disabled (no AI_ENABLED)", () => {
   it("returns 503 status", async () => {
@@ -240,5 +256,23 @@ describe("handleMotivationHebrew — AI enabled with binding", () => {
     expect(res.status).toBe(502);
     const body = await res.json<{ ok: boolean; error: string }>();
     expect(body).toEqual({ ok: false, error: "ai_error" });
+  });
+
+  it("returns 502 ai_empty_response when AI returns undefined response (Sprint 153)", async () => {
+    const emptyAi: AiBinding = { run: vi.fn().mockResolvedValue({}) };
+    const res = await handleMotivationHebrew(makeEnv({ AI_ENABLED: "true", AI: emptyAi }));
+    expect(res.status).toBe(502);
+    const body = await res.json<{ ok: boolean; error: string }>();
+    expect(body).toEqual({ ok: false, error: "ai_empty_response" });
+  });
+
+  it("returns 502 ai_empty_response when AI returns a ReadableStream (Sprint 153)", async () => {
+    const streamAi: AiBinding = {
+      run: vi.fn().mockResolvedValue(new ReadableStream()),
+    };
+    const res = await handleMotivationHebrew(makeEnv({ AI_ENABLED: "true", AI: streamAi }));
+    expect(res.status).toBe(502);
+    const body = await res.json<{ ok: boolean; error: string }>();
+    expect(body).toEqual({ ok: false, error: "ai_empty_response" });
   });
 });

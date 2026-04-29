@@ -99,8 +99,11 @@ export default defineConfig({
         //   Added: fdb-video-news.test.ts (+12), main (+7 branch tests), diag-overlay (+1 interval)
         //   fdb-weather/news/stocks (+2 each). Actuals: 93.62/85.39/92.63/94.87.
         //   Raised thresholds to 93.5/85.0/92.5/94.7.
+        // Sprint 153 (coverage ratchet batch): +16 tests across 5 files — rate-limiter-do,
+        //   rss-parser, open-meteo-adapter, hebcal-adapter, ai (worker). Actuals:
+        //   93.68/85.63/92.63/94.92. Raised branches 85.0 → 85.5.
         statements: 93.5,
-        branches: 85.0,
+        branches: 85.5,
         functions: 92.5,
         lines: 94.7,
       },
