@@ -46,3 +46,5 @@
 | [ADR-040](ADR-040-mermaid-static-validator.md)                                            | Mermaid Static Validator in CI                                  | 2026-04-26 | Accepted                                       |
 | [ADR-041](ADR-041-csp-wildcard-narrowing.md)                                              | CSP `https://*.intel.com` Wildcard Narrowing Plan               | 2026-04-28 | Accepted (Plan)                                |
 | [ADR-042](ADR-042-lhci-tighten-ratchet.md)                                                | LHCI Performance Threshold Tightening Plan                      | 2026-04-28 | Accepted (Plan)                                |
+| [ADR-043](ADR-043-vitest-browser-real-chromium.md)                                        | @vitest/browser with Real Chromium via Playwright Provider      | 2026-04-29 | Accepted                                       |
+| [ADR-044](ADR-044-exact-optional-property-types.md)                                       | `exactOptionalPropertyTypes: true` in tsconfig.json             | 2026-04-29 | Accepted                                       |
