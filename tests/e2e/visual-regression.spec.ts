@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — Visual Regression Tests (Stream G.2.3)
  *
- * Captures 45 baseline screenshots across nine scenario groups (Sprint 164):
+ * Captures 81 baseline screenshots across 22 scenario groups:
  *   - 18 idle baselines: 6 themes × 3 screen modes
  *   - 3 config-panel-open baselines: 3 themes × tv mode
  *   - 3 maximized-card baselines: 3 themes × tv mode
@@ -14,6 +14,16 @@
  *   - 3 compact-maximized baselines: 3 themes × tablet mode (Sprint 164)
  *   - 3 alert-state baselines: 3 themes × tv mode          (Sprint 219)
  *   - 3 video-news baselines: 3 themes × tv mode           (Sprint 219)
+ *   - 3 today-pane baselines: 3 themes × tv mode           (Sprint 223)
+ *   - 3 print-mode baselines: 3 themes × tv mode           (Sprint 223)
+ *   - 3 font-reduced baselines: 3 themes × tv mode         (Sprint 223)
+ *   - 3 night-dimmer-50 baselines: 3 themes × tv mode      (Sprint 223)
+ *   - 3 config-tablet baselines: 3 themes × tablet mode    (Sprint 223)
+ *   - 3 maximized-phone baselines: 3 themes × phone mode   (Sprint 223)
+ *   - 3 alert-takeover baselines: 3 themes × tv mode       (Sprint 223)
+ *   - 3 help-dialog-ext baselines: 3 more themes × tv mode (Sprint 223)
+ *   - 3 compact-config baselines: 3 themes × tablet mode   (Sprint 223)
+ *   - 3 compact-help baselines: 3 themes × tablet mode     (Sprint 223)
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -444,6 +454,349 @@ test.describe("FamilyDashBoard — Compact Mode Maximized Card Baselines", () =>
         timeout: 15_000,
       });
     });
+  }
+});
+
+// ── Sprint 223: Today-pane visible state baselines ────────────────────────
+
+test.describe("FamilyDashBoard — Today Pane Visible Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "amber", "rose"] as Theme[]) {
+    test(`${theme} theme / today-pane visible`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Open today-pane if collapsed
+      const todayBtn = page.locator(
+        "#today-pane-toggle, [data-action='today-pane'], [aria-label*='today'], [aria-label*='היום']",
+      );
+      const hasTodayBtn = await todayBtn.count();
+      if (hasTodayBtn > 0) {
+        await todayBtn.first().click();
+        await page.waitForTimeout(300);
+      }
+
+      await expect(page).toHaveScreenshot(`${theme}-today-pane.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+          page.locator("#today-pane .countdown, #today-pane [class*='countdown']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Print mode layout baselines ───────────────────────────────
+
+test.describe("FamilyDashBoard — Print Mode Layout Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "matrix"] as Theme[]) {
+    test(`${theme} theme / print-mode`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Emulate print media to capture print layout
+      await page.emulateMedia({ media: "print" });
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-print-mode.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+
+      // Restore screen media
+      await page.emulateMedia({ media: "screen" });
+    });
+  }
+});
+
+// ── Sprint 223: Font size reduced baselines ───────────────────────────────
+
+test.describe("FamilyDashBoard — Font Size Reduced Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "amber", "purple"] as Theme[]) {
+    test(`${theme} theme / font-reduced`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Press '-' twice to decrease font size
+      await page.keyboard.press("-");
+      await page.keyboard.press("-");
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-font-reduced.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Night dimmer at 50% baselines ─────────────────────────────
+
+test.describe("FamilyDashBoard — Night Dimmer 50% Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["matrix", "rose", "black"] as Theme[]) {
+    test(`${theme} theme / night-dimmer-50`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Set dimmer to 50% brightness via direct DOM manipulation
+      await page.evaluate(() => {
+        const dimmer = document.getElementById("screen-dimmer");
+        if (dimmer) {
+          (dimmer as HTMLElement).style.display = "block";
+          (dimmer as HTMLElement).style.opacity = "0.5";
+        }
+      });
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-night-dimmer-50.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Config panel in tablet mode baselines ─────────────────────
+
+test.describe("FamilyDashBoard — Config Panel Tablet Mode Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "purple", "rose"] as Theme[]) {
+    test(`${theme} theme / tablet-mode config-panel`, async ({ page }) => {
+      await goWithConfig(page, theme, "tablet");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.click("#cfg-gear-btn");
+      await page.waitForFunction(
+        () => document.getElementById("config-overlay")?.classList.contains("visible") === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-tablet-config-panel.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Maximized card in phone mode baselines ────────────────────
+
+test.describe("FamilyDashBoard — Maximized Card Phone Mode Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "matrix", "amber"] as Theme[]) {
+    test(`${theme} theme / phone-mode maximized-card`, async ({ page }) => {
+      await goWithConfig(page, theme, "phone");
+      await page.evaluate(() => document.fonts.ready);
+
+      const firstHeader = page.locator(".card-header").first();
+      await firstHeader.click();
+      await page.waitForFunction(() => document.querySelector(".maximized") !== null, {
+        timeout: 5_000,
+      });
+      await page.waitForTimeout(400);
+
+      await expect(page).toHaveScreenshot(`${theme}-phone-maximized-card.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Alert takeover dialog baselines ───────────────────────────
+
+test.describe("FamilyDashBoard — Alert Takeover Dialog Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "amber", "rose"] as Theme[]) {
+    test(`${theme} theme / alert-takeover-dialog`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Inject a synthetic alert takeover dialog state
+      await page.evaluate(() => {
+        const dlg = document.getElementById("alert-takeover") as HTMLDialogElement | null;
+        if (dlg && !dlg.open) {
+          try {
+            dlg.showModal();
+          } catch {
+            dlg.style.display = "flex";
+          }
+        }
+      });
+      await page.waitForTimeout(400);
+
+      const isVisible = await page
+        .locator("#alert-takeover")
+        .isVisible()
+        .catch(() => false);
+      if (!isVisible) {
+        test.skip();
+        return;
+      }
+
+      await expect(page).toHaveScreenshot(`${theme}-alert-takeover.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Help dialog extended theme baselines ──────────────────────
+
+test.describe("FamilyDashBoard — Help Dialog Extended Themes", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["amber", "purple", "rose"] as Theme[]) {
+    test(`${theme} theme / help-dialog-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.keyboard.press("h");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-help-dialog-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Config panel search state (tablet) baselines ─────────────
+
+test.describe("FamilyDashBoard — Config Panel Search Tablet Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "matrix", "purple"] as Theme[]) {
+    test(`${theme} theme / tablet-config-search`, async ({ page }) => {
+      await goWithConfig(page, theme, "tablet");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.click("#cfg-gear-btn");
+      await page.waitForFunction(
+        () => document.getElementById("config-overlay")?.classList.contains("visible") === true,
+        { timeout: 5_000 },
+      );
+      // Type in config search to show search state
+      const searchInput = page.locator(
+        "#config-search, [placeholder*='חיפוש'], [placeholder*='search']",
+      );
+      const hasSearch = await searchInput.count();
+      if (hasSearch > 0) {
+        await searchInput.first().fill("theme");
+        await page.waitForTimeout(200);
+      }
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-tablet-config-search.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 223: Help dialog in tablet mode baselines ─────────────────────
+
+test.describe("FamilyDashBoard — Help Dialog Tablet Mode Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "amber", "matrix"] as Theme[]) {
+    test(`${theme} theme / tablet-help-dialog`, async ({ page }) => {
+      await goWithConfig(page, theme, "tablet");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.keyboard.press("h");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-tablet-help-dialog.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
   }
 });
 
