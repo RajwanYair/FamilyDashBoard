@@ -37,6 +37,8 @@ import {
   alertRingAppend,
   alertRingGet,
   renderAlertHistory,
+  showAlertTakeover,
+  hideAlertTakeover,
 } from "@/cards/alerts/alerts";
 import * as idleMod from "@/core/idle";
 import type { AlertEvent } from "@/types/api";
@@ -1825,5 +1827,75 @@ describe("Alerts — renderAlertHistory (Sprint 185 A2)", () => {
     const container = document.getElementById("hist-container") as HTMLElement;
     renderAlertHistory(container);
     expect(container.querySelector(".alert-item")).not.toBeNull();
+  });
+});
+
+// ── Sprint 186 / A1: showAlertTakeover / hideAlertTakeover ──────────────────
+
+describe("Alerts — showAlertTakeover / hideAlertTakeover (Sprint 186 A1)", () => {
+  const nowSec = Math.floor(Date.now() / 1000);
+
+  const makeDialogHTML = (): void => {
+    document.body.innerHTML = `
+      <dialog id="alerts-takeover">
+        <div id="alerts-takeover-cities"></div>
+        <div id="alerts-takeover-threat"></div>
+        <div id="alerts-takeover-countdown"></div>
+        <button id="alerts-takeover-close">✕</button>
+      </dialog>
+    `;
+    // Polyfill showModal/close for happy-dom
+    const d = document.getElementById("alerts-takeover") as HTMLDialogElement;
+    if (typeof d.showModal !== "function") {
+      d.showModal = () => { d.setAttribute("open", ""); };
+      d.close = () => { d.removeAttribute("open"); };
+    }
+  };
+
+  beforeEach(() => {
+    makeDialogHTML();
+    _resetAlertsForTest();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    _resetAlertsForTest();
+    vi.useRealTimers();
+  });
+
+  const sampleTakeover: AlertEvent[] = [
+    { id: "t1", alerts: [{ time: nowSec - 5, threat: 0, cities: ["תל אביב", "גבעתיים"] }] },
+  ];
+
+  it("shows the dialog and populates cities", () => {
+    showAlertTakeover(sampleTakeover);
+    expect(document.getElementById("alerts-takeover-cities")?.textContent).toContain("תל אביב");
+  });
+
+  it("populates threat element", () => {
+    showAlertTakeover(sampleTakeover);
+    const threatEl = document.getElementById("alerts-takeover-threat");
+    expect(threatEl?.textContent).toBeTruthy();
+  });
+
+  it("does not throw when dialog element is absent", () => {
+    document.body.innerHTML = "<div></div>";
+    expect(() => showAlertTakeover(sampleTakeover)).not.toThrow();
+  });
+
+  it("does not throw when events list is empty", () => {
+    expect(() => showAlertTakeover([])).not.toThrow();
+  });
+
+  it("hideAlertTakeover closes the dialog", () => {
+    showAlertTakeover(sampleTakeover);
+    hideAlertTakeover();
+    const dialog = document.getElementById("alerts-takeover") as HTMLDialogElement;
+    expect(dialog.open).toBeFalsy();
+  });
+
+  it("hideAlertTakeover does not throw when dialog absent", () => {
+    document.body.innerHTML = "<div></div>";
+    expect(() => hideAlertTakeover()).not.toThrow();
   });
 });

@@ -1016,4 +1016,14 @@
     </div>
 
     <script type="module" src="/main.ts"></script>
+
+    <!-- Sprint 186 / A1: Full-screen alert takeover dialog -->
+    <dialog id="alerts-takeover" class="alerts-takeover" aria-modal="true" aria-label="⚠️ צבע אדום — התרעה פעילה" aria-live="assertive" dir="rtl">
+      <div class="alerts-takeover-icon" aria-hidden="true">🚨</div>
+      <h2 class="alerts-takeover-title">צבע אדום</h2>
+      <div class="alerts-takeover-cities" id="alerts-takeover-cities"></div>
+      <div class="alerts-takeover-threat" id="alerts-takeover-threat"></div>
+      <div class="alerts-takeover-countdown" id="alerts-takeover-countdown" aria-label="סוגר אוטומטית בעוד"></div>
+      <button type="button" class="alerts-takeover-close" id="alerts-takeover-close" aria-label="סגור התרעה">✕ סגור</button>
+    </dialog>
 </html>

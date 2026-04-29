@@ -357,6 +357,7 @@ export async function loadAlerts(): Promise<void> {
       const isNew = _lastAlertId !== null && newTopId !== _lastAlertId;
       _lastAlertId = newTopId;
       if (isNew) notify(validData);
+      if (isNew) showAlertTakeover(validData); // Sprint 186 / A1
 
       await cSetAsync(key, validData);
       renderAlerts(validData, isNew);
@@ -451,6 +452,76 @@ export function destroyAlertsSSE(): void {
 }
 
 // ── Sprint 185 / A2: 24-h alert history ring buffer ──────────────────────
+
+// ── Sprint 186 / A1: Full-screen alert takeover dialog ───────────────────
+
+const TAKEOVER_AUTO_CLOSE_MS = 30_000; // auto-dismiss after 30s
+let _takeoverTimer: ReturnType<typeof setTimeout> | null = null;
+let _takeoverInterval: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * Show the full-screen alert takeover dialog for the given alert events.
+ * Auto-dismisses after 30 seconds. Uses <dialog>.showModal().
+ */
+export function showAlertTakeover(events: AlertEvent[]): void {
+  const dialog = document.getElementById("alerts-takeover") as HTMLDialogElement | null;
+  if (!dialog || typeof dialog.showModal !== "function") return;
+
+  const firstAlert = events[0]?.alerts?.[0];
+  if (!firstAlert) return;
+
+  const allCities = events.flatMap((e) => e.alerts?.flatMap((a) => a.cities ?? []) ?? []);
+  const uniqueCities = [...new Set(allCities)].slice(0, 6).join(", ");
+  const threat = events.reduce(
+    (mx, e) => Math.max(mx, e.alerts?.reduce((m, a) => Math.max(m, a.threat ?? 0), 0) ?? 0),
+    0,
+  );
+
+  const citiesEl = document.getElementById("alerts-takeover-cities");
+  const threatEl = document.getElementById("alerts-takeover-threat");
+  const countdownEl = document.getElementById("alerts-takeover-countdown");
+  const closeBtn = document.getElementById("alerts-takeover-close");
+
+  if (citiesEl) citiesEl.textContent = uniqueCities || "אזורים שונים";
+  if (threatEl) threatEl.textContent = `${alertThreatIcon(threat)} ${THREAT_LABELS[threat] ?? "⚠️ התרעה"}`;
+
+  // Countdown ticker
+  if (_takeoverInterval) clearInterval(_takeoverInterval);
+  let remaining = Math.ceil(TAKEOVER_AUTO_CLOSE_MS / 1000);
+  const tick = (): void => {
+    if (countdownEl) countdownEl.textContent = `סוגר בעוד ${remaining}ש׳`;
+    remaining--;
+  };
+  tick();
+  _takeoverInterval = setInterval(tick, 1000);
+
+  // Auto-close
+  if (_takeoverTimer) clearTimeout(_takeoverTimer);
+  _takeoverTimer = setTimeout(() => hideAlertTakeover(), TAKEOVER_AUTO_CLOSE_MS);
+
+  // Wire close button (idempotent)
+  if (closeBtn) closeBtn.onclick = () => hideAlertTakeover();
+
+  try {
+    dialog.showModal();
+  } catch {
+    // showModal can throw if already open — ignore
+  }
+}
+
+/** Close the takeover dialog and clear timers. */
+export function hideAlertTakeover(): void {
+  const dialog = document.getElementById("alerts-takeover") as HTMLDialogElement | null;
+  if (dialog?.open) dialog.close();
+  if (_takeoverTimer) {
+    clearTimeout(_takeoverTimer);
+    _takeoverTimer = null;
+  }
+  if (_takeoverInterval) {
+    clearInterval(_takeoverInterval);
+    _takeoverInterval = null;
+  }
+}
 
 const ALERT_RING_KEY = "fdb_alert_ring";
 const ALERT_RING_MAX = 100;
@@ -609,6 +680,14 @@ export function _resetAlertsForTest(): void {
   if (_timer !== null) {
     clearTimeout(_timer);
     _timer = null;
+  }
+  if (_takeoverTimer !== null) {
+    clearTimeout(_takeoverTimer);
+    _takeoverTimer = null;
+  }
+  if (_takeoverInterval !== null) {
+    clearInterval(_takeoverInterval);
+    _takeoverInterval = null;
   }
   _realtimeMode = false;
   _beepVolume = 18;
