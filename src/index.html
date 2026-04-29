@@ -820,6 +820,20 @@
                 <div class="cur-item"><div class="cur-flag">₿</div><div class="cur-pair">BTC / ₪</div><div class="cur-rate skeleton" id="curBtc">--</div><div class="cur-chg" id="curBtcChg"></div><svg class="cur-spark" id="cur-btc-spark" viewBox="0 0 60 22"></svg></div>
                 <!-- v7.1: Last fetch timestamp chip -->
                 <div class="cur-footer"><span class="cur-last-fetch-label">⏱ עדכון:</span><span class="cur-last-fetch" id="cur-last-fetch" title="">--:--</span></div>
+                <!-- Sprint 184 / C1: Mini-calculator -->
+                <div class="cur-calc" id="cur-calc" role="group" aria-label="מחשבון המרת מטבע">
+                  <input type="number" id="cur-calc-input" class="cur-calc-input" placeholder="₪ סכום" min="0" step="any" aria-label="סכום בשקלים להמרה">
+                  <select id="cur-calc-pair" class="cur-calc-pair" aria-label="מטבע יעד">
+                    <option value="USD">USD 🇺🇸</option>
+                    <option value="EUR">EUR 🇪🇺</option>
+                    <option value="GBP">GBP 🇬🇧</option>
+                    <option value="XAU">זהב 🥇</option>
+                    <option value="XAG">כסף 🥈</option>
+                    <option value="XOI">נפט 🛢️</option>
+                    <option value="BTC">BTC ₿</option>
+                  </select>
+                  <span class="cur-calc-result" id="cur-calc-result" aria-live="polite">--</span>
+                </div>
               </div>
             </section>
 

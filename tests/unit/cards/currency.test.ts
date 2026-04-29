@@ -17,6 +17,8 @@ import {
   destroyCurrencyCard,
   loadCurrency,
   _resetCurrencyForTest,
+  calcCurrency,
+  initCalcWidget,
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
 
@@ -680,5 +682,126 @@ describe("Currency — loadCurrency async coverage", () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     // Should not throw — just record failure
     await expect(loadCurrency()).resolves.toBeUndefined();
+  });
+});
+
+// ── Sprint 184 / C1: calcCurrency + initCalcWidget ──────────────────────────
+
+describe("Currency — calcCurrency (Sprint 184 C1)", () => {
+  const rates = { USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, BTC: 0.0000052 };
+
+  it("converts ILS to USD correctly", () => {
+    const result = calcCurrency(100, "USD", rates);
+    expect(result).not.toBeNull();
+    expect(result!).toBeCloseTo(26.67, 1);
+  });
+
+  it("converts ILS to BTC correctly", () => {
+    const result = calcCurrency(1000, "BTC", rates);
+    expect(result).not.toBeNull();
+    expect(result!).toBeCloseTo(0.0052, 5);
+  });
+
+  it("returns null for missing rate key", () => {
+    expect(calcCurrency(100, "ZZZ", rates)).toBeNull();
+  });
+
+  it("returns null for negative amount", () => {
+    expect(calcCurrency(-10, "USD", rates)).toBeNull();
+  });
+
+  it("returns null for NaN amount", () => {
+    expect(calcCurrency(NaN, "USD", rates)).toBeNull();
+  });
+
+  it("returns zero for zero ILS amount", () => {
+    const result = calcCurrency(0, "USD", rates);
+    expect(result).toBe(0);
+  });
+
+  it("returns null for empty rates object", () => {
+    expect(calcCurrency(100, "USD", {})).toBeNull();
+  });
+});
+
+describe("Currency — initCalcWidget DOM wiring (Sprint 184 C1)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="curUsd"></div><div id="curUsdChg"></div>
+      <div id="curEur"></div><div id="curEurChg"></div>
+      <div id="curGbp"></div><div id="curGbpChg"></div>
+      <div id="curGold"></div><div id="curGoldChg"></div>
+      <div id="curSilver"></div><div id="curSilverChg"></div>
+      <div id="curOil"></div><div id="curOilChg"></div>
+      <div id="curBtc"></div><div id="curBtcChg"></div>
+      <div id="currency-body"></div>
+      <span id="cur-last-fetch"></span>
+      <input id="cur-calc-input" type="number">
+      <select id="cur-calc-pair">
+        <option value="USD" selected>USD</option>
+        <option value="EUR">EUR</option>
+        <option value="BTC">BTC</option>
+      </select>
+      <span id="cur-calc-result">--</span>
+    `;
+    _resetCurrencyForTest();
+    cacheDom();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    _resetCurrencyForTest();
+    vi.restoreAllMocks();
+  });
+
+  it("shows -- when no rates loaded yet", () => {
+    initCalcWidget();
+    const input = document.getElementById("cur-calc-input") as HTMLInputElement;
+    const result = document.getElementById("cur-calc-result");
+    input.value = "100";
+    input.dispatchEvent(new Event("input"));
+    expect(result?.textContent).toBe("--");
+  });
+
+  it("updates result after rates are loaded via renderCurrency", () => {
+    initCalcWidget();
+    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, XOI: 0.003, BTC: 0.0000052 });
+    const input = document.getElementById("cur-calc-input") as HTMLInputElement;
+    const result = document.getElementById("cur-calc-result");
+    input.value = "100";
+    input.dispatchEvent(new Event("input"));
+    // 100 * 0.2667 = 26.67
+    expect(result?.textContent).toMatch(/26\./);
+  });
+
+  it("updates result when pair changes", () => {
+    initCalcWidget();
+    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, XOI: 0.003, BTC: 0.0000052 });
+    const input = document.getElementById("cur-calc-input") as HTMLInputElement;
+    const pairSel = document.getElementById("cur-calc-pair") as HTMLSelectElement;
+    const result = document.getElementById("cur-calc-result");
+    input.value = "1000";
+    input.dispatchEvent(new Event("input"));
+    pairSel.value = "BTC";
+    pairSel.dispatchEvent(new Event("change"));
+    // 1000 * 0.0000052 ≈ 0.0052 (6 decimal places)
+    expect(result?.textContent).toMatch(/0\.00/);
+  });
+
+  it("shows -- when input is cleared", () => {
+    initCalcWidget();
+    renderCurrency({ USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, XOI: 0.003, BTC: 0.0000052 });
+    const input = document.getElementById("cur-calc-input") as HTMLInputElement;
+    const result = document.getElementById("cur-calc-result");
+    input.value = "100";
+    input.dispatchEvent(new Event("input"));
+    input.value = "";
+    input.dispatchEvent(new Event("input"));
+    expect(result?.textContent).toBe("--");
+  });
+
+  it("does not throw when DOM elements are missing", () => {
+    document.body.innerHTML = "<div></div>";
+    expect(() => initCalcWidget()).not.toThrow();
   });
 });

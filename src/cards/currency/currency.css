@@ -79,3 +79,50 @@
     padding: 4px 8px;
   }
 }
+
+/* Sprint 184 / C1: Mini-calculator */
+@layer components {
+  .cur-calc {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 10px;
+    flex-wrap: wrap;
+  }
+
+  .cur-calc-input {
+    width: 110px;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.9em;
+    text-align: left;
+    direction: ltr;
+  }
+
+  .cur-calc-input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .cur-calc-pair {
+    padding: 4px 6px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.9em;
+    cursor: pointer;
+  }
+
+  .cur-calc-result {
+    font-size: 1em;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 80px;
+    direction: ltr;
+  }
+}
