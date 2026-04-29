@@ -1,7 +1,13 @@
 /**
  * FamilyDashBoard — Visual Regression Tests (Stream G.2.3)
  *
- * Captures 18 baseline screenshots: 6 themes × 3 screen modes.
+ * Captures 30 baseline screenshots across four scenario groups:
+ *   - 18 idle baselines: 6 themes × 3 screen modes
+ *   - 3 config-panel-open baselines: 3 themes × tv mode
+ *   - 3 maximized-card baselines: 3 themes × tv mode
+ *   - 3 help-dialog-open baselines: 3 themes × tv mode
+ *   - 3 diag-overlay-open baselines: 3 themes × tv mode
+ *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
  *
@@ -135,6 +141,138 @@ test.describe("FamilyDashBoard — Theme CSS Class Applied", () => {
         attr === theme || (cls ?? "").split(" ").some((c) => c === `theme-${theme}` || c === theme);
 
       expect(hasTheme, `Expected theme "${theme}" to be applied`).toBe(true);
+    });
+  }
+});
+
+// ── Config panel state baselines (Sprint 154) ─────────────────────────────
+
+test.describe("FamilyDashBoard — Config Panel State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "rose"] as Theme[]) {
+    test(`${theme} theme / config-panel open`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Open the config panel via the gear button
+      await page.click("#cfg-gear-btn");
+      await page.waitForFunction(
+        () => document.getElementById("config-overlay")?.classList.contains("visible") === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-config-panel.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Maximized card state baselines (Sprint 154) ───────────────────────────
+
+test.describe("FamilyDashBoard — Maximized Card State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "amber", "matrix"] as Theme[]) {
+    test(`${theme} theme / maximized-card`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Click the first card header to maximize it (double-click = maximize in toggle model)
+      const firstHeader = page.locator(".card-header").first();
+      await firstHeader.click();
+      await page.waitForFunction(() => document.querySelector(".maximized") !== null, {
+        timeout: 5_000,
+      });
+      await page.waitForTimeout(400);
+
+      await expect(page).toHaveScreenshot(`${theme}-maximized-card.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Help dialog state baselines (Sprint 154) ──────────────────────────────
+
+test.describe("FamilyDashBoard — Help Dialog State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "matrix"] as Theme[]) {
+    test(`${theme} theme / help-dialog`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Press 'h' to open the keyboard-shortcuts help dialog
+      await page.keyboard.press("h");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-help-dialog.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Diag overlay state baselines (Sprint 154) ─────────────────────────────
+
+test.describe("FamilyDashBoard — Diag Overlay State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "amber", "purple"] as Theme[]) {
+    test(`${theme} theme / diag-overlay`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Press 'd' to open the diagnostics overlay
+      await page.keyboard.press("d");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("diag-overlay") as HTMLDialogElement | null)?.open === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-diag-overlay.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+          // Mask diag entries — they contain live timestamps and log messages
+          page.locator("#diag-overlay .diag-entries, #diag-overlay [class*='diag-entry']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
     });
   }
 });
