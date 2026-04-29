@@ -318,16 +318,16 @@ export type CacheLayer = "mem" | "ls" | "idb" | "none";
 let _lastHitLayer: CacheLayer = "none";
 
 /** Increment hit counter (called internally by cGet). */
-export function _recordCacheHit(): void {
+function _recordCacheHit(): void {
   _cacheHits++;
 }
 /** Increment miss counter (called internally by cGet). */
-export function _recordCacheMiss(): void {
+function _recordCacheMiss(): void {
   _cacheMisses++;
 }
 
 /** Sprint 181: Record which tier served a hit. */
-export function _setHitLayer(layer: CacheLayer): void {
+function _setHitLayer(layer: CacheLayer): void {
   _lastHitLayer = layer;
 }
 /** Sprint 181: Returns the layer that served the most recent hit. */

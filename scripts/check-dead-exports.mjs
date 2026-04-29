@@ -50,9 +50,15 @@ function walkTs(dir) {
   return files;
 }
 
-/** Extract exported symbol names from a file's source text. */
+/**
+ * Extract exported symbol names from a file's source text.
+ * Intentionally skips `interface` and `type` exports — these are zero-cost
+ * TypeScript declarations that are appropriate to export for documentation
+ * and contract purposes even when not currently consumed by src/ or tests/.
+ * Sprint 156: reduced false-positive surface from 75 → ~10 candidates.
+ */
 const EXPORT_RE =
-  /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?(?:interface|type|enum)\s+)(\w+)/gm;
+  /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?enum\s+)(\w+)/gm;
 const EXPORT_DEFAULT_RE = /^export\s+default\s+(?:function\s+|class\s+)?(\w+)/gm;
 const EXPORT_NAMED_RE = /^export\s*\{([^}]+)\}/gm;
 
