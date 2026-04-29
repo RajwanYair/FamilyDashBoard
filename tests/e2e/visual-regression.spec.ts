@@ -1,12 +1,17 @@
 /**
  * FamilyDashBoard — Visual Regression Tests (Stream G.2.3)
  *
- * Captures 30 baseline screenshots across four scenario groups:
+ * Captures 45 baseline screenshots across nine scenario groups (Sprint 164):
  *   - 18 idle baselines: 6 themes × 3 screen modes
  *   - 3 config-panel-open baselines: 3 themes × tv mode
  *   - 3 maximized-card baselines: 3 themes × tv mode
  *   - 3 help-dialog-open baselines: 3 themes × tv mode
  *   - 3 diag-overlay-open baselines: 3 themes × tv mode
+ *   - 3 collapsed-card baselines: 3 themes × tv mode       (Sprint 164)
+ *   - 3 bookmarks-overlay baselines: 3 themes × tv mode    (Sprint 164)
+ *   - 3 font-enlarged baselines: 3 themes × tv mode        (Sprint 164)
+ *   - 3 dimmer-overlay baselines: 3 themes × tv mode       (Sprint 164)
+ *   - 3 compact-maximized baselines: 3 themes × tablet mode (Sprint 164)
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -269,6 +274,169 @@ test.describe("FamilyDashBoard — Diag Overlay State Baselines", () => {
           page.locator("[class*='ticker'], [class*='marquee']"),
           // Mask diag entries — they contain live timestamps and log messages
           page.locator("#diag-overlay .diag-entries, #diag-overlay [class*='diag-entry']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Collapsed card state baselines (Sprint 164) ───────────────────────────
+
+test.describe("FamilyDashBoard — Collapsed Card State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "rose", "amber"] as Theme[]) {
+    test(`${theme} theme / collapsed-card`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Click the collapse button on the first card that has one
+      const collapseBtn = page.locator("[data-action='collapse'], .collapse-btn, [aria-label*='collapse']").first();
+      await collapseBtn.click();
+      await page.waitForFunction(
+        () => document.querySelector(".collapsed") !== null,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-collapsed-card.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Bookmarks overlay state baselines (Sprint 164) ────────────────────────
+
+test.describe("FamilyDashBoard — Bookmarks Overlay State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "matrix", "purple"] as Theme[]) {
+    test(`${theme} theme / bookmarks-overlay`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Press 'b' to open the bookmarks overlay
+      await page.keyboard.press("b");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("bookmarks-overlay") as HTMLDialogElement | null)?.open === true ||
+          document.querySelector("[data-overlay='bookmarks']")?.classList.contains("visible") === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-bookmarks-overlay.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Font size enlarged state baselines (Sprint 164) ───────────────────────
+
+test.describe("FamilyDashBoard — Font Size Enlarged State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "amber", "rose"] as Theme[]) {
+    test(`${theme} theme / font-enlarged`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Press '+' twice to increase font size (keyboard shortcut)
+      await page.keyboard.press("+");
+      await page.keyboard.press("+");
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-font-enlarged.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Dimmer overlay state baselines (Sprint 164) ───────────────────────────
+
+test.describe("FamilyDashBoard — Dimmer Overlay State Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "matrix", "purple"] as Theme[]) {
+    test(`${theme} theme / dimmer-overlay`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Press 'n' to toggle the night dimmer overlay
+      await page.keyboard.press("n");
+      await page.waitForFunction(
+        () =>
+          document.getElementById("screen-dimmer")?.style.display !== "none" ||
+          document.body.classList.contains("dimmed") ||
+          document.querySelector("[id*='dimmer'], [class*='dimmer']") !== null,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-dimmer-overlay.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Compact mode + maximized card baselines (Sprint 164) ──────────────────
+
+test.describe("FamilyDashBoard — Compact Mode Maximized Card Baselines", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "amber"] as Theme[]) {
+    test(`${theme} theme / tablet-mode maximized-card`, async ({ page }) => {
+      await goWithConfig(page, theme, "tablet");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Maximize the first card
+      const firstHeader = page.locator(".card-header").first();
+      await firstHeader.click();
+      await page.waitForFunction(() => document.querySelector(".maximized") !== null, {
+        timeout: 5_000,
+      });
+      await page.waitForTimeout(400);
+
+      await expect(page).toHaveScreenshot(`${theme}-tablet-maximized-card.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
         ],
         fullPage: false,
         timeout: 15_000,
