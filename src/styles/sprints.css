@@ -160,6 +160,22 @@ body.slideshow-fade::after {
   background: #9070b8;
 }
 
+/* Sprint 193 / W4: Air quality index pill */
+.aqi-pill {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 6px;
+  font-size: 0.75em;
+  font-weight: 700;
+  color: #fff;
+}
+.aqi-pill.aqi-good    { background: #4caf50; }
+.aqi-pill.aqi-fair    { background: #a5c400; color: #222; }
+.aqi-pill.aqi-moderate { background: #ffb300; color: #222; }
+.aqi-pill.aqi-poor    { background: #e64a19; }
+.aqi-pill.aqi-vpoor   { background: #880e4f; }
+.aqi-pill.aqi-extreme { background: #7b1fa2; }
+
 /* Motivation buttons — see src/cards/motivation/motivation.css */
 
 /* F139: Custom countdown chip */
