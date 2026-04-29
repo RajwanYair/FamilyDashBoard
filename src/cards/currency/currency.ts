@@ -522,6 +522,15 @@ export async function loadCurrency(): Promise<void> {
 
 let _curScheduleId: number | null = null;
 
+/**
+ * Sprint 199 / S2: Return the most-recently-fetched currency rates (stale ok).
+ * Used by the stocks card to convert USD prices to ILS.
+ * Rates are ILS-based (1 ILS expressed in foreign currency); USD rate → 1/rate = ILS per USD.
+ */
+export function getLastCurrencyRates(): Record<string, number> | null {
+  return cGetStale<Record<string, number>>("cur");
+}
+
 /** Market-aware self-rescheduling refresh: 10 min when active, 60 min when closed. */
 function scheduleCurrencyRefresh(): void {
   const delay = getCurrencyTTL(); // same as the TTL boundary — avoids over-fetching
