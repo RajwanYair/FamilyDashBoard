@@ -63,6 +63,7 @@ import { initBgImages } from "./ui/bg-images";
 import { initCardDragDrop } from "./ui/layout-drag";
 import { initResizers } from "./ui/resizer";
 import { showToast } from "./ui/toast";
+import { initOfflineBanner } from "./ui/offline-banner";
 import { initScrollShadows } from "./ui/scroll";
 import { mountRegisteredCards } from "./core/card-registry";
 import { initCardSettingsButtons } from "./ui/card-settings-dialog";
@@ -507,23 +508,7 @@ export function init(): void {
     unregisterSW;
 
   // ── Network reconnect: auto-refresh after connectivity loss ──
-  let _wenOffline = false;
-  const offlineBanner = document.getElementById("offline-banner");
-  window.addEventListener("offline", () => {
-    _wenOffline = true;
-    offlineBanner?.classList.add("visible");
-    showToast(t("offlineToast"), 5000);
-    diagLog("[init] FDB-008: network offline");
-  });
-  window.addEventListener("online", () => {
-    offlineBanner?.classList.remove("visible");
-    if (_wenOffline) {
-      _wenOffline = false;
-      showToast(t("onlineRefreshing"), 2500);
-      setTimeout(refreshAllCardsStaggered, 500);
-    }
-    diagLog("[init] FDB-009: network reconnected");
-  });
+  initOfflineBanner(refreshAllCardsStaggered);
   // Also listen to SW NETWORK_BACK broadcast
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
