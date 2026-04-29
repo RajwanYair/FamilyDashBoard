@@ -9,6 +9,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.24.0] — 2025-07-14
+
+> **5491 tests / 168 suites / 0 failures**
+
+### Added
+
+- **Sprint 213 / S4**: Watchlist Groups IDB layer — `getWatchlistGroups()`, `saveWatchlistGroup()`, `removeWatchlistGroup()`, `getGroupForSymbol()` with IDB backend (`fdb-stocks/watchlist-groups`). Max 4 groups. 12 new tests.
+- **Sprint 214 / T4**: 1-level subtasks in Tasks card — `addSubtask()`, `getSubtasks()`, `removeSubtask()` pure functions + `parentId?: string` on `ChoreItem`. 9 new tests.
+- **Sprint 215 / V2**: Document Picture-in-Picture API — `isPipSupported()`, `requestDocumentPip()` exports in `video-news.ts`. 7 new tests.
+- **Sprint 216 / X3**: Semantic-link service — new `src/core/links.ts` with `registerLink()`, `getLinks()`, `clearLinks()` gated by `semanticLinksEnabled` config toggle. 8 new tests.
+- **Sprint 217**: LHCI ratchet step 3 — `categories:performance` raised from 0.85 → 0.92, `categories:accessibility` raised to 0.90 in `.lighthouserc.json`. ADR-042 updated.
+- **Sprint 218**: Coverage thresholds calibrated to actuals (91.5 / 83.5 / 90.5 / 93.0) with documented gap explanation (ai-synthesis.ts 35%, video-news initVideoNews 44%).
+- **Sprint 219**: Playwright visual regression snapshots — 6 new baselines for alert-banner states and video-news card idle (3 themes × 2 scenarios).
+- **Sprint 220**: CSP `require-trusted-types-for 'script'` audit script (`scripts/check-trusted-types.mjs`, `npm run check:trusted-types`). Scans `src/` for dangerous DOM sinks not wrapped in `trustedHTML()`.
+- **Sprint 221**: OWASP Top 10 rotation automated check (`scripts/check-owasp.mjs`, `npm run check:owasp`). Flags A02–A10 relevant patterns with error/warning severities. 4 known-safe warnings.
+- **Sprint 222**: GitHub Actions SHA-pin enforcement script (`scripts/check-actions-pinned.mjs`, `npm run check:actions-pinned`). Verifies all 11 workflow files use 40-char commit SHA pins. All already pinned — gate prevents regression.
+
+---
+
 ## [13.23.0] — 2025-07-13
 
 ### Added
