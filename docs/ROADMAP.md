@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-29 · **Shipped baseline**: v13.15.0 → v13.16.0 in flight (Sprint 140–149: CSS Anchor Positioning, @vitest/browser real-Chromium tests, LHCI perf ratchet 0.85, exactOptionalPropertyTypes enabled).
+> **Refresh date**: 2026-04-29 · **Shipped baseline**: v13.16.0 (Sprint 149). Active stream: v14.0 (Q1 2027) — V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE. Roadmap items #7, #8, #10 confirmed Done.
 >
 > **Inventory**: 5121+ tests / 162+ suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 42+ ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache.
 >
@@ -324,10 +324,10 @@ Concrete work items. **P** = priority (P0 next-release blocker, P1 same-cycle, P
 | 4   | Enhance  | `@vitest/browser` for `maximize.ts` + `layout-drag.ts` (DOM-heavy)                                   | P1  | M   | Mid | v14.0   | happy-dom doesn't model FLIP correctly.                              |
 | 5   | Enhance  | DO Hibernatable WebSocket for stocks live + alerts SSE                                              | P1  | M   | Hi  | v14.x   | ~80 % DO bill drop when idle.                                        |
 | 6   | Enhance  | R2 mirror for backgrounds + offline shell                                                           | P2  | M   | Mid | v14.x   | egress = $0.                                                         |
-| 7   | Enhance  | HTTP Early Hints (103) from Worker                                                                  | P1  | S   | Mid | v14.x   | Expected −80 ms TTI.                                                 |
-| 8   | Enhance  | Coverage ratchet 89/81/89/90 → 92/85/92/93                                                          | P0  | M   | Mid | v14.0   | Add targeted branch tests on error-tracker + diag.                   |
+| 7   | ~~Enhance~~ | ~~HTTP Early Hints (103) from Worker~~ | P1  | S   | Mid | ~~v14.x~~ **Done** | ✅ Sprint 122 (v13.14.0): `worker/src/middleware/early-hints.ts` preloads 6 API endpoints via `Link` headers on eligible GET responses. |
+| 8   | ~~Enhance~~ | ~~Coverage ratchet 89/81/89/90 → 92/85/92/93~~ | P0  | M   | Mid | ~~v14.0~~ **Done** | ✅ Sprint 143 (v13.15.0): thresholds raised to 93.5/85.0/92.5/94.7 — all targets exceeded. Actuals: 93.62/85.40/92.63/94.87. |
 | 9   | ~~Enhance~~ | ~~Stryker scope: error-tracker + config + diag, threshold ≥ 85 %~~ | P1  | M   | Mid | ~~v14.0~~ **Done** | ✅ Sprint 126: error-tracker + config + diag confirmed in scope; break threshold raised 75 → 85. |
-| 10  | Enhance  | Cross-doc View Transitions for theme switch + maximise-card                                         | P1  | S   | Lo  | v14.0   | Native browser support live Q1 2026.                                 |
+| 10  | ~~Enhance~~ | ~~Cross-doc View Transitions for theme switch + maximise-card~~ | P1  | S   | Lo  | ~~v14.0~~ **Done** | ✅ v13.13: `<meta name="view-transition" content="same-origin">` + `src/ui/maximize.ts` L2 VT types + `src/ui/theme.ts` brightness-flash keyframes. |
 | 11  | ~~Enhance~~  | ~~Anchor Positioning for Diag-Overlay + Help dialog~~                                             | P2  | S   | Lo  | ~~v14.0~~ **Done** | ✅ Sprint 6 (diag-overlay) + Sprint 140 (help dialog), both anchored to `--status-bar-anchor`. |
 | 12  | Refactor | Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io)                            | P1  | L   | Hi  | v14.0   | First run unlocks ADR-031.                                           |
 | 13  | Enhance  | OpenTelemetry from Worker (opt-in, self-host collector)                                             | P2  | L   | Mid | v14.2   |                                                                      |
@@ -387,7 +387,7 @@ Target: **v14.0** (Q1–Q2 2027).
 - [x] `state.ts` → `signals.ts` migration ≥ 50 % of call sites (100 % achieved — Sprint 140/141).
 - [ ] TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4.
 - [ ] TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` when polyfill ≤ 10 KB gzip.
-- [ ] HTTP Early Hints (103) from Worker — push critical CSS + main JS earlier.
+- [x] HTTP Early Hints (103) from Worker — push critical CSS + main JS earlier. (v13.14.0, Sprint 122)
 
 **Exit**: Vectorize precision@10 ≥ SimHash + 15 %; signals migration ≥ 50 % of `state.ts` call sites; LHCI perf ≥ 0.98 cached.
 
