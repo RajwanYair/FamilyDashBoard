@@ -8,7 +8,7 @@
  *   npm install -D @stryker-mutator/core @stryker-mutator/vitest-runner
  *   (from MyScripts/ directory — never add devDeps to FamilyDashBoard/package.json)
  *
- * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 + Sprint 126 additions):
+ * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 + Sprint 126 + Sprint 226 additions):
  *   - simhash.ts            : mutation score ≥ 85%
  *   - d1-reports.ts         : mutation score ≥ 75%
  *   - analytics.ts          : mutation score ≥ 80%
@@ -21,9 +21,13 @@
  *   - fs-access.ts          : mutation score ≥ 75%  (Sprint 114)
  *   - idle.ts               : mutation score ≥ 75%  (Sprint 114)
  *   - cache.ts              : mutation score ≥ 85%  (Roadmap #9)
+ *   - event-bus.ts          : mutation score ≥ 80%  (Sprint 226 — pub/sub logic)
+ *   - keyboard.ts           : mutation score ≥ 80%  (Sprint 226 — keyboard shortcut dispatch)
+ *   - links.ts              : mutation score ≥ 80%  (Sprint 226 — semantic link registry)
  *
  * Sprint 126 (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
+ * Sprint 226: extended scope to event-bus, keyboard, links (cross-card primitives).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -52,6 +56,10 @@ export default {
     "src/core/idle.ts",
     // Roadmap #9: dual-layer cache primitive (high blast-radius if mutated)
     "src/core/cache.ts",
+    // Sprint 226: cross-card primitives — event-bus, keyboard, semantic links
+    "src/core/event-bus.ts",
+    "src/ui/keyboard.ts",
+    "src/core/links.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
