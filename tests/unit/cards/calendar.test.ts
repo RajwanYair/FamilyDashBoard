@@ -14,6 +14,7 @@ import {
   initCalendarCard,
   calDaysUntilLabel,
   groupEventsByDay,
+  getHolidaysByDate,
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
@@ -2865,5 +2866,87 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
     const out = parseICS(ics, 0);
     expect(out[0]!.summary).toContain("יום הולדת");
     expect(out[0]!.summary).toContain("🎂");
+  });
+});
+
+// ── Sprint 181 / CAL1: getHolidaysByDate ────────────────────────────────
+
+describe("Calendar — getHolidaysByDate (Sprint 181 CAL1)", () => {
+  const items = [
+    { title: "Rosh Hashana", hebrew: "ראש השנה", date: "2025-09-23", category: "holiday" },
+    { title: "Yom Kippur", hebrew: "יום כיפור", date: "2025-10-02", category: "holiday" },
+    { title: "Rosh Chodesh Tishrei", hebrew: "ראש חודש", date: "2025-09-23", category: "roshchodesh" },
+    { title: "Parashat Nitzavim", hebrew: "נצבים", date: "2025-09-20", category: "parashat" },
+  ];
+
+  it("returns null for a date with no holidays", () => {
+    expect(getHolidaysByDate(items, new Date("2025-09-21"))).toBeNull();
+  });
+
+  it("returns the Hebrew title for a holiday date", () => {
+    const result = getHolidaysByDate(items, new Date("2025-10-02"));
+    expect(result).toBe("יום כיפור");
+  });
+
+  it("returns null for category=parashat (not a holiday)", () => {
+    expect(getHolidaysByDate(items, new Date("2025-09-20"))).toBeNull();
+  });
+
+  it("joins multiple holidays on the same date with ·", () => {
+    const result = getHolidaysByDate(items, new Date("2025-09-23"));
+    expect(result).toContain("ראש השנה");
+    expect(result).toContain("ראש חודש");
+    expect(result).toContain("·");
+  });
+
+  it("returns null for empty items array", () => {
+    expect(getHolidaysByDate([], new Date("2025-09-23"))).toBeNull();
+  });
+});
+
+// ── Sprint 181 / CAL2: cal-src-N class in rendered events ───────────────
+
+describe("Calendar — per-source class in renderCalendar (Sprint 181 CAL2)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="cal-week-grid"></div>
+      <div id="cal-countdown"></div>
+      <div id="header-event-count"></div>
+    `;
+    cacheDom();
+  });
+
+  it("adds cal-src-0 to events from first ICS feed", () => {
+    const today = new Date();
+    const events = [
+      {
+        summary: "Meeting",
+        start: today,
+        end: today,
+        allDay: true,
+        icsIndex: 0,
+        category: "work",
+      },
+    ];
+    renderCalendar(events);
+    const eventEl = document.querySelector(".cal-event");
+    expect(eventEl?.classList.contains("cal-src-0")).toBe(true);
+  });
+
+  it("adds cal-src-1 to events from second ICS feed", () => {
+    const today = new Date();
+    const events = [
+      {
+        summary: "Family dinner",
+        start: today,
+        end: today,
+        allDay: true,
+        icsIndex: 1,
+        category: "family",
+      },
+    ];
+    renderCalendar(events);
+    const eventEl = document.querySelector(".cal-event");
+    expect(eventEl?.classList.contains("cal-src-1")).toBe(true);
   });
 });

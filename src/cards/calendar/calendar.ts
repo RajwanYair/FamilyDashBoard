@@ -23,7 +23,7 @@ import { fetchWithTimeout } from "../../core/fetch";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { diagLog } from "../../core/diag";
 import { acquireLock, releaseLock } from "../../core/fetch";
-import type { CalendarEvent } from "../../types/api";
+import type { CalendarEvent, HebcalItem } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
 
 // ── Constants ──
@@ -133,6 +133,23 @@ export function detectCalCategory(summary: string): string {
 }
 
 /**
+ * Sprint 181 / CAL1: Find the Hebrew holiday label (if any) for a given date
+ * using items from the Hebcal cache. Returns the `hebrew` title (or `title` fallback),
+ * or null when no holiday falls on that date.
+ */
+export function getHolidaysByDate(items: HebcalItem[], date: Date): string | null {
+  const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const holidays = items.filter(
+    (i) =>
+      (i.category === "holiday" || i.category === "roshchodesh") &&
+      i.date.slice(0, 10) === key,
+  );
+  if (holidays.length === 0) return null;
+  const labels = holidays.map((h) => h.hebrew || h.title).filter(Boolean);
+  return labels.length > 0 ? labels.join(" · ") : null;
+}
+
+/**
  * Sprint 25: Return a short Hebrew label for how many days until `date`.
  * Returns "" when `date` is today, "מחר" for tomorrow, "עוד N ימים" otherwise.
  * Returns "" for past dates (should not appear in agenda, but defensive).
@@ -175,7 +192,13 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
   const isSoon = !ev.allDay && msTilStart > 0 && msTilStart < 60 * 60 * 1000;
 
   const row = document.createElement("div");
-  row.className = "cal-event" + (isConflict ? " has-conflict" : "") + (isSoon ? " event-soon" : "");
+  // Sprint 181 / CAL2: add cal-src-N class for per-source color coding
+  const srcIdx = ev.icsIndex ?? 0;
+  row.className =
+    "cal-event" +
+    (isConflict ? " has-conflict" : "") +
+    (isSoon ? " event-soon" : "") +
+    ` cal-src-${srcIdx}`;
   if (ev.icsIndex) row.dataset["ics"] = String(ev.icsIndex);
 
   const timeEl = document.createElement("div");
@@ -267,10 +290,13 @@ function renderDayTile(
   dayEvents: CalendarEvent[],
   conflictSet: Set<CalendarEvent>,
   isToday: boolean,
+  holidayLabel?: string | null,
 ): HTMLElement {
   const tile = document.createElement("div");
   tile.className = "cal-day-tile" + (isToday ? " is-today" : "");
   if (dayEvents.length === 0) tile.classList.add("is-empty");
+  // Sprint 181 / CAL1: mark holiday tiles
+  if (holidayLabel) tile.classList.add("has-holiday");
 
   const hdr = document.createElement("div");
   hdr.className = "cal-day-tile-hdr";
@@ -298,6 +324,14 @@ function renderDayTile(
     hdr.appendChild(countBadge);
   }
   tile.appendChild(hdr);
+
+  // Sprint 181 / CAL1: holiday label below header
+  if (holidayLabel) {
+    const hol = document.createElement("div");
+    hol.className = "cal-holiday-label";
+    hol.textContent = holidayLabel;
+    tile.appendChild(hol);
+  }
 
   const body = document.createElement("div");
   body.className = "cal-day-tile-body";
@@ -343,12 +377,18 @@ export function renderCalendar(events: CalendarEvent[]): number {
   const buckets = groupEventsByDay(upcoming, weekStart);
   const todayKey = now.toDateString();
 
+  // Sprint 181 / CAL1: load holiday items from Hebcal stale cache
+  const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
+  const holData = cGetStale<{ items: HebcalItem[] }>(holKey);
+  const holItems: HebcalItem[] = holData?.items ?? [];
+
   if (els.grid) {
     els.grid.textContent = "";
     const frag = document.createDocumentFragment();
     for (const bucket of buckets) {
       const isToday = bucket.date.toDateString() === todayKey;
-      frag.appendChild(renderDayTile(bucket.date, bucket.events, conflictSet, isToday));
+      const holiday = getHolidaysByDate(holItems, bucket.date);
+      frag.appendChild(renderDayTile(bucket.date, bucket.events, conflictSet, isToday, holiday));
     }
     els.grid.appendChild(frag);
   }
