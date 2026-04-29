@@ -611,3 +611,27 @@ registerCard({
     };
   },
 });
+
+// Sprint 202 / X9: Daily AI Synthesis tile (opt-in, hidden by default)
+registerCard({
+  id: "ai-synthesis",
+  icon: "🤖",
+  titleHe: "תקציר AI יומי",
+  titleEn: "Daily AI Synthesis",
+  defaultSlot: { col: 2, order: 99, flexGrow: 10, hidden: true },
+  load: async (): Promise<CardDefinition> => {
+    const { initAiSynthesisCard, destroyAiSynthesisCard, aiSynthesisConfigSchema } =
+      await import("@/cards/ai-synthesis/ai-synthesis");
+    return legacyAdapter(
+      "ai-synthesis",
+      "🤖",
+      "תקציר AI יומי",
+      "Daily AI Synthesis",
+      2,
+      99,
+      10,
+      initAiSynthesisCard,
+      aiSynthesisConfigSchema,
+    ) as CardDefinition & { destroy: typeof destroyAiSynthesisCard };
+  },
+});

@@ -225,6 +225,8 @@ export interface DashboardConfig {
   stocksGroupBySector: boolean;
   /** Stocks card: show USD prices converted to ILS using live currency card rate. Default: false. */
   stocksShowIls: boolean;
+  /** AI Synthesis card: opt-in to daily Hebrew synthesis tile (X9). Default: false. */
+  synthesisEnabled: boolean;
   /** Tasks card: enable category labels (freeform string per task). Default: false. */
   tasksShowCategories: boolean;
   /** News card: show source domain badge on each news item. Default: true. */
@@ -353,6 +355,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   weatherShowSunrise: true,
   stocksGroupBySector: true,
   stocksShowIls: false,
+  synthesisEnabled: false,
   tasksShowCategories: true,
   newsShowSource: true,
   sysInfoShowRtt: true,

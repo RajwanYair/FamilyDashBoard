@@ -1,0 +1,37 @@
+/* Sprint 202 / X9: AI Synthesis Card */
+
+@layer components {
+  #ai-synthesis-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .synth-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .synth-tile {
+    background: var(--bg-card-inner, rgba(255 255 255 / 0.05));
+    border: 1px solid var(--accent-border, rgba(255 255 255 / 0.12));
+    border-radius: 10px;
+    padding: 14px 16px;
+    line-height: 1.65;
+  }
+
+  .synth-text {
+    font-size: 0.95em;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    direction: rtl;
+  }
+
+  .synth-meta {
+    font-size: 0.75em;
+    color: var(--text-muted, rgba(255 255 255 / 0.45));
+    text-align: start;
+    direction: rtl;
+  }
+}
