@@ -9,6 +9,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.23.0] — 2025-07-13
+
+### Added
+
+- **Sprint 205 / SI1**: `getStorageQuota()` pure export — extracts inline storage tile into a testable async function (`navigator.storage.estimate()`). 4 new tests.
+- **Sprint 206 / N2**: News star/read-later IDB layer — `starArticle()`, `unstarArticle()`, `isStarred()`, `getStarId()` backed by IndexedDB (`fdb-news/starred`). 5 new tests.
+- **Sprint 207 / W6**: Weather moon phase cross-link to hebrew-cal — `getMoonPhaseSummary()` pure export + `scrollToLinkedCard()` + click handler on `#wx-rise`. 5 new tests.
+- **Sprint 208 / S5**: Stocks pre/post-market helpers — `isPreMarket()`, `isPostMarket()`, `getMarketStateForDisplay()` pure exports. 4 new tests.
+- **Sprint 209 / CAL6**: Calendar conflict overlap badge — `findConflicts()` pure export (replaces inline logic in `renderCalendar`). 5 new tests.
+- **Sprint 210 / H6**: Hebrew-cal Yahrzeit IDB list — `addYahrzeit()`, `removeYahrzeit()`, `getYahrzeits()`, `getUpcomingYahrzeits()`, `todayHebrewMD()`. Max 20 entries. 6 new tests.
+- **Sprint 211 / X10**: Bundle delta group budgets — `GROUP_BUDGETS` in `check-card-bundle-delta.mjs` with 5 groups; fails CI (`exit 1`) on budget violation.
+- **Sprint 212 / SI3**: RTT trend sparkline — in-memory ring buffer (`appendRttHistory`, `getRttHistory`, `_resetRttHistory`) capped at 10 readings; sparkline rendered in `#sysinfo-rtt-spark`. 5 new tests.
+
+---
+
 ## [13.22.0] — 2026-06-01
 
 > **5405 tests / 167 suites / 0 failures** (commit `592b928`)

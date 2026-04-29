@@ -397,8 +397,8 @@ export function getMoonPhaseSummary(date: Date = new Date()): {
  * No-op when the target card is not in the DOM.
  */
 export function scrollToLinkedCard(cardId: string): void {
-  const card = document.querySelector(`[data-card-id="${cardId}"]`) as HTMLElement | null;
-  if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  const card = document.querySelector(`[data-card-id="${cardId}"]`);
+  if (card instanceof HTMLElement) card.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 /**
