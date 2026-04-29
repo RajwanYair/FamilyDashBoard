@@ -96,6 +96,48 @@ export function get7DayTrend(
   return { pct, arrow };
 }
 
+/**
+ * Sprint 204 / C3: Compute currency trend for a specific time window.
+ * Searches back at most `days` calendar days in `history` for a reference entry.
+ * Returns null when no suitable reference entry exists.
+ */
+export function getCurrencyTrend(
+  key: string,
+  history: CurHistoryEntry[],
+  days: number,
+): { pct: number; arrow: "↑" | "↓" | "→" } | null {
+  if (history.length < 2) return null;
+  const newest = history[history.length - 1];
+  if (!newest) return null;
+  const newRate = newest.rates[key];
+  if (!newRate || newRate === 0) return null;
+  const newVal = 1 / newRate;
+
+  const cutoffParts = newest.date.split("-");
+  const cutoffBase = new Date(
+    Date.UTC(Number(cutoffParts[0]), Number(cutoffParts[1]) - 1, Number(cutoffParts[2])),
+  );
+  cutoffBase.setUTCDate(cutoffBase.getUTCDate() - days);
+  const cutoff = `${cutoffBase.getUTCFullYear()}-${String(cutoffBase.getUTCMonth() + 1).padStart(2, "0")}-${String(cutoffBase.getUTCDate()).padStart(2, "0")}`;
+
+  // Find the most recent entry that is at or before the cutoff
+  let ref: CurHistoryEntry | undefined;
+  for (let i = history.length - 2; i >= 0; i--) {
+    const entry = history[i];
+    if (entry && entry.date <= cutoff) {
+      ref = entry;
+      break;
+    }
+  }
+  if (!ref) return null;
+  const oldRate = ref.rates[key];
+  if (!oldRate || oldRate === 0) return null;
+  const oldVal = 1 / oldRate;
+  const pct = ((newVal - oldVal) / oldVal) * 100;
+  const arrow: "↑" | "↓" | "→" = Math.abs(pct) < 0.1 ? "→" : pct > 0 ? "↑" : "↓";
+  return { pct, arrow };
+}
+
 /** Format a past date as a relative Hebrew label (e.g. "לפני 5 דק׳"). */
 export function formatRelativeTime(date: Date): string {
   const diffMs = Date.now() - date.getTime();
@@ -427,15 +469,30 @@ export function renderCurrency(rates: Record<string, number>): void {
         }
       }
       if (!sessionChangeShown) {
-        // Sprint 24 / Sprint 198 (C4): show 30-day trend when no intra-session change
-        const trend = get7DayTrend(tile.key, history);
-        if (trend) {
-          const sign = trend.pct >= 0 ? "+" : "";
-          chgEl.textContent = `7d ${trend.arrow} ${sign}${trend.pct.toFixed(1)}%`;
-          chgEl.className = `cur-chg ${trend.pct > 0.1 ? "positive" : trend.pct < -0.1 ? "negative" : ""}`;
+        // Sprint 204 / C3: show 1d / 7d / 30d trend arrows
+        const t1 = getCurrencyTrend(tile.key, history, 1);
+        const t7 = getCurrencyTrend(tile.key, history, 7);
+        const t30 = getCurrencyTrend(tile.key, history, 30);
+        const parts: string[] = [];
+        if (t1) parts.push(`1d${t1.arrow}${t1.pct >= 0 ? "+" : ""}${t1.pct.toFixed(1)}%`);
+        if (t7) parts.push(`7d${t7.arrow}${t7.pct >= 0 ? "+" : ""}${t7.pct.toFixed(1)}%`);
+        if (t30) parts.push(`30d${t30.arrow}${t30.pct >= 0 ? "+" : ""}${t30.pct.toFixed(1)}%`);
+        if (parts.length > 0) {
+          chgEl.textContent = parts.join(" · ");
+          // Colour by 7d trend if available, else by 1d
+          const dominant = t7 ?? t1;
+          chgEl.className = `cur-chg${dominant ? (dominant.pct > 0.1 ? " positive" : dominant.pct < -0.1 ? " negative" : "") : ""}`;
         } else {
-          chgEl.textContent = "";
-          chgEl.className = "cur-chg";
+          // Fall back to legacy 7-day trend (uses full history range)
+          const trend = get7DayTrend(tile.key, history);
+          if (trend) {
+            const sign = trend.pct >= 0 ? "+" : "";
+            chgEl.textContent = `7d ${trend.arrow} ${sign}${trend.pct.toFixed(1)}%`;
+            chgEl.className = `cur-chg ${trend.pct > 0.1 ? "positive" : trend.pct < -0.1 ? "negative" : ""}`;
+          } else {
+            chgEl.textContent = "";
+            chgEl.className = "cur-chg";
+          }
         }
       }
     }

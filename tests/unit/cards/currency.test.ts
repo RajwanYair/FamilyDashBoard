@@ -20,6 +20,7 @@ import {
   calcCurrency,
   initCalcWidget,
   applyPairVisibility,
+  getCurrencyTrend,
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
 
@@ -907,5 +908,57 @@ describe("Currency — applyPairVisibility (Sprint 189 C2)", () => {
       JSON.stringify({ configVersion: 12, currencyHiddenPairs: "XAG,BTC" }),
     );
     expect(() => applyPairVisibility()).not.toThrow();
+  });
+});
+
+// ── Sprint 204 / C3: getCurrencyTrend ──────────────────────────────
+describe("getCurrencyTrend", () => {
+  it("returns null for empty history", () => {
+    expect(getCurrencyTrend("USD", [], 7)).toBeNull();
+  });
+
+  it("returns null when only one entry exists", () => {
+    expect(getCurrencyTrend("USD", [{ date: "2025-03-10", rates: { USD: 0.27 } }], 7)).toBeNull();
+  });
+
+  it("returns null when no entry older than days window", () => {
+    const h = [
+      { date: "2025-03-09", rates: { USD: 0.27 } },
+      { date: "2025-03-10", rates: { USD: 0.265 } },
+    ];
+    // Requesting 7-day trend but entries are only 1 day apart
+    expect(getCurrencyTrend("USD", h, 7)).toBeNull();
+  });
+
+  it("returns positive arrow when rate rose over 7 days", () => {
+    const h = [
+      { date: "2025-03-01", rates: { USD: 0.27 } }, // 1/0.27 = 3.704
+      { date: "2025-03-10", rates: { USD: 0.25 } }, // 1/0.25 = 4.0
+    ];
+    const result = getCurrencyTrend("USD", h, 7);
+    expect(result).not.toBeNull();
+    expect(result!.arrow).toBe("↑");
+    expect(result!.pct).toBeGreaterThan(0);
+  });
+
+  it("returns negative arrow when rate fell over 30 days", () => {
+    const h = [
+      { date: "2025-01-01", rates: { USD: 0.24 } }, // 1/0.24 = 4.17
+      { date: "2025-03-10", rates: { USD: 0.28 } }, // 1/0.28 = 3.57
+    ];
+    const result = getCurrencyTrend("USD", h, 30);
+    expect(result).not.toBeNull();
+    expect(result!.arrow).toBe("↓");
+    expect(result!.pct).toBeLessThan(0);
+  });
+
+  it("returns flat arrow for negligible change", () => {
+    const h = [
+      { date: "2025-03-09", rates: { USD: 0.26999 } },
+      { date: "2025-03-10", rates: { USD: 0.27 } },
+    ];
+    const result = getCurrencyTrend("USD", h, 1);
+    expect(result).not.toBeNull();
+    expect(result!.arrow).toBe("→");
   });
 });
