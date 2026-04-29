@@ -123,3 +123,46 @@ if (failed) {
 }
 
 console.log("\n✅  All card bundle deltas within threshold.\n");
+
+// ── Sprint 211 / X10: Group budget totals ─────────────────────────────────
+/**
+ * Group budgets: the combined gzip size of all cards in a group must not
+ * exceed the budget (in KB). Fail CI with exit 1 if violated.
+ */
+const GROUP_BUDGETS = [
+  { name: "news + video-news",              cards: ["news", "video-news"],                          budgetKb: 30 },
+  { name: "weather + hebrew-cal + countdown", cards: ["weather", "hebrew-cal", "countdown"],        budgetKb: 40 },
+  { name: "stocks + currency",              cards: ["stocks", "currency"],                          budgetKb: 35 },
+  { name: "calendar + alerts",              cards: ["calendar", "alerts"],                          budgetKb: 25 },
+  { name: "tasks + motivation + system-info", cards: ["tasks", "motivation", "system-info"],        budgetKb: 25 },
+];
+
+let groupFailed = false;
+const groupRows = [];
+
+for (const group of GROUP_BUDGETS) {
+  const totalKb = group.cards.reduce((sum, card) => {
+    return sum + (currentCards[card] ?? 0);
+  }, 0);
+  const rounded = parseFloat(totalKb.toFixed(1));
+  const over = rounded > group.budgetKb;
+  const sign = over ? "❌" : "✅";
+  groupRows.push(
+    `  ${sign}  ${group.name.padEnd(36)} ${rounded} / ${group.budgetKb} KB`,
+  );
+  if (over) groupFailed = true;
+}
+
+console.log("Group budget totals:\n");
+for (const row of groupRows) console.log(row);
+console.log("");
+
+if (groupFailed) {
+  console.error(
+    "❌  One or more card groups exceeded their bundle budget.\n" +
+      "    Reduce bundle size in the affected cards before releasing.\n",
+  );
+  process.exit(1);
+}
+
+console.log("✅  All group budgets within limits.\n");
