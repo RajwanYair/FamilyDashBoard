@@ -12,6 +12,7 @@
  *   GET /api/news/aggregate               → Aggregate all 16 curated RSS feeds
  *   GET /api/news/summarise               → Workers AI news summarisation (AI_ENABLED=true, else 503)
  *   GET /api/motivation/hebrew            → Workers AI Hebrew motivational quote (AI_ENABLED=true, else 503)
+ *   GET /api/ai/synthesis                 → Daily Hebrew synthesis tile (cached 4 h; faith-safe; AI_ENABLED=true, else 503)
  *   GET /api/alerts                       → Tzeva Adom history
  *   GET /api/calendar?url=X              → Google Calendar ICS proxy
  *   GET /api/sefaria/calendar             → Sefaria calendars (Daf Yomi)
@@ -46,7 +47,7 @@ import { handleErrors, handleErrorsExport, handleErrorsQueue } from "./routes/er
 import { handleMetrics } from "./routes/metrics";
 import { handleReportsIngest, handleReportsDigest } from "./routes/reports";
 import { handleScheduled, handleNextYearPreWarm, handleWeeklyDigest } from "./routes/cron";
-import { handleNewsSummarise, handleMotivationHebrew } from "./routes/ai";
+import { handleNewsSummarise, handleMotivationHebrew, handleAiSynthesis } from "./routes/ai";
 import {
   checkRateLimitAsync,
   getClientIp,
@@ -152,6 +153,9 @@ app.get("/api/sefaria/text", (c) => handleSefariaText(new URL(c.req.url), c.env)
 app.get("/api/crypto", earlyHintsMiddleware, (c) => handleCrypto(new URL(c.req.url), c.env));
 
 app.get("/api/motivation/hebrew", (c) => handleMotivationHebrew(c.env));
+
+// Sprint 202 / X9: Daily AI synthesis tile
+app.get("/api/ai/synthesis", (c) => handleAiSynthesis(c.env));
 
 app.get("/api/errors/export", (c) => handleErrorsExport(c.req.raw, c.env));
 

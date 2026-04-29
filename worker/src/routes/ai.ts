@@ -161,3 +161,74 @@ export async function handleMotivationHebrew(env: Env): Promise<Response> {
     });
   }
 }
+
+/**
+ * GET /api/ai/synthesis
+ *
+ * Sprint 202 / X9: Daily AI synthesis — produces a short Hebrew summary of the
+ * day's context (date, current season cue). Cached 4 hours in KV.
+ * Faith-safe: avoids politically charged or religiously divisive content.
+ * Opt-in: client should gate behind `synthesisEnabled` config key.
+ */
+export async function handleAiSynthesis(env: Env): Promise<Response> {
+  if (env.AI_ENABLED !== "true") {
+    return new Response(JSON.stringify(AI_DISABLED_RESPONSE), {
+      status: 503,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  if (!env.AI) {
+    return new Response(JSON.stringify({ ok: false, error: "ai_not_configured" }), {
+      status: 503,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const hour = Math.floor(new Date().getUTCHours() / 4); // 6 buckets per day → cache 4h
+  const cacheKey = `ai:synthesis:${today}:${String(hour)}`;
+
+  const cached = await kvGetStale<{ synthesis: string }>(env.CACHE_KV, cacheKey);
+  if (cached) {
+    const { _stale: _, ...data } = cached;
+    return new Response(JSON.stringify({ ok: true, data, source: "cache" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  try {
+    const output = await env.AI.run(AI_MODEL, {
+      messages: [
+        {
+          role: "system",
+          content:
+            "אתה עוזר משפחתי ישראלי. הגב בעברית בלבד. אל תדון בפוליטיקה, דת או אלימות. תן תשובות חיוביות ומעוררות השראה.",
+        },
+        {
+          role: "user",
+          content: `כתוב תקציר יומי קצר (3-4 משפטות) לתאריך ${today}: מה מיוחד בעונה הזאת, רעיון ליום, ומשפט עידוד לפעילות משפחתית. בעברית בלבד.`,
+        },
+      ],
+      max_tokens: 250,
+    });
+    const text = extractText(output);
+    if (!text) {
+      return new Response(JSON.stringify({ ok: false, error: "ai_empty_response" }), {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const data = { synthesis: text };
+    await kvPut(env.CACHE_KV, cacheKey, data, AI_CACHE_TTL);
+    return new Response(JSON.stringify({ ok: true, data, source: "ai" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    return new Response(JSON.stringify({ ok: false, error: "ai_error" }), {
+      status: 502,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
