@@ -31,17 +31,17 @@ import type { CardConfigField } from "../../types/card";
 let _prevRates: Record<string, number> = {};
 let _lastFetchTime: Date | null = null;
 
-// ── Sprint 24: 7-day rate history ─────────────────────────────────────────────
+// ── Sprint 24: 7-day rate history / Sprint 198 (C4): extended to 30-day ──────
 
 // LS_CUR_HISTORY imported from constants
-const CUR_HISTORY_MAX_DAYS = 7;
+const CUR_HISTORY_MAX_DAYS = 30;
 
 interface CurHistoryEntry {
   date: string; // YYYY-MM-DD
   rates: Record<string, number>; // raw rates (ILS-based, same format as API)
 }
 
-/** Load the currency rate history from localStorage (up to 7 entries). */
+/** Load the currency rate history from localStorage (up to 30 entries). */
 export function loadCurrencyHistory(): CurHistoryEntry[] {
   try {
     const raw = localStorage.getItem(LS_CUR_HISTORY);
@@ -52,14 +52,14 @@ export function loadCurrencyHistory(): CurHistoryEntry[] {
   }
 }
 
-/** Store today's rates snapshot into the 7-day rolling history. */
+/** Store today's rates snapshot into the 30-day rolling history. */
 export function storeCurrencyHistory(rates: Record<string, number>): void {
   const today = new Date().toISOString().slice(0, 10);
   let history = loadCurrencyHistory();
   // Replace today's entry if already present, or append
   history = history.filter((e) => e.date !== today);
   history.push({ date: today, rates });
-  // Keep only the last 7 entries
+  // Keep only the last 30 entries
   if (history.length > CUR_HISTORY_MAX_DAYS) {
     history = history.slice(-CUR_HISTORY_MAX_DAYS);
   }
@@ -71,7 +71,7 @@ export function storeCurrencyHistory(rates: Record<string, number>): void {
 }
 
 /**
- * Compute the 7-day percentage change for a given currency key.
+ * Compute the 30-day percentage change for a given currency key.
  * Returns null when insufficient history is available.
  * @param key  Currency key (e.g. "USD", "EUR", "XAU")
  * @param history  Loaded history array
@@ -81,7 +81,7 @@ export function get7DayTrend(
   history: CurHistoryEntry[],
 ): { pct: number; arrow: "↑" | "↓" | "→" } | null {
   if (history.length < 2) return null;
-  // Find the oldest available entry (≤ 7 days ago)
+  // Find the oldest available entry (≤ 30 days ago)
   const oldest = history[0];
   const newest = history[history.length - 1];
   if (!oldest || !newest) return null;
@@ -364,8 +364,8 @@ async function renderCurrencySparklines(rates: Record<string, number>): Promise<
     // Persist to IDB history
     await historyAppend(`cur:${key}`, ilsValue);
 
-    // Fetch the 7-day window and render
-    const values = await historyGet(`cur:${key}`, 7);
+    // Fetch the 30-day window and render
+    const values = await historyGet(`cur:${key}`, 30);
     if (values.length < 2) return;
 
     const svgEl = document.getElementById(svgId);
@@ -427,7 +427,7 @@ export function renderCurrency(rates: Record<string, number>): void {
         }
       }
       if (!sessionChangeShown) {
-        // Sprint 24: show 7-day trend when no intra-session change
+        // Sprint 24 / Sprint 198 (C4): show 30-day trend when no intra-session change
         const trend = get7DayTrend(tile.key, history);
         if (trend) {
           const sign = trend.pct >= 0 ? "+" : "";

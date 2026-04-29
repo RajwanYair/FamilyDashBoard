@@ -554,9 +554,9 @@ describe("Currency — renderCurrency updates last-fetch chip", () => {
   });
 });
 
-// ── Sprint 24: 7-day rate history ────────────────────────────────────────────
+// ── Sprint 24: 7-day rate history / Sprint 198 (C4): extended to 30-day ──────
 
-describe("Currency — storeCurrencyHistory / loadCurrencyHistory (Sprint 24)", () => {
+describe("Currency — storeCurrencyHistory / loadCurrencyHistory (Sprint 24 / Sprint 198)", () => {
   beforeEach(() => {
     localStorage.removeItem("dash_v2_cur_history");
   });
@@ -583,19 +583,19 @@ describe("Currency — storeCurrencyHistory / loadCurrencyHistory (Sprint 24)", 
     expect(history[0]?.rates.USD).toBe(0.28);
   });
 
-  it("keeps a rolling 7-entry history", () => {
-    for (let d = 1; d <= 10; d++) {
+  it("keeps a rolling 30-entry history", () => {
+    for (let d = 1; d <= 35; d++) {
       const dateStr = `2024-01-${String(d).padStart(2, "0")}`;
       const stored = JSON.parse(localStorage.getItem("dash_v2_cur_history") ?? "[]") as Array<{
         date: string;
         rates: Record<string, number>;
       }>;
       stored.push({ date: dateStr, rates: { ...MOCK_RATES } });
-      if (stored.length > 7) stored.splice(0, stored.length - 7);
+      if (stored.length > 30) stored.splice(0, stored.length - 30);
       localStorage.setItem("dash_v2_cur_history", JSON.stringify(stored));
     }
     const history = loadCurrencyHistory();
-    expect(history.length).toBeLessThanOrEqual(7);
+    expect(history.length).toBeLessThanOrEqual(30);
   });
 });
 
