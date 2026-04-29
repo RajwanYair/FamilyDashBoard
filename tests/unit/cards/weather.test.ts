@@ -2429,3 +2429,90 @@ describe("Weather — isAirQualityResponse type guard", () => {
     expect(isAirQualityResponse("string")).toBe(false);
   });
 });
+
+// ── W3 / Sprint 194: Nowcast ──────────────────────────────────────────────────
+
+import { fetchNowcast, renderNowcastStrip } from "@/cards/weather/weather";
+import { isNowcastResponse } from "@/types/api";
+
+function makeNowcast(probs = [10, 45, 80, 20]): import("@/types/api").NowcastResponse {
+  return {
+    minutely_15: {
+      time: ["00:00", "00:15", "00:30", "00:45"],
+      precipitation_probability: probs,
+    },
+  };
+}
+
+describe("Weather — isNowcastResponse type guard (Sprint 194 / W3)", () => {
+  it("accepts valid nowcast object", () => {
+    expect(isNowcastResponse(makeNowcast())).toBe(true);
+  });
+  it("rejects missing precipitation_probability array", () => {
+    expect(isNowcastResponse({ minutely_15: { time: [] } })).toBe(false);
+  });
+  it("rejects non-object", () => {
+    expect(isNowcastResponse(null)).toBe(false);
+  });
+});
+
+describe("Weather — fetchNowcast (Sprint 194 / W3)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns NowcastResponse on valid data", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: async () => makeNowcast([5, 30, 70, 90]) }),
+    );
+    const result = await fetchNowcast(31.77, 35.21);
+    expect(result).not.toBeNull();
+    expect(result?.minutely_15.precipitation_probability[2]).toBe(70);
+  });
+
+  it("returns null when response fails type guard", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ bad: true }) }));
+    const result = await fetchNowcast(31.77, 35.21);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when fetch throws", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+    const result = await fetchNowcast(31.77, 35.21);
+    expect(result).toBeNull();
+  });
+});
+
+describe("Weather — renderNowcastStrip (Sprint 194 / W3)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="wx-nowcast" hidden></div>`;
+    cacheDom();
+  });
+
+  it("renders nc-low / nc-med / nc-high segments correctly", () => {
+    renderNowcastStrip(makeNowcast([10, 45, 80, 20]));
+    const el = document.getElementById("wx-nowcast")!;
+    expect(el.innerHTML).toContain("nc-low");
+    expect(el.innerHTML).toContain("nc-med");
+    expect(el.innerHTML).toContain("nc-high");
+    expect(el.getAttribute("hidden")).toBeNull();
+  });
+
+  it("renders 4 segments from first 4 probability values", () => {
+    renderNowcastStrip(makeNowcast([10, 20, 30, 40]));
+    const segs = document.querySelectorAll(".nc-seg");
+    expect(segs.length).toBe(4);
+  });
+
+  it("does nothing when #wx-nowcast element is absent", () => {
+    document.body.innerHTML = "";
+    cacheDom();
+    expect(() => renderNowcastStrip(makeNowcast())).not.toThrow();
+  });
+
+  it("does nothing when probability array is empty", () => {
+    renderNowcastStrip({ minutely_15: { time: [], precipitation_probability: [] } });
+    expect(document.getElementById("wx-nowcast")!.innerHTML).toBe("");
+  });
+});

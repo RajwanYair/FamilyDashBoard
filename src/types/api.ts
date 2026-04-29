@@ -57,6 +57,22 @@ export function isAirQualityResponse(v: unknown): v is AirQualityResponse {
   );
 }
 
+// ── Nowcast (Open-Meteo minutely_15, Sprint 194 / W3) ──
+export interface NowcastResponse {
+  minutely_15: {
+    time: string[];
+    precipitation_probability: number[];
+  };
+}
+
+/** Type guard for NowcastResponse. */
+export function isNowcastResponse(v: unknown): v is NowcastResponse {
+  if (!isObj(v)) return false;
+  const m = v["minutely_15"];
+  if (!isObj(m)) return false;
+  return Array.isArray(m["time"]) && Array.isArray(m["precipitation_probability"]);
+}
+
 // ── Stocks (Yahoo Finance v8 Chart) ──
 export interface YahooChartResponse {
   chart: {
