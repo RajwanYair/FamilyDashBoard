@@ -270,6 +270,9 @@ export interface DashboardConfig {
    * - "full"    : everything enabled: animated borders, glow on hover, all extras
    */
   animLevel: "none" | "minimal" | "normal" | "full";
+
+  /** Sprint 216 / X3: Semantic-link service — opt-in to cross-card contextual links. Default: false. */
+  semanticLinksEnabled: boolean;
 }
 
 export const DEFAULT_CONFIG: DashboardConfig = {
@@ -375,6 +378,9 @@ export const DEFAULT_CONFIG: DashboardConfig = {
 
   // Config v12 defaults
   weatherUsTravelMode: false,
+
+  // Config v13 defaults (Sprint 216 / X3)
+  semanticLinksEnabled: false,
 };
 
 /** Current config schema version — bump when shape changes. */
