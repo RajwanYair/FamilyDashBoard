@@ -13,6 +13,7 @@ import {
   LS_NEWS_VISITED,
   LS_NEWS_BOOKMARKS,
   LS_NEWS_FONT,
+  LS_NEWS_MUTED,
   MS_PER_HOUR,
   MS_PER_DAY,
   WORKER_BASE_URL,
@@ -350,7 +351,63 @@ export function cacheDom(): void {
   if (elBkmPill) elBkmPill.hidden = true;
   loadBookmarks();
   loadVisited();
+  loadMutedSources();
 }
+
+// ── Sprint 196 / N3: Per-source mute windows ──────────────────────────────
+
+/** In-memory mute map: sourceKey → expiry timestamp (ms). */
+let _mutedSources: Record<string, number> = {};
+
+/** Load muted sources from localStorage. */
+export function loadMutedSources(): void {
+  try {
+    const raw = localStorage.getItem(LS_NEWS_MUTED);
+    _mutedSources = raw ? (JSON.parse(raw) as Record<string, number>) : {};
+  } catch {
+    _mutedSources = {};
+  }
+}
+
+/** Save muted sources to localStorage. */
+function saveMutedSources(): void {
+  try {
+    localStorage.setItem(LS_NEWS_MUTED, JSON.stringify(_mutedSources));
+  } catch {
+    /* quota */
+  }
+}
+
+/** Returns true when the source is currently muted (expiry in the future). */
+export function isMuted(sourceKey: string): boolean {
+  const expiry = _mutedSources[sourceKey];
+  if (expiry === undefined) return false;
+  if (Date.now() >= expiry) {
+    delete _mutedSources[sourceKey];
+    saveMutedSources();
+    return false;
+  }
+  return true;
+}
+
+/** Mute a source for the given duration in milliseconds. */
+export function muteSource(sourceKey: string, durationMs: number): void {
+  _mutedSources[sourceKey] = Date.now() + durationMs;
+  saveMutedSources();
+}
+
+/** Remove a mute for the given source. */
+export function unmuteSource(sourceKey: string): void {
+  delete _mutedSources[sourceKey];
+  saveMutedSources();
+}
+
+/** Expose the raw mute map (for tests). */
+export function getMutedSources(): Record<string, number> {
+  return _mutedSources;
+}
+
+// ── end N3 ──────────────────────────────────────────────────────────────────
 
 // ── F9 (v7.2): Source filter chips with favicons ──────────────────────────
 
@@ -383,6 +440,31 @@ export function renderSourceFilterChips(): void {
       chip.appendChild(img);
     }
     chip.appendChild(document.createTextNode(feed.src));
+
+    // Sprint 196 / N3: Mute button — opens a snooze popover
+    const muteBtn = document.createElement("button");
+    muteBtn.type = "button";
+    muteBtn.className = "news-mute-btn";
+    muteBtn.textContent = "🔇";
+    muteBtn.title = `השתק ${feed.src}`;
+    muteBtn.dataset["src"] = feed.src;
+    muteBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const src = feed.src;
+      if (isMuted(src)) {
+        unmuteSource(src);
+        chip.classList.remove("news-src-muted");
+        muteBtn.title = `השתק ${src}`;
+      } else {
+        muteSource(src, MS_PER_HOUR);
+        chip.classList.add("news-src-muted");
+        muteBtn.title = `בטל השתקה ${src}`;
+      }
+      renderNews(_lastItems);
+    });
+    chip.appendChild(muteBtn);
+
+    if (isMuted(feed.src)) chip.classList.add("news-src-muted");
     frag.appendChild(chip);
   }
   bar.appendChild(frag);
@@ -502,7 +584,10 @@ export function renderNews(items: NewsItem[]): void {
   const baseItems = _bkmMode ? items.filter((i) => _bookmarks.has(getBookmarkKey(i.title))) : items;
 
   // Apply search filter
-  const displayItems = _searchQuery ? filterBySearch(baseItems, _searchQuery) : baseItems;
+  const afterSearch = _searchQuery ? filterBySearch(baseItems, _searchQuery) : baseItems;
+
+  // Sprint 196 / N3: Apply source mute filter
+  const displayItems = afterSearch.filter((i) => !isMuted(i.source));
 
   // Update search count and clear button visibility
   if (elSearchCount) {
@@ -863,4 +948,5 @@ export function _resetNewsForTest(): void {
   elSearchClear = null;
   elSearchCount = null;
   elNewsCount = null;
+  _mutedSources = {};
 }

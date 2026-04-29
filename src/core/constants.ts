@@ -289,6 +289,8 @@ export const LS_STOCK_ALERTS = "dash_v2_stock_alerts";
 export const LS_PORTFOLIO = "dash_v2_portfolio";
 export const LS_NEWS_VISITED = "dash_visited_news";
 export const LS_NEWS_BOOKMARKS = "dash_bookmarks";
+/** Sprint 196 / N3: Per-source mute windows { [sourceKey]: untilTimestamp } */
+export const LS_NEWS_MUTED = "dash_news_muted_sources";
 export const LS_CUR_HISTORY = "dash_v2_cur_history";
 export const LS_THEME = "dash_theme";
 export const LS_COLLAPSED = "dash_v2_collapsed_cards";
