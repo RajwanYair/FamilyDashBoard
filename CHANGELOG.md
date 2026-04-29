@@ -5,6 +5,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.16.0] — 2026-04-29
+
+> **Sprints 140–149 — roadmap progression batch** · **5121 tests / 162 suites / 0 failures** (commit `bbd87c7`) · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions
+
+### Added
+
+- **@vitest/browser real-Chromium tests** (Sprints 145–146, Roadmap V14-FOUNDATIONS) — `vitest.browser.config.ts` activates `@vitest/browser@4.1.5` with `playwright()` factory provider; 16 tests for `maximize.ts` (`computeFontScale`, `cardVtName`, DOM layout, `getCollapsedCards`) and 11 tests for `layout-drag.ts` (`readCurrentLayout`, `saveCurrentLayout`, `resetLayout`, drag visual state) now run in a real headless Chromium. View-Transition stub added to prevent `AbortError` rejections across tests.
+- **`exactOptionalPropertyTypes: true`** (Sprint 148, Roadmap #20) — enabled in `tsconfig.json`. 15 type-definition sites updated across `src/types/api.ts`, `src/types/provider.ts`, `src/core/error-tracker.ts`, and `src/cards/hebrew-cal/hebrew-cal.ts`. All `prop?: T` changed to `prop?: T | undefined` at optional-property boundaries. Zero new type suppressions.
+
+### Changed
+
+- **LHCI perf threshold ratchet** (Sprint 147, Roadmap #19) — `.lighthouserc.json` performance assertion tightened from `warn ≥ 0.80` → `warn ≥ 0.85`. Documents ADR-042 step 3 of 4 ratchet plan toward `error ≥ 0.97` at v14.x.
+- **ROADMAP cleanup** (Sprint 144) — CSS Anchor Positioning (Roadmap row 11) marked Done (shipped v13.15.0 via Sprint 6 diag-overlay + Sprint 140 help-dialog anchor). LHCI threshold row 19 updated to reflect `warn 0.85`.
+
+### Verified
+
+- Full test run (Sprint 149): 5121 tests / 162 suites / 0 failures.
+- Browser test suite: 27 tests / 2 specs / 0 failures (Chromium headless).
+- 0 ESLint errors, 0 ESLint warnings, 0 TS errors, 0 markdownlint errors.
+- 0 `eslint-disable`, 0 `@ts-ignore`, 0 `@ts-nocheck` introduced.
+- `exactOptionalPropertyTypes: true` — confirmed zero type errors after migration.
+
+### Version anchors
+
+Fourteen files bumped to v13.16.0: `package.json`, `sw.js`, `README.md` badge, `.github/copilot-instructions.md`, `.github/instructions/workspace.instructions.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `.github/assets/banner.svg`, `.github/assets/architecture.svg`, `.github/assets/preview.svg`, `.github/assets/data-sources.svg`, `.github/assets/roadmap.svg`, plus this CHANGELOG.
+
+---
+
 ## [13.15.0] — 2026-04-28
 
 > **Sprints 129–139 — roadmap progression batch** · **4939 tests / 161 suites / 0 failures** · 0 ESLint · 0 TS · 0 markdownlint · 0 suppressions

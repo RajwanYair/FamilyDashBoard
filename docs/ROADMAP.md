@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap
 
-> **Refresh date**: 2026-04-28 · **Shipped baseline**: v13.14.0 → v13.15.0 in flight (Sprint 129–140: app-signals tests + functions threshold anchor 88.9, .github docs refresh for VS Code/Copilot 2026-Q2 features, ECB/Frankfurter 3rd currency fallback, PiP for video-news, network-blocked diagnostic toast, OWASP rotation refresh, ADR-039 CSP wildcard narrowing plan, ADR-040 LHCI tighten plan, corp-proxy dev quickstart).
+> **Refresh date**: 2026-04-29 · **Shipped baseline**: v13.15.0 → v13.16.0 in flight (Sprint 140–149: CSS Anchor Positioning, @vitest/browser real-Chromium tests, LHCI perf ratchet 0.85, exactOptionalPropertyTypes enabled).
 >
-> **Inventory**: 4925+ tests / 159+ suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 40+ ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache.
+> **Inventory**: 5121+ tests / 162+ suites / 0 failures · 0 ESLint errors · 0 ESLint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 0 TS errors · 0 markdownlint / stylelint issues · 42+ ADRs · 0 client runtime deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache.
 >
 > **Purpose**: a deliberate, _first-principles re-litigation of every decision_ — including the ones that look clean. No grandfathering. The bar is **best-in-class** for an always-on family TV dashboard. Historical sprint and release entries live in [CHANGELOG.md](../CHANGELOG.md); this file is forward-looking only.
 
@@ -337,7 +337,7 @@ Concrete work items. **P** = priority (P0 next-release blocker, P1 same-cycle, P
 | 17  | ~~Enhance~~ | ~~Calendar fuzz-case set 204 → 250+~~ | P2  | S   | Lo  | ~~v14.0~~ **Done** | ✅ Sprint 128: 258 tests confirmed (>250). RFC-5545 edge cases complete. |
 | 18  | Enhance  | Visual-regression baselines 54 → 80+ (DO-SSE + video-news + maximise-FLIP + 21-day cal + 4×2 wx)    | P1  | M   | Mid | v14.0   |                                                                      |
 | 19  | Enhance  | LHCI perf threshold `warn 0.70` → `error 0.97` once Early Hints + SRI ship and CI runner stable     | P1  | S   | Mid | v14.x   | Sprint 147: ratcheted warn 0.70→0.80 (Sprint 124) → **0.85** (v13.16.0). Final `error 0.97` at v14.x. |
-| 20  | ~~Refactor~~ | ~~`exactOptionalPropertyTypes` migration audit~~ | P2  | M   | Lo  | ~~v14.x~~ **Done** | ✅ Sprint 148 (v13.16.0): enabled. 15 errors fixed — all `prop?: T` → `prop?: T | undefined`. |
+| 20  | ~~Refactor~~ | ~~`exactOptionalPropertyTypes` migration audit~~ | P2  | M   | Lo  | ~~v14.x~~ **Done** | ✅ Sprint 148 (v13.16.0): enabled. 15 errors fixed — all `prop?: T` → `prop?: T \| undefined`. |
 | 21  | Enhance  | WebRTC mirror with QR pairing (gated: 3+ user requests)                                             | P2  | L   | Mid | v14.x   | ADR-036.                                                             |
 | 22  | Enhance  | Document Picture-in-Picture for video-news (gated: 3+ user requests)                                | P2  | S   | Lo  | v14.x   |                                                                      |
 | 23  | ~~Enhance~~ | ~~`vite-plugin-dev-csp-strip` — relax CSP only in dev mode~~ | P2  | S   | Mid | ~~v14.0~~ **Done** | ✅ Sprint 127: `stripDevCsp` plugin already in `vite.config.ts` (`apply: "serve"`). Companion to `?nosw=1` for corp-proxy devs. |
@@ -369,7 +369,7 @@ Target: **v14.0** (Q1 2027).
 - [x] Cross-doc View Transitions opt-in via `<meta name="view-transition">` (v13.13).
 - [x] Smart text contrast via corrected `light-dark()` token order (v13.13.1).
 - [x] Dev-mode SW kill switches (`?nosw=1`, `__fdbUnregisterSW()`) (v13.13.1).
-- [ ] `@vitest/browser` component tests for `maximize.ts` + `layout-drag.ts`.
+- [x] `@vitest/browser` component tests for `maximize.ts` + `layout-drag.ts`. (v13.16.0, Sprints 145–146)
 - [x] CSS Anchor Positioning expansion (Diag-Overlay + Help dialog). (v13.15.0)
 - [x] Cross-doc View Transitions for theme switch + maximise-card.
 - [x] Stryker scope extension: error-tracker + config + diag, threshold ≥ 85 % (Sprint 126).
