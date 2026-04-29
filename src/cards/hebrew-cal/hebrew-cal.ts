@@ -547,7 +547,7 @@ async function loadDafYomi(): Promise<void> {
       calendar_items: Array<{
         title: { he: string; en: string };
         ref: string;
-        url?: string;
+        url?: string | undefined;
       }>;
     }>(API.SEFARIA_CALENDAR);
     const daf = d.calendar_items?.find((i) => i.title?.en?.toLowerCase().includes("daf yomi"));
@@ -574,7 +574,7 @@ async function loadDafYomi(): Promise<void> {
   }
 }
 
-function renderDaf(item: { ref: string; heRef: string; url?: string } | null): void {
+function renderDaf(item: { ref: string; heRef: string; url?: string | undefined } | null): void {
   if (!els.daf) return;
   if (!item) {
     if (els.dafRow) els.dafRow.style.display = "none";
@@ -594,7 +594,7 @@ function renderDaf(item: { ref: string; heRef: string; url?: string } | null): v
 }
 
 // ── Halacha Yomit ──
-function renderHalacha(item: { text: string; ref: string; url?: string } | null): void {
+function renderHalacha(item: { text: string; ref: string; url?: string | undefined } | null): void {
   if (!els.halacha || !els.halacaRow) return;
   if (!item) {
     els.halacaRow.style.display = "none";

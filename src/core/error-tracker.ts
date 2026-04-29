@@ -15,8 +15,8 @@
 export interface ErrorEntry {
   ts: number; // epoch ms
   message: string;
-  source?: string; // filename or 'unhandledrejection'
-  lineno?: number;
+  source?: string | undefined; // filename or 'unhandledrejection'
+  lineno?: number | undefined;
 }
 
 const MAX_ERRORS = 20;

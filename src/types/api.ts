@@ -129,20 +129,20 @@ export interface NewsItem {
   link: string;
   pubDate: string;
   source: string;
-  category?: string;
-  description?: string;
+  category?: string | undefined;
+  description?: string | undefined;
 }
 
-// ── Calendar (ICS parsed event) ──
+// ── Calendar (ICS parsed event)
 export interface CalendarEvent {
   summary: string;
   start: Date;
   end: Date;
   allDay: boolean;
-  location?: string;
-  description?: string;
+  location?: string | undefined;
+  description?: string | undefined;
   icsIndex: number;
-  category?: string;
+  category?: string | undefined;
 }
 
 // ── Runtime type guards ───────────────────────────────────────────────────────
@@ -530,17 +530,17 @@ export interface HebcalDomainItem {
   titleEn: string;
   date: string;
   category: string;
-  subcat?: string;
-  memo?: string;
+  subcat?: string | undefined;
+  memo?: string | undefined;
 }
 
 /** Normalized Hebrew calendar state. */
 export interface HebcalDomain {
   items: HebcalDomainItem[];
   /** Candle lighting time if present */
-  candleLighting?: string;
+  candleLighting?: string | undefined;
   /** Havdalah time if present */
-  havdalah?: string;
+  havdalah?: string | undefined;
   fetchedAt: string;
 }
 
@@ -571,8 +571,8 @@ export interface CalendarDomainEvent {
   start: Date;
   end: Date;
   allDay: boolean;
-  description?: string;
-  location?: string;
+  description?: string | undefined;
+  location?: string | undefined;
   icsIndex: number;
 }
 

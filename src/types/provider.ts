@@ -18,7 +18,7 @@ import type { ProviderStatus } from "../core/provider";
 /** Discriminated union: either success with data or failure with reason. */
 export type ProviderResult<T> =
   | { ok: true; data: T; cachedAt?: string }
-  | { ok: false; error: string; stale?: T };
+  | { ok: false; error: string; stale?: T | undefined };
 
 // ── Adapter interface ──────────────────────────────────────────────────────
 
