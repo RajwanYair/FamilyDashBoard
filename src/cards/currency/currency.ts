@@ -155,6 +155,52 @@ const TILE_EL_MAP: Record<string, { rate: keyof CurEls; chg: keyof CurEls }> = {
   BTC: { rate: "btc", chg: "btcChg" },
 };
 
+// ── Sprint 184 / C1: Mini-calculator state ────────────────────────────────
+
+/** Latest fetched rates snapshot (updated by renderCurrency). */
+let _calcRates: Record<string, number> = {};
+
+/**
+ * Pure helper: convert ILS amount using current rates.
+ * `rates[key]` = foreign-units-per-ILS (from er-api base=ILS).
+ * Result is how many foreign units the amount in ILS is worth.
+ * Returns null when the rate is missing or amount is invalid.
+ */
+export function calcCurrency(amountIls: number, rateKey: string, rates: Record<string, number>): number | null {
+  if (!Number.isFinite(amountIls) || amountIls < 0) return null;
+  const rate = rates[rateKey];
+  if (!rate || !Number.isFinite(rate) || rate <= 0) return null;
+  return amountIls * rate;
+}
+
+/** Wire up the mini-calculator DOM (called by initCurrencyCard). */
+export function initCalcWidget(): void {
+  const input = document.getElementById("cur-calc-input") as HTMLInputElement | null;
+  const pairSel = document.getElementById("cur-calc-pair") as HTMLSelectElement | null;
+  const result = document.getElementById("cur-calc-result");
+  if (!input || !pairSel || !result) return;
+
+  const recalc = (): void => {
+    const amount = parseFloat(input.value);
+    if (!input.value.trim() || isNaN(amount)) {
+      result.textContent = "--";
+      return;
+    }
+    const key = pairSel.value;
+    const val = calcCurrency(amount, key, _calcRates);
+    if (val === null) {
+      result.textContent = "--";
+      return;
+    }
+    // Format: BTC gets 6 decimals, gold/silver 4, others 2
+    const dec = key === "BTC" ? 6 : key === "XAU" || key === "XAG" ? 4 : 2;
+    result.textContent = val.toFixed(dec);
+  };
+
+  input.addEventListener("input", recalc);
+  pairSel.addEventListener("change", recalc);
+}
+
 export function cacheDom(): void {
   curEls = {
     usd: document.getElementById("curUsd"),
@@ -307,6 +353,9 @@ export function renderCurrency(rates: Record<string, number>): void {
   storeCurrencyHistory(rates);
   const history = loadCurrencyHistory();
 
+  // Sprint 184 / C1: keep calc rates up-to-date
+  _calcRates = rates;
+
   for (const tile of CUR_TILES) {
     const elMap = TILE_EL_MAP[tile.key];
     if (!elMap) continue;
@@ -452,6 +501,7 @@ export function initCurrencyCard(): void {
   cacheDom();
   void loadCurrency();
   scheduleCurrencyRefresh();
+  initCalcWidget(); // Sprint 184 / C1
   // F15: Popover API quick-reload button wiring
   const reloadBtn = document.getElementById("cur-reload-btn");
   const reloadPopover = document.getElementById("cur-reload-popover");
@@ -494,6 +544,7 @@ export const currencyConfigSchema: CardConfigField[] = [
 export function _resetCurrencyForTest(): void {
   _prevRates = {};
   _lastFetchTime = null;
+  _calcRates = {};
   curEls = {
     usd: null,
     eur: null,
