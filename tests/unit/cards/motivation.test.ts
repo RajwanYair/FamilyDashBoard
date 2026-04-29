@@ -22,6 +22,10 @@ import {
   getUsedIndices,
   markIndexUsed,
   MOTIVATION_NO_REPEAT_WINDOW,
+  SOURCE_META,
+  DAY_THEME_MAP,
+  getThemeForDay,
+  type MotivationSource,
 } from "@/cards/motivation/motivation";
 
 describe("Motivation — MOTIVATIONS array", () => {
@@ -462,6 +466,9 @@ describe("Motivation — getQuotesByCategory (Sprint 23)", () => {
       "shabbat",
       "family",
       "success",
+      "gratitude",
+      "courage",
+      "calm",
     ];
     for (const q of MOTIVATIONS) {
       expect(validCategories).toContain(q.category);
@@ -785,5 +792,117 @@ describe("Motivation — fetchAiMotivationQuote edge cases (Sprint 84)", () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
     const result = await fetchAiMotivationQuote();
     expect(result).toBeNull();
+  });
+});
+
+// ── M1: Source attribution badge (Sprint 176) ─────────────────────────────────
+
+describe("Motivation — M1 source attribution", () => {
+  beforeEach(() => {
+    _resetMotivationForTest();
+    document.body.innerHTML = `
+      <div id="moti-text"></div>
+      <div id="moti-author"></div>
+      <div id="moti-src"></div>
+      <button id="moti-next-btn"></button>
+      <button id="moti-share-btn"></button>
+    `;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("SOURCE_META defines all 4 source types", () => {
+    const keys: MotivationSource[] = ["tanakh", "hazal", "modern", "ai"];
+    for (const k of keys) {
+      expect(SOURCE_META[k]).toBeDefined();
+      expect(SOURCE_META[k].label).toBeTruthy();
+      expect(SOURCE_META[k].cls).toMatch(/^src-/);
+    }
+  });
+
+  it("setContent renders source badge when source is provided", () => {
+    initMotivationCard();
+    const srcEl = document.getElementById("moti-src")!;
+    setContent({ text: "Test", author: "", source: "tanakh" });
+    expect(srcEl.textContent).toBe("תנ״ך");
+    expect(srcEl.className).toContain("src-tanakh");
+  });
+
+  it("setContent clears source badge when source is undefined", () => {
+    initMotivationCard();
+    const srcEl = document.getElementById("moti-src")!;
+    // First set a source, then clear it
+    setContent({ text: "A", author: "", source: "hazal" });
+    setContent({ text: "B", author: "" });
+    expect(srcEl.textContent).toBe("");
+    expect(srcEl.className).toBe("moti-src");
+  });
+
+  it("at least some MOTIVATIONS quotes have a source field", () => {
+    const withSource = MOTIVATIONS.filter((q) => q.source != null);
+    expect(withSource.length).toBeGreaterThan(0);
+  });
+
+  it("all quotes with source have valid source values", () => {
+    const validSources: MotivationSource[] = ["tanakh", "hazal", "modern", "ai"];
+    for (const q of MOTIVATIONS) {
+      if (q.source != null) {
+        expect(validSources).toContain(q.source);
+      }
+    }
+  });
+});
+
+// ── M2: Theme-by-day rotation (Sprint 176) ────────────────────────────────────
+
+describe("Motivation — M2 theme-by-day", () => {
+  it("DAY_THEME_MAP has 7 entries (0=Sun … 6=Sat)", () => {
+    expect(DAY_THEME_MAP).toHaveLength(7);
+  });
+
+  it("getThemeForDay(Sunday) returns 'gratitude'", () => {
+    const sun = new Date("2025-06-01T12:00:00"); // Sunday
+    expect(getThemeForDay(sun)).toBe("gratitude");
+  });
+
+  it("getThemeForDay(Saturday) returns 'shabbat'", () => {
+    const sat = new Date("2025-05-31T12:00:00"); // Saturday
+    expect(getThemeForDay(sat)).toBe("shabbat");
+  });
+
+  it("getThemeForDay(Friday) returns 'morning'", () => {
+    const fri = new Date("2025-05-30T12:00:00"); // Friday
+    expect(getThemeForDay(fri)).toBe("morning");
+  });
+
+  it("getThemeForDay returns valid category for all days", () => {
+    const validCategories = [
+      "general", "morning", "shabbat", "family", "success",
+      "gratitude", "courage", "calm",
+    ];
+    // Check all 7 days by walking a known week
+    for (let d = 0; d < 7; d++) {
+      const date = new Date("2025-06-01T12:00:00"); // Sunday
+      date.setDate(date.getDate() + d);
+      expect(validCategories).toContain(getThemeForDay(date));
+    }
+  });
+
+  it("getThemeForDay() without args uses today and returns a valid category", () => {
+    const validCategories = [
+      "general", "morning", "shabbat", "family", "success",
+      "gratitude", "courage", "calm",
+    ];
+    expect(validCategories).toContain(getThemeForDay());
+  });
+
+  it("MOTIVATIONS includes quotes for each new category", () => {
+    const newCategories = ["gratitude", "courage", "calm"] as const;
+    for (const cat of newCategories) {
+      const quotes = MOTIVATIONS.filter((q) => q.category === cat);
+      expect(quotes.length).toBeGreaterThanOrEqual(2);
+    }
   });
 });

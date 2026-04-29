@@ -15,20 +15,36 @@ import { loadConfig } from "../../core/config";
 import type { CardConfigField } from "../../types/card";
 
 /** Sprint 23: Category labels for motivation quotes. */
-export type MotivationCategory = "general" | "morning" | "shabbat" | "family" | "success";
+export type MotivationCategory =
+  | "general"
+  | "morning"
+  | "shabbat"
+  | "family"
+  | "success"
+  | "gratitude"
+  | "courage"
+  | "calm";
+
+/**
+ * M1 (Sprint 176): Source attribution for displayed quote.
+ * Rendered as a colored badge below the author line.
+ */
+export type MotivationSource = "tanakh" | "hazal" | "modern" | "ai";
 
 /** Sprint 23: Categorized quotes with `category` field. */
 export interface MotivationQuote {
   text: string;
   author: string;
   category: MotivationCategory;
+  /** M1 (Sprint 176): Optional source attribution badge. */
+  source?: MotivationSource;
 }
 
 // Hebrew motivational quotes
 export const MOTIVATIONS: ReadonlyArray<MotivationQuote> = [
   { text: "הכל מתחיל בצעד אחד קטן.", author: "", category: "general" },
   { text: "אל תשפטו את כל השנה על ידי יום אחד בלבד.", author: "", category: "general" },
-  { text: "גם מסע של אלף מיל מתחיל בצעד אחד.", author: "לאו דזה", category: "general" },
+  { text: "גם מסע של אלף מיל מתחיל בצעד אחד.", author: "לאו דזה", category: "general", source: "modern" },
   { text: "אין דבר יותר עוצמתי מרוח האדם.", author: "", category: "general" },
   { text: "הצלחה זה לעשות את מה שאתה אוהב.", author: "", category: "success" },
   { text: "כל יום הוא הזדמנות חדשה.", author: "", category: "morning" },
@@ -36,10 +52,11 @@ export const MOTIVATIONS: ReadonlyArray<MotivationQuote> = [
     text: "הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.",
     author: "אברהם לינקולן",
     category: "success",
+    source: "modern",
   },
   { text: "מי שלא מנסה — לא מפסיד ולא מרוויח.", author: "", category: "general" },
-  { text: "חיים זה מה שקורה כשאתה עסוק בתכניות אחרות.", author: "ג׳ון לנון", category: "general" },
-  { text: "לא כל מי שמשוטט — אבוד.", author: "ג׳.ר.ר טולקין", category: "general" },
+  { text: "חיים זה מה שקורה כשאתה עסוק בתכניות אחרות.", author: "ג׳ון לנון", category: "general", source: "modern" },
+  { text: "לא כל מי שמשוטט — אבוד.", author: "ג׳.ר.ר טולקין", category: "general", source: "modern" },
   { text: "בוקר טוב — כל בוקר חדש הוא ברכה.", author: "", category: "morning" },
   { text: "שבת שלום — הקדש זמן לאהובים.", author: "", category: "shabbat" },
   { text: "מה שמחזק משפחה הוא האהבה והשמחה.", author: "", category: "family" },
@@ -49,12 +66,29 @@ export const MOTIVATIONS: ReadonlyArray<MotivationQuote> = [
   { text: "ההצלחה היא תוצאה של הרגלים יומיומיים.", author: "", category: "success" },
   { text: "כל מה שאנחנו מחפשים בחוץ — נמצא בפנים.", author: "", category: "general" },
   { text: "תנו לאהבה להיות המדריך שלכם.", author: "", category: "family" },
-  { text: "אם לא עכשיו — אז מתי?", author: "הלל הזקן", category: "success" },
+  { text: "אם לא עכשיו — אז מתי?", author: "הלל הזקן", category: "success", source: "hazal" },
+  // M2 / gratitude
+  { text: "הודו לה׳ כי טוב כי לעולם חסדו.", author: "תהילים קו:א", category: "gratitude", source: "tanakh" },
+  { text: "כל הנשמה תהלל יה.", author: "תהילים קנ:ו", category: "gratitude", source: "tanakh" },
+  { text: "שמח בחלקך — זוהי העושר האמיתי.", author: "פרקי אבות ד:א", category: "gratitude", source: "hazal" },
+  { text: "הכרת הטוב היא מידה מהמידות הנעלות ביותר.", author: "", category: "gratitude" },
+  // M2 / courage
+  { text: "חזקו ואמצו אל תיראו ואל תערצו.", author: "דברים לא:ו", category: "courage", source: "tanakh" },
+  { text: "אמץ ואל תירא, כי ה׳ אלוהיך עמך.", author: "יהושע א:ט", category: "courage", source: "tanakh" },
+  { text: "הגיבורים לא נולדים — הם נעשים.", author: "", category: "courage", source: "modern" },
+  { text: "הפחד הוא שקר; הגבורה היא שתלך קדימה בכל זאת.", author: "", category: "courage" },
+  // M2 / calm
+  { text: "שלום שלום לרחוק ולקרוב.", author: "ישעיהו נז:יט", category: "calm", source: "tanakh" },
+  { text: "נפשי בידיו אפקיד — ישנה ולא אפחד.", author: "פיוט 'אדון עולם'", category: "calm", source: "hazal" },
+  { text: "מי שיש לו שלווה פנימית — לא יבנה חומות.", author: "", category: "calm" },
+  { text: "הכל לטובה.", author: "נחום איש גמזו", category: "calm", source: "hazal" },
 ];
 
 let motiIdx = 0;
 let elText: HTMLElement | null = null;
 let elAuthor: HTMLElement | null = null;
+/** M1 (Sprint 176): Source attribution badge element. */
+let elSrc: HTMLElement | null = null;
 
 // ── Sprint 70: Non-repeat window ──────────────────────────────────────────────
 
@@ -116,6 +150,42 @@ export function pickNextQuoteIndex(poolSize: number, usedIndices: number[]): num
 
 /** Sprint 23: Active category filter — null = show all categories. */
 let _activeCategory: MotivationCategory | null = null;
+
+// ── M1: Source attribution labels ─────────────────────────────────────────────
+
+/** Human-readable label and CSS class for each source. */
+export const SOURCE_META: Readonly<Record<MotivationSource, { label: string; cls: string }>> = {
+  tanakh: { label: "תנ״ך", cls: "src-tanakh" },
+  hazal: { label: "חז״ל", cls: "src-hazal" },
+  modern: { label: "מודרני", cls: "src-modern" },
+  ai: { label: "AI", cls: "src-ai" },
+};
+
+// ── M2: Theme-by-day rotation ─────────────────────────────────────────────────
+
+/**
+ * Day-of-week → quote category mapping.
+ * Index 0 = Sunday, 6 = Saturday.
+ * Used for automatic theme rotation when no manual category is selected.
+ */
+export const DAY_THEME_MAP: ReadonlyArray<MotivationCategory> = [
+  "gratitude", // 0 Sun
+  "courage",   // 1 Mon
+  "calm",      // 2 Tue
+  "general",   // 3 Wed
+  "success",   // 4 Thu
+  "morning",   // 5 Fri
+  "shabbat",   // 6 Sat
+];
+
+/**
+ * M2 (Sprint 176): Returns the recommended quote category for a given date.
+ * @param date  Date to evaluate (defaults to today).
+ */
+export function getThemeForDay(date: Date = new Date()): MotivationCategory {
+  const dow = date.getDay(); // 0 = Sunday … 6 = Saturday
+  return DAY_THEME_MAP[dow] ?? "general";
+}
 
 /**
  * Sprint 23: Returns quotes filtered by category (or all when null).
@@ -246,9 +316,20 @@ export const loadMotivation = createAsyncCardLoader<MotivationQuote>(
   renderMotivationQuote,
 );
 
-export function setContent(m: { text: string; author: string }): void {
+export function setContent(m: { text: string; author: string; source?: MotivationSource }): void {
   if (elText) elText.textContent = m.text;
   if (elAuthor) elAuthor.textContent = m.author ? `— ${m.author}` : "";
+  // M1 (Sprint 176): source attribution badge
+  if (elSrc) {
+    if (m.source) {
+      const meta = SOURCE_META[m.source];
+      elSrc.textContent = meta.label;
+      elSrc.className = `moti-src ${meta.cls}`;
+    } else {
+      elSrc.textContent = "";
+      elSrc.className = "moti-src";
+    }
+  }
 }
 
 export function shareMotivation(): void {
@@ -268,6 +349,7 @@ export function shareMotivation(): void {
 export function initMotivationCard(): void {
   elText = document.getElementById("moti-text");
   elAuthor = document.getElementById("moti-author");
+  elSrc = document.getElementById("moti-src");
 
   document.getElementById("moti-next-btn")?.addEventListener("click", () => {
     renderMotivation();
@@ -275,6 +357,11 @@ export function initMotivationCard(): void {
   document.getElementById("moti-share-btn")?.addEventListener("click", () => {
     shareMotivation();
   });
+
+  // M2 (Sprint 176): Apply theme-by-day when no manual category is set
+  if (_activeCategory === null) {
+    _activeCategory = getThemeForDay();
+  }
 
   // Synchronous initial render — no async overhead for first display
   renderMotivation();
@@ -325,6 +412,7 @@ export function _resetMotivationForTest(): void {
   motiIdx = 0;
   elText = null;
   elAuthor = null;
+  elSrc = null;
   _activeCategory = null;
   if (_motiAutoInterval !== null) {
     clearInterval(_motiAutoInterval);

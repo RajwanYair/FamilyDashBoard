@@ -513,7 +513,7 @@ export function init(): void {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
       const data = e.data as { type?: string };
-      if (data?.type === "NETWORK_BACK" && !_wenOffline) {
+      if (data?.type === "NETWORK_BACK") {
         showToast(t("onlineRefreshing"), 2500);
         setTimeout(refreshAllCardsStaggered, 500);
       }
