@@ -54,6 +54,7 @@
         "check:ignore-scripts": "node scripts/check-npm-ignore-scripts.mjs",
         "check:cross-project": "node scripts/check-cross-project-gate.mjs",
         "check:sigstore": "node scripts/check-sigstore.mjs",
+        "check:reproducible": "node scripts/check-reproducible.mjs --dry-run",
         "check:bundle": "node scripts/check-bundle-size.mjs",
         "check:card-bundle": "node scripts/check-card-bundle-delta.mjs",
         "bundle:trend": "node scripts/bundle-trend.mjs",

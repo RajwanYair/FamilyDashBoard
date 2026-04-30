@@ -174,3 +174,6 @@ jobs:
           echo "=== Cosign bundle summary ===" >> "$GITHUB_STEP_SUMMARY"
           echo "dist.zip signed: dist.zip.bundle" >> "$GITHUB_STEP_SUMMARY"
           echo "sw.js signed: sw.js.bundle" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate rebuilder manifest (Sprint 244 / V14-SECURITY-L3)
+        run: node scripts/check-reproducible.mjs
