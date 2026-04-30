@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.30.0 (Sprint 296) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
+> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.31.0 (Sprint 306) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
 >
-> **Inventory**: 5872 tests / 172 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 52 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5957 tests / 175 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 53 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 
@@ -943,6 +943,10 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] Coverage ratchet 93.0/84.6/91.8/94.3 → 93.0/84.6/92.0/94.5 (Sprint 290 fast-check boost).
 - [x] X4 keymap.ts centralised utilities + 18 unit tests + 85 fast-check configSchema property tests (Sprints 291–293).
 - [x] ROADMAP V14-CROSS-CARD exit: all X1–X10 shipped; V14-CARD-SETTINGS fully complete (Sprint 297).
+- [x] fast-check KP4–KP8 (keymap) + SP1–SP5 (snapshot) + EB1–EB6 (event-bus) property tests (Sprints 298–300).
+- [x] Coverage baseline 93.14/84.70/92.02/94.52 documented; ADR-053 configSchema architecture (Sprints 301–302).
+- [x] CS-FC9–CS-FC16 configSchema property extensions + TDP6–TDP8 today-pane + LP5–LP8 links (Sprints 303–304).
+- [x] v13.31.0 release — 5957 tests / 175 suites / 0 failures (Sprint 306).
 
 **Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/92.0/94.5; LHCI perf `error ≥ 0.97`.
 

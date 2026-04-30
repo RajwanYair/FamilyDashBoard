@@ -9,6 +9,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.31.0] — 2026-04-30
+
+> **5957 tests / 175 suites / 0 failures** (commit `4df9ba3`)
+
+### Added
+
+- **Sprint 297**: ROADMAP housekeeping — X4 keymap.ts marked done in V14-CROSS-CARD; active streams header updated to V14-FOUNDATIONS + V14-SEMANTIC + V14-CARDS-DEEP.
+- **Sprint 298**: KP4–KP8 fast-check property tests for `keymap.ts` — `buildHelpRows` fragment child count = actions.length, single-char key uppercased in `.help-key`, `sortKeyEntries` length/key preservation, single-char precedes multi-char, sort idempotency. 7 new tests.
+- **Sprint 299**: SP1–SP5 fast-check property tests for `snapshot.ts` — `buildSnapshot` always returns 6 required keys, valid ISO-8601 timestamp, `dash_`/`fdb_` key filter, 300-char truncation, JSON-serializable result. 6 new tests.
+- **Sprint 300**: EB1–EB6 fast-check property tests for `event-bus.ts` — `globalSync` loading/error/ok aggregate state, `broadcastAlert` sets/clears channel, `broadcastTheme` preserves last value, `broadcastSync` idempotency. 7 new tests.
+- **Sprint 301**: Coverage baseline documented — actuals 93.14/84.70/92.02/94.52 after 20 new property tests; margins too tight for numeric ratchet; deferred to Sprint 305.
+- **Sprint 302**: ADR-053 — `CardConfigField[]` configSchema architecture decision record formalising the contract established by V14-CARD-SETTINGS (Sprints 277–289). ADR index updated to 53 entries.
+- **Sprint 303**: CS-FC9–CS-FC16 fast-check extensions for all 12 card `configSchema` arrays — range step > 0, select `defaultValue` in options, boolean fields free of options/min/max, non-select fields have no options, tab value validity, range/number numeric `defaultValue`, global key uniqueness across all 12 schemas, `groupOpenByDefault` requires `group`. Suite: 143 tests total.
+- **Sprint 304**: TDP6–TDP8 fast-check for `buildTodayItems` (icon/label always non-empty, `type` values always unique) + LP5–LP8 for `links.ts` (filter invariant, distinct-targets count, resolver identity, resolver replacement). 7 new tests.
+- **Sprint 305**: 5957 tests / 175 suites / 0 failures documented; property tests probe existing paths — no net coverage gain; thresholds held at 93.0/84.6/92.0/94.5.
+
+---
+
 ## [13.30.0] — 2026-04-30
 
 > **5872 tests / 172 suites / 0 failures** (commit `6a55862`)

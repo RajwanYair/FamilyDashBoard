@@ -3,7 +3,7 @@ applyTo: "tests/**"
 description: "Use when: writing or reviewing test files under tests/. Vitest patterns, mock conventions, and FamilyDashBoard test rules."
 ---
 
-# Test Instructions — FamilyDashBoard v13.30.0
+# Test Instructions — FamilyDashBoard v13.31.0
 
 > Apply these rules to every file under `tests/`. See `copilot-instructions.md` for cross-cutting project rules.
 > Baseline: 5701 / 170 suites / 0 failures · Coverage thresholds: 93.0 / 84.6 / 92.0 / 94.5 (statements / branches / functions / lines).
