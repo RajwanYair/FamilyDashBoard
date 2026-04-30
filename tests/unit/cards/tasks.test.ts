@@ -31,6 +31,7 @@ import {
   addSubtask,
   getSubtasks,
   removeSubtask,
+  tasksConfigSchema,
 } from "@/cards/tasks/tasks";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
@@ -2257,5 +2258,40 @@ describe("TP5 · isOverdue / isDueToday / isDueThisWeek — property: boolean gu
         return typeof isDueToday(s) === "boolean" && typeof isDueThisWeek(s) === "boolean";
       }),
     );
+  });
+});
+
+// ── Sprint 286 / CS-T1: due-badge/recurring/tags/sort-order ──────────────────────
+describe("Tasks configSchema — CS-T1 (Sprint 286)", () => {
+  it("configSchema has 8 fields total after CS-T1", () => {
+    expect(tasksConfigSchema.length).toBe(8);
+  });
+
+  it("tasksShowDueBadge is a boolean defaulting to true", () => {
+    const field = tasksConfigSchema.find((f) => f.key === "tasksShowDueBadge");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
+  });
+
+  it("tasksAllowRecurring is a boolean defaulting to false", () => {
+    const field = tasksConfigSchema.find((f) => f.key === "tasksAllowRecurring");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
+  });
+
+  it("tasksShowTags is a boolean defaulting to false", () => {
+    const field = tasksConfigSchema.find((f) => f.key === "tasksShowTags");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
+  });
+
+  it("tasksSortOrder is a select with priority/due/created options", () => {
+    const field = tasksConfigSchema.find((f) => f.key === "tasksSortOrder");
+    expect(field?.type).toBe("select");
+    const values = field?.options?.map((o) => o.value);
+    expect(values).toContain("priority");
+    expect(values).toContain("due");
+    expect(values).toContain("created");
+    expect(field?.defaultValue).toBe("priority");
   });
 });

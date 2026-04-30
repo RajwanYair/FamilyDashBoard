@@ -721,6 +721,48 @@ export const tasksConfigSchema: CardConfigField[] = [
     tab: "advanced",
     group: "tasks",
   },
+  // ── Sprint 286 / CS-T1: due-badge/recurring/tags/sort-order ──────────────────────────
+  {
+    key: "tasksShowDueBadge",
+    labelHe: "הצג תג תאריך יעד",
+    labelEn: "Show due-date badge",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "tasks",
+  },
+  {
+    key: "tasksAllowRecurring",
+    labelHe: "אפשר משימות חוזרות",
+    labelEn: "Allow recurring tasks",
+    type: "boolean",
+    defaultValue: false,
+    tab: "advanced",
+    group: "tasks",
+  },
+  {
+    key: "tasksShowTags",
+    labelHe: "הצג תגים",
+    labelEn: "Show tags",
+    type: "boolean",
+    defaultValue: false,
+    tab: "display",
+    group: "tasks",
+  },
+  {
+    key: "tasksSortOrder",
+    labelHe: "סדר משימות",
+    labelEn: "Task sort order",
+    type: "select",
+    defaultValue: "priority",
+    options: [
+      { value: "priority", label: "עדיפות / Priority" },
+      { value: "due", label: "תאריך יעד / Due date" },
+      { value: "created", label: "תאריך יצירה / Created" },
+    ],
+    tab: "display",
+    group: "tasks",
+  },
 ];
 
 // ── CardDefinition export (for registry) ─────────────────────────────────
