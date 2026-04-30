@@ -44,6 +44,7 @@ import {
   loadShadowVectorizeFlag,
   recordShadowVectorizeComparison,
   getShadowVectorizeLog,
+  newsConfigSchema,
 } from "@/cards/news/news";
 import { _idbClearFallback } from "@/core/idb-store";
 
@@ -2503,5 +2504,41 @@ describe("News — Vectorize shadow mode (Sprint 267 / N1 ADR-046)", () => {
     const log = getShadowVectorizeLog();
     expect(log[0]?.overlap).toBe(3);
     expect(log[1]?.overlap).toBe(2);
+  });
+});
+
+// ── Sprint 289 / CS-N1: AI summary, dedup sensitivity, min-age, source filter ──
+describe("News configSchema — CS-N1 (Sprint 289)", () => {
+  it("configSchema has 6 fields total after CS-N1", () => {
+    expect(newsConfigSchema.length).toBe(6);
+  });
+
+  it("newsAiSummary is a boolean defaulting to false", () => {
+    const f = newsConfigSchema.find((f) => f.key === "newsAiSummary");
+    expect(f?.type).toBe("boolean");
+    expect(f?.defaultValue).toBe(false);
+  });
+
+  it("newsDedup is a select with low/mid/hi options, default mid", () => {
+    const f = newsConfigSchema.find((f) => f.key === "newsDedup");
+    expect(f?.type).toBe("select");
+    const vals = f?.options?.map((o) => o.value);
+    expect(vals).toContain("low");
+    expect(vals).toContain("mid");
+    expect(vals).toContain("hi");
+    expect(f?.defaultValue).toBe("mid");
+  });
+
+  it("newsMinAge is a select with 4 age options, default 0", () => {
+    const f = newsConfigSchema.find((f) => f.key === "newsMinAge");
+    expect(f?.type).toBe("select");
+    expect(f?.options?.length).toBe(4);
+    expect(f?.defaultValue).toBe("0");
+  });
+
+  it("disabledFeeds is a text field defaulting to empty string", () => {
+    const f = newsConfigSchema.find((f) => f.key === "disabledFeeds");
+    expect(f?.type).toBe("text");
+    expect(f?.defaultValue).toBe("");
   });
 });

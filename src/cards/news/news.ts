@@ -952,6 +952,51 @@ export const newsConfigSchema: CardConfigField[] = [
     defaultValue: true,
     group: "תצוגה",
   },
+  // ── Sprint 289 / CS-N1: AI summary, dedup sensitivity, min-age, source filter ──
+  {
+    key: "newsAiSummary",
+    labelHe: "סיכום AI לכתבות",
+    labelEn: "AI article summaries",
+    type: "boolean",
+    defaultValue: false,
+    group: "תצוגה",
+  },
+  {
+    key: "newsDedup",
+    labelHe: "רגישות כפילויות",
+    labelEn: "Dedup sensitivity",
+    type: "select",
+    defaultValue: "mid",
+    options: [
+      { value: "low", label: "נמוכה / Low" },
+      { value: "mid", label: "בינונית / Mid" },
+      { value: "hi", label: "גבוהה / High" },
+    ],
+    group: "סינון",
+  },
+  {
+    key: "newsMinAge",
+    labelHe: "גיל כתבה מינימלי",
+    labelEn: "Min article age filter",
+    type: "select",
+    defaultValue: "0",
+    options: [
+      { value: "0", label: "ללא / None" },
+      { value: "1h", label: "שעה / 1 hour" },
+      { value: "6h", label: "6 שעות / 6 hours" },
+      { value: "24h", label: "יום / 24 hours" },
+    ],
+    group: "סינון",
+  },
+  {
+    key: "disabledFeeds",
+    labelHe: "מקורות מושבתים (מופרד בפסיקים)",
+    labelEn: "Disabled feeds (comma-separated source names)",
+    type: "text",
+    defaultValue: "",
+    placeholder: "ynet,cnn",
+    group: "סינון",
+  },
 ];
 
 export const newsCard: CardDefinition = {
