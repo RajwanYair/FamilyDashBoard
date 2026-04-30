@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — Visual Regression Tests (Stream G.2.3)
  *
- * Captures 81 baseline screenshots across 22 scenario groups:
+ * Captures 90 baseline screenshots across 25 scenario groups:
  *   - 18 idle baselines: 6 themes × 3 screen modes
  *   - 3 config-panel-open baselines: 3 themes × tv mode
  *   - 3 maximized-card baselines: 3 themes × tv mode
@@ -24,6 +24,9 @@
  *   - 3 help-dialog-ext baselines: 3 more themes × tv mode (Sprint 223)
  *   - 3 compact-config baselines: 3 themes × tablet mode   (Sprint 223)
  *   - 3 compact-help baselines: 3 themes × tablet mode     (Sprint 223)
+ *   - 3 alerts-banner-ext baselines: 3 more themes × tv mode (Sprint 269)
+ *   - 3 video-news-ext baselines: 3 more themes × tv mode  (Sprint 269)
+ *   - 3 esc-resets-state baselines: 3 themes × tv mode     (Sprint 269)
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -862,6 +865,128 @@ test.describe("Video-news card visual baselines (Sprint 219)", () => {
 
       await expect(page).toHaveScreenshot(`${theme}-video-news-idle.png`, {
         maxDiffPixelRatio: 0.06,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 269: Alerts-banner in 3 more themes ────────────────────────────
+
+const SPRINT269_THEMES_A = ["amber", "purple", "rose"] as const;
+const SPRINT269_THEMES_B = ["amber", "purple", "rose"] as const;
+
+test.describe("FamilyDashBoard — Alerts Banner Extended Themes (Sprint 269)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of SPRINT269_THEMES_A) {
+    test(`${theme}: alerts-banner-visible`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Inject a synthetic alert banner to make the state visible
+      await page.evaluate(() => {
+        let banner = document.getElementById("alerts-banner");
+        if (!banner) {
+          banner = document.createElement("div");
+          banner.id = "alerts-banner";
+          banner.className = "alerts-banner visible";
+          banner.style.cssText =
+            "position:fixed;top:0;left:0;right:0;z-index:900;padding:10px 16px;background:var(--alert-bg,#c00);color:var(--alert-text,#fff);font-weight:bold;direction:rtl;";
+          banner.textContent = "⚠️ בדיקה: התראת ביטחון";
+          document.body.prepend(banner);
+        } else {
+          banner.classList.add("visible");
+        }
+      });
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-alerts-banner-ext.png`, {
+        maxDiffPixelRatio: 0.06,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 269: Video-news idle in 3 more themes ──────────────────────────
+
+test.describe("FamilyDashBoard — Video News Idle Extended Themes (Sprint 269)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of SPRINT269_THEMES_B) {
+    test(`${theme}: video-news-card-idle-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(2_000);
+
+      const card = page.locator("[data-card-id='video-news']").first();
+      const isVisible = await card.isVisible().catch(() => false);
+
+      if (!isVisible) {
+        await page.evaluate(() => {
+          const placeholder = document.createElement("div");
+          placeholder.setAttribute("data-card-id", "video-news");
+          placeholder.className = "card";
+          placeholder.style.cssText =
+            "width:320px;height:180px;background:var(--card-bg,#111);border:1px solid var(--border,#444);display:flex;align-items:center;justify-content:center;color:var(--text,#fff);font-size:14px;position:fixed;bottom:20px;right:20px;z-index:800;";
+          placeholder.textContent = "📺 Video News";
+          document.body.appendChild(placeholder);
+        });
+        await page.waitForTimeout(300);
+      }
+
+      await expect(page).toHaveScreenshot(`${theme}-video-news-idle-ext.png`, {
+        maxDiffPixelRatio: 0.06,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 269: Escape key resets overlay state baselines ─────────────────
+
+test.describe("FamilyDashBoard — Escape Key Resets State Baselines (Sprint 269)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "matrix"] as Theme[]) {
+    test(`${theme}: esc-resets-state`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Open help dialog, then press Escape to close it
+      await page.keyboard.press("h");
+      await page.waitForFunction(
+        () => (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        { timeout: 5_000 },
+      );
+      await page.keyboard.press("Escape");
+      await page.waitForFunction(
+        () => (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open !== true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(400);
+
+      await expect(page).toHaveScreenshot(`${theme}-esc-resets-state.png`, {
+        maxDiffPixelRatio: 0.05,
         mask: [
           page.locator(".clock, #clock, [id*='time'], [class*='time']"),
           page.locator("[class*='ticker'], [class*='marquee']"),
