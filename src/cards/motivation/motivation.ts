@@ -475,6 +475,54 @@ export const motivationConfigSchema: CardConfigField[] = [
     tab: "display",
     group: "motivation",
   },
+  // ── Sprint 285 / CS-M1: categories/theme-by-day/source/lang ─────────────────────────
+  {
+    key: "motivationCategories",
+    labelHe: "קטגוריית ציטוטים",
+    labelEn: "Quote category",
+    type: "select",
+    defaultValue: "all",
+    options: [
+      { value: "all", label: "הכל / All" },
+      { value: "gratitude", label: "הכרת טובה / Gratitude" },
+      { value: "courage", label: "אומץ / Courage" },
+      { value: "calm", label: "שלווה / Calm" },
+    ],
+    tab: "display",
+    group: "motivation",
+  },
+  {
+    key: "motivationThemeByDay",
+    labelHe: "נושא לפי יום בשבוע",
+    labelEn: "Theme by day of week",
+    type: "boolean",
+    defaultValue: false,
+    tab: "display",
+    group: "motivation",
+  },
+  {
+    key: "motivationShowSource",
+    labelHe: "הצג מקור הציטוט",
+    labelEn: "Show quote source",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "motivation",
+  },
+  {
+    key: "motivationLang",
+    labelHe: "שפת הציטוטים",
+    labelEn: "Quote language",
+    type: "select",
+    defaultValue: "both",
+    options: [
+      { value: "both", label: "יעברית + אנגלית / Both" },
+      { value: "he", label: "עברית / Hebrew" },
+      { value: "en", label: "אנגלית / English" },
+    ],
+    tab: "display",
+    group: "motivation",
+  },
 ];
 
 // ── Test isolation (Stream G.1) ───────────────────────────────────────────────

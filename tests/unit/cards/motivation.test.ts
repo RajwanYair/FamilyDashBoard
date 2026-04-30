@@ -964,3 +964,39 @@ describe("Motivation — favorites (Sprint 197 / M3)", () => {
     expect(favs.length).toBe(50);
   });
 });
+
+// ── Sprint 285 / CS-M1: categories/theme-by-day/source/lang ─────────────────────
+describe("Motivation configSchema — CS-M1 (Sprint 285)", () => {
+  it("configSchema has 6 fields total after CS-M1", () => {
+    expect(motivationConfigSchema.length).toBe(6);
+  });
+
+  it("motivationCategories is a select with 4 options", () => {
+    const field = motivationConfigSchema.find((f) => f.key === "motivationCategories");
+    expect(field?.type).toBe("select");
+    expect(field?.options?.length).toBe(4);
+    expect(field?.defaultValue).toBe("all");
+  });
+
+  it("motivationThemeByDay is a boolean defaulting to false", () => {
+    const field = motivationConfigSchema.find((f) => f.key === "motivationThemeByDay");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
+  });
+
+  it("motivationShowSource is a boolean defaulting to true", () => {
+    const field = motivationConfigSchema.find((f) => f.key === "motivationShowSource");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
+  });
+
+  it("motivationLang is a select with he/en/both options", () => {
+    const field = motivationConfigSchema.find((f) => f.key === "motivationLang");
+    expect(field?.type).toBe("select");
+    const values = field?.options?.map((o) => o.value);
+    expect(values).toContain("he");
+    expect(values).toContain("en");
+    expect(values).toContain("both");
+    expect(field?.defaultValue).toBe("both");
+  });
+});
