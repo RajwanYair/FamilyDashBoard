@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-05-03 · **Shipped baseline**: v13.32.0 (Sprint 316) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
+> **Refresh date**: 2026-05-15 · **Shipped baseline**: v13.33.0 (Sprint 326) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
 >
 > **Inventory**: 5980 tests / 179 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 54 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
@@ -957,6 +957,16 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] Stryker scope extended to `history.ts`, `sync.ts`, `fetch.ts`; ARCHITECTURE.md + data-sources.md freshened to v13.31.0 (Sprint 314).
 - [x] ROADMAP.md + AI customisation files updated to 5980 tests / 179 suites / 54 ADRs (Sprint 315).
 - [x] v13.32.0 release — 5980 tests / 179 suites / 0 failures (Sprint 316).
+- [x] fast-check IP1–IP5 `i18n` placeholder/locale property tests (Sprint 317).
+- [x] fast-check CRP1–CRP5 `card-registry` round-trip + sort property tests (Sprint 318).
+- [x] fast-check ALP1–ALP4 `anim-level` clamp property tests (Sprint 319).
+- [x] fast-check PRP1–PRP6 `provider-health` backoff/ring-buffer property tests (Sprint 320).
+- [x] fast-check ETP1–ETP5 `error-tracker` retention/trend property tests (Sprint 321).
+- [x] fast-check HWP1–HWP4 `hardware` tier monotonicity property tests (Sprint 322).
+- [x] fast-check IDP1–IDP3 `idle` visibility property tests (Sprint 323).
+- [x] ADR-055: property-testing scope expansion — 32 new tests (Sprint 324).
+- [x] ROADMAP.md + AI customisation files updated to 6012 tests / 186 suites / 55 ADRs (Sprint 325).
+- [x] v13.33.0 release — Sprints 317–325 property-test sprint set (Sprint 326).
 
 **Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/92.0/94.5; LHCI perf `error ≥ 0.97`.
 
