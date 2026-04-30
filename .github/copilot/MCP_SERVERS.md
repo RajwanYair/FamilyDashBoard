@@ -36,6 +36,22 @@ MCP servers can provide more than tools. When choosing or documenting a server, 
 
 VS Code surfaces MCP capabilities through the Chat Customizations editor, the `MCP: List Servers` command, the Extensions view's MCP section, and the MCP output log. Disabled servers do not load tools, resources, or prompts — keep enable/disable state user-specific.
 
+### Transport Types
+
+VS Code supports three MCP transport types. Document which one a server uses:
+
+| Transport        | Use When                                              |
+| ---------------- | ----------------------------------------------------- |
+| `stdio`          | Local servers started by VS Code as a subprocess      |
+| `sse`            | Legacy remote servers using Server-Sent Events        |
+| `streamableHttp` | Modern remote servers; preferred for new deployments  |
+
+Prefer `streamableHttp` for new remote MCP servers; `stdio` for local processes.
+
+### Tool Discovery
+
+When adding an agent (`.github/agents/*.agent.md`) that depends on MCP tools, list those tools in the agent's `tools:` allowlist under a comment. This makes the dependency visible without requiring the server to be running at edit time.
+
 ## Security Rules
 
 - Never hardcode tokens or secrets in `mcp.json`.

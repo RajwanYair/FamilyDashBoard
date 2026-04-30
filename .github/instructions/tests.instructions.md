@@ -3,10 +3,10 @@ applyTo: "tests/**"
 description: "Use when: writing or reviewing test files under tests/. Vitest patterns, mock conventions, and FamilyDashBoard test rules."
 ---
 
-# Test Instructions — FamilyDashBoard v13.14.0
+# Test Instructions — FamilyDashBoard v13.29.0
 
 > Apply these rules to every file under `tests/`. See `copilot-instructions.md` for cross-cutting project rules.
-> Baseline: 4925 / 159 suites / 0 failures · Coverage thresholds: 89.3 / 81.8 / 88.9 / 90.4 (statements / branches / functions / lines).
+> Baseline: 5696 / 170 suites / 0 failures · Coverage thresholds: 93.0 / 84.6 / 92.0 / 94.5 (statements / branches / functions / lines).
 
 ## Test Framework
 
@@ -103,12 +103,22 @@ it("refreshes after 5 minutes", async () => {
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Statements | 90%       |
-| Branches   | 81%       |
-| Functions  | 90%       |
-| Lines      | 92%       |
+| Statements | 93.0%     |
+| Branches   | 84.6%     |
+| Functions  | 92.0%     |
+| Lines      | 94.5%     |
 
 Run `npx vitest run --coverage` to check. CI enforces these thresholds; PRs that lower them will fail.
+
+## Property-Based Testing (fast-check)
+
+When using `fast-check` for property tests:
+
+- Use `fc.double()` not `fc.float()` for numeric arbitraries (more range, no NaN pitfalls)
+- Use `.filter((v) => v.trim().length > 0)` on string arbitraries to exclude whitespace-only inputs
+- Pair `fc.string({ minLength: 1 })` with `.filter((t) => t.trim().length > 0)` — `minLength` alone can produce whitespace-only strings
+- Use `fc.oneof()` over `fc.frequency()` when weights don't matter
+- Keep `numRuns` at the default (100) unless you have a specific reason to increase it
 
 ## Worker Route Tests (Stream W.5–W.8)
 

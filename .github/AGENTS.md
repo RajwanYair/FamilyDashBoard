@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v13.22.0 · Tests: 5405 / 167 suites · Coverage: 93.5 / 85.7 / 92.5 / 94.7
+> Version: v13.29.0 · Tests: 5696 / 170 suites · Coverage: 93.0 / 84.6 / 92.0 / 94.5
 
 This repository uses the current VS Code Copilot customization model:
 
@@ -65,7 +65,7 @@ Use for pre-release gates, PR reviews, coverage audits, dead-code scans, and str
 | `/kv-stale-audit`      | Audit or debug KV stale fallback for a worker route (stocks, crypto, alerts) |
 | `/modernize-tooling`   | Refresh Copilot, CI, MCP, prompt, instruction, and workflow setup            |
 | `/release-check`       | Pre-release readiness gate (types + lint + tests + CHANGELOG + version)      |
-| `/test-coverage`       | Add targeted tests to meet the 89.3%/81.8%/88.9%/90.4% coverage thresholds   |
+| `/test-coverage`       | Add targeted tests to meet the 93.0%/84.6%/92.0%/94.5% coverage thresholds    |
 | `/version-bump`        | Bump version in package.json, CHANGELOG, README badges, and sw.ts            |
 | `/worker-debug`        | Debug a failing Cloudflare Worker route (fetch, Zod, KV, envelope)           |
 | `/worker-route`        | Scaffold a new Cloudflare Worker route (handler + Zod schema + tests)        |

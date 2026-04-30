@@ -6,7 +6,7 @@ tools: ["grep_search", "read_file", "replace_string_in_file", "semantic_search"]
 
 # Card Contract Audit — FamilyDashBoard
 
-Audit all 11 registered cards for a specific interface contract and fix any gaps.
+Audit all 12 registered cards for a specific interface contract and fix any gaps.
 
 ## Cards to Audit
 
@@ -23,6 +23,7 @@ Audit all 11 registered cards for a specific interface contract and fix any gaps
 | `countdown`   | `src/cards/countdown/countdown.ts`     |
 | `system-info` | `src/cards/system-info/system-info.ts` |
 | `tasks`       | `src/cards/tasks/tasks.ts`             |
+| `video-news`  | `src/cards/video-news/video-news.ts`   |
 
 ## Supported Contracts
 

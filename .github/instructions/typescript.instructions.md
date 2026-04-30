@@ -3,13 +3,13 @@ applyTo: "src/**/*.ts"
 description: "Use when: writing or reviewing TypeScript source files in src/. Rules for types, async, modules, and FamilyDashBoard conventions."
 ---
 
-# TypeScript Instructions — FamilyDashBoard v13.14.0
+# TypeScript Instructions — FamilyDashBoard v13.29.0
 
 > Apply these rules to every `.ts` file under `src/`. Rules in `copilot-instructions.md` take precedence for cross-cutting concerns.
 
 ## Strict Mode Baseline
 
-- Target: `ES2022` — use `Array.at()`, `Object.hasOwn()`, `structuredClone()`, `crypto.randomUUID()` freely
+- Target: `ES2024` — use `Array.at()`, `Object.hasOwn()`, `structuredClone()`, `crypto.randomUUID()`, `Promise.withResolvers()` freely
 - Always use `"verbatimModuleSyntax"` — import types with `import type { … }`
 - Avoid `any`. Use `unknown` at system boundaries; narrow immediately with type guards
 - Never use `@ts-ignore` or `@ts-expect-error` without a comment explaining the root cause

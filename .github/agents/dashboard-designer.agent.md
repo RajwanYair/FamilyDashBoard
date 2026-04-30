@@ -11,6 +11,8 @@ tools:
   - replace_string_in_file
   - multi_replace_string_in_file
   - create_file
+  - manage_todo_list
+  - vscode_askQuestions
 user-invocable: true
 handoffs:
   - label: Implement Data Wiring

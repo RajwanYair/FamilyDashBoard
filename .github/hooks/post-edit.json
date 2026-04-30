@@ -3,8 +3,8 @@
         "PostToolUse": [
             {
                 "type": "command",
-                "command": "printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS variables, and TV font readability after edits.\"}}'",
-                "windows": "Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS variables, and TV font readability after edits.\"}}'"
+                "windows": "Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS custom properties, TV font readability, and no hardcoded colors after edits. Confirm cGet/cSet/cGetStale usage is correct. Check _pageVisible guard on async loaders.\"}}'",
+                "fallback": "printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS custom properties, TV font readability, and no hardcoded colors after edits. Confirm cGet/cSet/cGetStale usage is correct. Check _pageVisible guard on async loaders.\"}}'"
             }
         ]
     }

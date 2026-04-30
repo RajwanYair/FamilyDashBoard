@@ -1,12 +1,15 @@
 {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "project": "FamilyDashBoard",
+    "appVersion": "13.29.0",
     "copilot": {
         "enabled": true,
         "features": {
-            "chat_modes": true,
+            "custom_agents": true,
             "inline_suggestions": true,
-            "documentation_generation": true
+            "documentation_generation": true,
+            "code_review": true,
+            "next_edit_suggestions": true
         }
     },
     "modes": {

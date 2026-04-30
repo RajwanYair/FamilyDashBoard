@@ -8,6 +8,7 @@ description: "Use when: editing CI/CD workflows, GitHub Actions, or any YAML con
 ## Workflow Standards
 
 - Use **`actions/checkout@v4`** and **`actions/setup-node@v4`** — these are the current stable major versions. Do NOT use @v5/@v6 (they don't exist for these actions).
+- Node.js version in CI: **24** — set via `node-version: '24'` in `actions/setup-node@v4`.
 - Use the dedicated Pages and Release action majors already present in this repo unless a workflow change explicitly requires otherwise.
 - Set `permissions: contents: read` (least privilege)
 - **No `npm ci` / no `cache: "npm"` / no `package-lock.json`** in this project (worker/ is the exception — it has its own lock file)
@@ -64,3 +65,12 @@ Keep `.github/workflows/README.md` aligned with any workflow changes.
 - If you add a secret, document where it is required and which workflow consumes it.
 - If you change tool versions, keep local developer instructions and CI install instructions in sync.
 - Preserve bash syntax inside GitHub Actions even though local interactive commands in this repository use PowerShell.
+
+## GitHub Copilot Code Review
+
+GitHub Copilot can perform PR code reviews. To request one on a PR:
+
+- Use `@github-copilot review` in a PR comment, or enable auto-review in repository settings.
+- Copilot review runs after CI passes — treat its output like any reviewer comment.
+- Copilot review suggestions are advisory — apply only those that match project rules.
+- Do not override Copilot review with `copilot:ignore` without a comment explaining why.

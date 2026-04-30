@@ -3,13 +3,13 @@ applyTo: "**"
 description: "Project context and file map for FamilyDashBoard."
 ---
 
-# FamilyDashBoard — v13.22.0
+# FamilyDashBoard — v13.29.0
 
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes · 12 cards
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
-> **Tests**: 5256 / 164 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
-> **Coverage**: 93.5 / 85.7 / 92.5 / 94.7 (statements / branches / functions / lines) — see `vitest.config.ts`
+> **Tests**: 5696 / 170 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Coverage**: 93.0 / 84.6 / 92.0 / 94.5 (statements / branches / functions / lines) — see `vitest.config.ts`
 
 ## Shell / Terminal
 
@@ -38,7 +38,7 @@ tests/unit/                 # Vitest unit tests
 sw.js                       # ServiceWorker reference (compiled to dist/sw.js by build-sw.mjs)
 docs/ARCHITECTURE.md        # Runtime structure, cache layers, worker topology
 docs/ROADMAP.md             # Strategic plan, stream priorities, forward release plan
-docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-038)
+docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-052)
 .github/SUPPORT.md          # Support and operator guidance (GitHub community health file)
 .github/skills/             # add-api, release, debug-fetch, update-tests
 .github/agents/             # api-integrator, dashboard-designer

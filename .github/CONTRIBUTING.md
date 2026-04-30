@@ -21,7 +21,7 @@ Thank you for your interest in contributing! This guide covers everything you ne
 
 ## Prerequisites
 
-- **Node.js 22+** with npm
+- **Node.js 24+** with npm
 - **PowerShell** (Windows) or bash-compatible shell (Linux/macOS)
 - Git
 
@@ -92,7 +92,7 @@ npx vitest run tests/unit/core/fetch.test.ts
 npx vitest run --coverage
 ```
 
-**Thresholds** (canonical source: `vitest.config.ts`): statements 89.3%, branches 81.8%, functions 88.9%, lines 90.4%. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
+**Thresholds** (canonical source: `vitest.config.ts`): statements 93.0%, branches 84.6%, functions 92.0%, lines 94.5%. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
 
 **Rules for new tests**:
 

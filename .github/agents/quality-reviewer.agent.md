@@ -66,7 +66,7 @@ Use this agent when:
 | Type errors   | `npx tsc --noEmit`                                      | 0 errors                                |
 | Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                   |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                |
-| Test failures | `npx vitest run`                                        | 0 failures (4925+ / 159 suites baseline) |
+| Test failures | `npx vitest run`                                        | 0 failures (5696 / 170 suites baseline) |
 | Build         | `npm run build`                                         | 0 errors                                |
 | Bundle size   | `npm run check:bundle`                                  | within limits                           |
 
@@ -74,10 +74,10 @@ Use this agent when:
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Statements | 89.3%     |
-| Branches   | 81.8%     |
-| Functions  | 88.9%     |
-| Lines      | 90.4%     |
+| Statements | 93.0%     |
+| Branches   | 84.6%     |
+| Functions  | 92.0%     |
+| Lines      | 94.5%     |
 
 Canonical source: `vitest.config.ts`. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
 

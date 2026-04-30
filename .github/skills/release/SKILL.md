@@ -10,7 +10,7 @@ Use this skill only when you are doing an actual versioned release or preparing 
 
 ## Version Bump Locations
 
-Update ALL of these (search current version string, e.g. `13.14.0`):
+Update ALL of these (search current version string, e.g. `13.29.0`):
 
 | #   | File                                             | Field / location                                      | Notes                                            |
 | --- | ------------------------------------------------ | ----------------------------------------------------- | ------------------------------------------------ |
@@ -103,6 +103,7 @@ npx vitest run
 npm run build
 node scripts/check-bundle-size.mjs
 node scripts/check-sw-version.mjs
+node scripts/check-version-consistency.mjs
 ```
 
 Zero tolerance: 0 type errors · 0 lint errors/warnings · 0 markdownlint errors ·

@@ -12,6 +12,8 @@ tools:
   - create_file
   - run_in_terminal
   - file_search
+  - manage_todo_list
+  - vscode_askQuestions
 user-invocable: true
 handoffs:
   - label: Polish Card UX
@@ -76,7 +78,7 @@ Use this agent when the task is primarily about one of the following:
 - Functions: `cGet(key,TTL)` / `cSet(key,data)` / `cGetStale(key)`
 - Fetch: `fetchWithTimeout(url, 8000)` via AbortController
 - Proxy race: `raceProxies(url)` only where the source module already uses it
-- Sync: `setSync(id, 'syncing'|'success'|'error')`
+- Sync: `setSync(id, 'syncing'|'success'|'error'|'stale')`
 - Locks: `acquireLock(name)` / `releaseLock(name)`
 - Logging: `diagLog(msg)` on every fetch success/error
 - Visibility: `if (!_pageVisible) return;` guard in all loaders or `isPageVisible()` where the module uses the helper
@@ -142,7 +144,7 @@ Use PowerShell commands in this repository:
 npx tsc --noEmit
 npx eslint src tests --max-warnings 0
 npx vitest run tests/unit/cards/<name>.test.ts
-npx vitest run   # full suite — confirm 4925+ tests / 159 suites
+npx vitest run   # full suite — confirm 5696+ tests / 170 suites
 ```
 
 Escalate to broader test coverage only after the focused path is green.

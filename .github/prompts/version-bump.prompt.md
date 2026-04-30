@@ -10,7 +10,7 @@ Bump the version from the current value to a new semver target.
 
 ## Files to Update
 
-Run `grep -r "8\.[0-9]\+\.[0-9]\+" --include="*.{md,json,js,ts}"` to locate all version references, then update each one:
+Run `Select-String -Path src,docs,.github -Pattern "<OLD_VERSION>" -Recurse -Include "*.md","*.json","*.js","*.ts"` to locate all version references, then update each one:
 
 | File                                             | Field / Location                         |
 | ------------------------------------------------ | ---------------------------------------- |
@@ -18,9 +18,18 @@ Run `grep -r "8\.[0-9]\+\.[0-9]\+" --include="*.{md,json,js,ts}"` to locate all 
 | `sw.js`                                          | Comment header + `CACHE_NAME` constant   |
 | `CHANGELOG.md`                                   | New top-level `## vX.Y.Z` heading + date |
 | `README.md`                                      | Version badge URL + inline references    |
-| `.github/copilot-instructions.md`                | Heading line                             |
-| `.github/instructions/workspace.instructions.md` | Version reference                        |
-| `docs/ARCHITECTURE.md`                           | Version reference                        |
+| `.github/copilot-instructions.md`                | Heading line + test count                |
+| `.github/instructions/workspace.instructions.md` | Version reference + test count           |
+| `.github/AGENTS.md`                              | Header `> Version:` line                 |
+| `docs/ARCHITECTURE.md`                           | Version reference + test count           |
+| `.github/assets/banner.svg`                      | Version string + test count              |
+| `.github/assets/architecture.svg`                | Version ×3 + test count                  |
+| `.github/assets/preview.svg`                     | `Dashboard vX.Y.Z` footer text           |
+| `.github/assets/data-sources.svg`                | Title line version                       |
+| `.github/assets/roadmap.svg`                     | Test count progression line              |
+| `docs/ROADMAP.md`                                | Shipped baseline header                  |
+| `.github/skills/release/SKILL.md`                | Verification test count line             |
+| `docs/security.md`                               | Title version string                     |
 
 ## Steps
 

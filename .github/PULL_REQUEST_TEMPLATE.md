@@ -23,7 +23,7 @@ Closes #
 
 ## Testing
 
-- [ ] `npx vitest run` — 0 failures
+- [ ] `npx vitest run` — 0 failures (baseline: 5696 / 170 suites)
 - [ ] `npx tsc --noEmit` — 0 errors
 - [ ] `npx eslint src tests --max-warnings 0` — 0 warnings
 - [ ] Tested in Chrome (desktop full-screen, 1920×1080)
@@ -49,3 +49,7 @@ Closes #
 ## Screenshots
 
 <!-- If this is a visual change, add before/after screenshots. TV-readable font size (≥18px). -->
+
+## Copilot Review
+
+<!-- Optional: request Copilot review by adding @github-copilot as a reviewer or commenting "@github-copilot review" below. -->
