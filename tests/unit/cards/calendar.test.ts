@@ -16,6 +16,7 @@ import {
   groupEventsByDay,
   getHolidaysByDate,
   findConflicts,
+  calendarConfigSchema,
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
@@ -3296,5 +3297,38 @@ describe("CP5 · parseICS — property: always returns an array; no events for e
         },
       ),
     );
+  });
+});
+
+// ── Sprint 284 / CS-CAL1: holidays/colors/horizon/conflicts ───────────────────
+describe("Calendar configSchema — CS-CAL1 (Sprint 284)", () => {
+  it("configSchema has 6 fields total after CS-CAL1", () => {
+    expect(calendarConfigSchema.length).toBe(6);
+  });
+
+  it("calendarShowHolidays is a boolean defaulting to true", () => {
+    const field = calendarConfigSchema.find((f) => f.key === "calendarShowHolidays");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
+  });
+
+  it("calendarSourceColors is a boolean defaulting to true", () => {
+    const field = calendarConfigSchema.find((f) => f.key === "calendarSourceColors");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
+  });
+
+  it("calendarWeeksAhead is a range 1–4 defaulting to 3", () => {
+    const field = calendarConfigSchema.find((f) => f.key === "calendarWeeksAhead");
+    expect(field?.type).toBe("range");
+    expect(field?.min).toBe(1);
+    expect(field?.max).toBe(4);
+    expect(field?.defaultValue).toBe(3);
+  });
+
+  it("calendarShowConflicts is a boolean defaulting to false", () => {
+    const field = calendarConfigSchema.find((f) => f.key === "calendarShowConflicts");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
   });
 });
