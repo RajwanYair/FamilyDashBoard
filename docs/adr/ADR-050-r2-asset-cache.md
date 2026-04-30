@@ -1,10 +1,10 @@
 # ADR-050 — Cloudflare R2 Asset Cache (V14-EDGE)
 
-**Status**: Proposed  
-**Deciders**: RajwanYair  
-**Date**: 2026-04-30  
-**Sprint**: 249  
-**Stream**: V14-EDGE  
+**Status**: Proposed
+**Deciders**: RajwanYair
+**Date**: 2026-04-30
+**Sprint**: 249
+**Stream**: V14-EDGE
 
 ---
 
@@ -69,7 +69,7 @@ GET /r2-asset?url=<percent-encoded-origin-url>
 ```
 
 Input validation:
-- `url` must be percent-decoded and validated with `new URL(url)` 
+- `url` must be percent-decoded and validated with `new URL(url)`
 - Only whitelisted origin hostnames accepted (allowlist in `worker/src/constants.ts`)
 - SSRF guard: block private IP ranges (RFC 1918/RFC 4193) before fetch
 - Max `url` param length: 512 characters

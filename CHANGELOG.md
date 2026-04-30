@@ -9,6 +9,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.27.0] — 2026-04-30
+
+> **5581 tests / 170 suites / 0 failures**
+
+### Added
+
+- **Sprint 243**: Sigstore/cosign keyless signing — `release.yml` adds `sigstore/cosign-installer@v3.8.2` step and `cosign sign-blob` for `dist.zip` and `sw.js`; `dist.zip.bundle` + `sw.js.bundle` attached as release assets. `scripts/check-sigstore.mjs` gate verifies signing steps present (V14-SECURITY-L3).
+- **Sprint 244**: Third-party rebuilder manifest — `scripts/check-reproducible.mjs` captures Node version, npm version, git HEAD, and input-file SHA-256 hashes; writes `dist/rebuilder-manifest.json` inside `dist.zip`; `--dry-run` mode for local use. Added `npm run check:reproducible` script.
+- **Sprint 245**: Stocks card fast-check property tests SP1–SP6 — `tests/unit/cards/stocks.test.ts`: `formatVolume` non-empty/B-M suffix, `sectorEmoji` non-empty, `getMarketStatus` 4-value set, `isPreMarket`+`isPostMarket` mutual exclusion, `getMinutesToNextTransition` ≥0, `marketStatusLabel` non-empty. 300/200/300/300/200/200 runs.
+- **Sprint 246**: Currency card fast-check property tests CM1–CM5 — `tests/unit/cards/currency.test.ts`: `calcCurrency` null-or-positive, negative-amount guard, zero-rate guard, linearity invariant, `formatRelativeTime` non-empty, `getCurrencyTrend` arrow set, sign-consistent direction.
+- **Sprint 247**: Alerts card fast-check property tests AP1–AP5 — `tests/unit/cards/alerts.test.ts`: `alertThreatIcon` exact output set {🔴,🟠,🟡}, threat≤1→🔴, threat=5→🟡, `alertAgeLabel` non-empty for non-negative age, ring buffer invariant ≤100 entries after any batch, exhaustive icon-set check.
+- **Sprint 248**: Hebrew-cal card fast-check property tests HC1–HC6 — `tests/unit/cards/hebrew-cal.test.ts`: `getPsalmOfDay` always in {24,48,82,94,81,93,92}, `formatCountdown` non-empty/00:00 on zero/colon-separated, `hebrewMonthName` non-empty for any date 2020–2030, `zmanimTimeLabel` never throws/empty string → `--`, `isShabbat` always boolean/invalid-window guard, `nextHebrewYearGregorianApprox` 4-digit year ≥ input year.
+- **Sprint 249**: ADR-049 (WebRTC QR-pair mirror, V14-CONTINUITY) + ADR-050 (R2 asset cache, V14-EDGE) — full architecture design documents with security model, implementation plan, and exit gates. ADR index regenerated (49 entries).
+- **Sprint 250**: Coverage ratchet — Sprints 245–248 added 75 fast-check tests; actuals 93.01/84.60/91.85/94.39; thresholds raised statements 92.7→93.0, branches 84.2→84.5, functions 91.5→91.8, lines 94.0→94.3.
+- **Sprint 251**: ROADMAP V14 completion update — header refreshed (5581 tests, 49 ADRs, v13.27.0), V14-FOUNDATIONS fast-check items and coverage ratchet checked, V14-SECURITY-L3 Sigstore/cosign + rebuilder manifest checked, ADR-049/050 cross-linked in V14-CONTINUITY and V14-EDGE streams. README badge and copilot-instructions updated.
+
+---
+
 ## [13.26.0] — 2026-04-30
 
 > **5546 tests / 170 suites / 0 failures**

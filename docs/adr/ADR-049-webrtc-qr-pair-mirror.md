@@ -1,10 +1,10 @@
 # ADR-049 — WebRTC QR-pair Cross-Device Mirror (V14-CONTINUITY)
 
-**Status**: Proposed  
-**Deciders**: RajwanYair  
-**Date**: 2026-04-30  
-**Sprint**: 249  
-**Stream**: V14-CONTINUITY  
+**Status**: Proposed
+**Deciders**: RajwanYair
+**Date**: 2026-04-30
+**Sprint**: 249
+**Stream**: V14-CONTINUITY
 
 ---
 
