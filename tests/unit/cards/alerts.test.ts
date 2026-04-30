@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import * as fc from "fast-check";
 
 // Mock idle to allow page-visibility control per test (default: page visible = true)
 vi.mock("@/core/idle", () => ({
@@ -1897,5 +1898,116 @@ describe("Alerts — showAlertTakeover / hideAlertTakeover (Sprint 186 A1)", () 
   it("hideAlertTakeover does not throw when dialog absent", () => {
     document.body.innerHTML = "<div></div>";
     expect(() => hideAlertTakeover()).not.toThrow();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Sprint 247 — Alerts card fast-check property tests (AP1–AP5)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── AP1: alertThreatIcon — always returns a non-empty string ─────────────
+describe("AP1: alertThreatIcon(threat) — always returns a non-empty emoji string", () => {
+  it("any integer threat level returns a non-empty string", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 10 }),
+        (threat) => {
+          const result = alertThreatIcon(threat);
+          return typeof result === "string" && result.length > 0;
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("threat ≤ 1 always returns red icon", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: Number.MIN_SAFE_INTEGER, max: 1 }),
+        (threat) => alertThreatIcon(threat) === "🔴",
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("threat 5 always returns yellow icon", () => {
+    expect(alertThreatIcon(5)).toBe("🟡");
+  });
+
+  it("threat 2..4 and 6+ always returns orange icon", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(fc.integer({ min: 2, max: 4 }), fc.integer({ min: 6, max: 100 })),
+        (threat) => alertThreatIcon(threat) === "🟠",
+      ),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// ── AP2: alertAgeLabel — always returns a non-empty string ───────────────
+describe("AP2: alertAgeLabel(ageMin) — always returns a non-empty string", () => {
+  it("any non-negative age in minutes yields a non-empty string", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0, max: 1440, noNaN: true }),
+        (ageMin) => {
+          const result = alertAgeLabel(ageMin);
+          return typeof result === "string" && result.length > 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── AP3: alertRingAppend + alertRingGet — ring buffer ≤ 100 entries ───────
+describe("AP3: alertRingAppend — ring buffer never exceeds 100 entries", () => {
+  beforeEach(() => {
+    _resetAlertsForTest();
+  });
+
+  it("appending any number of events keeps ring ≤ 100", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 1, max: 50 }), { minLength: 1, maxLength: 20 }),
+        (batchSizes) => {
+          _resetAlertsForTest();
+          for (const size of batchSizes) {
+            const events = Array.from({ length: size }, (_, i) => ({
+              id: `evt-${i}`,
+              title: "Test",
+              desc: "Test event",
+              threat: 1,
+              area: "Test",
+              ts: Date.now(),
+            }));
+            alertRingAppend(events as AlertEvent[]);
+          }
+          return alertRingGet().length <= 100;
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// ── AP4: alertRingGet — always returns an array ───────────────────────────
+describe("AP4: alertRingGet() — always returns an array", () => {
+  it("returns an array even when ring is empty", () => {
+    _resetAlertsForTest();
+    const result = alertRingGet();
+    expect(Array.isArray(result)).toBe(true);
+  });
+});
+
+// ── AP5: alertThreatIcon output set is exactly {🔴, 🟠, 🟡} ───────────────
+describe("AP5: alertThreatIcon — output set is exactly 3 distinct values", () => {
+  it("exhaustive scan of threat 0-10 yields exactly 3 distinct icons", () => {
+    const icons = new Set(Array.from({ length: 11 }, (_, i) => alertThreatIcon(i)));
+    expect(icons.size).toBe(3);
+    expect(icons.has("🔴")).toBe(true);
+    expect(icons.has("🟠")).toBe(true);
+    expect(icons.has("🟡")).toBe(true);
   });
 });
