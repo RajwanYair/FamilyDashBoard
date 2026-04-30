@@ -39,8 +39,8 @@ vi.mock("@/ui/keyboard", () => ({
   registerKey: vi.fn(),
   closeAllOverlays: vi.fn(),
   getKeyboardActions: vi.fn().mockReturnValue([
-    { key: "T", desc: "Theme" },
-    { key: "D", desc: "Diagnostics" },
+    { key: "T", description: "Theme", handler: vi.fn() },
+    { key: "D", description: "Diagnostics", handler: vi.fn() },
   ]),
 }));
 vi.mock("@/ui/header", () => ({
@@ -1373,14 +1373,17 @@ describe("Main — dynamic help overlay (F10 v7.3)", () => {
   });
 
   it("populates #help-dynamic-keys when opening help dialog", () => {
+    // Sprint 291: now renders .help-row elements (description + key) instead of count text
     buildHelpDOM();
     init();
     const hCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "h");
     const handler = hCall![2] as () => void;
     handler();
     const dynEl = document.getElementById("help-dynamic-keys")!;
-    expect(dynEl.textContent).toContain("2");
-    expect(dynEl.textContent).toContain("קיצורים רשומים");
+    const rows = dynEl.querySelectorAll(".help-row");
+    expect(rows.length).toBe(2);
+    expect(dynEl.textContent).toContain("Theme");
+    expect(dynEl.textContent).toContain("Diagnostics");
   });
 
   it("does not populate when getKeyboardActions returns empty", () => {
