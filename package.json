@@ -1,6 +1,6 @@
 {
     "name": "familydashboard",
-    "version": "13.24.0",
+    "version": "13.25.0",
     "description": "Family TV Dashboard — Hebrew RTL, TypeScript, Vite, Cloudflare Workers",
     "author": "Reuven Airhar",
     "license": "MIT",

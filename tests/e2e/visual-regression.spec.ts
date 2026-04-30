@@ -797,8 +797,6 @@ test.describe("FamilyDashBoard — Help Dialog Tablet Mode Baselines", () => {
     });
   }
 });
-  }
-});
 
 // ── Sprint 219: Alert state baselines ─────────────────────────────────────
 

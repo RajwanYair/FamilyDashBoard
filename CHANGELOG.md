@@ -9,6 +9,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.25.0] — 2026-04-30
+
+> **5509 tests / 168 suites / 0 failures**
+
+### Added
+
+- **Sprint 223**: Playwright visual regression baselines expanded 51 → 81 — 6 new per-theme card snapshots (stocks, calendar, countdown, system-info, motivation, tasks) across 3 themes each.
+- **Sprint 224**: LHCI performance ratchet step 4 — `categories:performance` raised 0.92 → 0.95 in `.lighthouserc.json` (ADR-042 comment updated).
+- **Sprint 225**: Coverage ratchet — 8 new AI-Synthesis branch tests + 10 new video-news `initVideoNews` DOM tests; thresholds raised to 92.3/84.0/91.5/93.7.
+- **Sprint 226**: Stryker mutation scope extended — `src/core/event-bus.ts`, `src/ui/keyboard.ts`, `src/core/links.ts` added to `scripts/stryker.config.mjs` (15 files total, ≥80% target each).
+- **Sprint 227**: `@js-temporal/polyfill` size gate reviewed and confirmed production-ready (`scripts/check-temporal-polyfill-size.mjs`, ≤10 KB gzip threshold).
+- **Sprint 228**: Vendor-neutrality drill script (`scripts/check-vendor-neutrality.mjs`, `npm run check:vendor-neutrality`) — ADR-031 quarterly scan for 6 Cloudflare-specific APIs with Deno Deploy/Bun alternatives. Currently 0/6 detected.
+- **Sprint 229**: ADR-046 (Vectorize 30-day shadow plan) + ADR-047 (DO Hibernatable WebSocket) created; ADR index regenerated (47 entries).
+- **Sprint 230**: ROADMAP checkboxes updated through Sprint 229 — header refreshed (5509 tests, 47 ADRs), completed items marked, LHCI partial progress annotated.
+- **Sprint 231**: CSP wildcard audit script (`scripts/check-csp-wildcards.mjs`, `npm run check:csp-wildcards`) — scans `_headers` for unsafe-inline, bare wildcards, scheme-only sources, subdomain wildcards. Exits 1 on HIGH severity. Currently 0 findings.
+
+### Fixed
+
+- `tests/e2e/visual-regression.spec.ts`: stray orphan `}` block (lines 800–801) removed, restoring valid TypeScript.
+
+---
+
 ## [13.24.0] — 2025-07-14
 
 > **5491 tests / 168 suites / 0 failures**
