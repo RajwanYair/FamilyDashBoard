@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import * as fc from "fast-check";
 import {
   fmtPrice,
   isMarketOpen,
@@ -2661,5 +2662,162 @@ describe("Stocks — Watchlist groups IDB (Sprint 213 / S4)", () => {
   it("getGroupForSymbol returns null when symbol not in any group", async () => {
     vi.mocked(idbGet).mockResolvedValue([]);
     expect(await getGroupForSymbol("TSLA")).toBeNull();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Sprint 245 — Stocks card fast-check property tests (SP1–SP6)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── SP1: formatVolume — non-empty suffix invariant ────────────────────────
+describe("SP1: formatVolume(vol) — always returns a non-empty string", () => {
+  it("any positive finite number produces a non-empty string", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 1e13, noNaN: true }),
+        (vol) => {
+          const result = formatVolume(vol);
+          return typeof result === "string" && result.length > 0;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("volumes ≥ 1B contain 'B' suffix", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 1e9, max: 1e13, noNaN: true }),
+        (vol) => formatVolume(vol).includes("B"),
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("volumes ≥ 1M and < 1B contain 'M' suffix", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 1e6, max: 999_999_999, noNaN: true }),
+        (vol) => formatVolume(vol).includes("M"),
+      ),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// ── SP2: sectorEmoji — always returns a non-empty string ─────────────────
+describe("SP2: sectorEmoji(sym) — always returns a non-empty string", () => {
+  it("any ticker symbol string yields a non-empty emoji string", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 6 }),
+        (sym) => {
+          const result = sectorEmoji(sym.toUpperCase());
+          return typeof result === "string" && result.length > 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── SP3: getMarketStatus — always returns one of four valid values ─────────
+describe("SP3: getMarketStatus() — returns one of 4 market state strings", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns a valid MarketStatus for any time-of-day across a week", () => {
+    const validStates = new Set<string>(["pre", "open", "after", "closed"]);
+    // Monday 2026-04-27T08:00:00 UTC as base
+    const baseMs = new Date("2026-04-27T08:00:00Z").getTime();
+    fc.assert(
+      fc.property(
+        // offset in minutes across 7 days
+        fc.integer({ min: 0, max: 7 * 24 * 60 }),
+        (offsetMins) => {
+          vi.useFakeTimers();
+          vi.setSystemTime(baseMs + offsetMins * 60_000);
+          const result = getMarketStatus();
+          vi.useRealTimers();
+          return validStates.has(result);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});
+
+// ── SP4: isPreMarket + isPostMarket — mutually exclusive ─────────────────
+describe("SP4: isPreMarket() + isPostMarket() — cannot both be true simultaneously", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("isPreMarket and isPostMarket are mutually exclusive for any time", () => {
+    const baseMs = new Date("2026-04-27T08:00:00Z").getTime();
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 7 * 24 * 60 }),
+        (offsetMins) => {
+          vi.useFakeTimers();
+          vi.setSystemTime(baseMs + offsetMins * 60_000);
+          const pre = isPreMarket();
+          const post = isPostMarket();
+          vi.useRealTimers();
+          // Both cannot be true at the same time
+          return !(pre && post);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});
+
+// ── SP5: getMinutesToNextTransition — always non-negative ─────────────────
+describe("SP5: getMinutesToNextTransition() — always returns a non-negative integer", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("minutes to next market transition is ≥ 0 for any time", () => {
+    const baseMs = new Date("2026-04-27T08:00:00Z").getTime();
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 7 * 24 * 60 }),
+        (offsetMins) => {
+          vi.useFakeTimers();
+          vi.setSystemTime(baseMs + offsetMins * 60_000);
+          const mins = getMinutesToNextTransition();
+          vi.useRealTimers();
+          return typeof mins === "number" && mins >= 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── SP6: marketStatusLabel — non-empty for any fake time ─────────────────
+describe("SP6: marketStatusLabel() — always returns a non-empty string", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("label is non-empty for any time-of-day", () => {
+    const baseMs = new Date("2026-04-27T08:00:00Z").getTime();
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 7 * 24 * 60 }),
+        (offsetMins) => {
+          vi.useFakeTimers();
+          vi.setSystemTime(baseMs + offsetMins * 60_000);
+          const label = marketStatusLabel();
+          vi.useRealTimers();
+          return typeof label === "string" && label.length > 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
   });
 });
