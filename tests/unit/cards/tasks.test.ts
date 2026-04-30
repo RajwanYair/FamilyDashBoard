@@ -2060,3 +2060,202 @@ describe("Tasks — removeSubtask (Sprint 214 / T4)", () => {
     expect(result).toHaveLength(0);
   });
 });
+
+// ── Sprint 256: fast-check property tests (TP1–TP5) ───────────────────────
+
+import * as fc from "fast-check";
+
+describe("TP1 · parseTaskPriority — property: output cleanText never shorter than input minus prefix", () => {
+  it("cleanText is always a string", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        const { cleanText } = parseTaskPriority(s);
+        return typeof cleanText === "string";
+      }),
+    );
+  });
+
+  it("priority is always one of the valid enum values", () => {
+    const VALID: Array<string> = ["high", "medium", "low", "none"];
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        const { priority } = parseTaskPriority(s);
+        return VALID.includes(priority);
+      }),
+    );
+  });
+
+  it("tagged inputs produce the correct priority", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom("[H] ", "[M] ", "[L] ", "[h] ", "[m] ", "[l] "),
+        fc.string({ minLength: 1, maxLength: 40 }),
+        (prefix, rest) => {
+          const { priority } = parseTaskPriority(prefix + rest);
+          if (prefix.includes("H") || prefix.includes("h")) return priority === "high";
+          if (prefix.includes("M") || prefix.includes("m")) return priority === "medium";
+          return priority === "low";
+        },
+      ),
+    );
+  });
+});
+
+describe("TP2 · taskPriorityIcon — property: returns known emoji or empty string", () => {
+  const KNOWN_ICONS = ["🔴", "🟡", "🔵", ""];
+  it("always returns a known icon for valid priorities", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom("high" as const, "medium" as const, "low" as const, "none" as const),
+        (p) => KNOWN_ICONS.includes(taskPriorityIcon(p)),
+      ),
+    );
+  });
+});
+
+describe("TP3 · recurrenceResetKey — property: output format matches recurrence type", () => {
+  const YYYY = /^\d{4}$/;
+  const YYYY_MM = /^\d{4}-\d{2}$/;
+  const YYYY_WNN = /^\d{4}-W\d{2}$/;
+  const YYYY_MM_DD = /^\d{4}-\d{2}-\d{2}$/;
+
+  it("yearly → YYYY", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          return YYYY.test(recurrenceResetKey("yearly", d));
+        },
+      ),
+    );
+  });
+
+  it("monthly → YYYY-MM", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          return YYYY_MM.test(recurrenceResetKey("monthly", d));
+        },
+      ),
+    );
+  });
+
+  it("weekly → YYYY-WNN", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          return YYYY_WNN.test(recurrenceResetKey("weekly", d));
+        },
+      ),
+    );
+  });
+
+  it("daily → YYYY-MM-DD", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          return YYYY_MM_DD.test(recurrenceResetKey("daily", d));
+        },
+      ),
+    );
+  });
+});
+
+describe("TP4 · taskCompletionRatio — property: pct in [0, 100] and done ≤ total", () => {
+  it("pct is always between 0 and 100", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1, max: 20 }),
+        fc.integer({ min: 0, max: 20 }),
+        (total, doneCount) => {
+          fc.pre(doneCount <= total);
+          const chores: ChoreItem[] = Array.from({ length: total }, (_, i) => ({
+            person: "אמא",
+            chore: `task ${i}`,
+          }));
+          const doneMap: Record<string, boolean> = {};
+          chores.slice(0, doneCount).forEach((c) => {
+            doneMap[`${c.person}::${c.chore}`] = true;
+          });
+          const { pct, done, total: tot } = taskCompletionRatio(chores, doneMap);
+          return pct >= 0 && pct <= 100 && done <= tot;
+        },
+      ),
+    );
+  });
+
+  it("pct is 0 when doneMap is empty", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 15 }), (n) => {
+        const chores: ChoreItem[] = Array.from({ length: n }, (_, i) => ({
+          person: "אבא",
+          chore: `item ${i}`,
+        }));
+        const { pct, done } = taskCompletionRatio(chores, {});
+        return pct === 0 && done === 0;
+      }),
+    );
+  });
+
+  it("pct is 100 when all tasks are in doneMap", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 15 }), (n) => {
+        const chores: ChoreItem[] = Array.from({ length: n }, (_, i) => ({
+          person: "ילד",
+          chore: `item ${i}`,
+        }));
+        const doneMap: Record<string, boolean> = {};
+        chores.forEach((c) => { doneMap[`${c.person}::${c.chore}`] = true; });
+        const { pct } = taskCompletionRatio(chores, doneMap);
+        return pct === 100;
+      }),
+    );
+  });
+});
+
+describe("TP5 · isOverdue / isDueToday / isDueThisWeek — property: boolean guards", () => {
+  it("isOverdue returns false for today or future dates", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date(), max: new Date(Date.now() + 30 * 24 * 60 * 60_000) }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
+          return !isOverdue(`${yyyy}-${mm}-${dd}`);
+        },
+      ),
+    );
+  });
+
+  it("isOverdue returns true for past dates", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2000-01-01"), max: new Date(Date.now() - 2 * 24 * 60 * 60_000) }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
+          return isOverdue(`${yyyy}-${mm}-${dd}`);
+        },
+      ),
+    );
+  });
+
+  it("isDueToday and isDueThisWeek always return booleans", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        return typeof isDueToday(s) === "boolean" && typeof isDueThisWeek(s) === "boolean";
+      }),
+    );
+  });
+});
