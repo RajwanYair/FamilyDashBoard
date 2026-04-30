@@ -3135,3 +3135,166 @@ describe("Calendar — findConflicts (Sprint 209)", () => {
     expect(set.size).toBe(3);
   });
 });
+
+// ── Sprint 257: fast-check property tests (CP1–CP5) ───────────────────────
+
+import * as fc from "fast-check";
+
+/** Arbitrary that produces a valid CalendarEvent */
+function arbCalEvent(base: Date): fc.Arbitrary<import("@/types/api").CalendarEvent> {
+  return fc
+    .record({
+      summary: fc.string({ minLength: 1, maxLength: 60 }),
+      startOffset: fc.integer({ min: 0, max: 23 * 3_600_000 }),
+      durationMs: fc.integer({ min: 1, max: 4 * 3_600_000 }),
+      allDay: fc.boolean(),
+      icsIndex: fc.integer({ min: 0, max: 2 }),
+    })
+    .map(({ summary, startOffset, durationMs, allDay, icsIndex }) => {
+      const start = new Date(base.getTime() + startOffset);
+      const end = new Date(start.getTime() + durationMs);
+      return { summary, start, end, allDay, icsIndex };
+    });
+}
+
+describe("CP1 · detectCalCategory — property: always returns a known category", () => {
+  const KNOWN = ["work", "family", "health", "holiday", "default"];
+  it("result is always a known category for any string", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        return KNOWN.includes(detectCalCategory(s));
+      }),
+    );
+  });
+
+  it("is deterministic for the same input", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        return detectCalCategory(s) === detectCalCategory(s);
+      }),
+    );
+  });
+});
+
+describe("CP2 · calDaysUntilLabel — property: output is always a string", () => {
+  it("always returns a string", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        (date, now) => {
+          fc.pre(isFinite(date.getTime()) && isFinite(now.getTime()));
+          return typeof calDaysUntilLabel(date, now) === "string";
+        },
+      ),
+    );
+  });
+
+  it("returns empty string for past or same-day dates", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2025-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const futureNow = new Date(d.getTime() + 24 * 3_600_000);
+          return calDaysUntilLabel(d, futureNow) === "";
+        },
+      ),
+    );
+  });
+
+  it("returns 'מחר' for exactly one day ahead", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-30") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const now = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+          return calDaysUntilLabel(d, now) === "מחר";
+        },
+      ),
+    );
+  });
+});
+
+describe("CP3 · findConflicts — property: subset of timed events; no all-day events included", () => {
+  const BASE = new Date("2025-06-01T00:00:00.000Z");
+
+  it("conflicts are always a subset of timed events", () => {
+    fc.assert(
+      fc.property(fc.array(arbCalEvent(BASE), { minLength: 0, maxLength: 12 }), (evs) => {
+        const conflicts = findConflicts(evs);
+        for (const c of conflicts) {
+          if (!evs.includes(c)) return false;
+        }
+        return true;
+      }),
+    );
+  });
+
+  it("all-day events are never in the conflict set", () => {
+    fc.assert(
+      fc.property(fc.array(arbCalEvent(BASE), { minLength: 1, maxLength: 8 }), (evs) => {
+        const allDayEvs = evs.map((e) => ({ ...e, allDay: true }));
+        return findConflicts(allDayEvs).size === 0;
+      }),
+    );
+  });
+
+  it("single event has no conflicts", () => {
+    fc.assert(
+      fc.property(arbCalEvent(BASE), (ev) => {
+        return findConflicts([{ ...ev, allDay: false }]).size === 0;
+      }),
+    );
+  });
+});
+
+describe("CP4 · groupEventsByDay — property: always returns 21 buckets; events are partitioned", () => {
+  const BASE = new Date("2025-06-01T00:00:00.000Z");
+
+  it("always returns exactly 21 day buckets", () => {
+    fc.assert(
+      fc.property(fc.array(arbCalEvent(BASE), { minLength: 0, maxLength: 20 }), (evs) => {
+        return groupEventsByDay(evs, BASE).length === 21;
+      }),
+    );
+  });
+
+  it("no event appears in more than one bucket", () => {
+    fc.assert(
+      fc.property(fc.array(arbCalEvent(BASE), { minLength: 1, maxLength: 10 }), (evs) => {
+        const groups = groupEventsByDay(evs, BASE);
+        const seen = new Set<unknown>();
+        for (const { events } of groups) {
+          for (const ev of events) {
+            if (seen.has(ev)) return false;
+            seen.add(ev);
+          }
+        }
+        return true;
+      }),
+    );
+  });
+});
+
+describe("CP5 · parseICS — property: always returns an array; no events for empty input", () => {
+  it("always returns an array", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        return Array.isArray(parseICS(s));
+      }),
+    );
+  });
+
+  it("returns empty array for strings with no VEVENT blocks", () => {
+    fc.assert(
+      fc.property(
+        fc.string().filter((s) => !s.includes("BEGIN:VEVENT")),
+        (s) => {
+          return parseICS(s).length === 0;
+        },
+      ),
+    );
+  });
+});
