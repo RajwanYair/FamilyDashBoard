@@ -129,6 +129,15 @@ export default defineConfig({
         //   Actuals: 93.14/84.70/92.02/94.52. Margins too tight to ratchet (max 0.14%).
         //   Numeric thresholds unchanged; ratchet deferred to Sprint 305 after
         //   config-schema-props (Sprint 303) + today-pane/links props (Sprint 304).
+        // Sprint 305 (coverage ratchet step 2 — Sprints 303-304 property tests):
+        //   +85 new tests total this session (Sprints 298-304): CS-FC9-FC16 (+64),
+        //   TDP6-TDP8 (+3), LP5-LP8 (+4), KP4-KP8 (+7), SP1-SP5 (+6), EB1-EB6 (+7).
+        //   Total test count: 5957 / 175 suites / 0 failures (was 5872 in v13.30.0).
+        //   Actuals post-305: 93.14/84.70/92.02/94.52. Property tests probe existing
+        //   paths → no net coverage gain. Margins: Stmts +0.14, Branches +0.10,
+        //   Funcs +0.02, Lines +0.02 — too tight for any safe ratchet.
+        //   Thresholds held at v13.30.0 values. Next ratchet requires targeted
+        //   branch/function tests on uncovered paths (e.g. service-worker, diag-overlay).
         statements: 93.0,
         branches: 84.6,
         functions: 92.0,
