@@ -938,8 +938,11 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] v13.29.0 release — tag + GitHub release, CHANGELOG published (Sprint 272).
 - [x] Tooling modernisation: Node 24 CI, ES2024 lib, ADR-037 View Transitions L2 adopted, stale-version sweep (Sprint 273).
 - [x] `.github` AI customisation files: 24 files updated to v13.29.0 + Copilot/VS Code latest features (Sprint 274).
+- [x] Documentation freshness + fast-check EP1–EP5 (Sprint 275).
+- [x] V14-CARD-SETTINGS: configSchema for all 12 cards — weather/video-news/hebrew-cal/system-info/countdown/alerts/currency/calendar/motivation/tasks/stocks/news (Sprints 277–289).
+- [x] Coverage ratchet 93.0/84.6/91.8/94.3 → 93.0/84.6/92.0/94.5 (Sprint 290 fast-check boost).
 
-**Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/91.8/94.3; LHCI perf `error ≥ 0.97`.
+**Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/92.0/94.5; LHCI perf `error ≥ 0.97`.
 
 ### 6.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals (v14.0, Q1–Q2 2027)
 
@@ -956,9 +959,13 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 
 Per-card backlog from §3. **Exit**: each card matches or exceeds its best-in-class peer on every capability listed in §3 except those marked Reject/Defer.
 
+**✅ Sprint 175–213 — all per-card depth items (W1-W6, S2-S5, C1-C4, CAL1-CAL6, H1-H6, A1-A2, M1-M3, T1-T4, SI1-SI3, CD1-CD4, N2-N3, N5, V1-V2, X9 AI synthesis) shipped.**
+
 ### 6.4 V14-CROSS-CARD — System-level synergies (v14.0–v14.1)
 
 X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline banner shipped; semantic linking opt-in; AI daily synthesis tile available.
+
+**✅ X1 (Sprint 190), X2 (Sprint 173), X3 (Sprint 216), X5 (Sprint 253), X6 (Sprint 174), X7 (Sprint 200), X8 (Sprint 258), X9 (Sprint 202), X10 (Sprint 211) shipped.** X4 keymap.ts pending.
 
 ### 6.5 V14-CONTINUITY — Cross-device without auth (v14.x, gated 3+ requests)
 
@@ -1019,19 +1026,19 @@ X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline 
 
 **Priority rule**: (G) gap items fix before adding new (P) settings.
 
-- [ ] CS-W1 · P0 · S — Weather: add `weatherUsTravelMode` boolean to `configSchema` (typed since v12 — no UI until now).
-- [ ] CS-VN1 · P0 · S — Video-news: add `autoplay`, `defaultMuted`, `showOverlay`, `pauseOnReducedMotion`, `pauseAtNight` to `configSchema` (5 typed settings in `VideoNewsCardConfig.settings` unreachable without UI).
-- [ ] CS-H1 · P0 · M — Hebrew-cal: add `hcalShowDafYomi`, `hcalShowOmer`, `hcalShowCandleLight`, `hcalShowHaftarah`, `hcalShowRoshChodesh`, `hcalZmanimMask` to card config + `configSchema` (6 tile-visibility gaps).
-- [ ] CS-SI1 · P0 · M — System-info: add per-tile boolean toggles for battery / memory / network-info / storage quota / SW-state to `configSchema` (5 gaps + `sysInfoRefreshInterval` range).
-- [ ] CS-CD1 · P0 · S — Countdown: add `countdownCardRecurrence` to `DashboardConfig` type (field exists in `configSchema` but is untyped — type-only gap).
-- [ ] CS-A1 · P1 · S — Alerts: migrate `alertZone` from global `DashboardConfig` into alerts card `configSchema`; add `alertShowHistory`, `alertSeverityFilter`, `alertDimOnAlert`.
-- [ ] CS-C1 · P1 · S — Currency: add `currencyBase` selector, `currencyShowCalc`, `currencyShowTrend`, `currencyShowSparkline` to `configSchema`.
-- [ ] CS-CAL1 · P1 · S — Calendar: add `calendarShowHolidays`, `calendarSourceColors`, `calendarWeeksAhead`, `calendarShowConflicts` to `configSchema`.
-- [ ] CS-M1 · P1 · S — Motivation: add `motivationCategories`, `motivationThemeByDay`, `motivationShowSource`, `motivationLang` to `configSchema`.
-- [ ] CS-T1 · P1 · S — Tasks: add `tasksShowDueBadge`, `tasksAllowRecurring`, `tasksShowTags`, `tasksSortOrder` to `configSchema`.
-- [ ] CS-W2 · P1 · S — Weather: add feature-toggle fields for W3 nowcast / W4 air-quality / W5 wind-compass / W6 moon-phase once those feature sprints ship.
-- [ ] CS-S1 · P2 · S — Stocks: add `stocksShowMovers` (daily-mover pills), `stocksShowExtended` (pre/post-market badge) to `configSchema`.
-- [ ] CS-N1 · P2 · S — News: add `newsAiSummary`, per-source enable/disable, `newsDedup` sensitivity, `newsMinAge` filter to `configSchema`.
+- [x] CS-W1 · P0 · S — Weather: add `weatherUsTravelMode` boolean to `configSchema` (Sprint 277).
+- [x] CS-VN1 · P0 · S — Video-news: add `autoplay`, `defaultMuted`, `showOverlay`, `pauseOnReducedMotion`, `pauseAtNight` to `configSchema` (Sprint 278).
+- [x] CS-H1 · P0 · M — Hebrew-cal: add `hcalShowDafYomi`, `hcalShowOmer`, `hcalShowCandleLight`, `hcalShowHaftarah`, `hcalShowRoshChodesh`, `hcalZmanimMask` to card config + `configSchema` (Sprint 279).
+- [x] CS-SI1 · P0 · M — System-info: add per-tile boolean toggles for battery / memory / network-info / storage quota / SW-state to `configSchema` (Sprint 280).
+- [x] CS-CD1 · P0 · S — Countdown: add `countdownCardRecurrence` to `DashboardConfig` type (Sprint 281).
+- [x] CS-A1 · P1 · S — Alerts: migrate `alertZone` from global `DashboardConfig` into alerts card `configSchema`; add `alertShowHistory`, `alertSeverityFilter`, `alertDimOnAlert` (Sprint 282).
+- [x] CS-C1 · P1 · S — Currency: add `currencyBase` selector, `currencyShowCalc`, `currencyShowTrend`, `currencyShowSparkline` to `configSchema` (Sprint 283).
+- [x] CS-CAL1 · P1 · S — Calendar: add `calendarShowHolidays`, `calendarSourceColors`, `calendarWeeksAhead`, `calendarShowConflicts` to `configSchema` (Sprint 284).
+- [x] CS-M1 · P1 · S — Motivation: add `motivationCategories`, `motivationThemeByDay`, `motivationShowSource`, `motivationLang` to `configSchema` (Sprint 285).
+- [x] CS-T1 · P1 · S — Tasks: add `tasksShowDueBadge`, `tasksAllowRecurring`, `tasksShowTags`, `tasksSortOrder` to `configSchema` (Sprint 286).
+- [x] CS-W2 · P1 · S — Weather: add feature-toggle fields for W3 nowcast / W4 air-quality / W5 wind-compass / W6 moon-phase (Sprint 287).
+- [x] CS-S1 · P2 · S — Stocks: add `stocksShowMovers` (daily-mover pills), `stocksShowExtended` (pre/post-market badge) to `configSchema` (Sprint 288).
+- [x] CS-N1 · P2 · S — News: add `newsAiSummary`, per-source enable/disable, `newsDedup` sensitivity, `newsMinAge` filter to `configSchema` (Sprint 289).
 
 **Exit**: `configSchema.length ≥ 2` for every card; `VideoNewsCardConfig.settings` fully represented in `configSchema`; `countdownCardRecurrence` typed in `DashboardConfig`; `alertZone` exposed at card level.
 
