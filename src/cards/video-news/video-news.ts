@@ -228,7 +228,8 @@ export function destroyVideoNews(): void {
 
 // ── Config schema ───────────────────────────────────────────────────────────
 
-/** Sprint 183 / V1 — channel pinning config field. */
+/** Sprint 183 / V1 — channel pinning config field.
+ *  Sprint 278 / CS-VN1 — added 5 playback-behaviour settings. */
 export const videoNewsConfigSchema: CardConfigField[] = [
   {
     key: "cards.video-news.settings.pinnedChannels",
@@ -238,6 +239,47 @@ export const videoNewsConfigSchema: CardConfigField[] = [
     defaultValue: "",
     placeholder: "c14,kan11",
     tab: "display",
+  },
+  // ── Sprint 278 / CS-VN1: playback settings ──────────────────────────────
+  {
+    key: "cards.video-news.settings.autoplay",
+    labelHe: "נגן אוטומטי",
+    labelEn: "Autoplay on load",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+  },
+  {
+    key: "cards.video-news.settings.defaultMuted",
+    labelHe: "מוגבל בהתחלה",
+    labelEn: "Start muted",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+  },
+  {
+    key: "cards.video-news.settings.showOverlay",
+    labelHe: "הצג כיתוב",
+    labelEn: "Show caption overlay",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+  },
+  {
+    key: "cards.video-news.settings.pauseOnReducedMotion",
+    labelHe: "עצור עם 'תנועה מצומצמת'",
+    labelEn: "Pause on reduced-motion",
+    type: "boolean",
+    defaultValue: true,
+    tab: "advanced",
+  },
+  {
+    key: "cards.video-news.settings.pauseAtNight",
+    labelHe: "עצור בלילה",
+    labelEn: "Pause during night-dimmer",
+    type: "boolean",
+    defaultValue: true,
+    tab: "advanced",
   },
 ];
 

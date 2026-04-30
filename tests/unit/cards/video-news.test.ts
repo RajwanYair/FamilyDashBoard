@@ -344,3 +344,33 @@ describe("initVideoNews DOM paths (Sprint 225)", () => {
     expect(tabs.length).toBe(2);
   });
 });
+
+// ── Sprint 278 / CS-VN1: 5 playback settings in configSchema ─────────────
+import { videoNewsConfigSchema } from "@/cards/video-news/video-news";
+
+describe("VideoNews configSchema — CS-VN1 (Sprint 278)", () => {
+  const PLAYBACK_KEYS = [
+    "cards.video-news.settings.autoplay",
+    "cards.video-news.settings.defaultMuted",
+    "cards.video-news.settings.showOverlay",
+    "cards.video-news.settings.pauseOnReducedMotion",
+    "cards.video-news.settings.pauseAtNight",
+  ] as const;
+
+  it("configSchema has 6 fields total after CS-VN1", () => {
+    expect(videoNewsConfigSchema.length).toBe(6);
+  });
+
+  it.each(PLAYBACK_KEYS)("field %s is a boolean with defined defaultValue", (key) => {
+    const field = videoNewsConfigSchema.find((f) => f.key === key);
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("boolean");
+    expect(typeof field?.defaultValue).toBe("boolean");
+  });
+
+  it("pauseOnReducedMotion and pauseAtNight are on advanced tab", () => {
+    const adv = videoNewsConfigSchema.filter((f) => f.tab === "advanced").map((f) => f.key);
+    expect(adv).toContain("cards.video-news.settings.pauseOnReducedMotion");
+    expect(adv).toContain("cards.video-news.settings.pauseAtNight");
+  });
+});
