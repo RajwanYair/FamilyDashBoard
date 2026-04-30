@@ -661,6 +661,47 @@ export const alertsConfigSchema: CardConfigField[] = [
     defaultValue: false,
     group: "כללי",
   },
+  // ── Sprint 282 / CS-A1: zone + history/severity/dim settings ─────────────
+  {
+    key: "alertZone",
+    labelHe: "אזור גיאוגרפי",
+    labelEn: "Geographic zone",
+    type: "text",
+    defaultValue: "",
+    placeholder: "ירושלים",
+    group: "סינון",
+    groupOpenByDefault: true,
+  },
+  {
+    key: "alertShowHistory",
+    labelHe: "הצג היסטוריית התראות",
+    labelEn: "Show alert history",
+    type: "boolean",
+    defaultValue: false,
+    group: "סינון",
+  },
+  {
+    key: "alertSeverityFilter",
+    labelHe: "רמת חומרה מינימלית",
+    labelEn: "Minimum severity",
+    type: "select",
+    defaultValue: "all",
+    options: [
+      { value: "all", label: "הכל / All" },
+      { value: "moderate", label: "בינוני / Moderate" },
+      { value: "severe", label: "חמור / Severe" },
+      { value: "extreme", label: "קיצוני / Extreme" },
+    ],
+    group: "סינון",
+  },
+  {
+    key: "alertDimOnAlert",
+    labelHe: "עמעם תצוגה בהתראה",
+    labelEn: "Dim display on alert",
+    type: "boolean",
+    defaultValue: false,
+    group: "סינון",
+  },
 ];
 
 // ── Test isolation (Stream G.1) ───────────────────────────────────────────────

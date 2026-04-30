@@ -40,6 +40,7 @@ import {
   renderAlertHistory,
   showAlertTakeover,
   hideAlertTakeover,
+  alertsConfigSchema,
 } from "@/cards/alerts/alerts";
 import * as idleMod from "@/core/idle";
 import type { AlertEvent } from "@/types/api";
@@ -2009,5 +2010,41 @@ describe("AP5: alertThreatIcon — output set is exactly 3 distinct values", () 
     expect(icons.has("🔴")).toBe(true);
     expect(icons.has("🟠")).toBe(true);
     expect(icons.has("🟡")).toBe(true);
+  });
+});
+
+// ── Sprint 282 / CS-A1: alertZone + history/severity/dim in configSchema ──
+describe("Alerts configSchema — CS-A1 (Sprint 282)", () => {
+  it("configSchema has 8 fields total after CS-A1", () => {
+    expect(alertsConfigSchema.length).toBe(8);
+  });
+
+  it("alertZone is a text field with empty default", () => {
+    const field = alertsConfigSchema.find((f) => f.key === "alertZone");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("text");
+    expect(field?.defaultValue).toBe("");
+  });
+
+  it("alertShowHistory is a boolean defaulting to false", () => {
+    const field = alertsConfigSchema.find((f) => f.key === "alertShowHistory");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
+  });
+
+  it("alertSeverityFilter is a select with 4 options", () => {
+    const field = alertsConfigSchema.find((f) => f.key === "alertSeverityFilter");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("select");
+    expect(field?.options?.length).toBe(4);
+    expect(field?.defaultValue).toBe("all");
+  });
+
+  it("alertDimOnAlert is a boolean defaulting to false", () => {
+    const field = alertsConfigSchema.find((f) => f.key === "alertDimOnAlert");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
   });
 });
