@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.26.0 (Sprint 242) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
+> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.27.0 (Sprint 252) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
 >
-> **Inventory**: 5546 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 48 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5581 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 49 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 
@@ -15,7 +15,7 @@ After 169 sprints across v10 → v13.18 the project sits on a stable, opinionate
 - **Frontend**: vanilla TS strict + in-house Signals (ADR-038), 0 client deps, ~88 KB gzip, CSS `@layer`/tokens/`@scope`/`light-dark()`/`@property`/Anchor Positioning/View Transitions L1.
 - **Backend**: single Cloudflare Worker (Hono + Valibot), KV stale cache, D1 telemetry, DO rate-limit, Analytics Engine, ≤ 75 KB gzip.
 - **Storage**: 4-tier client cache (Map → localStorage → IndexedDB ≤ 50 MB LRU → SW cache 7 origins). Zero user DB. Zero auth.
-- **Quality**: 5546 unit tests + Playwright + axe + 45 VR baselines + LHCI + Stryker mutation + fast-check + SLSA L2 + SBOM-diff + container-query audit + Mermaid validator + reading-level gate.
+- **Quality**: 5581 unit tests + Playwright + axe + 45 VR baselines + LHCI + Stryker mutation + fast-check (SP1-SP6/CM1-CM5/AP1-AP5/HC1-HC6) + SLSA L2 + Sigstore/cosign + rebuilder manifest + SBOM-diff + container-query audit + Mermaid validator + reading-level gate.
 
 This document **reopens every one of those decisions** at three levels:
 
@@ -742,8 +742,12 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] fast-check IDB property tests IDB1-IDB8 (Sprint 234).
 - [x] Card pure-function property tests CP1-CP6 (Sprint 240).
 - [x] LHCI `error 0.85` → `error 0.97` *(step 5/5: 0.97 at v13.26.0 — Sprint 236)*.
+- [x] fast-check stocks SP1-SP6 + currency CM1-CM5 + alerts AP1-AP5 + hebrew-cal HC1-HC6 (Sprints 245–248).
+- [x] Coverage ratchet 92.7/84.2/91.5/94.0 → 93.0/84.5/91.8/94.3 (Sprint 250).
+- [x] Sigstore/cosign keyless signing for dist.zip + sw.js (Sprint 243).
+- [x] Third-party rebuilder manifest `dist/rebuilder-manifest.json` (Sprint 244).
 
-**Exit**: oxlint green; CI deltas live; coverage ≥ 92.7/84.2/91.5/94.0; LHCI perf `error ≥ 0.97`.
+**Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.5/91.8/94.3; LHCI perf `error ≥ 0.97`.
 
 ### 6.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals (v14.0, Q1–Q2 2027)
 
@@ -768,13 +772,13 @@ X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline 
 
 - [x] AES-GCM encrypted config URL export.
 - [x] Import flow + `docs/sync.md`.
-- [ ] WebRTC mirror — short-lived (5 min) QR-pairing, STUN-only, no relay (ADR-036).
+- [ ] WebRTC mirror — short-lived (5 min) QR-pairing, STUN-only, no relay (ADR-049 designed Sprint 249).
 - [ ] CRDT (Yjs) — track only; adopt only if WebRTC delta insufficient AND core ≤ 12 KB gzip.
 
 ### 6.6 V14-EDGE — Workers platform expansion (v14.x, Q2–Q3 2027)
 
 - [ ] DO Hibernatable WebSocket — stocks live + alerts SSE.
-- [ ] R2 for asset cache.
+- [ ] R2 for asset cache (ADR-050 designed Sprint 249).
 - [ ] Workers AI Llama 4 (gate Hebrew quality).
 - [ ] DO Storage SQL audit (D1 replacement candidate).
 
@@ -791,8 +795,8 @@ X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline 
 
 - [x] Hermetic build: `actions/checkout` + `actions/setup-node` SHA-pinned (Sprint 222).
 - [x] Hermetic build: npm `--ignore-scripts` gate + deploy-worker/preview-deploy fixed (Sprint 237).
-- [ ] Sigstore/cosign signature on `dist.zip` + `worker.js`.
-- [ ] Third-party rebuilder verifies byte-identical output.
+- [x] Sigstore/cosign signature on `dist.zip` + `sw.js` (Sprint 243).
+- [x] Third-party rebuilder manifest `dist/rebuilder-manifest.json` (Sprint 244).
 - [x] npm + GitHub Actions provenance (SLSA L2 `attest-build-provenance` in release.yml).
 - [x] CSP `require-trusted-types-for 'script'` enforcement audit (Sprint 220, trusted-types policy).
 - [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`, Sprint 221).
