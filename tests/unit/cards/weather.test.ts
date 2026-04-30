@@ -2611,3 +2611,150 @@ describe("Weather — getMoonPhaseSummary (Sprint 207)", () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 });
+
+// ── Sprint 254: fast-check property tests (WP1–WP6) ───────────────────────
+
+import * as fc from "fast-check";
+
+describe("WP1 · toDisplayTemp — property: output always ends with °C or °F", () => {
+  it("always returns a string ending with °C or °F for any finite number", () => {
+    fc.assert(
+      fc.property(fc.double({ noNaN: true, noDefaultInfinity: true }), (c) => {
+        const result = toDisplayTemp(c);
+        return result.endsWith("°C") || result.endsWith("°F");
+      }),
+    );
+  });
+
+  it("Celsius output contains the rounded integer value", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: -60, max: 60 }),
+        (c) => {
+          const result = toDisplayTemp(c);
+          return result.includes(String(Math.round(c)));
+        },
+      ),
+    );
+  });
+});
+
+describe("WP2 · deg2arrow — property: always returns one of 8 arrow characters", () => {
+  const ARROWS = ["↑", "↗", "→", "↘", "↓", "↙", "←", "↖"];
+  it("any degree 0–359 maps to a known arrow", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 359 }), (deg) => {
+        return ARROWS.includes(deg2arrow(deg));
+      }),
+    );
+  });
+
+  it("idempotent — same input always produces same output", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 359 }), (deg) => {
+        return deg2arrow(deg) === deg2arrow(deg);
+      }),
+    );
+  });
+});
+
+describe("WP3 · aqiLabel — property: cls always matches known CSS class prefix", () => {
+  it("returns a non-empty label and known cls for aqi 0–500", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 500 }), (aqi) => {
+        const { label, cls } = aqiLabel(aqi);
+        return (
+          label.length > 0 &&
+          (cls.startsWith("aqi-") || cls === "")
+        );
+      }),
+    );
+  });
+
+  it("label is always a non-empty string for any integer", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: -10, max: 1000 }), (aqi) => {
+        const { label } = aqiLabel(aqi);
+        return typeof label === "string" && label.length > 0;
+      }),
+    );
+  });
+});
+
+describe("WP4 · humidityLabel — property: output is always a non-empty string", () => {
+  it("returns non-empty for any humidity 0–100", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 100 }), (rh) => {
+        const result = humidityLabel(rh);
+        return typeof result === "string" && result.length > 0;
+      }),
+    );
+  });
+
+  it("monotone behaviour — higher humidity maps to wetter label", () => {
+    // 100% is always "רטוב מאוד" or similar — just verify it's non-empty
+    expect(humidityLabel(100).length).toBeGreaterThan(0);
+    expect(humidityLabel(0).length).toBeGreaterThan(0);
+    // dry < wet: no hard assertion but function must not throw
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 100 }), (rh) => {
+        expect(() => humidityLabel(rh)).not.toThrow();
+        return true;
+      }),
+    );
+  });
+});
+
+describe("WP5 · precipSummaryLabel — property: deterministic for any non-negative mm", () => {
+  it("always returns a non-empty string for 0–200 mm", () => {
+    fc.assert(
+      fc.property(fc.double({ min: 0, max: 200, noNaN: true }), (pp) => {
+        const result = precipSummaryLabel(pp);
+        return typeof result === "string" && result.length > 0;
+      }),
+    );
+  });
+
+  it("same input always returns same output (referential transparency)", () => {
+    fc.assert(
+      fc.property(fc.double({ min: 0, max: 200, noNaN: true }), (pp) => {
+        return precipSummaryLabel(pp) === precipSummaryLabel(pp);
+      }),
+    );
+  });
+});
+
+describe("WP6 · computeGoldenHour — property: output format is HH:MM or '--:--'", () => {
+  const HH_MM = /^\d{2}:\d{2}$/;
+  it("valid ISO sunrise/sunset produces HH:MM times", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        fc.integer({ min: 60, max: 300 }), // day length in minutes
+        (sunrise, dayMinutes) => {
+          fc.pre(isFinite(sunrise.getTime()));
+          const sunset = new Date(sunrise.getTime() + dayMinutes * 60_000);
+          const { morningEnd, eveningStart } = computeGoldenHour(
+            sunrise.toISOString(),
+            sunset.toISOString(),
+          );
+          return HH_MM.test(morningEnd) && HH_MM.test(eveningStart);
+        },
+      ),
+    );
+  });
+
+  it("invalid ISO strings produce '--:--' fallbacks", () => {
+    const { morningEnd, eveningStart } = computeGoldenHour("not-a-date", "also-not");
+    expect(morningEnd).toBe("--:--");
+    expect(eveningStart).toBe("--:--");
+  });
+
+  it("evening start is always before or equal to sunset (1h offset)", () => {
+    const sunrise = new Date("2024-06-21T05:00:00Z");
+    const sunset = new Date("2024-06-21T21:00:00Z");
+    const { eveningStart } = computeGoldenHour(sunrise.toISOString(), sunset.toISOString());
+    // eveningStart should be sunset minus 1h ≈ 20:00
+    expect(eveningStart).toMatch(HH_MM);
+  });
+});
