@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Theme System
+ * FamilyDashBoard v13 — Theme System
  *
  * 6 themes: black, blue, matrix, amber, purple, rose.
  * Cycle with T key, persist in localStorage.

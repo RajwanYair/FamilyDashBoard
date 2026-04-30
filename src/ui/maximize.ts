@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Card Maximize (FLIP + View Transitions)
+ * FamilyDashBoard v13 — Card Maximize (FLIP + View Transitions)
  *
  * Click a card header to expand it fullscreen. Click again or Escape to collapse.
  * v7.1: Adaptive font scaling via --max-font-scale CSS custom property.

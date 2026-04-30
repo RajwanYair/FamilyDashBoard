@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Stocks Provider Adapter (Sprint 128)
+ * FamilyDashBoard v13 — Stocks Provider Adapter (Sprint 128)
  *
  * Implements ProviderAdapter for Yahoo Finance v8 chart API.
  * Fetches a single symbol per call; callers batch multiple symbols.

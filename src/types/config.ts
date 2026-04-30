@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — User Config Types
+ * FamilyDashBoard v13 — User Config Types
  */
 
 import { THEMES, SCREEN_MODES, INTERFACE_LANGUAGES } from "../core/constants";

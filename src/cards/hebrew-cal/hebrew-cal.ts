@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Hebrew Calendar Card
+ * FamilyDashBoard v13 — Hebrew Calendar Card
  *
  * Fetches candles/havdalah, next holiday, omer count, parasha, and Daf Yomi
  * from the Hebcal API. Also renders a daily motivation saying (from MOTIVATIONS).

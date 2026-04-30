@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Diagnostics Overlay
+ * FamilyDashBoard v13 — Diagnostics Overlay
  *
  * Renders getDiagEntries() into #diag-log when the overlay is opened.
  * Wires the copy-to-clipboard button (#diag-copy-btn).

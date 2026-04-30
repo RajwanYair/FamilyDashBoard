@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Config (Settings Persistence)
+ * FamilyDashBoard v13 — Config (Settings Persistence)
  *
  * Load/save user settings from localStorage. Share via URL hash.
  */

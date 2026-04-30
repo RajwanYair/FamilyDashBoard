@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8.5.0 — Alerts Card (FdbCard subclass)
+ * FamilyDashBoard v13 — Alerts Card (FdbCard subclass)
  *
  * Stream B2: FdbCard migration for the alerts card.
  * Real-time polling: Tzeva Adom / pikud-ha-oref alert feed.

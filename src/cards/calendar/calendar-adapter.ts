@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Calendar/ICS Provider Adapter (Sprint 129)
+ * FamilyDashBoard v13 — Calendar/ICS Provider Adapter (Sprint 129)
  *
  * Implements ProviderAdapter for ICS calendar feeds.
  * Fetches a single ICS URL, returns raw text for downstream parsing.

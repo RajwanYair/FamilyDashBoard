@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v11 — Web Vitals Reporter (v11.0-OBS-1)
+ * FamilyDashBoard v13 — Web Vitals Reporter (v11.0-OBS-1)
  *
  * Reads the collected vitals from perf.ts after the page has settled (30 s)
  * and reports them to the worker via the existing error-reporter batcher.

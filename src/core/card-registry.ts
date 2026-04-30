@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Card Registry
+ * FamilyDashBoard v13 — Card Registry
  *
  * Central catalog of all available cards.
  * Cards are lazy-loaded (dynamic import) so only actively-used

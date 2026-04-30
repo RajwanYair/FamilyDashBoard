@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Currency Provider Adapter (Sprint 91)
+ * FamilyDashBoard v13 — Currency Provider Adapter (Sprint 91)
  *
  * Implements ProviderAdapter for exchange-rate APIs (ER-API primary, exchangerate-api fallback).
  */

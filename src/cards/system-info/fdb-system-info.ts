@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8.5.0 — System Info Card (FdbCard subclass)
+ * FamilyDashBoard v13 — System Info Card (FdbCard subclass)
  *
  * Stream B2: FdbCard migration for the system-info card.
  * No network dependency — client-side hardware/browser polling.

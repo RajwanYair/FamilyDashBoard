@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8.0 — Reactive State Store
+ * FamilyDashBoard v13 — Reactive State Store
  *
  * Lightweight (~60 lines) EventTarget-based pub/sub state management.
  * Zero dependencies. Three slices: config (persisted), cache (ephemeral), ui (transient).

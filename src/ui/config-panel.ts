@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Config Panel UI
+ * FamilyDashBoard v13 — Config Panel UI
  *
  * Opens/closes the settings overlay, populates form inputs from config,
  * saves settings, handles export/import JSON, tab switching.

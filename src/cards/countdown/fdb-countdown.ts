@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8.5.0 — Countdown Card (FdbCard subclass)
+ * FamilyDashBoard v13 — Countdown Card (FdbCard subclass)
  *
  * Stream B2: FdbCard migration for the countdown card.
  * No network dependency — pure client-side timer.

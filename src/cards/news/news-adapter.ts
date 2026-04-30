@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — News RSS Provider Adapter (Sprint 97)
+ * FamilyDashBoard v13 — News RSS Provider Adapter (Sprint 97)
  *
  * Implements ProviderAdapter for aggregated RSS news feeds.
  * Delegates to the existing NEWS_FEEDS + fetchFeed pipeline.

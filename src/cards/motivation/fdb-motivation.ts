@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8 — Motivation Card (FdbCard subclass)
+ * FamilyDashBoard v13 — Motivation Card (FdbCard subclass)
  *
  * Sprint 187: First FdbCard-migrated card. Static quotes with fade animation.
  * No network dependency. Uses scheduleRefresh for auto-advance.

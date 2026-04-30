@@ -9,12 +9,14 @@
         "ms-vscode.powershell",
         "GitHub.vscode-github-actions",
         // Git & GitHub
+        "GitHub.copilot",
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",
         "mhutchie.git-graph",
         // Testing
         "vitest.explorer",
+        "ms-playwright.playwright",
         // HTML / CSS
         "ecmel.vscode-html-css",
         "formulahendry.auto-rename-tag",

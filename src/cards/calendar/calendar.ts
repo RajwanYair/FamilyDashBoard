@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Google Calendar ICS Card
+ * FamilyDashBoard v13 — Google Calendar ICS Card
  *
  * Fetches up to 3 Google Calendar ICS feeds, parses VEVENT blocks,
  * and renders a 21-day (3-week) tiled grid — one tile per day, each tile lists

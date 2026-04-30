@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Background Image Rotation
+ * FamilyDashBoard v13 — Background Image Rotation
  *
  * Crossfades between user-configured HTTPS image URLs every 30 minutes.
  * Config: `bgImages: string[]` — array of HTTPS image URLs.

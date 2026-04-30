@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Constants & Configuration
+ * FamilyDashBoard v13 — Constants & Configuration
  *
  * All magic numbers, URLs, symbol lists, and static lookup tables
  * extracted from the monolith for type-safe reuse.

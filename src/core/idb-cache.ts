@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7.9 — IndexedDB Cache Tier (Sprint 43)
+ * FamilyDashBoard v13 — IndexedDB Cache Tier (Sprint 43)
  *
  * Async third-tier cache for large payloads that overflow localStorage (5 MB limit).
  * In-memory → localStorage → IndexedDB (largest / most persistent).

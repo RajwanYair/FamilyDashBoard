@@ -796,3 +796,15 @@ body[data-anim-level="full"] .card--refreshed {
 body[data-anim-level="full"] .card:hover {
   box-shadow: 0 0 24px 4px var(--accent-glow, rgba(96, 165, 250, 0.18));
 }
+
+/* === Migrated from sprints.css @layer animations === */
+
+@keyframes elecPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+@keyframes slideshow-fadein {
+  from { opacity: 0; }
+  to   { opacity: 0.18; }
+}

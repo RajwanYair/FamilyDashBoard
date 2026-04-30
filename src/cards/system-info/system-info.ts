@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — System Info Card
+ * FamilyDashBoard v13 — System Info Card
  *
  * Displays live client-side system status with zero network dependency:
  *   - Online / offline status

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Dual-Layer Cache
+ * FamilyDashBoard v13 — Dual-Layer Cache
  *
  * In-memory Map (fast, volatile) + localStorage (persistent, 7-day eviction).
  * All keys are prefixed with `dash_v2_` for namespace isolation.

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Countdown Card
+ * FamilyDashBoard v13 — Countdown Card
  *
  * Displays a ticking countdown to a configurable target date/time.
  * Pure client-side, no API required.

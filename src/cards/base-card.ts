@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Base Card Module
+ * FamilyDashBoard v13 — Base Card Module
  *
  * Common card lifecycle: load → cache check → fetch → render → schedule.
  * Each card module exports an init function and a load function.

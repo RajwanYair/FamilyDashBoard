@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Config Auto-Renderer (Sprint 100)
+ * FamilyDashBoard v13 — Config Auto-Renderer (Sprint 100)
  *
  * Generates form controls from a CardConfigField[] schema.
  * Used by the config panel to render per-card settings without

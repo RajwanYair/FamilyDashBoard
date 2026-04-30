@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Main Entry Point
+ * FamilyDashBoard v13 — Main Entry Point
  *
  * Imports all modules, initializes the dashboard.
  */
@@ -18,7 +18,6 @@ import "./styles/screen-modes.css";
 import "./styles/maximize.css";
 import "./styles/a11y.css";
 import "./styles/print.css";
-import "./styles/sprints.css";
 import "./styles/scope.css"; // ADR-022: @scope per-card isolation (v12.0)
 import "./cards/tasks/tasks.css";
 import "./cards/system-info/system-info.css";

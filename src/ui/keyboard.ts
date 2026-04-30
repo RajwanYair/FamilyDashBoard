@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Keyboard Shortcuts
+ * FamilyDashBoard v13 — Keyboard Shortcuts
  *
  * Central keyboard handler. All shortcuts dispatched from here.
  */

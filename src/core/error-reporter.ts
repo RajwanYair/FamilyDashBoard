@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7.10 — Error Reporter
+ * FamilyDashBoard v13 — Error Reporter
  *
  * Lightweight client-side telemetry: batches runtime errors and POSTs them
  * to the Cloudflare Worker `POST /api/errors` endpoint.

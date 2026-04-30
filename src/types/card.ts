@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Card Type Definitions
+ * FamilyDashBoard v13 — Card Type Definitions
  *
  * CardDefinition: contract every card module must satisfy.
  * CardConfigField: schema for config panel auto-generation.

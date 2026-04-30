@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7.1 — Card Drag-and-Drop Layout
+ * FamilyDashBoard v13 — Card Drag-and-Drop Layout
  *
  * Allows users to reorder cards between the three grid columns by dragging
  * card headers. Layout is persisted to config.cardLayout via saveConfig().

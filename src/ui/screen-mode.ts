@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Screen Mode + Font Scale
+ * FamilyDashBoard v13 — Screen Mode + Font Scale
  *
  * Applies screen mode class (screen-tv / screen-tablet / screen-phone)
  * and font scale CSS custom property (--font-scale on <html>).

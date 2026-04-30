@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Status Bar
+ * FamilyDashBoard v13 — Status Bar
  *
  * Manages the bottom status bar:
  *   - Version badge

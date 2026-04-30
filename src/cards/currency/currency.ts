@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Currency Card
+ * FamilyDashBoard v13 — Currency Card
  *
  * Fetches exchange rates from open.er-api.com (ILS base) + gold/silver
  * metals (XAU/XAG) from the same endpoint.

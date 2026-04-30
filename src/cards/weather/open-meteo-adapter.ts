@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Open-Meteo Provider Adapter (Sprint 89)
+ * FamilyDashBoard v13 — Open-Meteo Provider Adapter (Sprint 89)
  *
  * Implements ProviderAdapter<WeatherResponse> for the Open-Meteo weather API.
  */

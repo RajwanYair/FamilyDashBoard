@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Halacha Ticker
+ * FamilyDashBoard v13 — Halacha Ticker
  *
  * Fetches the daily Halakhah Yomit from Sefaria and renders
  * a seamlessly looped horizontal ticker strip.

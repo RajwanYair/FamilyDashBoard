@@ -1,6 +1,6 @@
 # =============================================================================
-# CI — FamilyDashBoard v9 — Unified quality gate
-# Typecheck · ESLint · Markdownlint · Vitest (Node 22) · Security · Build
+# CI — FamilyDashBoard v13 — Unified quality gate
+# Typecheck · ESLint · Markdownlint · Vitest (Node 24) · Security · Build
 # Runs on every push to main and all pull requests.
 # =============================================================================
 name: CI
@@ -36,7 +36,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - run: npx tsc --noEmit
@@ -57,7 +59,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: oxlint (fast Rust pre-pass, errors only)
@@ -70,7 +74,7 @@ jobs:
         run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**" "#**/dist/**"
 
   unit-tests:
-    name: Vitest (Node 22)
+    name: Vitest (Node 24)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -79,7 +83,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - run: npx vitest run
@@ -94,7 +100,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: npm audit (high+critical)
@@ -144,7 +152,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Worker tests (gate for CF Worker regressions)
@@ -156,12 +166,14 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-    needs: [typecheck, lint, unit-tests, worker-tests]
+    needs: [typecheck, lint, unit-tests, worker-tests, security]
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Build
@@ -200,7 +212,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Build for Lighthouse
@@ -242,7 +256,9 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "22"
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
       - name: Install CI toolchain
         run: bash .github/ci/install-tools.sh
       - name: Generate SBOM (CycloneDX JSON)

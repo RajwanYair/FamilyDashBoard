@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v7 — Tasks Card
+ * FamilyDashBoard v13 — Tasks Card
  *
  * Family chore/task board. Reads chores from the config panel's
  * cfg-chores JSON field, then overlays per-session completion state

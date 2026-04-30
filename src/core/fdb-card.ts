@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v8.0 — FdbCard Base Class
+ * FamilyDashBoard v13 — FdbCard Base Class
  *
  * Vanilla Web Component base class. Cards extend FdbCard and gain:
  *   - `connectedCallback` / `disconnectedCallback` lifecycle hooks
