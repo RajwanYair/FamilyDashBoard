@@ -38,6 +38,7 @@ import {
   removeWatchlistGroup,
   getGroupForSymbol,
   WATCHLIST_GROUPS_MAX,
+  stocksConfigSchema,
 } from "@/cards/stocks/stocks";
 import { STOCK_SYMBOLS, STOCK_META } from "@/core/constants";
 import { cSet, cGetStale, cClear, cSetAsync } from "@/core/cache";
@@ -2819,5 +2820,24 @@ describe("SP6: marketStatusLabel() — always returns a non-empty string", () =>
       ),
       { numRuns: 200 },
     );
+  });
+});
+
+// ── Sprint 288 / CS-S1: daily-mover pills + pre/post-market badge ────────
+describe("Stocks configSchema — CS-S1 (Sprint 288)", () => {
+  it("configSchema has 5 fields total after CS-S1", () => {
+    expect(stocksConfigSchema.length).toBe(5);
+  });
+
+  it("stocksShowMovers is a boolean defaulting to true", () => {
+    const f = stocksConfigSchema.find((f) => f.key === "stocksShowMovers");
+    expect(f?.type).toBe("boolean");
+    expect(f?.defaultValue).toBe(true);
+  });
+
+  it("stocksShowExtended is a boolean defaulting to false", () => {
+    const f = stocksConfigSchema.find((f) => f.key === "stocksShowExtended");
+    expect(f?.type).toBe("boolean");
+    expect(f?.defaultValue).toBe(false);
   });
 });

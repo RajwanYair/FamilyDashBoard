@@ -1113,6 +1113,23 @@ export const stocksConfigSchema: CardConfigField[] = [
     defaultValue: false,
     group: "תצוגה",
   },
+  // ── Sprint 288 / CS-S1: daily-mover pills + pre/post-market badge ─────────
+  {
+    key: "stocksShowMovers",
+    labelHe: "הצג מובילי יום (3 עולים / יורדים)",
+    labelEn: "Show daily-mover pills (top 3 gainers/losers)",
+    type: "boolean",
+    defaultValue: true,
+    group: "תצוגה",
+  },
+  {
+    key: "stocksShowExtended",
+    labelHe: "הצג מסחר מחוץ לשעות",
+    labelEn: "Show pre/post-market badge",
+    type: "boolean",
+    defaultValue: false,
+    group: "תצוגה",
+  },
 ];
 
 export const stocksCard: CardDefinition = {
