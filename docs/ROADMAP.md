@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-04-29 · **Shipped baseline**: v13.22.0 (Sprint 191) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
+> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.25.0 (Sprint 229) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
 >
-> **Inventory**: 5155 tests / 162 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 45 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5509 tests / 168 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 47 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 
@@ -734,9 +734,12 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] Stryker scope: error-tracker + config + diag (Sprint 126).
 - [x] Coverage ratchet 89/81/89/90 → 93.5/85.7/92.5/94.7 (Sprint 167).
 - [x] `vite-plugin-dev-csp-strip` (Sprint 127).
-- [ ] LHCI `error 0.85` → `error 0.97`.
+- [x] VR baselines 45 → 81 (Sprint 223).
+- [x] Stryker scope extended: event-bus + keyboard + links (Sprint 226).
+- [x] Coverage ratchet 92.3/84.0/91.5/93.7 (Sprint 225).
+- [ ] LHCI `error 0.85` → `error 0.97` *(step 4/5 done: 0.95 at v13.25.0 — Sprint 224; final 0.97 at v14.2)*.
 
-**Exit**: oxlint green; CI deltas live; coverage ≥ 93.5/85.7/92.5/94.7; LHCI perf back to `error ≥ 0.97`.
+**Exit**: oxlint green; CI deltas live; coverage ≥ 92.3/84.0/91.5/93.7; LHCI perf `error ≥ 0.97`.
 
 ### 6.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals (v14.0, Q1–Q2 2027)
 
@@ -777,17 +780,18 @@ X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline 
 - [x] Cross-project tooling registry.
 - [x] Sibling repo audit (Sprint 168).
 - [ ] BudgetManager / CrossTideWeb / Wedding on shared presets.
-- [ ] Shared `tooling/vitest/happy-dom.mjs`.
+- [x] Shared `tooling/vitest/happy-dom.mjs` (Sprint 221).
 - [ ] Cross-project release gate.
 
 ### 6.8 V14-SECURITY-L3 — SLSA L3 + supply chain (v14.2, Q3 2027)
 
-- [ ] Hermetic build (`actions/setup-node@v4` SHA-pinned, npm `--ignore-scripts`).
+- [x] Hermetic build: `actions/checkout` + `actions/setup-node` SHA-pinned (Sprint 222).
+- [ ] Hermetic build: npm `--ignore-scripts` (pending).
 - [ ] Sigstore/cosign signature on `dist.zip` + `worker.js`.
 - [ ] Third-party rebuilder verifies byte-identical output.
-- [ ] npm + GitHub Actions provenance.
-- [ ] CSP `require-trusted-types-for 'script'` enforcement audit.
-- [ ] OWASP Top 10 rotation automated.
+- [x] npm + GitHub Actions provenance (SLSA L2 `attest-build-provenance` in release.yml).
+- [x] CSP `require-trusted-types-for 'script'` enforcement audit (Sprint 220, trusted-types policy).
+- [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`, Sprint 221).
 
 ### 6.9 V14-RESILIENCE — Hostile-network & DX (v14.0, Q1 2027)
 
