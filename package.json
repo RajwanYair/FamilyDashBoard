@@ -49,6 +49,7 @@
         "check:smart-contrast": "node scripts/check-smart-contrast.mjs",
         "check:trusted-types": "node scripts/check-trusted-types.mjs",
         "check:owasp": "node scripts/check-owasp.mjs",
+        "check:csp-wildcards": "node scripts/check-csp-wildcards.mjs",
         "check:actions-pinned": "node scripts/check-actions-pinned.mjs",
         "check:bundle": "node scripts/check-bundle-size.mjs",
         "check:card-bundle": "node scripts/check-card-bundle-delta.mjs",
