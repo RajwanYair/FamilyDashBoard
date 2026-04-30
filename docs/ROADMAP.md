@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.27.0 (Sprint 252) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
+> **Refresh date**: 2026-05-06 · **Shipped baseline**: v13.27.0 (Sprint 252) · **In-progress**: v13.28.0 (Sprint 261) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
 >
 > **Inventory**: 5581 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 49 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
@@ -746,6 +746,11 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] Coverage ratchet 92.7/84.2/91.5/94.0 → 93.0/84.5/91.8/94.3 (Sprint 250).
 - [x] Sigstore/cosign keyless signing for dist.zip + sw.js (Sprint 243).
 - [x] Third-party rebuilder manifest `dist/rebuilder-manifest.json` (Sprint 244).
+- [x] `FdbCard` lifecycle hooks `onThemeChange()` + `onAlert()` (Sprint 253 / X5).
+- [x] fast-check weather WP1-WP6 + news NP1-NP5 (Sprints 254–255).
+- [x] fast-check tasks TP1-TP5 + calendar CP1-CP5 (Sprints 256–257).
+- [x] Snapshot export `Ctrl+Shift+S` wired to `downloadSnapshot()` in `main.ts` (Sprint 258 / X8).
+- [x] fast-check countdown CDP1-CDP4 + system-info SIP1-SIP4 (Sprints 259–260).
 
 **Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.5/91.8/94.3; LHCI perf `error ≥ 0.97`.
 
