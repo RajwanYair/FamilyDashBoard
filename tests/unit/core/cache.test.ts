@@ -984,3 +984,122 @@ describe("Cache — Sprint 90 hydrateFromIdb IDB-tier branches", () => {
     expect(count).toBe(0);
   });
 });
+
+// ── Sprint 265 / CAP1-CAP5: fast-check property tests for cache invariants ───
+
+import * as fc from "fast-check";
+
+describe("Cache — fast-check property invariants (CAP1-CAP5, Sprint 265)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    cClear();
+    resetCacheStats();
+  });
+
+  /**
+   * CAP1: cGet on a key that was never set always returns null (for any TTL).
+   */
+  it("CAP1 · cGet miss always returns null for any key + ttl", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 40 }),
+        fc.integer({ min: 0, max: 3_600_000 }),
+        (key: string, ttl: number) => {
+          cClear();
+          return cGet(key, ttl) === null;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * CAP2: cSet then cGet with huge TTL always returns the same value (round-trip).
+   */
+  it("CAP2 · cSet + cGet round-trip invariant (JSON-serialisable values)", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 30 }),
+        fc.oneof(
+          fc.integer(),
+          fc.string({ maxLength: 20 }),
+          fc.boolean(),
+          fc.record({ x: fc.integer(), label: fc.string({ maxLength: 10 }) }),
+        ),
+        (key: string, value: unknown) => {
+          cClear();
+          cSet(key, value);
+          const got = cGet<unknown>(key, 999_999_999);
+          // Deep equality via JSON round-trip (same as what cache serialises)
+          return JSON.stringify(got) === JSON.stringify(value);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * CAP3: cGetStale always returns null for a key that was never set.
+   */
+  it("CAP3 · cGetStale miss always returns null", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 40 }),
+        (key: string) => {
+          cClear();
+          return cGetStale(key) === null;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * CAP4: cSet then cGetStale always returns non-null (stale access ignores TTL).
+   */
+  it("CAP4 · cSet then cGetStale is always non-null", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 30 }),
+        fc.oneof(fc.integer(), fc.string({ maxLength: 15 }), fc.boolean()),
+        (key: string, value: unknown) => {
+          cClear();
+          cSet(key, value);
+          return cGetStale(key) !== null;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * CAP5: cacheStats hitRate is always in [0, 1] after any sequence of set/get ops.
+   */
+  it("CAP5 · cacheStats hitRate is always in [0, 1]", () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.oneof(
+            fc.tuple(fc.constant("set"), fc.string({ minLength: 1, maxLength: 15 }), fc.integer()),
+            fc.tuple(fc.constant("get"), fc.string({ minLength: 1, maxLength: 15 }), fc.integer({ min: 0, max: 3_600_000 })),
+          ),
+          { minLength: 1, maxLength: 10 },
+        ),
+        (ops: [string, string, number][]) => {
+          cClear();
+          resetCacheStats();
+          for (const [op, key, val] of ops) {
+            if (op === "set") {
+              cSet(key, val);
+            } else {
+              cGet(key, val);
+            }
+          }
+          const stats = cacheStats();
+          return stats.hitRate >= 0 && stats.hitRate <= 1;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
