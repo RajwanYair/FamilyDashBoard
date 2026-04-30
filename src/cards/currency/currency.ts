@@ -648,8 +648,44 @@ export const currencyConfigSchema: CardConfigField[] = [
     defaultValue: "",
     placeholder: "XAG,BTC",
     group: "תצוגה",
+  },  // ── Sprint 283 / CS-C1: base selector + calc/trend/sparkline ───────────────────────────
+  {
+    key: "currencyBase",
+    labelHe: "מטבע בסיס",
+    labelEn: "Base currency",
+    type: "select",
+    defaultValue: "ILS",
+    options: [
+      { value: "ILS", label: "שקל (ILS)" },
+      { value: "USD", label: "דולר (USD)" },
+      { value: "EUR", label: "אירו (EUR)" },
+    ],
+    group: "תצוגה",
   },
-];
+  {
+    key: "currencyShowCalc",
+    labelHe: "הצג מחשבון המרה",
+    labelEn: "Show currency calculator",
+    type: "boolean",
+    defaultValue: false,
+    group: "תצוגה",
+  },
+  {
+    key: "currencyShowTrend",
+    labelHe: "הצג שינוי יומי",
+    labelEn: "Show daily trend arrow",
+    type: "boolean",
+    defaultValue: true,
+    group: "תצוגה",
+  },
+  {
+    key: "currencyShowSparkline",
+    labelHe: "הצג גרף זעיר",
+    labelEn: "Show sparkline chart",
+    type: "boolean",
+    defaultValue: true,
+    group: "תצוגה",
+  },];
 
 /** Reset module-level state (for tests only). */
 export function _resetCurrencyForTest(): void {

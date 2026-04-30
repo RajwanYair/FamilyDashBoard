@@ -22,6 +22,7 @@ import {
   initCalcWidget,
   applyPairVisibility,
   getCurrencyTrend,
+  currencyConfigSchema,
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
 
@@ -1099,5 +1100,38 @@ describe("CM5: getCurrencyTrend pct sign is consistent with arrow direction", ()
       ),
       { numRuns: 200 },
     );
+  });
+});
+
+// ── Sprint 283 / CS-C1: base selector + calc/trend/sparkline ────────────────────
+describe("Currency configSchema — CS-C1 (Sprint 283)", () => {
+  it("configSchema has 6 fields total after CS-C1", () => {
+    expect(currencyConfigSchema.length).toBe(6);
+  });
+
+  it("currencyBase is a select with 3 currency options", () => {
+    const field = currencyConfigSchema.find((f) => f.key === "currencyBase");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("select");
+    expect(field?.options?.length).toBe(3);
+    expect(field?.defaultValue).toBe("ILS");
+  });
+
+  it("currencyShowCalc is a boolean defaulting to false", () => {
+    const field = currencyConfigSchema.find((f) => f.key === "currencyShowCalc");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
+  });
+
+  it("currencyShowTrend is a boolean defaulting to true", () => {
+    const field = currencyConfigSchema.find((f) => f.key === "currencyShowTrend");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
+  });
+
+  it("currencyShowSparkline is a boolean defaulting to true", () => {
+    const field = currencyConfigSchema.find((f) => f.key === "currencyShowSparkline");
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
   });
 });
