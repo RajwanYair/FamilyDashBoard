@@ -896,6 +896,56 @@ export const weatherConfigSchema: CardConfigField[] = [
     tab: "advanced",
     group: "weather",
   },
+  // ── Sprint 287 / CS-W2: feature toggles for W3/W4/W5/W6 ──────────────────
+  {
+    key: "weatherShowNowcast",
+    labelHe: "הצג רצועת תחזית מיידית (שעה הבאה)",
+    labelEn: "Show nowcast strip (next-hour precip)",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherShowAqi",
+    labelHe: "הצג איכות אוויר (PM2.5/PM10/O3)",
+    labelEn: "Show air quality tile (PM2.5/PM10/O3)",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherShowCompass",
+    labelHe: "הצג מצפן רוח SVG",
+    labelEn: "Show SVG wind compass",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherShowMoon",
+    labelHe: "הצג שלב הירח",
+    labelEn: "Show moon phase tile",
+    type: "boolean",
+    defaultValue: false,
+    tab: "display",
+    group: "weather",
+  },
+  {
+    key: "weatherPrecipUnit",
+    labelHe: "יחידת משקעים",
+    labelEn: "Precipitation unit",
+    type: "select",
+    defaultValue: "mm",
+    options: [
+      { value: "mm", label: "מ\"מ (mm)" },
+      { value: "in", label: "אינץ' (in)" },
+    ],
+    tab: "display",
+    group: "weather",
+  },
 ];
 
 export const weatherCard: CardDefinition = {

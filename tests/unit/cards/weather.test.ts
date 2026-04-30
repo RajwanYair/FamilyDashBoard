@@ -2774,3 +2774,43 @@ describe("Weather configSchema — CS-W1 (Sprint 277)", () => {
     expect(weatherConfigSchema.length).toBe(7);
   });
 });
+
+// ── Sprint 287 / CS-W2: W3/W4/W5/W6 feature toggles ────────────────────────
+describe("Weather configSchema — CS-W2 (Sprint 287)", () => {
+  it("configSchema has 12 fields total after CS-W2", () => {
+    expect(weatherConfigSchema.length).toBe(12);
+  });
+
+  it("weatherShowNowcast is a boolean defaulting to true", () => {
+    const f = weatherConfigSchema.find((f) => f.key === "weatherShowNowcast");
+    expect(f?.type).toBe("boolean");
+    expect(f?.defaultValue).toBe(true);
+  });
+
+  it("weatherShowAqi is a boolean defaulting to true", () => {
+    const f = weatherConfigSchema.find((f) => f.key === "weatherShowAqi");
+    expect(f?.type).toBe("boolean");
+    expect(f?.defaultValue).toBe(true);
+  });
+
+  it("weatherShowCompass is a boolean defaulting to true", () => {
+    const f = weatherConfigSchema.find((f) => f.key === "weatherShowCompass");
+    expect(f?.type).toBe("boolean");
+    expect(f?.defaultValue).toBe(true);
+  });
+
+  it("weatherShowMoon is a boolean defaulting to false", () => {
+    const f = weatherConfigSchema.find((f) => f.key === "weatherShowMoon");
+    expect(f?.type).toBe("boolean");
+    expect(f?.defaultValue).toBe(false);
+  });
+
+  it("weatherPrecipUnit is a select with mm/in options", () => {
+    const f = weatherConfigSchema.find((f) => f.key === "weatherPrecipUnit");
+    expect(f?.type).toBe("select");
+    const vals = f?.options?.map((o) => o.value);
+    expect(vals).toContain("mm");
+    expect(vals).toContain("in");
+    expect(f?.defaultValue).toBe("mm");
+  });
+});
