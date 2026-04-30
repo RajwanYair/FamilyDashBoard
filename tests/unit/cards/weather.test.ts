@@ -2758,3 +2758,19 @@ describe("WP6 · computeGoldenHour — property: output format is HH:MM or '--:-
     expect(eveningStart).toMatch(HH_MM);
   });
 });
+
+// ── Sprint 277 / CS-W1: weatherUsTravelMode in configSchema ───────────────
+
+describe("Weather configSchema — CS-W1 (Sprint 277)", () => {
+  it("weatherUsTravelMode field exists in configSchema", () => {
+    const field = weatherConfigSchema.find((f) => f.key === "weatherUsTravelMode");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(false);
+    expect(field?.tab).toBe("advanced");
+  });
+
+  it("configSchema has 7 fields total after CS-W1", () => {
+    expect(weatherConfigSchema.length).toBe(7);
+  });
+});

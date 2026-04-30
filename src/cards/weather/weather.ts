@@ -886,6 +886,16 @@ export const weatherConfigSchema: CardConfigField[] = [
     tab: "display",
     group: "weather",
   },
+  // ── Sprint 277 / CS-W1: US travel mode was config-only; now user-settable ──
+  {
+    key: "weatherUsTravelMode",
+    labelHe: "מצב נסיעה לארה\"ב (NWS)",
+    labelEn: "US Travel Mode (NWS provider)",
+    type: "boolean",
+    defaultValue: false,
+    tab: "advanced",
+    group: "weather",
+  },
 ];
 
 export const weatherCard: CardDefinition = {
