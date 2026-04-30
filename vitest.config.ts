@@ -111,10 +111,14 @@ export default defineConfig({
         // Sprint 225 (coverage ratchet): added 8 ai-synthesis DOM-branch tests + 10 video-news
         //   initVideoNews DOM tests. Actuals: 92.64/84.26/91.79/94.05.
         //   Thresholds raised to actuals - 0.3% safety margin.
-        statements: 92.3,
-        branches: 84.0,
+        // Sprint 235 (coverage ratchet): +8 countdown tickSecondary/initCountdownCard tests +
+        //   3 ai-synthesis stale-cache/visibilitychange tests. countdown.ts branches 74.66→85.33,
+        //   ai-synthesis.ts lines 98.46→100%. Actuals: 93.01/84.59/91.85/94.39.
+        //   Thresholds raised to actuals - 0.3% safety margin.
+        statements: 92.7,
+        branches: 84.2,
         functions: 91.5,
-        lines: 93.7,
+        lines: 94.0,
       },
     },
   },

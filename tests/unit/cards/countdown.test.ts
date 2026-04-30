@@ -30,6 +30,7 @@ import {
   setConfetti,
 } from "@/cards/countdown/countdown";
 import { loadConfig } from "@/core/config";
+import { cSet, cClear } from "@/core/cache";
 import type { DashboardConfig } from "@/types/config";
 
 vi.mock("@/core/config", () => ({
@@ -1197,5 +1198,186 @@ describe("Countdown — setConfetti (Sprint 191 CD4)", () => {
     vi.mocked(loadConfig).mockReturnValue(FUTURE_CFG);
     tick();
     expect(document.querySelector(".countdown-body")?.classList.contains("cd-confetti")).toBe(false);
+  });
+});
+
+// ── Sprint 235: tickSecondary progress bar branches & initCountdownCard auto-populate ─
+describe("Countdown — Sprint 235 coverage: tickSecondary + initCountdownCard", () => {
+  function buildCd2DOM() {
+    const section = document.createElement("div");
+    section.id = "cd2-section";
+    const title = document.createElement("div");
+    title.id = "cd2-title";
+    const days = document.createElement("div");
+    days.id = "cd2-days";
+    const hours = document.createElement("div");
+    hours.id = "cd2-hours";
+    const mins = document.createElement("div");
+    mins.id = "cd2-mins";
+    const secs = document.createElement("div");
+    secs.id = "cd2-secs";
+    const msg = document.createElement("div");
+    msg.id = "cd2-msg";
+    const progressWrap = document.createElement("div");
+    progressWrap.id = "cd2-progress-wrap";
+    const progressBar = document.createElement("div");
+    progressBar.id = "cd2-progress-bar";
+    section.append(title, days, hours, mins, secs, msg, progressWrap, progressBar);
+    document.body.appendChild(section);
+    return section;
+  }
+
+  function buildCd3DOM() {
+    const section = document.createElement("div");
+    section.id = "cd3-section";
+    const title = document.createElement("div");
+    title.id = "cd3-title";
+    const days = document.createElement("div");
+    days.id = "cd3-days";
+    const hours = document.createElement("div");
+    hours.id = "cd3-hours";
+    const mins = document.createElement("div");
+    mins.id = "cd3-mins";
+    const secs = document.createElement("div");
+    secs.id = "cd3-secs";
+    const msg = document.createElement("div");
+    msg.id = "cd3-msg";
+    section.append(title, days, hours, mins, secs, msg);
+    document.body.appendChild(section);
+    return section;
+  }
+
+  function buildMainDOM() {
+    const days = document.createElement("div");
+    days.id = "cd-days";
+    document.body.appendChild(days);
+    return days;
+  }
+
+  beforeEach(() => {
+    cClear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    cClear();
+    document.body.innerHTML = "";
+  });
+
+  it("tick2() renders progress bar when startDate is set and section DOM present", () => {
+    const section = buildCd2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2099-12-31",
+      countdownCardTime: "23:59",
+      countdownCardTitle: "T",
+      countdownCardDoneMsg: "D",
+      countdownCard2Date: "2099-06-01",
+      countdownCard2Time: "18:00",
+      countdownCard2Title: "אירוע 2",
+      countdownCard2DoneMsg: "🎉",
+      countdownCard2StartDate: "2020-01-01",
+    } as DashboardConfig);
+    tick2();
+    const pw = document.getElementById("cd2-progress-wrap");
+    expect(section.style.display).not.toBe("none");
+    // Progress wrap should be displayed
+    expect(pw?.style.display).not.toBe("none");
+  });
+
+  it("tick2() hides section when no date configured", () => {
+    const section = buildCd2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCard2Date: undefined,
+    } as DashboardConfig);
+    tick2();
+    expect(section.style.display).toBe("none");
+  });
+
+  it("tick2() renders past-event path (daysSince >= 0)", () => {
+    const section = buildCd2DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2099-12-31",
+      countdownCardTime: "23:59",
+      countdownCardTitle: "T",
+      countdownCardDoneMsg: "D",
+      countdownCard2Date: "2000-01-01",
+      countdownCard2Time: "00:00",
+      countdownCard2Title: "עבר",
+      countdownCard2DoneMsg: "נגמר",
+    } as DashboardConfig);
+    tick2();
+    const days = document.getElementById("cd2-days");
+    expect(section.style.display).not.toBe("none");
+    expect(days?.textContent).toMatch(/^\d+$/);
+  });
+
+  it("tick3() renders future event", () => {
+    buildMainDOM();
+    const section = buildCd3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      countdownCardDate: "2099-12-31",
+      countdownCardTime: "23:59",
+      countdownCardTitle: "T",
+      countdownCardDoneMsg: "D",
+      countdownCard3Date: "2099-07-01",
+      countdownCard3Time: "18:00",
+      countdownCard3Title: "אירוע 3",
+      countdownCard3DoneMsg: "🎉",
+    } as DashboardConfig);
+    tick3();
+    expect(section.style.display).not.toBe("none");
+  });
+
+  it("initCountdownCard auto-populates slot 2 from Yom Tov when countdownCard2Date unset", () => {
+    buildMainDOM();
+    buildCd2DOM();
+    buildCd3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCard2Date: undefined,
+      countdownCard3Date: undefined,
+    } as DashboardConfig);
+    // Seed holiday cache (CD1 key pattern: holidays-YYYY-M)
+    const now = new Date();
+    const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
+    const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const dateStr = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, "0")}-${String(futureDate.getDate()).padStart(2, "0")}`;
+    cSet(holKey, {
+      items: [
+        { title: "Rosh Hashana", hebrew: "ראש השנה", date: dateStr, category: "holiday" },
+      ],
+    });
+    initCountdownCard();
+    const title2 = document.getElementById("cd2-title");
+    expect(title2?.textContent).toBe("ראש השנה");
+  });
+
+  it("initCountdownCard auto-populates slot 3 from ICS cache when countdownCard3Date unset", () => {
+    buildMainDOM();
+    buildCd2DOM();
+    buildCd3DOM();
+    vi.mocked(loadConfig).mockReturnValue({
+      ...FUTURE_CFG,
+      countdownCard2Date: "2099-01-01", // already set so CD1 is skipped
+      countdownCard3Date: undefined,
+    } as DashboardConfig);
+    // Seed ICS cache (key: cal-ics) with a future event (>= 7 days)
+    const futureDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    const y = futureDate.getFullYear();
+    const mo = String(futureDate.getMonth() + 1).padStart(2, "0");
+    const d = String(futureDate.getDate()).padStart(2, "0");
+    const icsText = [
+      "BEGIN:VCALENDAR",
+      "BEGIN:VEVENT",
+      `DTSTART:${y}${mo}${d}T180000Z`,
+      "SUMMARY:טיול משפחתי",
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    cSet("cal-ics", icsText);
+    initCountdownCard();
+    const title3 = document.getElementById("cd3-title");
+    expect(title3?.textContent).toBe("טיול משפחתי");
   });
 });

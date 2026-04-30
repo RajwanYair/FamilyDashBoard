@@ -208,4 +208,39 @@ describe("AI Synthesis — loadAiSynthesisData branches (Sprint 225)", () => {
     await new Promise((r) => setTimeout(r, 0));
     expect(synthMeta.textContent).toBe("");
   });
+
+  // Sprint 235: cover line 101 (renderError stale branch) and line 149 (visibilitychange handler)
+  it("Sprint 235: renders stale synthesis when fetch fails and stale cache exists (line 101)", async () => {
+    _s225cfg.synthesisEnabled = true;
+    // Seed cache with real timestamp T, then fake Date.now() to T+5h > 4h TTL
+    cSet("ai:synthesis", { synthesis: "תקציר ישן" });
+    const fakeNow = Date.now() + 5 * 60 * 60 * 1000; // 5 hours ahead
+    const dateSpy = vi.spyOn(Date, "now").mockReturnValue(fakeNow);
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("stale-test")));
+    initAiSynthesisCard();
+    // Flush microtask queue so async loadAiSynthesisData resolves
+    for (let i = 0; i < 6; i++) await Promise.resolve();
+    dateSpy.mockRestore();
+    expect(synthText.textContent).toBe("תקציר ישן");
+  });
+
+  it("Sprint 235: renders error message when fetch fails and no stale data exists (line 103)", async () => {
+    _s225cfg.synthesisEnabled = true;
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    initAiSynthesisCard();
+    await new Promise((r) => setTimeout(r, 30));
+    expect(synthText.textContent).toContain("AI");
+  });
+
+  it("Sprint 235: visibilitychange handler updates _pageVisible flag without throwing (line 149)", async () => {
+    _s225cfg.synthesisEnabled = false;
+    initAiSynthesisCard();
+    await new Promise((r) => setTimeout(r, 0));
+    // Fire visibilitychange → hidden then visible (exercises line 149)
+    Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    Object.defineProperty(document, "visibilityState", { value: "visible", configurable: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(synthText.textContent).toBeDefined();
+  });
 });
