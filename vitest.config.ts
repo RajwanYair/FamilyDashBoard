@@ -115,10 +115,14 @@ export default defineConfig({
         //   3 ai-synthesis stale-cache/visibilitychange tests. countdown.ts branches 74.66→85.33,
         //   ai-synthesis.ts lines 98.46→100%. Actuals: 93.01/84.59/91.85/94.39.
         //   Thresholds raised to actuals - 0.3% safety margin.
-        statements: 92.7,
-        branches: 84.2,
-        functions: 91.5,
-        lines: 94.0,
+        // Sprint 250 (coverage ratchet): Sprints 245-248 added fast-check property tests:
+        //   SP1-SP6 (stocks), CM1-CM5 (currency), AP1-AP5 (alerts), HC1-HC6 (hebrew-cal).
+        //   +75 new tests. Actuals: 93.01/84.60/91.85/94.39.
+        //   Ratchet: statements 92.7→93.0, branches 84.2→84.5, functions 91.5→91.8, lines 94.0→94.3.
+        statements: 93.0,
+        branches: 84.5,
+        functions: 91.8,
+        lines: 94.3,
       },
     },
   },
