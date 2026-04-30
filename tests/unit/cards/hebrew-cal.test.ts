@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import * as fc from "fast-check";
 import {
   initHebrewCalCard,
   computeMoonPhase,
@@ -2479,5 +2480,172 @@ describe("HebrewCal — Yahrzeit IDB (Sprint 210)", () => {
     await addYahrzeit("Today's", month, day);
     const upcoming = await getUpcomingYahrzeits(7, now);
     expect(upcoming.some((e) => e.name === "Today's")).toBe(true);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Sprint 248 — Hebrew-cal card fast-check property tests (HC1–HC6)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── HC1: getPsalmOfDay — always returns one of the 7 Psalm values ─────────
+describe("HC1: getPsalmOfDay(date) — always returns one of 7 known Psalm numbers", () => {
+  const VALID_PSALMS = new Set([24, 48, 82, 94, 81, 93, 92]);
+
+  it("any valid date yields a Psalm number in the known set", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2000-01-01"), max: new Date("2099-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const psalm = getPsalmOfDay(d);
+          return VALID_PSALMS.has(psalm);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("all 7 days of the week map to distinct Psalm values", () => {
+    const baseDate = new Date("2026-04-26"); // Sunday
+    const psalms = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(baseDate);
+      d.setDate(d.getDate() + i);
+      return getPsalmOfDay(d);
+    });
+    expect(new Set(psalms).size).toBe(7);
+  });
+});
+
+// ── HC2: formatCountdown — always returns a non-empty HH:MM string ────────
+describe("HC2: formatCountdown(ms) — always returns a non-empty time string", () => {
+  it("any non-negative milliseconds yields a non-empty string", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0, max: 86_400_000 * 7, noNaN: true }),
+        (ms) => {
+          const result = formatCountdown(ms);
+          return typeof result === "string" && result.length > 0;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("zero ms always returns 00:00", () => {
+    expect(formatCountdown(0)).toBe("00:00");
+  });
+
+  it("negative ms always returns 00:00", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -1e9, max: -0.001, noNaN: true }),
+        (ms) => formatCountdown(ms) === "00:00",
+      ),
+      { numRuns: 50 },
+    );
+  });
+
+  it("output matches HH:MM or H:MM format (colon-separated)", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 1000, max: 86_400_000 * 3, noNaN: true }),
+        (ms) => {
+          const result = formatCountdown(ms);
+          return result.includes(":");
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── HC3: hebrewMonthName — always returns a non-empty string ─────────────
+describe("HC3: hebrewMonthName(date) — always returns a non-empty Hebrew string", () => {
+  it("any valid date in Gregorian 2020–2030 yields a non-empty string", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2020-01-01"), max: new Date("2030-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const result = hebrewMonthName(d);
+          return typeof result === "string" && result.length > 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── HC4: zmanimTimeLabel — never throws for any string input ─────────────
+describe("HC4: zmanimTimeLabel(isoOrTime) — never throws for any string", () => {
+  it("any ASCII string input does not throw", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 0, maxLength: 20 }),
+        (s) => {
+          let threw = false;
+          try {
+            zmanimTimeLabel(s);
+          } catch {
+            threw = true;
+          }
+          return !threw;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  it("empty string returns '--'", () => {
+    expect(zmanimTimeLabel("")).toBe("--");
+  });
+});
+
+// ── HC5: isShabbat — always returns a boolean ────────────────────────────
+describe("HC5: isShabbat(candlesMs, havdalaMs) — always returns a boolean", () => {
+  it("any numeric candles/havdala pair yields a boolean", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0, max: 1e12, noNaN: true }),
+        fc.double({ min: 0, max: 1e12, noNaN: true }),
+        (candles, havdala) => {
+          const result = isShabbat(candles, havdala);
+          return typeof result === "boolean";
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  it("candles > havdala always returns false (invalid window)", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 1e9, max: 1e12, noNaN: true }),
+        (t) => !isShabbat(t + 100_000, t), // candles after havdala
+      ),
+      { numRuns: 100 },
+    );
+  });
+});
+
+// ── HC6: nextHebrewYearGregorianApprox — always returns a 4-digit year ────
+describe("HC6: nextHebrewYearGregorianApprox — always returns a 4-digit Gregorian year", () => {
+  it("any date in 2000–2080 yields a 4-digit year ≥ input year", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2000-01-01"), max: new Date("2080-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const result = nextHebrewYearGregorianApprox(d);
+          return (
+            typeof result === "number" &&
+            result >= 2000 &&
+            result <= 2090 &&
+            result >= d.getFullYear()
+          );
+        },
+      ),
+      { numRuns: 200 },
+    );
   });
 });
