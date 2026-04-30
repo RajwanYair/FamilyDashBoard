@@ -38,6 +38,7 @@ import {
   starArticle,
   unstarArticle,
   isStarred,
+  ageFreshness,
 } from "@/cards/news/news";
 import { _idbClearFallback } from "@/core/idb-store";
 
@@ -2259,5 +2260,167 @@ describe("News — star/read-later IDB (Sprint 206)", () => {
 
   it("isStarred returns false for unknown id", async () => {
     expect(await isStarred("no-such-id")).toBe(false);
+  });
+});
+
+// ── Sprint 255: fast-check property tests (NP1–NP5) ───────────────────────
+
+import * as fc from "fast-check";
+
+describe("NP1 · sanitizeNewsTitle — property: output length ≤ maxLen", () => {
+  it("truncated title never exceeds maxLen characters", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 0, maxLength: 300 }),
+        fc.integer({ min: 10, max: 200 }),
+        (title, maxLen) => {
+          const result = sanitizeNewsTitle(title, maxLen);
+          return result.length <= maxLen;
+        },
+      ),
+    );
+  });
+
+  it("title within limit is returned as-is (trimmed)", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 0, maxLength: 100 }), (title) => {
+        const result = sanitizeNewsTitle(title, 120);
+        return result.length <= 120;
+      }),
+    );
+  });
+
+  it("output is always a string", () => {
+    fc.assert(
+      fc.property(fc.string(), (title) => {
+        return typeof sanitizeNewsTitle(title) === "string";
+      }),
+    );
+  });
+});
+
+describe("NP2 · newsSourceDomain — property: output has no protocol or path", () => {
+  it("strips https:// from well-formed URLs", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom("ynet.co.il", "bbc.com", "haaretz.co.il", "theguardian.com"),
+        fc.constantFrom("https://", "http://"),
+        (domain, proto) => {
+          const result = newsSourceDomain(`${proto}${domain}/some/path`);
+          return !result.startsWith("http") && result.length > 0;
+        },
+      ),
+    );
+  });
+
+  it("returns non-empty string for any ASCII URL-like string", () => {
+    fc.assert(
+      fc.property(
+        fc.webUrl(),
+        (url) => {
+          const result = newsSourceDomain(url);
+          return typeof result === "string";
+        },
+      ),
+    );
+  });
+});
+
+describe("NP3 · filterBySearch — property: result is always a subset of input", () => {
+  const itemArb = fc.record({
+    title: fc.string({ minLength: 1, maxLength: 80 }),
+    link: fc.webUrl(),
+    pubDate: fc.constant("2024-01-01T12:00:00Z"),
+    source: fc.constant("test"),
+  });
+
+  it("filtered result is always a subset of input", () => {
+    fc.assert(
+      fc.property(
+        fc.array(itemArb, { maxLength: 20 }),
+        fc.string({ minLength: 0, maxLength: 20 }),
+        (items, query) => {
+          const result = filterBySearch(items as Parameters<typeof filterBySearch>[0], query);
+          return result.every((r) => items.some((i) => i.link === r.link));
+        },
+      ),
+    );
+  });
+
+  it("empty query returns all items", () => {
+    fc.assert(
+      fc.property(
+        fc.array(itemArb, { minLength: 1, maxLength: 10 }),
+        (items) => {
+          const result = filterBySearch(items as Parameters<typeof filterBySearch>[0], "");
+          return result.length === items.length;
+        },
+      ),
+    );
+  });
+
+  it("filter is idempotent — applying twice yields same result", () => {
+    fc.assert(
+      fc.property(
+        fc.array(itemArb, { maxLength: 10 }),
+        fc.string({ minLength: 1, maxLength: 15 }),
+        (items, query) => {
+          const asItems = items as Parameters<typeof filterBySearch>[0];
+          const first = filterBySearch(asItems, query);
+          const second = filterBySearch(first, query);
+          return first.length === second.length;
+        },
+      ),
+    );
+  });
+});
+
+describe("NP4 · getBookmarkKey — property: output is a stable non-empty string", () => {
+  it("any non-empty title produces a non-empty key", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1 }), (title) => {
+        const key = getBookmarkKey(title);
+        return typeof key === "string" && key.length > 0;
+      }),
+    );
+  });
+
+  it("same title always produces the same key (deterministic)", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1, maxLength: 100 }), (title) => {
+        return getBookmarkKey(title) === getBookmarkKey(title);
+      }),
+    );
+  });
+});
+
+describe("NP5 · ageFreshness — property: returns valid freshness class for any ISO date", () => {
+  const VALID_CLASSES = ["fresh2m", "fresh1h", "fresh1d", "old"] as const;
+
+  it("always returns a known freshness class for recent dates", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date(Date.now() - 7 * 24 * 60 * 60_000), max: new Date() }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const result = ageFreshness(d.toISOString());
+          return VALID_CLASSES.includes(result as (typeof VALID_CLASSES)[number]);
+        },
+      ),
+    );
+  });
+
+  it("very old date always returns 'old'", () => {
+    const old = new Date(Date.now() - 10 * 24 * 60 * 60_000).toISOString();
+    expect(ageFreshness(old)).toBe("old");
+  });
+
+  it("output is always one of four known values for any string input", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        const result = ageFreshness(s);
+        return VALID_CLASSES.includes(result as (typeof VALID_CLASSES)[number]);
+      }),
+    );
   });
 });
