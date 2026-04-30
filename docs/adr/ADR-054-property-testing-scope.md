@@ -86,7 +86,8 @@ Sprints 307–310 introduced four property test files under `tests/unit/core/`:
 
 ## Consequences
 
-**Positive**
+### Positive
+
 - 23 additional test cases probe algorithmic invariants that are difficult to
   cover with examples — e.g., monotonicity of sparkline x-coordinates across
   all point configurations.
@@ -96,7 +97,8 @@ Sprints 307–310 introduced four property test files under `tests/unit/core/`:
 - Property tests run inside Vitest 4 alongside example tests — no separate
   tooling or CI step required.
 
-**Negative / trade-offs**
+### Negative / trade-offs
+
 - Each `fc.assert` with `numRuns: 200` adds ~20–80 ms to the test run
   (vs. < 1 ms for a single example). 23 property tests add < 2 s total — acceptable.
 - Property tests require understanding of fast-check arbitraries; onboarding

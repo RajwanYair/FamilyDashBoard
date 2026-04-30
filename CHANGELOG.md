@@ -9,6 +9,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.33.0] — 2026-05-15
+
+> **6012 tests / 186 suites / 0 failures** — Sprints 317–326 fast-check property-test sprint set + ADR-055.
+
+### Added
+
+- **Sprint 317**: IP1–IP5 fast-check property tests for `i18n.ts` — `t()` non-empty for every key, placeholder substitution leaves no unresolved `{...}` markers, `getLocalizedCardTitle` round-trips with optional icon, `getInterfaceDirection` returns `"rtl"` for `he` / `"ltr"` otherwise. 5 new tests.
+- **Sprint 318**: CRP1–CRP5 fast-check property tests for `card-registry.ts` — register/get round-trip, last-write-wins on duplicate ID, `localeCompare("he")` sort stability, `list().length` matches unique-ID count for fresh prefix, `loadCard` rejects with `/not registered/i`. Documented per-iteration prefix-reset pattern (state-bearing module gotcha). 5 new tests.
+- **Sprint 319**: ALP1–ALP4 fast-check property tests for `anim-level.ts` — `applyAnimLevel` defaults invalid input to `"normal"`, `effectiveAnimLevel("full")` always wins, `prefers-reduced-motion: reduce` clamps `"normal"` → `"minimal"`, identity on other inputs. 4 new tests.
+- **Sprint 320**: PRP1–PRP6 fast-check property tests for `provider-health.ts` — success resets `consecutiveFails`/status, status buckets (`0=ok` / `1-2=degraded` / `3+=down`), exponential backoff capped at `maxMs`, `shouldBackoff` false post-success, latency ring buffer cap 20 with values rounded to 0.1, success/failure counters additive. 6 new tests.
+- **Sprint 321**: ETP1–ETP5 fast-check property tests for `error-tracker.ts` — buffer cap 20, last-N retention, `clearErrors` empties, `formatErrorEntry` has HH:MM:SS.mmm prefix + message + lineno suffix, trend buffer cap 10 with values rounded to 0.01. 5 new tests.
+- **Sprint 322**: HWP1–HWP4 fast-check property tests for `hardware.ts` — profile echoes navigator values, `getOptimalConcurrency` bounded `[2, 8]` and equals `max(2, min(8, ⌊cores × 0.6⌋))`, tier monotonic in (cores × memory), profile cached across calls (object identity). 4 new tests.
+- **Sprint 323**: IDP1–IDP3 fast-check property tests for `idle.ts` — `pageVisibleSignal.value` mirrors `document.hidden` across arbitrary toggle traces, `shouldWakeRefresh` false while visible, `shouldWakeRefresh` becomes true only after `WAKE_REFRESH_MS` elapsed while hidden. 3 new tests.
+- **Sprint 324**: ADR-055 — property-testing scope expansion documenting Sprints 317–323 (32 new tests across 7 modules) and the per-iteration reset pattern for state-bearing modules.
+- **Sprint 325**: ROADMAP.md §6.1 V14-FOUNDATIONS updated with Sprints 317–326 entries; refresh date bumped to 2026-05-15.
+- **Sprint 326**: v13.33.0 release — package.json `13.32.0` → `13.33.0`; CHANGELOG entry; AI customisation files freshened.
+
+### Changed
+
+- ADR index regenerated to 55 entries (`docs/adr/README.md`).
+
+---
+
 ## [13.32.0] — 2026-05-03
 
 > **5980 tests / 179 suites / 0 failures** (commit `34479b6`)
