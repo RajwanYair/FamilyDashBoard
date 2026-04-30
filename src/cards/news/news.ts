@@ -982,6 +982,78 @@ export const newsCard: CardDefinition = {
  *
  * @internal — test use only
  */
+// ── Sprint 267 / N1: Vectorize shadow mode (ADR-046) ─────────────────────────
+//
+// 30-day shadow mode: both SimHash v2 and Vectorize run in parallel.
+// Vectorize output is logged to diagLog for precision@10 comparison.
+// SimHash v2 remains the canonical dedup path; Vectorize is observational.
+// Activation: localStorage key `fdb_shadow_vectorize` = "1" OR config flag.
+
+const LS_SHADOW_VEC = "fdb_shadow_vectorize";
+
+export interface VectorizeShadowEntry {
+  ts: number;
+  simhashDeduped: number;
+  vectorizeCandidates: number;
+  overlap: number;
+}
+
+let _shadowVectorizeEnabled = false;
+let _shadowVectorizeLog: VectorizeShadowEntry[] = [];
+
+/** Return true when Vectorize shadow mode is active. */
+export function isShadowVectorizeEnabled(): boolean {
+  return _shadowVectorizeEnabled;
+}
+
+/** Enable or disable Vectorize shadow mode; persists to localStorage. */
+export function setShadowVectorize(enabled: boolean): void {
+  _shadowVectorizeEnabled = enabled;
+  try {
+    if (enabled) {
+      localStorage.setItem(LS_SHADOW_VEC, "1");
+    } else {
+      localStorage.removeItem(LS_SHADOW_VEC);
+    }
+  } catch {
+    // localStorage may be unavailable in some environments
+  }
+}
+
+/** Initialise shadow mode from localStorage (called once at card init). */
+export function loadShadowVectorizeFlag(): void {
+  try {
+    _shadowVectorizeEnabled = localStorage.getItem(LS_SHADOW_VEC) === "1";
+  } catch {
+    _shadowVectorizeEnabled = false;
+  }
+}
+
+/**
+ * Record a shadow comparison entry.
+ * Called after each fetch when shadow mode is active.
+ *
+ * @param simhashDeduped   Number of items remaining after SimHash dedup.
+ * @param vectorizeCandidates  Number of items the worker Vectorize endpoint flagged as near-dup.
+ */
+export function recordShadowVectorizeComparison(
+  simhashDeduped: number,
+  vectorizeCandidates: number,
+): void {
+  if (!_shadowVectorizeEnabled) return;
+  const overlap = Math.min(simhashDeduped, vectorizeCandidates);
+  _shadowVectorizeLog.push({ ts: Date.now(), simhashDeduped, vectorizeCandidates, overlap });
+  // Cap log at 50 entries to avoid unbounded growth
+  if (_shadowVectorizeLog.length > 50) {
+    _shadowVectorizeLog = _shadowVectorizeLog.slice(-50);
+  }
+}
+
+/** Return a copy of the shadow comparison log (for diagnostics / export). */
+export function getShadowVectorizeLog(): readonly VectorizeShadowEntry[] {
+  return [..._shadowVectorizeLog];
+}
+
 export function _resetNewsForTest(): void {
   if (_newsRefreshInterval !== null) {
     clearInterval(_newsRefreshInterval);
@@ -1000,4 +1072,6 @@ export function _resetNewsForTest(): void {
   elSearchCount = null;
   elNewsCount = null;
   _mutedSources = {};
+  _shadowVectorizeEnabled = false;
+  _shadowVectorizeLog = [];
 }

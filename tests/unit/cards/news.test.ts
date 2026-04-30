@@ -39,6 +39,11 @@ import {
   unstarArticle,
   isStarred,
   ageFreshness,
+  isShadowVectorizeEnabled,
+  setShadowVectorize,
+  loadShadowVectorizeFlag,
+  recordShadowVectorizeComparison,
+  getShadowVectorizeLog,
 } from "@/cards/news/news";
 import { _idbClearFallback } from "@/core/idb-store";
 
@@ -2422,5 +2427,78 @@ describe("NP5 · ageFreshness — property: returns valid freshness class for an
         return VALID_CLASSES.includes(result as (typeof VALID_CLASSES)[number]);
       }),
     );
+  });
+});
+
+// ── Sprint 267 / N1: Vectorize shadow mode tests ──────────────────────────────
+
+describe("News — Vectorize shadow mode (Sprint 267 / N1 ADR-046)", () => {
+  beforeEach(() => {
+    _resetNewsForTest();
+    localStorage.clear();
+  });
+  afterEach(() => {
+    _resetNewsForTest();
+    localStorage.clear();
+  });
+
+  it("isShadowVectorizeEnabled returns false by default", () => {
+    expect(isShadowVectorizeEnabled()).toBe(false);
+  });
+
+  it("setShadowVectorize(true) enables shadow mode and persists to localStorage", () => {
+    setShadowVectorize(true);
+    expect(isShadowVectorizeEnabled()).toBe(true);
+    expect(localStorage.getItem("fdb_shadow_vectorize")).toBe("1");
+  });
+
+  it("setShadowVectorize(false) disables shadow mode and removes localStorage key", () => {
+    setShadowVectorize(true);
+    setShadowVectorize(false);
+    expect(isShadowVectorizeEnabled()).toBe(false);
+    expect(localStorage.getItem("fdb_shadow_vectorize")).toBeNull();
+  });
+
+  it("loadShadowVectorizeFlag reads enabled state from localStorage", () => {
+    localStorage.setItem("fdb_shadow_vectorize", "1");
+    loadShadowVectorizeFlag();
+    expect(isShadowVectorizeEnabled()).toBe(true);
+  });
+
+  it("loadShadowVectorizeFlag sets disabled when key absent", () => {
+    loadShadowVectorizeFlag();
+    expect(isShadowVectorizeEnabled()).toBe(false);
+  });
+
+  it("recordShadowVectorizeComparison does nothing when shadow mode is disabled", () => {
+    recordShadowVectorizeComparison(10, 8);
+    expect(getShadowVectorizeLog()).toHaveLength(0);
+  });
+
+  it("recordShadowVectorizeComparison appends entry when shadow mode is enabled", () => {
+    setShadowVectorize(true);
+    recordShadowVectorizeComparison(10, 8);
+    const log = getShadowVectorizeLog();
+    expect(log).toHaveLength(1);
+    expect(log[0]?.simhashDeduped).toBe(10);
+    expect(log[0]?.vectorizeCandidates).toBe(8);
+    expect(log[0]?.overlap).toBe(8);
+  });
+
+  it("getShadowVectorizeLog is capped at 50 entries", () => {
+    setShadowVectorize(true);
+    for (let i = 0; i < 60; i++) {
+      recordShadowVectorizeComparison(i, i);
+    }
+    expect(getShadowVectorizeLog().length).toBeLessThanOrEqual(50);
+  });
+
+  it("getShadowVectorizeLog overlap is always min(simhash, vectorize)", () => {
+    setShadowVectorize(true);
+    recordShadowVectorizeComparison(5, 3);
+    recordShadowVectorizeComparison(2, 7);
+    const log = getShadowVectorizeLog();
+    expect(log[0]?.overlap).toBe(3);
+    expect(log[1]?.overlap).toBe(2);
   });
 });
