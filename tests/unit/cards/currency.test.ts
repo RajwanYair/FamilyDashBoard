@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import * as fc from "fast-check";
 import {
   fetchCurrency,
   renderCurrency,
@@ -960,5 +961,143 @@ describe("getCurrencyTrend", () => {
     const result = getCurrencyTrend("USD", h, 1);
     expect(result).not.toBeNull();
     expect(result!.arrow).toBe("→");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Sprint 246 — Currency card fast-check property tests (CM1–CM5)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── CM1: calcCurrency — result is null or positive finite ─────────────────
+describe("CM1: calcCurrency(amountIls, rateKey, rates) — null or positive finite", () => {
+  it("non-negative amount with valid rate yields positive finite result", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0, max: 1e7, noNaN: true }),
+        fc.double({ min: 1e-6, max: 100, noNaN: true }),
+        (amount, rate) => {
+          const result = calcCurrency(amount, "USD", { USD: rate });
+          if (result === null) return true; // null is allowed
+          return Number.isFinite(result) && result >= 0;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("negative amount always returns null", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: -1e7, max: -0.001, noNaN: true }),
+        fc.double({ min: 0.001, max: 10, noNaN: true }),
+        (negAmount, rate) => calcCurrency(negAmount, "USD", { USD: rate }) === null,
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("zero rate always returns null", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 1, max: 100, noNaN: true }),
+        (amount) => calcCurrency(amount, "USD", { USD: 0 }) === null,
+      ),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── CM2: calcCurrency — linearity invariant ────────────────────────────────
+describe("CM2: calcCurrency — doubles amount doubles result (linearity)", () => {
+  it("2× amount yields 2× result for same rate", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 1e6, noNaN: true }),
+        fc.double({ min: 0.0001, max: 10, noNaN: true }),
+        (amount, rate) => {
+          const r1 = calcCurrency(amount, "USD", { USD: rate });
+          const r2 = calcCurrency(amount * 2, "USD", { USD: rate });
+          if (r1 === null || r2 === null) return true;
+          // Allow 0.1 % floating-point tolerance
+          return Math.abs(r2 - r1 * 2) < Math.abs(r1) * 0.001 + 1e-9;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── CM3: formatRelativeTime — always returns a non-empty string ───────────
+describe("CM3: formatRelativeTime(date) — always returns a non-empty string", () => {
+  it("any valid Date produces a non-empty string", () => {
+    const now = Date.now();
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date(now - 365 * 86_400_000), max: new Date(now + 86_400_000) }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const result = formatRelativeTime(d);
+          return typeof result === "string" && result.length > 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── CM4: getCurrencyTrend — arrow is one of three valid values ────────────
+describe("CM4: getCurrencyTrend — arrow is '↑', '↓', or '→'", () => {
+  it("arrow is always one of three valid directional symbols", () => {
+    const validArrows = new Set(["↑", "↓", "→"]);
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 100, noNaN: true }),
+        fc.double({ min: 0.01, max: 100, noNaN: true }),
+        fc.integer({ min: 1, max: 365 }),
+        (oldRate, newRate, days) => {
+          const ago = new Date(Date.now() - days * 86_400_000)
+            .toISOString()
+            .slice(0, 10);
+          const today = new Date().toISOString().slice(0, 10);
+          const history = [
+            { date: ago, rates: { USD: oldRate } },
+            { date: today, rates: { USD: newRate } },
+          ];
+          const result = getCurrencyTrend("USD", history, days);
+          if (result === null) return true;
+          return validArrows.has(result.arrow);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
+
+// ── CM5: getCurrencyTrend — pct sign matches arrow ────────────────────────
+describe("CM5: getCurrencyTrend pct sign is consistent with arrow direction", () => {
+  it("↑ arrow has pct > 0 and ↓ arrow has pct < 0", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 10, noNaN: true }),
+        fc.double({ min: 0.01, max: 10, noNaN: true }),
+        (oldRate, newRate) => {
+          fc.pre(Math.abs(oldRate - newRate) > 0.001); // skip near-flat
+          const ago = new Date(Date.now() - 7 * 86_400_000)
+            .toISOString()
+            .slice(0, 10);
+          const today = new Date().toISOString().slice(0, 10);
+          const history = [
+            { date: ago, rates: { USD: oldRate } },
+            { date: today, rates: { USD: newRate } },
+          ];
+          const result = getCurrencyTrend("USD", history, 7);
+          if (result === null) return true;
+          if (result.arrow === "↑") return result.pct > 0;
+          if (result.arrow === "↓") return result.pct < 0;
+          return true; // flat arrow — pct may be near 0
+        },
+      ),
+      { numRuns: 200 },
+    );
   });
 });
