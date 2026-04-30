@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.25.0 (Sprint 229) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
+> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.26.0 (Sprint 242) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
 >
-> **Inventory**: 5509 tests / 168 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 47 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5546 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 48 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 
@@ -15,7 +15,7 @@ After 169 sprints across v10 → v13.18 the project sits on a stable, opinionate
 - **Frontend**: vanilla TS strict + in-house Signals (ADR-038), 0 client deps, ~88 KB gzip, CSS `@layer`/tokens/`@scope`/`light-dark()`/`@property`/Anchor Positioning/View Transitions L1.
 - **Backend**: single Cloudflare Worker (Hono + Valibot), KV stale cache, D1 telemetry, DO rate-limit, Analytics Engine, ≤ 75 KB gzip.
 - **Storage**: 4-tier client cache (Map → localStorage → IndexedDB ≤ 50 MB LRU → SW cache 7 origins). Zero user DB. Zero auth.
-- **Quality**: 5155 unit tests + Playwright + axe + 45 VR baselines + LHCI + Stryker mutation + fast-check + SLSA L2 + SBOM-diff + container-query audit + Mermaid validator + reading-level gate.
+- **Quality**: 5546 unit tests + Playwright + axe + 45 VR baselines + LHCI + Stryker mutation + fast-check + SLSA L2 + SBOM-diff + container-query audit + Mermaid validator + reading-level gate.
 
 This document **reopens every one of those decisions** at three levels:
 
@@ -737,9 +737,13 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] VR baselines 45 → 81 (Sprint 223).
 - [x] Stryker scope extended: event-bus + keyboard + links (Sprint 226).
 - [x] Coverage ratchet 92.3/84.0/91.5/93.7 (Sprint 225).
-- [ ] LHCI `error 0.85` → `error 0.97` *(step 4/5 done: 0.95 at v13.25.0 — Sprint 224; final 0.97 at v14.2)*.
+- [x] Coverage ratchet 92.7/84.2/91.5/94.0 (Sprint 235).
+- [x] fast-check worker-client invariants P1-P13 (Sprint 233).
+- [x] fast-check IDB property tests IDB1-IDB8 (Sprint 234).
+- [x] Card pure-function property tests CP1-CP6 (Sprint 240).
+- [x] LHCI `error 0.85` → `error 0.97` *(step 5/5: 0.97 at v13.26.0 — Sprint 236)*.
 
-**Exit**: oxlint green; CI deltas live; coverage ≥ 92.3/84.0/91.5/93.7; LHCI perf `error ≥ 0.97`.
+**Exit**: oxlint green; CI deltas live; coverage ≥ 92.7/84.2/91.5/94.0; LHCI perf `error ≥ 0.97`.
 
 ### 6.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals (v14.0, Q1–Q2 2027)
 
@@ -781,12 +785,12 @@ X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline 
 - [x] Sibling repo audit (Sprint 168).
 - [ ] BudgetManager / CrossTideWeb / Wedding on shared presets.
 - [x] Shared `tooling/vitest/happy-dom.mjs` (Sprint 221).
-- [ ] Cross-project release gate.
+- [x] Cross-project release gate (Sprint 239).
 
 ### 6.8 V14-SECURITY-L3 — SLSA L3 + supply chain (v14.2, Q3 2027)
 
 - [x] Hermetic build: `actions/checkout` + `actions/setup-node` SHA-pinned (Sprint 222).
-- [ ] Hermetic build: npm `--ignore-scripts` (pending).
+- [x] Hermetic build: npm `--ignore-scripts` gate + deploy-worker/preview-deploy fixed (Sprint 237).
 - [ ] Sigstore/cosign signature on `dist.zip` + `worker.js`.
 - [ ] Third-party rebuilder verifies byte-identical output.
 - [x] npm + GitHub Actions provenance (SLSA L2 `attest-build-provenance` in release.yml).
