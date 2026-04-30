@@ -807,7 +807,7 @@ Replace per-card sync indicators with a single coordinated bus:
 
 Today: `T D A S N P B H ?` + arrows + numbers. Risk: model bloat per card.
 
-**Item X4** · P1 · S · Mid · v14.0 — Centralised `keymap.ts` with help dialog auto-generated from registry; cards register their own bindings instead of patching globally.
+**Item X4** · P1 · S · Mid · v14.0 — Centralised `keymap.ts` with help dialog auto-generated from registry; cards register their own bindings instead of patching globally. ✅ Sprint 291 — `src/core/keymap.ts` added (`buildHelpRows()`, `sortKeyEntries()`); `_toggleHelp` in `main.ts` now populates `#help-dynamic-keys` from registry; 18 new tests.
 
 ### 4.5 Shared "card-state" lifecycle
 
