@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.30.0 (Sprint 296) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARD-SETTINGS.
+> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.30.0 (Sprint 296) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
 >
 > **Inventory**: 5872 tests / 172 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 52 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
@@ -941,6 +941,8 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] Documentation freshness + fast-check EP1–EP5 (Sprint 275).
 - [x] V14-CARD-SETTINGS: configSchema for all 12 cards — weather/video-news/hebrew-cal/system-info/countdown/alerts/currency/calendar/motivation/tasks/stocks/news (Sprints 277–289).
 - [x] Coverage ratchet 93.0/84.6/91.8/94.3 → 93.0/84.6/92.0/94.5 (Sprint 290 fast-check boost).
+- [x] X4 keymap.ts centralised utilities + 18 unit tests + 85 fast-check configSchema property tests (Sprints 291–293).
+- [x] ROADMAP V14-CROSS-CARD exit: all X1–X10 shipped; V14-CARD-SETTINGS fully complete (Sprint 297).
 
 **Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/92.0/94.5; LHCI perf `error ≥ 0.97`.
 
@@ -965,7 +967,7 @@ Per-card backlog from §3. **Exit**: each card matches or exceeds its best-in-cl
 
 X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline banner shipped; semantic linking opt-in; AI daily synthesis tile available.
 
-**✅ X1 (Sprint 190), X2 (Sprint 173), X3 (Sprint 216), X5 (Sprint 253), X6 (Sprint 174), X7 (Sprint 200), X8 (Sprint 258), X9 (Sprint 202), X10 (Sprint 211) shipped.** X4 keymap.ts pending.
+**✅ All X1–X10 shipped.** X1 (Sprint 190), X2 (Sprint 173), X3 (Sprint 216), X4 (Sprint 291), X5 (Sprint 253), X6 (Sprint 174), X7 (Sprint 200), X8 (Sprint 258), X9 (Sprint 202), X10 (Sprint 211).
 
 ### 6.5 V14-CONTINUITY — Cross-device without auth (v14.x, gated 3+ requests)
 
