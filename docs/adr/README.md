@@ -58,3 +58,5 @@
 | [ADR-051](ADR-051-fdbcard-lifecycle-hooks.md)                                             | FdbCard Lifecycle Hook Protocol (onThemeChange + onAlert)       | 2026-05-28 | Accepted                                           |
 | [ADR-052](ADR-052-shadow-vectorize-client-plan.md)                                        | Shadow-Vectorize 30-Day Client-Side Observation Plan            | 2026-05-28 | Accepted (Active)                                  |
 | [ADR-053](ADR-053-card-config-schema-architecture.md)                                     | Card configSchema Architecture                                  | 2026-04-30 | Accepted                                           |
+| [ADR-054](ADR-054-property-testing-scope.md)                                              | Property-Based Testing Scope Map                                | 2026-05-03 | Accepted                                           |
+| [ADR-055](ADR-055-property-testing-scope-expansion.md)                                    | Property-Based Testing Scope Expansion (Sprints 317–323)        | 2026-05-15 | Accepted                                           |
