@@ -32,6 +32,7 @@ import {
   getYahrzeits,
   getUpcomingYahrzeits,
   todayHebrewMD,
+  hebrewCalConfigSchema,
 } from "@/cards/hebrew-cal/hebrew-cal";
 import { _idbClearFallback } from "@/core/idb-store";
 import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
@@ -2647,5 +2648,40 @@ describe("HC6: nextHebrewYearGregorianApprox — always returns a 4-digit Gregor
       ),
       { numRuns: 200 },
     );
+  });
+});
+
+// ── Sprint 279 / CS-H1: hebrew-cal 6 tile-visibility toggles ─────────────
+describe("HebrewCal configSchema — CS-H1 (Sprint 279)", () => {
+  const BOOLEAN_KEYS = [
+    "hcalShowDafYomi",
+    "hcalShowOmer",
+    "hcalShowCandleLight",
+    "hcalShowHaftarah",
+    "hcalShowRoshChodesh",
+  ] as const;
+
+  it("configSchema has 7 fields total after CS-H1", () => {
+    expect(hebrewCalConfigSchema.length).toBe(7);
+  });
+
+  it.each(BOOLEAN_KEYS)("boolean field %s is defined with defaultValue true", (key) => {
+    const field = hebrewCalConfigSchema.find((f) => f.key === key);
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
+  });
+
+  it("hcalZmanimMask is a select with 3 options", () => {
+    const field = hebrewCalConfigSchema.find((f) => f.key === "hcalZmanimMask");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("select");
+    expect(field?.options?.length).toBe(3);
+    expect(field?.defaultValue).toBe("all");
+  });
+
+  it("all tile-visibility fields are in group תצוגה", () => {
+    const displayFields = hebrewCalConfigSchema.filter((f) => f.group === "תצוגה");
+    expect(displayFields.length).toBe(6);
   });
 });
