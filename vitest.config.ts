@@ -138,6 +138,12 @@ export default defineConfig({
         //   Funcs +0.02, Lines +0.02 — too tight for any safe ratchet.
         //   Thresholds held at v13.30.0 values. Next ratchet requires targeted
         //   branch/function tests on uncovered paths (e.g. service-worker, diag-overlay).
+        // Sprint 311 (coverage baseline — Sprints 307-310 fast-check property tests):
+        //   +23 tests: HP1-HP6 (sparklineSvg), SYP1-SYP6 (sync backoff),
+        //   DP1-DP5 (diag ring-buffer), FP1-FP5 (fetch locks+network).
+        //   Actuals: 93.17/84.73/92.02/94.55. Margins: Stmts +0.17, Branches +0.13,
+        //   Funcs +0.02, Lines +0.05 — still too tight for safe ratchet.
+        //   Thresholds held; next ratchet target: 93.1/84.7/92.0/94.5 when buffer ≥ 0.2%.
         statements: 93.0,
         branches: 84.6,
         functions: 92.0,
