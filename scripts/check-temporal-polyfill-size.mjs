@@ -8,6 +8,10 @@
  * Checks the installed (or npm-resolved) size of @js-temporal/polyfill
  * and reports whether the adoption gate is met.
  *
+ * Sprint 227 (v13.25.0): reviewed and confirmed production-ready.
+ * Added Bundlephobia fallback for CI environments without a local install.
+ * Gate threshold: GATE_KB = 10 (unchanged — Roadmap CAL5).
+ *
  * Exit codes:
  *   0 — polyfill ≤ GATE_KB gzip   → gate OPEN  (safe to adopt)
  *   1 — polyfill > GATE_KB gzip   → gate CLOSED (too large, skip)
