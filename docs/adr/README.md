@@ -51,3 +51,4 @@
 | [ADR-045](ADR-045-document-pip-video-news.md)                                             | Document Picture-in-Picture for video-news (Gated)              | 2026-04-29 | Accepted (Plan — gated on 3 user requests)         |
 | [ADR-046](ADR-046-vectorize-shadow-run.md)                                                | Vectorize Shadow Run Before Retiring SimHash                    | 2026-04-30 | Accepted (Plan)                                    |
 | [ADR-047](ADR-047-do-hibernatable-ws.md)                                                  | DO Hibernatable WebSockets for Stocks Live + Alerts SSE         | 2026-04-30 | Accepted (Plan — gated on A3 and S1 Roadmap items) |
+| [ADR-048](ADR-048-worker-otel-opt-in.md)                                                  | OpenTelemetry Worker Opt-in Plan                                | —          | Proposed                                           |
