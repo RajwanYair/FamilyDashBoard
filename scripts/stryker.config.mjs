@@ -8,7 +8,7 @@
  *   npm install -D @stryker-mutator/core @stryker-mutator/vitest-runner
  *   (from MyScripts/ directory — never add devDeps to FamilyDashBoard/package.json)
  *
- * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 + Sprint 126 + Sprint 226 additions):
+ * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 + Sprint 126 + Sprint 226 + Sprint 314 additions):
  *   - simhash.ts            : mutation score ≥ 85%
  *   - d1-reports.ts         : mutation score ≥ 75%
  *   - analytics.ts          : mutation score ≥ 80%
@@ -24,10 +24,14 @@
  *   - event-bus.ts          : mutation score ≥ 80%  (Sprint 226 — pub/sub logic)
  *   - keyboard.ts           : mutation score ≥ 80%  (Sprint 226 — keyboard shortcut dispatch)
  *   - links.ts              : mutation score ≥ 80%  (Sprint 226 — semantic link registry)
+ *   - history.ts            : mutation score ≥ 80%  (Sprint 314 — sparklineSvg property-tested HP1-HP6)
+ *   - sync.ts               : mutation score ≥ 80%  (Sprint 314 — backoff property-tested SYP1-SYP6)
+ *   - fetch.ts              : mutation score ≥ 80%  (Sprint 314 — lock primitives property-tested FP1-FP5)
  *
  * Sprint 126 (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
  * Sprint 226: extended scope to event-bus, keyboard, links (cross-card primitives).
+ * Sprint 314: extended scope to history, sync, fetch (property-tested in Sprints 307-310).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -60,6 +64,10 @@ export default {
     "src/core/event-bus.ts",
     "src/ui/keyboard.ts",
     "src/core/links.ts",
+    // Sprint 314: property-tested pure algorithms — sparklineSvg, backoff, lock primitives
+    "src/core/history.ts",
+    "src/core/sync.ts",
+    "src/core/fetch.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
