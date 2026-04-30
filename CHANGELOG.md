@@ -9,6 +9,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.28.0] — 2026-05-06
+
+> **5658 tests / 170 suites / 0 failures**
+
+### Added
+
+- **Sprint 253 (X5)**: `FdbCard` lifecycle hooks — `onThemeChange(theme: ThemeName)` and `onAlert(event: AlertEvent | null)` added to base class `src/core/fdb-card.ts`; wired via `effect()` dispose pattern to `globalThemeChannel` / `globalAlertChannel`; `CardRuntime` interface updated with optional hook signatures. 9 new unit tests.
+- **Sprint 254**: Weather card fast-check property tests WP1–WP6 — `toDisplayTemp` ends with °C/°F, `deg2arrow` returns 8 known arrows, `aqiLabel` returns known class, `humidityLabel` non-empty, `precipSummaryLabel` deterministic, `computeGoldenHour` returns HH:MM or '--:--'.
+- **Sprint 255**: News card fast-check property tests NP1–NP5 — `sanitizeNewsTitle` ≤ maxLen, `newsSourceDomain` strips protocol, `filterBySearch` is subset and idempotent, `getBookmarkKey` deterministic, `ageFreshness` returns valid class.
+- **Sprint 256**: Tasks card fast-check property tests TP1–TP5 — `parseTaskPriority` always valid priority enum + cleanText is string, `taskPriorityIcon` known emoji or empty, `recurrenceResetKey` format per recurrence type, `taskCompletionRatio` pct in [0,100] with doneMap, `isOverdue`/`isDueToday`/`isDueThisWeek` boolean guards.
+- **Sprint 257**: Calendar card fast-check property tests CP1–CP5 — `detectCalCategory` always known category, `calDaysUntilLabel` string/מחר/empty past, `findConflicts` subset of events/all-day excluded, `groupEventsByDay` always 21 buckets/no duplicates, `parseICS` always array/empty for no VEVENT.
+- **Sprint 258 (X8)**: Dashboard snapshot export — `Ctrl+Shift+S` keyboard shortcut wired in `main.ts`; calls `downloadSnapshot()` from `src/core/snapshot.ts`; shows toast confirmation. `buildSnapshot()` captures config + localStorage summary + diagLog.
+- **Sprint 259**: Countdown card fast-check property tests CDP1–CDP4 — `urgencyClass` known CSS class, `daysLabel` non-empty string, `computeProgress` null or [0,1], `advanceAnnualDate` format-preserved and future-dated.
+- **Sprint 260**: System-info card fast-check property tests SIP1–SIP4 — `formatBytes` always has unit suffix, `gpuShortName` ≤ 30 chars, `encodeConnType` 0–4 range, RTT ring buffer capped at 10 / ignores non-positive values.
+
+---
+
 ## [13.27.0] — 2026-04-30
 
 > **5581 tests / 170 suites / 0 failures**
