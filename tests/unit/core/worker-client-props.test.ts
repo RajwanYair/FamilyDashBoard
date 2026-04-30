@@ -186,4 +186,160 @@ describe("worker-client — fast-check property tests", () => {
       { numRuns: 15 },
     );
   });
+
+  // ── Sprint 233: WorkerEnvelope structural invariants ──────────────────────
+
+  // P8: WorkerEnvelope.ts is always a number in the returned object
+  it("P8: WorkerEnvelope.ts is always a finite number (arbitrary timestamp values)", async () => {
+    const { wc } = await import("@/core/worker-client");
+    await fc.assert(
+      fc.asyncProperty(
+        fc.integer({ min: 0, max: Number.MAX_SAFE_INTEGER }),
+        async (ts) => {
+          fetchSpy.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: () =>
+              Promise.resolve({ data: {}, source: "worker", stale: false, ts }),
+          });
+          const result = await wc.health();
+          expect(typeof result.ts).toBe("number");
+          expect(Number.isFinite(result.ts)).toBe(true);
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+
+  // P9: WorkerEnvelope.stale is always a boolean (never coerced)
+  it("P9: WorkerEnvelope.stale is always strictly boolean (arbitrary boolean values)", async () => {
+    const { wc } = await import("@/core/worker-client");
+    await fc.assert(
+      fc.asyncProperty(fc.boolean(), async (stale) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({ data: { ok: true, status: "ok", ts: 0 }, source: "kv", stale, ts: 0 }),
+        });
+        const result = await wc.health();
+        expect(typeof result.stale).toBe("boolean");
+        expect(result.stale).toBe(stale);
+      }),
+      { numRuns: 20 },
+    );
+  });
+
+  // P10: wc.news() always includes the feed URL as a URL-safe query param
+  it("P10: wc.news() always encodes the feed URL as the 'url' query param", async () => {
+    const { wc } = await import("@/core/worker-client");
+    const urlArb = fc
+      .tuple(
+        fc.constantFrom("https", "http"),
+        fc.stringMatching(/^[a-z0-9-]{3,20}$/),
+        fc.stringMatching(/^[a-z0-9/-]{1,30}$/),
+      )
+      .map(([proto, host, path]) => `${proto}://${host}.example.com/${path}`);
+
+    await fc.assert(
+      fc.asyncProperty(urlArb, async (feedUrl) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              data: { items: [], count: 0, sources: 1, deduped: 0 },
+              source: "kv",
+              stale: false,
+              ts: 0,
+            }),
+        });
+        await wc.news({ url: feedUrl });
+        const rawUrl: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(rawUrl);
+        expect(parsed.searchParams.get("url")).toBe(feedUrl);
+      }),
+      { numRuns: 25 },
+    );
+  });
+
+  // P11: wc.calendar() always includes the url param for any valid ICS URL
+  it("P11: wc.calendar() preserves arbitrary calendar URL as the 'url' query param", async () => {
+    const { wc } = await import("@/core/worker-client");
+    const icsUrlArb = fc
+      .stringMatching(/^[a-z]{3,8}$/)
+      .map((name) => `https://calendar.google.com/calendar/ical/${name}/public/basic.ics`);
+
+    await fc.assert(
+      fc.asyncProperty(icsUrlArb, async (calUrl) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({ data: {}, source: "kv", stale: false, ts: 0 }),
+        });
+        await wc.calendar({ url: calUrl });
+        const rawUrl: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(rawUrl);
+        expect(parsed.searchParams.get("url")).toBe(calUrl);
+      }),
+      { numRuns: 20 },
+    );
+  });
+
+  // P12: WorkerEnvelope.source is always a non-empty string
+  it("P12: WorkerEnvelope.source is always a non-empty string for any successful response", async () => {
+    const { wc } = await import("@/core/worker-client");
+    await fc.assert(
+      fc.asyncProperty(
+        fc.stringMatching(/^[a-z][a-z0-9-]{0,19}$/),
+        async (source) => {
+          fetchSpy.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: () =>
+              Promise.resolve({ data: [], source, stale: false, ts: Date.now() }),
+          });
+          const result = await wc.alerts();
+          expect(typeof result.source).toBe("string");
+          expect(result.source.length).toBeGreaterThan(0);
+          expect(result.source).toBe(source);
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+
+  // P13: wc.sefariaText() always includes ref verbatim in URL
+  it("P13: wc.sefariaText() always includes the ref param verbatim in the URL", async () => {
+    const { wc } = await import("@/core/worker-client");
+    const refArb = fc
+      .tuple(
+        fc.constantFrom("Berakhot", "Shabbat", "Genesis", "Psalms"),
+        fc.integer({ min: 1, max: 100 }),
+        fc.integer({ min: 1, max: 15 }),
+      )
+      .map(([book, chap, verse]) => `${book}.${String(chap)}.${String(verse)}`);
+
+    await fc.assert(
+      fc.asyncProperty(refArb, async (ref) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              data: { ref, heRef: ref, text: "", he: "", book: "" },
+              source: "sefaria",
+              stale: false,
+              ts: 0,
+            }),
+        });
+        await wc.sefariaText({ ref });
+        const rawUrl: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(rawUrl);
+        expect(parsed.searchParams.get("ref")).toBe(ref);
+      }),
+      { numRuns: 20 },
+    );
+  });
 });
