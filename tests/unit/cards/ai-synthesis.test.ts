@@ -244,3 +244,53 @@ describe("AI Synthesis — loadAiSynthesisData branches (Sprint 225)", () => {
     expect(synthText.textContent).toBeDefined();
   });
 });
+
+// ── Sprint 273: null DOM element branches (renderSynthesis/renderDisabled/renderError) ─
+
+describe("AI Synthesis — null DOM branches (Sprint 273)", () => {
+  let initAiSynthesisCard: () => void;
+  let destroyAiSynthesisCard: () => void;
+  let _resetAiSynthesisForTest: () => void;
+  const _cfg273 = { synthesisEnabled: false };
+
+  beforeEach(async () => {
+    _cfg273.synthesisEnabled = false;
+    cClear();
+    vi.stubGlobal("__APP_VERSION__", "13.29.0");
+    vi.resetModules();
+    vi.doMock("@/core/config", () => ({ loadConfig: () => ({ ..._cfg273 }) }));
+    // Do NOT append DOM elements — exercises the null-element guard branches
+    const mod = await import("@/cards/ai-synthesis/ai-synthesis");
+    initAiSynthesisCard = mod.initAiSynthesisCard;
+    destroyAiSynthesisCard = mod.destroyAiSynthesisCard;
+    _resetAiSynthesisForTest = mod._resetAiSynthesisForTest;
+    _resetAiSynthesisForTest();
+  });
+
+  afterEach(() => {
+    destroyAiSynthesisCard();
+    vi.restoreAllMocks();
+    vi.doUnmock("@/core/config");
+    cClear();
+  });
+
+  it("renderDisabled with null _elText/_elMeta does not throw", async () => {
+    // synthesisEnabled=false → renderDisabled() → both elements null → null-guards taken
+    expect(() => initAiSynthesisCard()).not.toThrow();
+    await new Promise((r) => setTimeout(r, 0));
+  });
+
+  it("renderSynthesis with null _elText/_elMeta does not throw on cache hit", async () => {
+    _cfg273.synthesisEnabled = true;
+    cSet("ai:synthesis", { synthesis: "cached text" });
+    expect(() => initAiSynthesisCard()).not.toThrow();
+    await new Promise((r) => setTimeout(r, 0));
+  });
+
+  it("renderError with null _elText does not throw on fetch failure", async () => {
+    _cfg273.synthesisEnabled = true;
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    expect(() => initAiSynthesisCard()).not.toThrow();
+    await new Promise((r) => setTimeout(r, 30));
+  });
+});

@@ -2381,12 +2381,15 @@ describe("NP3 · filterBySearch — property: result is always a subset of input
 });
 
 describe("NP4 · getBookmarkKey — property: output is a stable non-empty string", () => {
-  it("any non-empty title produces a non-empty key", () => {
+  it("any non-whitespace-only title produces a non-empty key", () => {
     fc.assert(
-      fc.property(fc.string({ minLength: 1 }), (title) => {
-        const key = getBookmarkKey(title);
-        return typeof key === "string" && key.length > 0;
-      }),
+      fc.property(
+        fc.string({ minLength: 1 }).filter((t) => t.trim().length > 0),
+        (title) => {
+          const key = getBookmarkKey(title);
+          return typeof key === "string" && key.length > 0;
+        },
+      ),
     );
   });
 

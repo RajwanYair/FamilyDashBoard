@@ -120,10 +120,14 @@ export default defineConfig({
         //   UP1-UP5 (utils), SV1-SV9 (news shadow-vectorize). +42 new tests.
         //   Actuals: 93.00/84.61/91.89/94.36.
         //   Ratchet: branches 84.5→84.6, functions 91.8→91.8 (no change), others unchanged.
+        // Sprint 273 (coverage ratchet): added null-DOM branch tests for ai-synthesis (3 tests),
+        //   snapshot localStorage-inaccessible + downloadSnapshot (2), first-run-tour cancel/throw (2),
+        //   fixed NP4 getBookmarkKey whitespace property. ai-synthesis branches 82.35→97.05%.
+        //   Actuals: 93.13/84.61/92.01/94.52. Ratchet: functions 91.8→92.0, lines 94.3→94.5.
         statements: 93.0,
         branches: 84.6,
-        functions: 91.8,
-        lines: 94.3,
+        functions: 92.0,
+        lines: 94.5,
       },
     },
   },

@@ -97,6 +97,22 @@ describe("first-run-tour — initTour()", () => {
     dialog.remove();
     expect(() => initTour()).not.toThrow();
   });
+
+  it("closes dialog when native cancel (Escape) event fires", () => {
+    initTour();
+    const evt = new Event("cancel", { bubbles: false, cancelable: true });
+    dialog.dispatchEvent(evt);
+    expect(dialog.close).toHaveBeenCalledOnce();
+    expect(localStorage.getItem("dash_tour_seen")).toBe("1");
+  });
+
+  it("returns early when localStorage.getItem throws", () => {
+    vi.spyOn(localStorage, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    expect(() => initTour()).not.toThrow();
+    expect(dialog.showModal).not.toHaveBeenCalled();
+  });
 });
 
 describe("first-run-tour — _resetTour()", () => {

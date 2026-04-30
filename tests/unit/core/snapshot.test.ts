@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { buildSnapshot } from "@/core/snapshot";
+import { buildSnapshot, downloadSnapshot } from "@/core/snapshot";
 
 describe("buildSnapshot (Sprint 201 / X8)", () => {
   beforeEach(() => {
@@ -55,5 +55,45 @@ describe("buildSnapshot (Sprint 201 / X8)", () => {
   it("diagLog is an array of strings", () => {
     const snap = buildSnapshot();
     expect(Array.isArray(snap.diagLog)).toBe(true);
+  });
+
+  it("handles localStorage inaccessible (catch branch)", () => {
+    localStorage.setItem("dash_test_error", "v");
+    vi.spyOn(localStorage, "key").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    const snap = buildSnapshot();
+    expect(snap.localStorageSummary["_error"]).toBe("localStorage inaccessible");
+  });
+});
+
+describe("downloadSnapshot (Sprint 201 / X8)", () => {
+  beforeEach(() => {
+    vi.stubGlobal("__APP_VERSION__", "13.29.0");
+    vi.stubGlobal("__BUILD_TIME__", "2025-01-01T00:00:00.000Z");
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+  });
+
+  it("triggers a download by appending and clicking an anchor", () => {
+    const anchor = document.createElement("a");
+    const clickSpy = vi.spyOn(anchor, "click").mockImplementation(() => {});
+    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag === "a") return anchor;
+      return document.createElement.call(document, tag);
+    });
+    vi.stubGlobal("URL", {
+      createObjectURL: vi.fn(() => "blob:mock"),
+      revokeObjectURL: vi.fn(),
+    });
+
+    expect(() => downloadSnapshot()).not.toThrow();
+    expect(clickSpy).toHaveBeenCalledOnce();
+    expect(anchor.download).toMatch(/^fdb-snapshot-/);
+    expect(anchor.href).toContain("blob:mock");
   });
 });
