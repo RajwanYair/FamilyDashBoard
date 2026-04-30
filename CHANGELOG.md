@@ -9,6 +9,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.26.0] — 2026-04-30
+
+> **5546 tests / 170 suites / 0 failures**
+
+### Added
+
+- **Sprint 233**: fast-check worker-client invariants P8–P13 — 6 new property tests: `WorkerEnvelope.ts` finite, `.stale` boolean, `wc.news()` feed URL encoding, `wc.calendar()` URL preservation, `.source` non-empty, `wc.sefariaText()` ref verbatim (total 13 worker-client props).
+- **Sprint 234**: fast-check IDB property tests IDB1–IDB8 — new `tests/unit/core/idb-store-props.test.ts`: round-trip, null-on-miss, delete, namespace isolation, idempotent write, key independence, delete non-existent, store-level isolation.
+- **Sprint 235**: Coverage ratchet — +8 countdown `tickSecondary`/`initCountdownCard` DOM tests (progress bar branches, Yom Tov + ICS auto-populate) + 3 ai-synthesis tests (stale cache `renderError` line 101, visibilitychange handler line 149). Thresholds raised to 92.7/84.2/91.5/94.0.
+- **Sprint 236**: LHCI performance ratchet — final step 5/5: `categories:performance` raised 0.95 → 0.97 in `.lighthouserc.json` (ADR-042 complete).
+- **Sprint 237**: Hermetic build `--ignore-scripts` gate — `scripts/check-npm-ignore-scripts.mjs` scans all workflow files; fixed `deploy-worker.yml` and `preview-deploy.yml` to use `npm ci --ignore-scripts` (V14-SECURITY-L3).
+- **Sprint 238**: ADR-048 — OpenTelemetry Worker opt-in plan: `OTEL_ENABLED` env-flag, `/api/telemetry` OTLP-forward route, Grafana free tier target, gate condition ≥100 K req/day. ADR index regenerated (48 entries).
+- **Sprint 239**: Cross-project release gate `scripts/check-cross-project-gate.mjs` — verifies 9 shared tooling files haven’t drifted (±50 B tolerance), prints V14-HARMONISE sibling adoption advisory (BudgetManager, CrossTideWeb, Wedding). Always exits 0 (informational).
+- **Sprint 240**: Card pure-function fast-check property tests CP1–CP6 — new `tests/unit/cards/card-pure-props.test.ts`: `ageFreshness` bucket invariant, `recurrenceResetKey` idempotency + yearly format, `portfolioChange` null-or-finite, `fmtPrice` non-empty, `advanceAnnualDate` future-date, `priceInRange52w` clamped.
+- **Sprint 241**: ROADMAP + docs refresh — header updated (5546 tests, 170 suites, 48 ADRs), Sprint 233–240 items checked, coverage threshold note updated, README version badge updated.
+
+---
+
 ## [13.25.0] — 2026-04-30
 
 > **5509 tests / 168 suites / 0 failures**
