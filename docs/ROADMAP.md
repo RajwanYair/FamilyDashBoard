@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.29.0 (Sprint 274) · **In-progress**: v13.30.0 (Sprint 276) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD, V14-CARD-SETTINGS.
+> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.30.0 (Sprint 296) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARD-SETTINGS.
 >
-> **Inventory**: 5701 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 52 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5872 tests / 172 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 52 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 

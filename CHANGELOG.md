@@ -7,15 +7,37 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased]
 
-> **5701 tests / 170 suites / 0 failures**
+---
+
+## [13.30.0] — 2026-04-30
+
+> **5872 tests / 172 suites / 0 failures** (commit `6a55862`)
 
 ### Added
 
-- **Sprint 272**: v13.29.0 release — tag `v13.29.0` pushed, GitHub release published with CHANGELOG entry for Sprints 263–271.
-- **Sprint 273**: Tooling modernisation — CI node upgraded to 24, TypeScript `lib` bumped to `ES2024`, ADR-037 View Transitions L2 adopted (cross-document + `@starting-style` animation), stale version sweep across docs/CI/skills, extensions.json refreshed with latest VS Code extensions.
-- **Sprint 273-P10**: Coverage ratchet — branches threshold raised 84.5 → 84.6, functions 91.8 → 92.0, lines 94.3 → 94.5 based on actuals.
-- **Sprint 274**: `.github` AI customisation files — 24 files updated to v13.29.0 baseline: agents (api-integrator, dashboard-designer, quality-reviewer), copilot config, MCP guidance, hooks, templates, instructions, skills, prompts, SVG assets. Added `manage_todo_list`/`vscode_askQuestions` to agent tool allowlists; updated Copilot Code Review section; coverage thresholds corrected everywhere.
-- **Sprint 275**: Documentation freshness + fast-check EP1–EP5 — `ARCHITECTURE.md` test count updated (5405/167 → 5696/170), coverage thresholds corrected (93.5/85.7 → 93.0/84.6), duplicate file-structure entries removed, `event-bus.ts` / `links.ts` / `history.ts` / `snapshot.ts` / `today-pane.ts` / `offline-banner.ts` / `help.ts` added to file listings. `ROADMAP.md` baseline updated (v13.29.0 shipped Sprint 274, 5696/170, 52 ADRs); V14-FOUNDATIONS checklist Sprint 271–274 items checked. `event-bus.test.ts` extended with 5 fast-check property tests (EP1–EP5): globalSync always valid SyncState, broadcastSync idempotent, loading-wins priority invariant, ok-when-all-ok, broadcastAlert no-throw. Total tests: 5696→5701.
+- **Sprint 276**: Per-card settings completeness matrix in ROADMAP.md — §3.13 settings audit + §6.11 V14-CARD-SETTINGS stream; all 12 card gap analyses documented.
+- **Sprint 277**: `CS-W1` — expose `weatherUsTravelMode` boolean in weather `configSchema`.
+- **Sprint 278**: `CS-VN1` — expose 5 `VideoNewsCardConfig` typed fields in video-news `configSchema` (`autoplay`, `defaultMuted`, `loop`, `defaultChannel`, `showChannelList`).
+- **Sprint 279**: `CS-H1` — hebrew-cal `configSchema` with 6 tile-visibility toggles + zmanim bitmask field.
+- **Sprint 280**: `CS-SI1` — system-info `configSchema` with per-tile visibility booleans + refresh interval range field.
+- **Sprint 281**: `CS-CD1` — type `countdownCardRecurrence` in `DashboardConfig`; remove `as` cast in countdown card.
+- **Sprint 282**: `CS-A1` — alerts `configSchema` with `alertZone` select + history/severity/dim boolean toggles.
+- **Sprint 283**: `CS-C1` — currency `configSchema` with `currencyBase` selector + calc/trend/sparkline toggles.
+- **Sprint 284**: `CS-CAL1` — calendar `configSchema` with holidays/colors/horizon/conflicts toggles.
+- **Sprint 285**: `CS-M1` — motivation `configSchema` with categories/theme-by-day/source/lang settings.
+- **Sprint 286**: `CS-T1` — tasks `configSchema` with due-badge/recurring/tags/sort-order settings.
+- **Sprint 287**: `CS-W2` — weather `configSchema` extended with nowcast/AQI/compass/moon/precip-unit feature toggles (12 fields total).
+- **Sprint 288**: `CS-S1` — stocks `configSchema` with daily-mover pills and pre/post-market badge toggles.
+- **Sprint 289**: `CS-N1` — news `configSchema` with AI summary, dedup sensitivity, min-age, and disabled-feeds settings.
+- **Sprint 290**: ROADMAP.md — V14-CARD-SETTINGS §6.11 all 13 `[ ]` → `[x]`, V14-CARDS-DEEP/CROSS-CARD completion notes.
+- **Sprint 291**: `X4` — `src/core/keymap.ts` with `buildHelpRows()` + `sortKeyEntries()`; `_toggleHelp` in `main.ts` now populates `#help-dynamic-keys` from registry with real shortcut rows.
+- **Sprint 292**: 18 unit tests for `keymap.ts` (`buildHelpRows` + `sortKeyEntries` invariants).
+- **Sprint 293**: 85 `fast-check` property tests `CS-FC1`–`CS-FC8` validating structural invariants of all 12 card `configSchema` arrays.
+
+### Fixed
+
+- **Sprint 294**: `main.test.ts` mock used `desc` instead of `description` (wrong `KeyboardAction` field) → fixed; weather configSchema length assertion updated to `≥ 7` after `CS-W2` added fields.
+- **Sprint 295**: JS bundle budget raised `100 → 104 KB`, CSS budget raised `26 → 29 KB` to match v13.30.0 actuals (102.1 KB / 27.8 KB) after 18 sprints of configSchema + UI feature additions.
 
 ---
 
