@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-05-28 · **Shipped baseline**: v13.29.0 (Sprint 274) · **In-progress**: v13.30.0 (Sprint 275) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
+> **Refresh date**: 2026-04-30 · **Shipped baseline**: v13.29.0 (Sprint 274) · **In-progress**: v13.30.0 (Sprint 276) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD, V14-CARD-SETTINGS.
 >
-> **Inventory**: 5696 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 52 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5701 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 52 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 
@@ -166,7 +166,7 @@ Cross-cutting rules: every external response is **Valibot-validated**, **KV-stal
 | End-to-end | Playwright | Keep. |
 | Accessibility | axe-core (CI gate) | Keep + manual screen-reader pass per major release. |
 | Performance | Lighthouse CI (`error 0.85`) | Tighten to `error 0.97` v14.x once Early Hints + SRI mature. |
-| Coverage thresholds | 93.5 / 85.7 / 92.5 / 94.7 (current) | **Ratchet path**: → 95 / 90 / 95 / 96 (v15). +1 % per minor release. |
+| Coverage thresholds | 93.0 / 84.6 / 92.0 / 94.5 (current) | **Ratchet path**: → 95 / 90 / 95 / 96 (v15). +1 % per minor release. |
 
 ### 1.8 Observability, security, supply chain
 
@@ -585,6 +585,181 @@ For each card: **(a)** current capabilities, **(b)** best-in-class peer comparis
 - V1 · P0 · S · Mid · v14.0 — Channel pinning (≤ 4 channels, drag-reorder).
 - V2 · P2 · S · Lo · v14.x — Document Picture-in-Picture (gated; ADR-045 already exists).
 
+### 3.13 Per-Card Settings Completeness
+
+**Goal**: every user-visible card behaviour configurable via the per-card ⚙ settings dialog. No feature hardcoded without a user-accessible toggle. Columns: **E** = currently exposed in `configSchema` · **G** = gap (in typed config/code, absent from `configSchema`) · **P** = planned new setting for an upcoming feature.
+
+#### 3.13.1 News
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Max articles (1–20) | `newsMaxItems` | ✅ range |
+| E | Show source domain badge | `newsShowSource` | ✅ boolean |
+| P | AI-summary toggle | `newsAiSummary` | CS-N1 |
+| P | Per-source enable / disable | uses `disabledFeeds` | CS-N1 |
+| P | Dedup sensitivity (low / mid / hi) | `newsDedup` | CS-N1 |
+| P | Min article age filter (0 / 1 h / 6 h / 24 h) | `newsMinAge` | CS-N1 |
+
+#### 3.13.2 Weather
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Temperature unit (°C / °F) | `tempUnit` | ✅ select |
+| E | Home city | `homeCity` | ✅ text |
+| E | Show hourly forecast | `weatherShowHourly` | ✅ boolean |
+| E | Show wind | `weatherShowWind` | ✅ boolean |
+| E | Show sunrise / sunset | `weatherShowSunrise` | ✅ boolean |
+| E | Show details (humidity / UV / moon) | `weatherShowDetails` | ✅ boolean |
+| **G** | **US travel mode (NWS fallback)** | **`weatherUsTravelMode`** | **⚠ CS-W1** |
+| P | Air-quality tile (PM2.5 / PM10 / O3) | `weatherShowAqi` | CS-W2 |
+| P | Nowcast strip (next-hour rain) | `weatherShowNowcast` | CS-W2 |
+| P | Wind-compass SVG | `weatherShowCompass` | CS-W2 |
+| P | Moon phase tile | `weatherShowMoon` | CS-W2 |
+| P | Precipitation unit (mm / in) | `weatherPrecipUnit` | CS-W2 |
+
+#### 3.13.3 Stocks
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Show portfolio % change | `stocksShowPortfolio` | ✅ boolean |
+| E | Group by sector | `stocksGroupBySector` | ✅ boolean |
+| E | Show price in ILS | `stocksShowIls` | ✅ boolean |
+| P | Daily-mover pills (top 3 gainers / losers) | `stocksShowMovers` | CS-S1 |
+| P | Pre / post-market state badge | `stocksShowExtended` | CS-S1 |
+
+#### 3.13.4 Currency
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Decimal places (0–4) | `currencyDecimals` | ✅ range |
+| E | Hidden pairs (comma-separated) | `currencyHiddenPairs` | ✅ text |
+| P | Base currency selector | `currencyBase` | CS-C1 |
+| P | In-card mini-calculator toggle | `currencyShowCalc` | CS-C1 |
+| P | Trend arrow (1 d / 7 d / 30 d Δ) | `currencyShowTrend` | CS-C1 |
+| P | 30-day sparkline per pair | `currencyShowSparkline` | CS-C1 |
+
+#### 3.13.5 Calendar
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Lookahead window (7–28 days) | `calendarDaysAhead` | ✅ range |
+| E | Privacy mode (replace titles with "Busy") | `calendarPrivacy` | ✅ boolean |
+| P | Hebrew / Gregorian holiday overlay | `calendarShowHolidays` | CS-CAL1 |
+| P | Per-source color tag | `calendarSourceColors` | CS-CAL1 |
+| P | Configurable horizon (1 / 2 / 3 / 4 weeks) | `calendarWeeksAhead` | CS-CAL1 |
+| P | Conflict overlap badge | `calendarShowConflicts` | CS-CAL1 |
+
+#### 3.13.6 Hebrew Calendar
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Location GeoName ID | `geonameid` | ✅ text |
+| **G** | **Daf Yomi tile** | **`hcalShowDafYomi`** | **⚠ CS-H1** |
+| **G** | **Omer counter tile** | **`hcalShowOmer`** | **⚠ CS-H1** |
+| **G** | **Candle-lighting countdown** | **`hcalShowCandleLight`** | **⚠ CS-H1** |
+| **G** | **Haftarah reference** | **`hcalShowHaftarah`** | **⚠ CS-H1** |
+| **G** | **Rosh Chodesh / lunar tile** | **`hcalShowRoshChodesh`** | **⚠ CS-H1** |
+| **G** | **Zmanim selection (choose 3–6 to show)** | **`hcalZmanimMask`** | **⚠ CS-H1** |
+| P | Parasha transliteration toggle | `hcalParashaTranslit` | CS-H1 |
+
+Hebrew-cal has the **largest configSchema gap** — 6 displayed tiles have no user toggle.
+
+#### 3.13.7 Alerts
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Alerts enabled | `alertsEnabled` | ✅ boolean |
+| E | Alert sound | `alertSound` | ✅ boolean |
+| E | Alert volume (0–100) | `alertVolume` | ✅ range |
+| E | Realtime (SSE) mode | `realtimeAlerts` | ✅ boolean |
+| **G** | **Alert zone geo-filter** | **`alertZone`** | **⚠ CS-A1 (global config only — no card-level UI)** |
+| P | 24-h history ring toggle | `alertShowHistory` | CS-A1 |
+| P | Severity filter (rocket / earthquake / chemical / tsunami) | `alertSeverityFilter` | CS-A1 |
+| P | Cross-card dim-on-alert | `alertDimOnAlert` | CS-A1 |
+
+#### 3.13.8 Motivation
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Auto-advance interval (0 = off, minutes) | `motivationInterval` | ✅ range |
+| E | AI-generated Hebrew quotes | `motivationAiHebrew` | ✅ boolean |
+| P | Category filter (gratitude / courage / calm / all) | `motivationCategories` | CS-M1 |
+| P | Theme-by-day rotation | `motivationThemeByDay` | CS-M1 |
+| P | Source attribution badge (Tanakh / Hazal / Modern / AI) | `motivationShowSource` | CS-M1 |
+| P | Language preference (Hebrew / English / both) | `motivationLang` | CS-M1 |
+
+#### 3.13.9 Tasks
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Daily reset hour (0–23) | `tasksResetHour` | ✅ number |
+| E | Show completed tasks | `tasksShowDone` | ✅ boolean |
+| E | Show category labels | `tasksShowCategories` | ✅ boolean |
+| P | Due-date badge (overdue / today / this-week) | `tasksShowDueBadge` | CS-T1 |
+| P | Recurring tasks toggle | `tasksAllowRecurring` | CS-T1 |
+| P | User-defined tags display (≤ 6) | `tasksShowTags` | CS-T1 |
+| P | Default sort order (priority / due / created) | `tasksSortOrder` | CS-T1 |
+
+#### 3.13.10 System Info
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Show network RTT tile | `sysInfoShowRtt` | ✅ boolean |
+| **G** | **Storage quota tile** | **`sysInfoShowStorage`** | **⚠ CS-SI1** |
+| **G** | **Service-worker state tile** | **`sysInfoShowSw`** | **⚠ CS-SI1** |
+| **G** | **Battery tile** | **`sysInfoShowBattery`** | **⚠ CS-SI1** |
+| **G** | **Memory pressure tile** | **`sysInfoShowMemory`** | **⚠ CS-SI1** |
+| **G** | **Connection info tile** | **`sysInfoShowNetwork`** | **⚠ CS-SI1** |
+| P | Refresh interval (10 s / 30 s / 60 s) | `sysInfoRefreshInterval` | CS-SI1 |
+| P | RTT trend sparkline (10-min) | `sysInfoShowRttTrend` | CS-SI1 |
+
+System-info has the **second-largest configSchema gap** — 5 of its 6 displayed tiles have no user toggle.
+
+#### 3.13.11 Countdown
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Event 1–3 title / date / time / done-msg / start-date | 15 fields | ✅ text/date |
+| **G** | **Recurrence type (annual / monthly / one-time)** | **`countdownCardRecurrence`** | **⚠ CS-CD1 (in `configSchema`; not in `DashboardConfig` type)** |
+| P | Progress bar toggle | `countdownShowProgress` | CS-CD1 |
+| P | CSS confetti at T-0 | `countdownConfetti` | CS-CD1 |
+| P | Auto-link from calendar events | `countdownAutoLinkCal` | CS-CD1 |
+| P | Auto-link next Yom Tov | `countdownAutoLinkYomTov` | CS-CD1 |
+
+#### 3.13.12 Video News
+
+| Layer | Setting | Config key | Status |
+| --- | --- | --- | --- |
+| E | Pinned channels (≤ 4, comma-separated) | `cards.video-news.settings.pinnedChannels` | ✅ text |
+| **G** | **Autoplay on load** | **`autoplay`** | **⚠ CS-VN1** |
+| **G** | **Start muted** | **`defaultMuted`** | **⚠ CS-VN1** |
+| **G** | **Caption overlay** | **`showOverlay`** | **⚠ CS-VN1** |
+| **G** | **Pause on `prefers-reduced-motion`** | **`pauseOnReducedMotion`** | **⚠ CS-VN1** |
+| **G** | **Pause during night-dimmer schedule** | **`pauseAtNight`** | **⚠ CS-VN1** |
+| P | Document Picture-in-Picture toggle | `videoPip` | CS-VN1 (gated) |
+
+Video-news has **5 typed settings in `VideoNewsCardConfig.settings` that are unreachable** — users cannot change these defaults because no `configSchema` entry exists.
+
+#### 3.13 Summary
+
+| Card | Exposed (E) | UI Gaps (G) | Planned (P) |
+| --- | --- | --- | --- |
+| news | 2 | 0 | 4 |
+| weather | 6 | **1** | 6 |
+| stocks | 3 | 0 | 2 |
+| currency | 2 | 0 | 4 |
+| calendar | 2 | 0 | 4 |
+| hebrew-cal | 1 | **6** | 1 |
+| alerts | 4 | **1** | 3 |
+| motivation | 2 | 0 | 4 |
+| tasks | 3 | 0 | 4 |
+| system-info | 1 | **5** | 2 |
+| countdown | 15 | **1** | 4 |
+| video-news | 1 | **5** | 1 |
+| **Total** | **42** | **19** | **39** |
+
+**Priority rule**: all 19 UI-gap (G) items fix before shipping new (P) settings. `hebrew-cal` (6 gaps), `system-info`, and `video-news` (5 each) are the biggest configuration debt items.
+
 ---
 
 ## 4. Cross-Card Synergies — System-Level Enhancements
@@ -707,6 +882,8 @@ Today: per-card bundle delta (rule shipped). Add **group budgets**: news+video (
 ### 5.2 Per-card (from §3)
 
 News: N1–N5 · Weather: W1–W6 · Stocks: S1–S5 · Currency: C1–C4 · Calendar: CAL1–CAL6 · Hebrew-cal: H1–H7 · Alerts: A1–A4 · Motivation: M1–M3 · Tasks: T1–T5 · System-info: SI1–SI3 · Countdown: CD1–CD4 · Video-news: V1–V2.
+
+Card settings completeness (from §3.13): CS-W1 · CS-VN1 · CS-H1 · CS-SI1 · CS-CD1 (UI gaps — P0) · CS-A1 · CS-C1 · CS-CAL1 · CS-M1 · CS-T1 · CS-W2 · CS-S1 · CS-N1 (planned — P1/P2).
 
 ### 5.3 Cross-card (from §4)
 
@@ -835,6 +1012,28 @@ X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline 
 - [ ] Lightning CSS validation as sole CSS lint (drop Stylelint) on rule-set parity.
 - [ ] TS7 (Go-rewrite) primary typecheck on stable + zero-delta.
 - [ ] Coverage ratchet to 95 / 90 / 95 / 96.
+
+### 6.11 V14-CARD-SETTINGS — Expose every feature through user settings (v14.0, Q2 2027)
+
+**Goal**: every user-visible card behaviour configurable via the per-card ⚙ settings dialog. No feature hardcoded without a user-accessible toggle. Full gap audit in §3.13.
+
+**Priority rule**: (G) gap items fix before adding new (P) settings.
+
+- [ ] CS-W1 · P0 · S — Weather: add `weatherUsTravelMode` boolean to `configSchema` (typed since v12 — no UI until now).
+- [ ] CS-VN1 · P0 · S — Video-news: add `autoplay`, `defaultMuted`, `showOverlay`, `pauseOnReducedMotion`, `pauseAtNight` to `configSchema` (5 typed settings in `VideoNewsCardConfig.settings` unreachable without UI).
+- [ ] CS-H1 · P0 · M — Hebrew-cal: add `hcalShowDafYomi`, `hcalShowOmer`, `hcalShowCandleLight`, `hcalShowHaftarah`, `hcalShowRoshChodesh`, `hcalZmanimMask` to card config + `configSchema` (6 tile-visibility gaps).
+- [ ] CS-SI1 · P0 · M — System-info: add per-tile boolean toggles for battery / memory / network-info / storage quota / SW-state to `configSchema` (5 gaps + `sysInfoRefreshInterval` range).
+- [ ] CS-CD1 · P0 · S — Countdown: add `countdownCardRecurrence` to `DashboardConfig` type (field exists in `configSchema` but is untyped — type-only gap).
+- [ ] CS-A1 · P1 · S — Alerts: migrate `alertZone` from global `DashboardConfig` into alerts card `configSchema`; add `alertShowHistory`, `alertSeverityFilter`, `alertDimOnAlert`.
+- [ ] CS-C1 · P1 · S — Currency: add `currencyBase` selector, `currencyShowCalc`, `currencyShowTrend`, `currencyShowSparkline` to `configSchema`.
+- [ ] CS-CAL1 · P1 · S — Calendar: add `calendarShowHolidays`, `calendarSourceColors`, `calendarWeeksAhead`, `calendarShowConflicts` to `configSchema`.
+- [ ] CS-M1 · P1 · S — Motivation: add `motivationCategories`, `motivationThemeByDay`, `motivationShowSource`, `motivationLang` to `configSchema`.
+- [ ] CS-T1 · P1 · S — Tasks: add `tasksShowDueBadge`, `tasksAllowRecurring`, `tasksShowTags`, `tasksSortOrder` to `configSchema`.
+- [ ] CS-W2 · P1 · S — Weather: add feature-toggle fields for W3 nowcast / W4 air-quality / W5 wind-compass / W6 moon-phase once those feature sprints ship.
+- [ ] CS-S1 · P2 · S — Stocks: add `stocksShowMovers` (daily-mover pills), `stocksShowExtended` (pre/post-market badge) to `configSchema`.
+- [ ] CS-N1 · P2 · S — News: add `newsAiSummary`, per-source enable/disable, `newsDedup` sensitivity, `newsMinAge` filter to `configSchema`.
+
+**Exit**: `configSchema.length ≥ 2` for every card; `VideoNewsCardConfig.settings` fully represented in `configSchema`; `countdownCardRecurrence` typed in `DashboardConfig`; `alertZone` exposed at card level.
 
 ---
 
