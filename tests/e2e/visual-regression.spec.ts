@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — Visual Regression Tests (Stream G.2.3)
  *
- * Captures 90 baseline screenshots across 25 scenario groups:
+ * Captures 108 baseline screenshots across 31 scenario groups:
  *   - 18 idle baselines: 6 themes × 3 screen modes
  *   - 3 config-panel-open baselines: 3 themes × tv mode
  *   - 3 maximized-card baselines: 3 themes × tv mode
@@ -27,6 +27,12 @@
  *   - 3 alerts-banner-ext baselines: 3 more themes × tv mode (Sprint 269)
  *   - 3 video-news-ext baselines: 3 more themes × tv mode  (Sprint 269)
  *   - 3 esc-resets-state baselines: 3 themes × tv mode     (Sprint 269)
+ *   - 3 bookmarks-overlay-ext baselines: 3 more themes × tv mode (Sprint 312)
+ *   - 3 font-enlarged-ext baselines: 3 more themes × tv mode     (Sprint 312)
+ *   - 3 phone-config-panel baselines: 3 themes × phone mode      (Sprint 312)
+ *   - 3 phone-help-dialog baselines: 3 themes × phone mode       (Sprint 312)
+ *   - 3 tablet-maximized-ext baselines: 3 more themes × tablet mode (Sprint 312)
+ *   - 3 diag-overlay-ext baselines: 3 more themes × tv mode      (Sprint 312)
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -990,6 +996,204 @@ test.describe("FamilyDashBoard — Escape Key Resets State Baselines (Sprint 269
         mask: [
           page.locator(".clock, #clock, [id*='time'], [class*='time']"),
           page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 312: Bookmarks overlay extended themes ─────────────────────────
+//   Completes 6-theme coverage for bookmarks-overlay (prior: blue/matrix/purple)
+
+test.describe("FamilyDashBoard — Bookmarks Overlay Extended Themes (Sprint 312)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "amber", "rose"] as Theme[]) {
+    test(`${theme}: bookmarks-overlay-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.keyboard.press("b");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("bookmarks-overlay") as HTMLDialogElement | null)?.open ===
+            true ||
+          document
+            .querySelector("[data-overlay='bookmarks']")
+            ?.classList.contains("visible") === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-bookmarks-overlay-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 312: Font enlarged extended themes ─────────────────────────────
+//   Completes 6-theme coverage for font-enlarged (prior: black/amber/rose)
+
+test.describe("FamilyDashBoard — Font Enlarged Extended Themes (Sprint 312)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "matrix", "purple"] as Theme[]) {
+    test(`${theme}: font-enlarged-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.keyboard.press("+");
+      await page.keyboard.press("+");
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-font-enlarged-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 312: Config panel in phone mode baselines ─────────────────────
+//   Novel: phone-mode config panel not previously captured
+
+test.describe("FamilyDashBoard — Config Panel Phone Mode Baselines (Sprint 312)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "matrix", "amber"] as Theme[]) {
+    test(`${theme}: phone-mode config-panel`, async ({ page }) => {
+      await goWithConfig(page, theme, "phone");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.click("#cfg-gear-btn");
+      await page.waitForFunction(
+        () =>
+          document.getElementById("config-overlay")?.classList.contains("visible") === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-phone-config-panel.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 312: Help dialog in phone mode baselines ───────────────────────
+//   Novel: phone-mode help dialog not previously captured
+
+test.describe("FamilyDashBoard — Help Dialog Phone Mode Baselines (Sprint 312)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "purple", "rose"] as Theme[]) {
+    test(`${theme}: phone-mode help-dialog`, async ({ page }) => {
+      await goWithConfig(page, theme, "phone");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.keyboard.press("h");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("help-overlay") as HTMLDialogElement | null)?.open === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-phone-help-dialog.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 312: Tablet maximized card extended themes ─────────────────────
+//   Extends compact-maximized (prior: black/blue/amber) to 6-theme coverage
+
+test.describe("FamilyDashBoard — Tablet Maximized Card Extended Themes (Sprint 312)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["matrix", "purple", "rose"] as Theme[]) {
+    test(`${theme}: tablet-maximized-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tablet");
+      await page.evaluate(() => document.fonts.ready);
+
+      const firstHeader = page.locator(".card-header").first();
+      await firstHeader.click();
+      await page.waitForFunction(() => document.querySelector(".maximized") !== null, {
+        timeout: 5_000,
+      });
+      await page.waitForTimeout(400);
+
+      await expect(page).toHaveScreenshot(`${theme}-tablet-maximized-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 312: Diag overlay extended themes ──────────────────────────────
+//   Extends diag-overlay (prior: black/amber/purple) to 6-theme coverage
+
+test.describe("FamilyDashBoard — Diag Overlay Extended Themes (Sprint 312)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "matrix", "rose"] as Theme[]) {
+    test(`${theme}: diag-overlay-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      await page.keyboard.press("d");
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("diag-overlay") as HTMLDialogElement | null)?.open === true,
+        { timeout: 5_000 },
+      );
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-diag-overlay-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+          page.locator("#diag-overlay .diag-entries, #diag-overlay [class*='diag-entry']"),
         ],
         fullPage: false,
         timeout: 15_000,
