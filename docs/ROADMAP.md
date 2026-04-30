@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-05-06 · **Shipped baseline**: v13.27.0 (Sprint 252) · **In-progress**: v13.28.0 (Sprint 261) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
+> **Refresh date**: 2026-05-28 · **Shipped baseline**: v13.28.0 (Sprint 266) · **In-progress**: v13.29.0 (Sprint 271) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
 >
-> **Inventory**: 5581 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 49 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5689 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 51 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 
@@ -15,7 +15,7 @@ After 169 sprints across v10 → v13.18 the project sits on a stable, opinionate
 - **Frontend**: vanilla TS strict + in-house Signals (ADR-038), 0 client deps, ~88 KB gzip, CSS `@layer`/tokens/`@scope`/`light-dark()`/`@property`/Anchor Positioning/View Transitions L1.
 - **Backend**: single Cloudflare Worker (Hono + Valibot), KV stale cache, D1 telemetry, DO rate-limit, Analytics Engine, ≤ 75 KB gzip.
 - **Storage**: 4-tier client cache (Map → localStorage → IndexedDB ≤ 50 MB LRU → SW cache 7 origins). Zero user DB. Zero auth.
-- **Quality**: 5581 unit tests + Playwright + axe + 45 VR baselines + LHCI + Stryker mutation + fast-check (SP1-SP6/CM1-CM5/AP1-AP5/HC1-HC6) + SLSA L2 + Sigstore/cosign + rebuilder manifest + SBOM-diff + container-query audit + Mermaid validator + reading-level gate.
+- **Quality**: 5689 unit tests + Playwright + axe + 90 VR baselines + LHCI + Stryker mutation + fast-check (SP1-SP6/CM1-CM5/AP1-AP5/HC1-HC6/TDP1-TDP5/LP1-LP4/CAP1-CAP5/KP1-KP3/UP1-UP5/SV1-SV9) + SLSA L2 + Sigstore/cosign + rebuilder manifest + SBOM-diff + container-query audit + Mermaid validator + reading-level gate.
 
 This document **reopens every one of those decisions** at three levels:
 
@@ -741,7 +741,7 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] fast-check worker-client invariants P1-P13 (Sprint 233).
 - [x] fast-check IDB property tests IDB1-IDB8 (Sprint 234).
 - [x] Card pure-function property tests CP1-CP6 (Sprint 240).
-- [x] LHCI `error 0.85` → `error 0.97` *(step 5/5: 0.97 at v13.26.0 — Sprint 236)*.
+- [x] LHCI `error 0.85` → `error 0.97` _(step 5/5: 0.97 at v13.26.0 — Sprint 236)_.
 - [x] fast-check stocks SP1-SP6 + currency CM1-CM5 + alerts AP1-AP5 + hebrew-cal HC1-HC6 (Sprints 245–248).
 - [x] Coverage ratchet 92.7/84.2/91.5/94.0 → 93.0/84.5/91.8/94.3 (Sprint 250).
 - [x] Sigstore/cosign keyless signing for dist.zip + sw.js (Sprint 243).
@@ -751,15 +751,21 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] fast-check tasks TP1-TP5 + calendar CP1-CP5 (Sprints 256–257).
 - [x] Snapshot export `Ctrl+Shift+S` wired to `downloadSnapshot()` in `main.ts` (Sprint 258 / X8).
 - [x] fast-check countdown CDP1-CDP4 + system-info SIP1-SIP4 (Sprints 259–260).
+- [x] fast-check buildTodayItems TDP1-TDP5 + links LP1-LP4 (Sprints 263–264).
+- [x] fast-check cache CAP1-CAP5 + keyboard KP1-KP3 + utils UP1-UP5 (Sprints 265–266).
+- [x] N1 shadow-vectorize client plumbing + fast-check SV1-SV9 (Sprint 267).
+- [x] Coverage ratchet 93.0/84.5/91.8/94.3 → 93.0/84.6/91.8/94.3 (Sprint 268).
+- [x] VR baselines 81 → 90+ alerts-banner-ext/video-news-ext/esc-resets (Sprint 269).
+- [x] ADR-051 FdbCard lifecycle hooks + ADR-052 shadow-vectorize client plan (Sprint 270).
 
-**Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.5/91.8/94.3; LHCI perf `error ≥ 0.97`.
+**Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/91.8/94.3; LHCI perf `error ≥ 0.97`.
 
 ### 6.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals (v14.0, Q1–Q2 2027)
 
 - [x] In-house `signals.ts` shipped (ADR-038).
 - [x] `state.ts` → `signals.ts` migration (100 % of reactive call sites).
 - [x] HTTP Early Hints (103) from Worker (v13.14).
-- [ ] Cloudflare Vectorize semantic news dedup (30-day shadow → SimHash retire).
+- [ ] Cloudflare Vectorize semantic news dedup — **shadow mode client plumbing shipped (Sprint 267 / ADR-052)**; 30-day observation window active.
 - [ ] TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4.
 - [ ] TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` when polyfill ≤ 10 KB gzip.
 
