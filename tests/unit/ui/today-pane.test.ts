@@ -295,3 +295,161 @@ describe("TodayPane — refreshTodayPane DOM integration", () => {
     expect(() => refreshTodayPane()).not.toThrow();
   });
 });
+
+// ── Sprint 263 / TDP1-TDP5: fast-check property tests for buildTodayItems ────
+
+import * as fc from "fast-check";
+
+describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () => {
+  /**
+   * TDP1: buildTodayItems always returns an array (never throws) for any valid inputs.
+   */
+  it("TDP1 · always returns an array for any inputs", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          nowMs: fc.integer({ min: 0, max: 2_000_000_000_000 }),
+          alerts: fc.constant([]),
+          countdownTargetMs: fc.option(fc.integer({ min: 0, max: 2_000_000_000_000 }), {
+            nil: null,
+          }),
+          countdownTitle: fc.string({ maxLength: 30 }),
+          chores: fc.constant([]),
+          stockMovers: fc.array(fc.string({ maxLength: 20 }), { maxLength: 6 }),
+          nextCalEvent: fc.constant(null),
+        }),
+        (inputs: TodayPaneInputs) => {
+          const result = buildTodayItems(inputs);
+          return Array.isArray(result);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  /**
+   * TDP2: Output is always sorted — critical items before warning before normal.
+   */
+  it("TDP2 · output is always urgency-sorted (critical → warning → normal)", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          nowMs: fc.integer({ min: 1_000_000_000_000, max: 2_000_000_000_000 }),
+          alerts: fc.constant([]),
+          countdownTargetMs: fc.option(
+            fc.integer({ min: 0, max: 1_000_000_000_000 }),
+            { nil: null },
+          ),
+          countdownTitle: fc.string({ maxLength: 20 }),
+          chores: fc.constant([]),
+          stockMovers: fc.array(
+            fc.oneof(
+              fc.constant("TSLA +5.2%"),
+              fc.constant("AAPL -1.0%"),
+              fc.constant("MSFT +0.5%"),
+            ),
+            { maxLength: 3 },
+          ),
+          nextCalEvent: fc.option(
+            fc.record({
+              label: fc.string({ maxLength: 20 }),
+              minutesUntil: fc.integer({ min: 0, max: 360 }),
+            }),
+            { nil: null },
+          ),
+        }),
+        (inputs: TodayPaneInputs) => {
+          const ORDER: Record<string, number> = { critical: 0, warning: 1, normal: 2 };
+          const items = buildTodayItems(inputs);
+          for (let i = 0; i < items.length - 1; i++) {
+            const a = ORDER[items[i]!.urgency] ?? 99;
+            const b = ORDER[items[i + 1]!.urgency] ?? 99;
+            if (a > b) return false;
+          }
+          return true;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  /**
+   * TDP3: Empty inputs always produce empty output.
+   */
+  it("TDP3 · empty inputs always produce empty output", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1_000_000_000_000, max: 2_000_000_000_000 }),
+        (nowMs: number) => {
+          const result = buildTodayItems({
+            nowMs,
+            alerts: [],
+            countdownTargetMs: null,
+            countdownTitle: "",
+            chores: [],
+            stockMovers: [],
+            nextCalEvent: null,
+          });
+          return result.length === 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * TDP4: Each item's urgency is always one of the three valid values.
+   */
+  it("TDP4 · every item urgency is always a valid TodayUrgency value", () => {
+    const VALID = new Set<string>(["critical", "warning", "normal"]);
+    fc.assert(
+      fc.property(
+        fc.record({
+          nowMs: fc.constant(NOW_MS),
+          alerts: fc.constant([]),
+          countdownTargetMs: fc.option(
+            fc.integer({ min: NOW_MS + 1, max: NOW_MS + 24 * 3600 * 1000 }),
+            { nil: null },
+          ),
+          countdownTitle: fc.string({ maxLength: 20 }),
+          chores: fc.constant([]),
+          stockMovers: fc.array(
+            fc.oneof(fc.constant("AAPL +5%"), fc.constant("MSFT -2%")),
+            { maxLength: 2 },
+          ),
+          nextCalEvent: fc.option(
+            fc.record({
+              label: fc.string({ maxLength: 15 }),
+              minutesUntil: fc.integer({ min: 0, max: 360 }),
+            }),
+            { nil: null },
+          ),
+        }),
+        (inputs: TodayPaneInputs) => {
+          const items = buildTodayItems(inputs);
+          return items.every((item: TodayPaneItem) => VALID.has(item.urgency));
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  /**
+   * TDP5: Stock movers with |pct| < 3 never appear in the output.
+   */
+  it("TDP5 · stock movers with |pct| < 3 never appear", () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.double({ min: -2.49, max: 2.49, noNaN: true }).map((f) => `AAPL ${f.toFixed(1)}%`),
+          { minLength: 1, maxLength: 4 },
+        ),
+        (stockMovers: string[]) => {
+          const items = buildTodayItems({ ...EMPTY_INPUTS, nowMs: NOW_MS, stockMovers });
+          return !items.some((i: TodayPaneItem) => i.type === "stocks");
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});
