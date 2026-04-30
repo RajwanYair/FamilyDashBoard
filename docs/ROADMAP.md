@@ -643,7 +643,7 @@ All 12 cards already extend `FdbCard`. Promote shared lifecycle hooks:
 - `onThemeChange()` (currently CSS-only; some cards need to recompute SVG colors).
 - `onAlert()` (new — cards opt-in to dim/quiet).
 
-**Item X5** · P1 · M · Hi · v14.0 — Lifecycle hook formalisation in `FdbCard` base class.
+**Item X5** · P1 · M · Hi · v14.0 — Lifecycle hook formalisation in `FdbCard` base class. ✅ Sprint 253 — `onThemeChange()` + `onAlert()` added to `FdbCard`; wired to `globalThemeChannel` / `globalAlertChannel` via `effect()` dispose pattern; 9 new tests.
 
 ### 4.6 Shared offline indicator + retry
 

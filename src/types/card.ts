@@ -6,6 +6,9 @@
  * CardSlot: persisted grid placement.
  */
 
+import type { ThemeName } from "../core/constants";
+import type { AlertEvent } from "../core/event-bus";
+
 // ── Config schema ──────────────────────────────────────────────────────────
 
 export type ConfigFieldType =
@@ -160,6 +163,21 @@ export interface CardRuntime {
    * @param err - The error that caused the failure
    */
   onError?(err: Error): void;
+
+  /**
+   * Called when the active dashboard theme changes (Sprint 253 / X5).
+   * Cards that perform theme-sensitive work (e.g. SVG colour recalculation)
+   * override this to react to the new theme.
+   * @param theme - The new theme name
+   */
+  onThemeChange?(theme: ThemeName): void;
+
+  /**
+   * Called when a cross-card alert event is broadcast (Sprint 253 / X5).
+   * Cards opt-in to dim/quiet mode by overriding this hook.
+   * @param event - The alert event, or null when the alert is cleared
+   */
+  onAlert?(event: AlertEvent | null): void;
 }
 
 // ── Card registry entry ────────────────────────────────────────────────────

@@ -940,3 +940,114 @@ describe("FdbCard.loadData (Sprint 184)", () => {
     expect(setSync).toHaveBeenCalledWith("dt4", "ok");
   });
 });
+
+// ── Sprint 253 / X5: onThemeChange + onAlert lifecycle hooks ─────────────
+
+import {
+  broadcastTheme,
+  broadcastAlert,
+  _resetBusForTesting,
+} from "@/core/event-bus";
+
+class LifecycleHookCard extends FdbCard {
+  themeChanges: Array<string> = [];
+  alertEvents: Array<ReturnType<typeof broadcastAlert> | null> = [];
+
+  override connect(): void { /* no-op */ }
+  override disconnect(): void { /* no-op */ }
+  override refresh(): Promise<void> { return Promise.resolve(); }
+
+  override onThemeChange(theme: string): void {
+    this.themeChanges.push(theme);
+  }
+
+  override onAlert(event: unknown): void {
+    this.alertEvents.push(event as null);
+  }
+}
+
+if (!customElements.get("fdb-lifecycle-hook-test")) {
+  customElements.define("fdb-lifecycle-hook-test", LifecycleHookCard);
+}
+
+describe("FdbCard — onThemeChange + onAlert (Sprint 253 / X5)", () => {
+  let card: LifecycleHookCard;
+
+  beforeEach(() => {
+    _resetBusForTesting();
+    document.body.innerHTML = "";
+    card = document.createElement("fdb-lifecycle-hook-test") as LifecycleHookCard;
+    card.setAttribute("data-card-id", "lh-test");
+  });
+
+  afterEach(() => {
+    card.remove();
+    _resetBusForTesting();
+  });
+
+  it("onThemeChange is called with initial theme on connect", () => {
+    document.body.appendChild(card);
+    // effect() fires immediately on subscription with current value
+    expect(card.themeChanges.length).toBeGreaterThanOrEqual(1);
+    expect(card.themeChanges[card.themeChanges.length - 1]).toBe("black");
+  });
+
+  it("onThemeChange fires when broadcastTheme is called", () => {
+    document.body.appendChild(card);
+    card.themeChanges.length = 0; // clear initial call
+    broadcastTheme("matrix");
+    expect(card.themeChanges).toContain("matrix");
+  });
+
+  it("onThemeChange does not fire after card is removed", () => {
+    document.body.appendChild(card);
+    card.remove();
+    card.themeChanges.length = 0;
+    broadcastTheme("amber");
+    expect(card.themeChanges).toHaveLength(0);
+  });
+
+  it("onAlert is called with initial null on connect", () => {
+    document.body.appendChild(card);
+    expect(card.alertEvents.length).toBeGreaterThanOrEqual(1);
+    expect(card.alertEvents[card.alertEvents.length - 1]).toBeNull();
+  });
+
+  it("onAlert fires when broadcastAlert emits an event", () => {
+    document.body.appendChild(card);
+    card.alertEvents.length = 0;
+    broadcastAlert({ source: "alerts", type: "pause" });
+    expect(card.alertEvents).toHaveLength(1);
+    expect(card.alertEvents[0]).toMatchObject({ source: "alerts", type: "pause" });
+  });
+
+  it("onAlert fires with null when alert is cleared", () => {
+    document.body.appendChild(card);
+    broadcastAlert({ source: "alerts", type: "pause" });
+    broadcastAlert(null);
+    expect(card.alertEvents[card.alertEvents.length - 1]).toBeNull();
+  });
+
+  it("onAlert does not fire after card is removed", () => {
+    document.body.appendChild(card);
+    card.remove();
+    card.alertEvents.length = 0;
+    broadcastAlert({ source: "alerts", type: "pause" });
+    expect(card.alertEvents).toHaveLength(0);
+  });
+
+  it("onThemeChange default no-op does not throw", () => {
+    class MinimalCard extends FdbCard {
+      override connect(): void { /* no-op */ }
+      override disconnect(): void { /* no-op */ }
+      override refresh(): Promise<void> { return Promise.resolve(); }
+    }
+    if (!customElements.get("fdb-minimal-theme-test")) {
+      customElements.define("fdb-minimal-theme-test", MinimalCard);
+    }
+    const c = document.createElement("fdb-minimal-theme-test") as FdbCard;
+    document.body.appendChild(c);
+    expect(() => broadcastTheme("purple")).not.toThrow();
+    c.remove();
+  });
+});

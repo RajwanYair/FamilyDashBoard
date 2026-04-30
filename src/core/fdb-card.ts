@@ -25,6 +25,9 @@ import { cGet, cGetStale, cSet } from "./cache";
 import { isPageVisible } from "./idle";
 import { getInterfaceLanguage } from "./i18n";
 import { state } from "./state";
+import { effect } from "./signals";
+import { globalThemeChannel, globalAlertChannel, type AlertEvent } from "./event-bus";
+import type { ThemeName } from "./constants";
 import { isValidCardSize, type CardRuntime, type CardSize } from "../types/card";
 
 /** Attributes monitored on every FdbCard subclass. */
@@ -55,6 +58,12 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     }
   };
 
+  /** Dispose function for the globalThemeChannel effect (Sprint 253 / X5). */
+  private _disposeTheme: (() => void) | null = null;
+
+  /** Dispose function for the globalAlertChannel effect (Sprint 253 / X5). */
+  private _disposeAlert: (() => void) | null = null;
+
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   /**
@@ -63,6 +72,15 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    */
   connectedCallback(): void {
     document.addEventListener("visibilitychange", this._visListener);
+    // Sprint 253 / X5: wire theme and alert lifecycle hooks via event-bus effects
+    this._disposeTheme = effect(() => {
+      const theme = globalThemeChannel.value;
+      this.onThemeChange(theme);
+    });
+    this._disposeAlert = effect(() => {
+      const event = globalAlertChannel.value;
+      this.onAlert(event);
+    });
     diagLog(`FDB-059: [fdb-card] connected: ${this.getAttribute("data-card-id") ?? this.tagName}`);
     this.connect();
   }
@@ -76,6 +94,11 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     this.disconnect();
     this._clearConfigListeners();
     this._clearRefreshTimer();
+    // Sprint 253 / X5: dispose theme and alert subscriptions
+    this._disposeTheme?.();
+    this._disposeTheme = null;
+    this._disposeAlert?.();
+    this._disposeAlert = null;
     document.removeEventListener("visibilitychange", this._visListener);
     diagLog(
       `FDB-060: [fdb-card] disconnected: ${this.getAttribute("data-card-id") ?? this.tagName}`,
@@ -264,6 +287,30 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    */
   onHidden(): void {
     // No-op default. Subclasses override to react to page becoming hidden.
+  }
+
+  /**
+   * Called when the active dashboard theme changes (Sprint 253 / X5).
+   * Override in cards that perform theme-sensitive work, such as SVG
+   * colour recalculation or canvas redraws that depend on CSS variables.
+   * Default implementation is a no-op.
+   *
+   * @param theme - The new theme name (e.g. "black", "blue", "matrix")
+   */
+  onThemeChange(_theme: ThemeName): void {
+    // No-op default. Subclasses override to react to theme changes.
+  }
+
+  /**
+   * Called when a cross-card alert event is broadcast (Sprint 253 / X5).
+   * Cards opt-in to dim/quiet mode by overriding this hook.
+   * Called with `null` when the alert is cleared.
+   * Default implementation is a no-op.
+   *
+   * @param event - The alert event, or null when the alert is cleared
+   */
+  onAlert(_event: AlertEvent | null): void {
+    // No-op default. Subclasses override to enter dim/quiet mode on alert.
   }
 
   /**
