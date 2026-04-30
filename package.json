@@ -51,6 +51,7 @@
         "check:owasp": "node scripts/check-owasp.mjs",
         "check:csp-wildcards": "node scripts/check-csp-wildcards.mjs",
         "check:actions-pinned": "node scripts/check-actions-pinned.mjs",
+        "check:ignore-scripts": "node scripts/check-npm-ignore-scripts.mjs",
         "check:bundle": "node scripts/check-bundle-size.mjs",
         "check:card-bundle": "node scripts/check-card-bundle-delta.mjs",
         "bundle:trend": "node scripts/bundle-trend.mjs",

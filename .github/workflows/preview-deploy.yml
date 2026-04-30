@@ -44,7 +44,7 @@ jobs:
           cache-dependency-path: "../package-lock.json"
 
       - name: Install dependencies (parent tooling)
-        run: npm ci
+        run: npm ci --ignore-scripts
         working-directory: ..
 
       - name: Build (GitHub Pages base)

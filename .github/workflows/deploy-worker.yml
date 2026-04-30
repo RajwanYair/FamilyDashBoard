@@ -42,7 +42,7 @@ jobs:
 
       - name: Install worker dependencies
         working-directory: worker
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: TypeScript check
         working-directory: worker
