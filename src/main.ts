@@ -37,6 +37,7 @@ import { state } from "./core/state";
 // ── UI ──
 import { initTheme, checkAutoTheme } from "./ui/theme";
 import { initKeyboard, registerKey, closeAllOverlays, getKeyboardActions } from "./ui/keyboard";
+import { buildHelpRows, sortKeyEntries } from "./core/keymap";
 import { initHeader, toggleClockSeconds } from "./ui/header";
 import { initCardMaximize, initCardCollapse } from "./ui/maximize";
 import { initCardAutoScroll } from "./ui/card-auto-scroll";
@@ -332,21 +333,12 @@ export function init(): void {
     if (dlg.open) {
       dlg.close();
     } else {
-      // F10 (v7.3): Populate dynamic shortcuts section from registered keyboard actions
+      // Sprint 291 / X4: Populate dynamic shortcuts from keymap registry
       const dynamicEl = document.getElementById("help-dynamic-keys");
       if (dynamicEl) {
-        const actions = getKeyboardActions();
-        if (actions.length > 0) {
-          const frag = document.createDocumentFragment();
-          const hdr = document.createElement("div");
-          hdr.style.cssText = "font-weight:700;margin-bottom:4px;color:var(--accent)";
-          hdr.textContent =
-            document.documentElement.lang === "en"
-              ? `⌨ ${String(actions.length)} registered shortcuts`
-              : `⌨ ${String(actions.length)} קיצורים רשומים`;
-          frag.appendChild(hdr);
-          dynamicEl.replaceChildren(frag);
-        }
+        const lang = document.documentElement.lang === "en" ? "en" : "he";
+        const sorted = sortKeyEntries(getKeyboardActions());
+        dynamicEl.replaceChildren(buildHelpRows(sorted, lang));
       }
       dlg.showModal();
     }
