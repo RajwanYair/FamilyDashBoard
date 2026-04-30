@@ -1059,3 +1059,93 @@ describe("System-info — RTT ring buffer (Sprint 212)", () => {
     expect(h1).toHaveLength(1); // copy not affected
   });
 });
+
+// ── Sprint 260: fast-check property tests (SIP1–SIP4) ─────────────────────
+
+import * as fc from "fast-check";
+
+describe("SIP1 · formatBytes — property: always returns a non-empty string with a unit", () => {
+  const UNITS = ["B", "KB", "MB", "GB"];
+  it("always includes a unit suffix", () => {
+    fc.assert(
+      fc.property(fc.double({ min: 0, max: 1e12, noNaN: true }), (bytes) => {
+        const result = formatBytes(bytes);
+        return UNITS.some((u) => result.endsWith(u));
+      }),
+    );
+  });
+
+  it("is deterministic for the same input", () => {
+    fc.assert(
+      fc.property(fc.double({ min: 0, max: 1e12, noNaN: true }), (bytes) => {
+        return formatBytes(bytes) === formatBytes(bytes);
+      }),
+    );
+  });
+});
+
+describe("SIP2 · gpuShortName — property: output is always ≤ 30 chars and a string", () => {
+  it("result is always ≤ 30 characters", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        return gpuShortName(s).length <= 30;
+      }),
+    );
+  });
+
+  it("result is always a string", () => {
+    fc.assert(
+      fc.property(fc.string(), (s) => {
+        return typeof gpuShortName(s) === "string";
+      }),
+    );
+  });
+});
+
+describe("SIP3 · encodeConnType — property: always returns 0–4", () => {
+  it("valid type strings return 1–4", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom("slow-2g", "2g", "3g", "4g"),
+        (t) => {
+          const v = encodeConnType(t);
+          return v >= 1 && v <= 4;
+        },
+      ),
+    );
+  });
+
+  it("unknown strings return 0", () => {
+    fc.assert(
+      fc.property(
+        fc.string().filter((s) => !["slow-2g", "2g", "3g", "4g"].includes(s)),
+        (s) => encodeConnType(s) === 0,
+      ),
+    );
+  });
+});
+
+describe("SIP4 · appendRttHistory / getRttHistory — property: ring buffer grows and caps", () => {
+  it("buffer length never exceeds 10 after many appends", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 1, max: 5000 }), { minLength: 1, maxLength: 50 }),
+        (rtts) => {
+          _resetRttHistory();
+          for (const rtt of rtts) appendRttHistory(rtt);
+          return getRttHistory().length <= 10;
+        },
+      ),
+    );
+  });
+
+  it("non-positive values are ignored", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: -1000, max: 0 }), (rtt) => {
+        _resetRttHistory();
+        appendRttHistory(rtt);
+        return getRttHistory().length === 0;
+      }),
+    );
+  });
+});
