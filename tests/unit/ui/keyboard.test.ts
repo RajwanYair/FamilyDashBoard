@@ -163,3 +163,79 @@ describe("Keyboard — p key dispatches window.print (line 42 handler)", () => {
     vi.unstubAllGlobals();
   });
 });
+
+// ── Sprint 266 / KP1-KP3: fast-check property tests for keyboard invariants ───
+
+import * as fc from "fast-check";
+
+describe("Keyboard — fast-check properties (KP1-KP3, Sprint 266)", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  /**
+   * KP1: registerKey always adds to getKeyboardActions (count increases by 1).
+   */
+  it("KP1 · registerKey always grows the actions list", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 10 }),
+        fc.string({ minLength: 1, maxLength: 30 }),
+        (key: string, description: string) => {
+          const before = getKeyboardActions().length;
+          registerKey(key, description, () => { /* noop */ });
+          return getKeyboardActions().length === before + 1;
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  /**
+   * KP2: All registered actions have key, description and handler properties.
+   */
+  it("KP2 · all registered actions have required shape", () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.tuple(
+            fc.string({ minLength: 1, maxLength: 5 }),
+            fc.string({ minLength: 1, maxLength: 30 }),
+          ),
+          { minLength: 1, maxLength: 5 },
+        ),
+        (pairs: [string, string][]) => {
+          for (const [key, desc] of pairs) {
+            registerKey(key, desc, () => { /* noop */ });
+          }
+          return getKeyboardActions().every(
+            (a) =>
+              typeof a.key === "string" &&
+              typeof a.description === "string" &&
+              typeof a.handler === "function",
+          );
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  /**
+   * KP3: getKeyboardActions always returns a non-null readonly array.
+   */
+  it("KP3 · getKeyboardActions always returns a non-null array", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 5 }),
+        (n: number) => {
+          for (let i = 0; i < n; i++) {
+            registerKey(`k${String(i)}`, `desc${String(i)}`, () => { /* noop */ });
+          }
+          const actions = getKeyboardActions();
+          return Array.isArray(actions) && actions !== null;
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+});

@@ -238,3 +238,99 @@ describe("computeMoonPhase", () => {
     expect(result.label).toBe("ירח חדש");
   });
 });
+
+// ── Sprint 266 / UP1-UP5: fast-check property tests for utils pure functions ──
+
+import * as fc from "fast-check";
+
+describe("Utils — fast-check properties (UP1-UP5, Sprint 266)", () => {
+  /**
+   * UP1: clamp(value, min, max) always returns a value in [min, max].
+   */
+  it("UP1 · clamp always returns result in [min, max]", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ noNaN: true, noDefaultInfinity: true }),
+        fc.double({ noNaN: true, noDefaultInfinity: true }),
+        fc.double({ noNaN: true, noDefaultInfinity: true }),
+        (a: number, b: number, value: number) => {
+          const lo = Math.min(a, b);
+          const hi = Math.max(a, b);
+          const result = clamp(value, lo, hi);
+          return result >= lo && result <= hi;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  /**
+   * UP2: pad2(n) always returns a string of length ≥ 2.
+   */
+  it("UP2 · pad2 always returns a string of length ≥ 2", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 9999 }),
+        (n: number) => {
+          return pad2(n).length >= 2;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  /**
+   * UP3: decomposeDuration always yields non-negative integer parts.
+   */
+  it("UP3 · decomposeDuration parts are always non-negative integers", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0, max: 1e12, noNaN: true, noDefaultInfinity: true }),
+        (ms: number) => {
+          const { days, hours, minutes, seconds } = decomposeDuration(ms);
+          return (
+            Number.isInteger(days) && days >= 0 &&
+            Number.isInteger(hours) && hours >= 0 &&
+            Number.isInteger(minutes) && minutes >= 0 &&
+            Number.isInteger(seconds) && seconds >= 0
+          );
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  /**
+   * UP4: decomposeDuration hours/minutes/seconds are always < their unit ceiling.
+   */
+  it("UP4 · decomposeDuration parts are within unit bounds", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0, max: 1e12, noNaN: true, noDefaultInfinity: true }),
+        (ms: number) => {
+          const { hours, minutes, seconds } = decomposeDuration(ms);
+          return hours < 24 && minutes < 60 && seconds < 60;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  /**
+   * UP5: computeMoonPhase always returns an object with non-empty emoji and label.
+   */
+  it("UP5 · computeMoonPhase always returns non-empty emoji and label", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2000-01-01"), max: new Date("2040-01-01") }),
+        (d: Date) => {
+          fc.pre(isFinite(d.getTime()));
+          const { emoji, label } = computeMoonPhase(d);
+          return typeof emoji === "string" && emoji.length > 0 &&
+                 typeof label === "string" && label.length > 0;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});
