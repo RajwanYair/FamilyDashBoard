@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-05-03 · **Shipped baseline**: v13.31.0 (Sprint 306) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
+> **Refresh date**: 2026-05-03 · **Shipped baseline**: v13.32.0 (Sprint 316) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
 >
 > **Inventory**: 5980 tests / 179 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 54 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
@@ -956,6 +956,7 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] ADR-054: property-testing scope map — all fast-check suites catalogued (Sprint 313).
 - [x] Stryker scope extended to `history.ts`, `sync.ts`, `fetch.ts`; ARCHITECTURE.md + data-sources.md freshened to v13.31.0 (Sprint 314).
 - [x] ROADMAP.md + AI customisation files updated to 5980 tests / 179 suites / 54 ADRs (Sprint 315).
+- [x] v13.32.0 release — 5980 tests / 179 suites / 0 failures (Sprint 316).
 
 **Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/92.0/94.5; LHCI perf `error ≥ 0.97`.
 

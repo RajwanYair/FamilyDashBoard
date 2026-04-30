@@ -9,6 +9,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.32.0] — 2026-05-03
+
+> **5980 tests / 179 suites / 0 failures** (commit `34479b6`)
+
+### Added
+
+- **Sprint 307**: HP1–HP6 fast-check property tests for `sparklineSvg` — empty/singleton → `""`, ≥2 points → non-empty, contains `<polyline`, viewBox matches w/h, x-coords monotonically non-decreasing, stroke contains color. 6 new tests.
+- **Sprint 308**: SYP1–SYP6 fast-check property tests for sync exponential backoff — monotonically increasing delay, reset to 1 on success, always power-of-2, bounded [1,32], `getFailedPanes` includes dirty keys, N failures → `min(2^N,32)`. 6 new tests.
+- **Sprint 309**: DP1–DP5 fast-check property tests for diag ring-buffer — messages retrievable within capacity, `getDiagEntries` respects limit, buffer ≤ DIAG_BUFFER_SIZE (80), `formatDiagEntry` embeds original message, `classifyProviderError` returns known kind / non-Error → "unknown". 6 new tests.
+- **Sprint 310**: FP1–FP5 fast-check property tests for fetch lock primitives — first `acquireLock` returns true, duplicate returns false, acquire-after-release returns true, `clearFetchLocks` re-enables all keys, N `recordFetchFailure` → `getConsecutiveFailures === N` / offline iff N ≥ 3. 5 new tests.
+- **Sprint 311**: Coverage baseline 93.17/84.73/92.02/94.55 documented in `vitest.config.ts`; thresholds held at 93.0/84.6/92.0/94.5.
+- **Sprint 312**: VR baselines 90 → 108 — 6 new scenario groups × 3 themes each: `bookmarks-overlay-ext`, `font-enlarged-ext`, `phone-config-panel`, `phone-help-dialog`, `tablet-maximized-ext`, `diag-overlay-ext`.
+- **Sprint 313**: ADR-054 — property-testing scope map cataloguing all fast-check suites (HP1–HP6, SYP1–SYP6, DP1–DP5, FP1–FP5 and all prior suites). ADR index now at 54 entries.
+- **Sprint 314**: Stryker mutation scope extended to `history.ts`, `sync.ts`, `fetch.ts` (property-tested modules); `docs/ARCHITECTURE.md` and `docs/data-sources.md` freshened to v13.31.0 actuals.
+- **Sprint 315**: ROADMAP.md + AI customisation files updated — 5980/179 tests, 54 ADRs, Sprints 307–315 logged.
+
+---
+
 ## [13.31.0] — 2026-04-30
 
 > **5957 tests / 175 suites / 0 failures** (commit `4df9ba3`)
