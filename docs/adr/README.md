@@ -57,3 +57,4 @@
 | [ADR-050](ADR-050-r2-asset-cache.md)                                                      | Cloudflare R2 Asset Cache (V14-EDGE)                            | —          | —                                                  |
 | [ADR-051](ADR-051-fdbcard-lifecycle-hooks.md)                                             | FdbCard Lifecycle Hook Protocol (onThemeChange + onAlert)       | 2026-05-28 | Accepted                                           |
 | [ADR-052](ADR-052-shadow-vectorize-client-plan.md)                                        | Shadow-Vectorize 30-Day Client-Side Observation Plan            | 2026-05-28 | Accepted (Active)                                  |
+| [ADR-053](ADR-053-card-config-schema-architecture.md)                                     | Card configSchema Architecture                                  | 2026-04-30 | Accepted                                           |

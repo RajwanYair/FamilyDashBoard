@@ -124,6 +124,11 @@ export default defineConfig({
         //   snapshot localStorage-inaccessible + downloadSnapshot (2), first-run-tour cancel/throw (2),
         //   fixed NP4 getBookmarkKey whitespace property. ai-synthesis branches 82.35→97.05%.
         //   Actuals: 93.13/84.61/92.01/94.52. Ratchet: functions 91.8→92.0, lines 94.3→94.5.
+        // Sprint 301 (coverage baseline — Sprints 298-300 fast-check property tests):
+        //   +20 tests: KP4-KP8 (keymap), SP1-SP5 (snapshot), EB1-EB6 (event-bus).
+        //   Actuals: 93.14/84.70/92.02/94.52. Margins too tight to ratchet (max 0.14%).
+        //   Numeric thresholds unchanged; ratchet deferred to Sprint 305 after
+        //   config-schema-props (Sprint 303) + today-pane/links props (Sprint 304).
         statements: 93.0,
         branches: 84.6,
         functions: 92.0,
