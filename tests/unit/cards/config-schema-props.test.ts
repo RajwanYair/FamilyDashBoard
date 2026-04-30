@@ -271,3 +271,110 @@ describe('CS-FC8: "boolean" fields always have defaultValue true or false', () =
     });
   }
 });
+
+// ── CS-FC9: "range" step is positive when defined ─────────────────────────
+describe('CS-FC9: "range" fields with step defined always have step > 0', () => {
+  for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
+    const steppedRangeFields = schema.filter(
+      (f) => f.type === "range" && f.step !== undefined,
+    );
+    if (steppedRangeFields.length === 0) continue;
+    it(`${name}: step > 0 on every stepped range field`, () => {
+      forAnyField(steppedRangeFields, (f) => (f.step ?? 0) > 0);
+    });
+  }
+});
+
+// ── CS-FC10: "select" defaultValue is a member of options ─────────────────
+describe('CS-FC10: "select" field defaultValue is always in options[*].value', () => {
+  for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
+    const selectFields = schema.filter((f) => f.type === "select");
+    if (selectFields.length === 0) continue;
+    it(`${name}: defaultValue always present in options`, () => {
+      forAnyField(selectFields, (f) => {
+        const values = (f.options ?? []).map((o) => o.value);
+        return values.includes(String(f.defaultValue));
+      });
+    });
+  }
+});
+
+// ── CS-FC11: "boolean" fields have no options/min/max ─────────────────────
+describe('CS-FC11: "boolean" fields have options === undefined and no min/max', () => {
+  for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
+    const boolFields = schema.filter((f) => f.type === "boolean");
+    if (boolFields.length === 0) continue;
+    it(`${name}: boolean fields are free of options, min, max`, () => {
+      forAnyField(
+        boolFields,
+        (f) =>
+          f.options === undefined && f.min === undefined && f.max === undefined,
+      );
+    });
+  }
+});
+
+// ── CS-FC12: only "select" fields carry an options array ──────────────────
+describe("CS-FC12: non-select fields always have options === undefined", () => {
+  for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
+    const nonSelectFields = schema.filter((f) => f.type !== "select");
+    if (nonSelectFields.length === 0) continue;
+    it(`${name}: no options on non-select fields`, () => {
+      forAnyField(nonSelectFields, (f) => f.options === undefined);
+    });
+  }
+});
+
+// ── CS-FC13: tab values are from the allowed set when present ─────────────
+const VALID_TABS = new Set(["display", "feeds", "alerts", "calendar", "advanced"]);
+describe("CS-FC13: field tab (when defined) is always a valid tab name", () => {
+  for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
+    const tabbedFields = schema.filter((f) => f.tab !== undefined);
+    if (tabbedFields.length === 0) continue;
+    it(`${name}: every tab value is in {display|feeds|alerts|calendar|advanced}`, () => {
+      forAnyField(tabbedFields, (f) => VALID_TABS.has(f.tab as string));
+    });
+  }
+});
+
+// ── CS-FC14: range/number fields have a numeric defaultValue ─────────────
+describe('CS-FC14: "range"/"number" fields always have a numeric defaultValue', () => {
+  for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
+    const numericFields = schema.filter(
+      (f) => f.type === "range" || f.type === "number",
+    );
+    if (numericFields.length === 0) continue;
+    it(`${name}: defaultValue is a finite number`, () => {
+      forAnyField(
+        numericFields,
+        (f) => typeof f.defaultValue === "number" && Number.isFinite(f.defaultValue),
+      );
+    });
+  }
+});
+
+// ── CS-FC15: all keys across all schemas are globally unique ──────────────
+describe("CS-FC15: all field keys across all 12 schemas are globally unique", () => {
+  it("no key appears in more than one card schema", () => {
+    const allKeys: string[] = [];
+    for (const schema of Object.values(ALL_SCHEMAS)) {
+      allKeys.push(...schema.map((f) => f.key));
+    }
+    const uniqueKeys = new Set(allKeys);
+    expect(uniqueKeys.size).toBe(allKeys.length);
+  });
+});
+
+// ── CS-FC16: groupOpenByDefault requires group to be set ──────────────────
+describe("CS-FC16: fields with groupOpenByDefault always have a group name", () => {
+  for (const [name, schema] of Object.entries(ALL_SCHEMAS)) {
+    const openByDefaultFields = schema.filter((f) => f.groupOpenByDefault === true);
+    if (openByDefaultFields.length === 0) continue;
+    it(`${name}: groupOpenByDefault fields always have group defined`, () => {
+      forAnyField(
+        openByDefaultFields,
+        (f) => typeof f.group === "string" && f.group.length > 0,
+      );
+    });
+  }
+});
