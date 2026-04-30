@@ -52,3 +52,5 @@
 | [ADR-046](ADR-046-vectorize-shadow-run.md)                                                | Vectorize Shadow Run Before Retiring SimHash                    | 2026-04-30 | Accepted (Plan)                                    |
 | [ADR-047](ADR-047-do-hibernatable-ws.md)                                                  | DO Hibernatable WebSockets for Stocks Live + Alerts SSE         | 2026-04-30 | Accepted (Plan — gated on A3 and S1 Roadmap items) |
 | [ADR-048](ADR-048-worker-otel-opt-in.md)                                                  | OpenTelemetry Worker Opt-in Plan                                | —          | Proposed                                           |
+| [ADR-049](ADR-049-webrtc-qr-pair-mirror.md)                                               | WebRTC QR-pair Cross-Device Mirror (V14-CONTINUITY)             | —          | —                                                  |
+| [ADR-050](ADR-050-r2-asset-cache.md)                                                      | Cloudflare R2 Asset Cache (V14-EDGE)                            | —          | —                                                  |
