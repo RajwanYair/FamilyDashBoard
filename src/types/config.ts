@@ -149,6 +149,8 @@ export interface DashboardConfig {
   countdownCardDoneMsg: string;
   /** Countdown card — start date YYYY-MM-DD for progress bar (default: 1 year before target) */
   countdownCardStartDate: string;
+  /** Countdown card — recurrence mode: '' | 'annual' | 'monthly' (Sprint 281 / CS-CD1) */
+  countdownCardRecurrence: string;
   bgImages: string[];
   /** Ordered list of card IDs per column: [col0_ids, col1_ids, col2_ids]. Null = use hardcoded layout. */
   cardLayout: [string[], string[], string[]] | null;
@@ -320,6 +322,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   countdownCardTime: "18:00",
   countdownCardDoneMsg: "🎉 מזל טוב לאליאור ולטובה!",
   countdownCardStartDate: "",
+  countdownCardRecurrence: "",
   bgImages: [],
   cardLayout: null,
   hiddenCards: [],

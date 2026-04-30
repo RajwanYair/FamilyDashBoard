@@ -23,7 +23,7 @@ export function getCountdownTargetDate(): Date {
   let d = c.countdownCardDate || "2026-05-07";
   const t = c.countdownCardTime || "18:00";
   // Sprint 180 / CD3: advance past recurring dates
-  const recurrence = (c as unknown as Record<string, unknown>).countdownCardRecurrence as string | undefined;
+  const recurrence = c.countdownCardRecurrence || undefined;
   if (recurrence === "annual") {
     d = advanceAnnualDate(d);
   } else if (recurrence === "monthly") {

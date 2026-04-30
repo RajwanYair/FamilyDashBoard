@@ -1486,3 +1486,27 @@ describe("CDP4 · advanceAnnualDate — property: returned date is in future; fo
     );
   });
 });
+
+// ── Sprint 281 / CS-CD1: countdownCardRecurrence typed in DashboardConfig ─
+describe("Countdown configSchema — CS-CD1 (Sprint 281)", () => {
+  it("countdownCardRecurrence field is present in countdownConfigSchema", () => {
+    const field = countdownConfigSchema.find((f) => f.key === "countdownCardRecurrence");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("select");
+  });
+
+  it("countdownCardRecurrence has 3 options (none, annual, monthly)", () => {
+    const field = countdownConfigSchema.find((f) => f.key === "countdownCardRecurrence");
+    expect(field?.options?.length).toBe(3);
+    const values = field?.options?.map((o) => o.value);
+    expect(values).toContain("");
+    expect(values).toContain("annual");
+    expect(values).toContain("monthly");
+  });
+
+  it("DashboardConfig has countdownCardRecurrence (type check via DEFAULT_CONFIG)", async () => {
+    const { DEFAULT_CONFIG } = await import("@/types/config");
+    expect(Object.prototype.hasOwnProperty.call(DEFAULT_CONFIG, "countdownCardRecurrence")).toBe(true);
+    expect(DEFAULT_CONFIG.countdownCardRecurrence).toBe("");
+  });
+});
