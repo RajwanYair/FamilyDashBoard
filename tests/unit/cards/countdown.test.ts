@@ -1381,3 +1381,108 @@ describe("Countdown — Sprint 235 coverage: tickSecondary + initCountdownCard",
     expect(title3?.textContent).toBe("טיול משפחתי");
   });
 });
+
+// ── Sprint 259: fast-check property tests (CDP1–CDP4) ─────────────────────
+
+import * as fc from "fast-check";
+
+describe("CDP1 · urgencyClass — property: always returns a known CSS class or empty string", () => {
+  const KNOWN = ["cd-urgent-pulse", "cd-urgent-amber", ""];
+  it("returns a known value for any integer days", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: -100, max: 10_000 }), (days) => {
+        return KNOWN.includes(urgencyClass(days));
+      }),
+    );
+  });
+
+  it("is deterministic for the same input", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 1_000 }), (days) => {
+        return urgencyClass(days) === urgencyClass(days);
+      }),
+    );
+  });
+});
+
+describe("CDP2 · daysLabel — property: always returns a non-empty string", () => {
+  it("always returns a non-empty string", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 10_000 }), (days) => {
+        return daysLabel(days).length > 0;
+      }),
+    );
+  });
+
+  it("returns 'היום! 🎉' for 0", () => {
+    expect(daysLabel(0)).toBe("היום! 🎉");
+  });
+
+  it("returns 'מחר' for 1", () => {
+    expect(daysLabel(1)).toBe("מחר");
+  });
+});
+
+describe("CDP3 · computeProgress — property: result is null or in [0, 1]", () => {
+  it("result is null when startMs >= targetMs", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 1_000_000_000_000 }),
+        fc.integer({ min: 0, max: 1_000_000_000_000 }),
+        (a, b) => {
+          fc.pre(a >= b);
+          return computeProgress(a, b) === null;
+        },
+      ),
+    );
+  });
+
+  it("result is in [0, 1] for valid startMs < targetMs", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1, max: 500_000_000_000 }),
+        fc.integer({ min: 500_000_000_001, max: 2_000_000_000_000 }),
+        (startMs, targetMs) => {
+          const r = computeProgress(startMs, targetMs);
+          return r === null || (r >= 0 && r <= 1);
+        },
+      ),
+    );
+  });
+});
+
+describe("CDP4 · advanceAnnualDate — property: returned date is in future; format preserved", () => {
+  const YYYY_MM_DD = /^\d{4}-\d{2}-\d{2}$/;
+
+  it("preserves YYYY-MM-DD format", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2000-01-01"), max: new Date("2024-12-31") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
+          const input = `${yyyy}-${mm}-${dd}`;
+          return YYYY_MM_DD.test(advanceAnnualDate(input));
+        },
+      ),
+    );
+  });
+
+  it("returned date is always in the future for past inputs", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date("2000-01-01"), max: new Date("2024-06-01") }),
+        (d) => {
+          fc.pre(isFinite(d.getTime()));
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
+          const result = advanceAnnualDate(`${yyyy}-${mm}-${dd}`);
+          return new Date(`${result}T00:00:00`).getTime() >= Date.now();
+        },
+      ),
+    );
+  });
+});
