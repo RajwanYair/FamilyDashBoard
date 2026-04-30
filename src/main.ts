@@ -104,6 +104,7 @@ import { applyHardwareTier } from "./core/hardware";
 import { applyConfigAnimLevel } from "./core/anim-level";
 import { scheduleVitalsReport, flushVitalsReport } from "./core/vitals-reporter";
 import { initTour } from "./core/first-run-tour";
+import { downloadSnapshot } from "./core/snapshot";
 
 // ── Version ──
 export const VERSION = __APP_VERSION__;
@@ -371,6 +372,18 @@ export function init(): void {
       a.download = `fdb-diag-${Date.now()}.json`;
       a.click();
       URL.revokeObjectURL(url);
+    }
+  });
+  // Ctrl+Shift+S — export full dashboard snapshot (X8)
+  window.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.shiftKey && e.key === "S") {
+      e.preventDefault();
+      downloadSnapshot();
+      showToast(
+        document.documentElement.lang === "en" ? "Snapshot exported" : "תצלום יוצא",
+        2500,
+      );
+      diagLog("[snapshot] Ctrl+Shift+S snapshot downloaded");
     }
   });
   registerKey(

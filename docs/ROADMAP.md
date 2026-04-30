@@ -661,7 +661,7 @@ Config panel today scrolls through all card configs. Add a top search box that f
 
 Single "snapshot" command (`Ctrl+Shift+S`) that exports a JSON capture of the entire dashboard state for support / debug / share. AES-GCM URL share already exists for config; this captures **state + config** at a moment.
 
-**Item X8** · P2 · M · Mid · v14.x — Snapshot export (gated by debug menu).
+**Item X8** · P2 · M · Mid · v13.28.0 — Snapshot export (gated by debug menu). ✅ Sprint 258 — `Ctrl+Shift+S` keyboard shortcut added to `main.ts`; calls `downloadSnapshot()` from `src/core/snapshot.ts`; shows toast confirmation; `buildSnapshot()` captures config + localStorage + diagLog.
 
 ### 4.9 Cross-card AI synthesis (Workers AI)
 
