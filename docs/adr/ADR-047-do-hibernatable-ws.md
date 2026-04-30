@@ -19,6 +19,7 @@ intervals rather than streaming live updates:
 | Alerts   | Worker SSE endpoint  | Client poll / reconnect | True SSE / WS push      |
 
 The polling approach works but has two problems:
+
 1. **Latency spike**: a price move is visible up to 60 s late.
 2. **CPU waste**: idle Workers are invoked even when no data changed.
 
@@ -34,7 +35,7 @@ to use DO Hibernatable WebSockets.
 
 ### Architecture: `FdbLiveHub` Durable Object
 
-```
+```text
 Client              Worker (request router)      FdbLiveHub DO
   |                         |                         |
   | GET /api/live/ws        |                         |
@@ -81,13 +82,15 @@ WebSocket path is stable (30+ days, no reconnect storms observed).
 
 ## Consequences
 
-**Positive**
+### Positive
+
 - Stocks updates visible within ~10 s of market move (vs. up to 60 s).
 - Alert push latency: < 2 s (vs. poll interval).
 - Worker CPU cost reduced: DO hibernates between alarms.
 - Single persistent WS connection per browser tab (vs. repeated poll fetches).
 
-**Negative / Risks**
+### Negative / Risks
+
 - Durable Objects with WebSocket Hibernation are CF-only → vendor lock-in
   increases for real-time path. Mitigated by ADR-031: fallback to polling
   is always available via feature flag.
@@ -109,6 +112,7 @@ WebSocket path is stable (30+ days, no reconnect storms observed).
 
 This ADR is **gated** until both A3 (live stocks) and S1 (DO Hibernatable
 alerts) are prioritised in the roadmap backlog. The gate opens when:
+
 - The FdbLiveHub skeleton passes type-check and unit tests with zero errors.
 - Stryker mutation score for `live-hub-do.ts` ≥ 80%.
 - Manual test: stock card updates within 15 s of a simulated price change.

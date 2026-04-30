@@ -210,3 +210,107 @@ describe("reactivity", () => {
     expect(val).toBe("error");
   });
 });
+
+// ── Sprint 275 / EP1-EP5: fast-check property tests for event-bus ──────────
+
+import * as fc from "fast-check";
+
+const SYNC_STATES = ["ok", "loading", "error"] as const;
+type SyncStateVal = (typeof SYNC_STATES)[number];
+
+const arbitrarySyncState = (): fc.Arbitrary<SyncStateVal> =>
+  fc.oneof(fc.constant("ok"), fc.constant("loading"), fc.constant("error"));
+
+const arbitraryCardId = (): fc.Arbitrary<string> =>
+  fc.string({ minLength: 1, maxLength: 12 }).filter((s) => s.trim().length > 0);
+
+describe("event-bus fast-check properties (EP1-EP5, Sprint 275)", () => {
+  beforeEach(() => {
+    _resetBusForTesting();
+  });
+
+  it("EP1: globalSync always returns a valid SyncState regardless of card set", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.tuple(arbitraryCardId(), arbitrarySyncState()), { minLength: 1, maxLength: 10 }),
+        (pairs) => {
+          _resetBusForTesting();
+          for (const [id, state] of pairs) {
+            broadcastSync(id, state);
+          }
+          const result = globalSync.value;
+          return result === "ok" || result === "loading" || result === "error";
+        },
+      ),
+    );
+  });
+
+  it("EP2: broadcastSync is idempotent — same state twice does not change the aggregated result", () => {
+    fc.assert(
+      fc.property(
+        arbitraryCardId(),
+        arbitrarySyncState(),
+        (cardId, state) => {
+          _resetBusForTesting();
+          broadcastSync(cardId, state);
+          const after1 = globalSync.value;
+          broadcastSync(cardId, state); // same again
+          return globalSync.value === after1;
+        },
+      ),
+    );
+  });
+
+  it("EP3: globalSync returns 'loading' whenever any card is 'loading'", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.tuple(arbitraryCardId(), arbitrarySyncState()), { minLength: 1, maxLength: 8 }),
+        arbitraryCardId(),
+        (pairs, loadingId) => {
+          _resetBusForTesting();
+          for (const [id, state] of pairs) {
+            broadcastSync(id, state);
+          }
+          broadcastSync(loadingId, "loading");
+          return globalSync.value === "loading";
+        },
+      ),
+    );
+  });
+
+  it("EP4: globalSync returns 'ok' when every card is 'ok'", () => {
+    fc.assert(
+      fc.property(
+        fc.array(arbitraryCardId(), { minLength: 1, maxLength: 10 }).filter(
+          (ids) => new Set(ids).size === ids.length,
+        ),
+        (cardIds) => {
+          _resetBusForTesting();
+          for (const id of cardIds) {
+            broadcastSync(id, "ok");
+          }
+          return globalSync.value === "ok";
+        },
+      ),
+    );
+  });
+
+  it("EP5: broadcastAlert accepts any non-empty source string with valid type without throwing", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 30 }).filter((s) => s.trim().length > 0),
+        fc.oneof(fc.constant("pause"), fc.constant("resume")) as fc.Arbitrary<"pause" | "resume">,
+        (source, type) => {
+          _resetBusForTesting();
+          let threw = false;
+          try {
+            broadcastAlert({ source, type });
+          } catch {
+            threw = true;
+          }
+          return !threw && globalAlertChannel.value?.source === source;
+        },
+      ),
+    );
+  });
+});

@@ -28,7 +28,7 @@ card-state synchronisation between up to 2 FamilyDashBoard instances on the same
 
 ### Pairing protocol
 
-```
+```text
   Device A (initiator)           Signalling                Device B (responder)
   ─────────────────────          (QR code)                 ──────────────────────
   1. Generate RTCPeerConnection

@@ -23,7 +23,7 @@ Closes #
 
 ## Testing
 
-- [ ] `npx vitest run` — 0 failures (baseline: 5696 / 170 suites)
+- [ ] `npx vitest run` — 0 failures (baseline: 5701 / 170 suites)
 - [ ] `npx tsc --noEmit` — 0 errors
 - [ ] `npx eslint src tests --max-warnings 0` — 0 warnings
 - [ ] Tested in Chrome (desktop full-screen, 1920×1080)

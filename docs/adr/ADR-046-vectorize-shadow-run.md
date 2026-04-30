@@ -52,6 +52,7 @@ dimensions), it enables:
 ### Phase 2 — Cutover gate (Sprint ~240)
 
 After 30 days of shadow data:
+
 - Agreement rate SimHash ↔ Vectorize ≥ 95% → proceed to Phase 3.
 - Agreement rate < 95% → extend shadow period and open a follow-up ADR.
 
@@ -66,13 +67,15 @@ After 30 days of shadow data:
 
 ## Consequences
 
-**Positive**
+### Positive
+
 - Semantic deduplication reduces false-positives (different wording, same
   story).
 - Foundation for "related articles" X-card feature (Roadmap N1).
 - Worker stays O(log n) via HNSW — no full-scan required.
 
-**Negative / Risks**
+### Negative / Risks
+
 - `VECTORIZE` is a Cloudflare-only binding → vendor lock-in increases for
   this code path. Mitigated by ADR-031 neutrality drill.
 - Embeddings cost CF Workers AI tokens → monitor via `ANALYTICS`.
@@ -113,6 +116,7 @@ export async function vectorizeArticle(
 ```
 
 The `wrangler.toml` binding (to be added in the cutover sprint):
+
 ```toml
 [[vectorize]]
 binding = "VECTORIZE"

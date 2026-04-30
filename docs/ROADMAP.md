@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
 
-> **Refresh date**: 2026-05-28 · **Shipped baseline**: v13.28.0 (Sprint 266) · **In-progress**: v13.29.0 (Sprint 271) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
+> **Refresh date**: 2026-05-28 · **Shipped baseline**: v13.29.0 (Sprint 274) · **In-progress**: v13.30.0 (Sprint 275) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-RESILIENCE, V14-CARDS-DEEP, V14-CROSS-CARD.
 >
-> **Inventory**: 5689 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 51 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 5696 tests / 170 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 52 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
 >
 > **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
 
@@ -757,6 +757,10 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 - [x] Coverage ratchet 93.0/84.5/91.8/94.3 → 93.0/84.6/91.8/94.3 (Sprint 268).
 - [x] VR baselines 81 → 90+ alerts-banner-ext/video-news-ext/esc-resets (Sprint 269).
 - [x] ADR-051 FdbCard lifecycle hooks + ADR-052 shadow-vectorize client plan (Sprint 270).
+- [x] ROADMAP.md refresh — Sprint 263-271 completions logged, baseline updated to v13.29.0 (Sprint 271).
+- [x] v13.29.0 release — tag + GitHub release, CHANGELOG published (Sprint 272).
+- [x] Tooling modernisation: Node 24 CI, ES2024 lib, ADR-037 View Transitions L2 adopted, stale-version sweep (Sprint 273).
+- [x] `.github` AI customisation files: 24 files updated to v13.29.0 + Copilot/VS Code latest features (Sprint 274).
 
 **Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/91.8/94.3; LHCI perf `error ≥ 0.97`.
 

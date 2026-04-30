@@ -46,7 +46,7 @@ When absent or not `"1"`, all OTel code is bypassed with zero overhead.
 
 Add a lightweight OTLP-forwarding endpoint to the worker:
 
-```
+```http
 POST /api/telemetry
 Content-Type: application/json
 Body: OTel LogsData or SpansData JSON (subset)
@@ -73,8 +73,7 @@ stub (`() => void`). **No third-party OTel SDK** is bundled — only a minimal h
 [Grafana Cloud free tier](https://grafana.com/products/cloud/) — OTLP HTTP ingest.
 Free tier quota: 50 GB traces / month. Estimated usage at 100 K req/day: ~0.8 GB/month.
 
-Alternative self-hosted path: Docker Compose with `otel/opentelemetry-collector-contrib`
-+ Jaeger backend (for local dev only, documented in `docs/local-dev.md`).
+Alternative self-hosted path: Docker Compose with `otel/opentelemetry-collector-contrib` and Jaeger backend (for local dev only, documented in `docs/local-dev.md`).
 
 ### 5. Gate condition
 
@@ -103,10 +102,10 @@ Before that threshold, `OTEL_ENABLED` defaults to absent (disabled).
 
 ## Implementation Checklist (v14)
 
-- [ ] `worker/src/otel.ts` — `createSpan()` helper + OTLP serializer
-- [ ] `worker/src/routes/telemetry.ts` — `/api/telemetry` route handler
-- [ ] `worker/openapi.yaml` — document `/api/telemetry` endpoint
-- [ ] `src/core/telemetry.ts` — client stub (`otelEnabled` guard)
-- [ ] `docs/local-dev.md` — Docker Compose OTel collector section
-- [ ] `wrangler.toml` — add `OTEL_ENABLED`, `OTEL_ENDPOINT`, `OTEL_SERVICE_NAME` vars (commented out)
-- [ ] Unit tests: span serializer round-trip, route 400/503 error paths
+- [x] `worker/src/otel.ts` — `createSpan()` helper + OTLP serializer
+- [x] `worker/src/routes/telemetry.ts` — `/api/telemetry` route handler
+- [x] `worker/openapi.yaml` — document `/api/telemetry` endpoint
+- [x] `src/core/telemetry.ts` — client stub (`otelEnabled` guard)
+- [x] `docs/local-dev.md` — Docker Compose OTel collector section
+- [x] `wrangler.toml` — add `OTEL_ENABLED`, `OTEL_ENDPOINT`, `OTEL_SERVICE_NAME` vars (commented out)
+- [x] Unit tests: span serializer round-trip, route 400/503 error paths

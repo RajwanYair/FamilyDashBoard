@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 5405 tests / 167 suites     |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 5701 tests / 170 suites     |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
@@ -56,13 +56,11 @@ src/
 │   ├── utils.ts                # Shared utility functions (formatters, helpers)
 │   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
 │   ├── sw-constants.ts         # SW version/cache name constants shared between sw.ts and src/
-│   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED + 10s auto-reload countdown + 60min periodic update
-│   ├── perf.ts                 # Performance timing helpers + mark/measure wrappers + card init timing (v7.19)
-│   ├── provider.ts             # Per-provider health tracking: success/failure counts + latency histogram (v7.19)
-│   ├── utils.ts                # Shared utility functions (formatters, helpers)
-│   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
-│   ├── sw-constants.ts         # SW version/cache name constants shared between sw.ts and src/
-│   └── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED + 10s auto-reload countdown + 60min periodic update
+│   ├── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED + 10s auto-reload countdown + 60min periodic update
+│   ├── event-bus.ts            # Signals-based pub/sub channels: globalSync/globalAlertChannel/globalThemeChannel/globalOffline (Sprint 173 / X2)
+│   ├── links.ts                # Semantic-link service: register/resolve cross-card links, gated by semanticLinksEnabled (Sprint 216 / X3)
+│   ├── history.ts              # Generic ring-buffer helpers: historyAppend/historyGet/sparklineSvg — used by alerts, system-info, weather
+│   └── snapshot.ts             # Dashboard snapshot export: buildSnapshot() / downloadSnapshot() — wired to Ctrl+Shift+S (Sprint 258 / X8)
 ├── ui/
 │   ├── theme.ts                # 6-theme system: black·blue·matrix·amber·purple·rose
 │   ├── keyboard.ts             # All keyboard shortcuts (T/D/A/S/N/+/-/P/B/H/C/Esc)
@@ -77,7 +75,10 @@ src/
 │   ├── diag-overlay.ts         # Diagnostics <dialog> (migrated from <div>, v7)
 │   ├── screen-mode.ts          # Screen mode manager (normal/compact/theater)
 │   ├── layout-drag.ts          # Drag-and-drop card reordering with localStorage persistence
-│   └── toast.ts                # Toast notification system
+│   ├── toast.ts                # Toast notification system
+│   ├── today-pane.ts           # Unified Today strip: aggregates alert/countdown/tasks/stocks/calendar signals (Sprint 190 / X1)
+│   ├── offline-banner.ts       # Global offline indicator driven by globalOffline signal (Sprint 174 / X6)
+│   └── help.ts                 # Help <dialog> modal auto-generated from keyboard registry
 ├── cards/
 │   ├── base-card.ts            # createCardLoader() + scheduleCard() — shared lifecycle
 │   ├── news/news.ts            # RSS feeds + search + bookmarks + stale tinting + pub-time/elapsed display
@@ -324,7 +325,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **5405 tests / 167 suites / 0 failures** — coverage thresholds: 93.5% statements, 85.7% branches, 92.5% functions, 94.7% lines (v13.22.0)
+15. **5701 tests / 170 suites / 0 failures** — coverage thresholds: 93.0% statements, 84.6% branches, 92.0% functions, 94.5% lines (v13.29.0)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)

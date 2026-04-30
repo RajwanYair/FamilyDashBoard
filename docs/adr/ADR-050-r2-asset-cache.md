@@ -30,7 +30,7 @@ long-lived binary assets (images, icons, audio).
 
 ### Cache architecture
 
-```
+```text
 Dashboard card (fetch)
     │
     ▼
@@ -55,7 +55,7 @@ Worker: /r2-asset?url=<encoded-origin-url>
 
 ### R2 key scheme
 
-```
+```text
 r2-asset/{sha256-of-origin-url}
 ```
 
@@ -64,11 +64,12 @@ path-traversal attacks and gives a stable, compact key without exposing the orig
 
 ### Worker route added
 
-```
+```text
 GET /r2-asset?url=<percent-encoded-origin-url>
 ```
 
 Input validation:
+
 - `url` must be percent-decoded and validated with `new URL(url)`
 - Only whitelisted origin hostnames accepted (allowlist in `worker/src/constants.ts`)
 - SSRF guard: block private IP ranges (RFC 1918/RFC 4193) before fetch

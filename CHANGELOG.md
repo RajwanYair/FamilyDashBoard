@@ -7,11 +7,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [Unreleased]
 
+> **5701 tests / 170 suites / 0 failures**
+
+### Added
+
+- **Sprint 272**: v13.29.0 release — tag `v13.29.0` pushed, GitHub release published with CHANGELOG entry for Sprints 263–271.
+- **Sprint 273**: Tooling modernisation — CI node upgraded to 24, TypeScript `lib` bumped to `ES2024`, ADR-037 View Transitions L2 adopted (cross-document + `@starting-style` animation), stale version sweep across docs/CI/skills, extensions.json refreshed with latest VS Code extensions.
+- **Sprint 273-P10**: Coverage ratchet — branches threshold raised 84.5 → 84.6, functions 91.8 → 92.0, lines 94.3 → 94.5 based on actuals.
+- **Sprint 274**: `.github` AI customisation files — 24 files updated to v13.29.0 baseline: agents (api-integrator, dashboard-designer, quality-reviewer), copilot config, MCP guidance, hooks, templates, instructions, skills, prompts, SVG assets. Added `manage_todo_list`/`vscode_askQuestions` to agent tool allowlists; updated Copilot Code Review section; coverage thresholds corrected everywhere.
+- **Sprint 275**: Documentation freshness + fast-check EP1–EP5 — `ARCHITECTURE.md` test count updated (5405/167 → 5696/170), coverage thresholds corrected (93.5/85.7 → 93.0/84.6), duplicate file-structure entries removed, `event-bus.ts` / `links.ts` / `history.ts` / `snapshot.ts` / `today-pane.ts` / `offline-banner.ts` / `help.ts` added to file listings. `ROADMAP.md` baseline updated (v13.29.0 shipped Sprint 274, 5696/170, 52 ADRs); V14-FOUNDATIONS checklist Sprint 271–274 items checked. `event-bus.test.ts` extended with 5 fast-check property tests (EP1–EP5): globalSync always valid SyncState, broadcastSync idempotent, loading-wins priority invariant, ok-when-all-ok, broadcastAlert no-throw. Total tests: 5696→5701.
+
 ---
 
 ## [13.29.0] — 2026-05-28
 
-> **5689 tests / 170 suites / 0 failures**
+> **5689 tests / 170 suites / 0 failures** *(at tag; post-tag: 5696 / Sprint 273-P10)*
 
 ### Added
 
@@ -406,7 +416,7 @@ Seven files bumped to v13.14.0: `package.json`, `sw.js`, `README.md` badge, `.gi
 
 ### Changed
 
-- **Inline styles → utility classes** — extracted **103** inline `style="…"` attributes from `src/index.html` (48 unique declaration sets) into a new dedicated cascade-layered stylesheet `src/styles/inline-utils.css`. New utility classes follow the `.cfg-*` and `.is-hidden` / `.is-invisible` naming conventions and live inside `@layer components`. Eliminates every HTMLHint _"CSS inline styles should not be used"_ warning.
+- **Inline styles → utility classes** — extracted **103** inline `style="…"` attributes from `src/index.html` (48 unique declaration sets) into a new dedicated cascade-layered stylesheet `src/styles/inline-utils.css`. New utility classes follow the `.cfg-*` and `.is-hidden` / `.is-invisible` naming conventions and live inside `@layer components`. Eliminates every HTMLHint *"CSS inline styles should not be used"* warning.
 - **`link-check.yml` strict mode** — the monthly link-rot workflow no longer silently passes when broken links are found; after the issue-opener step a follow-up `Fail job on dead links` step runs `exit 1`. Matches Rule 32 ("no `continue-on-error` shadow gates").
 - **`release.yml`** — checksum and release-asset paths updated from `icon.svg` (root) → `dist/icon.svg` (build output) so the SLSA-attested artefact references the actual deployed icon.
 - **Documentation rewire** — every `CLAUDE.md` reference removed from `.github/AGENTS.md`, `docs/README.md`, `.github/skills/release/SKILL.md`, `.github/instructions/pre-release.instructions.md`, `.github/instructions/workspace.instructions.md`, `.github/prompts/version-bump.prompt.md`, `.github/prompts/release-check.prompt.md`. Version-bump file lists drop from 15 → 14 anchors.
