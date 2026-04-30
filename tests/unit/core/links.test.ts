@@ -75,3 +75,103 @@ describe("Semantic links — registerLink / getLinks (Sprint 216 / X3)", () => {
     expect(getLinks("stocks")).toHaveLength(3);
   });
 });
+
+// ── Sprint 264 / LP1-LP4: fast-check property tests for links invariants ──────
+
+import * as fc from "fast-check";
+
+describe("Semantic links — fast-check properties (LP1-LP4, Sprint 264)", () => {
+  beforeEach(() => {
+    clearLinks();
+    vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: true } as never);
+  });
+
+  /**
+   * LP1: registerLink + getLinks always returns array containing the link.
+   * For any valid (fromCardId, toCardId) string pair, the registered link appears.
+   */
+  it("LP1 · registered link always appears in getLinks result (enabled)", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 20 }),
+        fc.string({ minLength: 1, maxLength: 20 }),
+        (from: string, to: string) => {
+          clearLinks();
+          const resolver = () => "payload";
+          registerLink(from, to, resolver);
+          const links = getLinks(from);
+          return links.length >= 1 && links.some((l) => l.fromCardId === from && l.toCardId === to);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * LP2: Re-registering the same (from, to) pair always keeps exactly one entry.
+   */
+  it("LP2 · re-registering same direction always yields exactly one entry", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 20 }),
+        fc.string({ minLength: 1, maxLength: 20 }),
+        fc.integer({ min: 2, max: 5 }),
+        (from: string, to: string, times: number) => {
+          clearLinks();
+          for (let i = 0; i < times; i++) {
+            registerLink(from, to, () => `v${String(i)}`);
+          }
+          return getLinks(from).length === 1;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * LP3: clearLinks always makes getLinks return empty array for any fromCardId.
+   */
+  it("LP3 · clearLinks always empties the registry for any fromCardId", () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.tuple(
+            fc.string({ minLength: 1, maxLength: 15 }),
+            fc.string({ minLength: 1, maxLength: 15 }),
+          ),
+          { minLength: 1, maxLength: 5 },
+        ),
+        fc.string({ minLength: 1, maxLength: 15 }),
+        (pairs: [string, string][], queryFrom: string) => {
+          clearLinks();
+          for (const [from, to] of pairs) {
+            registerLink(from, to, () => null);
+          }
+          clearLinks();
+          return getLinks(queryFrom).length === 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * LP4: When semanticLinksEnabled=false, getLinks always returns [].
+   */
+  it("LP4 · getLinks always returns [] when semanticLinksEnabled=false", () => {
+    vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: false } as never);
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 20 }),
+        fc.string({ minLength: 1, maxLength: 20 }),
+        fc.string({ minLength: 1, maxLength: 20 }),
+        (from: string, to: string, queryFrom: string) => {
+          clearLinks();
+          registerLink(from, to, () => "data");
+          return getLinks(queryFrom).length === 0;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
