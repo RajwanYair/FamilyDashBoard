@@ -147,10 +147,30 @@ jobs:
           files: |
             dist.zip
             dist.zip.sha256
+            dist.zip.bundle
             sw.js
+            sw.js.bundle
             dist/icon.svg
 
       - name: Attest build provenance (SLSA)
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
           subject-path: dist.zip
+
+      # ── Sprint 243 / V14-SECURITY-L3: Sigstore cosign keyless signing ─────
+      # Signs dist.zip and sw.js using GitHub OIDC identity (no long-lived key).
+      # Verification: cosign verify-blob --bundle=dist.zip.bundle
+      #   --certificate-identity-regexp=".*"
+      #   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
+      #   dist.zip
+      # SHA-pin: verify against sigstore/cosign-installer releases before next tag.
+      - name: Install Cosign (Sprint 243 / V14-SECURITY-L3)
+        uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcbfce4d4e74b90a25 # v3.8.2
+
+      - name: Sign artefacts with Cosign (Sprint 243 / V14-SECURITY-L3)
+        run: |
+          cosign sign-blob --bundle=dist.zip.bundle --yes dist.zip
+          cosign sign-blob --bundle=sw.js.bundle --yes sw.js
+          echo "=== Cosign bundle summary ===" >> "$GITHUB_STEP_SUMMARY"
+          echo "dist.zip signed: dist.zip.bundle" >> "$GITHUB_STEP_SUMMARY"
+          echo "sw.js signed: sw.js.bundle" >> "$GITHUB_STEP_SUMMARY"
