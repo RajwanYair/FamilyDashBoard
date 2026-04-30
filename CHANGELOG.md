@@ -9,6 +9,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.29.0] — 2026-05-28
+
+> **5689 tests / 170 suites / 0 failures**
+
+### Added
+
+- **Sprint 263**: fast-check property tests TDP1–TDP5 for `buildTodayItems` (today-pane) — always-array invariant, urgency-sorted output, empty-inputs→empty output, every urgency valid `TodayUrgency`, stock movers with |pct| < 3 never appear. 5 new tests.
+- **Sprint 264**: fast-check property tests LP1–LP4 for `src/core/links.ts` — registered link always appears when enabled, re-register same direction → exactly one entry, `clearLinks` always empties registry, `semanticLinksEnabled: false` → always `[]`. 4 new tests.
+- **Sprint 265**: fast-check property tests CAP1–CAP5 for `src/core/cache.ts` — `cGet` miss always null, `cSet`+`cGet` round-trip, `cGetStale` miss always null, `cSet`+`cGetStale` always non-null, `cacheStats` hitRate always in [0,1]. 5 new tests.
+- **Sprint 266**: fast-check property tests KP1–KP3 for `src/ui/keyboard.ts` (registerKey always grows actions list, all actions have required shape, `getKeyboardActions` always non-null array) + UP1–UP5 for `src/core/utils.ts` (`clamp` in [min,max], `pad2` length ≥ 2, `decomposeDuration` parts non-negative, hours<24/minutes<60/seconds<60, `computeMoonPhase` non-empty). 8 new tests.
+- **Sprint 267 (N1/ADR-052)**: Shadow-vectorize client-side plumbing — `isShadowVectorizeEnabled()`, `setShadowVectorize()`, `loadShadowVectorizeFlag()`, `recordShadowVectorizeComparison()`, `getShadowVectorizeLog()` + `VectorizeShadowEntry` interface added to `src/cards/news/news.ts`. `_resetNewsForTest()` clears shadow state. Activated via `localStorage.setItem("fdb_shadow_vectorize","1")` for 30-day observation alongside SimHash v2. 9 new unit tests (SV1–SV9).
+- **Sprint 268**: Coverage ratchet — Sprints 263–267 added 42 fast-check tests; actuals 93.00/84.61/91.89/94.36; branches threshold raised 84.5→84.6.
+- **Sprint 269**: Playwright VR baselines expanded 81→90 — three new groups: alerts-banner-ext (3 themes), video-news-idle-ext (3 themes), esc-resets-state (3 themes). Spec header updated to document all 25 scenario groups.
+- **Sprint 270**: ADR-051 (FdbCard lifecycle hook protocol — `onThemeChange`+`onAlert` contract formalised) + ADR-052 (Shadow-vectorize 30-day client-side observation plan). ADR index regenerated (51 entries).
+- **Sprint 271**: ROADMAP refresh — header updated (5689 tests, 51 ADRs, 90 VR baselines), V14-FOUNDATIONS checklist Sprint 263–270 items checked, V14-SEMANTIC Vectorize noted as shadow-mode active, LHCI emphasis style fixed.
+
+---
+
 ## [13.28.0] — 2026-05-06
 
 > **5658 tests / 170 suites / 0 failures**
