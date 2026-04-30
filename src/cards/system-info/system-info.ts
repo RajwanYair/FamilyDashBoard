@@ -17,7 +17,7 @@ import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { decomposeDuration, pad2 } from "../../core/utils";
-import type { CardDefinition } from "../../types/card";
+import type { CardDefinition, CardConfigField } from "../../types/card";
 
 // ── Types for non-standard browser APIs ──────────────────────────────────
 
@@ -447,6 +447,78 @@ export async function getSwState(): Promise<"active" | "installing" | "waiting" 
   }
 }
 
+// ── Sprint 280 / CS-SI1: configSchema (extracted + expanded) ─────────────
+
+export const systemInfoConfigSchema: CardConfigField[] = [
+  {
+    key: "sysInfoShowRtt",
+    labelHe: "הצג RTT רשת",
+    labelEn: "Show Network RTT",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "system-info",
+    groupOpenByDefault: true,
+  },
+  {
+    key: "sysInfoShowStorage",
+    labelHe: "הצג אחסון",
+    labelEn: "Show Storage",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "system-info",
+  },
+  {
+    key: "sysInfoShowSw",
+    labelHe: "הצג Service Worker",
+    labelEn: "Show Service Worker",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "system-info",
+  },
+  {
+    key: "sysInfoShowBattery",
+    labelHe: "הצג סוללה",
+    labelEn: "Show Battery",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "system-info",
+  },
+  {
+    key: "sysInfoShowMemory",
+    labelHe: "הצג זיכרון",
+    labelEn: "Show Memory",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "system-info",
+  },
+  {
+    key: "sysInfoShowNetwork",
+    labelHe: "הצג רשת",
+    labelEn: "Show Network",
+    type: "boolean",
+    defaultValue: true,
+    tab: "display",
+    group: "system-info",
+  },
+  {
+    key: "sysInfoRefreshInterval",
+    labelHe: "תדירות רענון (שניות)",
+    labelEn: "Refresh interval (seconds)",
+    type: "range",
+    defaultValue: 30,
+    min: 10,
+    max: 120,
+    step: 10,
+    tab: "advanced",
+    group: "system-info",
+  },
+];
+
 // ── CardDefinition export (for registry) ─────────────────────────────────
 
 export const systemInfoCard: CardDefinition = {
@@ -456,17 +528,7 @@ export const systemInfoCard: CardDefinition = {
   titleEn: "System Info",
   defaultSlot: { col: 2, order: 4, flexGrow: 14, hidden: false },
   defaultSize: "sm",
-  configSchema: [
-    {
-      key: "sysInfoShowRtt",
-      labelHe: "הצג RTT רשת",
-      labelEn: "Show Network RTT",
-      type: "boolean",
-      defaultValue: true,
-      tab: "display",
-      group: "system-info",
-    },
-  ],
+  configSchema: systemInfoConfigSchema,
   render(): HTMLElement {
     const section = document.createElement("section");
     section.className = "card";

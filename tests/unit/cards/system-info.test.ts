@@ -25,6 +25,7 @@ import {
   appendRttHistory,
   getRttHistory,
   _resetRttHistory,
+  systemInfoConfigSchema,
 } from "@/cards/system-info/system-info";
 
 // ── DOM setup ──────────────────────────────────────────────────────────────
@@ -1147,5 +1148,41 @@ describe("SIP4 · appendRttHistory / getRttHistory — property: ring buffer gro
         return getRttHistory().length === 0;
       }),
     );
+  });
+});
+
+// ── Sprint 280 / CS-SI1: per-tile toggles + refresh interval ─────────────
+describe("SystemInfo configSchema — CS-SI1 (Sprint 280)", () => {
+  const TILE_TOGGLE_KEYS = [
+    "sysInfoShowRtt",
+    "sysInfoShowStorage",
+    "sysInfoShowSw",
+    "sysInfoShowBattery",
+    "sysInfoShowMemory",
+    "sysInfoShowNetwork",
+  ] as const;
+
+  it("configSchema has 7 fields total after CS-SI1", () => {
+    expect(systemInfoConfigSchema.length).toBe(7);
+  });
+
+  it.each(TILE_TOGGLE_KEYS)("tile toggle %s is a boolean defaulting to true", (key) => {
+    const field = systemInfoConfigSchema.find((f) => f.key === key);
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("boolean");
+    expect(field?.defaultValue).toBe(true);
+  });
+
+  it("sysInfoRefreshInterval is a range field with correct bounds", () => {
+    const field = systemInfoConfigSchema.find((f) => f.key === "sysInfoRefreshInterval");
+    expect(field).toBeDefined();
+    expect(field?.type).toBe("range");
+    expect(field?.min).toBe(10);
+    expect(field?.max).toBe(120);
+    expect(field?.defaultValue).toBe(30);
+  });
+
+  it("systemInfoCard.configSchema references the exported schema", () => {
+    expect(systemInfoCard.configSchema).toBe(systemInfoConfigSchema);
   });
 });
