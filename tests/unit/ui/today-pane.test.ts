@@ -453,3 +453,83 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
     );
   });
 });
+
+// ── Sprint 304 / TDP6-TDP8: additional property tests ─────────────────────
+
+describe("TodayPane — buildTodayItems fast-check properties (TDP6-TDP8, Sprint 304)", () => {
+  /**
+   * TDP6: every item icon is always a non-empty string.
+   */
+  it("TDP6 · every result item icon is a non-empty string", () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            text: fc.string({ minLength: 1, maxLength: 20 }),
+            pct: fc.double({ min: 3.0, max: 10.0, noNaN: true }),
+          }),
+          { minLength: 1, maxLength: 3 },
+        ),
+        (movers: { text: string; pct: number }[]) => {
+          const stockMovers = movers.map((m) => `${m.text} +${m.pct.toFixed(1)}%`);
+          const items = buildTodayItems({ ...EMPTY_INPUTS, nowMs: NOW_MS, stockMovers });
+          return items.every((i: TodayPaneItem) => typeof i.icon === "string" && i.icon.length > 0);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * TDP7: every item label is always a non-empty string.
+   */
+  it("TDP7 · every result item label is a non-empty string", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1, max: 360 }),
+        (minutesUntil: number) => {
+          const items = buildTodayItems({
+            ...EMPTY_INPUTS,
+            nowMs: NOW_MS,
+            nextCalEvent: { label: "ישיבה", minutesUntil },
+          });
+          return items.every((i: TodayPaneItem) => typeof i.label === "string" && i.label.length > 0);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * TDP8: result items always have unique type values — at most one item per type.
+   */
+  it("TDP8 · result items always have unique type values", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          hasAlert: fc.boolean(),
+          hasCountdown: fc.boolean(),
+          minutesUntil: fc.integer({ min: 0, max: 300 }),
+          stockPct: fc.double({ min: 0.5, max: 15.0, noNaN: true }),
+        }),
+        ({ hasAlert, hasCountdown, minutesUntil, stockPct }) => {
+          const alertArr = hasAlert
+            ? [{ alerts: [{ cities: ["תל אביב"], threat: 0, time: Math.floor(NOW_MS / 1000) - 60 }] }]
+            : [];
+          const countdownTargetMs = hasCountdown ? NOW_MS + minutesUntil * 60 * 1000 : null;
+          const stockMovers = [`TSLA +${stockPct.toFixed(1)}%`];
+          const items = buildTodayItems({
+            ...EMPTY_INPUTS,
+            nowMs: NOW_MS,
+            alerts: alertArr,
+            countdownTargetMs,
+            stockMovers,
+          });
+          const types = items.map((i: TodayPaneItem) => i.type);
+          return new Set(types).size === types.length;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});

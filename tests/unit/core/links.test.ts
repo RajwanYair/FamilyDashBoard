@@ -175,3 +175,106 @@ describe("Semantic links — fast-check properties (LP1-LP4, Sprint 264)", () =>
     );
   });
 });
+
+// ── Sprint 304 / LP5-LP8: additional fast-check property tests ────────────
+
+describe("Semantic links — fast-check properties (LP5-LP8, Sprint 304)", () => {
+  beforeEach(() => {
+    clearLinks();
+    vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: true } as never);
+  });
+
+  /**
+   * LP5: every link returned by getLinks(from) always has fromCardId === from.
+   * The filter is always exact — no cross-card contamination.
+   */
+  it("LP5 · every returned link has fromCardId === query card (filter invariant)", () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.tuple(
+            fc.string({ minLength: 1, maxLength: 15 }),
+            fc.string({ minLength: 1, maxLength: 15 }),
+          ),
+          { minLength: 1, maxLength: 8 },
+        ),
+        fc.string({ minLength: 1, maxLength: 15 }),
+        (pairs: [string, string][], queryFrom: string) => {
+          clearLinks();
+          for (const [from, to] of pairs) {
+            registerLink(from, to, () => null);
+          }
+          const links = getLinks(queryFrom);
+          return links.every((l) => l.fromCardId === queryFrom);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * LP6: registering N distinct (from, to) pairs from the same source always
+   *      returns exactly N links.
+   */
+  it("LP6 · N distinct targets from same source → exactly N links", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 15 }),
+        fc.uniqueArray(fc.string({ minLength: 1, maxLength: 15 }), {
+          minLength: 1,
+          maxLength: 6,
+        }),
+        (fromCard: string, targetCards: string[]) => {
+          clearLinks();
+          for (const to of targetCards) {
+            registerLink(fromCard, to, () => to);
+          }
+          return getLinks(fromCard).length === targetCards.length;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * LP7: the resolver reference registered is the exact same reference returned.
+   */
+  it("LP7 · resolver identity is preserved after registration", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 15 }),
+        fc.string({ minLength: 1, maxLength: 15 }),
+        (from: string, to: string) => {
+          clearLinks();
+          const resolver = () => `${from}→${to}`;
+          registerLink(from, to, resolver);
+          const links = getLinks(from);
+          return links.length === 1 && links[0]?.resolver === resolver;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  /**
+   * LP8: replacing a resolver always reflects the new resolver in getLinks.
+   */
+  it("LP8 · replacing a resolver always returns the latest resolver", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 15 }),
+        fc.string({ minLength: 1, maxLength: 15 }),
+        fc.string({ minLength: 1, maxLength: 20 }),
+        (from: string, to: string, payload: string) => {
+          clearLinks();
+          registerLink(from, to, () => "old");
+          const newResolver = () => payload;
+          registerLink(from, to, newResolver);
+          const links = getLinks(from);
+          return links.length === 1 && links[0]?.resolver === newResolver;
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+});
