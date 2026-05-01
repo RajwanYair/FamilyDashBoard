@@ -249,6 +249,15 @@ export async function renderSystemInfo(): Promise<void> {
   const rttConn = (navigator as NavigatorWithExtras).connection;
   if (rttConn?.rtt !== undefined && rttConn.rtt > 0) {
     setText("sysinfo-rtt", `${rttConn.rtt}ms`);
+    // Sprint 399 / SI-RTT: accumulate Connection-API RTT into sparkline ring too.
+    appendRttHistory(rttConn.rtt);
+    const rttHistory = getRttHistory();
+    const rttSparkEl = document.getElementById("sysinfo-rtt-spark");
+    if (rttSparkEl !== null && rttHistory.length >= 2) {
+      rttSparkEl.innerHTML = trustedHTML(
+        sparklineSvg(Array.from(rttHistory), "var(--accent-2, var(--accent))", 44, 12),
+      );
+    }
   } else {
     const navEntry = performance.getEntriesByType("navigation")[0] as
       | PerformanceNavigationTiming
