@@ -376,7 +376,20 @@ See [ROADMAP.md](docs/ROADMAP.md) for the full strategic plan and stream priorit
 
 ---
 
-## 🤝 Contributing
+## � Troubleshooting
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| `npm install` fails inside `FamilyDashBoard/` | All deps live in the parent `MyScripts/` | `cd ..` then `npm install` |
+| A card shows the red sync indicator | Direct fetch + 3 proxies failed | Press **D** to open diagnostics; reload to retry |
+| Stale data after refresh | `cGet` hit a stale cache layer | Press **D**, click "Clear cache", or wait for next interval |
+| Build complains about per-card warn-cap (38 KB) | A card grew past the budget | Refactor; warn-cap is informational, hard-cap is 80 KB |
+| `npm run check` fails on `check:test-focus` | `.only` or `.skip` left in a test | Remove the focus/skip — both are forbidden in `main` |
+| Service worker won't update | Old SW is still controlling the page | DevTools → Application → Service Workers → "Update on reload" |
+
+---
+
+## �🤝 Contributing
 
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for development setup and coding standards.
 
