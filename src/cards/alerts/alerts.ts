@@ -5,6 +5,8 @@
  *   60s when alerts active, 5min when idle.
  * On new alert: plays a beep and shows a desktop notification if granted.
  * Renders scrolling list of recent alert events.
+ *
+ * X12/X15 ADOPTED — v13.40.0 Sprint 387 (see ADR-071).
  */
 
 import {
@@ -25,6 +27,31 @@ import { trustedHTML } from "../../core/trusted-types";
 import type { AlertEvent, AlertsResponse } from "../../types/api";
 import { isAlertEvent } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
+
+// X15 (Sprint 387): cached snapshot of active alerts for the semantic-clipboard producer.
+let _activeAlertsSnapshot: { count: number; areas: string[]; latestTs: number } | null = null;
+
+function buildAlertsPayload(): SemanticPayload | null {
+  const s = _activeAlertsSnapshot;
+  if (!s || s.count === 0) return null;
+  const areasText = s.areas.slice(0, 5).join(", ");
+  return {
+    cardId: "alerts",
+    text: `צבע אדום · ${String(s.count)} התראות פעילות · ${areasText}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "SpecialAnnouncement",
+      name: "צבע אדום",
+      datePosted: new Date(s.latestTs * 1000).toISOString(),
+      category: "https://schema.org/CivicEmergencyAnnouncement",
+      spatialCoverage: s.areas,
+    },
+    ts: Date.now(),
+  };
+}
 
 // ── State ──
 let _enabled = true;
@@ -278,6 +305,25 @@ export function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
 
   const recent = data.slice(0, 25);
   const hasActive = data.some((ev) => ev.alerts?.some((a) => now - a.time < 600));
+
+  // X12 (Sprint 387): publish active-alerts signal for sibling consumers.
+  const activeAlerts: { area: string; ts: number }[] = [];
+  for (const ev of data) {
+    for (const a of ev.alerts ?? []) {
+      if (now - a.time < 600) {
+        for (const city of a.cities) activeAlerts.push({ area: city, ts: a.time });
+      }
+    }
+  }
+  if (activeAlerts.length > 0) {
+    const areas = Array.from(new Set(activeAlerts.map((a) => a.area)));
+    const latestTs = activeAlerts.reduce((m, a) => Math.max(m, a.ts), 0);
+    setCardSignal("alerts", "active", { count: activeAlerts.length, areas, latestTs });
+    _activeAlertsSnapshot = { count: activeAlerts.length, areas, latestTs };
+  } else {
+    setCardSignal("alerts", "active", null);
+    _activeAlertsSnapshot = null;
+  }
 
   const frag = document.createDocumentFragment();
   for (const isClone of [false, true]) {
@@ -598,6 +644,7 @@ export function renderAlertHistory(container: HTMLElement): void {
 
 export function initAlertsCard(): void {
   cacheDom();
+  registerSemanticProducer("alerts", buildAlertsPayload);
   initAlertsSSE();
   void loadAlerts();
   // Sprint 185 / A2: wire history toggle button
