@@ -481,16 +481,16 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 
 ### 6.1 V14-FOUNDATIONS — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
-- [ ] D12 module-boundary linting in `tooling/eslint/`.
-- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar).
+- [x] D12 module-boundary linting in `tooling/eslint/`.
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 KB warn through v13.39.0; hard-cap unchanged at 80 KB)_
 - [ ] D14 Renovate group rules.
-- [ ] D11 `popover=` for diag toasts + bookmark menu.
+- [x] D11 `popover=` for diag toasts + bookmark menu.
 - [ ] D9 CSS `if()` + `@function` migration (tokens).
-- [ ] D10 Speculation Rules for help / config panels.
-- [ ] D5 Origin-Agent-Cluster header + meta.
+- [x] D10 Speculation Rules for help / config panels.
+- [x] D5 Origin-Agent-Cluster header + meta.
 - [ ] VR baselines 108 → 130 (DO-SSE alert states + maximise-FLIP scenarios).
-- [ ] D3 Compute Pressure API tile in system-info.
-- [ ] D4 Storage Buckets per-card eviction.
+- [x] D3 Compute Pressure API tile in system-info.
+- [x] D4 Storage Buckets per-card eviction.
 - [ ] LHCI ratchet `error 0.97 → 0.98` cached.
 - [ ] Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io).
 
@@ -523,8 +523,8 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 NEW stream. The dashboard becomes addressable by users' AI assistants without scraping or telemetry.
 
 - [ ] **D1 / X11** MCP read-only server (`localhost:7411/mcp`); ADR before code.
-- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; 4-consumer migration → v14.x).
-- [x] **X15** semantic clipboard (core + `Y` key shipped v13.38.0 S367–369; per-card producers → v14.x).
+- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; remaining 2 → v14.x).
+- [x] **X15** semantic clipboard (core + `Y` key shipped v13.38.0 S367–369; first 2 producers shipped v13.39.0: countdown S377, hebrew-cal S379; remaining producers → v14.x).
 - [ ] **PC-1** end-of-day audio recap (gated by audio-CSP audit).
 
 **Exit**: MCP server verified zero remote-origin reachability; CSP unchanged; LHCI no regression; ADR shipped.
