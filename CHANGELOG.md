@@ -9,6 +9,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.36.0] — 2026-05-18
+
+> **Decision documentation sweep** — Sprints 345–353 ship the v13.36.0 patch series: 4 new ADRs (D9/D2/D15/D11), per-card warn-cap ratchet 50→48 KB, `check:boundaries` wired into `npm run check`. Tests: 6028 / 191 suites / 0 failures. ADRs: 65 total.
+
+### Added
+
+- **Sprint 345**: ADR-062 documenting D9 CSS `if()` / `@function` tracking decision (revisit when Chrome + Firefox both ship; modest ~0.3 KB gzip win, kept behind `@layer themes` fallback).
+- **Sprint 346**: ADR-063 documenting D2 WebNN tracking decision (revisit at v15; quantized model ≤ 30 MB Storage Bucket gate).
+- **Sprint 347**: ADR-064 documenting D15 third-party rebuilder annual drill (SLSA `verifier-action` container; once-per-year on the v14.X.0 nearest project anniversary).
+- **Sprint 348**: ADR-065 documenting D11 popover= status (2 popovers live, bookmark menu queued, diag toasts + 6 other elements explicitly rejected).
+- **Sprint 351**: New `tests/unit/scripts/per-card-cap.test.ts` — regression test asserting `PER_CARD_HARD_CAP_KB ≤ 80` and `PER_CARD_WARN_KB ≤ 50 < hard-cap`.
+
+### Changed
+
+- **Sprint 349** (D13): Per-card source warn-cap ratcheted 50 → 48 KB. Three cards (weather 55.0, stocks 51.5, news 49.3) named as next refactor targets.
+- **Sprint 350**: `check:boundaries` script wired into `npm run check` (D12 lint now part of the unified gate).
+- **Sprint 352**: ROADMAP §1.11 — D2, D9, D11, D15 annotated with their shipped ADR references and sprint markers.
+
+---
+
 ## [13.35.0] — 2026-05-17
 
 > **Build hygiene + decision documentation** — Sprints 335–343 ship the v13.35.0 patch series: D12 module-boundary lint, D13 per-card source hard-cap, and five new ADRs (D12/D13/D1/D6/D7/D8). Tests: 6025 / 190 suites / 0 failures. ADRs: 61 total.

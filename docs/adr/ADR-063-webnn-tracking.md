@@ -38,8 +38,7 @@ network egress.
 
 - **Pro (when adopted):** Zero per-rerank Vectorize cost. Zero network
   egress for inference. Faster (sub-50 ms vs. ~150 ms over WAN).
-- **Pro (when adopted):** Native fit with the dashboard's "static PWA
-  + zero telemetry" posture.
+- **Pro (when adopted):** Native fit with the dashboard's "static PWA + zero telemetry" posture.
 - **Con (today):** Browser support is single-vendor.
 - **Con (today):** Quantized model footprint dwarfs the entire
   current bundle. Even with Storage Buckets eviction the cold-start
