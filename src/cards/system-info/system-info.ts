@@ -305,12 +305,23 @@ export async function renderSystemInfo(): Promise<void> {
   };
   setText("sysinfo-sw", SW_LABELS[swState] ?? "—");
 
+  // Sprint 329 / D3: Compute Pressure API state
+  const PRESSURE_LABELS: Record<PressureState, string> = {
+    nominal: "🟢 רגיל",
+    fair: "🟡 מתון",
+    serious: "🟠 גבוה",
+    critical: "🔴 קריטי",
+    unsupported: "—",
+  };
+  setText("sysinfo-pressure", PRESSURE_LABELS[getPressureState()]);
+
   diagLog("FDB-053: [system-info] Rendered");
 }
 
 let _sysInfoInterval: number | null = null;
 
 export function initSystemInfoCard(): void {
+  initPressureObserver();
   void renderSystemInfo();
   if (_sysInfoInterval) clearInterval(_sysInfoInterval);
   // Refresh every 30 seconds
@@ -330,6 +341,7 @@ export function destroySystemInfoCard(): void {
     clearInterval(_sysInfoInterval);
     _sysInfoInterval = null;
   }
+  destroyPressureObserver();
 }
 
 // ── Sprint 28: Pure system-info utility functions ─────────────────────────
@@ -445,6 +457,60 @@ export async function getSwState(): Promise<"active" | "installing" | "waiting" 
   } catch {
     return "none";
   }
+}
+
+// ── Sprint 329 / D3: Compute Pressure API ─────────────────────────────────
+
+/**
+ * Compute Pressure API state — `nominal | fair | serious | critical`.
+ * Uses the most recent observation from a long-lived `PressureObserver`.
+ * Returns "unsupported" when the API is absent.
+ */
+export type PressureState = "nominal" | "fair" | "serious" | "critical" | "unsupported";
+
+let _pressureState: PressureState = "unsupported";
+let _pressureObserver: { disconnect: () => void } | null = null;
+
+interface PressureRecord {
+  state: "nominal" | "fair" | "serious" | "critical";
+  source: string;
+  time: number;
+}
+type PressureObserverCtor = new (
+  callback: (records: ReadonlyArray<PressureRecord>) => void,
+  options?: { sampleInterval?: number },
+) => {
+  observe: (source: "cpu") => Promise<void>;
+  disconnect: () => void;
+};
+
+export function initPressureObserver(): void {
+  if (_pressureObserver) return;
+  const Ctor = (globalThis as unknown as { PressureObserver?: PressureObserverCtor })
+    .PressureObserver;
+  if (!Ctor) return;
+  try {
+    const obs = new Ctor((records) => {
+      const last = records[records.length - 1];
+      if (last) _pressureState = last.state;
+    }, { sampleInterval: 30_000 });
+    void obs.observe("cpu").catch(() => {
+      _pressureState = "unsupported";
+    });
+    _pressureObserver = obs;
+  } catch {
+    _pressureState = "unsupported";
+  }
+}
+
+export function getPressureState(): PressureState {
+  return _pressureState;
+}
+
+export function destroyPressureObserver(): void {
+  _pressureObserver?.disconnect();
+  _pressureObserver = null;
+  _pressureState = "unsupported";
 }
 
 // ── Sprint 280 / CS-SI1: configSchema (extracted + expanded) ─────────────
