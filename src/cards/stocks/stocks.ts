@@ -4,6 +4,8 @@
  * Yahoo Finance v8 chart API. Bare URL (no query params) to avoid
  * allorigins 522 timeouts. BTC-USD proxied via worker /api/crypto (CoinGecko).
  * Renders price, % change, mini sparkline chart, 52-week range.
+ *
+ * X12/X15 ADOPTED — v13.40.0 Sprint 388 (see ADR-071).
  */
 
 import "./stocks.css";
@@ -31,6 +33,30 @@ import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 import { getLastCurrencyRates } from "../currency/currency";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
+
+// X15 (Sprint 388): cached snapshot of top mover for the semantic-clipboard producer.
+let _topMoverSnapshot: { sym: string; pct: number; dir: "up" | "down" } | null = null;
+
+function buildStocksPayload(): SemanticPayload | null {
+  const m = _topMoverSnapshot;
+  if (!m) return null;
+  const arrow = m.dir === "up" ? "↑" : "↓";
+  const text = `${m.sym} ${arrow} ${m.pct.toFixed(2)}% · מוביל היום`;
+  return {
+    cardId: "stocks",
+    text,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "FinancialProduct",
+      name: m.sym,
+      identifier: m.sym,
+    },
+    ts: Date.now(),
+  };
+}
 
 // ── Helpers ──
 export function fmtPrice(price: number, sym: string): string {
@@ -813,6 +839,18 @@ export async function loadAllStocks(): Promise<void> {
   checkStockAlerts();
   renderPortfolioRow();
 
+  // X12 (Sprint 388): publish top-mover signal after all stocks are rendered.
+  const stkEls = Array.from(document.querySelectorAll<HTMLElement>("#stocks-body .stk"));
+  const movers = getTopMovers(stkEls);
+  if (movers.length > 0 && movers[0]) {
+    const top = movers[0];
+    setCardSignal("stocks", "top-mover", { sym: top.sym, pct: top.pct, dir: top.dir });
+    _topMoverSnapshot = { sym: top.sym, pct: top.pct, dir: top.dir };
+  } else {
+    setCardSignal("stocks", "top-mover", null);
+    _topMoverSnapshot = null;
+  }
+
   // Start loop scroll if stocks overflow the visible area
   const scrollEl = document.getElementById("stocks-body");
   if (scrollEl instanceof HTMLElement) {
@@ -1046,6 +1084,7 @@ export function applyHiddenStocks(): void {
 
 export function initStocksCard(): void {
   renderStocksShell();
+  registerSemanticProducer("stocks", buildStocksPayload);
   applyHiddenStocks();
   updateMarketBadge();
   updateMarketCountdown();
