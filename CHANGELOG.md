@@ -9,6 +9,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.35.0] — 2026-05-17
+
+> **Build hygiene + decision documentation** — Sprints 335–343 ship the v13.35.0 patch series: D12 module-boundary lint, D13 per-card source hard-cap, and five new ADRs (D12/D13/D1/D6/D7/D8). Tests: 6025 / 190 suites / 0 failures. ADRs: 61 total.
+
+### Added
+
+- **Sprint 335** (D12): `scripts/check-module-boundaries.mjs` — zero-dependency Node script enforcing the `src/cards/*` ↔ `src/ui/*` import boundary. Six pre-existing violations grandfathered in a `BASELINE` set; new violations exit 1. New `tests/unit/scripts/module-boundaries.test.ts` runs the script against the live tree on every CI pass.
+- **Sprint 336** (D13): Per-card source hard-cap added to `scripts/check-bundle-size.mjs`. Hard-cap 80 KB raw per `src/cards/<name>/`, warn 50 KB. Names the four heaviest cards (weather, stocks, news, hebrew-cal) as the next refactor backlog.
+- **Sprint 337**: ADR-057 documenting D12 module-boundary lint and D13 per-card cap (zero-dep custom-script approach, baseline grandfather policy, ratchet plan).
+- **Sprint 338**: ADR-058 documenting D1 local read-only MCP server design (loopback `localhost:7411`, opt-in via `?mcp=1`, BroadcastChannel bridge, zero egress).
+- **Sprint 339**: ADR-059 documenting D6 Cloudflare Snippets/TEE tracking decision (~3 KB Worker savings; gates: GA + sub-ms p99 + Worker pressure).
+- **Sprint 340**: ADR-060 documenting D7 Web Push (VAPID) gated decision (3+ user-request gate; severity ≥ rocket only; D1-stored subscriptions; 180-day auto-expire; aes128gcm encryption).
+- **Sprint 341**: ADR-061 documenting D8 IL native provider contract (IMS/TASE/BoI). Strict adapter contract, geo-gated chain order, ≤ 2 KB gzip per adapter; implementation order BoI → IMS → TASE.
+
+### Changed
+
+- **Sprint 342**: ROADMAP §1.11 — D12 and D13 struck through as shipped v13.35.0; D1, D6, D7, D8 annotated with ADR references and shipped-sprint markers.
+
+---
+
 ## [13.34.0] — 2026-05-16
 
 > **2026 hardening cohort** — Sprints 327–334 ship the v13.34.0 patch series: Origin-Agent-Cluster, Compute Pressure tile, Storage Buckets tile, Permissions-Policy 28 → 41 directives, Renovate group rules, ADR-056. 6024 tests / 189 suites passing.
