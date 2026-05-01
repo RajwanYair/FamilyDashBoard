@@ -9,6 +9,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.38.0] — 2026-05-26
+
+> **First implementation cohort of the X11–X15 capabilities** — Sprints 365–374 ship the v13.38.0 release: X12 card-signal protocol core API + tests, X15 semantic-clipboard core + `Y` keyboard binding + tests, per-card warn-cap ratchet 46→44 KB. Tests: 6051 / 193 suites / 0 failures. ADRs: 70 total (status updates only).
+
+### Added
+
+- **Sprint 365**: `src/core/card-signal-protocol.ts` — X12 core API. `setCardSignal<T>(cardId, key, value)` + `getCardSignal<T>` + `onCardSignal<T>` returning unsubscribe. Deep-freeze on write; microtask-deferred subscriber delivery; per-listener error isolation. Zero deps. Implements ADR-067 spec.
+- **Sprint 366**: `tests/unit/core/card-signal-protocol.test.ts` — 8 tests covering null-on-miss, set/get roundtrip, deep-freeze enforcement, microtask delivery semantics, current-value-not-fired, unsubscribe, listener-error isolation, composite-key isolation.
+- **Sprint 367**: `src/core/semantic-clipboard.ts` — X15 core. `registerSemanticProducer(cardId, fn)` opt-in; `copyFocusedCardPayload()` walks `[data-card-id]` ancestors, calls `navigator.clipboard.write([new ClipboardItem({…})])` with `text/plain` + `application/ld+json` MIMEs; falls back to `writeText` when `ClipboardItem` undefined. Returns `false`/`null` on any failure — never throws. Implements ADR-070 spec.
+- **Sprint 368**: `tests/unit/core/semantic-clipboard.test.ts` — 15 tests covering ancestor walk, producer registration, error swallowing, ClipboardItem write, fallback path, denial handling, full focused-card flow.
+- **Sprint 369**: Wired `Y` (yank) keyboard shortcut in `src/main.ts` for X15. Bilingual label "Copy semantic" / "העתק תוכן". Toast confirmation on success. _(Note: ADR-070 originally specified `C`, but `c` was already bound to clock-seconds toggle. ADR-070 status updated.)_
+
+### Changed
+
+- **Sprint 370**: D13 per-card source warn-cap ratcheted 46 → 44 KB in `scripts/check-bundle-size.mjs` (continuing the 50 → 48 → 46 → 44 schedule toward v14.0 target of warn 30 / hard 60).
+- **Sprint 371**: `docs/keyboard.md` — added `Y` row.
+- **Sprint 372**: `docs/ROADMAP.md` §4.2 / §4.5 / §6 checklist — marked X12 core + X15 core as shipped (consumer migration deferred to v14.x). ADR-067 + ADR-070 statuses updated to **Accepted** with shipped-sprint refs.
+
+---
+
 ## [13.37.0] — 2026-05-19
 
 > **Cross-card capabilities documentation sweep** — Sprints 355–363 ship the v13.37.0 patch series: 5 new ADRs (X11/X12/X13/X14/X15), per-card warn-cap ratchet 48→46 KB, `check:cards` npm alias. Tests: 6028 / 191 suites / 0 failures. ADRs: 70 total.
@@ -182,7 +202,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ## [13.29.0] — 2026-05-28
 
-> **5689 tests / 170 suites / 0 failures** *(at tag; post-tag: 5696 / Sprint 273-P10)*
+> **5689 tests / 170 suites / 0 failures** _(at tag; post-tag: 5696 / Sprint 273-P10)_
 
 ### Added
 
@@ -577,7 +597,7 @@ Seven files bumped to v13.14.0: `package.json`, `sw.js`, `README.md` badge, `.gi
 
 ### Changed
 
-- **Inline styles → utility classes** — extracted **103** inline `style="…"` attributes from `src/index.html` (48 unique declaration sets) into a new dedicated cascade-layered stylesheet `src/styles/inline-utils.css`. New utility classes follow the `.cfg-*` and `.is-hidden` / `.is-invisible` naming conventions and live inside `@layer components`. Eliminates every HTMLHint *"CSS inline styles should not be used"* warning.
+- **Inline styles → utility classes** — extracted **103** inline `style="…"` attributes from `src/index.html` (48 unique declaration sets) into a new dedicated cascade-layered stylesheet `src/styles/inline-utils.css`. New utility classes follow the `.cfg-*` and `.is-hidden` / `.is-invisible` naming conventions and live inside `@layer components`. Eliminates every HTMLHint _"CSS inline styles should not be used"_ warning.
 - **`link-check.yml` strict mode** — the monthly link-rot workflow no longer silently passes when broken links are found; after the issue-opener step a follow-up `Fail job on dead links` step runs `exit 1`. Matches Rule 32 ("no `continue-on-error` shadow gates").
 - **`release.yml`** — checksum and release-asset paths updated from `icon.svg` (root) → `dist/icon.svg` (build output) so the SLSA-attested artefact references the actual deployed icon.
 - **Documentation rewire** — every `CLAUDE.md` reference removed from `.github/AGENTS.md`, `docs/README.md`, `.github/skills/release/SKILL.md`, `.github/instructions/pre-release.instructions.md`, `.github/instructions/workspace.instructions.md`, `.github/prompts/version-bump.prompt.md`, `.github/prompts/release-check.prompt.md`. Version-bump file lists drop from 15 → 14 anchors.
