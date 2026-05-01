@@ -27,4 +27,27 @@ describe("_headers — security baseline (Sprint 327)", () => {
     expect(HEADERS).toMatch(/X-Content-Type-Options:\s*nosniff/);
     expect(HEADERS).toMatch(/require-trusted-types-for 'script'/);
   });
+
+  it("denies new 2026 sensor / privacy / clipboard APIs by default (Sprint 331)", () => {
+    // Hard-deny: empty allowlist
+    for (const directive of [
+      "attribution-reporting",
+      "browsing-topics",
+      "idle-detection",
+      "interest-cohort",
+      "storage-access",
+      "unload",
+      "clipboard-read",
+      "private-state-token-issuance",
+      "private-state-token-redemption",
+      "keyboard-map",
+      "speaker-selection",
+      "gamepad",
+    ]) {
+      expect(HEADERS).toMatch(new RegExp(`${directive}=\\(\\)`));
+    }
+    // Self-only: Compute Pressure (used by system-info card) and clipboard-write
+    expect(HEADERS).toMatch(/compute-pressure=\(self\)/);
+    expect(HEADERS).toMatch(/clipboard-write=\(self\)/);
+  });
 });

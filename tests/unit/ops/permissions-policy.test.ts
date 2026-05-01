@@ -98,10 +98,11 @@ describe("_headers: Permissions-Policy — total API count", () => {
     expect(apis.length).toBeGreaterThanOrEqual(28);
   });
 
-  it("all entries follow name=() format", () => {
+  it("all entries follow name=() or name=(self) format", () => {
+    // Sprint 331: Compute Pressure + clipboard-write are self-allowed for first-party cards
     const raw = policy.split(",").map((s) => s.trim());
     for (const entry of raw) {
-      expect(entry).toMatch(/^[\w-]+=\(\)$/);
+      expect(entry).toMatch(/^[\w-]+=\((?:|self)\)$/);
     }
   });
 
