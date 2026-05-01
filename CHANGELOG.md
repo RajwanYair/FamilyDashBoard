@@ -9,6 +9,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.34.0] — 2026-05-16
+
+> **2026 hardening cohort** — Sprints 327–334 ship the v13.34.0 patch series: Origin-Agent-Cluster, Compute Pressure tile, Storage Buckets tile, Permissions-Policy 28 → 41 directives, Renovate group rules, ADR-056. 6024 tests / 189 suites passing.
+
+### Added
+
+- **Sprint 327** (D5): `Origin-Agent-Cluster: ?1` response header on all routes for per-origin process isolation (defends against Spectre-class side-channels). New `tests/unit/headers.test.ts` asserts the full COOP/COEP/CORP/HSTS/Trusted-Types baseline.
+- **Sprint 329** (D3): Compute Pressure API tile in `system-info` card. Feature-detected `PressureObserver` wired through `initPressureObserver()` / `getPressureState()` / `destroyPressureObserver()`; surfaces `nominal / fair / serious / critical / unsupported` as `🌡️ עומס`. 4 new tests.
+- **Sprint 330** (D4): Storage Buckets feature-detect tile in `system-info`. `getStorageBuckets()` returns the count of named buckets or `—` when API is absent; surfaces as `🪣 דליים`. 4 new tests.
+- **Sprint 331**: `Permissions-Policy` expanded from 28 → 41 directives covering the 2026 cohort (`attribution-reporting`, `browsing-topics`, `idle-detection`, `interest-cohort`, `storage-access`, `unload`, `clipboard-read`, `private-state-token-issuance/redemption`, `keyboard-map`, `speaker-selection`, `gamepad`); `compute-pressure` and `clipboard-write` allowed `(self)` for first-party use.
+- **Sprint 332**: ADR-056 documenting the 2026 hardening cohort (D3/D4/D5 + Permissions-Policy expansion). 56 ADRs total.
+
+### Changed
+
+- **Sprint 328** (D14): Renovate scheduling refined — security PRs at-any-time, minor/patch dev-deps grouped monthly (was weekly), majors require manual review. Reduces PR noise without sacrificing supply-chain hygiene.
+- **Sprint 333**: ROADMAP §1.11 / §3 / §5.1 marked D3 / D4 / D5 / D14 / SI-Pressure / SI-Buckets as shipped (per §10 Sprint Log Discipline).
+- `tests/unit/ops/permissions-policy.test.ts` regex now accepts `name=()` and `name=(self)` forms.
+
+---
+
 ## [13.33.0] — 2026-05-15
 
 > **6012 tests / 186 suites / 0 failures** — Sprints 317–326 fast-check property-test sprint set + ADR-055.
