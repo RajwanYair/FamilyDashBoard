@@ -344,8 +344,11 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 // Hard-cap any single card's raw source at 80 KB. The aspirational target
 // (≤ 6 KB gzip ≈ ≤ 24 KB raw) is tracked in ROADMAP §1.11 D13 — this is
 // the runaway-growth guardrail, not the destination.
+//
+// Sprint 349 (v13.36.0): ratchet warn-cap 50 → 48 KB. Each release lowers
+// by 2 KB until we reach the v14.0 target of warn 30 / hard 60.
 const PER_CARD_HARD_CAP_KB = 80;
-const PER_CARD_WARN_KB = 50;
+const PER_CARD_WARN_KB = 48;
 let perCardCapOk = true;
 console.log(`📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`);
 for (const { name, sourceKb } of cardSourceRows) {
