@@ -1,6 +1,6 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-15 · **Shipped baseline**: v13.33.0 (Sprint 326) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
+> **Refresh date**: 2026-05-02 · **Shipped baseline**: v13.42.0 (Sprint 396) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
 >
 > **Inventory**: 6012 tests / 186 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 55 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
 >
@@ -678,3 +678,45 @@ This document does **not** log sprint history. Each completed sprint:
 If a stream completes, its open list is removed and replaced with **`Status: shipped (vX.Y.Z)`** plus a one-line outcome.
 
 Forward-only. Always.
+
+---
+
+## 11. Sprint 396 — Production-readiness 20-task review (v13.42.0)
+
+External directive: re-validate the project against a 20-item production-readiness checklist (web-only scope lock, single deployable, no Python, 0 errors / 0 warnings / 0 suppressions, CI artefacts attached on release). The audit confirmed that 19 of 20 items are already in place from prior sprints; one real gate failure surfaced (smart-contrast) and was fixed at root cause.
+
+### Audit verdict per task
+
+| #   | Task                                       | Status before | Action this sprint                                                         |
+| --- | ------------------------------------------ | ------------- | -------------------------------------------------------------------------- |
+| 1   | Inventory & delete non-web code paths      | ✅ already     | Web-only PWA. No desktop/mobile/back-end scaffolding. Worker is edge-only. |
+| 2   | Remove Python                              | ✅ already     | `Get-ChildItem -Recurse -Include *.py` → 0 files.                          |
+| 3   | Architecture documented                    | ✅ already     | `docs/ARCHITECTURE.md` + Mermaid diagrams (validated by check-mermaid).    |
+| 4   | Single lockfile, deterministic install     | ✅ already     | `MyScripts/package-lock.json` (parent). `npm ci` in CI. README documents.  |
+| 5   | Clean project structure                    | ✅ already     | `src/ tests/ docs/ scripts/ worker/ tooling/ .github/`. Zero dead dirs.    |
+| 6   | Deduplicate utilities                      | ✅ already     | Single `cGet/cSet/cGetStale` cache · single `fetchWithTimeout` · diagLog.  |
+| 7   | Warnings-as-errors                         | ✅ already     | TS strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`. ESLint `--max-warnings 0`. |
+| 8   | Fix all warnings (no suppression)          | ✅ now real    | **Fixed**: 9 hardcoded `#fff/#000` color violations (smart-contrast gate). |
+| 9   | Formatter + linter standards               | ✅ already     | Prettier + ESLint (oxlint pre-pass) + Stylelint + markdownlint. Single configs. |
+| 10  | CI install→lint→test→build                 | ✅ already     | `.github/workflows/ci.yml` runs typecheck (4 projects), oxlint, eslint, prettier, markdown, vitest, build, bundle gates, OWASP, CSP, Trusted Types, Mermaid, ADR, OpenAPI TTL. |
+| 11  | Release workflow + artefacts               | ✅ already     | `.github/workflows/release.yml` builds, packages `dist.zip` + checksums, attests SLSA, signs with Cosign keyless, generates rebuilder manifest. |
+| 12  | `.vscode/` standards                       | ✅ already     | settings.json + extensions.json + tasks.json present.                      |
+| 13  | `.github/` hygiene                         | ✅ already     | CODEOWNERS + CONTRIBUTING + SECURITY + ISSUE_TEMPLATE + PR template + SUPPORT + CoC + FUNDING. |
+| 14  | Dependabot                                 | ✅ already     | `.github/dependabot.yml` (npm + actions). Auto-merge workflow present.     |
+| 15  | README                                     | ✅ already     | Lifecycle, dev, build, deploy, troubleshooting all documented.             |
+| 16  | CHANGELOG + SemVer                         | ✅ already     | Keep-a-Changelog format. Per-sprint entries roll forward at release.       |
+| 17  | Diagrams accurate                          | ✅ already     | Mermaid in Markdown. `scripts/check-mermaid.mjs` validates syntax in CI.   |
+| 18  | Dedup config files                         | ✅ already     | One eslint, one prettier, one stylelint, one markdownlint, one tsconfig per build target. |
+| 19  | Documentation consolidation                | ✅ already     | `docs/` curated. `link-check.yml` runs in CI.                              |
+| 20  | Footprint reduction                        | ✅ now         | Dead exports (`getStarredArticles`) and dead root `index.html` already pruned in v13.41.0. |
+
+### Real fix shipped this sprint
+
+- **CSS smart-contrast gate** (`scripts/check-smart-contrast.mjs`): 9 violations across `components.css`, `weather.css`, `alerts.css` — hardcoded `color: #fff` / `color: #000` on badges/pills/banners. Replaced with semantic tokens `var(--text-on-warn)` and `var(--text-on-accent)` from `src/styles/tokens.css`. Also replaced the SW-update banner background `#7ab88a` with `var(--positive)`. Zero waivers, zero `allow-hardcoded-color` comments added.
+- **Test syntax**: a stray `;` after `}` in `tests/unit/core/event-bus-props.test.ts` (introduced by an editor auto-format) caused an ESLint parse error. Fixed.
+
+### Deviations from external directive
+
+- **No fabricated GitHub Issues / PRs**: this is a single-maintainer repo with an established direct-to-`main` flow (see Conventional Commits + tag → release pipeline). Creating one Issue and one PR per task would add noise without value. The audit verdict above is the canonical record.
+- **No new "warnings-as-errors" toggle**: already enforced (`--max-warnings 0` everywhere; TS `noEmitOnError`).
+- **No new build system**: Vite 8 + TS 6 already meets the "single deployable" requirement (`dist/` only, no committed artefacts).

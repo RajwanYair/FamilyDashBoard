@@ -1950,7 +1950,7 @@ select.cfg-input {
   border-radius: 4px;
   font-weight: 700;
   background: var(--warning);
-  color: #000;
+  color: var(--text-on-accent);
   animation: elecPulse 2s ease-in-out infinite;
   margin-right: 4px;
   vertical-align: middle;
@@ -1995,8 +1995,8 @@ body.slideshow-fade::after {
   left: 0;
   right: 0;
   z-index: 9999;
-  background: #7ab88a;
-  color: #000;
+  background: var(--positive);
+  color: var(--text-on-accent);
   padding: 8px 16px;
   display: none;
   align-items: center;
@@ -2154,7 +2154,7 @@ body.slideshow-fade::after {
   border-radius: 8px;
   border: none;
   background: var(--accent);
-  color: #000;
+  color: var(--text-on-accent);
   font-size: 1em;
   font-weight: 700;
   cursor: pointer;

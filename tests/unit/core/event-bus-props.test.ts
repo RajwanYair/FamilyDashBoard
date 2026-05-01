@@ -51,7 +51,7 @@ describe("EB1: globalSync — loading wins over error when both present", () => 
             return globalSync.value === "loading";
           }
           return true; // only checking the loading case here
-        };,
+        },
       ),
       { numRuns: 100 },
     );

@@ -9,6 +9,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.42.0] — 2026-05-02
+
+> **Sprint 396 — Production-readiness 20-task review.** External directive re-validates the project against a 20-item production-readiness checklist (web-only scope lock, single deployable, no Python, 0 errors / 0 warnings / 0 suppressions, CI artefacts attached on release). Audit confirmed 19 of 20 items already in place; one real gate failure surfaced and was fixed at root cause.
+
+### Fixed
+
+- **CSS smart-contrast gate** (`scripts/check-smart-contrast.mjs`): 9 hardcoded `color: #fff` / `color: #000` violations across `src/styles/components.css`, `src/cards/weather/weather.css`, `src/cards/alerts/alerts.css`. Replaced with semantic tokens `var(--text-on-warn)` and `var(--text-on-accent)` from `src/styles/tokens.css`; SW-update banner background `#7ab88a` replaced with `var(--positive)`. Zero waivers, zero `allow-hardcoded-color` justification comments added.
+- **Lint parse error**: a stray `;` after `}` in `tests/unit/core/event-bus-props.test.ts` (introduced by an editor auto-format) caused an ESLint parse error. Fixed.
+
+### Documentation
+
+- **`docs/ROADMAP.md` §11**: added Sprint 396 audit verdict matrix mapping each of the 20 directive tasks to the existing artefact in this repo (CI workflows, `.github/` hygiene files, `.vscode/` standards, dependabot, lockfile, formatter/linter configs, release workflow with SLSA + Cosign + rebuilder manifest, etc.). Baseline rolled forward to v13.42.0 (Sprint 396).
+
+### Quality (post-fix)
+
+- 6063 / 6063 tests passing across 195 suites
+- 0 TypeScript errors · 0 ESLint errors · 0 ESLint warnings · 0 suppressions
+- `npm run check` clean (typecheck × 4 + eslint + prettier + markdown + sw-version + version-consistency + worker-client + ADR + OpenAPI TTL + release-notes + reading-level + smart-contrast + module-boundaries + vitest)
+- Dead-export check clean · CSP Trusted Types clean · OWASP audit clean · CSP wildcard audit clean
+
+---
+
 ## [13.41.0] — 2026-05-02
 
 > **Production-readiness pass** — Sprint 395 cleanup release. Real fixes only, zero waivers. Eliminates flaky property test, resolves all VS Code accessibility warnings in `src/index.html`, declares explicit browser support matrix (Chromium 114+), removes dead code, and prunes a dead root file.

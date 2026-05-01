@@ -137,7 +137,7 @@
     padding: 0;
     border: none;
     background: color-mix(in sRGB, var(--negative) 92%, black 8%);
-    color: #fff;
+    color: var(--text-on-warn);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -194,10 +194,10 @@
   .alerts-takeover-close {
     margin-top: 12px;
     padding: 10px 28px;
-    border: 2px solid #fff;
+    border: 2px solid var(--text-on-warn);
     border-radius: 24px;
     background: transparent;
-    color: #fff;
+    color: var(--text-on-warn);
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;

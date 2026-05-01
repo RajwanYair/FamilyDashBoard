@@ -310,10 +310,10 @@
   border-radius: 6px;
   font-size: 0.75em;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-on-warn);
 }
 .uv-pill.uv-low    { background: #6aaa80; }
-.uv-pill.uv-mod    { background: #c8b060; color: #fff; }
+.uv-pill.uv-mod    { background: #c8b060; color: var(--text-on-warn); }
 .uv-pill.uv-high   { background: #c88050; }
 .uv-pill.uv-vhigh  { background: #c07070; }
 .uv-pill.uv-extreme { background: #9070b8; }
@@ -325,7 +325,7 @@
   border-radius: 6px;
   font-size: 0.75em;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-on-warn);
 }
 .aqi-pill.aqi-good     { background: #4caf50; }
 .aqi-pill.aqi-fair     { background: #a5c400; color: #222; }
@@ -342,7 +342,7 @@
 .nc-pct     { font-size: 0.9em; }
 .nc-low     { background: #4caf5033; color: var(--text); }
 .nc-med     { background: #ffb30066; color: var(--text); }
-.nc-high    { background: #e53935; color: #fff; }
+.nc-high    { background: #e53935; color: var(--text-on-warn); }
 
 /* SVG wind compass (Sprint 195 / W5) */
 .wx-compass { display: inline-block; vertical-align: middle; margin-inline-start: 4px; }
