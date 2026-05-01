@@ -49,8 +49,11 @@
 | `A`      | Toggle red alerts pane                                            |
 | `S`      | Open settings / config panel                                      |
 | `N`      | Toggle night dimmer                                               |
-| `M`      | Toggle video mute (video-news card)                               |
-| `V`      | Cycle video channel (C14 → i24 → …)                               |
+| `Y`      | Copy current card's semantic clipboard payload                    |
+| `+ / -`  | Increase / decrease global font scale                             |
+| `P`      | Print snapshot                                                    |
+| `B`      | Toggle bookmarks                                                  |
+| `H` / `?`| Toggle keyboard help overlay                                      |
 | `Escape` | Close maximized card / active overlay                             |
 
 > **Tip:** Click any card header to expand it full-screen (FLIP animation). Click again or press `Escape` to restore.
@@ -59,10 +62,10 @@
 
 ```bash
 npx vitest run
-# 3678+ tests, 123 suites, zero failures
+# 6067+ tests, 196 suites, zero failures
 ```
 
-Requires **Node.js 22+**.
+Requires **Node.js 24+**.
 
 ### Live Demo
 
