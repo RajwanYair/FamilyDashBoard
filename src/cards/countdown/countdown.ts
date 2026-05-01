@@ -306,11 +306,9 @@ function buildCountdownPayload(): SemanticPayload | null {
   };
 }
 
-let _countdownProducerRegistered = false;
 function ensureCountdownProducerRegistered(): void {
-  if (_countdownProducerRegistered) return;
+  // `registerSemanticProducer` is idempotent — replaces any previous producer.
   registerSemanticProducer("countdown", buildCountdownPayload);
-  _countdownProducerRegistered = true;
 }
 
 // ── Tick ─────────────────────────────────────────────────────────────────────
