@@ -3,9 +3,10 @@
  * FamilyDashBoard — Bundle Size CI Check
  *
  * Validates that the GitHub Pages production build stays within budget:
- *   JS gzipped:  ≤ 104 KB  (raised from 100 KB in v13.30.0 — 18 sprints of
- *                           configSchema fields + X4 keymap.ts pushed actuals
- *                           to 102.1 KB; new budget = actual + 2 KB headroom)
+ *   JS gzipped:  ≤ 105 KB  (raised from 104 KB in v13.43.0 — cumulative
+ *                           a11y aria-label additions + token-replaced color
+ *                           strings pushed actual to 104.6 KB; new budget =
+ *                           actual + ~0.4 KB headroom)
  *   CSS gzipped: ≤ 29 KB   (raised from 26 KB in v13.30.0 — card configSchema
  *                           form styles and config-panel CSS pushed actual to
  *                           27.8 KB; new budget = actual + 1 KB headroom)
@@ -26,7 +27,7 @@ import { gzipSync } from "node:zlib";
 const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
-const JS_BUDGET_KB = 104;
+const JS_BUDGET_KB = 105;
 const CSS_BUDGET_KB = 29;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.1;
@@ -351,8 +352,9 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 // Sprint 370 (v13.38.0): ratchet 46 → 44 KB.
 // Sprint 380 (v13.39.0): ratchet 44 → 42 KB.
 // Sprint 392 (v13.40.0): ratchet 42 → 40 KB.
+// Sprint 398 (v13.43.0): ratchet 40 → 38 KB.
 const PER_CARD_HARD_CAP_KB = 80;
-const PER_CARD_WARN_KB = 40;
+const PER_CARD_WARN_KB = 38;
 let perCardCapOk = true;
 console.log(`📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`);
 for (const { name, sourceKb } of cardSourceRows) {
