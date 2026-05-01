@@ -5,6 +5,8 @@
  * metals (XAU/XAG) from the same endpoint.
  * Renders tiles: USD, EUR, GBP, Gold, Silver.
  * Falls back to exchangerate-api.com if primary fails.
+ *
+ * X12/X15 ADOPTED — v13.40.0 Sprint 389 (see ADR-071).
  */
 
 import "./currency.css";
@@ -26,6 +28,31 @@ import { trustedHTML } from "../../core/trusted-types";
 import { loadConfig } from "../../core/config";
 import type { CurrencyResponse, YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
+
+// X15 (Sprint 389): cached snapshot of headline rates for the semantic-clipboard producer.
+let _ratesSnapshot: { usdIls: number; eurIls: number } | null = null;
+
+function buildCurrencyPayload(): SemanticPayload | null {
+  const r = _ratesSnapshot;
+  if (!r) return null;
+  return {
+    cardId: "currency",
+    text: `שערי חליפין · USD ₪${r.usdIls.toFixed(2)} · EUR ₪${r.eurIls.toFixed(2)}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "ExchangeRateSpecification",
+      currency: "ILS",
+      currentExchangeRate: [
+        { "@type": "UnitPriceSpecification", price: r.usdIls, priceCurrency: "USD" },
+        { "@type": "UnitPriceSpecification", price: r.eurIls, priceCurrency: "EUR" },
+      ],
+    },
+    ts: Date.now(),
+  };
+}
 
 // ── State ──
 let _prevRates: Record<string, number> = {};
@@ -429,6 +456,17 @@ export function renderCurrency(rates: Record<string, number>): void {
   // Sprint 184 / C1: keep calc rates up-to-date
   _calcRates = rates;
 
+  // X12 (Sprint 389): publish ILS-quoted headline rates for sibling consumers.
+  const usdRate = rates["USD"];
+  const eurRate = rates["EUR"];
+  const usdIls = usdRate && usdRate > 0 ? 1 / usdRate : null;
+  const eurIls = eurRate && eurRate > 0 ? 1 / eurRate : null;
+  if (usdIls !== null) setCardSignal("currency", "usd-ils", { ils: usdIls });
+  if (eurIls !== null) setCardSignal("currency", "eur-ils", { ils: eurIls });
+  if (usdIls !== null && eurIls !== null) {
+    _ratesSnapshot = { usdIls, eurIls };
+  }
+
   for (const tile of CUR_TILES) {
     const elMap = TILE_EL_MAP[tile.key];
     if (!elMap) continue;
@@ -599,6 +637,7 @@ function scheduleCurrencyRefresh(): void {
 
 export function initCurrencyCard(): void {
   cacheDom();
+  registerSemanticProducer("currency", buildCurrencyPayload);
   applyPairVisibility(); // Sprint 189 / C2: hide unconfigured pairs on init
   void loadCurrency();
   scheduleCurrencyRefresh();
