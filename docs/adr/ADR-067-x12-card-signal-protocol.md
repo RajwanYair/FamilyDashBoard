@@ -1,8 +1,8 @@
 # ADR-067: X12 — Card Signal Protocol Formalisation
 
-- **Status**: Proposed (formalisation; implementation in v14.x)
+- **Status**: Accepted — core API shipped v13.38.0 Sprints 365–366; consumer migration deferred to v14.x
 - **Date**: 2026-05-04 (v13.37.0 patch series)
-- **Sprints**: 356
+- **Sprints**: 356 (spec), 365–366 (impl + tests)
 - **Related**: ROADMAP §4.2 X12, ADR-053 (card config schema), ADR-066 (X11 MCP)
 
 ## Context

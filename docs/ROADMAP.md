@@ -392,7 +392,7 @@ Single localhost endpoint (`localhost:7411/mcp`) exposing read-only views of: to
 
 Today cards import from siblings via `getCardSignal(id)`. Formalise as `CardSignalProtocol` with versioned signal shape; consumers feature-detect.
 
-- **X12** · P1 · S · Mid · v14.x — Define `src/core/card-signal-protocol.ts`; migrate 4 known consumers (today-pane, semantic links, MCP, daily synthesis). _(spec ADR-067 shipped v13.37.0 Sprint 356)_
+- **X12** · P1 · S · Mid · v14.x — Define `src/core/card-signal-protocol.ts`; migrate 4 known consumers (today-pane, semantic links, MCP, daily synthesis). _(spec ADR-067 shipped v13.37.0 Sprint 356; **core implementation shipped v13.38.0 Sprints 365–366**; consumer migration deferred to v14.x)_
 
 ### 4.3 X13 — Time-machine debug
 
@@ -410,7 +410,7 @@ Companion to X11. Phone joins the dashboard's WebRTC mesh (ADR-049 v14.x) over Q
 
 User clicks a tile; system copies a context-rich text + JSON-LD payload (e.g. "30 ◌ April 2026 — Yom HaShoah · 19:30 candle-lighting · גשם 35%") for paste into chat / mail.
 
-- **X15** · P2 · S · Lo · v14.x — Replaces today's plain-text copy-on-tile (where present); keyboard `C` while focused on a card. _(adopt decision + spec ADR-070 shipped v13.37.0 Sprint 359)_
+- **X15** · P2 · S · Lo · v14.x — Replaces today's plain-text copy-on-tile (where present); keyboard `Y` (yank) while focused on a card — `C` was already taken by clock-seconds toggle. _(spec ADR-070 shipped v13.37.0 Sprint 359; **core + key wired shipped v13.38.0 Sprints 367–369**; per-card payload producers deferred)_
 
 ### 4.6 Cross-card invariants protected
 
@@ -523,8 +523,8 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 NEW stream. The dashboard becomes addressable by users' AI assistants without scraping or telemetry.
 
 - [ ] **D1 / X11** MCP read-only server (`localhost:7411/mcp`); ADR before code.
-- [ ] **X12** `CardSignalProtocol` formalisation; migrate 4 consumers.
-- [ ] **X15** semantic clipboard.
+- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; 4-consumer migration → v14.x).
+- [x] **X15** semantic clipboard (core + `Y` key shipped v13.38.0 S367–369; per-card producers → v14.x).
 - [ ] **PC-1** end-of-day audio recap (gated by audio-CSP audit).
 
 **Exit**: MCP server verified zero remote-origin reachability; CSP unchanged; LHCI no regression; ADR shipped.

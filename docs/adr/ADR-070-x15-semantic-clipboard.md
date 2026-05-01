@@ -1,9 +1,12 @@
 # ADR-070: X15 — Semantic Clipboard (Adopt v14.x)
 
-- **Status**: Adopt v14.x (small, well-scoped; implementation specified here)
+- **Status**: Accepted — core implementation shipped v13.38.0 Sprints 367–369
 - **Date**: 2026-05-04 (v13.37.0 patch series)
-- **Sprints**: 359
+- **Sprints**: 359 (spec), 367–369 (impl), 371 (docs)
 - **Related**: ROADMAP §4.5 X15, ADR-067 (X12 signal protocol)
+- **Implementation note**: Bound to `Y` (yank), not `C`, because `C`
+  was already taken by the clock-seconds toggle in v13. References
+  to `C` below are historical.
 
 ## Context
 
