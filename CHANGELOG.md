@@ -9,6 +9,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.44.0] — 2026-05-02
+
+### Sprints 406–414 — Roadmap forward-progress sprint
+
+10 focused sprints (9 commits + this release): more roadmap pruning, a new CI gate against focused/skipped tests, deeper test coverage for the SI-RTT ring buffer, an ADR for `noImplicitOverride`, and a Troubleshooting matrix in the README.
+
+#### Documentation
+
+- **S406**: Pruned ROADMAP §3 — H-Yahrzeit and T-Subtasks core APIs marked shipped (only manager-UI extensions remain open).
+- **S408**: New ADR-072 documenting the `noImplicitOverride` decision from S403.
+- **S409**: Ticked V14-CARDS-DEEP exit list — W-Nowcast/W-AQI/W-Compass, A-DO, and SI-Pressure/SI-Buckets/SI-RTT all confirmed shipped. Split A-DO from S-DO since only the latter remains open.
+- **S412**: Added a 6-row Troubleshooting matrix to README covering the most common pitfalls (parent npm install, sync indicator, stale cache, warn-cap, focused tests, SW update).
+- **S413**: Refreshed test counts (6012 → 6067) and suite counts (186 → 196) across copilot-instructions, AGENTS.md, and workspace.instructions.md.
+
+#### Quality gates
+
+- **S407**: New 4-test suite for `appendRttHistory` / `getRttHistory` / `_resetRttHistory` (FIFO eviction at 10 entries, non-finite/non-positive ignored, immutable-copy semantics).
+- **S410**: New `scripts/check-test-focus-skip.mjs` + `npm run check:test-focus`. Forbids `it.only` / `test.only` / `describe.only` and the `.skip` variants in `tests/`. Wired into `npm run check`.
+- **S411**: CI workflow's `unit-tests` job now runs the focus/skip check before vitest, failing the build the moment a focused/skipped test is committed to `main`.
+- **S414**: Recorded the v13.43.0 bundle-trend datapoint (104.6 KB JS / 27.8 KB CSS).
+
+#### Quality
+
+- 6067 / 6067 tests passing across 196 suites
+- 0 type errors / 0 lint errors / 0 lint warnings / 0 suppressions
+- All 12 audit gates clean (now 13 with `check:test-focus`)
+
+---
+
 ## [13.43.0] — 2026-05-02
 
 > **Sprints 397–405 — Roadmap forward-progress sprint.** Seven focused commits ratchet quality gates, prune stale roadmap items, harden TypeScript posture, and tick exit-list checkboxes that had silently shipped. No regressions; all gates green.
