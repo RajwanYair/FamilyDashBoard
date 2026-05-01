@@ -1,1111 +1,680 @@
-# FamilyDashBoard — Strategic Roadmap (v14 Deep-Rethink Edition)
+# FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-15 · **Shipped baseline**: v13.33.0 (Sprint 326) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CARDS-DEEP.
+> **Refresh date**: 2026-05-15 · **Shipped baseline**: v13.33.0 (Sprint 326) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
 >
-> **Inventory**: 5980 tests / 179 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 54 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip.
+> **Inventory**: 6012 tests / 186 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 55 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
 >
-> **Purpose**: a top-to-bottom **first-principles re-litigation of every decision** — including those that look clean. No grandfathering. The bar is **best-in-class for an always-on family TV dashboard**, harvested by direct comparison against the best peer in each category. Forward-looking only; historical sprints live in [CHANGELOG.md](../CHANGELOG.md).
+> **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
+>
+> **Bar**: best-in-class for an always-on family TV dashboard, harvested by direct comparison against the best peer in each category, no grandfathering of past decisions, no decoration.
 
 ---
 
 ## 0. Executive Summary
 
-After 169 sprints across v10 → v13.18 the project sits on a stable, opinionated, production-hardened plateau:
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X10), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6012 tests, 55 fast-check property suites across 11 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill scaffolded.
 
-- **Frontend**: vanilla TS strict + in-house Signals (ADR-038), 0 client deps, ~88 KB gzip, CSS `@layer`/tokens/`@scope`/`light-dark()`/`@property`/Anchor Positioning/View Transitions L1.
-- **Backend**: single Cloudflare Worker (Hono + Valibot), KV stale cache, D1 telemetry, DO rate-limit, Analytics Engine, ≤ 75 KB gzip.
-- **Storage**: 4-tier client cache (Map → localStorage → IndexedDB ≤ 50 MB LRU → SW cache 7 origins). Zero user DB. Zero auth.
-- **Quality**: 5689 unit tests + Playwright + axe + 90 VR baselines + LHCI + Stryker mutation + fast-check (SP1-SP6/CM1-CM5/AP1-AP5/HC1-HC6/TDP1-TDP5/LP1-LP4/CAP1-CAP5/KP1-KP3/UP1-UP5/SV1-SV9) + SLSA L2 + Sigstore/cosign + rebuilder manifest + SBOM-diff + container-query audit + Mermaid validator + reading-level gate.
+The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
-This document **reopens every one of those decisions** at three levels:
+1. **Replace heuristics with semantics** — Vectorize embeddings (news, owned shadow run); TC39 Temporal once polyfill ≤ 10 KB; TC39 Signals one-line swap once ≤ 1.5 KB; on-device WebNN inference for motivation/news where it preserves zero-PII.
+2. **Push observability + supply chain to industry leadership** — SLSA L3 hermetic builds (v14.2), opt-in OpenTelemetry from Worker (v14.2), Cloudflare Snippets / Trusted Execution audit, third-party rebuilder verification, automated SBOM diff.
+3. **Cross-device continuity without auth or DB** — WebRTC mirror with QR pairing (gated, ADR-049), CRDT (Yjs ≤ 12 KB) only if WebRTC delta proves insufficient, opt-in Web Push for alerts on phone (Cloudflare Workers VAPID).
+4. **Resilience behind hostile networks** — preserve `?nosw=1`, corp-CSP allowlist, file-protocol launch; layer in Compute Pressure API, Storage Buckets, Origin-Agent-Cluster.
+5. **Agentic dashboard** — expose the dashboard as an MCP server (read-only) so users' AI assistants can query "what's on today" without scraping. Privacy boundary: localhost-only, no cloud egress.
+6. **Mono-repo harvest** — promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding so all four repos share one quality gate.
 
-1. **Stack-level rethink** (§1, §2): code language, frontend framework, backend platform, edge DB, tooling, testing, observability, security, docs. Each axis carries a peer-by-peer comparison.
-2. **Per-card rethink** (§3): all 12 cards individually compared against best-in-class external apps in their category (NetNewsWire, Apple Weather, TradingView, Fantastical, Hebcal, Pikud Ha-Oref, Todoist, iStat Menus, …) with capability gap analysis and concrete enhancement items.
-3. **Cross-card rethink** (§4): synergies, shared services, unified bus, semantic linking — features that only emerge once the 12 cards are treated as a system.
-
-Every line below is a **decision, gate, or trigger**. No aspirational decoration.
-
-The strategic frontier for v14 → v15 is not breadth or feature catch-up. It is:
-
-1. **Eliminate every remaining vendor and tool lock-in** — annual neutrality drill (Cloudflare ↔ Deno Deploy ↔ Bun Deploy ↔ fly.io); auto-adopt Rolldown when Vite ships it default; track Biome/oxlint replacement.
-2. **Replace heuristics with semantics** — SimHash → Vectorize embeddings (news); ad-hoc date math → TC39 Temporal; in-house signals → TC39 Signals when Stage 4.
-3. **Push observability + supply chain to industry leadership** — SLSA L3 hermetic builds, Sigstore/cosign provenance, third-party rebuilder verification, opt-in OpenTelemetry, automated SBOM diff.
-4. **Cross-device continuity without auth or DB** — WebRTC mirror with QR pairing (gated); CRDT (Yjs ≤ 12 KB) only if WebRTC delta proves insufficient.
-5. **Card-level depth over breadth** — each card matches or exceeds its best-in-class single-purpose competitor (see §3).
-6. **Cross-card synergy** — the 12 cards behave as one informed system (shared today-pane, unified notification bus, semantic links, single keyboard model). See §4.
-7. **Mono-repo harvest** — promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding so all four repos share one quality gate.
-8. **Resilience behind hostile networks** — corporate-proxy / firewall-aware dev mode; provider chains never block the UI; SW never serves stale offline-fallback HTML when the user opted out.
+Streams are scoped tight. Each one ships in 5–15 sprints with a hard exit gate. No dangling P3 backlog.
 
 ---
 
-## 1. Stack-Level First-Principles Re-Litigation
+## 1. Stack-Level First-Principles Re-Litigation (2026-Q2 refresh)
 
-Stamps: **Keep**, **Adopt**, **Replace**, **Defer**, **Reject**, **Supersede**.
+Stamps: **Keep**, **Adopt**, **Replace**, **Defer**, **Reject**, **Track**, **Supersede**.
 
 ### 1.1 Code language & TypeScript posture
 
-| Decision | Challenge | Verdict | Action |
-| --- | --- | --- | --- |
-| TypeScript | Could Rust+wasm-bindgen win on a 75 KB worker? | **Keep** (load-bearing) | Annual posture review only. Rust → WASM rejected: developer pool, debug story, bundle floor (~50 KB runtime). |
-| `strict` + `noUncheckedIndexedAccess` + `verbatimModuleSyntax` + `exactOptionalPropertyTypes` | Stricter posture available? | **Keep** (highest grade) | All four flags on since v13.16. |
-| TypeScript 6.0.3 | Stay current? | **Keep** | Track 6.1+ on parent `MyScripts/`. |
-| TypeScript 7 (Go-rewrite, `tsc-go`) | Adopt early? | **Track v15** | Switch only when stable + zero behavioural delta on our codebase. |
-| `// @ts-check` on `.mjs` scripts | Bring helpers into the type gate? | **Shipped v13.9** | All `scripts/*.mjs` opt-in via `tsconfig.scripts.json`. |
-| Vanilla JS escape hatches | Allowed anywhere? | **Reject** | TS strict everywhere; no `.js` source. |
-| ECMAScript decorators (Stage 3) | Adopt for `FdbCard`? | **Reject** | Adds parse cost + transpile risk for zero functional gain. |
-| `tsgo` second typecheck | Re-add as informational? | **Withdrawn (ADR-021)** | Re-evaluate only when `tsgo` can replace `tsc` outright as a blocking gate. |
+| Decision                                                   | Verdict                  | Action                                                            |
+| ---------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |
+| TypeScript strict + nUII + vMS + eOPT                      | **Keep (load-bearing)**  | Annual posture review only. Rust → WASM rejected (bundle floor).  |
+| TypeScript 6.0.3                                           | **Keep**                 | Track 6.1+ on parent `MyScripts/`.                                |
+| TypeScript 7 (Go-rewrite, `tsgo`)                          | **Track for v15**        | Promote to primary typecheck only on stable + zero behaviour delta. |
+| `// @ts-check` on `.mjs`                                   | **Shipped v13.9**        | All `scripts/*.mjs` opt-in via `tsconfig.scripts.json`.            |
+| Vanilla JS escape hatches                                  | **Reject**               | TS strict everywhere; no `.js` source.                            |
+| ECMAScript decorators (Stage 3)                            | **Reject (reconfirmed)** | Adds parse cost + transpile risk for zero functional gain.        |
+| `tsgo` informational pre-pass                              | **Withdrawn (ADR-021)**  | Re-evaluate only when `tsgo` can replace `tsc` outright.          |
 
 ### 1.2 Frontend architecture & UI
 
-| Decision | Challenge | Verdict | Action |
-| --- | --- | --- | --- |
-| Vanilla DOM + `FdbCard` (no framework) | React 19 / Solid / Svelte 5 / Qwik won the productivity war? | **Keep (5th reconfirm)** | No peer benefit we lack. Bundle floor of any framework ≥ 30 KB gzip vs. our ~12 KB main thread runtime. |
-| Shadow DOM / Web Components | Better encapsulation than `@scope`? | **Reject (ADR-001)** | `@scope` gives encapsulation without breaking global `@layer` theming. |
-| Zero client deps (ADR-002) | Ever? | **Keep (load-bearing)** | Polyfills count against the ceiling. |
-| State (`state.ts` imperative) | Replace? | **In progress** | ADR-038 ships zero-dep `signals.ts`. Card-at-a-time migration v14.0; one-line swap to TC39 when Stage 4. |
-| Date math (ad-hoc + `Intl`) | TC39 Temporal? | **Replace v14.x** | When polyfill ≤ 10 KB gzip — gate `hebrew-cal`, `calendar`, `countdown`. |
-| View Transitions L1 (same-doc) | Already used? | **Keep** | Theme + config-panel + maximise-FLIP shipped. |
-| View Transitions L2 (cross-doc) | Adopt? | **Adopt v14.0** | Browser-shipped Q1-2026; expand to maximise-card flow. |
-| CSS `@layer` + tokens + `light-dark()` + `@property` | Sufficient? | **Keep** | Tailwind 4 / CSS-in-JS rejected — would break the 6-theme token system. |
-| CSS `@starting-style` | Replace JS enter animations? | **Shipped v13.9** | All `<dialog>` overlays use native enter/exit. |
-| CSS Anchor Positioning | Beyond Stocks Popover? | **Shipped v13.15** | Diag-Overlay + Help dialog. |
-| Container-Queries-only layout | Audited? | **Shipped v13.10** | CI guard blocks viewport `@media` in card CSS. |
-| Lightning CSS | Faster than esbuild CSS? | **Keep (ADR-017)** | Re-evaluate v15 if esbuild-css gains nesting + custom-property fallback at parity. |
-| Per-card bundle delta CI alert | Shipped? | **Shipped** | > 10 % growth fails CI. |
-| Subresource Integrity auto-injection | Source patched? | **Shipped v13.9** | `injectSri` Vite plugin. |
-| HTTP Early Hints (103) from Worker | Adopt? | **Shipped v13.14** | ~80 ms TTI improvement. |
-| Document Picture-in-Picture (video-news) | Adopt? | **Gate: 3+ user requests** | ADR-045. |
-| Streams API for news ingestion | Replace JSON-batch with NDJSON? | **Defer v15** | Quantify perceived-TTI win first; current p95 already < 1.0 s cached. |
-| `<selectlist>` + `<details>` `name=` (Open UI) | Replace `<dialog>`? | **Reject** | `<dialog>` is GA across all browsers; Open UI remains experimental. |
-| Card layout: rectangular tile/grid (rule #25) | Vertical lists ever? | **Keep** | Audited every release. Sequential feeds (news, stocks) excepted. |
+| Decision                                            | Verdict                           | Action                                                                                       |
+| --------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------- |
+| Vanilla DOM + `FdbCard` (no framework)              | **Keep (6th reconfirm)**          | No peer benefit we lack. Smallest framework floor still ≥ 30 KB gzip vs. our ~12 KB runtime. |
+| Shadow DOM                                          | **Reject (ADR-001)**              | `@scope` gives encapsulation without breaking global `@layer` theming.                       |
+| Zero client deps (ADR-002)                          | **Keep (load-bearing)**           | Polyfills count against the ceiling.                                                         |
+| In-house `signals.ts` (ADR-038)                     | **Keep**                          | One-line swap to TC39 Signals when polyfill ≤ 1.5 KB and Stage 4.                            |
+| Date math (ad-hoc + `Intl`)                         | **Replace v14.x**                 | TC39 Temporal once polyfill ≤ 10 KB gzip — gate `hebrew-cal`, `calendar`, `countdown`.       |
+| View Transitions L1 (same-doc)                      | **Keep**                          | Theme + config-panel + maximise-FLIP shipped.                                                |
+| View Transitions L2 (cross-doc)                     | **Adopted v13.29**                | Expand to maximise-card flow.                                                                |
+| CSS `@layer` + tokens + `light-dark()` + `@property` | **Keep**                          | Tailwind 4 / CSS-in-JS rejected — would break the 6-theme token system.                      |
+| `@starting-style`, Anchor Positioning, `@scope`     | **Shipped v13.9–v13.15**          | Audited every release.                                                                       |
+| Container-Queries-only layout                       | **Shipped v13.10**                | CI guard blocks viewport `@media` in card CSS.                                               |
+| Lightning CSS                                       | **Keep (ADR-017)**                | Re-evaluate v15 if esbuild-css gains nesting + custom-property fallback at parity.           |
+| Subresource Integrity auto-injection                | **Shipped v13.9**                 | `injectSri` Vite plugin.                                                                     |
+| HTTP Early Hints (103) from Worker                  | **Shipped v13.14**                | ~80 ms TTI improvement.                                                                      |
+| Document Picture-in-Picture (video-news)            | **Gate: 3+ user requests**        | ADR-045.                                                                                     |
+| Streams API for news ingestion                      | **Defer v15**                     | Quantify perceived-TTI win first; current p95 already < 1.0 s cached.                        |
+| `<selectlist>` + Open UI                            | **Reject**                        | `<dialog>` is GA; Open UI experimental.                                                      |
+| Speculation Rules API (prerender)                   | **Track v14.x**                   | Worth audit on the help / config panels; gate by bundle delta < 1 KB.                        |
+| `popover=` attribute                                | **Adopt v14.x**                   | Harvest for diag toasts + bookmark menu; replaces ad-hoc focus traps.                        |
+| **WebNN (on-device inference)**                     | **Track v15**                     | News rerank + motivation curator on-device once Chrome ships GA + falls back gracefully.     |
+| **CSS `@function`**                                 | **Track**                         | Theme tokens may compress 20% once Chrome ships GA.                                          |
+| **CSS `if()`**                                      | **Adopt v14.x**                   | Replaces some token-based light-dark gymnastics.                                             |
 
 ### 1.3 Backend architecture & edge
 
-| Decision | Challenge | Verdict | Action |
-| --- | --- | --- | --- |
-| Cloudflare Worker (ADR-003) | Better edge? | **Keep** | Annual vendor-neutrality drill (ADR-031) starts v14.0 — rebuild on Deno Deploy + Bun Deploy + fly.io. |
-| Hono + Valibot | Lighter? | **Keep** | ~25 KB win over Zod retained; Hono routing < 8 KB. |
-| KV stale cache (per route) | Per-route TTL audit? | **Keep** (ADR-013) | Annual TTL review against `worker/openapi.yaml`. |
-| D1 telemetry | Cheaper alt? | **Audit v15** | Compare DO Storage SQL + Workers Analytics Engine for same workload. |
-| Durable Objects (alerts SSE) | Hibernatable? | **Adopt v14.x** | DO Hibernatable WebSocket — stocks live + alerts SSE; ~80 % bill drop when idle. |
-| R2 for asset cache | Adopt? | **Adopt v14.x** | Backgrounds + offline shell mirrored; egress = $0. |
-| Workers Queues (error fan-out) | Shipped? | **Shipped v13.0** | |
-| Email Workers weekly digest | Shipped? | **Shipped v13.0 (opt-in)** | |
-| Workers AI (Llama 3.3 8B) | Llama 4? | **Track v14.x** | Switch only when Hebrew quality measurably better at equal cost. |
-| Cloudflare Vectorize (semantic news dedup) | Replace SimHash? | **Adopt v14.0** | 30-day shadow vs SimHash; precision@10 ≥ +15 % gate. |
-| Hyperdrive / Postgres | Adopt? | **Reject (reconfirmed)** | No relational store in stack. |
-| User-facing DB | Adopt? | **Reject (4th reconfirm)** | LS + IDB + JSON export + AES-GCM URL share cover it. |
-| Worker bundle budget ≤ 75 KB gzip | Tighten? | **Keep ceiling** | Tightening to 60 KB rejected — leaves no room for DO Storage SQL adapter. |
-| Annual vendor-neutrality build drill | Adopt? | **Adopt v14.0 (ADR-031)** | First run rebuild on Deno Deploy + Bun Deploy + fly.io once per major release. |
-| OpenTelemetry from Worker | Adopt? | **Adopt v14.2 (opt-in)** | Self-hosted collector; off by default. |
-| WebTransport / HTTP/3 push | Adopt for stocks/alerts? | **Defer** | DO Hibernatable WebSocket has same UX at known cost. |
-| File-protocol launch (`dist/index.html`) | Adopt? | **Shipped v13.13** | `--base ./` + `removeCrossOrigin` Vite plugin. |
-| Dev-mode CSP relaxation | Adopt? | **Shipped (Sprint 127)** | `vite-plugin-dev-csp-strip` removes meta in `serve` mode only. |
+| Decision                                            | Verdict                           | Action                                                                                                  |
+| --------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Cloudflare Worker (ADR-003)                         | **Keep**                          | Annual vendor-neutrality drill (ADR-031) — rebuild on Deno Deploy + Bun Deploy + fly.io once per major. |
+| Hono + Valibot                                      | **Keep**                          | ~25 KB win over Zod retained; Hono routing < 8 KB.                                                      |
+| KV stale cache (per route)                          | **Keep (ADR-013)**                | Annual TTL review against `worker/openapi.yaml`.                                                        |
+| D1 telemetry                                        | **Audit v15**                     | Compare DO Storage SQL + Workers Analytics Engine for the same workload.                                |
+| **DO Hibernatable WebSocket** (stocks live + alerts) | **Adopt v14.x (ADR-047)**         | ~80 % bill drop when idle; replaces HTTP poll + SSE.                                                    |
+| **R2 for asset cache**                              | **Adopt v14.x (ADR-050)**         | Backgrounds + offline shell mirrored; egress = $0.                                                      |
+| Workers Queues (error fan-out)                      | **Shipped v13.0**                 | —                                                                                                       |
+| Email Workers weekly digest                         | **Shipped v13.0 (opt-in)**        | —                                                                                                       |
+| Workers AI (Llama 3.3 8B Hebrew)                    | **Track Llama 4 v14.x**           | Switch only when Hebrew quality measurably better at equal cost.                                        |
+| **Cloudflare Vectorize (semantic news dedup)**      | **Adopt v14.0 (ADR-052)**         | Shadow-mode active since Sprint 267; 30-day precision@10 ≥ +15 % gate.                                  |
+| Hyperdrive / Postgres                               | **Reject (reconfirmed)**          | No relational store in stack.                                                                           |
+| User-facing DB                                      | **Reject (5th reconfirm)**        | LS + IDB + JSON export + AES-GCM URL share cover it.                                                    |
+| Worker bundle budget ≤ 75 KB gzip                   | **Keep ceiling**                  | Tightening to 60 KB rejected — leaves no room for DO Storage SQL adapter.                               |
+| **OpenTelemetry from Worker (opt-in)**              | **Adopt v14.2**                   | Self-hosted collector on R2 + Workers ingestor; off by default.                                         |
+| **Cloudflare Snippets**                             | **Track v14.x**                   | Move static header injection out of Worker once Snippets ships TEE.                                     |
+| WebTransport / HTTP/3 push                          | **Defer**                         | DO Hibernatable WebSocket has same UX at known cost.                                                    |
+| File-protocol launch (`dist/index.html`)            | **Shipped v13.13**                | `--base ./` + `removeCrossOrigin` Vite plugin.                                                          |
+| Dev-mode CSP relaxation                             | **Shipped (Sprint 127)**          | `vite-plugin-dev-csp-strip` removes meta in `serve` mode only.                                          |
+| **MCP server (read-only) for AI assistants**        | **Adopt v14.x (NEW, see §1.11)**  | Localhost-only; surface "today's signals" so user agents can ask without scraping.                      |
+| **Web Push (VAPID) for alerts on phone**            | **Gate: 3+ user requests v14.x**  | Worker-side VAPID; opt-in; never tracks; only fires for `alerts` card severity ≥ rocket.                |
 
 ### 1.4 Data plane & external APIs
 
-Cross-cutting rules: every external response is **Valibot-validated**, **KV-stale-cached**, has a **per-route TTL** documented in `worker/openapi.yaml`, **falls back to a stale tier on failure**, has a **page-visibility guard** (`if (!_pageVisible) return;`) at top of every loader, **try/catch + proxy fallback chain** (`PROXIES`) on every fetch, **`diagLog()` on every error**.
+Cross-cutting rules unchanged: every external response is **Valibot-validated**, **KV-stale-cached**, has a **per-route TTL** documented in `worker/openapi.yaml`, **falls back to a stale tier on failure**, has a **page-visibility guard** at top of every loader, **try/catch + proxy fallback chain** on every fetch, **`diagLog()` on every error**.
 
-| Card | Provider chain | Verdict / Action |
-| --- | --- | --- |
-| news | RSS aggregator → SimHash v2 → (v14) Vectorize embeddings → Llama 3.3 summary | Vectorize shadow run 30 d before SimHash retire. |
-| weather | Met Norway (default) + NWS (US-travel) + Open-Meteo + provider chain | 3-source fallback shipped. UI: 4-col detail grid + equal-width forecast tiles. |
-| stocks | Yahoo + Finnhub HTTP today | DO Hibernatable WebSocket live-stream v14.x; gate TTI + battery budget. |
-| currency | exchangerate.host + open.er-api + Frankfurter + ECB direct | 4 providers shipped (Sprint 162). |
-| calendar | iCal (RFC-5545) + Google Calendar feed | 21-day window shipped; fuzz set 258 (>250). |
-| hebrew-cal | Hebcal + Zmanim + Sefaria | Replace internal date math with Temporal when polyfill ≤ 10 KB gzip. |
-| alerts | Pikud Ha-Oref + Tzeva-Adom + DO SSE | DO Hibernatable upgrade v14.x. |
-| motivation | Local curator + Workers AI Hebrew quote | Non-repeat window shipped; faith-safe curator audit annually. |
-| tasks | Local IDB | Optional CRDT sync gate (Yjs ≤ 12 KB). |
-| system-info | `navigator.connection` + battery + memory + UA-CH high-entropy | Stable. |
-| countdown | Local | Stable. |
-| video-news | Embed allowlist only | Document PiP gate: 3+ user requests. |
+| Card        | Provider chain                                                  | Open work                                                                                                |
+| ----------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| news        | RSS aggregator → SimHash v2 → (v14) Vectorize → Llama 3.3       | Vectorize 30-day shadow run before SimHash retire (gate: precision@10 +15 %).                            |
+| weather     | Met Norway + NWS (US travel) + Open-Meteo                       | Add **IMS (Israel Met Service)** native source — primary for Hebrew users when geo ∈ IL.                 |
+| stocks      | Yahoo + Finnhub HTTP                                            | Add **TASE (Tel-Aviv Stock Exchange)** native source for `.TA` suffix tickers; DO Hibernatable WS upgrade. |
+| currency    | exchangerate.host + open.er-api + Frankfurter + ECB             | Add **Bank of Israel direct** native source as `ILS` authoritative rate.                                 |
+| calendar    | iCal (RFC-5545) + Google Calendar feed                          | Stable; revisit CalDAV write-path only if user pressure accumulates.                                     |
+| hebrew-cal  | Hebcal + Zmanim + Sefaria                                       | Replace internal date math with Temporal when polyfill ≤ 10 KB gzip; add **OpenSiddur** parashat haftarah audio link (gated). |
+| alerts      | Pikud Ha-Oref + Tzeva-Adom + DO SSE                             | DO Hibernatable upgrade v14.x; opt-in Web Push to phone (gate).                                           |
+| motivation  | Local curator + Workers AI Hebrew quote                         | Add **WebNN on-device curator** once Chrome GA so Hebrew quotes never round-trip.                        |
+| tasks       | Local IDB                                                       | Optional CRDT sync gate (Yjs ≤ 12 KB).                                                                    |
+| system-info | `navigator.connection` + battery + memory + UA-CH high-entropy + Storage Buckets | Add **Compute Pressure API** tile; Storage Buckets audit.                                |
+| countdown   | Local                                                           | Stable.                                                                                                   |
+| video-news  | Embed allowlist only                                            | Document PiP gate: 3+ user requests.                                                                     |
 
 ### 1.5 Storage / database / infrastructure
 
-| Tier | Current | Challenged with | Verdict |
-| --- | --- | --- | --- |
-| Browser L1 | In-memory `Map` | None viable | **Keep** |
-| Browser L2 | `localStorage` (`dash_v2_*`) | OPFS structured cache | **Keep** — OPFS lacks LRU eviction story. |
-| Browser L3 | IndexedDB ≤ 50 MB LRU | OPFS / SQLite-WASM | **Keep** — SQLite-WASM ≈ 1.5 MB blows ceiling. |
-| Browser L4 | Service Worker cache (7 origins) | None viable | **Keep** |
-| Edge cache | Cloudflare KV (per-route) | DO Storage SQL | **Audit v15** |
-| Edge analytics | D1 + Analytics Engine | Workers Logs | **Keep, audit v15** |
-| Edge object | (none) | R2 | **Adopt v14.x** for backgrounds + offline shell |
-| User-owned config | LS + IDB + JSON export + AES-GCM URL | Cloud DB | **Reject (4th reconfirm)** |
-| Reproducible artefact | `dist.zip` + `worker.js` (SLSA L2 → L3) | Docker image | **Keep** — Docker adds OS surface for zero benefit on a static SPA. |
+| Tier                  | Current                                                        | Verdict / Action                                                                  |
+| --------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Browser L1            | In-memory `Map`                                                | **Keep**                                                                          |
+| Browser L2            | `localStorage` (`dash_v2_*`)                                   | **Keep** — OPFS lacks LRU eviction story.                                         |
+| Browser L3            | IndexedDB ≤ 50 MB LRU                                          | **Keep** — SQLite-WASM ≈ 1.5 MB blows ceiling.                                    |
+| Browser L4            | Service Worker cache (7 origins)                               | **Keep**                                                                          |
+| **Browser L5 (NEW)**  | **Storage Buckets (per-card eviction policy)**                 | **Adopt v14.x** — let `news` evict before `tasks`; aligns with our LRU intent.    |
+| Edge cache            | Cloudflare KV (per-route)                                      | DO Storage SQL **audit v15**.                                                     |
+| Edge analytics        | D1 + Analytics Engine                                          | **Keep**, audit v15 against Workers Logs.                                         |
+| Edge object           | (none)                                                         | **Adopt R2 v14.x** for backgrounds + offline shell.                               |
+| User-owned config     | LS + IDB + JSON export + AES-GCM URL                           | **Reject cloud DB (5th reconfirm)**.                                              |
+| Reproducible artefact | `dist.zip` + `worker.js` (SLSA L2 → L3)                        | **Keep** — Docker adds OS surface for zero benefit on a static SPA.               |
 
 ### 1.6 Tooling & versions
 
-| Tool | Current | Challenge | Action |
-| --- | --- | --- | --- |
-| Node.js | 22 LTS | 24 LTS | Track; switch on first stable (Oct 2026). |
-| TypeScript | 6.0.3 | 6.1+ / TS7 (Go) | Track minor monthly; TS7 only when zero-delta. |
-| Vite | 8 | 9 + Rolldown | Auto-adopt when default. |
-| Vitest | 4.1.5 | 4.2 / 5.x | Auto-adopt 4.2; track 5.x. |
-| ESLint | 10 | `oxlint` (50–100×) | **Adopted as fast pre-pass v13.13 (ADR-039)**; ESLint retained for missing rules. |
-| Prettier | 3.x | Biome 2.x | **Track**; switch only on TS+MD+JSON parity. |
-| Stylelint | 16.x | Lightning-CSS-only | Keep; consider Lightning-CSS-only validation v15. |
-| Playwright | 1.5x | latest | Quarterly baseline regen. |
-| Stryker (mutation) | 8.x | — | Threshold ≥ 85 %; extend to error-tracker + config + diag. |
-| `fast-check` (property) | 3.x | — | Extend to worker-client envelope invariants v14.x. |
-| `axe-core` (a11y) | latest | — | Keep CI gate. |
-| Lighthouse CI | latest | — | Ratchet path: `warn 0.85` → `error 0.97` v14.x. |
-| `pnpm` workspace | npm + parent | — | **Reject** — current pattern is sufficient and simpler. |
-| Husky / Lefthook | none (CI is the gate) | — | **Reject** — pre-commit hooks slow contributors. |
+| Tool                  | Current                  | Action                                                                            |
+| --------------------- | ------------------------ | --------------------------------------------------------------------------------- |
+| Node.js               | 24 LTS                   | Track 26 LTS (Oct 2027).                                                          |
+| TypeScript            | 6.0.3                    | Track minor monthly; TS7 only when zero-delta.                                    |
+| Vite                  | 8                        | Auto-adopt 9 + Rolldown when default.                                             |
+| Vitest                | 4.1.5                    | Auto-adopt 4.2; track 5.x.                                                        |
+| ESLint                | 10                       | Pair with `oxlint` fast pre-pass (ADR-039).                                       |
+| Prettier              | 3.x                      | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity.                       |
+| Stylelint             | 16.x                     | Keep; consider Lightning-CSS-only validation v15.                                 |
+| Playwright            | 1.5x                     | Quarterly baseline regen.                                                         |
+| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; extend to error-tracker + config + diag (shipped) + provider-health. |
+| `fast-check`          | 3.x                      | 55 property suites; extend to worker-client envelope invariants v14.x.            |
+| `axe-core`            | latest                   | Keep CI gate.                                                                     |
+| Lighthouse CI         | latest                   | Tightened to `error 0.97`; ratchet to `0.98` cached v14.x.                        |
+| `pnpm` workspace      | npm + parent             | **Reject** — current pattern is sufficient and simpler.                           |
+| Husky / Lefthook      | none (CI is the gate)    | **Reject** — pre-commit hooks slow contributors.                                  |
 
 ### 1.7 Testing strategy
 
-| Layer | Tooling | Action |
-| --- | --- | --- |
-| Unit | Vitest 4.1 + happy-dom 20 | Keep. Suite split per file. |
-| Component (DOM-heavy) | `@vitest/browser` (Playwright provider) | Shipped v13.16 for `maximize.ts` + `layout-drag.ts`. |
-| Property-based | fast-check | Extend to worker-client envelope invariants v14.x. |
-| Mutation | Stryker | Threshold ≥ 85 %. |
-| Visual regression | Playwright (in-repo baselines) | 45 → 80+ baselines; add DO-SSE alert states + video-news + maximise-FLIP. |
-| End-to-end | Playwright | Keep. |
-| Accessibility | axe-core (CI gate) | Keep + manual screen-reader pass per major release. |
-| Performance | Lighthouse CI (`error 0.85`) | Tighten to `error 0.97` v14.x once Early Hints + SRI mature. |
-| Coverage thresholds | 93.0 / 84.6 / 92.0 / 94.5 (current) | **Ratchet path**: → 95 / 90 / 95 / 96 (v15). +1 % per minor release. |
+| Layer            | Tooling                                | Action                                                                            |
+| ---------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
+| Unit             | Vitest 4.1 + happy-dom 20              | Keep. Suite split per file.                                                       |
+| Component        | `@vitest/browser` (Playwright)         | Shipped v13.16.                                                                   |
+| Property-based   | fast-check (55 suites, ADR-054/055)    | Extend to worker-client envelope invariants v14.x.                                |
+| Mutation         | Stryker                                | Threshold ≥ 85 %.                                                                 |
+| Visual regression | Playwright (108 baselines)             | Extend to DO-SSE alert states + maximise-FLIP.                                    |
+| End-to-end       | Playwright                             | Keep.                                                                             |
+| Accessibility    | axe-core (CI gate)                     | Keep + manual screen-reader pass per major.                                       |
+| Performance      | Lighthouse CI (`error 0.97`)           | Tighten to `0.98` cached v14.x.                                                   |
+| Coverage         | 93.0/84.6/92.0/94.5                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
 
 ### 1.8 Observability, security, supply chain
 
 | Area | Action |
-| --- | --- |
-| Obs | Diag schema v1 → v2 only if needed. **OpenTelemetry from Worker (opt-in, v14.2)**. |
-| Obs | SLO dashboard (Grafana free tier or self-hosted) — gate: > 100 K req/day. |
-| Sec | **SLSA L3 hermetic build (ADR-035)** — first shipped v14.2. Sigstore/cosign per release. |
-| Sec | Subresource Integrity auto-injected (shipped v13.9). |
-| Sec | Secret rotation per major release. Reporting API sampling audit annually. |
-| Sec | CSP `require-trusted-types-for 'script'` enforcement audit v14.0. |
-| Sec | npm + GitHub Actions provenance (Sigstore) — adopt v14.2. |
-| Sec | OWASP Top 10 audit per major release; CSP wildcards reviewed every patch. |
+| ---- | ------ |
+| Obs  | **OpenTelemetry from Worker (opt-in, v14.2)**. Diag schema v1 → v2 only if needed. |
+| Obs  | SLO dashboard (Grafana free tier or self-hosted) — gate: > 100 K req/day. |
+| Sec  | **SLSA L3 hermetic build (ADR-035)** — first shipped v14.2. Sigstore/cosign per release. |
+| Sec  | Subresource Integrity auto-injected (shipped v13.9). |
+| Sec  | Secret rotation per major release. Reporting API sampling audit annually. |
+| Sec  | CSP `require-trusted-types-for 'script'` enforcement audit v14.0. |
+| Sec  | npm + GitHub Actions provenance (Sigstore) — adopt v14.2. |
+| Sec  | OWASP Top 10 audit per major release; CSP wildcards reviewed every patch. |
+| Sec  | **Origin-Agent-Cluster header** — adopt v14.x (process isolation; defends against Spectre-class side-channels). |
+| Sec  | **Permissions-Policy delegation audit** — reduce inherited surface for video-news iframes. |
 | Infra | Cloudflare Pages migration — gate on measurable TTI/caching regression. |
-| Infra | Annual vendor-neutrality drill (ADR-031) starts v14.0. |
+| Infra | **Annual vendor-neutrality drill (ADR-031)** — first run v14.0 on Deno Deploy + Bun Deploy + fly.io. |
 | Infra | Static-PWA constraint: no server, no auth, no backend session (rule #26). |
-| DX | `docs/adr/README.md` auto-generated (shipped). |
-| DX | Mono-repo tooling harvest — propagate `tooling/` presets to siblings v14.1. |
-| DX | Codecov-style PR coverage delta bot (own action) — shipped v13.9. |
-| DX | PR SBOM-diff bot (own action) — shipped v13.9. |
-| DX | Dev-mode SW kill switches (`?nosw=1`, `__fdbUnregisterSW()`) — shipped v13.13.1. |
+| DX   | `docs/adr/README.md` auto-generated (shipped). |
+| DX   | Mono-repo tooling harvest — propagate `tooling/` presets to siblings v14.1. |
+| DX   | Codecov-style PR coverage delta bot (own action) — shipped v13.9. |
+| DX   | PR SBOM-diff bot (own action) — shipped v13.9. |
+| DX   | Dev-mode SW kill switches (`?nosw=1`, `__fdbUnregisterSW()`) — shipped v13.13.1. |
 
 ### 1.9 Documentation discipline
 
-| Type | Current | Verdict / Action |
-| --- | --- | --- |
-| ADRs | 45 (44 active, 1 withdrawn) | One per non-trivial decision. ADR-021 withdrawn; ADR-037 reserved. |
-| User docs (`docs/`) | 14 + 45 | Keep. `docs/README.md` is the table of contents. |
-| Legacy | `docs/legacy/BestDashBoard.html` | Keep archived; never edit. |
-| `CHANGELOG.md` | per-release | Single source of historical truth. |
-| `ROADMAP.md` | this file | Forward-looking only. |
-| `.github/` | instructions, prompts, agents, skills | Deduplicated against `copilot-instructions.md`. |
-| Architecture diagrams | `.github/assets/*.svg` + Mermaid | Auto-validated (ADR-040). |
-| Inline comments | sparse, intent-only | Keep. No JSDoc for trivial functions. |
-| Reading-level gate | `check-reading-level.mjs` | Shipped. |
-| Wiki / Discussions | none | **Reject** — `docs/` + ADRs cover it. |
+- ADRs: 55 (54 active, 1 withdrawn). One per non-trivial decision.
+- User docs (`docs/`): `README.md` is the table of contents. Reading-level gate enforced.
+- Legacy: `docs/legacy/BestDashBoard.html` archived; never edit.
+- `CHANGELOG.md`: single source of historical truth.
+- `ROADMAP.md` (this file): forward-looking only.
+- Architecture diagrams: `.github/assets/*.svg` + Mermaid, auto-validated (ADR-040).
+- Inline comments: sparse, intent-only. No JSDoc for trivial functions.
+- Wiki / Discussions: **Reject** — `docs/` + ADRs cover it.
 
 ### 1.10 Decisions held rejected (consolidated 2026-Q2)
 
-Client framework rewrite · Shadow DOM · user DB · OIDC/passkey/Google/Facebook/Apple auth · 40+ language i18n · pre-commit hooks · WebGPU/WASM hot paths · OPFS structured cache · AGPL · multi-tenant Workers for Platforms · pnpm workspace · Husky · Lerna/Nx · hand-rolled bundler · custom auth · Sentry SaaS · Codecov SaaS · Argos CI SaaS · Docker image release · Hyperdrive/Postgres · WebTransport server-side · Open UI `<selectlist>` · Bun test runner · `<dialog>` replacement · ECMAScript decorators · React Server Components · Remix/Next routing · GraphQL · gRPC · Drizzle/tRPC/Mantine.
+Client framework rewrite · Shadow DOM · user DB · OIDC/passkey/Google/Facebook/Apple auth · 40+ language i18n · pre-commit hooks · WebGPU/WASM hot paths (excluding optional WebNN) · OPFS structured cache · AGPL · multi-tenant Workers for Platforms · pnpm workspace · Husky · Lerna/Nx · hand-rolled bundler · custom auth · Sentry SaaS · Codecov SaaS · Argos CI SaaS · Docker image release · Hyperdrive/Postgres · WebTransport server-side · Open UI `<selectlist>` · Bun test runner · `<dialog>` replacement · ECMAScript decorators · React Server Components · Remix/Next routing · GraphQL · gRPC · Drizzle/tRPC/Mantine · Tailwind · CSS-in-JS · Map dependencies (Leaflet/Mapbox) · auto-play video · auto-translate · pollen API.
+
+### 1.11 New decisions opened in this re-litigation
+
+These were not on the v1 roadmap. Each gets an ADR before the work lands.
+
+| # | Decision | Verdict | Trigger / Gate | Target |
+| - | -------- | ------- | -------------- | ------ |
+| D1 | **Local MCP server (read-only)** — surface "today's signals" so users' AI assistants can ask without scraping. Dashboard exposes a localhost-only HTTP+JSON endpoint at `localhost:7411/mcp`; never reachable from a remote origin. | **Adopt v14.x** | Privacy gate: zero network egress; CSP unchanged; opt-in via `?mcp=1`. | v14.x |
+| D2 | **WebNN on-device inference** for news rerank + motivation curator. | **Track v15** | Chrome GA + graceful Workers AI fallback when API absent. | v15 |
+| D3 | **Compute Pressure API** in `system-info` card. | **Adopt v14.x** | Behind feature-detect; surface `nominal/fair/serious/critical` tile. | v14.x |
+| D4 | **Storage Buckets** (per-card eviction policy). | **Adopt v14.x** | Behind feature-detect; news bucket evicts before tasks. | v14.x |
+| D5 | **Origin-Agent-Cluster** response header + meta. | **Adopt v14.x** | Side-channel hardening; verify no measurable memory regression on TV-target hardware (4 GB RAM Chromecast-class). | v14.x |
+| D6 | **Cloudflare Snippets / TEE** for static header injection. | **Track v14.x** | Move CSP / COOP / COEP / HSTS out of Worker once Snippets ships TEE; saves ~3 KB Worker. | v14.x |
+| D7 | **Web Push (VAPID) for alerts → phone**. | **Gate: 3+ user requests** | Worker-side VAPID, opt-in; only fires `alerts` severity ≥ rocket; never tracks subscription beyond push. | v14.x |
+| D8 | **IMS / TASE / BoI native sources** for IL-geo users (`weather`, `stocks`, `currency`). | **Adopt v14.0** | Adapter contract: provider-health emits same envelope; KV stale + provider chain unchanged. | v14.0 |
+| D9 | **CSS `if()` + `@function`** for theme-token compression. | **Adopt v14.x** | Behind progressive-enhancement; theme `@layer` keeps fallback. | v14.x |
+| D10 | **Speculation Rules API (prerender)** for help / config panels. | **Adopt v14.x** | Bundle delta < 1 KB; gate by LHCI no-regression on TTI. | v14.x |
+| D11 | **`popover=` attribute** for diag toasts + bookmark menu. | **Adopt v14.x** | Replaces ad-hoc focus traps; gate by zero a11y regression on axe. | v14.x |
+| D12 | **TS module boundary linting** — disallow `src/cards/*` from importing `src/ui/*` and vice-versa beyond declared interfaces. | **Adopt v14.0** | Enforced by `eslint-plugin-boundaries` config in `tooling/eslint/`. | v14.0 |
+| D13 | **Per-card budget hard-cap** — each card module ≤ 6 KB gzip individually (today: 4 / 12 cards over 5 KB). | **Adopt v14.0** | CI gate; refactor over-budget cards. | v14.0 |
+| D14 | **Renovate group rules: security weekly, minors monthly, majors manual.** | **Adopt v14.0** | Replaces current per-package weekly noise. | v14.0 |
+| D15 | **Annual `dist/` reproducibility verification by an unrelated builder** (third-party rebuilder via SLSA `verifier-action`). | **Adopt v14.2** | Builds on existing `rebuilder-manifest.json`. | v14.2 |
 
 ---
 
-## 2. Competitive Landscape — 2026-Q2
+## 2. Competitive Landscape — 2026-Q2 (refreshed)
 
-### 2.1 Comparison matrix — 16 peer projects across 4 categories
+### 2.1 Comparison matrix — 18 peer projects across 5 categories
 
-Categories: **TV/Family dashboards** · **Homelab dashboards** · **News/feed readers** · **Smart-home / monitoring**.
+Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed readers** · **Smart-home / monitoring** · **AI-native dashboards (2025 cohort)**.
 
-| Dimension | **FamilyDashBoard v13.18** | Homepage | Dashy | Homer | Homarr v2 | Glance | MagicMirror² | Beszel | Dashdot | NetNewsWire | Feedly | Apple Home | Grafana | HASS Lovelace | Tidbyt | TRMNL |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Audience | Always-on family TV | Homelab launcher | Homelab dashboard | Static startpage | Homelab mgmt | News dashboard | Smart-mirror | Server monitor | Server monitor | News reader | News reader (paid) | Apple smart-home | SRE/observability | Smart-home | Pixel info display | E-ink dashboard |
-| Frontend | **Vanilla TS strict + Vite 8** | Next.js 15 | Vue 3.5 | Vue 3 | Next.js 15 + Mantine 7 | Go templates | Node + MM modules | SvelteKit | React + Vite | Swift | React (closed) | SwiftUI | React | Lit + Polymer | Go (HW) | Vue (HW) |
-| Client deps | **0 / ~88 KB gzip** | ~38 | ~22 | ~12 | ~55 | 0 (SSR) | ~15 | ~4 | ~25 | n/a | unknown | n/a | ~120 | ~65 | n/a | n/a |
-| State | **In-house Signals (ADR-038)** | React state | Pinia | Vuex | Zustand | n/a | Module bus | Svelte runes | React state | KVO | unknown | SwiftUI | Redux | Lit reactive | n/a | n/a |
-| Backend | **Cloudflare Worker (Hono + Valibot)** | Node proxy | Node/Express | None | Node + tRPC + Drizzle | Single Go binary | Node Express | Single Go binary | Single Go binary | n/a | Cloud (closed) | iCloud | Go monolith | Python (HASS core) | Cloud + device | Cloud |
-| User database | **None** | None | None | None | SQLite + Drizzle | None | None | SQLite | None | SQLite | Cloud | iCloud | many | SQLite | Cloud KV | Cloud KV |
-| Edge cache | **KV stale + D1 + DO + Analytics Engine** | n/a | n/a | n/a | Postgres / SQLite | n/a | n/a | SQLite | n/a | n/a | proprietary | iCloud | Prometheus / Mimir | InfluxDB / SQLite | Tidbyt cloud | TRMNL cloud |
-| TS strictness | **strict + nUII + vMS + eOPT** | strict | partial | JS-dominant | strict | n/a | partial | strict | partial | n/a | unknown | n/a | partial | partial | n/a | n/a |
-| CSS | **`@layer` + tokens + Lightning + `@scope` + `light-dark()` + `@property`** | Tailwind 4 | SCSS | SCSS | Mantine CSS-in-JS | Hand CSS | CSS Modules | Tailwind 4 | Tailwind 3 | AppKit | Tailwind | SwiftUI | SCSS + Emotion | hand CSS | n/a | hand CSS |
-| Tests | **5155 unit + PW + axe + 45 VR + LHCI + fast-check + Stryker** | Vitest partial | Vitest partial | None | Vitest + PW + Argos | Go tests | Minimal | Go tests | Partial | XCTest | unknown | XCTest | Go tests | pytest | n/a | n/a |
-| Mutation | **Stryker** | None | None | None | None | None | None | None | None | None | unknown | None | None | None | None | None |
-| Visual regression | **Playwright (45, in-repo)** | None | None | None | Argos CI | None | None | None | None | Snapshot | unknown | None | Pixelmatch | None | None | None |
-| i18n | **Hebrew RTL + English** | 45+ | 22+ | YAML | 38+ | en-only | 30+ | en-only | en-only | 40+ | 25+ | 40+ | 30+ | 80+ | en-only | en-only |
-| A11y | **WCAG 2.2 AA + axe gate** | Partial | Partial | Unknown | Partial | Unknown | Partial | Unknown | Unknown | VoiceOver | Unknown | Apple stack | Partial | Partial | n/a | n/a |
-| Offline / PWA | **Full SW · 4-tier cache · `?nosw=1` escape** | No | Basic PWA | Installable | No | No | No | No | No | Native | Web stale-only | Native | No | Partial | n/a | E-ink only |
-| Auth | **None (intentional)** | Host/proxy | Keycloak / basic | None | OIDC + passkey | None | None | Email + 2FA | None | Apple ID | Email | Apple ID | Many | Account / OIDC | Cloud account | Cloud account |
-| Edge proxy | **Worker + KV stale + Valibot + D1 + Analytics + DO RL** | Server proxy | Proxy chain | n/a | tRPC over Next | n/a | None | n/a | n/a | None | proprietary | iCloud | Plugin model | Add-on model | n/a | n/a |
-| Observability | **Web Analytics + Vitals + Errors + D1 + Reporting + Prom + AE + diag JSON** | None | None | None | Sentry (opt) | Prom endpoint | None | Built-in | Prometheus | Apple | proprietary | Apple | Prom + OTel | Prom + OTel + Loki | n/a | Cloud only |
-| Sec headers | **CSP L3 + Trusted Types + COOP/COEP/CORP + 28-API Permissions-Policy + HSTS** | NGINX | Varies | None | Next defaults | Go handlers | None | Svelte defaults | Partial | Apple | proprietary | Apple | Helm defaults | HASS defaults | n/a | n/a |
-| Supply-chain | **SLSA L2 + SBOM + Dependabot + Renovate (SHA) + dep-review + Stryker + SBOM-diff bot** (→ L3 v14.2) | High (Next churn) | Medium | Low | Very high | ~0 | Medium | Low | Medium | Apple-signed | proprietary | Apple-signed | Medium | High | Cloud-signed | Cloud-signed |
-| Reproducible artefact | **`dist.zip` + `worker.js`, SLSA-pinned, SBOM/release** | Docker | Docker | Static site | Docker compose | Single binary | Node bundle | Single binary | Single binary | Apple-signed | n/a | n/a | Docker / Helm | Docker / venv | Cloud | Cloud |
-| Cold-start TTI | **< 1.0 s cached / ~1.6 s fresh** | ~2.5 s | ~3 s | ~1 s | ~3.5 s | ~300 ms | ~2 s | ~500 ms | ~800 ms | n/a | ~2 s | n/a | ~3 s | ~2 s | n/a | ~1 s |
-| Live-data cards | **12 deep, provider-adapted, history-backed** | 100+ shallow | 50+ | limited | 30+ | 12 feed types | 100+ shallow | Server metrics | Server metrics | RSS only | RSS + ML | Smart-home only | unlimited | unlimited | curated apps | curated apps |
-| Hostile-network mode | **`?nosw=1` + corp CSP allowlist + DevTools unregister** | None | None | None | None | None | None | None | None | None | None | None | None | None | None | None |
-| License | MIT | GPL-3.0 | MIT | Apache-2.0 | MIT | AGPL-3.0 | MIT | MIT | MIT | MIT | proprietary | proprietary | AGPL-3.0 | Apache-2.0 | proprietary | proprietary |
-| Unique strength | Hebrew/Zmanim/Hebcal/Sefaria · TV-3 m · 4-tier offline · zero deps · highest gate density · firewall-aware | Ecosystem size | Themeable | Simplicity | Feature breadth | Go footprint | Mirror form-factor | Go deploy | Go deploy | macOS polish | ML clustering | Apple integration | Best-in-class panels | Vast device ecosystem | Pixel charm | E-ink low-power |
+| Dimension              | **FamilyDashBoard v13.33**                                                          | Homepage   | Dashy     | Homarr v2     | Glance      | MagicMirror² | NetNewsWire | Feedly      | Apple Home  | Grafana          | HASS Lovelace | Tidbyt    | TRMNL    | Daylight DC-1 | Arc Boost | Perplexity Comet | Granola      | Beeper       |
+| ---------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- | ----------- | ------------ | ----------- | ----------- | ----------- | ---------------- | ------------- | --------- | -------- | ------------- | --------- | ---------------- | ------------ | ------------ |
+| Audience               | Always-on family TV                                                                 | Homelab    | Homelab   | Homelab       | News-focus  | Smart-mirror | News reader | News reader | Smart-home  | SRE/observability | Smart-home    | Pixel art | E-ink    | E-ink tablet  | Browser   | AI browser       | Meeting AI   | Chat AI      |
+| Frontend               | **Vanilla TS strict + Vite 8**                                                      | Next.js 15 | Vue 3.5   | Next.js 15    | Go templates | Node + MM   | Swift       | React       | SwiftUI     | React            | Lit + Polymer | Go (HW)   | Vue (HW) | proprietary   | Swift     | Electron + RN    | Electron     | Electron     |
+| Client deps            | **0 / ~88 KB gzip**                                                                 | ~38        | ~22       | ~55           | 0 (SSR)     | ~15          | n/a         | unknown     | n/a         | ~120             | ~65           | n/a       | n/a      | n/a           | n/a       | many             | many         | many         |
+| State                  | **In-house Signals (ADR-038)**                                                      | React      | Pinia     | Zustand       | n/a         | Module bus   | KVO         | unknown     | SwiftUI     | Redux            | Lit reactive  | n/a       | n/a      | n/a           | SwiftUI   | unknown          | unknown      | unknown      |
+| Backend                | **Cloudflare Worker (Hono + Valibot)**                                              | Node proxy | Node      | Node + tRPC   | Single Go   | Node Express | n/a         | proprietary | iCloud      | Go monolith      | Python        | Cloud     | Cloud    | proprietary   | Cloud     | Cloud            | Cloud + LLM  | Bridges      |
+| User database          | **None**                                                                            | None       | None      | SQLite + Drizzle | None      | None         | SQLite      | Cloud       | iCloud      | many             | SQLite        | Cloud KV  | Cloud KV | Cloud         | Cloud     | Cloud            | Cloud        | Cloud        |
+| Edge cache             | **KV stale + D1 + DO + AE**                                                         | n/a        | n/a       | Postgres      | n/a         | n/a          | n/a         | proprietary | iCloud      | Prom / Mimir     | Influx        | Cloud     | Cloud    | proprietary   | Cloud     | Cloud            | Cloud        | Cloud        |
+| TS strictness          | **strict + nUII + vMS + eOPT**                                                      | strict     | partial   | strict        | n/a         | partial      | n/a         | unknown     | n/a         | partial          | partial       | n/a       | n/a      | n/a           | n/a       | unknown          | unknown      | unknown      |
+| CSS                    | **`@layer` + tokens + Lightning + `@scope` + `light-dark()` + `@property`**          | Tailwind 4 | SCSS      | Mantine CSS-in-JS | Hand    | CSS Modules  | AppKit      | Tailwind    | SwiftUI     | SCSS + Emotion   | hand          | n/a       | hand     | n/a           | SwiftUI   | Tailwind         | Tailwind     | Tailwind     |
+| Tests                  | **6012 unit + PW + axe + 108 VR + LHCI + 55 fast-check + Stryker**                  | Vitest partial | partial | Vitest + PW + Argos | Go     | Minimal      | XCTest      | unknown     | XCTest      | Go tests         | pytest        | n/a       | n/a      | n/a           | unknown   | unknown          | unknown      | unknown      |
+| Visual regression      | **Playwright (108, in-repo)**                                                       | None       | None      | Argos CI      | None        | None         | Snapshot    | unknown     | None        | Pixelmatch       | None          | None      | None     | None          | None      | None             | None         | None         |
+| i18n                   | **Hebrew RTL + English**                                                            | 45+        | 22+       | 38+           | en-only     | 30+          | 40+         | 25+         | 40+         | 30+              | 80+           | en-only   | en-only  | en-only       | en-only   | many             | en-only      | many         |
+| A11y                   | **WCAG 2.2 AA + axe gate**                                                          | Partial    | Partial   | Partial       | Unknown     | Partial      | VoiceOver   | Unknown     | Apple stack | Partial          | Partial       | n/a       | n/a      | E-ink only    | Apple     | partial          | partial      | partial      |
+| Offline / PWA          | **Full SW · 4-tier cache · `?nosw=1` escape**                                       | No         | Basic     | No            | No          | No           | Native      | stale-only  | Native      | No               | Partial       | n/a       | E-ink    | E-ink         | n/a       | partial          | partial      | partial      |
+| Auth                   | **None (intentional)**                                                              | Host       | Keycloak  | OIDC + passkey | None       | None         | Apple ID    | Email       | Apple ID    | Many             | Account       | Cloud     | Cloud    | Cloud         | Cloud     | Cloud            | Cloud        | Cloud        |
+| Edge proxy             | **Worker + KV stale + Valibot + D1 + AE + DO RL**                                   | Server proxy | Proxy   | tRPC          | n/a         | None         | None        | proprietary | iCloud      | Plugin           | Add-on        | n/a       | n/a      | n/a           | n/a       | n/a              | n/a          | n/a          |
+| Observability          | **RUM + Vitals + Errors + D1 + Reporting + Prom + AE + diag JSON**                  | None       | None      | Sentry (opt)  | Prom        | None         | Apple       | proprietary | Apple       | Prom + OTel      | Prom + OTel + Loki | n/a   | Cloud    | Cloud         | Cloud     | Cloud            | Cloud        | Cloud        |
+| Sec headers            | **CSP L3 + TT + COOP/COEP/CORP + 28-API PP + HSTS**                                 | NGINX      | Varies    | Next defaults | Go          | None         | Apple       | proprietary | Apple       | Helm defaults    | HASS defaults | n/a       | n/a      | n/a           | n/a       | n/a              | n/a          | n/a          |
+| Supply-chain           | **SLSA L2 + SBOM + Renovate (SHA) + Stryker + SBOM-diff bot** (→ L3 v14.2)          | High churn | Medium    | Very high     | ~0          | Medium       | Apple-signed | proprietary | Apple-signed | Medium         | High          | Cloud-signed | Cloud-signed | unknown | unknown   | unknown          | unknown      | unknown      |
+| Reproducible artefact  | **`dist.zip` + `worker.js`, SLSA-pinned, SBOM/release**                             | Docker     | Docker    | Docker compose | binary    | Node bundle  | Apple-signed | n/a       | n/a         | Docker / Helm    | Docker / venv | Cloud     | Cloud    | Cloud         | Cloud     | Cloud            | Cloud        | Cloud        |
+| Cold-start TTI         | **< 1.0 s cached / ~1.6 s fresh**                                                   | ~2.5 s     | ~3 s      | ~3.5 s        | ~300 ms     | ~2 s         | n/a         | ~2 s        | n/a         | ~3 s             | ~2 s          | n/a       | ~1 s     | ~3 s          | ~1 s      | ~2 s             | ~2 s         | ~2 s         |
+| Live-data cards        | **12 deep, provider-adapted, history-backed**                                       | 100+ shallow | 50+    | 30+           | 12 types    | 100+         | RSS only    | RSS+ML      | Smart-home  | unlimited        | unlimited     | curated   | curated  | curated       | n/a       | unlimited (LLM)  | meeting only | chat only    |
+| Hostile-network mode   | **`?nosw=1` + corp CSP allowlist + DevTools unregister**                            | None       | None      | None          | None        | None         | None        | None        | None        | None             | None          | None      | None     | None          | None      | None             | None         | None         |
+| **AI integration**     | **Workers AI Llama 3.3 (motivation, news summary, daily synthesis); MCP server v14.x** | None    | None      | None          | None        | None         | None        | ML cluster  | None        | None             | None          | None      | None     | None          | Boost     | LLM browser      | LLM transcribe | LLM bridge   |
+| License                | MIT                                                                                 | GPL-3.0    | MIT       | MIT           | AGPL-3.0    | MIT          | MIT         | proprietary | proprietary | AGPL-3.0         | Apache-2.0    | proprietary | proprietary | proprietary | proprietary | proprietary    | proprietary  | MIT (client) |
+| Unique strength        | Hebrew/Zmanim/Hebcal/Sefaria · TV-3 m · 4-tier offline · zero deps · highest gate density · firewall-aware | Ecosystem | Themeable | Feature breadth | Go footprint | Mirror form-factor | macOS polish | ML clustering | Apple integration | Best panels | Vast device ecosystem | Pixel charm | E-ink low-power | E-ink low-power | Browser fluency | LLM fluency | Meeting depth | Chat aggregation |
 
-### 2.2 Patterns harvested (or rejected)
+### 2.2 Patterns harvested in 2026-Q2 (new since v1 roadmap)
 
 | Pattern | Source | Verdict | Landing |
-| --- | --- | --- | --- |
-| **Cloudflare Vectorize (semantic dedup)** | Feedly ML | **Adopt v14.0** | Replaces SimHash v2; precision@10 gate. |
-| **Workers AI Llama 4 / multilingual** | CF 2026 GA | **Track v14.x** | Replace Llama 3.3 only when Hebrew quality measurably better at equal cost. |
-| **DO Hibernatable WebSocket** | CF 2025 GA | **Adopt v14.x** | Stocks live + alerts SSE — DO bill drops ~80 % when idle. |
-| **Cloudflare R2 for asset cache** | CF 2024 GA | **Adopt v14.x** | Backgrounds + offline shell mirrored; egress = $0. |
-| **DO Storage SQL** | CF 2025 GA | **Track** | Possible D1 replacement; gate same query latency at lower CPU bill. |
-| **TC39 Signals** | TC39 Stage 3 | **Adopt when polyfill ≤ 1.5 KB** | Drop-in for in-house signals. |
-| **TC39 Temporal** | TC39 Stage 3 | **Adopt when polyfill ≤ 10 KB gzip** | Replaces date math in `hebrew-cal`, `calendar`, `countdown`. |
-| **HTTP Early Hints (103)** | RFC 8297 | **Shipped v13.14** | −80 ms TTI. |
-| **CRDT (Yjs ≈ 12 KB)** | Yjs 2024 | **Track** | Only if WebRTC delta proves insufficient. Hard budget ≤ 12 KB. |
-| **Document Picture-in-Picture** | Browser 2024 | **Gate: 3+ user requests** | Corner PiP while other cards refresh. |
-| **OpenTelemetry from Worker (opt-in)** | OTel 1.30+ | **Adopt v14.2** | Self-host collector on R2 + Workers ingestor. |
-| **`oxlint` Rust lint pre-pass** | Oxc 2025 | **Shipped v13.13 (ADR-039)** | Pre-pass before ESLint. |
-| **Biome (formatter + lint)** | Biome 2.x | **Track** | Re-evaluate v15 on TS+MD+JSON parity. |
-| **Rolldown (Vite Rust bundler)** | Vite 2026 default | **Auto-adopt** | Zero code change required. |
-| **Mermaid pre-commit validator** | Internal | **Shipped v13.10 (ADR-040)** | All architecture diagrams validated in CI. |
+| ------- | ------ | ------- | ------- |
+| **Local MCP server (read-only) for AI assistants** | Granola, Comet, Beeper Cloud (2025–2026 cohort) | **Adopt v14.x** | Localhost-only; surface today's signals; ADR before code (D1). |
+| **WebNN on-device inference** | Chrome 130+, Edge 130+ | **Track v15** | News rerank + motivation curator without round-trip (D2). |
+| **Compute Pressure API surfacing** | Daylight DC-1 thermal-aware UI | **Adopt v14.x** | New tile in `system-info` (D3). |
+| **Storage Buckets per-card eviction** | Chrome 122+ | **Adopt v14.x** | Better than monolithic IDB LRU (D4). |
+| **`popover=` attribute** | Browser 2024 | **Adopt v14.x** | Replaces ad-hoc focus traps (D11). |
+| **Speculation Rules prerender** | Chrome 121+ | **Adopt v14.x** | Help / config panel TTI win (D10). |
+| **Origin-Agent-Cluster header** | Chrome 116+ | **Adopt v14.x** | Side-channel hardening (D5). |
+| **CSS `if()` + `@function`** | CSS 2026 | **Adopt v14.x** | Token compression (D9). |
+| **Cloudflare Snippets** | CF 2025 GA | **Track** | Move CSP / COOP / COEP / HSTS out of Worker (D6). |
+| **Web Push VAPID for opt-in alerts** | Browser 2024 | **Gate: 3+ requests** | Phone push for `alerts` ≥ rocket only (D7). |
+| **DC-1 / TRMNL e-ink cadence (15-min)** | Daylight, TRMNL | **Inspire** | Already aligned with our card TTLs. |
+| **Granola "after-meeting summary"** | Granola 2025 | **Adapted as X9** | Daily synthesis tile shipped Sprint 202. |
+| **Comet agent-driven panel** | Perplexity 2026 | **Inspire (no copy)** | We expose data via MCP (D1) instead of embedding an agent. |
+| **Beeper bridge model** | Beeper 2026 | **Reject** | Auth + DB requirement contradicts static-PWA. |
 | **Argos CI visual regression** | Homarr v2 | **Superseded** | Playwright in-repo baselines; zero SaaS dep. |
-| **Drizzle / tRPC / Mantine / Next** | Homarr v2 | **Reject (4th reconfirm)** | Contradicts zero-dep, no-DB, no-framework lines. |
-| **OIDC / passkey / OAuth** | Homarr v2 / Beszel | **Reject** | Static client-only PWA; auth would require backend session store. |
+| **OIDC / passkey / OAuth** | Homarr v2 / Beszel | **Reject (5th reconfirm)** | Static client-only PWA; auth would require backend session store. |
 | **Tidbyt pixel-art aesthetic** | Tidbyt | **Reject** | TV-3 m readability is opposite design pressure. |
-| **TRMNL e-ink cadence (15-min)** | TRMNL | **Inspire** | Already aligned with our card TTLs. |
 | **Apple Home Hub continuity** | Apple | **Inspire** | Mirrors WebRTC mirror direction (gated v14.x); auth-free, P2P. |
 | **Feedly ML clustering** | Feedly | **Adopt v14.0** | Vectorize embeddings is the open-stack equivalent. |
 | **Grafana panel grammar** | Grafana | **Reject** | Plugin loader ≥ 30 KB; our 12 cards are statically authored. |
 | **HASS Lovelace YAML cards** | HASS | **Reject** | YAML editor adds parsing surface for zero gain on 12-card SPA. |
-| **NetNewsWire SwiftData sync** | NNW 2024 | **N/A** | Apple-only; no cross-platform equivalent worth shipping. |
 
-### 2.3 Our protected unique strengths
+### 2.3 Our protected unique strengths (2026-Q2)
 
 1. **Zero runtime deps on client** — peers ship 30–55; we ship 0.
 2. **TV-first at 3 m viewing distance** — no peer targets this ergonomic.
 3. **Hebrew RTL + Zmanim + Hebcal + Sefaria + Tzeva-Adom native** — unique.
 4. **12 provider-adapted cards with normalized history + stale fallback** — depth over breadth.
 5. **4-tier offline cache + dev escape hatches** — no peer renders a useful dashboard offline _and_ provides a `?nosw=1` opt-out.
-6. **5155 tests + axe + VR + LHCI + Stryker + SLSA + container-query audit + mermaid validator** — highest gate density in matrix.
+6. **6012 tests + axe + 108 VR + LHCI + 55 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
 7. **Production observability without tracking cookies** — RUM + Vitals + Errors + Reports + AE + Prometheus.
-8. **Reproducible single-artefact release** — `dist.zip` + `worker.js`, SLSA-pinned.
+8. **Reproducible single-artefact release** — `dist.zip` + `worker.js`, SLSA-pinned + Sigstore + rebuilder manifest.
 9. **Hostile-network resilience** — explicit corp-proxy CSP allowlist, SW unregister helper, file-protocol launch.
-10. **Static-PWA constraint discipline** — no auth, no server, no DB. Reaffirmed every release.
+10. **Static-PWA constraint discipline** — no auth, no server, no DB. Reaffirmed 5×.
+11. **NEW** — provider chains layered with native IL sources (IMS / TASE / BoI) where the user community concentrates.
+12. **NEW** — agent-readable via local MCP without telemetry leak.
 
 ---
 
-## 3. Per-Card Deep Dive — 12 Cards × Best-in-Class Comparison
-
-For each card: **(a)** current capabilities, **(b)** best-in-class peer comparison, **(c)** capability gap, **(d)** enhancement backlog (P/E/I — see §5).
-
-### 3.1 News card
-
-**Current**: RSS aggregator → SimHash v2 dedup → Llama 3.3 8B summary; per-source weighting; KV stale; no tracking.
-
-**Compared to**: NetNewsWire (macOS, MIT, native), Feedly Pro+ ($8/mo, ML clustering), Inoreader ($5/mo, rules engine), Tiny Tiny RSS (self-host), Miniflux (Go self-host).
-
-| Capability | Us | NetNewsWire | Feedly | Inoreader | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Semantic dedup | SimHash v2 | None | ML clustering | Rules | **Adopt Vectorize v14.0** |
-| Auto-summary | Llama 3.3 Hebrew | None | English only | None | Keep |
-| Read-later / starred | None | Yes | Yes | Yes | **Add v14.x** (IDB-backed) |
-| Source weighting | Per-source slider | None | Pro feature | Pro feature | Keep |
-| Topic clustering | None | None | ML | Rules | **Adopt v14.0** (Vectorize) |
-| Hostile-network | `?nosw=1` + proxy chain | n/a | None | None | Keep — unique |
-| RTL Hebrew | Native | Partial | Partial | Partial | Keep — unique |
-| Per-article TTS | None | macOS only | None | None | **Defer v15** (Web Speech API; gate readability) |
-
-**Enhancements**:
-
-- N1 · P0 · M · Hi · v14.0 — Vectorize semantic dedup + topic clusters (replaces SimHash; precision@10 ≥ +15 %).
-- N2 · P1 · S · Mid · v14.x — Star/read-later list (IDB-backed, AES-GCM URL share).
-- N3 · P2 · S · Lo · v14.x — Per-source mute window (snooze 1 h / 1 d / 7 d).
-- N4 · P2 · M · Mid · v15 — Web Speech API "read article" (Hebrew + English, gated by ≥ 3 user requests).
-- N5 · P1 · S · Mid · v14.x — Article freshness pill (`<2 m`/`<1 h`/`<1 d`/old) with theme-tinted color.
-
-### 3.2 Weather card
-
-**Current**: Met Norway default + NWS (US travel) + Open-Meteo fallback + provider chain; 4-col detail grid; equal-width forecast tiles; °C/°F toggle; mm/in toggle.
-
-**Compared to**: Apple Weather (proprietary), Carrot Weather ($5/yr), Tomorrow.io (API), Pirate Weather (open Dark Sky clone), Windy (vertical product).
-
-| Capability | Us | Apple | Carrot | Tomorrow.io | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Multi-source aggregation | 3+ providers | 1 (Apple WeatherKit) | 6+ | 1 | **Lead** |
-| Hyperlocal precip (next-hr) | None | Yes (US/UK/JP) | Yes | Yes | **Add v14.x** (Open-Meteo nowcast) |
-| Severe-weather alerts | Via alerts card | Yes | Yes | Yes | **Cross-link to alerts card v14.0** |
-| Air quality (AQI) | None | Yes | Yes | Yes | **Add v14.x** (Open-Meteo air-quality endpoint) |
-| UV index | None | Yes | Yes | Yes | **Add v14.0** |
-| Sunrise/sunset/golden | None | Yes | Yes | Yes | **Add v14.0** (compute locally, no API) |
-| Moon phase | None | Yes | Yes | None | **Add v14.x** (Hebrew lunar tie-in) |
-| Wind/gust visualization | Numeric | Compass | Compass + animated | Compass | **Add v14.x** SVG compass |
-| Pollen | None | Yes | None | Yes | **Defer v15** |
-| 10-day forecast | 7-day | 10-day | 10-day | 14-day | **Extend to 10-day v14.0** |
-
-**Enhancements**:
-
-- W1 · P0 · S · Mid · v14.0 — UV index + sunrise/sunset/golden hour (local compute, no extra API).
-- W2 · P1 · M · Hi · v14.0 — Forecast 7 → 10 days (already in Open-Meteo response).
-- W3 · P1 · M · Mid · v14.x — Hyperlocal nowcast (next 1-hour minute-by-minute precip from Open-Meteo).
-- W4 · P1 · S · Mid · v14.x — Air-quality tile (PM2.5/PM10/O3 from Open-Meteo air-quality).
-- W5 · P2 · S · Lo · v14.x — SVG wind compass with gust ring.
-- W6 · P2 · S · Lo · v14.x — Moon phase emoji + Hebrew lunar day (tie to hebrew-cal card).
-
-### 3.3 Stocks card
-
-**Current**: Yahoo + Finnhub HTTP poll; SVG sparkline; Anchor-positioned popover; column widths fixed (rule #13).
-
-**Compared to**: TradingView (proprietary), Yahoo Finance (free), Robinhood (broker), Bloomberg Terminal (enterprise), simplywall.st.
-
-| Capability | Us | TradingView | Yahoo | Robinhood | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Live streaming | HTTP poll (60 s) | WebSocket | 15-min delay | WebSocket | **Adopt DO Hibernatable WS v14.x** |
-| Sparkline | SVG inline | Pro charts | Pro charts | Pro charts | Keep — readability win at 3 m |
-| Pre/post-market | None | Yes | Yes | Yes | **Add v14.x** |
-| Multi-currency display | None | Yes | Yes | None | **Add v14.0** (cross-link currency card) |
-| Earnings calendar | None | Yes | Yes | Yes | **Defer v15** (cross-link calendar card) |
-| Watchlist groups | Single list | Multi | Multi | Multi | **Add v14.0** (IDB-backed groups) |
-| Daily mover badge | None | Yes | Yes | Yes | **Add v14.0** (gainers/losers pill) |
-| Historic chart on hover | Popover sparkline | Full chart | Full chart | Limited | Keep — readability; extend popover with 1Y/5Y tabs v14.x |
-| Hebrew/RTL ticker | Native | None | None | None | Keep — unique |
-
-**Enhancements**:
-
-- S1 · P0 · M · Hi · v14.x — DO Hibernatable WebSocket live stream (replaces HTTP poll; ~80 % DO bill drop idle).
-- S2 · P1 · S · Mid · v14.0 — Cross-card display: convert ticker to user's preferred currency (uses currency card rate).
-- S3 · P1 · S · Mid · v14.0 — Daily-mover pills (top 3 gainers / losers across watchlist).
-- S4 · P2 · M · Mid · v14.x — Watchlist groups (drag-into-group; IDB; AES-GCM URL share).
-- S5 · P2 · S · Lo · v14.x — Pre/post-market state badge.
-
-### 3.4 Currency card
-
-**Current**: 4 providers (exchangerate.host + open.er-api + Frankfurter + ECB direct); ILS-base; per-route TTL.
-
-**Compared to**: xe.com, Wise (formerly TransferWise), OANDA, Google Finance.
-
-| Capability | Us | xe.com | Wise | OANDA | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Provider redundancy | 4 | 1 | 1 | 1 | **Lead** |
-| Fee/spread reveal | None | Yes (paid) | Yes | Yes | **Skip** — not a transactional product |
-| Historic chart | None | Yes | Yes | Yes | **Add v14.x** (30-day mini sparkline) |
-| Quick-amount calculator | Static rate | Yes | Yes | Yes | **Add v14.0** (in-card input → result) |
-| Multi-pair watch | 1 base | unlimited | 5 | unlimited | **Add v14.0** (allow up to 6 watch pairs) |
-| Trend arrow (1d/7d/30d) | None | Yes | None | Yes | **Add v14.0** |
-| Hebrew RTL | Native | Partial | None | None | Keep |
-
-**Enhancements**:
-
-- C1 · P0 · S · Hi · v14.0 — In-card mini-calculator: number input → live result for selected pair.
-- C2 · P1 · S · Mid · v14.0 — Multi-pair watch (≤ 6 pairs).
-- C3 · P1 · S · Mid · v14.0 — Trend arrow (1d Δ, 7d Δ, 30d Δ) — uses Frankfurter history endpoint.
-- C4 · P2 · S · Lo · v14.x — 30-day SVG sparkline per pair.
-
-### 3.5 Calendar card
-
-**Current**: iCal (RFC-5545) + Google Calendar feed; 21-day window; 258 fuzz cases.
-
-**Compared to**: Fantastical (Apple, $5/mo), Google Calendar, BusyCal, Cron (Notion).
+## 3. Per-Card Open Backlog (2026-Q2 refresh)
 
-| Capability | Us | Fantastical | Google | BusyCal | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Multi-source ingestion | iCal + Google | All (CalDAV/Google/Exchange/iCloud) | Google + iCal | All | Keep — within static-PWA constraint |
-| Natural-language input | None | Yes | Limited | Yes | **Reject** — TV display, not authoring |
-| Today/Next strip | Yes | Yes | Yes | Yes | Keep |
-| 3-week view | 21 days | 6 weeks | 6 weeks | configurable | **Make horizon configurable v14.x** (1/2/3/4 weeks) |
-| Holiday overlay | None | Yes | Yes | Yes | **Add v14.0** (Hebrew + Gregorian holidays from hebrew-cal) |
-| Per-source color | None | Yes | Yes | Yes | **Add v14.0** |
-| Conflict detection | None | Yes | None | Yes | **Add v14.x** (overlap badge) |
-| Privacy-mode (titles hidden) | None | Yes | Yes | Yes | **Add v14.0** (`Busy` placeholder) |
-| Temporal date math | ad-hoc | n/a | n/a | n/a | **Adopt when polyfill ≤ 10 KB** |
-
-**Enhancements**:
-
-- CAL1 · P0 · S · Hi · v14.0 — Holiday overlay using hebrew-cal data (cross-card).
-- CAL2 · P0 · S · Mid · v14.0 — Per-source color tag (config UI).
-- CAL3 · P1 · S · Mid · v14.0 — Privacy mode (replace title with `Busy`; per-source toggle).
-- CAL4 · P1 · S · Mid · v14.x — Configurable horizon (1/2/3/4 weeks).
-- CAL5 · P1 · M · Mid · v14.x — Replace ad-hoc date math with TC39 Temporal (gate by polyfill size).
-- CAL6 · P2 · S · Lo · v14.x — Conflict overlap badge.
-
-### 3.6 Hebrew calendar card
-
-**Current**: Hebcal + Zmanim + Sefaria; daily Hebrew date; weekly parasha; festival highlights.
+The full per-card peer comparison and capability gap analysis is preserved in the v1 roadmap and **shipped through Sprint 213**. This section lists **only what remains open** for v14.0+, plus net-new items raised by the 2026-Q2 peer refresh.
 
-**Compared to**: Hebcal app, Sefaria iOS/Android, OpenSiddur, Chabad.org calendar.
+### 3.1 News
 
-| Capability | Us | Hebcal | Sefaria | Chabad | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Hebrew date | Native | Yes | Yes | Yes | Keep |
-| Zmanim (6 daily) | Yes | Yes | Limited | Yes | Keep |
-| Parasha + Haftarah | Parasha only | Both + commentary | Both | Both | **Add Haftarah ref v14.0** |
-| Daily Sefaria text | None | Limited | Native | Limited | **Add v14.0** (one verse / day, Hebrew + EN translit) |
-| Daf Yomi | None | Yes | Yes | Yes | **Add v14.0** (free Sefaria endpoint) |
-| Candle-lighting countdown | None | Yes | None | Yes | **Add v14.0** (cross-link to countdown card on Fridays) |
-| Omer counter | None | Yes (seasonal) | None | Yes | **Add v14.0** (auto-active Pesach → Shavuot) |
-| Lunar phase + Rosh Chodesh | None | Yes | None | Yes | **Add v14.0** (cross-link to weather moon-phase). |
-| Yahrzeit reminder | None | Yes | None | Yes | **Add v14.x** (IDB list, no PII to server). |
-
-**Enhancements**:
-
-- H1 · P0 · S · Hi · v14.0 — Daf Yomi tile (free Sefaria endpoint).
-- H2 · P0 · S · Hi · v14.0 — Omer counter (seasonal auto-activation).
-- H3 · P0 · S · Hi · v14.0 — Candle-lighting countdown (auto on Fridays + chag eves).
-- H4 · P1 · S · Mid · v14.0 — Haftarah reference next to Parasha.
-- H5 · P1 · S · Mid · v14.0 — Rosh Chodesh + lunar phase tile (cross-link to weather).
-- H6 · P2 · M · Mid · v14.x — Yahrzeit list (local-only, IDB, AES-GCM URL share).
-- H7 · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal (gate by polyfill).
+- **N-V** · P0 · L · Hi · v14.0 — Retire SimHash v2 once Vectorize 30-day shadow run delivers precision@10 ≥ +15 %. (ADR-052 active.)
+- **N-WebNN** · P2 · M · Mid · v15 — Move per-source rerank to WebNN on-device when API GA (D2).
+- **N-Star** · P2 · S · Lo · v14.x — Star/read-later list (IDB-backed, AES-GCM URL share). [N2 carry-over]
+- **N-TTS** · P2 · M · Mid · v15 — Web Speech API "read article" (Hebrew + English; gated 3+ requests). [N4 carry-over]
 
-### 3.7 Alerts card (Israel home-front)
+### 3.2 Weather
 
-**Current**: Pikud Ha-Oref + Tzeva-Adom + DO SSE; Hebrew RTL; severity coloring; geo filter.
+- **W-IMS** · P0 · M · Hi · v14.0 — Add **IMS (Israel Met Service)** native source as primary for `geonameid` ∈ IL (D8). Provider-health envelope unchanged.
+- **W-Nowcast** · P1 · M · Mid · v14.x — Hyperlocal next-hour minute-by-minute precip (Open-Meteo nowcast endpoint). [W3 carry-over]
+- **W-AQI** · P1 · S · Mid · v14.x — Air-quality tile (PM2.5/PM10/O3 from Open-Meteo air-quality). [W4 carry-over]
+- **W-Compass** · P2 · S · Lo · v14.x — SVG wind compass with gust ring. [W5 carry-over]
 
-**Compared to**: Pikud Ha-Oref official app, Tzeva Adom (community), Red Alert (volunteer).
-
-| Capability | Us | Pikud Ha-Oref | Tzeva-Adom | Red Alert | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Real-time SSE | DO SSE | Native push | WebSocket | Native push | **Upgrade to DO Hibernatable WS v14.x** |
-| Geo-filtering | Yes | Yes | Yes | Yes | Keep |
-| Multi-source corroboration | 2 sources | 1 official | 1 community | 1 community | **Lead** |
-| Audio alarm | None | Yes | Yes | Yes | **Add v14.0** (TV-only opt-in; user-supplied tone path; Permissions-Policy compliant) |
-| Vibrate fallback | None | n/a | Yes | Yes | **N/A** — TV |
-| Alert history (24h) | Live only | Yes | Yes | Yes | **Add v14.0** (ring buffer in IDB, ≤ 100 entries) |
-| Map view | None | Yes | Yes | Yes | **Defer v15** (would require map deps; static SVG tile alternative under audit) |
-| Cross-card pause | None | n/a | n/a | n/a | **Add v14.0** (on alert: dim non-essential cards, full-screen alert) |
+### 3.3 Stocks
 
-**Enhancements**:
+- **S-DO** · P1 · M · Hi · v14.x — DO Hibernatable WebSocket live stream (replaces HTTP poll; ~80 % DO bill drop idle). [S1 carry-over]
+- **S-TASE** · P0 · M · Hi · v14.0 — Add **TASE (Tel-Aviv Stock Exchange)** native source for `.TA` suffix tickers (D8). Cross-link currency card for ILS conversion.
+- **S-Watchlists** · P2 · M · Mid · v14.x — Watchlist groups (drag-into-group; IDB; AES-GCM URL share). [S4 carry-over]
 
-- A1 · P0 · M · Hi · v14.0 — Alert mode UI takeover (full-screen, dim other cards, audio opt-in).
-- A2 · P0 · S · Hi · v14.0 — 24-h alert history ring buffer (IDB, ≤ 100 entries).
-- A3 · P1 · M · Hi · v14.x — DO Hibernatable WebSocket SSE upgrade.
-- A4 · P2 · L · Mid · v15 — SVG static-tile map of recent alert geographies (no map dep).
+### 3.4 Currency
 
-### 3.8 Motivation card
+- **C-BoI** · P1 · S · Hi · v14.0 — Add **Bank of Israel direct** as authoritative ILS source (D8). Provider chain order: BoI → Frankfurter → ECB → exchangerate.host.
+- **C-Sparkline** · P2 · S · Lo · v14.x — 30-day SVG sparkline per pair. [C4 carry-over]
 
-**Current**: Local curator + Workers AI Hebrew quote; non-repeat window; faith-safe curator.
+### 3.5 Calendar
 
-**Compared to**: Motivation+ ($1.99/yr), Daily Quote apps, Stoic ($30/yr), I Am ($30/yr).
+- **CAL-Temporal** · P1 · M · Mid · v14.x — Replace ad-hoc date math with TC39 Temporal (gate by polyfill ≤ 10 KB). [CAL5 carry-over]
+- **CAL-Conflict** · P2 · S · Lo · v14.x — Conflict overlap badge. [CAL6 carry-over]
 
-| Capability | Us | Motivation+ | Stoic | I Am | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Hebrew RTL | Native | None | None | None | Keep — unique |
-| AI-generated | Llama 3.3 | Curated | Curated | Curated | Keep |
-| Faith-safe filter | Yes | None | None | None | Keep |
-| Theme-by-day | None | Yes | Yes | Yes | **Add v14.0** (gratitude/courage/calm rotation) |
-| Quote source attribution | Sometimes | Always | Always | Always | **Add v14.0** (source badge: Tanakh / Hazal / Modern / AI) |
-| Save / favorite | None | Yes | Yes | Yes | **Add v14.x** (IDB favorites, AES-GCM URL share) |
+### 3.6 Hebrew calendar
 
-**Enhancements**:
+- **H-Yahrzeit** · P2 · M · Mid · v14.x — Yahrzeit list (local-only, IDB, AES-GCM URL share). [H6 carry-over]
+- **H-Temporal** · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal. [H7 carry-over]
+- **H-Sefaria-Audio** · P2 · M · Lo · v15 — Optional parashat haftarah audio link (gated by audio-CSP audit; OpenSiddur public dataset).
 
-- M1 · P0 · S · Mid · v14.0 — Source attribution badge (Tanakh / Hazal / Modern / AI).
-- M2 · P1 · S · Lo · v14.0 — Theme-by-day rotation (Sun=gratitude, Mon=courage, …).
-- M3 · P2 · S · Lo · v14.x — Favorites list (IDB, ≤ 50 entries).
+### 3.7 Alerts
 
-### 3.9 Tasks card
+- **A-DO** · P1 · M · Hi · v14.x — DO Hibernatable WebSocket SSE upgrade. [A3 carry-over]
+- **A-Push** · P2 · M · Mid · v14.x — Web Push VAPID to phone for `alerts` severity ≥ rocket (D7); opt-in only.
+- **A-Map** · P3 · L · Mid · v15 — SVG static-tile map of recent alert geographies (no map dep). [A4 carry-over]
 
-**Current**: Local IDB; per-task priority; due dates; CRDT track-only.
+### 3.8 Motivation
 
-**Compared to**: Todoist (paid), Things 3 (Apple, $50), Microsoft To Do (free), TickTick.
+- **M-WebNN** · P2 · M · Mid · v15 — On-device curator via WebNN once GA (D2); preserves zero round-trip.
+- **M-Favorites** · P2 · S · Lo · v14.x — Favorites list (IDB, ≤ 50 entries). [M3 carry-over]
 
-| Capability | Us | Todoist | Things 3 | MS To Do | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Local-only | Yes | No | Per device | No | Keep — privacy win |
-| Due-date reminders | None | Yes | Yes | Yes | **Add v14.0** (overdue badge + cross-card today-pane) |
-| Recurring tasks | None | Yes | Yes | Yes | **Add v14.0** (RRULE subset) |
-| Subtasks | None | Yes | Yes | Yes | **Add v14.x** (1-level nesting only) |
-| Natural-language input | None | Yes | Yes | Yes | **Reject** — TV display |
-| Tags / labels | None | Yes | Yes | Yes | **Add v14.0** (≤ 6 user-defined tags, color-coded) |
-| Cross-device sync | URL share only | Cloud | iCloud | Cloud | **Add v14.x** (WebRTC mirror, gated 3+ requests) |
-| Today / upcoming view | None | Yes | Yes | Yes | **Add v14.0** (cross-card today pane) |
-
-**Enhancements**:
-
-- T1 · P0 · S · Hi · v14.0 — Due-date overdue/today/this-week badge.
-- T2 · P0 · M · Hi · v14.0 — RRULE recurring tasks (daily/weekly/monthly subset).
-- T3 · P1 · S · Mid · v14.0 — Tags (≤ 6 user-defined, color-coded).
-- T4 · P2 · M · Mid · v14.x — 1-level subtasks.
-- T5 · P2 · L · Mid · v14.x — WebRTC mirror sync (gated; ADR-036).
-
-### 3.10 System-info card
-
-**Current**: `navigator.connection` + battery + memory + UA-CH high-entropy.
-
-**Compared to**: Stats (macOS), iStat Menus ($10), HWMonitor (Win), Beszel.
-
-| Capability | Us | iStat Menus | Stats (free) | Beszel | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Browser-only sandbox | Yes | n/a | n/a | n/a | Keep — only privacy-safe option |
-| CPU per-core | API limited | Yes | Yes | Yes | **N/A** — browser sandbox |
-| Network throughput | Connection type only | Yes | Yes | Yes | **Add v14.x** (passive RTT + downlink trend) |
-| Battery health | % only | Yes | Yes | n/a | Keep within Battery API limits |
-| Memory pressure | Yes | Yes | Yes | Yes | Keep |
-| Storage quota | None | n/a | n/a | n/a | **Add v14.0** (`navigator.storage.estimate()`) |
-| Service-worker state | None | n/a | n/a | n/a | **Add v14.0** (active/installing/redundant) |
-
-**Enhancements**:
-
-- SI1 · P1 · S · Mid · v14.0 — Storage quota tile (`navigator.storage.estimate()`).
-- SI2 · P1 · S · Mid · v14.0 — Service-worker state tile (active / installing / redundant / none).
-- SI3 · P2 · S · Lo · v14.x — Network RTT + downlink trend (10-min sparkline).
-
-### 3.11 Countdown card
-
-**Current**: Local user-defined target; Hebrew + Gregorian; multiple countdowns.
-
-**Compared to**: Countdown+ ($1), Final Countdown, Days Until.
-
-| Capability | Us | Countdown+ | Final Countdown | Verdict |
-| --- | --- | --- | --- | --- |
-| Multiple countdowns | Yes | Yes | Yes | Keep |
-| Recurring | None | Yes | Yes | **Add v14.0** (annual/monthly) |
-| Background image / theme | Theme tokens | Per-event image | Per-event image | **Reject** — breaks 6-theme system |
-| Auto-link to calendar event | None | iCal import | iCal import | **Add v14.0** (cross-link calendar card events ≥ 7 days out) |
-| Auto-link to hebrew-cal | None | None | None | **Add v14.0** — auto-add next Yom Tov |
-| Confetti / celebration on T-0 | None | Yes | Yes | **Add v14.0** (CSS-only, reduced-motion aware) |
-
-**Enhancements**:
-
-- CD1 · P0 · S · Hi · v14.0 — Auto-import next Yom Tov from hebrew-cal (cross-card).
-- CD2 · P0 · S · Mid · v14.0 — Auto-link from calendar events ≥ 7 days out (one-click "track").
-- CD3 · P1 · S · Lo · v14.0 — Recurring (annual/monthly).
-- CD4 · P2 · S · Lo · v14.x — CSS-only confetti at T-0 (`prefers-reduced-motion: no-preference`).
-
-### 3.12 Video-news card
-
-**Current**: Embed allowlist (YouTube, Reuters, AP); CSP `frame-src` strict.
-
-**Compared to**: YouTube TV, Apple News+ video, Reuters TV.
-
-| Capability | Us | YouTube TV | Apple News+ | Reuters TV | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| Embed allowlist | Yes | n/a | n/a | n/a | Keep — only privacy-safe option |
-| Picture-in-Picture | None | Yes | Yes | Yes | **Adopt PiP gated 3+ requests** (ADR-045) |
-| Auto-play next | None | Yes | Yes | Yes | **Reject** — TV always-on, would compete with audio alerts |
-| Captions / subtitles | Native player | Yes | Yes | Yes | Keep — native player passes through |
-| Hebrew RTL caption | Player-dependent | n/a | n/a | n/a | Keep |
-| Channel pinning | None | Yes | Yes | None | **Add v14.0** (≤ 4 channels in user config) |
-
-**Enhancements**:
-
-- V1 · P0 · S · Mid · v14.0 — Channel pinning (≤ 4 channels, drag-reorder).
-- V2 · P2 · S · Lo · v14.x — Document Picture-in-Picture (gated; ADR-045 already exists).
-
-### 3.13 Per-Card Settings Completeness
-
-**Goal**: every user-visible card behaviour configurable via the per-card ⚙ settings dialog. No feature hardcoded without a user-accessible toggle. Columns: **E** = currently exposed in `configSchema` · **G** = gap (in typed config/code, absent from `configSchema`) · **P** = planned new setting for an upcoming feature.
-
-#### 3.13.1 News
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Max articles (1–20) | `newsMaxItems` | ✅ range |
-| E | Show source domain badge | `newsShowSource` | ✅ boolean |
-| P | AI-summary toggle | `newsAiSummary` | CS-N1 |
-| P | Per-source enable / disable | uses `disabledFeeds` | CS-N1 |
-| P | Dedup sensitivity (low / mid / hi) | `newsDedup` | CS-N1 |
-| P | Min article age filter (0 / 1 h / 6 h / 24 h) | `newsMinAge` | CS-N1 |
-
-#### 3.13.2 Weather
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Temperature unit (°C / °F) | `tempUnit` | ✅ select |
-| E | Home city | `homeCity` | ✅ text |
-| E | Show hourly forecast | `weatherShowHourly` | ✅ boolean |
-| E | Show wind | `weatherShowWind` | ✅ boolean |
-| E | Show sunrise / sunset | `weatherShowSunrise` | ✅ boolean |
-| E | Show details (humidity / UV / moon) | `weatherShowDetails` | ✅ boolean |
-| **G** | **US travel mode (NWS fallback)** | **`weatherUsTravelMode`** | **⚠ CS-W1** |
-| P | Air-quality tile (PM2.5 / PM10 / O3) | `weatherShowAqi` | CS-W2 |
-| P | Nowcast strip (next-hour rain) | `weatherShowNowcast` | CS-W2 |
-| P | Wind-compass SVG | `weatherShowCompass` | CS-W2 |
-| P | Moon phase tile | `weatherShowMoon` | CS-W2 |
-| P | Precipitation unit (mm / in) | `weatherPrecipUnit` | CS-W2 |
-
-#### 3.13.3 Stocks
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Show portfolio % change | `stocksShowPortfolio` | ✅ boolean |
-| E | Group by sector | `stocksGroupBySector` | ✅ boolean |
-| E | Show price in ILS | `stocksShowIls` | ✅ boolean |
-| P | Daily-mover pills (top 3 gainers / losers) | `stocksShowMovers` | CS-S1 |
-| P | Pre / post-market state badge | `stocksShowExtended` | CS-S1 |
-
-#### 3.13.4 Currency
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Decimal places (0–4) | `currencyDecimals` | ✅ range |
-| E | Hidden pairs (comma-separated) | `currencyHiddenPairs` | ✅ text |
-| P | Base currency selector | `currencyBase` | CS-C1 |
-| P | In-card mini-calculator toggle | `currencyShowCalc` | CS-C1 |
-| P | Trend arrow (1 d / 7 d / 30 d Δ) | `currencyShowTrend` | CS-C1 |
-| P | 30-day sparkline per pair | `currencyShowSparkline` | CS-C1 |
-
-#### 3.13.5 Calendar
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Lookahead window (7–28 days) | `calendarDaysAhead` | ✅ range |
-| E | Privacy mode (replace titles with "Busy") | `calendarPrivacy` | ✅ boolean |
-| P | Hebrew / Gregorian holiday overlay | `calendarShowHolidays` | CS-CAL1 |
-| P | Per-source color tag | `calendarSourceColors` | CS-CAL1 |
-| P | Configurable horizon (1 / 2 / 3 / 4 weeks) | `calendarWeeksAhead` | CS-CAL1 |
-| P | Conflict overlap badge | `calendarShowConflicts` | CS-CAL1 |
-
-#### 3.13.6 Hebrew Calendar
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Location GeoName ID | `geonameid` | ✅ text |
-| **G** | **Daf Yomi tile** | **`hcalShowDafYomi`** | **⚠ CS-H1** |
-| **G** | **Omer counter tile** | **`hcalShowOmer`** | **⚠ CS-H1** |
-| **G** | **Candle-lighting countdown** | **`hcalShowCandleLight`** | **⚠ CS-H1** |
-| **G** | **Haftarah reference** | **`hcalShowHaftarah`** | **⚠ CS-H1** |
-| **G** | **Rosh Chodesh / lunar tile** | **`hcalShowRoshChodesh`** | **⚠ CS-H1** |
-| **G** | **Zmanim selection (choose 3–6 to show)** | **`hcalZmanimMask`** | **⚠ CS-H1** |
-| P | Parasha transliteration toggle | `hcalParashaTranslit` | CS-H1 |
-
-Hebrew-cal has the **largest configSchema gap** — 6 displayed tiles have no user toggle.
-
-#### 3.13.7 Alerts
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Alerts enabled | `alertsEnabled` | ✅ boolean |
-| E | Alert sound | `alertSound` | ✅ boolean |
-| E | Alert volume (0–100) | `alertVolume` | ✅ range |
-| E | Realtime (SSE) mode | `realtimeAlerts` | ✅ boolean |
-| **G** | **Alert zone geo-filter** | **`alertZone`** | **⚠ CS-A1 (global config only — no card-level UI)** |
-| P | 24-h history ring toggle | `alertShowHistory` | CS-A1 |
-| P | Severity filter (rocket / earthquake / chemical / tsunami) | `alertSeverityFilter` | CS-A1 |
-| P | Cross-card dim-on-alert | `alertDimOnAlert` | CS-A1 |
-
-#### 3.13.8 Motivation
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Auto-advance interval (0 = off, minutes) | `motivationInterval` | ✅ range |
-| E | AI-generated Hebrew quotes | `motivationAiHebrew` | ✅ boolean |
-| P | Category filter (gratitude / courage / calm / all) | `motivationCategories` | CS-M1 |
-| P | Theme-by-day rotation | `motivationThemeByDay` | CS-M1 |
-| P | Source attribution badge (Tanakh / Hazal / Modern / AI) | `motivationShowSource` | CS-M1 |
-| P | Language preference (Hebrew / English / both) | `motivationLang` | CS-M1 |
-
-#### 3.13.9 Tasks
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Daily reset hour (0–23) | `tasksResetHour` | ✅ number |
-| E | Show completed tasks | `tasksShowDone` | ✅ boolean |
-| E | Show category labels | `tasksShowCategories` | ✅ boolean |
-| P | Due-date badge (overdue / today / this-week) | `tasksShowDueBadge` | CS-T1 |
-| P | Recurring tasks toggle | `tasksAllowRecurring` | CS-T1 |
-| P | User-defined tags display (≤ 6) | `tasksShowTags` | CS-T1 |
-| P | Default sort order (priority / due / created) | `tasksSortOrder` | CS-T1 |
-
-#### 3.13.10 System Info
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Show network RTT tile | `sysInfoShowRtt` | ✅ boolean |
-| **G** | **Storage quota tile** | **`sysInfoShowStorage`** | **⚠ CS-SI1** |
-| **G** | **Service-worker state tile** | **`sysInfoShowSw`** | **⚠ CS-SI1** |
-| **G** | **Battery tile** | **`sysInfoShowBattery`** | **⚠ CS-SI1** |
-| **G** | **Memory pressure tile** | **`sysInfoShowMemory`** | **⚠ CS-SI1** |
-| **G** | **Connection info tile** | **`sysInfoShowNetwork`** | **⚠ CS-SI1** |
-| P | Refresh interval (10 s / 30 s / 60 s) | `sysInfoRefreshInterval` | CS-SI1 |
-| P | RTT trend sparkline (10-min) | `sysInfoShowRttTrend` | CS-SI1 |
-
-System-info has the **second-largest configSchema gap** — 5 of its 6 displayed tiles have no user toggle.
-
-#### 3.13.11 Countdown
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Event 1–3 title / date / time / done-msg / start-date | 15 fields | ✅ text/date |
-| **G** | **Recurrence type (annual / monthly / one-time)** | **`countdownCardRecurrence`** | **⚠ CS-CD1 (in `configSchema`; not in `DashboardConfig` type)** |
-| P | Progress bar toggle | `countdownShowProgress` | CS-CD1 |
-| P | CSS confetti at T-0 | `countdownConfetti` | CS-CD1 |
-| P | Auto-link from calendar events | `countdownAutoLinkCal` | CS-CD1 |
-| P | Auto-link next Yom Tov | `countdownAutoLinkYomTov` | CS-CD1 |
-
-#### 3.13.12 Video News
-
-| Layer | Setting | Config key | Status |
-| --- | --- | --- | --- |
-| E | Pinned channels (≤ 4, comma-separated) | `cards.video-news.settings.pinnedChannels` | ✅ text |
-| **G** | **Autoplay on load** | **`autoplay`** | **⚠ CS-VN1** |
-| **G** | **Start muted** | **`defaultMuted`** | **⚠ CS-VN1** |
-| **G** | **Caption overlay** | **`showOverlay`** | **⚠ CS-VN1** |
-| **G** | **Pause on `prefers-reduced-motion`** | **`pauseOnReducedMotion`** | **⚠ CS-VN1** |
-| **G** | **Pause during night-dimmer schedule** | **`pauseAtNight`** | **⚠ CS-VN1** |
-| P | Document Picture-in-Picture toggle | `videoPip` | CS-VN1 (gated) |
-
-Video-news has **5 typed settings in `VideoNewsCardConfig.settings` that are unreachable** — users cannot change these defaults because no `configSchema` entry exists.
-
-#### 3.13 Summary
-
-| Card | Exposed (E) | UI Gaps (G) | Planned (P) |
-| --- | --- | --- | --- |
-| news | 2 | 0 | 4 |
-| weather | 6 | **1** | 6 |
-| stocks | 3 | 0 | 2 |
-| currency | 2 | 0 | 4 |
-| calendar | 2 | 0 | 4 |
-| hebrew-cal | 1 | **6** | 1 |
-| alerts | 4 | **1** | 3 |
-| motivation | 2 | 0 | 4 |
-| tasks | 3 | 0 | 4 |
-| system-info | 1 | **5** | 2 |
-| countdown | 15 | **1** | 4 |
-| video-news | 1 | **5** | 1 |
-| **Total** | **42** | **19** | **39** |
-
-**Priority rule**: all 19 UI-gap (G) items fix before shipping new (P) settings. `hebrew-cal` (6 gaps), `system-info`, and `video-news` (5 each) are the biggest configuration debt items.
+### 3.9 Tasks
+
+- **T-Subtasks** · P2 · M · Mid · v14.x — 1-level subtask nesting. [T4 carry-over]
+- **T-WebRTC** · P2 · L · Mid · v14.x — WebRTC mirror sync (gated 3+; ADR-049). [T5 carry-over]
+
+### 3.10 System-info
+
+- **SI-Pressure** · P1 · S · Mid · v14.x — Compute Pressure API tile (D3); `nominal/fair/serious/critical`.
+- **SI-Buckets** · P2 · S · Lo · v14.x — Storage Buckets quota-per-card tile (D4).
+- **SI-RTT** · P2 · S · Lo · v14.x — RTT trend sparkline (10-min). [SI3 carry-over]
+
+### 3.11 Countdown
+
+- All §3 v1 items (CD1–CD4) shipped through Sprint 213.
+
+### 3.12 Video-news
+
+- **V-PiP** · P2 · S · Lo · v14.x — Document Picture-in-Picture (gated 3+; ADR-045). [V2 carry-over]
+
+### 3.13 Cross-card peer-driven additions (NEW)
+
+- **PC-1 (Granola-inspired)** · P1 · M · Mid · v14.x — End-of-day "what mattered" tile: AI synthesis of cards (already shipped X9) gains a 30-second after-day audio recap (gated; same audio-CSP work as H-Sefaria-Audio).
+- **PC-2 (Comet-inspired)** · P0 · M · Hi · v14.x — **MCP read-only server** (D1). Surfaces today's calendar / hebrew-cal / alerts / weather / countdown so users' assistants can ask without scraping. Localhost-only; no cloud egress.
 
 ---
 
-## 4. Cross-Card Synergies — System-Level Enhancements
+## 4. Cross-Card System-Level — Open Items Only
 
-Once each card is best-in-class individually, the next leap is treating them as **one informed system**. Concrete synergies:
+X1–X10 from the v1 roadmap are **all shipped**. New cross-card items raised by the 2026-Q2 rethink:
 
-### 4.1 Unified "Today" pane (priority overlay)
+### 4.1 X11 — MCP read-only server
 
-A single full-width strip above the grid that aggregates every card's "today-relevant" signal in one row:
+Single localhost endpoint (`localhost:7411/mcp`) exposing read-only views of: today-pane signal · calendar next-event · hebrew-cal next-zman · active alerts · weather summary · stocks top-mover · countdowns < 24 h.
 
-- Next event from **calendar** (≤ 6 h away).
-- Next zman from **hebrew-cal** (≤ 3 h).
-- Active **alert** badge (severity tinted).
-- Top **stocks** mover (≥ 3 % move).
-- Top **news** cluster (last 30 min).
-- Most-overdue **task**.
-- Active **countdown** (≤ 24 h).
+- **X11** · P0 · M · Hi · v14.x — Implement `src/core/mcp-server.ts`; opt-in via `?mcp=1`; CSP unchanged (loopback only); never reachable from a remote origin; never sends telemetry.
 
-**Item X1** · P0 · M · Hi · v14.0 — Implement `today-pane.ts` reading from each card's signal; single subscriber pattern; auto-collapses when empty.
+### 4.2 X12 — Card composability protocol
 
-### 4.2 Notification bus
+Today cards import from siblings via `getCardSignal(id)`. Formalise as `CardSignalProtocol` with versioned signal shape; consumers feature-detect.
 
-Replace per-card sync indicators with a single coordinated bus:
+- **X12** · P1 · S · Mid · v14.x — Define `src/core/card-signal-protocol.ts`; migrate 4 known consumers (today-pane, semantic links, MCP, daily synthesis).
 
-- One **`globalSync`** signal aggregates all card states.
-- One **`globalAlertChannel`** broadcasts cross-card pause requests (e.g., alert card requests dim).
-- One **`globalThemeChannel`** propagates theme changes via View Transitions L2.
+### 4.3 X13 — Time-machine debug
 
-**Item X2** · P0 · M · Hi · v14.0 — `src/core/event-bus.ts` (signals-based pub/sub, ≤ 1 KB).
+Snapshot at any point + replay; piggybacks `src/core/snapshot.ts` (X8 shipped).
 
-### 4.3 Semantic linking between cards
+- **X13** · P2 · M · Lo · v15 — Snapshot every 60 s into IDB ring (≤ 24 h retention); `Ctrl+Shift+T` to scrub. Behind `?devtime=1`.
 
-| Trigger | Effect |
-| --- | --- |
-| Calendar event with location → | Weather card prefetches forecast for that location on that date. |
-| Hebrew-cal Erev Shabbat → | Countdown card auto-creates "candle-lighting" timer. |
-| Hebrew-cal Yom Tov → | Calendar card colors holiday days; Countdown auto-tracks. |
-| Stocks earnings date → | Calendar card adds read-only "earnings: TICKER". |
-| News article mentions ticker → | Stocks card flashes the ticker subtle highlight. |
-| News article high-severity tag (war/disaster) → | Alerts card surfaces banner. |
+### 4.4 X14 — Phone-as-remote (no auth)
 
-**Item X3** · P1 · L · Hi · v14.x — Semantic-link service (`src/core/links.ts`); one subscriber per direction; gated by user toggle.
+Companion to X11. Phone joins the dashboard's WebRTC mesh (ADR-049 v14.x) over QR pairing for **5 min**, taps a card to reorder/dismiss/snooze. No accounts, no relay, ICE STUN-only.
 
-### 4.4 Single keyboard model
+- **X14** · P2 · L · Mid · v15 — Gates: WebRTC mirror (V14-CONTINUITY) shipped + ≥ 3 requests + threat-model ADR.
 
-Today: `T D A S N P B H ?` + arrows + numbers. Risk: model bloat per card.
+### 4.5 X15 — Semantic clipboard
 
-**Item X4** · P1 · S · Mid · v14.0 — Centralised `keymap.ts` with help dialog auto-generated from registry; cards register their own bindings instead of patching globally. ✅ Sprint 291 — `src/core/keymap.ts` added (`buildHelpRows()`, `sortKeyEntries()`); `_toggleHelp` in `main.ts` now populates `#help-dynamic-keys` from registry; 18 new tests.
+User clicks a tile; system copies a context-rich text + JSON-LD payload (e.g. "30 ◌ April 2026 — Yom HaShoah · 19:30 candle-lighting · גשם 35%") for paste into chat / mail.
 
-### 4.5 Shared "card-state" lifecycle
+- **X15** · P2 · S · Lo · v14.x — Replaces today's plain-text copy-on-tile (where present); keyboard `C` while focused on a card.
 
-All 12 cards already extend `FdbCard`. Promote shared lifecycle hooks:
+### 4.6 Cross-card invariants protected
 
-- `onVisible()` / `onHidden()` (currently ad-hoc in each card).
-- `onConfigChange(scope)` (currently `state.ts` listener).
-- `onThemeChange()` (currently CSS-only; some cards need to recompute SVG colors).
-- `onAlert()` (new — cards opt-in to dim/quiet).
-
-**Item X5** · P1 · M · Hi · v14.0 — Lifecycle hook formalisation in `FdbCard` base class. ✅ Sprint 253 — `onThemeChange()` + `onAlert()` added to `FdbCard`; wired to `globalThemeChannel` / `globalAlertChannel` via `effect()` dispose pattern; 9 new tests.
-
-### 4.6 Shared offline indicator + retry
-
-One global "offline" pill replaces 12 per-card sync indicators when network is fully down. Per-card stale indicator remains for partial failures.
-
-**Item X6** · P0 · S · Mid · v14.0 — `src/ui/offline-banner.ts` driven by `globalSync` signal.
-
-### 4.7 Cross-card config search
-
-Config panel today scrolls through all card configs. Add a top search box that fuzzy-matches config keys across cards.
-
-**Item X7** · P2 · S · Lo · v14.x — Config search (≤ 1 KB; uses native fuzzy `match()`).
-
-### 4.8 Cross-card snapshot
-
-Single "snapshot" command (`Ctrl+Shift+S`) that exports a JSON capture of the entire dashboard state for support / debug / share. AES-GCM URL share already exists for config; this captures **state + config** at a moment.
-
-**Item X8** · P2 · M · Mid · v13.28.0 — Snapshot export (gated by debug menu). ✅ Sprint 258 — `Ctrl+Shift+S` keyboard shortcut added to `main.ts`; calls `downloadSnapshot()` from `src/core/snapshot.ts`; shows toast confirmation; `buildSnapshot()` captures config + localStorage + diagLog.
-
-### 4.9 Cross-card AI synthesis (Workers AI)
-
-When all 12 cards are loaded, send their headline data points to Workers AI Llama 3.3 for a 1-line "summary of your day" tile. Hebrew-first.
-
-**Item X9** · P1 · M · Mid · v14.x — Daily synthesis tile (cached 4 h; opt-in; faith-safe curator pre-filter).
-
-### 4.10 Card-bundle delta budget per card group
-
-Today: per-card bundle delta (rule shipped). Add **group budgets**: news+video (≤ 25 KB), weather+hebrew-cal+countdown (≤ 30 KB), …
-
-**Item X10** · P2 · S · Lo · v14.x — Extend `check-card-bundle-delta.mjs` with grouped totals.
+- **Single keyboard model** (X4 shipped) — every new feature registers via `keymap.ts`, never patches `window` directly.
+- **Per-card budget hard-cap** (D13) — prevents X11/X12/X14 from bloating any one card.
+- **Module boundary linting** (D12) — `src/cards/*` cannot reach into `src/ui/*` and vice versa beyond declared interfaces.
 
 ---
 
-## 5. Consolidated Improvement Backlog
+## 5. Consolidated Improvement Backlog (forward-only)
 
-`P` = priority (P0 next-release blocker, P1 same-cycle, P2 opportunistic). `E` = effort (S ≤ 1 day, M 2–5 days, L > 5 days). `I` = impact (Hi/Mid/Lo).
+`P` = priority (P0 next-release blocker, P1 same-cycle, P2 opportunistic, P3 long horizon). `E` = effort (S ≤ 1 day, M 2–5 days, L > 5 days). `I` = impact (Hi/Mid/Lo).
 
-### 5.1 Stack-level (carried from previous roadmap, consolidated)
+### 5.1 Stack-level
 
-| # | Type | Item | P | E | I | Target |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | Rewrite | SimHash → Cloudflare Vectorize semantic news dedup | P0 | L | Hi | v14.0 |
-| 2 | Refactor | Replace ad-hoc date math with TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` (gated polyfill ≤ 10 KB) | P1 | M | Mid | v14.x |
-| 3 | Enhance | DO Hibernatable WebSocket for stocks live + alerts SSE | P1 | M | Hi | v14.x |
-| 4 | Enhance | R2 mirror for backgrounds + offline shell | P2 | M | Mid | v14.x |
-| 5 | Refactor | Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io) | P1 | L | Hi | v14.0 |
-| 6 | Enhance | OpenTelemetry from Worker (opt-in) | P2 | L | Mid | v14.2 |
-| 7 | Enhance | SLSA L3 hermetic build + Sigstore/cosign | P0 | L | Hi | v14.2 |
-| 8 | Refactor | Promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding | P1 | M | Hi | v14.1 |
-| 9 | Enhance | Visual-regression baselines 45 → 80+ | P1 | M | Mid | v14.0 |
-| 10 | Enhance | LHCI perf `error 0.85` → `error 0.97` once Early Hints + SRI ship and CI runner stable | P1 | S | Mid | v14.x |
-| 11 | Enhance | WebRTC mirror with QR pairing (gated 3+ requests) | P2 | L | Mid | v14.x |
-| 12 | Refactor | Narrow CSP `https://*.intel.com` wildcard once alternatives surface | P2 | S | Lo | v14.x |
-| 13 | Enhance | OWASP Top 10 audit (rotate per major release) | P0 | M | Hi | v14.0 |
-| 14 | Refactor | Coverage ratchet 93.5/85.7/92.5/94.7 → 95/90/95/96 | P1 | M | Mid | v15 |
-| 15 | Track | TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4 | P2 | S | Mid | v14.x |
-| 16 | Track | Biome replacement for Prettier + ESLint when parity reached | P2 | M | Mid | v15 |
-| 17 | Track | Rolldown auto-adopt when Vite default | P2 | S | Mid | v14.x |
-| 18 | Track | TypeScript 7 (Go) primary typecheck once stable + zero-delta | P2 | M | Mid | v15 |
+| #  | Type     | Item                                                                            | P  | E | I  | Target | Stream         |
+| -- | -------- | ------------------------------------------------------------------------------- | -- | - | -- | ------ | -------------- |
+| 1  | Rewrite  | SimHash → Vectorize semantic news dedup (retire after gate)                     | P0 | L | Hi | v14.0  | V14-SEMANTIC   |
+| 2  | Refactor | TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` (gated polyfill ≤ 10 KB)   | P1 | M | Mid | v14.x  | V14-SEMANTIC   |
+| 3  | Track    | TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4                   | P2 | S | Mid | v14.x  | V14-SEMANTIC   |
+| 4  | Enhance  | DO Hibernatable WebSocket — stocks live + alerts SSE                            | P1 | M | Hi | v14.x  | V14-EDGE       |
+| 5  | Enhance  | R2 mirror for backgrounds + offline shell                                       | P2 | M | Mid | v14.x  | V14-EDGE       |
+| 6  | Refactor | Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io)        | P1 | L | Hi | v14.0  | V14-FOUNDATIONS |
+| 7  | Enhance  | OpenTelemetry from Worker (opt-in)                                              | P2 | L | Mid | v14.2  | V14-FOUNDATIONS |
+| 8  | Enhance  | SLSA L3 hermetic build + Sigstore + 3rd-party rebuilder verify                  | P0 | L | Hi | v14.2  | V14-SECURITY-L3 |
+| 9  | Refactor | Promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding             | P1 | M | Hi | v14.1  | V14-HARMONISE  |
+| 10 | Enhance  | Visual-regression baselines 108 → 130+                                          | P1 | M | Mid | v14.0  | V14-FOUNDATIONS |
+| 11 | Enhance  | LHCI perf `error 0.97` → `0.98` cached                                          | P1 | S | Mid | v14.x  | V14-FOUNDATIONS |
+| 12 | Enhance  | WebRTC mirror with QR pairing (gated 3+; ADR-049)                               | P2 | L | Mid | v14.x  | V14-CONTINUITY |
+| 13 | Enhance  | OWASP Top 10 audit (rotate per major release)                                   | P0 | M | Hi | v14.0  | V14-SECURITY-L3 |
+| 14 | Refactor | Coverage ratchet 93.0/84.6/92.0/94.5 → 95/90/95/96 (+0.5%/release)              | P1 | M | Mid | v15    | V14-FOUNDATIONS |
+| 15 | Track    | Biome replacement for Prettier + ESLint when parity reached                     | P2 | M | Mid | v15    | V15-OPEN       |
+| 16 | Track    | Rolldown auto-adopt when Vite default                                           | P2 | S | Mid | v14.x  | V15-OPEN       |
+| 17 | Track    | TypeScript 7 (Go) primary typecheck once stable + zero-delta                    | P3 | M | Mid | v15    | V15-OPEN       |
+| 18 | Adopt    | **MCP read-only server (D1, X11)**                                              | P0 | M | Hi | v14.x  | V14-AGENTIC    |
+| 19 | Adopt    | **Compute Pressure API tile (D3)**                                              | P1 | S | Mid | v14.x  | V14-FOUNDATIONS |
+| 20 | Adopt    | **Storage Buckets per-card eviction (D4)**                                      | P2 | S | Mid | v14.x  | V14-FOUNDATIONS |
+| 21 | Adopt    | **Origin-Agent-Cluster header (D5)**                                            | P1 | S | Mid | v14.x  | V14-SECURITY-L3 |
+| 22 | Adopt    | **`popover=` attribute (D11)**                                                  | P2 | S | Lo | v14.x  | V14-FOUNDATIONS |
+| 23 | Adopt    | **Speculation Rules prerender (D10)**                                           | P2 | S | Lo | v14.x  | V14-FOUNDATIONS |
+| 24 | Adopt    | **CSS `if()` + `@function` (D9)**                                               | P2 | S | Lo | v14.x  | V14-FOUNDATIONS |
+| 25 | Track    | **Cloudflare Snippets / TEE (D6)**                                              | P2 | M | Mid | v14.x  | V14-EDGE       |
+| 26 | Adopt    | **Module boundary linting (D12)**                                               | P1 | S | Mid | v14.0  | V14-FOUNDATIONS |
+| 27 | Adopt    | **Per-card budget hard-cap ≤ 6 KB gzip (D13)**                                  | P1 | M | Mid | v14.0  | V14-FOUNDATIONS |
+| 28 | Adopt    | **Renovate group rules (D14)**                                                  | P1 | S | Mid | v14.0  | V14-FOUNDATIONS |
+| 29 | Adopt    | **3rd-party rebuilder annual verification (D15)**                               | P1 | M | Mid | v14.2  | V14-SECURITY-L3 |
+| 30 | Track    | **WebNN on-device inference (D2)**                                              | P2 | M | Mid | v15    | V15-OPEN       |
+| 31 | Gate     | **Web Push VAPID for alerts → phone (D7)**                                      | P3 | M | Mid | v14.x  | V14-CONTINUITY |
+| 32 | Adopt    | **IMS / TASE / BoI native sources (D8)**                                        | P0 | M | Hi | v14.0  | V14-CARDS-DEEP |
 
-### 5.2 Per-card (from §3)
+### 5.2 Per-card (from §3, open only)
 
-News: N1–N5 · Weather: W1–W6 · Stocks: S1–S5 · Currency: C1–C4 · Calendar: CAL1–CAL6 · Hebrew-cal: H1–H7 · Alerts: A1–A4 · Motivation: M1–M3 · Tasks: T1–T5 · System-info: SI1–SI3 · Countdown: CD1–CD4 · Video-news: V1–V2.
+News: N-V · N-WebNN · N-Star · N-TTS · Weather: W-IMS · W-Nowcast · W-AQI · W-Compass · Stocks: S-DO · S-TASE · S-Watchlists · Currency: C-BoI · C-Sparkline · Calendar: CAL-Temporal · CAL-Conflict · Hebrew-cal: H-Yahrzeit · H-Temporal · H-Sefaria-Audio · Alerts: A-DO · A-Push · A-Map · Motivation: M-WebNN · M-Favorites · Tasks: T-Subtasks · T-WebRTC · System-info: SI-Pressure · SI-Buckets · SI-RTT · Video-news: V-PiP · Cross-peer: PC-1 · PC-2.
 
-Card settings completeness (from §3.13): CS-W1 · CS-VN1 · CS-H1 · CS-SI1 · CS-CD1 (UI gaps — P0) · CS-A1 · CS-C1 · CS-CAL1 · CS-M1 · CS-T1 · CS-W2 · CS-S1 · CS-N1 (planned — P1/P2).
+### 5.3 Cross-card (from §4, open only)
 
-### 5.3 Cross-card (from §4)
-
-X1–X10.
+X11 (MCP server) · X12 (CardSignalProtocol) · X13 (time-machine) · X14 (phone-as-remote) · X15 (semantic clipboard).
 
 ### 5.4 Anti-backlog (deliberately not on the list)
 
-React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB · Sentry · Codecov SaaS · Argos CI SaaS · pnpm · Husky · Bun runtime · Docker artefact · 3rd language until contributor offer · WebGPU/WASM hot paths · ECMAScript decorators · React Server Components · Remix/Next routing · GraphQL · gRPC · Tailwind · CSS-in-JS · Map dependencies (Leaflet/Mapbox) · auto-play video · auto-translate · pollen API.
+React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB · Sentry · Codecov SaaS · Argos CI SaaS · pnpm · Husky · Bun runtime · Docker artefact · 3rd language until contributor offer · WebGPU hot paths (excluding optional WebNN) · ECMAScript decorators · React Server Components · Remix/Next routing · GraphQL · gRPC · Tailwind · CSS-in-JS · Map dependencies · auto-play video · auto-translate · pollen API · embedded LLM agent in the dashboard (we expose data via MCP instead).
 
 ---
 
-## 6. Strategic Streams (v14 → v15)
+## 6. Strategic Streams (v14.0 → v17)
+
+Each stream has a hard exit gate. No stream lingers; if exit is blocked, the stream is paused and the blocker becomes its own item.
 
 ### 6.1 V14-FOUNDATIONS — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
-- [x] SRI auto-injected · `@ts-check` on `.mjs` · `@starting-style` for `<dialog>` (v13.9).
-- [x] PR coverage-delta + SBOM-diff bots (v13.9).
-- [x] Mermaid + container-query audit (v13.10).
-- [x] `oxlint` fast pre-pass (v13.13).
-- [x] Cross-doc View Transitions opt-in (v13.13).
-- [x] Smart text contrast (v13.13.1).
-- [x] Dev-mode SW kill switches (v13.13.1).
-- [x] `@vitest/browser` for `maximize.ts` + `layout-drag.ts` (v13.16).
-- [x] CSS Anchor Positioning expansion (v13.15).
-- [x] Stryker scope: error-tracker + config + diag (Sprint 126).
-- [x] Coverage ratchet 89/81/89/90 → 93.5/85.7/92.5/94.7 (Sprint 167).
-- [x] `vite-plugin-dev-csp-strip` (Sprint 127).
-- [x] VR baselines 45 → 81 (Sprint 223).
-- [x] Stryker scope extended: event-bus + keyboard + links (Sprint 226).
-- [x] Coverage ratchet 92.3/84.0/91.5/93.7 (Sprint 225).
-- [x] Coverage ratchet 92.7/84.2/91.5/94.0 (Sprint 235).
-- [x] fast-check worker-client invariants P1-P13 (Sprint 233).
-- [x] fast-check IDB property tests IDB1-IDB8 (Sprint 234).
-- [x] Card pure-function property tests CP1-CP6 (Sprint 240).
-- [x] LHCI `error 0.85` → `error 0.97` _(step 5/5: 0.97 at v13.26.0 — Sprint 236)_.
-- [x] fast-check stocks SP1-SP6 + currency CM1-CM5 + alerts AP1-AP5 + hebrew-cal HC1-HC6 (Sprints 245–248).
-- [x] Coverage ratchet 92.7/84.2/91.5/94.0 → 93.0/84.5/91.8/94.3 (Sprint 250).
-- [x] Sigstore/cosign keyless signing for dist.zip + sw.js (Sprint 243).
-- [x] Third-party rebuilder manifest `dist/rebuilder-manifest.json` (Sprint 244).
-- [x] `FdbCard` lifecycle hooks `onThemeChange()` + `onAlert()` (Sprint 253 / X5).
-- [x] fast-check weather WP1-WP6 + news NP1-NP5 (Sprints 254–255).
-- [x] fast-check tasks TP1-TP5 + calendar CP1-CP5 (Sprints 256–257).
-- [x] Snapshot export `Ctrl+Shift+S` wired to `downloadSnapshot()` in `main.ts` (Sprint 258 / X8).
-- [x] fast-check countdown CDP1-CDP4 + system-info SIP1-SIP4 (Sprints 259–260).
-- [x] fast-check buildTodayItems TDP1-TDP5 + links LP1-LP4 (Sprints 263–264).
-- [x] fast-check cache CAP1-CAP5 + keyboard KP1-KP3 + utils UP1-UP5 (Sprints 265–266).
-- [x] N1 shadow-vectorize client plumbing + fast-check SV1-SV9 (Sprint 267).
-- [x] Coverage ratchet 93.0/84.5/91.8/94.3 → 93.0/84.6/91.8/94.3 (Sprint 268).
-- [x] VR baselines 81 → 90+ alerts-banner-ext/video-news-ext/esc-resets (Sprint 269).
-- [x] ADR-051 FdbCard lifecycle hooks + ADR-052 shadow-vectorize client plan (Sprint 270).
-- [x] ROADMAP.md refresh — Sprint 263-271 completions logged, baseline updated to v13.29.0 (Sprint 271).
-- [x] v13.29.0 release — tag + GitHub release, CHANGELOG published (Sprint 272).
-- [x] Tooling modernisation: Node 24 CI, ES2024 lib, ADR-037 View Transitions L2 adopted, stale-version sweep (Sprint 273).
-- [x] `.github` AI customisation files: 24 files updated to v13.29.0 + Copilot/VS Code latest features (Sprint 274).
-- [x] Documentation freshness + fast-check EP1–EP5 (Sprint 275).
-- [x] V14-CARD-SETTINGS: configSchema for all 12 cards — weather/video-news/hebrew-cal/system-info/countdown/alerts/currency/calendar/motivation/tasks/stocks/news (Sprints 277–289).
-- [x] Coverage ratchet 93.0/84.6/91.8/94.3 → 93.0/84.6/92.0/94.5 (Sprint 290 fast-check boost).
-- [x] X4 keymap.ts centralised utilities + 18 unit tests + 85 fast-check configSchema property tests (Sprints 291–293).
-- [x] ROADMAP V14-CROSS-CARD exit: all X1–X10 shipped; V14-CARD-SETTINGS fully complete (Sprint 297).
-- [x] fast-check KP4–KP8 (keymap) + SP1–SP5 (snapshot) + EB1–EB6 (event-bus) property tests (Sprints 298–300).
-- [x] Coverage baseline 93.14/84.70/92.02/94.52 documented; ADR-053 configSchema architecture (Sprints 301–302).
-- [x] CS-FC9–CS-FC16 configSchema property extensions + TDP6–TDP8 today-pane + LP5–LP8 links (Sprints 303–304).
-- [x] v13.31.0 release — 5957 tests / 175 suites / 0 failures (Sprint 306).
-- [x] fast-check HP1–HP6 `sparklineSvg` property tests (Sprint 307).
-- [x] fast-check SYP1–SYP6 sync backoff property tests (Sprint 308).
-- [x] fast-check DP1–DP5 diag ring-buffer property tests (Sprint 309).
-- [x] fast-check FP1–FP5 fetch lock/network property tests (Sprint 310).
-- [x] Coverage baseline 93.17/84.73/92.02/94.55 documented; thresholds held (Sprint 311).
-- [x] VR baselines 90 → 108 — 6 new scenario groups × 3 themes each (Sprint 312).
-- [x] ADR-054: property-testing scope map — all fast-check suites catalogued (Sprint 313).
-- [x] Stryker scope extended to `history.ts`, `sync.ts`, `fetch.ts`; ARCHITECTURE.md + data-sources.md freshened to v13.31.0 (Sprint 314).
-- [x] ROADMAP.md + AI customisation files updated to 5980 tests / 179 suites / 54 ADRs (Sprint 315).
-- [x] v13.32.0 release — 5980 tests / 179 suites / 0 failures (Sprint 316).
-- [x] fast-check IP1–IP5 `i18n` placeholder/locale property tests (Sprint 317).
-- [x] fast-check CRP1–CRP5 `card-registry` round-trip + sort property tests (Sprint 318).
-- [x] fast-check ALP1–ALP4 `anim-level` clamp property tests (Sprint 319).
-- [x] fast-check PRP1–PRP6 `provider-health` backoff/ring-buffer property tests (Sprint 320).
-- [x] fast-check ETP1–ETP5 `error-tracker` retention/trend property tests (Sprint 321).
-- [x] fast-check HWP1–HWP4 `hardware` tier monotonicity property tests (Sprint 322).
-- [x] fast-check IDP1–IDP3 `idle` visibility property tests (Sprint 323).
-- [x] ADR-055: property-testing scope expansion — 32 new tests (Sprint 324).
-- [x] ROADMAP.md + AI customisation files updated to 6012 tests / 186 suites / 55 ADRs (Sprint 325).
-- [x] v13.33.0 release — Sprints 317–325 property-test sprint set (Sprint 326).
+- [ ] D12 module-boundary linting in `tooling/eslint/`.
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar).
+- [ ] D14 Renovate group rules.
+- [ ] D11 `popover=` for diag toasts + bookmark menu.
+- [ ] D9 CSS `if()` + `@function` migration (tokens).
+- [ ] D10 Speculation Rules for help / config panels.
+- [ ] D5 Origin-Agent-Cluster header + meta.
+- [ ] VR baselines 108 → 130 (DO-SSE alert states + maximise-FLIP scenarios).
+- [ ] D3 Compute Pressure API tile in system-info.
+- [ ] D4 Storage Buckets per-card eviction.
+- [ ] LHCI ratchet `error 0.97 → 0.98` cached.
+- [ ] Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io).
 
-**Exit**: oxlint green; CI deltas live; coverage ≥ 93.0/84.6/92.0/94.5; LHCI perf `error ≥ 0.97`.
+**Exit**: all D-items D3–D5, D9–D14 shipped; LHCI cached ≥ 0.98; module-boundary lint zero violations; every card module ≤ 6 KB gzip.
 
-### 6.2 V14-SEMANTIC — Replace heuristics with embeddings & Signals (v14.0, Q1–Q2 2027)
+### 6.2 V14-SEMANTIC — Replace heuristics with embeddings (v14.0, Q1–Q2 2027)
 
-- [x] In-house `signals.ts` shipped (ADR-038).
+- [x] In-house `signals.ts` (ADR-038).
 - [x] `state.ts` → `signals.ts` migration (100 % of reactive call sites).
-- [x] HTTP Early Hints (103) from Worker (v13.14).
-- [ ] Cloudflare Vectorize semantic news dedup — **shadow mode client plumbing shipped (Sprint 267 / ADR-052)**; 30-day observation window active.
+- [x] HTTP Early Hints (103) from Worker.
+- [ ] Vectorize semantic news dedup — retire SimHash after 30-day shadow precision@10 ≥ +15 %.
 - [ ] TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4.
-- [ ] TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` when polyfill ≤ 10 KB gzip.
+- [ ] TC39 Temporal in `hebrew-cal` / `calendar` / `countdown` when polyfill ≤ 10 KB gzip.
 
-**Exit**: Vectorize precision@10 ≥ SimHash + 15 %; LHCI perf ≥ 0.98 cached.
+**Exit**: Vectorize precision@10 ≥ SimHash + 15 %; LHCI perf ≥ 0.98 cached; SimHash deleted from `worker/`.
 
-### 6.3 V14-CARDS-DEEP — Best-in-class per-card depth (v14.0, Q1–Q2 2027)
+### 6.3 V14-CARDS-DEEP — Open per-card depth (v14.0, Q1–Q2 2027)
 
-Per-card backlog from §3. **Exit**: each card matches or exceeds its best-in-class peer on every capability listed in §3 except those marked Reject/Defer.
+- [ ] **W-IMS · S-TASE · C-BoI** native IL providers (D8).
+- [ ] **W-Nowcast · W-AQI · W-Compass** weather expansion.
+- [ ] **N-V** Vectorize cutover.
+- [ ] **A-DO · S-DO** DO Hibernatable WebSocket migration.
+- [ ] **CAL-Temporal · H-Temporal** Temporal migration (gated by polyfill).
+- [ ] **SI-Pressure · SI-Buckets · SI-RTT** system-info expansion.
 
-**✅ Sprint 175–213 — all per-card depth items (W1-W6, S2-S5, C1-C4, CAL1-CAL6, H1-H6, A1-A2, M1-M3, T1-T4, SI1-SI3, CD1-CD4, N2-N3, N5, V1-V2, X9 AI synthesis) shipped.**
+**Exit**: each open card item shipped or explicitly deferred to v15 with ADR.
 
-### 6.4 V14-CROSS-CARD — System-level synergies (v14.0–v14.1)
+### 6.4 V14-AGENTIC — Read-only AI surface (v14.x, Q2 2027)
 
-X1–X10 from §4. **Exit**: Today pane + event bus + lifecycle hooks + offline banner shipped; semantic linking opt-in; AI daily synthesis tile available.
+NEW stream. The dashboard becomes addressable by users' AI assistants without scraping or telemetry.
 
-**✅ All X1–X10 shipped.** X1 (Sprint 190), X2 (Sprint 173), X3 (Sprint 216), X4 (Sprint 291), X5 (Sprint 253), X6 (Sprint 174), X7 (Sprint 200), X8 (Sprint 258), X9 (Sprint 202), X10 (Sprint 211).
+- [ ] **D1 / X11** MCP read-only server (`localhost:7411/mcp`); ADR before code.
+- [ ] **X12** `CardSignalProtocol` formalisation; migrate 4 consumers.
+- [ ] **X15** semantic clipboard.
+- [ ] **PC-1** end-of-day audio recap (gated by audio-CSP audit).
+
+**Exit**: MCP server verified zero remote-origin reachability; CSP unchanged; LHCI no regression; ADR shipped.
 
 ### 6.5 V14-CONTINUITY — Cross-device without auth (v14.x, gated 3+ requests)
 
 - [x] AES-GCM encrypted config URL export.
 - [x] Import flow + `docs/sync.md`.
-- [ ] WebRTC mirror — short-lived (5 min) QR-pairing, STUN-only, no relay (ADR-049 designed Sprint 249).
+- [ ] WebRTC mirror — short-lived (5 min) QR-pairing, STUN-only, no relay (ADR-049).
+- [ ] Web Push VAPID alerts → phone (D7; gated).
 - [ ] CRDT (Yjs) — track only; adopt only if WebRTC delta insufficient AND core ≤ 12 KB gzip.
+- [ ] **X14** phone-as-remote (gated by WebRTC mirror).
+
+**Exit**: at least one continuity feature shipped end-to-end with threat-model ADR.
 
 ### 6.6 V14-EDGE — Workers platform expansion (v14.x, Q2–Q3 2027)
 
 - [ ] DO Hibernatable WebSocket — stocks live + alerts SSE.
-- [ ] R2 for asset cache (ADR-050 designed Sprint 249).
+- [ ] R2 for asset cache (ADR-050).
+- [ ] Cloudflare Snippets / TEE for static header injection (D6).
 - [ ] Workers AI Llama 4 (gate Hebrew quality).
 - [ ] DO Storage SQL audit (D1 replacement candidate).
+
+**Exit**: DO bill drops ≥ 50 % at idle; Worker bundle ≤ 65 KB gzip after Snippets migration.
 
 ### 6.7 V14-HARMONISE — Mono-repo reference (v14.1, Q2 2027)
 
 - [x] Composite `tooling/ci/check.yml`.
 - [x] Cross-project tooling registry.
-- [x] Sibling repo audit (Sprint 168).
+- [x] Sibling repo audit.
+- [x] Shared `tooling/vitest/happy-dom.mjs`.
+- [x] Cross-project release gate.
 - [ ] BudgetManager / CrossTideWeb / Wedding on shared presets.
-- [x] Shared `tooling/vitest/happy-dom.mjs` (Sprint 221).
-- [x] Cross-project release gate (Sprint 239).
+
+**Exit**: all 4 sibling repos consume `tooling/` presets; one quality gate across the org.
 
 ### 6.8 V14-SECURITY-L3 — SLSA L3 + supply chain (v14.2, Q3 2027)
 
-- [x] Hermetic build: `actions/checkout` + `actions/setup-node` SHA-pinned (Sprint 222).
-- [x] Hermetic build: npm `--ignore-scripts` gate + deploy-worker/preview-deploy fixed (Sprint 237).
-- [x] Sigstore/cosign signature on `dist.zip` + `sw.js` (Sprint 243).
-- [x] Third-party rebuilder manifest `dist/rebuilder-manifest.json` (Sprint 244).
-- [x] npm + GitHub Actions provenance (SLSA L2 `attest-build-provenance` in release.yml).
-- [x] CSP `require-trusted-types-for 'script'` enforcement audit (Sprint 220, trusted-types policy).
-- [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`, Sprint 221).
+- [x] Hermetic build: `actions/checkout` + `actions/setup-node` SHA-pinned.
+- [x] Hermetic build: npm `--ignore-scripts` gate.
+- [x] Sigstore/cosign signature on `dist.zip` + `sw.js`.
+- [x] Third-party rebuilder manifest `dist/rebuilder-manifest.json`.
+- [x] npm + GitHub Actions provenance (SLSA L2 `attest-build-provenance`).
+- [x] CSP `require-trusted-types-for 'script'`.
+- [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`).
+- [ ] **D15** Annual third-party rebuilder verification (SLSA verifier-action).
+- [ ] OpenTelemetry from Worker (opt-in).
+- [ ] OWASP Top 10 audit per major release.
 
-### 6.9 V14-RESILIENCE — Hostile-network & DX (v14.0, Q1 2027)
+**Exit**: SLSA L3; OpenTelemetry shipping zero data by default; one third-party rebuilder verification per major release.
 
-- [x] `?nosw=1` URL flag (v13.13.1).
-- [x] `__fdbUnregisterSW()` DevTools helper (v13.13.1).
-- [x] CSP `connect-src` allowlist widened (v13.13.1).
-- [x] `vite-plugin-dev-csp-strip` (Sprint 127).
-- [x] Per-card "blocked by network" diagnostic toast (Sprint 136).
-- [x] `docs/local-dev.md` corp-proxy quickstart (Sprint 135).
+### 6.9 V14-RESILIENCE — Hostile-network & DX (v14.0, shipped) — protected
 
-**Exit**: developer behind hostile firewall iterates on every card without disabling CSP globally.
+- [x] `?nosw=1` URL flag.
+- [x] `__fdbUnregisterSW()` DevTools helper.
+- [x] CSP `connect-src` allowlist widened.
+- [x] `vite-plugin-dev-csp-strip`.
+- [x] Per-card "blocked by network" diagnostic toast.
+- [x] `docs/local-dev.md` corp-proxy quickstart.
+
+**Status**: shipped. Protect every release — CI-gated.
 
 ### 6.10 V15-OPEN — Long horizon (Q4 2027 →)
 
+- [ ] WebNN on-device inference (D2) — news rerank + motivation curator.
 - [ ] Streams API for news ingestion (gate measurable perceived-TTI win).
 - [ ] WebTransport server-side once Cloudflare ships native support.
 - [ ] DO Storage SQL evaluation as D1 replacement.
 - [ ] Lightning CSS validation as sole CSS lint (drop Stylelint) on rule-set parity.
 - [ ] TS7 (Go-rewrite) primary typecheck on stable + zero-delta.
 - [ ] Coverage ratchet to 95 / 90 / 95 / 96.
+- [ ] Biome replacement for Prettier + ESLint when parity reached.
+- [ ] **X13** time-machine debug.
+- [ ] **X14** phone-as-remote.
 
-### 6.11 V14-CARD-SETTINGS — Expose every feature through user settings (v14.0, Q2 2027)
+### 6.11 V16/V17-FUTURE — 5-year horizon (2028+)
 
-**Goal**: every user-visible card behaviour configurable via the per-card ⚙ settings dialog. No feature hardcoded without a user-accessible toggle. Full gap audit in §3.13.
+Markers, not commitments. Each requires its own re-litigation when the trigger fires.
 
-**Priority rule**: (G) gap items fix before adding new (P) settings.
-
-- [x] CS-W1 · P0 · S — Weather: add `weatherUsTravelMode` boolean to `configSchema` (Sprint 277).
-- [x] CS-VN1 · P0 · S — Video-news: add `autoplay`, `defaultMuted`, `showOverlay`, `pauseOnReducedMotion`, `pauseAtNight` to `configSchema` (Sprint 278).
-- [x] CS-H1 · P0 · M — Hebrew-cal: add `hcalShowDafYomi`, `hcalShowOmer`, `hcalShowCandleLight`, `hcalShowHaftarah`, `hcalShowRoshChodesh`, `hcalZmanimMask` to card config + `configSchema` (Sprint 279).
-- [x] CS-SI1 · P0 · M — System-info: add per-tile boolean toggles for battery / memory / network-info / storage quota / SW-state to `configSchema` (Sprint 280).
-- [x] CS-CD1 · P0 · S — Countdown: add `countdownCardRecurrence` to `DashboardConfig` type (Sprint 281).
-- [x] CS-A1 · P1 · S — Alerts: migrate `alertZone` from global `DashboardConfig` into alerts card `configSchema`; add `alertShowHistory`, `alertSeverityFilter`, `alertDimOnAlert` (Sprint 282).
-- [x] CS-C1 · P1 · S — Currency: add `currencyBase` selector, `currencyShowCalc`, `currencyShowTrend`, `currencyShowSparkline` to `configSchema` (Sprint 283).
-- [x] CS-CAL1 · P1 · S — Calendar: add `calendarShowHolidays`, `calendarSourceColors`, `calendarWeeksAhead`, `calendarShowConflicts` to `configSchema` (Sprint 284).
-- [x] CS-M1 · P1 · S — Motivation: add `motivationCategories`, `motivationThemeByDay`, `motivationShowSource`, `motivationLang` to `configSchema` (Sprint 285).
-- [x] CS-T1 · P1 · S — Tasks: add `tasksShowDueBadge`, `tasksAllowRecurring`, `tasksShowTags`, `tasksSortOrder` to `configSchema` (Sprint 286).
-- [x] CS-W2 · P1 · S — Weather: add feature-toggle fields for W3 nowcast / W4 air-quality / W5 wind-compass / W6 moon-phase (Sprint 287).
-- [x] CS-S1 · P2 · S — Stocks: add `stocksShowMovers` (daily-mover pills), `stocksShowExtended` (pre/post-market badge) to `configSchema` (Sprint 288).
-- [x] CS-N1 · P2 · S — News: add `newsAiSummary`, per-source enable/disable, `newsDedup` sensitivity, `newsMinAge` filter to `configSchema` (Sprint 289).
-
-**Exit**: `configSchema.length ≥ 2` for every card; `VideoNewsCardConfig.settings` fully represented in `configSchema`; `countdownCardRecurrence` typed in `DashboardConfig`; `alertZone` exposed at card level.
+- TC39 Signals at Stage 4 + polyfill ≤ 1.5 KB → drop in-house signals.
+- TC39 Temporal Stage 4 + polyfill ≤ 10 KB → drop ad-hoc date math.
+- WebNN at GA on Chrome stable Mac+Linux+Win → migrate Workers AI Llama path on-device.
+- Workers AI Llama 5 / multilingual GA → re-evaluate motivation curator.
+- Cloudflare Containers GA → re-evaluate Worker bundle ceiling (we will not adopt a container; only check assumption).
+- WebGPU broadly available on TV-class Chromecast → re-evaluate sparkline rendering pipeline.
+- Cloudflare Pages → Workers Static Assets convergence → re-evaluate hosting choice.
 
 ---
 
 ## 7. Release Cadence & Gates
 
-| Phase | Gate | Action on red |
-| --- | --- | --- |
-| Pre-PR | tsc · eslint · oxlint · prettier · stylelint | Fix locally before push. |
-| PR | vitest · LHCI · axe · VR · bundle delta · SBOM | One reviewer (self) — block on any red gate. |
-| Pre-tag | `.github/instructions/pre-release.instructions.md` checklist | All zero-tolerance items must pass. |
-| Post-tag | `release.yml` workflow | Watch for `dist.zip` + SBOM + cosign signature. |
-| Post-prod | RUM Web Vitals + diag JSON + Prom `/api/metrics` | Regression > 10 % triggers patch within 24 h. |
+| Phase     | Gate                                                                       | Action on red                                |
+| --------- | -------------------------------------------------------------------------- | -------------------------------------------- |
+| Pre-PR    | tsc · eslint · oxlint · prettier · stylelint                               | Fix locally before push.                     |
+| PR        | vitest · LHCI · axe · VR · bundle delta · SBOM · module-boundary           | One reviewer (self) — block on any red gate. |
+| Pre-tag   | `.github/instructions/pre-release.instructions.md` checklist               | All zero-tolerance items must pass.          |
+| Post-tag  | `release.yml` workflow                                                     | Watch for `dist.zip` + SBOM + cosign signature. |
+| Post-prod | RUM Web Vitals + diag JSON + Prom `/api/metrics`                           | Regression > 10 % triggers patch within 24 h. |
 
-**Versioning**: SemVer. Major = breaking config schema (rare); Minor = new card or worker route or stream completion; Patch = bug fix or polish.
+**Versioning**: SemVer.
+
+- **Major** = breaking config schema (rare).
+- **Minor** = new card, worker route, or stream completion.
+- **Patch** = bug fix, polish, or property-test sprint set (e.g. v13.32 → v13.33).
 
 ---
 
 ## 8. Open Questions (re-litigated quarterly)
 
-1. When does TC39 Signals reach Stage 4 + polyfill ≤ 1.5 KB? (gate item #15)
-2. When does TC39 Temporal land a polyfill ≤ 10 KB gzip? (gate items #2, CAL5, H7)
+1. When does TC39 Signals reach Stage 4 + polyfill ≤ 1.5 KB? (gate item #3)
+2. When does TC39 Temporal land a polyfill ≤ 10 KB gzip? (gate items #2, CAL-Temporal, H-Temporal)
 3. Will Cloudflare Pages match Workers TTI at zero cost differential? (Pages migration gate)
-4. Should `https://*.intel.com` wildcard narrow once we leave the corp environment? (#12)
+4. Should `https://*.intel.com` wildcard narrow once we leave the corp environment? (CSP audit)
 5. At what tested-card count does the `weather` 4×2 detail grid exhaust readability on a 65″ TV at 3 m? (visual-regression check at v14.0)
 6. Should we add a `?dev=1` mega-flag bundling `?nosw=1` + dev CSP strip + verbose diag? (track demand)
-7. Is 21-day calendar (3 weeks) the right default, or should the user-configurable horizon (CAL4) become default? (track post-shipping)
-8. Does Vectorize cost-per-million stay below D1 read cost at our news volume? (gate item #1)
-9. Does the cross-card AI synthesis tile (X9) regress LHCI on first paint? (visual-regression + LHCI gate)
+7. Does Vectorize cost-per-million stay below D1 read cost at our news volume? (gate item #1)
+8. Does the cross-card AI synthesis tile (X9) regress LHCI on first paint? (visual-regression + LHCI gate)
+9. **NEW** — Does the local MCP server (X11) ever leak to a remote origin? Continuous CSP-violation report sampling for 30 days post-launch.
+10. **NEW** — Does Compute Pressure API surfacing produce false positives on TV hardware (idle but thermally throttled)? Empirical gate before promoting from "experimental" tile.
+11. **NEW** — Will WebNN ship Hebrew-capable embeddings before Workers AI Llama 4 closes the quality gap? Decides M-WebNN vs Workers AI Llama 4 priority.
+12. **NEW** — Will an unrelated builder reproduce `dist.zip` byte-for-byte once a year? Failure flips D15 to a release blocker.
 
 ---
 
-## 9. Pointers
+## 9. Top-of-Mind Risks (re-rated each major)
 
-- **History**: [CHANGELOG.md](../CHANGELOG.md)
-- **Architecture**: [ARCHITECTURE.md](./ARCHITECTURE.md)
-- **ADRs**: [adr/README.md](./adr/README.md)
-- **Data sources**: [data-sources.md](./data-sources.md)
-- **Local dev**: [local-dev.md](./local-dev.md)
-- **Sync (config-share)**: [sync.md](./sync.md)
-- **Security**: [security.md](./security.md)
-- **Privacy**: [privacy.md](./privacy.md)
-- **Card audit**: [card-architecture-audit.md](./card-architecture-audit.md)
+| #  | Risk                                                                                  | Severity | Likelihood | Mitigation                                                              |
+| -- | ------------------------------------------------------------------------------------- | -------- | ---------- | ----------------------------------------------------------------------- |
+| R1 | Cloudflare pricing or TOS change forces vendor swap                                   | High     | Low        | Annual vendor-neutrality drill (item #6); Hono + Valibot are portable.  |
+| R2 | Workers AI deprecates Llama 3.3 before Llama 4 Hebrew quality reaches parity          | Mid      | Mid        | Cache fallback to local curator already shipped; M-WebNN tracks D2.      |
+| R3 | Browser ships breaking change to CSP L3 / Trusted Types                               | Mid      | Low        | OWASP rotation + reporting-API sampling catches early.                  |
+| R4 | One un-pinned transitive dep introduces a supply-chain vector                          | High     | Low        | Renovate SHA-pinned + dependabot + SBOM-diff bot + `--ignore-scripts`.   |
+| R5 | TV hardware refresh leaves 4 GB-RAM Chromecast-class behind                            | Low      | Mid        | Per-card budget hard-cap (D13); Compute Pressure tile (D3) surfaces.    |
+| R6 | Hebrew RTL regresses silently when CSS engine ships breaking change                    | Mid      | Low        | 108 VR baselines × 6 themes; quarterly manual TV walk-through.          |
+| R7 | Free-tier Met Norway / Open-Meteo / Yahoo / Finnhub change quota                       | Mid      | Mid        | 3+ providers per card; provider-health auto-failover; KV stale.         |
+| R8 | Pikud Ha-Oref API change disrupts `alerts`                                             | High     | Mid        | Tzeva-Adom corroboration; DO SSE + history ring; Web Push backup (D7).  |
+| R9 | Local MCP server (X11) accidentally exposed beyond loopback                            | High     | Low        | CSP report-only surveillance; bind localhost-only verified by integration test. |
+| R10 | Build reproducibility breaks silently between releases                                 | Mid      | Low        | D15 third-party rebuilder verifies once per major; rebuilder manifest. |
+
+---
+
+## 10. Sprint Log Discipline (process invariant)
+
+This document does **not** log sprint history. Each completed sprint:
+
+1. Ships a focused commit (1 file pattern: `feat:`, `fix:`, `chore:`, `test:`, `docs:`, `refactor:`).
+2. Updates `CHANGELOG.md` under `[Unreleased]` (rolled forward at release).
+3. Closes its corresponding ROADMAP item by **deleting** it from this file (history lives in CHANGELOG).
+4. If new work surfaced, appends to §3 / §4 / §5 / §6 with a P/E/I rating.
+
+If a stream completes, its open list is removed and replaced with **`Status: shipped (vX.Y.Z)`** plus a one-line outcome.
+
+Forward-only. Always.
