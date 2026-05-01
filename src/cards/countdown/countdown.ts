@@ -4,6 +4,8 @@
  * Displays a ticking countdown to a configurable target date/time.
  * Pure client-side, no API required.
  * Target, title and done-message are read from DashboardConfig each tick.
+ *
+ * X12/X15 ADOPTED — v13.39.0 Sprints 376–377 (see ADR-071).
  */
 
 import "./countdown.css";

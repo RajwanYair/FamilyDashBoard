@@ -4,6 +4,8 @@
  * Fetches candles/havdalah, next holiday, omer count, parasha, and Daf Yomi
  * from the Hebcal API. Also renders a daily motivation saying (from MOTIVATIONS).
  * Refresh: INTERVALS.SHABBAT (6 hours).
+ *
+ * X12/X15 ADOPTED — v13.39.0 Sprint 379 (see ADR-071).
  */
 
 import { scheduleCard } from "../base-card";
