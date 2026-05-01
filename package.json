@@ -58,6 +58,7 @@
         "check:reproducible": "node scripts/check-reproducible.mjs --dry-run",
         "check:bundle": "node scripts/check-bundle-size.mjs",
         "check:card-bundle": "node scripts/check-card-bundle-delta.mjs",
+        "check:cards": "npm run check:boundaries && npm run check:bundle && npm run check:card-bundle",
         "bundle:trend": "node scripts/bundle-trend.mjs",
         "install:hooks": "node scripts/install-git-hooks.mjs",
         "mutate": "stryker run scripts/stryker.config.mjs",
