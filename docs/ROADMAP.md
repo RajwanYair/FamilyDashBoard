@@ -502,11 +502,11 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 ### 6.3 V14-CARDS-DEEP — Open per-card depth (v14.0, Q1–Q2 2027)
 
 - [ ] **W-IMS · S-TASE · C-BoI** native IL providers (D8).
-- [ ] **W-Nowcast · W-AQI · W-Compass** weather expansion.
+- [x] **W-Nowcast · W-AQI · W-Compass** weather expansion. _(shipped ≤ v13.42.0; pruned in S400)_
 - [ ] **N-V** Vectorize cutover.
-- [ ] **A-DO · S-DO** DO Hibernatable WebSocket migration.
+- [ ] **S-DO** DO Hibernatable WebSocket migration. _(A-DO already shipped, pruned in S400)_
 - [ ] **CAL-Temporal · H-Temporal** Temporal migration (gated by polyfill).
-- [ ] **SI-Pressure · SI-Buckets · SI-RTT** system-info expansion.
+- [x] **SI-Pressure · SI-Buckets · SI-RTT** system-info expansion. _(SI-Pressure D3 + SI-Buckets D4 shipped; SI-RTT Connection-API path completed S399)_
 
 **Exit**: each open card item shipped or explicitly deferred to v15 with ADR.
 
