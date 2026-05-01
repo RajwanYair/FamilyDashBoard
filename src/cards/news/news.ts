@@ -3,6 +3,8 @@
  *
  * Aggregates multiple Hebrew RSS feeds, deduplicates, sorts by date,
  * and renders a scrolling news strip with category detection.
+ *
+ * X12/X15 ADOPTED — v13.40.0 Sprint 390 (see ADR-071).
  */
 
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
@@ -25,6 +27,31 @@ import { diagLog } from "../../core/diag";
 import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
 import type { NewsItem } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
+
+// X15 (Sprint 390): cached snapshot of top headline for the semantic-clipboard producer.
+let _topHeadlineSnapshot: { title: string; source: string; link: string; pubDate: string } | null =
+  null;
+
+function buildNewsPayload(): SemanticPayload | null {
+  const h = _topHeadlineSnapshot;
+  if (!h) return null;
+  return {
+    cardId: "news",
+    text: `${h.source} · ${h.title}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      headline: h.title,
+      url: h.link,
+      datePublished: h.pubDate,
+      publisher: { "@type": "NewsMediaOrganization", name: h.source },
+    },
+    ts: Date.now(),
+  };
+}
 
 // ── Feed definitions ──
 export interface NewsFeed {
@@ -631,6 +658,21 @@ export function renderNews(items: NewsItem[]): void {
   _lastItems = items;
   const cfg = loadConfig();
 
+  // X12 (Sprint 390): publish top-headline signal (after mute/search filtering happens later).
+  const top = items[0];
+  if (top) {
+    setCardSignal("news", "top", { title: top.title, source: top.source, link: top.link });
+    _topHeadlineSnapshot = {
+      title: top.title,
+      source: top.source,
+      link: top.link,
+      pubDate: top.pubDate,
+    };
+  } else {
+    setCardSignal("news", "top", null);
+    _topHeadlineSnapshot = null;
+  }
+
   // In bookmark mode show only bookmarked items as a static list (no clone loop).
   const baseItems = _bkmMode ? items.filter((i) => _bookmarks.has(getBookmarkKey(i.title))) : items;
 
@@ -913,6 +955,7 @@ function initNewsSearch(): void {
 
 export function initNewsCard(): void {
   cacheDom();
+  registerSemanticProducer("news", buildNewsPayload);
   applyNewsFontSize();
   initNewsSearch();
   renderSourceFilterChips();
