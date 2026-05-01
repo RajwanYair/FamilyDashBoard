@@ -339,3 +339,28 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
     process.exit(1);
   }
 }
+
+// ── Sprint 336 / D13: per-card source hard-cap ────────────────────────────
+// Hard-cap any single card's raw source at 80 KB. The aspirational target
+// (≤ 6 KB gzip ≈ ≤ 24 KB raw) is tracked in ROADMAP §1.11 D13 — this is
+// the runaway-growth guardrail, not the destination.
+const PER_CARD_HARD_CAP_KB = 80;
+const PER_CARD_WARN_KB = 50;
+let perCardCapOk = true;
+console.log(`📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`);
+for (const { name, sourceKb } of cardSourceRows) {
+  if (sourceKb > PER_CARD_HARD_CAP_KB) {
+    console.error(
+      `  ❌  ${name.padEnd(srcColW)} ${sourceKb.toFixed(1)} KB exceeds ${PER_CARD_HARD_CAP_KB} KB hard-cap`,
+    );
+    perCardCapOk = false;
+  } else if (sourceKb > PER_CARD_WARN_KB) {
+    console.log(
+      `  ⚠️  ${name.padEnd(srcColW)} ${sourceKb.toFixed(1)} KB (over ${PER_CARD_WARN_KB} KB warn — refactor candidate)`,
+    );
+  }
+}
+console.log();
+if (!perCardCapOk) {
+  process.exit(1);
+}
