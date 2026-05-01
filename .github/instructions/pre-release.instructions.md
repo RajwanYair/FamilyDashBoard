@@ -32,6 +32,7 @@ npx vite build
 
 - No `// eslint-disable` or `/* eslint-disable */` anywhere in `src/` or `tests/`
 - No `@ts-ignore` or `@ts-expect-error` in `src/`
+- No `it.only` / `test.only` / `describe.only` or the `.skip` variants in `tests/` (enforced by `npm run check:test-focus`; see ADR-073)
 - No deprecated API calls — check ESLint deprecation rules and TypeScript `--target` output
 - No `console.log` in `src/` (use `diagLog()`)
 - ESLint config (`eslint.config.mjs`) must use the latest flat-config format — no legacy `.eslintrc`
