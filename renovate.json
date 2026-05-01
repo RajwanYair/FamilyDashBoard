@@ -1,11 +1,11 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:recommended", ":semanticCommits", ":separatePatchReleases"],
-    "description": "FamilyDashBoard — Renovate dependency update configuration. Owns npm dependency PRs; Dependabot owns GitHub Actions.",
+    "description": "FamilyDashBoard — Renovate dependency update configuration. Owns npm dependency PRs; Dependabot owns GitHub Actions. D14 schedule: security at any time, minors+patches monthly, majors manual.",
     "assignees": ["RajwanYair"],
     "labels": ["dependencies"],
     "reviewers": ["RajwanYair"],
-    "schedule": ["on saturday"],
+    "schedule": ["on the first day of the month"],
     "timezone": "Asia/Jerusalem",
     "prConcurrentLimit": 5,
     "prHourlyLimit": 3,
@@ -42,16 +42,17 @@
             "labels": ["dependencies", "worker"]
         },
         {
-            "description": "Minor + patch updates for CI scripts (low risk, auto-merge)",
+            "description": "D14: Minor + patch updates for CI scripts — monthly cadence, low-risk auto-merge",
             "matchDepTypes": ["devDependencies"],
             "matchUpdateTypes": ["minor", "patch"],
             "matchFileNames": ["package.json"],
+            "schedule": ["on the first day of the month"],
             "automerge": true,
             "automergeType": "branch",
             "automergeStrategy": "squash"
         },
         {
-            "description": "Major bumps always require manual review",
+            "description": "D14: Major bumps — always manual review, no auto-merge, no schedule cap",
             "matchUpdateTypes": ["major"],
             "automerge": false,
             "labels": ["dependencies", "major-upgrade"]
