@@ -9,6 +9,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.39.0] — 2026-06-02
+
+> **First X12 + X15 per-card adoption cohort** — Sprints 375–384 ship the v13.39.0 release: public type re-exports, X12 producers + X15 semantic-payload producers in 2 cards (countdown, hebrew-cal), ADR-071 codifying the per-card adoption pattern, D13 ratchet 44→42 KB. Tests: 6057 / 194 suites / 0 failures. ADRs: 71 total.
+
+### Added
+
+- **Sprint 375**: `src/types/card-signal.ts` + `src/types/semantic-clipboard.ts` — public type re-exports so cards opt in via the `types/` barrel rather than reaching into `core/`.
+- **Sprint 376–377**: `src/cards/countdown/countdown.ts` adopts X12 + X15. Publishes `(countdown, next)` signal on every tick (`{ targetMs, title, days, hours, minutes }`) and registers a semantic-clipboard producer returning a `text` + `application/ld+json` Event payload.
+- **Sprint 378**: `tests/unit/cards/countdown-signals.test.ts` — 5 integration tests covering signal publish, repeated-tick freshness, deep-freeze invariant, null-before-init, payload shape after init.
+- **Sprint 379**: `src/cards/hebrew-cal/hebrew-cal.ts` adopts X12 + X15. Publishes `(hebrew-cal, next-holiday)` signal in `renderHoliday` and registers a producer returning Hebrew-formatted text + JSON-LD Event with optional `candleLighting` / `havdala` fields.
+- **Sprint 381**: ADR-071 — codifies the 4-step per-card adoption pattern (imports → publish → producer → init register), per-card key conventions table, test pattern, audit-grep marker (`X12/X15 ADOPTED`). Cards `countdown` + `hebrew-cal` carry the marker.
+- **Sprint 382**: `docs/ARCHITECTURE.md` — invariants 25 + 26 documenting X12 + X15 as cross-card protocols.
+
+### Changed
+
+- **Sprint 380**: D13 per-card source warn-cap ratcheted 44 → 42 KB (`scripts/check-bundle-size.mjs`). Continuing the 50 → 48 → 46 → 44 → 42 schedule toward v14.0 target of warn 30 / hard 60.
+- **Sprint 380**: ROADMAP §6.1 status sweep — D3, D4, D5, D10, D11, D12 marked **shipped** (stale checklist items accumulated over prior releases). ROADMAP §6.4 X12/X15 entries updated to reflect first 2 producer adoptions in v13.39.0.
+
+### Deferred
+
+- Remaining 8 cards' X12 + X15 adoption (weather, calendar, alerts, stocks, currency, news, motivation, tasks). Each is a ≤ 50 LoC change following ADR-071; scheduled across v14.x patches.
+
+### Notes
+
+- ADR-067 and ADR-070 both promoted to **Accepted** in v13.38.0 — no status change in v13.39.0.
+- `_resetCardSignals` and `_resetSemanticProducers` are test-only helpers, not part of the public surface.
+
+---
+
 ## [13.38.0] — 2026-05-26
 
 > **First implementation cohort of the X11–X15 capabilities** — Sprints 365–374 ship the v13.38.0 release: X12 card-signal protocol core API + tests, X15 semantic-clipboard core + `Y` keyboard binding + tests, per-card warn-cap ratchet 46→44 KB. Tests: 6051 / 193 suites / 0 failures. ADRs: 70 total (status updates only).

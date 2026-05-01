@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v13.38.0)
+# FamilyDashBoard — Architecture (v13.39.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -335,8 +335,8 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 22. **Per-card configSchema** — Each card exports a `CardConfigField[]` schema; `buildConfigAccordion()` auto-renders the config panel UI; per-card reset buttons (v7.19, ADR-004)
 23. **Config dirty tracking** — `closeConfigPanel()` warns on unsaved changes; second close discards (v7.19)
 24. **Observability suite** — Card init timing (`recordCardInitTime`), startup waterfall in diag overlay, perf JSON export, error rate trending sparkline, network quality history (v7.19)
-25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071. (v13.38.0 core, v13.39.0 first 2 producers)
-26. **Semantic clipboard (X15)** — `src/core/semantic-clipboard.ts` + `Y` (yank) keystroke. Cards opt in by calling `registerSemanticProducer(cardId, fn)` returning `SemanticPayload` (text + JSON-LD). `ClipboardItem` write with text-only fallback. See ADR-070 + ADR-071. (v13.38.0 core, v13.39.0 first 2 producers)
+25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071. (v13.39.0 core, v13.39.0 first 2 producers)
+26. **Semantic clipboard (X15)** — `src/core/semantic-clipboard.ts` + `Y` (yank) keystroke. Cards opt in by calling `registerSemanticProducer(cardId, fn)` returning `SemanticPayload` (text + JSON-LD). `ClipboardItem` write with text-only fallback. See ADR-070 + ADR-071. (v13.39.0 core, v13.39.0 first 2 producers)
 
 ## Accessibility Compliance
 
