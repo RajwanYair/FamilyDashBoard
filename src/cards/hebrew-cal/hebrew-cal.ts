@@ -19,6 +19,9 @@ import { getTasksForToday } from "../tasks/tasks";
 import { decomposeDuration, pad2, computeMoonPhase } from "../../core/utils";
 import type { HebcalResponse, HebcalItem } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // ── Sprint 27: Pure Hebrew-cal utility functions ───────────────────────────
 
@@ -315,6 +318,38 @@ let _havdalaTime: Date | null = null;
 let _countdownInterval: ReturnType<typeof setInterval> | null = null;
 let _hebCalScheduleId: number | null = null;
 
+// X15 (Sprint 379): semantic-clipboard producer for hebrew-cal.
+function buildHebrewCalPayload(): SemanticPayload | null {
+  if (!_lastHolidayName) return null;
+  const today = new Date();
+  const hebrewDate = new Intl.DateTimeFormat("he-u-ca-hebrew", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(today);
+  const candlesNote = _candlesTime
+    ? ` · הדלקת נרות ${pad2(_candlesTime.getHours())}:${pad2(_candlesTime.getMinutes())}`
+    : "";
+  const havdalaNote = _havdalaTime
+    ? ` · הבדלה ${pad2(_havdalaTime.getHours())}:${pad2(_havdalaTime.getMinutes())}`
+    : "";
+  const text = `${hebrewDate} — ${_lastHolidayName}${candlesNote}${havdalaNote}`;
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: _lastHolidayName,
+    startDate: today.toISOString(),
+  };
+  if (_candlesTime) jsonLd["candleLighting"] = _candlesTime.toISOString();
+  if (_havdalaTime) jsonLd["havdala"] = _havdalaTime.toISOString();
+  return {
+    cardId: "hebrew-cal",
+    text,
+    jsonLd,
+    ts: Date.now(),
+  };
+}
+
 // ── Sefaria link refs ──
 let _dafSefariaUrl = "";
 let _parashaSefariaName = "";
@@ -415,6 +450,14 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
   const days = Math.ceil((holidayDate.getTime() - now.getTime()) / MS_PER_DAY);
   const name = h.hebrew ?? h.title;
   _lastHolidayName = name;
+
+  // X12 (Sprint 379): publish next-holiday signal for sibling consumers.
+  setCardSignal("hebrew-cal", "next-holiday", {
+    name,
+    titleEn: h.title,
+    isoDate: h.date,
+    days,
+  });
 
   // Format Gregorian date for the holiday (day + short month)
   const gregDate = holidayDate.toLocaleDateString("he-IL", {
@@ -940,6 +983,8 @@ export function initHebrewCalCard(): void {
   _dafSefariaUrl = "";
   _parashaSefariaName = "";
   cacheDom();
+  // X15 (Sprint 379): register semantic-clipboard producer.
+  registerSemanticProducer("hebrew-cal", buildHebrewCalPayload);
   renderMoonPhase();
   renderNextCalEvent();
   renderPsalmOfDay();
