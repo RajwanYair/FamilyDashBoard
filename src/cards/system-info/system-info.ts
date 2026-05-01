@@ -315,6 +315,10 @@ export async function renderSystemInfo(): Promise<void> {
   };
   setText("sysinfo-pressure", PRESSURE_LABELS[getPressureState()]);
 
+  // Sprint 330 / D4: Storage Buckets feature-detect
+  const bucketsLabel = await getStorageBuckets();
+  setText("sysinfo-buckets", bucketsLabel);
+
   diagLog("FDB-053: [system-info] Rendered");
 }
 
@@ -414,6 +418,33 @@ export async function getStorageQuota(): Promise<string> {
     return "—";
   }
 }
+
+// ── Sprint 330 / D4: Storage Buckets feature-detect ──────────────────────
+
+interface StorageBucketsManager {
+  keys: () => Promise<string[]>;
+}
+
+/**
+ * Sprint 330 / D4: Return a Storage Buckets summary string.
+ *
+ * Surfaces the count of named storage buckets (per-card persistence
+ * partitions). Returns "N דליים" when the API is supported, or "—" when
+ * absent (current state on most browsers in 2026 — Chromium-only origin
+ * trial). Used to feature-detect upcoming per-card quota partitioning.
+ */
+export async function getStorageBuckets(): Promise<string> {
+  const buckets = (navigator as Navigator & { storageBuckets?: StorageBucketsManager })
+    .storageBuckets;
+  if (!buckets?.keys) return "—";
+  try {
+    const keys = await buckets.keys();
+    return `${keys.length} דליים`;
+  } catch {
+    return "—";
+  }
+}
+
 
 // Sprint 212 / SI3: In-memory RTT ring buffer (10-minute window) ──────────
 
