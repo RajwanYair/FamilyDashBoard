@@ -23,6 +23,7 @@ is inside an `<input>`, `<textarea>`, or `<select>`.
 | `-`       | Decrease font size           | Step -1px on `<html>` font-size                              |
 | `P`       | Print                        | Opens browser print dialog                                   |
 | `B`       | Toggle bookmarks sidebar     | Quick-access bookmark panel                                  |
+| `Y`       | Yank focused card content    | X15: copies `text/plain` + `application/ld+json` to clipboard |
 | `H` / `?` | Help overlay                 | Shows this key table in a `<dialog>`                         |
 | `Esc`     | Close active overlay         | Closes config, help, diag, dimmer                            |
 
