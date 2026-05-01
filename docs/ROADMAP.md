@@ -207,9 +207,9 @@ These were not on the v1 roadmap. Each gets an ADR before the work lands.
 | - | -------- | ------- | -------------- | ------ |
 | D1 | **Local MCP server (read-only)** — surface "today's signals" so users' AI assistants can ask without scraping. Dashboard exposes a localhost-only HTTP+JSON endpoint at `localhost:7411/mcp`; never reachable from a remote origin. | **Adopt v14.x** | Privacy gate: zero network egress; CSP unchanged; opt-in via `?mcp=1`. | v14.x |
 | D2 | **WebNN on-device inference** for news rerank + motivation curator. | **Track v15** | Chrome GA + graceful Workers AI fallback when API absent. | v15 |
-| D3 | **Compute Pressure API** in `system-info` card. | **Adopt v14.x** | Behind feature-detect; surface `nominal/fair/serious/critical` tile. | v14.x |
-| D4 | **Storage Buckets** (per-card eviction policy). | **Adopt v14.x** | Behind feature-detect; news bucket evicts before tasks. | v14.x |
-| D5 | **Origin-Agent-Cluster** response header + meta. | **Adopt v14.x** | Side-channel hardening; verify no measurable memory regression on TV-target hardware (4 GB RAM Chromecast-class). | v14.x |
+| ~~D3~~ | ~~**Compute Pressure API** in `system-info` card.~~ — shipped v13.34.0 (Sprint 329, ADR-056) | | | |
+| ~~D4~~ | ~~**Storage Buckets** (per-card eviction policy).~~ — shipped v13.34.0 (Sprint 330, ADR-056) | | | |
+| ~~D5~~ | ~~**Origin-Agent-Cluster** response header + meta.~~ — shipped v13.34.0 (Sprint 327, ADR-056) | | | |
 | D6 | **Cloudflare Snippets / TEE** for static header injection. | **Track v14.x** | Move CSP / COOP / COEP / HSTS out of Worker once Snippets ships TEE; saves ~3 KB Worker. | v14.x |
 | D7 | **Web Push (VAPID) for alerts → phone**. | **Gate: 3+ user requests** | Worker-side VAPID, opt-in; only fires `alerts` severity ≥ rocket; never tracks subscription beyond push. | v14.x |
 | D8 | **IMS / TASE / BoI native sources** for IL-geo users (`weather`, `stocks`, `currency`). | **Adopt v14.0** | Adapter contract: provider-health emits same envelope; KV stale + provider chain unchanged. | v14.0 |
@@ -218,7 +218,7 @@ These were not on the v1 roadmap. Each gets an ADR before the work lands.
 | D11 | **`popover=` attribute** for diag toasts + bookmark menu. | **Adopt v14.x** | Replaces ad-hoc focus traps; gate by zero a11y regression on axe. | v14.x |
 | D12 | **TS module boundary linting** — disallow `src/cards/*` from importing `src/ui/*` and vice-versa beyond declared interfaces. | **Adopt v14.0** | Enforced by `eslint-plugin-boundaries` config in `tooling/eslint/`. | v14.0 |
 | D13 | **Per-card budget hard-cap** — each card module ≤ 6 KB gzip individually (today: 4 / 12 cards over 5 KB). | **Adopt v14.0** | CI gate; refactor over-budget cards. | v14.0 |
-| D14 | **Renovate group rules: security weekly, minors monthly, majors manual.** | **Adopt v14.0** | Replaces current per-package weekly noise. | v14.0 |
+| ~~D14~~ | ~~**Renovate group rules: security weekly, minors monthly, majors manual.**~~ — shipped v13.34.0 (Sprint 328) | | | |
 | D15 | **Annual `dist/` reproducibility verification by an unrelated builder** (third-party rebuilder via SLSA `verifier-action`). | **Adopt v14.2** | Builds on existing `rebuilder-manifest.json`. | v14.2 |
 
 ---
@@ -359,8 +359,8 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.10 System-info
 
-- **SI-Pressure** · P1 · S · Mid · v14.x — Compute Pressure API tile (D3); `nominal/fair/serious/critical`.
-- **SI-Buckets** · P2 · S · Lo · v14.x — Storage Buckets quota-per-card tile (D4).
+- ~~**SI-Pressure**~~ — shipped v13.34.0 (Sprint 329, D3, ADR-056).
+- ~~**SI-Buckets**~~ — shipped v13.34.0 (Sprint 330, D4, ADR-056).
 - **SI-RTT** · P2 · S · Lo · v14.x — RTT trend sparkline (10-min). [SI3 carry-over]
 
 ### 3.11 Countdown
