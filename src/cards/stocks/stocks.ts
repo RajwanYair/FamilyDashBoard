@@ -70,7 +70,7 @@ export function fmtPrice(price: number, sym: string): string {
  * Sprint 199 / S2: Convert a USD price to ILS using the live currency rate.
  * Returns null when rates are unavailable or the USD rate is invalid.
  */
-export function convertUsdToIls(usdPrice: number): number | null {
+function convertUsdToIls(usdPrice: number): number | null {
   const rates = getLastCurrencyRates();
   if (!rates) return null;
   const usdRate = rates["USD"]; // ILS-based: 1 ILS = X USD, so 1 USD = 1/X ILS

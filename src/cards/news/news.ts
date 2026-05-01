@@ -400,13 +400,6 @@ export async function unstarArticle(id: string): Promise<void> {
   await idbDelete(IDB_NEWS_DB, IDB_STARRED_STORE, id);
 }
 
-/** Return all starred articles (single entry stored per id). */
-export async function getStarredArticles(): Promise<StarredArticle[]> {
-  const raw = await idbGet<StarredArticle[]>(IDB_NEWS_DB, IDB_STARRED_STORE, "__all__");
-  if (Array.isArray(raw)) return raw;
-  return [];
-}
-
 /** Check whether a specific article is starred. */
 export async function isStarred(id: string): Promise<boolean> {
   const entry = await idbGet<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE, id);

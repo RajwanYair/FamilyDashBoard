@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "development"
+  ],
+  "browserslist": [
+    "chrome >= 114",
+    "edge >= 114"
+  ],
+  "hints": {
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "meta[name=theme-color]",
+          "script[type=speculationrules]"
+        ]
+      }
+    ],
+    "compat-api/css": "default",
+    "no-inline-styles": "off",
+    "no-broken-links": "off"
+  }
+}

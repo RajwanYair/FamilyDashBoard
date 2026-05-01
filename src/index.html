@@ -498,7 +498,7 @@
           <!-- Sprint 58: Network mode selector (worker / proxy fetch path) -->
           <div class="cfg-row">
             <span class="cfg-label">🔌 מצב רשת (Worker / Proxy)</span>
-            <select class="cfg-input cfg-select cfg-ltr" id="cfg-network-mode">
+            <select class="cfg-input cfg-select cfg-ltr" id="cfg-network-mode" aria-label="מצב רשת" title="מצב רשת (Worker / Proxy)">
               <option value="auto">auto — ברירת מחדל (Worker + Proxy fallback)</option>
               <option value="worker-only">worker-only — Worker בלבד (ללא proxy)</option>
               <option value="no-worker">no-worker — ישיר / Proxy בלבד (ללא Worker)</option>
@@ -508,7 +508,7 @@
           <!-- F139: Custom countdown chip config -->
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — תאריך</span>
-            <input class="cfg-input cfg-num-140" id="cfg-countdown-date" type="date" >
+            <input class="cfg-input cfg-num-140" id="cfg-countdown-date" type="date" aria-label="תאריך ספירה לאחור" title="תאריך אירוע להתקרבות">
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ אירוע ספירה לאחור — שם</span>
@@ -520,11 +520,11 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — תאריך</span>
-            <input class="cfg-input cfg-num-140" id="cfg-cd-card-date" type="date" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd-card-date" type="date" aria-label="כרטיס ספירה — תאריך" title="תאריך האירוע הראשי">
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — שעה</span>
-            <input class="cfg-input cfg-num-100" id="cfg-cd-card-time" type="time" >
+            <input class="cfg-input cfg-num-100" id="cfg-cd-card-time" type="time" aria-label="כרטיס ספירה — שעה" title="שעת האירוע הראשי">
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — הודעת סיום</span>
@@ -532,7 +532,7 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">💍 כרטיס ספירה — תאריך התחלה (לסרגל התקדמות)</span>
-            <input class="cfg-input cfg-num-140" id="cfg-cd-card-start-date" type="date" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd-card-start-date" type="date" aria-label="כרטיס ספירה — תאריך התחלה" title="תאריך התחלה לחישוב סרגל התקדמות">
           </div>
           <!-- F8 (v7.2): Countdown card 2nd event -->
           <div class="cfg-row">
@@ -541,11 +541,11 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 2 — תאריך</span>
-            <input class="cfg-input cfg-num-140" id="cfg-cd2-date" type="date" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd2-date" type="date" aria-label="ספירה 2 — תאריך" title="תאריך האירוע השני">
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 2 — שעה</span>
-            <input class="cfg-input cfg-num-100" id="cfg-cd2-time" type="time" >
+            <input class="cfg-input cfg-num-100" id="cfg-cd2-time" type="time" aria-label="ספירה 2 — שעה" title="שעת האירוע השני">
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 2 — הודעת סיום</span>
@@ -558,11 +558,11 @@
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 3 — תאריך</span>
-            <input class="cfg-input cfg-num-140" id="cfg-cd3-date" type="date" >
+            <input class="cfg-input cfg-num-140" id="cfg-cd3-date" type="date" aria-label="ספירה 3 — תאריך" title="תאריך האירוע השלישי">
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 3 — שעה</span>
-            <input class="cfg-input cfg-num-100" id="cfg-cd3-time" type="time" >
+            <input class="cfg-input cfg-num-100" id="cfg-cd3-time" type="time" aria-label="ספירה 3 — שעה" title="שעת האירוע השלישי">
           </div>
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 3 — הודעת סיום</span>
@@ -594,7 +594,7 @@
             <!-- F4 (v7.2): Reset all to defaults -->
             <button class="cfg-pill-danger" type="button" id="cfg-reset-all-btn" aria-label="איפוס כל ההגדרות" title="מחיקת כל ההגדרות וטעינה מחדש">⚠️ אפס הכל</button>
           </div>
-          <input class="is-hidden" type="file" id="cfg-import-file" accept=".json" >
+          <input class="is-hidden" type="file" id="cfg-import-file" accept=".json" aria-label="בחירת קובץ JSON לייבוא הגדרות" title="בחירת קובץ לייבוא">
         </div>
         <!-- Always-visible actions -->
         <div class="cfg-row cfg-row-divider">
@@ -814,7 +814,7 @@
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-cal" role="status" aria-label="מצב סנכרון לוח שנה" title="סנכרון לוח שנה — 🟢 תקין 🟡 טוען 🔴 שגיאה"></div></div><div class="card-hd-title"><span class="icon-badge green">📅</span> <span id="card-title-calendar">לוח שנה משפחתי</span> <span id="cal-countdown"></span></div><div class="card__hd-end"><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית לוח שנה" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="cal-wrapper">
                 <div class="cal-week-grid" id="cal-week-grid" role="list" aria-live="polite" aria-label="תצוגת שבוע קרוב">
-                  <div class="cal-empty">טוען לוח שנה...</div>
+                  <div class="cal-empty" role="listitem">טוען לוח שנה...</div>
                 </div>
               </div>
             </section>

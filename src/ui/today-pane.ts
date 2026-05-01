@@ -209,7 +209,7 @@ function readNextCalEvent(): { label: string; minutesUntil: number } | null {
 }
 
 /** Collect all inputs for buildTodayItems from DOM + localStorage + card APIs. */
-export function collectInputs(): TodayPaneInputs {
+function collectInputs(): TodayPaneInputs {
   const countdownDate = (() => {
     try {
       return getCountdownTargetDate();

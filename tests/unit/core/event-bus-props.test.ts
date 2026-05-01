@@ -41,15 +41,17 @@ describe("EB1: globalSync — loading wins over error when both present", () => 
       fc.property(
         fc.array(fc.tuple(cardIdArb, syncStateArb), { minLength: 1, maxLength: 8 }),
         (pairs) => {
+          // Deduplicate by cardId (last write wins per broadcastSync semantics).
+          const deduped = new Map(pairs);
           _resetBusForTesting();
-          for (const [id, state] of pairs) broadcastSync(id, state);
-          const allStates = pairs.map(([, s]) => s);
+          for (const [id, state] of deduped) broadcastSync(id, state);
+          const allStates = [...deduped.values()];
           const hasLoading = allStates.some((s) => s === "loading");
           if (hasLoading) {
             return globalSync.value === "loading";
           }
           return true; // only checking the loading case here
-        },
+        };,
       ),
       { numRuns: 100 },
     );

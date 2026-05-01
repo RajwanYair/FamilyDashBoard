@@ -1,0 +1,6 @@
+# FamilyDashBoard targets only modern Chromium-based always-on TV displays.
+# Documented in docs/ARCHITECTURE.md and ADR-001 — the dashboard is shipped
+# as a static PWA tested only against Chromium 114+. Firefox / Safari / Opera
+# are not in the support matrix.
+Chrome >= 114
+Edge >= 114

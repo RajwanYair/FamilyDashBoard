@@ -9,6 +9,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.41.0] — 2026-05-02
+
+> **Production-readiness pass** — Sprint 395 cleanup release. Real fixes only, zero waivers. Eliminates flaky property test, resolves all VS Code accessibility warnings in `src/index.html`, declares explicit browser support matrix (Chromium 114+), removes dead code, and prunes a dead root file.
+
+### Fixed
+
+- **EB1 property test deterministic** — `tests/unit/core/event-bus-props.test.ts` EB1 case now deduplicates `(cardId, state)` pairs via `new Map(pairs)` before computing `hasLoading`, matching the EB2 pattern. Resolves intermittent failure on counterexample `[["b","loading"],["b","ok"]]` (~1/100 fast-check runs). Root-cause fix — no `test.skip`, no seed lockdown.
+- **Accessibility (`src/index.html`)** — Added `aria-label` + `title` (Hebrew) to 8 unlabeled date/time/file inputs (`cfg-countdown-date`, `cfg-cd-card-date`, `cfg-cd-card-time`, `cfg-cd-card-start-date`, `cfg-cd2-date`, `cfg-cd2-time`, `cfg-cd3-date`, `cfg-cd3-time`, `cfg-import-file`) and the `cfg-network-mode` `<select>`. Added `role="listitem"` to the calendar week-grid placeholder so the `role="list"` parent always has a valid listitem child.
+
+### Added
+
+- **`.browserslistrc`** — Declares actual support matrix (`Chrome >= 114`, `Edge >= 114`) so build tools and the webhint VS Code extension generate accurate compat warnings.
+- **`.hintrc`** — webhint config matching the browserslist target with `compat-api/html` ignores for intentionally Chromium-only features (`meta[name=theme-color]`, `script[type=speculationrules]`).
+
+### Removed
+
+- **Dead root `index.html`** — Removed unused 1.6 KB root entry. Vite already builds from `src/index.html` per `vite.config.ts` (`root: "src"`).
+- **Dead export `getStarredArticles`** in `src/cards/news/news.ts` — zero consumers across `src/` and `tests/`. The companion `unstarArticle` and `isStarred` IDB read-later API remains.
+- **Demoted `export` → internal**: `collectInputs` (`src/ui/today-pane.ts`) and `convertUsdToIls` (`src/cards/stocks/stocks.ts`) — used only within their own files.
+
+### Quality
+
+- 0 TypeScript errors · 0 ESLint errors · 0 ESLint warnings · 0 suppressions
+- 195 / 195 test suites passing
+- Dead-export check: clean (`scripts/check-dead-exports.mjs`)
+- CSP Trusted Types audit: 0 findings
+- Version consistency: 7/7 files match `package.json`
+
+---
+
 ## [13.40.0] — 2026-05-01
 
 > **Six-card X12 + X15 adoption cohort** — Sprints 385–394 ship the v13.40.0 release: 6 cards (weather, calendar, alerts, stocks, currency, news) now publish `card-signal-protocol` values and register `semantic-clipboard` producers per ADR-071. Combined with v13.39.0's 2 cards, **8 of 12 cards** are now full X12 + X15 producers. D13 ratchet 42→40 KB. Tests: 6063 / 195 suites / 0 failures.
