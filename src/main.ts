@@ -69,6 +69,7 @@ import { globalOffline } from "./core/event-bus";
 import { initScrollShadows } from "./ui/scroll";
 import { mountRegisteredCards } from "./core/card-registry";
 import { initCardSettingsButtons } from "./ui/card-settings-dialog";
+import { copyFocusedCardPayload } from "./core/semantic-clipboard";
 
 // ── Cards ──
 import { initWeatherCard, toggleTempUnit } from "./cards/weather/weather";
@@ -309,6 +310,21 @@ export function init(): void {
   );
   registerKey("w", document.documentElement.lang === "en" ? "Toggle °C/°F" : "מעבר °C/°F", () =>
     toggleTempUnit(),
+  );
+  // X15 (Sprint 369): semantic clipboard — yank focused card's payload
+  registerKey(
+    "y",
+    document.documentElement.lang === "en" ? "Copy semantic" : "העתק תוכן",
+    () => {
+      void copyFocusedCardPayload().then((cardId) => {
+        if (cardId) {
+          showToast(
+            document.documentElement.lang === "en" ? "Copied" : "הועתק לזיכרון",
+            1500,
+          );
+        }
+      });
+    },
   );
   registerKey("1", "עיר מזג אוויר 1", () =>
     document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']")?.click(),

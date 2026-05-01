@@ -483,6 +483,12 @@ describe("Main — init() keyboard shortcuts", () => {
     expect(calls.some(([k]) => k === "b")).toBe(true);
   });
 
+  it("registers 'y' key for X15 semantic clipboard yank (Sprint 369)", () => {
+    init();
+    const calls = vi.mocked(registerKey).mock.calls;
+    expect(calls.some(([k]) => k === "y")).toBe(true);
+  });
+
   it("registers 'r' key for reload", () => {
     init();
     const calls = vi.mocked(registerKey).mock.calls;
