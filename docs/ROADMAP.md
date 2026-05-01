@@ -386,31 +386,31 @@ X1–X10 from the v1 roadmap are **all shipped**. New cross-card items raised by
 
 Single localhost endpoint (`localhost:7411/mcp`) exposing read-only views of: today-pane signal · calendar next-event · hebrew-cal next-zman · active alerts · weather summary · stocks top-mover · countdowns < 24 h.
 
-- **X11** · P0 · M · Hi · v14.x — Implement `src/core/mcp-server.ts`; opt-in via `?mcp=1`; CSP unchanged (loopback only); never reachable from a remote origin; never sends telemetry.
+- **X11** · P0 · M · Hi · v14.x — Implement `src/core/mcp-server.ts`; opt-in via `?mcp=1`; CSP unchanged (loopback only); never reachable from a remote origin; never sends telemetry. _(impl plan ADR-066 shipped v13.37.0 Sprint 355)_
 
 ### 4.2 X12 — Card composability protocol
 
 Today cards import from siblings via `getCardSignal(id)`. Formalise as `CardSignalProtocol` with versioned signal shape; consumers feature-detect.
 
-- **X12** · P1 · S · Mid · v14.x — Define `src/core/card-signal-protocol.ts`; migrate 4 known consumers (today-pane, semantic links, MCP, daily synthesis).
+- **X12** · P1 · S · Mid · v14.x — Define `src/core/card-signal-protocol.ts`; migrate 4 known consumers (today-pane, semantic links, MCP, daily synthesis). _(spec ADR-067 shipped v13.37.0 Sprint 356)_
 
 ### 4.3 X13 — Time-machine debug
 
 Snapshot at any point + replay; piggybacks `src/core/snapshot.ts` (X8 shipped).
 
-- **X13** · P2 · M · Lo · v15 — Snapshot every 60 s into IDB ring (≤ 24 h retention); `Ctrl+Shift+T` to scrub. Behind `?devtime=1`.
+- **X13** · P2 · M · Lo · v15 — Snapshot every 60 s into IDB ring (≤ 24 h retention); `Ctrl+Shift+T` to scrub. Behind `?devtime=1`. _(track decision ADR-068 shipped v13.37.0 Sprint 357)_
 
 ### 4.4 X14 — Phone-as-remote (no auth)
 
 Companion to X11. Phone joins the dashboard's WebRTC mesh (ADR-049 v14.x) over QR pairing for **5 min**, taps a card to reorder/dismiss/snooze. No accounts, no relay, ICE STUN-only.
 
-- **X14** · P2 · L · Mid · v15 — Gates: WebRTC mirror (V14-CONTINUITY) shipped + ≥ 3 requests + threat-model ADR.
+- **X14** · P2 · L · Mid · v15 — Gates: WebRTC mirror (V14-CONTINUITY) shipped + ≥ 3 requests + threat-model ADR. _(gated decision ADR-069 shipped v13.37.0 Sprint 358)_
 
 ### 4.5 X15 — Semantic clipboard
 
 User clicks a tile; system copies a context-rich text + JSON-LD payload (e.g. "30 ◌ April 2026 — Yom HaShoah · 19:30 candle-lighting · גשם 35%") for paste into chat / mail.
 
-- **X15** · P2 · S · Lo · v14.x — Replaces today's plain-text copy-on-tile (where present); keyboard `C` while focused on a card.
+- **X15** · P2 · S · Lo · v14.x — Replaces today's plain-text copy-on-tile (where present); keyboard `C` while focused on a card. _(adopt decision + spec ADR-070 shipped v13.37.0 Sprint 359)_
 
 ### 4.6 Cross-card invariants protected
 
