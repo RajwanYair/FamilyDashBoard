@@ -475,7 +475,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 
 - [x] D12 module-boundary linting in `tooling/eslint/`.
 - [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 KB warn through v13.39.0; hard-cap unchanged at 80 KB)_
-- [ ] D14 Renovate group rules.
+- [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
 - [ ] D9 CSS `if()` + `@function` migration (tokens).
 - [x] D10 Speculation Rules for help / config panels.
@@ -483,7 +483,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 - [ ] VR baselines 108 → 130 (DO-SSE alert states + maximise-FLIP scenarios).
 - [x] D3 Compute Pressure API tile in system-info.
 - [x] D4 Storage Buckets per-card eviction.
-- [ ] LHCI ratchet `error 0.97 → 0.98` cached.
+- [x] LHCI ratchet `error 0.97 → 0.98` cached. (Sprint 397, v13.43.0)
 - [ ] Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io).
 
 **Exit**: all D-items D3–D5, D9–D14 shipped; LHCI cached ≥ 0.98; module-boundary lint zero violations; every card module ≤ 6 KB gzip.
