@@ -301,39 +301,33 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 
 ---
 
-## 3. Per-Card Open Backlog (2026-Q2 refresh)
+## 3. Per-Card Open Backlog (2026-Q2 refresh — Sprint 400 prune)
 
-The full per-card peer comparison and capability gap analysis is preserved in the v1 roadmap and **shipped through Sprint 213**. This section lists **only what remains open** for v14.0+, plus net-new items raised by the 2026-Q2 peer refresh.
+The full per-card peer comparison and capability gap analysis is preserved in the v1 roadmap and **shipped through Sprint 213**. Sprint 400 audit removed v1 carry-over items that have since been silently shipped (W-Nowcast, W-AQI, W-Compass, S-Watchlists, C-Sparkline, CAL-Conflict, A-DO, M-Favorites, SI-RTT, V-PiP, N-Star core API). This section now lists **only what genuinely remains open** for v14.0+.
 
 ### 3.1 News
 
 - **N-V** · P0 · L · Hi · v14.0 — Retire SimHash v2 once Vectorize 30-day shadow run delivers precision@10 ≥ +15 %. (ADR-052 active.)
 - **N-WebNN** · P2 · M · Mid · v15 — Move per-source rerank to WebNN on-device when API GA (D2).
-- **N-Star** · P2 · S · Lo · v14.x — Star/read-later list (IDB-backed, AES-GCM URL share). [N2 carry-over]
+- **N-Star-UI** · P2 · S · Lo · v14.x — Read-later viewer drawer. IDB store + `unstarArticle`/`isStarred` already shipped; needs viewer UI.
 - **N-TTS** · P2 · M · Mid · v15 — Web Speech API "read article" (Hebrew + English; gated 3+ requests). [N4 carry-over]
 
 ### 3.2 Weather
 
 - **W-IMS** · P0 · M · Hi · v14.0 — Add **IMS (Israel Met Service)** native source as primary for `geonameid` ∈ IL (D8). Provider-health envelope unchanged.
-- **W-Nowcast** · P1 · M · Mid · v14.x — Hyperlocal next-hour minute-by-minute precip (Open-Meteo nowcast endpoint). [W3 carry-over]
-- **W-AQI** · P1 · S · Mid · v14.x — Air-quality tile (PM2.5/PM10/O3 from Open-Meteo air-quality). [W4 carry-over]
-- **W-Compass** · P2 · S · Lo · v14.x — SVG wind compass with gust ring. [W5 carry-over]
 
 ### 3.3 Stocks
 
 - **S-DO** · P1 · M · Hi · v14.x — DO Hibernatable WebSocket live stream (replaces HTTP poll; ~80 % DO bill drop idle). [S1 carry-over]
 - **S-TASE** · P0 · M · Hi · v14.0 — Add **TASE (Tel-Aviv Stock Exchange)** native source for `.TA` suffix tickers (D8). Cross-link currency card for ILS conversion.
-- **S-Watchlists** · P2 · M · Mid · v14.x — Watchlist groups (drag-into-group; IDB; AES-GCM URL share). [S4 carry-over]
 
 ### 3.4 Currency
 
 - **C-BoI** · P1 · S · Hi · v14.0 — Add **Bank of Israel direct** as authoritative ILS source (D8). Provider chain order: BoI → Frankfurter → ECB → exchangerate.host.
-- **C-Sparkline** · P2 · S · Lo · v14.x — 30-day SVG sparkline per pair. [C4 carry-over]
 
 ### 3.5 Calendar
 
 - **CAL-Temporal** · P1 · M · Mid · v14.x — Replace ad-hoc date math with TC39 Temporal (gate by polyfill ≤ 10 KB). [CAL5 carry-over]
-- **CAL-Conflict** · P2 · S · Lo · v14.x — Conflict overlap badge. [CAL6 carry-over]
 
 ### 3.6 Hebrew calendar
 
@@ -343,14 +337,12 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.7 Alerts
 
-- **A-DO** · P1 · M · Hi · v14.x — DO Hibernatable WebSocket SSE upgrade. [A3 carry-over]
 - **A-Push** · P2 · M · Mid · v14.x — Web Push VAPID to phone for `alerts` severity ≥ rocket (D7); opt-in only.
 - **A-Map** · P3 · L · Mid · v15 — SVG static-tile map of recent alert geographies (no map dep). [A4 carry-over]
 
 ### 3.8 Motivation
 
 - **M-WebNN** · P2 · M · Mid · v15 — On-device curator via WebNN once GA (D2); preserves zero round-trip.
-- **M-Favorites** · P2 · S · Lo · v14.x — Favorites list (IDB, ≤ 50 entries). [M3 carry-over]
 
 ### 3.9 Tasks
 
@@ -361,7 +353,7 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 - ~~**SI-Pressure**~~ — shipped v13.34.0 (Sprint 329, D3, ADR-056).
 - ~~**SI-Buckets**~~ — shipped v13.34.0 (Sprint 330, D4, ADR-056).
-- **SI-RTT** · P2 · S · Lo · v14.x — RTT trend sparkline (10-min). [SI3 carry-over]
+- ~~**SI-RTT**~~ — shipped through Sprint 399 (Connection-API path now also feeds the 10-min sparkline).
 
 ### 3.11 Countdown
 
@@ -369,7 +361,7 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.12 Video-news
 
-- **V-PiP** · P2 · S · Lo · v14.x — Document Picture-in-Picture (gated 3+; ADR-045). [V2 carry-over]
+- ~~**V-PiP**~~ — shipped (`src/ui/document-pip.ts` + `video-news.ts` integration).
 
 ### 3.13 Cross-card peer-driven additions (NEW)
 
