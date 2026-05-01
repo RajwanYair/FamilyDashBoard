@@ -8,6 +8,7 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
         "resolveJsonModule": true,
