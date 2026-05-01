@@ -331,7 +331,7 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.6 Hebrew calendar
 
-- **H-Yahrzeit** · P2 · M · Mid · v14.x — Yahrzeit list (local-only, IDB, AES-GCM URL share). [H6 carry-over]
+- ~~**H-Yahrzeit**~~ — IDB API shipped (`addYahrzeit` / `getUpcomingYahrzeits` / `removeYahrzeit`); manager UI deferred to v14.x.
 - **H-Temporal** · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal. [H7 carry-over]
 - **H-Sefaria-Audio** · P2 · M · Lo · v15 — Optional parashat haftarah audio link (gated by audio-CSP audit; OpenSiddur public dataset).
 
@@ -346,7 +346,7 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.9 Tasks
 
-- **T-Subtasks** · P2 · M · Mid · v14.x — 1-level subtask nesting. [T4 carry-over]
+- ~~**T-Subtasks**~~ — core API shipped (`addSubtask`, `getSubtasks`, `parentId` field); deeper UI integration deferred to v14.x.
 - **T-WebRTC** · P2 · L · Mid · v14.x — WebRTC mirror sync (gated 3+; ADR-049). [T5 carry-over]
 
 ### 3.10 System-info
