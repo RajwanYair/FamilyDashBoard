@@ -5,6 +5,8 @@
  * and renders a 21-day (3-week) tiled grid — one tile per day, each tile lists
  * that day's events (or a muted placeholder when empty).
  * Refresh: INTERVALS.CALENDAR (15 minutes).
+ *
+ * X12/X15 ADOPTED — v13.40.0 Sprint 386 (see ADR-071).
  */
 
 import { scheduleCard } from "../base-card";
@@ -26,6 +28,36 @@ import { diagLog } from "../../core/diag";
 import { acquireLock, releaseLock } from "../../core/fetch";
 import type { CalendarEvent, HebcalItem } from "../../types/api";
 import type { CardConfigField } from "../../types/card";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
+
+// X15 (Sprint 386): cached snapshot of next event for the semantic-clipboard producer.
+let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
+
+function buildCalendarPayload(): SemanticPayload | null {
+  const s = _nextEventSnapshot;
+  if (!s) return null;
+  const when = new Date(s.startMs);
+  const dateText = when.toLocaleString("he-IL", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    hour: s.isAllDay ? undefined : "2-digit",
+    minute: s.isAllDay ? undefined : "2-digit",
+  });
+  return {
+    cardId: "calendar",
+    text: `${s.title} · ${dateText}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: s.title,
+      startDate: when.toISOString(),
+    },
+    ts: Date.now(),
+  };
+}
 
 // ── Constants ──
 const CAL_WEEK_DAYS = 21;
@@ -395,6 +427,24 @@ export function renderCalendar(events: CalendarEvent[]): number {
     .filter((e) => e.start >= weekStart && e.start < weekEnd)
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
+  // X12 (Sprint 386): publish next upcoming event signal for sibling consumers.
+  const nextEvent = upcoming.find((e) => e.start.getTime() >= now.getTime()) ?? null;
+  if (nextEvent) {
+    setCardSignal("calendar", "next-event", {
+      title: nextEvent.summary,
+      startMs: nextEvent.start.getTime(),
+      isAllDay: Boolean(nextEvent.allDay),
+    });
+    _nextEventSnapshot = {
+      title: nextEvent.summary,
+      startMs: nextEvent.start.getTime(),
+      isAllDay: Boolean(nextEvent.allDay),
+    };
+  } else {
+    setCardSignal("calendar", "next-event", null);
+    _nextEventSnapshot = null;
+  }
+
   // Detect overlapping timed events (for conflict indicator)
   const conflictSet = findConflicts(upcoming);
 
@@ -566,6 +616,7 @@ let _calScheduleId: number | null = null;
 
 export function initCalendarCard(): void {
   cacheDom();
+  registerSemanticProducer("calendar", buildCalendarPayload);
   void loadCalendar();
   _calScheduleId = scheduleCard(loadCalendar, INTERVALS.CALENDAR);
   diagLog("FDB-029: [calendar] Initialized");
