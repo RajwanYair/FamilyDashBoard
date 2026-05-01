@@ -2,11 +2,16 @@
  * FamilyDashBoard v13 — Weather Card
  *
  * Open-Meteo integration: current conditions, hourly chart, 7-day forecast.
+ *
+ * X12/X15 ADOPTED — v13.40.0 Sprint 385 (see ADR-071).
  */
 
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import { trustedHTML } from "../../core/trusted-types";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
 import "./weather.css";
 import {
   INTERVALS,
@@ -36,8 +41,35 @@ import type { CardConfigField, CardDefinition } from "../../types/card";
 // ── City state ──
 let _activeLat = 31.7683;
 let _activeLon = 35.2137;
-
 // LS_CITY_1/2/3 imported from constants
+
+// X15 (Sprint 385): semantic-clipboard producer for the weather card.
+let _lastWeatherSnapshot: {
+  tempC: number;
+  feelsC: number;
+  humidity: number;
+  desc: string;
+  cityName: string;
+} | null = null;
+
+function buildWeatherPayload(): SemanticPayload | null {
+  const s = _lastWeatherSnapshot;
+  if (!s) return null;
+  const text = `${s.cityName} · ${String(s.tempC)}°C (מרגיש ${String(s.feelsC)}°C) · ${s.desc} · לחות ${String(s.humidity)}%`;
+  return {
+    cardId: "weather",
+    text,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WeatherForecast",
+      name: s.desc,
+      temperature: { "@type": "QuantitativeValue", value: s.tempC, unitCode: "CEL" },
+      relativeHumidity: s.humidity,
+      location: s.cityName,
+    },
+    ts: Date.now(),
+  };
+}
 
 interface CityEntry {
   name: string;
@@ -541,6 +573,28 @@ export function renderWeather(d: WeatherResponse): void {
   const cur = d.current;
   const tempC = Math.round(cur.temperature_2m);
   const wCfg = loadConfig();
+
+  // X12 (Sprint 385): publish current weather signal for sibling consumers.
+  setCardSignal("weather", "current", {
+    tempC,
+    feelsC: Math.round(cur.apparent_temperature),
+    humidity: cur.relative_humidity_2m,
+    windKmh: Math.round(cur.wind_speed_10m),
+    code: cur.weather_code,
+    desc: WX_CODES[cur.weather_code] ?? null,
+    lat: _activeLat,
+    lon: _activeLon,
+  });
+
+  // X15 (Sprint 385): cache last snapshot for the semantic-clipboard producer.
+  const activeTab = document.querySelector<HTMLButtonElement>(".wx-city-tab.active");
+  _lastWeatherSnapshot = {
+    tempC,
+    feelsC: Math.round(cur.apparent_temperature),
+    humidity: cur.relative_humidity_2m,
+    desc: WX_CODES[cur.weather_code] ?? "—",
+    cityName: activeTab?.textContent?.trim() ?? "מיקום נוכחי",
+  };
   if (el.wxWindTile) el.wxWindTile.style.display = wCfg.weatherShowWind ? "" : "none";
   if (el.wxRiseTile) el.wxRiseTile.style.display = wCfg.weatherShowSunrise ? "" : "none";
 
@@ -751,6 +805,7 @@ function bindOnce(
 
 export function initWeatherCard(): void {
   cacheDom();
+  registerSemanticProducer("weather", buildWeatherPayload);
   initWeatherCities(); // Apply configured cities from localStorage
   void loadWeather();
   if (_weatherRefreshInterval !== null) clearInterval(_weatherRefreshInterval);
