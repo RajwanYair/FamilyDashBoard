@@ -9,6 +9,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.40.0] — 2026-05-01
+
+> **Six-card X12 + X15 adoption cohort** — Sprints 385–394 ship the v13.40.0 release: 6 cards (weather, calendar, alerts, stocks, currency, news) now publish `card-signal-protocol` values and register `semantic-clipboard` producers per ADR-071. Combined with v13.39.0's 2 cards, **8 of 12 cards** are now full X12 + X15 producers. D13 ratchet 42→40 KB. Tests: 6063 / 195 suites / 0 failures.
+
+### Added
+
+- **Sprint 385**: `src/cards/weather/weather.ts` adopts X12 + X15. Publishes `(weather, current)` signal in `renderWeather` (`{ tempC, feelsC, humidity, windKmh, code, desc, lat, lon }`) and registers a producer returning a Hebrew text summary + JSON-LD `WeatherForecast` payload.
+- **Sprint 386**: `src/cards/calendar/calendar.ts` adopts X12 + X15. Publishes `(calendar, next-event)` signal in `renderCalendar` (`{ title, startMs, isAllDay }`) and registers a producer returning a localized text summary + JSON-LD `Event` payload.
+- **Sprint 387**: `src/cards/alerts/alerts.ts` adopts X12 + X15. Publishes `(alerts, active)` signal in `renderAlerts` (`{ count, areas, latestTs }`) — only when alerts within the 600s active window — and registers a producer returning a Hebrew summary + JSON-LD `SpecialAnnouncement` (CivicEmergencyAnnouncement category).
+- **Sprint 388**: `src/cards/stocks/stocks.ts` adopts X12 + X15. Publishes `(stocks, top-mover)` signal at end of `loadAllStocks` (`{ sym, pct, dir }`) and registers a producer returning a Hebrew arrow-formatted text + JSON-LD `FinancialProduct`.
+- **Sprint 389**: `src/cards/currency/currency.ts` adopts X12 + X15. Publishes dual signals `(currency, usd-ils)` + `(currency, eur-ils)` in `renderCurrency` and registers a producer returning a combined text summary + JSON-LD `ExchangeRateSpecification`.
+- **Sprint 390**: `src/cards/news/news.ts` adopts X12 + X15. Publishes `(news, top)` signal in `renderNews` (`{ title, source, link }`) and registers a producer returning the source-prefixed headline + JSON-LD `NewsArticle` with `publisher` `NewsMediaOrganization`.
+- **Sprint 391**: `tests/unit/cards/multi-card-signals.test.ts` — 6 integration tests across currency, alerts, news verifying signal publish, deep-freeze invariant, null-on-empty semantics. All cards' adoption-marker headers grep-able with `rg "X12/X15 ADOPTED"`.
+
+### Changed
+
+- **Sprint 392**: D13 per-card source warn-cap ratcheted 42 → 40 KB (`scripts/check-bundle-size.mjs`). Continuing the 50 → 48 → 46 → 44 → 42 → 40 schedule toward v14.0 target of warn 30 / hard 60.
+
+### Deferred
+
+- Remaining 4 cards' X12 + X15 adoption (motivation, tasks, system-info, video-news, countdown timer secondary keys). Each is a ≤ 50 LoC change following ADR-071; scheduled for v13.41+.
+
+### Notes
+
+- All 6 adoption commits follow the ADR-071 4-step pattern (imports → publish → producer → init register). No card uses a module-level boolean to gate `registerSemanticProducer` — the registry is idempotent and tests rely on `_resetSemanticProducers` between cases.
+
+---
+
 ## [13.39.0] — 2026-06-02
 
 > **First X12 + X15 per-card adoption cohort** — Sprints 375–384 ship the v13.39.0 release: public type re-exports, X12 producers + X15 semantic-payload producers in 2 cards (countdown, hebrew-cal), ADR-071 codifying the per-card adoption pattern, D13 ratchet 44→42 KB. Tests: 6057 / 194 suites / 0 failures. ADRs: 71 total.
