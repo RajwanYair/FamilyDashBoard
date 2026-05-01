@@ -12,9 +12,12 @@ import { diagLog } from "../../core/diag";
 import { MS_PER_DAY } from "../../core/constants";
 import { decomposeDuration, pad2 } from "../../core/utils";
 import { cGetStale } from "../../core/cache";
+import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { HebcalItem } from "../../types/api";
 import type { DurationParts } from "../../core/utils";
 import type { CardConfigField } from "../../types/card";
+import type { SemanticPayload } from "../../types/semantic-clipboard";
 
 // ── Config-driven helpers ─────────────────────────────────────────────────────
 
@@ -255,6 +258,61 @@ export function setConfetti(active: boolean): void {
   body.classList.toggle(CD_CONFETTI_CLASS, active);
 }
 
+// ── X12 / X15 (Sprint 376–377): cross-card signal + semantic clipboard ───────
+
+/**
+ * Publish the current primary countdown state for sibling consumers
+ * (today-pane, MCP server, daily synthesis). Called on every tick.
+ */
+function publishCountdownSignal(targetMs: number, parts: DurationParts, title: string): void {
+  setCardSignal("countdown", "next", {
+    targetMs,
+    title,
+    days: parts.days,
+    hours: parts.hours,
+    minutes: parts.minutes,
+  });
+}
+
+/**
+ * Build a semantic payload for the focused countdown card. Returns
+ * `null` until the first tick has populated the registry.
+ */
+function buildCountdownPayload(): SemanticPayload | null {
+  const sig = (
+    globalThis as unknown as { __cdLast?: { targetMs: number; title: string; days: number } }
+  ).__cdLast;
+  if (!sig) return null;
+  const target = new Date(sig.targetMs);
+  const dateStr = target.toLocaleDateString("he-IL", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  const text =
+    sig.days === 0
+      ? `${sig.title} — היום (${dateStr})`
+      : `${sig.title} — בעוד ${String(sig.days)} ימים (${dateStr})`;
+  return {
+    cardId: "countdown",
+    text,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: sig.title,
+      startDate: target.toISOString(),
+    },
+    ts: Date.now(),
+  };
+}
+
+let _countdownProducerRegistered = false;
+function ensureCountdownProducerRegistered(): void {
+  if (_countdownProducerRegistered) return;
+  registerSemanticProducer("countdown", buildCountdownPayload);
+  _countdownProducerRegistered = true;
+}
+
 // ── Tick ─────────────────────────────────────────────────────────────────────
 
 export function tick(): void {
@@ -294,6 +352,12 @@ export function tick(): void {
   if (hoursEl) hoursEl.textContent = pad2(hours);
   if (minsEl) minsEl.textContent = pad2(minutes);
   if (secsEl) secsEl.textContent = pad2(seconds);
+
+  // X12 / X15 (Sprint 376–377): publish signal + cache semantic snapshot
+  publishCountdownSignal(targetMs, { days, hours, minutes, seconds }, getCountdownTitle());
+  (
+    globalThis as unknown as { __cdLast: { targetMs: number; title: string; days: number } }
+  ).__cdLast = { targetMs, title: getCountdownTitle(), days };
   if (msgEl) {
     msgEl.textContent =
       days === 0
@@ -422,6 +486,7 @@ export function tick3(): void {
 
 export function initCountdownCard(): void {
   cacheDom();
+  ensureCountdownProducerRegistered();
   tick();
   tick2();
   tick3();
