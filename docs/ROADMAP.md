@@ -205,19 +205,19 @@ These were not on the v1 roadmap. Each gets an ADR before the work lands.
 
 | # | Decision | Verdict | Trigger / Gate | Target |
 | - | -------- | ------- | -------------- | ------ |
-| D1 | **Local MCP server (read-only)** — surface "today's signals" so users' AI assistants can ask without scraping. Dashboard exposes a localhost-only HTTP+JSON endpoint at `localhost:7411/mcp`; never reachable from a remote origin. | **Adopt v14.x** | Privacy gate: zero network egress; CSP unchanged; opt-in via `?mcp=1`. | v14.x |
+| D1 | **Local MCP server (read-only)** — surface "today's signals" so users' AI assistants can ask without scraping. Dashboard exposes a localhost-only HTTP+JSON endpoint at `localhost:7411/mcp`; never reachable from a remote origin. | **Adopt v14.x** (design ADR-058 shipped v13.35.0 Sprint 338) | Privacy gate: zero network egress; CSP unchanged; opt-in via `?mcp=1`. | v14.x |
 | D2 | **WebNN on-device inference** for news rerank + motivation curator. | **Track v15** | Chrome GA + graceful Workers AI fallback when API absent. | v15 |
 | ~~D3~~ | ~~**Compute Pressure API** in `system-info` card.~~ — shipped v13.34.0 (Sprint 329, ADR-056) | | | |
 | ~~D4~~ | ~~**Storage Buckets** (per-card eviction policy).~~ — shipped v13.34.0 (Sprint 330, ADR-056) | | | |
 | ~~D5~~ | ~~**Origin-Agent-Cluster** response header + meta.~~ — shipped v13.34.0 (Sprint 327, ADR-056) | | | |
-| D6 | **Cloudflare Snippets / TEE** for static header injection. | **Track v14.x** | Move CSP / COOP / COEP / HSTS out of Worker once Snippets ships TEE; saves ~3 KB Worker. | v14.x |
-| D7 | **Web Push (VAPID) for alerts → phone**. | **Gate: 3+ user requests** | Worker-side VAPID, opt-in; only fires `alerts` severity ≥ rocket; never tracks subscription beyond push. | v14.x |
-| D8 | **IMS / TASE / BoI native sources** for IL-geo users (`weather`, `stocks`, `currency`). | **Adopt v14.0** | Adapter contract: provider-health emits same envelope; KV stale + provider chain unchanged. | v14.0 |
+| D6 | **Cloudflare Snippets / TEE** for static header injection. | **Track v14.x** (decision ADR-059 shipped v13.35.0 Sprint 339) | Move CSP / COOP / COEP / HSTS out of Worker once Snippets ships TEE; saves ~3 KB Worker. | v14.x |
+| D7 | **Web Push (VAPID) for alerts → phone**. | **Gate: 3+ user requests** (design ADR-060 shipped v13.35.0 Sprint 340) | Worker-side VAPID, opt-in; only fires `alerts` severity ≥ rocket; never tracks subscription beyond push. | v14.x |
+| D8 | **IMS / TASE / BoI native sources** for IL-geo users (`weather`, `stocks`, `currency`). | **Adopt v14.0** (contract ADR-061 shipped v13.35.0 Sprint 341) | Adapter contract: provider-health emits same envelope; KV stale + provider chain unchanged. | v14.0 |
 | D9 | **CSS `if()` + `@function`** for theme-token compression. | **Adopt v14.x** | Behind progressive-enhancement; theme `@layer` keeps fallback. | v14.x |
 | D10 | **Speculation Rules API (prerender)** for help / config panels. | **Adopt v14.x** | Bundle delta < 1 KB; gate by LHCI no-regression on TTI. | v14.x |
 | D11 | **`popover=` attribute** for diag toasts + bookmark menu. | **Adopt v14.x** | Replaces ad-hoc focus traps; gate by zero a11y regression on axe. | v14.x |
-| D12 | **TS module boundary linting** — disallow `src/cards/*` from importing `src/ui/*` and vice-versa beyond declared interfaces. | **Adopt v14.0** | Enforced by `eslint-plugin-boundaries` config in `tooling/eslint/`. | v14.0 |
-| D13 | **Per-card budget hard-cap** — each card module ≤ 6 KB gzip individually (today: 4 / 12 cards over 5 KB). | **Adopt v14.0** | CI gate; refactor over-budget cards. | v14.0 |
+| ~~D12~~ | ~~**TS module boundary linting** — disallow `src/cards/*` from importing `src/ui/*` and vice-versa beyond declared interfaces.~~ — shipped v13.35.0 (Sprint 335, ADR-057) as zero-dep custom script | | | |
+| ~~D13~~ | ~~**Per-card budget hard-cap** — each card module ≤ 6 KB gzip individually.~~ — interim 80 KB raw hard-cap shipped v13.35.0 (Sprint 336, ADR-057); aspirational target tracked as backlog | | | |
 | ~~D14~~ | ~~**Renovate group rules: security weekly, minors monthly, majors manual.**~~ — shipped v13.34.0 (Sprint 328) | | | |
 | D15 | **Annual `dist/` reproducibility verification by an unrelated builder** (third-party rebuilder via SLSA `verifier-action`). | **Adopt v14.2** | Builds on existing `rebuilder-manifest.json`. | v14.2 |
 
