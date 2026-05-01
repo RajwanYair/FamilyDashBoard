@@ -9,6 +9,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.37.0] — 2026-05-19
+
+> **Cross-card capabilities documentation sweep** — Sprints 355–363 ship the v13.37.0 patch series: 5 new ADRs (X11/X12/X13/X14/X15), per-card warn-cap ratchet 48→46 KB, `check:cards` npm alias. Tests: 6028 / 191 suites / 0 failures. ADRs: 70 total.
+
+### Added
+
+- **Sprint 355**: ADR-066 refining X11 MCP implementation plan (concrete file plan, channel protocol, tool surface, ≤ 1 KB gzip lazy-load gate). Builds on ADR-058's design ADR.
+- **Sprint 356**: ADR-067 formalising X12 card-signal protocol (`CardSignal<T>` + `setCardSignal` / `getCardSignal` / `onCardSignal`; deep-frozen values; consumers feature-detect). 4 known consumers will migrate in v14.x.
+- **Sprint 357**: ADR-068 documenting X13 time-machine debug tracking decision (revisit at v15; gates: X12 shipped + Storage Buckets widespread + first incident request).
+- **Sprint 358**: ADR-069 documenting X14 phone-as-remote gated decision (3 gates: WebRTC mirror lands + 3+ user requests + dedicated threat-model ADR).
+- **Sprint 359**: ADR-070 documenting X15 semantic clipboard adopt v14.x (single keystroke `C`, JSON-LD payload, ≤ 4 KB gzip across 5 cards). Smallest of the X11–X15 cohort, scheduled first.
+- **Sprint 362**: New `check:cards` npm alias — runs `check:boundaries && check:bundle && check:card-bundle` for one-shot per-card audit.
+
+### Changed
+
+- **Sprint 360** (D13): Per-card source warn-cap ratcheted 48 → 46 KB. Three cards (weather 55.0, stocks 51.5, news 49.3) remain refactor candidates.
+- **Sprint 361**: ROADMAP §4.1–§4.5 — X11, X12, X13, X14, X15 annotated with their shipped ADR references and sprint markers.
+
+---
+
 ## [13.36.0] — 2026-05-18
 
 > **Decision documentation sweep** — Sprints 345–353 ship the v13.36.0 patch series: 4 new ADRs (D9/D2/D15/D11), per-card warn-cap ratchet 50→48 KB, `check:boundaries` wired into `npm run check`. Tests: 6028 / 191 suites / 0 failures. ADRs: 65 total.
