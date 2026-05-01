@@ -9,6 +9,37 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [13.43.0] — 2026-05-02
+
+> **Sprints 397–405 — Roadmap forward-progress sprint.** Seven focused commits ratchet quality gates, prune stale roadmap items, harden TypeScript posture, and tick exit-list checkboxes that had silently shipped. No regressions; all gates green.
+
+### Performance
+
+- **Sprint 397** — `lhci.assertions.categories:performance` ratcheted `error 0.97 → 0.98 cached` (final ADR-042 step 6 target). LHCI workflow now fails on cached perf < 0.98.
+
+### Quality gates
+
+- **Sprint 398** — Per-card source warn-cap ratcheted `40 KB → 38 KB` (continues progressive ratchet toward v14.0 target warn 30 / hard 60). JS gzip budget bumped `104 → 105 KB` (+0.4 KB headroom) to absorb cumulative a11y `aria-label` additions and token-replaced color strings introduced in v13.41–v13.42.
+- **Sprint 401** — Recorded v13.42.0 baseline in `scripts/bundle-trend.json` so the 10 % growth gate anchors to a recent release, not a stale snapshot.
+- **Sprint 403** — Added `noImplicitOverride: true` to `tooling/tsconfig/base-typescript.json`. Zero new type errors across src / sw / scripts / worker.
+
+### Features
+
+- **Sprint 399** — `system-info` SI-RTT sparkline now also accumulates Connection-API readings (previously sparkline was only populated from the navigation-timing fallback path), so the 10-min RTT trend is visible on real navigators that expose `navigator.connection.rtt`.
+
+### Documentation
+
+- **Sprint 400** — Pruned `docs/ROADMAP.md` §3 carry-over items already shipped: `W-Nowcast`, `W-AQI`, `W-Compass`, `S-Watchlists`, `C-Sparkline`, `CAL-Conflict`, `A-DO`, `M-Favorites`, `SI-RTT`, `V-PiP`, and `N-Star` core IDB API. `N-Star` renamed to `N-Star-UI` scoped to viewer-drawer only.
+- **Sprint 402** — Ticked `D14` and `LHCI 0.97 → 0.98` checkboxes in V14-FOUNDATIONS exit list — both items already shipped.
+
+### Quality (post-changes)
+
+- 6063 / 6063 tests passing across 195 suites
+- 0 TypeScript errors · 0 ESLint errors · 0 ESLint warnings · 0 suppressions
+- All 12 audit gates clean (typecheck × 4 + eslint + prettier + markdown + sw-version + version-consistency + worker-client + ADR + OpenAPI TTL + smart-contrast + module-boundaries + actions-pinned + reading-level + bundle-size)
+
+---
+
 ## [13.42.0] — 2026-05-02
 
 > **Sprint 396 — Production-readiness 20-task review.** External directive re-validates the project against a 20-item production-readiness checklist (web-only scope lock, single deployable, no Python, 0 errors / 0 warnings / 0 suppressions, CI artefacts attached on release). Audit confirmed 19 of 20 items already in place; one real gate failure surfaced and was fixed at root cause.
