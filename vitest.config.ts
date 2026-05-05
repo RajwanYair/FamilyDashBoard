@@ -173,10 +173,13 @@ export default defineConfig({
         // Sprint 463 (coverage ratchet — Sprints 459-461 added 26 property tests for cache/signals/event-bus):
         //   Actuals (Sprint 451 baseline): 94.23/85.40/94.51/95.67. New tests only add coverage.
         //   Safety margin 0.2%: ratchet stmts 93.9→94.0, branches 85.1→85.2, funcs 94.2→94.3, lines 95.3→95.4.
-        statements: 94.0,
-        branches: 85.2,
-        functions: 94.3,
-        lines: 95.4,
+        // Sprint 474 (coverage ratchet — Sprints 469-473 added 25 property tests for config-crypto/utils/links):
+        //   Actuals (Sprint 451 baseline): 94.23/85.40/94.51/95.67. Property tests probe existing paths.
+        //   Safety margin 0.2%: ratchet stmts 94.0→94.2, branches 85.2→85.4, funcs 94.3→94.5, lines 95.4→95.6.
+        statements: 94.2,
+        branches: 85.4,
+        functions: 94.5,
+        lines: 95.6,
       },
     },
   },
