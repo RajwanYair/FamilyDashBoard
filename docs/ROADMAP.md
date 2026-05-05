@@ -1,9 +1,9 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-12 · **Shipped baseline**: v14.3.0 (Sprint 468) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
+> **Refresh date**: 2026-05-12 · **Shipped baseline**: v14.4.0 (Sprint 478) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
 >
-> **Inventory**: 6336 tests / 209 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage (Sprint 463)**: 94.0 / 85.2 / 94.3 / 95.4 (statements / branches / functions / lines).
+> **Inventory**: 6361 tests / 212 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage (Sprint 474)**: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -13,7 +13,7 @@
 
 ## 0. Executive Summary
 
-After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6336 tests, 74 fast-check property suites across 18 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6361 tests, 77 fast-check property suites across 21 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
@@ -151,8 +151,8 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Prettier              | 3.x                      | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity.                       |
 | Stylelint             | 16.x                     | Keep; consider Lightning-CSS-only validation v15.                                 |
 | Playwright            | 1.5x                     | Quarterly baseline regen.                                                         |
-| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; 22 files in scope (provider.ts added Sprint 449); extend to remaining core modules. |
-| `fast-check`          | 3.x                      | 74 property suites across 18 modules (cache CS1-CS8 Sprint 459, signals SIG1-SIG6 Sprint 460, event-bus EB1-EB6 Sprint 461, history HIS1-HIS6 Sprint 465); continue expanding. |
+| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; 25 files in scope (utils.ts + config-crypto.ts + worker-client.ts added Sprint 472); extend to remaining core modules. |
+| `fast-check`          | 3.x                      | 77 property suites across 21 modules (config-crypto CC1-CC8 Sprint 469, utils UT1-UT8 Sprint 470, links LK1-LK6 Sprint 471); continue expanding. |
 | `axe-core`            | latest                   | Keep CI gate.                                                                     |
 | Lighthouse CI         | latest                   | Tightened to `error 0.97`; ratchet to `0.98` cached v14.x.                        |
 | `pnpm` workspace      | npm + parent             | **Reject** — current pattern is sufficient and simpler.                           |
@@ -164,13 +164,13 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | ---------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
 | Unit             | Vitest 4.1 + happy-dom 20              | Keep. Suite split per file.                                                       |
 | Component        | `@vitest/browser` (Playwright)         | Shipped v13.16.                                                                   |
-| Property-based   | fast-check (74 suites, ADR-054/055)    | 18 modules covered; cache/signals/event-bus/history property suites shipped v14.3. |
-| Mutation         | Stryker (22 files)                     | Threshold ≥ 85 %; extended to provider.ts Sprint 449.                             |
+| Property-based   | fast-check (77 suites, ADR-054/055)    | 21 modules covered; config-crypto/utils/links property suites shipped v14.4. |
+| Mutation         | Stryker (25 files)                     | Threshold ≥ 85 %; extended to utils/config-crypto/worker-client Sprint 472.       |
 | Visual regression | Playwright (108 baselines)             | Extend to DO-SSE alert states + maximise-FLIP.                                    |
 | End-to-end       | Playwright                             | Keep.                                                                             |
 | Accessibility    | axe-core (CI gate)                     | Keep + manual screen-reader pass per major.                                       |
 | Performance      | Lighthouse CI (`error 0.97`)           | Tighten to `0.98` cached v14.x.                                                   |
-| Coverage         | 94.0/85.2/94.3/95.4                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
+| Coverage         | 94.2/85.4/94.5/95.6                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
 
 ### 1.8 Observability, security, supply chain
 
@@ -183,7 +183,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Sec  | Secret rotation per major release. Reporting API sampling audit annually. |
 | Sec  | CSP `require-trusted-types-for 'script'` enforcement audit v14.0. |
 | Sec  | npm + GitHub Actions provenance (Sigstore) — adopt v14.2. |
-| Sec  | OWASP Top 10 audit per major release; 29 rules scan `src/`, `worker/src/`, and `scripts/` (Sprint 466); CSP wildcards reviewed every patch. |
+| Sec  | OWASP Top 10 audit per major release; 32 rules scan `src/`, `worker/src/`, and `scripts/` (Sprint 473); CSP wildcards reviewed every patch. |
 | Sec  | **Origin-Agent-Cluster header** — adopt v14.x (process isolation; defends against Spectre-class side-channels). |
 | Sec  | **Permissions-Policy delegation audit** — reduce inherited surface for video-news iframes. |
 | Infra | Cloudflare Pages migration — gate on measurable TTI/caching regression. |
@@ -251,7 +251,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 | Edge cache             | **KV stale + D1 + DO + AE**                                                         | n/a        | n/a       | Postgres      | n/a         | n/a          | n/a         | proprietary | iCloud      | Prom / Mimir     | Influx        | Cloud     | Cloud    | proprietary   | Cloud     | Cloud            | Cloud        | Cloud        |
 | TS strictness          | **strict + nUII + vMS + eOPT**                                                      | strict     | partial   | strict        | n/a         | partial      | n/a         | unknown     | n/a         | partial          | partial       | n/a       | n/a      | n/a           | n/a       | unknown          | unknown      | unknown      |
 | CSS                    | **`@layer` + tokens + Lightning + `@scope` + `light-dark()` + `@property`**          | Tailwind 4 | SCSS      | Mantine CSS-in-JS | Hand    | CSS Modules  | AppKit      | Tailwind    | SwiftUI     | SCSS + Emotion   | hand          | n/a       | hand     | n/a           | SwiftUI   | Tailwind         | Tailwind     | Tailwind     |
-| Tests                  | **6336 unit + PW + axe + 108 VR + LHCI + 74 fast-check + Stryker**                  | Vitest partial | partial | Vitest + PW + Argos | Go     | Minimal      | XCTest      | unknown     | XCTest      | Go tests         | pytest        | n/a       | n/a      | n/a           | unknown   | unknown          | unknown      | unknown      |
+| Tests                  | **6361 unit + PW + axe + 108 VR + LHCI + 77 fast-check + Stryker**                  | Vitest partial | partial | Vitest + PW + Argos | Go     | Minimal      | XCTest      | unknown     | XCTest      | Go tests         | pytest        | n/a       | n/a      | n/a           | unknown   | unknown          | unknown      | unknown      |
 | Visual regression      | **Playwright (108, in-repo)**                                                       | None       | None      | Argos CI      | None        | None         | Snapshot    | unknown     | None        | Pixelmatch       | None          | None      | None     | None          | None      | None             | None         | None         |
 | i18n                   | **Hebrew RTL + English**                                                            | 45+        | 22+       | 38+           | en-only     | 30+          | 40+         | 25+         | 40+         | 30+              | 80+           | en-only   | en-only  | en-only       | en-only   | many             | en-only      | many         |
 | A11y                   | **WCAG 2.2 AA + axe gate**                                                          | Partial    | Partial   | Partial       | Unknown     | Partial      | VoiceOver   | Unknown     | Apple stack | Partial          | Partial       | n/a       | n/a      | E-ink only    | Apple     | partial          | partial      | partial      |
@@ -302,7 +302,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 3. **Hebrew RTL + Zmanim + Hebcal + Sefaria + Tzeva-Adom native** — unique.
 4. **12 provider-adapted cards with normalized history + stale fallback** — depth over breadth.
 5. **4-tier offline cache + dev escape hatches** — no peer renders a useful dashboard offline _and_ provides a `?nosw=1` opt-out.
-6. **6336 tests + axe + 108 VR + LHCI + 74 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
+6. **6361 tests + axe + 108 VR + LHCI + 77 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
 7. **Production observability without tracking cookies** — RUM + Vitals + Errors + Reports + AE + Prometheus.
 8. **Reproducible single-artefact release** — `dist.zip` + `worker.js`, SLSA-pinned + Sigstore + rebuilder manifest.
 9. **Hostile-network resilience** — explicit corp-proxy CSP allowlist, SW unregister helper, file-protocol launch.
