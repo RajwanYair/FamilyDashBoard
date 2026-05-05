@@ -525,7 +525,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 NEW stream. The dashboard becomes addressable by users' AI assistants without scraping or telemetry.
 
 - [x] **D1 / X11** MCP read-only server — `mcp-bridge.ts` shipped v14.0 Sprint 415; `docs/mcp.md` operator guide shipped v14.0 Sprint 416; companion remains out-of-repo.
-- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; today-pane + ai-synthesis consumers migrated v14.0 S415; remaining 2 → v14.x).
+- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; today-pane + ai-synthesis consumers migrated v14.0 S415; motivation + tasks producers shipped Sprint 426 — **all 11 applicable cards are now X12 producers**; system-info + video-news emit no composable signals by design).
 - [x] **X15** semantic clipboard (core + `Y` key shipped v13.38.0 S367–369; first 2 producers shipped v13.39.0: countdown S377, hebrew-cal S379; remaining 5 producers shipped v14.0 S415: motivation, tasks, system-info, video-news, ai-synthesis).
 - [x] **PC-1** end-of-day audio recap — SpeechSynthesis read-aloud button on AI synthesis card. `Sprint 421/422` (coverage fix + 2 additional tests for _setSpeakBtnState; all 28 tests pass; functions 92.08%)
 

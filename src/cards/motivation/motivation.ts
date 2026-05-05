@@ -16,6 +16,7 @@ import type { CardConfigField } from "../../types/card";
 import { idbGet, idbSet } from "../../core/idb-store";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
+import { setCardSignal } from "../../core/card-signal-protocol";
 
 /** Sprint 23: Category labels for motivation quotes. */
 export type MotivationCategory =
@@ -293,6 +294,7 @@ export function renderMotivation(): void {
   if (!m) return;
   renderMotivationQuote(m);
   setSync("moti", "ok");
+  setCardSignal("motivation", "quote", { text: m.text, author: m.author }); // X12
 }
 
 /**

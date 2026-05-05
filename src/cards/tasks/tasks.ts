@@ -20,6 +20,7 @@ import { LS_TASKS_DONE, LS_TASKS_RESET, LS_CHORES } from "../../core/constants";
 import type { CardDefinition, CardConfigField } from "../../types/card";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
+import { setCardSignal } from "../../core/card-signal-protocol";
 
 export interface ChoreItem {
   person: string;
@@ -527,6 +528,13 @@ export function renderTasksCard(): void {
       overdueBadge.style.display = "none";
     }
   }
+
+  // X12: publish pending task count for today-pane / MCP consumers
+  setCardSignal(
+    "tasks",
+    "pending",
+    total > 0 ? { count: pending, overdue: countOverdueTasks(chores), total } : null,
+  );
 
   // Start loop scroll if task list overflows its visible area
   const listEl = document.getElementById("tasks-list");
