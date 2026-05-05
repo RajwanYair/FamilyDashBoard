@@ -30,6 +30,9 @@
  *   - card-signal-protocol.ts : mutation score ≥ 80%  (Sprint 432 — CSP1-CSP5 property-tested)
  *   - semantic-clipboard.ts   : mutation score ≥ 80%  (Sprint 432 — SCP1-SCP5 property-tested)
  *   - provider.ts             : mutation score ≥ 80%  (Sprint 449 — PRP1-PRP6 property-tested; backoff + status logic)
+ *   - utils.ts               : mutation score ≥ 80%  (Sprint 472 — UT1-UT8 property-tested; clamp, pad2, decomposeDuration, computeMoonPhase)
+ *   - config-crypto.ts       : mutation score ≥ 80%  (Sprint 472 — CC1-CC8 property-tested; AES-GCM round-trip, IV uniqueness, prefix invariant)
+ *   - worker-client.ts       : mutation score ≥ 75%  (Sprint 472 — worker-client-props property-tested)
  *
  * Sprint 126 (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
@@ -37,6 +40,7 @@
  * Sprint 314: extended scope to history, sync, fetch (property-tested in Sprints 307-310).
  * Sprint 432: extended scope to card-signal-protocol + semantic-clipboard (X12/X15 core).
  * Sprint 449: extended scope to provider.ts (PRP1-PRP6 property-tested; backoff + status machine).
+ * Sprint 472: extended scope to utils.ts, config-crypto.ts, worker-client.ts (property-tested in Sprints 470, 469).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -78,6 +82,10 @@ export default {
     "src/core/semantic-clipboard.ts",
     // Sprint 449: provider-health model — backoff policy, status state machine (PRP1-PRP6)
     "src/core/provider.ts",
+    // Sprint 472: pure-function modules fully property-tested (UT1-UT8, CC1-CC8, worker-client-props)
+    "src/core/utils.ts",
+    "src/core/config-crypto.ts",
+    "src/core/worker-client.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
