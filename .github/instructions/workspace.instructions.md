@@ -38,10 +38,10 @@ tests/unit/                 # Vitest unit tests
 sw.js                       # ServiceWorker reference (compiled to dist/sw.js by build-sw.mjs)
 docs/ARCHITECTURE.md        # Runtime structure, cache layers, worker topology
 docs/ROADMAP.md             # Strategic plan, stream priorities, forward release plan
-docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-052)
+docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-073)
 .github/SUPPORT.md          # Support and operator guidance (GitHub community health file)
 .github/skills/             # add-api, release, debug-fetch, update-tests
-.github/agents/             # api-integrator, dashboard-designer
+.github/agents/             # api-integrator, dashboard-designer, quality-reviewer
 .github/copilot/            # Copilot repo config + MCP/server guidance docs
 .github/assets/             # SVG docs graphics
 ```
@@ -79,3 +79,5 @@ news · weather · stocks · currency · calendar · hebrew-cal · alerts · mot
 | SW       | APP_SHELL pre-cache, API cache (7 origins), offline HTML fallback, `VERSION_ACTIVATED` broadcast                                       |
 | Init     | `safeLoad()` wrappers → `Promise.allSettled` · per-pane `setInterval` · startup self-check                                             |
 | Keyboard | `T` theme · `D` diagnostics · `A` alerts · `S` config · `N` dimmer · `+/-` font · `P` print · `B` bookmarks · `H/?` help · `Esc` close |
+| Browsers | Chrome 114+ · Edge 114+ · Firefox 128+ · Firefox ESR · Safari 17.4+ · Opera 100+ · Samsung 23+ · iOS 17.4+ (see `.browserslistrc`)     |
+| E2E      | Playwright: Chromium (all tests) · Firefox/WebKit/Edge/Mobile-Chrome/Mobile-Safari/Tablet-Safari (smoke + a11y only)                   |

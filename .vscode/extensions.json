@@ -17,6 +17,9 @@
         // Testing
         "vitest.explorer",
         "ms-playwright.playwright",
+        // Browser compatibility
+        "webhint.vscode-webhint",
+        "ms-edgetools.vscode-edge-devtools",
         // HTML / CSS
         "ecmel.vscode-html-css",
         "formulahendry.auto-rename-tag",

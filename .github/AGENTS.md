@@ -61,7 +61,7 @@ Use for pre-release gates, PR reviews, coverage audits, dead-code scans, and str
 | `/code-review`         | Review for bugs, risks, regressions, security, and maintainability           |
 | `/debug-card`          | Debug a malfunctioning card (fetch path, render, config, stale)              |
 | `/fix-lint`            | Fix ESLint / TypeScript / Prettier / Markdownlint issues                     |
-| `/fix-quality`         | Tighten lint, type, test, and quality issues                                 |
+| `/fix-quality`         | Fix accessibility, performance, and non-lint quality issues (for lint, use `/fix-lint`) |
 | `/kv-stale-audit`      | Audit or debug KV stale fallback for a worker route (stocks, crypto, alerts) |
 | `/modernize-tooling`   | Refresh Copilot, CI, MCP, prompt, instruction, and workflow setup            |
 | `/release-check`       | Pre-release readiness gate (types + lint + tests + CHANGELOG + version)      |

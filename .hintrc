@@ -4,7 +4,13 @@
   ],
   "browserslist": [
     "chrome >= 114",
-    "edge >= 114"
+    "edge >= 114",
+    "firefox >= 128",
+    "firefox esr",
+    "safari >= 17.4",
+    "opera >= 100",
+    "samsung >= 23",
+    "ios_saf >= 17.4"
   ],
   "hints": {
     "compat-api/html": [

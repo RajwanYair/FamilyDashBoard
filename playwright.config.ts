@@ -7,8 +7,14 @@ import { defineConfig, devices } from "@playwright/test";
  * Run locally: npx playwright test
  * Run in CI:   npx playwright test --reporter=github
  *
- * Extends the shared base from MyScripts/tooling/playwright.base.ts.
- * The dev server (vite) must be available at http://localhost:3000.
+ * Browser strategy:
+ *   - Chromium: ALL tests (full suite including visual regression)
+ *   - Firefox, WebKit, Edge: smoke + a11y only (tagged @cross-browser)
+ *   - Mobile Chrome (Pixel 5), Mobile Safari (iPhone 13): smoke + a11y only
+ *
+ * Visual regression baselines are Chromium-only by design — per-engine rendering
+ * differences are intentional, not bugs. Cross-browser tests validate layout
+ * correctness and accessibility rather than pixel-perfect output.
  */
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -24,15 +30,66 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    // 1920×1080 — TV resolution target
+    // 1920×1080 — TV resolution target (overridden per project as needed)
     viewport: { width: 1920, height: 1080 },
     locale: "he-IL",
   },
 
   projects: [
+    // ── Primary: full suite on Chromium ───────────────────────────────
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+    },
+
+    // ── Cross-browser: smoke + a11y on Firefox ───────────────────────
+    {
+      name: "firefox",
+      use: {
+        ...devices["Desktop Firefox"],
+        viewport: { width: 1920, height: 1080 },
+        locale: "he-IL",
+      },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Cross-browser: smoke + a11y on WebKit (Safari) ───────────────
+    {
+      name: "webkit",
+      use: {
+        ...devices["Desktop Safari"],
+        viewport: { width: 1920, height: 1080 },
+        locale: "he-IL",
+      },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Cross-browser: smoke + a11y on Edge (Chromium engine) ────────
+    {
+      name: "edge",
+      use: { ...devices["Desktop Edge"], viewport: { width: 1920, height: 1080 }, locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Mobile: smoke + a11y on Android Chrome (Pixel 5) ─────────────
+    {
+      name: "mobile-chrome",
+      use: { ...devices["Pixel 5"], locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Mobile: smoke + a11y on Mobile Safari (iPhone 13) ────────────
+    {
+      name: "mobile-safari",
+      use: { ...devices["iPhone 13"], locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Tablet: smoke + a11y on iPad (Safari) ────────────────────────
+    {
+      name: "tablet-safari",
+      use: { ...devices["iPad Pro 11"], locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
     },
   ],
 
@@ -45,3 +102,4 @@ export default defineConfig({
     stderr: "pipe",
   },
 });
+

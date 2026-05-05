@@ -31,20 +31,17 @@ Review the TypeScript source files in `src/` for the following:
 - [ ] New CSS rules in correct `@layer` (tokens → themes → base → layout → components → animations)
 - [ ] No duplicate CSS selectors
 
-## API Reliability
+## API Reliability & Performance
 
-- [ ] All fetches use `fetchWithTimeout()` + try/catch + proxy fallback (`PROXIES`)
-- [ ] All responses cached via `cSet`/`cGet`/`cGetStale`
-- [ ] Sync indicators update on every exit path (`setSync`)
+> Delegate data flow, cache, proxy fallback, and sync state to `@api-integrator` for full coverage.
+> Delegate a11y, performance, and TV-readability review to `@dashboard-designer`.
+
+Quick gates:
+
 - [ ] `if (!_pageVisible) return;` guard at top of all async loaders
-- [ ] Fetch locks (`acquireLock`/`releaseLock`) where needed
-
-## Performance
-
-- [ ] DOM updates use `DocumentFragment` for batch writes
-- [ ] `contain: layout style` on cards
-- [ ] `will-change` on animated elements only
-- [ ] No memory leaks (intervals use `setInterval` reference, no growing arrays)
+- [ ] `cGet`/`cSet`/`cGetStale` used (not raw `localStorage`)
+- [ ] `setSync(id, state)` called on every exit path
+- [ ] `DocumentFragment` for batch DOM writes
 
 ## Tests
 
