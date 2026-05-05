@@ -342,4 +342,123 @@ describe("worker-client — fast-check property tests", () => {
       { numRuns: 20 },
     );
   });
+
+  // ── Sprint 455: P14-P18 — newsAggregate, sefariaCalendar, crypto ─────────
+
+  // P14: wc.newsAggregate() always targets the worker base URL
+  it("P14: wc.newsAggregate() always targets the correct worker base URL", async () => {
+    const { wc } = await import("@/core/worker-client");
+    await fc.assert(
+      fc.asyncProperty(fc.constant(null), async () => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              data: { items: [], count: 0, sources: 1, deduped: 0 },
+              source: "kv",
+              stale: false,
+              ts: 0,
+            }),
+        });
+        await wc.newsAggregate();
+        const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        expect(url.startsWith(WORKER_BASE)).toBe(true);
+        expect(url).toContain("/api/news/aggregate");
+      }),
+      { numRuns: 5 },
+    );
+  });
+
+  // P15: wc.sefariaCalendar() envelope.stale is always strictly boolean
+  it("P15: wc.sefariaCalendar() WorkerEnvelope.stale is always strictly boolean", async () => {
+    const { wc } = await import("@/core/worker-client");
+    await fc.assert(
+      fc.asyncProperty(fc.boolean(), async (stale) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              data: { items: [] },
+              source: "kv",
+              stale,
+              ts: Date.now(),
+            }),
+        });
+        const result = await wc.sefariaCalendar();
+        expect(typeof result.stale).toBe("boolean");
+        expect(result.stale).toBe(stale);
+      }),
+      { numRuns: 20 },
+    );
+  });
+
+  // P16: wc.crypto() with ids always includes ids param in URL
+  it("P16: wc.crypto() with arbitrary coin ids always includes ids param in URL", async () => {
+    const { wc } = await import("@/core/worker-client");
+    const coinIdsArb = fc
+      .array(fc.stringMatching(/^[a-z][a-z0-9-]{1,15}$/), { minLength: 1, maxLength: 5 })
+      .map((ids) => ids.join(","));
+
+    await fc.assert(
+      fc.asyncProperty(coinIdsArb, async (ids) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({ data: {}, source: "coingecko", stale: false, ts: 0 }),
+        });
+        await wc.crypto({ ids });
+        const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(url);
+        expect(parsed.searchParams.get("ids")).toBe(ids);
+      }),
+      { numRuns: 20 },
+    );
+  });
+
+  // P17: wc.crypto() with vs_currencies always includes vs_currencies param
+  it("P17: wc.crypto() with vs_currencies always includes it as query param", async () => {
+    const { wc } = await import("@/core/worker-client");
+    const currenciesArb = fc
+      .array(fc.stringMatching(/^[a-z]{3}$/), { minLength: 1, maxLength: 4 })
+      .map((cs) => cs.join(","));
+
+    await fc.assert(
+      fc.asyncProperty(currenciesArb, async (vs_currencies) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({ data: {}, source: "coingecko", stale: false, ts: 0 }),
+        });
+        await wc.crypto({ vs_currencies });
+        const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(url);
+        expect(parsed.searchParams.get("vs_currencies")).toBe(vs_currencies);
+      }),
+      { numRuns: 20 },
+    );
+  });
+
+  // P18: wc.hebcalHolidays() year param is always coerced to a string in URL
+  it("P18: wc.hebcalHolidays() year param is always coerced to string in URL (arbitrary year)", async () => {
+    const { wc } = await import("@/core/worker-client");
+    await fc.assert(
+      fc.asyncProperty(fc.integer({ min: 1900, max: 2200 }), async (year) => {
+        fetchSpy.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({ data: {}, source: "kv", stale: false, ts: 0 }),
+        });
+        await wc.hebcalHolidays({ year });
+        const url: string = (fetchSpy.mock.calls.at(-1) as [string, ...unknown[]])[0];
+        const parsed = new URL(url);
+        expect(parsed.searchParams.get("year")).toBe(String(year));
+      }),
+      { numRuns: 25 },
+    );
+  });
 });
