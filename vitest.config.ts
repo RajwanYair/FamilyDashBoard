@@ -167,10 +167,13 @@ export default defineConfig({
         //   currency-adapter.ts branches 50%→100%.
         //   Actuals: 94.07/85.29/94.45/95.49. Ratchet: stmts 93.4→93.7, branches 84.9→85.0,
         //   functions 92.1→94.1, lines 94.8→95.1.
-        statements: 93.7,
-        branches: 85.0,
-        functions: 94.1,
-        lines: 95.1,
+        // Sprint 451 (coverage ratchet — Sprints 449-450 Stryker+OWASP added new coverage):
+        //   Actuals post-450: 94.23/85.40/94.51/95.67 (coverage surface stable — no new uncovered code).
+        //   Safety margin 0.3%: ratchet stmts 93.7→93.9, branches 85.0→85.1, funcs 94.1→94.2, lines 95.1→95.3.
+        statements: 93.9,
+        branches: 85.1,
+        functions: 94.2,
+        lines: 95.3,
       },
     },
   },
