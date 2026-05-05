@@ -155,10 +155,17 @@ export default defineConfig({
         //   interval-callback, onstart/onend/onerror utterance events; ai-synthesis.ts now 100% funcs.
         //   Actuals: 93.32/84.81/92.08/94.76. Ratchet: funcs 92.0→92.0 (held; margin 0.08%).
         //   Next ratchet targets: 93.4/84.9/92.1/94.8 once alerts.ts + motivation.ts gaps closed.
-        statements: 93.2,
-        branches: 84.7,
-        functions: 92.0,
-        lines: 94.6,
+        // Sprint 434 (coverage ratchet — alerts.ts + motivation.ts gaps closed):
+        //   Added: buildAlertsPayload happy path (lines 38-41), history-btn click handler (654-658),
+        //   buildMotivationPayload via semantic clipboard, updateHeartBtn via refreshHeartState,
+        //   markIndexUsed localStorage-catch branch; 7 new tests across 2 files.
+        //   alerts.ts funcs 89.47→92.98%; motivation.ts funcs 86.66→96.96%.
+        //   Actuals: 93.43/84.96/92.19/94.86. Ratchet: stmts 93.2→93.4, branches 84.7→84.9,
+        //   functions 92.0→92.1, lines 94.6→94.8.
+        statements: 93.4,
+        branches: 84.9,
+        functions: 92.1,
+        lines: 94.8,
       },
     },
   },

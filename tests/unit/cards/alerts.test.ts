@@ -42,6 +42,7 @@ import {
   hideAlertTakeover,
   alertsConfigSchema,
 } from "@/cards/alerts/alerts";
+import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 import * as idleMod from "@/core/idle";
 import type { AlertEvent } from "@/types/api";
 
@@ -2046,5 +2047,104 @@ describe("Alerts configSchema — CS-A1 (Sprint 282)", () => {
     expect(field).toBeDefined();
     expect(field?.type).toBe("boolean");
     expect(field?.defaultValue).toBe(false);
+  });
+});
+
+// ── Sprint 434: buildAlertsPayload happy path + history button (X15/A2) ────
+
+describe("Alerts — buildAlertsPayload happy path (Sprint 434 / X15)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    _resetAlertsForTest();
+    _resetSemanticProducers();
+    document.body.innerHTML = `<div id="alerts-scroll"></div><div id="alerts-badge"></div>`;
+    setAlertsEnabled(true);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+  });
+
+  it("returns non-null payload with correct cardId when active alerts exist", () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    initAlertsCard(); // registers semantic producer + calls cacheDom
+    const activeAlert: AlertEvent = {
+      id: "active-001",
+      alerts: [{ cities: ["תל אביב", "רמת גן"], threat: 2, time: NOW_SEC - 30 }],
+    };
+    renderAlerts([activeAlert], false);
+    const payload = getSemanticPayload("alerts");
+    expect(payload).not.toBeNull();
+    expect(payload!.cardId).toBe("alerts");
+    expect(payload!.text).toContain("צבע אדום");
+    expect(typeof payload!.ts).toBe("number");
+  });
+
+  it("returns null payload when no recent active alerts", () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    initAlertsCard();
+    // Alert older than 600 sec → not active
+    const oldAlert: AlertEvent = {
+      id: "old-001",
+      alerts: [{ cities: ["חיפה"], threat: 1, time: NOW_SEC - 700 }],
+    };
+    renderAlerts([oldAlert], false);
+    const payload = getSemanticPayload("alerts");
+    expect(payload).toBeNull();
+  });
+});
+
+describe("Alerts — initAlertsCard history button (Sprint 434 / A2 lines 654-658)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    _resetAlertsForTest();
+    document.body.innerHTML = `
+      <div id="alerts-scroll"></div>
+      <div id="alerts-badge"></div>
+      <button id="alerts-history-btn" aria-expanded="false"></button>
+      <div id="alerts-history-panel" class="is-hidden"></div>
+    `;
+    setAlertsEnabled(true);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+  });
+
+  it("clicking history btn removes is-hidden and sets aria-expanded=true", () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    initAlertsCard();
+    const btn = document.getElementById("alerts-history-btn")!;
+    const panel = document.getElementById("alerts-history-panel")!;
+    btn.click();
+    expect(panel.classList.contains("is-hidden")).toBe(false);
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("clicking history btn twice restores is-hidden and aria-expanded=false", () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    } as Response);
+    initAlertsCard();
+    const btn = document.getElementById("alerts-history-btn")!;
+    const panel = document.getElementById("alerts-history-panel")!;
+    btn.click(); // open
+    btn.click(); // close
+    expect(panel.classList.contains("is-hidden")).toBe(true);
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
   });
 });

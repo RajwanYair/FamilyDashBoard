@@ -915,6 +915,7 @@ import {
   loadFavorites,
 } from "@/cards/motivation/motivation";
 import { _idbClearFallback } from "@/core/idb-store";
+import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 
 describe("Motivation — favorites (Sprint 197 / M3)", () => {
   beforeEach(() => {
@@ -998,5 +999,74 @@ describe("Motivation configSchema — CS-M1 (Sprint 285)", () => {
     expect(values).toContain("en");
     expect(values).toContain("both");
     expect(field?.defaultValue).toBe("both");
+  });
+});
+
+// ── Sprint 434: buildMotivationPayload + updateHeartBtn + localStorage catch ──
+
+describe("Motivation — buildMotivationPayload via semantic clipboard (Sprint 434 / X15)", () => {
+  beforeEach(() => {
+    _resetMotivationForTest();
+    _resetSemanticProducers();
+    localStorage.clear();
+    document.body.innerHTML = `<div id="moti-text"></div><div id="moti-author"></div>`;
+  });
+
+  afterEach(() => {
+    _resetMotivationForTest();
+    localStorage.clear();
+    document.body.innerHTML = "";
+  });
+
+  it("returns non-null payload with cardId='motivation' after init", () => {
+    initMotivationCard(); // calls renderMotivation() + registerSemanticProducer
+    const payload = getSemanticPayload("motivation");
+    expect(payload).not.toBeNull();
+    expect(payload!.cardId).toBe("motivation");
+    expect(payload!.text).toContain("ציטוט:");
+    expect(typeof payload!.ts).toBe("number");
+  });
+});
+
+describe("Motivation — updateHeartBtn via refreshHeartState (Sprint 434 / M3)", () => {
+  beforeEach(() => {
+    _resetMotivationForTest();
+    _idbClearFallback();
+    localStorage.clear();
+    document.body.innerHTML = `
+      <div id="moti-text"></div>
+      <div id="moti-author"></div>
+      <button id="moti-fav-btn">🤍</button>
+    `;
+  });
+
+  afterEach(() => {
+    _resetMotivationForTest();
+    _idbClearFallback();
+    localStorage.clear();
+    document.body.innerHTML = "";
+  });
+
+  it("heart button reflects unfavorited state after refreshHeartState resolves", async () => {
+    initMotivationCard(); // calls void refreshHeartState() internally
+    // Flush the microtask chain (idbGet resolves in-memory synchronously via Promise.resolve)
+    await new Promise<void>((r) => setTimeout(r, 0));
+    const btn = document.getElementById("moti-fav-btn")!;
+    expect(btn.textContent).toBe("🤍");
+    expect(btn.getAttribute("aria-pressed")).toBe("false");
+  });
+});
+
+describe("Motivation — markIndexUsed localStorage catch branch (Sprint 434)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+  });
+
+  it("does not throw when localStorage.setItem throws (quota exceeded)", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("QuotaExceededError");
+    });
+    expect(() => markIndexUsed(0, 5)).not.toThrow();
   });
 });
