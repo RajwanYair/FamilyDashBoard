@@ -3,8 +3,8 @@
         "PostToolUse": [
             {
                 "type": "command",
-                "windows": "Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS custom properties, TV font readability, and no hardcoded colors after edits. Confirm cGet/cSet/cGetStale usage is correct. Check _pageVisible guard on async loaders.\"}}'",
-                "fallback": "printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: verify RTL layout, CSS custom properties, TV font readability, and no hardcoded colors after edits. Confirm cGet/cSet/cGetStale usage is correct. Check _pageVisible guard on async loaders.\"}}'"
+                "windows": "Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: (1) verify RTL layout, CSS custom properties (--accent/--bg-*/--text-*), TV font readability, no hardcoded colors after edits; (2) confirm cGet/cSet/cGetStale usage — cGet returns null not undefined; (3) check _pageVisible guard on every async loader; (4) no innerHTML with unsanitized data — use textContent; (5) new overlays: <dialog> + showModal(), never visibility toggling; (6) CSS layer order must be: tokens, themes, base, layout, components, animations; (7) card data-card-id must match registry ID exactly; (8) run npx tsc --noEmit and npx eslint src tests --max-warnings 0 before committing.\"}}'",
+                "fallback": "printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Reminder: (1) verify RTL layout, CSS custom properties, TV font readability, no hardcoded colors; (2) cGet returns null not undefined; (3) _pageVisible guard on async loaders; (4) no innerHTML with unsanitized data; (5) new overlays: <dialog>+showModal(); (6) CSS layer order: tokens themes base layout components animations; (7) card data-card-id must match registry ID; (8) run tsc --noEmit and eslint before committing.\"}}'"
             }
         ]
     }

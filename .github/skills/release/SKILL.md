@@ -28,6 +28,8 @@ Update ALL of these (search current version string, e.g. `13.29.0`):
 | 12  | `.github/assets/roadmap.svg`                     | Test count progression line                           | Line ~90                                         |
 | 13  | `docs/ROADMAP.md`                                | New row in the version history table                  | Bottom of the released versions table            |
 | 14  | `.github/skills/release/SKILL.md`                | Verification guidance if the baseline changed         | Keep it aligned with current repo state          |
+| 15  | `docs/security.md`                               | Title `Security Model — FamilyDashBoard vX.Y.Z`      | Lines 1 and 4 (updated date + version)           |
+| 16  | `.github/AGENTS.md`                              | Header `> Version: vX.Y.Z · Tests: NNNN / SS suites` | Single header line                               |
 
 > `BestDashBoard.html` is legacy/archived — do NOT update its version.
 > `docs/ROADMAP.md` comment `<!-- Last updated: vX.Y.Z -->` at the bottom should also be bumped.
@@ -108,6 +110,7 @@ node scripts/check-version-consistency.mjs
 
 Zero tolerance: 0 type errors · 0 lint errors/warnings · 0 markdownlint errors ·
 0 test failures · JS gzip ≤ 100 KB · CSS gzip ≤ 26 KB · SW version matches `package.json`.
+Always confirm test count (6290+ at v14.2.0) and update all 16 documented files before tagging.
 
 Read `.github/instructions/workspace.instructions.md` before updating any
 hardcoded test-count or toolchain text. Do not carry forward stale totals.

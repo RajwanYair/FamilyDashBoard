@@ -13,6 +13,9 @@ tools:
   - create_file
   - manage_todo_list
   - vscode_askQuestions
+  - view_image
+  - memory
+  - tool_search
 user-invocable: true
 handoffs:
   - label: Implement Data Wiring
@@ -53,11 +56,13 @@ Use this agent when the task is primarily about one of the following:
 
 ## Default Workflow
 
+0. **Load context** — `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall design conventions. Use `tool_search` before calling any deferred tool.
 1. Read the existing HTML, TS, and CSS for the component before proposing changes.
 2. Preserve the design language already present in the repo.
 3. Prefer token and layout changes over one-off overrides.
 4. Make RTL, spacing, and state behavior explicit.
-5. Verify both desktop and TV-style readability assumptions.
+5. When a screenshot or mockup is provided, use `view_image` to inspect it before proposing changes.
+6. Verify both desktop and TV-style readability assumptions.
 
 ## Context
 

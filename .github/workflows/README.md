@@ -25,11 +25,15 @@ This directory contains the operational GitHub Actions workflows for build, vali
 | Stale Issues          | `stale.yml`                 | Auto-mark stale issues (90 d) and PRs (30 d), close after grace period              | daily schedule, manual                |
 | Supply Chain          | `supply-chain.yml`          | npm audit signatures + license compliance + PR dependency review + auto-issue       | `package*.json` push/PR, weekly       |
 | Perf Regression       | `perf-regression.yml`       | Bundle size delta + Lighthouse Web Vitals PR comment; fails if JS > 500 KB gzip     | `src/**` / `vite.config.ts` PR        |
-| Trivy Scan            | `trivy.yml`                 | CVE + IaC misconfig scan; uploads SARIF to Security tab (HIGH/CRITICAL)             | push/PR/weekly Monday                 |
-| TruffleHog            | `trufflehog.yml`            | Full git-history secret scanning (verified findings only)                           | push/PR/weekly Monday, manual         |
-| ZAP Baseline          | `zap-baseline.yml`          | OWASP ZAP passive DAST scan against local production build                          | weekly Sunday, manual                 |
-| SBOM                  | `sbom.yml`                  | CycloneDX JSON + XML SBOM generation (prod deps only)                               | release tags, weekly Monday, manual   |
-| Visual Baselines      | `visual-baselines.yml`      | Update Linux Playwright VR snapshots on Ubuntu, commit back                         | manual only                           |
+| Trivy Scan            | `trivy.yml`                 | CVE + IaC misconfig scan; uploads SARIF to Security tab (HIGH/CRITICAL)             | push/PR/weekly Monday         |
+| TruffleHog            | `trufflehog.yml`            | Full git-history secret scanning (verified findings only)                           | push/PR/weekly Monday, manual |
+| ZAP Baseline          | `zap-baseline.yml`          | OWASP ZAP passive DAST scan against local production build                          | weekly Sunday, manual         |
+| SBOM                  | `sbom.yml`                  | CycloneDX JSON + XML SBOM generation (prod deps only)                               | release tags, weekly Monday   |
+| PR SBOM Diff          | `pr-sbom-diff.yml`          | Diff SBOM on dependency-changing PRs; posts comment + blocks on new HIGH/CRITICAL   | `package*.json` change PR     |
+| Rebuild Verify        | `rebuild-verify.yml`        | Hermetic reproducibility check: build twice, compare checksums                      | push to `main`, manual        |
+| Preview Deploy        | `preview-deploy.yml`        | Deploy PR preview build to a staging URL for visual + functional review             | pull_request                  |
+| Link Check            | `link-check.yml`            | Validate internal and external links in `docs/` and README                          | weekly schedule, manual       |
+| Visual Baselines      | `visual-baselines.yml`      | Update Linux Playwright VR snapshots on Ubuntu, commit back                         | manual only                   |
 | Branch Protection     | `branch-protection.yml`     | Verify + apply minimum branch-protection rules on `main`                            | weekly Monday, manual                 |
 | Security Gate         | `security.yml`              | Unified security status check: npm audit + source scan + dep-diff + gate job        | push/PR/weekly Monday, manual         |
 | Release Drafter       | `release-drafter.yml`       | Auto-draft next GitHub release from merged PR titles + labels                       | push to `main`, PR closed, manual     |

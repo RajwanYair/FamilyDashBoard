@@ -1,7 +1,7 @@
 {
-    "version": "1.2.0",
+    "version": "1.3.0",
     "project": "FamilyDashBoard",
-    "appVersion": "13.29.0",
+    "appVersion": "14.2.0",
     "copilot": {
         "enabled": true,
         "features": {
@@ -9,7 +9,16 @@
             "inline_suggestions": true,
             "documentation_generation": true,
             "code_review": true,
-            "next_edit_suggestions": true
+            "next_edit_suggestions": true,
+            "agent_handoffs": true,
+            "model_selection_in_prompts": true,
+            "memory_tool_three_tier": true,
+            "deferred_tools_via_tool_search": true,
+            "mcp_streamable_http": true,
+            "vision_tools": true,
+            "runSubagent": true,
+            "manage_todo_list": true,
+            "chat_customizations_editor": true
         }
     },
     "modes": {

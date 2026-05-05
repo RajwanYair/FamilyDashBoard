@@ -31,10 +31,19 @@ MCP servers can provide more than tools. When choosing or documenting a server, 
 - **Tools** — callable functions surfaced to chat and agent execution
 - **Resources** — read-only context attachments (files, URIs, database rows)
 - **Prompts** — templated prompt scaffolds exposed by the server
-- **Sampling / elicitation** — the server can request structured input from the user mid-task
+- **Sampling / elicitation** — the server can request structured input from the user mid-task via VS Code's input UI
 - **MCP apps** — inline-rendered UI in chat where supported by the host
 
-VS Code surfaces MCP capabilities through the Chat Customizations editor, the `MCP: List Servers` command, the Extensions view's MCP section, and the MCP output log. Disabled servers do not load tools, resources, or prompts — keep enable/disable state user-specific.
+VS Code surfaces MCP capabilities through the **Chat Customizations editor**, the `MCP: List Servers` command, the **Extensions view MCP section** (start / stop / inspect individual servers), and the MCP output log. Disabled servers do not load tools, resources, or prompts — keep enable/disable state user-specific.
+
+### Authentication
+
+VS Code supports two authentication flows for remote MCP servers:
+
+- **OAuth 2.0 (`authorization_code`)** — VS Code launches the browser flow and stores the token securely. Use for GitHub, Google, or other OAuth providers.
+- **Input variables** — `${input:TOKEN}` prompts the user once and stores in the secret store. Use for static API keys.
+
+Never hardcode tokens in `mcp.json`. Never commit `mcp.json` with personal tokens or input-variable defaults.
 
 ### Transport Types
 
@@ -46,7 +55,11 @@ VS Code supports three MCP transport types. Document which one a server uses:
 | `sse`            | Legacy remote servers using Server-Sent Events        |
 | `streamableHttp` | Modern remote servers; preferred for new deployments  |
 
-Prefer `streamableHttp` for new remote MCP servers; `stdio` for local processes.
+Prefer `streamableHttp` for new remote MCP servers; `stdio` for local processes. `sse` is deprecated — migrate when the server supports `streamableHttp`.
+
+### Deferred Tool Discovery
+
+MCP tools are **deferred** in VS Code agent mode — they are not loaded until explicitly requested. Always call `tool_search` with a natural-language query before using any MCP tool. If `tool_search` returns no result for a tool, the server is not running or not configured.
 
 ### Tool Discovery
 

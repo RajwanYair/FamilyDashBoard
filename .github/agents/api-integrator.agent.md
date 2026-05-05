@@ -14,6 +14,8 @@ tools:
   - file_search
   - manage_todo_list
   - vscode_askQuestions
+  - memory
+  - tool_search
 user-invocable: true
 handoffs:
   - label: Polish Card UX
@@ -70,6 +72,11 @@ Use this agent when the task is primarily about one of the following:
 | `cGet` returns `undefined` instead of `null` | Wrong null check: `!== undefined`                 | Change to `!== null` (rule 22)                 |
 
 ## Architecture Rules
+
+- Use `tool_search` before calling any deferred tool (e.g. `mcp_github_*`, `runTests`, `run_task`).
+- Use `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall repo-specific conventions before making assumptions.
+
+## Proxy rule: `cGet()` returns `null` (not `undefined`) on cache miss — check `!== null` (rule 22)
 
 - Browser-side `fetch()` only — no server
 - Prefer worker-backed fetch helpers when the source is supported by the Worker

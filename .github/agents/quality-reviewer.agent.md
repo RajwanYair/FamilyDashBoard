@@ -9,6 +9,9 @@ tools:
   - get_errors
   - run_in_terminal
   - file_search
+  - manage_todo_list
+  - memory
+  - tool_search
 user-invocable: true
 handoffs:
   - label: Fix failing tests
@@ -49,26 +52,30 @@ Use this agent when:
 
 ## Default Workflow
 
+0. **Load context** — `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall repo conventions. Use `tool_search` before calling any deferred tool.
 1. **Gather scope** — identify the changed files or the review target.
 2. **Run type check** — `npx tsc --noEmit`. Fix any errors before continuing.
 3. **Run lint** — `npx eslint src tests --max-warnings 0`. Fix all warnings.
 4. **Run tests** — `npx vitest run`. Report any failures and fix them.
-5. **Check coverage** (full review only) — `npx vitest run --coverage`. Flag modules below threshold.
-6. **Security scan** — grep for `innerHTML` with unsanitized data, `eval`, `new Function`, hardcoded secrets.
-7. **Dead code scan** — grep for exports that have no consumers in `src/` or `tests/`.
-8. **Produce report** — structured list of PASS / FAIL / WARNING per category.
-9. **Fix blockers** — apply minimal fixes for any FAIL items. Leave WARNINGs as noted issues.
+5. **Check coverage** (full review only) — `npx vitest run --coverage`. Flag modules below threshold (93.7 / 85.0 / 94.1 / 95.1).
+6. **OWASP check** — `node scripts/check-owasp.mjs`. Exit 0 required.
+7. **Security scan** — grep for `innerHTML` with unsanitized data, `eval`, `new Function`, hardcoded secrets.
+8. **Dead code scan** — grep for exports that have no consumers in `src/` or `tests/`.
+9. **Produce report** — structured list of PASS / FAIL / WARNING per category.
+10. **Fix blockers** — apply minimal fixes for any FAIL items. Leave WARNINGs as noted issues.
 
 ## Quality Gates (Zero Tolerance)
 
-| Gate          | Command                                                 | Expected                                |
-| ------------- | ------------------------------------------------------- | --------------------------------------- |
-| Type errors   | `npx tsc --noEmit`                                      | 0 errors                                |
-| Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                   |
-| Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                |
-| Test failures | `npx vitest run`                                        | 0 failures (6067 / 196 suites baseline) |
-| Build         | `npm run build`                                         | 0 errors                                |
-| Bundle size   | `npm run check:bundle`                                  | within limits                           |
+| Gate          | Command                                                 | Expected                                    |
+| ------------- | ------------------------------------------------------- | ------------------------------------------- |
+| Type errors   | `npx tsc --noEmit`                                      | 0 errors                                    |
+| Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                       |
+| Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                    |
+| Test failures | `npx vitest run`                                        | 0 failures (6290 / 204 suites at v14.2.0)   |
+| Coverage      | `npx vitest run --coverage`                             | stmts 93.7 / branches 85.0 / fn 94.1 / ln 95.1 |
+| OWASP check   | `node scripts/check-owasp.mjs`                          | 0 findings                                  |
+| Build         | `npm run build`                                         | 0 errors                                    |
+| Bundle size   | `npm run check:bundle`                                  | JS gzip ≤ 100 KB · CSS ≤ 26 KB · card ≤ 66 KB |
 
 ## Coverage Thresholds
 

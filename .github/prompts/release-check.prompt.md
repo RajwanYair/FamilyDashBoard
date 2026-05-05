@@ -9,16 +9,28 @@ Run this checklist in order before tagging any release. All items must be ✅ gr
 
 ## 1. Version Consistency
 
-Confirm `vX.Y.Z` appears consistently in ALL of:
+Run the automated check first:
+
+```powershell
+node scripts/check-version-consistency.mjs
+```
+
+Expected: **All 7 files match package.json vX.Y.Z**
+
+Then confirm `vX.Y.Z` appears consistently in ALL 16 documented files:
 
 - `package.json` → `"version"`
 - `sw.js` → version comment / `CACHE_NAME` constant
-- `sw.ts` → `SW_VERSION` / `CACHE_NAME` constant (must match `sw.js`)
 - `CHANGELOG.md` → top entry heading
 - `README.md` → badge / version reference
 - `.github/copilot-instructions.md` → heading
 - `.github/instructions/workspace.instructions.md` → heading
+- `.github/AGENTS.md` → header Version line
 - `docs/ARCHITECTURE.md` → version reference
+- `docs/security.md` → title and updated-date line
+- `.github/assets/banner.svg`, `architecture.svg`, `preview.svg`, `data-sources.svg`, `roadmap.svg` → version text
+
+> Full file list in `.github/skills/release/SKILL.md`.
 
 ## 2. Type Check
 
@@ -86,7 +98,15 @@ npm run check:sw
 
 Expected: **version in sw.js matches package.json**
 
-## 9. A11Y Audit (V13-A11Y)
+## 9. OWASP Script
+
+```powershell
+node scripts/check-owasp.mjs
+```
+
+Expected: **0 findings** (Exit 0)
+
+## 10. A11Y Audit (V13-A11Y)
 
 Verify no regressions in accessibility contract:
 
@@ -97,13 +117,13 @@ npx vitest run tests/unit/html/dom-contract.test.ts
 Expected: **all 112+ tests pass** — confirms every dialog has `aria-labelledby`, all
 icon-only buttons have `aria-label`, all cards have `role=region`.
 
-## 10. Open Issues
+## 11. Open Issues
 
 All GitHub issues assigned to the milestone must be **closed** with a commit hash in the closing comment before tagging.
 
-## 11. Tag & Release
+## 12. Tag & Release
 
-Only after all 10 gates are green:
+Only after all 12 gates are green:
 
 ```sh
 git tag vX.Y.Z

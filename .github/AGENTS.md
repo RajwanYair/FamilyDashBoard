@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v14.1.0 · Tests: 6240 / 203 suites · Coverage: 93.4 / 84.9 / 92.1 / 94.8
+> Version: v14.2.0 · Tests: 6290 / 204 suites · Coverage thresholds: 93.7 / 85.0 / 94.1 / 95.1
 
 This repository uses the current VS Code Copilot customization model:
 
@@ -65,10 +65,13 @@ Use for pre-release gates, PR reviews, coverage audits, dead-code scans, and str
 | `/kv-stale-audit`      | Audit or debug KV stale fallback for a worker route (stocks, crypto, alerts) |
 | `/modernize-tooling`   | Refresh Copilot, CI, MCP, prompt, instruction, and workflow setup            |
 | `/release-check`       | Pre-release readiness gate (types + lint + tests + CHANGELOG + version)      |
-| `/test-coverage`       | Add targeted tests to meet the 93.0%/84.6%/92.0%/94.5% coverage thresholds    |
+| `/test-coverage`       | Add targeted tests to meet the 93.7%/85.0%/94.1%/95.1% coverage thresholds  |
 | `/version-bump`        | Bump version in package.json, CHANGELOG, README badges, and sw.ts            |
 | `/worker-debug`        | Debug a failing Cloudflare Worker route (fetch, Zod, KV, envelope)           |
 | `/worker-route`        | Scaffold a new Cloudflare Worker route (handler + Zod schema + tests)        |
+| `/sprint`              | Run next N roadmap sprints in priority order — commit each, release at end   |
+| `/security-audit`      | Run OWASP Top 10 audit against the codebase and fix any blockers             |
+| `/browser-compat`      | Add or fix a browser compatibility test (Vitest unit or Playwright E2E)      |
 
 ## Skills
 
@@ -83,13 +86,15 @@ Use for pre-release gates, PR reviews, coverage audits, dead-code scans, and str
 
 | Instruction                | Applies To                                     | Purpose                                                               |
 | -------------------------- | ---------------------------------------------- | --------------------------------------------------------------------- |
-| `copilot-instructions`     | All work                                       | Canonical coding rules, naming conventions, hard constraints          |
-| `workspace.instructions`   | `**`                                           | File map, architecture, shell expectations, shared tooling layout     |
-| `dashboard.instructions`   | `**/*.html`                                    | HTML, layout, DOM, and styling rules                                  |
-| `cicd.instructions`        | `**/*.yml, **/*.yaml, .github/**`              | Workflows, Actions, permissions, CI conventions                       |
-| `pre-release.instructions` | `CHANGELOG.md, package.json, sw.js, README.md` | Release gate and version-update checklist                             |
-| `tests.instructions`       | `tests/**`                                     | Vitest patterns, `_resetForTest()`, mock helpers, coverage thresholds |
-| `typescript.instructions`  | `src/**/*.ts, worker/**/*.ts`                  | TypeScript strict rules, import conventions, ADR references           |
+| `copilot-instructions`     | All work                                                                             | Canonical coding rules, naming conventions, hard constraints          |
+| `workspace.instructions`   | `**`                                                                                 | File map, architecture, shell expectations, shared tooling layout     |
+| `dashboard.instructions`   | `**/*.html`                                                                          | HTML, layout, DOM, and styling rules                                  |
+| `cicd.instructions`        | `**/*.yml, **/*.yaml, .github/**`                                                    | Workflows, Actions, permissions, CI conventions                       |
+| `css.instructions`         | `src/styles/**/*.css, src/cards/**/*.css, src/ui/**/*.css`                           | CSS layer order, custom properties, RTL, TV display, tile layout      |
+| `pre-release.instructions` | `CHANGELOG.md, package.json, sw.js, README.md`                                      | Release gate and 16-file version-update checklist                     |
+| `security-audit.instructions` | `.github/**, docs/security.md, worker/**, src/core/**, src/main.ts, src/index.html` | OWASP Top 10 audit checklist for static-PWA threat surface           |
+| `tests.instructions`       | `tests/**`                                                                           | Vitest 4 patterns, `_resetForTest()`, mock helpers, coverage ratchet  |
+| `typescript.instructions`  | `src/**/*.ts`                                                                        | TypeScript strict rules, import conventions, ADR references           |
 
 ## MCP Server Guidance
 
@@ -105,23 +110,51 @@ See `.github/copilot/MCP_SERVERS.md` for the project policy and recommended serv
 
 ## Workflow Map
 
-| Workflow         | File                                          | Purpose                                                              |
-| ---------------- | --------------------------------------------- | -------------------------------------------------------------------- |
-| CI               | `.github/workflows/ci.yml`                    | Typecheck, lint, markdownlint, tests, security, worker checks, build |
-| Pages deploy     | `.github/workflows/deploy.yml`                | Build and publish `dist/` to GitHub Pages                            |
-| Release          | `.github/workflows/release.yml`               | Build tagged release artifacts and publish GitHub Release            |
-| Worker deploy    | `.github/workflows/deploy-worker.yml`         | Deploy Cloudflare Worker from `worker/`                              |
-| Auto label       | `.github/workflows/auto-label.yml`            | Apply PR and issue labels                                            |
-| Dependabot merge | `.github/workflows/dependabot-auto-merge.yml` | Controlled automation for dependency PRs                             |
+| Workflow               | File                                          | Purpose                                                              |
+| ---------------------- | --------------------------------------------- | -------------------------------------------------------------------- |
+| CI                     | `.github/workflows/ci.yml`                    | Typecheck, lint, markdownlint, tests, security, worker checks, build |
+| Pages deploy           | `.github/workflows/deploy.yml`                | Build and publish `dist/` to GitHub Pages                            |
+| Release                | `.github/workflows/release.yml`               | Build tagged release artifacts and publish GitHub Release            |
+| Worker deploy          | `.github/workflows/deploy-worker.yml`         | Deploy Cloudflare Worker from `worker/`                              |
+| Auto label             | `.github/workflows/auto-label.yml`            | Apply PR and issue labels                                            |
+| Dependabot merge       | `.github/workflows/dependabot-auto-merge.yml` | Controlled automation for dependency PRs                             |
+| CodeQL                 | `.github/workflows/codeql.yml`                | SAST security scanning via GitHub CodeQL (TypeScript)                |
+| OpenSSF Scorecard      | `.github/workflows/scorecard.yml`             | Supply-chain security posture score                                  |
+| Security gate          | `.github/workflows/security.yml`              | Unified npm audit + source scan + dep-diff gate                      |
+| SBOM                   | `.github/workflows/sbom.yml`                  | CycloneDX SBOM on release tags                                       |
+| PR coverage            | `.github/workflows/pr-coverage.yml`           | Coverage diff comment on pull requests                               |
+| Perf regression        | `.github/workflows/perf-regression.yml`       | Bundle delta + Lighthouse Web Vitals gate on PRs                     |
+| Visual baselines       | `.github/workflows/visual-baselines.yml`      | Update Playwright VR snapshots (Ubuntu, manual)                      |
 
 See `.github/workflows/README.md` for operational details and change rules.
 
 ## Diagnostics And Maintenance
 
-- Use the Chat Customizations editor to inspect loaded instructions, prompts, agents, and skills.
-- Use Chat Diagnostics when a prompt, instructions file, or agent does not appear to load.
+- Use the **Chat Customizations editor** (gear icon in chat) to inspect loaded instructions, prompts, agents, skills, and MCP servers.
+- Use **Chat Diagnostics** (`Copilot: Open Chat Diagnostics`) when a prompt, instructions file, or agent does not appear to load.
+- Use **`MCP: List Servers`** in the Command Palette to start, stop, or inspect MCP servers.
+- Use the **Extensions view MCP section** to manage server state visually.
+- Use `tool_search` before calling any deferred tool — loading a deferred tool without searching first will fail.
 - Keep guidance short, concrete, and reference-based. Avoid duplicating the same rule in five places.
 - When a tool or workflow changes, update both the operational file and the markdown that describes it.
+
+## Model Selection In Prompts
+
+Prompt files (`.github/prompts/*.prompt.md`) may declare a `model:` key in YAML frontmatter to lock a specific Copilot model:
+
+```yaml
+---
+mode: agent
+model: "Claude Sonnet 4.5 (copilot)"
+description: "..."
+---
+```
+
+When `model:` is omitted the active chat model is used. Use model locking only for release-gating or auditing prompts that require stable, deterministic output.
+
+## Deferred Tools
+
+Some VS Code tools are deferred and must be loaded via `tool_search` before use. Always call `tool_search` with a natural-language description first. Do not retry with different queries if the first search returns no results — the tool is not available. Examples of deferred tools: `runTests`, `run_task`, `get_task_output`, `get_changed_files`, `mcp_github_*`, `github-pull-request_*`.
 
 ## Subagents
 
@@ -143,13 +176,13 @@ Guidelines for invoking subagents:
 
 ## Persistent Memory (three-tier)
 
-VS Code Copilot's memory tool stores notes across three scopes. Use the `memory` tool to view, create, or update entries.
+VS Code Copilot's `memory` tool stores notes across three scopes. Use `memory { command: "view", path: "/memories/" }` to inspect before creating.
 
 | Scope               | Path                  | Lifetime                                | Use For                                                             |
 | ------------------- | --------------------- | --------------------------------------- | ------------------------------------------------------------------- |
 | User memory         | `/memories/`          | Persists across all workspaces and chat | Coding preferences, recurring patterns, general insights            |
 | Session memory      | `/memories/session/`  | Current conversation only               | Task-specific context, in-progress notes, working state             |
-| Repository memory   | `/memories/repo/`     | Scoped to this workspace                | Codebase conventions, build commands, repo-only verified facts      |
+| Repository memory   | `/memories/repo/`     | Scoped to this workspace (write-once)   | Codebase conventions, build commands, repo-only verified facts      |
 
 Guidelines:
 

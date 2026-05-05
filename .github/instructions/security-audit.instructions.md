@@ -57,6 +57,20 @@ Run on every patch release (`vX.Y.Z` with `Z > 0`):
 Pick three items via `Get-Random -InputObject 1..10 -Count 3` and re-verify
 their mitigation. Record commit hashes in the table.
 
+## Automated OWASP Script (scripts/check-owasp.mjs)
+
+`node scripts/check-owasp.mjs` — runs static pattern analysis against all `src/` and `worker/` TypeScript files. Exit 0 = clean.
+
+Sprint 444 (v14.2.0) added three rules:
+
+| Rule       | Pattern                                             | Severity |
+| ---------- | --------------------------------------------------- | -------- |
+| A03        | `document.createElement('script')` — dynamic injection | error |
+| A04        | `.__proto__ =` — prototype pollution assignment     | error    |
+| A04        | `Object.defineProperty(Object.prototype,` — prototype pollution | error |
+
+Run after every sprint that adds or modifies `src/` files.
+
 ## Reject conditions (auto-block release)
 
 - Any A-entry above with **Verified** older than 12 months.
@@ -66,6 +80,7 @@ their mitigation. Record commit hashes in the table.
   containing `Roadmap #25` and a follow-up issue link.
 - Trusted Types policy regression (`require-trusted-types-for 'script'`
   removed or disabled).
+- `node scripts/check-owasp.mjs` exits non-zero (Sprint 444+ hardened rule set).
 
 ## CSP wildcard quarterly-narrow policy (Roadmap #25)
 

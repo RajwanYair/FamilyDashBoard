@@ -9,6 +9,7 @@ Implement the next **`${input:count|10}`** roadmap sprints in priority order.
 
 > Read `docs/ROADMAP.md` before starting. Check current test baseline with:
 > `npx vitest run 2>&1 | Select-Object -Last 5`
+> **Tip**: Use `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall per-sprint facts and previous sprint commit hashes before choosing the next item.
 
 ## Sprint Execution Loop
 
