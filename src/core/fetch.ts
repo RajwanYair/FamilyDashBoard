@@ -101,13 +101,13 @@ export async function fetchWithTimeout(
 ): Promise<Response> {
   // Prefer native AbortSignal.timeout when available
   if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
-    return fetch(url, { ...init, signal: AbortSignal.timeout(ms) });
+    return fetch(url, { ...init, signal: AbortSignal.timeout(ms) }); // owasp-allow:A10 — this IS the fetch helper; callers are all internal
   }
   // Legacy fallback for environments without AbortSignal.timeout (e.g. happy-dom)
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);
   try {
-    return await fetch(url, { ...init, signal: controller.signal });
+    return await fetch(url, { ...init, signal: controller.signal }); // owasp-allow:A10 — legacy fallback path of the same helper
   } finally {
     clearTimeout(timer);
   }

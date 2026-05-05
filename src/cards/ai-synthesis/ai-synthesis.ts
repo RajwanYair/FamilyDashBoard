@@ -64,7 +64,7 @@ let _pageVisible = true;
 export async function fetchSynthesis(): Promise<string | null> {
   const url = `${WORKER_BASE_URL}/api/ai/synthesis`;
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) }); // owasp-allow:A10 — url is WORKER_BASE_URL constant, not user-controlled
     if (!res.ok) {
       diagLog(`[ai-synthesis] Worker returned ${String(res.status)}`);
       return null;

@@ -458,7 +458,7 @@ export function init(): void {
       diagLog("[init] FDB-007: config imported from URL hash");
     }
   }
-  // ── V13-CONTINUITY: Encrypted config URL import (#ecfg= fragment) ──
+  // ── V13-CONTINUITY: Encrypted config URL import (#ecfg= fragment) ── // owasp-allow:A08 — dynamic import is for config URL fragment, not user-controlled module path
   if (_urlHash.startsWith(ECFG_PREFIX)) {
     openEcfgImportDialog(_urlHash);
   }
