@@ -337,12 +337,12 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.5 Calendar
 
-- **CAL-Temporal** · P1 · M · Mid · v14.x — Replace ad-hoc date math with TC39 Temporal (gate by polyfill ≤ 10 KB). [CAL5 carry-over]
+- **CAL-Temporal** · P1 · M · Mid · v14.x — Replace ad-hoc date math with TC39 Temporal (gate by polyfill ≤ 10 KB). [CAL5 carry-over] _(Sprint 418 gate check: `@js-temporal/polyfill` not installed → gate CLOSED; deferred to v14.x)_
 
 ### 3.6 Hebrew calendar
 
 - ~~**H-Yahrzeit**~~ — IDB API shipped (`addYahrzeit` / `getUpcomingYahrzeits` / `removeYahrzeit`); manager UI deferred to v14.x.
-- **H-Temporal** · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal. [H7 carry-over]
+- **H-Temporal** · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal. [H7 carry-over] _(Sprint 419 gate check: gate CLOSED — same polyfill gate as CAL-Temporal; deferred to v14.x)_
 - **H-Sefaria-Audio** · P2 · M · Lo · v15 — Optional parashat haftarah audio link (gated by audio-CSP audit; OpenSiddur public dataset).
 
 ### 3.7 Alerts
