@@ -170,10 +170,13 @@ export default defineConfig({
         // Sprint 451 (coverage ratchet — Sprints 449-450 Stryker+OWASP added new coverage):
         //   Actuals post-450: 94.23/85.40/94.51/95.67 (coverage surface stable — no new uncovered code).
         //   Safety margin 0.3%: ratchet stmts 93.7→93.9, branches 85.0→85.1, funcs 94.1→94.2, lines 95.1→95.3.
-        statements: 93.9,
-        branches: 85.1,
-        functions: 94.2,
-        lines: 95.3,
+        // Sprint 463 (coverage ratchet — Sprints 459-461 added 26 property tests for cache/signals/event-bus):
+        //   Actuals (Sprint 451 baseline): 94.23/85.40/94.51/95.67. New tests only add coverage.
+        //   Safety margin 0.2%: ratchet stmts 93.9→94.0, branches 85.1→85.2, funcs 94.2→94.3, lines 95.3→95.4.
+        statements: 94.0,
+        branches: 85.2,
+        functions: 94.3,
+        lines: 95.4,
       },
     },
   },
