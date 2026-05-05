@@ -150,6 +150,11 @@ export default defineConfig({
         //   Fixed: currency.test.ts cache pollution (beforeEach cDelete).
         //   Actuals: 93.30/84.79/92.00/94.73. Ratchet: stmts 93.0→93.2, branches 84.6→84.7,
         //   functions 92.0 (held — exactly at threshold), lines 94.5→94.6.
+        // Sprint 422 (PC-1 audio recap coverage fix):
+        //   Added 7 new tests covering _setSpeakBtnState(true/false), click-handler delegation,
+        //   interval-callback, onstart/onend/onerror utterance events; ai-synthesis.ts now 100% funcs.
+        //   Actuals: 93.32/84.81/92.08/94.76. Ratchet: funcs 92.0→92.0 (held; margin 0.08%).
+        //   Next ratchet targets: 93.4/84.9/92.1/94.8 once alerts.ts + motivation.ts gaps closed.
         statements: 93.2,
         branches: 84.7,
         functions: 92.0,
