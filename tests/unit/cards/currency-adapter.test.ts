@@ -19,10 +19,14 @@ vi.mock("@/core/fetch", () => ({
   fetchJSONWithWorker: vi.fn(),
 }));
 vi.mock("@/core/diag", () => ({ diagLog: vi.fn() }));
+vi.mock("@/cards/currency/boi-adapter", () => ({
+  fetchBoIRates: vi.fn().mockResolvedValue(null),
+}));
 
 import { cGet } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
 import { recordProviderSuccess, recordProviderFailure } from "@/core/provider";
+import { fetchBoIRates } from "@/cards/currency/boi-adapter";
 
 describe("CurrencyAdapter (Sprint 91)", () => {
   const adapter = createCurrencyAdapter();
@@ -82,5 +86,34 @@ describe("CurrencyAdapter (Sprint 91)", () => {
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);
     expect(recordProviderFailure).toHaveBeenCalledWith("currency");
+  });
+
+  // Sprint 442: BoI primary path (lines 37-38 in currency-adapter.ts)
+  it("uses BoI rates when fetchBoIRates returns valid data with >2 rates", async () => {
+    vi.mocked(fetchBoIRates).mockResolvedValueOnce({
+      rates: { USD: 0.27, EUR: 0.25, GBP: 0.22, JPY: 40.1 },
+      base_code: "ILS",
+    });
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(true);
+    // fetchJSONWithWorker should NOT have been called (BoI satisfied the request)
+    expect(fetchJSONWithWorker).not.toHaveBeenCalled();
+    expect(recordProviderSuccess).toHaveBeenCalledWith("currency");
+  });
+
+  it("falls through to provider chain when BoI returns <=2 rates", async () => {
+    vi.mocked(fetchBoIRates).mockResolvedValueOnce({ rates: { USD: 0.27 } });
+    vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce({ rates: { USD: 0.27, EUR: 0.25 } });
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(true);
+    expect(fetchJSONWithWorker).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls through to provider chain when BoI throws", async () => {
+    vi.mocked(fetchBoIRates).mockRejectedValueOnce(new Error("BoI unreachable"));
+    vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce({ rates: { USD: 0.27, EUR: 0.25 } });
+    const result = await adapter.fetch();
+    expect(result.ok).toBe(true);
+    expect(fetchJSONWithWorker).toHaveBeenCalledTimes(1);
   });
 });
