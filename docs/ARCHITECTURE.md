@@ -1,4 +1,4 @@
-# FamilyDashBoard — Architecture (v13.44.0)
+# FamilyDashBoard — Architecture (v14.0.0)
 
 > Deployment: <https://rajwanyair.github.io/FamilyDashBoard/>
 > Worker: <https://fdb.rajwanyair.workers.dev>
@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 6067 tests / 196 suites     |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 6222 tests / 201 suites     |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
@@ -325,7 +325,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **6067 tests / 196 suites / 0 failures** — coverage thresholds: 93.0% statements, 84.6% branches, 92.0% functions, 94.5% lines (v13.44.0)
+15. **6222 tests / 201 suites / 0 failures** — coverage thresholds: 93.0% statements, 84.6% branches, 92.0% functions, 94.5% lines (v14.0.0)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)
@@ -335,7 +335,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 22. **Per-card configSchema** — Each card exports a `CardConfigField[]` schema; `buildConfigAccordion()` auto-renders the config panel UI; per-card reset buttons (v7.19, ADR-004)
 23. **Config dirty tracking** — `closeConfigPanel()` warns on unsaved changes; second close discards (v7.19)
 24. **Observability suite** — Card init timing (`recordCardInitTime`), startup waterfall in diag overlay, perf JSON export, error rate trending sparkline, network quality history (v7.19)
-25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071. (v13.44.0 core, v13.44.0 first 2 producers)
+25. **Cross-card signal protocol (X12)** — `src/core/card-signal-protocol.ts` exposes `setCardSignal` / `getCardSignal` / `onCardSignal`. Values are deep-frozen, subscribers fire via microtask. Cards publish under `(cardId, key)`; consumers subscribe without coupling. See ADR-067 + ADR-071. (v14.0.0 all 11 applicable producers wired)
 26. **Semantic clipboard (X15)** — `src/core/semantic-clipboard.ts` + `Y` (yank) keystroke. Cards opt in by calling `registerSemanticProducer(cardId, fn)` returning `SemanticPayload` (text + JSON-LD). `ClipboardItem` write with text-only fallback. See ADR-070 + ADR-071. (v13.44.0 core, v13.44.0 first 2 producers)
 
 ## Accessibility Compliance

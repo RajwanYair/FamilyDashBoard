@@ -9,6 +9,38 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.0.0] — 2026-05-01
+
+> **6222 tests / 201 suites / 0 failures** (commit `c83021a`)
+
+### Security
+
+- **Sprint 424 / D15**: Annual third-party rebuilder verification workflow (`.github/workflows/rebuild-verify.yml`) — hermetic rebuild + SHA-256 comparison with official release `dist.zip`; opens GitHub issue on hash mismatch; triggers annually Jan 1 + after every published release + manual dispatch.
+- **Sprint 427**: Pre-v14.0 full OWASP Top 10 audit; 2 new rules in `scripts/check-owasp.mjs` — A03 `document.write()` injection and A05 `postMessage('*')` wildcard origin; 0 findings.
+
+### Quality Gates
+
+- **Sprint 425 / D13**: Per-card bundle ratchet — warn-cap 38 → 36 KB; hard-cap 80 → 75 KB; progressing toward v14 target of warn 30 / hard 60 KB.
+- **Sprint 423**: Coverage ratchet annotated — actual 93.32 / 84.81 / 92.08 / 94.76 vs thresholds 93.2 / 84.7 / 92.0 / 94.6.
+
+### Features
+
+- **Sprint 421 / PC-1**: AI synthesis card audio read-aloud button (SpeechSynthesis); 7 new tests; all coverage thresholds met at 92.08% functions.
+- **Sprint 426 / X12**: `motivation` + `tasks` wired as `CardSignalProtocol` producers — completes X12 for all 11 applicable cards (`system-info` + `video-news` emit no composable signals by design).
+
+### Documentation
+
+- **Sprint 422**: ROADMAP — marked W-IMS, S-TASE, C-BoI, PC-1, PC-2 as shipped.
+- **Sprint 428**: ADR-064 fix (workflow filename `rebuild-verify.yml`); ADR-067 updated to all-11-producers status.
+
+#### Quality
+
+- 6222 / 6222 tests passing across 201 suites
+- 0 type errors / 0 lint errors / 0 lint warnings / 0 suppressions
+- All CI gates clean: typecheck · ESLint · markdownlint · Vitest · build · bundle · OWASP · CSP · Trusted Types · ADR index
+
+---
+
 ## [13.44.0] — 2026-05-02
 
 ### Sprints 406–414 — Roadmap forward-progress sprint

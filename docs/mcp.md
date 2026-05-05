@@ -16,7 +16,7 @@ without scraping the page or requiring any server-side session.
 
 Architecture:
 
-```
+```text
 AI assistant ──► Companion process (localhost:7411/mcp)
                          │
                 BroadcastChannel("fdb-mcp")
@@ -36,7 +36,7 @@ itself never binds any TCP port.
 
 Append `?mcp=1` to the dashboard URL on initial page load:
 
-```
+```text
 https://rajwanyair.github.io/FamilyDashBoard/?mcp=1
 ```
 
