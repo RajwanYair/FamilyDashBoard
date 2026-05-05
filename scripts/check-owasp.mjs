@@ -7,8 +7,9 @@
  * Sprint 450 (v14.2.0) — added A03 insertAdjacentHTML, A05 http-in-fetch, A07 window.opener access.
  * Sprint 456 (v14.2.0) — extended scan scope to `worker/src/` in addition to `src/`.
  * Sprint 464 (v14.3.0) — added A03 srcdoc iframe injection, A02 btoa-credential, A01 hardcoded admin bypass.
+ * Sprint 466 (v14.3.0) — extended scan scope to `scripts/*.mjs` (build/CI helpers).
  *
- * Scans `src/` and `worker/src/` for patterns that correspond to OWASP Top 10 (2021) categories
+ * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
  *
  *   A01 – Broken Access Control:       hardcoded role bypass, admin checks; open redirect
@@ -40,6 +41,7 @@ import { fileURLToPath } from "url";
 const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
 const SRC = join(ROOT, "src");
 const WORKER_SRC = join(ROOT, "worker", "src");
+const SCRIPTS_DIR = join(ROOT, "scripts"); // Sprint 466: also scan build/CI helpers
 const WARN_ONLY = process.argv.includes("--warn-only");
 
 /** @typedef {{ category: string; label: string; severity: "error"|"warn"; pattern: RegExp; safeMarkers?: string[] }} Rule */
@@ -273,6 +275,10 @@ const RULES = [
 /** Exempt source paths (relative to root, forward slashes). */
 const EXEMPT_PATHS = [
   "src/core/trusted-types.ts",
+  // Sprint 466: exempt the scanner itself and security-checker helpers —
+  // they enumerate dangerous patterns by design, so every rule would match their own source.
+  "scripts/check-owasp.mjs",
+  "scripts/check-trusted-types.mjs",
 ];
 
 /**
@@ -294,10 +300,24 @@ function collectTsFiles(dir) {
   return results;
 }
 
-// Collect from both src/ and worker/src/
+/**
+ * Collect all .mjs files (non-recursive) from `dir`. (Sprint 466)
+ * @param {string} dir
+ * @returns {string[]}
+ */
+function collectMjsFiles(dir) {
+  const st = statSync(dir, { throwIfNoEntry: false });
+  if (!st?.isDirectory()) return [];
+  return readdirSync(dir)
+    .filter((f) => f.endsWith(".mjs"))
+    .map((f) => join(dir, f));
+}
+
+// Collect from src/, worker/src/, and scripts/ (Sprint 466)
 const files = [
   ...collectTsFiles(SRC),
   ...(statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirectory() ? collectTsFiles(WORKER_SRC) : []),
+  ...collectMjsFiles(SCRIPTS_DIR),
 ];
 
 /** @type {{ severity: "error"|"warn"; file: string; line: number; category: string; label: string; code: string }[]} */

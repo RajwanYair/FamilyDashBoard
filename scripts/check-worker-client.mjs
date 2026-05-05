@@ -88,7 +88,7 @@ if (isMain) {
     }
     writeFileSync(CLIENT_PATH, newClientText, "utf8");
     console.log(`✅  Updated @openapi-paths-hash → ${computedHash}`);
-    console.log(`    Paths (${pathKeys.length}): ${pathKeys.join(", ")}`);
+    console.log(`    Paths (${pathKeys.length}): ${pathKeys.join(", ")}`); // owasp-allow:A09 — route path-keys, not credentials
     process.exit(0);
   }
 
