@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — Visual Regression Tests (Stream G.2.3)
  *
- * Captures 108 baseline screenshots across 31 scenario groups:
+ * Captures 129 baseline screenshots across 38 scenario groups:
  *   - 18 idle baselines: 6 themes × 3 screen modes
  *   - 3 config-panel-open baselines: 3 themes × tv mode
  *   - 3 maximized-card baselines: 3 themes × tv mode
@@ -33,6 +33,13 @@
  *   - 3 phone-help-dialog baselines: 3 themes × phone mode       (Sprint 312)
  *   - 3 tablet-maximized-ext baselines: 3 more themes × tablet mode (Sprint 312)
  *   - 3 diag-overlay-ext baselines: 3 more themes × tv mode      (Sprint 312)
+ *   - 3 alert-sse-pending baselines: 3 themes × tv mode          (Sprint 415 / v14.0)
+ *   - 3 alert-sse-connected baselines: 3 more themes × tv mode   (Sprint 415 / v14.0)
+ *   - 3 maximize-flip-ext baselines: 3 more themes × tv mode     (Sprint 415 / v14.0)
+ *   - 3 maximize-flip-tablet-ext baselines: 3 more themes × tablet (Sprint 415 / v14.0)
+ *   - 3 maximize-flip-phone-ext baselines: 3 more themes × phone  (Sprint 415 / v14.0)
+ *   - 3 stocks-ils-display baselines: 3 themes × tv mode          (Sprint 415 / v14.0)
+ *   - 3 currency-boi-source baselines: 3 more themes × tv mode    (Sprint 415 / v14.0)
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -1195,6 +1202,266 @@ test.describe("FamilyDashBoard — Diag Overlay Extended Themes (Sprint 312)", (
           page.locator(".clock, #clock, [id*='time'], [class*='time']"),
           page.locator("[class*='ticker'], [class*='marquee']"),
           page.locator("#diag-overlay .diag-entries, #diag-overlay [class*='diag-entry']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 415 / v14.0: DO-SSE alert pending state ─────────────────────────
+// Captures the alerts card in SSE-connecting / pending state.
+
+test.describe("FamilyDashBoard — Alert SSE Pending State (Sprint 415)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "matrix"] as Theme[]) {
+    test(`${theme}: alert-sse-pending`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Inject a synthetic SSE-pending indicator on the alerts card
+      await page.evaluate(() => {
+        const card = document.querySelector("[data-card-id='alerts']") as HTMLElement | null;
+        if (card) {
+          const badge = document.createElement("span");
+          badge.className = "sse-status sse-pending";
+          badge.setAttribute("aria-label", "SSE connecting");
+          badge.style.cssText =
+            "position:absolute;top:8px;right:8px;width:10px;height:10px;" +
+            "border-radius:50%;background:var(--warning,#f59e0b);opacity:0.8;";
+          card.style.position = "relative";
+          card.appendChild(badge);
+        }
+      });
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-alert-sse-pending.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 415 / v14.0: DO-SSE alert connected state (ext themes) ──────────
+
+test.describe("FamilyDashBoard — Alert SSE Connected State Ext (Sprint 415)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["amber", "purple", "rose"] as Theme[]) {
+    test(`${theme}: alert-sse-connected`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Inject SSE-connected badge on the alerts card
+      await page.evaluate(() => {
+        const card = document.querySelector("[data-card-id='alerts']") as HTMLElement | null;
+        if (card) {
+          const badge = document.createElement("span");
+          badge.className = "sse-status sse-connected";
+          badge.setAttribute("aria-label", "SSE connected");
+          badge.style.cssText =
+            "position:absolute;top:8px;right:8px;width:10px;height:10px;" +
+            "border-radius:50%;background:var(--positive,#22c55e);opacity:0.9;";
+          card.style.position = "relative";
+          card.appendChild(badge);
+        }
+      });
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-alert-sse-connected.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 415 / v14.0: Maximize-FLIP ext themes (tv) ─────────────────────
+// Captures the FLIP animation end-state in the 3 "ext" themes.
+
+test.describe("FamilyDashBoard — Maximize FLIP Extended Themes (Sprint 415)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "purple", "rose"] as Theme[]) {
+    test(`${theme}: maximize-flip-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      const firstHeader = page.locator(".card-header").first();
+      await firstHeader.click();
+      await page.waitForFunction(() => document.querySelector(".maximized") !== null, {
+        timeout: 5_000,
+      });
+      await page.waitForTimeout(500); // allow FLIP transition to settle
+
+      await expect(page).toHaveScreenshot(`${theme}-maximize-flip-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 415 / v14.0: Maximize-FLIP tablet ext themes ───────────────────
+
+test.describe("FamilyDashBoard — Maximize FLIP Tablet Extended Themes (Sprint 415)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["amber", "matrix", "rose"] as Theme[]) {
+    test(`${theme}: maximize-flip-tablet-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "tablet");
+      await page.evaluate(() => document.fonts.ready);
+
+      const firstHeader = page.locator(".card-header").first();
+      await firstHeader.click();
+      await page.waitForFunction(() => document.querySelector(".maximized") !== null, {
+        timeout: 5_000,
+      });
+      await page.waitForTimeout(500);
+
+      await expect(page).toHaveScreenshot(`${theme}-maximize-flip-tablet-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 415 / v14.0: Maximize-FLIP phone ext themes ────────────────────
+
+test.describe("FamilyDashBoard — Maximize FLIP Phone Extended Themes (Sprint 415)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "purple"] as Theme[]) {
+    test(`${theme}: maximize-flip-phone-ext`, async ({ page }) => {
+      await goWithConfig(page, theme, "phone");
+      await page.evaluate(() => document.fonts.ready);
+
+      const firstHeader = page.locator(".card-header").first();
+      await firstHeader.click();
+      await page.waitForFunction(() => document.querySelector(".maximized") !== null, {
+        timeout: 5_000,
+      });
+      await page.waitForTimeout(500);
+
+      await expect(page).toHaveScreenshot(`${theme}-maximize-flip-phone-ext.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 415 / v14.0: Stocks card ILS display (S-TASE adapter) ───────────
+// Captures the stocks card with an injected ILS-denomination tile.
+
+test.describe("FamilyDashBoard — Stocks ILS Display (Sprint 415)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "matrix", "amber"] as Theme[]) {
+    test(`${theme}: stocks-ils-display`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Inject a synthetic ILS stock tile to represent TASE .TA data
+      await page.evaluate(() => {
+        const stocksCard = document.querySelector("[data-card-id='stocks']") as HTMLElement | null;
+        if (stocksCard) {
+          const tile = document.createElement("div");
+          tile.className = "stk-block stk-block--ils";
+          tile.setAttribute("data-symbol", "PERI.TA");
+          tile.style.cssText =
+            "display:inline-flex;flex-direction:column;align-items:center;" +
+            "padding:6px 10px;background:var(--card-bg,#111);border:1px solid var(--accent,#4f8);border-radius:6px;margin:4px;";
+          tile.innerHTML =
+            "<span style='font-size:11px;opacity:0.7'>PERI.TA</span>" +
+            "<span style='font-size:16px;font-weight:600'>₪35.50</span>" +
+            "<span style='font-size:12px;color:var(--negative,#f44)'>-1.80%</span>";
+          stocksCard.prepend(tile);
+        }
+      });
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-stocks-ils-display.png`, {
+        maxDiffPixelRatio: 0.06,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 415 / v14.0: Currency card BoI source badge (ext themes) ────────
+
+test.describe("FamilyDashBoard — Currency BoI Source Badge Ext (Sprint 415)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["blue", "purple", "rose"] as Theme[]) {
+    test(`${theme}: currency-boi-source`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Inject a synthetic BoI source badge on the currency card
+      await page.evaluate(() => {
+        const card = document.querySelector("[data-card-id='currency']") as HTMLElement | null;
+        if (card) {
+          const badge = document.createElement("span");
+          badge.className = "provider-badge provider-boi";
+          badge.textContent = "בנק ישראל";
+          badge.setAttribute("lang", "he");
+          badge.style.cssText =
+            "display:inline-block;padding:2px 6px;font-size:10px;border-radius:4px;" +
+            "background:var(--accent,#4f8);color:var(--bg,#000);opacity:0.85;margin:4px;";
+          const header = card.querySelector(".card-header, h2, h3") ?? card;
+          header.appendChild(badge);
+        }
+      });
+      await page.waitForTimeout(300);
+
+      await expect(page).toHaveScreenshot(`${theme}-currency-boi-source.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
         ],
         fullPage: false,
         timeout: 15_000,
