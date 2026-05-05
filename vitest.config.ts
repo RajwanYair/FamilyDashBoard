@@ -162,10 +162,15 @@ export default defineConfig({
         //   alerts.ts funcs 89.47→92.98%; motivation.ts funcs 86.66→96.96%.
         //   Actuals: 93.43/84.96/92.19/94.86. Ratchet: stmts 93.2→93.4, branches 84.7→84.9,
         //   functions 92.0→92.1, lines 94.6→94.8.
-        statements: 93.4,
-        branches: 84.9,
-        functions: 92.1,
-        lines: 94.8,
+        // Sprint 445 (coverage ratchet — Sprints 439-442 idb-store/card-registry/mcp-bridge/currency-adapter):
+        //   idb-store.ts 30%→100%; card-registry.ts funcs 50%→92%; mcp-bridge.ts 88%→99%;
+        //   currency-adapter.ts branches 50%→100%.
+        //   Actuals: 94.07/85.29/94.45/95.49. Ratchet: stmts 93.4→93.7, branches 84.9→85.0,
+        //   functions 92.1→94.1, lines 94.8→95.1.
+        statements: 93.7,
+        branches: 85.0,
+        functions: 94.1,
+        lines: 95.1,
       },
     },
   },
