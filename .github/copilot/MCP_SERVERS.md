@@ -58,6 +58,33 @@ When adding an agent (`.github/agents/*.agent.md`) that depends on MCP tools, li
 - Prefer input variables, environment-backed values, or other secure indirection.
 - Only trust and enable servers from known publishers.
 - Use least privilege. If a server is not materially helping a task, disable it.
+
+---
+
+## Dashboard-Exposed Local MCP Server (v14.x, X11)
+
+FamilyDashBoard itself will expose a **read-only MCP server** at `localhost:7411/mcp` (opt-in via `?mcp=1`, ADR-066). This is a _server the dashboard exposes_, not a server you configure here.
+
+**What it surfaces** (JSON, read-only): today-pane signal · calendar next-event · hebrew-cal next-zman · active alerts · weather summary · stocks top-mover · countdowns < 24 h.
+
+**Security contract**: loopback-only (`127.0.0.1`), zero network egress, CSP unchanged. Verified by an integration test that the bind address is never a remote origin. RUM CSP violation sampling active for 30 days post-launch (Q9 open question, §8 of ROADMAP.md).
+
+**For AI assistant configuration**: when X11 ships, add it to `.vscode/mcp.json` as a `streamableHttp` server:
+
+```jsonc
+// .vscode/mcp.json (X11 — add when v14.x ships)
+{
+  "servers": {
+    "familydashboard": {
+      "type": "streamableHttp",
+      "url": "http://localhost:7411/mcp"
+    }
+  }
+}
+```
+
+Do **not** add this entry today — the server is not yet implemented. Track progress in `docs/ROADMAP.md §6.4`.
+
 - Review trust prompts carefully. Starting a server directly from config can bypass the usual trust flow.
 
 ## Windows Notes

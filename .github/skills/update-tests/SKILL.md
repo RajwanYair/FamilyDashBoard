@@ -50,6 +50,7 @@ npx vitest run --reporter=verbose                 # see each test name
 | `src/cards/motivation/motivation.ts`   | `tests/unit/cards/motivation.test.ts`    |
 | `src/cards/tasks/tasks.ts`             | `tests/unit/cards/tasks.test.ts`         |
 | `src/cards/countdown/countdown.ts`     | `tests/unit/cards/countdown.test.ts`     |
+| `src/cards/video-news/video-news.ts`   | `tests/unit/cards/video-news.test.ts`    |
 | `src/cards/system-info/system-info.ts` | `tests/unit/cards/system-info.test.ts`   |
 | `src/cards/base-card.ts`               | `tests/unit/cards/base-card.test.ts`     |
 | `src/ui/ticker.ts`                     | `tests/unit/ui/ticker.test.ts`           |

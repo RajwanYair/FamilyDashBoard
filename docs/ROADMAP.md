@@ -25,6 +25,16 @@ The v14 → v17 frontier is no longer breadth or feature catch-up. It is six thi
 
 Streams are scoped tight. Each one ships in 5–15 sprints with a hard exit gate. No dangling P3 backlog.
 
+### 0.1 Engineering Discipline (Non-Negotiable)
+
+Five meta-rules that override all feature pressure. Sourced from the project's genesis quality directive; reaffirmed at every major release.
+
+1. **No suppression, waivers, or workarounds.** Fix root causes. If genuinely unavoidable, document in an ADR with a production-safe rationale — never just disable a check.
+2. **No suspended / disabled / deprecated / commented-out code in production.** If it exists for a real reason, it belongs to the correct production approach with an ADR. If not, delete it.
+3. **No dead artifacts.** Dead code, dead docs, dead configs, unused scripts, stale examples — remove them. Everything in the repository must be wired, coherent, and current.
+4. **Reproducibility first.** Deterministic builds (SHA-pinned Actions), pinned tool versions, documented setup steps, and an annual third-party rebuilder drill (D15 — see §6.8).
+5. **Forward-only history.** This document records only what is _next_. Completed work is deleted from here and moved to `CHANGELOG.md`.
+
 ---
 
 ## 1. Stack-Level First-Principles Re-Litigation (2026-Q2 refresh)

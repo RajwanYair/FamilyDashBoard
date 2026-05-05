@@ -183,6 +183,17 @@ export function createWebTsAppEslintConfig({
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-floating-promises": "off",
         "no-empty": ["error", { allowEmptyCatch: true }],
+        // ADR-073: forbid focused/skipped tests in committed test files.
+        // Defence in depth alongside scripts/check-test-focus-skip.mjs.
+        "no-restricted-syntax": [
+          "error",
+          {
+            selector:
+              "CallExpression[callee.object.name=/^(it|test|describe)$/][callee.property.name=/^(only|skip)$/]",
+            message:
+              "Forbidden focused/skipped test (ADR-073). Remove .only / .skip before committing.",
+          },
+        ],
         ...testRules,
       },
     },

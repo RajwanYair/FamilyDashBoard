@@ -66,7 +66,7 @@ Use this agent when:
 | Type errors   | `npx tsc --noEmit`                                      | 0 errors                                |
 | Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                   |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                |
-| Test failures | `npx vitest run`                                        | 0 failures (5701 / 170 suites baseline) |
+| Test failures | `npx vitest run`                                        | 0 failures (6067 / 196 suites baseline) |
 | Build         | `npm run build`                                         | 0 errors                                |
 | Bundle size   | `npm run check:bundle`                                  | within limits                           |
 
