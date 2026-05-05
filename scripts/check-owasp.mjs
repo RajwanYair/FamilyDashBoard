@@ -3,6 +3,7 @@
  * Sprint 221 — OWASP Top 10 rotation automated check.
  * Sprint 427 (v14.0.0) — added A03 document.write rule + A05 postMessage(*) rule.
  * Sprint 435 (v14.1.0) — added A01 open-redirect, A02 atob-credential, A03 setTimeout-string.
+ * Sprint 444 (v14.2.0) — added A03 createElement-script, A04 __proto__ pollution, A04 defineProperty-prototype.
  *
  * Scans `src/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -183,6 +184,31 @@ const RULES = [
     label: "fetch() with user-controlled URL variable (possible SSRF analogue)",
     severity: "warn",
     pattern: /\bfetch\s*\(\s*(?:params|req|request|input|userInput|url)\b/i,
+  },
+
+  // A03 — Injection (Sprint 444)
+  {
+    // Dynamically creating a <script> element is an XSS/script-injection vector
+    category: "A03",
+    label: "document.createElement('script') — dynamic script injection",
+    severity: "error",
+    pattern: /\bdocument\.createElement\s*\(\s*['"]script['"]\s*\)/i,
+  },
+
+  // A04 — Insecure Design: prototype pollution (Sprint 444)
+  {
+    // __proto__ assignment can silently poison every object in the runtime
+    category: "A04",
+    label: "__proto__ property assignment (prototype pollution vector)",
+    severity: "error",
+    pattern: /\.__proto__\s*=/,
+  },
+  {
+    // Object.defineProperty(Object.prototype, ...) pollutes all objects
+    category: "A04",
+    label: "Object.defineProperty on Object.prototype (prototype pollution)",
+    severity: "error",
+    pattern: /Object\.defineProperty\s*\(\s*Object\.prototype\b/,
   },
 ];
 

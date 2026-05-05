@@ -574,7 +574,7 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 - [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`).
 - [x] **D15** Annual third-party rebuilder verification (SLSA verifier-action). _(shipped Sprint 424: `.github/workflows/rebuild-verify.yml` — hermetic rebuild + SHA-256 comparison; opens GitHub issue on mismatch; annual cron Jan 1 + post-release trigger)_
 - [ ] OpenTelemetry from Worker (opt-in).
-- [x] OWASP Top 10 audit per major release. _(Sprint 427: pre-v14.0 full audit passed; 2 new rules added to `check-owasp.mjs` — A03 document.write, A05 postMessage(*); 0 findings; security-audit.instructions.md updated)_
+- [x] OWASP Top 10 audit per major release. _(Sprint 427: pre-v14.0 full audit passed; 2 new rules added to `check-owasp.mjs` — A03 document.write, A05 postMessage(*); 0 findings; security-audit.instructions.md updated. Sprint 444: 3 new rules — A03 createElement-script, A04 \_\_proto\_\_ pollution, A04 defineProperty-prototype; 0 findings.)_
 
 **Exit**: SLSA L3; OpenTelemetry shipping zero data by default; one third-party rebuilder verification per major release.
 
