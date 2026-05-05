@@ -8,6 +8,7 @@
  * Sprint 456 (v14.2.0) — extended scan scope to `worker/src/` in addition to `src/`.
  * Sprint 464 (v14.3.0) — added A03 srcdoc iframe injection, A02 btoa-credential, A01 hardcoded admin bypass.
  * Sprint 466 (v14.3.0) — extended scan scope to `scripts/*.mjs` (build/CI helpers).
+ * Sprint 473 (v14.4.0) — added A01 document.domain assignment, A03 new RegExp() dynamic, A04 Object.assign() prototype-pollution vector.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -269,6 +270,33 @@ const RULES = [
     label: "Hardcoded admin/root privilege bypass (isAdmin/isRoot/isSuperUser = true)",
     severity: "error",
     pattern: /\b(?:isAdmin|isRoot|isSuperUser|isModerator)\s*=\s*true\b/i,
+  },
+
+  // A01 — Broken Access Control (Sprint 473)
+  {
+    // document.domain assignment relaxes the same-origin policy, allowing cross-origin frame access
+    category: "A01",
+    label: "document.domain assignment — relaxes same-origin policy (use postMessage instead)",
+    severity: "error",
+    pattern: /\bdocument\.domain\s*=(?!=)/,
+  },
+
+  // A03 — Injection (Sprint 473)
+  {
+    // new RegExp() with a non-literal argument can introduce ReDoS or injection via user-controlled input
+    category: "A03",
+    label: "new RegExp() with non-literal argument — potential ReDoS or injection vector",
+    severity: "warn",
+    pattern: /\bnew\s+RegExp\s*\(\s*(?!\/|['"`])[^)]/,
+  },
+
+  // A04 — Insecure Design (Sprint 473)
+  {
+    // Object.assign() called with a variable second argument can smuggle __proto__ when parsing untrusted JSON
+    category: "A04",
+    label: "Object.assign() with variable source — ensure source is not user-supplied JSON (prototype pollution via __proto__)",
+    severity: "warn",
+    pattern: /\bObject\.assign\s*\(\s*[^,)]+,\s*(?!{)[a-zA-Z_$][a-zA-Z0-9_.]*\s*\)/,
   },
 ];
 
