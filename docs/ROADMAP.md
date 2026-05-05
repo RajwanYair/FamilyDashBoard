@@ -1,9 +1,9 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-05 · **Shipped baseline**: v14.1.0 (Sprint 438) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
+> **Refresh date**: 2026-05-05 · **Shipped baseline**: v14.2.0 (Sprint 456) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
 >
-> **Inventory**: 6290 tests / 204 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage (Sprint 445)**: 93.7 / 85.0 / 94.1 / 95.1 (statements / branches / functions / lines).
+> **Inventory**: 6303 tests / 205 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage (Sprint 451)**: 93.9 / 85.1 / 94.2 / 95.3 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -13,7 +13,7 @@
 
 ## 0. Executive Summary
 
-After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6290 tests, 65 fast-check property suites across 13 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6303 tests, 70 fast-check property suites across 14 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
@@ -151,8 +151,8 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Prettier              | 3.x                      | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity.                       |
 | Stylelint             | 16.x                     | Keep; consider Lightning-CSS-only validation v15.                                 |
 | Playwright            | 1.5x                     | Quarterly baseline regen.                                                         |
-| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; extend to error-tracker + config + diag (shipped) + provider-health. |
-| `fast-check`          | 3.x                      | 55 property suites; extend to worker-client envelope invariants v14.x.            |
+| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; 22 files in scope (provider.ts added Sprint 449); extend to remaining core modules. |
+| `fast-check`          | 3.x                      | 70 property suites across 14 modules (normalize-error NE1-NE8 Sprint 453, worker-client P14-P18 Sprint 455); continue expanding. |
 | `axe-core`            | latest                   | Keep CI gate.                                                                     |
 | Lighthouse CI         | latest                   | Tightened to `error 0.97`; ratchet to `0.98` cached v14.x.                        |
 | `pnpm` workspace      | npm + parent             | **Reject** — current pattern is sufficient and simpler.                           |
@@ -164,13 +164,13 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | ---------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
 | Unit             | Vitest 4.1 + happy-dom 20              | Keep. Suite split per file.                                                       |
 | Component        | `@vitest/browser` (Playwright)         | Shipped v13.16.                                                                   |
-| Property-based   | fast-check (55 suites, ADR-054/055)    | Extend to worker-client envelope invariants v14.x.                                |
-| Mutation         | Stryker                                | Threshold ≥ 85 %.                                                                 |
+| Property-based   | fast-check (70 suites, ADR-054/055)    | 14 modules covered; worker-client P14-P18 + normalize-error NE1-NE8 shipped v14.2. |
+| Mutation         | Stryker (22 files)                     | Threshold ≥ 85 %; extended to provider.ts Sprint 449.                             |
 | Visual regression | Playwright (108 baselines)             | Extend to DO-SSE alert states + maximise-FLIP.                                    |
 | End-to-end       | Playwright                             | Keep.                                                                             |
 | Accessibility    | axe-core (CI gate)                     | Keep + manual screen-reader pass per major.                                       |
 | Performance      | Lighthouse CI (`error 0.97`)           | Tighten to `0.98` cached v14.x.                                                   |
-| Coverage         | 93.0/84.6/92.0/94.5                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
+| Coverage         | 93.9/85.1/94.2/95.3                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
 
 ### 1.8 Observability, security, supply chain
 
@@ -183,7 +183,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Sec  | Secret rotation per major release. Reporting API sampling audit annually. |
 | Sec  | CSP `require-trusted-types-for 'script'` enforcement audit v14.0. |
 | Sec  | npm + GitHub Actions provenance (Sigstore) — adopt v14.2. |
-| Sec  | OWASP Top 10 audit per major release; CSP wildcards reviewed every patch. |
+| Sec  | OWASP Top 10 audit per major release; 22 rules now scan `src/` + `worker/src/` (Sprint 456); CSP wildcards reviewed every patch. |
 | Sec  | **Origin-Agent-Cluster header** — adopt v14.x (process isolation; defends against Spectre-class side-channels). |
 | Sec  | **Permissions-Policy delegation audit** — reduce inherited surface for video-news iframes. |
 | Infra | Cloudflare Pages migration — gate on measurable TTI/caching regression. |
