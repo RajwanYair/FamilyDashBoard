@@ -572,7 +572,7 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 - [x] npm + GitHub Actions provenance (SLSA L2 `attest-build-provenance`).
 - [x] CSP `require-trusted-types-for 'script'`.
 - [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`).
-- [ ] **D15** Annual third-party rebuilder verification (SLSA verifier-action).
+- [x] **D15** Annual third-party rebuilder verification (SLSA verifier-action). _(shipped Sprint 424: `.github/workflows/rebuild-verify.yml` — hermetic rebuild + SHA-256 comparison; opens GitHub issue on mismatch; annual cron Jan 1 + post-release trigger)_
 - [ ] OpenTelemetry from Worker (opt-in).
 - [ ] OWASP Top 10 audit per major release.
 

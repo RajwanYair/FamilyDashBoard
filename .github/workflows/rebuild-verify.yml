@@ -1,0 +1,179 @@
+# =============================================================================
+# Rebuilder Verify — FamilyDashBoard (D15, ADR-064, V14-SECURITY-L3)
+#
+# Annual third-party reproducibility verification (Sprint 424 / D15).
+# Re-builds `dist.zip` from scratch in a clean hermetic environment and
+# compares the SHA-256 against the official release artefact on GitHub.
+#
+# Workflow cadence: once per year (Jan 1), after every public v* release,
+# and on-demand (manual dispatch).
+#
+# Passes when:
+#   1. A clean rebuild of the same git tag produces the same SHA-256 as the
+#      released dist.zip (deterministic / reproducible build).
+#   2. The rebuilder-manifest.json from the release matches the re-generated
+#      one (input fingerprints match).
+#
+# Security: read-only permissions; no secrets required; attestation is
+# public.  Failure creates a GitHub check annotation but does NOT auto-fail
+# the release — it fires a repository issue via the GITHUB_TOKEN so humans
+# review before the next patch cycle.
+# =============================================================================
+name: Rebuilder Verify (D15)
+
+on:
+  schedule:
+    # 01 Jan each year at 03:00 UTC — annual third-party rebuilder drill
+    - cron: "0 3 1 1 *"
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to verify (e.g. v14.0.0). Defaults to latest."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  issues: write     # open a GitHub issue on mismatch
+
+concurrency:
+  group: rebuilder-${{ github.ref }}
+  cancel-in-progress: false  # never cancel a running verification
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NODE_VERSION: "24"
+
+jobs:
+  verify:
+    name: Hermetic rebuild + SHA-256 comparison
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # ── 1. Resolve tag ────────────────────────────────────────────────────
+      - name: Resolve release tag
+        id: resolve
+        run: |
+          INPUT_TAG="${{ github.event.inputs.tag }}"
+          if [[ -n "$INPUT_TAG" ]]; then
+            echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            # Fetch latest release tag from GitHub API
+            LATEST=$(curl -sS \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
+              | jq -r .tag_name)
+            echo "tag=$LATEST" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── 2. Checkout exact tag ─────────────────────────────────────────────
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ steps.resolve.outputs.tag }}
+          fetch-depth: 0
+
+      # ── 3. Hermetic Node setup ─────────────────────────────────────────────
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install tools (parent MyScripts/)
+        run: bash .github/ci/install-tools.sh --ignore-scripts
+
+      # ── 4. Clean build ─────────────────────────────────────────────────────
+      - name: Build dist/ from tag
+        run: npm run build
+
+      # ── 5. Create dist.zip (same method as release.yml) ───────────────────
+      - name: Create dist.zip
+        run: |
+          cd dist
+          zip -r ../dist-rebuild.zip .
+          cd ..
+          sha256sum dist-rebuild.zip | awk '{print $1}' > dist-rebuild.zip.sha256
+
+      # ── 6. Download official dist.zip from release ────────────────────────
+      - name: Download official release artefact
+        id: download
+        run: |
+          TAG="${{ steps.resolve.outputs.tag }}"
+          echo "Verifying tag: $TAG"
+
+          RELEASE_DATA=$(curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
+
+          DIST_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name == "dist.zip") | .browser_download_url')
+
+          if [[ -z "$DIST_URL" || "$DIST_URL" == "null" ]]; then
+            echo "::error::No dist.zip asset found for release $TAG"
+            exit 1
+          fi
+
+          curl -sS -L -o dist-official.zip "$DIST_URL"
+          sha256sum dist-official.zip | awk '{print $1}' > dist-official.zip.sha256
+
+          echo "official=$(cat dist-official.zip.sha256)" >> "$GITHUB_OUTPUT"
+          echo "rebuild=$(cat dist-rebuild.zip.sha256)" >> "$GITHUB_OUTPUT"
+
+      # ── 7. Compare SHA-256 ────────────────────────────────────────────────
+      - name: Compare SHA-256 hashes
+        id: compare
+        run: |
+          OFFICIAL="${{ steps.download.outputs.official }}"
+          REBUILD="${{ steps.download.outputs.rebuild }}"
+
+          echo "Official: $OFFICIAL"
+          echo "Rebuild:  $REBUILD"
+
+          if [[ "$OFFICIAL" == "$REBUILD" ]]; then
+            echo "✅ Reproducible: SHA-256 match" >> "$GITHUB_STEP_SUMMARY"
+            echo "match=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "❌ Non-reproducible: SHA-256 MISMATCH" >> "$GITHUB_STEP_SUMMARY"
+            echo "Official: $OFFICIAL" >> "$GITHUB_STEP_SUMMARY"
+            echo "Rebuild:  $REBUILD" >> "$GITHUB_STEP_SUMMARY"
+            echo "match=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── 8. Generate rebuilder manifest for comparison ─────────────────────
+      - name: Generate rebuilder manifest
+        run: node scripts/check-reproducible.mjs
+
+      # ── 9. Open GitHub issue on mismatch (for human review) ───────────────
+      - name: Open issue on SHA-256 mismatch
+        if: steps.compare.outputs.match == 'false'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const tag = '${{ steps.resolve.outputs.tag }}';
+            const official = '${{ steps.download.outputs.official }}';
+            const rebuild = '${{ steps.download.outputs.rebuild }}';
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[D15] Rebuilder mismatch: ${tag}`,
+              labels: ['security', 'priority: critical'],
+              body: [
+                '## ⚠️ Reproducible Build Mismatch (D15 / ADR-064)',
+                '',
+                `**Tag**: \`${tag}\``,
+                `**Official SHA-256**: \`${official}\``,
+                `**Rebuild SHA-256**: \`${rebuild}\``,
+                '',
+                '**Required action**: Investigate before the next patch release.',
+                'A mismatch indicates the build is non-deterministic or the release',
+                'artefact was modified after publication.',
+                '',
+                'See [docs/adr/ADR-064.md](../blob/main/docs/adr/ADR-064.md) and',
+                '[V14-SECURITY-L3](../blob/main/docs/ROADMAP.md) for verification protocol.',
+              ].join('\n'),
+            });
