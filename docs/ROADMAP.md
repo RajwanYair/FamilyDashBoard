@@ -494,7 +494,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 - [x] D3 Compute Pressure API tile in system-info.
 - [x] D4 Storage Buckets per-card eviction.
 - [x] LHCI ratchet `error 0.97 → 0.98` cached. (Sprint 397, v13.43.0)
-- [ ] Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io).
+- [ ] Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io). _(v14.0 static-analysis pass done; live Deno Deploy drill deferred to `drill/vendor-2026-06` branch — see docs/adr/vendor-drill-log.md)_
 
 **Exit**: all D-items D3–D5, D9–D14 shipped; LHCI cached ≥ 0.98; module-boundary lint zero violations; every card module ≤ 6 KB gzip.
 

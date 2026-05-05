@@ -7,9 +7,14 @@
  * APIs, then prints a checklist of alternatives for Deno Deploy and Bun Deploy
  * so the operator can assess portability risk before each major release.
  *
- * This is an INFORMATIONAL script — it always exits 0.
- * It does NOT fail CI.  Run it quarterly as part of the ADR-031 drill:
+ * Usage (informational, always exits 0):
  *   node scripts/check-vendor-neutrality.mjs
+ *
+ * Usage (gate mode, exits 1 if unmitigated HIGH-risk APIs are detected):
+ *   node scripts/check-vendor-neutrality.mjs --gate
+ *
+ * Gate mode is intended for pre-release gating before `git tag vX.0.0`.
+ * Document results in docs/adr/vendor-drill-log.md after each drill.
  *
  * ADR reference: docs/adr/ADR-031-vendor-portability.md
  */
@@ -109,15 +114,18 @@ function scanFiles(apiEntry) {
 
 // ── Report ─────────────────────────────────────────────────────────────────
 
+const GATE_MODE = process.argv.includes("--gate");
+
 const DIVIDER = "─".repeat(72);
 
 console.log(`\n${"═".repeat(72)}`);
 console.log("  FamilyDashBoard — Worker Vendor-Neutrality Drill  (ADR-031)");
-console.log(`  ${new Date().toISOString().slice(0, 10)}  |  Sprint 228 (v13.25.0)`);
+console.log(`  ${new Date().toISOString().slice(0, 10)}  |  v14.0${GATE_MODE ? "  [--gate]" : ""}`);
 console.log(`${"═".repeat(72)}\n`);
 
 let totalApis = 0;
 let detectedApis = 0;
+let highRiskUnmitigated = 0;
 
 for (const api of CF_APIS) {
   totalApis++;
@@ -138,9 +146,18 @@ for (const api of CF_APIS) {
   console.log(`   Bun Deploy alt  : ${api.bunEquivalent}`);
   console.log(`   Primary adapter : ${api.adapterFile}`);
   console.log(DIVIDER);
+
+  if (detected && api.portabilityRisk === "HIGH") {
+    highRiskUnmitigated++;
+  }
 }
 
-console.log(`\nSummary: ${detectedApis}/${totalApis} Cloudflare-specific APIs detected.\n`);
+console.log(`\nSummary: ${detectedApis}/${totalApis} Cloudflare-specific APIs detected.`);
+if (highRiskUnmitigated > 0) {
+  console.log(`         ${highRiskUnmitigated} HIGH-risk API${highRiskUnmitigated > 1 ? "s" : ""} in use.\n`);
+} else {
+  console.log();
+}
 
 if (detectedApis === 0) {
   console.log("✅  Worker appears vendor-neutral — no CF-specific APIs detected.");
@@ -148,8 +165,19 @@ if (detectedApis === 0) {
   console.log("📋  Action items for portability:");
   console.log("     1. Review each ⚠️  entry above before migrating off Cloudflare.");
   console.log("     2. HIGH-risk items require a migration spike (add to ROADMAP).");
-  console.log("     3. Update docs/adr/ADR-031-vendor-portability.md after each drill.");
-  console.log("     4. Next drill: run quarterly or before any major infra change.\n");
+  console.log("     3. Update docs/adr/vendor-drill-log.md after each annual drill.");
+  console.log("     4. Next drill target: run before git tag vX.0.0.\n");
 }
-console.log("(Script always exits 0 — informational only per ADR-031.)\n");
+
+if (GATE_MODE && highRiskUnmitigated > 0) {
+  console.error(
+    `\n❌  Gate failed: ${highRiskUnmitigated} unmitigated HIGH-risk API${highRiskUnmitigated > 1 ? "s" : ""} detected.` +
+      "\n    Document mitigations in docs/adr/vendor-drill-log.md before releasing.\n",
+  );
+  process.exit(1);
+}
+
+if (!GATE_MODE) {
+  console.log("(Run with --gate to exit 1 on unmitigated HIGH-risk APIs.)\n");
+}
 process.exit(0);
