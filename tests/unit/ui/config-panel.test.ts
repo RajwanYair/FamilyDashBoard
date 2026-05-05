@@ -12,7 +12,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { setupConfigPanelTestDOM } from "../helpers/config-panel-dom";
-import { shareSettings, exportSettings, importSettings, cancelEcfgDialog, confirmEcfgDialog } from "@/ui/config-panel";
+import { shareSettings, exportSettings, importSettings, cancelEcfgDialog, confirmEcfgDialog, encryptedShareSettings, openEcfgImportDialog } from "@/ui/config-panel";
 
 type CfgMod = {
   openConfigPanel: () => void;
@@ -1558,5 +1558,46 @@ describe("ConfigPanel — confirmEcfgDialog", () => {
   it("does not throw when required elements are absent", () => {
     document.body.innerHTML = "";
     expect(() => confirmEcfgDialog()).not.toThrow();
+  });
+});
+
+// ── Sprint 421 / coverage ratchet: openEcfgDialog callers ─────────────────
+
+describe("ConfigPanel — encryptedShareSettings (Sprint 421)", () => {
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("calls openEcfgDialog (export) and resolves null when dialog absent", async () => {
+    document.body.innerHTML = "";
+    // No dialog in DOM — openEcfgDialog resolves immediately with null
+    expect(() => encryptedShareSettings()).not.toThrow();
+    // Let microtasks flush so the async .then() runs without hanging
+    await Promise.resolve();
+  });
+
+  it("calls showModal when ecfg-dialog element is present, then cancels", async () => {
+    document.body.innerHTML = `
+      <dialog id="ecfg-dialog">
+        <p id="ecfg-dialog-desc"></p>
+        <input id="ecfg-passphrase-input" value="">
+        <p id="ecfg-dialog-error" hidden></p>
+      </dialog>
+    `;
+    const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement;
+    const showModal = vi.spyOn(dlg, "showModal").mockImplementation(() => {});
+    encryptedShareSettings();
+    await Promise.resolve();
+    expect(showModal).toHaveBeenCalled();
+    cancelEcfgDialog(); // resolve with null so the .then() callback exits cleanly
+    await Promise.resolve();
+  });
+});
+
+describe("ConfigPanel — openEcfgImportDialog (Sprint 421)", () => {
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("does not throw when dialog element is absent", async () => {
+    document.body.innerHTML = "";
+    expect(() => openEcfgImportDialog("#ecfg=abc")).not.toThrow();
+    await Promise.resolve();
   });
 });

@@ -144,10 +144,16 @@ export default defineConfig({
         //   Actuals: 93.17/84.73/92.02/94.55. Margins: Stmts +0.17, Branches +0.13,
         //   Funcs +0.02, Lines +0.05 — still too tight for safe ratchet.
         //   Thresholds held; next ratchet target: 93.1/84.7/92.0/94.5 when buffer ≥ 0.2%.
-        statements: 93.0,
-        branches: 84.6,
+        // Sprint 421 (coverage ratchet — N-Star-UI + ecfg + buildNewsPayload tests):
+        //   Added: encryptedShareSettings/openEcfgImportDialog/openEcfgDialog coverage (+4 tests),
+        //   buildNewsPayload coverage via getSemanticPayload("news") (+1 test).
+        //   Fixed: currency.test.ts cache pollution (beforeEach cDelete).
+        //   Actuals: 93.30/84.79/92.00/94.73. Ratchet: stmts 93.0→93.2, branches 84.6→84.7,
+        //   functions 92.0 (held — exactly at threshold), lines 94.5→94.6.
+        statements: 93.2,
+        branches: 84.7,
         functions: 92.0,
-        lines: 94.5,
+        lines: 94.6,
       },
     },
   },

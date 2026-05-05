@@ -26,6 +26,7 @@ import {
   getLastCurrencyRates,
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
+import { cDelete } from "@/core/cache";
 
 const MOCK_RATES: Record<string, number> = {
   USD: 0.2667, // 1 ILS = 0.2667 USD → 1 USD ≈ 3.75 ILS
@@ -1140,6 +1141,8 @@ describe("Currency configSchema — CS-C1 (Sprint 283)", () => {
 // ── Sprint 415 / coverage ratchet: getLastCurrencyRates ───────────────────
 
 describe("Currency — getLastCurrencyRates", () => {
+  beforeEach(() => { cDelete("cur"); });
+
   it("returns null when no rates have been fetched (cache miss)", () => {
     expect(getLastCurrencyRates()).toBeNull();
   });
