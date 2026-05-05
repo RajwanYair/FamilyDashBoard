@@ -166,7 +166,6 @@ export function imsStationToWeatherResponse(station: IMSStation): WeatherRespons
       apparent_temperature: tempC, // IMS doesn't provide feels-like; use dry bulb
       uv_index: 0, // not in IMS current-weather feed
       dew_point_2m: dewPoint,
-      cloud_cover: undefined,
     },
     hourly: {
       time: hourlyTimes,

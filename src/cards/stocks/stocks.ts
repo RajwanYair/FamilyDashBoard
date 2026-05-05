@@ -33,6 +33,7 @@ import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
 import type { YahooChartResponse, CoinGeckoResponse } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 import { getLastCurrencyRates } from "../currency/currency";
+import { fetchTASE, isTASETicker } from "./tase-adapter";
 import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
@@ -709,6 +710,19 @@ async function updateStockVolumeHistory(blk: Element, sym: string, vol: number):
   }
 }
 async function fetchStock(sym: string): Promise<YahooChartResponse> {
+  // D8/S-TASE (ADR-061): non-index .TA tickers use native TASE API for authoritative ILS prices.
+  if (isTASETicker(sym)) {
+    try {
+      const taseData = await fetchTASE(sym);
+      if (taseData?.chart?.result?.[0]) {
+        diagLog(`FDB-044t: [stocks] ${sym} OK via TASE native adapter`);
+        return taseData;
+      }
+    } catch (err) {
+      diagLog(`FDB-044t: [stocks] ${sym} TASE failed, falling back to Yahoo: ${String(err)}`);
+    }
+  }
+
   // BTC-USD: use CoinGecko (CORS-enabled, Yahoo crypto fails in browser)
   if (sym === "BTC-USD") {
     const cg = await fetchJSONWithWorker<CoinGeckoResponse>(API.COINGECKO_BTC);
