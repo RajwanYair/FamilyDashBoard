@@ -9,6 +9,39 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.3.0] — 2026-05-12
+
+> **6336 tests / 209 suites / 0 failures** (commit `b7bd304`)
+
+### Security
+
+- **Sprint 464**: OWASP +3 rules — A03 `element.srcdoc` iframe injection, A02 `btoa()` encoding credential, A01 hardcoded admin/root bypass (`isAdmin/isRoot/isSuperUser = true`); 29 rules total.
+- **Sprint 466**: OWASP scan extended to `scripts/*.mjs` (build/CI helpers); exempted scanner + checker helpers; suppressed 3 false positives with `owasp-allow` comments.
+
+### Quality Gates
+
+- **Sprint 462**: D13 per-card bundle warn-cap ratchet 28 → 26 KB; hard-cap held at 66 KB (weather card 65.1 KB).
+- **Sprint 463**: Coverage thresholds ratcheted 93.9/85.1/94.2/95.3 → 94.0/85.2/94.3/95.4 (Sprints 459-461 added 26 property tests for cache/signals/event-bus).
+
+### Tests
+
+- **Sprint 459**: fast-check CS1-CS8 for `src/core/cache.ts` — 8 properties: round-trip identity, TTL=0 expiry, `cGetStale` ignores TTL, key isolation, last-write-wins, `cDelete` all tiers, hitRate ∈ [0,1], lastHitLayer validity.
+- **Sprint 460**: fast-check SIG1-SIG6 for `src/core/signals.ts` — 11 tests: initial value, computed derivation + chaining, effect runs once, re-runs on change/no-op, batch coalesces N writes → 1 run, `untrack` no dep, `isSignal` guard.
+- **Sprint 461**: fast-check EB1-EB6 for `src/core/event-bus.ts` — 7 tests: `broadcastSync` idempotence, loading dominates globalSync, all-error→"error", all-ok→"ok", `broadcastAlert` stores payload + null clears, `broadcastTheme` stores theme.
+- **Sprint 465**: fast-check HIS1-HIS6 for `src/core/history.ts` `sparklineSvg` — 7 tests: empty string for < 2 values, non-empty SVG + `<polyline>` for ≥ 2, x-coordinates strictly non-decreasing, flat values produce no NaN/Infinity, color verbatim in `stroke`, viewBox reflects w/h.
+
+### Documentation
+
+- **Sprint 467**: ROADMAP baselines updated — 6303→6336 tests, 70→74 property suites, 14→18 modules, coverage 93.9→94.0, OWASP 22→29 rules + scripts/ scope, bundle warn 28→26 KB.
+
+#### Quality
+
+- 6336 / 6336 tests passing across 209 suites
+- 0 type errors / 0 lint errors / 0 lint warnings / 0 suppressions
+- All CI gates clean: typecheck · ESLint · markdownlint · Vitest · build · bundle · OWASP · CSP · Trusted Types · ADR index
+
+---
+
 ## [14.2.0] — 2026-05-05
 
 > **6303 tests / 205 suites / 0 failures** (commit `099dbef`)
