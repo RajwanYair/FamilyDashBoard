@@ -543,6 +543,12 @@ export function init(): void {
     });
   }
 
+  // ── D1/X11: MCP bridge (ADR-066) — lazy-load ONLY when ?mcp=1 on initial page load ──
+  // Zero bytes parsed when the flag is absent; privacy by design.
+  if (new URLSearchParams(window.location.search).has("mcp")) {
+    void import("./core/mcp-bridge").then((m) => m.initMcpBridge());
+  }
+
   diagLog(`[init] FDB-010: dashboard initialized`);
 }
 
