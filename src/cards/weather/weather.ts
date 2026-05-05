@@ -33,6 +33,8 @@ import { setSync } from "../../core/sync";
 import { loadConfig, saveConfig } from "../../core/config";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import { fetchNWS } from "./nws-adapter";
+import { fetchIMS } from "./ims-adapter";
+import { isILGeo } from "./ims-adapter";
 import { effect } from "../../core/signals";
 import { tempUnit as tempUnitSignal } from "../../core/app-signals";
 import { computeMoonPhase as _sharedMoonPhase } from "../../core/utils";
@@ -563,6 +565,14 @@ async function fetchWeather(): Promise<WeatherResponse> {
       return await fetchNWS(lat, lon);
     } catch (e) {
       diagLog(`[weather] NWS fetch failed, falling back to Open-Meteo: ${String(e)}`);
+    }
+  }
+  // D8/W-IMS (ADR-061): IMS as primary source for IL coordinates.
+  if (isILGeo(lat, lon)) {
+    try {
+      return await fetchIMS(lat, lon);
+    } catch (e) {
+      diagLog(`[weather] IMS fetch failed, falling back to Open-Meteo: ${String(e)}`);
     }
   }
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,apparent_temperature,uv_index,dew_point_2m,cloud_cover&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_probability_max,uv_index_max&timezone=Asia%2FJerusalem&forecast_days=11`;
