@@ -66,6 +66,8 @@ export const API = {
   ZMANIM: "https://www.hebcal.com/zmanim",
   SEFARIA_CALENDAR: "https://www.sefaria.org/api/calendars",
   SEFARIA_TEXT: "https://www.sefaria.org/api/v3/texts/",
+  // D8/C-BoI (ADR-061): Bank of Israel official daily ILS reference rates (XML, no key).
+  CURRENCY_BOI: "https://boi.org.il/PublicApi/GetExchangeRates",
   CURRENCY_PRIMARY: "https://open.er-api.com/v6/latest/ILS",
   CURRENCY_FALLBACK: "https://api.exchangerate-api.com/v4/latest/ILS",
   // Sprint 132 (Roadmap #16): ECB-direct mirror via Frankfurter (no key, daily ECB rates).
@@ -77,6 +79,10 @@ export const API = {
   COINGECKO_BTC:
     "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",
   ALERTS: "https://api.tzevaadom.co.il/alerts-history",
+  // D8/W-IMS (ADR-061): Israel Meteorological Service — current conditions for IL stations.
+  IMS_CURRENT_WEATHER: "https://ims.gov.il/sites/default/files/ims_data/map_data/currentWeather.json",
+  // D8/S-TASE (ADR-061): Tel-Aviv Stock Exchange — snapshot quotes for .TA tickers.
+  TASE_QUOTE: "https://api.tase.co.il/api/share/GetAllShares",
 } as const;
 
 // ── Stocks ──

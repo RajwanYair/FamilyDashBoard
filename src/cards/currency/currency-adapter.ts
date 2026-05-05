@@ -1,13 +1,17 @@
 /**
  * FamilyDashBoard v13 — Currency Provider Adapter (Sprint 91)
  *
- * Implements ProviderAdapter for exchange-rate APIs (ER-API primary, exchangerate-api fallback).
+ * Implements ProviderAdapter for exchange-rate APIs.
+ *
+ * Provider chain (ADR-061 D8/C-BoI, v14.0):
+ *   BoI (Bank of Israel) → open.er-api → exchangerate-api → Frankfurter/ECB
  */
 
 import type { ProviderAdapter } from "../../types/provider";
 import { API, INTERVALS } from "../../core/constants";
 import { fetchJSONWithWorker } from "../../core/fetch";
 import { createCachedProviderAdapter } from "../../core/provider-adapter";
+import { fetchBoIRates } from "./boi-adapter";
 
 const PROVIDER_ID = "currency";
 const CACHE_KEY = "cur";
@@ -27,7 +31,17 @@ export function createCurrencyAdapter(): ProviderAdapter<CurrencyRateResponse> {
     cacheKey: CACHE_KEY,
     cacheTtl,
     async fetchFresh(): Promise<CurrencyRateResponse> {
-      // Sprint 132 (Roadmap #16): ECB-direct via Frankfurter as 3rd fallback for redundancy.
+      // D8/C-BoI (ADR-061): Bank of Israel as authoritative primary ILS source.
+      try {
+        const boi = await fetchBoIRates();
+        if (boi?.rates && Object.keys(boi.rates).length > 2) {
+          return boi;
+        }
+      } catch {
+        // BoI failed — fall through to existing provider chain.
+      }
+
+      // Sprint 132 (Roadmap #16): ECB-direct via Frankfurter as 3rd fallback.
       for (const url of [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK, API.CURRENCY_FALLBACK_ECB]) {
         try {
           const data = await fetchJSONWithWorker<CurrencyRateResponse>(url);
