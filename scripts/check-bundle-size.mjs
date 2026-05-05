@@ -353,8 +353,9 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 // Sprint 380 (v13.39.0): ratchet 44 → 42 KB.
 // Sprint 392 (v13.40.0): ratchet 42 → 40 KB.
 // Sprint 398 (v13.43.0): ratchet 40 → 38 KB.
-const PER_CARD_HARD_CAP_KB = 80;
-const PER_CARD_WARN_KB = 38;
+// Sprint 425 (v14.0.0): warn 38 → 36 KB; hard-cap 80 → 75 KB (max card: weather 57 KB).
+const PER_CARD_HARD_CAP_KB = 75;
+const PER_CARD_WARN_KB = 36;
 let perCardCapOk = true;
 console.log(`📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`);
 for (const { name, sourceKb } of cardSourceRows) {
