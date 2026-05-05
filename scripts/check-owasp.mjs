@@ -4,6 +4,7 @@
  * Sprint 427 (v14.0.0) — added A03 document.write rule + A05 postMessage(*) rule.
  * Sprint 435 (v14.1.0) — added A01 open-redirect, A02 atob-credential, A03 setTimeout-string.
  * Sprint 444 (v14.2.0) — added A03 createElement-script, A04 __proto__ pollution, A04 defineProperty-prototype.
+ * Sprint 450 (v14.2.0) — added A03 insertAdjacentHTML, A05 http-in-fetch, A07 window.opener access.
  *
  * Scans `src/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -209,6 +210,33 @@ const RULES = [
     label: "Object.defineProperty on Object.prototype (prototype pollution)",
     severity: "error",
     pattern: /Object\.defineProperty\s*\(\s*Object\.prototype\b/,
+  },
+
+  // A03 — Injection (Sprint 450)
+  {
+    // insertAdjacentHTML injects raw HTML into the DOM — same risk as innerHTML
+    category: "A03",
+    label: "insertAdjacentHTML() call (DOM injection — use insertAdjacentText or textContent)",
+    severity: "error",
+    pattern: /\.insertAdjacentHTML\s*\(/,
+  },
+
+  // A05 — Security Misconfiguration (Sprint 450)
+  {
+    // Plain HTTP fetch leaks data in transit; use HTTPS for all network calls
+    category: "A05",
+    label: "fetch() over plain http:// (unencrypted traffic — upgrade to HTTPS)",
+    severity: "warn",
+    pattern: /\bfetch\s*\(\s*['"]http:\/\//,
+  },
+
+  // A07 — Identification and Authentication Failures (Sprint 450)
+  {
+    // window.opener can point to the originating page; assigning to it enables reverse tabnapping
+    category: "A07",
+    label: "window.opener access (reverse tabnapping — ensure opener is null for cross-origin links)",
+    severity: "warn",
+    pattern: /\bwindow\.opener\b/,
   },
 ];
 
