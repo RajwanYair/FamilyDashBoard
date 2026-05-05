@@ -1,8 +1,8 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-01 · **Shipped baseline**: v14.0.0 (Sprint 429 · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
+> **Refresh date**: 2026-05-05 · **Shipped baseline**: v14.0.0 (Sprint 429) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
 >
-> **Inventory**: 6012 tests / 186 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 55 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 6240 tests / 203 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -12,7 +12,7 @@
 
 ## 0. Executive Summary
 
-After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X10), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6012 tests, 55 fast-check property suites across 11 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill scaffolded.
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6240 tests, 65 fast-check property suites across 13 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
@@ -250,7 +250,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 | Edge cache             | **KV stale + D1 + DO + AE**                                                         | n/a        | n/a       | Postgres      | n/a         | n/a          | n/a         | proprietary | iCloud      | Prom / Mimir     | Influx        | Cloud     | Cloud    | proprietary   | Cloud     | Cloud            | Cloud        | Cloud        |
 | TS strictness          | **strict + nUII + vMS + eOPT**                                                      | strict     | partial   | strict        | n/a         | partial      | n/a         | unknown     | n/a         | partial          | partial       | n/a       | n/a      | n/a           | n/a       | unknown          | unknown      | unknown      |
 | CSS                    | **`@layer` + tokens + Lightning + `@scope` + `light-dark()` + `@property`**          | Tailwind 4 | SCSS      | Mantine CSS-in-JS | Hand    | CSS Modules  | AppKit      | Tailwind    | SwiftUI     | SCSS + Emotion   | hand          | n/a       | hand     | n/a           | SwiftUI   | Tailwind         | Tailwind     | Tailwind     |
-| Tests                  | **6012 unit + PW + axe + 108 VR + LHCI + 55 fast-check + Stryker**                  | Vitest partial | partial | Vitest + PW + Argos | Go     | Minimal      | XCTest      | unknown     | XCTest      | Go tests         | pytest        | n/a       | n/a      | n/a           | unknown   | unknown          | unknown      | unknown      |
+| Tests                  | **6240 unit + PW + axe + 108 VR + LHCI + 65 fast-check + Stryker**                  | Vitest partial | partial | Vitest + PW + Argos | Go     | Minimal      | XCTest      | unknown     | XCTest      | Go tests         | pytest        | n/a       | n/a      | n/a           | unknown   | unknown          | unknown      | unknown      |
 | Visual regression      | **Playwright (108, in-repo)**                                                       | None       | None      | Argos CI      | None        | None         | Snapshot    | unknown     | None        | Pixelmatch       | None          | None      | None     | None          | None      | None             | None         | None         |
 | i18n                   | **Hebrew RTL + English**                                                            | 45+        | 22+       | 38+           | en-only     | 30+          | 40+         | 25+         | 40+         | 30+              | 80+           | en-only   | en-only  | en-only       | en-only   | many             | en-only      | many         |
 | A11y                   | **WCAG 2.2 AA + axe gate**                                                          | Partial    | Partial   | Partial       | Unknown     | Partial      | VoiceOver   | Unknown     | Apple stack | Partial          | Partial       | n/a       | n/a      | E-ink only    | Apple     | partial          | partial      | partial      |
@@ -301,7 +301,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 3. **Hebrew RTL + Zmanim + Hebcal + Sefaria + Tzeva-Adom native** — unique.
 4. **12 provider-adapted cards with normalized history + stale fallback** — depth over breadth.
 5. **4-tier offline cache + dev escape hatches** — no peer renders a useful dashboard offline _and_ provides a `?nosw=1` opt-out.
-6. **6012 tests + axe + 108 VR + LHCI + 55 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
+6. **6240 tests + axe + 108 VR + LHCI + 65 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
 7. **Production observability without tracking cookies** — RUM + Vitals + Errors + Reports + AE + Prometheus.
 8. **Reproducible single-artefact release** — `dist.zip` + `worker.js`, SLSA-pinned + Sigstore + rebuilder manifest.
 9. **Hostile-network resilience** — explicit corp-proxy CSP allowlist, SW unregister helper, file-protocol launch.
@@ -412,7 +412,7 @@ Companion to X11. Phone joins the dashboard's WebRTC mesh (ADR-049 v14.x) over Q
 
 User clicks a tile; system copies a context-rich text + JSON-LD payload (e.g. "30 ◌ April 2026 — Yom HaShoah · 19:30 candle-lighting · גשם 35%") for paste into chat / mail.
 
-- **X15** · P2 · S · Lo · v14.x — Replaces today's plain-text copy-on-tile (where present); keyboard `Y` (yank) while focused on a card — `C` was already taken by clock-seconds toggle. _(spec ADR-070 shipped v13.37.0 Sprint 359; **core + key wired shipped v13.38.0 Sprints 367–369**; per-card payload producers deferred)_
+- **X15** · ✅ · **Shipped v14.0.0** — All 12 per-card semantic clipboard producers shipped (Sprints 387–415). Spec ADR-070; core + keyboard `Y` wired v13.38.0 Sprints 367–369; fast-check property tests added Sprint 430 (SCP1–SCP5). _(fully complete)_
 
 ### 4.6 Cross-card invariants protected
 
