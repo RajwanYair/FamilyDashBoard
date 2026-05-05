@@ -319,7 +319,7 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 - **N-V** · P0 · L · Hi · v14.0 — Retire SimHash v2 once Vectorize 30-day shadow run delivers precision@10 ≥ +15 %. (ADR-052 active.)
 - **N-WebNN** · P2 · M · Mid · v15 — Move per-source rerank to WebNN on-device when API GA (D2).
-- **N-Star-UI** · P2 · S · Lo · v14.x — Read-later viewer drawer. IDB store + `unstarArticle`/`isStarred` already shipped; needs viewer UI.
+- ~~**N-Star-UI**~~ · P2 · S · Lo · v14.0 — Read-later viewer drawer shipped (Sprint 420). `<dialog>` with IDB-backed tile grid; `openStarredDrawer()`/`closeStarredDrawer()`/`getStarredArticles()` in `news.ts`.
 - **N-TTS** · P2 · M · Mid · v15 — Web Speech API "read article" (Hebrew + English; gated 3+ requests). [N4 carry-over]
 
 ### 3.2 Weather

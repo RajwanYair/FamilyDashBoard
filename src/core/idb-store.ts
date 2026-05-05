@@ -102,3 +102,29 @@ export function _idbClearFallback(): void {
   _fallback.clear();
   _idbAvailable = null;
 }
+
+/** Get all values in a store. Returns an empty array when the store is empty or unavailable. */
+export async function idbGetAll<T>(
+  dbName: string,
+  storeName: string,
+): Promise<T[]> {
+  const prefix = `${dbName}/${storeName}/`;
+  if (!isIDBAvailable()) {
+    return Array.from(_fallback.entries())
+      .filter(([k]) => k.startsWith(prefix))
+      .map(([, v]) => v as T);
+  }
+  try {
+    const db = await openStore(dbName, storeName);
+    return await new Promise<T[]>((resolve, reject) => {
+      const tx = db.transaction(storeName, "readonly");
+      const req = tx.objectStore(storeName).getAll();
+      req.onsuccess = () => resolve((req.result as T[]) ?? []);
+      req.onerror = () => reject(req.error);
+    });
+  } catch {
+    return Array.from(_fallback.entries())
+      .filter(([k]) => k.startsWith(prefix))
+      .map(([, v]) => v as T);
+  }
+}

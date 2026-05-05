@@ -24,7 +24,7 @@ import {
 import { runConcurrent } from "../../core/fetch";
 import { loadConfig } from "../../core/config";
 import { diagLog } from "../../core/diag";
-import { idbGet, idbSet, idbDelete } from "../../core/idb-store";
+import { idbGet, idbSet, idbDelete, idbGetAll } from "../../core/idb-store";
 import type { NewsItem } from "../../types/api";
 import type { CardConfigField, CardDefinition } from "../../types/card";
 import { setCardSignal } from "../../core/card-signal-protocol";
@@ -88,6 +88,8 @@ let elSearchInput: HTMLInputElement | null = null;
 let elSearchClear: HTMLElement | null = null;
 let elSearchCount: HTMLElement | null = null;
 let elNewsCount: HTMLElement | null = null;
+let elStarBtn: HTMLElement | null = null;
+let elStarDialog: HTMLDialogElement | null = null;
 let _newsRefreshInterval: number | null = null;
 
 // ── Search ──
@@ -406,6 +408,98 @@ export async function isStarred(id: string): Promise<boolean> {
   return entry !== null;
 }
 
+/** Retrieve all saved read-later articles, newest first. */
+export async function getStarredArticles(): Promise<StarredArticle[]> {
+  const all = await idbGetAll<StarredArticle>(IDB_NEWS_DB, IDB_STARRED_STORE);
+  return all.sort((a, b) => b.starredAt.localeCompare(a.starredAt));
+}
+
+// ── Sprint 420 / N-Star-UI: Read-later viewer drawer ─────────────────────
+
+/** Close the starred-articles dialog. */
+export function closeStarredDrawer(): void {
+  elStarDialog?.close();
+}
+
+/** Render and open the starred-articles `<dialog>` drawer. */
+export async function openStarredDrawer(): Promise<void> {
+  if (!elStarDialog) return;
+  const articles = await getStarredArticles();
+
+  const list = elStarDialog.querySelector<HTMLElement>(".news-starred-list");
+  if (!list) return;
+
+  list.replaceChildren();
+
+  if (articles.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "news-starred-empty";
+    empty.textContent = "אין מאמרים שמורים — לחץ ⭐ ליד כתבה כדי לשמור לקריאה מאוחר יותר.";
+    list.appendChild(empty);
+  } else {
+    for (const art of articles) {
+      const tile = document.createElement("div");
+      tile.className = "news-starred-tile";
+
+      const titleLink = document.createElement("a");
+      titleLink.className = "news-starred-title";
+      titleLink.textContent = art.title;
+      if (art.link) {
+        titleLink.href = art.link;
+        titleLink.target = "_blank";
+        titleLink.rel = "noopener noreferrer";
+      }
+
+      const meta = document.createElement("div");
+      meta.className = "news-starred-meta";
+
+      const sourceSpan = document.createElement("span");
+      sourceSpan.className = "news-starred-source";
+      sourceSpan.textContent = art.source;
+
+      const dateSpan = document.createElement("span");
+      dateSpan.className = "news-starred-date";
+      try {
+        dateSpan.textContent = new Date(art.starredAt).toLocaleString("he-IL", {
+          timeZone: "Asia/Jerusalem",
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } catch {
+        dateSpan.textContent = art.starredAt.slice(0, 16);
+      }
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "news-starred-remove";
+      removeBtn.textContent = "✕";
+      removeBtn.setAttribute("aria-label", `הסר "${art.title}" מהשמורים`);
+      removeBtn.addEventListener("click", () => {
+        void unstarArticle(art.id).then(() => {
+          tile.remove();
+          if (!list.querySelector(".news-starred-tile")) {
+            const empty2 = document.createElement("p");
+            empty2.className = "news-starred-empty";
+            empty2.textContent = "אין מאמרים שמורים.";
+            list.appendChild(empty2);
+          }
+        });
+      });
+
+      meta.appendChild(sourceSpan);
+      meta.appendChild(dateSpan);
+      tile.appendChild(removeBtn);
+      tile.appendChild(titleLink);
+      tile.appendChild(meta);
+      list.appendChild(tile);
+    }
+  }
+
+  elStarDialog.showModal();
+}
+
 export function cacheDom(): void {
   elRssScroll = document.getElementById("rss-scroll");
   if (elRssScroll) {
@@ -420,6 +514,23 @@ export function cacheDom(): void {
   elSearchCount = document.getElementById("news-search-count");
   elNewsCount = document.getElementById("news-count");
   if (elBkmPill) elBkmPill.hidden = true;
+  // N-Star-UI: read-later drawer
+  elStarBtn = document.getElementById("news-star-btn");
+  elStarDialog = document.getElementById("news-starred-dialog") as HTMLDialogElement | null;
+  if (elStarBtn) {
+    elStarBtn.addEventListener("click", () => {
+      void openStarredDrawer();
+    });
+  }
+  const closeBtn = document.getElementById("news-starred-close");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeStarredDrawer);
+  }
+  if (elStarDialog) {
+    elStarDialog.addEventListener("click", (e) => {
+      if (e.target === elStarDialog) closeStarredDrawer();
+    });
+  }
   loadBookmarks();
   loadVisited();
   loadMutedSources();
