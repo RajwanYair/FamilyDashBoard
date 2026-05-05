@@ -324,16 +324,16 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.2 Weather
 
-- **W-IMS** · P0 · M · Hi · v14.0 — Add **IMS (Israel Met Service)** native source as primary for `geonameid` ∈ IL (D8). Provider-health envelope unchanged.
+- ~~**W-IMS**~~ — shipped v14.0 (Sprint 422, ADR-061). `ims-adapter.ts` + `isILGeo()` gate; primary for geonameid ∈ IL; falls back to Open-Meteo + Met Norway.
 
 ### 3.3 Stocks
 
 - **S-DO** · P1 · M · Hi · v14.x — DO Hibernatable WebSocket live stream (replaces HTTP poll; ~80 % DO bill drop idle). [S1 carry-over]
-- **S-TASE** · P0 · M · Hi · v14.0 — Add **TASE (Tel-Aviv Stock Exchange)** native source for `.TA` suffix tickers (D8). Cross-link currency card for ILS conversion.
+- ~~**S-TASE**~~ — shipped v14.0 (Sprint 422, ADR-061). `tase-adapter.ts` + `isTASETicker()` gate; authoritative prices for `.TA` suffix tickers with ILS conversion.
 
 ### 3.4 Currency
 
-- **C-BoI** · P1 · S · Hi · v14.0 — Add **Bank of Israel direct** as authoritative ILS source (D8). Provider chain order: BoI → Frankfurter → ECB → exchangerate.host.
+- ~~**C-BoI**~~ — shipped v14.0 (Sprint 422, ADR-061). `boi-adapter.ts` + `parseBoIRates()`; chain: BoI → open.er-api → Frankfurter/ECB. XML parser with DOMParser; `isILGeo()` from boi-adapter.
 
 ### 3.5 Calendar
 
@@ -375,8 +375,8 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.13 Cross-card peer-driven additions (NEW)
 
-- **PC-1 (Granola-inspired)** · P1 · M · Mid · v14.x — End-of-day "what mattered" tile: AI synthesis of cards (already shipped X9) gains a 30-second after-day audio recap (gated; same audio-CSP work as H-Sefaria-Audio).
-- **PC-2 (Comet-inspired)** · P0 · M · Hi · v14.x — **MCP read-only server** (D1). Surfaces today's calendar / hebrew-cal / alerts / weather / countdown so users' assistants can ask without scraping. Localhost-only; no cloud egress.
+- ~~**PC-1 (Granola-inspired)**~~ — shipped v14.0 (Sprint 421/422). `speakSynthesis()` / `stopSpeakSynthesis()` / `_setSpeakBtnState()` on AI synthesis card; 28 tests; audio-CSP audit complete.
+- ~~**PC-2 (Comet-inspired)**~~ — shipped v14.0 (Sprint 415). `mcp-bridge.ts` + `docs/mcp.md`; X11 MCP read-only server.
 
 ---
 
@@ -511,7 +511,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 
 ### 6.3 V14-CARDS-DEEP — Open per-card depth (v14.0, Q1–Q2 2027)
 
-- [ ] **W-IMS · S-TASE · C-BoI** native IL providers (D8).
+- [x] **W-IMS · S-TASE · C-BoI** native IL providers (D8). _(shipped v14.0 Sprint 422; boi-adapter.ts + ims-adapter.ts + tase-adapter.ts, all with full test suites)_
 - [x] **W-Nowcast · W-AQI · W-Compass** weather expansion. _(shipped ≤ v13.42.0; pruned in S400)_
 - [ ] **N-V** Vectorize cutover.
 - [ ] **S-DO** DO Hibernatable WebSocket migration. _(A-DO already shipped, pruned in S400)_
@@ -527,7 +527,7 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 - [x] **D1 / X11** MCP read-only server — `mcp-bridge.ts` shipped v14.0 Sprint 415; `docs/mcp.md` operator guide shipped v14.0 Sprint 416; companion remains out-of-repo.
 - [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; today-pane + ai-synthesis consumers migrated v14.0 S415; remaining 2 → v14.x).
 - [x] **X15** semantic clipboard (core + `Y` key shipped v13.38.0 S367–369; first 2 producers shipped v13.39.0: countdown S377, hebrew-cal S379; remaining 5 producers shipped v14.0 S415: motivation, tasks, system-info, video-news, ai-synthesis).
-- [x] **PC-1** end-of-day audio recap — SpeechSynthesis read-aloud button on AI synthesis card. `Sprint 421`
+- [x] **PC-1** end-of-day audio recap — SpeechSynthesis read-aloud button on AI synthesis card. `Sprint 421/422` (coverage fix + 2 additional tests for _setSpeakBtnState; all 28 tests pass; functions 92.08%)
 
 **Exit**: MCP server verified zero remote-origin reachability; CSP unchanged; LHCI no regression; ADR shipped.
 
