@@ -17,6 +17,8 @@ import { loadConfig } from "../../core/config";
 import { getStreamDescriptor, listChannels } from "./video-news-adapter";
 import type { VideoChannelId } from "../../types/stream";
 import type { CardConfigField } from "../../types/card";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../core/semantic-clipboard";
 
 // ── Internal state ─────────────────────────────────────────────────────────
 
@@ -183,6 +185,23 @@ function buildChannelTile(id: VideoChannelId): HTMLElement {
 
 // ── Public init / destroy ──────────────────────────────────────────────────
 
+// X15 (Sprint 415): semantic clipboard producer
+function buildVideoNewsPayload(): SemanticPayload {
+  const desc = getStreamDescriptor(_activeChannel);
+  return {
+    cardId: "video-news",
+    text: `ערוץ פעיל: ${desc.titleHe}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "BroadcastChannel",
+      name: desc.titleHe,
+      broadcastChannelId: _activeChannel,
+      inLanguage: "he",
+    },
+    ts: Date.now(),
+  };
+}
+
 /**
  * Wire up DOM for the video-news card.
  * Called by FdbVideoNewsCard.connect().
@@ -211,6 +230,8 @@ export function initVideoNews(root: HTMLElement, initialChannel: VideoChannelId 
   root.appendChild(grid);
 
   updateMiniInfo();
+  // X15 (Sprint 415): register semantic clipboard producer
+  registerSemanticProducer("video-news", buildVideoNewsPayload);
   diagLog(`[video-news] init complete — ${listPinnedChannels().length} channels loaded`);
 }
 

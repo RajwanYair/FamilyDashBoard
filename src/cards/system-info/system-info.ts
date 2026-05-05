@@ -18,6 +18,8 @@ import { loadConfig } from "../../core/config";
 import { historyAppend, historyGet, sparklineSvg } from "../../core/history";
 import { decomposeDuration, pad2 } from "../../core/utils";
 import type { CardDefinition, CardConfigField } from "../../types/card";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../core/semantic-clipboard";
 
 // ── Types for non-standard browser APIs ──────────────────────────────────
 
@@ -333,12 +335,36 @@ export async function renderSystemInfo(): Promise<void> {
 
 let _sysInfoInterval: number | null = null;
 
+// X15 (Sprint 415): semantic clipboard producer
+function buildSystemInfoPayload(): SemanticPayload {
+  const device = categorizeDevice();
+  const conn = getConnectionInfo();
+  const load = getPageLoadTime();
+  const vp = getViewportSize();
+  const pressure = getPressureState();
+  return {
+    cardId: "system-info",
+    text: `מכשיר: ${device} · ${vp.width}×${vp.height} · חיבור: ${conn} · טעינה: ${load}ms · לחץ: ${pressure}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "FamilyDashBoard",
+      operatingSystem: device,
+      applicationCategory: "Dashboard",
+      offers: { "@type": "Offer", price: "0" },
+    },
+    ts: Date.now(),
+  };
+}
+
 export function initSystemInfoCard(): void {
   initPressureObserver();
   void renderSystemInfo();
   if (_sysInfoInterval) clearInterval(_sysInfoInterval);
   // Refresh every 30 seconds
   _sysInfoInterval = window.setInterval(() => void renderSystemInfo(), 30_000);
+  // X15 (Sprint 415): register semantic clipboard producer
+  registerSemanticProducer("system-info", buildSystemInfoPayload);
 
   // React to online/offline events
   window.addEventListener("online", () => {

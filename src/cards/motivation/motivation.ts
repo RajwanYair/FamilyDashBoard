@@ -14,6 +14,8 @@ import { showToast } from "../../ui/toast";
 import { loadConfig } from "../../core/config";
 import type { CardConfigField } from "../../types/card";
 import { idbGet, idbSet } from "../../core/idb-store";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../core/semantic-clipboard";
 
 /** Sprint 23: Category labels for motivation quotes. */
 export type MotivationCategory =
@@ -243,6 +245,25 @@ export function getCurrentQuote(): MotivationQuote | null {
   return pool[motiIdx] ?? null;
 }
 
+// X15 (Sprint 415): semantic clipboard producer
+function buildMotivationPayload(): SemanticPayload | null {
+  const q = getCurrentQuote();
+  if (!q) return null;
+  const authorPart = q.author ? ` — ${q.author}` : "";
+  return {
+    cardId: "motivation",
+    text: `ציטוט: ${q.text}${authorPart}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Quotation",
+      text: q.text,
+      spokenByCharacter: q.author || undefined,
+      inLanguage: "he",
+    },
+    ts: Date.now(),
+  };
+}
+
 /**
  * Render a specific quote with fade animation.
  * Used by both renderMotivation (user-triggered) and the async loader.
@@ -375,6 +396,8 @@ export function initMotivationCard(): void {
 
   // Synchronous initial render — no async overhead for first display
   renderMotivation();
+  // X15 (Sprint 415): register semantic clipboard producer
+  registerSemanticProducer("motivation", buildMotivationPayload);
   // Stream D2.4: use createAsyncCardLoader for all scheduled refreshes
   // (adds visibility + lock checks, consistent with other cards)
   scheduleCard(loadMotivation, INTERVALS.MOTIVATION);

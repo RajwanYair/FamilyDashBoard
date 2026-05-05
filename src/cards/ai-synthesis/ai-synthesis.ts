@@ -13,6 +13,8 @@ import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { setSync } from "../../core/sync";
 import { setCardSignal } from "../../core/card-signal-protocol";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../core/semantic-clipboard";
 import type { CardConfigField } from "../../types/card";
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -39,6 +41,8 @@ export const aiSynthesisConfigSchema: CardConfigField[] = [
 let _elText: HTMLElement | null = null;
 let _elMeta: HTMLElement | null = null;
 let _scheduleId: number | null = null;
+/** X15 (Sprint 415): snapshot for semantic clipboard producer. */
+let _synthesisSnapshot: string | null = null;
 
 // ── Data shape from worker ─────────────────────────────────────────────────
 
@@ -85,11 +89,29 @@ export async function fetchSynthesis(): Promise<string | null> {
 // ── Render helper ──────────────────────────────────────────────────────────
 
 function renderSynthesis(text: string, source: "fresh" | "cached"): void {
+  _synthesisSnapshot = text; // X15: keep snapshot for semantic producer
   if (_elText) _elText.textContent = text;
   if (_elMeta) {
     const now = new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
     _elMeta.textContent = source === "cached" ? `עודכן: ${now} (מטמון)` : `עודכן: ${now}`;
   }
+}
+
+// X15 (Sprint 415): semantic clipboard producer
+function buildAiSynthesisPayload(): SemanticPayload | null {
+  if (!_synthesisSnapshot) return null;
+  return {
+    cardId: "ai-synthesis",
+    text: `תקציר AI: ${_synthesisSnapshot.substring(0, 200)}`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      name: "תקציר AI יומי",
+      description: _synthesisSnapshot,
+      inLanguage: "he",
+    },
+    ts: Date.now(),
+  };
 }
 
 function renderDisabled(): void {
@@ -154,7 +176,11 @@ export function initAiSynthesisCard(): void {
   });
 
   void loadAiSynthesisData();
-  _scheduleId = window.setInterval(() => { void loadAiSynthesisData(); }, SYNTH_REFRESH_MS);
+  _scheduleId = window.setInterval(() => {
+    void loadAiSynthesisData();
+  }, SYNTH_REFRESH_MS);
+  // X15 (Sprint 415): register semantic clipboard producer
+  registerSemanticProducer("ai-synthesis", buildAiSynthesisPayload);
 }
 
 export function destroyAiSynthesisCard(): void {
@@ -172,4 +198,5 @@ export function _resetAiSynthesisForTest(): void {
   _elMeta = null;
   _scheduleId = null;
   _pageVisible = true;
+  _synthesisSnapshot = null;
 }

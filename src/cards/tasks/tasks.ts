@@ -18,6 +18,8 @@ import { loadConfig } from "../../core/config";
 import { initAutoLoopScroll } from "../../core/auto-loop-scroll";
 import { LS_TASKS_DONE, LS_TASKS_RESET, LS_CHORES } from "../../core/constants";
 import type { CardDefinition, CardConfigField } from "../../types/card";
+import { registerSemanticProducer } from "../../core/semantic-clipboard";
+import type { SemanticPayload } from "../../core/semantic-clipboard";
 
 export interface ChoreItem {
   person: string;
@@ -626,11 +628,41 @@ function bindOnce(
   element.dataset[marker] = "1";
 }
 
+// X15 (Sprint 415): semantic clipboard producer
+function buildTasksPayload(): SemanticPayload | null {
+  const today = getTasksForToday();
+  const overdue = today.filter((c) => {
+    const { dueDate } = parseTaskDueDate(c.chore);
+    return dueDate !== null && isOverdue(dueDate);
+  });
+  if (today.length === 0) return null;
+  const { cleanText: firstText } = parseTaskDueDate(today[0]!.chore);
+  const overdueNote = overdue.length > 0 ? ` · ${overdue.length} באיחור` : "";
+  return {
+    cardId: "tasks",
+    text: `משימות היום: ${today.length}${overdueNote} · "${firstText}"`,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "משימות היום",
+      numberOfItems: today.length,
+      itemListElement: today.slice(0, 5).map((c, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: parseTaskDueDate(c.chore).cleanText,
+      })),
+    },
+    ts: Date.now(),
+  };
+}
+
 export function initTasksCard(): void {
   renderTasksCard();
   if (_tasksInterval) clearInterval(_tasksInterval);
   // Re-render every hour (catches daily reset if dashboard is always on)
   _tasksInterval = window.setInterval(renderTasksCard, 60 * 60 * 1_000);
+  // X15 (Sprint 415): register semantic clipboard producer
+  registerSemanticProducer("tasks", buildTasksPayload);
 
   bindOnce(
     document.getElementById("tasks-mark-all-btn"),
