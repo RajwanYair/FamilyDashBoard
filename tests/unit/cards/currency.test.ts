@@ -23,6 +23,7 @@ import {
   applyPairVisibility,
   getCurrencyTrend,
   currencyConfigSchema,
+  getLastCurrencyRates,
 } from "@/cards/currency/currency";
 import { clearFetchLocks } from "@/core/fetch";
 
@@ -1133,5 +1134,13 @@ describe("Currency configSchema — CS-C1 (Sprint 283)", () => {
     const field = currencyConfigSchema.find((f) => f.key === "currencyShowSparkline");
     expect(field?.type).toBe("boolean");
     expect(field?.defaultValue).toBe(true);
+  });
+});
+
+// ── Sprint 415 / coverage ratchet: getLastCurrencyRates ───────────────────
+
+describe("Currency — getLastCurrencyRates", () => {
+  it("returns null when no rates have been fetched (cache miss)", () => {
+    expect(getLastCurrencyRates()).toBeNull();
   });
 });

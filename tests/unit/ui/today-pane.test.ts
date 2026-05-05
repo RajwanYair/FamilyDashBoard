@@ -529,3 +529,132 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP6-TDP8, Sprint
     );
   });
 });
+
+// ── Sprint 415: initTodayPane — covers lines 269-271, 277-278 + the 1 uncovered function ─────
+import { initTodayPane } from "@/ui/today-pane";
+
+describe("TodayPane — initTodayPane (Sprint 415)", () => {
+  beforeEach(() => {
+    _resetTodayPaneForTest();
+    localStorage.clear();
+    vi.useFakeTimers();
+    document.body.innerHTML = `
+      <section id="today-pane" class="is-hidden">
+        <div id="today-pane-items"></div>
+      </section>`;
+  });
+  afterEach(() => {
+    _resetTodayPaneForTest();
+    vi.useRealTimers();
+    document.body.innerHTML = "";
+  });
+
+  it("wires DOM, runs initial refresh, and starts 60s interval", () => {
+    initTodayPane();
+    // _paneEl and _itemsEl are wired; first refreshTodayPane() ran already
+    const pane = document.getElementById("today-pane");
+    expect(pane).not.toBeNull();
+    // Timer was started — advance by 60s to verify it fires again (no throw)
+    expect(() => vi.advanceTimersByTime(60 * 60_000)).not.toThrow();
+  });
+
+  it("does nothing when required DOM elements are absent", () => {
+    document.body.innerHTML = "<div></div>";
+    expect(() => initTodayPane()).not.toThrow();
+  });
+
+  it("_resetTodayPaneForTest clears the interval when timer is active", () => {
+    initTodayPane();
+    // timer is now set (_refreshTimer !== null) — reset must clearInterval
+    expect(() => _resetTodayPaneForTest()).not.toThrow();
+    // A second reset with timer=null must also be safe
+    expect(() => _resetTodayPaneForTest()).not.toThrow();
+  });
+});
+
+// ── Sprint 415 / X12: collectInputs non-null signal paths ─────────────────
+// These tests use getCardSignal mock with real values to cover the non-null
+// branches in the private collectInputs() function (reached via refreshTodayPane).
+
+import { getCardSignal } from "@/core/card-signal-protocol";
+
+describe("TodayPane — refreshTodayPane signal non-null branches (X12, Sprint 415)", () => {
+  beforeEach(() => {
+    _resetTodayPaneForTest();
+    localStorage.clear();
+    document.body.innerHTML = `
+      <section id="today-pane">
+        <div id="today-pane-items"></div>
+      </section>`;
+    cachePaneDom();
+    vi.mocked(getCardSignal).mockReturnValue(null);
+  });
+  afterEach(() => {
+    _resetTodayPaneForTest();
+    vi.restoreAllMocks();
+    document.body.innerHTML = "";
+  });
+
+  it("shows alert pill when alerts signal has count > 0", () => {
+    vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
+      if (cardId === "alerts" && key === "active") {
+        return { value: { count: 2, areas: ["תל אביב", "רמת גן"], latestTs: Date.now() / 1000 - 30 } } as ReturnType<typeof getCardSignal>;
+      }
+      return null;
+    });
+    refreshTodayPane();
+    const pills = document.querySelectorAll(".today-pill");
+    expect(pills.length).toBeGreaterThan(0);
+  });
+
+  it("shows countdown pill when countdown signal is present", () => {
+    vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
+      if (cardId === "countdown" && key === "next") {
+        return { value: { targetMs: Date.now() + 3 * 60 * 60 * 1000, title: "אירוע" } } as ReturnType<typeof getCardSignal>;
+      }
+      return null;
+    });
+    refreshTodayPane();
+    const pills = document.querySelectorAll(".today-pill");
+    expect(pills.length).toBeGreaterThan(0);
+  });
+
+  it("shows stock mover pill from signal (not DOM fallback)", () => {
+    vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
+      if (cardId === "stocks" && key === "top-mover") {
+        return { value: { sym: "TSLA", pct: 5.2, dir: "up" } } as ReturnType<typeof getCardSignal>;
+      }
+      return null;
+    });
+    refreshTodayPane();
+    // Stock pct ≥ 3% — should appear as a stock pill
+    const pills = document.querySelectorAll(".today-pill");
+    expect(pills.length).toBeGreaterThan(0);
+  });
+
+  it("shows calendar pill for non-all-day event within 6h from signal", () => {
+    const startMs = Date.now() + 2 * 60 * 60 * 1000; // 2h from now
+    vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
+      if (cardId === "calendar" && key === "next-event") {
+        return { value: { title: "ישיבה", startMs, isAllDay: false } } as ReturnType<typeof getCardSignal>;
+      }
+      return null;
+    });
+    refreshTodayPane();
+    const pills = document.querySelectorAll(".today-pill");
+    expect(pills.length).toBeGreaterThan(0);
+  });
+
+  it("skips calendar pill for all-day event (isAllDay: true branch)", () => {
+    const startMs = Date.now() + 2 * 60 * 60 * 1000;
+    vi.mocked(getCardSignal).mockImplementation((cardId: string, key: string) => {
+      if (cardId === "calendar" && key === "next-event") {
+        return { value: { title: "חג", startMs, isAllDay: true } } as ReturnType<typeof getCardSignal>;
+      }
+      return null;
+    });
+    refreshTodayPane();
+    const calPills = document.querySelectorAll("[data-type='cal']");
+    expect(calPills.length).toBe(0);
+  });
+});

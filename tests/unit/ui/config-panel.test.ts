@@ -12,7 +12,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { setupConfigPanelTestDOM } from "../helpers/config-panel-dom";
-import { shareSettings, exportSettings, importSettings } from "@/ui/config-panel";
+import { shareSettings, exportSettings, importSettings, cancelEcfgDialog, confirmEcfgDialog } from "@/ui/config-panel";
 
 type CfgMod = {
   openConfigPanel: () => void;
@@ -1517,5 +1517,46 @@ describe("Config Panel — weatherUsTravelMode populateForm (Sprint 82)", () => 
     const mod = await freshCfg();
     expect(() => mod.initConfigPanel()).not.toThrow();
     expect(() => mod.openConfigPanel()).not.toThrow();
+  });
+});
+
+// ── Sprint 415 / coverage ratchet: ecfg dialog handlers ───────────────────────────────────────────
+
+describe("ConfigPanel — cancelEcfgDialog", () => {
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("does not throw when dialog element is absent", () => {
+    document.body.innerHTML = "";
+    expect(() => cancelEcfgDialog()).not.toThrow();
+  });
+
+  it("closes the dialog and resolves the promise with null", () => {
+    document.body.innerHTML = `<dialog id="ecfg-dialog"></dialog>`;
+    const dlg = document.getElementById("ecfg-dialog") as HTMLDialogElement;
+    // Simulate open state
+    vi.spyOn(dlg, "close");
+    cancelEcfgDialog();
+    expect(dlg.close).toHaveBeenCalled();
+  });
+});
+
+describe("ConfigPanel — confirmEcfgDialog", () => {
+  afterEach(() => { document.body.innerHTML = ""; });
+
+  it("shows validation error when passphrase input is empty", () => {
+    document.body.innerHTML = `
+      <dialog id="ecfg-dialog"></dialog>
+      <input id="ecfg-passphrase-input" value="">
+      <span id="ecfg-dialog-error" hidden></span>
+    `;
+    confirmEcfgDialog();
+    const err = document.getElementById("ecfg-dialog-error");
+    expect(err?.hidden).toBe(false);
+    expect(err?.textContent).toBeTruthy();
+  });
+
+  it("does not throw when required elements are absent", () => {
+    document.body.innerHTML = "";
+    expect(() => confirmEcfgDialog()).not.toThrow();
   });
 });

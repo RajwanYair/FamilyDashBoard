@@ -2184,6 +2184,45 @@ describe("Worker — handleErrorsExport route", () => {
   });
 });
 
+// ── Sprint 415: handleErrorsQueue (Workers Queue consumer) ─────────────────────
+import { handleErrorsQueue } from "../../../worker/src/routes/errors";
+
+describe("Worker — handleErrorsQueue consumer (Sprint 415)", () => {
+  it("acks well-formed queue message and logs info", async () => {
+    const acked: boolean[] = [];
+    const msg = {
+      body: { count: 3, dateKey: "2026-05-05", enqueuedAt: "2026-05-05T10:00:00Z", kvPrefix: "errors:2026-05-05:" },
+      ack: () => { acked.push(true); },
+    };
+    await handleErrorsQueue({ messages: [msg] });
+    expect(acked).toHaveLength(1);
+    expect(acked[0]).toBe(true);
+  });
+
+  it("acks malformed (null body) queue message without throwing", async () => {
+    const acked: boolean[] = [];
+    const msg = {
+      body: null,
+      ack: () => { acked.push(true); },
+    };
+    await handleErrorsQueue({ messages: [msg] });
+    expect(acked).toHaveLength(1);
+  });
+
+  it("acks multiple messages in one batch", async () => {
+    const acked: boolean[] = [];
+    const mkMsg = (body: unknown) => ({ body, ack: () => { acked.push(true); } });
+    await handleErrorsQueue({
+      messages: [
+        mkMsg({ count: 1, dateKey: "2026-05-05", enqueuedAt: "T", kvPrefix: "errors:" }),
+        mkMsg({ count: 2, dateKey: "2026-05-05", enqueuedAt: "T", kvPrefix: "errors:" }),
+        mkMsg("not-an-object"),
+      ],
+    });
+    expect(acked).toHaveLength(3);
+  });
+});
+
 // ── Sprint 47: feeds.ts missing branches ──────────────────────────────────────
 
 describe("Worker — handleStocks with FINNHUB_API_KEY (Finnhub primary path)", () => {

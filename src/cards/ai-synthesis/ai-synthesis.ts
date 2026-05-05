@@ -200,3 +200,8 @@ export function _resetAiSynthesisForTest(): void {
   _pageVisible = true;
   _synthesisSnapshot = null;
 }
+
+/** Test-only hook to seed _synthesisSnapshot without going through the loader. */
+export function _setSnapshotForTest(text: string | null): void {
+  _synthesisSnapshot = text;
+}

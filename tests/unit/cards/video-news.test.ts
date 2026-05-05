@@ -374,3 +374,39 @@ describe("VideoNews configSchema — CS-VN1 (Sprint 278)", () => {
     expect(adv).toContain("cards.video-news.settings.pauseAtNight");
   });
 });
+
+// ── X15 semantic producer (buildVideoNewsPayload) ─────────────────────────
+import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
+
+describe("VideoNews semantic producer — X15 (Sprint 415)", () => {
+  let root: HTMLElement;
+  beforeEach(() => {
+    _resetSemanticProducers();
+    document.body.innerHTML = `
+      <div id="video-news-body"></div>
+      <div id="video-news-mini"></div>
+    `;
+    root = document.getElementById("video-news-body") as HTMLElement;
+  });
+  afterEach(() => {
+    destroy();
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("returns a non-null payload after initVideoNews", () => {
+    initVideoNews(root);
+    const payload = getSemanticPayload("video-news");
+    expect(payload).not.toBeNull();
+    expect(payload!.cardId).toBe("video-news");
+    expect(payload!.text).toContain("ערוץ פעיל:");
+    expect(payload!.jsonLd?.["@type"]).toBe("BroadcastChannel");
+  });
+
+  it("payload broadcastChannelId matches the active channel", () => {
+    initVideoNews(root, "kan11");
+    const payload = getSemanticPayload("video-news");
+    expect(payload!.jsonLd?.["broadcastChannelId"]).toBe("kan11");
+    expect(payload!.jsonLd?.["inLanguage"]).toBe("he");
+  });
+});

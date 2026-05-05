@@ -33,6 +33,7 @@ import {
   getUpcomingYahrzeits,
   todayHebrewMD,
   hebrewCalConfigSchema,
+  destroyHebrewCalCard,
 } from "@/cards/hebrew-cal/hebrew-cal";
 import { _idbClearFallback } from "@/core/idb-store";
 import { cGet, cGetStale, cSet, cGetAsync, cGetStaleAsync, cSetAsync } from "@/core/cache";
@@ -2683,5 +2684,13 @@ describe("HebrewCal configSchema — CS-H1 (Sprint 279)", () => {
   it("all tile-visibility fields are in group תצוגה", () => {
     const displayFields = hebrewCalConfigSchema.filter((f) => f.group === "תצוגה");
     expect(displayFields.length).toBe(6);
+  });
+});
+
+// ── Sprint 415 / coverage ratchet: destroyHebrewCalCard ────────────────────
+
+describe("HebrewCal — destroyHebrewCalCard", () => {
+  it("does not throw when no intervals are scheduled", () => {
+    expect(() => destroyHebrewCalCard()).not.toThrow();
   });
 });

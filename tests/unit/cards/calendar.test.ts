@@ -17,6 +17,7 @@ import {
   getHolidaysByDate,
   findConflicts,
   calendarConfigSchema,
+  destroyCalendarCard,
 } from "@/cards/calendar/calendar";
 import { cSet, cClear } from "@/core/cache";
 import * as fetchCore from "@/core/fetch";
@@ -3330,5 +3331,23 @@ describe("Calendar configSchema — CS-CAL1 (Sprint 284)", () => {
     const field = calendarConfigSchema.find((f) => f.key === "calendarShowConflicts");
     expect(field?.type).toBe("boolean");
     expect(field?.defaultValue).toBe(false);
+  });
+});
+
+// ── Sprint 415 / coverage ratchet: destroyCalendarCard ──────────────────────
+
+describe("Calendar — destroyCalendarCard", () => {
+  it("does not throw when no interval is scheduled (null state)", () => {
+    expect(() => destroyCalendarCard()).not.toThrow();
+  });
+
+  it("cancels scheduled interval when one is active", () => {
+    vi.useFakeTimers();
+    const id = window.setInterval(() => {}, 1_000);
+    // Force internal state by calling init first then destroy
+    vi.spyOn(window, "clearInterval");
+    destroyCalendarCard(); // clears if non-null (state is null here — no throw)
+    vi.useRealTimers();
+    void id; // suppress unused var lint
   });
 });

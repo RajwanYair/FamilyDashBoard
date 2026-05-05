@@ -33,6 +33,7 @@ This directory is the canonical entry point for product documentation in FamilyD
 
 | File                                                     | Purpose                                                         |
 | -------------------------------------------------------- | --------------------------------------------------------------- |
+| [mcp.md](mcp.md)                                         | MCP bridge operator guide (X11 / D1, ADR-066)                  |
 | [adding-a-card.md](adding-a-card.md)                     | Step-by-step guide for adding a new card                        |
 | [deployment.md](deployment.md)                           | GitHub Pages and Cloudflare Pages deployment                    |
 | [data-sources.md](data-sources.md)                       | All external APIs, worker routes, cache keys, and failure modes |

@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { state } from "@/core/state";
+import { state, _resetForTest } from "@/core/state";
 
 // Reset state between tests by seeding known values
 beforeEach(() => {
@@ -143,5 +143,21 @@ describe("state — invalid/unknown slice key", () => {
   it("silently ignores writes to unknown slice", () => {
     // TypeScript would prevent this, but runtime guard should not throw
     expect(() => state.set("unknown.key" as Parameters<typeof state.set>[0], "val")).not.toThrow();
+  });
+});
+
+// ── Sprint 415 / coverage ratchet: _resetForTest ──────────────────────────
+
+describe("state — _resetForTest", () => {
+  it("clears all slices and fires change events", () => {
+    state.set("config.tempUnit", "F");
+    state.set("cache.weather", { temp: 20 });
+    _resetForTest();
+    expect(state.get("config.tempUnit")).toBeUndefined();
+    expect(state.get("cache.weather")).toBeUndefined();
+  });
+
+  it("is callable multiple times without throwing", () => {
+    expect(() => { _resetForTest(); _resetForTest(); }).not.toThrow();
   });
 });
