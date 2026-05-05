@@ -2,8 +2,9 @@
 /**
  * check-dead-exports.mjs — Sprint 116 (Task 1/20 + Task 20/20)
  *
- * Scans src/ for exported symbols that are never imported anywhere in src/ or
- * tests/.  Reports candidates for dead code.
+ * Scans src/ and worker/src/ for exported symbols that are never imported
+ * anywhere in src/, worker/src/, or tests/.  Reports candidates for dead code.
+ * Sprint 476 (v14.4.0): extended scan scope to worker/src/ (mirrors Sprint 466 OWASP extension).
  *
  * False-positive sources (excluded automatically):
  *   - Re-export barrel files (index.ts) — excluded from analysis
@@ -18,13 +19,14 @@
  * --fail-on-dead is passed.  This keeps CI green while still surfacing debt.
  */
 
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
 const SRC = join(ROOT, "src");
+const WORKER_SRC = join(ROOT, "worker", "src"); // Sprint 476: also scan worker code
 const TESTS = join(ROOT, "tests");
 
 const { values: flags } = parseArgs({
@@ -56,6 +58,7 @@ function walkTs(dir) {
  * TypeScript declarations that are appropriate to export for documentation
  * and contract purposes even when not currently consumed by src/ or tests/.
  * Sprint 156: reduced false-positive surface from 75 → ~10 candidates.
+ * Sprint 476: lines annotated `// dead-export-ok` are suppressed from analysis.
  */
 const EXPORT_RE =
   /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?enum\s+)(\w+)/gm;
@@ -66,6 +69,25 @@ const EXPORT_NAMED_RE = /^export\s*\{([^}]+)\}/gm;
 function extractExports(src) {
   /** @type {string[]} */
   const names = [];
+  // Sprint 476: collect suppressed symbols (lines with // dead-export-ok)
+  /** @type {Set<string>} */
+  const suppressed = new Set();
+  // Non-global versions of regexes for single-line exec
+  const EXPORT_RE_NG = /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?enum\s+)(\w+)/;
+  const EXPORT_DEFAULT_RE_NG = /^export\s+default\s+(?:function\s+|class\s+)?(\w+)/;
+  for (const line of src.split("\n")) {
+    if (!line.includes("dead-export-ok")) continue;
+    const m = EXPORT_RE_NG.exec(line) ?? EXPORT_DEFAULT_RE_NG.exec(line);
+    if (m?.[1]) suppressed.add(m[1]);
+    // also handle named exports on suppressed lines
+    const nm = /export\s*\{([^}]+)\}/.exec(line);
+    if (nm?.[1]) {
+      for (const part of nm[1].split(",")) {
+        const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+        if (name) suppressed.add(name);
+      }
+    }
+  }
   for (const m of src.matchAll(EXPORT_RE)) if (m[1]) names.push(m[1]);
   for (const m of src.matchAll(EXPORT_DEFAULT_RE)) if (m[1]) names.push(m[1]);
   for (const m of src.matchAll(EXPORT_NAMED_RE)) {
@@ -79,24 +101,27 @@ function extractExports(src) {
       if (name && name !== "") names.push(name);
     }
   }
-  return [...new Set(names.filter(Boolean))];
+  return [...new Set(names.filter(Boolean).filter((n) => !suppressed.has(n)))];
 }
 
 // ─── Build corpus ────────────────────────────────────────────────────────────
 
 const srcFiles = walkTs(SRC);
+const workerSrcFiles = statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirectory()
+  ? walkTs(WORKER_SRC)
+  : [];
 const testFiles = walkTs(TESTS);
-const allFiles = [...srcFiles, ...testFiles];
+const allFiles = [...srcFiles, ...workerSrcFiles, ...testFiles];
 
 // Concatenate all source text for import-search
 const corpus = allFiles.map((f) => readFileSync(f, "utf8")).join("\n");
 
-// ─── Analyse each src/ file ──────────────────────────────────────────────────
+// ─── Analyse each src/ and worker/src/ file ───────────────────────────────────
 
 /** @type {{ file: string; symbol: string }[]} */
 const dead = [];
 
-for (const file of srcFiles) {
+for (const file of [...srcFiles, ...workerSrcFiles]) {
   // Skip type declaration files and vite-env
   if (file.endsWith(".d.ts") || file.includes("vite-env")) continue;
 
@@ -126,7 +151,10 @@ for (const file of srcFiles) {
 // ─── Report ──────────────────────────────────────────────────────────────────
 
 if (dead.length === 0) {
-  console.log("✅ Dead export check: no unused exports detected in src/");
+  const totalFiles = srcFiles.length + workerSrcFiles.length;
+  console.log(
+    `✅ Dead export check: no unused exports detected in src/ or worker/src/ (${totalFiles} files scanned)`,
+  );
   process.exit(0);
 }
 

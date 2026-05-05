@@ -11,7 +11,7 @@ import * as v from "valibot";
 
 // ── Weather (Open-Meteo) ──────────────────────────────────────────────────────
 
-export const WeatherCurrentSchema = v.looseObject({
+export const WeatherCurrentSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   temperature_2m: v.number(),
   apparent_temperature: v.number(),
   weather_code: v.number(),
@@ -21,13 +21,13 @@ export const WeatherCurrentSchema = v.looseObject({
   uv_index: v.number(),
 });
 
-export const WeatherHourlySchema = v.looseObject({
+export const WeatherHourlySchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   temperature_2m: v.array(v.number()),
   precipitation_probability: v.array(v.number()),
   weather_code: v.array(v.number()),
 });
 
-export const WeatherDailySchema = v.looseObject({
+export const WeatherDailySchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   temperature_2m_max: v.array(v.number()),
   temperature_2m_min: v.array(v.number()),
   weather_code: v.array(v.number()),
@@ -51,7 +51,7 @@ export const CurrencySchema = v.looseObject({
 
 // ── Hebcal (Shabbat times) ────────────────────────────────────────────────────
 
-export const HebcalItemSchema = v.looseObject({
+export const HebcalItemSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   title: v.string(),
   date: v.string(),
   category: v.string(),
@@ -63,7 +63,7 @@ export const HebcalSchema = v.looseObject({
 
 // ── Hebcal Holidays ───────────────────────────────────────────────────────────
 
-export const HebcalHolidayItemSchema = v.looseObject({
+export const HebcalHolidayItemSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   title: v.string(),
   date: v.string(),
   category: v.string(),
@@ -75,13 +75,13 @@ export const HebcalHolidaysSchema = v.looseObject({
 
 // ── Stocks (Yahoo Finance chart) ─────────────────────────────────────────────
 
-export const StocksChartMetaSchema = v.looseObject({
+export const StocksChartMetaSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   regularMarketPrice: v.number(),
   currency: v.string(),
   symbol: v.string(),
 });
 
-export const StocksChartResultSchema = v.looseObject({
+export const StocksChartResultSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   meta: StocksChartMetaSchema,
 });
 
@@ -113,7 +113,7 @@ export const NewsRssSchema = v.pipe(
 
 // ── Crypto / CoinGecko ───────────────────────────────────────────────────────
 
-export const CoinGeckoPriceSchema = v.looseObject({
+export const CoinGeckoPriceSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   usd: v.number(),
   usd_24h_change: v.optional(v.number()),
 });
@@ -124,13 +124,13 @@ export const CoinGeckoSchema = v.looseObject({
 
 // ── met.no (Yr) Weather — backup provider ────────────────────────────────────
 
-export const MetNoInstantDetailsSchema = v.looseObject({
+export const MetNoInstantDetailsSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   air_temperature: v.number(),
   wind_speed: v.number(),
   relative_humidity: v.optional(v.number()),
 });
 
-export const MetNoTimeseriesSchema = v.looseObject({
+export const MetNoTimeseriesSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   time: v.string(),
   data: v.looseObject({
     instant: v.looseObject({ details: MetNoInstantDetailsSchema }),
@@ -168,7 +168,7 @@ export const FinnhubQuoteSchema = v.looseObject({
 
 // ── Tzeva Adom (Red Alerts) ──────────────────────────────────────────────────
 
-export const AlertItemSchema = v.looseObject({
+export const AlertItemSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   time: v.string(),
   threat: v.string(),
   cities: v.array(v.string()),
@@ -196,7 +196,7 @@ export const NwsPointsSchema = v.looseObject({
 /**
  * Quantitative value used for humidity, precipitation probability, dewpoint.
  */
-export const NwsQuantValueSchema = v.looseObject({
+export const NwsQuantValueSchema = v.looseObject({ // dead-export-ok: sub-schema; exported for InferOutput type consumers
   value: v.nullable(v.number()),
   unitCode: v.optional(v.string()),
 });
