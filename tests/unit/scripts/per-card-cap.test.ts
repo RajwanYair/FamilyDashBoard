@@ -9,6 +9,7 @@
  *  Sprint 425 (v14.0.0): hard ≤ 75, warn ≤ 38
  *  Sprint 433 (v14.1.0): hard ≤ 68, warn ≤ 32
  *  Sprint 443 (v14.2.0): hard ≤ 66, warn ≤ 30
+ *  Sprint 452 (v14.2.0): hard ≤ 66 (held; weather 65.1 KB), warn ≤ 28
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
@@ -27,10 +28,10 @@ describe("check-bundle-size per-card cap (Sprint 351 / D13)", () => {
     expect(hard).toBeGreaterThan(0);
   });
 
-  it("warn-cap is at most 30 KB and below hard-cap (Sprint 443)", () => {
+  it("warn-cap is at most 28 KB and below hard-cap (Sprint 452)", () => {
     const hard = Number(text.match(/PER_CARD_HARD_CAP_KB\s*=\s*(\d+)/)![1]);
     const warn = Number(text.match(/PER_CARD_WARN_KB\s*=\s*(\d+)/)![1]);
-    expect(warn).toBeLessThanOrEqual(30);
+    expect(warn).toBeLessThanOrEqual(28);
     expect(warn).toBeLessThan(hard);
   });
 
