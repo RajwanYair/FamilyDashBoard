@@ -12,6 +12,7 @@ import { cGet, cSet, cGetStale } from "../../core/cache";
 import { diagLog } from "../../core/diag";
 import { loadConfig } from "../../core/config";
 import { setSync } from "../../core/sync";
+import { setCardSignal } from "../../core/card-signal-protocol";
 import type { CardConfigField } from "../../types/card";
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -112,6 +113,7 @@ async function loadAiSynthesisData(): Promise<void> {
   const cfg = loadConfig();
   if (!cfg.synthesisEnabled) {
     renderDisabled();
+    setCardSignal("ai-synthesis", "synthesis", null); // X12: clear signal when disabled
     setSync("ai-synthesis", "ok");
     return;
   }
@@ -122,6 +124,7 @@ async function loadAiSynthesisData(): Promise<void> {
   const cached = cGet<SynthesisPayload>(SYNTH_CACHE_KEY, SYNTH_CACHE_TTL);
   if (cached?.synthesis) {
     renderSynthesis(cached.synthesis, "cached");
+    setCardSignal("ai-synthesis", "synthesis", { text: cached.synthesis }); // X12
     setSync("ai-synthesis", "ok");
     return;
   }
@@ -131,6 +134,7 @@ async function loadAiSynthesisData(): Promise<void> {
   if (text) {
     cSet(SYNTH_CACHE_KEY, { synthesis: text } satisfies SynthesisPayload);
     renderSynthesis(text, "fresh");
+    setCardSignal("ai-synthesis", "synthesis", { text }); // X12: publish for MCP + today-pane
     setSync("ai-synthesis", "ok");
   } else {
     const stale = cGetStale<SynthesisPayload>(SYNTH_CACHE_KEY);

@@ -16,18 +16,14 @@ import type { TodayPaneInputs, TodayPaneItem } from "@/ui/today-pane";
 import type { AlertEvent } from "@/types/api";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
-vi.mock("@/cards/alerts/alerts", () => ({
-  alertRingGet: vi.fn().mockReturnValue([]),
-  alertRingAppend: vi.fn(),
-  renderAlertHistory: vi.fn(),
-  showAlertTakeover: vi.fn(),
-  hideAlertTakeover: vi.fn(),
-}));
-vi.mock("@/cards/countdown/countdown", () => ({
-  getCountdownTargetDate: vi.fn().mockReturnValue(null),
-  getCountdownTitle: vi.fn().mockReturnValue(""),
-  scheduleCard: vi.fn(),
-  createCardLoader: vi.fn(),
+// X12 (Sprint 415): today-pane no longer imports from alerts/countdown card
+// modules directly — it uses getCardSignal(). Mock the protocol so
+// refreshTodayPane tests get predictable (empty) signal state.
+vi.mock("@/core/card-signal-protocol", () => ({
+  getCardSignal: vi.fn().mockReturnValue(null),
+  setCardSignal: vi.fn(),
+  onCardSignal: vi.fn(),
+  _resetCardSignals: vi.fn(),
 }));
 vi.mock("@/cards/base-card", () => ({
   scheduleCard: vi.fn(),

@@ -525,7 +525,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 NEW stream. The dashboard becomes addressable by users' AI assistants without scraping or telemetry.
 
 - [ ] **D1 / X11** MCP read-only server (`localhost:7411/mcp`); ADR before code.
-- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; remaining 2 → v14.x).
+- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; today-pane + ai-synthesis consumers migrated v14.0 S415; remaining 2 → v14.x).
 - [x] **X15** semantic clipboard (core + `Y` key shipped v13.38.0 S367–369; first 2 producers shipped v13.39.0: countdown S377, hebrew-cal S379; remaining producers → v14.x).
 - [ ] **PC-1** end-of-day audio recap (gated by audio-CSP audit).
 

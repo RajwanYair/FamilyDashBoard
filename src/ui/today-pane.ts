@@ -1,5 +1,7 @@
 /**
  * Sprint 190 / X1: Today Pane
+ * X12 (Sprint 415): migrated collectInputs() to consume card signals via
+ * getCardSignal() instead of direct cross-card imports (ADR-067).
  *
  * A collapsible summary bar between the header and main grid.
  * Aggregates urgent items from multiple cards: next calendar event ≤6h,
@@ -12,8 +14,7 @@ import {
   LS_CHORES,
   MS_PER_MIN,
 } from "../core/constants";
-import { alertRingGet } from "../cards/alerts/alerts";
-import { getCountdownTargetDate, getCountdownTitle } from "../cards/countdown/countdown";
+import { getCardSignal } from "../core/card-signal-protocol";
 import type { AlertEvent } from "../types/api";
 import type { ChoreItem } from "../cards/tasks/tasks";
 import { isOverdue, parseTaskDueDate } from "../cards/tasks/tasks";
@@ -184,55 +185,67 @@ function readChores(): ChoreItem[] {
   }
 }
 
-/** Read stock mover pill labels from DOM elements added in Sprint 187. */
-function readStockMovers(): string[] {
-  return Array.from(document.querySelectorAll<HTMLElement>(".stk-mover-pill"))
-    .map((el) => el.textContent?.trim() ?? "")
-    .filter(Boolean);
-}
+// ── Signal type helpers (X12 ADR-067) ────────────────────────────────────────
 
-/** Read next calendar event from the countdown DOM element. */
-function readNextCalEvent(): { label: string; minutesUntil: number } | null {
-  const el = document.getElementById("cal-countdown");
-  if (!el?.textContent) return null;
-  const text = el.textContent.trim();
-  if (!text) return null;
-  // Try to extract minutes from data attribute if available
-  const minsAttr = el.dataset["minutesUntil"];
-  if (minsAttr !== undefined) {
-    const mins = parseInt(minsAttr, 10);
-    if (Number.isFinite(mins) && mins >= 0) {
-      return { label: text.replace(/^.*?:\s*/, "").substring(0, 30), minutesUntil: mins };
-    }
-  }
-  return null;
-}
+interface AlertsSignal { count: number; areas: string[]; latestTs: number }
+interface CountdownSignal { targetMs: number; title: string }
+interface TopMoverSignal { sym: string; pct: number; dir: "up" | "down" }
+interface CalEventSignal { title: string; startMs: number; isAllDay: boolean }
 
-/** Collect all inputs for buildTodayItems from DOM + localStorage + card APIs. */
+/**
+ * X12 (Sprint 415): Collect today-pane inputs from card signals (ADR-067).
+ * Uses getCardSignal() instead of direct cross-card imports.
+ *
+ * Tasks still read from localStorage (no signal producer yet — X15).
+ * Stock movers fall back to DOM pills when signal is absent for backward compat.
+ */
 function collectInputs(): TodayPaneInputs {
-  const countdownDate = (() => {
-    try {
-      return getCountdownTargetDate();
-    } catch {
-      return null;
-    }
-  })();
-  const countdownTitle = (() => {
-    try {
-      return getCountdownTitle();
-    } catch {
-      return "";
-    }
-  })();
+  const nowMs = Date.now();
+
+  // Alerts — read from "alerts.active" signal
+  const alertSig = getCardSignal<AlertsSignal>("alerts", "active");
+  const alertVal = alertSig?.value ?? null;
+  const alerts: AlertEvent[] = alertVal
+    ? Array.from({ length: alertVal.count }, (_, i) => ({
+        alerts: [{
+          cities: [alertVal.areas[i % alertVal.areas.length] ?? "אזור"],
+          threat: 0,
+          time: alertVal.latestTs,
+        }],
+      }))
+    : [];
+
+  // Countdown — read from "countdown.next" signal
+  const cdSig = getCardSignal<CountdownSignal>("countdown", "next");
+  const countdownTargetMs = cdSig?.value?.targetMs ?? null;
+  const countdownTitle = cdSig?.value?.title ?? "";
+
+  // Stocks — read from "stocks.top-mover" signal; fall back to DOM pills
+  const stockSig = getCardSignal<TopMoverSignal>("stocks", "top-mover");
+  const stockMovers: string[] = stockSig?.value
+    ? [`${stockSig.value.sym} ${stockSig.value.dir === "up" ? "+" : ""}${stockSig.value.pct.toFixed(1)}%`]
+    : Array.from(document.querySelectorAll<HTMLElement>(".stk-mover-pill"))
+        .map((el) => el.textContent?.trim() ?? "")
+        .filter(Boolean);
+
+  // Calendar — read from "calendar.next-event" signal
+  const calSig = getCardSignal<CalEventSignal>("calendar", "next-event");
+  const nextCalEvent =
+    calSig?.value && !calSig.value.isAllDay
+      ? {
+          label: calSig.value.title.substring(0, 40),
+          minutesUntil: Math.round((calSig.value.startMs - nowMs) / (MS_PER_MIN)),
+        }
+      : null;
 
   return {
-    nowMs: Date.now(),
-    alerts: alertRingGet(),
-    countdownTargetMs: countdownDate ? countdownDate.getTime() : null,
+    nowMs,
+    alerts,
+    countdownTargetMs,
     countdownTitle,
     chores: readChores(),
-    stockMovers: readStockMovers(),
-    nextCalEvent: readNextCalEvent(),
+    stockMovers,
+    nextCalEvent,
   };
 }
 
