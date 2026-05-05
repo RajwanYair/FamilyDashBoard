@@ -2,7 +2,8 @@
 
 > **Refresh date**: 2026-05-05 · **Shipped baseline**: v14.1.0 (Sprint 438) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
 >
-> **Inventory**: 6240 tests / 203 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Inventory**: 6290 tests / 204 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage (Sprint 445)**: 93.7 / 85.0 / 94.1 / 95.1 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -12,7 +13,7 @@
 
 ## 0. Executive Summary
 
-After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6240 tests, 65 fast-check property suites across 13 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6290 tests, 65 fast-check property suites across 13 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
@@ -301,7 +302,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 3. **Hebrew RTL + Zmanim + Hebcal + Sefaria + Tzeva-Adom native** — unique.
 4. **12 provider-adapted cards with normalized history + stale fallback** — depth over breadth.
 5. **4-tier offline cache + dev escape hatches** — no peer renders a useful dashboard offline _and_ provides a `?nosw=1` opt-out.
-6. **6240 tests + axe + 108 VR + LHCI + 65 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
+6. **6290 tests + axe + 108 VR + LHCI + 65 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
 7. **Production observability without tracking cookies** — RUM + Vitals + Errors + Reports + AE + Prometheus.
 8. **Reproducible single-artefact release** — `dist.zip` + `worker.js`, SLSA-pinned + Sigstore + rebuilder manifest.
 9. **Hostile-network resilience** — explicit corp-proxy CSP allowlist, SW unregister helper, file-protocol launch.
