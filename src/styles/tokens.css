@@ -52,11 +52,6 @@
   inherits: true;
   initial-value: #86c490;
 }
-@property --positive {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #86c490;
-}
 @property --negative {
   syntax: "<color>";
   inherits: true;
@@ -100,7 +95,31 @@
   initial-value: #d9bc9e;
 }
 
-@layer tokens {
+/*
+ * Additional @property registrations (Sprint 454) — glow + border accent
+ * tokens used in box-shadow / border-color transitions on hover/focus.
+ * Typed registrations allow CSS to animate these across theme switches.
+ */
+@property --accent-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(200, 168, 122, 0.18);
+}
+@property --accent-border {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(200, 168, 122, 0.2);
+}
+@property --positive-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(134, 196, 144, 0.18);
+}
+@property --negative-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(200, 144, 144, 0.18);
+}
   :root {
     /* F11: light-dark() token adoption — supports both dark (default) and
      * system light mode when no explicit theme is selected.
