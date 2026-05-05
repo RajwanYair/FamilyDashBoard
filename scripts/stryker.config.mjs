@@ -8,7 +8,7 @@
  *   npm install -D @stryker-mutator/core @stryker-mutator/vitest-runner
  *   (from MyScripts/ directory — never add devDeps to FamilyDashBoard/package.json)
  *
- * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 + Sprint 126 + Sprint 226 + Sprint 314 additions):
+ * Score targets (Sprint 33 + V13 Sprint 12 + Sprint 72 + Sprint 114 + Sprint 126 + Sprint 226 + Sprint 314 + Sprint 449 additions):
  *   - simhash.ts            : mutation score ≥ 85%
  *   - d1-reports.ts         : mutation score ≥ 75%
  *   - analytics.ts          : mutation score ≥ 80%
@@ -29,12 +29,14 @@
  *   - fetch.ts              : mutation score ≥ 80%  (Sprint 314 — lock primitives property-tested FP1-FP5)
  *   - card-signal-protocol.ts : mutation score ≥ 80%  (Sprint 432 — CSP1-CSP5 property-tested)
  *   - semantic-clipboard.ts   : mutation score ≥ 80%  (Sprint 432 — SCP1-SCP5 property-tested)
+ *   - provider.ts             : mutation score ≥ 80%  (Sprint 449 — PRP1-PRP6 property-tested; backoff + status logic)
  *
  * Sprint 126 (Roadmap #9): hard break threshold raised 75 → 85.
  * error-tracker, config, diag confirmed in scope. Overall gate: ≥ 85% or CI fails.
  * Sprint 226: extended scope to event-bus, keyboard, links (cross-card primitives).
  * Sprint 314: extended scope to history, sync, fetch (property-tested in Sprints 307-310).
  * Sprint 432: extended scope to card-signal-protocol + semantic-clipboard (X12/X15 core).
+ * Sprint 449: extended scope to provider.ts (PRP1-PRP6 property-tested; backoff + status machine).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -74,6 +76,8 @@ export default {
     // Sprint 432: X12/X15 core — card-signal-protocol + semantic-clipboard
     "src/core/card-signal-protocol.ts",
     "src/core/semantic-clipboard.ts",
+    // Sprint 449: provider-health model — backoff policy, status state machine (PRP1-PRP6)
+    "src/core/provider.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
