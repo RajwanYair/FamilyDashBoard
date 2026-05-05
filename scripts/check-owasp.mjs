@@ -6,6 +6,7 @@
  * Sprint 444 (v14.2.0) — added A03 createElement-script, A04 __proto__ pollution, A04 defineProperty-prototype.
  * Sprint 450 (v14.2.0) — added A03 insertAdjacentHTML, A05 http-in-fetch, A07 window.opener access.
  * Sprint 456 (v14.2.0) — extended scan scope to `worker/src/` in addition to `src/`.
+ * Sprint 464 (v14.3.0) — added A03 srcdoc iframe injection, A02 btoa-credential, A01 hardcoded admin bypass.
  *
  * Scans `src/` and `worker/src/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -239,6 +240,33 @@ const RULES = [
     label: "window.opener access (reverse tabnapping — ensure opener is null for cross-origin links)",
     severity: "warn",
     pattern: /\bwindow\.opener\b/,
+  },
+
+  // A03 — Injection (Sprint 464)
+  {
+    // iframe.srcdoc = userInput injects arbitrary HTML into an iframe — same risk as innerHTML
+    category: "A03",
+    label: "element.srcdoc assignment (iframe HTML injection — use textContent or sanitize first)",
+    severity: "error",
+    pattern: /\.srcdoc\s*=(?!=)/,
+  },
+
+  // A02 — Cryptographic Failures (Sprint 464)
+  {
+    // btoa() is base64, not encryption; storing credentials via btoa() gives a false sense of security
+    category: "A02",
+    label: "btoa() encoding potential credential (base64 is not encryption)",
+    severity: "warn",
+    pattern: /\bbtoa\s*\([^)]*(?:token|secret|password|key|credential)[^)]*\)/i,
+  },
+
+  // A01 — Broken Access Control (Sprint 464)
+  {
+    // Hardcoding isAdmin/isRoot/isSuperUser = true bypasses all access control
+    category: "A01",
+    label: "Hardcoded admin/root privilege bypass (isAdmin/isRoot/isSuperUser = true)",
+    severity: "error",
+    pattern: /\b(?:isAdmin|isRoot|isSuperUser|isModerator)\s*=\s*true\b/i,
   },
 ];
 
