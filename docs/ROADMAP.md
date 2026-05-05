@@ -484,7 +484,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 ### 6.1 V14-FOUNDATIONS — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
 - [x] D12 module-boundary linting in `tooling/eslint/`.
-- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** Sprint 433; warn lowered 36 → **32 KB** Sprint 433; target warn 30 / hard 60 at v14 GA)_
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** Sprint 433; warn lowered 36 → **32 KB** Sprint 433; hard-cap **66 KB** Sprint 443; warn **30 KB** Sprint 443; target warn 28 / hard 60 at v14 GA)_
 - [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
 - [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 Sprint 415; full migration pending Baseline 2026)_
