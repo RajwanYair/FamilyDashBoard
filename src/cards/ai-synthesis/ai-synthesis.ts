@@ -40,6 +40,7 @@ export const aiSynthesisConfigSchema: CardConfigField[] = [
 
 let _elText: HTMLElement | null = null;
 let _elMeta: HTMLElement | null = null;
+let _elSpeakBtn: HTMLButtonElement | null = null;
 let _scheduleId: number | null = null;
 /** X15 (Sprint 415): snapshot for semantic clipboard producer. */
 let _synthesisSnapshot: string | null = null;
@@ -165,14 +166,61 @@ async function loadAiSynthesisData(): Promise<void> {
   }
 }
 
+// ── PC-1 (Sprint 421): Read-aloud via SpeechSynthesis ─────────────────────
+// Uses the Web Speech API (SpeechSynthesisUtterance) — no CSP media-src
+// directive needed. Gate: audio-CSP audit OPEN for SpeechSynthesis.
+
+function _setSpeakBtnState(speaking: boolean): void {
+  if (!_elSpeakBtn) return;
+  _elSpeakBtn.setAttribute("aria-pressed", speaking ? "true" : "false");
+  _elSpeakBtn.textContent = speaking ? "⏹" : "🔊";
+  _elSpeakBtn.title = speaking
+    ? "PC-1: עצור קריאה — Stop reading"
+    : "PC-1: קרא בקול — Read aloud";
+}
+
+export function speakSynthesis(): void {
+  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+  const text = _synthesisSnapshot;
+  if (!text) return;
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    _setSpeakBtnState(false);
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "he-IL";
+  utterance.rate = 0.9;
+  utterance.onstart = () => { _setSpeakBtnState(true); };
+  utterance.onend = () => { _setSpeakBtnState(false); };
+  utterance.onerror = () => { _setSpeakBtnState(false); };
+  window.speechSynthesis.speak(utterance);
+}
+
+export function stopSpeakSynthesis(): void {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  _setSpeakBtnState(false);
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 
 export function initAiSynthesisCard(): void {
   _elText = document.getElementById("synth-text");
   _elMeta = document.getElementById("synth-meta");
+  _elSpeakBtn = document.getElementById("synth-speak-btn") as HTMLButtonElement | null;
+
+  if (_elSpeakBtn) {
+    _elSpeakBtn.addEventListener("click", () => {
+      speakSynthesis();
+    });
+  }
 
   document.addEventListener("visibilitychange", () => {
     _pageVisible = document.visibilityState === "visible";
+    if (!_pageVisible) stopSpeakSynthesis();
   });
 
   void loadAiSynthesisData();
@@ -184,18 +232,21 @@ export function initAiSynthesisCard(): void {
 }
 
 export function destroyAiSynthesisCard(): void {
+  stopSpeakSynthesis();
   if (_scheduleId !== null) {
     clearInterval(_scheduleId);
     _scheduleId = null;
   }
   _elText = null;
   _elMeta = null;
+  _elSpeakBtn = null;
 }
 
 /** Reset module-level state — for unit tests only. */
 export function _resetAiSynthesisForTest(): void {
   _elText = null;
   _elMeta = null;
+  _elSpeakBtn = null;
   _scheduleId = null;
   _pageVisible = true;
   _synthesisSnapshot = null;

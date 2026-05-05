@@ -423,7 +423,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   border: 1px solid var(--border, #333);
   border-inline-end: none;
   border-radius: 0;
-  box-shadow: -4px 0 24px color-mix(in srgb, var(--accent) 18%, transparent);
+  box-shadow: -4px 0 24px color-mix(in sRGB, var(--accent) 18%, transparent);
   direction: rtl;
 }
 #news-starred-dialog::backdrop {
@@ -492,7 +492,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   border: 1px solid var(--border, #333);
   border-radius: 7px;
   padding: 0.6rem 0.75rem;
-  background: color-mix(in srgb, var(--surface) 85%, var(--accent) 15%);
+  background: color-mix(in sRGB, var(--surface) 85%, var(--accent) 15%);
 }
 
 .news-starred-remove {

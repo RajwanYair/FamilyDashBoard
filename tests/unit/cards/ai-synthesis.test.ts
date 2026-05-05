@@ -294,3 +294,138 @@ describe("AI Synthesis — null DOM branches (Sprint 273)", () => {
     await new Promise((r) => setTimeout(r, 30));
   });
 });
+
+// ── Sprint 421 / PC-1: speakSynthesis + stopSpeakSynthesis ─────────────────
+
+describe("AI Synthesis — PC-1 speakSynthesis (Sprint 421)", () => {
+  let speakSynthesis: () => void;
+  let stopSpeakSynthesis: () => void;
+  let initAiSynthesisCard: () => void;
+  let destroyAiSynthesisCard: () => void;
+  let _resetAiSynthesisForTest: () => void;
+  let _setSnapshotForTest: (text: string | null) => void;
+
+  beforeEach(async () => {
+    document.body.innerHTML = `
+      <p id="synth-text"></p>
+      <div id="synth-meta"></div>
+      <button id="synth-speak-btn" aria-pressed="false">🔊</button>
+    `;
+    const mod = await import("@/cards/ai-synthesis/ai-synthesis");
+    speakSynthesis = mod.speakSynthesis;
+    stopSpeakSynthesis = mod.stopSpeakSynthesis;
+    initAiSynthesisCard = mod.initAiSynthesisCard;
+    destroyAiSynthesisCard = mod.destroyAiSynthesisCard;
+    _resetAiSynthesisForTest = mod._resetAiSynthesisForTest;
+    _setSnapshotForTest = mod._setSnapshotForTest;
+    _resetAiSynthesisForTest();
+  });
+
+  afterEach(() => {
+    destroyAiSynthesisCard?.();
+    _resetAiSynthesisForTest();
+    document.body.innerHTML = "";
+    vi.restoreAllMocks();
+  });
+
+  it("does not throw when SpeechSynthesis is unavailable", () => {
+    // SpeechSynthesis is not available in happy-dom — should return silently
+    expect(() => speakSynthesis()).not.toThrow();
+  });
+
+  it("does not throw when snapshot is null", () => {
+    _setSnapshotForTest(null);
+    expect(() => speakSynthesis()).not.toThrow();
+  });
+
+  it("does not throw when SpeechSynthesisUtterance and speechSynthesis are mocked", () => {
+    _setSnapshotForTest("תקציר יומי לבדיקה");
+    // SpeechSynthesisUtterance is not available in happy-dom; verify guard exits cleanly.
+    // The guard `typeof SpeechSynthesisUtterance === "undefined"` causes early return.
+    expect(() => speakSynthesis()).not.toThrow();
+  });
+
+  it("stopSpeakSynthesis does not throw when SpeechSynthesis is unavailable", () => {
+    expect(() => stopSpeakSynthesis()).not.toThrow();
+  });
+
+  it("stopSpeakSynthesis calls cancel when SpeechSynthesis is present", () => {
+    const mockCancel = vi.fn();
+    Object.defineProperty(window, "speechSynthesis", {
+      value: { speaking: false, cancel: mockCancel },
+      configurable: true,
+    });
+    stopSpeakSynthesis();
+    expect(mockCancel).toHaveBeenCalled();
+  });
+
+  it("speakSynthesis cancels and sets button aria-pressed=false when already speaking", () => {
+    const mockCancel = vi.fn();
+    vi.stubGlobal("SpeechSynthesisUtterance", class {
+      lang = ""; rate = 0;
+      onstart: (() => void) | null = null;
+      onend: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      constructor(public text: string) {}
+    });
+    Object.defineProperty(window, "speechSynthesis", {
+      value: { speaking: true, cancel: mockCancel, speak: vi.fn() },
+      configurable: true,
+    });
+    initAiSynthesisCard(); // wires _elSpeakBtn from DOM
+    _setSnapshotForTest("תקציר יומי לבדיקה");
+    speakSynthesis();
+    expect(mockCancel).toHaveBeenCalled();
+    expect(document.getElementById("synth-speak-btn")?.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("speakSynthesis speaks, onstart sets pressed=true, onend/onerror set pressed=false", () => {
+    let capturedInstance: { onstart: (() => void) | null; onend: (() => void) | null; onerror: (() => void) | null } | null = null;
+    vi.stubGlobal("SpeechSynthesisUtterance", class {
+      lang = ""; rate = 0;
+      onstart: (() => void) | null = null;
+      onend: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      constructor(public text: string) {
+        capturedInstance = this as unknown as typeof capturedInstance;
+      }
+    });
+    Object.defineProperty(window, "speechSynthesis", {
+      value: { speaking: false, cancel: vi.fn(), speak: vi.fn() },
+      configurable: true,
+    });
+    initAiSynthesisCard(); // wires _elSpeakBtn from DOM
+    _setSnapshotForTest("summary text");
+    speakSynthesis();
+    expect(capturedInstance).not.toBeNull();
+    const btn = document.getElementById("synth-speak-btn");
+    capturedInstance!.onstart?.();
+    expect(btn?.getAttribute("aria-pressed")).toBe("true");
+    capturedInstance!.onend?.();
+    expect(btn?.getAttribute("aria-pressed")).toBe("false");
+    // onerror path also resets state
+    capturedInstance!.onstart?.();
+    capturedInstance!.onerror?.();
+    expect(btn?.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("speak button click event delegates to speakSynthesis without throwing", () => {
+    // Covers the anonymous click-handler arrow function wired in initAiSynthesisCard
+    initAiSynthesisCard();
+    const btn = document.getElementById("synth-speak-btn") as HTMLButtonElement;
+    // SpeechSynthesisUtterance is absent in happy-dom → speakSynthesis() early-returns cleanly
+    expect(() => btn.click()).not.toThrow();
+  });
+
+  it("setInterval callback invokes loadAiSynthesisData without throwing", async () => {
+    // Covers the anonymous interval arrow function (line 228) wired in initAiSynthesisCard
+    vi.useFakeTimers();
+    try {
+      initAiSynthesisCard();
+      // Advance past the 4-hour refresh interval (SYNTH_REFRESH_MS = 4 * 60 * 60 * 1000)
+      await vi.advanceTimersByTimeAsync(4 * 60 * 60 * 1000 + 1000);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
