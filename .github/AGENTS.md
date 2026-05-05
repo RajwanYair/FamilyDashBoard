@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v14.2.0 · Tests: 6290 / 204 suites · Coverage thresholds: 93.7 / 85.0 / 94.1 / 95.1
+> Version: v14.2.0 · Tests: 6303 / 205 suites · Coverage thresholds: 93.9 / 85.1 / 94.2 / 95.3
 
 This repository uses the current VS Code Copilot customization model:
 

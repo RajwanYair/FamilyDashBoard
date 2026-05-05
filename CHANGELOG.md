@@ -9,6 +9,42 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.2.0] — 2026-05-05
+
+> **6303 tests / 205 suites / 0 failures** (commit `099dbef`)
+
+### Security
+
+- **Sprint 450**: OWASP 3 new rules (A03 `insertAdjacentHTML`, A05 plain-HTTP fetch, A07 `window.opener`) — 22 rules total; 0 findings.
+- **Sprint 456**: Extended OWASP scan scope to `worker/src/` in addition to `src/`; suppressed 6 false-positive A10 Cloudflare Worker fetch-handler signatures.
+
+### Quality Gates
+
+- **Sprint 449**: Stryker mutation scope extended to `src/core/provider.ts` (22 files in scope; PRP1-PRP6 fast-check suites provide coverage).
+- **Sprint 451**: Coverage ratchet — 93.7/85.0/94.1/95.1 → 93.9/85.1/94.2/95.3 (actuals 94.23/85.40/94.51/95.67).
+- **Sprint 452**: D13 per-card bundle warn-cap 30 → 28 KB; hard-cap held at 66 KB (weather card at 65.1 KB).
+
+### Tests
+
+- **Sprint 453**: fast-check property tests NE1-NE8 for `worker/src/utils/normalize-error.ts` — covers ok:false, FDB-07x code, 5xx status, routeName inclusion, timeout/parse branch routing, `errorResponse` status, non-Error throwables.
+- **Sprint 455**: Worker-client P14-P18 fast-check properties — `newsAggregate`, `sefariaCalendar`, `crypto` ids/vs_currencies params, `hebcalHolidays` year coercion (70 suites total).
+
+### CSS
+
+- **Sprint 454**: Removed duplicate `--positive` `@property` registration; added missing glow/border token registrations (`--accent-glow`, `--accent-border`, `--positive-glow`, `--negative-glow`) — 23 typed `@property` declarations.
+
+### Documentation
+
+- **Sprint 457**: ROADMAP baseline updated to v14.2.0/Sprint 456; 6303 tests / 205 suites; coverage 93.9/85.1/94.2/95.3; 70 fast-check suites; 22 Stryker files.
+
+#### Quality
+
+- 6303 / 6303 tests passing across 205 suites
+- 0 type errors / 0 lint errors / 0 lint warnings / 0 suppressions
+- All CI gates clean: typecheck · ESLint · markdownlint · Vitest · build · bundle · OWASP · CSP · Trusted Types · ADR index
+
+---
+
 ## [14.1.0] — 2026-05-05
 
 > **6240 tests / 203 suites / 0 failures** (commit `d245b49`)
