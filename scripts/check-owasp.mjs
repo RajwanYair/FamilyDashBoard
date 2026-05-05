@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * Sprint 221 — OWASP Top 10 rotation automated check.
+ * Sprint 427 (v14.0.0) — added A03 document.write rule + A05 postMessage(*) rule.
  *
  * Scans `src/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -73,6 +74,13 @@ const RULES = [
     pattern: /dangerouslySetInnerHTML/,
   },
   {
+    // Sprint 427: document.write() is an injection vector (writes arbitrary HTML)
+    category: "A03",
+    label: "document.write() call (DOM injection vector)",
+    severity: "error",
+    pattern: /\bdocument\.write\s*\(/,
+  },
+  {
     category: "A03",
     label: "bare innerHTML/outerHTML assignment (use trustedHTML())",
     severity: "error",
@@ -101,6 +109,13 @@ const RULES = [
     label: "DEBUG / development flag hardcoded true",
     severity: "warn",
     pattern: /\bDEBUG\s*=\s*true\b/,
+  },
+  {
+    // Sprint 427: postMessage to wildcard origin broadcasts to any iframe/window
+    category: "A05",
+    label: "postMessage() with wildcard origin '*'",
+    severity: "error",
+    pattern: /\.postMessage\s*\([^,)]+,\s*['"]\*['"]/,
   },
 
   // A07 — Identification and Authentication Failures

@@ -16,10 +16,10 @@ description: "OWASP Top 10:2021 audit checklist mapped to FamilyDashBoard's stat
 
 ## Last full audit
 
-- **Release**: v13.17.0 (patch-cycle smoke check — full v14.0.0 audit pending)
+- **Release**: v14.0.0 (pre-release full audit — Sprint 427)
 - **Auditor**: self
-- **Date**: 2026-04-29
-- **Commit hash range**: 6c93f17 → 49df655 (Sprints 150–159)
+- **Date**: 2026-05-01
+- **Commit hash range**: e006613 → HEAD (Sprints 423–427)
 
 ## OWASP Top 10:2021 mapping to FamilyDashBoard
 
