@@ -5,8 +5,9 @@
  * Sprint 435 (v14.1.0) — added A01 open-redirect, A02 atob-credential, A03 setTimeout-string.
  * Sprint 444 (v14.2.0) — added A03 createElement-script, A04 __proto__ pollution, A04 defineProperty-prototype.
  * Sprint 450 (v14.2.0) — added A03 insertAdjacentHTML, A05 http-in-fetch, A07 window.opener access.
+ * Sprint 456 (v14.2.0) — extended scan scope to `worker/src/` in addition to `src/`.
  *
- * Scans `src/` for patterns that correspond to OWASP Top 10 (2021) categories
+ * Scans `src/` and `worker/src/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
  *
  *   A01 – Broken Access Control:       hardcoded role bypass, admin checks; open redirect
@@ -37,6 +38,7 @@ import { fileURLToPath } from "url";
 
 const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
 const SRC = join(ROOT, "src");
+const WORKER_SRC = join(ROOT, "worker", "src");
 const WARN_ONLY = process.argv.includes("--warn-only");
 
 /** @typedef {{ category: string; label: string; severity: "error"|"warn"; pattern: RegExp; safeMarkers?: string[] }} Rule */
@@ -264,7 +266,11 @@ function collectTsFiles(dir) {
   return results;
 }
 
-const files = collectTsFiles(SRC);
+// Collect from both src/ and worker/src/
+const files = [
+  ...collectTsFiles(SRC),
+  ...(statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirectory() ? collectTsFiles(WORKER_SRC) : []),
+];
 
 /** @type {{ severity: "error"|"warn"; file: string; line: number; category: string; label: string; code: string }[]} */
 const findings = [];

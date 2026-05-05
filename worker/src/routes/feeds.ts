@@ -199,7 +199,7 @@ export async function handleNewsAggregate(env: Env): Promise<Response> {
   // Fetch all feeds in parallel
   const results = await Promise.allSettled(
     NEWS_FEED_URLS.map(async ({ url, src }) => {
-      const res = await fetch(url, {
+      const res = await fetch(url, { // owasp-allow:A10 — url from hardcoded NEWS_FEED_URLS constant
         headers: {
           "User-Agent": "FamilyDashBoard/11.0",
           Accept: "application/rss+xml, text/xml, application/xml",

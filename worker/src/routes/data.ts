@@ -153,7 +153,7 @@ export async function handleCurrency(env: Env): Promise<Response> {
   ];
 
   for (const { url, provider } of upstreams) {
-    const res = await fetch(url);
+    const res = await fetch(url); // owasp-allow:A10 — url from hardcoded upstreams[] array
     if (res.ok) {
       const data: unknown = await res.json();
       const parsed = safeParse(CurrencySchema, data);

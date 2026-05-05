@@ -190,7 +190,7 @@ export interface DurableObjectId {
 }
 
 export interface DurableObjectStub {
-  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>; // owasp-allow:A10
 }
 
 /**
