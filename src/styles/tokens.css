@@ -215,6 +215,18 @@
     --focus-outline-width-card: 3px;
     --focus-shadow-spread: 4px;
     --focus-outline-offset-btn: 3px;
+    --focus-outline-width-input: 2px;
+
+    /* ── WCAG 1.4.12 Text Spacing Tokens ── */
+    /* Minimum values required by WCAG 2.1 SC 1.4.12 (AA) when overridden by user styles */
+    --ts-line-height: 1.5; /* ≥ 1.5 × font-size */
+    --ts-letter-spacing: 0.12em; /* ≥ 0.12 × font-size */
+    --ts-word-spacing: 0.16em; /* ≥ 0.16 × font-size */
+    --ts-paragraph-spacing: 2em; /* ≥ 2 × font-size */
+
+    /* ── WCAG 3.1.5 Reading Level Token ── */
+    /* 1.6 × font-size for Hebrew/RTL prose — improves cognitive reading ease (AAA). */
+    --reading-lh: 1.6;
   }
 
   /*
@@ -233,7 +245,7 @@
    *     style(--theme: amber),  #fbbf24;
    *     style(--theme: purple), #a78bfa;
    *     style(--theme: rose),   #fb7185;
-   *     #c8a87a  /* default warm */
+   *     #c8a87a  (default warm)
    *   );
    * }
    * @function --theme-bg-primary() {
@@ -243,7 +255,7 @@
    *     style(--theme: amber),  #140f00;
    *     style(--theme: purple), #0c0a1a;
    *     style(--theme: rose),   #180a0f;
-   *     #1a1410  /* default warm (= theme-black) */
+   *     #1a1410  (default warm = theme-black)
    *   );
    * }
    */
@@ -269,18 +281,5 @@
       /* Negative tint */
       --negative-subtle: color-mix(in sRGB, var(--negative) if(true; 12%; 12%), transparent);
     }
-  }
-    --focus-outline-width-input: 2px;
-
-    /* ── WCAG 1.4.12 Text Spacing Tokens ── */
-    /* Minimum values required by WCAG 2.1 SC 1.4.12 (AA) when overridden by user styles */
-    --ts-line-height: 1.5; /* ≥ 1.5 × font-size */
-    --ts-letter-spacing: 0.12em; /* ≥ 0.12 × font-size */
-    --ts-word-spacing: 0.16em; /* ≥ 0.16 × font-size */
-    --ts-paragraph-spacing: 2em; /* ≥ 2 × font-size */
-
-    /* ── WCAG 3.1.5 Reading Level Token ── */
-    /* 1.6 × font-size for Hebrew/RTL prose — improves cognitive reading ease (AAA). */
-    --reading-lh: 1.6;
   }
 }

@@ -3,13 +3,12 @@
  * FamilyDashBoard — Bundle Size CI Check
  *
  * Validates that the GitHub Pages production build stays within budget:
- *   JS gzipped:  ≤ 105 KB  (raised from 104 KB in v13.43.0 — cumulative
- *                           a11y aria-label additions + token-replaced color
- *                           strings pushed actual to 104.6 KB; new budget =
- *                           actual + ~0.4 KB headroom)
+ *   JS gzipped:  ≤ 110 KB  (raised from 105 KB in v14.1.0 — Sprint 415 added
+ *                           mcp-bridge chunk + card-infra split, pushing actual
+ *                           to 108.7 KB after full rebuild; budget = actual + ~1.3 KB headroom)
  *   CSS gzipped: ≤ 29 KB   (raised from 26 KB in v13.30.0 — card configSchema
  *                           form styles and config-panel CSS pushed actual to
- *                           27.8 KB; new budget = actual + 1 KB headroom)
+ *                           28.5 KB; new budget = actual + ~0.5 KB headroom)
  *
  * Also checks for 10% growth regression against the last baseline recorded
  * in scripts/bundle-trend.json.  Exit 1 on budget exceeded OR on > 10% growth.
@@ -27,7 +26,7 @@ import { gzipSync } from "node:zlib";
 const DIST_ASSETS = resolve(process.cwd(), "dist", "assets");
 const TREND_FILE = resolve(process.cwd(), "scripts", "bundle-trend.json");
 
-const JS_BUDGET_KB = 105;
+const JS_BUDGET_KB = 110;
 const CSS_BUDGET_KB = 29;
 /** Alert if a bundle type grows more than this fraction vs last baseline. */
 const GROWTH_THRESHOLD = 0.1;

@@ -9,6 +9,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.1.0] — 2026-05-05
+
+> **6240 tests / 203 suites / 0 failures** (commit `d245b49`)
+
+### Security
+
+- **Sprint 435**: OWASP rules expanded (+3): A01 open-redirect (`location.href/window.location = variable`), A02 atob-credential pattern, A03 `setTimeout/setInterval` string-argument — 0 findings across entire src tree.
+
+### Quality Gates
+
+- **Sprint 433 / D13**: Per-card bundle ratchet — warn-cap 36 → 32 KB, hard-cap 75 → 68 KB; v14.0.0 bundle baseline recorded (108.7 KB JS / 28.5 KB CSS actual after full rebuild); JS budget raised 105 → 110 KB to account for Sprint 415 `mcp-bridge` + `card-infra` chunks.
+- **Sprint 434**: Coverage ratchet — `alerts.ts` build/history-button branches and `motivation.ts` semantic/heart/localStorage-catch branches now covered; thresholds raised 93.2/84.7/92.0/94.6 → 93.4/84.9/92.1/94.8.
+
+### Documentation
+
+- **Sprint 436**: Vendor-neutrality drill log — v14.1.0 Bun Deploy static-analysis pass recorded; next live drill (fly.io) deferred to pre-v15.0.
+- **Sprint 437**: ROADMAP housekeeping — inventory 6012 → 6240 tests, 186 → 203 suites, 55 → 73 ADRs; fixed stale X15 note; updated exec summary for X1–X15 milestone.
+
+### Fixes
+
+- **Sprint 438**: `tokens.css` nested CSS comment + orphaned declaration bug (Sprint 415 regression) — `@function`-sketch comment no longer uses `/* nested */` syntax; text-spacing tokens (`--ts-*`, `--reading-lh`) and `--focus-outline-width-input` moved back inside `:root {}`.
+
+#### Quality
+
+- 6240 / 6240 tests passing across 203 suites
+- 0 type errors / 0 lint errors / 0 lint warnings / 0 suppressions
+- All CI gates clean: typecheck · ESLint · markdownlint · Vitest · build · bundle · OWASP · CSP · Trusted Types · ADR index
+
+---
+
 ## [14.0.0] — 2026-05-01
 
 > **6222 tests / 201 suites / 0 failures** (commit `c83021a`)

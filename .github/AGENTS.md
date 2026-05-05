@@ -1,6 +1,6 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v14.0.0 · Tests: 6222 / 201 suites · Coverage: 93.0 / 84.6 / 92.0 / 94.5
+> Version: v14.1.0 · Tests: 6240 / 203 suites · Coverage: 93.4 / 84.9 / 92.1 / 94.8
 
 This repository uses the current VS Code Copilot customization model:
 
