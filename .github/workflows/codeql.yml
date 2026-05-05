@@ -1,0 +1,70 @@
+# =============================================================================
+# CodeQL Analysis — FamilyDashBoard
+#
+# Runs GitHub's semantic code analysis engine on TypeScript source.
+# Catches security vulnerabilities (XSS, injection, prototype pollution, etc.)
+# that pattern-based grep scanning misses.
+#
+# Harvested from CrossTide parallel project — adapted for FamilyDashBoard:
+#   · TypeScript only (no separate js build target)
+#   · Scans src/ + worker/ + scripts/
+#   · Runs on push to main (src/worker/scripts changes), all PRs, weekly Saturday
+# =============================================================================
+name: CodeQL Analysis
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "worker/**"
+      - "scripts/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "worker/**"
+      - "scripts/**"
+  schedule:
+    # Weekly Saturday 04:00 UTC — catches supply-chain CVEs introduced in deps
+    - cron: "0 4 * * 6"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      security-events: write
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          languages: ${{ matrix.language }}
+          # security-extended catches OWASP Top 10 patterns relevant to this PWA
+          queries: +security-extended,security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          category: "/language:${{ matrix.language }}"

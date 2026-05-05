@@ -1,0 +1,69 @@
+# =============================================================================
+# OWASP ZAP Baseline Scan — FamilyDashBoard
+#
+# Passive DAST (Dynamic Application Security Testing) scan against a locally
+# served production build. Checks for common OWASP vulnerabilities (missing
+# headers, XSS vectors, insecure cookies, etc.) without active attacks.
+#
+# fail_action: false — informational scan; findings open a GitHub issue
+# but do not block deployments until a stable baseline is established.
+#
+# Harvested from Wedding parallel project — adapted for FamilyDashBoard:
+#   · Builds with --base / for local HTTP serving (not --base ./FamilyDashBoard/)
+#   · Served on port 4173 via npx serve
+#   · No .zap/rules.tsv yet — add one to suppress known false positives
+#
+# Run: weekly Sunday 05:37 UTC + manual dispatch
+# =============================================================================
+name: ZAP Baseline
+
+on:
+  schedule:
+    - cron: "37 5 * * 0" # weekly Sunday 05:37 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write # ZAP opens an issue when findings appear
+
+jobs:
+  zap:
+    name: OWASP ZAP baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
+
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+
+      - name: Build (base / for local HTTP serving)
+        run: npx vite build --base /
+
+      - name: Serve dist on port 4173
+        run: |
+          npx --yes serve -l 4173 dist &
+          # Wait until the server is ready (up to 20 seconds)
+          for i in $(seq 1 10); do
+            if curl -fsS http://127.0.0.1:4173/ > /dev/null 2>&1; then
+              echo "Server is ready."
+              break
+            fi
+            sleep 2
+          done
+
+      - name: ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.13.0 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          target: "http://127.0.0.1:4173/"
+          cmd_options: "-a -j -T 5"
+          allow_issue_writing: true
+          # Informational only until a stable ZAP rule baseline is established
+          fail_action: false

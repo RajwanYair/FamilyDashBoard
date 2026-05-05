@@ -1,0 +1,44 @@
+# =============================================================================
+# Sync Labels — FamilyDashBoard
+#
+# Keeps the GitHub repository labels in sync with .github/labels.yml.
+# Runs automatically when labels.yml changes, also available via manual
+# dispatch to force a full sync.
+#
+# Harvested from ExplorerLens.io parallel project.
+# =============================================================================
+name: Sync Labels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/labels.yml"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+concurrency:
+  group: sync-labels
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync:
+    name: Sync repo labels from labels.yml
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Sync labels
+        uses: EndBug/label-sync@v2 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          config-file: .github/labels.yml
+          # Keep any labels created manually in the GitHub UI
+          delete-other-labels: false
+          token: ${{ secrets.GITHUB_TOKEN }}

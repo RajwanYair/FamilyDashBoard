@@ -20,6 +20,20 @@ This directory contains the operational GitHub Actions workflows for build, vali
 | Worker Deploy         | `deploy-worker.yml`         | Deploy Cloudflare Worker from `worker/`                                             | `worker/**` changes on `main`, manual |
 | Auto Label            | `auto-label.yml`            | Apply repository labels automatically                                               | event-driven                          |
 | Dependabot Auto Merge | `dependabot-auto-merge.yml` | Controlled automation for dependency PR flow                                        | Dependabot events                     |
+| CodeQL Analysis       | `codeql.yml`                | SAST security scanning via GitHub CodeQL (TypeScript)                               | `src/**` push/PR, weekly Saturday     |
+| OpenSSF Scorecard     | `scorecard.yml`             | Supply-chain security posture score (publishes SARIF to Security tab)               | push to `main`, weekly Monday         |
+| Stale Issues          | `stale.yml`                 | Auto-mark stale issues (90 d) and PRs (30 d), close after grace period              | daily schedule, manual                |
+| Supply Chain          | `supply-chain.yml`          | npm audit signatures + license compliance + PR dependency review + auto-issue       | `package*.json` push/PR, weekly       |
+| Perf Regression       | `perf-regression.yml`       | Bundle size delta + Lighthouse Web Vitals PR comment; fails if JS > 500 KB gzip     | `src/**` / `vite.config.ts` PR        |
+| Trivy Scan            | `trivy.yml`                 | CVE + IaC misconfig scan; uploads SARIF to Security tab (HIGH/CRITICAL)             | push/PR/weekly Monday                 |
+| TruffleHog            | `trufflehog.yml`            | Full git-history secret scanning (verified findings only)                           | push/PR/weekly Monday, manual         |
+| ZAP Baseline          | `zap-baseline.yml`          | OWASP ZAP passive DAST scan against local production build                          | weekly Sunday, manual                 |
+| SBOM                  | `sbom.yml`                  | CycloneDX JSON + XML SBOM generation (prod deps only)                               | release tags, weekly Monday, manual   |
+| Visual Baselines      | `visual-baselines.yml`      | Update Linux Playwright VR snapshots on Ubuntu, commit back                         | manual only                           |
+| Branch Protection     | `branch-protection.yml`     | Verify + apply minimum branch-protection rules on `main`                            | weekly Monday, manual                 |
+| Security Gate         | `security.yml`              | Unified security status check: npm audit + source scan + dep-diff + gate job        | push/PR/weekly Monday, manual         |
+| Release Drafter       | `release-drafter.yml`       | Auto-draft next GitHub release from merged PR titles + labels                       | push to `main`, PR closed, manual     |
+| Sync Labels           | `sync-labels.yml`           | Sync repository labels with `.github/labels.yml`                                    | `labels.yml` change, manual           |
 
 ## CI Expectations
 
@@ -72,14 +86,28 @@ If a change adds a new required quality gate, add it to `ci.yml` rather than cre
 
 ## Permissions Matrix
 
-| Workflow                    | contents | pages | id-token | deployments | pull-requests |
-| --------------------------- | -------- | ----- | -------- | ----------- | ------------- |
-| `ci.yml`                    | read     | —     | —        | —           | —             |
-| `deploy.yml`                | read     | write | write    | —           | —             |
-| `release.yml`               | write    | —     | —        | write       | —             |
-| `deploy-worker.yml`         | read     | —     | —        | —           | —             |
-| `auto-label.yml`            | read     | —     | —        | —           | write         |
-| `dependabot-auto-merge.yml` | write    | —     | —        | —           | write         |
+| Workflow                    | contents | pages | id-token | deployments | pull-requests | security-events | issues |
+| --------------------------- | -------- | ----- | -------- | ----------- | ------------- | --------------- | ------ |
+| `ci.yml`                    | read     | —     | —        | —           | read          | —               | —      |
+| `deploy.yml`                | read     | write | write    | —           | —             | —               | —      |
+| `release.yml`               | write    | —     | —        | write       | —             | —               | —      |
+| `deploy-worker.yml`         | read     | —     | —        | —           | —             | —               | —      |
+| `auto-label.yml`            | read     | —     | —        | —           | write         | —               | —      |
+| `dependabot-auto-merge.yml` | write    | —     | —        | —           | write         | —               | —      |
+| `codeql.yml`                | read     | —     | —        | —           | —             | write           | —      |
+| `scorecard.yml`             | read-all | —     | write    | —           | —             | write           | —      |
+| `stale.yml`                 | —        | —     | —        | —           | write         | —               | write  |
+| `supply-chain.yml`          | read     | —     | —        | —           | write         | —               | write  |
+| `perf-regression.yml`       | read     | —     | —        | —           | write         | —               | —      |
+| `trivy.yml`                 | read     | —     | —        | —           | —             | write           | —      |
+| `trufflehog.yml`            | read     | —     | —        | —           | —             | —               | —      |
+| `zap-baseline.yml`          | read     | —     | —        | —           | —             | —               | write  |
+| `sbom.yml`                  | read     | —     | —        | —           | —             | —               | —      |
+| `visual-baselines.yml`      | write    | —     | —        | —           | —             | —               | —      |
+| `branch-protection.yml`     | read     | —     | —        | —           | —             | —               | —      |
+| `security.yml`              | read     | —     | —        | —           | —             | —               | —      |
+| `release-drafter.yml`       | write    | —     | —        | —           | read          | —               | —      |
+| `sync-labels.yml`           | —        | —     | —        | —           | —             | —               | write  |
 
 > Principle: **least privilege**. Only grant the minimum permissions required for the workflow to function.
 > The `id-token: write` on `deploy.yml` is required for OIDC authentication with GitHub Pages.

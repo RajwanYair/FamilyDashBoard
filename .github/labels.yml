@@ -1,0 +1,144 @@
+# =============================================================================
+# .github/labels.yml — Canonical label definitions for FamilyDashBoard
+#
+# Applied automatically by .github/workflows/sync-labels.yml.
+# To add or change a label: edit this file → merge to main → workflow applies it.
+#
+# Harvested from ExplorerLens.io — adapted for FamilyDashBoard (TV PWA dashboard).
+# =============================================================================
+
+# ── Type ───────────────────────────────────────────────────────────────────
+- name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or request"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Improvements or additions to documentation"
+
+- name: "question"
+  color: "d876e3"
+  description: "Further information is requested"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+
+- name: "breaking-change"
+  color: "b60205"
+  description: "Removes or renames a public API / config key"
+
+# ── Priority ───────────────────────────────────────────────────────────────
+- name: "priority: critical"
+  color: "b60205"
+  description: "Blocks release or causes data loss"
+
+- name: "priority: high"
+  color: "e11d48"
+  description: "Important — target next sprint"
+
+- name: "priority: medium"
+  color: "f97316"
+  description: "Should be addressed soon"
+
+- name: "priority: low"
+  color: "fed7aa"
+  description: "Nice to have"
+
+# ── Status ─────────────────────────────────────────────────────────────────
+- name: "needs-triage"
+  color: "ededed"
+  description: "Waiting for maintainer review"
+
+- name: "in-progress"
+  color: "0052cc"
+  description: "Currently being worked on"
+
+- name: "needs-info"
+  color: "fef3c7"
+  description: "Waiting for more information from reporter"
+
+- name: "ready-for-review"
+  color: "0e8a16"
+  description: "PR is ready for code review"
+
+- name: "blocked"
+  color: "5319e7"
+  description: "Blocked by another issue or external factor"
+
+- name: "stale"
+  color: "d3d3d3"
+  description: "No activity for 90+ days"
+
+# ── Domain (FamilyDashBoard-specific) ──────────────────────────────────────
+- name: "card"
+  color: "fbca04"
+  description: "Touches one of the 12 dashboard cards"
+
+- name: "theme"
+  color: "7057ff"
+  description: "CSS theme tokens or theme switching"
+
+- name: "ui"
+  color: "1d76db"
+  description: "UI overlays, ticker, header, status bar"
+
+- name: "design"
+  color: "8e44ad"
+  description: "Visual design, layout, typography"
+
+- name: "accessibility"
+  color: "0e8a16"
+  description: "A11y improvements, ARIA, screen-reader, keyboard"
+
+- name: "rtl"
+  color: "006b75"
+  description: "Right-to-left / Hebrew layout"
+
+- name: "i18n"
+  color: "16a34a"
+  description: "Internationalization, locales, date/number formatting"
+
+- name: "performance"
+  color: "ff7f50"
+  description: "Bundle size, load time, runtime perf"
+
+- name: "security"
+  color: "ee0701"
+  description: "Security hardening, OWASP, CSP, supply chain"
+
+- name: "build"
+  color: "f9d0c4"
+  description: "Vite, TypeScript, build scripts, tooling"
+
+- name: "ci/cd"
+  color: "fbca04"
+  description: "GitHub Actions workflows, automation"
+
+- name: "dependencies"
+  color: "0366d6"
+  description: "Bumps a dependency"
+
+- name: "chore"
+  color: "ededed"
+  description: "Maintenance, cleanup, refactor without behavior change"
+
+- name: "worker"
+  color: "0e8a16"
+  description: "Cloudflare Worker (worker/ directory)"
+
+- name: "service-worker"
+  color: "5319e7"
+  description: "Browser service worker (sw.ts / sw.js)"

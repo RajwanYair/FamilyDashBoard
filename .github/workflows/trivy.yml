@@ -1,0 +1,76 @@
+# =============================================================================
+# Trivy Scan — FamilyDashBoard
+#
+# Filesystem CVE scan + IaC/workflow misconfig scan.
+# Catches vulnerable transitive dependencies and workflow misconfigurations.
+# Uploads SARIF to the GitHub Security tab (Code Scanning).
+#
+# Harvested from Wedding parallel project — adapted for FamilyDashBoard:
+#   · Scans the repo filesystem (npm deps + workflow YAML)
+#   · Uses HIGH,CRITICAL severity filter (TV dashboard; no credentials at rest)
+#   · exit-code 0 — findings surfaced via SARIF, not by blocking CI
+#   · Weekly Monday + push to main + all PRs
+# =============================================================================
+name: Trivy Scan
+
+on:
+  schedule:
+    - cron: "37 6 * * 1" # Mondays 06:37 UTC
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trivy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Trivy filesystem + config
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Run Trivy (filesystem — npm deps)
+        uses: aquasecurity/trivy-action@0.28.0 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          # exit 0 — surfaced via SARIF upload, not by failing CI directly
+          exit-code: "0"
+
+      - name: Run Trivy (config — workflow / IaC misconfig)
+        uses: aquasecurity/trivy-action@0.28.0 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-config.sarif
+          severity: HIGH,CRITICAL
+          exit-code: "0"
+
+      - name: Upload filesystem SARIF
+        uses: github/codeql-action/upload-sarif@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-fs
+
+      - name: Upload config SARIF
+        uses: github/codeql-action/upload-sarif@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          sarif_file: trivy-config.sarif
+          category: trivy-config

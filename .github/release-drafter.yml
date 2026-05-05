@@ -1,0 +1,106 @@
+# =============================================================================
+# release-drafter.yml — Auto-generate FamilyDashBoard release notes
+#
+# Used by .github/workflows/release-drafter.yml. Each merged PR with a labeled
+# title is collected into the appropriate category. Tag vX.Y.Z to publish.
+#
+# Harvested from ExplorerLens.io — adapted for FamilyDashBoard:
+#   · Categories tuned for a TV/PWA dashboard (cards, theming, accessibility)
+#   · No native build / GPU sections
+# =============================================================================
+
+name-template: "FamilyDashBoard v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+tag-prefix: "v"
+
+# Version bump resolution — reads the highest label on merged PRs since last release
+version-resolver:
+  major:
+    labels:
+      - "breaking-change"
+  minor:
+    labels:
+      - "enhancement"
+      - "card"
+      - "theme"
+      - "accessibility"
+  patch:
+    labels:
+      - "bug"
+      - "security"
+      - "performance"
+      - "build"
+      - "ci/cd"
+      - "documentation"
+      - "dependencies"
+  default: patch
+
+# Category sections in the release body — top-to-bottom display order
+categories:
+  - title: "⚠️ Breaking Changes"
+    labels:
+      - "breaking-change"
+
+  - title: "🎴 New Cards & Features"
+    labels:
+      - "enhancement"
+      - "card"
+
+  - title: "🎨 Theme & UI"
+    labels:
+      - "theme"
+      - "ui"
+      - "design"
+
+  - title: "♿ Accessibility & RTL"
+    labels:
+      - "accessibility"
+      - "rtl"
+      - "i18n"
+
+  - title: "⚡ Performance"
+    labels:
+      - "performance"
+
+  - title: "🔒 Security"
+    labels:
+      - "security"
+
+  - title: "🐛 Bug Fixes"
+    labels:
+      - "bug"
+
+  - title: "🔨 Build & CI"
+    labels:
+      - "build"
+      - "ci/cd"
+
+  - title: "📚 Documentation"
+    labels:
+      - "documentation"
+
+  - title: "🏠 Maintenance"
+    labels:
+      - "dependencies"
+      - "chore"
+
+# Default change line format
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+change-title-escapes: '\<*_&'
+
+# PRs with these labels are excluded from release notes
+exclude-labels:
+  - "wontfix"
+  - "invalid"
+  - "duplicate"
+
+# Release body template
+template: |
+  ## What's Changed in $RESOLVED_VERSION
+
+  $CHANGES
+
+  ---
+
+  **Full Changelog**: https://github.com/RajwanYair/FamilyDashBoard/blob/main/CHANGELOG.md
+  **Live Dashboard**: <https://rajwanyair.github.io/FamilyDashBoard/>

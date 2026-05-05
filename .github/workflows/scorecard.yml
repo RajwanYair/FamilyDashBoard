@@ -1,0 +1,52 @@
+# =============================================================================
+# OpenSSF Scorecard — FamilyDashBoard
+#
+# Measures the project's supply-chain security posture against the OpenSSF
+# Scorecard rubric (branch protection, dependency updates, CI tests, pinned
+# dependencies, token permissions, etc.).
+#
+# Results are published to the GitHub Security tab as SARIF and contribute to
+# the public Scorecard badge.
+#
+# Harvested from CrossTide parallel project — adapted for FamilyDashBoard.
+# =============================================================================
+name: OpenSSF Scorecard
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Weekly Monday 06:00 UTC
+    - cron: "0 6 * * 1"
+
+# Scorecard requires broad read permissions + id-token for OIDC publish
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      security-events: write
+      id-token: write
+      contents: read
+      actions: read
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@v2.4.0 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload SARIF results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          sarif_file: results.sarif

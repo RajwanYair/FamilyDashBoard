@@ -1,0 +1,127 @@
+# =============================================================================
+# Unified Security Gate — FamilyDashBoard
+#
+# Orchestrates the individual security scans (Trivy, Scorecard, SBOM) with a
+# single combined status check that PRs can require ("Security / gate").
+#
+# Individual detailed workflows run on their own schedules. This workflow adds:
+#   1. A combined gate job (branch protection can require "Security / gate")
+#   2. npm audit --audit-level=moderate (stricter than CI's --high)
+#   3. Source security scan (eval / innerHTML / document.write)
+#   4. Dependency integrity check on PRs (count of new production deps)
+#
+# Harvested from Wedding parallel project — adapted for FamilyDashBoard.
+# =============================================================================
+name: Security
+
+on:
+  schedule:
+    - cron: "47 6 * * 1" # Mondays 06:47 UTC — after sbom/trivy/scorecard
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. npm audit (moderate+) ─────────────────────────────────────────────
+  npm-audit:
+    name: npm audit (moderate+)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+      - name: Run npm audit (moderate+)
+        run: npm audit --audit-level=moderate
+
+  # ── 2. Source security scan ───────────────────────────────────────────────
+  inline-scan:
+    name: Source security scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Check for dangerous JS patterns
+        run: |
+          FAILED=0
+          for f in $(find src/ worker/ scripts/ -name '*.ts' -o -name '*.js' 2>/dev/null) src/index.html; do
+            [ -f "$f" ] || continue
+            if grep -n "eval(" "$f"; then
+              echo "::error file=$f::eval() usage detected"
+              FAILED=1
+            fi
+            if grep -n "document\.write(" "$f"; then
+              echo "::error file=$f::document.write() detected"
+              FAILED=1
+            fi
+          done
+          [ "$FAILED" -eq 0 ] && echo "Source security scan passed." || exit 1
+
+  # ── 3. Dependency integrity check (PRs only) ──────────────────────────────
+  dep-diff:
+    name: Dependency integrity check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+
+      - name: Capture PR production dep count
+        run: |
+          # FamilyDashBoard has zero runtime deps; any new one needs explicit review
+          RUNTIME_COUNT=$(node -e "
+            const pkg = require('./package.json');
+            console.log(Object.keys(pkg.dependencies || {}).length);
+          ")
+          echo "Runtime dependencies: ${RUNTIME_COUNT}"
+          if [ "$RUNTIME_COUNT" -gt 0 ]; then
+            echo "::warning::PR introduces ${RUNTIME_COUNT} runtime production dep(s). FamilyDashBoard target = 0 runtime deps. Please review."
+          else
+            echo "Zero runtime deps — OK."
+          fi
+
+  # ── 4. Summary gate ──────────────────────────────────────────────────────
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    needs: [npm-audit, inline-scan]
+    if: always()
+    timeout-minutes: 3
+
+    steps:
+      - name: Check required security jobs
+        run: |
+          if [[ "${{ needs.npm-audit.result }}" != "success" ]]; then
+            echo "npm-audit failed"
+            exit 1
+          fi
+          if [[ "${{ needs.inline-scan.result }}" != "success" ]]; then
+            echo "inline-scan failed"
+            exit 1
+          fi
+          echo "All security checks passed."

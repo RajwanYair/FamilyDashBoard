@@ -1,0 +1,41 @@
+# =============================================================================
+# Release Drafter — FamilyDashBoard
+#
+# Auto-drafts the next GitHub release from merged PR titles. Updates a single
+# "Draft" release on every push to main and PR-close. When you tag vX.Y.Z,
+# release.yml publishes the real release and this draft resets for the next
+# cycle.
+#
+# Configuration: .github/release-drafter.yml
+# Harvested from ExplorerLens.io parallel project.
+# =============================================================================
+name: Release Drafter
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: release-drafter-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  update-draft:
+    name: Update release draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: release-drafter/release-drafter@v6 # pin-allow: initial addition — Dependabot will SHA-pin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

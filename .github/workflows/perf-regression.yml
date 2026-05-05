@@ -1,0 +1,213 @@
+# =============================================================================
+# Performance Regression — FamilyDashBoard
+#
+# On every PR that touches src/, vite.config.ts, or package-lock.json:
+#   1. Builds the PR branch and measures gzip JS + CSS bundle sizes.
+#   2. Checks out the base branch and measures the same.
+#   3. Runs Lighthouse for Web Vitals (LCP, TBT, CLS, Performance score).
+#   4. Posts a sticky PR comment with the delta and Web Vitals table.
+#   5. Fails the workflow if the JS bundle exceeds the 500 KB gzip budget.
+#
+# FamilyDashBoard specifics:
+#   · Budget: 500 KB gzip (TV/always-on dashboard; larger than typical SPA)
+#   · Warning threshold: 10 KB increase triggers a ⚠️ notice in the comment
+#   · Lighthouse: best-effort (continue-on-error); dashboard is TV-first so
+#     LCP/CLS expectations differ from consumer web pages
+#
+# Harvested from CrossTide parallel project — adapted for FamilyDashBoard.
+# =============================================================================
+name: Performance Regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "sw.ts"
+      - "sw.js"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: perf-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  perf-check:
+    name: Bundle Size & Web Vitals
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+
+      # ── PR branch build ──────────────────────────────────────────────────────
+      - name: Build PR branch
+        run: npx vite build
+
+      - name: Measure PR bundle size
+        id: pr_size
+        run: |
+          JS_GZ=$(find dist/assets -name "*.js" -exec gzip -c {} \; | wc -c)
+          CSS_GZ=$(find dist/assets -name "*.css" -exec gzip -c {} \; | wc -c)
+          echo "js_gz=$JS_GZ" >> "$GITHUB_OUTPUT"
+          echo "css_gz=$CSS_GZ" >> "$GITHUB_OUTPUT"
+          echo "js_kb=$(echo "scale=1; $JS_GZ / 1024" | bc)" >> "$GITHUB_OUTPUT"
+          echo "css_kb=$(echo "scale=1; $CSS_GZ / 1024" | bc)" >> "$GITHUB_OUTPUT"
+
+      # ── Base branch build (for delta) ────────────────────────────────────────
+      - name: Build base branch for comparison
+        run: |
+          git stash --include-untracked 2>/dev/null || true
+          git checkout ${{ github.event.pull_request.base.sha }}
+          bash .github/ci/install-tools.sh
+          npx vite build
+        continue-on-error: true
+
+      - name: Measure base bundle size
+        id: base_size
+        run: |
+          if [ -d "dist/assets" ]; then
+            JS_GZ=$(find dist/assets -name "*.js" -exec gzip -c {} \; | wc -c)
+            CSS_GZ=$(find dist/assets -name "*.css" -exec gzip -c {} \; | wc -c)
+            echo "js_gz=$JS_GZ" >> "$GITHUB_OUTPUT"
+            echo "css_gz=$CSS_GZ" >> "$GITHUB_OUTPUT"
+          else
+            echo "js_gz=0" >> "$GITHUB_OUTPUT"
+            echo "css_gz=0" >> "$GITHUB_OUTPUT"
+          fi
+        continue-on-error: true
+
+      # ── Lighthouse Web Vitals (best-effort) ──────────────────────────────────
+      - name: Restore PR branch dist for Lighthouse
+        run: |
+          git checkout ${{ github.sha }} -- dist/ || true
+        continue-on-error: true
+
+      - name: Run Lighthouse for Web Vitals
+        id: lighthouse
+        run: |
+          npm install -g @lhci/cli@0.14.x --silent
+          npx vite preview --port 4173 &
+          PREVIEW_PID=$!
+          sleep 4
+          lhci collect --url=http://localhost:4173/ --settings.preset=desktop --numberOfRuns=1 || true
+          kill $PREVIEW_PID 2>/dev/null || true
+          if [ -f ".lighthouseci/lhr-0.json" ]; then
+            LCP=$(jq '.audits["largest-contentful-paint"].numericValue // 0' .lighthouseci/lhr-0.json)
+            TBT=$(jq '.audits["total-blocking-time"].numericValue // 0' .lighthouseci/lhr-0.json)
+            CLS=$(jq '.audits["cumulative-layout-shift"].numericValue // 0' .lighthouseci/lhr-0.json)
+            PERF=$(jq '.categories.performance.score // 0' .lighthouseci/lhr-0.json)
+            echo "lcp=$(printf '%.0f' "$LCP")" >> "$GITHUB_OUTPUT"
+            echo "tbt=$(printf '%.0f' "$TBT")" >> "$GITHUB_OUTPUT"
+            echo "cls=$CLS" >> "$GITHUB_OUTPUT"
+            echo "perf=$PERF" >> "$GITHUB_OUTPUT"
+          else
+            echo "lcp=—" >> "$GITHUB_OUTPUT"
+            echo "tbt=—" >> "$GITHUB_OUTPUT"
+            echo "cls=—" >> "$GITHUB_OUTPUT"
+            echo "perf=—" >> "$GITHUB_OUTPUT"
+          fi
+        continue-on-error: true
+
+      # ── Post sticky PR comment ───────────────────────────────────────────────
+      - name: Post bundle + Web Vitals PR comment
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v8.0.0
+        with:
+          script: |
+            const prJs   = parseInt('${{ steps.pr_size.outputs.js_gz }}')   || 0;
+            const baseJs = parseInt('${{ steps.base_size.outputs.js_gz }}') || 0;
+            const prCss  = parseInt('${{ steps.pr_size.outputs.css_gz }}')  || 0;
+            const baseCss = parseInt('${{ steps.base_size.outputs.css_gz }}') || 0;
+
+            const jsDiff    = prJs - baseJs;
+            const cssDiff   = prCss - baseCss;
+            const jsDiffKb  = (jsDiff  / 1024).toFixed(1);
+            const cssDiffKb = (cssDiff / 1024).toFixed(1);
+            const prJsKb    = (prJs  / 1024).toFixed(1);
+            const prCssKb   = (prCss / 1024).toFixed(1);
+
+            const lcp  = '${{ steps.lighthouse.outputs.lcp }}'  || '—';
+            const tbt  = '${{ steps.lighthouse.outputs.tbt }}'  || '—';
+            const cls  = '${{ steps.lighthouse.outputs.cls }}'  || '—';
+            const perf = '${{ steps.lighthouse.outputs.perf }}' || '—';
+            const perfPct = (perf !== '—' && !isNaN(parseFloat(perf)))
+              ? (parseFloat(perf) * 100).toFixed(0) + '%' : '—';
+
+            // 500 KB gzip budget (TV dashboard is larger than typical SPA)
+            const BUDGET_KB = 500;
+            const WARNING_KB = 10;
+
+            let status = '✅ Within budget';
+            if (prJs / 1024 > BUDGET_KB)    status = '🚨 OVER BUDGET';
+            else if (jsDiff / 1024 > WARNING_KB) status = '⚠️ Significant increase';
+
+            const body = [
+              '## 📦 Bundle Size & Performance Report',
+              '',
+              '| Asset | Size (gzip) | Δ vs base | Budget |',
+              '|-------|------------|-----------|--------|',
+              `| JS    | ${prJsKb} KB  | ${jsDiff >= 0 ? '+' : ''}${jsDiffKb} KB | ${BUDGET_KB} KB |`,
+              `| CSS   | ${prCssKb} KB | ${cssDiff >= 0 ? '+' : ''}${cssDiffKb} KB | — |`,
+              '',
+              '### ⚡ Web Vitals (Lighthouse desktop — best-effort)',
+              '',
+              '| Metric | Value | Target |',
+              '|--------|-------|--------|',
+              `| LCP | ${lcp} ms | < 2500 ms |`,
+              `| TBT | ${tbt} ms | < 300 ms |`,
+              `| CLS | ${cls} | < 0.1 |`,
+              `| Performance | ${perfPct} | ≥ 90% |`,
+              '',
+              `**Bundle status:** ${status}`,
+              '',
+              baseJs === 0 ? '_Base branch comparison unavailable for this run._' : '',
+              '',
+              '_Lighthouse is informational only for this TV dashboard (not a CI gate)._',
+            ].filter(Boolean).join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.body?.includes('## 📦 Bundle Size & Performance Report')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+            if (prJs / 1024 > BUDGET_KB) {
+              core.setFailed(`JS bundle ${prJsKb} KB exceeds ${BUDGET_KB} KB gzip budget`);
+            }

@@ -8,8 +8,24 @@ name: CI
 on:
   push:
     branches: [main]
+    # Skip CI for AI customization / documentation-only pushes that cannot
+    # affect runtime behaviour. Harvested from CrossTide parallel project.
+    paths-ignore:
+      - ".github/instructions/**"
+      - ".github/prompts/**"
+      - ".github/agents/**"
+      - ".github/copilot/**"
+      - ".github/copilot-instructions.md"
+      - ".github/AGENTS.md"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - ".github/instructions/**"
+      - ".github/prompts/**"
+      - ".github/agents/**"
+      - ".github/copilot/**"
+      - ".github/copilot-instructions.md"
+      - ".github/AGENTS.md"
   workflow_dispatch:
 
 # Cancel any in-progress CI run for the same branch/PR on new pushes.

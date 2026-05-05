@@ -1,0 +1,77 @@
+# =============================================================================
+# CycloneDX SBOM Generation — FamilyDashBoard
+#
+# Generates a Software Bill of Materials (SBOM) in both CycloneDX JSON and XML
+# formats. Uploaded as workflow artefacts for supply-chain audits, SLSA
+# compliance, and downstream consumers.
+#
+# Separate from pr-sbom-diff.yml which diffs PR-level dependency changes.
+# This workflow captures a complete production-dependency snapshot on every
+# release tag and weekly for ongoing supply-chain visibility.
+#
+# Harvested from Wedding parallel project — adapted for FamilyDashBoard:
+#   · Production deps only (--omit dev)
+#   · Runs on release tags (v*) + weekly Monday + manual dispatch
+#   · Artefacts retained 90 days
+# =============================================================================
+name: SBOM (CycloneDX)
+
+on:
+  schedule:
+    - cron: "31 6 * * 1" # Mondays 06:31 UTC
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sbom:
+    name: Generate CycloneDX SBOM
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
+
+      - name: Install CI toolchain (production deps only)
+        run: |
+          # FamilyDashBoard shares node_modules from parent MyScripts/
+          # In CI we install just what we need for SBOM generation
+          npm install --no-save --no-package-lock --ignore-scripts \
+            "@cyclonedx/cyclonedx-npm"
+
+      - name: Generate SBOM (JSON)
+        run: |
+          npx --yes @cyclonedx/cyclonedx-npm \
+            --output-format JSON \
+            --output-file sbom.cdx.json \
+            --omit dev \
+            --package-lock-only
+
+      - name: Generate SBOM (XML)
+        run: |
+          npx --yes @cyclonedx/cyclonedx-npm \
+            --output-format XML \
+            --output-file sbom.cdx.xml \
+            --omit dev \
+            --package-lock-only
+
+      - name: Upload artefacts
+        uses: actions/upload-artifact@v4 # pin-allow: initial addition — Dependabot will SHA-pin
+        with:
+          name: cyclonedx-sbom
+          path: |
+            sbom.cdx.json
+            sbom.cdx.xml
+          retention-days: 90

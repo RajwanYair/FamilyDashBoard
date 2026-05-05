@@ -1,0 +1,155 @@
+# =============================================================================
+# Supply Chain Security — FamilyDashBoard
+#
+# Three complementary checks beyond the basic `npm audit` already in ci.yml:
+#
+#   1. npm audit signatures  — verifies every installed package is signed by
+#      its publisher via Sigstore transparency log (detects tampered packages).
+#
+#   2. License compliance    — rejects GPL-3.0 and AGPL-3.0 licensed production
+#      dependencies (incompatible with the project's MIT license).
+#
+#   3. Dependency Review     — on PRs, flags newly introduced high-severity
+#      vulnerabilities and license violations before merging.
+#
+#   4. Auto-issue creation   — if the weekly scheduled audit fails, opens a
+#      GitHub Issue labelled "security" so it doesn't go unnoticed.
+#
+# Triggers:
+#   · push/PR to main when package-lock.json or package.json changes
+#   · weekly Monday 08:00 UTC (scheduled baseline)
+#
+# Harvested from CrossTide parallel project — adapted for FamilyDashBoard
+# (removed Socket.dev step — requires paid API key; Dependabot covers gaps).
+# =============================================================================
+name: Supply Chain Security
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package-lock.json"
+      - "package.json"
+      - "worker/package-lock.json"
+      - "worker/package.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - "package-lock.json"
+      - "package.json"
+      - "worker/package-lock.json"
+      - "worker/package.json"
+  schedule:
+    # Weekly Monday 08:00 UTC
+    - cron: "0 8 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supply-chain-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. Signature verification + license compliance ──────────────────────────
+  audit:
+    name: npm audit + signature verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "../package-lock.json"
+
+      - name: Install CI toolchain
+        run: bash .github/ci/install-tools.sh
+
+      - name: npm audit (high+ severity, production deps)
+        run: |
+          npm install --package-lock-only --ignore-scripts --silent
+          npm audit --omit=dev --audit-level=high
+
+      - name: Verify package signatures (Sigstore transparency log)
+        run: npm audit signatures
+        # Ensures every package's registry signature matches the transparency log.
+        # Catches supply-chain attacks where a package is replaced post-publish.
+
+      - name: License compliance check
+        run: |
+          npx --yes license-checker --production \
+            --failOn "GPL-3.0-only;AGPL-3.0-only;GPL-3.0-or-later;AGPL-3.0-or-later" \
+            --summary || {
+            echo "::error::Found disallowed licenses in production dependencies (GPL-3.0/AGPL-3.0)"
+            exit 1
+          }
+
+      # Worker has its own lock file — audit it separately
+      - name: Worker npm audit
+        run: |
+          cd worker
+          npm audit --omit=dev --audit-level=high || true
+        continue-on-error: true
+
+      # On scheduled weekly runs: open a GitHub Issue if any check above failed
+      - name: Create security issue on scheduled failure
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v8.0.0
+        with:
+          script: |
+            const title = `🔒 Supply chain audit failure — ${new Date().toISOString().slice(0, 10)}`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'security',
+              per_page: 10,
+            });
+            const existing = issues.find(i => i.title.startsWith('🔒 Supply chain audit failure'));
+            if (!existing) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: [
+                  '## Automated Security Alert',
+                  '',
+                  'The weekly supply chain audit found a problem (npm audit, signatures, or license compliance).',
+                  '',
+                  '**Action required:** Run `npm audit` and `npm audit signatures` locally and update affected packages.',
+                  '',
+                  `Workflow run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+                ].join('\n'),
+                labels: ['security', 'dependencies'],
+              });
+            }
+
+  # ── 2. Dependency Review (PRs only) ─────────────────────────────────────────
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+        with:
+          fail-on-severity: high
+          # Deny licenses incompatible with this project's MIT license
+          deny-licenses: GPL-3.0, AGPL-3.0
+          comment-summary-in-pr: always
