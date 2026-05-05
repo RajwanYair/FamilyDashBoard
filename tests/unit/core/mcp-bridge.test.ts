@@ -77,6 +77,15 @@ describe("deepFreezeJson", () => {
     expect((frozen as Record<string, unknown>).fn).toBeUndefined();
     expect((frozen as Record<string, unknown>).val).toBe(2);
   });
+
+  // Sprint 441: cover line 53 — array path in deepFreezeAll
+  it("deep-freezes arrays and array elements (line 53 coverage)", () => {
+    const arr = [{ x: 1 }, { y: 2 }];
+    const frozen = deepFreezeJson(arr);
+    expect(Array.isArray(frozen)).toBe(true);
+    expect(Object.isFrozen(frozen)).toBe(true);
+    expect(Object.isFrozen(frozen[0])).toBe(true);
+  });
 });
 
 // ── dispatchTool ──────────────────────────────────────────────────────────────
@@ -123,6 +132,29 @@ describe("dispatchTool", () => {
       expect(() => dispatchTool(tool)).not.toThrow();
     }
   });
+
+  // Sprint 441: cover signal-available path for alerts, countdown, synthesis (lines 97, 107, 112)
+  it.each([
+    ["today.alerts", "alerts", "active"],
+    ["today.countdown", "countdown", "items"],
+    ["today.synthesis", "ai-synthesis", "synthesis"],
+    ["today.calendar", "calendar", "events"],
+    ["today.hebrew_cal", "hebrew-cal", "zmanim"],
+  ] as const)(
+    "%s returns frozen payload when card signal is set",
+    (tool, cardId, key) => {
+      vi.mocked(getCardSignal).mockReturnValue({
+        v: 1,
+        cardId,
+        key,
+        value: { data: "test" },
+        ts: Date.now(),
+      });
+      const result = dispatchTool(tool);
+      expect(result).not.toBeNull();
+      expect(Object.isFrozen(result)).toBe(true);
+    },
+  );
 });
 
 // ── initMcpBridge / closeMcpBridge / isMcpActive ─────────────────────────────
@@ -208,6 +240,25 @@ describe("request roundtrip", () => {
     initMcpBridge();
     const ch = new BroadcastChannel("fdb-mcp");
     ch.postMessage({ foo: "bar" });
+    ch.close();
+    const resp = await collectResponse(120);
+    expect(resp).toBeNull();
+  });
+
+  // Sprint 441: cover line 138 — handleMessage early-return when id/tool fields are invalid
+  it("ignores request with empty string id (line 138 coverage)", async () => {
+    initMcpBridge();
+    const ch = new BroadcastChannel("fdb-mcp");
+    ch.postMessage({ type: "fdb-mcp/request", id: "", tool: "today.weather", ts: Date.now() });
+    ch.close();
+    const resp = await collectResponse(120);
+    expect(resp).toBeNull();
+  });
+
+  it("ignores request with non-string tool (line 138 coverage)", async () => {
+    initMcpBridge();
+    const ch = new BroadcastChannel("fdb-mcp");
+    ch.postMessage({ type: "fdb-mcp/request", id: "abc-123", tool: 42, ts: Date.now() });
     ch.close();
     const resp = await collectResponse(120);
     expect(resp).toBeNull();
