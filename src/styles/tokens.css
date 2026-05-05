@@ -215,6 +215,61 @@
     --focus-outline-width-card: 3px;
     --focus-shadow-spread: 4px;
     --focus-outline-offset-btn: 3px;
+  }
+
+  /*
+   * D9 — CSS @function sketch (ADR-062, v14.0 Sprint 415)
+   *
+   * When CSS Functions L1 reaches Baseline 2026, these @function declarations
+   * will replace the six body.theme-* blocks in themes.css.
+   * The @function syntax is commented out (no browser supports it yet) to
+   * serve as an implementation guide; the existing theme blocks remain
+   * authoritative. Tracked: https://www.w3.org/TR/css-mixins-1/
+   *
+   * @function --theme-accent() {
+   *   result: if(
+   *     style(--theme: matrix), #00ff88;
+   *     style(--theme: blue),   #60a5fa;
+   *     style(--theme: amber),  #fbbf24;
+   *     style(--theme: purple), #a78bfa;
+   *     style(--theme: rose),   #fb7185;
+   *     #c8a87a  /* default warm */
+   *   );
+   * }
+   * @function --theme-bg-primary() {
+   *   result: if(
+   *     style(--theme: matrix), #020c04;
+   *     style(--theme: blue),   #080d18;
+   *     style(--theme: amber),  #140f00;
+   *     style(--theme: purple), #0c0a1a;
+   *     style(--theme: rose),   #180a0f;
+   *     #1a1410  /* default warm (= theme-black) */
+   *   );
+   * }
+   */
+
+  /* D9 partial migration: @supports-gated if() for derived opacity tokens.
+   *
+   * The @supports guard ensures browsers that do not understand CSS if()
+   * continue to use the color-mix() fallback values declared above.
+   * Chrome 137+ / Firefox 136+ (both behind intent-to-ship as of v14.0) will
+   * pick up these definitions and override the color-mix() values.
+   *
+   * ADR-062 §Migration Sketch step 1/2 (partial — step 2 = fallback removal
+   * is deferred until CSS if() reaches Baseline 2026).
+   */
+  @supports (top: if(true; 0px; 0px)) {
+    :root {
+      /* Accent tint — 12% opacity variant */
+      --accent-subtle: color-mix(in sRGB, var(--accent) if(true; 12%; 12%), transparent);
+      /* Accent dim — 40% opacity variant */
+      --accent-dim: color-mix(in sRGB, var(--accent) if(true; 40%; 40%), transparent);
+      /* Positive tint */
+      --positive-subtle: color-mix(in sRGB, var(--positive) if(true; 12%; 12%), transparent);
+      /* Negative tint */
+      --negative-subtle: color-mix(in sRGB, var(--negative) if(true; 12%; 12%), transparent);
+    }
+  }
     --focus-outline-width-input: 2px;
 
     /* ── WCAG 1.4.12 Text Spacing Tokens ── */

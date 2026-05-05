@@ -56,7 +56,7 @@ function deepFreezeAll<T>(value: T): T {
       deepFreezeAll((value as Record<string, unknown>)[k]);
     }
   }
-  return Object.freeze(value) as T;
+  return Object.freeze(value);
 }
 
 // ── Replay protection ────────────────────────────────────────────────────────

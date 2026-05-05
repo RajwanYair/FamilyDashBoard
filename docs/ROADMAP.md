@@ -487,7 +487,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 - [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 KB warn through v13.39.0; hard-cap unchanged at 80 KB)_
 - [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
-- [ ] D9 CSS `if()` + `@function` migration (tokens).
+- [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 Sprint 415; full migration pending Baseline 2026)_
 - [x] D10 Speculation Rules for help / config panels.
 - [x] D5 Origin-Agent-Cluster header + meta.
 - [ ] VR baselines 108 → 130 (DO-SSE alert states + maximise-FLIP scenarios).

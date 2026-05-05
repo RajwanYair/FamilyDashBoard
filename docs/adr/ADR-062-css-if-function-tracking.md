@@ -1,6 +1,6 @@
 # ADR-062: D9 — CSS `if()` and `@function` for Theme-Token Compression (Track)
 
-- **Status**: Tracking (adopt v14.x once Chrome + Firefox both ship)
+- **Status**: Partial (v14.0 Sprint 415 — @supports-gated if() proof-of-concept; @function sketch added as comment; full migration deferred until Baseline 2026)
 - **Date**: 2026-05-03 (v13.36.0 patch series)
 - **Sprints**: 345
 - **Related**: ADR-014 (theme system), ROADMAP §1.11 D9, §5.1 themes
