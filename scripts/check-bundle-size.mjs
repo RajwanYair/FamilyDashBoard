@@ -357,8 +357,9 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
 // Sprint 443 (v14.2.0): warn 32 → 30 KB; hard-cap 68 → 66 KB.
 // Sprint 452 (v14.2.0): warn 30 → 28 KB; hard held at 66 (weather 65.1 KB blocks further drop).
 // Sprint 462 (v14.3.0): warn 28 → 26 KB; hard held at 66 (weather 65.1 KB still blocks hard drop).
+// Sprint 475 (v14.4.0): warn 26 → 24 KB; hard held at 66 (weather 65.1 KB still blocks hard drop; system-info 25.4 KB now in advisory zone).
 const PER_CARD_HARD_CAP_KB = 66;
-const PER_CARD_WARN_KB = 26;
+const PER_CARD_WARN_KB = 24;
 let perCardCapOk = true;
 console.log(`📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`);
 for (const { name, sourceKb } of cardSourceRows) {
