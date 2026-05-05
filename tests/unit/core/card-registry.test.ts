@@ -411,3 +411,72 @@ describe("mountRegisteredCards", () => {
     expect(document.querySelector(`[data-card-id="${id}"]`)).toBeNull();
   });
 });
+
+// ── Sprint 440: init/destroy/render coverage for built-in FdbCardDefinition cards ──
+//
+// The init() and destroy() methods on FdbCardDefinition cards are empty no-ops
+// ("Lifecycle owned by the custom element's connect/disconnect hook.").
+// These functions ARE tracked by V8 coverage but were never exercised.
+// This suite calls them via the loaded CardDefinition to close the coverage gap.
+
+// Cards where both init() and destroy() are local empty stubs
+const fdbInitDestroyCards = [
+  "news",
+  "weather",
+  "stocks",
+  "tasks",
+  "system-info",
+  "video-news",
+] as const;
+
+// Cards where init() is a local empty stub (destroy is an imported fn, not counted here)
+const fdbInitOnlyCards = ["hebrew-cal", "calendar", "currency", "alerts"] as const;
+
+// Cards whose legacyAdapter render() needs exercising (not in ceCards list)
+const legacyRenderCards = [
+  "hebrew-cal",
+  "calendar",
+  "currency",
+  "alerts",
+  "video-news",
+  "ai-synthesis",
+] as const;
+
+describe("Card Registry — Sprint 440 init/destroy/render coverage", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it.each([...fdbInitDestroyCards])(
+    "%s: loadCard → init() and destroy() are callable no-ops",
+    async (cardId) => {
+      const def = await loadCard(cardId);
+      expect(() => def.init()).not.toThrow();
+      // destroy is optional on CardDefinition
+      if (typeof (def as Record<string, unknown>)["destroy"] === "function") {
+        expect(() => (def as Record<string, () => void>)["destroy"]()).not.toThrow();
+      }
+    },
+  );
+
+  it.each([...fdbInitOnlyCards])(
+    "%s: loadCard → init() is callable no-op (destroy is imported fn)",
+    async (cardId) => {
+      const def = await loadCard(cardId);
+      expect(() => def.init()).not.toThrow();
+    },
+  );
+
+  it.each([...legacyRenderCards])(
+    "%s: loadCard → render() returns an HTMLElement",
+    async (cardId) => {
+      const def = await loadCard(cardId);
+      const el = def.render();
+      expect(el).toBeInstanceOf(HTMLElement);
+    },
+  );
+});
