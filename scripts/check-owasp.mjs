@@ -2,12 +2,13 @@
 /**
  * Sprint 221 — OWASP Top 10 rotation automated check.
  * Sprint 427 (v14.0.0) — added A03 document.write rule + A05 postMessage(*) rule.
+ * Sprint 435 (v14.1.0) — added A01 open-redirect, A02 atob-credential, A03 setTimeout-string.
  *
  * Scans `src/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
  *
- *   A01 – Broken Access Control:       hardcoded role bypass, admin checks
- *   A02 – Cryptographic Failures:      MD5/SHA1 usage, Math.random for secrets
+ *   A01 – Broken Access Control:       hardcoded role bypass, admin checks; open redirect
+ *   A02 – Cryptographic Failures:      MD5/SHA1 usage, Math.random for secrets, atob for credentials
  *   A03 – Injection:                   eval, new Function, innerHTML, dangerouslySetInnerHTML
  *   A04 – Insecure Design:             TODO/FIXME SECURITY markers flagged for review
  *   A05 – Security Misconfiguration:   wildcard CORS in fetch headers, DEBUG flags
@@ -53,6 +54,27 @@ const RULES = [
     severity: "warn",
     pattern: /Math\.random\(\).{0,40}(?:token|secret|key|nonce|csrf|auth)/i,
   },
+  {
+    // Sprint 435: atob() decoding a credential-looking variable is not secure storage
+    category: "A02",
+    label: "atob() decoding potential credential (not a secure encoding)",
+    severity: "warn",
+    pattern: /\batob\s*\([^)]*(?:token|secret|password|key|credential)[^)]*\)/i,
+  },
+
+  // A01 — Broken Access Control (open redirect — Sprint 435)
+  {
+    category: "A01",
+    label: "Unvalidated redirect via location.href assignment",
+    severity: "warn",
+    pattern: /\blocation\.href\s*=[^=]/,
+  },
+  {
+    category: "A01",
+    label: "Unvalidated redirect via window.location assignment",
+    severity: "warn",
+    pattern: /\bwindow\.location\s*=[^=]/,
+  },
 
   // A03 — Injection
   {
@@ -79,6 +101,13 @@ const RULES = [
     label: "document.write() call (DOM injection vector)",
     severity: "error",
     pattern: /\bdocument\.write\s*\(/,
+  },
+  {
+    // Sprint 435: setTimeout/setInterval with a string argument is eval-equivalent
+    category: "A03",
+    label: "setTimeout/setInterval with string argument (eval analogue)",
+    severity: "error",
+    pattern: /\b(?:setTimeout|setInterval)\s*\(\s*['"`]/,
   },
   {
     category: "A03",
