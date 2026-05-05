@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — Visual Regression Tests (Stream G.2.3)
  *
- * Captures 129 baseline screenshots across 38 scenario groups:
+ * Captures 132 baseline screenshots across 39 scenario groups:
  *   - 18 idle baselines: 6 themes × 3 screen modes
  *   - 3 config-panel-open baselines: 3 themes × tv mode
  *   - 3 maximized-card baselines: 3 themes × tv mode
@@ -40,6 +40,7 @@
  *   - 3 maximize-flip-phone-ext baselines: 3 more themes × phone  (Sprint 415 / v14.0)
  *   - 3 stocks-ils-display baselines: 3 themes × tv mode          (Sprint 415 / v14.0)
  *   - 3 currency-boi-source baselines: 3 more themes × tv mode    (Sprint 415 / v14.0)
+ *   - 3 news-starred-drawer baselines: 3 themes × tv mode          (Sprint 421 / v14.1)
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -1458,6 +1459,44 @@ test.describe("FamilyDashBoard — Currency BoI Source Badge Ext (Sprint 415)", 
       await page.waitForTimeout(300);
 
       await expect(page).toHaveScreenshot(`${theme}-currency-boi-source.png`, {
+        maxDiffPixelRatio: 0.05,
+        mask: [
+          page.locator(".clock, #clock, [id*='time'], [class*='time']"),
+          page.locator("[class*='ticker'], [class*='marquee']"),
+        ],
+        fullPage: false,
+        timeout: 15_000,
+      });
+    });
+  }
+});
+
+// ── Sprint 421 / v14.1: News starred-drawer open state ─────────────────────
+// Captures the news starred-articles drawer dialog in 3 themes (N-Star-UI).
+
+test.describe("FamilyDashBoard — News Starred Drawer (Sprint 421)", () => {
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(60_000);
+
+  for (const theme of ["black", "blue", "matrix"] as Theme[]) {
+    test(`${theme}: news-starred-drawer`, async ({ page }) => {
+      await goWithConfig(page, theme, "tv");
+      await page.evaluate(() => document.fonts.ready);
+
+      // Open the starred-articles drawer by clicking the star button if present,
+      // or by triggering showModal() directly as a fallback.
+      await page.evaluate(() => {
+        const btn = document.getElementById("news-star-btn") as HTMLElement | null;
+        if (btn) {
+          btn.click();
+        } else {
+          const dlg = document.getElementById("news-starred-dialog") as HTMLDialogElement | null;
+          dlg?.showModal?.();
+        }
+      });
+      await page.waitForTimeout(400);
+
+      await expect(page).toHaveScreenshot(`${theme}-news-starred-drawer.png`, {
         maxDiffPixelRatio: 0.05,
         mask: [
           page.locator(".clock, #clock, [id*='time'], [class*='time']"),

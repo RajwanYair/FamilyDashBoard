@@ -490,7 +490,7 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 - [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 Sprint 415; full migration pending Baseline 2026)_
 - [x] D10 Speculation Rules for help / config panels.
 - [x] D5 Origin-Agent-Cluster header + meta.
-- [ ] VR baselines 108 → 130 (DO-SSE alert states + maximise-FLIP scenarios).
+- [x] VR baselines 108 → 132 (DO-SSE alert states + maximise-FLIP + news-starred-drawer). `Sprint 415 + 421`
 - [x] D3 Compute Pressure API tile in system-info.
 - [x] D4 Storage Buckets per-card eviction.
 - [x] LHCI ratchet `error 0.97 → 0.98` cached. (Sprint 397, v13.43.0)
