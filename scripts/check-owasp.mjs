@@ -14,6 +14,7 @@
  * Sprint 496 (v14.5.0) — added A07 document.cookie token, A03 javascript: protocol, A04 prototype reassignment.
  * Sprint 500 (v14.5.0) — added A09 logging sensitive vars, A05 ACAO wildcard, A08 dynamic script.src.
  * Sprint 505 (v14.5.0) — added A01 location assignment, A02 Math.random token, A10 URL from searchParams.
+ * Sprint 510 (v14.5.0) — added A03 SQL template injection, A07 token in URL query, A04 rejectUnauthorized false.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -446,6 +447,35 @@ const RULES = [
     severity: "warn",
     pattern: /new\s+URL\(\s*(?:searchParams|params|query)/i,
     safeMarkers: ["allowlist", "ALLOWED_ORIGINS", "validateUrl("],
+  },
+
+  // A03 — Injection (Sprint 510)
+  {
+    // Using template literals in SQL queries risks SQLi (look for SQL verbs followed by FROM/INTO/SET + interpolation)
+    category: "A03",
+    label: "Template literal in SQL query — use parameterized queries",
+    severity: "error",
+    pattern: /(?:SELECT\s+.+FROM|INSERT\s+INTO|UPDATE\s+\w+\s+SET|DELETE\s+FROM|DROP\s+TABLE)\s.*\$\{/i,
+    safeMarkers: [".prepare(", ".bind(", "parameterized"],
+  },
+
+  // A07 — Auth Failures (Sprint 510)
+  {
+    // Exposing tokens/keys in URL query strings (logged in server access logs)
+    category: "A07",
+    label: "Token/key in URL query — move to Authorization header",
+    severity: "warn",
+    pattern: /[?&](?:api_key|apiKey|token|secret|password)=/i,
+    safeMarkers: ["Authorization:", "Bearer", "env.", "* Handle", "* GET", "* POST"],
+  },
+
+  // A04 — Insecure Design (Sprint 510)
+  {
+    // Disabling TLS verification (rejectUnauthorized: false) — MITM risk
+    category: "A04",
+    label: "rejectUnauthorized: false — enables MITM attacks",
+    severity: "error",
+    pattern: /rejectUnauthorized\s*:\s*false/,
   },
 ];
 
