@@ -22,6 +22,7 @@
  * Sprint 537 (v14.5.0) — added A03 Blob URL XSS, A05 cookie SameSite, A02 localStorage secret.
  * Sprint 543 (v14.5.0) — added A01 target=_blank noopener, A07 auth header logged, A04 setTimeout string.
  * Sprint 549 (v14.5.0) — added A03 contentDocument.write, A05 X-Frame-Options missing, A09 stack trace exposed.
+ * Sprint 555 (v14.5.0) — added A02 hardcoded password, A06 dynamic import(), A10 SSRF interpolated fetch.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -683,6 +684,35 @@ const RULES = [
     severity: "error",
     pattern: /(?:err|error)\.stack/,
     safeMarkers: ["test", "spec", "mock", "diagLog", "console", "log", "report", "sentry", "debug"],
+  },
+
+  // Sprint 555 — 3 new rules (total: 74)
+
+  // A02 — Cryptographic Failures: hardcoded password/secret in variable assignment
+  {
+    category: "A02",
+    label: "Hardcoded password/secret literal in assignment",
+    severity: "error",
+    pattern: /(?:password|passwd|secret|apiKey|api_key)\s*[:=]\s*['"`][^'"`]{4,}/i,
+    safeMarkers: ["test", "spec", "mock", "env.", "process.env", "import.meta.env", "example", "placeholder", "CHANGE_ME"],
+  },
+
+  // A06 — Vulnerable Components: eval of import() with user-controlled string
+  {
+    category: "A06",
+    label: "Dynamic import() with non-literal argument",
+    severity: "warn",
+    pattern: /import\(\s*(?!['"`])[^)]+\)/,
+    safeMarkers: ["test", "spec", "mock", "/* trusted */", "webpackChunkName"],
+  },
+
+  // A10 — SSRF: fetch/request with URL constructed from user input without allowlist
+  {
+    category: "A10",
+    label: "fetch() with interpolated/dynamic URL (potential SSRF)",
+    severity: "warn",
+    pattern: /fetch\(\s*`[^`]*\$\{/,
+    safeMarkers: ["WORKER_BASE_URL", "BASE_URL", "NWS_API", "PROXIES", "safeParam", "allowlist", "ALLOWED_", "import.meta.env", "encodeURIComponent", "URLSearchParams", "test", "spec", "geonameid", "encoded", "owasp-allow:A10", "hebcal", "sefaria"],
   },
 ];
 

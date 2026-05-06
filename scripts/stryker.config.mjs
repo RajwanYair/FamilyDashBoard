@@ -144,6 +144,11 @@ export default {
     "worker/src/utils/d1-telemetry.ts",
     "worker/src/routes/metrics.ts",
     "worker/src/middleware/rate-limit.ts",
+    // Sprint 555: property-tested canary (CY1-CY6), base-card (BC1-BC7), header (HD1-HD6), hardware (HW1-HW5)
+    "worker/src/middleware/canary.ts",
+    "src/cards/base-card.ts",
+    "src/ui/header.ts",
+    "src/core/hardware.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
