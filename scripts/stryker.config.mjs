@@ -42,6 +42,7 @@
  * Sprint 449: extended scope to provider.ts (PRP1-PRP6 property-tested; backoff + status machine).
  * Sprint 472: extended scope to utils.ts, config-crypto.ts, worker-client.ts (property-tested in Sprints 470, 469).
  * Sprint 483: extended scope to perf.ts, i18n.ts, error-boundary.ts (property-tested PF1-PF9, I18N1-I18N7, EB1-EB6 in Sprints 479-481).
+ * Sprint 490: extended scope to sw-constants.ts, trusted-types.ts (property-tested SW1-SW6, TT1-TT5 in Sprints 485, 488).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -91,6 +92,9 @@ export default {
     "src/core/perf.ts",
     "src/core/i18n.ts",
     "src/core/error-boundary.ts",
+    // Sprint 490: property-tested type-guards (SW1-SW6), TT passthrough (TT1-TT5), provider health (PV1-PV7)
+    "src/core/sw-constants.ts",
+    "src/core/trusted-types.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
