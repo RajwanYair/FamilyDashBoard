@@ -74,7 +74,7 @@ async function fetchIndexHTML(): Promise<Document> {
   if (_indexDoc) return _indexDoc;
   const resp = await fetch(`${import.meta.env.BASE_URL}index.html`);
   const text = await resp.text();
-  _indexDoc = new DOMParser().parseFromString(text, "text/html");
+  _indexDoc = new DOMParser().parseFromString(text, "text/html"); // safe: result not inserted into live DOM
   return _indexDoc;
 }
 

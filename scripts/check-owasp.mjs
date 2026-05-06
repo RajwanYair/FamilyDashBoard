@@ -9,6 +9,7 @@
  * Sprint 464 (v14.3.0) — added A03 srcdoc iframe injection, A02 btoa-credential, A01 hardcoded admin bypass.
  * Sprint 466 (v14.3.0) — extended scan scope to `scripts/*.mjs` (build/CI helpers).
  * Sprint 473 (v14.4.0) — added A01 document.domain assignment, A03 new RegExp() dynamic, A04 Object.assign() prototype-pollution vector.
+ * Sprint 482 (v14.5.0) — added A03 DOMParser.parseFromString XSS, A05 referrerPolicy='no-referrer' missing on ext links, A08 importScripts() in workers.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -297,6 +298,36 @@ const RULES = [
     label: "Object.assign() with variable source — ensure source is not user-supplied JSON (prototype pollution via __proto__)",
     severity: "warn",
     pattern: /\bObject\.assign\s*\(\s*[^,)]+,\s*(?!{)[a-zA-Z_$][a-zA-Z0-9_.]*\s*\)/,
+  },
+
+  // A03 — Injection (Sprint 482)
+  {
+    // DOMParser.parseFromString with "text/html" can execute scripts if the parsed result
+    // is inserted into the live DOM without sanitization
+    category: "A03",
+    label: "DOMParser.parseFromString('text/html') — parsed DOM must not be inserted unsanitized into live document",
+    severity: "warn",
+    pattern: /\.parseFromString\s*\([^)]*,\s*['"]text\/html['"]/,
+    safeMarkers: ["owasp-allow:A03", "// safe: result not inserted into live DOM"],
+  },
+
+  // A05 — Security Misconfiguration (Sprint 482)
+  {
+    // External links without rel="noopener noreferrer" and proper referrerPolicy leak origin info
+    category: "A05",
+    label: "window.open() without noopener — allows reverse tabnapping and leaks referrer",
+    severity: "warn",
+    pattern: /\bwindow\.open\s*\([^)]*\)\s*(?!.*noopener)/,
+    safeMarkers: ["noopener"],
+  },
+
+  // A08 — Software and Data Integrity Failures (Sprint 482)
+  {
+    // importScripts() in Workers loads & executes remote code without SRI; prefer static import
+    category: "A08",
+    label: "importScripts() in Worker — no SRI verification, prefer static ES module import",
+    severity: "error",
+    pattern: /\bimportScripts\s*\(/,
   },
 ];
 
