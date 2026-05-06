@@ -31,7 +31,16 @@ export function withErrorBoundary<T>(
     try {
       return await fn();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      let msg: string;
+      if (err instanceof Error) {
+        msg = err.message;
+      } else {
+        try {
+          msg = String(err);
+        } catch {
+          msg = "Unknown error";
+        }
+      }
       diagLog(`[error-boundary] "${cardId}" threw: ${msg}`);
       recordError(msg, `card:${cardId}`);
 
