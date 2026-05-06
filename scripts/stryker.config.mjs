@@ -45,6 +45,7 @@
  * Sprint 490: extended scope to sw-constants.ts, trusted-types.ts (property-tested SW1-SW6, TT1-TT5 in Sprints 485, 488).
  * Sprint 497: extended scope to idb-store.ts, keymap.ts (property-tested IDB1-IDB6, KM1-KM5).
  * Sprint 501: extended scope to anim-level.ts, snapshot.ts (property-tested AL1-AL5, SY1-SY5); removed duplicate error-tracker.ts entry.
+ * Sprint 507: extended scope to ecb-adapter.ts, app-signals.ts, constants.ts (property-tested ECB1-ECB6, AS1-AS6, CN1-CN6).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -103,6 +104,10 @@ export default {
     // Sprint 501: property-tested anim-level (AL1-AL5), sync backoff (SY1-SY5), snapshot export
     "src/core/anim-level.ts",
     "src/core/snapshot.ts",
+    // Sprint 507: property-tested ECB adapter (ECB1-ECB6), app-signals (AS1-AS6), constants (CN1-CN6)
+    "worker/src/utils/ecb-adapter.ts",
+    "src/core/app-signals.ts",
+    "src/core/constants.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
