@@ -12,6 +12,7 @@
  * Sprint 482 (v14.5.0) — added A03 DOMParser.parseFromString XSS, A05 referrerPolicy='no-referrer' missing on ext links, A08 importScripts() in workers.
  * Sprint 487 (v14.5.0) — added A03 createContextualFragment XSS, A05 CORS credentials, A02 insecure crypto algorithms.
  * Sprint 496 (v14.5.0) — added A07 document.cookie token, A03 javascript: protocol, A04 prototype reassignment.
+ * Sprint 500 (v14.5.0) — added A09 logging sensitive vars, A05 ACAO wildcard, A08 dynamic script.src.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -386,6 +387,35 @@ const RULES = [
     pattern: /\.prototype\s*=\s*(?!null\b)[^=]/,
     safeMarkers: ["Object.create("],
   },
+
+  // A09 — Logging Failures (Sprint 500)
+  {
+    // console.log/warn/error with variables named token/password/secret/apiKey
+    category: "A09",
+    label: "Logging sensitive variable name — redact before logging",
+    severity: "warn",
+    pattern: /console\.\w+\(.*(?:token|password|secret|apiKey|api_key|credential)/i,
+    safeMarkers: ["redact(", "mask(", "[REDACTED]"],
+  },
+
+  // A05 — Security Misconfiguration (Sprint 500)
+  {
+    // Setting Access-Control-Allow-Origin to literal wildcard in code
+    category: "A05",
+    label: "Access-Control-Allow-Origin wildcard — restrict to specific origins",
+    severity: "error",
+    pattern: /['"]Access-Control-Allow-Origin['"]\s*[:,]\s*['"]\*/i,
+  },
+
+  // A08 — Software Integrity Failures (Sprint 500)
+  {
+    // Dynamically constructed script src from variable (DOM-based script injection)
+    category: "A08",
+    label: "Dynamic script.src assignment — validate URL scheme + origin",
+    severity: "error",
+    pattern: /script[^.]*\.src\s*=\s*(?!['"]https?:\/\/)(?!['"]\/)/i,
+    safeMarkers: ["URL.createObjectURL(", "data:text/javascript"],
+  },
 ];
 
 /** Exempt source paths (relative to root, forward slashes). */
@@ -395,6 +425,10 @@ const EXEMPT_PATHS = [
   // they enumerate dangerous patterns by design, so every rule would match their own source.
   "scripts/check-owasp.mjs",
   "scripts/check-trusted-types.mjs",
+  // Sprint 500: public API proxy uses CORS wildcard by design.
+  "worker/src/utils/validation.ts",
+  "worker/src/utils/response.ts",
+  "worker/src/middleware/cors.ts",
 ];
 
 /**
