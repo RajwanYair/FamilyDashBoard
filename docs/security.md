@@ -1,7 +1,7 @@
-# Security Model — FamilyDashBoard v14.3.0
+# Security Model — FamilyDashBoard v14.4.0
 
 > This document describes the security posture, threat model, and mitigation decisions for the
-> FamilyDashBoard project. Updated: 2026-05-12 (v14.3.0).
+> FamilyDashBoard project. Updated: 2026-05-06 (v14.4.0).
 
 ---
 

@@ -9,6 +9,33 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.4.0] — 2026-05-06
+
+> **6361 tests / 212 suites / 0 failures** (commit `c6c7989`)
+
+### Security
+
+- **Sprint 473**: OWASP +3 rules — A01 `document.domain =` assignment, A03 `new RegExp()` dynamic (ReDoS), A04 `Object.assign()` prototype-pollution vector; 32 rules total.
+
+### Quality Gates
+
+- **Sprint 474**: Coverage thresholds ratcheted 94.0/85.2/94.3/95.4 → 94.2/85.4/94.5/95.6 (Sprints 469-471 added 25 new property tests for config-crypto/utils/links).
+- **Sprint 475**: Per-card bundle warn-cap ratcheted 26 → 24 KB; hard-cap held at 66 KB (weather 65.1 KB).
+- **Sprint 476**: Dead-exports audit extended to `worker/src/`; 141 files scanned; `// dead-export-ok` suppression mechanism added for 13 worker false positives.
+
+### Tests
+
+- **Sprint 469**: fast-check CC1-CC8 for `src/core/config-crypto.ts` — 9 properties: encrypt/decrypt round-trip, empty string, non-string inputs, key isolation, algorithm agnosticism, key-length invariant, deterministic outcome, Unicode correctness.
+- **Sprint 470**: fast-check UT1-UT8 for `src/core/utils.ts` — 10 properties: `clamp` bounds/identity/degenerate, `pad2` length/leading-zero, `decomposeDuration` reconstruction + calendar-ranges, `computeMoonPhase` non-empty + known-phases.
+- **Sprint 471**: fast-check LK1-LK6 for `src/core/links.ts` — 6 properties: registration count, idempotence, direction isolation, `clearLinks` reset, resolver identity, feature-gate.
+
+### Tooling
+
+- **Sprint 472**: Stryker mutation-test scope extended from 22 → 25 files (added `utils.ts`, `config-crypto.ts`, `worker-client.ts`).
+- **Sprint 477**: ROADMAP housekeeping — all baselines updated (tests, suites, property suites, Stryker files, coverage, OWASP rules, bundle warn cap).
+
+---
+
 ## [14.3.0] — 2026-05-12
 
 > **6336 tests / 209 suites / 0 failures** (commit `b7bd304`)

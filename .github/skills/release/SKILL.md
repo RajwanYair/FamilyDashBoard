@@ -110,7 +110,7 @@ node scripts/check-version-consistency.mjs
 
 Zero tolerance: 0 type errors · 0 lint errors/warnings · 0 markdownlint errors ·
 0 test failures · JS gzip ≤ 100 KB · CSS gzip ≤ 26 KB · SW version matches `package.json`.
-Always confirm test count (6336+ at v14.3.0) and update all 16 documented files before tagging.
+Always confirm test count (6361+ at v14.4.0) and update all 16 documented files before tagging.
 
 Read `.github/instructions/workspace.instructions.md` before updating any
 hardcoded test-count or toolchain text. Do not carry forward stale totals.

@@ -106,8 +106,8 @@ describe("signals — SIG3: effect runs exactly once on construction", () => {
 describe("signals — SIG4: effect re-runs exactly once per signal.value change", () => {
   it("setting signal to a new value causes effect to re-run exactly once", () => {
     fc.assert(
-      fc.property(intArb, intArb.filter((n) => n !== 0).map((n) => n + 1), (a, delta) => {
-        const b = a + delta; // guaranteed a !== b
+      fc.property(intArb, intArb, (a, b) => {
+        fc.pre(a !== b); // discard equal pairs — same-value write does not re-run
         const src = signal(a);
         let count = 0;
         const dispose = effect(() => {
