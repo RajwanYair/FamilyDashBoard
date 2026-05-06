@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/tasks/tasks.ts (Sprint 528)
+ * fast-check property tests — src/cards/tasks/tasks.ts (Sprint 528, extended Sprint 560)
  *
  * Properties under test:
  *  TK1. parseTaskPriority: no prefix → "none" + unchanged text
@@ -12,6 +12,9 @@
  *  TK8. recurrenceResetKey: yearly → "YYYY"
  *  TK9. taskCompletionRatio: empty → {0,0,0}
  *  TK10. taskCompletionRatio: pct ∈ [0,100]
+ *  TK11. addSubtask: result length = input length + 1
+ *  TK12. addSubtask: new item has correct parentId
+ *  TK13. getSubtasks: filters only children of parentId
  */
 
 import { describe, it, expect } from "vitest";
@@ -22,6 +25,8 @@ import {
   parseTaskDueDate,
   recurrenceResetKey,
   taskCompletionRatio,
+  addSubtask,
+  getSubtasks,
 } from "@/cards/tasks/tasks";
 
 // ── TK1: no prefix → "none" ─────────────────────────────────────────────────
@@ -169,5 +174,72 @@ describe("tasks — TK10: taskCompletionRatio bounds", () => {
     expect(r0.pct).toBeGreaterThanOrEqual(0);
     expect(r0.pct).toBeLessThanOrEqual(100);
     expect(r0.total).toBe(3);
+  });
+});
+
+// ── TK11: addSubtask length ──────────────────────────────────────────────────
+
+describe("tasks — TK11: addSubtask increases length", () => {
+  it("result length = input + 1", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 10 }),
+        fc.string({ minLength: 1, maxLength: 10 }),
+        fc.string({ minLength: 1, maxLength: 10 }),
+        (parentId, person, chore) => {
+          const items = [{ person: "X", chore: "existing" }];
+          const subtask = { person, chore };
+          const result = addSubtask(parentId, subtask, items);
+          expect(result.length).toBe(items.length + 1);
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── TK12: addSubtask sets parentId ───────────────────────────────────────────
+
+describe("tasks — TK12: addSubtask sets parentId", () => {
+  it("last item in result has correct parentId", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 10 }),
+        fc.string({ minLength: 1, maxLength: 10 }),
+        (parentId, chore) => {
+          const subtask = { person: "Bob", chore };
+          const result = addSubtask(parentId, subtask, []);
+          expect(result[result.length - 1].parentId).toBe(parentId);
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── TK13: getSubtasks filters correctly ──────────────────────────────────────
+
+describe("tasks — TK13: getSubtasks filters by parentId", () => {
+  it("only items with matching parentId are returned", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 5 }),
+        fc.string({ minLength: 1, maxLength: 5 }),
+        (parentA, parentB) => {
+          fc.pre(parentA !== parentB);
+          const items = [
+            { person: "X", chore: "t1", parentId: parentA },
+            { person: "Y", chore: "t2", parentId: parentB },
+            { person: "Z", chore: "t3", parentId: parentA },
+          ];
+          const result = getSubtasks(parentA, items);
+          expect(result.length).toBe(2);
+          for (const r of result) {
+            expect(r.parentId).toBe(parentA);
+          }
+        },
+      ),
+      { numRuns: 15 },
+    );
   });
 });
