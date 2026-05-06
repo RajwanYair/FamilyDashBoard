@@ -43,7 +43,8 @@
  * Sprint 472: extended scope to utils.ts, config-crypto.ts, worker-client.ts (property-tested in Sprints 470, 469).
  * Sprint 483: extended scope to perf.ts, i18n.ts, error-boundary.ts (property-tested PF1-PF9, I18N1-I18N7, EB1-EB6 in Sprints 479-481).
  * Sprint 490: extended scope to sw-constants.ts, trusted-types.ts (property-tested SW1-SW6, TT1-TT5 in Sprints 485, 488).
- * Sprint 497: extended scope to error-tracker.ts, idb-store.ts, keymap.ts (property-tested ET1-ET7, IDB1-IDB6, KM1-KM5).
+ * Sprint 497: extended scope to idb-store.ts, keymap.ts (property-tested IDB1-IDB6, KM1-KM5).
+ * Sprint 501: extended scope to anim-level.ts, snapshot.ts (property-tested AL1-AL5, SY1-SY5); removed duplicate error-tracker.ts entry.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -96,10 +97,12 @@ export default {
     // Sprint 490: property-tested type-guards (SW1-SW6), TT passthrough (TT1-TT5), provider health (PV1-PV7)
     "src/core/sw-constants.ts",
     "src/core/trusted-types.ts",
-    // Sprint 497: property-tested ring buffers + semantic primitives (DG1-DG7, IDB1-IDB6, ET1-ET7, CSP1-CSP6, SC1-SC6, KM1-KM5)
-    "src/core/error-tracker.ts",
+    // Sprint 497: property-tested ring buffers + semantic primitives (IDB1-IDB6, KM1-KM5)
     "src/core/idb-store.ts",
     "src/core/keymap.ts",
+    // Sprint 501: property-tested anim-level (AL1-AL5), sync backoff (SY1-SY5), snapshot export
+    "src/core/anim-level.ts",
+    "src/core/snapshot.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
