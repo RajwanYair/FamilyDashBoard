@@ -41,6 +41,7 @@
  * Sprint 432: extended scope to card-signal-protocol + semantic-clipboard (X12/X15 core).
  * Sprint 449: extended scope to provider.ts (PRP1-PRP6 property-tested; backoff + status machine).
  * Sprint 472: extended scope to utils.ts, config-crypto.ts, worker-client.ts (property-tested in Sprints 470, 469).
+ * Sprint 483: extended scope to perf.ts, i18n.ts, error-boundary.ts (property-tested PF1-PF9, I18N1-I18N7, EB1-EB6 in Sprints 479-481).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -86,6 +87,10 @@ export default {
     "src/core/utils.ts",
     "src/core/config-crypto.ts",
     "src/core/worker-client.ts",
+    // Sprint 483: property-tested formatVital/rateVital (PF1-PF9), t() (I18N1-I18N7), withErrorBoundary (EB1-EB6)
+    "src/core/perf.ts",
+    "src/core/i18n.ts",
+    "src/core/error-boundary.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
