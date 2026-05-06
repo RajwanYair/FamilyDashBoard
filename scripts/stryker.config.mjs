@@ -46,6 +46,7 @@
  * Sprint 497: extended scope to idb-store.ts, keymap.ts (property-tested IDB1-IDB6, KM1-KM5).
  * Sprint 501: extended scope to anim-level.ts, snapshot.ts (property-tested AL1-AL5, SY1-SY5); removed duplicate error-tracker.ts entry.
  * Sprint 507: extended scope to ecb-adapter.ts, app-signals.ts, constants.ts (property-tested ECB1-ECB6, AS1-AS6, CN1-CN6).
+ * Sprint 513: extended scope to mcp-bridge.ts, countdown.ts, rss-parser.ts, analytics.ts (property-tested MB1-MB5, CD1-CD6, RSS1-RSS6, AN1-AN5).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -108,6 +109,10 @@ export default {
     "worker/src/utils/ecb-adapter.ts",
     "src/core/app-signals.ts",
     "src/core/constants.ts",
+    // Sprint 513: property-tested mcp-bridge (MB1-MB5), countdown (CD1-CD6), rss-parser (RSS1-RSS6), analytics (AN1-AN5)
+    "src/core/mcp-bridge.ts",
+    "src/cards/countdown/countdown.ts",
+    "worker/src/utils/rss-parser.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
