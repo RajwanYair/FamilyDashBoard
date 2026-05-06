@@ -129,6 +129,11 @@ export default {
     "src/cards/calendar/calendar.ts",
     "src/cards/system-info/system-info.ts",
     "src/cards/video-news/video-news-adapter.ts",
+    // Sprint 537: property-tested card-registry (CR1-CR6), screen-mode (SM1-SM6), api-mappers (DM1-DM10), response (WR1-WR7)
+    "src/core/card-registry.ts",
+    "src/ui/screen-mode.ts",
+    "src/types/api.ts",
+    "worker/src/utils/response.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",

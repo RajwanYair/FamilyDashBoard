@@ -19,6 +19,7 @@
  * Sprint 520 (v14.5.0) — added A02 hardcoded JWT secret, A01 window.open dynamic URL, A04 CSP meta removal.
  * Sprint 525 (v14.5.0) — added A03 outerHTML assignment, A05 Expose-Headers wildcard, A02 sessionStorage secret.
  * Sprint 531 (v14.5.0) — added A03 unencoded template URL, A07 bearer token in console, A04 NODE_TLS disabled.
+ * Sprint 537 (v14.5.0) — added A03 Blob URL XSS, A05 cookie SameSite, A02 localStorage secret.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -593,6 +594,35 @@ const RULES = [
     severity: "error",
     pattern: /NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*['"]?0/,
     safeMarkers: ["test", "spec", "mock", "development"],
+  },
+
+  // ── Sprint 537 additions ──────────────────────────────────────────────────
+
+  // A03 — Injection: Blob URL from unsanitized string (XSS via blob:)
+  {
+    category: "A03",
+    label: "URL.createObjectURL(new Blob([unsanitized])) — XSS via blob URL",
+    severity: "error",
+    pattern: /URL\.createObjectURL\(\s*new\s+Blob\(/,
+    safeMarkers: ["sanitize", "textContent", "JSON.stringify", "encodeURI", "DOMPurify", "trusted"],
+  },
+
+  // A05 — Security Misconfiguration: missing SameSite on cookie
+  {
+    category: "A05",
+    label: "document.cookie set without SameSite attribute",
+    severity: "warning",
+    pattern: /document\.cookie\s*=(?!.*SameSite)/,
+    safeMarkers: ["SameSite", "samesite", "test", "spec", "mock"],
+  },
+
+  // A02 — Cryptographic Failures: storing secret in localStorage
+  {
+    category: "A02",
+    label: "localStorage.setItem with sensitive key name (token/secret/password/key)",
+    severity: "error",
+    pattern: /localStorage\.setItem\(\s*['"`](?:.*(?:token|secret|password|api[_-]?key))/i,
+    safeMarkers: ["test", "spec", "mock", "theme", "fontScale", "config"],
   },
 ];
 
