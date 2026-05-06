@@ -62,7 +62,7 @@
 
 ```bash
 npx vitest run
-# 6067+ tests, 196 suites, zero failures
+# 6387+ tests, 214 suites, zero failures
 ```
 
 Requires **Node.js 24+**.

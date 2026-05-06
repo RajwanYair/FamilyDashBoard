@@ -1,0 +1,27 @@
+{
+    "$schema": "https://json.schemastore.org/mcp.json",
+    "servers": {
+        "github": {
+            "type": "http",
+            "url": "https://api.githubcopilot.com/mcp",
+            "description": "GitHub MCP — PRs, issues, code search, workflows, labels, releases."
+        },
+        "fetch": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-fetch@latest"],
+            "description": "Test API endpoints directly in chat. Supports GET/POST with headers."
+        },
+        "filesystem": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-filesystem@latest", "${workspaceFolder}"],
+            "description": "Scoped read/write access to the workspace root."
+        },
+        "gitkraken": {
+            "type": "http",
+            "url": "https://mcp.gitkraken.com/mcp",
+            "description": "Git blame, log, diff, branch ops, PR workflow, Launchpad issue tracking."
+        }
+    }
+}

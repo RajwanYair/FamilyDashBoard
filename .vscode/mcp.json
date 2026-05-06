@@ -3,24 +3,40 @@
         "github": {
             "type": "http",
             "url": "https://api.githubcopilot.com/mcp",
-            "description": "Official GitHub MCP server for pull requests, issues, workflows, and repository context in Copilot chat."
+            "description": "GitHub MCP — PRs, issues, code search, workflows, labels, releases. Copilot-managed auth."
         },
         "fetch": {
             "type": "stdio",
             "command": "npx",
-            "args": ["-y", "@modelcontextprotocol/server-fetch"],
-            "description": "Test API endpoints directly in chat. Use to verify Open-Meteo, Hebcal, Yahoo Finance, and other dashboard data sources without opening a browser."
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-fetch@latest"
+            ],
+            "description": "HTTP client for testing dashboard data sources (Open-Meteo, Hebcal, Yahoo, CoinGecko). GET/POST with headers."
         },
         "filesystem": {
             "type": "stdio",
             "command": "npx",
-            "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
-            "description": "Scoped read/write access to the FamilyDashBoard workspace. Use for reading CHANGELOG.md, test files, and GitHub workflow configs."
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-filesystem@latest",
+                "${workspaceFolder}"
+            ],
+            "description": "Workspace-scoped file ops — coverage reports, test outputs, configs, build artifacts."
         },
         "gitkraken": {
             "type": "http",
             "url": "https://mcp.gitkraken.com/mcp",
-            "description": "GitKraken MCP server — git blame, log, diff, branch ops, pull request workflow, and Launchpad issue tracking from Copilot chat."
+            "description": "Git blame, log, diff, branch ops, PR workflow. Cross-repo MyScripts/ monorepo work."
+        },
+        "playwright": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@anthropic/mcp-playwright@latest"
+            ],
+            "description": "Browser automation for E2E validation, screenshot capture, and visual regression verification in chat."
         }
     }
 }

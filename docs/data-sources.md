@@ -1,9 +1,11 @@
 # Data Sources
 
-> Last updated: v13.31.0 (Sprint 314 freshness pass; data source routes unchanged)
+> Last updated: v14.4.0
 
 This document describes every external data source used by FamilyDashBoard, its
 caching strategy, worker route, and known failure modes.
+
+![Data Sources diagram](../.github/assets/data-sources.svg)
 
 ---
 

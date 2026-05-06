@@ -1,6 +1,7 @@
 ---
 mode: agent
 description: "Run a targeted OWASP Top 10 security audit against the FamilyDashBoard codebase"
+tools: ["read_file", "grep_search", "file_search", "run_in_terminal", "get_terminal_output", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "memory"]
 ---
 
 # Security Audit — FamilyDashBoard
@@ -74,6 +75,9 @@ node scripts/check-dead-exports.mjs
 - [ ] Service Worker version broadcast (`VERSION_ACTIVATED`) carries no PII
 
 ## Reporting
+
+Use `get_errors` to surface webhint + ESLint security-related diagnostics before manual review.
+Use `manage_todo_list` to track findings and fixes across the A03–A09 checklist.
 
 For each finding:
 

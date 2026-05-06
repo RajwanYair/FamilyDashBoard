@@ -1,30 +1,33 @@
 # AI Customizations — FamilyDashBoard
 
-> Version: v14.4.0 · Tests: 6361 / 212 suites · Coverage thresholds: 94.2 / 85.4 / 94.5 / 95.6
+> Version: v14.4.0 · Tests: 6387 / 214 suites · Coverage thresholds: 94.2 / 85.4 / 94.5 / 95.6
 
-This repository uses the current VS Code Copilot customization model:
+This repository uses the current VS Code Copilot customization model (May 2026):
 
 - Always-on instructions via `.github/copilot-instructions.md` and `AGENTS.md`
-- File-scoped rules via `.github/instructions/*.instructions.md`
-- Reusable slash prompts via `.github/prompts/*.prompt.md`
-- Custom agents via `.github/agents/*.agent.md`
-- Agent skills via `.github/skills/*/SKILL.md`
+- File-scoped rules via `.github/instructions/*.instructions.md` (`applyTo:` glob + `description:` frontmatter)
+- Reusable slash prompts via `.github/prompts/*.prompt.md` (`mode: agent`, optional `model:`)
+- Custom agents via `.github/agents/*.agent.md` (`tools:` allowlist, `handoffs:`, `user-invocable:`)
+- Agent skills via `.github/skills/*/SKILL.md` (auto-discovered by `description:` match)
 - Persistent memory via the three-tier memory tool (`/memories/`, `/memories/session/`, `/memories/repo/`)
-- Optional MCP server configuration via `.vscode/mcp.json` or user-profile `mcp.json`
+- MCP servers via `.vscode/mcp.json` (workspace) or user-profile `mcp.json` — supports tools, resources, prompts, sampling/elicitation, and inline apps
 - Edit-time hooks via `.github/hooks/*.json` (e.g. `post-edit.json`)
+- Interactive terminal support via `send_to_terminal` + `vscode_askQuestions` for multi-step CLI flows
+- Code intelligence via `vscode_listCodeUsages` and `vscode_renameSymbol` for semantic refactoring
 
-Custom agents are the current term for what older tooling and docs sometimes called custom chat modes. Use agents when you need a persistent persona, scoped tools, or handoffs. Use prompts for lightweight one-shot tasks. Use skills for repeatable multi-step implementation playbooks. Use subagents (`runSubagent`) to run a stateless specialist task without polluting the main conversation.
+Custom agents are the current term for what older tooling and docs sometimes called custom chat modes. Use agents when you need a persistent persona, scoped tools, or handoffs. Use prompts for lightweight one-shot tasks. Use skills for repeatable multi-step implementation playbooks. Use subagents (`runSubagent`) to run a stateless specialist task without polluting the main conversation. Use `vscode_askQuestions` to gather structured input from the user before executing complex operations.
 
 ## What Loads Automatically
 
-| Customization           | Location                                 | Scope                                         | Use It For                                                |
-| ----------------------- | ---------------------------------------- | --------------------------------------------- | --------------------------------------------------------- |
-| Repository instructions | `.github/copilot-instructions.md`        | All chats in this workspace                   | Core coding rules, architecture, naming, hard constraints |
-| Agent-wide instructions | `AGENTS.md`                              | All chats in this workspace                   | How AI customizations are organized in this repo          |
-| File instructions       | `.github/instructions/*.instructions.md` | Matching files or semantically relevant tasks | CI/CD, HTML, release work, workspace map                  |
-| Prompt files            | `.github/prompts/*.prompt.md`            | Manual `/prompt-name` invocation              | Repeatable task scaffolds                                 |
-| Custom agents           | `.github/agents/*.agent.md`              | Manual agent selection or subagent use        | Specialized personas with narrower guidance               |
-| Skills                  | `.github/skills/*/SKILL.md`              | Auto-loaded when relevant                     | Tested operational checklists                             |
+| Customization           | Location                                 | Scope                                         | Use It For                                                   |
+| ----------------------- | ---------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| Repository instructions | `.github/copilot-instructions.md`        | All chats in this workspace                   | Core coding rules, architecture, naming, hard constraints    |
+| Agent-wide instructions | `AGENTS.md`                              | All chats in this workspace                   | How AI customizations are organized in this repo             |
+| File instructions       | `.github/instructions/*.instructions.md` | Matching files (via `applyTo:` glob) or semantic match | CI/CD, HTML, CSS, TypeScript, tests, release, workspace map |
+| Prompt files            | `.github/prompts/*.prompt.md`            | Manual `/prompt-name` invocation              | Repeatable task scaffolds with optional model lock           |
+| Custom agents           | `.github/agents/*.agent.md`              | Manual agent selection or `runSubagent` use   | Specialized personas with scoped tools and handoffs          |
+| Skills                  | `.github/skills/*/SKILL.md`              | Auto-loaded when `description:` matches task  | Tested operational checklists                                |
+| Hooks                   | `.github/hooks/*.json`                   | Triggered on tool events (e.g. PostToolUse)   | Post-edit reminders, lint nudges                             |
 
 ## Current Agent Inventory
 
@@ -65,7 +68,7 @@ Use for pre-release gates, PR reviews, coverage audits, dead-code scans, and str
 | `/kv-stale-audit`      | Audit or debug KV stale fallback for a worker route (stocks, crypto, alerts) |
 | `/modernize-tooling`   | Refresh Copilot, CI, MCP, prompt, instruction, and workflow setup            |
 | `/release-check`       | Pre-release readiness gate (types + lint + tests + CHANGELOG + version)      |
-| `/test-coverage`       | Add targeted tests to meet the 93.7%/85.0%/94.1%/95.1% coverage thresholds  |
+| `/test-coverage`       | Add targeted tests to meet the 94.2%/85.4%/94.5%/95.6% coverage thresholds  |
 | `/version-bump`        | Bump version in package.json, CHANGELOG, README badges, and sw.ts            |
 | `/worker-debug`        | Debug a failing Cloudflare Worker route (fetch, Zod, KV, envelope)           |
 | `/worker-route`        | Scaffold a new Cloudflare Worker route (handler + Zod schema + tests)        |
@@ -98,13 +101,16 @@ Use for pre-release gates, PR reviews, coverage audits, dead-code scans, and str
 
 ## MCP Server Guidance
 
-This repository does not require a committed workspace `mcp.json`, but it is designed to work well with MCP servers.
+This repository does not require a committed workspace `mcp.json`, but it is designed to work well with MCP servers. VS Code's MCP implementation (May 2026) supports five capability classes: **tools**, **resources**, **prompts**, **sampling/elicitation**, and **inline apps**.
 
 - Put shared, reusable MCP servers in the user profile or your shared parent environment.
 - Put repository-specific MCP servers in `.vscode/mcp.json` only when the whole team should share them.
 - Prefer least privilege. Only enable servers that materially improve the current task.
-- Do not hardcode secrets in `mcp.json`. Use input variables or environment-backed values.
+- Do not hardcode secrets in `mcp.json`. Use input variables (`${input:TOKEN}`) or OAuth 2.0 flows.
 - On Windows, do not rely on sandboxing for local MCP servers because VS Code sandboxing is not currently available there.
+- Prefer `streamableHttp` transport for new remote servers; `stdio` for local processes. `sse` is deprecated.
+- Use the **Chat Customizations editor** or `MCP: List Servers` to inspect running servers.
+- MCP tools are deferred — always call `tool_search` before using any MCP-provided tool.
 
 See `.github/copilot/MCP_SERVERS.md` for the project policy and recommended server patterns.
 
@@ -130,12 +136,43 @@ See `.github/workflows/README.md` for operational details and change rules.
 
 ## Diagnostics And Maintenance
 
-- Use the **Chat Customizations editor** (gear icon in chat) to inspect loaded instructions, prompts, agents, skills, and MCP servers.
+- Use the **Chat Customizations editor** (gear icon in chat panel) to inspect loaded instructions, prompts, agents, skills, and MCP servers.
 - Use **Chat Diagnostics** (`Copilot: Open Chat Diagnostics`) when a prompt, instructions file, or agent does not appear to load.
 - Use **`MCP: List Servers`** in the Command Palette to start, stop, or inspect MCP servers.
 - Use the **Extensions view MCP section** to manage server state visually.
 - Use `tool_search` before calling any deferred tool — loading a deferred tool without searching first will fail.
+- Use `vscode_listCodeUsages` for cross-file reference analysis before refactoring.
+- Use `vscode_renameSymbol` for semantics-aware symbol renames across the workspace.
+- Use `vscode_askQuestions` to collect structured input from the user (multi-select, options, free text).
+- Use `manage_todo_list` for multi-step task tracking with in-progress / completed states.
+- Use `send_to_terminal` + `get_terminal_output` for interactive CLI flows (prompts, REPLs, wizards).
+- Use `fetch_webpage` to pull documentation or API references from external URLs.
 - Keep guidance short, concrete, and reference-based. Avoid duplicating the same rule in five places.
+
+## Extension ↔ Copilot Integration Map
+
+The following extensions surface data directly to Copilot — use the indicated tools instead of running CLI commands:
+
+| Extension            | Copilot Tool                           | Saves                                                     |
+| -------------------- | -------------------------------------- | --------------------------------------------------------- |
+| ESLint               | `get_errors`                           | Skip terminal eslint for single-file checks               |
+| Stylelint            | `get_errors`                           | CSS layer/property validation without terminal             |
+| Markdownlint         | `get_errors`                           | MD diagnostics inline; `run_task` for full sweep           |
+| webhint              | `get_errors`                           | Browser-compat checks (validates `.browserslistrc`)        |
+| Spell Checker (HE+EN)| `get_errors`                          | Catches typos in markdown/comments without extra passes    |
+| Vitest Explorer      | `run_task` (Vitest tasks)              | Cleaner output, task reuse, no manual npx commands         |
+| Playwright           | `run_task` + MCP `playwright`          | VR/E2E via tasks; browser automation via MCP in chat       |
+| GitHub Actions ext   | `get_errors` on YAML                   | Workflow validation inline; no separate linter needed      |
+| GitLens + GitKraken  | MCP `gitkraken`                        | Blame/log/diff in chat; supplements `vscode_listCodeUsages`|
+| Git Graph            | Visual branch explorer                 | Branch topology questions; supplements gitkraken MCP       |
+| Todo Tree            | grep `TODO\|FIXME\|HACK`              | Pre-release dead-code sweeps                               |
+| Edge DevTools        | Local Lighthouse/axe                   | Supplements CI LHCI for preview-time audits               |
+| PowerShell           | Terminal profile + debugging           | All `run_in_terminal` commands — never emit bash           |
+| EditorConfig         | Format-on-save                         | Eliminates formatting fixups from edits                    |
+| HTML CSS Support     | Class/ID completion                    | Reduces `semantic_search` for style references             |
+
+**Token optimization**: `get_errors` returns structured diagnostics with zero output parsing. `run_task` reuses workspace-defined commands cleanly. Always prefer these over raw terminal commands when the extension covers the need.
+
 - When a tool or workflow changes, update both the operational file and the markdown that describes it.
 
 ## Model Selection In Prompts
@@ -154,7 +191,21 @@ When `model:` is omitted the active chat model is used. Use model locking only f
 
 ## Deferred Tools
 
-Some VS Code tools are deferred and must be loaded via `tool_search` before use. Always call `tool_search` with a natural-language description first. Do not retry with different queries if the first search returns no results — the tool is not available. Examples of deferred tools: `runTests`, `run_task`, `get_task_output`, `get_changed_files`, `mcp_github_*`, `github-pull-request_*`.
+Some VS Code tools are deferred and must be loaded via `tool_search` before use. Always call `tool_search` with a natural-language description first. Do not retry with different queries if the first search returns no results — the tool is not available.
+
+Categories of deferred tools:
+
+| Category            | Examples                                                                        |
+| ------------------- | ------------------------------------------------------------------------------- |
+| Task runner         | `run_task`, `get_task_output`, `create_and_run_task`                            |
+| Git / GitHub        | `get_changed_files`, `mcp_github_*`, `github-pull-request_*`                    |
+| Testing             | `testFailure`                                                                   |
+| Notebook            | `run_notebook_cell`, `edit_notebook_file`, `copilot_getNotebookSummary`         |
+| Python / Pylance    | `mcp_pylance_*`, `configure_python_environment`                                 |
+| Filesystem (MCP)    | `mcp_filesystem_*`                                                              |
+| Browser / Playwright| `open_browser_page`                                                             |
+| Mermaid             | `renderMermaidDiagram`, `mermaid-diagram-validator`, `get-syntax-docs-mermaid`   |
+| VS Code commands    | `run_vscode_command`, `vscode_searchExtensions_internal`                         |
 
 ## Subagents
 
@@ -164,7 +215,7 @@ This repository exposes four subagents that can be invoked via the `runSubagent`
 | -------------------- | ------------------------------------------------------------------------------------ |
 | `Explore`            | Read-only codebase exploration, Q&A, multi-file searches without cluttering the chat |
 | `api-integrator`     | New data sources, fetch path repairs, worker/proxy fallback, cache strategy          |
-| `dashboard-designer` | RTL layout, theme tokens, card composition, TV readability                           |
+| `dashboard-designer` | RTL layout, theme tokens, card composition, TV readability, multimodal review        |
 | `quality-reviewer`   | Pre-release gates, coverage audits, dead-code scans, lint compliance                 |
 
 Guidelines for invoking subagents:
@@ -173,6 +224,9 @@ Guidelines for invoking subagents:
 - Always include the success/return shape in the prompt ("Return: file paths + line numbers").
 - Subagents do not stream back to the user; surface their result yourself with a concise summary.
 - Prefer a subagent over manually chaining many search and file-reading operations.
+- Pass the `agentName` parameter exactly as shown (case-sensitive).
+- Optionally pass `model` to lock a specific model for deterministic output (e.g. `"Claude Opus 4.6 (copilot)"`).
+- Large results are written to a temp file — use `read_file` to access the content.
 
 ## Persistent Memory (three-tier)
 
@@ -193,11 +247,22 @@ Guidelines:
 
 ## Hooks
 
-Light-weight edit-time hooks live under `.github/hooks/`. The current hook is:
+Edit-time hooks live under `.github/hooks/`. They fire on specific VS Code Copilot tool events and inject additional context or reminders.
 
-- `post-edit.json` — emits a reminder after each tool use to verify RTL layout, CSS variable usage, and TV font readability.
+| Hook file         | Event          | Purpose                                                                                |
+| ----------------- | -------------- | -------------------------------------------------------------------------------------- |
+| `post-edit.json`  | `PostToolUse`  | Remind about RTL layout, CSS variables, TV readability, cGet null checks after edits   |
 
-Keep hook payloads small and informational. Hooks must not block edits or fail the chat session.
+Hook payloads are JSON objects with a `hookSpecificOutput` field containing `additionalContext`. They must:
+
+- Be small and informational (no blocking operations)
+- Not fail the chat session
+- Use PowerShell on `windows` key; Unix fallback on `fallback` key
+- Return valid JSON that VS Code can parse
+
+### Adding New Hooks
+
+Supported hook events: `PostToolUse`, `PreToolUse`. Each can trigger `command` (shell) or `message` (static text). Keep them lightweight — heavy validation belongs in CI, not hooks.
 
 ## Dashboard Keyboard Reference
 

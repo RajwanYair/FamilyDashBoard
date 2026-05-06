@@ -1,7 +1,7 @@
 {
-    "version": "1.3.0",
+    "version": "1.4.0",
     "project": "FamilyDashBoard",
-    "appVersion": "14.2.0",
+    "appVersion": "14.4.0",
     "copilot": {
         "enabled": true,
         "features": {
@@ -15,10 +15,24 @@
             "memory_tool_three_tier": true,
             "deferred_tools_via_tool_search": true,
             "mcp_streamable_http": true,
+            "mcp_resources": true,
+            "mcp_prompts": true,
+            "mcp_elicitation": true,
+            "mcp_apps_inline_ui": true,
+            "mcp_oauth2_auth": true,
             "vision_tools": true,
             "runSubagent": true,
             "manage_todo_list": true,
-            "chat_customizations_editor": true
+            "chat_customizations_editor": true,
+            "chat_diagnostics": true,
+            "vscode_rename_symbol": true,
+            "vscode_list_code_usages": true,
+            "vscode_ask_questions": true,
+            "multi_replace_string_in_file": true,
+            "send_to_terminal": true,
+            "kill_terminal": true,
+            "post_edit_hooks": true,
+            "fetch_webpage": true
         }
     },
     "modes": {
@@ -73,5 +87,95 @@
             ],
             "description": "Pre-release cleanup: 0 errors, 0 warnings, dead-code removal, docs dedup, issue closing, git tag"
         }
+    },
+    "extensions": {
+        "eslint": {
+            "id": "dbaeumer.vscode-eslint",
+            "copilot_role": "get_errors provides inline diagnostics; fix-lint prompt auto-fixes; run_task triggers workspace lint",
+            "token_hint": "Prefer get_errors over running eslint in terminal when checking a single file"
+        },
+        "prettier": {
+            "id": "esbenp.prettier-vscode",
+            "copilot_role": "Format-on-save ensures code output matches project style without extra tool calls"
+        },
+        "vitest": {
+            "id": "vitest.explorer",
+            "copilot_role": "run_task '🔬 Vitest: Run All Tests' or '🔬 Vitest: Current File' preferred over raw npx vitest",
+            "token_hint": "Use run_task for test execution; testFailure deferred tool for inline failure context"
+        },
+        "playwright": {
+            "id": "ms-playwright.playwright",
+            "copilot_role": "E2E test runner via run_task '🎭 Playwright: E2E Tests'; MCP playwright server for in-chat browser automation",
+            "token_hint": "Use view_image on test-results/ screenshots to diagnose VR failures"
+        },
+        "gitlens": {
+            "id": "eamodio.gitlens",
+            "copilot_role": "Git blame/history via GitKraken MCP; supplements vscode_listCodeUsages with change attribution"
+        },
+        "github-actions": {
+            "id": "GitHub.vscode-github-actions",
+            "copilot_role": "Workflow YAML validation, auto-complete for action inputs, inline run status"
+        },
+        "webhint": {
+            "id": "webhint.vscode-webhint",
+            "copilot_role": "Browser compat warnings in get_errors; validates .browserslistrc compliance inline"
+        },
+        "spell-checker": {
+            "id": "streetsidesoftware.code-spell-checker",
+            "copilot_role": "Hebrew + English spell-check diagnostics surfaced via get_errors on markdown files"
+        },
+        "todo-tree": {
+            "id": "Gruntfuggly.todo-tree",
+            "copilot_role": "Tracks TODO/FIXME/HACK comments; useful for dead-code sweeps and pre-release audits"
+        },
+        "stylelint": {
+            "id": "stylelint.vscode-stylelint",
+            "copilot_role": "CSS diagnostics in get_errors; enforces layer order, custom-property usage, no hardcoded colors"
+        },
+        "markdownlint": {
+            "id": "DavidAnson.vscode-markdownlint",
+            "copilot_role": "Markdown diagnostics via get_errors; run_task '📝 Markdownlint: Docs' for full sweep"
+        },
+        "edge-devtools": {
+            "id": "ms-edgetools.vscode-edge-devtools",
+            "copilot_role": "Lighthouse/axe integration; supplements LHCI CI checks for local preview"
+        },
+        "powershell": {
+            "id": "ms-vscode.powershell",
+            "copilot_role": "Terminal profile + script debugging; all run_in_terminal commands execute in PowerShell",
+            "token_hint": "Never emit Unix commands — settings.json pins 'PowerShell Fast' as default profile"
+        },
+        "git-graph": {
+            "id": "mhutchie.git-graph",
+            "copilot_role": "Visual branch/commit explorer; supplements gitkraken MCP blame/log for branch topology questions"
+        },
+        "editorconfig": {
+            "id": "EditorConfig.EditorConfig",
+            "copilot_role": "Auto-applies .editorconfig on save — no formatting corrections needed from Copilot",
+            "token_hint": "File formatting is handled automatically; never add whitespace/eol fixups to edits"
+        },
+        "html-css": {
+            "id": "ecmel.vscode-html-css",
+            "copilot_role": "CSS class/ID completion in HTML; reduces need for semantic_search on style references",
+            "token_hint": "User gets inline suggestions — Copilot can assume class names are valid if in src/styles/"
+        }
+    },
+    "tokenOptimization": {
+        "strategy": "context-economy",
+        "rules": [
+            "Instructions use applyTo globs — only loaded when relevant files are edited",
+            "Skills auto-discovered by description — invoke read_file only when skill matches",
+            "Agents delegate via handoffs — avoid re-explaining domain rules in prompts",
+            "run_task preferred over run_in_terminal for workspace-defined commands",
+            "get_errors preferred over running lint/tsc in terminal for single-file checks",
+            "get_errors surfaces ESLint + Stylelint + webhint + markdownlint + spell-check diagnostics in one call",
+            "tool_search once per MCP tool family — broad queries reduce round-trips",
+            "multi_replace_string_in_file for batch edits — single tool call vs N sequential",
+            "runSubagent for multi-step exploration — keeps main context clean",
+            "memory repo scope for frequently-referenced facts — avoids repeated lookups",
+            "Deferred tools stay unloaded until needed — never eagerly load all MCP tools",
+            "EditorConfig + Prettier format-on-save eliminate formatting fixups from edits",
+            "PowerShell profile pins 'PowerShell Fast' (-NoLogo) — never suggest bash alternatives"
+        ]
     }
 }

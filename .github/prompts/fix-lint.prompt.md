@@ -1,9 +1,12 @@
 ---
 mode: agent
 description: "Fix all ESLint and TypeScript errors to reach zero warnings. Use when CI lint or typecheck fails, or after adding new code that introduced type/lint issues."
+tools: ["read_file", "grep_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "vscode_renameSymbol", "manage_todo_list", "tool_search"]
 ---
 
 # Fix Lint and Type Errors
+
+> **Extension shortcut**: Call `get_errors` on the target file FIRST — it surfaces ESLint + Stylelint + webhint diagnostics without terminal. Only fall back to terminal `npx eslint` when you need the full workspace sweep.
 
 ## Context
 

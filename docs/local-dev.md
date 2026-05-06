@@ -1,6 +1,6 @@
 # Local Development & Verification
 
-> FamilyDashBoard v10 · TypeScript · Vite 8 · Hebrew RTL
+> FamilyDashBoard v14.4.0 · TypeScript · Vite 8 · Hebrew RTL
 
 Three verified workflows for running and testing the dashboard locally.
 

@@ -11,11 +11,17 @@ tools:
   - multi_replace_string_in_file
   - create_file
   - run_in_terminal
+  - get_terminal_output
+  - send_to_terminal
   - file_search
   - manage_todo_list
   - vscode_askQuestions
+  - vscode_listCodeUsages
+  - vscode_renameSymbol
   - memory
   - tool_search
+  - fetch_webpage
+  - runSubagent
 user-invocable: true
 handoffs:
   - label: Polish Card UX
@@ -73,8 +79,10 @@ Use this agent when the task is primarily about one of the following:
 
 ## Architecture Rules
 
-- Use `tool_search` before calling any deferred tool (e.g. `mcp_github_*`, `runTests`, `run_task`).
-- Use `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall repo-specific conventions before making assumptions.
+- Use `tool_search` before calling any deferred tool (e.g. `mcp_github_*`, `run_task`, `mcp_fetch_*`)
+- Use `memory { command: "view", path: "/memories/repo/project-knowledge.md" }` to recall repo-specific conventions before making assumptions
+- Use `fetch_webpage` or the MCP `fetch` server to test upstream API responses live when debugging data flow issues
+- Use `mcp_github_*` tools for issue/PR operations when the task involves tracking or linking work items
 
 ## Proxy rule: `cGet()` returns `null` (not `undefined`) on cache miss — check `!== null` (rule 22)
 
@@ -151,7 +159,7 @@ Use PowerShell commands in this repository:
 npx tsc --noEmit
 npx eslint src tests --max-warnings 0
 npx vitest run tests/unit/cards/<name>.test.ts
-npx vitest run   # full suite — confirm 5696+ tests / 170 suites
+npx vitest run   # full suite — confirm 6387+ tests / 214 suites
 ```
 
 Escalate to broader test coverage only after the focused path is green.

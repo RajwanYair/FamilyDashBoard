@@ -1,6 +1,7 @@
 ---
 mode: agent
 description: "Implement the next N roadmap sprints in priority order — commit each sprint, release at end of session."
+tools: ["read_file", "grep_search", "semantic_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "create_file", "run_in_terminal", "get_terminal_output", "send_to_terminal", "manage_todo_list", "vscode_listCodeUsages", "vscode_renameSymbol", "memory", "tool_search", "runSubagent"]
 ---
 
 # Sprint Runner — FamilyDashBoard
@@ -45,7 +46,7 @@ Choose the correct layer:
 ### 3. Write / Update Tests
 
 - File: `tests/unit/cards/<name>.test.ts` or `tests/unit/<name>.test.ts`
-- Coverage thresholds: 93.2 / 84.7 / 92.0 / 94.6 (statements / branches / functions / lines)
+- Coverage thresholds: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines)
 - Run: `npx vitest run tests/unit/<target-file>.test.ts`
 - Must show all tests passing with no regressions
 

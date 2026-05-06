@@ -8,8 +8,8 @@ description: "Project context and file map for FamilyDashBoard."
 TypeScript modular TV dashboard · Vite 8 + TS 6.0.3 + Vitest 4.1.5 · Hebrew RTL · Zero external CDN dependencies · 1920×1080+ always-on display · 6 themes · 3 screen modes · 12 cards
 
 > **Shared deps**: All packages resolve from `MyScripts/node_modules/` (parent). Run `npm install` in `MyScripts/`, never here. No local `package-lock.json` or `devDependencies` in this project. CI uses `.github/ci/install-tools.sh`. Shared tooling configs are vendored into `tooling/` (tsconfig/, eslint/, vitest/).
-> **Tests**: 6303 / 205 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
-> **Coverage**: 93.9 / 85.1 / 94.2 / 95.3 (statements / branches / functions / lines) — see `vitest.config.ts`
+> **Tests**: 6387 / 214 suites / 0 failures · **Lint**: 0 errors · 0 warnings · 0 suppressions
+> **Coverage**: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines) — see `vitest.config.ts`
 
 ## Shell / Terminal
 
@@ -48,15 +48,48 @@ docs/adr/                   # Accepted architectural decisions (ADR-001 → ADR-
 
 ## AI Customizations
 
-| Type                     | Location                                 | Notes                                                    |
-| ------------------------ | ---------------------------------------- | -------------------------------------------------------- |
-| Repository instructions  | `.github/copilot-instructions.md`        | Canonical coding rules                                   |
-| Agent-wide instructions  | `AGENTS.md`                              | AI customization map for the repo                        |
-| File-scoped instructions | `.github/instructions/*.instructions.md` | Applied by file pattern or task relevance                |
-| Prompt files             | `.github/prompts/*.prompt.md`            | Reusable slash commands                                  |
-| Custom agents            | `.github/agents/*.agent.md`              | Specialist personas for API and UI work                  |
-| Skills                   | `.github/skills/*/SKILL.md`              | Repeatable checklists                                    |
-| MCP guidance             | `.github/copilot/MCP_SERVERS.md`         | How to configure shared versus repo-specific MCP servers |
+| Type                     | Location                                 | Notes                                                                    |
+| ------------------------ | ---------------------------------------- | ------------------------------------------------------------------------ |
+| Repository instructions  | `.github/copilot-instructions.md`        | Canonical coding rules                                                   |
+| Agent-wide instructions  | `AGENTS.md`                              | AI customization map for the repo                                        |
+| File-scoped instructions | `.github/instructions/*.instructions.md` | Applied by `applyTo:` glob pattern or semantic task relevance            |
+| Prompt files             | `.github/prompts/*.prompt.md`            | Reusable slash commands (`mode: agent`, optional `model:`)               |
+| Custom agents            | `.github/agents/*.agent.md`              | Specialist personas with `tools:` allowlist and `handoffs:`              |
+| Skills                   | `.github/skills/*/SKILL.md`              | Repeatable checklists (auto-discovered by `description:` match)          |
+| MCP guidance             | `.github/copilot/MCP_SERVERS.md`         | How to configure shared versus repo-specific MCP servers                 |
+| Edit-time hooks          | `.github/hooks/*.json`                   | PostToolUse reminders (RTL, CSS vars, TV readability)                    |
+
+## Extension Integration (Token-Saving Shortcuts)
+
+| Extension             | Copilot Surface                                                                      |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| ESLint                | `get_errors` for inline diagnostics — skip terminal eslint for single-file checks    |
+| Vitest Explorer       | `run_task` tasks: "🔬 Vitest: Run All Tests" / "Current File" / "Coverage Report"    |
+| Playwright            | `run_task` "🎭 Playwright: E2E Tests"; MCP `playwright` server for chat automation   |
+| Stylelint             | `get_errors` on CSS files — validates layer order + custom-property usage             |
+| Markdownlint          | `get_errors` on `.md` files; `run_task` "📝 Markdownlint: Docs" for full sweep       |
+| webhint               | Browser-compat warnings in `get_errors` (validates `.browserslistrc` targets)        |
+| Spell Checker         | Hebrew+English diagnostics in `get_errors` on markdown/comments                      |
+| GitLens + GitKraken   | MCP `gitkraken` for blame/log/diff; supplements `vscode_listCodeUsages`              |
+| Git Graph             | Visual branch topology; supplements gitkraken MCP for commit history                 |
+| GitHub Actions ext    | YAML validation + auto-complete in workflow files via `get_errors`                    |
+| Todo Tree             | `TODO`/`FIXME`/`HACK` tracking for pre-release dead-code sweeps                     |
+| Edge DevTools         | Local Lighthouse/axe; supplements CI LHCI checks                                     |
+| PowerShell            | Terminal profile; all `run_in_terminal` → PowerShell (never bash)                    |
+| EditorConfig          | Format-on-save eliminates whitespace/EOL fixups from Copilot edits                   |
+| HTML CSS Support      | Class/ID completion — reduces `semantic_search` for style lookups                    |
+
+## Token Optimization Strategy
+
+- **`get_errors`** over terminal lint/tsc for single-file validation (zero output parsing)
+- **`get_errors`** aggregates ESLint + Stylelint + webhint + markdownlint + spell-check in one call
+- **`run_task`** over `run_in_terminal` for workspace-defined commands (cleaner output, task reuse)
+- **`multi_replace_string_in_file`** for 2+ edits (one tool call vs N sequential)
+- **`runSubagent`** for multi-file exploration (keeps main context clean)
+- **`tool_search`** with broad queries (one call discovers all MCP tools in a family)
+- **Instructions `applyTo`** globs ensure only relevant rules load (not all 8 instruction files)
+- **Agent `handoffs:`** delegate specialized sub-tasks without repeating domain rules
+- **`memory` repo scope** for frequently-referenced facts (avoids repeated file reads)
 
 ## Shared Tooling
 

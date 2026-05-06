@@ -1,76 +1,116 @@
 # MCP Servers — FamilyDashBoard
 
-This repository is compatible with VS Code's current MCP server model, but it does not require a committed workspace `mcp.json` to function.
+> Updated: May 2026 · VS Code MCP Protocol · Transport: stdio / streamableHttp / http (Copilot-managed)
+
+This repository ships a committed `.vscode/mcp.json` for shared team servers and is designed to work with VS Code's full MCP feature set.
+
+## Committed Servers (`.vscode/mcp.json`)
+
+| Server       | Type    | Purpose                                                                 |
+| ------------ | ------- | ----------------------------------------------------------------------- |
+| `github`     | `http`  | PRs, issues, code search, workflows, labels, releases via Copilot      |
+| `fetch`      | `stdio` | Test API endpoints (Open-Meteo, Hebcal, Yahoo, CoinGecko) in chat      |
+| `filesystem` | `stdio` | Scoped read/write to workspace — coverage reports, configs, test output |
+| `gitkraken`  | `http`  | Git blame, log, diff, branch ops, PR workflow, cross-repo work          |
+| `playwright` | `stdio` | Browser automation, screenshot capture, visual regression in chat       |
 
 ## Placement Policy
 
 Use this split consistently:
 
-- Shared servers for many projects: user-profile `mcp.json` or a shared parent-level setup outside this repo
-- Repository-specific servers that the whole team should share: `.vscode/mcp.json`
-- One-off personal experiments: user profile only, not committed to the repo
+- **Committed (`.vscode/mcp.json`)**: Servers the whole team uses — GitHub, fetch, filesystem
+- **User profile**: Personal servers or experiments — keep out of version control
+- **Parent-level (`MyScripts/`)**: Shared servers for all projects in the monorepo parent
 
 This matches the broader tooling policy for `MyScripts/`: common tools belong at the shared level, repository-only behavior stays in the workspace.
 
 ## Recommended Server Types
 
-| Server Type                    | Good Fit Here | Notes                                                                                                                                                       |
-| ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GitHub                         | Yes           | PRs, issues, labels, release and review workflows                                                                                                           |
-| Fetch / web                    | Yes           | Docs lookup, API verification, release-note context                                                                                                         |
-| Filesystem                     | Yes           | Workspace-aware browsing and read/write tooling                                                                                                             |
-| Playwright                     | Optional      | UI validation and screenshot workflows when needed                                                                                                          |
-| GitKraken / GitLens            | Optional      | Cross-project worktree, branch, PR review and "start work" flows. Useful when juggling multiple `MyScripts/` repos.                                         |
-| Azure (Cloud / Wrangler-side)  | Conditional   | Only when interacting with the Cloudflare worker's deployment surface or comparable Azure resources. Disabled by default; not required for static-PWA work. |
-| Repo-specific internal servers | Conditional   | Commit only if the whole team needs the same config                                                                                                         |
+| Server Type                    | Status        | Notes                                                                                                              |
+| ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------ |
+| GitHub (Copilot-managed)       | ✅ Committed  | PRs, issues, labels, release and review workflows, code search                                                     |
+| Fetch / web                    | ✅ Committed  | API endpoint verification, upstream response inspection, header testing                                            |
+| Filesystem                     | ✅ Committed  | Workspace-aware browsing; coverage/test output; config reads                                                       |
+| GitKraken / GitLens            | ✅ Committed  | Cross-project worktree, branch, PR review, Launchpad. Useful for `MyScripts/` multi-repo                          |
+| Playwright                     | ✅ Committed  | Browser automation, screenshot capture, VR validation. Complements ms-playwright extension                         |
+| Cloudflare (Wrangler)          | ⏳ Conditional| Only for Worker deployment tasks. Not needed for static-PWA development                                            |
+| Repo-specific internal servers | ⏳ Conditional| Commit only if the whole team needs the same config                                                                |
 
-## Current VS Code MCP Concepts To Account For
+## MCP Capability Model (VS Code May 2026)
 
-MCP servers can provide more than tools. When choosing or documenting a server, consider all five capability classes:
+MCP servers provide up to five capability classes. When choosing or documenting a server, consider all:
 
-- **Tools** — callable functions surfaced to chat and agent execution
-- **Resources** — read-only context attachments (files, URIs, database rows)
-- **Prompts** — templated prompt scaffolds exposed by the server
-- **Sampling / elicitation** — the server can request structured input from the user mid-task via VS Code's input UI
-- **MCP apps** — inline-rendered UI in chat where supported by the host
+| Capability              | Description                                                                                      | Discovery                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| **Tools**               | Callable functions surfaced to chat and agent execution                                          | `tool_search` (deferred loading)       |
+| **Resources**           | Read-only context attachments (files, URIs, data) agents can reference                           | Resources panel in chat customizations |
+| **Prompts**             | Templated prompt scaffolds exposed by the server (invokable as slash commands)                   | Prompt picker in chat                  |
+| **Sampling/Elicitation**| Server requests structured input mid-task via VS Code UI (dropdowns, text, confirmations)        | Automatic during tool execution        |
+| **MCP Apps**            | Inline-rendered rich UI in chat (previews, interactive widgets, forms)                           | Rendered inline automatically          |
 
-VS Code surfaces MCP capabilities through the **Chat Customizations editor**, the `MCP: List Servers` command, the **Extensions view MCP section** (start / stop / inspect individual servers), and the MCP output log. Disabled servers do not load tools, resources, or prompts — keep enable/disable state user-specific.
+### VS Code Integration Points
+
+| Surface                             | What It Does                                                    |
+| ----------------------------------- | --------------------------------------------------------------- |
+| Chat Customizations editor (gear)   | View all loaded tools, resources, prompts per server            |
+| `MCP: List Servers` command         | Start, stop, restart, inspect individual servers                |
+| Extensions view → MCP section       | Visual server management with status indicators                 |
+| MCP output log                      | Real-time transport logs for debugging connection issues         |
+| `tool_search` in agent mode         | Deferred discovery — MCP tools only load on demand              |
+| Server lifecycle badges             | Shows running/stopped/error state per server                    |
+
+Disabled servers do not load tools, resources, or prompts — keep enable/disable state user-specific.
 
 ### Authentication
 
-VS Code supports two authentication flows for remote MCP servers:
+VS Code supports multiple authentication flows for remote MCP servers:
 
-- **OAuth 2.0 (`authorization_code`)** — VS Code launches the browser flow and stores the token securely. Use for GitHub, Google, or other OAuth providers.
-- **Input variables** — `${input:TOKEN}` prompts the user once and stores in the secret store. Use for static API keys.
+| Flow                          | Use When                                                           |
+| ----------------------------- | ------------------------------------------------------------------ |
+| OAuth 2.0 (`authorization_code`) | GitHub, Google, or other OAuth providers. VS Code launches browser flow. |
+| Input variables (`${input:X}`)   | Static API keys. Prompts once, stores in VS Code secret store.        |
+| Copilot-managed               | GitHub MCP uses Copilot auth automatically. No user action needed.    |
 
 Never hardcode tokens in `mcp.json`. Never commit `mcp.json` with personal tokens or input-variable defaults.
 
 ### Transport Types
 
-VS Code supports three MCP transport types. Document which one a server uses:
+| Transport        | Use When                                                     | Status       |
+| ---------------- | ------------------------------------------------------------ | ------------ |
+| `stdio`          | Local servers started by VS Code as a subprocess             | ✅ Active    |
+| `http`           | Copilot-managed remote (GitHub MCP, GitKraken)               | ✅ Active    |
+| `streamableHttp` | Modern self-hosted remote servers; preferred for new deploys  | ✅ Preferred |
+| `sse`            | Legacy remote servers using Server-Sent Events               | ⚠️ Deprecated |
 
-| Transport        | Use When                                              |
-| ---------------- | ----------------------------------------------------- |
-| `stdio`          | Local servers started by VS Code as a subprocess      |
-| `sse`            | Legacy remote servers using Server-Sent Events        |
-| `streamableHttp` | Modern remote servers; preferred for new deployments  |
-
-Prefer `streamableHttp` for new remote MCP servers; `stdio` for local processes. `sse` is deprecated — migrate when the server supports `streamableHttp`.
+Prefer `streamableHttp` for new remote MCP servers; `stdio` for local processes; `http` for Copilot-managed cloud endpoints. Migrate `sse` servers when they support `streamableHttp`.
 
 ### Deferred Tool Discovery
 
-MCP tools are **deferred** in VS Code agent mode — they are not loaded until explicitly requested. Always call `tool_search` with a natural-language query before using any MCP tool. If `tool_search` returns no result for a tool, the server is not running or not configured.
+MCP tools are **deferred** in VS Code agent mode — they are not loaded until explicitly requested:
 
-### Tool Discovery
+1. Call `tool_search("describe what you need")` before using any MCP-provided tool
+2. If `tool_search` returns no result, the server is not running or not configured — do not retry
+3. Once loaded, the tool remains available for the rest of the session
+4. Use broad queries to discover related tools in one call (e.g., "github" finds issues + PRs + code search)
 
-When adding an agent (`.github/agents/*.agent.md`) that depends on MCP tools, list those tools in the agent's `tools:` allowlist under a comment. This makes the dependency visible without requiring the server to be running at edit time.
+### Agent–MCP Integration
+
+When adding an agent (`.github/agents/*.agent.md`) that depends on MCP tools:
+
+1. List dependent tools in the agent's `tools:` allowlist
+2. Add a comment noting the MCP server dependency
+3. Include fallback behavior when the server is unavailable
+4. Document which capabilities (tools/resources/prompts) the agent uses
 
 ## Security Rules
 
-- Never hardcode tokens or secrets in `mcp.json`.
-- Prefer input variables, environment-backed values, or other secure indirection.
-- Only trust and enable servers from known publishers.
-- Use least privilege. If a server is not materially helping a task, disable it.
+- Never hardcode tokens or secrets in `mcp.json`
+- Prefer input variables, environment-backed values, or Copilot-managed auth
+- Only trust and enable servers from known publishers
+- Use least privilege — if a server is not materially helping, disable it
+- Review trust prompts carefully; starting a server from config can bypass the usual trust flow
+- Audit `mcp.json` changes in PR review — treat as a security-sensitive file
+- Loopback-only for locally exposed servers (e.g., dashboard MCP endpoint)
 
 ---
 
@@ -113,9 +153,25 @@ This repository is developed primarily on Windows and PowerShell.
 - Use `MCP: List Servers` or the MCP section in Extensions to start, stop, or inspect a server.
 - Use the MCP output log when tool discovery or startup fails.
 - Keep the enable/disable state separate from the committed config. The state is user-specific.
+- When a server provides **resources**, they appear as attachable context in the chat panel.
+- When a server provides **prompts**, they appear as invokable slash commands.
+- Use `tool_search("<server-tool-description>")` to discover MCP tools at runtime.
+
+## Server Lifecycle
+
+| State       | Meaning                                                                   |
+| ----------- | ------------------------------------------------------------------------- |
+| `starting`  | Server subprocess is launching or HTTP handshake in progress              |
+| `running`   | Server is ready and tools are discoverable                                |
+| `stopped`   | Server is not running; tools are unavailable                              |
+| `error`     | Server failed to start; check MCP output log for diagnostics             |
+| `disabled`  | User explicitly disabled; will not start until re-enabled                 |
+
+Use `MCP: Restart Server` when a server enters error state after a network or config change.
 
 ## Repository Change Rules
 
 - If you commit `.vscode/mcp.json`, document why the server must be shared by the team.
 - If an agent or prompt relies on MCP-specific tools, mention that dependency in the relevant `.agent.md` or `.prompt.md` file.
 - If a workflow or docs process depends on a server, add that requirement to `.github/AGENTS.md` and the relevant instruction or skill file.
+- When adding a new MCP server to the project, update the "Recommended Server Types" table above.

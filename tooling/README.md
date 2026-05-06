@@ -18,6 +18,9 @@ tooling/
     web-ts-app.mjs      ← Browser TypeScript apps (FamilyDashBoard)
     node-ts-app.mjs     ← Node.js / Cloudflare Worker TypeScript apps
     js-browser-app.mjs  ← Vanilla JavaScript browser apps
+  mcp/
+    README.md           ← Shared MCP patterns, skills templates, agent templates
+    base-mcp.json       ← Shared MCP server config (copy to .vscode/mcp.json)
   tsconfig/
     base-typescript.json ← Strict TypeScript base (browser / bundler)
     base-node.json       ← Node.js / Cloudflare Worker TypeScript base

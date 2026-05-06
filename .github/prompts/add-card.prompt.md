@@ -1,6 +1,7 @@
 ---
 mode: agent
 description: "Scaffold a complete new card for FamilyDashBoard — module, CSS, HTML shell, registry entry, and focused tests."
+tools: ["read_file", "grep_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "create_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "memory", "tool_search"]
 ---
 
 # Add a New Dashboard Card

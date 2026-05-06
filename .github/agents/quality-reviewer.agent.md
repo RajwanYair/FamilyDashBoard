@@ -8,10 +8,16 @@ tools:
   - semantic_search
   - get_errors
   - run_in_terminal
+  - get_terminal_output
   - file_search
   - manage_todo_list
   - memory
   - tool_search
+  - vscode_listCodeUsages
+  - vscode_renameSymbol
+  - view_image
+  - fetch_webpage
+  - runSubagent
 user-invocable: true
 handoffs:
   - label: Fix failing tests
@@ -71,8 +77,8 @@ Use this agent when:
 | Type errors   | `npx tsc --noEmit`                                      | 0 errors                                    |
 | Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                       |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                    |
-| Test failures | `npx vitest run`                                        | 0 failures (6290 / 204 suites at v14.2.0)   |
-| Coverage      | `npx vitest run --coverage`                             | stmts 93.7 / branches 85.0 / fn 94.1 / ln 95.1 |
+| Test failures | `npx vitest run`                                        | 0 failures (6387 / 214 suites at v14.4.0)   |
+| Coverage      | `npx vitest run --coverage`                             | stmts 94.2 / branches 85.4 / fn 94.5 / ln 95.6 |
 | OWASP check   | `node scripts/check-owasp.mjs`                          | 0 findings                                  |
 | Build         | `npm run build`                                         | 0 errors                                    |
 | Bundle size   | `npm run check:bundle`                                  | JS gzip ≤ 100 KB · CSS ≤ 26 KB · card ≤ 66 KB |
@@ -81,10 +87,10 @@ Use this agent when:
 
 | Metric     | Threshold |
 | ---------- | --------- |
-| Statements | 93.0%     |
-| Branches   | 84.6%     |
-| Functions  | 92.0%     |
-| Lines      | 94.5%     |
+| Statements | 94.2%     |
+| Branches   | 85.4%     |
+| Functions  | 94.5%     |
+| Lines      | 95.6%     |
 
 Canonical source: `vitest.config.ts`. The thresholds ratchet upward each sprint as targeted tests are added — see Roadmap #8.
 

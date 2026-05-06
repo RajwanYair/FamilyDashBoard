@@ -1,6 +1,7 @@
 ---
 mode: "agent"
 description: "Perform a thorough code review of the FamilyDashBoard TypeScript source. Check security (XSS, unsanitized innerHTML, eval), UI quality (RTL, responsiveness, TV font sizes), API reliability (caching, proxy fallback, error handling), and performance (DOM updates, lazy loading)."
+tools: ["read_file", "grep_search", "file_search", "semantic_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "memory", "runSubagent"]
 ---
 
 # Code Review — FamilyDashBoard
@@ -33,8 +34,9 @@ Review the TypeScript source files in `src/` for the following:
 
 ## API Reliability & Performance
 
-> Delegate data flow, cache, proxy fallback, and sync state to `@api-integrator` for full coverage.
-> Delegate a11y, performance, and TV-readability review to `@dashboard-designer`.
+> Use `runSubagent` with `@api-integrator` for deep data flow, cache, proxy fallback, and sync state review.
+> Use `runSubagent` with `@dashboard-designer` for a11y, performance, and TV-readability review.
+> Use `get_errors` (webhint extension) for browser-compat diagnostics without terminal commands.
 
 Quick gates:
 

@@ -1,5 +1,5 @@
 # =============================================================================
-# CI — FamilyDashBoard v13 — Unified quality gate
+# CI — FamilyDashBoard v14 — Unified quality gate
 # Typecheck · ESLint · Markdownlint · Vitest (Node 24) · Security · Build
 # Runs on every push to main and all pull requests.
 # =============================================================================
@@ -17,6 +17,7 @@ on:
       - ".github/copilot/**"
       - ".github/copilot-instructions.md"
       - ".github/AGENTS.md"
+      - "tooling/mcp/**"
   pull_request:
     branches: [main]
     paths-ignore:
@@ -26,6 +27,7 @@ on:
       - ".github/copilot/**"
       - ".github/copilot-instructions.md"
       - ".github/AGENTS.md"
+      - "tooling/mcp/**"
   workflow_dispatch:
 
 # Cancel any in-progress CI run for the same branch/PR on new pushes.

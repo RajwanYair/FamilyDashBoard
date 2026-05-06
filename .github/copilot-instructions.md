@@ -3,7 +3,7 @@
 > TypeScript modular TV dashboard (`src/`) · Hebrew RTL · 6 Themes · 12 Cards · Vite 8 + TS 6.0.3 + Vitest 4.1.5
 > **All tools installed at parent `MyScripts/`** — run `npm install` from `MyScripts/`, never here
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
-> Tests: `npx vitest run` — 6361 / 212 suites / 0 failures
+> Tests: `npx vitest run` — 6387 / 214 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
 > Coverage thresholds: `94.2 / 85.4 / 94.5 / 95.6` (statements / branches / functions / lines) — see `vitest.config.ts`
 
@@ -62,3 +62,9 @@
 38. **Model selection in prompts** — prompt files may set `model: "<Display Name> (copilot)"` frontmatter to lock a specific model (e.g. for release gating). When omitted, the active chat model is used.
 39. **Context economy** — when a skill or agent already covers a task in full, invoke it rather than repeating its rules inline. Reference `.github/skills/*/SKILL.md` and `.github/agents/*.agent.md`. In particular: version-bump file list → load `release/SKILL.md`; data flow review → `@api-integrator`; UI/RTL review → `@dashboard-designer`; pre-release gate → `@quality-reviewer`.
 40. **Browser support** — `.browserslistrc` targets Chrome 114+ · Edge 114+ · Firefox 128+ · Firefox ESR · Safari 17.4+ · Opera 100+ · Samsung 23+ · iOS 17.4+. CSS features must be compatible with all these (see `.hintrc`). Playwright smoke + a11y tests run on all projects; visual regression runs on chromium only.
+41. **Batch edits** — use `multi_replace_string_in_file` when making 2+ independent edits across files. Reduces round-trips and ensures atomicity. Each replacement must include 3+ lines of context.
+42. **Code intelligence before refactoring** — use `vscode_listCodeUsages` to find all references before renaming or removing exports. Use `vscode_renameSymbol` for semantics-aware renames across the workspace.
+43. **Interactive CLI flows** — use `send_to_terminal` + `get_terminal_output` for multi-step interactive prompts (npm init, wrangler login, etc.). Use `vscode_askQuestions` to gather user input before sending to terminal.
+44. **MCP tools are deferred** — always call `tool_search` before using any MCP-provided tool or deferred VS Code tool. Do not retry if the first search returns no results.
+45. **Task tracking** — use `manage_todo_list` for multi-step work. Mark one item `in-progress` at a time. Mark `completed` immediately after finishing each step. Skip for single-step operations.
+46. **Extension-aware tooling** — prefer `get_errors` over terminal lint/tsc for single-file validation (ESLint, Stylelint, webhint, markdownlint, spell-checker all surface via `get_errors`). Use `run_task` for predefined workspace tasks (Vitest, Playwright, build, coverage) instead of manual terminal commands. Use `view_image` on VR screenshots in `test-results/` for visual regression diagnosis. Use `tool_search("playwright")` for MCP browser automation in chat.

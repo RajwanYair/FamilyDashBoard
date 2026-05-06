@@ -328,8 +328,11 @@ export async function requestDocumentPip(
 ): Promise<Window | null> {
   if (!element || !isPipSupported()) return null;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pip = window as any;
+    const pip = window as unknown as {
+      documentPictureInPicture: {
+        requestWindow: (opts: { width: number; height: number }) => Promise<Window>;
+      };
+    };
     const pipWindow: Window = await pip.documentPictureInPicture.requestWindow({
       width: element.clientWidth || 640,
       height: element.clientHeight || 360,

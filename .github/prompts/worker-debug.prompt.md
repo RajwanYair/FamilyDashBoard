@@ -1,7 +1,7 @@
 ---
 mode: "agent"
 description: "Debug a broken Cloudflare Worker route: fetch failures, Zod validation errors, KV read/write, envelope shape mismatches."
-tools: ["read_file", "grep_search", "replace_string_in_file", "run_in_terminal"]
+tools: ["read_file", "grep_search", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "get_errors", "file_search", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "fetch_webpage"]
 ---
 
 # Worker Route Debug — FamilyDashBoard

@@ -11,11 +11,17 @@ tools:
   - replace_string_in_file
   - multi_replace_string_in_file
   - create_file
+  - run_in_terminal
+  - get_terminal_output
   - manage_todo_list
   - vscode_askQuestions
+  - vscode_listCodeUsages
+  - vscode_renameSymbol
   - view_image
   - memory
   - tool_search
+  - fetch_webpage
+  - runSubagent
 user-invocable: true
 handoffs:
   - label: Implement Data Wiring
