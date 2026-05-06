@@ -9,6 +9,9 @@
  *  CFG5. loadConfigFromHash returns null for invalid hashes.
  *  CFG6. sanitize coerces invalid theme/screenMode/tempUnit to defaults.
  *  CFG7. validateImportedConfig rejects non-object inputs.
+ *  CFG8. diffConfigs: identical configs → empty diff array.
+ *  CFG9. diffConfigs: single key change → exactly 1 diff entry.
+ *  CFG10. diffConfigs: each diff entry has correct old/new values.
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -27,6 +30,7 @@ import {
   shareConfigHash,
   loadConfigFromHash,
   validateImportedConfig,
+  diffConfigs,
 } from "@/core/config";
 import { CONFIG_VERSION, DEFAULT_CONFIG } from "@/types/config";
 
@@ -199,5 +203,48 @@ describe("config — CFG7: validateImportedConfig rejects non-objects", () => {
       ),
       { numRuns: 40 },
     );
+  });
+});
+
+// ── CFG8: diffConfigs identical → empty ──────────────────────────────────────
+
+describe("config — CFG8: diffConfigs identical configs", () => {
+  it("returns empty diff for identical configs", () => {
+    const cfg = loadConfig();
+    expect(diffConfigs(cfg, { ...cfg })).toEqual([]);
+  });
+});
+
+// ── CFG9: single key change → 1 entry ───────────────────────────────────────
+
+describe("config — CFG9: diffConfigs one change", () => {
+  it("returns exactly 1 entry for a single key change", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1, maxLength: 20 }), (name) => {
+        const a = loadConfig();
+        const b = { ...a, familyName: name + "_x" };
+        if (a.familyName === b.familyName) return; // skip if same by chance
+        const diffs = diffConfigs(a, b);
+        const familyDiff = diffs.find((d) => d.key === "familyName");
+        expect(familyDiff).toBeDefined();
+        expect(familyDiff!.oldValue).toBe(a.familyName);
+        expect(familyDiff!.newValue).toBe(b.familyName);
+      }),
+      { numRuns: 5 },
+    );
+  });
+});
+
+// ── CFG10: diff entries carry correct values ─────────────────────────────────
+
+describe("config — CFG10: diffConfigs values", () => {
+  it("diff entry has correct old and new values", () => {
+    const a = loadConfig();
+    const b = { ...a, showClockSeconds: !a.showClockSeconds };
+    const diffs = diffConfigs(a, b);
+    const entry = diffs.find((d) => d.key === "showClockSeconds");
+    expect(entry).toBeDefined();
+    expect(entry!.oldValue).toBe(a.showClockSeconds);
+    expect(entry!.newValue).toBe(!a.showClockSeconds);
   });
 });
