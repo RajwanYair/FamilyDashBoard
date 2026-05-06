@@ -20,6 +20,7 @@
  * Sprint 525 (v14.5.0) — added A03 outerHTML assignment, A05 Expose-Headers wildcard, A02 sessionStorage secret.
  * Sprint 531 (v14.5.0) — added A03 unencoded template URL, A07 bearer token in console, A04 NODE_TLS disabled.
  * Sprint 537 (v14.5.0) — added A03 Blob URL XSS, A05 cookie SameSite, A02 localStorage secret.
+ * Sprint 543 (v14.5.0) — added A01 target=_blank noopener, A07 auth header logged, A04 setTimeout string.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -623,6 +624,35 @@ const RULES = [
     severity: "error",
     pattern: /localStorage\.setItem\(\s*['"`](?:.*(?:token|secret|password|api[_-]?key))/i,
     safeMarkers: ["test", "spec", "mock", "theme", "fontScale", "config"],
+  },
+
+  // ── Sprint 543 additions ──────────────────────────────────────────────────
+
+  // A01 — Broken Access Control: target="_blank" without rel="noopener"
+  {
+    category: "A01",
+    label: 'target="_blank" without rel="noopener" — tab-napping risk',
+    severity: "warning",
+    pattern: /target\s*=\s*['"]_blank['"](?!.*rel\s*=\s*['"][^'"]*noopener)/,
+    safeMarkers: ["noopener", "noreferrer", "test", "spec"],
+  },
+
+  // A07 — Identification and Authentication Failures: Authorization header logged
+  {
+    category: "A07",
+    label: "Authorization header value logged or exposed",
+    severity: "error",
+    pattern: /(?:console\.|diagLog|log)\(.*(?:headers\.(?:get|Authorization)|authorization)/i,
+    safeMarkers: ["test", "spec", "mock", "redact", "mask", "[REDACTED]"],
+  },
+
+  // A04 — Insecure Design: eval-like pattern via setTimeout/setInterval with string
+  {
+    category: "A04",
+    label: "setTimeout/setInterval with string arg — implicit eval",
+    severity: "error",
+    pattern: /(?:setTimeout|setInterval)\(\s*['"`]/,
+    safeMarkers: ["test", "spec", "mock"],
   },
 ];
 

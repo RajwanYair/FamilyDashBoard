@@ -134,6 +134,11 @@ export default {
     "src/ui/screen-mode.ts",
     "src/types/api.ts",
     "worker/src/utils/response.ts",
+    // Sprint 543: property-tested today-pane (TP1-TP8), theme (TH1-TH6), night-dimmer (ND1-ND7), ticker/scroll (TK1-TK6)
+    "src/ui/today-pane.ts",
+    "src/ui/night-dimmer.ts",
+    "src/ui/ticker.ts",
+    "worker/src/middleware/cors.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
