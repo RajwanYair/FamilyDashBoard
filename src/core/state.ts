@@ -70,7 +70,8 @@ class FdbStateStore extends EventTarget {
     const dot = key.indexOf(".");
     const slice = key.slice(0, dot) as SliceName;
     const field = key.slice(dot + 1);
-    return this._data[slice]?.[field] as T | undefined;
+    if (!Object.hasOwn(this._data, slice)) return undefined;
+    return this._data[slice][field] as T | undefined;
   }
 
   /**
@@ -83,7 +84,7 @@ class FdbStateStore extends EventTarget {
     const slice = key.slice(0, dot) as SliceName;
     const field = key.slice(dot + 1);
 
-    if (!(slice in this._data)) return; // guard against typos
+    if (!Object.hasOwn(this._data, slice)) return; // guard against prototype-chain injection
 
     const previous = this._data[slice][field];
     if (previous === value) return; // skip no-op writes
