@@ -17,6 +17,7 @@
  * Sprint 510 (v14.5.0) — added A03 SQL template injection, A07 token in URL query, A04 rejectUnauthorized false.
  * Sprint 515 (v14.5.0) — added A05 CORS Allow-Headers wildcard, A08 script without SRI, A09 console.error credentials.
  * Sprint 520 (v14.5.0) — added A02 hardcoded JWT secret, A01 window.open dynamic URL, A04 CSP meta removal.
+ * Sprint 525 (v14.5.0) — added A03 outerHTML assignment, A05 Expose-Headers wildcard, A02 sessionStorage secret.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -533,6 +534,35 @@ const RULES = [
     label: "CSP meta tag removal — security header bypass",
     severity: "error",
     pattern: /(?:remove|delete).*content-security-policy/i,
+  },
+
+  // Sprint 525 — 3 new rules (total: 59)
+
+  // A03 — Injection: outerHTML assignment with dynamic content
+  {
+    category: "A03",
+    label: "outerHTML assignment — potential XSS vector",
+    severity: "error",
+    pattern: /\.outerHTML\s*=/,
+    safeMarkers: ["sanitize", "DOMPurify", "escapeHtml", "textContent"],
+  },
+
+  // A05 — Security Misconfiguration: Access-Control-Expose-Headers wildcard
+  {
+    category: "A05",
+    label: "Access-Control-Expose-Headers wildcard — over-exposes response headers",
+    severity: "warn",
+    pattern: /Access-Control-Expose-Headers['"]?\s*[:,]\s*['"]?\*/i,
+    safeMarkers: ["test", "spec", "mock"],
+  },
+
+  // A02 — Cryptographic Failures: storing secrets in sessionStorage
+  {
+    category: "A02",
+    label: "sessionStorage secret/token storage — credentials accessible via XSS",
+    severity: "warn",
+    pattern: /sessionStorage\.setItem\s*\(\s*['"](?:token|secret|api[_-]?key|password|auth)/i,
+    safeMarkers: ["test", "spec", "mock", "clearSession"],
   },
 ];
 

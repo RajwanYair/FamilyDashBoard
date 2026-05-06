@@ -48,6 +48,7 @@
  * Sprint 507: extended scope to ecb-adapter.ts, app-signals.ts, constants.ts (property-tested ECB1-ECB6, AS1-AS6, CN1-CN6).
  * Sprint 513: extended scope to mcp-bridge.ts, countdown.ts, rss-parser.ts, analytics.ts (property-tested MB1-MB5, CD1-CD6, RSS1-RSS6, AN1-AN5).
  * Sprint 519: extended scope to weather.ts, stocks.ts, currency.ts (property-tested WX1-WX10, ST1-ST11, CUR1-CUR8, FT1-FT8).
+ * Sprint 525: extended scope to motivation.ts, alerts.ts, hebrew-cal.ts (property-tested MO1-MO6, AL1-AL9, HC1-HC10).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -118,6 +119,10 @@ export default {
     "src/cards/weather/weather.ts",
     "src/cards/stocks/stocks.ts",
     "src/cards/currency/currency.ts",
+    // Sprint 525: property-tested motivation (MO1-MO6), alerts (AL1-AL9), hebrew-cal (HC1-HC10)
+    "src/cards/motivation/motivation.ts",
+    "src/cards/alerts/alerts.ts",
+    "src/cards/hebrew-cal/hebrew-cal.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
