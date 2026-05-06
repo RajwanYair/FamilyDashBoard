@@ -11,6 +11,7 @@
  * Sprint 473 (v14.4.0) — added A01 document.domain assignment, A03 new RegExp() dynamic, A04 Object.assign() prototype-pollution vector.
  * Sprint 482 (v14.5.0) — added A03 DOMParser.parseFromString XSS, A05 referrerPolicy='no-referrer' missing on ext links, A08 importScripts() in workers.
  * Sprint 487 (v14.5.0) — added A03 createContextualFragment XSS, A05 CORS credentials, A02 insecure crypto algorithms.
+ * Sprint 496 (v14.5.0) — added A07 document.cookie token, A03 javascript: protocol, A04 prototype reassignment.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -356,6 +357,34 @@ const RULES = [
     label: "crypto.subtle with insecure algorithm (DES/RC4/ECB) — use AES-GCM or ChaCha20",
     severity: "error",
     pattern: /crypto\.subtle\.(?:encrypt|decrypt|importKey)\s*\([^)]*['"](?:DES|RC4|AES-ECB|3DES)['"]/i,
+  },
+
+  // A07 — Identification and Authentication Failures (Sprint 496)
+  {
+    // Storing JWT tokens in cookie without HttpOnly or Secure flags leaks them to JS/XSS
+    category: "A07",
+    label: "document.cookie assignment with token/session — use HttpOnly secure cookies instead",
+    severity: "error",
+    pattern: /\bdocument\.cookie\s*=\s*[^;]*(?:token|session|auth|jwt)/i,
+  },
+
+  // A03 — Injection (Sprint 496)
+  {
+    // URL() constructor used directly with user input + .href as src/href can enable XSS via javascript:
+    category: "A03",
+    label: "javascript: protocol in URL/href — validate scheme before assignment",
+    severity: "error",
+    pattern: /['"]javascript\s*:/i,
+  },
+
+  // A04 — Insecure Design (Sprint 496)
+  {
+    // Constructor.prototype reassignment can silently break instanceof and prototype chain
+    category: "A04",
+    label: "Constructor.prototype reassignment — breaks instanceof, use Object.create()",
+    severity: "warn",
+    pattern: /\.prototype\s*=\s*(?!null\b)[^=]/,
+    safeMarkers: ["Object.create("],
   },
 ];
 
