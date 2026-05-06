@@ -18,6 +18,7 @@
  * Sprint 515 (v14.5.0) — added A05 CORS Allow-Headers wildcard, A08 script without SRI, A09 console.error credentials.
  * Sprint 520 (v14.5.0) — added A02 hardcoded JWT secret, A01 window.open dynamic URL, A04 CSP meta removal.
  * Sprint 525 (v14.5.0) — added A03 outerHTML assignment, A05 Expose-Headers wildcard, A02 sessionStorage secret.
+ * Sprint 531 (v14.5.0) — added A03 unencoded template URL, A07 bearer token in console, A04 NODE_TLS disabled.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -563,6 +564,35 @@ const RULES = [
     severity: "warn",
     pattern: /sessionStorage\.setItem\s*\(\s*['"](?:token|secret|api[_-]?key|password|auth)/i,
     safeMarkers: ["test", "spec", "mock", "clearSession"],
+  },
+
+  // Sprint 531 — 3 new rules (total: 62)
+
+  // A03 — Injection: template literal in URL without encoding
+  {
+    category: "A03",
+    label: "unencoded template literal in URL — potential injection vector",
+    severity: "warn",
+    pattern: /(?:fetch|XMLHttpRequest|new\s+Request)\s*\(\s*`[^`]*\$\{/,
+    safeMarkers: ["encodeURIComponent", "encodeURI", "URLSearchParams", "safeParam", "sanitize", "WORKER_BASE_URL", "BASE_URL", "NWS_API", "toFixed", "encoded", "params", "geonameid", "import.meta.env"],
+  },
+
+  // A07 — Auth Failures: bearer token in console output
+  {
+    category: "A07",
+    label: "bearer token logged — credentials exposed in console",
+    severity: "error",
+    pattern: /console\.\w+\s*\([^)]*(?:bearer|authorization)/i,
+    safeMarkers: ["test", "spec", "mock", "redact", "mask"],
+  },
+
+  // A04 — Insecure Design: disabling HTTPS verification
+  {
+    category: "A04",
+    label: "NODE_TLS_REJECT_UNAUTHORIZED=0 — disables TLS verification",
+    severity: "error",
+    pattern: /NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*['"]?0/,
+    safeMarkers: ["test", "spec", "mock", "development"],
   },
 ];
 
