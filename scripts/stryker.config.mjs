@@ -47,6 +47,7 @@
  * Sprint 501: extended scope to anim-level.ts, snapshot.ts (property-tested AL1-AL5, SY1-SY5); removed duplicate error-tracker.ts entry.
  * Sprint 507: extended scope to ecb-adapter.ts, app-signals.ts, constants.ts (property-tested ECB1-ECB6, AS1-AS6, CN1-CN6).
  * Sprint 513: extended scope to mcp-bridge.ts, countdown.ts, rss-parser.ts, analytics.ts (property-tested MB1-MB5, CD1-CD6, RSS1-RSS6, AN1-AN5).
+ * Sprint 519: extended scope to weather.ts, stocks.ts, currency.ts (property-tested WX1-WX10, ST1-ST11, CUR1-CUR8, FT1-FT8).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -113,6 +114,10 @@ export default {
     "src/core/mcp-bridge.ts",
     "src/cards/countdown/countdown.ts",
     "worker/src/utils/rss-parser.ts",
+    // Sprint 519: property-tested weather (WX1-WX10), stocks (ST1-ST11), currency (CUR1-CUR8), fetch (FT1-FT8)
+    "src/cards/weather/weather.ts",
+    "src/cards/stocks/stocks.ts",
+    "src/cards/currency/currency.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
