@@ -15,6 +15,7 @@
  * Sprint 500 (v14.5.0) — added A09 logging sensitive vars, A05 ACAO wildcard, A08 dynamic script.src.
  * Sprint 505 (v14.5.0) — added A01 location assignment, A02 Math.random token, A10 URL from searchParams.
  * Sprint 510 (v14.5.0) — added A03 SQL template injection, A07 token in URL query, A04 rejectUnauthorized false.
+ * Sprint 515 (v14.5.0) — added A05 CORS Allow-Headers wildcard, A08 script without SRI, A09 console.error credentials.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -476,6 +477,33 @@ const RULES = [
     label: "rejectUnauthorized: false — enables MITM attacks",
     severity: "error",
     pattern: /rejectUnauthorized\s*:\s*false/,
+  },
+
+  // A05 — Security Misconfiguration (Sprint 515)
+  {
+    // Over-permissive Access-Control-Allow-Headers wildcard
+    category: "A05",
+    label: "Access-Control-Allow-Headers: * — overly permissive CORS",
+    severity: "warn",
+    pattern: /Access-Control-Allow-Headers['"]\s*[:,]\s*['"]?\*/i,
+  },
+
+  // A08 — Software Integrity (Sprint 515)
+  {
+    // Loading external scripts without Subresource Integrity (SRI)
+    category: "A08",
+    label: "External <script src> without integrity attribute — use SRI",
+    severity: "warn",
+    pattern: /<script[^>]+src\s*=\s*['"]https?:\/\/[^>]*(?!integrity)/i,
+  },
+
+  // A09 — Logging Failures (Sprint 515)
+  {
+    // console.error logging sensitive variable names
+    category: "A09",
+    label: "console.error with sensitive data — redact credentials before logging",
+    severity: "warn",
+    pattern: /console\.error\s*\([^)]*(?:password|secret|token|apiKey|credential)[^)]*\)/i,
   },
 ];
 
