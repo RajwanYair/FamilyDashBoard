@@ -13,6 +13,7 @@
  * Sprint 487 (v14.5.0) — added A03 createContextualFragment XSS, A05 CORS credentials, A02 insecure crypto algorithms.
  * Sprint 496 (v14.5.0) — added A07 document.cookie token, A03 javascript: protocol, A04 prototype reassignment.
  * Sprint 500 (v14.5.0) — added A09 logging sensitive vars, A05 ACAO wildcard, A08 dynamic script.src.
+ * Sprint 505 (v14.5.0) — added A01 location assignment, A02 Math.random token, A10 URL from searchParams.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -415,6 +416,36 @@ const RULES = [
     severity: "error",
     pattern: /script[^.]*\.src\s*=\s*(?!['"]https?:\/\/)(?!['"]\/)/i,
     safeMarkers: ["URL.createObjectURL(", "data:text/javascript"],
+  },
+
+  // A01 — Broken Access Control (Sprint 505)
+  {
+    // window.location.href set from untrusted source can enable open redirect
+    category: "A01",
+    label: "window.location assignment from variable — validate target origin",
+    severity: "warn",
+    pattern: /window\.location\s*(?:\.\s*href)?\s*=\s*(?!['"]https?:\/\/)/,
+    safeMarkers: ["location.reload(", "location.hash", "location.search"],
+  },
+
+  // A02 — Cryptographic Failures (Sprint 505)
+  {
+    // Using Math.random for any security/token purpose is predictable
+    category: "A02",
+    label: "Math.random() in token/nonce/id context — use crypto.getRandomValues()",
+    severity: "warn",
+    pattern: /Math\.random\(\).*(?:token|nonce|id|key|secret|session)/i,
+    safeMarkers: ["crypto.getRandomValues(", "crypto.randomUUID("],
+  },
+
+  // A10 — SSRF (Sprint 505)
+  {
+    // Constructing URL from user-controlled searchParams without origin validation
+    category: "A10",
+    label: "URL from searchParams without origin check — validate scheme + allowlist",
+    severity: "warn",
+    pattern: /new\s+URL\(\s*(?:searchParams|params|query)/i,
+    safeMarkers: ["allowlist", "ALLOWED_ORIGINS", "validateUrl("],
   },
 ];
 
