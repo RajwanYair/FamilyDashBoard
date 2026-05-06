@@ -50,6 +50,7 @@
  * Sprint 519: extended scope to weather.ts, stocks.ts, currency.ts (property-tested WX1-WX10, ST1-ST11, CUR1-CUR8, FT1-FT8).
  * Sprint 525: extended scope to motivation.ts, alerts.ts, hebrew-cal.ts (property-tested MO1-MO6, AL1-AL9, HC1-HC10).
  * Sprint 531: extended scope to tasks.ts, calendar.ts, system-info.ts, video-news-adapter.ts (property-tested TK1-TK10, CAL1-CAL10, SI1-SI10, VN1-VN7).
+ * Sprint 561: extended scope to ims-adapter.ts, bg-images.ts, early-hints.ts (property-tested IMS1-IMS7, BG1-BG5, CO1-CO7); removed duplicate canary entry.
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -144,11 +145,14 @@ export default {
     "worker/src/utils/d1-telemetry.ts",
     "worker/src/routes/metrics.ts",
     "worker/src/middleware/rate-limit.ts",
-    // Sprint 555: property-tested canary (CY1-CY6), base-card (BC1-BC7), header (HD1-HD6), hardware (HW1-HW5)
-    "worker/src/middleware/canary.ts",
+    // Sprint 555: property-tested base-card (BC1-BC7), header (HD1-HD6), hardware (HW1-HW5)
     "src/cards/base-card.ts",
     "src/ui/header.ts",
     "src/core/hardware.ts",
+    // Sprint 561: property-tested ims-adapter (IMS1-IMS7), bg-images (BG1-BG5), early-hints (CO1-CO7)
+    "src/cards/weather/ims-adapter.ts",
+    "src/ui/bg-images.ts",
+    "worker/src/middleware/early-hints.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",

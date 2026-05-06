@@ -23,6 +23,7 @@
  * Sprint 543 (v14.5.0) — added A01 target=_blank noopener, A07 auth header logged, A04 setTimeout string.
  * Sprint 549 (v14.5.0) — added A03 contentDocument.write, A05 X-Frame-Options missing, A09 stack trace exposed.
  * Sprint 555 (v14.5.0) — added A02 hardcoded password, A06 dynamic import(), A10 SSRF interpolated fetch.
+ * Sprint 561 (v14.5.0) — added A03 document.writeln, A05 insecure WebSocket, A02 private key material.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -713,6 +714,33 @@ const RULES = [
     severity: "warn",
     pattern: /fetch\(\s*`[^`]*\$\{/,
     safeMarkers: ["WORKER_BASE_URL", "BASE_URL", "NWS_API", "PROXIES", "safeParam", "allowlist", "ALLOWED_", "import.meta.env", "encodeURIComponent", "URLSearchParams", "test", "spec", "geonameid", "encoded", "owasp-allow:A10", "hebcal", "sefaria"],
+  },
+
+  // Sprint 561 — A03: XSS via document.writeln
+  {
+    category: "A03",
+    label: "document.writeln() injection risk",
+    severity: "error",
+    pattern: /document\.writeln\s*\(/,
+    safeMarkers: ["test", "spec", "mock", "trusted-types"],
+  },
+
+  // Sprint 561 — A05: WebSocket without TLS (ws:// instead of wss://)
+  {
+    category: "A05",
+    label: "WebSocket over insecure ws:// (use wss://)",
+    severity: "warn",
+    pattern: /new\s+WebSocket\(\s*['"`]ws:\/\//,
+    safeMarkers: ["localhost", "127.0.0.1", "test", "spec"],
+  },
+
+  // Sprint 561 — A02: Private key in source
+  {
+    category: "A02",
+    label: "Hardcoded private key material",
+    severity: "error",
+    pattern: /-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----/,
+    safeMarkers: ["test", "spec", "mock", "example"],
   },
 ];
 
