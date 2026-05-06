@@ -21,6 +21,7 @@
  * Sprint 531 (v14.5.0) — added A03 unencoded template URL, A07 bearer token in console, A04 NODE_TLS disabled.
  * Sprint 537 (v14.5.0) — added A03 Blob URL XSS, A05 cookie SameSite, A02 localStorage secret.
  * Sprint 543 (v14.5.0) — added A01 target=_blank noopener, A07 auth header logged, A04 setTimeout string.
+ * Sprint 549 (v14.5.0) — added A03 contentDocument.write, A05 X-Frame-Options missing, A09 stack trace exposed.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -653,6 +654,35 @@ const RULES = [
     severity: "error",
     pattern: /(?:setTimeout|setInterval)\(\s*['"`]/,
     safeMarkers: ["test", "spec", "mock"],
+  },
+
+  // Sprint 549 — 3 new rules (total: 71)
+
+  // A03 — Injection: writing to srcdoc without sanitization (iframe content injection)
+  {
+    category: "A03",
+    label: "write to contentDocument.write — bypasses CSP",
+    severity: "error",
+    pattern: /contentDocument\.(?:write|writeln)\s*\(/,
+    safeMarkers: ["test", "spec", "mock", "sanitize", "trusted"],
+  },
+
+  // A05 — Security Misconfiguration: X-Frame-Options not set on responses
+  {
+    category: "A05",
+    label: "Response missing X-Frame-Options or frame-ancestors CSP",
+    severity: "warn",
+    pattern: /new\s+Response\([\s\S]{0,200}status:\s*200[\s\S]{0,200}\)/,
+    safeMarkers: ["X-Frame-Options", "frame-ancestors", "test", "spec", "CORS_HEADERS", "Content-Type"],
+  },
+
+  // A09 — Security Logging: stack trace exposed to client in production response
+  {
+    category: "A09",
+    label: "Error stack trace exposed in response body",
+    severity: "error",
+    pattern: /(?:err|error)\.stack/,
+    safeMarkers: ["test", "spec", "mock", "diagLog", "console", "log", "report", "sentry", "debug"],
   },
 ];
 

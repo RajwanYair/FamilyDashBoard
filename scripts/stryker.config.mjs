@@ -139,6 +139,11 @@ export default {
     "src/ui/night-dimmer.ts",
     "src/ui/ticker.ts",
     "worker/src/middleware/cors.ts",
+    // Sprint 549: property-tested maximize (MX1-MX6), d1-telemetry (DT1-DT7), rate-limit (RL1-RL7)
+    "src/ui/maximize.ts",
+    "worker/src/utils/d1-telemetry.ts",
+    "worker/src/routes/metrics.ts",
+    "worker/src/middleware/rate-limit.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
