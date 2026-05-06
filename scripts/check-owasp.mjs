@@ -10,6 +10,7 @@
  * Sprint 466 (v14.3.0) — extended scan scope to `scripts/*.mjs` (build/CI helpers).
  * Sprint 473 (v14.4.0) — added A01 document.domain assignment, A03 new RegExp() dynamic, A04 Object.assign() prototype-pollution vector.
  * Sprint 482 (v14.5.0) — added A03 DOMParser.parseFromString XSS, A05 referrerPolicy='no-referrer' missing on ext links, A08 importScripts() in workers.
+ * Sprint 487 (v14.5.0) — added A03 createContextualFragment XSS, A05 CORS credentials, A02 insecure crypto algorithms.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -328,6 +329,33 @@ const RULES = [
     label: "importScripts() in Worker — no SRI verification, prefer static ES module import",
     severity: "error",
     pattern: /\bimportScripts\s*\(/,
+  },
+
+  // A03 — Injection (Sprint 487)
+  {
+    // document.createRange().createContextualFragment() parses arbitrary HTML and can execute scripts
+    category: "A03",
+    label: "createContextualFragment() — parses HTML with script execution, use textContent or Trusted Types",
+    severity: "error",
+    pattern: /\.createContextualFragment\s*\(/,
+  },
+
+  // A05 — Security Misconfiguration (Sprint 487)
+  {
+    // Setting Access-Control-Allow-Credentials: true with a permissive origin is a CORS credential leak
+    category: "A05",
+    label: "Access-Control-Allow-Credentials: true — risks credential leak with permissive CORS origin",
+    severity: "warn",
+    pattern: /['"]Access-Control-Allow-Credentials['"]\s*:\s*['"]true['"]/i,
+  },
+
+  // A02 — Cryptographic Failures (Sprint 487)
+  {
+    // crypto.subtle.importKey with 'raw' format and no length check may accept weak keys (< 128 bits)
+    category: "A02",
+    label: "crypto.subtle with insecure algorithm (DES/RC4/ECB) — use AES-GCM or ChaCha20",
+    severity: "error",
+    pattern: /crypto\.subtle\.(?:encrypt|decrypt|importKey)\s*\([^)]*['"](?:DES|RC4|AES-ECB|3DES)['"]/i,
   },
 ];
 
