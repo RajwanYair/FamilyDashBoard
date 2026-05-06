@@ -16,6 +16,7 @@
  * Sprint 505 (v14.5.0) — added A01 location assignment, A02 Math.random token, A10 URL from searchParams.
  * Sprint 510 (v14.5.0) — added A03 SQL template injection, A07 token in URL query, A04 rejectUnauthorized false.
  * Sprint 515 (v14.5.0) — added A05 CORS Allow-Headers wildcard, A08 script without SRI, A09 console.error credentials.
+ * Sprint 520 (v14.5.0) — added A02 hardcoded JWT secret, A01 window.open dynamic URL, A04 CSP meta removal.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -505,6 +506,34 @@ const RULES = [
     severity: "warn",
     pattern: /console\.error\s*\([^)]*(?:password|secret|token|apiKey|credential)[^)]*\)/i,
   },
+
+  // A02 — Cryptographic Failures (Sprint 520)
+  {
+    // Hardcoded JWT secret strings in source
+    category: "A02",
+    label: "Hardcoded JWT secret — use env variable",
+    severity: "error",
+    pattern: /(?:jwt|jsonwebtoken).*(?:secret|key)\s*[:=]\s*['"][^'"]{8,}['"]/i,
+  },
+
+  // A01 — Broken Access Control (Sprint 520)
+  {
+    // window.open with user-controlled URL without validation
+    category: "A01",
+    label: "window.open with dynamic URL — validate origin before opening",
+    severity: "warn",
+    pattern: /window\.open\s*\(\s*(?!['"]https?:\/\/)/,
+    safeMarkers: ["trustedURL", "validateUrl", "safeOpen", "noopener", "_blank"],
+  },
+
+  // A04 — Insecure Design (Sprint 520)
+  {
+    // Disabling Content-Security-Policy via meta tag removal
+    category: "A04",
+    label: "CSP meta tag removal — security header bypass",
+    severity: "error",
+    pattern: /(?:remove|delete).*content-security-policy/i,
+  },
 ];
 
 /** Exempt source paths (relative to root, forward slashes). */
@@ -576,7 +605,9 @@ for (const file of files) {
       if (line.includes(`owasp-allow:${rule.category}`)) continue;
       // Generic allow-all suppression
       if (line.includes("owasp-allow:all")) continue;        // Per-rule safe markers (e.g. trustedHTML( makes innerHTML safe)
-        if (rule.safeMarkers?.some((m) => line.includes(m))) continue;
+        // Check current line + next 2 lines for multi-line statements
+        const context = [line, lines[i + 1] ?? "", lines[i + 2] ?? ""].join(" ");
+        if (rule.safeMarkers?.some((m) => context.includes(m))) continue;
       if (rule.pattern.test(line)) {
         findings.push({
           severity: rule.severity,
