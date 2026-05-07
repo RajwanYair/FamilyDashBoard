@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/calendar/calendar.ts (Sprint 526)
+ * fast-check property tests — src/cards/calendar/calendar.ts (Sprint 526, extended Sprint 564)
  *
  * Properties under test:
  *  CAL1. detectCalCategory: always returns one of known categories
@@ -12,12 +12,18 @@
  *  CAL8. findConflicts: non-overlapping → empty set
  *  CAL9. findConflicts: overlapping pair → both in set
  *  CAL10. parseICS: empty string → empty array
+ *  CAL11. groupEventsByDay: returns 21 buckets (CAL_WEEK_DAYS)
+ *  CAL12. groupEventsByDay: events sorted within each bucket
+ *  CAL13. getHolidaysByDate: returns null for empty items
+ *  CAL14. getHolidaysByDate: matching items → non-null string
  */
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
 import {
   detectCalCategory,
+  groupEventsByDay,
+  getHolidaysByDate,
   calDaysUntilLabel,
   findConflicts,
   parseICS,
@@ -141,5 +147,69 @@ describe("calendar — CAL10: parseICS empty", () => {
 
   it("returns empty for no VEVENT blocks", () => {
     expect(parseICS("BEGIN:VCALENDAR\nEND:VCALENDAR")).toEqual([]);
+  });
+});
+
+// ── CAL11: groupEventsByDay returns 7 buckets ────────────────────────────────
+
+describe("calendar — CAL11: groupEventsByDay bucket count", () => {
+  it("always returns 7 day buckets", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }),
+        (now) => {
+          const result = groupEventsByDay([], now);
+          expect(result.length).toBe(21);
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── CAL12: groupEventsByDay events sorted within bucket ──────────────────────
+
+describe("calendar — CAL12: groupEventsByDay sorted", () => {
+  it("events within each bucket are in chronological order", () => {
+    const now = new Date(2025, 5, 15);
+    const events = [
+      { summary: "B", start: new Date(2025, 5, 15, 14, 0), end: new Date(2025, 5, 15, 15, 0), allDay: false, icsIndex: 0 },
+      { summary: "A", start: new Date(2025, 5, 15, 9, 0), end: new Date(2025, 5, 15, 10, 0), allDay: false, icsIndex: 0 },
+    ];
+    const result = groupEventsByDay(events, now);
+    const todayBucket = result[0]!;
+    expect(todayBucket.events.length).toBe(2);
+    expect(todayBucket.events[0]!.summary).toBe("A");
+    expect(todayBucket.events[1]!.summary).toBe("B");
+  });
+});
+
+// ── CAL13: getHolidaysByDate empty → null ────────────────────────────────────
+
+describe("calendar — CAL13: getHolidaysByDate empty", () => {
+  it("returns null for empty items array", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }),
+        (d) => {
+          expect(getHolidaysByDate([], d)).toBeNull();
+        },
+      ),
+      { numRuns: 15 },
+    );
+  });
+});
+
+// ── CAL14: getHolidaysByDate matching → non-null ─────────────────────────────
+
+describe("calendar — CAL14: getHolidaysByDate match", () => {
+  it("returns non-null string when items match the date", () => {
+    const d = new Date(2025, 5, 15);
+    const items = [
+      { title: "Shabbat", hebrew: "שבת", date: "2025-06-15", category: "holiday" as const },
+    ];
+    const result = getHolidaysByDate(items, d);
+    expect(result).not.toBeNull();
+    expect(result!.length).toBeGreaterThan(0);
   });
 });
