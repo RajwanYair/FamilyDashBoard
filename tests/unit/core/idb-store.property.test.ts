@@ -10,6 +10,10 @@
  *  IDB4. idbSet is idempotent (last write wins).
  *  IDB5. _idbClearFallback empties all keys.
  *  IDB6. idbGetAll returns all values for a given store.
+ *  IDB7. idbDelete on non-existent key does not throw.
+ *  IDB8. idbSet with same value twice keeps single entry (no duplication).
+ *  IDB9. idbGetAll values match what was set (content correctness).
+ *  IDB10. Separate stores are isolated (write to store A, read from store B → null).
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -152,6 +156,91 @@ describe("idb-store — IDB6: getAll returns all stored values", () => {
         },
       ),
       { numRuns: 20 },
+    );
+  });
+});
+
+// ── IDB7: delete on non-existent key does not throw ──────────────────────────
+
+describe("idb-store — IDB7: idbDelete on non-existent key is safe", () => {
+  it("does not throw for keys never set", async () => {
+    await fc.assert(
+      fc.asyncProperty(dbNameArb, storeNameArb, keyArb, async (db, store, key) => {
+        _idbClearFallback();
+        // Should not throw
+        await idbDelete(db, store, key);
+        const result = await idbGet(db, store, key);
+        expect(result).toBeNull();
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── IDB8: double set same value keeps single entry ───────────────────────────
+
+describe("idb-store — IDB8: idbSet same key twice yields one entry", () => {
+  it("getAll count stays 1 for same key set twice", async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        dbNameArb,
+        storeNameArb,
+        keyArb,
+        jsonValueArb,
+        jsonValueArb,
+        async (db, store, key, v1, v2) => {
+          _idbClearFallback();
+          await idbSet(db, store, key, v1);
+          await idbSet(db, store, key, v2);
+          const all = await idbGetAll(db, store);
+          expect(all.length).toBe(1);
+        },
+      ),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── IDB9: getAll values match set content ────────────────────────────────────
+
+describe("idb-store — IDB9: getAll values match what was set", () => {
+  it("all stored values are present in getAll result", async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        dbNameArb,
+        storeNameArb,
+        fc.uniqueArray(keyArb, { minLength: 1, maxLength: 5 }),
+        async (db, store, keys) => {
+          _idbClearFallback();
+          const expectedValues: string[] = [];
+          for (const k of keys) {
+            const val = `val-${k}`;
+            expectedValues.push(val);
+            await idbSet(db, store, k, val);
+          }
+          const all = await idbGetAll<string>(db, store);
+          for (const val of expectedValues) {
+            expect(all).toContain(val);
+          }
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── IDB10: stores are isolated ───────────────────────────────────────────────
+
+describe("idb-store — IDB10: separate stores are isolated", () => {
+  it("write to store-a, read from store-b → null", async () => {
+    await fc.assert(
+      fc.asyncProperty(dbNameArb, keyArb, jsonValueArb, async (db, key, val) => {
+        _idbClearFallback();
+        await idbSet(db, "store-a", key, val);
+        const result = await idbGet(db, "store-b", key);
+        expect(result).toBeNull();
+      }),
+      { numRuns: 30 },
     );
   });
 });
