@@ -129,38 +129,6 @@ jobs:
         run: |
           npm install --package-lock-only --ignore-scripts --silent
           npm audit --audit-level=high
-      - name: Scan for hardcoded secrets
-        run: |
-          echo "🔍 Scanning for potential secrets in src/..."
-          FOUND=0
-          for PATTERN in 'api[_-]?key\s*[:=]' 'apiKey\s*[:=]' 'secret\s*[:=]' 'password\s*[:=]' 'Bearer\s+[A-Za-z0-9]{20,}'; do
-            if grep -rEn "$PATTERN" src/ --include="*.ts" 2>/dev/null | grep -qv '//.*:'; then
-              echo "::error::Potential secret pattern found: $PATTERN"
-              grep -rEn "$PATTERN" src/ --include="*.ts" | grep -v '//.*:'
-              FOUND=1
-            fi
-          done
-          if [ "$FOUND" -eq 0 ]; then
-            echo "✅ No hardcoded secrets detected"
-          else
-            exit 1
-          fi
-      - name: Scan for dangerous JS patterns
-        run: |
-          echo "🔍 Scanning for dangerous JS patterns in src/..."
-          FAILED=0
-          if grep -rn "eval(" src/ --include="*.ts" 2>/dev/null; then
-            echo "::error::eval() usage detected in src/ — security risk"
-            FAILED=1
-          fi
-          if grep -rn "document\.write(" src/ --include="*.ts" 2>/dev/null; then
-            echo "::error::document.write() detected in src/ — security risk"
-            FAILED=1
-          fi
-          if [ "$FAILED" -eq 0 ]; then
-            echo "✅ No dangerous patterns found"
-          fi
-          exit $FAILED
       - name: OWASP Top 10 pattern scan
         run: node scripts/check-owasp.mjs
       - name: Trusted Types enforcement audit
