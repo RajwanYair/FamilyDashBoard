@@ -62,11 +62,12 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       exclude: ["src/vite-env.d.ts", "src/**/*.d.ts", "src/preview.ts"],
       thresholds: {
-        // Actuals: 94.23 / 85.40 / 94.51 / 95.67 — thresholds set with ~0.2% safety margin.
-        statements: 94.2,
-        branches: 85.4,
-        functions: 94.5,
-        lines: 95.6,
+        // Actuals: 94.43 / 85.63 / 94.72 / 95.87 — thresholds set with ~0.2% safety margin.
+        // (v14.5.0): ratcheted +0.2% per metric toward v15 target 95/90/95/96.
+        statements: 94.4,
+        branches: 85.6,
+        functions: 94.7,
+        lines: 95.8,
       },
     },
   },

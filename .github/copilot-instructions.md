@@ -5,7 +5,7 @@
 > No local `package-lock.json` or `devDependencies` in `FamilyDashBoard/package.json`. Shared configs vendored into `tooling/`.
 > Tests: `npx vitest run` — 7037 / 275 suites / 0 failures
 > Lint: `npx eslint src tests --max-warnings 0` — 0 errors · 0 warnings · 0 suppressions
-> Coverage thresholds: `94.2 / 85.4 / 94.5 / 95.6` (statements / branches / functions / lines) — see `vitest.config.ts`
+> Coverage thresholds: `94.4 / 85.6 / 94.7 / 95.8` (statements / branches / functions / lines) — see `vitest.config.ts`
 
 ## Mandatory Rules
 
