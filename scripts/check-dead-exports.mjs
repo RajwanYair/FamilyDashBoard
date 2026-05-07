@@ -3,8 +3,9 @@
  * check-dead-exports.mjs — (Task 1/20 + Task 20/20)
  *
  * Scans src/ and worker/src/ for exported symbols that are never imported
- * anywhere in src/, worker/src/, or tests/.  Reports candidates for dead code.
+ * anywhere in src/, worker/src/, tests/, or scripts/.  Reports candidates for dead code.
  * (v14.4.0): extended scan scope to worker/src/ (mirrors OWASP extension).
+ * (v14.5.0): extended import corpus to scripts/; added --max-allowed N threshold gate.
  *
  * False-positive sources (excluded automatically):
  *   - Re-export barrel files (index.ts) — excluded from analysis
@@ -13,10 +14,11 @@
  *   - Type-only exports (exported for d.ts consumers only)
  *
  * Usage:
- *   node scripts/check-dead-exports.mjs [--fail-on-dead]
+ *   node scripts/check-dead-exports.mjs [--fail-on-dead] [--max-allowed N]
  *
  * The script exits 0 even when candidates are found (informational only) unless
- * --fail-on-dead is passed.  This keeps CI green while still surfacing debt.
+ * --fail-on-dead is passed.  --max-allowed N exits 1 if dead count exceeds N.
+ * This keeps CI green while still surfacing debt.
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -28,24 +30,28 @@ const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
 const SRC = join(ROOT, "src");
 const WORKER_SRC = join(ROOT, "worker", "src"); // also scan worker code
 const TESTS = join(ROOT, "tests");
+const SCRIPTS = join(ROOT, "scripts"); // also scan scripts for import references
 
 const { values: flags } = parseArgs({
   args: process.argv.slice(2),
-  options: { "fail-on-dead": { type: "boolean", default: false } },
+  options: {
+    "fail-on-dead": { type: "boolean", default: false },
+    "max-allowed": { type: "string", default: "" },
+  },
   strict: false,
 });
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-/** @param {string} dir @returns {string[]} */
-function walkTs(dir) {
+/** @param {string} dir @param {string[]} [exts] @returns {string[]} */
+function walkTs(dir, exts = [".ts"]) {
   /** @type {string[]} */
   const files = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
-      files.push(...walkTs(full));
-    } else if (entry.isFile() && extname(entry.name) === ".ts") {
+      files.push(...walkTs(full, exts));
+    } else if (entry.isFile() && exts.includes(extname(entry.name))) {
       files.push(full);
     }
   }
@@ -111,7 +117,10 @@ const workerSrcFiles = statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirect
   ? walkTs(WORKER_SRC)
   : [];
 const testFiles = walkTs(TESTS);
-const allFiles = [...srcFiles, ...workerSrcFiles, ...testFiles];
+const scriptFiles = statSync(SCRIPTS, { throwIfNoEntry: false })?.isDirectory()
+  ? walkTs(SCRIPTS, [".ts", ".mjs"])
+  : [];
+const allFiles = [...srcFiles, ...workerSrcFiles, ...testFiles, ...scriptFiles];
 
 // Concatenate all source text for import-search
 const corpus = allFiles.map((f) => readFileSync(f, "utf8")).join("\n");
@@ -175,6 +184,12 @@ console.log(
 
 if (flags["fail-on-dead"]) {
   console.error("::error::Dead export candidates found — pass --fail-on-dead=false to allow.");
+  process.exit(1);
+}
+
+const maxAllowed = flags["max-allowed"] ? parseInt(flags["max-allowed"], 10) : NaN;
+if (!Number.isNaN(maxAllowed) && dead.length > maxAllowed) {
+  console.error(`::error::${dead.length} dead exports exceed --max-allowed ${maxAllowed}`);
   process.exit(1);
 }
 process.exit(0);
