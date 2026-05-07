@@ -212,6 +212,8 @@ jobs:
         run: node scripts/check-dead-exports.mjs --max-allowed 5
       - name: Build artifacts untracked check
         run: node scripts/check-build-artifacts-untracked.mjs
+      - name: Vendor-neutrality gate
+        run: node scripts/check-vendor-neutrality.mjs
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)
