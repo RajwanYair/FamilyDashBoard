@@ -11,6 +11,10 @@
  *        or Infinity in the output.
  *  HIS5. sparklineSvg color parameter is emitted verbatim in the stroke attribute.
  *  HIS6. sparklineSvg viewBox reflects the w×h parameters passed in.
+ *  HIS7. sparklineSvg with negative values still produces valid SVG (no NaN/Infinity).
+ *  HIS8. sparklineSvg polyline has exactly values.length coordinate pairs.
+ *  HIS9. sparklineSvg y-coordinates are always within [0, h].
+ *  HIS10. sparklineSvg output never contains NaN or Infinity strings.
  */
 
 import { describe, it, expect } from "vitest";
@@ -145,6 +149,80 @@ describe("sparklineSvg — HIS6: viewBox reflects the w and h parameters", () =>
       fc.property(enoughArb, colorArb, dimArb, dimArb, (values, color, w, h) => {
         const svg = sparklineSvg(values, color, w, h);
         expect(svg).toContain(`viewBox="0 0 ${w} ${h}"`);
+      }),
+      { numRuns: 80 },
+    );
+  });
+});
+
+// ── HIS7: negative values → valid SVG ────────────────────────────────────────
+
+describe("sparklineSvg — HIS7: negative values produce valid SVG", () => {
+  const negativeArb = fc.array(
+    fc.double({ noNaN: true, noDefaultInfinity: true, min: -1_000_000, max: -1 }),
+    { minLength: 2, maxLength: 20 },
+  );
+
+  it("output contains <polyline> even with all-negative data", () => {
+    fc.assert(
+      fc.property(negativeArb, colorArb, (values, color) => {
+        const svg = sparklineSvg(values, color);
+        expect(svg).toContain("<polyline");
+        expect(svg).not.toContain("NaN");
+        expect(svg).not.toContain("Infinity");
+      }),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── HIS8: polyline has exactly values.length coordinate pairs ────────────────
+
+describe("sparklineSvg — HIS8: point count matches values.length", () => {
+  it("polyline points has N x,y pairs for N values", () => {
+    fc.assert(
+      fc.property(enoughArb, colorArb, (values, color) => {
+        const svg = sparklineSvg(values, color);
+        const match = svg.match(/points="([^"]+)"/);
+        expect(match).not.toBeNull();
+        const pairs = match![1].trim().split(" ");
+        expect(pairs.length).toBe(values.length);
+      }),
+      { numRuns: 80 },
+    );
+  });
+});
+
+// ── HIS9: y-coordinates within [0, h] ───────────────────────────────────────
+
+describe("sparklineSvg — HIS9: all y-values within [0, h]", () => {
+  it("every y-coordinate in polyline is between 0 and h", () => {
+    fc.assert(
+      fc.property(enoughArb, colorArb, dimArb, dimArb, (values, color, w, h) => {
+        const svg = sparklineSvg(values, color, w, h);
+        const match = svg.match(/points="([^"]+)"/);
+        if (!match) return;
+        const pairs = match[1].trim().split(" ");
+        for (const pair of pairs) {
+          const y = parseFloat(pair.split(",")[1]);
+          expect(y).toBeGreaterThanOrEqual(0);
+          expect(y).toBeLessThanOrEqual(h);
+        }
+      }),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── HIS10: output never contains NaN or Infinity ─────────────────────────────
+
+describe("sparklineSvg — HIS10: output free of NaN/Infinity", () => {
+  it("no NaN or Infinity in output for any finite input", () => {
+    fc.assert(
+      fc.property(enoughArb, colorArb, dimArb, dimArb, (values, color, w, h) => {
+        const svg = sparklineSvg(values, color, w, h);
+        expect(svg).not.toContain("NaN");
+        expect(svg).not.toContain("Infinity");
       }),
       { numRuns: 80 },
     );
