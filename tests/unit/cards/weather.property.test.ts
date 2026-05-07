@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/weather/weather.ts (Sprint 514)
+ * fast-check property tests — src/cards/weather/weather.ts (Sprint 514, extended Sprint 566)
  *
  * Properties under test:
  *  WX1. parseCityEntry: valid "name|lat|lon" → CityEntry
@@ -12,6 +12,10 @@
  *  WX8. humidityLabel: any 0–100 → one of 4 labels
  *  WX9. precipSummaryLabel: any 0–100 → non-empty Hebrew string
  *  WX10. formatCloudCover: any 0–100 → includes percentage
+ *  WX11. moonPhase: always returns [emoji, non-empty label]
+ *  WX12. getMoonPhaseSummary: crossLinkTarget is "hebrew-cal"
+ *  WX13. computeGoldenHour: valid ISO → HH:MM format
+ *  WX14. computeGoldenHour: invalid ISO → "--:--"
  */
 
 import { describe, it, expect } from "vitest";
@@ -26,6 +30,9 @@ import {
   humidityLabel,
   precipSummaryLabel,
   formatCloudCover,
+  moonPhase,
+  getMoonPhaseSummary,
+  computeGoldenHour,
 } from "@/cards/weather/weather";
 
 // ── WX1: parseCityEntry valid ────────────────────────────────────────────────
@@ -198,5 +205,54 @@ describe("weather — WX10: formatCloudCover", () => {
       }),
       { numRuns: 30 },
     );
+  });
+});
+
+// ── WX11: moonPhase returns [emoji, label] ──────────────────────────────────
+
+describe("weather — WX11: moonPhase tuple", () => {
+  it("always returns [emoji, non-empty label]", () => {
+    fc.assert(
+      fc.property(
+        fc.date({ min: new Date(2020, 0, 1), max: new Date(2030, 0, 1) }),
+        (d) => {
+          const [emoji, label] = moonPhase(d);
+          expect(emoji.length).toBeGreaterThan(0);
+          expect(label.length).toBeGreaterThan(0);
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── WX12: getMoonPhaseSummary crossLinkTarget ────────────────────────────
+
+describe("weather — WX12: getMoonPhaseSummary target", () => {
+  it("crossLinkTarget is always hebrew-cal", () => {
+    const result = getMoonPhaseSummary(new Date(2025, 3, 10));
+    expect(result.crossLinkTarget).toBe("hebrew-cal");
+    expect(result.emoji.length).toBeGreaterThan(0);
+    expect(result.label.length).toBeGreaterThan(0);
+  });
+});
+
+// ── WX13: computeGoldenHour valid ISO ───────────────────────────────────
+
+describe("weather — WX13: computeGoldenHour valid", () => {
+  it("valid ISO strings → HH:MM format", () => {
+    const result = computeGoldenHour("2025-06-01T05:43", "2025-06-01T19:52");
+    expect(result.morningEnd).toMatch(/^\d{2}:\d{2}$/);
+    expect(result.eveningStart).toMatch(/^\d{2}:\d{2}$/);
+  });
+});
+
+// ── WX14: computeGoldenHour invalid ISO ──────────────────────────────────
+
+describe("weather — WX14: computeGoldenHour invalid", () => {
+  it("invalid strings → --:--", () => {
+    const result = computeGoldenHour("not-a-date", "also-bad");
+    expect(result.morningEnd).toBe("--:--");
+    expect(result.eveningStart).toBe("--:--");
   });
 });
