@@ -214,6 +214,10 @@ jobs:
         run: node scripts/check-build-artifacts-untracked.mjs
       - name: Vendor-neutrality gate
         run: node scripts/check-vendor-neutrality.mjs
+      - name: Cross-project tooling drift check
+        run: node scripts/check-cross-project-gate.mjs
+      - name: Temporal polyfill size gate
+        run: node scripts/check-temporal-polyfill-size.mjs
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)
