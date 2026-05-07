@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * FamilyDashBoard — Bundle Trend Tracker (Sprint 61)
+ * FamilyDashBoard — Bundle Trend Tracker 
  *
  * Appends the current build's gzip sizes to `scripts/bundle-trend.json`
  * so developers can track bundle growth over time.

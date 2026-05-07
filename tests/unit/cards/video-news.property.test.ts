@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/video-news/ (Sprint 529)
+ * fast-check property tests — src/cards/video-news/ 
  *
  * Properties under test:
  *  VN1. getStreamDescriptor: known channel → correct id field

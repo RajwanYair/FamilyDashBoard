@@ -1,5 +1,5 @@
 /**
- * Sprint 239 / V14-HARMONISE: Cross-project release gate script
+ * Cross-project release gate script
  *
  * Verifies that the shared tooling presets vendored into this repo haven't
  * drifted unexpectedly from their last-known sizes, and prints an advisory
@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 
-// ── Known tooling file checksums (sizes in bytes at Sprint 239 / v13.26.0) ──
+// ── Known tooling file checksums (sizes in bytes at / v13.26.0) ──
 // Update these when a tooling file is intentionally changed.
 const TOOLING_BASELINE = [
   { path: "tooling/ci/check.yml",                  size: 3114  },

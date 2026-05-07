@@ -529,7 +529,7 @@ export function getConsecutiveFailures(): number {
   return _consecutiveFailures;
 }
 
-// ── Sprint 162: Network quality history tracking ──────────────────────────────
+// Network quality history tracking ──────────────────────────────
 
 const NET_HISTORY_MAX = 10;
 const _netQualityHistory: Array<{ ts: number; tier: NetworkQualityTier }> = [];
@@ -633,7 +633,7 @@ export async function fetchWithStale<T>(opts: {
 }
 
 /**
- * Generic retry wrapper for any async operation (Sprint 65).
+ * Generic retry wrapper for any async operation.
  *
  * Unlike `fetchWithRetry` (which wraps a URL fetch via fetchJSON), this
  * helper accepts any `() => Promise<T>` callback — useful for wrapping
@@ -668,7 +668,7 @@ export async function withRetry<T>(
   throw lastErr;
 }
 
-// ── Sprint 94: Error classification ──────────────────────────────────────
+// Error classification ──────────────────────────────────────
 
 /**
  * Known error categories for fetch failures.

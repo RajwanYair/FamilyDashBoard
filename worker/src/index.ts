@@ -92,7 +92,7 @@ app.use("*", async (c, next) => {
 
   logRequest(c.req.raw, c.res, startMs, ip);
 
-  // Canary traffic tagging (V12-EDGE-4b, Sprint 32) — fire-and-forget header injection
+  // Canary traffic tagging (V12-EDGE-4b ) — fire-and-forget header injection
   applyCanaryHeader(c.res, c.env.CANARY_PCT);
 
   // Analytics Engine hit (V12-EDGE-2b, ADR-029) — fire-and-forget
@@ -154,7 +154,7 @@ app.get("/api/crypto", earlyHintsMiddleware, (c) => handleCrypto(new URL(c.req.u
 
 app.get("/api/motivation/hebrew", (c) => handleMotivationHebrew(c.env));
 
-// Sprint 202 / X9: Daily AI synthesis tile
+// Daily AI synthesis tile
 app.get("/api/ai/synthesis", (c) => handleAiSynthesis(c.env));
 
 app.get("/api/errors/export", (c) => handleErrorsExport(c.req.raw, c.env));

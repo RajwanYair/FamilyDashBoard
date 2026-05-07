@@ -18,7 +18,7 @@ import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../core/semantic-clipboard";
 import { setCardSignal } from "../../core/card-signal-protocol";
 
-/** Sprint 23: Category labels for motivation quotes. */
+/** Category labels for motivation quotes. */
 export type MotivationCategory =
   | "general"
   | "morning"
@@ -30,17 +30,17 @@ export type MotivationCategory =
   | "calm";
 
 /**
- * M1 (Sprint 176): Source attribution for displayed quote.
+ * M1: Source attribution for displayed quote.
  * Rendered as a colored badge below the author line.
  */
 export type MotivationSource = "tanakh" | "hazal" | "modern" | "ai";
 
-/** Sprint 23: Categorized quotes with `category` field. */
+/** Categorized quotes with `category` field. */
 export interface MotivationQuote {
   text: string;
   author: string;
   category: MotivationCategory;
-  /** M1 (Sprint 176): Optional source attribution badge. */
+  /** M1: Optional source attribution badge. */
   source?: MotivationSource;
 }
 
@@ -91,10 +91,10 @@ export const MOTIVATIONS: ReadonlyArray<MotivationQuote> = [
 let motiIdx = 0;
 let elText: HTMLElement | null = null;
 let elAuthor: HTMLElement | null = null;
-/** M1 (Sprint 176): Source attribution badge element. */
+/** M1: Source attribution badge element. */
 let elSrc: HTMLElement | null = null;
 
-// ── Sprint 70: Non-repeat window ──────────────────────────────────────────────
+// Non-repeat window ──────────────────────────────────────────────
 
 /** localStorage key for the rolling used-index list. */
 const LS_MOTI_USED = "moti-used-indices";
@@ -150,9 +150,9 @@ export function pickNextQuoteIndex(poolSize: number, usedIndices: number[]): num
   return available[Math.floor(Math.random() * available.length)]!;
 }
 
-// ── end Sprint 70 ────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────
 
-/** Sprint 23: Active category filter — null = show all categories. */
+/** Active category filter — null = show all categories. */
 let _activeCategory: MotivationCategory | null = null;
 
 // ── M1: Source attribution labels ─────────────────────────────────────────────
@@ -183,7 +183,7 @@ export const DAY_THEME_MAP: ReadonlyArray<MotivationCategory> = [
 ];
 
 /**
- * M2 (Sprint 176): Returns the recommended quote category for a given date.
+ * M2: Returns the recommended quote category for a given date.
  * @param date  Date to evaluate (defaults to today).
  */
 export function getThemeForDay(date: Date = new Date()): MotivationCategory {
@@ -192,7 +192,7 @@ export function getThemeForDay(date: Date = new Date()): MotivationCategory {
 }
 
 /**
- * Sprint 23: Returns quotes filtered by category (or all when null).
+ * Returns quotes filtered by category (or all when null).
  */
 export function getQuotesByCategory(
   category: MotivationCategory | null,
@@ -202,13 +202,13 @@ export function getQuotesByCategory(
 }
 
 /**
- * Sprint 23: Set the active category filter and restart the index counter.
+ * Set the active category filter and restart the index counter.
  * Pass null to show all categories.
  */
 export function setMotivationCategory(category: MotivationCategory | null): void {
   _activeCategory = category;
   motiIdx = 0;
-  // Sprint 70: clear used-index window when category changes (new pool = fresh start)
+  // clear used-index window when category changes (new pool = fresh start)
   try {
     localStorage.removeItem(LS_MOTI_USED);
   } catch {
@@ -218,7 +218,7 @@ export function setMotivationCategory(category: MotivationCategory | null): void
   renderMotivation();
 }
 
-/** Sprint 23: Returns the currently active category filter. */
+/** Returns the currently active category filter. */
 export function getMotivationCategory(): MotivationCategory | null {
   return _activeCategory;
 }
@@ -246,7 +246,7 @@ export function getCurrentQuote(): MotivationQuote | null {
   return pool[motiIdx] ?? null;
 }
 
-// X15 (Sprint 415): semantic clipboard producer
+// X15: semantic clipboard producer
 function buildMotivationPayload(): SemanticPayload | null {
   const q = getCurrentQuote();
   if (!q) return null;
@@ -286,7 +286,7 @@ function renderMotivationQuote(m: MotivationQuote): void {
 export function renderMotivation(): void {
   const pool = getQuotesByCategory(_activeCategory);
   if (!pool.length) return;
-  // Sprint 70: pick via non-repeat window instead of simple sequential index
+  // pick via non-repeat window instead of simple sequential index
   const usedIndices = getUsedIndices();
   motiIdx = pickNextQuoteIndex(pool.length, usedIndices);
   markIndexUsed(motiIdx, pool.length);
@@ -298,7 +298,7 @@ export function renderMotivation(): void {
 }
 
 /**
- * V13-DATA: Fetch an AI-generated Hebrew motivational quote from the worker.
+ * Fetch an AI-generated Hebrew motivational quote from the worker.
  * Falls back to static quotes on any error.
  */
 export async function fetchAiMotivationQuote(): Promise<MotivationQuote | null> {
@@ -343,7 +343,7 @@ export const loadMotivation = createAsyncCardLoader<MotivationQuote>(
 export function setContent(m: { text: string; author: string; source?: MotivationSource }): void {
   if (elText) elText.textContent = m.text;
   if (elAuthor) elAuthor.textContent = m.author ? `— ${m.author}` : "";
-  // M1 (Sprint 176): source attribution badge
+  // M1: source attribution badge
   if (elSrc) {
     if (m.source) {
       const meta = SOURCE_META[m.source];
@@ -383,7 +383,7 @@ export function initMotivationCard(): void {
     shareMotivation();
   });
 
-  // Sprint 197 / M3: Heart (favorite) button
+  // Heart (favorite) button
   _favHeartBtn = document.getElementById("moti-fav-btn");
   _favHeartBtn?.addEventListener("click", () => {
     const q = getCurrentQuote();
@@ -391,14 +391,14 @@ export function initMotivationCard(): void {
   });
   void refreshHeartState();
 
-  // M2 (Sprint 176): Apply theme-by-day when no manual category is set
+  // M2: Apply theme-by-day when no manual category is set
   if (_activeCategory === null) {
     _activeCategory = getThemeForDay();
   }
 
   // Synchronous initial render — no async overhead for first display
   renderMotivation();
-  // X15 (Sprint 415): register semantic clipboard producer
+  // X15: register semantic clipboard producer
   registerSemanticProducer("motivation", buildMotivationPayload);
   // Stream D2.4: use createAsyncCardLoader for all scheduled refreshes
   // (adds visibility + lock checks, consistent with other cards)
@@ -408,7 +408,7 @@ export function initMotivationCard(): void {
   diagLog("FDB-041: [motivation] Initialized");
 }
 
-// ── Sprint 197 / M3: Motivation favorites (IDB, ≤50 entries) ─────────────────
+// Motivation favorites (IDB, ≤50 entries) ─────────────────
 
 const MOTI_IDB_DB = "fdb-motivation";
 const MOTI_IDB_STORE = "favorites";
@@ -476,7 +476,7 @@ async function refreshHeartState(): Promise<void> {
 
 // ── end M3 ──────────────────────────────────────────────────────────────────
 
-// ── Sprint 83: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const motivationConfigSchema: CardConfigField[] = [
   {
@@ -500,7 +500,7 @@ export const motivationConfigSchema: CardConfigField[] = [
     tab: "display",
     group: "motivation",
   },
-  // ── Sprint 285 / CS-M1: categories/theme-by-day/source/lang ─────────────────────────
+  // categories/theme-by-day/source/lang ─────────────────────────
   {
     key: "motivationCategories",
     labelHe: "קטגוריית ציטוטים",

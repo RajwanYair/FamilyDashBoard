@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/alerts/alerts.ts (Sprint 523)
+ * fast-check property tests — src/cards/alerts/alerts.ts 
  *
  * Properties under test:
  *  AL1. alertThreatIcon: threat=5 → 🟡

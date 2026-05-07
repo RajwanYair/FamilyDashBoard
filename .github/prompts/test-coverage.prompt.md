@@ -1,7 +1,6 @@
 ---
-mode: "agent"
 description: "Identify gaps in test coverage for a given module or card and add targeted tests to meet the 94.2%/85.4%/94.5%/95.6% thresholds (canonical source: vitest.config.ts)."
-tools: ["read_file", "grep_search", "file_search", "get_errors", "create_file", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "manage_todo_list", "tool_search"]
+tools: ["read_file", "grep_search", "file_search", "get_errors", "create_file", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "memory", "runSubagent"]
 ---
 
 # Test Coverage — FamilyDashBoard

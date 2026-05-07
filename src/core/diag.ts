@@ -50,10 +50,10 @@ export function formatDiagEntry(entry: DiagEntry): string {
   return `[${time}] ${entry.msg}`;
 }
 
-// ── Sprint 60: Provider error normalization ────────────────────────────────
+// Provider error normalization ────────────────────────────────
 
 /**
- * Classify the severity of a provider error (Sprint 60).
+ * Classify the severity of a provider error.
  *
  * - `"network"` — fetch/network-level failure (offline, DNS, CORS)
  * - `"parse"`   — response received but JSON/XML parse failed
@@ -64,7 +64,7 @@ export function formatDiagEntry(entry: DiagEntry): string {
 export type ProviderErrorKind = "network" | "parse" | "timeout" | "upstream" | "unknown";
 
 /**
- * Derive a standardized error kind from an arbitrary caught error (Sprint 60).
+ * Derive a standardized error kind from an arbitrary caught error.
  *
  * Logs the result at FDB-062 diagnostic level.
  *
@@ -97,7 +97,7 @@ export function classifyProviderError(err: unknown, providerId: string): Provide
   return kind;
 }
 
-// ── Structured JSON diagnostics export (V12-OBSERVABILITY) ───────────────────
+// ── Structured JSON diagnostics export  ───────────────────
 
 /** Schema version for the structured diagnostics export. Increment on breaking changes. */
 export const DIAG_EXPORT_SCHEMA_VERSION = 1;

@@ -1,7 +1,6 @@
 ---
-mode: "agent"
 description: "Bump the project version number consistently across all files that reference it: package.json, sw.js, CHANGELOG.md, README.md, instruction files, copilot-instructions.md, docs/ARCHITECTURE.md."
-tools: ["read_file", "replace_string_in_file", "multi_replace_string_in_file", "grep_search", "file_search", "run_in_terminal", "get_terminal_output", "manage_todo_list", "tool_search", "memory"]
+tools: ["read_file", "replace_string_in_file", "multi_replace_string_in_file", "grep_search", "file_search", "run_in_terminal", "get_terminal_output", "get_errors", "manage_todo_list", "vscode_listCodeUsages", "tool_search", "memory"]
 ---
 
 # Version Bump — FamilyDashBoard

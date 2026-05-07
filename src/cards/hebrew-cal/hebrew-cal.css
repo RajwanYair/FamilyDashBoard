@@ -161,7 +161,7 @@
   cursor: pointer;
 }
 
-/* Sprint 11: Maximize — large Hebrew calendar layout */
+/* Maximize — large Hebrew calendar layout */
 @container card (min-width: 900px) {
   .hc-row {
     padding: 6px 0;

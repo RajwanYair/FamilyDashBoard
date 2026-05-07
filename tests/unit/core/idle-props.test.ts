@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/idle.ts (Sprint 323 / IDP1-IDP3)
+ * fast-check property tests for src/core/idle.ts 
  *
  * Verifies invariants of `shouldWakeRefresh` and `pageVisibleSignal`
  * across arbitrary visibility transitions.
@@ -20,7 +20,7 @@ function setVisibility(state: "visible" | "hidden"): void {
   document.dispatchEvent(new Event("visibilitychange"));
 }
 
-describe("idle — fast-check properties (IDP1-IDP3, Sprint 323)", () => {
+describe("idle — fast-check properties (IDP1-IDP3 )", () => {
   beforeEach(() => {
     if (!initialised) {
       initVisibility();

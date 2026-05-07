@@ -1709,7 +1709,7 @@ describe("News — renderSourceFilterChips (F9 v7.2)", () => {
   });
 });
 
-// ── Sprint 26: readingTimeMinutes ────────────────────────────────────────────
+// ── readingTimeMinutes ────────────────────────────────────────────
 
 describe("News — readingTimeMinutes", () => {
   it("returns 0 for empty string", () => {
@@ -1732,7 +1732,7 @@ describe("News — readingTimeMinutes", () => {
   });
 });
 
-// ── Sprint 26: isBreaking ─────────────────────────────────────────────────────
+// ── isBreaking ─────────────────────────────────────────────────────
 
 describe("News — isBreaking", () => {
   it("returns true for title containing 'breaking'", () => {
@@ -1757,7 +1757,7 @@ describe("News — isBreaking", () => {
   });
 });
 
-// ── Sprint 26: newsSourceDomain ──────────────────────────────────────────────
+// ── newsSourceDomain ──────────────────────────────────────────────
 
 describe("News — newsSourceDomain", () => {
   it("extracts domain from https URL", () => {
@@ -1777,7 +1777,7 @@ describe("News — newsSourceDomain", () => {
   });
 });
 
-// ── Sprint 26: sanitizeNewsTitle ─────────────────────────────────────────────
+// ── sanitizeNewsTitle ─────────────────────────────────────────────
 
 describe("News — sanitizeNewsTitle", () => {
   it("replaces &amp; with &", () => {
@@ -1808,7 +1808,7 @@ describe("News — sanitizeNewsTitle", () => {
   });
 });
 
-// ── Sprint 26: readingTimeMinutes ────────────────────────────────────────────
+// ── readingTimeMinutes ────────────────────────────────────────────
 
 describe("News — readingTimeMinutes", () => {
   it("returns 0 for empty string", () => {
@@ -1831,7 +1831,7 @@ describe("News — readingTimeMinutes", () => {
   });
 });
 
-// ── Sprint 26: isBreaking ─────────────────────────────────────────────────────
+// ── isBreaking ─────────────────────────────────────────────────────
 
 describe("News — isBreaking", () => {
   it("returns true for title containing 'breaking'", () => {
@@ -1856,7 +1856,7 @@ describe("News — isBreaking", () => {
   });
 });
 
-// ── Sprint 26: newsSourceDomain ──────────────────────────────────────────────
+// ── newsSourceDomain ──────────────────────────────────────────────
 
 describe("News — newsSourceDomain", () => {
   it("extracts domain from https URL", () => {
@@ -1876,7 +1876,7 @@ describe("News — newsSourceDomain", () => {
   });
 });
 
-// ── Sprint 26: sanitizeNewsTitle ─────────────────────────────────────────────
+// ── sanitizeNewsTitle ─────────────────────────────────────────────
 
 describe("News — sanitizeNewsTitle", () => {
   it("replaces &amp; with &", () => {
@@ -1907,9 +1907,9 @@ describe("News — sanitizeNewsTitle", () => {
   });
 });
 
-// ── Sprint 48: newsShowSource config gate ─────────────────────────────────
+// ── newsShowSource config gate ─────────────────────────────────
 
-describe("News — newsShowSource config gate (Sprint 48)", () => {
+describe("News — newsShowSource config gate ", () => {
   const makeItem = (title = "כותרת בדיקה", source = "Ynet") => ({
     title,
     link: "https://ynet.co.il/test",
@@ -1953,9 +1953,9 @@ describe("News — newsShowSource config gate (Sprint 48)", () => {
   });
 });
 
-// ── Sprint 48: breaking news badge ───────────────────────────────────────
+// ── breaking news badge ───────────────────────────────────────
 
-describe("News — breaking news badge (Sprint 48)", () => {
+describe("News — breaking news badge ", () => {
   function setupNewsDOM(): void {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
     localStorage.removeItem("dash_v2_config");
@@ -2014,9 +2014,9 @@ describe("News — breaking news badge (Sprint 48)", () => {
   });
 });
 
-// ── Sprint 27: readingTimeMinutes + badge rendering ──────────────────────────
+// ── readingTimeMinutes + badge rendering ──────────────────────────
 
-describe("News — readingTimeMinutes (Sprint 27)", () => {
+describe("News — readingTimeMinutes ", () => {
   it("returns 0 for empty string", () => {
     expect(readingTimeMinutes("")).toBe(0);
   });
@@ -2038,7 +2038,7 @@ describe("News — readingTimeMinutes (Sprint 27)", () => {
   });
 });
 
-describe("News — reading-time badge in renderNews (Sprint 27)", () => {
+describe("News — reading-time badge in renderNews ", () => {
   beforeEach(() => {
     document.body.innerHTML = `<div id="rss-scroll"></div>`;
     cacheDom();
@@ -2101,9 +2101,9 @@ describe("News — loadNews uses createAsyncCardLoader (Stream D2.2)", () => {
   });
 });
 
-// ── Sprint 183 / N5 — ageFreshness ────────────────────────────────────────
+// ── ageFreshness ────────────────────────────────────────
 
-describe("News — ageFreshness (Sprint 183 N5)", () => {
+describe("News — ageFreshness ( N5)", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2024-01-10T10:00:00Z"));
@@ -2153,7 +2153,7 @@ describe("News — ageFreshness (Sprint 183 N5)", () => {
   });
 });
 
-// ── Sprint 196 / N3: Per-source mute window ───────────────────────────────
+// ── Per-source mute window ───────────────────────────────
 
 import {
   isMuted,
@@ -2163,7 +2163,7 @@ import {
   getMutedSources,
 } from "@/cards/news/news";
 
-describe("News — isMuted / muteSource / unmuteSource (Sprint 196 / N3)", () => {
+describe("News — isMuted / muteSource / unmuteSource ", () => {
   beforeEach(() => {
     localStorage.clear();
     loadMutedSources();
@@ -2202,7 +2202,7 @@ describe("News — isMuted / muteSource / unmuteSource (Sprint 196 / N3)", () =>
   });
 });
 
-describe("News — renderNews mute filter (Sprint 196 / N3)", () => {
+describe("News — renderNews mute filter ", () => {
   beforeEach(() => {
     localStorage.clear();
     loadMutedSources();
@@ -2240,8 +2240,8 @@ describe("News — renderNews mute filter (Sprint 196 / N3)", () => {
   });
 });
 
-// ── Sprint 206 / N2: Star / read-later IDB ──────────────────────────
-describe("News — star/read-later IDB (Sprint 206)", () => {
+// ── Star / read-later IDB ──────────────────────────
+describe("News — star/read-later IDB ", () => {
   beforeEach(() => { _idbClearFallback(); });
 
   it("getStarId returns trimmed link", () => {
@@ -2273,7 +2273,7 @@ describe("News — star/read-later IDB (Sprint 206)", () => {
   });
 });
 
-// ── Sprint 255: fast-check property tests (NP1–NP5) ───────────────────────
+// ── fast-check property tests (NP1–NP5) ───────────────────────
 
 import * as fc from "fast-check";
 
@@ -2438,9 +2438,9 @@ describe("NP5 · ageFreshness — property: returns valid freshness class for an
   });
 });
 
-// ── Sprint 267 / N1: Vectorize shadow mode tests ──────────────────────────────
+// ── Vectorize shadow mode tests ──────────────────────────────
 
-describe("News — Vectorize shadow mode (Sprint 267 / N1 ADR-046)", () => {
+describe("News — Vectorize shadow mode ( / N1 ADR-046)", () => {
   beforeEach(() => {
     _resetNewsForTest();
     localStorage.clear();
@@ -2511,8 +2511,8 @@ describe("News — Vectorize shadow mode (Sprint 267 / N1 ADR-046)", () => {
   });
 });
 
-// ── Sprint 289 / CS-N1: AI summary, dedup sensitivity, min-age, source filter ──
-describe("News configSchema — CS-N1 (Sprint 289)", () => {
+// ── AI summary, dedup sensitivity, min-age, source filter ──
+describe("News configSchema — CS-N1 ", () => {
   it("configSchema has 6 fields total after CS-N1", () => {
     expect(newsConfigSchema.length).toBe(6);
   });
@@ -2547,9 +2547,9 @@ describe("News configSchema — CS-N1 (Sprint 289)", () => {
   });
 });
 
-// ── Sprint 420 / N-Star-UI: getStarredArticles + drawer functions ──────────
+// ── getStarredArticles + drawer functions ──────────
 
-describe("News — getStarredArticles (Sprint 420)", () => {
+describe("News — getStarredArticles ", () => {
   beforeEach(() => { _idbClearFallback(); });
 
   it("returns empty array when no articles are starred", async () => {
@@ -2571,7 +2571,7 @@ describe("News — getStarredArticles (Sprint 420)", () => {
   });
 });
 
-describe("News — closeStarredDrawer (Sprint 420)", () => {
+describe("News — closeStarredDrawer ", () => {
   it("does not throw when dialog element is absent", () => {
     expect(() => closeStarredDrawer()).not.toThrow();
   });
@@ -2595,7 +2595,7 @@ describe("News — closeStarredDrawer (Sprint 420)", () => {
   });
 });
 
-describe("News — openStarredDrawer (Sprint 420)", () => {
+describe("News — openStarredDrawer ", () => {
   beforeEach(() => { _idbClearFallback(); });
 
   it("does not throw when dialog element is absent", async () => {
@@ -2650,7 +2650,7 @@ describe("News — openStarredDrawer (Sprint 420)", () => {
   });
 });
 
-describe("idbGetAll — Sprint 420", () => {
+describe("idbGetAll — ", () => {
   beforeEach(() => { _idbClearFallback(); });
 
   it("returns empty array when store is empty", async () => {
@@ -2659,9 +2659,9 @@ describe("idbGetAll — Sprint 420", () => {
   });
 });
 
-// ── Sprint 421 / coverage ratchet: buildNewsPayload ────────────────────────
+// ── / coverage ratchet: buildNewsPayload ────────────────────────
 
-describe("News — buildNewsPayload (Sprint 421)", () => {
+describe("News — buildNewsPayload ", () => {
   it("invokes buildNewsPayload via getSemanticPayload producer", () => {
     // news.ts registers a semantic producer at module load; calling getSemanticPayload
     // exercises buildNewsPayload. After prior renderNews() tests it may have a snapshot.

@@ -1,7 +1,7 @@
 # =============================================================================
-# Rebuilder Verify — FamilyDashBoard (D15, ADR-064, V14-SECURITY-L3)
+# Rebuilder Verify — FamilyDashBoard (ADR-064)
 #
-# Annual third-party reproducibility verification (Sprint 424 / D15).
+# Annual third-party reproducibility verification .
 # Re-builds `dist.zip` from scratch in a clean hermetic environment and
 # compares the SHA-256 against the official release artefact on GitHub.
 #
@@ -173,7 +173,6 @@ jobs:
                 'A mismatch indicates the build is non-deterministic or the release',
                 'artefact was modified after publication.',
                 '',
-                'See [docs/adr/ADR-064.md](../blob/main/docs/adr/ADR-064.md) and',
-                '[V14-SECURITY-L3](../blob/main/docs/ROADMAP.md) for verification protocol.',
+                'See [docs/adr/ADR-064.md](../blob/main/docs/adr/ADR-064.md) for verification protocol.',
               ].join('\n'),
             });

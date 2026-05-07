@@ -1,7 +1,7 @@
 # ADR-072: Enable `noImplicitOverride` Compiler Flag
 
 - **Status**: Accepted
-- **Date**: 2026-05-02 (v13.43.0 / Sprint 403)
+- **Date**: 2026-05-02 (v13.43.0 / )
 - **Sprints**: 403 (enable), 408 (this ADR)
 - **Related**: ADR-001 (TypeScript strict baseline)
 
@@ -52,4 +52,4 @@ tsconfig via the shared base.
 
 ## Notes
 
-Sprint 403 commit `f59e68b`. ADR authored Sprint 408 (v13.44.0 prep).
+commit `f59e68b`. ADR authored (v13.44.0 prep).

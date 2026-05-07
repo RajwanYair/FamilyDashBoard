@@ -1,12 +1,11 @@
 /**
- * Sprint 78 — Weather NWS travel-mode integration tests
+ * Weather NWS travel-mode integration tests
  *
- * Tests the three branches of fetchWeather() added in Sprint 68:
- *   1. weatherUsTravelMode=true + fetchNWS succeeds → returns NWS data
+ * Tests the three branches of fetchWeather() added in *   1. weatherUsTravelMode=true + fetchNWS succeeds → returns NWS data
  *   2. weatherUsTravelMode=true + fetchNWS throws  → falls back to Open-Meteo
  *   3. weatherUsTravelMode=false                   → skips NWS entirely
  *
- * Also covers weatherConfigSchema structure validation (Sprint 68 fields).
+ * Also covers weatherConfigSchema structure validation ( fields).
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -173,9 +172,9 @@ describe("Weather — fetchWeather NWS travel-mode branch", () => {
   });
 });
 
-// ── weatherConfigSchema structure (Sprint 68) ──
+// ── weatherConfigSchema structure  ──
 
-describe("Weather — weatherConfigSchema Sprint 68 fields", () => {
+describe("Weather — weatherConfigSchema fields", () => {
   it("includes weatherShowDetails field in the schema", async () => {
     const { weatherConfigSchema } = await import("@/cards/weather/weather");
     const field = weatherConfigSchema.find((f) => f.key === "weatherShowDetails");

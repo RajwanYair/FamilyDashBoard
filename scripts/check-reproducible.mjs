@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * Sprint 244 — Third-party rebuilder reproducibility check (V14-SECURITY-L3).
+ * Third-party rebuilder reproducibility check (V14-SECURITY-L3).
  *
  * A third party claiming they can reproduce the build must produce a
  * dist.zip whose SHA-256 matches the value in dist.zip.sha256 from the

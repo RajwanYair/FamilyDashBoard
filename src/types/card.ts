@@ -45,13 +45,13 @@ export interface CardConfigField {
   /** Config tab to place this field in. */
   tab?: "display" | "feeds" | "alerts" | "calendar" | "advanced";
   /**
-   * Accordion group name (Sprint 58).
+   * Accordion group name.
    * Fields in the same group are rendered inside a collapsible `<details>`
    * element in the config panel. Optional; ungrouped fields render flat.
    */
   group?: string;
   /**
-   * Whether the accordion group starts expanded (Sprint 58).
+   * Whether the accordion group starts expanded.
    * Only applies when `group` is set. Defaults to false (collapsed).
    */
   groupOpenByDefault?: boolean;
@@ -165,7 +165,7 @@ export interface CardRuntime {
   onError?(err: Error): void;
 
   /**
-   * Called when the active dashboard theme changes (Sprint 253 / X5).
+   * Called when the active dashboard theme changes.
    * Cards that perform theme-sensitive work (e.g. SVG colour recalculation)
    * override this to react to the new theme.
    * @param theme - The new theme name
@@ -173,7 +173,7 @@ export interface CardRuntime {
   onThemeChange?(theme: ThemeName): void;
 
   /**
-   * Called when a cross-card alert event is broadcast (Sprint 253 / X5).
+   * Called when a cross-card alert event is broadcast.
    * Cards opt-in to dim/quiet mode by overriding this hook.
    * @param event - The alert event, or null when the alert is cleared
    */
@@ -201,7 +201,7 @@ export interface CardRegistryEntry {
   load: () => Promise<CardDefinition>;
 }
 
-// ── CardShell interface (Sprint 56) ───────────────────────────────────────
+// ── CardShell interface ───────────────────────────────────────
 
 /**
  * CardShell describes the minimal DOM anatomy that every rendered card
@@ -232,7 +232,7 @@ export interface CardShell {
   footer?: HTMLElement;
 }
 
-// ── Card size guards (Sprint 69) ───────────────────────────────────────────
+// ── Card size guards ───────────────────────────────────────────
 
 const CARD_SIZES: readonly CardSize[] = ["sm", "md", "lg", "xl"] as const;
 
@@ -262,7 +262,7 @@ export function assertCardSize(value: unknown): asserts value is CardSize {
   }
 }
 
-// ── Sprint 185: FdbCardDefinition ─────────────────────────────────────────
+// FdbCardDefinition ─────────────────────────────────────────
 
 import type { FdbCard } from "../core/fdb-card";
 

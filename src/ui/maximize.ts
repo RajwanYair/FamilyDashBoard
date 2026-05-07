@@ -12,7 +12,7 @@ import { updateCardMiniInfo } from "../core/sync";
 
 let maximizedCard: HTMLElement | null = null;
 
-// ── View Transitions L2 helper (Roadmap #10, Sprint 123) ─────────────────────
+// ── View Transitions L2 helper  ─────────────────────
 
 type VtL2Doc = Document & {
   startViewTransition(

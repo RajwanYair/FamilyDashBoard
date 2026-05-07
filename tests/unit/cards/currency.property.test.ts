@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/currency/currency.ts (Sprint 517, 569)
+ * fast-check property tests — src/cards/currency/currency.ts ( , 569)
  *
  * Properties under test:
  *  CUR1. calcCurrency: positive amount × positive rate → positive result

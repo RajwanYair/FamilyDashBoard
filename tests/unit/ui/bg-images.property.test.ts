@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/bg-images.ts (Sprint 558)
+ * fast-check property tests — src/ui/bg-images.ts 
  *
  * Properties under test:
  *  BG1. isValidBgUrl: valid https URL → true

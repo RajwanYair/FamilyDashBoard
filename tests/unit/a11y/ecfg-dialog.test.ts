@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-CONTINUITY: Encrypted config passphrase dialog
+ * Unit tests — Encrypted config passphrase dialog
  *
  * Pure static-analysis tests using readFileSync — no vi.mock() hoisting issues.
  * Checks that:
@@ -25,7 +25,7 @@ const HTML = readFileSync(resolve(ROOT, "src", "index.html"), "utf8");
 
 // ── HTML structure tests ──────────────────────────────────────────────────────
 
-describe("V13-CONTINUITY: #ecfg-dialog HTML structure", () => {
+describe("#ecfg-dialog HTML structure", () => {
   it("contains a <dialog> element with id='ecfg-dialog'", () => {
     expect(HTML).toMatch(/<dialog[^>]*id="ecfg-dialog"/);
   });
@@ -89,7 +89,7 @@ describe("V13-CONTINUITY: #ecfg-dialog HTML structure", () => {
   });
 });
 
-describe("V13-CONTINUITY: #cfg-encrypt-share-btn HTML structure", () => {
+describe("#cfg-encrypt-share-btn HTML structure", () => {
   it("contains #cfg-encrypt-share-btn button", () => {
     expect(HTML).toContain('id="cfg-encrypt-share-btn"');
   });
@@ -109,7 +109,7 @@ describe("V13-CONTINUITY: #cfg-encrypt-share-btn HTML structure", () => {
 
 // ── i18n source tests ─────────────────────────────────────────────────────────
 
-describe("V13-CONTINUITY: i18n keys — encrypted config flow", () => {
+describe("i18n keys — encrypted config flow", () => {
   const i18nSrc = readFileSync(resolve(ROOT, "src", "core", "i18n.ts"), "utf8");
 
   it("encryptedShareCopied key present in i18n.ts", () => {
@@ -150,7 +150,7 @@ describe("V13-CONTINUITY: i18n keys — encrypted config flow", () => {
 
 // ── config-panel.ts source exports ───────────────────────────────────────────
 
-describe("V13-CONTINUITY: config-panel.ts exports", () => {
+describe("config-panel.ts exports", () => {
   const src = readFileSync(resolve(ROOT, "src", "ui", "config-panel.ts"), "utf8");
 
   it("exports encryptedShareSettings", () => {
@@ -217,7 +217,7 @@ describe("V13-CONTINUITY: config-panel.ts exports", () => {
 
 // ── main.ts wiring ────────────────────────────────────────────────────────────
 
-describe("V13-CONTINUITY: main.ts ECFG_PREFIX wiring", () => {
+describe("main.ts ECFG_PREFIX wiring", () => {
   const mainSrc = readFileSync(resolve(ROOT, "src", "main.ts"), "utf8");
 
   it("main.ts imports ECFG_PREFIX from config-crypto", () => {
@@ -242,7 +242,7 @@ describe("V13-CONTINUITY: main.ts ECFG_PREFIX wiring", () => {
 
 // ── config-crypto.ts ECFG_PREFIX shape ───────────────────────────────────────
 
-describe("V13-CONTINUITY: ECFG_PREFIX constant shape", () => {
+describe("ECFG_PREFIX constant shape", () => {
   const cryptoSrc = readFileSync(resolve(ROOT, "src", "core", "config-crypto.ts"), "utf8");
 
   it("config-crypto.ts exports ECFG_PREFIX", () => {

@@ -362,9 +362,9 @@ describe("Night Dimmer — applyDim returns early when #night-dim absent (line 3
   });
 });
 
-// ── Sprint 26: Idle Auto-Dim ─────────────────────────────────────────────────
+// ── Idle Auto-Dim ─────────────────────────────────────────────────
 
-describe("Night Dimmer — idle auto-dim (Sprint 26)", () => {
+describe("Night Dimmer — idle auto-dim ", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     document.body.innerHTML =
@@ -492,8 +492,8 @@ describe("Night dimmer — setWarmTint / isWarmTint (F3 v7.2)", () => {
   });
 });
 
-// ── Sprint 57: autoDimCheckWeekday ────────────────────────────────────────
-describe("autoDimCheckWeekday (Sprint 57)", () => {
+// ── autoDimCheckWeekday ────────────────────────────────────────
+describe("autoDimCheckWeekday ", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -538,7 +538,7 @@ describe("autoDimCheckWeekday (Sprint 57)", () => {
   });
 });
 
-// ── Sprint 143: missed branches ───────────────────────────────────────────────
+// ── missed branches ───────────────────────────────────────────────
 
 describe("Night Dimmer — applyDim with warm tint active (line 52)", () => {
   beforeEach(() => {

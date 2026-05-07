@@ -33,7 +33,7 @@ export function setSync(name: string, state: SyncState): void {
     error: "שגיאת סנכרון",
   };
   dot.setAttribute("aria-label", labels[state]);
-  // aria-busy on the nearest card ancestor for screen readers (Sprint 45)
+  // aria-busy on the nearest card ancestor for screen readers
   const card = dot.closest(".card");
   if (card) {
     card.setAttribute("aria-busy", state === "loading" ? "true" : "false");

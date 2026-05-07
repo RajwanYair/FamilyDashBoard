@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/trusted-types.ts (Sprint 488)
+ * fast-check property tests — src/core/trusted-types.ts 
  *
  * Properties under test:
  *  TT1. trustedHTML returns input unchanged when TrustedTypes API is absent.

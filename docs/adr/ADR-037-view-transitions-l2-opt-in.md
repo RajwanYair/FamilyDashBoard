@@ -6,7 +6,7 @@
 | **Status**   | Accepted                                                                       |
 | **Sprint**   | 120 (opt-in shipped) / 270 (ADR formalised to fill numbering gap)              |
 | **Deciders** | @RajwanYair                                                                    |
-| **Tags**     | css, transitions, progressive-enhancement, v14-foundations                     |
+| **Tags**     | css, transitions, progressive-enhancement, |
 | **Supersedes** | n/a                                                                          |
 | **Related**  | ADR-036 (WebRTC mirror), ADR-008 (CSS layer governance), Roadmap 1.2           |
 
@@ -53,5 +53,5 @@ card), giving a native-feeling back-navigation animation in Chrome 111+/Edge
 - **Positive**: Native animated back-navigation on Chromium/WebKit 2024+.
 - **Positive**: Zero JS, zero runtime cost, zero bundle impact.
 - **Negative**: Feature behaves as no-op on Firefox until cross-document VT lands.
-- **Neutral**: `@starting-style` for `<dialog>` (ADR note in Sprint 9) pairs well
+- **Neutral**: `@starting-style` for `<dialog>` (ADR note in ) pairs well
   with this — both are in the `@layer animations` / `@layer transitions` layers.

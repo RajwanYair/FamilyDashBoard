@@ -1,5 +1,5 @@
 /**
- * Worker unit tests — handleWeeklyDigest (V13-S27, ADR-033)
+ * Worker unit tests — handleWeeklyDigest 
  *
  * Tests the weekly email digest function:
  *  - skips when EMAIL_SEND_FROM/TO not set

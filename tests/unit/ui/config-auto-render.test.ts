@@ -1,5 +1,5 @@
 /**
- * Sprint 100 — Config auto-renderer tests
+ * Config auto-renderer tests
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/ui/config-auto-render";
 import type { CardConfigField } from "@/types/card";
 
-describe("renderConfigField (Sprint 100)", () => {
+describe("renderConfigField ", () => {
   it("renders a text field with label", () => {
     const field: CardConfigField = {
       key: "city",
@@ -94,7 +94,7 @@ describe("renderConfigField (Sprint 100)", () => {
   });
 });
 
-describe("renderConfigFields (Sprint 100)", () => {
+describe("renderConfigFields ", () => {
   let container: HTMLDivElement;
 
   beforeEach(() => {
@@ -129,7 +129,7 @@ describe("renderConfigFields (Sprint 100)", () => {
   });
 });
 
-describe("readConfigValues (Sprint 100)", () => {
+describe("readConfigValues ", () => {
   it("reads text and checkbox values from rendered fields", () => {
     const fields: CardConfigField[] = [
       { key: "city", labelHe: "עיר", labelEn: "City", type: "text", defaultValue: "test" },
@@ -167,9 +167,9 @@ describe("readConfigValues (Sprint 100)", () => {
   });
 });
 
-// ── Sprint 107: filterConfigFields ──────────────────────────────────────
+// ── filterConfigFields ──────────────────────────────────────
 
-describe("filterConfigFields (Sprint 107)", () => {
+describe("filterConfigFields ", () => {
   it("hides fields that don't match the query", () => {
     const container = document.createElement("div");
     const fields: CardConfigField[] = [

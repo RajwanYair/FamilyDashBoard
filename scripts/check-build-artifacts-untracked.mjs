@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * check-build-artifacts-untracked.mjs — Sprint 421 / v13.45.0
+ * check-build-artifacts-untracked.mjs — / v13.45.0
  *
  * Fails CI if any build-time artefact has crept into the git index:
  *   - dist/                      (Vite build output)

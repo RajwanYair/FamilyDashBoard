@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/hardware.ts (Sprint 554)
+ * fast-check property tests — src/core/hardware.ts 
  *
  * Properties under test:
  *  HW1. getHardwareProfile: tier is always "high"|"mid"|"low"

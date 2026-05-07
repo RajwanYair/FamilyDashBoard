@@ -95,7 +95,7 @@ export function autoDimCheck(startHour: number, endHour: number): void {
 
 /**
  * Check whether the current time falls within the dimming window,
- * optionally limited to specific weekdays (Sprint 57).
+ * optionally limited to specific weekdays.
  *
  * @param startHour  - Hour to start dimming (0–23)
  * @param endHour    - Hour to end dimming (0–23)
@@ -122,7 +122,7 @@ export function isDimActive(): boolean {
   return dimActive;
 }
 
-// ── Idle Auto-Dim (Sprint 26) ──────────────────────────────────────────────
+// ── Idle Auto-Dim ──────────────────────────────────────────────
 
 let _idleMinutes = 0;
 let _idleTimer: ReturnType<typeof setTimeout> | null = null;

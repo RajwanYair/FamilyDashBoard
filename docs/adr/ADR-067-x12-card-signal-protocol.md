@@ -1,6 +1,6 @@
 # ADR-067: X12 — Card Signal Protocol Formalisation
 
-- **Status**: Accepted — core API shipped v13.38.0 Sprints 365–366; all 11 applicable producers wired through Sprint 426 (motivation + tasks added; system-info + video-news emit no composable signals by design)
+- **Status**: Accepted — core API shipped v13.38.0 Sprints 365–366; all 11 applicable producers wired through (motivation + tasks added; system-info + video-news emit no composable signals by design)
 - **Date**: 2026-05-04 (v13.37.0 patch series)
 - **Sprints**: 356 (spec), 365–366 (impl + tests), 376 (countdown), 379 (hebrew-cal), 415 (today-pane + ai-synthesis consumers), 426 (motivation + tasks producers)
 - **Related**: ROADMAP §4.2 X12, ADR-053 (card config schema), ADR-066 (X11 MCP)

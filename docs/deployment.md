@@ -3,6 +3,8 @@
 FamilyDashBoard is a static PWA. There is no server to run; you just serve the
 compiled `dist/` folder from any static host.
 
+![CI/CD pipeline](../.github/assets/ci-cd.svg)
+
 ---
 
 ## Build Targets

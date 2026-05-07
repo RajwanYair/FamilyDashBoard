@@ -1,5 +1,5 @@
 /**
- * Tests for document-pip helper (Sprint 137 / Roadmap #22).
+ * Tests for document-pip helper ( / ).
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -38,7 +38,7 @@ function makeFakePipWindow(): FakePipWindow {
   };
 }
 
-describe("document-pip (Sprint 137)", () => {
+describe("document-pip ", () => {
   beforeEach(() => {
     _resetDocumentPip();
     Reflect.deleteProperty(window, "documentPictureInPicture");
@@ -142,7 +142,7 @@ describe("document-pip (Sprint 137)", () => {
     document.body.removeChild(host);
   });
 
-  // Sprint 143: missed branches
+  // missed branches
 
   it("exitDocumentPip is a no-op when no PiP window is active", () => {
     _resetDocumentPip();
@@ -225,7 +225,7 @@ describe("document-pip (Sprint 137)", () => {
     expect(isPipActive()).toBe(false);
   });
 
-  // Sprint 167: _onPipClose uses insertBefore when nextSibling is still in the same parent
+  // _onPipClose uses insertBefore when nextSibling is still in the same parent
   it("_onPipClose uses insertBefore when nextSibling still belongs to the same parent", async () => {
     const fake = makeFakePipWindow();
     Object.defineProperty(window, "documentPictureInPicture", {

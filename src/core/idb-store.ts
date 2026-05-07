@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard — Minimal IDB key-value store (Sprint 197 / M3)
+ * FamilyDashBoard — Minimal IDB key-value store
  *
  * Thin wrapper around IndexedDB. Falls back to an in-memory Map when
  * IndexedDB is unavailable (test environments, private browsing).

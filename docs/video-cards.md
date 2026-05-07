@@ -52,9 +52,9 @@ Open **Settings (S) → Cards** and enable the video-news card. Available settin
 
 ## Stream Integration Status
 
-> Stream URLs for all channels are **pending the research sprint** (v11.1-sprint-1).
+> Stream URLs for all channels are **pending research** (deferred to v15).
 > The card currently renders a "Stream URL pending research" state.
-> Once the research sprint confirms the actual `.m3u8` URLs and CORS policy, the
+> Once actual `.m3u8` URLs and CORS policy are confirmed, the
 > adapter file (`src/cards/video-news/video-news-adapter.ts`) must be updated.
 
 ### Research checklist per channel

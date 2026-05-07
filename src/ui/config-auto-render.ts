@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Config Auto-Renderer (Sprint 100)
+ * FamilyDashBoard v13 — Config Auto-Renderer
  *
  * Generates form controls from a CardConfigField[] schema.
  * Used by the config panel to render per-card settings without
@@ -111,7 +111,7 @@ export function readConfigValues(
   return values;
 }
 
-// ── Sprint 107: Config field search/filter ───────────────────────────────
+// Config field search/filter ───────────────────────────────
 
 /**
  * Filter visible config fields in a container by search query.

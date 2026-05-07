@@ -1,5 +1,5 @@
 /**
- * src/core/card-signal-protocol.ts — X12 (Sprint 365 / v13.38.0)
+ * src/core/card-signal-protocol.ts
  *
  * Versioned typed signal protocol for sibling-card consumption.
  * Producers (cards) call `setCardSignal`; consumers (today-pane,

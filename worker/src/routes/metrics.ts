@@ -3,7 +3,7 @@
  *
  * Returns Prometheus text-format metrics for:
  *   - Route hit counts (D1 last 7 days)
- *   - Per-route p95 latency histogram (D1 last 7 days, Sprint 24 — B10)
+ *   - Per-route p95 latency histogram (D1 last 7 days, B10)
  *
  * Security:
  *   Requires `Authorization: Bearer <METRICS_TOKEN>` header where METRICS_TOKEN
@@ -47,7 +47,7 @@ function toPrometheusText(totals: Record<string, number>): string {
 }
 
 /**
- * Serialize per-route p95 latency data to Prometheus gauge format (Sprint 24 — B10).
+ * Serialize per-route p95 latency data to Prometheus gauge format (B10).
  * Exported for unit testing.
  */
 export function toProviderHealthPrometheus(p95Rows: ReadonlyArray<RouteP95>): string {

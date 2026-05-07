@@ -147,9 +147,9 @@ describe("video-news module — channel state (headless)", () => {
   });
 });
 
-// ── Sprint 183 / V1 — listPinnedChannels ─────────────────────────────────
+// ── listPinnedChannels ─────────────────────────────────
 
-describe("video-news — listPinnedChannels (Sprint 183 V1)", () => {
+describe("video-news — listPinnedChannels ( V1)", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -200,12 +200,12 @@ describe("video-news — listPinnedChannels (Sprint 183 V1)", () => {
   });
 });
 
-// ── Sprint 215 / V2: Document PiP ─────────────────────────────────────────
+// ── Document PiP ─────────────────────────────────────────
 
 import { isPipSupported, requestDocumentPip } from "@/cards/video-news/video-news";
 import { vi } from "vitest";
 
-describe("isPipSupported (Sprint 215 / V2)", () => {
+describe("isPipSupported ", () => {
   it("returns false when documentPictureInPicture is absent", () => {
     const orig = (window as Record<string, unknown>)["documentPictureInPicture"];
     delete (window as Record<string, unknown>)["documentPictureInPicture"];
@@ -220,7 +220,7 @@ describe("isPipSupported (Sprint 215 / V2)", () => {
   });
 });
 
-describe("requestDocumentPip (Sprint 215 / V2)", () => {
+describe("requestDocumentPip ", () => {
   it("returns null when element is null", async () => {
     expect(await requestDocumentPip(null)).toBeNull();
   });
@@ -255,11 +255,11 @@ describe("requestDocumentPip (Sprint 215 / V2)", () => {
   });
 });
 
-// ── Sprint 225: initVideoNews DOM paths ───────────────────────────────────
+// ── initVideoNews DOM paths ───────────────────────────────────
 
 import { initVideoNews, destroyVideoNews as destroy } from "@/cards/video-news/video-news";
 
-describe("initVideoNews DOM paths (Sprint 225)", () => {
+describe("initVideoNews DOM paths ", () => {
   let root: HTMLDivElement;
 
   beforeEach(() => {
@@ -345,10 +345,10 @@ describe("initVideoNews DOM paths (Sprint 225)", () => {
   });
 });
 
-// ── Sprint 278 / CS-VN1: 5 playback settings in configSchema ─────────────
+// ── 5 playback settings in configSchema ─────────────
 import { videoNewsConfigSchema } from "@/cards/video-news/video-news";
 
-describe("VideoNews configSchema — CS-VN1 (Sprint 278)", () => {
+describe("VideoNews configSchema — CS-VN1 ", () => {
   const PLAYBACK_KEYS = [
     "cards.video-news.settings.autoplay",
     "cards.video-news.settings.defaultMuted",
@@ -378,7 +378,7 @@ describe("VideoNews configSchema — CS-VN1 (Sprint 278)", () => {
 // ── X15 semantic producer (buildVideoNewsPayload) ─────────────────────────
 import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 
-describe("VideoNews semantic producer — X15 (Sprint 415)", () => {
+describe("VideoNews semantic producer — X15 ", () => {
   let root: HTMLElement;
   beforeEach(() => {
     _resetSemanticProducers();

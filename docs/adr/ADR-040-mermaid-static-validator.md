@@ -4,7 +4,7 @@
 | ------ | --------------------- |
 | Date   | 2026-04-26            |
 | Status | Accepted              |
-| Sprint | 109 (V14-FOUNDATIONS) |
+| Sprint | 109  |
 
 ## Context
 
@@ -38,7 +38,7 @@ all fenced Mermaid blocks in the repository:
 The script is wired into the CI `build` job:
 
 ```yaml
-- name: Mermaid diagram validation (Sprint 109)
+- name: Mermaid diagram validation 
   run: node scripts/check-mermaid.mjs
 ```
 

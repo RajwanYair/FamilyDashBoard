@@ -1,5 +1,5 @@
 /**
- * Sprint 174 — Integration: provider adapter lifecycle
+ * Integration: provider adapter lifecycle
  * Tests that provider health tracking + latency recording + backoff work together.
  */
 
@@ -15,7 +15,7 @@ import {
   getProviderLatency,
 } from "@/core/provider";
 
-describe("Provider adapter lifecycle (Sprint 174)", () => {
+describe("Provider adapter lifecycle ", () => {
   beforeEach(() => {
     _resetProviderHealth();
   });

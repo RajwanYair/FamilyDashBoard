@@ -120,7 +120,7 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v4 → v5");
   }
 
-  // v5 → v6: move remaining flat per-card props into cards namespace (Sprint 99)
+  // v5 → v6: move remaining flat per-card props into cards namespace
   if (version < 6) {
     const cards: Record<string, CardConfig> = cfg.cards ?? {};
 
@@ -153,7 +153,7 @@ export function migrateConfig(raw: Partial<DashboardConfig>): Partial<DashboardC
     diagLog("[config] migrated v5 → v6");
   }
 
-  // v6 → v7: move alerts flat props into cards.alerts.settings (Sprint 143)
+  // v6 → v7: move alerts flat props into cards.alerts.settings
   if (version < 7) {
     const cards: Record<string, CardConfig> = cfg.cards ?? {};
 
@@ -350,7 +350,7 @@ export function loadConfigFromHash(hash: string): DashboardConfig | null {
   }
 }
 
-// ── Config import validation (Sprint 38, v7.13) ──────────────────────────
+// ── Config import validation ( , v7.13) ──────────────────────────
 
 /** Result type for config import validation. */
 export interface ConfigImportResult {
@@ -381,7 +381,7 @@ export function validateImportedConfig(raw: unknown): ConfigImportResult {
   }
   let obj = raw as Record<string, unknown>;
 
-  // Sprint 102: unwrap ConfigExportEnvelope if detected
+  // unwrap ConfigExportEnvelope if detected
   if (
     "config" in obj &&
     typeof obj["config"] === "object" &&
@@ -438,7 +438,7 @@ export function validateImportedConfig(raw: unknown): ConfigImportResult {
   }
 }
 
-// ── Config export enrichment (Sprint 39, v7.13) ───────────────────────────
+// ── Config export enrichment ( , v7.13) ───────────────────────────
 
 /** Metadata envelope wrapping an exported config. */
 export interface ConfigExportEnvelope {
@@ -474,7 +474,7 @@ export function serializeConfigExport(config: DashboardConfig): string {
   return JSON.stringify(buildExportEnvelope(config), null, 2);
 }
 
-// ── Sprint 101: Config export validation ──────────────────────────────────
+// Config export validation ──────────────────────────────────
 
 export interface ConfigExportValidation {
   ok: boolean;
@@ -523,7 +523,7 @@ export function validateExportPayload(envelope: unknown): ConfigExportValidation
 }
 
 /**
- * Read a feature flag from the current config (Sprint 76).
+ * Read a feature flag from the current config.
  *
  * Feature flags live in `DashboardConfig.featureFlags` (added in config v5).
  * Reads localStorage config on each call — use sparingly in hot paths.
@@ -545,7 +545,7 @@ export function readFeatureFlag(key: string, defaultValue = false): boolean {
   }
 }
 
-// ── Sprint 103: Config diff utility ──────────────────────────────────────
+// Config diff utility ──────────────────────────────────────
 
 export interface ConfigDiffEntry {
   key: string;
@@ -573,7 +573,7 @@ export function diffConfigs(a: DashboardConfig, b: DashboardConfig): ConfigDiffE
   return diffs;
 }
 
-// ── Sprint 104: Per-card config reset ────────────────────────────────────
+// Per-card config reset ────────────────────────────────────
 
 /**
  * Reset settings for a single card to defaults.
@@ -592,7 +592,7 @@ export function resetCardConfig(cardId: string): boolean {
   return true;
 }
 
-// ── Sprint 105: LS key audit ─────────────────────────────────────────────
+// LS key audit ─────────────────────────────────────────────
 
 /**
  * Set of all known localStorage key prefixes used by the app.

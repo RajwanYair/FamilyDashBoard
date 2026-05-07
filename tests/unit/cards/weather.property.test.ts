@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/weather/weather.ts (Sprint 514, extended Sprint 566)
+ * fast-check property tests — src/cards/weather/weather.ts ( , extended )
  *
  * Properties under test:
  *  WX1. parseCityEntry: valid "name|lat|lon" → CityEntry

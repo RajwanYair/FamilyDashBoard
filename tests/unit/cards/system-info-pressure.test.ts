@@ -1,5 +1,5 @@
 /**
- * Sprint 329 / D3: Compute Pressure API helper tests.
+ * Compute Pressure API helper tests.
  *
  * Verifies feature-detection, observer wiring, state propagation, and clean
  * teardown. Uses a stub `PressureObserver` constructor to avoid relying on
@@ -45,7 +45,7 @@ function installStub(): { last: () => CapturedObserver | null; remove: () => voi
   };
 }
 
-describe("Compute Pressure helper (Sprint 329 / D3)", () => {
+describe("Compute Pressure helper ", () => {
   afterEach(() => {
     destroyPressureObserver();
     delete (globalThis as unknown as { PressureObserver?: unknown }).PressureObserver;

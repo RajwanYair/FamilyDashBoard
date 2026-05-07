@@ -1,5 +1,5 @@
 /**
- * tests/unit/core/card-signal-protocol-props.test.ts — Sprint 431 (v14.1.0)
+ * tests/unit/core/card-signal-protocol-props.test.ts — (v14.1.0)
  *
  * fast-check property tests for src/core/card-signal-protocol.ts (CSP1-CSP5).
  *

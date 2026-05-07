@@ -1,6 +1,5 @@
 /**
- * tests/unit/core/idb-cache.test.ts — Sprint 43
- *
+ * tests/unit/core/idb-cache.test.ts — *
  * Tests for the IndexedDB cache tier.
  * Uses a vi.stubGlobal IDB mock because happy-dom's IDB implementation
  * does not persist data between requests.
@@ -382,7 +381,7 @@ describe("IDB Cache — idbKeys", () => {
   });
 });
 
-// ── Sprint 50: idbGetEntry ────────────────────────────────────────────────────
+// ── idbGetEntry ────────────────────────────────────────────────────
 
 describe("IDB Cache — idbGetEntry", () => {
   it("returns data and ts for a stored entry", async () => {
@@ -524,8 +523,8 @@ describe("IDB Cache — idbEvictLRU", () => {
     expect(removed).toBe(0);
   });
 });
-// ── Sprint 49: migrateLsToIdb ─────────────────────────────────────────────
-describe("migrateLsToIdb (Sprint 49)", () => {
+// ── migrateLsToIdb ─────────────────────────────────────────────
+describe("migrateLsToIdb ", () => {
   beforeEach(async () => {
     _resetIdb();
     await idbClear();
@@ -571,7 +570,7 @@ describe("migrateLsToIdb (Sprint 49)", () => {
   });
 });
 
-// ── Sprint 120: idbEvictStale tests ───────────────────────────────────────────
+// ── idbEvictStale tests ───────────────────────────────────────────
 
 describe("idbEvictStale", () => {
   beforeEach(async () => {
@@ -609,7 +608,7 @@ describe("idbEvictStale", () => {
   });
 });
 
-// ── Sprint 143: catch-block branches (lines 165, 192) ─────────────────────────
+// ── catch-block branches (lines 165, 192) ─────────────────────────
 
 function makeThrowingMockIdb() {
   const throwingDb = {
@@ -646,7 +645,7 @@ describe("IDB Cache — idbGetEntry catch branch (line 192)", () => {
   });
 });
 
-// ── Sprint 143: idbEvictLRU size-check after 5 deletions (lines 254-256) ──────
+// ── idbEvictLRU size-check after 5 deletions (lines 254-256) ──────
 
 describe("IDB Cache — idbEvictLRU size re-check at 5 deletions (line 255 TRUE)", () => {
   beforeEach(async () => {

@@ -279,7 +279,7 @@ describe("auto-loop-scroll — destroyAutoLoopScroll", () => {
   });
 });
 
-// ── Sprint 32: V13 scrollend event + animLevel branches ─────────────────────
+// ── V13 scrollend event + animLevel branches ─────────────────────
 
 describe("auto-loop-scroll — scrollend event attachment", () => {
   afterEach(() => {

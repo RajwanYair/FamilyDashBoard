@@ -19,16 +19,32 @@
         // Browser compatibility
         "webhint.vscode-webhint",
         "ms-edgetools.vscode-edge-devtools",
+        "kwesinavilot.baseline-lens",
+        "akamud.vscode-caniuse",
+        "webben.browserslist",
         // HTML / CSS
         "ecmel.vscode-html-css",
         "formulahendry.auto-rename-tag",
         "naumovs.color-highlight",
-        // Productivity
+        // Developer experience
         "EditorConfig.EditorConfig",
         "streetsidesoftware.code-spell-checker",
         "streetsidesoftware.code-spell-checker-hebrew",
         "christian-kohler.path-intellisense",
-        "Gruntfuggly.todo-tree"
+        "christian-kohler.npm-intellisense",
+        "Gruntfuggly.todo-tree",
+        // Diagnostics & debugging
+        "usernamehw.errorlens",
+        "wallabyjs.console-ninja",
+        // Coverage & versions
+        "ryanluker.vscode-coverage-gutters",
+        "pflannery.vscode-versionlens",
+        // Navigation
+        "alefragnani.bookmarks",
+        // Diagrams & assets
+        "mermaidchart.vscode-mermaid-chart",
+        "hediet.vscode-drawio",
+        "jock.svg"
     ],
     "unwantedRecommendations": [
         "connor4312.nodejs-testing",

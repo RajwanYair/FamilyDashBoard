@@ -1,5 +1,5 @@
 /**
- * Sprint 330 / D4: Storage Buckets feature-detect tests.
+ * Storage Buckets feature-detect tests.
  *
  * Verifies graceful behaviour across three states:
  *   - API absent (most browsers in 2026)         → "—"
@@ -20,7 +20,7 @@ function setBuckets(buckets: Buckets | undefined): void {
   }
 }
 
-describe("getStorageBuckets (Sprint 330 / D4)", () => {
+describe("getStorageBuckets ", () => {
   afterEach(() => setBuckets(undefined));
 
   it("returns '—' when navigator.storageBuckets is absent", async () => {

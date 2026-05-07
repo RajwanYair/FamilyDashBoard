@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * check-module-boundaries.mjs — D12 (Sprint 335)
+ * check-module-boundaries.mjs — D12 
  *
  * Enforces the architectural rule that:
  *   - `src/cards/*` MUST NOT import from `src/ui/*`

@@ -526,7 +526,7 @@ describe("Countdown — tick2 (F8 v7.2)", () => {
   });
 });
 
-// ── Sprint 23: urgencyClass ──────────────────────────────────────────────────
+// ── urgencyClass ──────────────────────────────────────────────────
 
 describe("Countdown — urgencyClass", () => {
   it("returns 'cd-urgent-pulse' when days = 0", () => {
@@ -554,7 +554,7 @@ describe("Countdown — urgencyClass", () => {
   });
 });
 
-// ── Sprint 23: hebrewDayOfWeek ────────────────────────────────────────────────
+// ── hebrewDayOfWeek ────────────────────────────────────────────────
 
 describe("Countdown — hebrewDayOfWeek", () => {
   it("returns a non-empty Hebrew string", () => {
@@ -570,7 +570,7 @@ describe("Countdown — hebrewDayOfWeek", () => {
   });
 });
 
-// ── Sprint 23: daysLabel ─────────────────────────────────────────────────────
+// ── daysLabel ─────────────────────────────────────────────────────
 
 describe("Countdown — daysLabel", () => {
   it("returns 'היום! 🎉' when days = 0", () => {
@@ -587,7 +587,7 @@ describe("Countdown — daysLabel", () => {
   });
 });
 
-// ── Sprint 23: advanceAnnualDate ─────────────────────────────────────────────
+// ── advanceAnnualDate ─────────────────────────────────────────────
 
 describe("Countdown — advanceAnnualDate", () => {
   it("returns the same date string when date is in the future", () => {
@@ -611,9 +611,9 @@ describe("Countdown — advanceAnnualDate", () => {
   });
 });
 
-// ── Sprint 22: tick3 — 3rd event ─────────────────────────────────────────
+// ── tick3 — 3rd event ─────────────────────────────────────────
 
-describe("Countdown — tick3 (Sprint 22)", () => {
+describe("Countdown — tick3 ", () => {
   function build3DOM(): void {
     document.body.innerHTML = `
       <div id="cd3-section"></div>
@@ -692,9 +692,9 @@ describe("Countdown — tick3 (Sprint 22)", () => {
   });
 });
 
-// ── Sprint 31: CD2 + CD3 progress bars ────────────────────────────────────
+// ── CD2 + CD3 progress bars ────────────────────────────────────
 
-describe("Countdown — tick2 progress bar (Sprint 31)", () => {
+describe("Countdown — tick2 progress bar ", () => {
   function buildCD2DOM(): void {
     document.body.innerHTML = `
       <div id="cd2-section"></div>
@@ -778,7 +778,7 @@ describe("Countdown — tick2 progress bar (Sprint 31)", () => {
   });
 });
 
-describe("Countdown — tick3 progress bar (Sprint 31)", () => {
+describe("Countdown — tick3 progress bar ", () => {
   function buildCD3DOM(): void {
     document.body.innerHTML = `
       <div id="cd3-section"></div>
@@ -847,9 +847,9 @@ describe("Countdown — tick3 progress bar (Sprint 31)", () => {
   });
 });
 
-// ── Sprint 82: configSchema ─────────────────────────────────────────────
+// ── configSchema ─────────────────────────────────────────────
 
-describe("Countdown — configSchema (Sprint 82)", () => {
+describe("Countdown — configSchema ", () => {
   it("is a non-empty array", () => {
     expect(Array.isArray(countdownConfigSchema)).toBe(true);
     expect(countdownConfigSchema.length).toBeGreaterThan(0);
@@ -967,9 +967,9 @@ describe("Countdown — tick() primary progress bar", () => {
   });
 });
 
-// ── Sprint 83: computeProgress edge cases ─────────────────────────────────
+// ── computeProgress edge cases ─────────────────────────────────
 
-describe("Countdown — computeProgress edge cases (Sprint 83)", () => {
+describe("Countdown — computeProgress edge cases ", () => {
   it("clamps to 0 when elapsed is negative (start in the future)", () => {
     const now = Date.now();
     const start = now + 100_000; // start in future
@@ -1000,9 +1000,9 @@ describe("Countdown — computeProgress edge cases (Sprint 83)", () => {
   });
 });
 
-// ── Sprint 83: getDaysSince — future targets clamp to 0 ──────────────────
+// ── getDaysSince — future targets clamp to 0 ──────────────────
 
-describe("Countdown — getDaysSince future target clamp (Sprint 83)", () => {
+describe("Countdown — getDaysSince future target clamp ", () => {
   it("returns 0 when targetMs is in the future", () => {
     const future = Date.now() + 24 * 60 * 60 * 1000;
     expect(getDaysSince(future)).toBe(0);
@@ -1013,9 +1013,9 @@ describe("Countdown — getDaysSince future target clamp (Sprint 83)", () => {
   });
 });
 
-// ── Sprint 180 / CD3: advanceMonthlyDate ─────────────────────────────────
+// ── advanceMonthlyDate ─────────────────────────────────
 
-describe("Countdown — advanceMonthlyDate (Sprint 180 CD3)", () => {
+describe("Countdown — advanceMonthlyDate ( CD3)", () => {
   it("returns future date unchanged", () => {
     const future = new Date();
     future.setMonth(future.getMonth() + 2);
@@ -1044,9 +1044,9 @@ describe("Countdown — advanceMonthlyDate (Sprint 180 CD3)", () => {
   });
 });
 
-// ── Sprint 180 / CD1: getNextYomTov ─────────────────────────────────────
+// ── getNextYomTov ─────────────────────────────────────
 
-describe("Countdown — getNextYomTov (Sprint 180 CD1)", () => {
+describe("Countdown — getNextYomTov ( CD1)", () => {
   const now = new Date("2025-09-01T12:00:00");
 
   it("returns null for empty items", () => {
@@ -1086,9 +1086,9 @@ describe("Countdown — getNextYomTov (Sprint 180 CD1)", () => {
   });
 });
 
-// ── Sprint 180 / CD2: getNextCalEventForCountdown ───────────────────────
+// ── getNextCalEventForCountdown ───────────────────────
 
-describe("Countdown — getNextCalEventForCountdown (Sprint 180 CD2)", () => {
+describe("Countdown — getNextCalEventForCountdown ( CD2)", () => {
   it("returns null for empty ICS text", () => {
     expect(getNextCalEventForCountdown("BEGIN:VCALENDAR\nEND:VCALENDAR")).toBeNull();
   });
@@ -1122,9 +1122,9 @@ describe("Countdown — getNextCalEventForCountdown (Sprint 180 CD2)", () => {
   });
 });
 
-// ── Sprint 191 / CD4: setConfetti ────────────────────────────────────────
+// ── setConfetti ────────────────────────────────────────
 
-describe("Countdown — setConfetti (Sprint 191 CD4)", () => {
+describe("Countdown — setConfetti ( CD4)", () => {
   function buildConfettiDOM(): void {
     document.body.innerHTML = `
       <div id="cd-wedding-title"></div>
@@ -1201,8 +1201,8 @@ describe("Countdown — setConfetti (Sprint 191 CD4)", () => {
   });
 });
 
-// ── Sprint 235: tickSecondary progress bar branches & initCountdownCard auto-populate ─
-describe("Countdown — Sprint 235 coverage: tickSecondary + initCountdownCard", () => {
+// ── tickSecondary progress bar branches & initCountdownCard auto-populate ─
+describe("Countdown — coverage: tickSecondary + initCountdownCard", () => {
   function buildCd2DOM() {
     const section = document.createElement("div");
     section.id = "cd2-section";
@@ -1382,7 +1382,7 @@ describe("Countdown — Sprint 235 coverage: tickSecondary + initCountdownCard",
   });
 });
 
-// ── Sprint 259: fast-check property tests (CDP1–CDP4) ─────────────────────
+// ── fast-check property tests (CDP1–CDP4) ─────────────────────
 
 import * as fc from "fast-check";
 
@@ -1487,8 +1487,8 @@ describe("CDP4 · advanceAnnualDate — property: returned date is in future; fo
   });
 });
 
-// ── Sprint 281 / CS-CD1: countdownCardRecurrence typed in DashboardConfig ─
-describe("Countdown configSchema — CS-CD1 (Sprint 281)", () => {
+// ── countdownCardRecurrence typed in DashboardConfig ─
+describe("Countdown configSchema — CS-CD1 ", () => {
   it("countdownCardRecurrence field is present in countdownConfigSchema", () => {
     const field = countdownConfigSchema.find((f) => f.key === "countdownCardRecurrence");
     expect(field).toBeDefined();

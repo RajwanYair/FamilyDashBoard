@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/maximize.ts (Sprint 546)
+ * fast-check property tests — src/ui/maximize.ts 
  *
  * Properties under test:
  *  MX1. computeFontScale: result always in [1, 4]

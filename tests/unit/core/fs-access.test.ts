@@ -1,6 +1,5 @@
 /**
- * tests/unit/core/fs-access.test.ts — Sprint 112
- *
+ * tests/unit/core/fs-access.test.ts — *
  * Verifies the fallback behaviour of the File System Access wrapper in an
  * environment without `window.showSaveFilePicker` / `showOpenFilePicker`
  * (happy-dom). The picker-available branch is exercised in the dedicated

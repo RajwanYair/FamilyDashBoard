@@ -215,7 +215,7 @@ export function markStartupComplete(): void {
     });
 }
 
-// ── Perf Budget (Sprint 40, v7.13) ────────────────────────────────────────
+// ── Perf Budget ( , v7.13) ────────────────────────────────────────
 
 /** Result of a budget check. */
 export interface PerfBudgetResult {
@@ -256,7 +256,7 @@ export function checkPerfBudget(limitMs = 3000): PerfBudgetResult {
   return { limitMs, measuredMs: measured, status: pass ? "pass" : "fail" };
 }
 
-// ── Sprint 124: Per-vital budget check ───────────────────────────────────────
+// Per-vital budget check ───────────────────────────────────────
 
 /** Default budget thresholds (Google "good" thresholds). */
 export const VITAL_BUDGETS: Record<keyof PerfVitals, number> = {
@@ -268,7 +268,7 @@ export const VITAL_BUDGETS: Record<keyof PerfVitals, number> = {
   startup: 3000,
 };
 
-// ── Sprint 158: Per-card init timing ─────────────────────────────────────────
+// Per-card init timing ─────────────────────────────────────────
 
 const _cardTimings: Map<string, number> = new Map();
 
@@ -287,7 +287,7 @@ export function getCardTimings(): ReadonlyMap<string, number> {
   return _cardTimings;
 }
 
-// ── Sprint 160: Perf metrics JSON export ─────────────────────────────────────
+// Perf metrics JSON export ─────────────────────────────────────
 
 /**
  * Download all perf metrics (vitals + card timings) as a JSON file.

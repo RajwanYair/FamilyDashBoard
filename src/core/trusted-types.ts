@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Trusted Types policy (V12-SEC-1)
+ * FamilyDashBoard v13 — Trusted Types policy 
  *
  * Creates the "dashboard" TrustedTypePolicy used to wrap static/computed HTML
  * strings before assigning to innerHTML. All inputs are app-generated

@@ -559,9 +559,9 @@ describe("Currency — renderCurrency updates last-fetch chip", () => {
   });
 });
 
-// ── Sprint 24: 7-day rate history / Sprint 198 (C4): extended to 30-day ──────
+// ── 7-day rate history / (C4): extended to 30-day ──────
 
-describe("Currency — storeCurrencyHistory / loadCurrencyHistory (Sprint 24 / Sprint 198)", () => {
+describe("Currency — storeCurrencyHistory / loadCurrencyHistory ( / )", () => {
   beforeEach(() => {
     localStorage.removeItem("dash_v2_cur_history");
   });
@@ -604,7 +604,7 @@ describe("Currency — storeCurrencyHistory / loadCurrencyHistory (Sprint 24 / S
   });
 });
 
-describe("Currency — get7DayTrend (Sprint 24)", () => {
+describe("Currency — get7DayTrend ", () => {
   it("returns null when history has fewer than 2 entries", () => {
     expect(get7DayTrend("USD", [])).toBeNull();
     expect(get7DayTrend("USD", [{ date: "2024-01-01", rates: { USD: 0.27 } }])).toBeNull();
@@ -691,9 +691,9 @@ describe("Currency — loadCurrency async coverage", () => {
   });
 });
 
-// ── Sprint 184 / C1: calcCurrency + initCalcWidget ──────────────────────────
+// ── calcCurrency + initCalcWidget ──────────────────────────
 
-describe("Currency — calcCurrency (Sprint 184 C1)", () => {
+describe("Currency — calcCurrency ( C1)", () => {
   const rates = { USD: 0.2667, EUR: 0.2451, GBP: 0.2098, XAU: 0.000115, XAG: 0.009, BTC: 0.0000052 };
 
   it("converts ILS to USD correctly", () => {
@@ -730,7 +730,7 @@ describe("Currency — calcCurrency (Sprint 184 C1)", () => {
   });
 });
 
-describe("Currency — initCalcWidget DOM wiring (Sprint 184 C1)", () => {
+describe("Currency — initCalcWidget DOM wiring ( C1)", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div id="curUsd"></div><div id="curUsdChg"></div>
@@ -812,7 +812,7 @@ describe("Currency — initCalcWidget DOM wiring (Sprint 184 C1)", () => {
   });
 });
 
-// ── Sprint 189 / C2: applyPairVisibility ────────────────────────────────────
+// ── applyPairVisibility ────────────────────────────────────
 
 function makeCurDOM(): void {
   document.body.innerHTML = `
@@ -829,7 +829,7 @@ function makeCurDOM(): void {
   cacheDom();
 }
 
-describe("Currency — applyPairVisibility (Sprint 189 C2)", () => {
+describe("Currency — applyPairVisibility ( C2)", () => {
   beforeEach(() => {
     localStorage.clear();
     _resetCurrencyForTest();
@@ -915,7 +915,7 @@ describe("Currency — applyPairVisibility (Sprint 189 C2)", () => {
   });
 });
 
-// ── Sprint 204 / C3: getCurrencyTrend ──────────────────────────────
+// ── getCurrencyTrend ──────────────────────────────
 describe("getCurrencyTrend", () => {
   it("returns null for empty history", () => {
     expect(getCurrencyTrend("USD", [], 7)).toBeNull();
@@ -968,7 +968,7 @@ describe("getCurrencyTrend", () => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Sprint 246 — Currency card fast-check property tests (CM1–CM5)
+// Currency card fast-check property tests (CM1–CM5)
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── CM1: calcCurrency — result is null or positive finite ─────────────────
@@ -1105,8 +1105,8 @@ describe("CM5: getCurrencyTrend pct sign is consistent with arrow direction", ()
   });
 });
 
-// ── Sprint 283 / CS-C1: base selector + calc/trend/sparkline ────────────────────
-describe("Currency configSchema — CS-C1 (Sprint 283)", () => {
+// ── base selector + calc/trend/sparkline ────────────────────
+describe("Currency configSchema — CS-C1 ", () => {
   it("configSchema has 6 fields total after CS-C1", () => {
     expect(currencyConfigSchema.length).toBe(6);
   });
@@ -1138,7 +1138,7 @@ describe("Currency configSchema — CS-C1 (Sprint 283)", () => {
   });
 });
 
-// ── Sprint 415 / coverage ratchet: getLastCurrencyRates ───────────────────
+// ── / coverage ratchet: getLastCurrencyRates ───────────────────
 
 describe("Currency — getLastCurrencyRates", () => {
   beforeEach(() => { cDelete("cur"); });

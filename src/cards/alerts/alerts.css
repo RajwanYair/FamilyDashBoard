@@ -59,7 +59,7 @@
   }
 } /* end @layer components */
 
-/* Sprint 11: Maximize — large alerts card layout */
+/* Maximize — large alerts card layout */
 @container card (min-width: 900px) {
   .alert-row {
     padding: 8px 12px;
@@ -80,7 +80,7 @@
   }
 }
 
-/* Sprint 185 / A2: History ring buffer panel */
+/* History ring buffer panel */
 @layer components {
   .alerts-history-bar {
     padding: 4px 8px 2px;
@@ -124,7 +124,7 @@
   }
 }
 
-/* Sprint 186 / A1: Full-screen alert takeover dialog */
+/* Full-screen alert takeover dialog */
 @layer components {
   .alerts-takeover {
     position: fixed;

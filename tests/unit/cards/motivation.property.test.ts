@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/motivation/motivation.ts (Sprint 522, 571)
+ * fast-check property tests — src/cards/motivation/motivation.ts ( , 571)
  *
  * Properties under test:
  *  MO1. pickNextQuoteIndex: poolSize=1 always returns 0

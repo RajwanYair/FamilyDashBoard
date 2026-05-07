@@ -1,7 +1,7 @@
 # Screen Reader Testing — FamilyDashBoard
 
 > Manual test protocol and findings for NVDA (Windows desktop) and VoiceOver
-> (iOS mobile). Last verified against **v11.4.0**.
+> (iOS mobile). Last verified against **v14.4.0**.
 
 ---
 

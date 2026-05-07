@@ -1,10 +1,10 @@
 // @ts-check
 /**
- * check-dead-exports.mjs — Sprint 116 (Task 1/20 + Task 20/20)
+ * check-dead-exports.mjs — (Task 1/20 + Task 20/20)
  *
  * Scans src/ and worker/src/ for exported symbols that are never imported
  * anywhere in src/, worker/src/, or tests/.  Reports candidates for dead code.
- * Sprint 476 (v14.4.0): extended scan scope to worker/src/ (mirrors Sprint 466 OWASP extension).
+ * (v14.4.0): extended scan scope to worker/src/ (mirrors OWASP extension).
  *
  * False-positive sources (excluded automatically):
  *   - Re-export barrel files (index.ts) — excluded from analysis
@@ -26,7 +26,7 @@ import { parseArgs } from "node:util";
 
 const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
 const SRC = join(ROOT, "src");
-const WORKER_SRC = join(ROOT, "worker", "src"); // Sprint 476: also scan worker code
+const WORKER_SRC = join(ROOT, "worker", "src"); // also scan worker code
 const TESTS = join(ROOT, "tests");
 
 const { values: flags } = parseArgs({
@@ -57,8 +57,8 @@ function walkTs(dir) {
  * Intentionally skips `interface` and `type` exports — these are zero-cost
  * TypeScript declarations that are appropriate to export for documentation
  * and contract purposes even when not currently consumed by src/ or tests/.
- * Sprint 156: reduced false-positive surface from 75 → ~10 candidates.
- * Sprint 476: lines annotated `// dead-export-ok` are suppressed from analysis.
+ * reduced false-positive surface from 75 → ~10 candidates.
+ * lines annotated `// dead-export-ok` are suppressed from analysis.
  */
 const EXPORT_RE =
   /^export\s+(?:(?:async\s+)?function\s*\*?\s*|(?:const|let|var)\s+|class\s+|(?:abstract\s+)?enum\s+)(\w+)/gm;
@@ -69,7 +69,7 @@ const EXPORT_NAMED_RE = /^export\s*\{([^}]+)\}/gm;
 function extractExports(src) {
   /** @type {string[]} */
   const names = [];
-  // Sprint 476: collect suppressed symbols (lines with // dead-export-ok)
+  // collect suppressed symbols (lines with // dead-export-ok)
   /** @type {Set<string>} */
   const suppressed = new Set();
   // Non-global versions of regexes for single-line exec

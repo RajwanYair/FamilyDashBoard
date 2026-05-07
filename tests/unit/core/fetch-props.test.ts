@@ -1,5 +1,5 @@
 /**
- * Sprint 310 — Property-based tests for src/core/fetch.ts (FP1–FP5)
+ * Property-based tests for src/core/fetch.ts (FP1–FP5)
  *
  * Uses fast-check to verify lock and network-failure-streak invariants
  * for any key string / failure count.

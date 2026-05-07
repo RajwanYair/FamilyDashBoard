@@ -3,7 +3,6 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.tabSize": 2,
-    "editor.bracketPairColorization.enabled": true,
     "editor.linkedEditing": true,
     "editor.minimap.enabled": false,
     "editor.wordWrap": "on",

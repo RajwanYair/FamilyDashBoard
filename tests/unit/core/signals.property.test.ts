@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/signals.ts (Sprint 460)
+ * fast-check property tests — src/core/signals.ts 
  *
  * Properties under test:
  *  SIG1. signal(v).value === v — initial value is always preserved exactly.

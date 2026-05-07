@@ -335,7 +335,7 @@ describe("Status Bar — updateFontScaleIndicator", () => {
   });
 });
 
-// ── Sprint 52: updateRefreshAge — the stale-stamp branch (lines 82-89) ──
+// ── updateRefreshAge — the stale-stamp branch (lines 82-89) ──
 
 describe("Status Bar — updateRefreshAge", () => {
   let mod: StatusBarMod;
@@ -389,7 +389,7 @@ describe("Status Bar — updateRefreshAge", () => {
   });
 });
 
-// ── Sprint 52: cache-age chip branch (updateCacheAge in initStatusBar) ──
+// ── cache-age chip branch (updateCacheAge in initStatusBar) ──
 
 describe("Status Bar — cache-age chip in DOM", () => {
   afterEach(() => {
@@ -411,7 +411,7 @@ describe("Status Bar — cache-age chip in DOM", () => {
   });
 });
 
-// ── Sprint 52: SW VERSION_ACTIVATED message handler ──
+// ── SW VERSION_ACTIVATED message handler ──
 
 describe("Status Bar — SW VERSION_ACTIVATED message", () => {
   afterEach(() => {
@@ -507,7 +507,7 @@ describe("Status Bar — online/offline events update conn-indicator", () => {
   });
 });
 
-// ── Sprint 143: formatUptime h > 0 branch + cache-age mins > 0 ──
+// ── formatUptime h > 0 branch + cache-age mins > 0 ──
 
 describe("Status Bar — formatUptime hours branch", () => {
   afterEach(() => {

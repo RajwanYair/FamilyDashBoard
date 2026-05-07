@@ -1,5 +1,5 @@
 /**
- * Sprint 308 — Property-based tests for sync.ts backoff (SYP1–SYP6)
+ * Property-based tests for sync.ts backoff (SYP1–SYP6)
  *
  * Uses fast-check to verify exponential-backoff invariants for any key string.
  * Uses unique-per-run keys (via fc.uuid()) to avoid module-state bleed.

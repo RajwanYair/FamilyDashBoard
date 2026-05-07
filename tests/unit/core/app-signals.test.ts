@@ -1,8 +1,8 @@
 /**
  * Tests for src/core/app-signals.ts
  *
- * Sprint 129: tempUnit signal, appTheme signal, syncAppSignal bridge function.
- * Sprint 140 (Roadmap #1): motivationInterval signal + bridge case.
+ * tempUnit signal, appTheme signal, syncAppSignal bridge function.
+ * : motivationInterval signal + bridge case.
  */
 
 import { describe, it, expect, beforeEach } from "vitest";

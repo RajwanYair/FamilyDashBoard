@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/config-auto-render.ts (Sprint 544)
+ * fast-check property tests — src/ui/config-auto-render.ts 
  *
  * Properties under test:
  *  CA1. renderConfigField returns a div with class cfg-field

@@ -205,7 +205,7 @@ describe("handleMetrics — /api/metrics", () => {
   });
 });
 
-// ── toProviderHealthPrometheus — Sprint 24 (B10) ──────────────────────────────
+// ── toProviderHealthPrometheus — (B10) ──────────────────────────────
 
 describe("toProviderHealthPrometheus", () => {
   it("returns empty string for empty input", () => {

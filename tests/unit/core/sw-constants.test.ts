@@ -1,6 +1,5 @@
 /**
- * tests/unit/core/sw-constants.test.ts — Sprint 44
- *
+ * tests/unit/core/sw-constants.test.ts — *
  * Tests for typed SW message constants and type-guards.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";

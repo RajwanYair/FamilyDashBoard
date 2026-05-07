@@ -3,7 +3,7 @@
  * Source of truth: MyScripts/tooling/vitest/base.mjs
  * Keep in sync when upgrading Vitest.
  *
- * V11-PERF-1: pool=forks with dynamic fork count targets < 30 s for 3265 tests.
+ * pool=forks with dynamic fork count targets < 30 s for 3265 tests.
  * forks is preferred over threads to avoid happy-dom global-state contamination.
  *
  * NOTE: In Vitest 4, `pool` and `poolOptions` are top-level config options.

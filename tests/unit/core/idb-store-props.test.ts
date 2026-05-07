@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/idb-store.ts (Sprint 234)
+ * fast-check property tests for src/core/idb-store.ts 
  *
  * Properties verified:
  *  IDB1 — set → get round-trip: arbitrary JSON values are returned unchanged
@@ -40,7 +40,7 @@ beforeEach(() => {
 
 // ─── Property tests ───────────────────────────────────────────────────────────
 
-describe("idb-store — fast-check property tests (Sprint 234)", () => {
+describe("idb-store — fast-check property tests ", () => {
   // IDB1: set → get round-trip
   it("IDB1: idbSet then idbGet returns the identical value for any key/value", async () => {
     await fc.assert(

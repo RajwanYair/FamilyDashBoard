@@ -401,7 +401,7 @@ body.shabbat-mode #shabbat-mode-banner {
   color: var(--text-primary);
 }
 
-/* Sprint 140 (Roadmap #11): Anchor Positioning for Help dialog.
+/* Anchor Positioning for Help dialog.
    When supported, the help panel tethers to #status-bar (where the keyboard
    shortcut hint lives) and uses position-try-fallbacks to flip when there
    isn't enough vertical space. Browsers without anchor positioning keep the
@@ -435,7 +435,7 @@ body.shabbat-mode #shabbat-mode-banner {
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 151: Card Badge Pulse — new data indicator
+   Card Badge Pulse — new data indicator
    ═══════════════════════════════════════════════════════ */
 .card-badge-new {
   position: absolute;
@@ -499,7 +499,7 @@ body.shabbat-mode #shabbat-mode-banner {
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 154: Card Show/Hide Transition
+   Card Show/Hide Transition
    ═══════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: no-preference) {
   .card {
@@ -556,7 +556,7 @@ body.shabbat-mode #shabbat-mode-banner {
 }
 
 /* ──────────────────────────────────────────────────────────────────
- * Sprint 99 — Native @starting-style entrance for <dialog> overlays.
+ * — Native @starting-style entrance for <dialog> overlays.
  * Replaces JS-driven enter animations with pure-CSS state machine:
  *   closed → open: opacity 0 + scale(0.96) + translateY(8px) → 1 / 1 / 0
  *   ::backdrop fades in via the same starting-style.
@@ -797,7 +797,6 @@ body[data-anim-level="full"] .card:hover {
   box-shadow: 0 0 24px 4px var(--accent-glow, rgba(96, 165, 250, 0.18));
 }
 
-/* === Migrated from sprints.css @layer animations === */
 
 @keyframes elecPulse {
   0%, 100% { opacity: 1; }

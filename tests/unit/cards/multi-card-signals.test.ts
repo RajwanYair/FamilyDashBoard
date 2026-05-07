@@ -1,5 +1,5 @@
 /**
- * Sprint 391 — X12 + X15 multi-card adoption smoke tests.
+ * X12 + X15 multi-card adoption smoke tests.
  *
  * Verifies that each card adopted in v13.40.0 publishes the expected
  * CardSignal key under its registered cardId. Uses the public render*
@@ -20,7 +20,7 @@ beforeEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("Currency × X12 (Sprint 389)", () => {
+describe("Currency × X12 ", () => {
   it("publishes (currency, usd-ils) and (currency, eur-ils) on render", () => {
     renderCurrency({ USD: 0.27, EUR: 0.25 });
     const usd = getCardSignal<{ ils: number }>("currency", "usd-ils");
@@ -39,7 +39,7 @@ describe("Currency × X12 (Sprint 389)", () => {
   });
 });
 
-describe("Alerts × X12 (Sprint 387)", () => {
+describe("Alerts × X12 ", () => {
   it("publishes (alerts, active) when an alert is within 600s window", () => {
     document.body.innerHTML = `<div id="alerts-scroll"></div>`;
     cacheAlertsDom();
@@ -64,7 +64,7 @@ describe("Alerts × X12 (Sprint 387)", () => {
   });
 });
 
-describe("News × X12 (Sprint 390)", () => {
+describe("News × X12 ", () => {
   it("publishes (news, top) for the first item", () => {
     document.body.innerHTML = `<div id="rss-scroll" class="rss-scroll"></div>`;
     cacheNewsDom();

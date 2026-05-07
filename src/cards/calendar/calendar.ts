@@ -6,8 +6,7 @@
  * that day's events (or a muted placeholder when empty).
  * Refresh: INTERVALS.CALENDAR (15 minutes).
  *
- * X12/X15 ADOPTED — v13.40.0 Sprint 386 (see ADR-071).
- */
+ * X12/X15 protocol adopted (see ADR-071). */
 
 import { scheduleCard } from "../base-card";
 import "./calendar.css";
@@ -32,7 +31,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
-// X15 (Sprint 386): cached snapshot of next event for the semantic-clipboard producer.
+// X15: cached snapshot of next event for the semantic-clipboard producer.
 let _nextEventSnapshot: { title: string; startMs: number; isAllDay: boolean } | null = null;
 
 function buildCalendarPayload(): SemanticPayload | null {
@@ -166,7 +165,7 @@ export function detectCalCategory(summary: string): string {
 }
 
 /**
- * Sprint 181 / CAL1: Find the Hebrew holiday label (if any) for a given date
+ * Find the Hebrew holiday label (if any) for a given date
  * using items from the Hebcal cache. Returns the `hebrew` title (or `title` fallback),
  * or null when no holiday falls on that date.
  */
@@ -183,7 +182,7 @@ export function getHolidaysByDate(items: HebcalItem[], date: Date): string | nul
 }
 
 /**
- * Sprint 25: Return a short Hebrew label for how many days until `date`.
+ * Return a short Hebrew label for how many days until `date`.
  * Returns "" when `date` is today, "מחר" for tomorrow, "עוד N ימים" otherwise.
  * Returns "" for past dates (should not appear in agenda, but defensive).
  */
@@ -225,7 +224,7 @@ function renderCalEvent(ev: CalendarEvent, isConflict: boolean): HTMLElement {
   const isSoon = !ev.allDay && msTilStart > 0 && msTilStart < 60 * 60 * 1000;
 
   const row = document.createElement("div");
-  // Sprint 181 / CAL2: add cal-src-N class for per-source color coding
+  // add cal-src-N class for per-source color coding
   const srcIdx = ev.icsIndex ?? 0;
   row.className =
     "cal-event" +
@@ -318,7 +317,7 @@ export function groupEventsByDay(
 }
 
 /**
- * Sprint 209 / CAL6: Detect timed-event conflicts (overlapping start/end).
+ * Detect timed-event conflicts (overlapping start/end).
  * Returns the set of CalendarEvent objects that overlap with at least one
  * other timed event on the same day. All-day events are excluded.
  * Pure function — safe to unit-test without DOM.
@@ -350,7 +349,7 @@ function renderDayTile(
   const tile = document.createElement("div");
   tile.className = "cal-day-tile" + (isToday ? " is-today" : "");
   if (dayEvents.length === 0) tile.classList.add("is-empty");
-  // Sprint 181 / CAL1: mark holiday tiles
+  // mark holiday tiles
   if (holidayLabel) tile.classList.add("has-holiday");
 
   const hdr = document.createElement("div");
@@ -380,7 +379,7 @@ function renderDayTile(
   }
   tile.appendChild(hdr);
 
-  // Sprint 181 / CAL1: holiday label below header
+  // holiday label below header
   if (holidayLabel) {
     const hol = document.createElement("div");
     hol.className = "cal-holiday-label";
@@ -410,10 +409,10 @@ export function renderCalendar(events: CalendarEvent[]): number {
   const now = new Date();
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  // Sprint 188 / CAL4: read horizon from config (default 21)
+  // read horizon from config (default 21)
   const cfg = loadConfig();
   const horizonDays = Math.max(7, Math.min(60, cfg.calendarDaysAhead ?? CAL_WEEK_DAYS));
-  // Sprint 188 / CAL3: privacy mode — replace event summaries with "עסוק"
+  // privacy mode — replace event summaries with "עסוק"
   const privacy = cfg.calendarPrivacy ?? false;
   const maskedEvents: CalendarEvent[] = privacy
     ? events.map((e) => ({ ...e, summary: "עסוק" }))
@@ -427,7 +426,7 @@ export function renderCalendar(events: CalendarEvent[]): number {
     .filter((e) => e.start >= weekStart && e.start < weekEnd)
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  // X12 (Sprint 386): publish next upcoming event signal for sibling consumers.
+  // X12: publish next upcoming event signal for sibling consumers.
   const nextEvent = upcoming.find((e) => e.start.getTime() >= now.getTime()) ?? null;
   if (nextEvent) {
     setCardSignal("calendar", "next-event", {
@@ -451,7 +450,7 @@ export function renderCalendar(events: CalendarEvent[]): number {
   const buckets = groupEventsByDay(upcoming, weekStart);
   const todayKey = now.toDateString();
 
-  // Sprint 181 / CAL1: load holiday items from Hebcal stale cache
+  // load holiday items from Hebcal stale cache
   const holKey = `holidays-${now.getFullYear()}-${now.getMonth()}`;
   const holData = cGetStale<{ items: HebcalItem[] }>(holKey);
   const holItems: HebcalItem[] = holData?.items ?? [];
@@ -629,7 +628,7 @@ export function destroyCalendarCard(): void {
   }
 }
 
-// ── Sprint 139: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const calendarConfigSchema: CardConfigField[] = [
   {
@@ -644,7 +643,7 @@ export const calendarConfigSchema: CardConfigField[] = [
     group: "תצוגה",
     groupOpenByDefault: true,
   },
-  // Sprint 188 / CAL3: Privacy mode toggle
+  // Privacy mode toggle
   {
     key: "calendarPrivacy",
     labelHe: "מצב פרטיות (הסתר פרטי אירועים)",
@@ -653,7 +652,7 @@ export const calendarConfigSchema: CardConfigField[] = [
     defaultValue: false,
     group: "פרטיות",
   },
-  // ── Sprint 284 / CS-CAL1: holidays/colors/horizon/conflicts ────────────────────────
+  // holidays/colors/horizon/conflicts ────────────────────────
   {
     key: "calendarShowHolidays",
     labelHe: "הצג חגים ואירועים לאומיים",

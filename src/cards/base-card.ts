@@ -83,7 +83,7 @@ export function scheduleCard(load: () => Promise<void>, intervalMs: number): num
   }, intervalMs);
 }
 
-// ── Sprint 180: Async-first card loader ─────────────────────────────────────
+// Async-first card loader ─────────────────────────────────────
 
 /**
  * Like createCardLoader but uses cGetAsync/cGetStaleAsync
@@ -137,7 +137,7 @@ export function createAsyncCardLoader<T>(
 }
 
 /**
- * Build a short human-readable staleness chip label (Sprint 48).
+ * Build a short human-readable staleness chip label.
  *
  * Returns a string like "לפני 3 דק'" or "לפני שעה 2".
  * Use for overlay captions, diagnostics, and stale-state badges.
@@ -158,10 +158,10 @@ export function staleChip(ageMs: number): string {
     : `\u05DC\u05E4\u05E0\u05D9 ${days} \u05D9\u05DE\u05D9\u05DD`;
 }
 
-// ── Sprint 51-53: Card Shell Primitives ─────────────────────────────────────
+// ── Card Shell Primitives ─────────────────────────────────────
 
 /**
- * Build a skeleton placeholder element for use during initial card load (Sprint 51).
+ * Build a skeleton placeholder element for use during initial card load.
  *
  * Renders one or more animated shimmer lines inside a `<div class="card-skeleton">`.
  * Cards should replace the element once data is ready.
@@ -182,7 +182,7 @@ export function createSkeleton(lines = 3): HTMLElement {
 }
 
 /**
- * Build a standardized empty-state element (Sprint 52).
+ * Build a standardized empty-state element.
  *
  * Displays a neutral message when a card has no data (e.g. empty news feed,
  * no upcoming calendar events, no tasks).
@@ -206,7 +206,7 @@ export function createEmptyState(message: string): HTMLElement {
 }
 
 /**
- * Build a standardized error-state element (Sprint 53).
+ * Build a standardized error-state element.
  *
  * Displays an error badge for unrecoverable card failures. Intended for
  * inline use inside a card's content area.

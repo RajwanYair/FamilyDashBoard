@@ -1,5 +1,5 @@
 /**
- * Sprint 378 — Countdown × X12/X15 integration tests.
+ * Countdown × X12/X15 integration tests.
  *
  * Verifies that ticking the countdown card publishes a
  * `card-signal-protocol` value on (`countdown`, `next`) and that
@@ -39,7 +39,7 @@ function setupDom(): void {
     </div>`;
 }
 
-describe("Countdown × X12 (Sprint 378)", () => {
+describe("Countdown × X12 ", () => {
   beforeEach(() => {
     _resetCardSignals();
     _resetSemanticProducers();
@@ -90,7 +90,7 @@ describe("Countdown × X12 (Sprint 378)", () => {
   });
 });
 
-describe("Countdown × X15 semantic producer (Sprint 378)", () => {
+describe("Countdown × X15 semantic producer ", () => {
   beforeEach(() => {
     _resetCardSignals();
     _resetSemanticProducers();

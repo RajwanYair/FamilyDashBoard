@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/hardware.ts (Sprint 322 / HWP1-HWP4)
+ * fast-check property tests for src/core/hardware.ts 
  *
  * Verifies invariants of `getHardwareProfile()` over arbitrary
  * navigator.hardwareConcurrency × navigator.deviceMemory inputs.
@@ -22,7 +22,7 @@ function mockNav(cores: number, memGB: number): void {
 
 const TIER_VALUES: readonly HardwareTier[] = ["high", "mid", "low"];
 
-describe("hardware — fast-check properties (HWP1-HWP4, Sprint 322)", () => {
+describe("hardware — fast-check properties (HWP1-HWP4 )", () => {
   beforeEach(() => {
     _resetHardwareProfile();
   });

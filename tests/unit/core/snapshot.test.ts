@@ -1,11 +1,11 @@
 /**
- * Tests for src/core/snapshot.ts (Sprint 201 / X8)
+ * Tests for src/core/snapshot.ts 
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { buildSnapshot, downloadSnapshot } from "@/core/snapshot";
 
-describe("buildSnapshot (Sprint 201 / X8)", () => {
+describe("buildSnapshot ", () => {
   beforeEach(() => {
     vi.stubGlobal("__APP_VERSION__", "13.22.0");
     vi.stubGlobal("__BUILD_TIME__", "2025-01-01T00:00:00.000Z");
@@ -67,7 +67,7 @@ describe("buildSnapshot (Sprint 201 / X8)", () => {
   });
 });
 
-describe("downloadSnapshot (Sprint 201 / X8)", () => {
+describe("downloadSnapshot ", () => {
   beforeEach(() => {
     vi.stubGlobal("__APP_VERSION__", "13.29.0");
     vi.stubGlobal("__BUILD_TIME__", "2025-01-01T00:00:00.000Z");

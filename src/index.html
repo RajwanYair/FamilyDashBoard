@@ -7,7 +7,7 @@
     <meta name="description" content="Family TV Dashboard — Hebrew RTL, 6 dark themes, live data.">
     <meta name="author" content="Yair Rajwan">
     <meta name="theme-color" content="#1a1410">
-    <!-- Sprint 118 (Roadmap #11): opt-in to cross-doc View Transitions L2 (Chrome 126+, Safari 18+) -->
+    <!-- (Roadmap #11): opt-in to cross-doc View Transitions L2 (Chrome 126+, Safari 18+) -->
     <meta name="view-transition" content="same-origin">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; connect-src 'self' https://fdb.rajwanyair.workers.dev https://api.allorigins.win https://api.codetabs.com https://corsproxy.io https://api.open-meteo.com https://www.hebcal.com https://www.sefaria.org https://open.er-api.com https://api.exchangerate-api.com https://api.frankfurter.dev https://query1.finance.yahoo.com https://api.coingecko.com https://api.tzevaadom.co.il https://calendar.google.com https://cloudflareinsights.com https://*.intel.com; font-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://video.i24news.tv https://players.brightcove.net; media-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests; trusted-types dashboard; require-trusted-types-for 'script';">
     <link rel="canonical" href="https://rajwanyair.github.io/FamilyDashBoard/">
@@ -43,7 +43,7 @@
           media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
     >
     <title>רגואן Family Dashboard</title>
-    <!-- Sprint 118 (Roadmap perf): preconnect to the worker origin to shave TLS+DNS off
+    <!-- (Roadmap perf): preconnect to the worker origin to shave TLS+DNS off
          first API call. Limited to the single hot origin; lighthouse caps preconnects ≤ 4. -->
     <link rel="preconnect" href="https://fdb.rajwanyair.workers.dev" crossorigin>
     <link rel="dns-prefetch" href="https://fdb.rajwanyair.workers.dev">
@@ -111,7 +111,7 @@
         </div>
       </div>
     </dialog>
-    <!-- Sprint 8 (v11.0-PWA-1): First-run welcome tour dialog -->
+    <!-- (v11.0-PWA-1): First-run welcome tour dialog -->
     <dialog id="tour-overlay" aria-labelledby="tour-dialog-title" aria-modal="true">
       <div class="tour-inner">
         <h2 id="tour-dialog-title">👋 ברוך הבא ל-FamilyDashBoard</h2>
@@ -158,7 +158,7 @@
         <div class="cfg-help-center">לחץ Escape / ? / H לסגירה</div>
       </div>
     </dialog>
-    <!-- Sprint 420 / N-Star-UI: Read-later starred articles viewer -->
+    <!-- Read-later starred articles viewer -->
     <dialog id="news-starred-dialog" aria-labelledby="news-starred-dialog-title" aria-modal="true">
       <div class="news-starred-inner">
         <div class="news-starred-header">
@@ -172,7 +172,7 @@
     <div id="config-overlay" role="dialog" aria-modal="true" aria-labelledby="cfg-panel-title">
       <div id="config-panel">
         <h2 id="cfg-panel-title">⚙️ הגדרות</h2>
-        <!-- Sprint 200 / X7: Config search box -->
+        <!-- Config search box -->
         <div class="cfg-search-wrap">
           <input type="search" id="cfg-search-box" class="cfg-search-input" placeholder="חיפוש הגדרה… / Search setting…" aria-label="חיפוש הגדרה" autocomplete="off" spellcheck="false">
         </div>
@@ -286,7 +286,7 @@
               <option value="full">מלא</option>
             </select>
           </div>
-          <!-- Config v3 (v7.9): Per-card settings moved to Cards tab (Sprint 17) -->
+          <!-- Config v3 (v7.9): Per-card settings moved to Cards tab  -->
         </div>
         <!-- Tab: Calendar -->
         <div class="cfg-section" id="cfg-section-calendar" role="tabpanel" aria-labelledby="cfg-tab-calendar" data-tab="calendar">
@@ -378,7 +378,7 @@
           <div class="cfg-row cfg-mt-8">
             <button type="button" id="cfg-reset-layout-btn" class="cfg-input cfg-link-mini" aria-label="איפוס סדר כרטיסיות לברירת מחדל" title="איפוס סדר הכרטיסיות לברירת המחדל המקורית">↩ איפוס סידור כרטיסיות</button>
           </div>
-          <!-- Sprint 17: Per-card settings accordion -->
+          <!-- Per-card settings accordion -->
           <details class="cfg-percard-details cfg-mt-12">
             <summary class="cfg-percard-summary">🌤️ מזג אוויר</summary>
             <div class="cfg-percard-body">
@@ -505,7 +505,7 @@
             <span class="cfg-label">🌐 פרוקסי CORS מותאם (proxy?url=)</span>
             <input class="cfg-input cfg-ltr-08" id="cfg-custom-proxy" type="url" placeholder="https://my-proxy/?url=" >
           </div>
-          <!-- Sprint 58: Network mode selector (worker / proxy fetch path) -->
+          <!-- Network mode selector (worker / proxy fetch path) -->
           <div class="cfg-row">
             <span class="cfg-label">🔌 מצב רשת (Worker / Proxy)</span>
             <select class="cfg-input cfg-select cfg-ltr" id="cfg-network-mode" aria-label="מצב רשת" title="מצב רשת (Worker / Proxy)">
@@ -561,7 +561,7 @@
             <span class="cfg-label">⏳ ספירה 2 — הודעת סיום</span>
             <input class="cfg-input" id="cfg-cd2-done-msg" type="text" placeholder="🎉 מזל טוב!" >
           </div>
-          <!-- Sprint 22: Countdown card 3rd event -->
+          <!-- Countdown card 3rd event -->
           <div class="cfg-row">
             <span class="cfg-label">⏳ ספירה 3 — שם האירוע</span>
             <input class="cfg-input" id="cfg-cd3-title" type="text" placeholder="חג / יום הולדת / ..." >
@@ -620,12 +620,12 @@
         <button type="button" id="diag-copy-btn" aria-label="העתק לוג אבחון ללוח" title="העתק לוג אבחון ללוח — Copy diagnostics">📋 העתק לוג</button>
         <!-- F1 (v7.3): Clear diagnostics log -->
         <button type="button" id="diag-clear-btn" aria-label="נקה את כל רשומות האבחון" title="נקה את כל רשומות האבחון — Clear log">🗑 נקה לוג</button>
-        <!-- Sprint 39: Clear runtime errors button -->
+        <!-- Clear runtime errors button -->
         <button type="button" id="diag-clear-errors-btn" aria-label="נקה שגיאות זמן-ריצה" title="נקה שגיאות זמן-ריצה — Clear errors">🧹 נקה שגיאות</button>
-        <!-- Sprint 201 / X8: Snapshot export -->
+        <!-- Snapshot export -->
         <button type="button" id="diag-snapshot-btn" aria-label="ייצוא snapshot של מצב הדשבורד ל-JSON" title="ייצוא snapshot — Export dashboard state JSON">📸 Snapshot</button>
         <div id="diag-panes"></div>
-        <!-- Sprint 39: Runtime error log section -->
+        <!-- Runtime error log section -->
         <details class="cfg-mt-6">
           <summary class="cfg-link-secondary">⚠️ שגיאות זמן-ריצה</summary>
           <div class="diag-log cfg-list-scroll" id="diag-error-log"></div>
@@ -677,13 +677,13 @@
             </div>
         </header>
 
-        <!-- Sprint 190 / X1: Today Pane — at-a-glance urgent items bar -->
+        <!-- Today Pane — at-a-glance urgent items bar -->
         <section id="today-pane" aria-label="סיכום יומי — פריטים דחופים" dir="rtl" class="is-hidden">
           <div id="today-pane-items" role="list" aria-live="polite" aria-atomic="false"></div>
         </section>
 
         <main class="grids-area" id="main-content">
-          <!-- SR-only page heading: WCAG 2.4.6 / 1.3.1 — visible to screen readers only (Sprint 30 V12-A11Y) -->
+          <!-- SR-only page heading: WCAG 2.4.6 / 1.3.1 — visible to screen readers only ( V12-A11Y) -->
           <h1 class="sr-only" id="page-heading">לוח מחוונים משפחתי — FamilyDashBoard</h1>
 
           <!-- ── Left Column: News + Weather ── -->
@@ -722,13 +722,13 @@
                       <!-- F158: Today min/max range -->
                       <div id="wx-minmax" class="wx-minmax"></div>
                       <div class="wx-desc" id="wx-desc">טוען...</div>
-                      <!-- Sprint 11: 7-day temp sparkline -->
+                      <!-- 7-day temp sparkline -->
                       <svg class="wx-temp-spark" id="wx-temp-spark" viewBox="0 0 60 18" aria-hidden="true"></svg>
                     </div>
                   </div>
                   <div class="wx-details">
                     <div class="wx-detail"><div class="wx-detail-label">💧 לחות</div><div class="wx-detail-val" id="wx-hum">--%</div></div>
-                    <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div><span id="wx-wind-heb"></span><span id="wx-gust"></span><!-- Sprint 195 / W5: SVG compass --><svg id="wx-compass" class="wx-compass" viewBox="-20 -20 40 40" width="36" height="36" aria-hidden="true"><circle r="18" class="wc-ring"/><circle r="3" class="wc-center"/><line id="wx-compass-needle" class="wc-needle" x1="0" y1="0" x2="0" y2="-13"/><path id="wx-compass-gust" class="wc-gust" d="" visibility="hidden"/></svg></div>
+                    <div class="wx-detail"><div class="wx-detail-label">💨 רוח</div><div class="wx-detail-val" id="wx-wind">--</div><span id="wx-wind-heb"></span><span id="wx-gust"></span><!-- SVG compass --><svg id="wx-compass" class="wx-compass" viewBox="-20 -20 40 40" width="36" height="36" aria-hidden="true"><circle r="18" class="wc-ring"/><circle r="3" class="wc-center"/><line id="wx-compass-needle" class="wc-needle" x1="0" y1="0" x2="0" y2="-13"/><path id="wx-compass-gust" class="wc-gust" d="" visibility="hidden"/></svg></div>
                     <div class="wx-detail"><div class="wx-detail-label">☀️ UV</div><div class="wx-detail-val" id="wx-uv">--</div></div>
                     <div class="wx-detail"><div class="wx-detail-label" id="wx-rise-label">🌅 זריחה</div><div class="wx-detail-val" id="wx-rise">--:--</div></div>
                     <!-- Feature 26: Feels-like temperature -->
@@ -737,17 +737,17 @@
                     <div class="wx-detail"><div class="wx-detail-label">🌫️ נ.ר.</div><div class="wx-detail-val" id="wx-dew">--°</div></div>
                     <!-- F1 (v7.2): Today's precipitation probability -->
                     <div class="wx-detail"><div class="wx-detail-label">🌧️ גשם</div><div class="wx-detail-val" id="wx-precip">--%</div><!-- V13-DATA: 7-day precip sparkline --><svg class="wx-precip-spark" id="wx-precip-spark" viewBox="0 0 44 12" aria-hidden="true"></svg></div>
-                    <!-- Sprint 32: Cloud cover tile -->
+                    <!-- Cloud cover tile -->
                     <div class="wx-detail"><div class="wx-detail-label">☁️ ענניות</div><div class="wx-detail-val" id="wx-cloud">--%</div></div>
-                    <!-- Sprint 193 / W4: Air quality tile -->
+                    <!-- Air quality tile -->
                     <div class="wx-detail"><div class="wx-detail-label">🌬️ איכ׳ אוויר</div><div class="wx-detail-val" id="wx-aqi">--</div></div>
                   </div>
                 </div>
                 <!-- F128: Hourly chart view toggle -->
                 <button type="button" id="wx-chart-toggle" aria-label="החלף תצוגת תרשים" title="החלף תצוגה">🌡️ טמפ׳</button>
-                <!-- Sprint 46: Next-6-hours strip -->
+                <!-- Next-6-hours strip -->
                 <div id="wx-hourly-strip" class="wx-hourly-strip" role="list" aria-label="תחזית שעתית"></div>
-                <!-- Sprint 194 / W3: 60-min nowcast bar -->
+                <!-- 60-min nowcast bar -->
                 <div id="wx-nowcast" class="wx-nowcast" aria-label="תחזית גשם לשעה הקרובה" hidden></div>
                 <svg class="wx-hourly-chart" id="wx-hourly" viewBox="0 0 500 60" preserveAspectRatio="none"></svg>
                 <!-- Feature 32: Extreme weather alert banner -->
@@ -783,9 +783,9 @@
                   <div class="hc-row hc-special-row is-hidden" id="hc-special-row"><span class="hc-val hc-special" id="hc-special"></span></div>
                   <div class="hc-row is-hidden" id="hc-school-row"><span class="hc-label">🎒 חופשה</span><span class="hc-val hc-school-val" id="hc-school">--</span></div>
                   <div class="hc-row is-hidden" id="hc-parasha-row"><span class="hc-label">📖 פרשה</span><span class="hc-val hc-parasha-val" id="hc-parasha">--</span><span class="hc-parasha-ref" id="hc-parasha-ref"></span></div>
-                  <!-- Sprint 178 / H4: Haftarah reference -->
+                  <!-- Haftarah reference -->
                   <div class="hc-row is-hidden" id="hc-haftara-row"><span class="hc-label">📜 הפטרה</span><span class="hc-val hc-haftara-val" id="hc-haftara">--</span></div>
-                  <!-- Sprint 178 / H5: Rosh Chodesh tile -->
+                  <!-- Rosh Chodesh tile -->
                   <div class="hc-row is-hidden" id="hc-rosh-chodesh-row"><span class="hc-label">🌙 ראש חודש</span><span class="hc-val hc-rosh-chodesh-val" id="hc-rosh-chodesh">--</span></div>
                   <div class="hc-row is-hidden" id="hc-daf-row"><span class="hc-label">📚 דף יומי</span><span class="hc-val hc-daf-val" id="hc-daf">--</span></div>
                   <!-- Feature 53: Daf Yomi Sefaria link -->
@@ -845,7 +845,7 @@
                 <div class="cur-item"><div class="cur-flag">₿</div><div class="cur-pair">BTC / ₪</div><div class="cur-rate skeleton" id="curBtc">--</div><div class="cur-chg" id="curBtcChg"></div><svg class="cur-spark" id="cur-btc-spark" viewBox="0 0 60 22"></svg></div>
                 <!-- v7.1: Last fetch timestamp chip -->
                 <div class="cur-footer"><span class="cur-last-fetch-label">⏱ עדכון:</span><span class="cur-last-fetch" id="cur-last-fetch" title="">--:--</span></div>
-                <!-- Sprint 184 / C1: Mini-calculator -->
+                <!-- Mini-calculator -->
                 <div class="cur-calc" id="cur-calc" role="group" aria-label="מחשבון המרת מטבע">
                   <input type="number" id="cur-calc-input" class="cur-calc-input" placeholder="₪ סכום" min="0" step="any" aria-label="סכום בשקלים להמרה">
                   <select id="cur-calc-pair" class="cur-calc-pair" aria-label="מטבע יעד">
@@ -907,7 +907,7 @@
                   <div class="alert-count">טוען התרעות...</div>
                 </div>
                 <svg id="alerts-count-spark" class="alerts-sparkline" aria-hidden="true" focusable="false"></svg>
-                <!-- Sprint 185 / A2: History ring buffer panel -->
+                <!-- History ring buffer panel -->
                 <div class="alerts-history-bar">
                   <button type="button" id="alerts-history-btn" class="alerts-history-toggle" aria-expanded="false" aria-controls="alerts-history-panel" title="הצג היסטוריית התרעות 24 שעות">📋 היסטוריה</button>
                 </div>
@@ -921,7 +921,7 @@
                   <div class="moti-text" id="moti-text" aria-live="polite">טוען השראה...</div>
                   <div class="moti-author" id="moti-author"></div>
                   <div class="moti-src" id="moti-src"></div>
-                  <!-- F146: Next quote button; F135: share button; Sprint 197 / M3: heart -->
+                  <!-- F146: Next quote button; F135: share button; heart -->
                   <button type="button" id="moti-next-btn" title="ציטוט הבא">⏭ הבא</button><button type="button" id="moti-share-btn" title="שתף ציטוט">📤 שתף</button><button type="button" id="moti-fav-btn" aria-pressed="false" title="הוסף למועדפים">🤍</button>
                 </div>
               </div>
@@ -1005,18 +1005,18 @@
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-storage">—</span><span class="sysinfo-tile-label">💾 אחסון</span></div>
                 <!-- F9 (v7.3): Network RTT -->
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-rtt">—</span><svg id="sysinfo-rtt-spark" viewBox="0 0 44 12" aria-hidden="true" class="sysinfo-spark"></svg><span class="sysinfo-tile-label">📡 זמן תגובה</span></div>
-                <!-- Sprint 29: JS heap + GPU -->
+                <!-- JS heap + GPU -->
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-heap">—</span><span class="sysinfo-tile-label">🧮 Heap JS</span></div>
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-gpu">—</span><span class="sysinfo-tile-label">🎮 GPU</span></div>
-                <!-- Sprint 179 / SI2: Service Worker state -->
+                <!-- Service Worker state -->
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-sw">—</span><span class="sysinfo-tile-label">⚙️ SW</span></div>
-                <!-- Sprint 329 / D3: Compute Pressure API -->
+                <!-- Compute Pressure API -->
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-pressure">—</span><span class="sysinfo-tile-label">🌡️ עומס</span></div>
-                <!-- Sprint 330 / D4: Storage Buckets feature-detect -->
+                <!-- Storage Buckets feature-detect -->
                 <div class="sysinfo-tile"><span class="sysinfo-tile-val" id="sysinfo-buckets">—</span><span class="sysinfo-tile-label">🪣 דליים</span></div>
               </div>
             </section>
-            <!-- Sprint 202 / X9: Daily AI Synthesis tile (opt-in, cached 4h) -->
+            <!-- Daily AI Synthesis tile (opt-in, cached 4h) -->
             <section class="card is-hidden" role="region" data-card-id="ai-synthesis" id="ai-synthesis-card" aria-labelledby="card-title-ai-synthesis">
               <div class="card-header" title="לחץ להגדלה / הקטנה — Click to maximize"><div class="card-hd-status"><div class="sync-dot" id="sync-ai-synthesis" role="status" aria-label="מצב סנכרון AI" title="AI סנכרון"></div></div><div class="card-hd-title"><span class="icon-badge purple">🤖</span> <span id="card-title-ai-synthesis">תקציר AI יומי</span></div><div class="card__hd-end"><button type="button" id="synth-speak-btn" class="synth-speak-btn" aria-label="קרא בקול" title="PC-1: קרא בקול — Read aloud" aria-pressed="false">🔊</button><button type="button" class="card-collapse-btn" aria-label="כווץ / הרחב כרטיסיית AI" aria-expanded="true" title="מזער/הרחב — Collapse / Expand">▼</button></div></div>
               <div class="synth-body">
@@ -1056,7 +1056,7 @@
 
     <script type="module" src="/main.ts"></script>
 
-    <!-- Sprint 186 / A1: Full-screen alert takeover dialog -->
+    <!-- Full-screen alert takeover dialog -->
     <dialog id="alerts-takeover" class="alerts-takeover" aria-modal="true" aria-labelledby="alerts-takeover-title" aria-live="assertive" dir="rtl">
       <div class="alerts-takeover-icon" aria-hidden="true">🚨</div>
       <h2 class="alerts-takeover-title" id="alerts-takeover-title">צבע אדום</h2>

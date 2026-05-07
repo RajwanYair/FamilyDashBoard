@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/event-bus.ts (Sprint 461)
+ * fast-check property tests — src/core/event-bus.ts 
  *
  * Properties under test:
  *  EB1. broadcastSync idempotence — broadcasting the same state for a card

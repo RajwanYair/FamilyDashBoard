@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/tasks/tasks.ts (Sprint 528, extended Sprint 560)
+ * fast-check property tests — src/cards/tasks/tasks.ts ( , extended )
  *
  * Properties under test:
  *  TK1. parseTaskPriority: no prefix → "none" + unchanged text

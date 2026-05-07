@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — @vitest/browser config
  *
- * Sprint 145 (v13.16.0): activated browser-mode testing with real Chromium.
+ * activated browser-mode testing with real Chromium.
  * Tests in tests/browser/ run in headless Chromium via @vitest/browser-playwright.
  *
  * Requirements (installed in MyScripts/package.json):

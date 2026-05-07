@@ -27,9 +27,9 @@ export interface ChoreItem {
   chore: string;
   /** Optional recurrence — if set, the task auto-resets after each cycle. */
   recurrence?: "daily" | "weekly" | "monthly" | "yearly";
-  /** Sprint 177 / T3: optional free-form tags for grouping/coloring (max 6 rendered). */
+  /** optional free-form tags for grouping/coloring (max 6 rendered). */
   tags?: string[];
-  /** Sprint 214 / T4: parent task fingerprint — set when this item is a subtask. */
+  /** parent task fingerprint — set when this item is a subtask. */
   parentId?: string;
 }
 
@@ -144,7 +144,7 @@ function loadChores(): ChoreItem[] {
   }
 }
 
-// ── Sprint 24: Priority + Due-date helpers ─────────────────────────────────
+// Priority + Due-date helpers ─────────────────────────────────
 
 /** Priority levels derived from a `[H]`/`[M]`/`[L]` prefix in the chore text. */
 export type TaskPriority = "high" | "medium" | "low" | "none";
@@ -171,7 +171,7 @@ export function parseTaskPriority(chore: string): { priority: TaskPriority; clea
 }
 
 /**
- * Sprint 30: Return a color emoji icon for a task priority level.
+ * Return a color emoji icon for a task priority level.
  * high → 🔴 · medium → 🟡 · low → 🔵 · none → ""
  */
 export function taskPriorityIcon(priority: TaskPriority): string {
@@ -202,7 +202,7 @@ export function isOverdue(dueDateStr: string): boolean {
 }
 
 /**
- * Sprint 47: Returns true when `dueDateStr` is exactly today.
+ * Returns true when `dueDateStr` is exactly today.
  */
 export function isDueToday(dueDateStr: string): boolean {
   const today = new Date();
@@ -211,7 +211,7 @@ export function isDueToday(dueDateStr: string): boolean {
 }
 
 /**
- * Sprint 177 / T1: Returns true when `dueDateStr` is within the next 7 days
+ * Returns true when `dueDateStr` is within the next 7 days
  * (not today, not overdue — strictly future within 7 days).
  */
 export function isDueThisWeek(dueDateStr: string): boolean {
@@ -234,7 +234,7 @@ export function formatTaskDueDate(dueDateStr: string): string {
 }
 
 /**
- * Sprint 33: Count chores that have an overdue due-date (@YYYY-MM-DD before today).
+ * Count chores that have an overdue due-date (@YYYY-MM-DD before today).
  * Chores without a due-date are not counted.
  */
 export function countOverdueTasks(chores: ChoreItem[]): number {
@@ -247,7 +247,7 @@ export function countOverdueTasks(chores: ChoreItem[]): number {
 }
 
 /**
- * Sprint 203 / T2: Compute the next due-date for a recurring task by advancing
+ * Compute the next due-date for a recurring task by advancing
  * the existing embedded due date by the recurrence interval.
  * - daily → +1 day, weekly → +7 days, monthly → +1 month, yearly → +1 year.
  * Advances from max(existing due date, today) so the result is always ≥ tomorrow.
@@ -350,7 +350,7 @@ export function renderTasksCard(): void {
   }
 
   for (const [person, items] of byPerson) {
-    // Sprint 47: person headers gated by tasksShowCategories config
+    // person headers gated by tasksShowCategories config
     if (cfg.tasksShowCategories) {
       const personHdr = document.createElement("div");
       personHdr.className = "tasks-person";
@@ -400,7 +400,7 @@ export function renderTasksCard(): void {
           doneMsg.style.display = pending2 === 0 ? "" : "none";
         }
         diagLog(`FDB-048: [tasks] ${fp} = ${String(cb.checked)}`);
-        // Sprint 203 / T2: auto-advance due date for recurring tasks when marked done
+        // auto-advance due date for recurring tasks when marked done
         if (cb.checked && item.recurrence) {
           const newDate = advanceRecurringDueDate(item);
           if (newDate !== null) {
@@ -439,7 +439,7 @@ export function renderTasksCard(): void {
         const badge = document.createElement("span");
         badge.className = `tasks-priority tasks-pri-${priority}`;
         badge.style.color = PRIORITY_COLORS[priority];
-        // Sprint 30: emoji icons for better TV readability
+        // emoji icons for better TV readability
         badge.textContent = priority === "high" ? "🔴" : priority === "medium" ? "🟡" : "🔵";
         badge.title =
           priority === "high"
@@ -464,7 +464,7 @@ export function renderTasksCard(): void {
         row.appendChild(chip);
       }
 
-      // Sprint 177 / T3: Tag chips (max 6)
+      // Tag chips (max 6)
       if (item.tags && item.tags.length > 0) {
         const tagWrap = document.createElement("span");
         tagWrap.className = "tasks-tags";
@@ -481,7 +481,7 @@ export function renderTasksCard(): void {
         row.appendChild(tagWrap);
       }
 
-      // V13-DATA: Recurrence badge (daily/weekly/monthly)
+      // Recurrence badge (daily/weekly/monthly)
       if (item.recurrence) {
         const recBadge = document.createElement("span");
         recBadge.className = `tasks-recurrence tasks-recur-${item.recurrence}`;
@@ -518,7 +518,7 @@ export function renderTasksCard(): void {
   if (doneMsg) {
     doneMsg.style.display = total > 0 && pending === 0 ? "" : "none";
   }
-  // Sprint 33: Overdue badge
+  // Overdue badge
   if (overdueBadge) {
     const overdueCount = countOverdueTasks(chores);
     if (overdueCount > 0) {
@@ -636,7 +636,7 @@ function bindOnce(
   element.dataset[marker] = "1";
 }
 
-// X15 (Sprint 415): semantic clipboard producer
+// X15: semantic clipboard producer
 function buildTasksPayload(): SemanticPayload | null {
   const today = getTasksForToday();
   const overdue = today.filter((c) => {
@@ -669,7 +669,7 @@ export function initTasksCard(): void {
   if (_tasksInterval) clearInterval(_tasksInterval);
   // Re-render every hour (catches daily reset if dashboard is always on)
   _tasksInterval = window.setInterval(renderTasksCard, 60 * 60 * 1_000);
-  // X15 (Sprint 415): register semantic clipboard producer
+  // X15: register semantic clipboard producer
   registerSemanticProducer("tasks", buildTasksPayload);
 
   bindOnce(
@@ -761,7 +761,7 @@ export const tasksConfigSchema: CardConfigField[] = [
     tab: "advanced",
     group: "tasks",
   },
-  // ── Sprint 286 / CS-T1: due-badge/recurring/tags/sort-order ──────────────────────────
+  // due-badge/recurring/tags/sort-order ──────────────────────────
   {
     key: "tasksShowDueBadge",
     labelHe: "הצג תג תאריך יעד",
@@ -829,7 +829,7 @@ export const tasksCard: CardDefinition = {
   configSchema: tasksConfigSchema,
 };
 
-// ── Sprint 214 / T4: 1-level subtasks ─────────────────────────────────────
+// 1-level subtasks ─────────────────────────────────────
 
 /**
  * Add a subtask to a parent chore list.

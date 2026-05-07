@@ -69,7 +69,7 @@ media-src:   'self'  blob:          <segment-host>
 frame-src:   'none'                 (stays 'none' unless Mode C)
 ```
 
-Until the research sprint (v11.1-sprint-1) confirms the actual stream URLs,
+Until research confirms the actual stream URLs (deferred to v15),
 the CSP is **not modified** — the video card remains `hidden: true` in the
 default registry slot (opt-in only).
 

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/theme.ts (Sprint 538b → Sprint 539)
+ * fast-check property tests — src/ui/theme.ts ( b → )
  *
  * Properties under test:
  *  TH1. applyTheme: invalid theme defaults to "black"

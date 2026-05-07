@@ -1,6 +1,6 @@
 # ADR-064: D15 — Annual Third-Party `dist/` Reproducibility Verification
 
-- **Status**: Adopt v14.2 (shipped Sprint 424 — `.github/workflows/rebuild-verify.yml` active)
+- **Status**: Adopt v14.2 (shipped `.github/workflows/rebuild-verify.yml` active)
 - **Date**: 2026-05-03 (v13.36.0 patch series)
 - **Sprints**: 347, 424
 - **Related**: ADR-038 (SLSA L3 + Sigstore), ADR-046 (rebuilder-manifest), ROADMAP §1.11 D15

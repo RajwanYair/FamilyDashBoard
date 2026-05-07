@@ -1,5 +1,5 @@
 /**
- * Tests for provider-toast (Sprint 136 / Roadmap V14-RESILIENCE).
+ * Tests for provider-toast ( / Roadmap ).
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -9,7 +9,7 @@ vi.mock("@/ui/toast", () => ({ showToast: vi.fn() }));
 import { showToast } from "@/ui/toast";
 import { notifyProviderBlocked, _resetProviderToast } from "@/core/provider-toast";
 
-describe("provider-toast (Sprint 136)", () => {
+describe("provider-toast ", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     _resetProviderToast();

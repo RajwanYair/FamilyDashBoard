@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/worker-client.ts (V13-S28)
+ * fast-check property tests for src/core/worker-client.ts 
  *
  * Property-based tests that verify:
  *  1. URL construction: arbitrary valid params always produce parseable URLs
@@ -187,7 +187,7 @@ describe("worker-client — fast-check property tests", () => {
     );
   });
 
-  // ── Sprint 233: WorkerEnvelope structural invariants ──────────────────────
+  // ── WorkerEnvelope structural invariants ──────────────────────
 
   // P8: WorkerEnvelope.ts is always a number in the returned object
   it("P8: WorkerEnvelope.ts is always a finite number (arbitrary timestamp values)", async () => {
@@ -343,7 +343,7 @@ describe("worker-client — fast-check property tests", () => {
     );
   });
 
-  // ── Sprint 455: P14-P18 — newsAggregate, sefariaCalendar, crypto ─────────
+  // ── P14-P18 — newsAggregate, sefariaCalendar, crypto ─────────
 
   // P14: wc.newsAggregate() always targets the worker base URL
   it("P14: wc.newsAggregate() always targets the correct worker base URL", async () => {

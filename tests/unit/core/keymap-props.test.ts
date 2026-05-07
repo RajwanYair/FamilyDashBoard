@@ -1,5 +1,5 @@
 /**
- * Sprint 298 — Property-based tests for src/core/keymap.ts (KP4–KP8)
+ * Property-based tests for src/core/keymap.ts (KP4–KP8)
  *
  * Uses fast-check to verify structural invariants that hold for all possible
  * action arrays. Complements the concrete unit tests in keymap.test.ts.

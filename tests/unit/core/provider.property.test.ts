@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/provider.ts (Sprint 486)
+ * fast-check property tests — src/core/provider.ts 
  *
  * Properties under test:
  *  PV1. recordProviderSuccess resets consecutiveFails to 0 and status to "ok".
@@ -9,10 +9,10 @@
  *  PV5. recordProviderLatency: ring buffer never exceeds LATENCY_MAX_SAMPLES (20).
  *  PV6. getProviderHealth returns a copy (mutation doesn't affect internal state).
  *  PV7. shouldBackoff returns false when status is ok.
- *  PV8. getAllProviderHealth includes every registered provider (Sprint 598)
- *  PV9. recordProviderLatency: FIFO — latest sample is last in array (Sprint 598)
- *  PV10. shouldBackoff returns true when down + recent attempt (Sprint 598)
- *  PV11. recordProviderSuccess: successCount accumulates across calls (Sprint 598)
+ *  PV8. getAllProviderHealth includes every registered provider 
+ *  PV9. recordProviderLatency: FIFO — latest sample is last in array 
+ *  PV10. shouldBackoff returns true when down + recent attempt 
+ *  PV11. recordProviderSuccess: successCount accumulates across calls 
  */
 
 import { describe, it, expect, beforeEach } from "vitest";

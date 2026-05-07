@@ -5,7 +5,7 @@
 | Status  | Accepted   |
 | Date    | 2025-07-13 |
 | Sprint  | 28         |
-| Roadmap | V12-OPS    |
+| Roadmap | |
 
 ## Context
 
@@ -13,7 +13,7 @@ Browsers implement the [Reporting API](https://www.w3.org/TR/reporting/) (Level 
 Content-Security-Policy violation reports, deprecation warnings, and network error logs to a designated
 `report-to` endpoint without requiring any page-level JavaScript.
 
-Prior to Sprint 28, FamilyDashBoard had no endpoint to receive these browser-generated reports. CSP
+Prior to , FamilyDashBoard had no endpoint to receive these browser-generated reports. CSP
 violations were silently discarded. There was no visibility into which CSP directives were being violated,
 what deprecated APIs were being used by third-party scripts, or what network interventions the browser
 was applying.

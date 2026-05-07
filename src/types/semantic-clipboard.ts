@@ -4,7 +4,7 @@
  * Cards opt-in by importing `SemanticPayload` from here and calling
  * `registerSemanticProducer` from `src/core/semantic-clipboard`.
  *
- * Sprint 375 / v13.39.0.
+ * 
  */
 
 export type {

@@ -239,11 +239,11 @@ describe("computeMoonPhase", () => {
   });
 });
 
-// ── Sprint 266 / UP1-UP5: fast-check property tests for utils pure functions ──
+// ── fast-check property tests for utils pure functions ──
 
 import * as fc from "fast-check";
 
-describe("Utils — fast-check properties (UP1-UP5, Sprint 266)", () => {
+describe("Utils — fast-check properties (UP1-UP5 )", () => {
   /**
    * UP1: clamp(value, min, max) always returns a value in [min, max].
    */

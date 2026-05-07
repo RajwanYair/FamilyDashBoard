@@ -86,7 +86,7 @@ export function _resetInstalledFlag(): void {
   _installed = false;
 }
 
-// ── Sprint 125: Error rate calculation ───────────────────────────────────────
+// Error rate calculation ───────────────────────────────────────
 
 /**
  * Calculate the error rate: errors per minute since the first recorded error.
@@ -102,7 +102,7 @@ export function errorRate(): number {
   return _buffer.length / (spanMs / 60_000);
 }
 
-// ── Sprint 161: Error rate trend tracking ────────────────────────────────────
+// Error rate trend tracking ────────────────────────────────────
 
 const ERROR_TREND_MAX = 10;
 const _errorTrend: number[] = [];

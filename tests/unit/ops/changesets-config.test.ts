@@ -1,5 +1,5 @@
 /**
- * V13-OPS-1: Changesets bootstrap — config validation
+ * Changesets bootstrap — config validation
  *
  * Verifies .changeset/config.json is valid JSON with required fields.
  */
@@ -12,7 +12,7 @@ const configPath = resolve(__dirname, "../../../.changeset/config.json");
 const raw = readFileSync(configPath, "utf-8");
 const config = JSON.parse(raw) as Record<string, unknown>;
 
-describe("Changesets — .changeset/config.json (V13-OPS-1)", () => {
+describe("Changesets — .changeset/config.json ", () => {
   it("is valid JSON", () => {
     expect(() => JSON.parse(raw)).not.toThrow();
   });
@@ -46,7 +46,7 @@ describe("Changesets — .changeset/config.json (V13-OPS-1)", () => {
   });
 });
 
-describe("Changesets — package.json scripts (V13-OPS-1)", () => {
+describe("Changesets — package.json scripts ", () => {
   const pkgPath = resolve(__dirname, "../../../package.json");
   const pkg = JSON.parse(readFileSync(pkgPath, "utf-8")) as { scripts: Record<string, string> };
 

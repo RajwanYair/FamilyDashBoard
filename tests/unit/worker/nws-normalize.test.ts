@@ -1,5 +1,5 @@
 /**
- * Worker unit tests — NWS (api.weather.gov) normalizer (V13-DATA)
+ * Worker unit tests — NWS (api.weather.gov) normalizer 
  *
  * Verifies that the NWS-to-WeatherSchema normalization functions produce
  * correct Open-Meteo-compatible output from NWS forecast period data.
@@ -332,7 +332,7 @@ describe("isUsCoordinate", () => {
   });
 });
 
-// ── Sprint 46: missing branch coverage ───────────────────────────────────────
+// ── missing branch coverage ───────────────────────────────────────
 
 describe("parseWindKph — null match branch (line 33 `: 0` path)", () => {
   it('returns 0 for non-numeric non-calm string "Variable"', () => {

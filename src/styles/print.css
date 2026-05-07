@@ -80,7 +80,7 @@
     padding: 2px 8px;
   }
 
-  /* Sprint 114: Print improvements */
+  /* Print improvements */
   /* Card anatomy for print */
   .card__header {
     background: #f0f0f0 !important;
@@ -141,7 +141,7 @@
     margin: 1.5cm;
   }
 
-  /* Sprint 156: Print footer with dashboard URL */
+  /* Print footer with dashboard URL */
   body::after {
     content: "FamilyDashBoard — " attr(data-print-url);
     display: block !important;

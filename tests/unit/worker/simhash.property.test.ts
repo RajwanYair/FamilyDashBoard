@@ -171,7 +171,7 @@ describe("hammingDistance — property: triangle inequality", () => {
   });
 });
 
-// ── Sprint 33 expanded invariants (V12-TESTING) ───────────────────────────────
+// ── expanded invariants  ───────────────────────────────
 
 describe("simHash — property: determinism", () => {
   it("produces the same fingerprint for the same string on every call", () => {
@@ -255,9 +255,9 @@ describe("simHash — property: prefix sensitivity", () => {
   });
 });
 
-// ── Sprint 80: additional SimHash property assertions ─────────────────────
+// ── additional SimHash property assertions ─────────────────────
 
-describe("simHash — property: whitespace normalization (Sprint 80)", () => {
+describe("simHash — property: whitespace normalization ", () => {
   it("strings differing only in internal whitespace have the same fingerprint", () => {
     fc.assert(
       fc.property(
@@ -282,7 +282,7 @@ describe("simHash — property: whitespace normalization (Sprint 80)", () => {
   });
 });
 
-describe("simHash — property: case normalization (Sprint 80)", () => {
+describe("simHash — property: case normalization ", () => {
   it("uppercase and lowercase variants produce the same fingerprint", () => {
     fc.assert(
       fc.property(
@@ -296,7 +296,7 @@ describe("simHash — property: case normalization (Sprint 80)", () => {
   });
 });
 
-describe("simHash — property: hamming distance non-negativity (Sprint 80)", () => {
+describe("simHash — property: hamming distance non-negativity ", () => {
   it("hammingDistance is always a non-negative integer", () => {
     fc.assert(
       fc.property(printableStr, printableStr, (s1, s2) => {
@@ -309,7 +309,7 @@ describe("simHash — property: hamming distance non-negativity (Sprint 80)", ()
   });
 });
 
-describe("simHash — property: isNearDuplicate threshold boundary (Sprint 80)", () => {
+describe("simHash — property: isNearDuplicate threshold boundary ", () => {
   it("threshold equal to hammingDistance returns true", () => {
     fc.assert(
       fc.property(printableStr, printableStr, (s1, s2) => {

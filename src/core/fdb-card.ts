@@ -49,7 +49,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   /** State listeners bound via watchConfig(), cleared on disconnect. */
   private readonly _configListeners = new Map<string, EventListener>();
 
-  /** Bound visibility listener, stored for proper removal (Sprint 84). */
+  /** Bound visibility listener, stored for proper removal. */
   private readonly _visListener = (): void => {
     if (document.hidden) {
       this.onHidden();
@@ -58,10 +58,10 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     }
   };
 
-  /** Dispose function for the globalThemeChannel effect (Sprint 253 / X5). */
+  /** Dispose function for the globalThemeChannel effect. */
   private _disposeTheme: (() => void) | null = null;
 
-  /** Dispose function for the globalAlertChannel effect (Sprint 253 / X5). */
+  /** Dispose function for the globalAlertChannel effect. */
   private _disposeAlert: (() => void) | null = null;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
    */
   connectedCallback(): void {
     document.addEventListener("visibilitychange", this._visListener);
-    // Sprint 253 / X5: wire theme and alert lifecycle hooks via event-bus effects
+    // wire theme and alert lifecycle hooks via event-bus effects
     this._disposeTheme = effect(() => {
       const theme = globalThemeChannel.value;
       this.onThemeChange(theme);
@@ -94,7 +94,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     this.disconnect();
     this._clearConfigListeners();
     this._clearRefreshTimer();
-    // Sprint 253 / X5: dispose theme and alert subscriptions
+    // dispose theme and alert subscriptions
     this._disposeTheme?.();
     this._disposeTheme = null;
     this._disposeAlert?.();
@@ -195,7 +195,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     return Promise.resolve();
   }
 
-  // ── CardRuntime Hooks (Sprint 50) ─────────────────────────────────────────
+  // ── CardRuntime Hooks ─────────────────────────────────────────
 
   /**
    * Called when a config key that this card owns changes.
@@ -272,7 +272,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Called when the page becomes visible (Sprint 84).
+   * Called when the page becomes visible.
    * Override to trigger data refresh or resume animations.
    * Default implementation is a no-op.
    */
@@ -281,7 +281,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Called when the page becomes hidden (Sprint 84).
+   * Called when the page becomes hidden.
    * Override to pause expensive operations or animations.
    * Default implementation is a no-op.
    */
@@ -290,7 +290,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Called when the active dashboard theme changes (Sprint 253 / X5).
+   * Called when the active dashboard theme changes.
    * Override in cards that perform theme-sensitive work, such as SVG
    * colour recalculation or canvas redraws that depend on CSS variables.
    * Default implementation is a no-op.
@@ -302,7 +302,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Called when a cross-card alert event is broadcast (Sprint 253 / X5).
+   * Called when a cross-card alert event is broadcast.
    * Cards opt-in to dim/quiet mode by overriding this hook.
    * Called with `null` when the alert is cleared.
    * Default implementation is a no-op.
@@ -314,7 +314,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Show or hide a stale-data indicator chip on the card (Sprint 85).
+   * Show or hide a stale-data indicator chip on the card.
    *
    * When `ageMs > 0`, a `<span class="stale-chip">` is inserted (or
    * updated) as the first child of the card. When `ageMs <= 0` any
@@ -342,11 +342,11 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     }
   }
 
-  // ── Render Helpers (Sprint 54+55) ─────────────────────────────────────────
+  // ── Render Helpers ( +55) ─────────────────────────────────────────
 
   /**
    * Replace the card's content with a DocumentFragment built from the provided
-   * child nodes or strings (Sprint 54).
+   * child nodes or strings.
    *
    * Prefers appending DOM nodes (safe). Passing a plain string sets
    * `textContent` on a `<p>` wrapper — NEVER use for unsanitized HTML.
@@ -371,7 +371,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
 
   /**
    * Run an async data-loading function with automatic loading-state management
-   * (Sprint 55).
+   *.
    *
    * Sets `aria-busy="true"` before calling `fn`, and clears it when `fn`
    * resolves or rejects. On rejection, delegates to `onError`.
@@ -390,7 +390,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Dispatch a custom DOM event from this card element (Sprint 67).
+   * Dispatch a custom DOM event from this card element.
    *
    * Events bubble by default and are composed (cross shadow-DOM boundary).
    * All FamilyDashBoard cards are non-shadow so `composed` has no effect,
@@ -410,7 +410,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Set the card's visible title text (Sprint 72).
+   * Set the card's visible title text.
    *
    * Looks for a `[data-card-title]` descendant and safely sets its
    * `textContent`. If no title element exists, the call is a no-op so
@@ -424,7 +424,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Show or clear a numeric notification badge on the card header (Sprint 73).
+   * Show or clear a numeric notification badge on the card header.
    *
    * Looks for a `[data-card-badge]` descendant. When `count > 0` the badge
    * is made visible with the numeric value. When `count <= 0` the badge is
@@ -445,7 +445,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Remove all child nodes from a target element (Sprint 78).
+   * Remove all child nodes from a target element.
    * Defaults to `this` (the card root). Safer than setting innerHTML.
    * @param target - Element to clear (defaults to this)
    */
@@ -454,7 +454,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Type-safe querySelector scoped to this card (Sprint 79).
+   * Type-safe querySelector scoped to this card.
    * Returns null if no match found — no casting required by callers.
    * @param selector - CSS selector string
    */
@@ -463,7 +463,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Create an HTML element with optional class and text content (Sprint 80).
+   * Create an HTML element with optional class and text content.
    * Reduces boilerplate in card render methods.
    * @param tag       - HTML tag name (e.g. "div", "span")
    * @param className - CSS class(es) to set (space-separated)
@@ -481,7 +481,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Update the card's sync dot status (Sprint 86).
+   * Update the card's sync dot status.
    *
    * Delegates to `setSync(cardId, state)` — if the card has no sync dot
    * registered for its ID the call is silently ignored.
@@ -493,11 +493,11 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     if (id) setSync(id, state);
   }
 
-  // ── Render Primitives (Sprint 130–133) ──────────────────────────────────
+  // ── Render Primitives ( — 133) ──────────────────────────────────
 
-  // ── Sprint 183: Card Shell Builder ──────────────────────────────────────
+  // Card Shell Builder ──────────────────────────────────────
 
-  // ── Sprint 184: Data loading template ─────────────────────────────────
+  // Data loading template ─────────────────────────────────
 
   /**
    * Template method: fetch fresh data for this card.
@@ -556,7 +556,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
     }
   }
 
-  // ── Sprint 183: Card Shell Builder ──────────────────────────────────────
+  // Card Shell Builder ──────────────────────────────────────
 
   /**
    * Build the standard card shell inside this element.
@@ -634,7 +634,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Create a metric tile element (Sprint 130).
+   * Create a metric tile element.
    *
    * Returns a `<div class="metric-tile">` with label, value, and optional unit.
    * Use inside card body for structured data display (e.g. temperature, rate).
@@ -661,7 +661,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Create an empty state element (Sprint 131).
+   * Create an empty state element.
    *
    * Returns a `<div class="card-empty">` with icon and message.
    * Use when a card has no data to display (e.g. no events, no tasks).
@@ -687,7 +687,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Create an error state element (Sprint 132).
+   * Create an error state element.
    *
    * Returns a `<div class="card-error" role="alert">` with icon and message.
    * Use when a card fails to load data after all retries.
@@ -714,7 +714,7 @@ export abstract class FdbCard extends HTMLElement implements CardRuntime {
   }
 
   /**
-   * Create a skeleton loader element (Sprint 133).
+   * Create a skeleton loader element.
    *
    * Returns a `<div class="card-skeleton">` with N shimmer lines.
    * Use as placeholder content while data is loading.

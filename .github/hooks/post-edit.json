@@ -1,10 +1,38 @@
 {
     "hooks": {
+        "PreToolUse": [
+            {
+                "type": "message",
+                "toolNames": [
+                    "create_file"
+                ],
+                "message": "Before creating: check if a similar file already exists via file_search. Never duplicate files."
+            },
+            {
+                "type": "message",
+                "toolNames": [
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file"
+                ],
+                "message": "Before editing: include 3+ lines of context. Use multi_replace for 2+ independent edits. Never use oldString from summarized docs."
+            },
+            {
+                "type": "message",
+                "toolNames": [
+                    "run_in_terminal"
+                ],
+                "message": "Prefer run_task for workspace tasks (Vitest, Playwright, lint, build). Prefer get_errors for single-file diagnostics. PowerShell only — never bash."
+            }
+        ],
         "PostToolUse": [
             {
-                "type": "command",
-                "windows": "Write-Output '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Post-edit checklist: (1) RTL layout + CSS custom properties (--accent/--bg-*/--text-*) — no hardcoded colors; (2) cGet/cGetStale/cGetAsync return null not undefined; (3) _pageVisible guard on every async loader; (4) no innerHTML with unsanitized data — use textContent; (5) <dialog>+showModal() for overlays; (6) CSS layer: tokens→themes→base→layout→components→animations; (7) data-card-id must match registry ID; (8) use vscode_listCodeUsages before renaming; (9) multi_replace_string_in_file for batch edits; (10) use tool_search before any MCP/deferred tool; (11) run_task preferred over raw terminal for workspace tasks (typecheck/lint/test/build); (12) view_image for VR baseline comparison.\"}}'",
-                "fallback": "printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Post-edit: (1) RTL+CSS vars only; (2) cGet returns null; (3) _pageVisible guard; (4) textContent only; (5) dialog+showModal; (6) CSS layer order; (7) card-id=registry-id; (8) listCodeUsages before rename; (9) multi_replace for batch; (10) tool_search before MCP; (11) run_task for workspace tasks; (12) view_image for VR.\"}}'"
+                "type": "message",
+                "toolNames": [
+                    "replace_string_in_file",
+                    "multi_replace_string_in_file",
+                    "create_file"
+                ],
+                "message": "Post-edit: verify RTL · CSS vars · cGet→null · textContent · dialog+showModal · layer order · card-id=registry-id. Run get_errors on changed files."
             }
         ]
     }

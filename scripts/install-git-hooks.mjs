@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * install-git-hooks.mjs — Sprint 56
- *
+ * install-git-hooks.mjs — *
  * Copies scripts/git-hooks/pre-commit into .git/hooks/pre-commit and makes
  * it executable. Run once after cloning:
  *

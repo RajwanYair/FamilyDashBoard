@@ -1,5 +1,5 @@
 /**
- * Worker unit tests — ERRORS_QUEUE integration (V13-S26, ADR-032)
+ * Worker unit tests — ERRORS_QUEUE integration 
  *
  * Tests that:
  *  - handleErrors() enqueues a batch message when ERRORS_QUEUE is present

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/constants.ts (Sprint 502)
+ * fast-check property tests — src/core/constants.ts 
  *
  * Properties under test:
  *  CN1. getNetworkMode returns one of the 4 valid NetworkMode values.
@@ -8,10 +8,10 @@
  *  CN4. INTERVALS values are all positive integers and multiples of MS_PER_MIN.
  *  CN5. MAX_CONCURRENT is between 2 and 8 inclusive.
  *  CN6. CUR_TILES have positive precision and non-empty label/key/icon.
- *  CN7. getNetworkMode never returns invalid string for random localStorage (Sprint 593)
- *  CN8. PROXIES all start with https:// (Sprint 593)
- *  CN9. STOCK_META name/he/domain fields are non-empty strings (Sprint 593)
- *  CN10. Time constants are consistent: MS_PER_HOUR = 60*MS_PER_MIN, etc. (Sprint 593)
+ *  CN7. getNetworkMode never returns invalid string for random localStorage 
+ *  CN8. PROXIES all start with https:// 
+ *  CN9. STOCK_META name/he/domain fields are non-empty strings 
+ *  CN10. Time constants are consistent: MS_PER_HOUR = 60*MS_PER_MIN, etc. 
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";

@@ -1,15 +1,27 @@
 # FamilyDashBoard — supported browser targets
 # Primary: always-on TV displays (Chromium 114+)
 # Extended: all modern evergreen browsers so the dashboard renders correctly
-# on any device a family member might open it on (phone, tablet, laptop).
+# on any device a family member might open it on (phone, tablet, laptop, smart TV).
 # See ADR-001, ADR-002, and docs/ARCHITECTURE.md for constraints.
 # CSS features required: @layer · @property · @scope · light-dark() · container queries · View Transitions
 # Minimum versions that support all of these:
+
+# ── Desktop ────────────────────────────────────────────────────────────────
 Chrome >= 114
 Edge >= 114
 Firefox >= 128
 Firefox ESR
 Safari >= 17.4
 Opera >= 100
-Samsung >= 23
+
+# ── Mobile & Tablet ────────────────────────────────────────────────────────
 iOS >= 17.4
+Samsung >= 23
+Android >= 114
+ChromeAndroid >= 114
+FirefoxAndroid >= 128
+OperaMobile >= 80
+
+# ── Embedded / WebView ─────────────────────────────────────────────────────
+# Android WebView (for in-app browsers, Kiosk/TV set-top-box apps)
+op_mob >= 80

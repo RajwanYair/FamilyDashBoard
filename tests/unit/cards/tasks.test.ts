@@ -956,7 +956,7 @@ describe("Tasks — person filter chips (F8 v7.3)", () => {
     expect(document.querySelectorAll(".tasks-cb").length).toBe(3);
   });
 });
-// ── Sprint 24: parseTaskPriority ─────────────────────────────────────────────
+// ── parseTaskPriority ─────────────────────────────────────────────
 
 describe("Tasks — parseTaskPriority", () => {
   it("returns high priority for [H] prefix", () => {
@@ -988,7 +988,7 @@ describe("Tasks — parseTaskPriority", () => {
   });
 });
 
-// ── Sprint 24: parseTaskDueDate ──────────────────────────────────────────────
+// ── parseTaskDueDate ──────────────────────────────────────────────
 
 describe("Tasks — parseTaskDueDate", () => {
   it("extracts @YYYY-MM-DD suffix", () => {
@@ -1009,7 +1009,7 @@ describe("Tasks — parseTaskDueDate", () => {
   });
 });
 
-// ── Sprint 24: isOverdue ─────────────────────────────────────────────────────
+// ── isOverdue ─────────────────────────────────────────────────────
 
 describe("Tasks — isOverdue", () => {
   it("returns true for a past date", () => {
@@ -1025,7 +1025,7 @@ describe("Tasks — isOverdue", () => {
   });
 });
 
-// ── Sprint 24: formatTaskDueDate ─────────────────────────────────────────────
+// ── formatTaskDueDate ─────────────────────────────────────────────
 
 describe("Tasks — formatTaskDueDate", () => {
   it("returns a formatted string for a valid date", () => {
@@ -1039,7 +1039,7 @@ describe("Tasks — formatTaskDueDate", () => {
   });
 });
 
-// ── Sprint 24: taskCompletionRatio ────────────────────────────────────────────
+// ── taskCompletionRatio ────────────────────────────────────────────
 
 describe("Tasks — taskCompletionRatio", () => {
   const chores = [
@@ -1075,9 +1075,9 @@ describe("Tasks — taskCompletionRatio", () => {
   });
 });
 
-// ── Sprint 47: isDueToday ───────────────────────────────────────────────────
+// ── isDueToday ───────────────────────────────────────────────────
 
-describe("Tasks — isDueToday (Sprint 47)", () => {
+describe("Tasks — isDueToday ", () => {
   it("returns true for today's date string", () => {
     const today = new Date();
     const s = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
@@ -1097,9 +1097,9 @@ describe("Tasks — isDueToday (Sprint 47)", () => {
   });
 });
 
-// ── Sprint 47: due-today CSS class ──────────────────────────────────────────
+// ── due-today CSS class ──────────────────────────────────────────
 
-describe("Tasks — due-today class on row (Sprint 47)", () => {
+describe("Tasks — due-today class on row ", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
@@ -1161,9 +1161,9 @@ describe("Tasks — due-today class on row (Sprint 47)", () => {
   });
 });
 
-// ── Sprint 47: tasksShowCategories config gate ──────────────────────────────
+// ── tasksShowCategories config gate ──────────────────────────────
 
-describe("Tasks — tasksShowCategories config gate (Sprint 47)", () => {
+describe("Tasks — tasksShowCategories config gate ", () => {
   const chores = [
     { person: "עמרי", chore: "מטאטא" },
     { person: "ריבה", chore: "בישול" },
@@ -1199,9 +1199,9 @@ describe("Tasks — tasksShowCategories config gate (Sprint 47)", () => {
   });
 });
 
-// ── Sprint 30: taskPriorityIcon + emoji badge in render ──────────────────────
+// ── taskPriorityIcon + emoji badge in render ──────────────────────
 
-describe("Tasks — taskPriorityIcon (Sprint 30)", () => {
+describe("Tasks — taskPriorityIcon ", () => {
   it("returns 🔴 for high", () => {
     expect(taskPriorityIcon("high")).toBe("🔴");
   });
@@ -1219,7 +1219,7 @@ describe("Tasks — taskPriorityIcon (Sprint 30)", () => {
   });
 });
 
-describe("Tasks — priority emoji badge in renderTasksCard (Sprint 30)", () => {
+describe("Tasks — priority emoji badge in renderTasksCard ", () => {
   beforeEach(() => {
     localStorage.setItem(
       "dash_chores",
@@ -1241,9 +1241,9 @@ describe("Tasks — priority emoji badge in renderTasksCard (Sprint 30)", () => 
   });
 });
 
-// ── Sprint 33: countOverdueTasks ──────────────────────────────────────────
+// ── countOverdueTasks ──────────────────────────────────────────
 
-describe("Tasks — countOverdueTasks (Sprint 33)", () => {
+describe("Tasks — countOverdueTasks ", () => {
   const yesterday = (() => {
     const d = new Date();
     d.setDate(d.getDate() - 1);
@@ -1390,9 +1390,9 @@ describe("checkRecurringReset", () => {
   });
 });
 
-// ── V13-DATA: recurrence badge rendering ─────────────────────────────────────
+// ── recurrence badge rendering ─────────────────────────────────────
 
-describe("Tasks — recurrence badge (V13-DATA)", () => {
+describe("Tasks — recurrence badge ", () => {
   function setup(recurrence?: ChoreItem["recurrence"]) {
     document.body.innerHTML = `
       <div id="tasks-list"></div>
@@ -1472,7 +1472,7 @@ describe("Tasks — recurrence badge (V13-DATA)", () => {
   });
 });
 
-// ── Sprint 62: Monthly recurrence edge cases ───────────────────────────────
+// ── Monthly recurrence edge cases ───────────────────────────────
 
 describe("recurrenceResetKey — monthly edge cases", () => {
   it("returns zero-padded month for January", () => {
@@ -1595,9 +1595,9 @@ describe("checkRecurringReset — monthly cross-month", () => {
   });
 });
 
-// ── Sprint 83: addQuickChore edge cases ───────────────────────────────────
+// ── addQuickChore edge cases ───────────────────────────────────
 
-describe("Tasks — addQuickChore (Sprint 83)", () => {
+describe("Tasks — addQuickChore ", () => {
   beforeEach(() => {
     document.body.innerHTML = `<div id="tasks-list"></div>`;
     localStorage.clear();
@@ -1745,7 +1745,7 @@ describe("Tasks — quickInput keydown Enter triggers quickBtn.click (line 564)"
 
 // ── Task row ArrowDown / ArrowUp keyboard navigation ─────────────────────────
 
-describe("Tasks — row ArrowDown/ArrowUp keyboard navigation (Sprint 167)", () => {
+describe("Tasks — row ArrowDown/ArrowUp keyboard navigation ", () => {
   const chores = [
     { person: "עמרי", chore: "🧹 לנקות" },
     { person: "עמרי", chore: "🛒 קניות" },
@@ -1820,9 +1820,9 @@ describe("Tasks — row ArrowDown/ArrowUp keyboard navigation (Sprint 167)", () 
   });
 });
 
-// ── Sprint 177 / T1: isDueThisWeek ────────────────────────────────────────
+// ── isDueThisWeek ────────────────────────────────────────
 
-describe("Tasks — isDueThisWeek (Sprint 177)", () => {
+describe("Tasks — isDueThisWeek ", () => {
   it("returns false for a past date (overdue)", () => {
     expect(isDueThisWeek("2000-01-01")).toBe(false);
   });
@@ -1859,9 +1859,9 @@ describe("Tasks — isDueThisWeek (Sprint 177)", () => {
   });
 });
 
-// ── Sprint 177 / T3: Tag chips rendering ─────────────────────────────────
+// ── Tag chips rendering ─────────────────────────────────
 
-describe("Tasks — tag chips rendering (Sprint 177 T3)", () => {
+describe("Tasks — tag chips rendering ( T3)", () => {
   function setupDom(): void {
     document.body.innerHTML = `
       <div id="tasks-list"></div>
@@ -1920,7 +1920,7 @@ describe("Tasks — tag chips rendering (Sprint 177 T3)", () => {
   });
 });
 
-// ── Sprint 203 / T2: advanceRecurringDueDate ──────────────────────────────
+// ── advanceRecurringDueDate ──────────────────────────────
 describe("advanceRecurringDueDate", () => {
   it("returns null for non-recurring item", () => {
     const item: ChoreItem = { person: "אלי", chore: "ניקיון @2025-03-10" };
@@ -1964,9 +1964,9 @@ describe("advanceRecurringDueDate", () => {
   });
 });
 
-// ── Sprint 214 / T4: 1-level subtasks ──────────────────────────────────────
+// ── 1-level subtasks ──────────────────────────────────────
 
-describe("Tasks — addSubtask (Sprint 214 / T4)", () => {
+describe("Tasks — addSubtask ", () => {
   const parent: ChoreItem = { person: "אמא", chore: "קניות" };
   const parentId = "אמא::קניות";
   const sub: ChoreItem = { person: "אמא", chore: "חלב" };
@@ -2002,7 +2002,7 @@ describe("Tasks — addSubtask (Sprint 214 / T4)", () => {
   });
 });
 
-describe("Tasks — getSubtasks (Sprint 214 / T4)", () => {
+describe("Tasks — getSubtasks ", () => {
   const parentId = "אמא::קניות";
   const child1: ChoreItem = { person: "אמא", chore: "חלב", parentId };
   const child2: ChoreItem = { person: "אמא", chore: "לחם", parentId };
@@ -2027,7 +2027,7 @@ describe("Tasks — getSubtasks (Sprint 214 / T4)", () => {
   });
 });
 
-describe("Tasks — removeSubtask (Sprint 214 / T4)", () => {
+describe("Tasks — removeSubtask ", () => {
   const parentId = "אמא::קניות";
   const child: ChoreItem = { person: "אמא", chore: "חלב", parentId };
   const other: ChoreItem = { person: "אבא", chore: "כלים" };
@@ -2062,7 +2062,7 @@ describe("Tasks — removeSubtask (Sprint 214 / T4)", () => {
   });
 });
 
-// ── Sprint 256: fast-check property tests (TP1–TP5) ───────────────────────
+// ── fast-check property tests (TP1–TP5) ───────────────────────
 
 import * as fc from "fast-check";
 
@@ -2261,8 +2261,8 @@ describe("TP5 · isOverdue / isDueToday / isDueThisWeek — property: boolean gu
   });
 });
 
-// ── Sprint 286 / CS-T1: due-badge/recurring/tags/sort-order ──────────────────────
-describe("Tasks configSchema — CS-T1 (Sprint 286)", () => {
+// ── due-badge/recurring/tags/sort-order ──────────────────────
+describe("Tasks configSchema — CS-T1 ", () => {
   it("configSchema has 8 fields total after CS-T1", () => {
     expect(tasksConfigSchema.length).toBe(8);
   });

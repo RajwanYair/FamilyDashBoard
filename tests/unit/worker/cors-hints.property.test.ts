@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/middleware/cors.ts + early-hints.ts (Sprint 538)
+ * fast-check property tests — worker/src/middleware/cors.ts + early-hints.ts 
  *
  * Properties under test:
  *  CO1. isPreflight returns true only for OPTIONS method

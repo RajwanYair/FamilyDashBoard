@@ -32,7 +32,7 @@ type StateKey = `${SliceName}.${string}`;
 
 type StateChangeCallback<T = unknown> = (value: T, key: StateKey) => void;
 
-// ── Bridge to app-signals (Roadmap #1, Sprint 121) ───────────────────────────
+// ── Bridge to app-signals  ───────────────────────────
 
 // Lazy import to avoid circular dep on module init.  syncAppSignal is called
 // only after the store dispatches an event so the module is already loaded.
@@ -91,7 +91,7 @@ class FdbStateStore extends EventTarget {
 
     this._data[slice][field] = value;
     this.dispatchEvent(Object.assign(new CustomEvent(key, { detail: value }), { key }));
-    // Bridge config writes to named app-signals (Roadmap #1).
+    // Bridge config writes to named app-signals .
     if (slice === "config") _bridgeToSignals(key, value);
   }
 

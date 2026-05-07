@@ -424,7 +424,7 @@ describe("Card Settings Dialog — cancel button", () => {
   });
 });
 
-// ── Sprint 143: missed branches ──────────────────────────────────────────────
+// ── missed branches ──────────────────────────────────────────────
 
 describe("Card Settings Dialog — backdrop click closes dialog", () => {
   beforeEach(() => {

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/ecb-adapter.ts (Sprint 504)
+ * fast-check property tests — worker/src/utils/ecb-adapter.ts 
  *
  * Properties under test:
  *  ECB1. Valid XML with ILS → returns non-null with ILS=1.0.

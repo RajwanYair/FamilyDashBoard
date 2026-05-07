@@ -4,7 +4,7 @@
  * Thin helpers around the Cloudflare D1 database binding for:
  *   - Counting route invocations per UTC day
  *   - Querying aggregated counters for the /api/metrics endpoint
- *   - Recording per-route response latency samples (Sprint 23 — B5)
+ *   - Recording per-route response latency samples (B5)
  *   - Computing p95 latency per route for Prometheus output
  *   - Bootstrap: lazy schema creation on first write
  *
@@ -159,7 +159,7 @@ export async function queryTotalsByRoute(
   return totals;
 }
 
-// ── Sprint 23: p95 latency aggregation ───────────────────────────────────────
+// ── p95 latency aggregation ───────────────────────────────────────
 
 export interface RouteP95 {
   /** Route name, e.g. "/api/weather". */

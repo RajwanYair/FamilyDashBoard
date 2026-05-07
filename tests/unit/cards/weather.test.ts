@@ -1270,7 +1270,7 @@ describe("Weather — inline coverage: renderWeather sunrise/sunset (line 304)",
     expect(rise.textContent).toBeTruthy();
   });
 
-  it("shows '--:--' placeholders when sunset[0] is null (W1 Sprint 175)", () => {
+  it("shows '--:--' placeholders when sunset[0] is null (W1 )", () => {
     document.body.innerHTML = `
       <div id="top-temp"></div><div id="wx-temp"></div>
       <div id="wx-desc"></div><div id="wx-icon"></div>
@@ -1470,7 +1470,7 @@ describe("Weather — renderWeather defensive branches", () => {
     localStorage.clear();
   });
 
-  it("shows '--:--' fallback for invalid sunset string (W1 Sprint 175)", () => {
+  it("shows '--:--' fallback for invalid sunset string (W1 )", () => {
     const data = makeWeather();
     data.daily!.sunset = ["not-a-date", "also-bad"];
     renderWeather(data);
@@ -1950,7 +1950,7 @@ describe("Weather — precipSummaryLabel", () => {
   });
 });
 
-// ── Sprint 46: renderHourlyStrip ─────────────────────────────────────────────
+// ── renderHourlyStrip ─────────────────────────────────────────────
 
 function makeHourlyWeather(hourCount = 6): WeatherResponse {
   const now = new Date();
@@ -1978,7 +1978,7 @@ function makeHourlyWeather(hourCount = 6): WeatherResponse {
   };
 }
 
-describe("Weather — renderHourlyStrip (Sprint 46)", () => {
+describe("Weather — renderHourlyStrip ", () => {
   beforeEach(() => {
     localStorage.clear();
     localStorage.setItem("dash_v2_config", JSON.stringify({ weatherShowHourly: true }));
@@ -2053,9 +2053,9 @@ describe("Weather — renderHourlyStrip (Sprint 46)", () => {
   });
 });
 
-// ── Sprint 32: formatCloudCover ────────────────────────────────────────────
+// ── formatCloudCover ────────────────────────────────────────────
 
-describe("Weather — formatCloudCover (Sprint 32)", () => {
+describe("Weather — formatCloudCover ", () => {
   it("returns 'בהיר' label for 0%", () => {
     expect(formatCloudCover(0)).toContain("בהיר");
   });
@@ -2087,9 +2087,9 @@ describe("Weather — formatCloudCover (Sprint 32)", () => {
   });
 });
 
-// ── Sprint 87: configSchema ─────────────────────────────────────────────
+// ── configSchema ─────────────────────────────────────────────
 
-describe("Weather — configSchema (Sprint 87)", () => {
+describe("Weather — configSchema ", () => {
   it("is a non-empty array", () => {
     expect(Array.isArray(weatherConfigSchema)).toBe(true);
     expect(weatherConfigSchema.length).toBeGreaterThan(0);
@@ -2145,9 +2145,9 @@ describe("Weather — loadWeather uses createAsyncCardLoader (Stream D2.2)", () 
   });
 });
 
-// ── Sprint 91: branch coverage gaps ──────────────────────────────────────────
+// ── branch coverage gaps ──────────────────────────────────────────
 
-describe("Weather — Sprint 91 renderHourlyStrip branch gaps", () => {
+describe("Weather — renderHourlyStrip branch gaps", () => {
   beforeEach(() => {
     localStorage.clear();
     localStorage.setItem("dash_v2_config", JSON.stringify({ weatherShowHourly: true }));
@@ -2225,7 +2225,7 @@ describe("Weather — Sprint 91 renderHourlyStrip branch gaps", () => {
   });
 });
 
-describe("Weather — Sprint 91 initWeatherCities branch gaps", () => {
+describe("Weather — initWeatherCities branch gaps", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
@@ -2267,7 +2267,7 @@ describe("Weather — Sprint 91 initWeatherCities branch gaps", () => {
   });
 });
 
-describe("Weather — Sprint 91 renderWeather wind-tile display", () => {
+describe("Weather — renderWeather wind-tile display", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
@@ -2293,7 +2293,7 @@ describe("Weather — Sprint 91 renderWeather wind-tile display", () => {
   });
 });
 
-// ── computeGoldenHour (W1, Sprint 175) ───────────────────────────────────────
+// ── computeGoldenHour (W1 ) ───────────────────────────────────────
 
 describe("computeGoldenHour", () => {
   it("returns morningEnd as sunrise + 60 min", () => {
@@ -2331,12 +2331,12 @@ describe("computeGoldenHour", () => {
   });
 });
 
-// ── W4 / Sprint 193: Air quality ──────────────────────────────────────────────
+// ── W4 / Air quality ──────────────────────────────────────────────
 
 import { aqiLabel, renderAqiTile, fetchAirQuality } from "@/cards/weather/weather";
 import { isAirQualityResponse } from "@/types/api";
 
-describe("Weather — aqiLabel (Sprint 193 / W4)", () => {
+describe("Weather — aqiLabel ", () => {
   it("returns aqi-good for AQI 0", () => {
     expect(aqiLabel(0).cls).toBe("aqi-good");
     expect(aqiLabel(0).label).toBe("טוב");
@@ -2361,7 +2361,7 @@ describe("Weather — aqiLabel (Sprint 193 / W4)", () => {
   });
 });
 
-describe("Weather — renderAqiTile (Sprint 193 / W4)", () => {
+describe("Weather — renderAqiTile ", () => {
   beforeEach(() => {
     document.body.innerHTML = `<div id="wx-aqi"></div>`;
   });
@@ -2385,7 +2385,7 @@ describe("Weather — renderAqiTile (Sprint 193 / W4)", () => {
   });
 });
 
-describe("Weather — fetchAirQuality (Sprint 193 / W4)", () => {
+describe("Weather — fetchAirQuality ", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -2432,7 +2432,7 @@ describe("Weather — isAirQualityResponse type guard", () => {
   });
 });
 
-// ── W3 / Sprint 194: Nowcast ──────────────────────────────────────────────────
+// ── W3 / Nowcast ──────────────────────────────────────────────────
 
 import { fetchNowcast, renderNowcastStrip } from "@/cards/weather/weather";
 import { isNowcastResponse } from "@/types/api";
@@ -2446,7 +2446,7 @@ function makeNowcast(probs = [10, 45, 80, 20]): import("@/types/api").NowcastRes
   };
 }
 
-describe("Weather — isNowcastResponse type guard (Sprint 194 / W3)", () => {
+describe("Weather — isNowcastResponse type guard ", () => {
   it("accepts valid nowcast object", () => {
     expect(isNowcastResponse(makeNowcast())).toBe(true);
   });
@@ -2458,7 +2458,7 @@ describe("Weather — isNowcastResponse type guard (Sprint 194 / W3)", () => {
   });
 });
 
-describe("Weather — fetchNowcast (Sprint 194 / W3)", () => {
+describe("Weather — fetchNowcast ", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -2486,7 +2486,7 @@ describe("Weather — fetchNowcast (Sprint 194 / W3)", () => {
   });
 });
 
-describe("Weather — renderNowcastStrip (Sprint 194 / W3)", () => {
+describe("Weather — renderNowcastStrip ", () => {
   beforeEach(() => {
     document.body.innerHTML = `<div id="wx-nowcast" hidden></div>`;
     cacheDom();
@@ -2519,11 +2519,11 @@ describe("Weather — renderNowcastStrip (Sprint 194 / W3)", () => {
   });
 });
 
-// ── W5 / Sprint 195: SVG wind compass ────────────────────────────────────────
+// ── W5 / SVG wind compass ────────────────────────────────────────
 
 import { compassGustArc, renderWindCompass } from "@/cards/weather/weather";
 
-describe("Weather — compassGustArc (Sprint 195 / W5)", () => {
+describe("Weather — compassGustArc ", () => {
   it("returns a valid SVG arc path string", () => {
     const path = compassGustArc(0, 60);
     expect(path).toMatch(/^M /);
@@ -2543,7 +2543,7 @@ describe("Weather — compassGustArc (Sprint 195 / W5)", () => {
   });
 });
 
-describe("Weather — renderWindCompass (Sprint 195 / W5)", () => {
+describe("Weather — renderWindCompass ", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <svg id="wx-compass">
@@ -2579,8 +2579,8 @@ describe("Weather — renderWindCompass (Sprint 195 / W5)", () => {
   });
 });
 
-// ── Sprint 207 / W6: getMoonPhaseSummary + scrollToLinkedCard ──────────
-describe("Weather — getMoonPhaseSummary (Sprint 207)", () => {
+// ── getMoonPhaseSummary + scrollToLinkedCard ──────────
+describe("Weather — getMoonPhaseSummary ", () => {
   it("returns crossLinkTarget hebrew-cal", () => {
     const result = getMoonPhaseSummary(new Date("2024-01-11"));
     expect(result.crossLinkTarget).toBe("hebrew-cal");
@@ -2612,7 +2612,7 @@ describe("Weather — getMoonPhaseSummary (Sprint 207)", () => {
   });
 });
 
-// ── Sprint 254: fast-check property tests (WP1–WP6) ───────────────────────
+// ── fast-check property tests (WP1–WP6) ───────────────────────
 
 import * as fc from "fast-check";
 
@@ -2759,9 +2759,9 @@ describe("WP6 · computeGoldenHour — property: output format is HH:MM or '--:-
   });
 });
 
-// ── Sprint 277 / CS-W1: weatherUsTravelMode in configSchema ───────────────
+// ── weatherUsTravelMode in configSchema ───────────────
 
-describe("Weather configSchema — CS-W1 (Sprint 277)", () => {
+describe("Weather configSchema — CS-W1 ", () => {
   it("weatherUsTravelMode field exists in configSchema", () => {
     const field = weatherConfigSchema.find((f) => f.key === "weatherUsTravelMode");
     expect(field).toBeDefined();
@@ -2771,13 +2771,13 @@ describe("Weather configSchema — CS-W1 (Sprint 277)", () => {
   });
 
   it("configSchema has 7 fields total after CS-W1", () => {
-    // Updated to 12 in CS-W2 (Sprint 287) which added 5 more feature-toggle fields
+    // Updated to 12 in CS-W2  which added 5 more feature-toggle fields
     expect(weatherConfigSchema.length).toBeGreaterThanOrEqual(7);
   });
 });
 
-// ── Sprint 287 / CS-W2: W3/W4/W5/W6 feature toggles ────────────────────────
-describe("Weather configSchema — CS-W2 (Sprint 287)", () => {
+// ── W3/W4/W5/W6 feature toggles ────────────────────────
+describe("Weather configSchema — CS-W2 ", () => {
   it("configSchema has 12 fields total after CS-W2", () => {
     expect(weatherConfigSchema.length).toBe(12);
   });

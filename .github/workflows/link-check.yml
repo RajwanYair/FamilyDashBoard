@@ -1,5 +1,5 @@
 # =============================================================================
-# Markdown Link Check — Sprint 108 (V14-FOUNDATIONS)
+# Markdown Link Check
 #
 # Monthly cron + manual dispatch. **Never blocks PRs** by design — link rot
 # is a non-deterministic, network-dependent failure mode that should be

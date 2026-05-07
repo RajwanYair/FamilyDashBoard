@@ -1,5 +1,5 @@
 /**
- * Sprint 309 — Property-based tests for src/core/diag.ts (DP1–DP5)
+ * Property-based tests for src/core/diag.ts (DP1–DP5)
  *
  * Uses fast-check to verify ring-buffer invariants and classifyProviderError
  * for all possible input shapes.

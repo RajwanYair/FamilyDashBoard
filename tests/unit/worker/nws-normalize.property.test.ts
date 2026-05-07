@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — NWS normalizer invariants (V13-DATA)
+ * fast-check property tests — NWS normalizer invariants 
  *
  * Mathematical and structural properties that must hold for any valid input:
  *
@@ -12,8 +12,7 @@
  * N7. windDirToDeg output is always in [0, 360)
  * N8. isUsCoordinate is true only for lat ∈ [24.4, 49.4] and lon ∈ [-125, -66.9]
  *
- * V13-DATA
- */
+ * */
 
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
@@ -225,7 +224,7 @@ describe("NWS normalizer — N8: isUsCoordinate boundary invariants", () => {
   });
 });
 
-// ── Sprint 81: additional NWS normalizer property assertions ──────────────
+// ── additional NWS normalizer property assertions ──────────────
 
 // Helper: make a minimal NwsPeriod
 type NwsPeriodMin = {
@@ -259,7 +258,7 @@ function makeNwsPeriod(overrides?: Partial<NwsPeriodMin>): NwsPeriodMin {
   };
 }
 
-describe("NWS normalizer — N9: mphToKph properties (Sprint 81)", () => {
+describe("NWS normalizer — N9: mphToKph properties ", () => {
   it("mphToKph result is always rounded to 1 decimal place", () => {
     fc.assert(
       fc.property(fc.integer({ min: 0, max: 300 }), (v) => {
@@ -281,7 +280,7 @@ describe("NWS normalizer — N9: mphToKph properties (Sprint 81)", () => {
   });
 });
 
-describe("NWS normalizer — N10: windDirToDeg round-trip (Sprint 81)", () => {
+describe("NWS normalizer — N10: windDirToDeg round-trip ", () => {
   const COMPASS_DIRS: string[] = [
     "N",
     "NNE",
@@ -323,7 +322,7 @@ describe("NWS normalizer — N10: windDirToDeg round-trip (Sprint 81)", () => {
   });
 });
 
-describe("NWS normalizer — N11: buildDailyEntries invariants (Sprint 81)", () => {
+describe("NWS normalizer — N11: buildDailyEntries invariants ", () => {
   it("empty input returns empty array", () => {
     expect(buildDailyEntries([])).toEqual([]);
   });
@@ -373,7 +372,7 @@ describe("NWS normalizer — N11: buildDailyEntries invariants (Sprint 81)", () 
   });
 });
 
-describe("NWS normalizer — N12: normalizeNwsToWeatherSchema output shape (Sprint 81)", () => {
+describe("NWS normalizer — N12: normalizeNwsToWeatherSchema output shape ", () => {
   it("returns the correct top-level keys", () => {
     const period = makeNwsPeriod() as Parameters<typeof normalizeNwsToWeatherSchema>[0][0];
     const result = normalizeNwsToWeatherSchema([period], [period]);

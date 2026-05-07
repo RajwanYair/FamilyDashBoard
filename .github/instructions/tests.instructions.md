@@ -6,7 +6,7 @@ description: "Use when: writing or reviewing test files under tests/. Vitest pat
 # Test Instructions — FamilyDashBoard v14.4.0
 
 > Apply these rules to every file under `tests/`. See `copilot-instructions.md` for cross-cutting project rules.
-> Baseline: 6387 / 214 suites / 0 failures · Coverage thresholds: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines).
+> Baseline: 7037 / 275 suites / 0 failures · Coverage thresholds: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines).
 
 ## Test Framework
 
@@ -120,7 +120,7 @@ When using `fast-check` for property tests:
 - Use `fc.oneof()` over `fc.frequency()` when weights don't matter
 - Keep `numRuns` at the default (100) unless you have a specific reason to increase it
 
-## Worker Route Tests (Stream W.5–W.8)
+## Worker Route Tests
 
 - Worker tests live in `tests/unit/worker/worker.test.ts` — they run in Node (no Miniflare)
 - Use `vi.spyOn(globalThis, "fetch")` to mock upstream calls (not `vi.mock`)
@@ -130,3 +130,12 @@ When using `fast-check` for property tests:
 - URLs in `handleNews` tests must use an origin from `ALLOWED_NEWS_ORIGINS` (e.g. `rss.ynet.co.il`)
 - NewsRssSchema: valid RSS requires `<channel>` + `<item>`; valid Atom requires `<feed>` + `<entry>`
 - Worker typecheck (separate from main tscheck): `npx tsc --project worker/tsconfig.json --noEmit`
+
+## Extension Integration
+
+- **Vitest Explorer** (`vitest.explorer`): run individual tests via click; use `run_task` for workspace Vitest commands rather than raw `npx vitest`.
+- **Coverage Gutters** (`ryanluker.vscode-coverage-gutters`): displays coverage inline from `lcov.info` — run `npx vitest run --coverage` first, then toggle "Watch" in status bar to see uncovered lines.
+- **Error Lens** (`usernamehw.errorlens`): shows test assertion errors inline when Vitest is running in watch mode.
+- **Playwright** (`ms-playwright.playwright`): E2E test runner; use `run_task '🎭 Playwright: E2E Tests'` — MCP playwright for in-chat browser automation.
+- **Console Ninja** (`wallabyjs.console-ninja`): shows `diagLog()` output inline in test files during debugging sessions.
+- **TODO Tree** (`gruntfuggly.todo-tree`): tracks `TODO`, `FIXME`, `HACK` comments in tests — use for pre-release cleanup audits.

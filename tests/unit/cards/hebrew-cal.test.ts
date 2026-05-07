@@ -2084,7 +2084,7 @@ describe("Hebrew Calendar — renderNextCalEvent dedup via _lastSpecialNames.som
   });
 });
 
-// -- DAF_STATIC_FALLBACK constant (Sprint 5 / v7.5) ---------------------------
+// -- DAF_STATIC_FALLBACK constant  ---------------------------
 
 describe("DAF_STATIC_FALLBACK constant", () => {
   it("is an object with ref and heRef string fields", () => {
@@ -2099,7 +2099,7 @@ describe("DAF_STATIC_FALLBACK constant", () => {
   });
 });
 
-// ── Sprint 27: isShabbat ──────────────────────────────────────────────────────
+// ── isShabbat ──────────────────────────────────────────────────────
 
 describe("isShabbat", () => {
   it("returns true when within candles-to-havdala window", () => {
@@ -2123,7 +2123,7 @@ describe("isShabbat", () => {
   });
 });
 
-// ── Sprint 27: nextHolidayName ────────────────────────────────────────────────
+// ── nextHolidayName ────────────────────────────────────────────────
 
 describe("nextHolidayName", () => {
   it("returns null for empty items", () => {
@@ -2156,7 +2156,7 @@ describe("nextHolidayName", () => {
   });
 });
 
-// ── Sprint 27: hebrewMonthName ────────────────────────────────────────────────
+// ── hebrewMonthName ────────────────────────────────────────────────
 
 describe("hebrewMonthName", () => {
   it("returns a non-empty string", () => {
@@ -2171,7 +2171,7 @@ describe("hebrewMonthName", () => {
   });
 });
 
-// ── Sprint 27: getParashat ────────────────────────────────────────────────────
+// ── getParashat ────────────────────────────────────────────────────
 
 describe("getParashat", () => {
   it("returns null for empty array", () => {
@@ -2198,7 +2198,7 @@ describe("getParashat", () => {
   });
 });
 
-// ── Sprint 27: zmanimTimeLabel ────────────────────────────────────────────────
+// ── zmanimTimeLabel ────────────────────────────────────────────────
 
 describe("zmanimTimeLabel", () => {
   it("returns '--' for empty string", () => {
@@ -2219,7 +2219,7 @@ describe("zmanimTimeLabel", () => {
   });
 });
 
-// ── Sprint 31: V13-DATA — 29 Elul pre-warm trigger ──────────────────────────
+// ── — 29 Elul pre-warm trigger ──────────────────────────
 
 describe("Hebrew Calendar — is29Elul", () => {
   it("returns a boolean", () => {
@@ -2314,9 +2314,9 @@ describe("Hebrew Calendar — prewarmNextYearHolidays", () => {
   });
 });
 
-// ── Sprint 94: branch coverage gaps ──────────────────────────────────────────
+// ── branch coverage gaps ──────────────────────────────────────────
 
-describe("Hebrew Calendar — Sprint 94 isShabbat heuristic day branches", () => {
+describe("Hebrew Calendar — isShabbat heuristic day branches", () => {
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -2353,7 +2353,7 @@ describe("Hebrew Calendar — Sprint 94 isShabbat heuristic day branches", () =>
   });
 });
 
-describe("Hebrew Calendar — Sprint 94 nextHolidayName title fallback", () => {
+describe("Hebrew Calendar — nextHolidayName title fallback", () => {
   it("uses title when hebrew is absent (title fallback branch)", () => {
     const items = [
       { category: "holiday", date: "2099-04-15", title: "Passover Festival" },
@@ -2363,7 +2363,7 @@ describe("Hebrew Calendar — Sprint 94 nextHolidayName title fallback", () => {
   });
 });
 
-describe("Hebrew Calendar — Sprint 94 renderMoonPhase without moon-row", () => {
+describe("Hebrew Calendar — renderMoonPhase without moon-row", () => {
   afterEach(() => {
     document.body.innerHTML = "";
   });
@@ -2376,9 +2376,9 @@ describe("Hebrew Calendar — Sprint 94 renderMoonPhase without moon-row", () =>
   });
 });
 
-// ── Sprint 178 / H4: getHaftarah ─────────────────────────────────────────
+// ── getHaftarah ─────────────────────────────────────────
 
-describe("Hebrew-cal — H4 getHaftarah (Sprint 178)", () => {
+describe("Hebrew-cal — H4 getHaftarah ", () => {
   it("returns null when no haftara items present", () => {
     const items = [
       { title: "Shabbat", date: "2025-06-07", category: "parashat", hebrew: "בראשית" },
@@ -2403,9 +2403,9 @@ describe("Hebrew-cal — H4 getHaftarah (Sprint 178)", () => {
   });
 });
 
-// ── Sprint 178 / H5: getRoshChodesh ──────────────────────────────────────
+// ── getRoshChodesh ──────────────────────────────────────
 
-describe("Hebrew-cal — H5 getRoshChodesh (Sprint 178)", () => {
+describe("Hebrew-cal — H5 getRoshChodesh ", () => {
   it("returns null when no roshchodesh items in range", () => {
     const now = new Date("2025-06-10");
     const items = [{ title: "Rosh Chodesh Tamuz", date: "2025-06-28", category: "roshchodesh", hebrew: "ראש חודש תמוז" }];
@@ -2441,8 +2441,8 @@ describe("Hebrew-cal — H5 getRoshChodesh (Sprint 178)", () => {
   });
 });
 
-// ── Sprint 210 / H6: Yahrzeit IDB list ────────────────────────────────
-describe("HebrewCal — Yahrzeit IDB (Sprint 210)", () => {
+// ── Yahrzeit IDB list ────────────────────────────────
+describe("HebrewCal — Yahrzeit IDB ", () => {
   beforeEach(() => { _idbClearFallback(); });
 
   it("getYahrzeits returns empty array initially", async () => {
@@ -2486,7 +2486,7 @@ describe("HebrewCal — Yahrzeit IDB (Sprint 210)", () => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Sprint 248 — Hebrew-cal card fast-check property tests (HC1–HC6)
+// Hebrew-cal card fast-check property tests (HC1–HC6)
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── HC1: getPsalmOfDay — always returns one of the 7 Psalm values ─────────
@@ -2652,8 +2652,8 @@ describe("HC6: nextHebrewYearGregorianApprox — always returns a 4-digit Gregor
   });
 });
 
-// ── Sprint 279 / CS-H1: hebrew-cal 6 tile-visibility toggles ─────────────
-describe("HebrewCal configSchema — CS-H1 (Sprint 279)", () => {
+// ── hebrew-cal 6 tile-visibility toggles ─────────────
+describe("HebrewCal configSchema — CS-H1 ", () => {
   const BOOLEAN_KEYS = [
     "hcalShowDafYomi",
     "hcalShowOmer",
@@ -2687,7 +2687,7 @@ describe("HebrewCal configSchema — CS-H1 (Sprint 279)", () => {
   });
 });
 
-// ── Sprint 415 / coverage ratchet: destroyHebrewCalCard ────────────────────
+// ── / coverage ratchet: destroyHebrewCalCard ────────────────────
 
 describe("HebrewCal — destroyHebrewCalCard", () => {
   it("does not throw when no intervals are scheduled", () => {

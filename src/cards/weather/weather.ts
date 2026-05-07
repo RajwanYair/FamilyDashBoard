@@ -3,8 +3,7 @@
  *
  * Open-Meteo integration: current conditions, hourly chart, 7-day forecast.
  *
- * X12/X15 ADOPTED — v13.40.0 Sprint 385 (see ADR-071).
- */
+ * X12/X15 protocol adopted (see ADR-071). */
 
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import { trustedHTML } from "../../core/trusted-types";
@@ -45,7 +44,7 @@ let _activeLat = 31.7683;
 let _activeLon = 35.2137;
 // LS_CITY_1/2/3 imported from constants
 
-// X15 (Sprint 385): semantic-clipboard producer for the weather card.
+// X15: semantic-clipboard producer for the weather card.
 let _lastWeatherSnapshot: {
   tempC: number;
   feelsC: number;
@@ -236,10 +235,10 @@ function getTempUnit(): "C" | "F" {
   return loadConfig().tempUnit;
 }
 
-// ── Sprint 193 / W4: Air quality ─────────────────────────────────────────────────────
+// Air quality ─────────────────────────────────────────────────────
 
 /**
- * W4 (Sprint 193): Map European AQI (0–100+) to a label + CSS class.
+ * W4: Map European AQI (0–100+) to a label + CSS class.
  * Uses WHO/EEA 5-band scale.
  */
 export function aqiLabel(aqi: number): { label: string; cls: string } {
@@ -279,7 +278,7 @@ export function renderAqiTile(aqi: number): void {
 
 // ── end W4 ──────────────────────────────────────────────────────────────────────────
 
-// ── Sprint 194 / W3: Hyperlocal nowcast (next 60 min) ────────────────────────────────
+// Hyperlocal nowcast (next 60 min) ────────────────────────────────
 
 /** Fetch next-60-min precipitation probability using Open-Meteo minutely_15. */
 export async function fetchNowcast(
@@ -323,7 +322,7 @@ export function renderNowcastStrip(data: NowcastResponse): void {
 
 // ── end W3 ──────────────────────────────────────────────────────────────────────────
 
-// ── Sprint 195 / W5: SVG wind compass ────────────────────────────────────────────────
+// SVG wind compass ────────────────────────────────────────────────
 
 /**
  * Compute an SVG arc path string for the gust ring.
@@ -414,7 +413,7 @@ export function moonPhase(date: Date = new Date()): [string, string] {
 }
 
 /**
- * Sprint 207 / W6: Return moon phase data plus the card ID to cross-link to.
+ * Return moon phase data plus the card ID to cross-link to.
  * The weather card moon tile should navigate to `crossLinkTarget` when clicked.
  */
 export function getMoonPhaseSummary(date: Date = new Date()): {
@@ -427,7 +426,7 @@ export function getMoonPhaseSummary(date: Date = new Date()): {
 }
 
 /**
- * Sprint 207 / W6: Scroll a cross-linked card into view by its data-card-id.
+ * Scroll a cross-linked card into view by its data-card-id.
  * No-op when the target card is not in the DOM.
  */
 export function scrollToLinkedCard(cardId: string): void {
@@ -447,7 +446,7 @@ export function precipSummaryLabel(pp: number): string {
 }
 
 /**
- * Sprint 32: Return a Hebrew label for a cloud cover percentage.
+ * Return a Hebrew label for a cloud cover percentage.
  * 0-12% → “בהיר”, 13-50% → “חלקי”, 51-84% → “מעונן”, 85-100% → “מעונן אחיד”.
  */
 export function formatCloudCover(cc: number): string {
@@ -458,7 +457,7 @@ export function formatCloudCover(cc: number): string {
 }
 
 /**
- * W1 (Sprint 175): Compute golden-hour window times from ISO sunrise/sunset strings.
+ * W1: Compute golden-hour window times from ISO sunrise/sunset strings.
  * Morning golden hour ends ~1 h after sunrise.
  * Evening golden hour starts ~1 h before sunset.
  *
@@ -492,7 +491,7 @@ export function computeGoldenHour(
 // LS_WX_CHART_MODE imported from constants
 
 /**
- * Sprint 46: Render the next-6-hours strip from hourly data.
+ * Render the next-6-hours strip from hourly data.
  * Finds the current hour index in d.hourly.time and renders 6 tiles.
  * Respects cfg.weatherShowHourly.
  */
@@ -559,7 +558,7 @@ async function fetchWeather(): Promise<WeatherResponse> {
   const lat = _activeLat;
   const lon = _activeLon;
   const cfg = loadConfig();
-  // Sprint 68: US-travel mode — try api.weather.gov first, fall back to Open-Meteo
+  // US-travel mode — try api.weather.gov first, fall back to Open-Meteo
   if (cfg.weatherUsTravelMode) {
     try {
       return await fetchNWS(lat, lon);
@@ -584,7 +583,7 @@ export function renderWeather(d: WeatherResponse): void {
   const tempC = Math.round(cur.temperature_2m);
   const wCfg = loadConfig();
 
-  // X12 (Sprint 385): publish current weather signal for sibling consumers.
+  // X12: publish current weather signal for sibling consumers.
   setCardSignal("weather", "current", {
     tempC,
     feelsC: Math.round(cur.apparent_temperature),
@@ -596,7 +595,7 @@ export function renderWeather(d: WeatherResponse): void {
     lon: _activeLon,
   });
 
-  // X15 (Sprint 385): cache last snapshot for the semantic-clipboard producer.
+  // X15: cache last snapshot for the semantic-clipboard producer.
   const activeTab = document.querySelector<HTMLButtonElement>(".wx-city-tab.active");
   _lastWeatherSnapshot = {
     tempC,
@@ -611,7 +610,7 @@ export function renderWeather(d: WeatherResponse): void {
   if (el.topTemp) el.topTemp.textContent = toDisplayTemp(tempC);
   if (el.wxTemp) el.wxTemp.textContent = toDisplayTemp(tempC);
 
-  // Sprint 11: IDB history write + sparkline (async — non-blocking)
+  // IDB history write + sparkline (async — non-blocking)
   void (async () => {
     await historyAppend("weather:temp", tempC);
     const vals = await historyGet("weather:temp", 7);
@@ -657,7 +656,7 @@ export function renderWeather(d: WeatherResponse): void {
     }
   }
 
-  // Sprint 195 / W5: SVG wind compass
+  // SVG wind compass
   renderWindCompass(cur.wind_direction_10m, Math.round(cur.wind_speed_10m), Math.round(cur.wind_gusts_10m));
 
   // UV index pill (F122)
@@ -685,7 +684,7 @@ export function renderWeather(d: WeatherResponse): void {
     el.wxPrecip.textContent = `${pp}% · ${precipSummaryLabel(pp)}`;
   }
 
-  // V13-DATA: 7-day precipitation sparkline
+  // 7-day precipitation sparkline
   void (async () => {
     await historyAppend("weather:precip", pp);
     const precipVals = await historyGet("weather:precip", 7);
@@ -696,13 +695,13 @@ export function renderWeather(d: WeatherResponse): void {
     }
   })();
 
-  // Sprint 32: Cloud cover
+  // Cloud cover
   if (el.wxCloud) {
     const cc = cur.cloud_cover ?? 0;
     el.wxCloud.textContent = formatCloudCover(cc);
   }
 
-  // Daily forecast (W2 Sprint 175: extended to 10 days)
+  // Daily forecast (W2 Extended to 10 days)
   if (d.daily && el.wxForecast) {
     const fDays = el.wxForecast.querySelectorAll<HTMLElement>(".wx-fday");
     for (let i = 1; i <= 10; i++) {
@@ -733,7 +732,7 @@ export function renderWeather(d: WeatherResponse): void {
     }
   }
 
-  // Weekly weather summary (F148) — extended to 10-day range (W2, Sprint 175)
+  // Weekly weather summary (F148) — extended to 10-day range
   if (d.daily && el.wxWeekSummary) {
     const maxTemps = d.daily.temperature_2m_max.slice(1, 11).filter((v): v is number => v != null);
     const minTemps = d.daily.temperature_2m_min.slice(1, 11).filter((v): v is number => v != null);
@@ -757,7 +756,7 @@ export function renderWeather(d: WeatherResponse): void {
     }
   }
 
-  // Sunrise/sunset + golden hour (W1, Sprint 175) + moon phase
+  // Sunrise/sunset + golden hour + moon phase
   if (d.daily && el.wxRise) {
     const riseIso = d.daily.sunrise[0] ?? "";
     const setIso = d.daily.sunset[0] ?? "";
@@ -776,7 +775,7 @@ export function renderWeather(d: WeatherResponse): void {
     // Update label to reflect combined content
     const riseLabel = document.getElementById("wx-rise-label");
     if (riseLabel) riseLabel.textContent = "🌅 שמש";
-    // Sprint 207 / W6: clicking the moon emoji tile cross-links to hebrew-cal
+    // clicking the moon emoji tile cross-links to hebrew-cal
     el.wxRise.title = "לחץ לפרטי לוח עברי";
     el.wxRise.style.cursor = "pointer";
     el.wxRise.onclick = (): void => { scrollToLinkedCard("hebrew-cal"); };
@@ -791,7 +790,7 @@ export function renderWeather(d: WeatherResponse): void {
     }
   }
 
-  // Sprint 46: Hourly strip (next 6 hours)
+  // Hourly strip (next 6 hours)
   renderHourlyStrip(d);
 }
 
@@ -821,13 +820,13 @@ export function initWeatherCard(): void {
   if (_weatherRefreshInterval !== null) clearInterval(_weatherRefreshInterval);
   _weatherRefreshInterval = scheduleCard(loadWeather, INTERVALS.WEATHER);
 
-  // Sprint 193 / W4: Async air quality fetch (parallel, non-blocking)
+  // Async air quality fetch (parallel, non-blocking)
   void (async () => {
     const aq = await fetchAirQuality(_activeLat, _activeLon);
     if (aq !== null) renderAqiTile(aq.current.european_aqi);
   })();
 
-  // Sprint 194 / W3: Async nowcast fetch (parallel, non-blocking)
+  // Async nowcast fetch (parallel, non-blocking)
   void (async () => {
     const nc = await fetchNowcast(_activeLat, _activeLon);
     if (nc !== null) renderNowcastStrip(nc);
@@ -868,7 +867,7 @@ export function initWeatherCard(): void {
     void switchWeatherCity(lat, lon);
   });
 
-  // Subscribe to tempUnit signal: re-render when tempUnit changes (Roadmap #1 migration)
+  // Subscribe to tempUnit signal: re-render when tempUnit changes 
   if (_tempUnitEffect === null) {
     _tempUnitEffect = effect(() => {
       void tempUnitSignal.value; // track dependency — fires on every tempUnit change
@@ -890,7 +889,7 @@ export function destroyWeatherCard(): void {
   _tempUnitEffect = null;
 }
 
-// ── Sprint 87: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const weatherConfigSchema: CardConfigField[] = [
   {
@@ -951,7 +950,7 @@ export const weatherConfigSchema: CardConfigField[] = [
     tab: "display",
     group: "weather",
   },
-  // ── Sprint 277 / CS-W1: US travel mode was config-only; now user-settable ──
+  // US travel mode was config-only; now user-settable ──
   {
     key: "weatherUsTravelMode",
     labelHe: "מצב נסיעה לארה\"ב (NWS)",
@@ -961,7 +960,7 @@ export const weatherConfigSchema: CardConfigField[] = [
     tab: "advanced",
     group: "weather",
   },
-  // ── Sprint 287 / CS-W2: feature toggles for W3/W4/W5/W6 ──────────────────
+  // feature toggles for W3/W4/W5/W6 ──────────────────
   {
     key: "weatherShowNowcast",
     labelHe: "הצג רצועת תחזית מיידית (שעה הבאה)",

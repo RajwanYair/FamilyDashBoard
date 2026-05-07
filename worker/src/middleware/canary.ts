@@ -1,5 +1,5 @@
 /**
- * Canary traffic tagging middleware (V12-EDGE-4b, Sprint 32).
+ * Canary traffic tagging middleware (V12-EDGE-4b ).
  *
  * When the CANARY_PCT Worker variable is set to a number between 1 and 100,
  * a deterministic fraction of responses receives the `X-Canary: true` header.

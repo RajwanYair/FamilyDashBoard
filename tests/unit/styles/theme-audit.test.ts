@@ -1,5 +1,5 @@
 /**
- * Sprint 113 — Theme audit: verify all 6 themes define required CSS properties
+ * Theme audit: verify all 6 themes define required CSS properties
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
@@ -50,7 +50,7 @@ function extractThemeBlock(theme: string): string {
   return "";
 }
 
-describe("Theme audit (Sprint 113)", () => {
+describe("Theme audit ", () => {
   for (const theme of THEMES) {
     describe(`theme-${theme}`, () => {
       const block = extractThemeBlock(theme);
@@ -68,9 +68,9 @@ describe("Theme audit (Sprint 113)", () => {
   }
 });
 
-// ── V13-DATA: @property registrations + color-scheme ─────────────────────────
+// ── @property registrations + color-scheme ─────────────────────────
 
-describe("tokens.css — @property registrations (V13-DATA)", () => {
+describe("tokens.css — @property registrations ", () => {
   const REGISTERED_PROPS = [
     "--duration-fast",
     "--duration-normal",

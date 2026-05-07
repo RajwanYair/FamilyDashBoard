@@ -1,5 +1,5 @@
 /**
- * Sprint 126 — Integration: Cache dashboard + error rate combined stats
+ * Integration: Cache dashboard + error rate combined stats
  *
  * Verifies that the cache dashboard and error rate utilities work together
  * to provide a coherent system health snapshot.
@@ -10,7 +10,7 @@ import { recordError, clearErrors, errorRate, getErrorCount } from "@/core/error
 import { checkAllVitalBudgets } from "@/core/perf";
 import { _resetPerfObserver } from "@/core/perf";
 
-describe("System health snapshot (Sprint 126)", () => {
+describe("System health snapshot ", () => {
   beforeEach(() => {
     cClear();
     resetCacheStats();

@@ -1,5 +1,5 @@
 /**
- * src/ui/offline-banner.ts — Sprint 174 (X6 · V14-CROSS)
+ * src/ui/offline-banner.ts
  *
  * Reactive offline indicator driven by the event-bus `globalOffline` signal.
  * Replaces the inline window.addEventListener("offline"/"online") wiring

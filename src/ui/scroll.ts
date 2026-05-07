@@ -84,7 +84,7 @@ export function stopScroll(container: HTMLElement): void {
   container.querySelectorAll(".clone").forEach((el) => el.remove());
 }
 
-// ── Sprint 155: scroll shadow indicator wiring ──────────────────────────────
+// scroll shadow indicator wiring ──────────────────────────────
 
 /**
  * Observe `.card__body` elements and toggle `.scroll-top` / `.scroll-bottom`

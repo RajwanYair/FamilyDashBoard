@@ -12,7 +12,7 @@
 
 ADR-046 accepted running Cloudflare Vectorize in shadow mode **on the worker**
 alongside SimHash v2 to validate near-duplicate detection quality before
-retiring SimHash. Sprint 267 added the **client-side companion**: lightweight
+retiring SimHash. added the **client-side companion**: lightweight
 plumbing that enables the developer to toggle shadow mode via a `localStorage`
 flag and logs comparison statistics to `diagLog` during normal dashboard usage.
 

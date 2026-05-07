@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/schemas.ts (Sprint 530)
+ * fast-check property tests — worker/src/utils/schemas.ts 
  *
  * Properties under test:
  *  SC1. WeatherSchema: valid structure passes

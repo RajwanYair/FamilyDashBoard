@@ -4,7 +4,7 @@
 | ------ | --------------------- |
 | Date   | 2026-04-26            |
 | Status | Accepted              |
-| Sprint | 107 (V14-FOUNDATIONS) |
+| Sprint | 107  |
 
 ## Context
 

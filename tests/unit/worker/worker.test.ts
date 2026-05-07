@@ -418,7 +418,7 @@ import type { Env } from "../../../worker/src/index";
 import type { KVStore } from "../../../worker/src/types";
 import { makeKv, makeWorkerEnv } from "@tests/worker-helpers";
 
-/** Minimal mock Env with a no-op KV namespace for unit tests (Stream W.2). */
+/** Minimal mock Env with a no-op KV namespace for unit tests. */
 const mockEnv: Env = makeWorkerEnv();
 
 describe("Worker — handleErrors route", () => {
@@ -593,7 +593,7 @@ describe("Worker — handleCurrency route", () => {
     expect(body.provider).toBe("exchangerate-api.com");
   });
 
-  it("falls back to ECB (frankfurter) when both primary upstreams fail (Roadmap #19)", async () => {
+  it("falls back to ECB (frankfurter) when both primary upstreams fail ", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(new Response("fail", { status: 502 }))
@@ -612,7 +612,7 @@ describe("Worker — handleCurrency route", () => {
     expect(body.stale).toBe(false);
   });
 
-  it("falls back to ECB direct XML when all JSON upstreams fail (Roadmap #16 Sprint 162)", async () => {
+  it("falls back to ECB direct XML when all JSON upstreams fail ()", async () => {
     const ecbXml = `<?xml version="1.0"?>
 <gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01" xmlns="http://www.ecb.int/vocabulary/2002-08-01/eurofxref">
   <Cube><Cube time="2026-04-29">
@@ -645,7 +645,7 @@ describe("Worker — handleCurrency route", () => {
   });
 });
 
-// ── ECB XML adapter (Sprint 162, Roadmap #16) ─────────────────────────────────
+// ── ECB XML adapter ( , ) ─────────────────────────────────
 
 describe("parseEcbXml — ECB eurofxref-daily.xml adapter", () => {
   const sampleXml = `<?xml version="1.0"?>
@@ -707,7 +707,7 @@ describe("parseEcbXml — ECB eurofxref-daily.xml adapter", () => {
   });
 });
 
-// ── Worker — handleHebcal + handleHebcalHolidays routes (Stream W.3) ─────────
+// ── Worker — handleHebcal + handleHebcalHolidays routes ─────────
 
 import { handleHebcal, handleHebcalHolidays } from "../../../worker/src/routes/data";
 
@@ -884,7 +884,7 @@ describe("Worker — handleHebcalHolidays route", () => {
   });
 });
 
-// ── Worker — handleWeather route (Sprint 35 — V13-DATA NWS coverage) ──────────
+// ── Worker — handleWeather route (NWS coverage) ──────────
 
 import { handleWeather } from "../../../worker/src/routes/data";
 
@@ -1039,7 +1039,7 @@ describe("Worker — handleWeather route", () => {
   });
 });
 
-// ── Worker — handleAlerts route (Stream W.4) ──────────────────────────────────
+// ── Worker — handleAlerts route ──────────────────────────────────
 
 import {
   handleAlerts,
@@ -1223,7 +1223,7 @@ describe("Zod schemas — HebcalHolidaysSchema", () => {
   });
 });
 
-// ── Zod schemas — StocksChartSchema (Stream W.5) ─────────────────────────────
+// ── Zod schemas — StocksChartSchema ─────────────────────────────
 
 const VALID_STOCKS = {
   chart: {
@@ -1285,7 +1285,7 @@ describe("Zod schemas — StocksChartSchema", () => {
   });
 });
 
-// ── Worker — handleStocks route (Stream W.5) ──────────────────────────────────
+// ── Worker — handleStocks route ──────────────────────────────────
 
 describe("Worker — handleStocks route", () => {
   afterEach(() => {
@@ -1350,7 +1350,7 @@ describe("Worker — handleStocks route", () => {
   });
 });
 
-// ── Zod schemas — CoinGeckoSchema (Stream W.7) ──────────────────────────────
+// ── Zod schemas — CoinGeckoSchema ──────────────────────────────
 
 const VALID_CRYPTO = {
   bitcoin: { usd: 65000, usd_24h_change: 2.3 },
@@ -1384,7 +1384,7 @@ describe("Zod schemas — CoinGeckoSchema", () => {
   });
 });
 
-// ── Worker — handleCrypto route (Stream W.7) ──────────────────────────────────
+// ── Worker — handleCrypto route ──────────────────────────────────
 
 describe("Worker — handleCrypto route", () => {
   afterEach(() => {
@@ -1450,7 +1450,7 @@ describe("Worker — handleCrypto route", () => {
   });
 });
 
-// ── Zod schemas — NewsRssSchema (Stream W.8) ──────────────────────────────────
+// ── Zod schemas — NewsRssSchema ──────────────────────────────────
 
 const VALID_RSS_2 = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -1522,7 +1522,7 @@ describe("Zod schemas — NewsRssSchema", () => {
   });
 });
 
-// ── Worker — handleNews route (Stream W.8) ────────────────────────────────────
+// ── Worker — handleNews route ────────────────────────────────────
 
 describe("Worker — handleNews route", () => {
   afterEach(() => {
@@ -1593,7 +1593,7 @@ describe("Worker — handleNews route", () => {
   });
 });
 
-// ── Worker — KV cache utilities (Stream W.9) ──────────────────────────────────
+// ── Worker — KV cache utilities ──────────────────────────────────
 
 import { kvGetStale, kvPut } from "../../../worker/src/utils/kv";
 
@@ -1653,7 +1653,7 @@ describe("KV cache utilities — kvPut", () => {
   });
 });
 
-// ── Worker — makeWorkerEnv helper (Stream W.9) ────────────────────────────────
+// ── Worker — makeWorkerEnv helper ────────────────────────────────
 
 describe("Worker test helper — makeWorkerEnv", () => {
   it("returns ENVIRONMENT: test by default", () => {
@@ -1682,7 +1682,7 @@ describe("Worker test helper — makeWorkerEnv", () => {
     expect(getSpy).toHaveBeenCalledWith("stocks:AAPL");
   });
 });
-// ── checkRateLimitAsync (V13-EDGE-6 DO-backed rate limiter) ──────────────────
+// ── checkRateLimitAsync (DO-backed rate limiter) ──────────────────
 
 describe("checkRateLimitAsync — in-memory fallback (no DO)", () => {
   beforeEach(() => clearRateLimitState());
@@ -1750,7 +1750,7 @@ describe("checkRateLimitAsync — in-memory fallback (no DO)", () => {
   });
 });
 
-// ── Worker — feeds.ts untested routes (Sprint 36) ────────────────────────────
+// ── Worker — feeds.ts untested routes  ────────────────────────────
 
 import {
   handleNewsAggregate,
@@ -1971,7 +1971,7 @@ describe("Worker — handleSefariaText route", () => {
   });
 });
 
-// ── Worker — handleErrors with KV + handleErrorsExport (Sprint 42) ────────────
+// ── Worker — handleErrors with KV + handleErrorsExport  ────────────
 
 import { handleErrorsExport } from "../../../worker/src/routes/errors";
 
@@ -2184,10 +2184,10 @@ describe("Worker — handleErrorsExport route", () => {
   });
 });
 
-// ── Sprint 415: handleErrorsQueue (Workers Queue consumer) ─────────────────────
+// ── handleErrorsQueue (Workers Queue consumer) ─────────────────────
 import { handleErrorsQueue } from "../../../worker/src/routes/errors";
 
-describe("Worker — handleErrorsQueue consumer (Sprint 415)", () => {
+describe("Worker — handleErrorsQueue consumer ", () => {
   it("acks well-formed queue message and logs info", async () => {
     const acked: boolean[] = [];
     const msg = {
@@ -2223,7 +2223,7 @@ describe("Worker — handleErrorsQueue consumer (Sprint 415)", () => {
   });
 });
 
-// ── Sprint 47: feeds.ts missing branches ──────────────────────────────────────
+// ── feeds.ts missing branches ──────────────────────────────────────
 
 describe("Worker — handleStocks with FINNHUB_API_KEY (Finnhub primary path)", () => {
   afterEach(() => {

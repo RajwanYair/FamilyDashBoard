@@ -423,7 +423,7 @@ describe("DiagOverlay — clear log button (F1 v7.3)", () => {
   });
 });
 
-// ── Sprint 19: renderStats populates #diag-panes ───────────────────────────
+// ── renderStats populates #diag-panes ───────────────────────────
 
 describe("DiagOverlay — renderStats populates #diag-panes", () => {
   beforeEach(() => {
@@ -480,9 +480,9 @@ describe("DiagOverlay — renderStats populates #diag-panes", () => {
   });
 });
 
-// ── Sprint 93: providerStatusIcon + renderProviderHealthHtml ────────────
+// ── providerStatusIcon + renderProviderHealthHtml ────────────
 
-describe("providerStatusIcon (Sprint 93)", () => {
+describe("providerStatusIcon ", () => {
   it("returns green for ok", () => {
     expect(providerStatusIcon("ok")).toBe("🟢");
   });
@@ -500,7 +500,7 @@ describe("providerStatusIcon (Sprint 93)", () => {
   });
 });
 
-describe("renderProviderHealthHtml (Sprint 93)", () => {
+describe("renderProviderHealthHtml ", () => {
   afterEach(() => {
     _resetProviderHealth();
   });
@@ -538,7 +538,7 @@ describe("renderProviderHealthHtml (Sprint 93)", () => {
   });
 });
 
-// ── Sprint 52: renderStats via openDiagOverlay (lines 59-200) ─────────────
+// ── renderStats via openDiagOverlay (lines 59-200) ─────────────
 
 function buildFullDiagDOM(): void {
   document.body.innerHTML = `
@@ -569,7 +569,7 @@ function buildFullDiagDOM(): void {
   }
 }
 
-describe("DiagOverlay — renderStats via openDiagOverlay (Sprint 52)", () => {
+describe("DiagOverlay — renderStats via openDiagOverlay ", () => {
   beforeEach(() => {
     buildFullDiagDOM();
     clearDiag();
@@ -616,7 +616,7 @@ describe("DiagOverlay — renderStats via openDiagOverlay (Sprint 52)", () => {
   });
 });
 
-describe("DiagOverlay — renderErrors (Sprint 52)", () => {
+describe("DiagOverlay — renderErrors ", () => {
   beforeEach(() => {
     buildFullDiagDOM();
     clearDiag();
@@ -645,7 +645,7 @@ describe("DiagOverlay — renderErrors (Sprint 52)", () => {
   });
 });
 
-describe("DiagOverlay — diag-build-time stamp (Sprint 52, lines 378-382)", () => {
+describe("DiagOverlay — diag-build-time stamp ( , lines 378-382)", () => {
   afterEach(() => {
     document.body.innerHTML = "";
   });
@@ -687,9 +687,9 @@ describe("DiagOverlay — diag-build-time stamp (Sprint 52, lines 378-382)", () 
   });
 });
 
-// ── Sprint 95: renderStats branch coverage via vi.spyOn ─────────────────────
+// ── renderStats branch coverage via vi.spyOn ─────────────────────
 
-describe("DiagOverlay — Sprint 95 renderStats network tier + trend branches", () => {
+describe("DiagOverlay — renderStats network tier + trend branches", () => {
   function buildStatsDom(): void {
     document.body.innerHTML = `
       <dialog id="diag-overlay">

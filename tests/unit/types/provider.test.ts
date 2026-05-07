@@ -1,5 +1,5 @@
 /**
- * Tests for Provider Adapter types (Sprint 88).
+ * Tests for Provider Adapter types .
  * Type-level assertions + runtime shape checks.
  */
 
@@ -7,7 +7,7 @@ import { describe, it, expect } from "vitest";
 import type { ProviderAdapter, ProviderResult, ProviderAdapterOptions } from "@/types/provider";
 import type { ProviderStatus } from "@/core/provider";
 
-describe("ProviderAdapter types (Sprint 88)", () => {
+describe("ProviderAdapter types ", () => {
   it("ProviderResult success shape", () => {
     const result: ProviderResult<number> = { ok: true, data: 42 };
     expect(result.ok).toBe(true);

@@ -1,5 +1,4 @@
 ---
-mode: "agent"
 description: "Audit and modernize FamilyDashBoard developer tooling, VS Code chat customizations, GitHub workflows, MCP servers, hooks, agents, skills, prompts, and version pins."
 tools: ["read_file", "grep_search", "file_search", "semantic_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "create_file", "run_in_terminal", "get_terminal_output", "manage_todo_list", "vscode_listCodeUsages", "memory", "tool_search", "fetch_webpage", "runSubagent"]
 ---

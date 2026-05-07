@@ -20,7 +20,7 @@
 ![License](https://img.shields.io/badge/License-MIT-60a5fa?style=flat-square)
 ![RTL](https://img.shields.io/badge/Layout-RTL%20Hebrew-fbbf24?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-14.4.0-a78bfa?style=flat-square)
-![Tests](https://img.shields.io/badge/Vitest-6387_passing-34d399?style=flat-square)
+![Tests](https://img.shields.io/badge/Vitest-7037_passing-34d399?style=flat-square)
 
 [![GitHub stars](https://img.shields.io/github/stars/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/RajwanYair/FamilyDashBoard?style=social)](https://github.com/RajwanYair/FamilyDashBoard/network/members)
@@ -44,7 +44,7 @@ Pastel glassmorphism · 6 themes · Hebrew RTL · 12 cards · Per-pane smart ref
 </div>
 
 > The dashboard runs full-screen on a 55" TV in the living room with **per-pane smart refresh** (no full-page reloads). Designed for comfortable reading from 3 meters away.
-> Canonical product docs live in [docs/README.md](docs/README.md). The archived [BestDashBoard.html](BestDashBoard.html) file is preserved for legacy reference only and is not the current app runtime.
+> Canonical product docs live in [docs/README.md](docs/README.md). The archived [BestDashBoard.html](docs/legacy/BestDashBoard.html) file is preserved for legacy reference only and is not the current app runtime.
 
 ---
 
@@ -345,19 +345,19 @@ This project leverages extensive GitHub features:
 | --------- | ------------------------------------------------------------------------------------------ |
 | v3.0–v4.4 | Glassmorphism redesign, red alerts, per-pane refresh, 5 themes, diagnostic overlay         |
 | v4.5–v4.8 | Card maximize, halacha ticker, 17 news feeds, Hebrew Calendar card, stock logos            |
-| v4.9      | Sprints 1–5 (F1–50): Parasha, Zmanim, Daf Yomi, config panel, AQI, Gold/Silver, sparklines |
-| v4.10     | Sprints 6–7 (F51–70): TA-35, portfolio P&L, earthquake monitor, market countdown           |
-| v4.11     | Sprint 8 (F71–80): GBP, favicons, sector headers, Shabbat pill, PWA metas                  |
-| v4.12     | Sprint 9 (F81–90): 7-day forecast, ICS config, dim schedule, offline cache age             |
-| v4.13     | Sprint 10 (F91–100): SW offline, home city, news feed toggle, card drag-reorder            |
-| v4.14     | Sprint 11 (F101–110): Multi-ICS, news search, settings import/export, visited news         |
-| v4.15     | Sprint 12 (F111–120): API cache, notifications, weather cities, config tabs                |
-| v4.16     | Sprint 13 (F121–130): Toast system, UV pill, chart toggle, deeplinks                       |
-| v4.17     | Sprint 14 (F131–140): Stock alerts, P&L chip, weather toast, countdown chip                |
-| v4.18     | Sprint 15 (F141–150): Dew point, bookmarks, weather summary, help overlay                  |
-| v4.19     | Sprint 16 (F151–160): Omer, sparklines, card collapse, halacha overlay                     |
-| v5.0      | Sprint 17 (F161–170): Corp proxy, SW v5, PWA install, offline fallback                     |
-| v5.1      | Refactoring R1–R5: CSS tokens, ARIA, JS constants, dead code removal                       |
+| v4.9      | Parasha, Zmanim, Daf Yomi, config panel, AQI, Gold/Silver, sparklines                      |
+| v4.10     | TA-35, portfolio P&L, earthquake monitor, market countdown                                  |
+| v4.11     | GBP, favicons, sector headers, Shabbat pill, PWA metas                                      |
+| v4.12     | 7-day forecast, ICS config, dim schedule, offline cache age                                 |
+| v4.13     | SW offline, home city, news feed toggle, card drag-reorder                                  |
+| v4.14     | Multi-ICS, news search, settings import/export, visited news                                |
+| v4.15     | API cache, notifications, weather cities, config tabs                                       |
+| v4.16     | Toast system, UV pill, chart toggle, deeplinks                                              |
+| v4.17     | Stock alerts, P&L chip, weather toast, countdown chip                                       |
+| v4.18     | Dew point, bookmarks, weather summary, help overlay                                         |
+| v4.19     | Omer, sparklines, card collapse, halacha overlay                                            |
+| v5.0      | Corp proxy, SW v5, PWA install, offline fallback                                            |
+| v5.1      | Refactoring: CSS tokens, ARIA, JS constants, dead code removal                              |
 
 ### Upcoming
 

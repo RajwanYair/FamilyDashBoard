@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard — Core utility functions (Sprint 29)
+ * FamilyDashBoard — Core utility functions
  *
  * Pure, zero-dependency utilities used across multiple modules.
  * All functions are exported for direct import and unit testing.

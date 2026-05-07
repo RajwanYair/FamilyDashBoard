@@ -11,7 +11,7 @@ info:
     url: https://github.com/RajwanYair/FamilyDashBoard
   x-ttl-audit:
     last-audit: "2026-04-29"
-    auditor: "Sprint 155 / v13.17.0"
+    auditor: "/ v13.17.0"
     verdict: >
       All 22 routes reviewed — all x-kv-ttl values are appropriate for their
       data volatility and upstream rate-limit budgets. No TTL changes required.

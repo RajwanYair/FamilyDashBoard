@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/idb-store.ts (Sprint 491)
+ * fast-check property tests — src/core/idb-store.ts 
  *
  * Tests run against the in-memory fallback since Vitest jsdom doesn't provide IndexedDB.
  *

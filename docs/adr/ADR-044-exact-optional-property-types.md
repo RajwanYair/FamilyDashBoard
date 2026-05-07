@@ -23,15 +23,13 @@ property is declared `?: T | undefined`.
 
 ## Decision
 
-Enable `exactOptionalPropertyTypes: true` in `tsconfig.json` (Sprint 148).
+Enable `exactOptionalPropertyTypes: true` in `tsconfig.json` .
 
 All optional properties that legitimately accept `undefined` as an explicit
 value must be declared `?: T | undefined`.  Properties that are purely absent
 (never written as `undefined`) stay `?: T`.
 
-### Files changed in Sprint 148
-
-Six source files required `prop?: T → prop?: T | undefined` annotations
+### Files changed in Six source files required `prop?: T → prop?: T | undefined` annotations
 (15 total property sites):
 
 | File | Properties updated |
@@ -79,6 +77,6 @@ Six source files required `prop?: T → prop?: T | undefined` annotations
 
 | Date       | Status   | Note                                          |
 | ---------- | -------- | --------------------------------------------- |
-| 2026-04-28 | Draft    | Sprint 148 — enabled in tsconfig.json; 15 fixes |
-| 2026-04-28 | Accepted | Sprint 148 — all tests and type-check pass    |
-| 2026-04-29 | Accepted | Sprint 152 — ADR written and committed        |
+| 2026-04-28 | Draft    | enabled in tsconfig.json; 15 fixes |
+| 2026-04-28 | Accepted | all tests and type-check pass    |
+| 2026-04-29 | Accepted | ADR written and committed        |

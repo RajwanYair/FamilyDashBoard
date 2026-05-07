@@ -1,8 +1,8 @@
 /**
- * FamilyDashBoard — layout-drag.ts browser spec (Sprint 146)
+ * FamilyDashBoard — layout-drag.ts browser spec 
  *
  * Tests drag-and-drop layout state using real Chromium DOM APIs.
- * Requires @vitest/browser + @vitest/browser-playwright (installed Sprint 145).
+ * Requires @vitest/browser + @vitest/browser-playwright (installed ).
  *
  * Run: npx vitest --config vitest.browser.config.ts
  */

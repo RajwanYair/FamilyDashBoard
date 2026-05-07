@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/normalize-error.ts (Sprint 453)
+ * fast-check property tests — worker/src/utils/normalize-error.ts 
  *
  * Properties under test:
  *  NE1. normalizeWorkerError always produces ok:false regardless of input.

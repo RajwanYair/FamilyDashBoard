@@ -1,7 +1,6 @@
 ---
-mode: agent
 description: "Run a targeted OWASP Top 10 security audit against the FamilyDashBoard codebase"
-tools: ["read_file", "grep_search", "file_search", "run_in_terminal", "get_terminal_output", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "memory"]
+tools: ["read_file", "grep_search", "file_search", "run_in_terminal", "get_terminal_output", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "memory", "runSubagent", "view_image"]
 ---
 
 # Security Audit — FamilyDashBoard

@@ -1,35 +1,35 @@
 #!/usr/bin/env node
 /**
- * Sprint 221 — OWASP Top 10 rotation automated check.
- * Sprint 427 (v14.0.0) — added A03 document.write rule + A05 postMessage(*) rule.
- * Sprint 435 (v14.1.0) — added A01 open-redirect, A02 atob-credential, A03 setTimeout-string.
- * Sprint 444 (v14.2.0) — added A03 createElement-script, A04 __proto__ pollution, A04 defineProperty-prototype.
- * Sprint 450 (v14.2.0) — added A03 insertAdjacentHTML, A05 http-in-fetch, A07 window.opener access.
- * Sprint 456 (v14.2.0) — extended scan scope to `worker/src/` in addition to `src/`.
- * Sprint 464 (v14.3.0) — added A03 srcdoc iframe injection, A02 btoa-credential, A01 hardcoded admin bypass.
- * Sprint 466 (v14.3.0) — extended scan scope to `scripts/*.mjs` (build/CI helpers).
- * Sprint 473 (v14.4.0) — added A01 document.domain assignment, A03 new RegExp() dynamic, A04 Object.assign() prototype-pollution vector.
- * Sprint 482 (v14.5.0) — added A03 DOMParser.parseFromString XSS, A05 referrerPolicy='no-referrer' missing on ext links, A08 importScripts() in workers.
- * Sprint 487 (v14.5.0) — added A03 createContextualFragment XSS, A05 CORS credentials, A02 insecure crypto algorithms.
- * Sprint 496 (v14.5.0) — added A07 document.cookie token, A03 javascript: protocol, A04 prototype reassignment.
- * Sprint 500 (v14.5.0) — added A09 logging sensitive vars, A05 ACAO wildcard, A08 dynamic script.src.
- * Sprint 505 (v14.5.0) — added A01 location assignment, A02 Math.random token, A10 URL from searchParams.
- * Sprint 510 (v14.5.0) — added A03 SQL template injection, A07 token in URL query, A04 rejectUnauthorized false.
- * Sprint 515 (v14.5.0) — added A05 CORS Allow-Headers wildcard, A08 script without SRI, A09 console.error credentials.
- * Sprint 520 (v14.5.0) — added A02 hardcoded JWT secret, A01 window.open dynamic URL, A04 CSP meta removal.
- * Sprint 525 (v14.5.0) — added A03 outerHTML assignment, A05 Expose-Headers wildcard, A02 sessionStorage secret.
- * Sprint 531 (v14.5.0) — added A03 unencoded template URL, A07 bearer token in console, A04 NODE_TLS disabled.
- * Sprint 537 (v14.5.0) — added A03 Blob URL XSS, A05 cookie SameSite, A02 localStorage secret.
- * Sprint 543 (v14.5.0) — added A01 target=_blank noopener, A07 auth header logged, A04 setTimeout string.
- * Sprint 549 (v14.5.0) — added A03 contentDocument.write, A05 X-Frame-Options missing, A09 stack trace exposed.
- * Sprint 555 (v14.5.0) — added A02 hardcoded password, A06 dynamic import(), A10 SSRF interpolated fetch.
- * Sprint 561 (v14.5.0) — added A03 document.writeln, A05 insecure WebSocket, A02 private key material.
- * Sprint 567 (v14.5.0) — added A01 form action manipulation, A03 CSS injection via cssText, A08 dynamic importScripts.
- * Sprint 573 (v14.5.0) — added A02 token in URL fragment, A05 ACAO reflecting origin, A09 sensitive var in Error().
- * Sprint 579 (v14.5.0) — added A03 proto pollution, A04 SSRF interpolated URL, A08 location.href redirect.
- * Sprint 585 (v14.6.0) — added A01 postMessage wildcard, A07 hardcoded secret, A05 document.domain.
- * Sprint 591 (v14.7.0) — added A03 srcdoc template injection, A09 PII in telemetry, A02 weak PBKDF2 iterations.
- * Sprint 597 (v14.7.0) — added A04 Object.assign proto pollution, A06 weak hash (MD5/SHA1), A10 fetch without catch.
+ * OWASP Top 10 rotation automated check.
+ * (v14.0.0) — added A03 document.write rule + A05 postMessage(*) rule.
+ * (v14.1.0) — added A01 open-redirect, A02 atob-credential, A03 setTimeout-string.
+ * (v14.2.0) — added A03 createElement-script, A04 __proto__ pollution, A04 defineProperty-prototype.
+ * (v14.2.0) — added A03 insertAdjacentHTML, A05 http-in-fetch, A07 window.opener access.
+ * (v14.2.0) — extended scan scope to `worker/src/` in addition to `src/`.
+ * (v14.3.0) — added A03 srcdoc iframe injection, A02 btoa-credential, A01 hardcoded admin bypass.
+ * (v14.3.0) — extended scan scope to `scripts/*.mjs` (build/CI helpers).
+ * (v14.4.0) — added A01 document.domain assignment, A03 new RegExp() dynamic, A04 Object.assign() prototype-pollution vector.
+ * (v14.5.0) — added A03 DOMParser.parseFromString XSS, A05 referrerPolicy='no-referrer' missing on ext links, A08 importScripts() in workers.
+ * (v14.5.0) — added A03 createContextualFragment XSS, A05 CORS credentials, A02 insecure crypto algorithms.
+ * (v14.5.0) — added A07 document.cookie token, A03 javascript: protocol, A04 prototype reassignment.
+ * (v14.5.0) — added A09 logging sensitive vars, A05 ACAO wildcard, A08 dynamic script.src.
+ * (v14.5.0) — added A01 location assignment, A02 Math.random token, A10 URL from searchParams.
+ * (v14.5.0) — added A03 SQL template injection, A07 token in URL query, A04 rejectUnauthorized false.
+ * (v14.5.0) — added A05 CORS Allow-Headers wildcard, A08 script without SRI, A09 console.error credentials.
+ * (v14.5.0) — added A02 hardcoded JWT secret, A01 window.open dynamic URL, A04 CSP meta removal.
+ * (v14.5.0) — added A03 outerHTML assignment, A05 Expose-Headers wildcard, A02 sessionStorage secret.
+ * (v14.5.0) — added A03 unencoded template URL, A07 bearer token in console, A04 NODE_TLS disabled.
+ * (v14.5.0) — added A03 Blob URL XSS, A05 cookie SameSite, A02 localStorage secret.
+ * (v14.5.0) — added A01 target=_blank noopener, A07 auth header logged, A04 setTimeout string.
+ * (v14.5.0) — added A03 contentDocument.write, A05 X-Frame-Options missing, A09 stack trace exposed.
+ * (v14.5.0) — added A02 hardcoded password, A06 dynamic import(), A10 SSRF interpolated fetch.
+ * (v14.5.0) — added A03 document.writeln, A05 insecure WebSocket, A02 private key material.
+ * (v14.5.0) — added A01 form action manipulation, A03 CSS injection via cssText, A08 dynamic importScripts.
+ * (v14.5.0) — added A02 token in URL fragment, A05 ACAO reflecting origin, A09 sensitive var in Error().
+ * (v14.5.0) — added A03 proto pollution, A04 SSRF interpolated URL, A08 location.href redirect.
+ * (v14.6.0) — added A01 postMessage wildcard, A07 hardcoded secret, A05 document.domain.
+ * (v14.7.0) — added A03 srcdoc template injection, A09 PII in telemetry, A02 weak PBKDF2 iterations.
+ * (v14.7.0) — added A04 Object.assign proto pollution, A06 weak hash (MD5/SHA1), A10 fetch without catch.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -63,7 +63,7 @@ import { fileURLToPath } from "url";
 const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
 const SRC = join(ROOT, "src");
 const WORKER_SRC = join(ROOT, "worker", "src");
-const SCRIPTS_DIR = join(ROOT, "scripts"); // Sprint 466: also scan build/CI helpers
+const SCRIPTS_DIR = join(ROOT, "scripts"); // also scan build/CI helpers
 const WARN_ONLY = process.argv.includes("--warn-only");
 
 /** @typedef {{ category: string; label: string; severity: "error"|"warn"; pattern: RegExp; safeMarkers?: string[] }} Rule */
@@ -84,14 +84,14 @@ const RULES = [
     pattern: /Math\.random\(\).{0,40}(?:token|secret|key|nonce|csrf|auth)/i,
   },
   {
-    // Sprint 435: atob() decoding a credential-looking variable is not secure storage
+    // atob() decoding a credential-looking variable is not secure storage
     category: "A02",
     label: "atob() decoding potential credential (not a secure encoding)",
     severity: "warn",
     pattern: /\batob\s*\([^)]*(?:token|secret|password|key|credential)[^)]*\)/i,
   },
 
-  // A01 — Broken Access Control (open redirect — Sprint 435)
+  // A01 — Broken Access Control (open redirect — )
   {
     category: "A01",
     label: "Unvalidated redirect via location.href assignment",
@@ -125,14 +125,14 @@ const RULES = [
     pattern: /dangerouslySetInnerHTML/,
   },
   {
-    // Sprint 427: document.write() is an injection vector (writes arbitrary HTML)
+    // document.write() is an injection vector (writes arbitrary HTML)
     category: "A03",
     label: "document.write() call (DOM injection vector)",
     severity: "error",
     pattern: /\bdocument\.write\s*\(/,
   },
   {
-    // Sprint 435: setTimeout/setInterval with a string argument is eval-equivalent
+    // setTimeout/setInterval with a string argument is eval-equivalent
     category: "A03",
     label: "setTimeout/setInterval with string argument (eval analogue)",
     severity: "error",
@@ -169,7 +169,7 @@ const RULES = [
     pattern: /\bDEBUG\s*=\s*true\b/,
   },
   {
-    // Sprint 427: postMessage to wildcard origin broadcasts to any iframe/window
+    // postMessage to wildcard origin broadcasts to any iframe/window
     category: "A05",
     label: "postMessage() with wildcard origin '*'",
     severity: "error",
@@ -214,7 +214,7 @@ const RULES = [
     pattern: /\bfetch\s*\(\s*(?:params|req|request|input|userInput|url)\b/i,
   },
 
-  // A03 — Injection (Sprint 444)
+  // A03 — Injection 
   {
     // Dynamically creating a <script> element is an XSS/script-injection vector
     category: "A03",
@@ -223,7 +223,7 @@ const RULES = [
     pattern: /\bdocument\.createElement\s*\(\s*['"]script['"]\s*\)/i,
   },
 
-  // A04 — Insecure Design: prototype pollution (Sprint 444)
+  // A04 — Insecure Design: prototype pollution 
   {
     // __proto__ assignment can silently poison every object in the runtime
     category: "A04",
@@ -239,7 +239,7 @@ const RULES = [
     pattern: /Object\.defineProperty\s*\(\s*Object\.prototype\b/,
   },
 
-  // A03 — Injection (Sprint 450)
+  // A03 — Injection 
   {
     // insertAdjacentHTML injects raw HTML into the DOM — same risk as innerHTML
     category: "A03",
@@ -248,7 +248,7 @@ const RULES = [
     pattern: /\.insertAdjacentHTML\s*\(/,
   },
 
-  // A05 — Security Misconfiguration (Sprint 450)
+  // A05 — Security Misconfiguration 
   {
     // Plain HTTP fetch leaks data in transit; use HTTPS for all network calls
     category: "A05",
@@ -257,7 +257,7 @@ const RULES = [
     pattern: /\bfetch\s*\(\s*['"]http:\/\//,
   },
 
-  // A07 — Identification and Authentication Failures (Sprint 450)
+  // A07 — Identification and Authentication Failures 
   {
     // window.opener can point to the originating page; assigning to it enables reverse tabnapping
     category: "A07",
@@ -266,7 +266,7 @@ const RULES = [
     pattern: /\bwindow\.opener\b/,
   },
 
-  // A03 — Injection (Sprint 464)
+  // A03 — Injection 
   {
     // iframe.srcdoc = userInput injects arbitrary HTML into an iframe — same risk as innerHTML
     category: "A03",
@@ -275,7 +275,7 @@ const RULES = [
     pattern: /\.srcdoc\s*=(?!=)/,
   },
 
-  // A02 — Cryptographic Failures (Sprint 464)
+  // A02 — Cryptographic Failures 
   {
     // btoa() is base64, not encryption; storing credentials via btoa() gives a false sense of security
     category: "A02",
@@ -284,7 +284,7 @@ const RULES = [
     pattern: /\bbtoa\s*\([^)]*(?:token|secret|password|key|credential)[^)]*\)/i,
   },
 
-  // A01 — Broken Access Control (Sprint 464)
+  // A01 — Broken Access Control 
   {
     // Hardcoding isAdmin/isRoot/isSuperUser = true bypasses all access control
     category: "A01",
@@ -293,7 +293,7 @@ const RULES = [
     pattern: /\b(?:isAdmin|isRoot|isSuperUser|isModerator)\s*=\s*true\b/i,
   },
 
-  // A01 — Broken Access Control (Sprint 473)
+  // A01 — Broken Access Control 
   {
     // document.domain assignment relaxes the same-origin policy, allowing cross-origin frame access
     category: "A01",
@@ -302,7 +302,7 @@ const RULES = [
     pattern: /\bdocument\.domain\s*=(?!=)/,
   },
 
-  // A03 — Injection (Sprint 473)
+  // A03 — Injection 
   {
     // new RegExp() with a non-literal argument can introduce ReDoS or injection via user-controlled input
     category: "A03",
@@ -311,7 +311,7 @@ const RULES = [
     pattern: /\bnew\s+RegExp\s*\(\s*(?!\/|['"`])[^)]/,
   },
 
-  // A04 — Insecure Design (Sprint 473)
+  // A04 — Insecure Design 
   {
     // Object.assign() called with a variable second argument can smuggle __proto__ when parsing untrusted JSON
     category: "A04",
@@ -320,7 +320,7 @@ const RULES = [
     pattern: /\bObject\.assign\s*\(\s*[^,)]+,\s*(?!{)[a-zA-Z_$][a-zA-Z0-9_.]*\s*\)/,
   },
 
-  // A03 — Injection (Sprint 482)
+  // A03 — Injection 
   {
     // DOMParser.parseFromString with "text/html" can execute scripts if the parsed result
     // is inserted into the live DOM without sanitization
@@ -331,7 +331,7 @@ const RULES = [
     safeMarkers: ["owasp-allow:A03", "// safe: result not inserted into live DOM"],
   },
 
-  // A05 — Security Misconfiguration (Sprint 482)
+  // A05 — Security Misconfiguration 
   {
     // External links without rel="noopener noreferrer" and proper referrerPolicy leak origin info
     category: "A05",
@@ -341,7 +341,7 @@ const RULES = [
     safeMarkers: ["noopener"],
   },
 
-  // A08 — Software and Data Integrity Failures (Sprint 482)
+  // A08 — Software and Data Integrity Failures 
   {
     // importScripts() in Workers loads & executes remote code without SRI; prefer static import
     category: "A08",
@@ -350,7 +350,7 @@ const RULES = [
     pattern: /\bimportScripts\s*\(/,
   },
 
-  // A03 — Injection (Sprint 487)
+  // A03 — Injection 
   {
     // document.createRange().createContextualFragment() parses arbitrary HTML and can execute scripts
     category: "A03",
@@ -359,7 +359,7 @@ const RULES = [
     pattern: /\.createContextualFragment\s*\(/,
   },
 
-  // A05 — Security Misconfiguration (Sprint 487)
+  // A05 — Security Misconfiguration 
   {
     // Setting Access-Control-Allow-Credentials: true with a permissive origin is a CORS credential leak
     category: "A05",
@@ -368,7 +368,7 @@ const RULES = [
     pattern: /['"]Access-Control-Allow-Credentials['"]\s*:\s*['"]true['"]/i,
   },
 
-  // A02 — Cryptographic Failures (Sprint 487)
+  // A02 — Cryptographic Failures 
   {
     // crypto.subtle.importKey with 'raw' format and no length check may accept weak keys (< 128 bits)
     category: "A02",
@@ -377,7 +377,7 @@ const RULES = [
     pattern: /crypto\.subtle\.(?:encrypt|decrypt|importKey)\s*\([^)]*['"](?:DES|RC4|AES-ECB|3DES)['"]/i,
   },
 
-  // A07 — Identification and Authentication Failures (Sprint 496)
+  // A07 — Identification and Authentication Failures 
   {
     // Storing JWT tokens in cookie without HttpOnly or Secure flags leaks them to JS/XSS
     category: "A07",
@@ -386,7 +386,7 @@ const RULES = [
     pattern: /\bdocument\.cookie\s*=\s*[^;]*(?:token|session|auth|jwt)/i,
   },
 
-  // A03 — Injection (Sprint 496)
+  // A03 — Injection 
   {
     // URL() constructor used directly with user input + .href as src/href can enable XSS via javascript:
     category: "A03",
@@ -395,7 +395,7 @@ const RULES = [
     pattern: /['"]javascript\s*:/i,
   },
 
-  // A04 — Insecure Design (Sprint 496)
+  // A04 — Insecure Design 
   {
     // Constructor.prototype reassignment can silently break instanceof and prototype chain
     category: "A04",
@@ -405,7 +405,7 @@ const RULES = [
     safeMarkers: ["Object.create("],
   },
 
-  // A09 — Logging Failures (Sprint 500)
+  // A09 — Logging Failures 
   {
     // console.log/warn/error with variables named token/password/secret/apiKey
     category: "A09",
@@ -415,7 +415,7 @@ const RULES = [
     safeMarkers: ["redact(", "mask(", "[REDACTED]"],
   },
 
-  // A05 — Security Misconfiguration (Sprint 500)
+  // A05 — Security Misconfiguration 
   {
     // Setting Access-Control-Allow-Origin to literal wildcard in code
     category: "A05",
@@ -424,7 +424,7 @@ const RULES = [
     pattern: /['"]Access-Control-Allow-Origin['"]\s*[:,]\s*['"]\*/i,
   },
 
-  // A08 — Software Integrity Failures (Sprint 500)
+  // A08 — Software Integrity Failures 
   {
     // Dynamically constructed script src from variable (DOM-based script injection)
     category: "A08",
@@ -434,7 +434,7 @@ const RULES = [
     safeMarkers: ["URL.createObjectURL(", "data:text/javascript"],
   },
 
-  // A01 — Broken Access Control (Sprint 505)
+  // A01 — Broken Access Control 
   {
     // window.location.href set from untrusted source can enable open redirect
     category: "A01",
@@ -444,7 +444,7 @@ const RULES = [
     safeMarkers: ["location.reload(", "location.hash", "location.search"],
   },
 
-  // A02 — Cryptographic Failures (Sprint 505)
+  // A02 — Cryptographic Failures 
   {
     // Using Math.random for any security/token purpose is predictable
     category: "A02",
@@ -454,7 +454,7 @@ const RULES = [
     safeMarkers: ["crypto.getRandomValues(", "crypto.randomUUID("],
   },
 
-  // A10 — SSRF (Sprint 505)
+  // A10 — SSRF 
   {
     // Constructing URL from user-controlled searchParams without origin validation
     category: "A10",
@@ -464,7 +464,7 @@ const RULES = [
     safeMarkers: ["allowlist", "ALLOWED_ORIGINS", "validateUrl("],
   },
 
-  // A03 — Injection (Sprint 510)
+  // A03 — Injection 
   {
     // Using template literals in SQL queries risks SQLi (look for SQL verbs followed by FROM/INTO/SET + interpolation)
     category: "A03",
@@ -474,7 +474,7 @@ const RULES = [
     safeMarkers: [".prepare(", ".bind(", "parameterized"],
   },
 
-  // A07 — Auth Failures (Sprint 510)
+  // A07 — Auth Failures 
   {
     // Exposing tokens/keys in URL query strings (logged in server access logs)
     category: "A07",
@@ -484,7 +484,7 @@ const RULES = [
     safeMarkers: ["Authorization:", "Bearer", "env.", "* Handle", "* GET", "* POST"],
   },
 
-  // A04 — Insecure Design (Sprint 510)
+  // A04 — Insecure Design 
   {
     // Disabling TLS verification (rejectUnauthorized: false) — MITM risk
     category: "A04",
@@ -493,7 +493,7 @@ const RULES = [
     pattern: /rejectUnauthorized\s*:\s*false/,
   },
 
-  // A05 — Security Misconfiguration (Sprint 515)
+  // A05 — Security Misconfiguration 
   {
     // Over-permissive Access-Control-Allow-Headers wildcard
     category: "A05",
@@ -502,7 +502,7 @@ const RULES = [
     pattern: /Access-Control-Allow-Headers['"]\s*[:,]\s*['"]?\*/i,
   },
 
-  // A08 — Software Integrity (Sprint 515)
+  // A08 — Software Integrity 
   {
     // Loading external scripts without Subresource Integrity (SRI)
     category: "A08",
@@ -511,7 +511,7 @@ const RULES = [
     pattern: /<script[^>]+src\s*=\s*['"]https?:\/\/[^>]*(?!integrity)/i,
   },
 
-  // A09 — Logging Failures (Sprint 515)
+  // A09 — Logging Failures 
   {
     // console.error logging sensitive variable names
     category: "A09",
@@ -520,7 +520,7 @@ const RULES = [
     pattern: /console\.error\s*\([^)]*(?:password|secret|token|apiKey|credential)[^)]*\)/i,
   },
 
-  // A02 — Cryptographic Failures (Sprint 520)
+  // A02 — Cryptographic Failures 
   {
     // Hardcoded JWT secret strings in source
     category: "A02",
@@ -529,7 +529,7 @@ const RULES = [
     pattern: /(?:jwt|jsonwebtoken).*(?:secret|key)\s*[:=]\s*['"][^'"]{8,}['"]/i,
   },
 
-  // A01 — Broken Access Control (Sprint 520)
+  // A01 — Broken Access Control 
   {
     // window.open with user-controlled URL without validation
     category: "A01",
@@ -539,7 +539,7 @@ const RULES = [
     safeMarkers: ["trustedURL", "validateUrl", "safeOpen", "noopener", "_blank"],
   },
 
-  // A04 — Insecure Design (Sprint 520)
+  // A04 — Insecure Design 
   {
     // Disabling Content-Security-Policy via meta tag removal
     category: "A04",
@@ -548,7 +548,7 @@ const RULES = [
     pattern: /(?:remove|delete).*content-security-policy/i,
   },
 
-  // Sprint 525 — 3 new rules (total: 59)
+  // 3 new rules (total: 59)
 
   // A03 — Injection: outerHTML assignment with dynamic content
   {
@@ -577,7 +577,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock", "clearSession"],
   },
 
-  // Sprint 531 — 3 new rules (total: 62)
+  // 3 new rules (total: 62)
 
   // A03 — Injection: template literal in URL without encoding
   {
@@ -606,7 +606,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock", "development"],
   },
 
-  // ── Sprint 537 additions ──────────────────────────────────────────────────
+  // ── additions ──────────────────────────────────────────────────
 
   // A03 — Injection: Blob URL from unsanitized string (XSS via blob:)
   {
@@ -635,7 +635,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock", "theme", "fontScale", "config"],
   },
 
-  // ── Sprint 543 additions ──────────────────────────────────────────────────
+  // ── additions ──────────────────────────────────────────────────
 
   // A01 — Broken Access Control: target="_blank" without rel="noopener"
   {
@@ -664,7 +664,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock"],
   },
 
-  // Sprint 549 — 3 new rules (total: 71)
+  // 3 new rules (total: 71)
 
   // A03 — Injection: writing to srcdoc without sanitization (iframe content injection)
   {
@@ -693,7 +693,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock", "diagLog", "console", "log", "report", "sentry", "debug"],
   },
 
-  // Sprint 555 — 3 new rules (total: 74)
+  // 3 new rules (total: 74)
 
   // A02 — Cryptographic Failures: hardcoded password/secret in variable assignment
   {
@@ -722,7 +722,7 @@ const RULES = [
     safeMarkers: ["WORKER_BASE_URL", "BASE_URL", "NWS_API", "PROXIES", "safeParam", "allowlist", "ALLOWED_", "import.meta.env", "encodeURIComponent", "URLSearchParams", "test", "spec", "geonameid", "encoded", "owasp-allow:A10", "hebcal", "sefaria"],
   },
 
-  // Sprint 561 — A03: XSS via document.writeln
+  // A03: XSS via document.writeln
   {
     category: "A03",
     label: "document.writeln() injection risk",
@@ -731,7 +731,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock", "trusted-types"],
   },
 
-  // Sprint 561 — A05: WebSocket without TLS (ws:// instead of wss://)
+  // A05: WebSocket without TLS (ws:// instead of wss://)
   {
     category: "A05",
     label: "WebSocket over insecure ws:// (use wss://)",
@@ -740,7 +740,7 @@ const RULES = [
     safeMarkers: ["localhost", "127.0.0.1", "test", "spec"],
   },
 
-  // Sprint 561 — A02: Private key in source
+  // A02: Private key in source
   {
     category: "A02",
     label: "Hardcoded private key material",
@@ -749,7 +749,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock", "example"],
   },
 
-  // Sprint 567 — A01: Form action manipulation (DOM clobbering vector)
+  // A01: Form action manipulation (DOM clobbering vector)
   {
     category: "A01",
     label: "Form action set to dynamic value (potential phishing)",
@@ -758,7 +758,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "mock", "trusted"],
   },
 
-  // Sprint 567 — A03: Unescaped template in style attribute (CSS injection)
+  // A03: Unescaped template in style attribute (CSS injection)
   {
     category: "A03",
     label: "Dynamic style attribute assignment (CSS injection risk)",
@@ -767,7 +767,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "sanitize", "trusted-types"],
   },
 
-  // Sprint 567 — A08: Unprotected importScripts in SW with dynamic arg
+  // A08: Unprotected importScripts in SW with dynamic arg
   {
     category: "A08",
     label: "importScripts() with dynamic argument in service worker",
@@ -776,7 +776,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "/* trusted */", "WORKER_BASE_URL"],
   },
 
-  // Sprint 573 — A02: Token/key passed in URL fragment or hash
+  // A02: Token/key passed in URL fragment or hash
   {
     category: "A02",
     label: "Credential/token exposed in URL fragment (leaks via Referer)",
@@ -785,7 +785,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "example", "mock", "// owasp-allow:A02"],
   },
 
-  // Sprint 573 — A05: Access-Control-Allow-Origin reflecting request origin
+  // A05: Access-Control-Allow-Origin reflecting request origin
   {
     category: "A05",
     label: "ACAO header reflecting request origin (open CORS)",
@@ -794,7 +794,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "ALLOWED_ORIGINS", "allowlist", "// owasp-allow:A05"],
   },
 
-  // Sprint 573 — A09: Sensitive var names in thrown Error messages
+  // A09: Sensitive var names in thrown Error messages
   {
     category: "A09",
     label: "Sensitive variable name in Error() message (info leak)",
@@ -803,7 +803,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A09", "sanitize"],
   },
 
-  // Sprint 579 — A03: Prototype pollution via __proto__ assignment
+  // A03: Prototype pollution via __proto__ assignment
   {
     category: "A03",
     label: "Direct __proto__ property assignment (prototype pollution vector)",
@@ -812,7 +812,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A03", "Object.create(null)"],
   },
 
-  // Sprint 579 — A04: SSRF via unvalidated URL template with variable
+  // A04: SSRF via unvalidated URL template with variable
   {
     category: "A04",
     label: "Dynamic URL construction with interpolated variable (potential SSRF)",
@@ -821,7 +821,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A04", "PROXIES", "allowedHosts"],
   },
 
-  // Sprint 579 — A08: Unvalidated redirect via location assignment
+  // A08: Unvalidated redirect via location assignment
   {
     category: "A08",
     label: "location.href assigned from variable (open redirect risk)",
@@ -830,7 +830,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A08", "sanitizeUrl", "trustedUrl"],
   },
 
-  // Sprint 585 — A01: postMessage with wildcard targetOrigin
+  // A01: postMessage with wildcard targetOrigin
   {
     category: "A01",
     label: "postMessage with '*' targetOrigin (data exposure to any origin)",
@@ -839,7 +839,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A01", "same-origin"],
   },
 
-  // Sprint 585 — A07: Hardcoded secret/token/key literal in source
+  // A07: Hardcoded secret/token/key literal in source
   {
     category: "A07",
     label: "Hardcoded secret/token literal in source (use env vars)",
@@ -848,7 +848,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A07", "mock", "example", "placeholder"],
   },
 
-  // Sprint 585 — A05: document.domain assignment (relaxes same-origin)
+  // A05: document.domain assignment (relaxes same-origin)
   {
     category: "A05",
     label: "document.domain assignment (relaxes same-origin policy)",
@@ -857,7 +857,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A05"],
   },
 
-  // Sprint 591 — A03: srcdoc attribute set via template literal (injection)
+  // A03: srcdoc attribute set via template literal (injection)
   {
     category: "A03",
     label: "iframe srcdoc set from template literal (XSS injection vector)",
@@ -866,7 +866,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A03", "trusted-types", "sanitize"],
   },
 
-  // Sprint 591 — A09: User PII in telemetry/analytics payload
+  // A09: User PII in telemetry/analytics payload
   {
     category: "A09",
     label: "PII field name in analytics/telemetry payload (privacy leak)",
@@ -875,7 +875,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A09", "redact", "anonymize", "hash"],
   },
 
-  // Sprint 591 — A02: PBKDF2 with fewer than 100k iterations (weak KDF)
+  // A02: PBKDF2 with fewer than 100k iterations (weak KDF)
   {
     category: "A02",
     label: "PBKDF2 with too few iterations (< 100000 is weak)",
@@ -884,7 +884,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A02", "100000", "600000"],
   },
 
-  // Sprint 597 — A04: Object.assign with user-controlled source (proto pollution)
+  // A04: Object.assign with user-controlled source (proto pollution)
   {
     category: "A04",
     label: "Object.assign with unvalidated source (prototype pollution risk)",
@@ -893,7 +893,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A04", "structuredClone", "sanitize"],
   },
 
-  // Sprint 597 — A06: Weak hash algorithm for security purposes (MD5/SHA1)
+  // A06: Weak hash algorithm for security purposes (MD5/SHA1)
   {
     category: "A06",
     label: "Weak hash algorithm (MD5/SHA-1) used for security/integrity",
@@ -902,7 +902,7 @@ const RULES = [
     safeMarkers: ["test", "spec", "// owasp-allow:A06", "non-security", "checksum", "etag"],
   },
 
-  // Sprint 597 — A10: fetch() without .catch() or try/catch (unhandled rejection)
+  // A10: fetch() without .catch() or try/catch (unhandled rejection)
   {
     category: "A10",
     label: "fetch() chain without .catch() (unhandled rejection risk)",
@@ -915,11 +915,11 @@ const RULES = [
 /** Exempt source paths (relative to root, forward slashes). */
 const EXEMPT_PATHS = [
   "src/core/trusted-types.ts",
-  // Sprint 466: exempt the scanner itself and security-checker helpers —
+  // exempt the scanner itself and security-checker helpers —
   // they enumerate dangerous patterns by design, so every rule would match their own source.
   "scripts/check-owasp.mjs",
   "scripts/check-trusted-types.mjs",
-  // Sprint 500: public API proxy uses CORS wildcard by design.
+  // public API proxy uses CORS wildcard by design.
   "worker/src/utils/validation.ts",
   "worker/src/utils/response.ts",
   "worker/src/middleware/cors.ts",
@@ -945,7 +945,7 @@ function collectTsFiles(dir) {
 }
 
 /**
- * Collect all .mjs files (non-recursive) from `dir`. (Sprint 466)
+ * Collect all .mjs files (non-recursive) from `dir`. 
  * @param {string} dir
  * @returns {string[]}
  */
@@ -957,7 +957,7 @@ function collectMjsFiles(dir) {
     .map((f) => join(dir, f));
 }
 
-// Collect from src/, worker/src/, and scripts/ (Sprint 466)
+// Collect from src/, worker/src/, and scripts/ 
 const files = [
   ...collectTsFiles(SRC),
   ...(statSync(WORKER_SRC, { throwIfNoEntry: false })?.isDirectory() ? collectTsFiles(WORKER_SRC) : []),

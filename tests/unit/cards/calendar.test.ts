@@ -192,7 +192,7 @@ describe("Calendar — groupEventsByDay", () => {
 // ── renderCalendar — weekly tiled grid ────────────────────────────────────
 describe("Calendar — renderCalendar (weekly tiled view)", () => {
   beforeEach(() => {
-    // Sprint 62 fix: pin to Wednesday so 'tomorrow' falls inside the
+    // fix: pin to Wednesday so 'tomorrow' falls inside the
     // current Sunday–Saturday week grid (independent of real system date).
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-17T12:00:00")); // Wednesday
@@ -422,7 +422,7 @@ describe("Calendar — renderCalendar (weekly tiled view)", () => {
 // ── countdown + header count ──────────────────────────────────────────────
 describe("Calendar — countdown + header count", () => {
   beforeEach(() => {
-    // Sprint 62 fix: pin to Wednesday so countdown tests are deterministic.
+    // fix: pin to Wednesday so countdown tests are deterministic.
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-17T12:00:00")); // Wednesday
     makeCalDOM();
@@ -730,7 +730,7 @@ describe("Calendar — parseICS edge cases", () => {
     expect(() => parseICS(ics, -1)).not.toThrow();
   });
 
-  // ── V13-DATA: 12 additional ICS fuzz cases ──────────────────────────────
+  // ── 12 additional ICS fuzz cases ──────────────────────────────
 
   it("handles RRULE line without crashing (parser ignores recurrence rules)", () => {
     const ics =
@@ -868,7 +868,7 @@ describe("Calendar — parseICS edge cases", () => {
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
 
-  // ── V13-DATA sprint 7: fuzz cases 24-28 ─────────────────────────────────
+  // ── fuzz cases 24-28 ─────────────────────────────────
 
   it("handles DTSTART with TZID parameter (non-UTC timezone-qualified)", () => {
     const ics =
@@ -911,7 +911,7 @@ describe("Calendar — parseICS edge cases", () => {
   });
 });
 
-// ── RFC 5545 fuzz expansion — Sprint 53 ──────────────────────────────────
+// ── RFC 5545 fuzz expansion — ──────────────────────────────────
 // Increases total icalendar test cases from 79 → 150+
 
 describe("Calendar — parseICS RFC 5545 fuzz: date formats", () => {
@@ -1353,12 +1353,12 @@ describe("Calendar — calDaysUntilLabel fuzz", () => {
   });
 });
 
-// ── Sprint 61: icalendar RFC-5545 fuzz 138 → 154 ──────────────────────────
+// ── icalendar RFC-5545 fuzz 138 → 154 ──────────────────────────
 // Adds 16 new test cases covering RECURRENCE-ID, EXDATE lists, ORGANIZER,
 // ATTENDEE, STATUS, PRIORITY, TRANSP, mixed timezone/UTC feeds,
 // and groupEventsByDay edge cases.
 
-describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
+describe("Calendar — parseICS RFC 5545 fuzz: additions", () => {
   it("handles RECURRENCE-ID property without crashing", () => {
     const ics = [
       "BEGIN:VCALENDAR",
@@ -1592,7 +1592,7 @@ describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
 
-  // ── Sprint 71: icalendar fuzz 157 → 170+ ─────────────────────────────────
+  // ── icalendar fuzz 157 → 170+ ─────────────────────────────────
 
   it("handles VALARM component inside VEVENT without crashing", () => {
     const ics = [
@@ -1816,7 +1816,7 @@ describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
     expect(parseICS(ics, 0)).toHaveLength(0);
   });
 
-  // ── Sprint 77 — icalendar fuzz expansion 171 → 200+ ──────────────────────
+  // ── icalendar fuzz expansion 171 → 200+ ──────────────────────
 
   it("handles VTODO component inside VCALENDAR without crashing", () => {
     const ics = [
@@ -2304,9 +2304,9 @@ describe("Calendar — parseICS RFC 5545 fuzz: Sprint 61 additions", () => {
   });
 });
 
-// ── Sprint 92: branch coverage gaps ─────────────────────────────────────────
+// ── branch coverage gaps ─────────────────────────────────────────
 
-describe("Calendar — Sprint 92 isSoon and countdown branches", () => {
+describe("Calendar — isSoon and countdown branches", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div id="cal-week-grid"></div>
@@ -2390,7 +2390,7 @@ describe("Calendar — Sprint 92 isSoon and countdown branches", () => {
   });
 });
 
-describe("Calendar — Sprint 92 parseICS DTEND invalid date branch", () => {
+describe("Calendar — parseICS DTEND invalid date branch", () => {
   it("falls back to start when DTEND has an invalid date string (non-8-char, non-ISO)", () => {
     // DTEND value that is not 8 chars and doesn't match ISO → parseICSDate returns null → end = start
     const ics = [
@@ -2409,7 +2409,7 @@ describe("Calendar — Sprint 92 parseICS DTEND invalid date branch", () => {
   });
 });
 
-// ── Sprint Fuzz+ (Roadmap #17): icalendar fuzz expansion 210 → 250+ ──────
+// ── Sprint Fuzz+ : icalendar fuzz expansion 210 → 250+ ──────
 // Targets RFC 5545 properties not previously covered: RDATE/EXDATE/RECURRENCE-ID,
 // ORGANIZER + ATTENDEE, X- experimental, GEO, TRANSP, CLASS, STATUS, CATEGORIES,
 // PRIORITY, URL, COMMENT, CONTACT, CONFERENCE, RESOURCES, RELATED-TO, REQUEST-STATUS,
@@ -2872,9 +2872,9 @@ describe("Calendar — parseICS RFC 5545 fuzz: extended property surface", () =>
   });
 });
 
-// ── Sprint 181 / CAL1: getHolidaysByDate ────────────────────────────────
+// ── getHolidaysByDate ────────────────────────────────
 
-describe("Calendar — getHolidaysByDate (Sprint 181 CAL1)", () => {
+describe("Calendar — getHolidaysByDate ( CAL1)", () => {
   const items = [
     { title: "Rosh Hashana", hebrew: "ראש השנה", date: "2025-09-23", category: "holiday" },
     { title: "Yom Kippur", hebrew: "יום כיפור", date: "2025-10-02", category: "holiday" },
@@ -2907,9 +2907,9 @@ describe("Calendar — getHolidaysByDate (Sprint 181 CAL1)", () => {
   });
 });
 
-// ── Sprint 181 / CAL2: cal-src-N class in rendered events ───────────────
+// ── cal-src-N class in rendered events ───────────────
 
-describe("Calendar — per-source class in renderCalendar (Sprint 181 CAL2)", () => {
+describe("Calendar — per-source class in renderCalendar ( CAL2)", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div id="cal-week-grid"></div>
@@ -2953,8 +2953,8 @@ describe("Calendar — per-source class in renderCalendar (Sprint 181 CAL2)", ()
     expect(eventEl?.classList.contains("cal-src-1")).toBe(true);
   });
 });
-// ── Sprint 188 / CAL3: Privacy mode ─────────────────────────────────────────
-describe("Calendar — privacy mode (Sprint 188 CAL3)", () => {
+// ── Privacy mode ─────────────────────────────────────────
+describe("Calendar — privacy mode ( CAL3)", () => {
   beforeEach(() => {
     makeCalDOM();
     localStorage.clear();
@@ -3021,8 +3021,8 @@ describe("Calendar — privacy mode (Sprint 188 CAL3)", () => {
   });
 });
 
-// ── Sprint 188 / CAL4: Configurable horizon ──────────────────────────────────
-describe("Calendar — configurable horizon (Sprint 188 CAL4)", () => {
+// ── Configurable horizon ──────────────────────────────────
+describe("Calendar — configurable horizon ( CAL4)", () => {
   beforeEach(() => {
     makeCalDOM();
     localStorage.clear();
@@ -3094,8 +3094,8 @@ describe("Calendar — configurable horizon (Sprint 188 CAL4)", () => {
   });
 });
 
-// ── Sprint 209 / CAL6: findConflicts ──────────────────────────────────
-describe("Calendar — findConflicts (Sprint 209)", () => {
+// ── findConflicts ──────────────────────────────────
+describe("Calendar — findConflicts ", () => {
   function makeEv(startH: number, endH: number, allDay = false): import("@/types/api").CalendarEvent {
     const base = new Date("2024-01-08T00:00:00");
     return {
@@ -3138,7 +3138,7 @@ describe("Calendar — findConflicts (Sprint 209)", () => {
   });
 });
 
-// ── Sprint 257: fast-check property tests (CP1–CP5) ───────────────────────
+// ── fast-check property tests (CP1–CP5) ───────────────────────
 
 import * as fc from "fast-check";
 
@@ -3301,8 +3301,8 @@ describe("CP5 · parseICS — property: always returns an array; no events for e
   });
 });
 
-// ── Sprint 284 / CS-CAL1: holidays/colors/horizon/conflicts ───────────────────
-describe("Calendar configSchema — CS-CAL1 (Sprint 284)", () => {
+// ── holidays/colors/horizon/conflicts ───────────────────
+describe("Calendar configSchema — CS-CAL1 ", () => {
   it("configSchema has 6 fields total after CS-CAL1", () => {
     expect(calendarConfigSchema.length).toBe(6);
   });
@@ -3334,7 +3334,7 @@ describe("Calendar configSchema — CS-CAL1 (Sprint 284)", () => {
   });
 });
 
-// ── Sprint 415 / coverage ratchet: destroyCalendarCard ──────────────────────
+// ── / coverage ratchet: destroyCalendarCard ──────────────────────
 
 describe("Calendar — destroyCalendarCard", () => {
   it("does not throw when no interval is scheduled (null state)", () => {

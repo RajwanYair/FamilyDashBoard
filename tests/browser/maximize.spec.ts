@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard — maximize.ts browser spec (Sprint 145)
+ * FamilyDashBoard — maximize.ts browser spec 
  *
  * These tests run in real Chromium via @vitest/browser + playwright.
  * They cover behaviours that require actual layout (getBoundingClientRect)

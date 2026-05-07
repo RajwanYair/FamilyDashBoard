@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/i18n.ts (Sprint 317 / IP1-IP5)
+ * fast-check property tests for src/core/i18n.ts 
  *
  * Verifies invariants of `t()` and `getLocalizedCardTitle()` over a wide
  * input space. These functions are pure (given a language argument) so
@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import fc from "fast-check";
 import { t, getLocalizedCardTitle, getInterfaceDirection } from "@/core/i18n";
 
-describe("i18n — fast-check properties (IP1-IP5, Sprint 317)", () => {
+describe("i18n — fast-check properties (IP1-IP5 )", () => {
   beforeEach(() => {
     localStorage.clear();
   });

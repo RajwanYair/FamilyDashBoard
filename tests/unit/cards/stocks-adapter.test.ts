@@ -1,5 +1,5 @@
 /**
- * Tests — Stocks Provider Adapter (Sprint 128)
+ * Tests — Stocks Provider Adapter 
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -14,7 +14,7 @@ import { createStocksAdapter } from "@/cards/stocks/stocks-adapter";
 import { _resetProviderHealth, getProviderHealth } from "@/core/provider";
 import { cClear } from "@/core/cache";
 
-describe("Stocks Provider Adapter (Sprint 128)", () => {
+describe("Stocks Provider Adapter ", () => {
   beforeEach(() => {
     localStorage.clear();
     cClear();

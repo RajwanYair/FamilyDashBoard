@@ -68,6 +68,6 @@ both configs in the same workflow step via
 
 | Date       | Status   | Note                                      |
 | ---------- | -------- | ----------------------------------------- |
-| 2026-04-26 | Draft    | Sprint 145 — initial activation           |
-| 2026-04-26 | Accepted | Sprint 146 — layout-drag spec added (27 total browser tests) |
-| 2026-04-29 | Accepted | Sprint 152 — ADR written and committed    |
+| 2026-04-26 | Draft    | initial activation           |
+| 2026-04-26 | Accepted | layout-drag spec added (27 total browser tests) |
+| 2026-04-29 | Accepted | ADR written and committed    |

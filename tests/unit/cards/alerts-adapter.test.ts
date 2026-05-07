@@ -1,5 +1,5 @@
 /**
- * Tests for Alerts Provider Adapter (Sprint 92).
+ * Tests for Alerts Provider Adapter .
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -24,7 +24,7 @@ import { cGet } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
 import { recordProviderSuccess, recordProviderFailure } from "@/core/provider";
 
-describe("AlertsAdapter (Sprint 92)", () => {
+describe("AlertsAdapter ", () => {
   const adapter = createAlertsAdapter();
 
   beforeEach(() => {

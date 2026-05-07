@@ -111,7 +111,7 @@ describe("fetchViaWorker", () => {
   });
 });
 
-// -- resetWorkerEnabledCache (Sprint 7 / v7.5) ----------------------------------
+// -- resetWorkerEnabledCache  ----------------------------------
 
 import { resetWorkerEnabledCache as resetCache } from "@/core/constants";
 

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/perf.ts (Sprint 479)
+ * fast-check property tests — src/core/perf.ts 
  *
  * Properties under test:
  *  PF1. formatVital returns "–" for null regardless of key.

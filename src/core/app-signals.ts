@@ -1,5 +1,5 @@
 /**
- * src/core/app-signals.ts — Sprint 121 + Sprint 140 (Roadmap #1)
+ * src/core/app-signals.ts
  *
  * Named application-level signals for gradual `state.ts` → `signals.ts`
  * migration (ADR-038).  Each signal here is a single source of truth for
@@ -13,9 +13,9 @@
  *   - Migrated cards subscribe via `effect()` on these signals.
  *   - Unmigrated cards continue using `state.on()` / `state.addEventListener`.
  *
- * Migration status (Roadmap #1): ≥ 50 % of `state.ts` call-site subscriptions.
- *   Sprint 121: weather.ts subscription migrated (first card-at-a-time step).
- *   Sprint 140: fdb-motivation.ts motivationInterval migrated → 100 % of
+ * Migration status : ≥ 50 % of `state.ts` call-site subscriptions.
+ *   weather.ts subscription migrated (first card-at-a-time step).
+ *   fdb-motivation.ts motivationInterval migrated → 100 % of
  *               reactive config subscriptions now on signals.
  */
 

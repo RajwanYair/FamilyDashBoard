@@ -1,6 +1,6 @@
 /**
- * Tests for worker/src/middleware/early-hints.ts (Sprint 122, Roadmap #7).
- * Sprint 142 (Roadmap #8): add earlyHintsMiddleware branch coverage.
+ * Tests for worker/src/middleware/early-hints.ts ( , ).
+ * : add earlyHintsMiddleware branch coverage.
  */
 import { describe, it, expect, vi } from "vitest";
 import {

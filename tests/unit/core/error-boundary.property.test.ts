@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/error-boundary.ts (Sprint 481)
+ * fast-check property tests — src/core/error-boundary.ts 
  *
  * Properties under test:
  *  EB1. withErrorBoundary never throws/rejects regardless of the wrapped function's behavior.

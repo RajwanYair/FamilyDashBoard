@@ -2,7 +2,7 @@
 /**
  * check-vendor-neutrality.mjs
  *
- * Sprint 228 / ADR-031 — Vendor-neutrality drill for the FamilyDashBoard
+ * Vendor-neutrality drill for the FamilyDashBoard
  * Cloudflare Worker.  Scans worker/src/ for Cloudflare-specific bindings and
  * APIs, then prints a checklist of alternatives for Deno Deploy and Bun Deploy
  * so the operator can assess portability risk before each major release.

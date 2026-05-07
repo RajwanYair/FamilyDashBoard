@@ -1,12 +1,10 @@
-# ADR-050 — Cloudflare R2 Asset Cache (V14-EDGE)
+# ADR-050 — Cloudflare R2 Asset Cache 
 
 **Status**: Proposed
 **Deciders**: RajwanYair
 **Date**: 2026-04-30
 **Sprint**: 249
-**Stream**: V14-EDGE
-
----
+**Stream**: ---
 
 ## Context
 

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard Worker — Early Hints middleware (Sprint 122, Roadmap #7)
+ * FamilyDashBoard Worker — Early Hints middleware ( , Roadmap #7)
  *
  * Adds RFC 8297 `Link` preload headers to GET responses so that
  * Cloudflare's edge layer can synthesize a `103 Early Hints` response

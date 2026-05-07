@@ -1,5 +1,5 @@
 /**
- * Sprint 216 / X3 — Semantic-link service.
+ * Semantic-link service.
  *
  * Provides a lightweight, dependency-free registry that lets cards declare
  * directional semantic relationships (e.g. "stocks → weather") so the shell

@@ -1,6 +1,6 @@
 # FamilyDashBoard — MCP Server Bridge (X11 / D1)
 
-> **Status**: Shipped v14.0 (Sprint 415) · ADR-058 (design) · ADR-066 (impl plan)
+> **Status**: Shipped v14.0  · ADR-058 (design) · ADR-066 (impl plan)
 >
 > **Privacy guarantee**: zero network egress from the dashboard.  The bridge
 > uses `BroadcastChannel` — same-origin, in-browser only.  No data ever leaves
@@ -173,6 +173,6 @@ ch.postMessage({
 
 | Version | Notes |
 | ------- | ----- |
-| v14.0 (Sprint 415) | `mcp-bridge.ts` shipped; 6-tool surface; replay protection; deep-freeze |
-| ADR-066 (Sprint 355) | Implementation plan; channel protocol; bundle-delta budget |
-| ADR-058 (Sprint 338) | Design decision; privacy model; companion architecture |
+| v14.0  | `mcp-bridge.ts` shipped; 6-tool surface; replay protection; deep-freeze |
+| ADR-066  | Implementation plan; channel protocol; bundle-delta budget |
+| ADR-058  | Design decision; privacy model; companion architecture |

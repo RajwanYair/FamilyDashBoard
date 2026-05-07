@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/i18n.ts (Sprint 480)
+ * fast-check property tests — src/core/i18n.ts 
  *
  * Properties under test:
  *  I18N1. t() always returns a non-empty string for every known key in both languages.

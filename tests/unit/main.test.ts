@@ -483,7 +483,7 @@ describe("Main — init() keyboard shortcuts", () => {
     expect(calls.some(([k]) => k === "b")).toBe(true);
   });
 
-  it("registers 'y' key for X15 semantic clipboard yank (Sprint 369)", () => {
+  it("registers 'y' key for X15 semantic clipboard yank ", () => {
     init();
     const calls = vi.mocked(registerKey).mock.calls;
     expect(calls.some(([k]) => k === "y")).toBe(true);
@@ -1379,7 +1379,7 @@ describe("Main — dynamic help overlay (F10 v7.3)", () => {
   });
 
   it("populates #help-dynamic-keys when opening help dialog", () => {
-    // Sprint 291: now renders .help-row elements (description + key) instead of count text
+    // now renders .help-row elements (description + key) instead of count text
     buildHelpDOM();
     init();
     const hCall = vi.mocked(registerKey).mock.calls.find(([k]) => k === "h");

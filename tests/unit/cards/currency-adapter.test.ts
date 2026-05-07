@@ -1,5 +1,5 @@
 /**
- * Tests for Currency Provider Adapter (Sprint 91).
+ * Tests for Currency Provider Adapter .
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -28,7 +28,7 @@ import { fetchJSONWithWorker } from "@/core/fetch";
 import { recordProviderSuccess, recordProviderFailure } from "@/core/provider";
 import { fetchBoIRates } from "@/cards/currency/boi-adapter";
 
-describe("CurrencyAdapter (Sprint 91)", () => {
+describe("CurrencyAdapter ", () => {
   const adapter = createCurrencyAdapter();
 
   beforeEach(() => {
@@ -62,7 +62,7 @@ describe("CurrencyAdapter (Sprint 91)", () => {
     expect(recordProviderFailure).toHaveBeenCalledWith("currency");
   });
 
-  it("Sprint 132 (Roadmap #16): tries 3 endpoints (primary + ER fallback + ECB Frankfurter)", async () => {
+  it(" : tries 3 endpoints (primary + ER fallback + ECB Frankfurter)", async () => {
     vi.mocked(fetchJSONWithWorker)
       .mockRejectedValueOnce(new Error("primary down"))
       .mockRejectedValueOnce(new Error("er-fallback down"))
@@ -88,7 +88,7 @@ describe("CurrencyAdapter (Sprint 91)", () => {
     expect(recordProviderFailure).toHaveBeenCalledWith("currency");
   });
 
-  // Sprint 442: BoI primary path (lines 37-38 in currency-adapter.ts)
+  // BoI primary path (lines 37-38 in currency-adapter.ts)
   it("uses BoI rates when fetchBoIRates returns valid data with >2 rates", async () => {
     vi.mocked(fetchBoIRates).mockResolvedValueOnce({
       rates: { USD: 0.27, EUR: 0.25, GBP: 0.22, JPY: 40.1 },

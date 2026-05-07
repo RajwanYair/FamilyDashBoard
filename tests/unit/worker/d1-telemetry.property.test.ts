@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/d1-telemetry.ts + routes/metrics.ts (Sprint 547)
+ * fast-check property tests — worker/src/utils/d1-telemetry.ts + routes/metrics.ts 
  *
  * Properties under test:
  *  DT1. aggregateP95: sampleCount = total samples per route

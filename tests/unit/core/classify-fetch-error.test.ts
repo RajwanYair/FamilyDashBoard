@@ -1,10 +1,10 @@
 /**
- * Sprint 94 — classifyFetchError tests
+ * classifyFetchError tests
  */
 import { describe, it, expect } from "vitest";
 import { classifyFetchError } from "@/core/fetch";
 
-describe("classifyFetchError (Sprint 94)", () => {
+describe("classifyFetchError ", () => {
   it("classifies AbortError as timeout", () => {
     const err = new DOMException("The operation was aborted.", "AbortError");
     expect(classifyFetchError(err)).toBe("timeout");

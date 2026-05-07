@@ -149,7 +149,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 153: High Contrast Mode — OS preference override
+   High Contrast Mode — OS preference override
    ═══════════════════════════════════════════════════════ */
 @media (prefers-contrast: more) {
   :root {

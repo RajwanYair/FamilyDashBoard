@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * FamilyDashBoard — Playwright Configuration (Stream G.2)
+ * FamilyDashBoard — Playwright Configuration
  *
  * E2E tests live in tests/e2e/.
  * Run locally: npx playwright test
@@ -11,6 +11,8 @@ import { defineConfig, devices } from "@playwright/test";
  *   - Chromium: ALL tests (full suite including visual regression)
  *   - Firefox, WebKit, Edge: smoke + a11y only (tagged @cross-browser)
  *   - Mobile Chrome (Pixel 5), Mobile Safari (iPhone 13): smoke + a11y only
+ *   - Samsung Internet (Galaxy S9+): smoke + a11y only
+ *   - Tablet: iPad Pro 11 (Safari) + Galaxy Tab S4 (Android): smoke + a11y only
  *
  * Visual regression baselines are Chromium-only by design — per-engine rendering
  * differences are intentional, not bugs. Cross-browser tests validate layout
@@ -89,6 +91,19 @@ export default defineConfig({
     {
       name: "tablet-safari",
       use: { ...devices["iPad Pro 11"], locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+    // ── Tablet: smoke + a11y on Galaxy Tab (Android) ─────────────────────
+    {
+      name: "tablet-android",
+      use: { ...devices["Galaxy Tab S4"], locale: "he-IL" },
+      testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
+    },
+
+    // ── Mobile: smoke + a11y on Galaxy S9+ (Samsung Internet) ────────────
+    {
+      name: "mobile-samsung",
+      use: { ...devices["Galaxy S9+"], locale: "he-IL" },
       testMatch: /smoke\.spec\.ts|accessibility\.spec\.ts/,
     },
   ],

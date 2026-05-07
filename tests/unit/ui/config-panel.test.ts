@@ -342,15 +342,15 @@ describe("Config Panel — importSettings", () => {
     expect(() => importSettings()).not.toThrow();
   });
 
-  it("calls click() on a dynamically created file input (Sprint 112)", () => {
-    // After Sprint 112 the import flow creates a fresh <input type="file"> and
+  it("calls click() on a dynamically created file input ", () => {
+    // After the import flow creates a fresh <input type="file"> and
     // calls click() on it (or uses showOpenFilePicker — unavailable in happy-dom).
     const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
     importSettings();
     expect(clickSpy).toHaveBeenCalledOnce();
   });
 
-  it("saves config when the picked file contains valid JSON (Sprint 112)", async () => {
+  it("saves config when the picked file contains valid JSON ", async () => {
     const clickSpy = vi.spyOn(HTMLInputElement.prototype, "click").mockImplementation(() => {});
     class MockFileReader {
       onload: ((e: ProgressEvent<FileReader>) => void) | null = null;
@@ -1089,9 +1089,9 @@ describe("Config Panel — collectForm tasksResetHour NaN preserves default", ()
   });
 });
 
-// ── Sprint 171: Config dirty tracking tests ─────────────────────────────
+// ── Config dirty tracking tests ─────────────────────────────
 
-describe("Config Panel — dirty tracking (Sprint 171)", () => {
+describe("Config Panel — dirty tracking ", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
@@ -1327,9 +1327,9 @@ describe("Config Panel — dim-level and font-scale slider live preview", () => 
   });
 });
 
-// ── Sprint 19: dirty indicator + closeConfigPanel clears dirty ────────────────
+// ── dirty indicator + closeConfigPanel clears dirty ────────────────
 
-describe("Config Panel — dirty indicator (Sprint 19)", () => {
+describe("Config Panel — dirty indicator ", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
@@ -1371,15 +1371,15 @@ describe("Config Panel — dirty indicator (Sprint 19)", () => {
     input.value = "שינוי";
     input.dispatchEvent(new Event("input", { bubbles: true }));
     expect(gearBtn.textContent).toContain("*");
-    mod.closeConfigPanel(); // first close: shows toast warning (Sprint 148)
+    mod.closeConfigPanel(); // first close: shows toast warning 
     mod.closeConfigPanel(); // second close: actually closes and clears dirty
     expect(gearBtn.textContent).not.toContain("*");
   });
 });
 
-// ── Sprint 58: Network-mode selector populate + collect ──────────────────────
+// ── Network-mode selector populate + collect ──────────────────────
 
-describe("Config Panel — network-mode selector (Sprint 58)", () => {
+describe("Config Panel — network-mode selector ", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
@@ -1425,9 +1425,9 @@ describe("Config Panel — network-mode selector (Sprint 58)", () => {
   });
 });
 
-// ── Sprint 82: weatherUsTravelMode load/save paths (cfg-weather-us-travel) ───
+// ── weatherUsTravelMode load/save paths (cfg-weather-us-travel) ───
 
-describe("Config Panel — weatherUsTravelMode populateForm (Sprint 82)", () => {
+describe("Config Panel — weatherUsTravelMode populateForm ", () => {
   function buildTravelDOM(): void {
     document.body.innerHTML = `
       <div id="config-overlay">
@@ -1520,7 +1520,7 @@ describe("Config Panel — weatherUsTravelMode populateForm (Sprint 82)", () => 
   });
 });
 
-// ── Sprint 415 / coverage ratchet: ecfg dialog handlers ───────────────────────────────────────────
+// ── / coverage ratchet: ecfg dialog handlers ───────────────────────────────────────────
 
 describe("ConfigPanel — cancelEcfgDialog", () => {
   afterEach(() => { document.body.innerHTML = ""; });
@@ -1561,9 +1561,9 @@ describe("ConfigPanel — confirmEcfgDialog", () => {
   });
 });
 
-// ── Sprint 421 / coverage ratchet: openEcfgDialog callers ─────────────────
+// ── / coverage ratchet: openEcfgDialog callers ─────────────────
 
-describe("ConfigPanel — encryptedShareSettings (Sprint 421)", () => {
+describe("ConfigPanel — encryptedShareSettings ", () => {
   afterEach(() => { document.body.innerHTML = ""; });
 
   it("calls openEcfgDialog (export) and resolves null when dialog absent", async () => {
@@ -1592,7 +1592,7 @@ describe("ConfigPanel — encryptedShareSettings (Sprint 421)", () => {
   });
 });
 
-describe("ConfigPanel — openEcfgImportDialog (Sprint 421)", () => {
+describe("ConfigPanel — openEcfgImportDialog ", () => {
   afterEach(() => { document.body.innerHTML = ""; });
 
   it("does not throw when dialog element is absent", async () => {

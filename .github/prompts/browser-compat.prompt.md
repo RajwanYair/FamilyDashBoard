@@ -1,7 +1,6 @@
 ---
-mode: "agent"
 description: "Add or fix a browser compatibility test in FamilyDashBoard — Vitest browser-mode or Playwright E2E. Use when checking CSS feature support, Web API availability, or cross-browser rendering."
-tools: ["read_file", "grep_search", "file_search", "create_file", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "get_errors", "manage_todo_list", "tool_search", "view_image"]
+tools: ["read_file", "grep_search", "file_search", "create_file", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "get_errors", "manage_todo_list", "vscode_listCodeUsages", "tool_search", "view_image", "memory", "fetch_webpage", "runSubagent"]
 ---
 
 # Browser Compatibility Test

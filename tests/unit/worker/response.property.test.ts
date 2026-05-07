@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/response.ts (Sprint 536)
+ * fast-check property tests — worker/src/utils/response.ts 
  *
  * Properties under test:
  *  WR1. jsonResponse status code matches param

@@ -25,7 +25,7 @@ tooling/
     base-typescript.json ← Strict TypeScript base (browser / bundler)
     base-node.json       ← Node.js / Cloudflare Worker TypeScript base
   vitest/
-    README.md           ← Preset API docs and usage guide (Sprint 157)
+    README.md           ← Preset API docs and usage guide 
     base.mjs            ← Shared Vitest defaults (forks pool, mocks, timeouts)
     happy-dom.mjs       ← DOM test preset (extends base, environment: happy-dom)
     node.mjs            ← Node.js test preset (extends base, environment: node)
@@ -296,7 +296,7 @@ When a new tooling version is released:
 ## Cross-Project Registry (V14-HARMONISE)
 
 All active `MyScripts/` workspaces that consume these shared configs.
-This table is the source of truth for Sprint 73+ V14-HARMONISE alignment work.
+This table is the source of truth for + V14-HARMONISE alignment work.
 
 | Project                    | Package name       | Stack                                     | ESLint factory    | Vitest preset   | Status                                   |
 | -------------------------- | ------------------ | ----------------------------------------- | ----------------- | --------------- | ---------------------------------------- |
@@ -344,7 +344,7 @@ per-project overrides to ESLint rules or TypeScript strictness settings.
 | Sprint | Task                                                                              |
 | ------ | --------------------------------------------------------------------------------- |
 | 73     | Document cross-project registry + status column ← **done**                        |
-| 168    | Sprint 168: audit all three sibling repos; update registry with actual status ← **done** |
+| 168    | audit all three sibling repos; update registry with actual status ← **done** |
 | 74+    | Migrate BudgetManager vitest to `happy-dom.mjs` preset                            |
 | 74+    | Migrate CrossTideWeb eslint to `web-ts-app.mjs` factory                           |
 | 74+    | Migrate CrossTideWeb vitest to `happy-dom.mjs` preset                             |
@@ -360,7 +360,7 @@ per-project overrides to ESLint rules or TypeScript strictness settings.
 
 ---
 
-### Sibling Repo Audit Findings (Sprint 168)
+### Sibling Repo Audit Findings 
 
 Audited 2026-05. Three sibling repos under `MyScripts/` assessed against shared preset baseline.
 

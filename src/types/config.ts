@@ -17,7 +17,7 @@ export interface CardConfig {
   settings?: Record<string, boolean | number | string>;
 }
 
-// ── Sprint 98: Typed per-card config namespaces ──────────────────────────
+// Typed per-card config namespaces ──────────────────────────
 
 export interface WeatherCardConfig extends CardConfig {
   settings?: {
@@ -88,7 +88,7 @@ export interface VideoNewsCardConfig extends CardConfig {
     pauseOnReducedMotion: boolean;
     /** Pause video during night-dimmer schedule. Default: true */
     pauseAtNight: boolean;
-    /** Sprint 183 / V1: Pinned channel IDs shown in normal mode (≤ 4, comma-separated). Empty = show all. */
+    /** Pinned channel IDs shown in normal mode (≤ 4, comma-separated). Empty = show all. */
     pinnedChannels?: string;
   };
 }
@@ -127,11 +127,11 @@ export interface DashboardConfig {
   calendarUrls: string[];
   /** Number of days ahead to display in calendar (default: 21; range 7–60). */
   calendarDaysAhead: number;
-  /** Sprint 188 / CAL3: Replace event titles with "עסוק" when true. */
+  /** Replace event titles with "עסוק" when true. */
   calendarPrivacy: boolean;
   disabledFeeds: string[];
   hiddenStocks: string[];
-  /** Sprint 189 / C2: Comma-separated pair keys to hide (e.g. "XAG,BTC"). */
+  /** Comma-separated pair keys to hide (e.g. "XAG,BTC"). */
   currencyHiddenPairs: string;
   customProxy: string;
   familyName: string;
@@ -149,7 +149,7 @@ export interface DashboardConfig {
   countdownCardDoneMsg: string;
   /** Countdown card — start date YYYY-MM-DD for progress bar (default: 1 year before target) */
   countdownCardStartDate: string;
-  /** Countdown card — recurrence mode: '' | 'annual' | 'monthly' (Sprint 281 / CS-CD1) */
+  /** Countdown card — recurrence mode: '' | 'annual' | 'monthly' */
   countdownCardRecurrence: string;
   bgImages: string[];
   /** Ordered list of card IDs per column: [col0_ids, col1_ids, col2_ids]. Null = use hardcoded layout. */
@@ -188,7 +188,7 @@ export interface DashboardConfig {
   countdownCard3StartDate: string;
   /** Motivation card — auto-advance interval in minutes (0 = off). */
   motivationInterval: number;
-  /** V13-DATA: Motivation card — opt-in to AI-generated Hebrew quotes from the worker. */
+  /** Motivation card — opt-in to AI-generated Hebrew quotes from the worker. */
   motivationAiHebrew: boolean;
   /**
    * Schema version — used to run forward migrations when loading older stored configs.
@@ -273,7 +273,7 @@ export interface DashboardConfig {
    */
   animLevel: "none" | "minimal" | "normal" | "full";
 
-  /** Sprint 216 / X3: Semantic-link service — opt-in to cross-card contextual links. Default: false. */
+  /** Semantic-link service — opt-in to cross-card contextual links. Default: false. */
   semanticLinksEnabled: boolean;
 }
 
@@ -382,7 +382,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   // Config v12 defaults
   weatherUsTravelMode: false,
 
-  // Config v13 defaults (Sprint 216 / X3)
+  // Config v13 defaults
   semanticLinksEnabled: false,
 };
 

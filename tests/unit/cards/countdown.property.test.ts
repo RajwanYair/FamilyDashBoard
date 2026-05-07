@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/countdown/countdown.ts (Sprint 512, extended Sprint 562)
+ * fast-check property tests — src/cards/countdown/countdown.ts ( , extended )
  *
  * Properties under test:
  *  CD1. urgencyClass: days ≤ 1 → "cd-urgent-pulse"

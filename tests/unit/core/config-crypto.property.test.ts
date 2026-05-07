@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/config-crypto.ts (Sprint 469)
+ * fast-check property tests — src/core/config-crypto.ts 
  *
  * Properties under test:
  *  CC1. Round-trip identity: decrypt(encrypt(config, pass), pass) ≡ config

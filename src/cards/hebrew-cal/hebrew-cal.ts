@@ -5,8 +5,7 @@
  * from the Hebcal API. Also renders a daily motivation saying (from MOTIVATIONS).
  * Refresh: INTERVALS.SHABBAT (6 hours).
  *
- * X12/X15 ADOPTED — v13.39.0 Sprint 379 (see ADR-071).
- */
+ * X12/X15 protocol adopted (see ADR-071). */
 
 import { scheduleCard } from "../base-card";
 import "./hebrew-cal.css";
@@ -25,7 +24,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
-// ── Sprint 27: Pure Hebrew-cal utility functions ───────────────────────────
+// Pure Hebrew-cal utility functions ───────────────────────────
 
 /**
  * Returns true if the current moment is between candle-lighting and havdala
@@ -79,7 +78,7 @@ export function getParashat(items: HebcalItem[]): string | null {
 }
 
 /**
- * Sprint 178 / H4: Extract the Haftarah reference from Hebcal items.
+ * Extract the Haftarah reference from Hebcal items.
  * Hebcal returns items with `category === "haftara"` in the Shabbat feed.
  * Returns null when absent (weekdays, Yom Tov without distinct Haftarah).
  */
@@ -89,7 +88,7 @@ export function getHaftarah(items: HebcalItem[]): string | null {
 }
 
 /**
- * Sprint 178 / H5: Find a Rosh Chodesh item from Hebcal items that occurs
+ * Find a Rosh Chodesh item from Hebcal items that occurs
  * today or within the next 2 days (covers both days of a two-day Rosh Chodesh).
  * Returns the Hebrew name, or null when not Rosh Chodesh period.
  */
@@ -105,7 +104,7 @@ export function getRoshChodesh(items: HebcalItem[], now: Date = new Date()): str
 }
 
 /**
- * V13-DATA: Returns true when the given date falls on 29 Elul in the Hebrew calendar.
+ * Returns true when the given date falls on 29 Elul in the Hebrew calendar.
  * 29 Elul is the last day of the Hebrew year — the trigger for pre-warming next-year
  * holiday data from the Hebcal API so it is available immediately on Rosh Hashana.
  * Uses `Intl.DateTimeFormat` with `ca-hebrew` extension (rule 28).
@@ -123,7 +122,7 @@ export function is29Elul(date: Date = new Date()): boolean {
 }
 
 /**
- * V13-DATA: Returns the Gregorian year + 1 that will be the next Hebrew year
+ * Returns the Gregorian year + 1 that will be the next Hebrew year
  * when called on 29 Elul. Used to build the pre-warm Hebcal URL for next year's
  * holidays. Returns the current Gregorian year + 1 as a simple approximation
  * (Rosh Hashana always falls in Sept–Oct, so next Hebrew year maps to next Gregorian year).
@@ -133,7 +132,7 @@ export function nextHebrewYearGregorianApprox(date: Date = new Date()): number {
 }
 
 /**
- * V13-DATA: Fire-and-forget pre-warm for next year's holiday list.
+ * Fire-and-forget pre-warm for next year's holiday list.
  * Called on 29 Elul so Rosh Hashana data is cached before midnight rollover.
  * The result is stored under a dedicated 30-day key to avoid evicting the
  * current-year entry. Safe to call multiple times — skips if already cached.
@@ -212,7 +211,7 @@ interface HebCalEls {
   halacaRow: HTMLElement | null;
   school: HTMLElement | null;
   schoolRow: HTMLElement | null;
-  // Sprint 178: H4 Haftarah + H5 Rosh Chodesh
+  // H4 Haftarah + H5 Rosh Chodesh
   haftara: HTMLElement | null;
   haftaraRow: HTMLElement | null;
   roshChodesh: HTMLElement | null;
@@ -320,7 +319,7 @@ let _havdalaTime: Date | null = null;
 let _countdownInterval: ReturnType<typeof setInterval> | null = null;
 let _hebCalScheduleId: number | null = null;
 
-// X15 (Sprint 379): semantic-clipboard producer for hebrew-cal.
+// X15: semantic-clipboard producer for hebrew-cal.
 function buildHebrewCalPayload(): SemanticPayload | null {
   if (!_lastHolidayName) return null;
   const today = new Date();
@@ -453,7 +452,7 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
   const name = h.hebrew ?? h.title;
   _lastHolidayName = name;
 
-  // X12 (Sprint 379): publish next-holiday signal for sibling consumers.
+  // X12: publish next-holiday signal for sibling consumers.
   setCardSignal("hebrew-cal", "next-holiday", {
     name,
     titleEn: h.title,
@@ -487,7 +486,7 @@ function renderHoliday(items: HebcalItem[], now: Date): void {
   // School vacation: show if any major holiday started in the last 7 days
   renderSchool(items, now);
 
-  // Sprint 178 / H5: Rosh Chodesh tile
+  // Rosh Chodesh tile
   const rcName = getRoshChodesh(items, now);
   if (rcName && els.roshChodesh && els.roshChodeshRow) {
     els.roshChodesh.textContent = rcName;
@@ -622,7 +621,7 @@ function renderParasha(items: HebcalItem[]): void {
       );
     els.parashaLinkRow.style.display = "";
   }
-  // Sprint 178 / H4: Render Haftarah row when present
+  // Render Haftarah row when present
   const haftarahName = getHaftarah(items);
   if (haftarahName && els.haftara && els.haftaraRow) {
     els.haftara.textContent = haftarahName;
@@ -784,7 +783,7 @@ async function loadHebCal(): Promise<void> {
     }
     // Re-evaluate event row now that holiday/special names are known
     renderNextCalEvent();
-    // V13-DATA: If today is 29 Elul (last day of Hebrew year), fire-and-forget
+    // If today is 29 Elul (last day of Hebrew year), fire-and-forget
     // a background pre-warm of next year's holiday data.
     if (is29Elul()) {
       void prewarmNextYearHolidays();
@@ -985,7 +984,7 @@ export function initHebrewCalCard(): void {
   _dafSefariaUrl = "";
   _parashaSefariaName = "";
   cacheDom();
-  // X15 (Sprint 379): register semantic-clipboard producer.
+  // X15: register semantic-clipboard producer.
   registerSemanticProducer("hebrew-cal", buildHebrewCalPayload);
   renderMoonPhase();
   renderNextCalEvent();
@@ -1028,7 +1027,7 @@ function renderTasksStrip(): void {
   strip.style.display = "";
 }
 
-// ── Sprint 206 / H6: Yahrzeit IDB list ────────────────────────────────────
+// Yahrzeit IDB list ────────────────────────────────────
 
 const IDB_HC_DB = "fdb-hebrew-cal";
 const IDB_YZ_STORE = "yahrzeits";
@@ -1104,7 +1103,7 @@ export async function getUpcomingYahrzeits(
   });
 }
 
-// ── Sprint 140: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const hebrewCalConfigSchema: CardConfigField[] = [
   {
@@ -1116,7 +1115,7 @@ export const hebrewCalConfigSchema: CardConfigField[] = [
     group: "מיקום",
     groupOpenByDefault: true,
   },
-  // ── Sprint 279 / CS-H1: tile-visibility toggles ──────────────────────────
+  // tile-visibility toggles ──────────────────────────
   {
     key: "hcalShowDafYomi",
     labelHe: "הצג דף יומי",

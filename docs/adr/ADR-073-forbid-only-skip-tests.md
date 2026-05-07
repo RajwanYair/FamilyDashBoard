@@ -61,5 +61,5 @@ relied on human review. As the suite has grown past 6 000 tests across
 
 ## Notes
 
-Sprint 410 added the script and `npm run check:test-focus`.
-Sprint 411 added the CI step. Sprint 416 documents the rationale.
+added the script and `npm run check:test-focus`.
+added the CI step. documents the rationale.

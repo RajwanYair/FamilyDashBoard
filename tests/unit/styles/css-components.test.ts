@@ -1,5 +1,5 @@
 /**
- * Sprint 108-112 — CSS component classes existence tests
+ * — CSS component classes existence tests
  *
  * Verifies that key CSS selectors exist in components.css.
  * Since happy-dom doesn't process CSS, we verify via text matching.
@@ -10,7 +10,7 @@ import { resolve } from "node:path";
 
 const css = readFileSync(resolve(__dirname, "../../../src/styles/components.css"), "utf-8");
 
-describe("CSS card-shell anatomy (Sprint 108)", () => {
+describe("CSS card-shell anatomy ", () => {
   it("defines .card__header", () => {
     expect(css).toContain(".card__header");
   });
@@ -25,13 +25,13 @@ describe("CSS card-shell anatomy (Sprint 108)", () => {
   });
 });
 
-describe("Shared stale-chip (Sprint 109)", () => {
+describe("Shared stale-chip ", () => {
   it("defines .stale-chip", () => {
     expect(css).toContain(".stale-chip");
   });
 });
 
-describe("Shared error state (Sprint 110)", () => {
+describe("Shared error state ", () => {
   it("defines .card-error", () => {
     expect(css).toContain(".card-error");
   });
@@ -40,13 +40,13 @@ describe("Shared error state (Sprint 110)", () => {
   });
 });
 
-describe("Shared empty state (Sprint 111)", () => {
+describe("Shared empty state ", () => {
   it("defines .card-empty", () => {
     expect(css).toContain(".card-empty");
   });
 });
 
-describe("Metric tile (Sprint 112)", () => {
+describe("Metric tile ", () => {
   it("defines .metric-tile", () => {
     expect(css).toContain(".metric-tile");
   });
@@ -58,11 +58,11 @@ describe("Metric tile (Sprint 112)", () => {
   });
 });
 
-// ── Sprint 172: Animation CSS tests ────────────────────────────────────
+// ── Animation CSS tests ────────────────────────────────────
 
 const animCss = readFileSync(resolve(__dirname, "../../../src/styles/animations.css"), "utf-8");
 
-describe("Card badge pulse animation (Sprint 172)", () => {
+describe("Card badge pulse animation ", () => {
   it("defines .card-badge-new class", () => {
     expect(animCss).toContain(".card-badge-new");
   });
@@ -74,7 +74,7 @@ describe("Card badge pulse animation (Sprint 172)", () => {
   });
 });
 
-describe("Card enter/leave animations (Sprint 172)", () => {
+describe("Card enter/leave animations ", () => {
   it("defines card-enter keyframes", () => {
     expect(animCss).toContain("@keyframes card-enter");
   });

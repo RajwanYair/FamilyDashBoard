@@ -1,5 +1,5 @@
 /**
- * Tests for V13-DATA: 7-day precipitation probability sparkline in weather.ts
+ * Tests for 7-day precipitation probability sparkline in weather.ts
  *
  * Isolates @/core/history with vi.mock so assertions are deterministic.
  */
@@ -88,7 +88,7 @@ function buildDom() {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe("Weather — precipitation sparkline (V13-DATA)", () => {
+describe("Weather — precipitation sparkline ", () => {
   beforeEach(() => {
     localStorage.clear();
     mockAppend.mockClear();

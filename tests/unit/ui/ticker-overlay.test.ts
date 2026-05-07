@@ -1,5 +1,5 @@
 /**
- * Sprint 45 — ticker.ts overlay wiring coverage
+ * ticker.ts overlay wiring coverage
  *
  * Runs in its own file so the module-level `_docKeydownWired` flag starts
  * as `false` (fresh module per Vitest file isolation), allowing us to reach

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/system-info/system-info.ts (Sprint 527)
+ * fast-check property tests — src/cards/system-info/system-info.ts 
  *
  * Properties under test:
  *  SI1. formatHeapMb: zero inputs → ""

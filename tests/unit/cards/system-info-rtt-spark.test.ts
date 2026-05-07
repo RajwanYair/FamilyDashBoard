@@ -1,5 +1,5 @@
 /**
- * Tests for Sprint 399 / SI-RTT: Connection-API path also feeds the RTT
+ * Tests for Connection-API path also feeds the RTT
  * sparkline ring buffer (previously only navigation-timing path did).
  */
 
@@ -10,7 +10,7 @@ import {
   _resetRttHistory,
 } from "@/cards/system-info/system-info";
 
-describe("SI-RTT ring buffer (Sprint 399)", () => {
+describe("SI-RTT ring buffer ", () => {
   beforeEach(() => {
     _resetRttHistory();
   });

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/semantic-clipboard.ts (Sprint 494)
+ * fast-check property tests — src/core/semantic-clipboard.ts 
  *
  * Properties under test:
  *  SC1. registerSemanticProducer → getSemanticPayload round-trip.
@@ -8,10 +8,10 @@
  *  SC4. getSemanticPayload returns null when producer throws.
  *  SC5. findFocusedCardId walks up the DOM tree to find data-card-id.
  *  SC6. findFocusedCardId returns null when no ancestor has data-card-id.
- *  SC7. findFocusedCardId finds deepest ancestor across arbitrary nesting (Sprint 596)
- *  SC8. getSemanticPayload returns null when producer returns null (Sprint 596)
- *  SC9. Multiple cards registered — each returns its own payload (Sprint 596)
- *  SC10. getSemanticPayload timestamp matches producer's ts (Sprint 596)
+ *  SC7. findFocusedCardId finds deepest ancestor across arbitrary nesting 
+ *  SC8. getSemanticPayload returns null when producer returns null 
+ *  SC9. Multiple cards registered — each returns its own payload 
+ *  SC10. getSemanticPayload timestamp matches producer's ts 
  */
 
 import { describe, it, expect, beforeEach } from "vitest";

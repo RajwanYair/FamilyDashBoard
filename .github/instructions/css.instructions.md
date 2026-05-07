@@ -110,3 +110,11 @@ CI runs a duplicate-selector check that will fail on violations.
 FamilyDashBoard targets full-screen TV. Do not add mobile breakpoints unless
 explicitly required by a 3-screen-mode feature. Screen modes are handled via
 `body[data-screen-mode="compact"]` / `standard` / `spacious`.
+
+## Extension Integration
+
+- **Stylelint** (`stylelint.vscode-stylelint`): diagnostics surface in `get_errors` — use it to verify layer order, custom-property usage, and no-hardcoded-colors compliance before terminal lint.
+- **webhint** (`webhint.vscode-webhint`): shows browser compat warnings inline for CSS features not supported by `.browserslistrc` targets (Chrome 114+, Firefox 128+, Safari 17.4+). Check `get_errors` output for these.
+- **Baseline Lens** (`kwesinavilot.baseline-lens`): inline CSS compat annotations — complements webhint for visual verification of feature availability.
+- **Color Highlight** (`naumovs.color-highlight`): visually reveals hardcoded colors that should be CSS custom properties.
+- **CSS Peek** (`pranaygp.vscode-css-peek`): jump from HTML class/id to CSS definition — use when tracing style inheritance.

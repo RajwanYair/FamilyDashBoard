@@ -13,7 +13,7 @@ Canonical doc entry points: [README.md](../README.md), [docs/README.md](README.m
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Build tool       | **Vite 8**                                                                                                 | Fast dev server, Rollup bundler, native TS, tree-shaking      |
 | Language         | **TypeScript 6.0.3**                                                                                       | Type safety, type-aware ESLint, strict null checks            |
-| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 6387 tests / 214 suites     |
+| Test framework   | **Vitest 4.1.5 + happy-dom 20**                                                                            | Vite-native, real DOM simulation, 7037 tests / 275 suites     |
 | Lint             | **ESLint 10 + typescript-eslint 8**                                                                        | Flat config, type-aware rules, 0 errors / 0 warnings enforced |
 | API proxy        | **Cloudflare Workers**                                                                                     | Eliminates CORS chain, 100 K req/day free, edge-deployed      |
 | Deployment       | **GitHub Pages** (static) + **Cloudflare Workers** (API)                                                   |                                                               |
@@ -57,10 +57,10 @@ src/
 │   ├── hardware.ts             # getHardwareProfile() — CPU/RAM/GPU tier detection, applyHardwareTier()
 │   ├── sw-constants.ts         # SW version/cache name constants shared between sw.ts and src/
 │   ├── sw-register.ts          # SW registration + SKIP_WAITING + VERSION_ACTIVATED + 10s auto-reload countdown + 60min periodic update
-│   ├── event-bus.ts            # Signals-based pub/sub channels: globalSync/globalAlertChannel/globalThemeChannel/globalOffline (Sprint 173 / X2)
-│   ├── links.ts                # Semantic-link service: register/resolve cross-card links, gated by semanticLinksEnabled (Sprint 216 / X3)
+│   ├── event-bus.ts            # Signals-based pub/sub channels: globalSync/globalAlertChannel/globalThemeChannel/globalOffline
+│   ├── links.ts                # Semantic-link service: register/resolve cross-card links, gated by semanticLinksEnabled
 │   ├── history.ts              # Generic ring-buffer helpers: historyAppend/historyGet/sparklineSvg — used by alerts, system-info, weather
-│   └── snapshot.ts             # Dashboard snapshot export: buildSnapshot() / downloadSnapshot() — wired to Ctrl+Shift+S (Sprint 258 / X8)
+│   └── snapshot.ts             # Dashboard snapshot export: buildSnapshot() / downloadSnapshot() — wired to Ctrl+Shift+S
 ├── ui/
 │   ├── theme.ts                # 6-theme system: black·blue·matrix·amber·purple·rose
 │   ├── keyboard.ts             # All keyboard shortcuts (T/D/A/S/N/+/-/P/B/H/C/Esc)
@@ -76,8 +76,8 @@ src/
 │   ├── screen-mode.ts          # Screen mode manager (normal/compact/theater)
 │   ├── layout-drag.ts          # Drag-and-drop card reordering with localStorage persistence
 │   ├── toast.ts                # Toast notification system
-│   ├── today-pane.ts           # Unified Today strip: aggregates alert/countdown/tasks/stocks/calendar signals (Sprint 190 / X1)
-│   ├── offline-banner.ts       # Global offline indicator driven by globalOffline signal (Sprint 174 / X6)
+│   ├── today-pane.ts           # Unified Today strip: aggregates alert/countdown/tasks/stocks/calendar signals
+│   ├── offline-banner.ts       # Global offline indicator driven by globalOffline signal
 │   └── help.ts                 # Help <dialog> modal auto-generated from keyboard registry
 ├── cards/
 │   ├── base-card.ts            # createCardLoader() + scheduleCard() — shared lifecycle
@@ -106,6 +106,11 @@ src/
 │   ├── print.css               # @media print
 │   ├── sprints.css             # Cross-cutting global styles (season tints, elec badge, clock)
 │   └── a11y.css                # prefers-reduced-motion, prefers-contrast
+```
+
+![Theme cascade](../.github/assets/theme-cascade.svg)
+
+```text
 worker/src/
 │   ├── index.ts                # Worker entry + router (re-exports Env from types.ts)
 │   ├── types.ts                # Env interface (KV, secrets) — canonical, no circular deps (ADR-015)
@@ -159,6 +164,8 @@ Cache layers:
   L4: Service Worker cache (API endpoints, stale-while-revalidate)
 ```
 
+![Cache layers](../.github/assets/cache-layers.svg)
+
 ## Data Flow — Mermaid Overview
 
 ```mermaid
@@ -192,6 +199,8 @@ flowchart TD
 ```
 
 ## Card Lifecycle — Mermaid Overview
+
+![Card lifecycle](../.github/assets/card-lifecycle.svg)
 
 ```mermaid
 sequenceDiagram
@@ -325,7 +334,7 @@ Global styles (tokens, layout, animation) remain in `src/styles/`.
 12. **`__APP_VERSION__`** injected from `package.json` at build time — version is single source of truth
 13. **Card CSS co-located** — each card and UI component imports its own `.css` file; `sprints.css` for cross-cutting globals only (v7.5+)
 14. **Worker-first fetch** — `fetchViaWorker()` is the primary data path when `isWorkerEnabled()`; proxy chain is fallback-only (v7.5); `__USE_PROXIES__=false` disables proxy chain in production builds (v7.10)
-15. **6387 tests / 214 suites / 0 failures** — coverage thresholds: 94.2% statements, 85.4% branches, 94.5% functions, 95.6% lines (v14.4.0)
+15. **7037 tests / 275 suites / 0 failures** — coverage thresholds: 94.2% statements, 85.4% branches, 94.5% functions, 95.6% lines (v14.4.0)
 16. **Reactive state store** — `state.ts` EventTarget pub/sub for `config`/`cache`/`ui` slices; `window.__FDB_STATE__` DevTools hook in DEV (v7.10)
 17. **Error telemetry** — `error-reporter.ts` batches runtime errors, POSTs to Worker `POST /api/errors`; Worker logs to CF console (best-effort, v7.10)
 18. **Domain types** — `WeatherDomain`, `StocksDomain`, `CurrencyDomain`, `NewsDomain`, `AlertsDomain`, `HebcalDomain`, `CalendarDomain` normalize provider quirks; mapper functions live in each card module (v7.13)
@@ -356,7 +365,7 @@ No multi-step forms exist in this dashboard. All settings are presented on a sin
 
 ### WCAG 2.4.6 — Headings and Labels (Level AA)
 
-A visually-hidden `<h1 id="page-heading">` is injected inside `<main>` (Sprint 30). Screen readers announce the page title without affecting the visual TV layout. The `.sr-only` CSS utility follows the [WebAIM SR-only pattern](https://webaim.org/techniques/css/invisiblecontent/) with `clip: rect(0,0,0,0)`.
+A visually-hidden `<h1 id="page-heading">` is injected inside `<main>` . Screen readers announce the page title without affecting the visual TV layout. The `.sr-only` CSS utility follows the [WebAIM SR-only pattern](https://webaim.org/techniques/css/invisiblecontent/) with `clip: rect(0,0,0,0)`.
 
 ### WCAG 3.2.6 — Consistent Help (Level A, WCAG 2.2)
 

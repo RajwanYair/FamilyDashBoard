@@ -1,4 +1,4 @@
-# PR Coverage Delta Bot — Sprint 102 (V14-FOUNDATIONS)
+# PR Coverage Delta Bot
 #
 # Posts a single sticky comment on each PR with the absolute coverage of the
 # PR head, and — when a baseline artefact from `main` is available — the

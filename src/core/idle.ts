@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard v13 — Idle Scheduler & Page Visibility
  *
- * Sprint 113 (V14-FOUNDATIONS): the page-visibility flag is now backed by a
+ * the page-visibility flag is now backed by a
  * `signal()` from `core/signals.ts` so new consumers can subscribe via
  * `effect()` / `computed()`. The legacy `isPageVisible()` /
  * `onVisibilityChange()` callback API is preserved as a thin shim — no

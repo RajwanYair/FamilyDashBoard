@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/middleware (Sprint 532)
+ * fast-check property tests — worker/src/middleware 
  *
  * Properties under test:
  *  MW1. shouldTagCanary: undefined/null/"0" → false

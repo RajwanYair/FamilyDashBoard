@@ -9,7 +9,7 @@
   padding: 6px 10px;
   gap: 6px;
   text-align: center;
-  position: relative; /* Sprint 191 / CD4: anchor confetti pseudo-elements */
+  position: relative; /* anchor confetti pseudo-elements */
 }
 
 .cd-title {
@@ -63,7 +63,7 @@
   color: var(--positive, #34d399);
 }
 
-/* Sprint 11: Maximize — large countdown card layout */
+/* Maximize — large countdown card layout */
 @container card (min-width: 900px) {
   .countdown-body {
     gap: 20px;
@@ -134,7 +134,7 @@
   width: 100%;
 }
 
-/* Urgency tiers (Sprint 23) */
+/* Urgency tiers */
 .cd-num.cd-urgent-amber {
   color: #f59e0b !important;
 }
@@ -156,7 +156,7 @@
   animation: cd-pulse 1s ease-in-out infinite;
 }
 
-/* ── Sprint 191 / CD4: CSS-only confetti on T-0 ─────────────────────────── */
+/* ── CSS-only confetti on T-0 ─────────────────────────── */
 @layer components {
   @keyframes cd-confetti-fall-a {
     0%   { transform: translateY(-60px) rotate(0deg);   opacity: 1; }

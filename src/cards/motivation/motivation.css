@@ -34,7 +34,7 @@
     color: var(--accent);
   }
 
-  /* Sprint 197 / M3: Favorites heart button */
+  /* Favorites heart button */
   #moti-fav-btn {
     background: none;
     border: none;
@@ -62,7 +62,7 @@
     margin-top: 4px;
   }
 
-  /* M1 (Sprint 176): Source attribution badge */
+  /* M1: Source attribution badge */
   .moti-src {
     display: inline-block;
     margin-top: 5px;
@@ -82,7 +82,7 @@
   .src-ai     { background: color-mix(in sRGB, var(--accent) 25%, transparent); color: var(--accent); border: 1px solid var(--accent); }
 } /* end @layer components */
 
-/* Sprint 11: Maximize — large motivation card layout */
+/* Maximize — large motivation card layout */
 @container card (min-width: 900px) {
   .moti-body {
     padding: 24px;

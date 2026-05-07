@@ -5,7 +5,7 @@
  * Pure client-side, no API required.
  * Target, title and done-message are read from DashboardConfig each tick.
  *
- * X12/X15 ADOPTED — v13.39.0 Sprints 376–377 (see ADR-071).
+ * X12/X15 ADOPTED — v13.39.0 (see ADR-071).
  */
 
 import "./countdown.css";
@@ -27,7 +27,7 @@ export function getCountdownTargetDate(): Date {
   const c = loadConfig();
   let d = c.countdownCardDate || "2026-05-07";
   const t = c.countdownCardTime || "18:00";
-  // Sprint 180 / CD3: advance past recurring dates
+  // advance past recurring dates
   const recurrence = c.countdownCardRecurrence || undefined;
   if (recurrence === "annual") {
     d = advanceAnnualDate(d);
@@ -58,7 +58,7 @@ interface CdEls {
   msg: HTMLElement | null;
   progressWrap: HTMLElement | null;
   progressBar: HTMLElement | null;
-  /** Sprint 191 / CD4: body element for confetti class toggle */
+  /** body element for confetti class toggle */
   body: HTMLElement | null;
 }
 
@@ -160,7 +160,7 @@ export function advanceAnnualDate(dateStr: string): string {
 }
 
 /**
- * Sprint 180 / CD3: When the target date is in the past and recurrence is monthly,
+ * When the target date is in the past and recurrence is monthly,
  * advance it to the same day-of-month in the next upcoming calendar month.
  * Returns the updated YYYY-MM-DD string.
  */
@@ -185,7 +185,7 @@ export function advanceMonthlyDate(dateStr: string): string {
 }
 
 /**
- * Sprint 180 / CD1: Find the next upcoming Yom Tov (holiday) from Hebcal items
+ * Find the next upcoming Yom Tov (holiday) from Hebcal items
  * within the next `maxDays` days (default 90). Returns title + YYYY-MM-DD date string,
  * or null when no holiday is found in range.
  */
@@ -210,7 +210,7 @@ export function getNextYomTov(
 }
 
 /**
- * Sprint 180 / CD2: Parse ICS text and find the next calendar event that is
+ * Parse ICS text and find the next calendar event that is
  * at least `minDaysAhead` days in the future (default 7). Returns title + date,
  * or null when none found.
  */
@@ -245,7 +245,7 @@ export function getNextCalEventForCountdown(
   return first ? { title: first.title, date: first.date } : null;
 }
 
-// ── Sprint 191 / CD4: CSS Confetti ──────────────────────────────────────────
+// CSS Confetti ──────────────────────────────────────────
 
 const CD_CONFETTI_CLASS = "cd-confetti";
 
@@ -260,7 +260,7 @@ export function setConfetti(active: boolean): void {
   body.classList.toggle(CD_CONFETTI_CLASS, active);
 }
 
-// ── X12 / X15 (Sprint 376–377): cross-card signal + semantic clipboard ───────
+// ── cross-card signal + semantic clipboard ───────
 
 /**
  * Publish the current primary countdown state for sibling consumers
@@ -337,7 +337,7 @@ export function tick(): void {
     if (msgEl)
       msgEl.textContent =
         daysSince > 0 ? `${getCountdownDoneMsg()} · יום ${daysSince}` : getCountdownDoneMsg();
-    // Sprint 191 / CD4: show CSS confetti on the exact day of the event (T-0)
+    // show CSS confetti on the exact day of the event (T-0)
     setConfetti(daysSince === 0);
     if (_cdInterval !== null) {
       clearInterval(_cdInterval);
@@ -353,7 +353,7 @@ export function tick(): void {
   if (minsEl) minsEl.textContent = pad2(minutes);
   if (secsEl) secsEl.textContent = pad2(seconds);
 
-  // X12 / X15 (Sprint 376–377): publish signal + cache semantic snapshot
+  // publish signal + cache semantic snapshot
   publishCountdownSignal(targetMs, { days, hours, minutes, seconds }, getCountdownTitle());
   (
     globalThis as unknown as { __cdLast: { targetMs: number; title: string; days: number } }
@@ -491,7 +491,7 @@ export function initCountdownCard(): void {
   tick2();
   tick3();
 
-  // Sprint 180 / CD1: Auto-populate slot 2 with next Yom Tov if unset
+  // Auto-populate slot 2 with next Yom Tov if unset
   const cfg2 = loadConfig();
   if (!cfg2.countdownCard2Date) {
     const now = new Date();
@@ -520,7 +520,7 @@ export function initCountdownCard(): void {
     }
   }
 
-  // Sprint 180 / CD2: Auto-populate slot 3 with next calendar event (≥ 7 days) if unset
+  // Auto-populate slot 3 with next calendar event (≥ 7 days) if unset
   const cfg3 = loadConfig();
   if (!cfg3.countdownCard3Date) {
     const icsText = cGetStale<string>("cal-ics");
@@ -563,7 +563,7 @@ export function destroyCountdownCard(): void {
   }
 }
 
-// ── Sprint 82: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const countdownConfigSchema: CardConfigField[] = [
   {

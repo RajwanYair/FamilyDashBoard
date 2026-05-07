@@ -77,7 +77,7 @@ export interface Env {
    */
   ANALYTICS?: AnalyticsEngineDataset;
   /**
-   * Canary traffic percentage (0–100) as a string (V12-EDGE-4b, Sprint 32).
+   * Canary traffic percentage (0–100) as a string (V12-EDGE-4b ).
    * When set, a random fraction of requests receive the X-Canary: true response header.
    * Example: "10" means 10% of requests are tagged as canary.
    * Optional — canary tagging is disabled when not set or when value is 0.

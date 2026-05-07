@@ -1,5 +1,5 @@
 /**
- * V13-DATA — Stocks 7-day volume sparkline tests
+ * — Stocks 7-day volume sparkline tests
  *
  * Verifies that renderStocksShell() adds a .stk-vol-spark element per row,
  * and that renderStock() writes volume to IDB history and renders the sparkline.
@@ -179,7 +179,7 @@ describe("Stocks vol-spark — stk-vol-spark count matches STOCK_SYMBOLS count",
   });
 });
 
-// ── Sprint 34: V13-DATA Popover API — fillStockDetailPopover ─────────────────
+// ── Popover API — fillStockDetailPopover ─────────────────
 
 describe("Stocks Popover API — fillStockDetailPopover", () => {
   function setupPopoverDom(price = "$190.00", chg = "▲ +2.50%"): void {

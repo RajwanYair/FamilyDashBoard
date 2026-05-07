@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * check-test-focus-skip.mjs — Sprint 410 / v13.44.0
+ * check-test-focus-skip.mjs — / v13.44.0
  *
  * Fails CI if any test file under tests/ contains a focused (`it.only` /
  * `describe.only` / `test.only`) or a skipped (`it.skip` / `describe.skip` /

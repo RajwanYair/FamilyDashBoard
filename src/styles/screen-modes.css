@@ -10,7 +10,7 @@ body.mode-tv {
   --grid-gap: 8px;
 }
 
-/* Sprint 115: TV-distance readability floor (3m viewing distance) */
+/* TV-distance readability floor (3m viewing distance) */
 body.mode-tv .card__body {
   font-size: max(0.82em, 14px);
 }

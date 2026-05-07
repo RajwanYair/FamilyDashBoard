@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/error-reporter.ts (Sprint 545)
+ * fast-check property tests — src/core/error-reporter.ts 
  *
  * Properties under test:
  *  ER1. reportErrors deduplicates by ts+message

@@ -1,6 +1,5 @@
 /**
- * tests/unit/core/history.test.ts — Sprint 11
- *
+ * tests/unit/core/history.test.ts — *
  * Tests for src/core/history.ts (IDB history + sparklineSvg).
  * Uses an in-memory IDB mock (same pattern as idb-cache.test.ts).
  */

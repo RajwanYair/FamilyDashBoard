@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/middleware/canary.ts (Sprint 550)
+ * fast-check property tests — worker/src/middleware/canary.ts 
  *
  * Properties under test:
  *  CY1. shouldTagCanary: undefined/empty/null → false

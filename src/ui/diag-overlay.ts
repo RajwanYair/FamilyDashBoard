@@ -101,14 +101,14 @@ function renderStats(): void {
   // Worker status
   const workerStatus = isWorkerEnabled() ? "✅ פעיל" : "❌ כבוי";
 
-  // Cache stats (Sprint 37 + Sprint 123: full dashboard)
+  // Cache stats ( + full dashboard)
   const cs = cacheStats();
   const cd = cacheDashboard();
   const hitPct = cs.hitRate.toFixed(0);
   const oldestAge = getOldestCacheAgeMinutes();
   const cacheAgeStr = oldestAge > 0 ? `${oldestAge}m` : "N/A";
 
-  // Network quality (Sprint 34+37)
+  // Network quality ( +37)
   const networkTier = getNetworkQualityTier();
   const networkIcon =
     networkTier === "ok"
@@ -142,7 +142,7 @@ function renderStats(): void {
       ${errCount > 0 ? `<span style="color:var(--negative)">⚠️ שגיאות: <b>${errCount}</b></span>` : '<span style="color:var(--positive)">\u2705 אין שגיאות</span>'}
       <span id="diag-idb-size">💾 IDB: טוען...</span>
     </div>`;
-  // Web Vitals section (Sprint 41) + startup waterfall (Sprint 16)
+  // Web Vitals section + startup waterfall
   const vitalsHtml = hasPerfSupport()
     ? (() => {
         const v = getPerfVitals();
@@ -177,7 +177,7 @@ function renderStats(): void {
       renderProviderHealthHtml(),
   );
 
-  // Async IDB size + inventory update (v7.10 — non-blocking, Sprint 179 — key count)
+  // Async IDB size + inventory update (v7.10 — non-blocking — key count)
   void Promise.all([idbEstimateSize(), cacheInventory()]).then(([bytes, inv]) => {
     const idbEl = document.getElementById("diag-idb-size");
     if (!idbEl) return;
@@ -188,7 +188,7 @@ function renderStats(): void {
   });
 }
 
-// ── Sprint 159: card init timing breakdown ──
+// card init timing breakdown ──
 
 function renderCardTimingsHtml(): string {
   const timings = getCardTimings();
@@ -206,7 +206,7 @@ function renderCardTimingsHtml(): string {
   </div>`;
 }
 
-// ── Sprint 161: error rate trend sparkline ──
+// error rate trend sparkline ──
 
 function renderErrorTrendHtml(): string {
   const trend = getErrorTrend();
@@ -225,7 +225,7 @@ function renderErrorTrendHtml(): string {
   </div>`;
 }
 
-// ── Provider health table (Sprint 46, enhanced Sprint 93) ──
+// ── Provider health table ( , enhanced ) ──
 
 /** Map provider status to emoji icon. */
 export function providerStatusIcon(status: string): string {
@@ -235,7 +235,7 @@ export function providerStatusIcon(status: string): string {
 }
 
 /**
- * Render a provider health summary as an HTML string (Sprint 93).
+ * Render a provider health summary as an HTML string.
  * Returns empty string when no providers have been recorded.
  */
 export function renderProviderHealthHtml(): string {
@@ -356,7 +356,7 @@ export function initDiagOverlay(): void {
     });
   }
 
-  // Sprint 39: Clear runtime errors button
+  // Clear runtime errors button
   const clearErrBtn = document.getElementById("diag-clear-errors-btn");
   if (clearErrBtn) {
     clearErrBtn.addEventListener("click", () => {
@@ -375,7 +375,7 @@ export function initDiagOverlay(): void {
 
   diagLog("[diag] Overlay initialized");
 
-  // Sprint 201 / X8: Snapshot export button
+  // Snapshot export button
   const snapBtn = document.getElementById("diag-snapshot-btn");
   if (snapBtn) {
     snapBtn.addEventListener("click", () => {

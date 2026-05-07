@@ -131,7 +131,7 @@ describe("Error Reporter — network failure resilience", () => {
   });
 });
 
-// ── Sprint 38: request shape + batch cap tests ─────────────────────────────
+// ── request shape + batch cap tests ─────────────────────────────
 
 describe("Error Reporter — request shape", () => {
   beforeEach(() => {

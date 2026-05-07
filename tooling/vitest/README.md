@@ -120,6 +120,6 @@ any test that must not have a DOM environment.
 
 | Preset version | Vitest | Change |
 | --- | --- | --- |
-| Sprint 157 / v13.17.0 | 4.x | Initial README — documents `base.mjs`, `happy-dom.mjs`, `node.mjs` |
-| Sprint 116 | 2.x | `pool: "forks"` introduced for happy-dom isolation |
-| Sprint 101 | 1.x | `sharedVitestTestConfig` extracted to base |
+| / v13.17.0 | 4.x | Initial README — documents `base.mjs`, `happy-dom.mjs`, `node.mjs` |
+| | 2.x | `pool: "forks"` introduced for happy-dom isolation |
+| | 1.x | `sharedVitestTestConfig` extracted to base |

@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-A11Y: Voice-control semantic names
+ * Unit tests — Y: Voice-control semantic names
  *
  * Verifies that every interactive element in index.html has a unique
  * accessible name. Key checks:
@@ -34,7 +34,7 @@ function extractAriaLabels(pattern: RegExp): string[] {
 
 // ── Card collapse buttons ─────────────────────────────────────────────────────
 
-describe("card-collapse-btn aria-labels (V13-A11Y)", () => {
+describe("card-collapse-btn aria-labels (Y)", () => {
   const collapsePattern = /class="card-collapse-btn"\s+aria-label="([^"]+)"/g;
 
   let collapseLabels: string[];
@@ -91,7 +91,7 @@ describe("card-collapse-btn aria-labels (V13-A11Y)", () => {
 
 // ── Config action buttons ─────────────────────────────────────────────────────
 
-describe("config panel button aria-labels (V13-A11Y)", () => {
+describe("config panel button aria-labels (Y)", () => {
   it("cfg-save-btn has aria-label", () => {
     expect(HTML).toMatch(
       /id="cfg-save-btn"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-save-btn"/,
@@ -137,7 +137,7 @@ describe("config panel button aria-labels (V13-A11Y)", () => {
 
 // ── Range slider inputs ───────────────────────────────────────────────────────
 
-describe("range slider input aria-labels (V13-A11Y)", () => {
+describe("range slider input aria-labels (Y)", () => {
   it("cfg-news-fontsize slider has aria-label", () => {
     expect(HTML).toMatch(
       /id="cfg-news-fontsize"[^>]*aria-label="|aria-label="[^"]*"[^>]*id="cfg-news-fontsize"/,
@@ -165,7 +165,7 @@ describe("range slider input aria-labels (V13-A11Y)", () => {
 
 // ── Globally unique interactive names ────────────────────────────────────────
 
-describe("unique accessible names across dialogs (V13-A11Y)", () => {
+describe("unique accessible names across dialogs (Y)", () => {
   it("no two card-collapse-btn share the same label string", () => {
     const all: string[] = [];
     const re = /class="card-collapse-btn"\s+aria-label="([^"]+)"/g;

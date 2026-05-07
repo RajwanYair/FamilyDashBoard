@@ -7,40 +7,40 @@
  *   - 3 maximized-card baselines: 3 themes × tv mode
  *   - 3 help-dialog-open baselines: 3 themes × tv mode
  *   - 3 diag-overlay-open baselines: 3 themes × tv mode
- *   - 3 collapsed-card baselines: 3 themes × tv mode       (Sprint 164)
- *   - 3 bookmarks-overlay baselines: 3 themes × tv mode    (Sprint 164)
- *   - 3 font-enlarged baselines: 3 themes × tv mode        (Sprint 164)
- *   - 3 dimmer-overlay baselines: 3 themes × tv mode       (Sprint 164)
- *   - 3 compact-maximized baselines: 3 themes × tablet mode (Sprint 164)
- *   - 3 alert-state baselines: 3 themes × tv mode          (Sprint 219)
- *   - 3 video-news baselines: 3 themes × tv mode           (Sprint 219)
- *   - 3 today-pane baselines: 3 themes × tv mode           (Sprint 223)
- *   - 3 print-mode baselines: 3 themes × tv mode           (Sprint 223)
- *   - 3 font-reduced baselines: 3 themes × tv mode         (Sprint 223)
- *   - 3 night-dimmer-50 baselines: 3 themes × tv mode      (Sprint 223)
- *   - 3 config-tablet baselines: 3 themes × tablet mode    (Sprint 223)
- *   - 3 maximized-phone baselines: 3 themes × phone mode   (Sprint 223)
- *   - 3 alert-takeover baselines: 3 themes × tv mode       (Sprint 223)
- *   - 3 help-dialog-ext baselines: 3 more themes × tv mode (Sprint 223)
- *   - 3 compact-config baselines: 3 themes × tablet mode   (Sprint 223)
- *   - 3 compact-help baselines: 3 themes × tablet mode     (Sprint 223)
- *   - 3 alerts-banner-ext baselines: 3 more themes × tv mode (Sprint 269)
- *   - 3 video-news-ext baselines: 3 more themes × tv mode  (Sprint 269)
- *   - 3 esc-resets-state baselines: 3 themes × tv mode     (Sprint 269)
- *   - 3 bookmarks-overlay-ext baselines: 3 more themes × tv mode (Sprint 312)
- *   - 3 font-enlarged-ext baselines: 3 more themes × tv mode     (Sprint 312)
- *   - 3 phone-config-panel baselines: 3 themes × phone mode      (Sprint 312)
- *   - 3 phone-help-dialog baselines: 3 themes × phone mode       (Sprint 312)
- *   - 3 tablet-maximized-ext baselines: 3 more themes × tablet mode (Sprint 312)
- *   - 3 diag-overlay-ext baselines: 3 more themes × tv mode      (Sprint 312)
- *   - 3 alert-sse-pending baselines: 3 themes × tv mode          (Sprint 415 / v14.0)
- *   - 3 alert-sse-connected baselines: 3 more themes × tv mode   (Sprint 415 / v14.0)
- *   - 3 maximize-flip-ext baselines: 3 more themes × tv mode     (Sprint 415 / v14.0)
- *   - 3 maximize-flip-tablet-ext baselines: 3 more themes × tablet (Sprint 415 / v14.0)
- *   - 3 maximize-flip-phone-ext baselines: 3 more themes × phone  (Sprint 415 / v14.0)
- *   - 3 stocks-ils-display baselines: 3 themes × tv mode          (Sprint 415 / v14.0)
- *   - 3 currency-boi-source baselines: 3 more themes × tv mode    (Sprint 415 / v14.0)
- *   - 3 news-starred-drawer baselines: 3 themes × tv mode          (Sprint 421 / v14.1)
+ *   - 3 collapsed-card baselines: 3 themes × tv mode       
+ *   - 3 bookmarks-overlay baselines: 3 themes × tv mode    
+ *   - 3 font-enlarged baselines: 3 themes × tv mode        
+ *   - 3 dimmer-overlay baselines: 3 themes × tv mode       
+ *   - 3 compact-maximized baselines: 3 themes × tablet mode 
+ *   - 3 alert-state baselines: 3 themes × tv mode          
+ *   - 3 video-news baselines: 3 themes × tv mode           
+ *   - 3 today-pane baselines: 3 themes × tv mode           
+ *   - 3 print-mode baselines: 3 themes × tv mode           
+ *   - 3 font-reduced baselines: 3 themes × tv mode         
+ *   - 3 night-dimmer-50 baselines: 3 themes × tv mode      
+ *   - 3 config-tablet baselines: 3 themes × tablet mode    
+ *   - 3 maximized-phone baselines: 3 themes × phone mode   
+ *   - 3 alert-takeover baselines: 3 themes × tv mode       
+ *   - 3 help-dialog-ext baselines: 3 more themes × tv mode 
+ *   - 3 compact-config baselines: 3 themes × tablet mode   
+ *   - 3 compact-help baselines: 3 themes × tablet mode     
+ *   - 3 alerts-banner-ext baselines: 3 more themes × tv mode 
+ *   - 3 video-news-ext baselines: 3 more themes × tv mode  
+ *   - 3 esc-resets-state baselines: 3 themes × tv mode     
+ *   - 3 bookmarks-overlay-ext baselines: 3 more themes × tv mode 
+ *   - 3 font-enlarged-ext baselines: 3 more themes × tv mode     
+ *   - 3 phone-config-panel baselines: 3 themes × phone mode      
+ *   - 3 phone-help-dialog baselines: 3 themes × phone mode       
+ *   - 3 tablet-maximized-ext baselines: 3 more themes × tablet mode 
+ *   - 3 diag-overlay-ext baselines: 3 more themes × tv mode      
+ *   - 3 alert-sse-pending baselines: 3 themes × tv mode          
+ *   - 3 alert-sse-connected baselines: 3 more themes × tv mode   
+ *   - 3 maximize-flip-ext baselines: 3 more themes × tv mode     
+ *   - 3 maximize-flip-tablet-ext baselines: 3 more themes × tablet 
+ *   - 3 maximize-flip-phone-ext baselines: 3 more themes × phone  
+ *   - 3 stocks-ils-display baselines: 3 themes × tv mode          
+ *   - 3 currency-boi-source baselines: 3 more themes × tv mode    
+ *   - 3 news-starred-drawer baselines: 3 themes × tv mode          
  *
  * Screenshots are stored in tests/e2e/__screenshots__/ and compared
  * on subsequent runs via Playwright's built-in snapshot comparison.
@@ -179,7 +179,7 @@ test.describe("FamilyDashBoard — Theme CSS Class Applied", () => {
   }
 });
 
-// ── Config panel state baselines (Sprint 154) ─────────────────────────────
+// ── Config panel state baselines  ─────────────────────────────
 
 test.describe("FamilyDashBoard — Config Panel State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -211,7 +211,7 @@ test.describe("FamilyDashBoard — Config Panel State Baselines", () => {
   }
 });
 
-// ── Maximized card state baselines (Sprint 154) ───────────────────────────
+// ── Maximized card state baselines  ───────────────────────────
 
 test.describe("FamilyDashBoard — Maximized Card State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -243,7 +243,7 @@ test.describe("FamilyDashBoard — Maximized Card State Baselines", () => {
   }
 });
 
-// ── Help dialog state baselines (Sprint 154) ──────────────────────────────
+// ── Help dialog state baselines  ──────────────────────────────
 
 test.describe("FamilyDashBoard — Help Dialog State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -276,7 +276,7 @@ test.describe("FamilyDashBoard — Help Dialog State Baselines", () => {
   }
 });
 
-// ── Diag overlay state baselines (Sprint 154) ─────────────────────────────
+// ── Diag overlay state baselines  ─────────────────────────────
 
 test.describe("FamilyDashBoard — Diag Overlay State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -311,7 +311,7 @@ test.describe("FamilyDashBoard — Diag Overlay State Baselines", () => {
   }
 });
 
-// ── Collapsed card state baselines (Sprint 164) ───────────────────────────
+// ── Collapsed card state baselines  ───────────────────────────
 
 test.describe("FamilyDashBoard — Collapsed Card State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -344,7 +344,7 @@ test.describe("FamilyDashBoard — Collapsed Card State Baselines", () => {
   }
 });
 
-// ── Bookmarks overlay state baselines (Sprint 164) ────────────────────────
+// ── Bookmarks overlay state baselines  ────────────────────────
 
 test.describe("FamilyDashBoard — Bookmarks Overlay State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -378,7 +378,7 @@ test.describe("FamilyDashBoard — Bookmarks Overlay State Baselines", () => {
   }
 });
 
-// ── Font size enlarged state baselines (Sprint 164) ───────────────────────
+// ── Font size enlarged state baselines  ───────────────────────
 
 test.describe("FamilyDashBoard — Font Size Enlarged State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -407,7 +407,7 @@ test.describe("FamilyDashBoard — Font Size Enlarged State Baselines", () => {
   }
 });
 
-// ── Dimmer overlay state baselines (Sprint 164) ───────────────────────────
+// ── Dimmer overlay state baselines  ───────────────────────────
 
 test.describe("FamilyDashBoard — Dimmer Overlay State Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -442,7 +442,7 @@ test.describe("FamilyDashBoard — Dimmer Overlay State Baselines", () => {
   }
 });
 
-// ── Compact mode + maximized card baselines (Sprint 164) ──────────────────
+// ── Compact mode + maximized card baselines  ──────────────────
 
 test.describe("FamilyDashBoard — Compact Mode Maximized Card Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -474,7 +474,7 @@ test.describe("FamilyDashBoard — Compact Mode Maximized Card Baselines", () =>
   }
 });
 
-// ── Sprint 223: Today-pane visible state baselines ────────────────────────
+// ── Today-pane visible state baselines ────────────────────────
 
 test.describe("FamilyDashBoard — Today Pane Visible Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -509,7 +509,7 @@ test.describe("FamilyDashBoard — Today Pane Visible Baselines", () => {
   }
 });
 
-// ── Sprint 223: Print mode layout baselines ───────────────────────────────
+// ── Print mode layout baselines ───────────────────────────────
 
 test.describe("FamilyDashBoard — Print Mode Layout Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -540,7 +540,7 @@ test.describe("FamilyDashBoard — Print Mode Layout Baselines", () => {
   }
 });
 
-// ── Sprint 223: Font size reduced baselines ───────────────────────────────
+// ── Font size reduced baselines ───────────────────────────────
 
 test.describe("FamilyDashBoard — Font Size Reduced Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -569,7 +569,7 @@ test.describe("FamilyDashBoard — Font Size Reduced Baselines", () => {
   }
 });
 
-// ── Sprint 223: Night dimmer at 50% baselines ─────────────────────────────
+// ── Night dimmer at 50% baselines ─────────────────────────────
 
 test.describe("FamilyDashBoard — Night Dimmer 50% Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -603,7 +603,7 @@ test.describe("FamilyDashBoard — Night Dimmer 50% Baselines", () => {
   }
 });
 
-// ── Sprint 223: Config panel in tablet mode baselines ─────────────────────
+// ── Config panel in tablet mode baselines ─────────────────────
 
 test.describe("FamilyDashBoard — Config Panel Tablet Mode Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -634,7 +634,7 @@ test.describe("FamilyDashBoard — Config Panel Tablet Mode Baselines", () => {
   }
 });
 
-// ── Sprint 223: Maximized card in phone mode baselines ────────────────────
+// ── Maximized card in phone mode baselines ────────────────────
 
 test.describe("FamilyDashBoard — Maximized Card Phone Mode Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -665,7 +665,7 @@ test.describe("FamilyDashBoard — Maximized Card Phone Mode Baselines", () => {
   }
 });
 
-// ── Sprint 223: Alert takeover dialog baselines ───────────────────────────
+// ── Alert takeover dialog baselines ───────────────────────────
 
 test.describe("FamilyDashBoard — Alert Takeover Dialog Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -712,7 +712,7 @@ test.describe("FamilyDashBoard — Alert Takeover Dialog Baselines", () => {
   }
 });
 
-// ── Sprint 223: Help dialog extended theme baselines ──────────────────────
+// ── Help dialog extended theme baselines ──────────────────────
 
 test.describe("FamilyDashBoard — Help Dialog Extended Themes", () => {
   test.describe.configure({ mode: "serial" });
@@ -744,7 +744,7 @@ test.describe("FamilyDashBoard — Help Dialog Extended Themes", () => {
   }
 });
 
-// ── Sprint 223: Config panel search state (tablet) baselines ─────────────
+// ── Config panel search state (tablet) baselines ─────────────
 
 test.describe("FamilyDashBoard — Config Panel Search Tablet Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -784,7 +784,7 @@ test.describe("FamilyDashBoard — Config Panel Search Tablet Baselines", () => 
   }
 });
 
-// ── Sprint 223: Help dialog in tablet mode baselines ─────────────────────
+// ── Help dialog in tablet mode baselines ─────────────────────
 
 test.describe("FamilyDashBoard — Help Dialog Tablet Mode Baselines", () => {
   test.describe.configure({ mode: "serial" });
@@ -816,11 +816,11 @@ test.describe("FamilyDashBoard — Help Dialog Tablet Mode Baselines", () => {
   }
 });
 
-// ── Sprint 219: Alert state baselines ─────────────────────────────────────
+// ── Alert state baselines ─────────────────────────────────────
 
 const SPRINT219_THEMES = ["black", "blue", "matrix"] as const;
 
-test.describe("Alert state visual baselines (Sprint 219)", () => {
+test.describe("Alert state visual baselines ", () => {
   for (const theme of SPRINT219_THEMES) {
     test(`${theme}: alerts-banner-visible`, async ({ page }) => {
       await page.goto(`/?theme=${theme}`, { waitUntil: "networkidle" });
@@ -852,9 +852,9 @@ test.describe("Alert state visual baselines (Sprint 219)", () => {
   }
 });
 
-// ── Sprint 219: Video-news card baselines ──────────────────────────────────
+// ── Video-news card baselines ──────────────────────────────────
 
-test.describe("Video-news card visual baselines (Sprint 219)", () => {
+test.describe("Video-news card visual baselines ", () => {
   for (const theme of SPRINT219_THEMES) {
     test(`${theme}: video-news-card-idle`, async ({ page }) => {
       await page.goto(`/?theme=${theme}`, { waitUntil: "networkidle" });
@@ -891,12 +891,12 @@ test.describe("Video-news card visual baselines (Sprint 219)", () => {
   }
 });
 
-// ── Sprint 269: Alerts-banner in 3 more themes ────────────────────────────
+// ── Alerts-banner in 3 more themes ────────────────────────────
 
 const SPRINT269_THEMES_A = ["amber", "purple", "rose"] as const;
 const SPRINT269_THEMES_B = ["amber", "purple", "rose"] as const;
 
-test.describe("FamilyDashBoard — Alerts Banner Extended Themes (Sprint 269)", () => {
+test.describe("FamilyDashBoard — Alerts Banner Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -935,9 +935,9 @@ test.describe("FamilyDashBoard — Alerts Banner Extended Themes (Sprint 269)", 
   }
 });
 
-// ── Sprint 269: Video-news idle in 3 more themes ──────────────────────────
+// ── Video-news idle in 3 more themes ──────────────────────────
 
-test.describe("FamilyDashBoard — Video News Idle Extended Themes (Sprint 269)", () => {
+test.describe("FamilyDashBoard — Video News Idle Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -976,9 +976,9 @@ test.describe("FamilyDashBoard — Video News Idle Extended Themes (Sprint 269)"
   }
 });
 
-// ── Sprint 269: Escape key resets overlay state baselines ─────────────────
+// ── Escape key resets overlay state baselines ─────────────────
 
-test.describe("FamilyDashBoard — Escape Key Resets State Baselines (Sprint 269)", () => {
+test.describe("FamilyDashBoard — Escape Key Resets State Baselines ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1013,10 +1013,10 @@ test.describe("FamilyDashBoard — Escape Key Resets State Baselines (Sprint 269
   }
 });
 
-// ── Sprint 312: Bookmarks overlay extended themes ─────────────────────────
+// ── Bookmarks overlay extended themes ─────────────────────────
 //   Completes 6-theme coverage for bookmarks-overlay (prior: blue/matrix/purple)
 
-test.describe("FamilyDashBoard — Bookmarks Overlay Extended Themes (Sprint 312)", () => {
+test.describe("FamilyDashBoard — Bookmarks Overlay Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1050,10 +1050,10 @@ test.describe("FamilyDashBoard — Bookmarks Overlay Extended Themes (Sprint 312
   }
 });
 
-// ── Sprint 312: Font enlarged extended themes ─────────────────────────────
+// ── Font enlarged extended themes ─────────────────────────────
 //   Completes 6-theme coverage for font-enlarged (prior: black/amber/rose)
 
-test.describe("FamilyDashBoard — Font Enlarged Extended Themes (Sprint 312)", () => {
+test.describe("FamilyDashBoard — Font Enlarged Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1079,10 +1079,10 @@ test.describe("FamilyDashBoard — Font Enlarged Extended Themes (Sprint 312)", 
   }
 });
 
-// ── Sprint 312: Config panel in phone mode baselines ─────────────────────
+// ── Config panel in phone mode baselines ─────────────────────
 //   Novel: phone-mode config panel not previously captured
 
-test.describe("FamilyDashBoard — Config Panel Phone Mode Baselines (Sprint 312)", () => {
+test.describe("FamilyDashBoard — Config Panel Phone Mode Baselines ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1112,10 +1112,10 @@ test.describe("FamilyDashBoard — Config Panel Phone Mode Baselines (Sprint 312
   }
 });
 
-// ── Sprint 312: Help dialog in phone mode baselines ───────────────────────
+// ── Help dialog in phone mode baselines ───────────────────────
 //   Novel: phone-mode help dialog not previously captured
 
-test.describe("FamilyDashBoard — Help Dialog Phone Mode Baselines (Sprint 312)", () => {
+test.describe("FamilyDashBoard — Help Dialog Phone Mode Baselines ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1145,10 +1145,10 @@ test.describe("FamilyDashBoard — Help Dialog Phone Mode Baselines (Sprint 312)
   }
 });
 
-// ── Sprint 312: Tablet maximized card extended themes ─────────────────────
+// ── Tablet maximized card extended themes ─────────────────────
 //   Extends compact-maximized (prior: black/blue/amber) to 6-theme coverage
 
-test.describe("FamilyDashBoard — Tablet Maximized Card Extended Themes (Sprint 312)", () => {
+test.describe("FamilyDashBoard — Tablet Maximized Card Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1177,10 +1177,10 @@ test.describe("FamilyDashBoard — Tablet Maximized Card Extended Themes (Sprint
   }
 });
 
-// ── Sprint 312: Diag overlay extended themes ──────────────────────────────
+// ── Diag overlay extended themes ──────────────────────────────
 //   Extends diag-overlay (prior: black/amber/purple) to 6-theme coverage
 
-test.describe("FamilyDashBoard — Diag Overlay Extended Themes (Sprint 312)", () => {
+test.describe("FamilyDashBoard — Diag Overlay Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1211,10 +1211,10 @@ test.describe("FamilyDashBoard — Diag Overlay Extended Themes (Sprint 312)", (
   }
 });
 
-// ── Sprint 415 / v14.0: DO-SSE alert pending state ─────────────────────────
+// ── / v14.0: DO-SSE alert pending state ─────────────────────────
 // Captures the alerts card in SSE-connecting / pending state.
 
-test.describe("FamilyDashBoard — Alert SSE Pending State (Sprint 415)", () => {
+test.describe("FamilyDashBoard — Alert SSE Pending State ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1252,9 +1252,9 @@ test.describe("FamilyDashBoard — Alert SSE Pending State (Sprint 415)", () => 
   }
 });
 
-// ── Sprint 415 / v14.0: DO-SSE alert connected state (ext themes) ──────────
+// ── / v14.0: DO-SSE alert connected state (ext themes) ──────────
 
-test.describe("FamilyDashBoard — Alert SSE Connected State Ext (Sprint 415)", () => {
+test.describe("FamilyDashBoard — Alert SSE Connected State Ext ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1292,10 +1292,10 @@ test.describe("FamilyDashBoard — Alert SSE Connected State Ext (Sprint 415)", 
   }
 });
 
-// ── Sprint 415 / v14.0: Maximize-FLIP ext themes (tv) ─────────────────────
+// ── / v14.0: Maximize-FLIP ext themes (tv) ─────────────────────
 // Captures the FLIP animation end-state in the 3 "ext" themes.
 
-test.describe("FamilyDashBoard — Maximize FLIP Extended Themes (Sprint 415)", () => {
+test.describe("FamilyDashBoard — Maximize FLIP Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1324,9 +1324,9 @@ test.describe("FamilyDashBoard — Maximize FLIP Extended Themes (Sprint 415)", 
   }
 });
 
-// ── Sprint 415 / v14.0: Maximize-FLIP tablet ext themes ───────────────────
+// ── / v14.0: Maximize-FLIP tablet ext themes ───────────────────
 
-test.describe("FamilyDashBoard — Maximize FLIP Tablet Extended Themes (Sprint 415)", () => {
+test.describe("FamilyDashBoard — Maximize FLIP Tablet Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1355,9 +1355,9 @@ test.describe("FamilyDashBoard — Maximize FLIP Tablet Extended Themes (Sprint 
   }
 });
 
-// ── Sprint 415 / v14.0: Maximize-FLIP phone ext themes ────────────────────
+// ── / v14.0: Maximize-FLIP phone ext themes ────────────────────
 
-test.describe("FamilyDashBoard — Maximize FLIP Phone Extended Themes (Sprint 415)", () => {
+test.describe("FamilyDashBoard — Maximize FLIP Phone Extended Themes ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1386,10 +1386,10 @@ test.describe("FamilyDashBoard — Maximize FLIP Phone Extended Themes (Sprint 4
   }
 });
 
-// ── Sprint 415 / v14.0: Stocks card ILS display (S-TASE adapter) ───────────
+// ── / v14.0: Stocks card ILS display (S-TASE adapter) ───────────
 // Captures the stocks card with an injected ILS-denomination tile.
 
-test.describe("FamilyDashBoard — Stocks ILS Display (Sprint 415)", () => {
+test.describe("FamilyDashBoard — Stocks ILS Display ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1430,9 +1430,9 @@ test.describe("FamilyDashBoard — Stocks ILS Display (Sprint 415)", () => {
   }
 });
 
-// ── Sprint 415 / v14.0: Currency card BoI source badge (ext themes) ────────
+// ── / v14.0: Currency card BoI source badge (ext themes) ────────
 
-test.describe("FamilyDashBoard — Currency BoI Source Badge Ext (Sprint 415)", () => {
+test.describe("FamilyDashBoard — Currency BoI Source Badge Ext ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 
@@ -1471,10 +1471,10 @@ test.describe("FamilyDashBoard — Currency BoI Source Badge Ext (Sprint 415)", 
   }
 });
 
-// ── Sprint 421 / v14.1: News starred-drawer open state ─────────────────────
+// ── / v14.1: News starred-drawer open state ─────────────────────
 // Captures the news starred-articles drawer dialog in 3 themes (N-Star-UI).
 
-test.describe("FamilyDashBoard — News Starred Drawer (Sprint 421)", () => {
+test.describe("FamilyDashBoard — News Starred Drawer ", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(60_000);
 

@@ -39,7 +39,7 @@ Use **Cloudflare D1** (`fdb-telemetry`) for route hit counting.
 
 ## Consequences
 
-- **+** Route hit counts are queryable via `/api/metrics` (Sprint 17).
+- **+** Route hit counts are queryable via `/api/metrics` .
 - **+** No new runtime cost for requests where telemetry insertion fails.
 - **+** Zero schema migrations needed for v1 — single table, append-only.
 - **-** D1 binding requires `wrangler d1 create fdb-telemetry` before first deploy.

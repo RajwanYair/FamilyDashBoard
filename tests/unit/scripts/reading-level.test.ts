@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-A11Y: check-reading-level.mjs
+ * Unit tests — Y: check-reading-level.mjs
  *
  * Verifies the pure helper functions and integration against real CSS files.
  */

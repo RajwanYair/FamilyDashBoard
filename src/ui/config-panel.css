@@ -1,6 +1,4 @@
 /* Config Panel — co-located styles (v7.8) */
-/* Migrated from src/styles/sprints.css */
-
 #config-overlay {
   display: none;
   position: fixed;
@@ -16,7 +14,7 @@
   display: flex;
 }
 
-/* Sprint 10: Wider config panel (420px → 860px) */
+/* Wider config panel (420px → 860px) */
 #config-panel {
   background: var(--bg-card);
   border: 1px solid var(--accent-border);
@@ -72,7 +70,7 @@
   scrollbar-width: thin;
 }
 
-/* Sprint 17: Per-card settings accordion */
+/* Per-card settings accordion */
 .cfg-percard-details {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
@@ -152,7 +150,7 @@
   opacity: 1;
 }
 
-/* Sprint 200 / X7: Config search box */
+/* Config search box */
 .cfg-search-wrap {
   margin-bottom: 8px;
 }
@@ -203,7 +201,7 @@
   display: block;
 }
 
-/* Sprint 10: 2-column grid layout for setting sections */
+/* 2-column grid layout for setting sections */
 #cfg-section-display.active,
 #cfg-section-calendar.active,
 #cfg-section-feeds.active,

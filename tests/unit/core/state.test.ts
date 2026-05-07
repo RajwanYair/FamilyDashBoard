@@ -146,7 +146,7 @@ describe("state — invalid/unknown slice key", () => {
   });
 });
 
-// ── Sprint 415 / coverage ratchet: _resetForTest ──────────────────────────
+// ── / coverage ratchet: _resetForTest ──────────────────────────
 
 describe("state — _resetForTest", () => {
   it("clears all slices and fires change events", () => {

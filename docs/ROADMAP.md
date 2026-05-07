@@ -1,9 +1,9 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-06 · **Shipped baseline**: v14.4.0 (Sprint 478) · **Active streams**: V14-FOUNDATIONS, V14-SEMANTIC, V14-CONTINUITY, V14-EDGE, V14-AGENTIC, V15-OPEN.
+> **Refresh date**: 2026-05-06 · **Shipped baseline**: v14.4.0  · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 6387 tests / 214 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage (Sprint 474)**: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines).
+> **Inventory**: 7037 tests / 275 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage **: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -15,7 +15,7 @@
 
 ## 0. Executive Summary
 
-After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. v14-CARD-SETTINGS, v14-CROSS-CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 6387 tests / 214 suites, 77 fast-check property suites across 21 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
+After 326 sprints across v10 → v13.33 the project sits on a stable, opinionated, production-hardened plateau. SETTINGS, CARD synergies (X1–X15), and the per-card depth backlog (§3 of the v1 roadmap) are **shipped**. The quality gate is industry-leading for a static-PWA: 7037 tests / 275 suites, 77 fast-check property suites across 21 modules, container-query-only audit, mermaid validator, reading-level gate, smart-contrast audit, vendor-neutrality drill active.
 
 The v14 → v17 frontier is no longer breadth or feature catch-up. It is six things:
 
@@ -95,7 +95,7 @@ Stamps: **Keep**, **Adopt**, **Replace**, **Defer**, **Reject**, **Track**, **Su
 | Workers Queues (error fan-out)                      | **Shipped v13.0**                 | —                                                                                                       |
 | Email Workers weekly digest                         | **Shipped v13.0 (opt-in)**        | —                                                                                                       |
 | Workers AI (Llama 3.3 8B Hebrew)                    | **Track Llama 4 v14.x**           | Switch only when Hebrew quality measurably better at equal cost.                                        |
-| **Cloudflare Vectorize (semantic news dedup)**      | **Adopt v14.0 (ADR-052)**         | Shadow-mode active since Sprint 267; 30-day precision@10 ≥ +15 % gate.                                  |
+| **Cloudflare Vectorize (semantic news dedup)**      | **Adopt v14.0 (ADR-052)**         | Shadow-mode active since ; 30-day precision@10 ≥ +15 % gate.                                  |
 | Hyperdrive / Postgres                               | **Reject (reconfirmed)**          | No relational store in stack.                                                                           |
 | User-facing DB                                      | **Reject (5th reconfirm)**        | LS + IDB + JSON export + AES-GCM URL share cover it.                                                    |
 | Worker bundle budget ≤ 75 KB gzip                   | **Keep ceiling**                  | Tightening to 60 KB rejected — leaves no room for DO Storage SQL adapter.                               |
@@ -103,7 +103,7 @@ Stamps: **Keep**, **Adopt**, **Replace**, **Defer**, **Reject**, **Track**, **Su
 | **Cloudflare Snippets**                             | **Track v14.x**                   | Move static header injection out of Worker once Snippets ships TEE.                                     |
 | WebTransport / HTTP/3 push                          | **Defer**                         | DO Hibernatable WebSocket has same UX at known cost.                                                    |
 | File-protocol launch (`dist/index.html`)            | **Shipped v13.13**                | `--base ./` + `removeCrossOrigin` Vite plugin.                                                          |
-| Dev-mode CSP relaxation                             | **Shipped (Sprint 127)**          | `vite-plugin-dev-csp-strip` removes meta in `serve` mode only.                                          |
+| Dev-mode CSP relaxation                             | **Shipped **          | `vite-plugin-dev-csp-strip` removes meta in `serve` mode only.                                          |
 | **MCP server (read-only) for AI assistants**        | **Adopt v14.x (NEW, see §1.11)**  | Localhost-only; surface "today's signals" so user agents can ask without scraping.                      |
 | **Web Push (VAPID) for alerts on phone**            | **Gate: 3+ user requests v14.x**  | Worker-side VAPID; opt-in; never tracks; only fires for `alerts` card severity ≥ rocket.                |
 
@@ -153,8 +153,8 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Prettier              | 3.x                      | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity.                       |
 | Stylelint             | 16.x                     | Keep; consider Lightning-CSS-only validation v15.                                 |
 | Playwright            | 1.5x                     | Quarterly baseline regen.                                                         |
-| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; 25 files in scope (utils.ts + config-crypto.ts + worker-client.ts added Sprint 472); extend to remaining core modules. |
-| `fast-check`          | 3.x                      | 77 property suites across 21 modules (config-crypto CC1-CC8 Sprint 469, utils UT1-UT8 Sprint 470, links LK1-LK6 Sprint 471); continue expanding. |
+| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; 25 files in scope (utils.ts + config-crypto.ts + worker-client.ts added ); extend to remaining core modules. |
+| `fast-check`          | 3.x                      | 77 property suites across 21 modules (config-crypto CC1-CC8 , utils UT1-UT8 , links LK1-LK6 ); continue expanding. |
 | `axe-core`            | latest                   | Keep CI gate.                                                                     |
 | Lighthouse CI         | latest                   | Tightened to `error 0.97`; ratchet to `0.98` cached v14.x.                        |
 | `pnpm` workspace      | npm + parent             | **Reject** — current pattern is sufficient and simpler.                           |
@@ -167,7 +167,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Unit             | Vitest 4.1 + happy-dom 20              | Keep. Suite split per file.                                                       |
 | Component        | `@vitest/browser` (Playwright)         | Shipped v13.16.                                                                   |
 | Property-based   | fast-check (77 suites, ADR-054/055)    | 21 modules covered; config-crypto/utils/links property suites shipped v14.4. |
-| Mutation         | Stryker (25 files)                     | Threshold ≥ 85 %; extended to utils/config-crypto/worker-client Sprint 472.       |
+| Mutation         | Stryker (25 files)                     | Threshold ≥ 85 %; extended to utils/config-crypto/worker-client .       |
 | Visual regression | Playwright (108 baselines)             | Extend to DO-SSE alert states + maximise-FLIP.                                    |
 | End-to-end       | Playwright                             | Keep.                                                                             |
 | Accessibility    | axe-core (CI gate)                     | Keep + manual screen-reader pass per major.                                       |
@@ -185,7 +185,7 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Sec  | Secret rotation per major release. Reporting API sampling audit annually. |
 | Sec  | CSP `require-trusted-types-for 'script'` enforcement audit v14.0. |
 | Sec  | npm + GitHub Actions provenance (Sigstore) — adopt v14.2. |
-| Sec  | OWASP Top 10 audit per major release; 32 rules scan `src/`, `worker/src/`, and `scripts/` (Sprint 473); CSP wildcards reviewed every patch. |
+| Sec  | OWASP Top 10 audit per major release; 32 rules scan `src/`, `worker/src/`, and `scripts/` ; CSP wildcards reviewed every patch. |
 | Sec  | **Origin-Agent-Cluster header** — adopt v14.x (process isolation; defends against Spectre-class side-channels). |
 | Sec  | **Permissions-Policy delegation audit** — reduce inherited surface for video-news iframes. |
 | Infra | Cloudflare Pages migration — gate on measurable TTI/caching regression. |
@@ -218,21 +218,21 @@ These were not on the v1 roadmap. Each gets an ADR before the work lands.
 
 | # | Decision | Verdict | Trigger / Gate | Target |
 | - | -------- | ------- | -------------- | ------ |
-| D1 | **Local MCP server (read-only)** — surface "today's signals" so users' AI assistants can ask without scraping. Dashboard exposes a localhost-only HTTP+JSON endpoint at `localhost:7411/mcp`; never reachable from a remote origin. | **Adopt v14.x** (design ADR-058 shipped v13.35.0 Sprint 338) | Privacy gate: zero network egress; CSP unchanged; opt-in via `?mcp=1`. | v14.x |
-| D2 | **WebNN on-device inference** for news rerank + motivation curator. | **Track v15** (decision ADR-063 shipped v13.36.0 Sprint 346) | Chrome GA + graceful Workers AI fallback when API absent. | v15 |
-| ~~D3~~ | ~~**Compute Pressure API** in `system-info` card.~~ — shipped v13.34.0 (Sprint 329, ADR-056) | | | |
-| ~~D4~~ | ~~**Storage Buckets** (per-card eviction policy).~~ — shipped v13.34.0 (Sprint 330, ADR-056) | | | |
-| ~~D5~~ | ~~**Origin-Agent-Cluster** response header + meta.~~ — shipped v13.34.0 (Sprint 327, ADR-056) | | | |
-| D6 | **Cloudflare Snippets / TEE** for static header injection. | **Track v14.x** (decision ADR-059 shipped v13.35.0 Sprint 339) | Move CSP / COOP / COEP / HSTS out of Worker once Snippets ships TEE; saves ~3 KB Worker. | v14.x |
-| D7 | **Web Push (VAPID) for alerts → phone**. | **Gate: 3+ user requests** (design ADR-060 shipped v13.35.0 Sprint 340) | Worker-side VAPID, opt-in; only fires `alerts` severity ≥ rocket; never tracks subscription beyond push. | v14.x |
-| D8 | **IMS / TASE / BoI native sources** for IL-geo users (`weather`, `stocks`, `currency`). | **Adopt v14.0** (contract ADR-061 shipped v13.35.0 Sprint 341) | Adapter contract: provider-health emits same envelope; KV stale + provider chain unchanged. | v14.0 |
-| D9 | **CSS `if()` + `@function`** for theme-token compression. | **Adopt v14.x** (decision ADR-062 shipped v13.36.0 Sprint 345) | Behind progressive-enhancement; theme `@layer` keeps fallback. | v14.x |
+| D1 | **Local MCP server (read-only)** — surface "today's signals" so users' AI assistants can ask without scraping. Dashboard exposes a localhost-only HTTP+JSON endpoint at `localhost:7411/mcp`; never reachable from a remote origin. | **Adopt v14.x** (design ADR-058 shipped v13.35.0 ) | Privacy gate: zero network egress; CSP unchanged; opt-in via `?mcp=1`. | v14.x |
+| D2 | **WebNN on-device inference** for news rerank + motivation curator. | **Track v15** (decision ADR-063 shipped v13.36.0 ) | Chrome GA + graceful Workers AI fallback when API absent. | v15 |
+| ~~D3~~ | ~~**Compute Pressure API** in `system-info` card.~~ — shipped v13.34.0 (, ADR-056) | | | |
+| ~~D4~~ | ~~**Storage Buckets** (per-card eviction policy).~~ — shipped v13.34.0 (, ADR-056) | | | |
+| ~~D5~~ | ~~**Origin-Agent-Cluster** response header + meta.~~ — shipped v13.34.0 (, ADR-056) | | | |
+| D6 | **Cloudflare Snippets / TEE** for static header injection. | **Track v14.x** (decision ADR-059 shipped v13.35.0 ) | Move CSP / COOP / COEP / HSTS out of Worker once Snippets ships TEE; saves ~3 KB Worker. | v14.x |
+| D7 | **Web Push (VAPID) for alerts → phone**. | **Gate: 3+ user requests** (design ADR-060 shipped v13.35.0 ) | Worker-side VAPID, opt-in; only fires `alerts` severity ≥ rocket; never tracks subscription beyond push. | v14.x |
+| D8 | **IMS / TASE / BoI native sources** for IL-geo users (`weather`, `stocks`, `currency`). | **Adopt v14.0** (contract ADR-061 shipped v13.35.0 ) | Adapter contract: provider-health emits same envelope; KV stale + provider chain unchanged. | v14.0 |
+| D9 | **CSS `if()` + `@function`** for theme-token compression. | **Adopt v14.x** (decision ADR-062 shipped v13.36.0 ) | Behind progressive-enhancement; theme `@layer` keeps fallback. | v14.x |
 | D10 | **Speculation Rules API (prerender)** for help / config panels. | **Adopt v14.x** | Bundle delta < 1 KB; gate by LHCI no-regression on TTI. | v14.x |
-| D11 | **`popover=` attribute** for diag toasts + bookmark menu. | **Adopt v14.x** (status ADR-065 shipped v13.36.0 Sprint 348 — 2 popovers live, bookmark menu remains, diag toasts rejected) | Replaces ad-hoc focus traps; gate by zero a11y regression on axe. | v14.x |
-| ~~D12~~ | ~~**TS module boundary linting** — disallow `src/cards/*` from importing `src/ui/*` and vice-versa beyond declared interfaces.~~ — shipped v13.35.0 (Sprint 335, ADR-057) as zero-dep custom script | | | |
-| ~~D13~~ | ~~**Per-card budget hard-cap** — each card module ≤ 6 KB gzip individually.~~ — interim 80 KB raw hard-cap shipped v13.35.0 (Sprint 336, ADR-057); aspirational target tracked as backlog | | | |
-| ~~D14~~ | ~~**Renovate group rules: security weekly, minors monthly, majors manual.**~~ — shipped v13.34.0 (Sprint 328) | | | |
-| D15 | **Annual `dist/` reproducibility verification by an unrelated builder** (third-party rebuilder via SLSA `verifier-action`). | **Adopt v14.2** (drill spec ADR-064 shipped v13.36.0 Sprint 347) | Builds on existing `rebuilder-manifest.json`. | v14.2 |
+| D11 | **`popover=` attribute** for diag toasts + bookmark menu. | **Adopt v14.x** (status ADR-065 shipped v13.36.0 2 popovers live, bookmark menu remains, diag toasts rejected) | Replaces ad-hoc focus traps; gate by zero a11y regression on axe. | v14.x |
+| ~~D12~~ | ~~**TS module boundary linting** — disallow `src/cards/*` from importing `src/ui/*` and vice-versa beyond declared interfaces.~~ — shipped v13.35.0 (, ADR-057) as zero-dep custom script | | | |
+| ~~D13~~ | ~~**Per-card budget hard-cap** — each card module ≤ 6 KB gzip individually.~~ — interim 80 KB raw hard-cap shipped v13.35.0 (, ADR-057); aspirational target tracked as backlog | | | |
+| ~~D14~~ | ~~**Renovate group rules: security weekly, minors monthly, majors manual.**~~ — shipped v13.34.0  | | | |
+| D15 | **Annual `dist/` reproducibility verification by an unrelated builder** (third-party rebuilder via SLSA `verifier-action`). | **Adopt v14.2** (drill spec ADR-064 shipped v13.36.0 ) | Builds on existing `rebuilder-manifest.json`. | v14.2 |
 
 ---
 
@@ -253,7 +253,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 | Edge cache             | **KV stale + D1 + DO + AE**                                                         | n/a        | n/a       | Postgres      | n/a         | n/a          | n/a         | proprietary | iCloud      | Prom / Mimir     | Influx        | Cloud     | Cloud    | proprietary   | Cloud     | Cloud            | Cloud        | Cloud        |
 | TS strictness          | **strict + nUII + vMS + eOPT**                                                      | strict     | partial   | strict        | n/a         | partial      | n/a         | unknown     | n/a         | partial          | partial       | n/a       | n/a      | n/a           | n/a       | unknown          | unknown      | unknown      |
 | CSS                    | **`@layer` + tokens + Lightning + `@scope` + `light-dark()` + `@property`**          | Tailwind 4 | SCSS      | Mantine CSS-in-JS | Hand    | CSS Modules  | AppKit      | Tailwind    | SwiftUI     | SCSS + Emotion   | hand          | n/a       | hand     | n/a           | SwiftUI   | Tailwind         | Tailwind     | Tailwind     |
-| Tests                  | **6387 unit + PW + axe + 108 VR + LHCI + 77 fast-check + Stryker**                  | Vitest partial | partial | Vitest + PW + Argos | Go     | Minimal      | XCTest      | unknown     | XCTest      | Go tests         | pytest        | n/a       | n/a      | n/a           | unknown   | unknown          | unknown      | unknown      |
+| Tests                  | **7037 unit + PW + axe + 108 VR + LHCI + 77 fast-check + Stryker**                  | Vitest partial | partial | Vitest + PW + Argos | Go     | Minimal      | XCTest      | unknown     | XCTest      | Go tests         | pytest        | n/a       | n/a      | n/a           | unknown   | unknown          | unknown      | unknown      |
 | Visual regression      | **Playwright (108, in-repo)**                                                       | None       | None      | Argos CI      | None        | None         | Snapshot    | unknown     | None        | Pixelmatch       | None          | None      | None     | None          | None      | None             | None         | None         |
 | i18n                   | **Hebrew RTL + English**                                                            | 45+        | 22+       | 38+           | en-only     | 30+          | 40+         | 25+         | 40+         | 30+              | 80+           | en-only   | en-only  | en-only       | en-only   | many             | en-only      | many         |
 | A11y                   | **WCAG 2.2 AA + axe gate**                                                          | Partial    | Partial   | Partial       | Unknown     | Partial      | VoiceOver   | Unknown     | Apple stack | Partial          | Partial       | n/a       | n/a      | E-ink only    | Apple     | partial          | partial      | partial      |
@@ -286,7 +286,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 | **Cloudflare Snippets** | CF 2025 GA | **Track** | Move CSP / COOP / COEP / HSTS out of Worker (D6). |
 | **Web Push VAPID for opt-in alerts** | Browser 2024 | **Gate: 3+ requests** | Phone push for `alerts` ≥ rocket only (D7). |
 | **DC-1 / TRMNL e-ink cadence (15-min)** | Daylight, TRMNL | **Inspire** | Already aligned with our card TTLs. |
-| **Granola "after-meeting summary"** | Granola 2025 | **Adapted as X9** | Daily synthesis tile shipped Sprint 202. |
+| **Granola "after-meeting summary"** | Granola 2025 | **Adapted as X9** | Daily synthesis tile shipped . |
 | **Comet agent-driven panel** | Perplexity 2026 | **Inspire (no copy)** | We expose data via MCP (D1) instead of embedding an agent. |
 | **Beeper bridge model** | Beeper 2026 | **Reject** | Auth + DB requirement contradicts static-PWA. |
 | **Argos CI visual regression** | Homarr v2 | **Superseded** | Playwright in-repo baselines; zero SaaS dep. |
@@ -304,7 +304,7 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 3. **Hebrew RTL + Zmanim + Hebcal + Sefaria + Tzeva-Adom native** — unique.
 4. **12 provider-adapted cards with normalized history + stale fallback** — depth over breadth.
 5. **4-tier offline cache + dev escape hatches** — no peer renders a useful dashboard offline _and_ provides a `?nosw=1` opt-out.
-6. **6387 tests + axe + 108 VR + LHCI + 77 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
+6. **7037 tests + axe + 108 VR + LHCI + 77 fast-check + Stryker + SLSA + container-query audit + mermaid validator + reading-level gate** — highest gate density in matrix.
 7. **Production observability without tracking cookies** — RUM + Vitals + Errors + Reports + AE + Prometheus.
 8. **Reproducible single-artefact release** — `dist.zip` + `worker.js`, SLSA-pinned + Sigstore + rebuilder manifest.
 9. **Hostile-network resilience** — explicit corp-proxy CSP allowlist, SW unregister helper, file-protocol launch.
@@ -314,38 +314,38 @@ Categories: **Family/TV dashboards** · **Homelab dashboards** · **News/feed re
 
 ---
 
-## 3. Per-Card Open Backlog (2026-Q2 refresh — Sprint 400 prune)
+## 3. Per-Card Open Backlog (2026-Q2 refresh — prune)
 
-The full per-card peer comparison and capability gap analysis is preserved in the v1 roadmap and **shipped through Sprint 213**. Sprint 400 audit removed v1 carry-over items that have since been silently shipped (W-Nowcast, W-AQI, W-Compass, S-Watchlists, C-Sparkline, CAL-Conflict, A-DO, M-Favorites, SI-RTT, V-PiP, N-Star core API). This section now lists **only what genuinely remains open** for v14.0+.
+The full per-card peer comparison and capability gap analysis is preserved in the v1 roadmap and **shipped through **. audit removed v1 carry-over items that have since been silently shipped (W-Nowcast, W-AQI, W-Compass, S-Watchlists, C-Sparkline, CAL-Conflict, A-DO, M-Favorites, SI-RTT, V-PiP, N-Star core API). This section now lists **only what genuinely remains open** for v14.0+.
 
 ### 3.1 News
 
 - **N-V** · P0 · L · Hi · v14.0 — Retire SimHash v2 once Vectorize 30-day shadow run delivers precision@10 ≥ +15 %. (ADR-052 active.)
 - **N-WebNN** · P2 · M · Mid · v15 — Move per-source rerank to WebNN on-device when API GA (D2).
-- ~~**N-Star-UI**~~ · P2 · S · Lo · v14.0 — Read-later viewer drawer shipped (Sprint 420). `<dialog>` with IDB-backed tile grid; `openStarredDrawer()`/`closeStarredDrawer()`/`getStarredArticles()` in `news.ts`.
+- ~~**N-Star-UI**~~ · P2 · S · Lo · v14.0 — Read-later viewer drawer shipped . `<dialog>` with IDB-backed tile grid; `openStarredDrawer()`/`closeStarredDrawer()`/`getStarredArticles()` in `news.ts`.
 - **N-TTS** · P2 · M · Mid · v15 — Web Speech API "read article" (Hebrew + English; gated 3+ requests). [N4 carry-over]
 
 ### 3.2 Weather
 
-- ~~**W-IMS**~~ — shipped v14.0 (Sprint 422, ADR-061). `ims-adapter.ts` + `isILGeo()` gate; primary for geonameid ∈ IL; falls back to Open-Meteo + Met Norway.
+- ~~**W-IMS**~~ — shipped v14.0 (, ADR-061). `ims-adapter.ts` + `isILGeo()` gate; primary for geonameid ∈ IL; falls back to Open-Meteo + Met Norway.
 
 ### 3.3 Stocks
 
 - **S-DO** · P1 · M · Hi · v14.x — DO Hibernatable WebSocket live stream (replaces HTTP poll; ~80 % DO bill drop idle). [S1 carry-over]
-- ~~**S-TASE**~~ — shipped v14.0 (Sprint 422, ADR-061). `tase-adapter.ts` + `isTASETicker()` gate; authoritative prices for `.TA` suffix tickers with ILS conversion.
+- ~~**S-TASE**~~ — shipped v14.0 (, ADR-061). `tase-adapter.ts` + `isTASETicker()` gate; authoritative prices for `.TA` suffix tickers with ILS conversion.
 
 ### 3.4 Currency
 
-- ~~**C-BoI**~~ — shipped v14.0 (Sprint 422, ADR-061). `boi-adapter.ts` + `parseBoIRates()`; chain: BoI → open.er-api → Frankfurter/ECB. XML parser with DOMParser; `isILGeo()` from boi-adapter.
+- ~~**C-BoI**~~ — shipped v14.0 (, ADR-061). `boi-adapter.ts` + `parseBoIRates()`; chain: BoI → open.er-api → Frankfurter/ECB. XML parser with DOMParser; `isILGeo()` from boi-adapter.
 
 ### 3.5 Calendar
 
-- **CAL-Temporal** · P1 · M · Mid · v14.x — Replace ad-hoc date math with TC39 Temporal (gate by polyfill ≤ 10 KB). [CAL5 carry-over] _(Sprint 418 gate check: `@js-temporal/polyfill` not installed → gate CLOSED; deferred to v14.x)_
+- **CAL-Temporal** · P1 · M · Mid · v14.x — Replace ad-hoc date math with TC39 Temporal (gate by polyfill ≤ 10 KB). [CAL5 carry-over] _(gate check: `@js-temporal/polyfill` not installed → gate CLOSED; deferred to v14.x)_
 
 ### 3.6 Hebrew calendar
 
 - ~~**H-Yahrzeit**~~ — IDB API shipped (`addYahrzeit` / `getUpcomingYahrzeits` / `removeYahrzeit`); manager UI deferred to v14.x.
-- **H-Temporal** · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal. [H7 carry-over] _(Sprint 419 gate check: gate CLOSED — same polyfill gate as CAL-Temporal; deferred to v14.x)_
+- **H-Temporal** · P1 · M · Mid · v14.x — Replace internal date math with TC39 Temporal. [H7 carry-over] _(gate check: gate CLOSED — same polyfill gate as CAL-Temporal; deferred to v14.x)_
 - **H-Sefaria-Audio** · P2 · M · Lo · v15 — Optional parashat haftarah audio link (gated by audio-CSP audit; OpenSiddur public dataset).
 
 ### 3.7 Alerts
@@ -364,13 +364,13 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.10 System-info
 
-- ~~**SI-Pressure**~~ — shipped v13.34.0 (Sprint 329, D3, ADR-056).
-- ~~**SI-Buckets**~~ — shipped v13.34.0 (Sprint 330, D4, ADR-056).
-- ~~**SI-RTT**~~ — shipped through Sprint 399 (Connection-API path now also feeds the 10-min sparkline).
+- ~~**SI-Pressure**~~ — shipped v13.34.0 (, D3, ADR-056).
+- ~~**SI-Buckets**~~ — shipped v13.34.0 (, D4, ADR-056).
+- ~~**SI-RTT**~~ — shipped through (Connection-API path now also feeds the 10-min sparkline).
 
 ### 3.11 Countdown
 
-- All §3 v1 items (CD1–CD4) shipped through Sprint 213.
+- All §3 v1 items (CD1–CD4) shipped through .
 
 ### 3.12 Video-news
 
@@ -378,8 +378,8 @@ The full per-card peer comparison and capability gap analysis is preserved in th
 
 ### 3.13 Cross-card peer-driven additions (NEW)
 
-- ~~**PC-1 (Granola-inspired)**~~ — shipped v14.0 (Sprint 421/422). `speakSynthesis()` / `stopSpeakSynthesis()` / `_setSpeakBtnState()` on AI synthesis card; 28 tests; audio-CSP audit complete.
-- ~~**PC-2 (Comet-inspired)**~~ — shipped v14.0 (Sprint 415). `mcp-bridge.ts` + `docs/mcp.md`; X11 MCP read-only server.
+- ~~**PC-1 (Granola-inspired)**~~ — shipped v14.0 . `speakSynthesis()` / `stopSpeakSynthesis()` / `_setSpeakBtnState()` on AI synthesis card; 28 tests; audio-CSP audit complete.
+- ~~**PC-2 (Comet-inspired)**~~ — shipped v14.0 . `mcp-bridge.ts` + `docs/mcp.md`; X11 MCP read-only server.
 
 ---
 
@@ -391,31 +391,31 @@ X1–X10 from the v1 roadmap are **all shipped**. New cross-card items raised by
 
 Single localhost endpoint (`localhost:7411/mcp`) exposing read-only views of: today-pane signal · calendar next-event · hebrew-cal next-zman · active alerts · weather summary · stocks top-mover · countdowns < 24 h.
 
-- **X11** · P0 · M · Hi · v14.x — Implement `src/core/mcp-server.ts`; opt-in via `?mcp=1`; CSP unchanged (loopback only); never reachable from a remote origin; never sends telemetry. _(impl plan ADR-066 shipped v13.37.0 Sprint 355)_
+- **X11** · P0 · M · Hi · v14.x — Implement `src/core/mcp-server.ts`; opt-in via `?mcp=1`; CSP unchanged (loopback only); never reachable from a remote origin; never sends telemetry. _(impl plan ADR-066 shipped v13.37.0 )_
 
 ### 4.2 X12 — Card composability protocol
 
 Today cards import from siblings via `getCardSignal(id)`. Formalise as `CardSignalProtocol` with versioned signal shape; consumers feature-detect.
 
-- **X12** · P1 · S · Mid · v14.x — Define `src/core/card-signal-protocol.ts`; migrate 4 known consumers (today-pane, semantic links, MCP, daily synthesis). _(spec ADR-067 shipped v13.37.0 Sprint 356; **core implementation shipped v13.38.0 Sprints 365–366**; consumer migration deferred to v14.x)_
+- **X12** · P1 · S · Mid · v14.x — Define `src/core/card-signal-protocol.ts`; migrate 4 known consumers (today-pane, semantic links, MCP, daily synthesis). _(spec ADR-067 shipped v13.37.0 ; **core implementation shipped v13.38.0 Sprints 365–366**; consumer migration deferred to v14.x)_
 
 ### 4.3 X13 — Time-machine debug
 
 Snapshot at any point + replay; piggybacks `src/core/snapshot.ts` (X8 shipped).
 
-- **X13** · P2 · M · Lo · v15 — Snapshot every 60 s into IDB ring (≤ 24 h retention); `Ctrl+Shift+T` to scrub. Behind `?devtime=1`. _(track decision ADR-068 shipped v13.37.0 Sprint 357)_
+- **X13** · P2 · M · Lo · v15 — Snapshot every 60 s into IDB ring (≤ 24 h retention); `Ctrl+Shift+T` to scrub. Behind `?devtime=1`. _(track decision ADR-068 shipped v13.37.0 )_
 
 ### 4.4 X14 — Phone-as-remote (no auth)
 
 Companion to X11. Phone joins the dashboard's WebRTC mesh (ADR-049 v14.x) over QR pairing for **5 min**, taps a card to reorder/dismiss/snooze. No accounts, no relay, ICE STUN-only.
 
-- **X14** · P2 · L · Mid · v15 — Gates: WebRTC mirror (V14-CONTINUITY) shipped + ≥ 3 requests + threat-model ADR. _(gated decision ADR-069 shipped v13.37.0 Sprint 358)_
+- **X14** · P2 · L · Mid · v15 — Gates: WebRTC mirror  shipped + ≥ 3 requests + threat-model ADR. _(gated decision ADR-069 shipped v13.37.0 )_
 
 ### 4.5 X15 — Semantic clipboard
 
 User clicks a tile; system copies a context-rich text + JSON-LD payload (e.g. "30 ◌ April 2026 — Yom HaShoah · 19:30 candle-lighting · גשם 35%") for paste into chat / mail.
 
-- **X15** · ✅ · **Shipped v14.0.0** — All 12 per-card semantic clipboard producers shipped (Sprints 387–415). Spec ADR-070; core + keyboard `Y` wired v13.38.0 Sprints 367–369; fast-check property tests added Sprint 430 (SCP1–SCP5). _(fully complete)_
+- **X15** · ✅ · **Shipped v14.0.0** — All 12 per-card semantic clipboard producers shipped (Sprints 387–415). Spec ADR-070; core + keyboard `Y` wired v13.38.0 Sprints 367–369; fast-check property tests added (SCP1–SCP5). _(fully complete)_
 
 ### 4.6 Cross-card invariants protected
 
@@ -433,38 +433,38 @@ User clicks a tile; system copies a context-rich text + JSON-LD payload (e.g. "3
 
 | #  | Type     | Item                                                                            | P  | E | I  | Target | Stream         |
 | -- | -------- | ------------------------------------------------------------------------------- | -- | - | -- | ------ | -------------- |
-| 1  | Rewrite  | SimHash → Vectorize semantic news dedup (retire after gate)                     | P0 | L | Hi | v14.0  | V14-SEMANTIC   |
-| 2  | Refactor | TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` (gated polyfill ≤ 10 KB)   | P1 | M | Mid | v14.x  | V14-SEMANTIC   |
-| 3  | Track    | TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4                   | P2 | S | Mid | v14.x  | V14-SEMANTIC   |
-| 4  | Enhance  | DO Hibernatable WebSocket — stocks live + alerts SSE                            | P1 | M | Hi | v14.x  | V14-EDGE       |
-| 5  | Enhance  | R2 mirror for backgrounds + offline shell                                       | P2 | M | Mid | v14.x  | V14-EDGE       |
-| 6  | Refactor | Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io)        | P1 | L | Hi | v14.0  | V14-FOUNDATIONS |
-| 7  | Enhance  | OpenTelemetry from Worker (opt-in)                                              | P2 | L | Mid | v14.2  | V14-FOUNDATIONS |
-| 8  | Enhance  | SLSA L3 hermetic build + Sigstore + 3rd-party rebuilder verify                  | P0 | L | Hi | v14.2  | V14-SECURITY-L3 |
-| 9  | Refactor | Promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding             | P1 | M | Hi | v14.1  | V14-HARMONISE  |
-| 10 | Enhance  | Visual-regression baselines 108 → 130+                                          | P1 | M | Mid | v14.0  | V14-FOUNDATIONS |
-| 11 | Enhance  | LHCI perf `error 0.97` → `0.98` cached                                          | P1 | S | Mid | v14.x  | V14-FOUNDATIONS |
-| 12 | Enhance  | WebRTC mirror with QR pairing (gated 3+; ADR-049)                               | P2 | L | Mid | v14.x  | V14-CONTINUITY |
-| 13 | Enhance  | OWASP Top 10 audit (rotate per major release)                                   | P0 | M | Hi | v14.0  | V14-SECURITY-L3 |
-| 14 | Refactor | Coverage ratchet 93.0/84.6/92.0/94.5 → 95/90/95/96 (+0.5%/release)              | P1 | M | Mid | v15    | V14-FOUNDATIONS |
+| 1  | Rewrite  | SimHash → Vectorize semantic news dedup (retire after gate)                     | P0 | L | Hi | v14.0  | |
+| 2  | Refactor | TC39 Temporal in `hebrew-cal`/`calendar`/`countdown` (gated polyfill ≤ 10 KB)   | P1 | M | Mid | v14.x  | |
+| 3  | Track    | TC39 Signals one-line swap when polyfill ≤ 1.5 KB and Stage 4                   | P2 | S | Mid | v14.x  | |
+| 4  | Enhance  | DO Hibernatable WebSocket — stocks live + alerts SSE                            | P1 | M | Hi | v14.x  | |
+| 5  | Enhance  | R2 mirror for backgrounds + offline shell                                       | P2 | M | Mid | v14.x  | |
+| 6  | Refactor | Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io)        | P1 | L | Hi | v14.0  | |
+| 7  | Enhance  | OpenTelemetry from Worker (opt-in)                                              | P2 | L | Mid | v14.2  | |
+| 8  | Enhance  | SLSA L3 hermetic build + Sigstore + 3rd-party rebuilder verify                  | P0 | L | Hi | v14.2  | L3 |
+| 9  | Refactor | Promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding             | P1 | M | Hi | v14.1  | |
+| 10 | Enhance  | Visual-regression baselines 108 → 130+                                          | P1 | M | Mid | v14.0  | |
+| 11 | Enhance  | LHCI perf `error 0.97` → `0.98` cached                                          | P1 | S | Mid | v14.x  | |
+| 12 | Enhance  | WebRTC mirror with QR pairing (gated 3+; ADR-049)                               | P2 | L | Mid | v14.x  | |
+| 13 | Enhance  | OWASP Top 10 audit (rotate per major release)                                   | P0 | M | Hi | v14.0  | L3 |
+| 14 | Refactor | Coverage ratchet 93.0/84.6/92.0/94.5 → 95/90/95/96 (+0.5%/release)              | P1 | M | Mid | v15    | |
 | 15 | Track    | Biome replacement for Prettier + ESLint when parity reached                     | P2 | M | Mid | v15    | V15-OPEN       |
 | 16 | Track    | Rolldown auto-adopt when Vite default                                           | P2 | S | Mid | v14.x  | V15-OPEN       |
 | 17 | Track    | TypeScript 7 (Go) primary typecheck once stable + zero-delta                    | P3 | M | Mid | v15    | V15-OPEN       |
-| 18 | Adopt    | **MCP read-only server (D1, X11)**                                              | P0 | M | Hi | v14.x  | V14-AGENTIC    |
-| 19 | Adopt    | **Compute Pressure API tile (D3)**                                              | P1 | S | Mid | v14.x  | V14-FOUNDATIONS |
-| 20 | Adopt    | **Storage Buckets per-card eviction (D4)**                                      | P2 | S | Mid | v14.x  | V14-FOUNDATIONS |
-| 21 | Adopt    | **Origin-Agent-Cluster header (D5)**                                            | P1 | S | Mid | v14.x  | V14-SECURITY-L3 |
-| 22 | Adopt    | **`popover=` attribute (D11)**                                                  | P2 | S | Lo | v14.x  | V14-FOUNDATIONS |
-| 23 | Adopt    | **Speculation Rules prerender (D10)**                                           | P2 | S | Lo | v14.x  | V14-FOUNDATIONS |
-| 24 | Adopt    | **CSS `if()` + `@function` (D9)**                                               | P2 | S | Lo | v14.x  | V14-FOUNDATIONS |
-| 25 | Track    | **Cloudflare Snippets / TEE (D6)**                                              | P2 | M | Mid | v14.x  | V14-EDGE       |
-| 26 | Adopt    | **Module boundary linting (D12)**                                               | P1 | S | Mid | v14.0  | V14-FOUNDATIONS |
-| 27 | Adopt    | **Per-card budget hard-cap ≤ 6 KB gzip (D13)**                                  | P1 | M | Mid | v14.0  | V14-FOUNDATIONS |
-| 28 | Adopt    | **Renovate group rules (D14)**                                                  | P1 | S | Mid | v14.0  | V14-FOUNDATIONS |
-| 29 | Adopt    | **3rd-party rebuilder annual verification (D15)**                               | P1 | M | Mid | v14.2  | V14-SECURITY-L3 |
+| 18 | Adopt    | **MCP read-only server (D1, X11)**                                              | P0 | M | Hi | v14.x  | |
+| 19 | Adopt    | **Compute Pressure API tile (D3)**                                              | P1 | S | Mid | v14.x  | |
+| 20 | Adopt    | **Storage Buckets per-card eviction (D4)**                                      | P2 | S | Mid | v14.x  | |
+| 21 | Adopt    | **Origin-Agent-Cluster header (D5)**                                            | P1 | S | Mid | v14.x  | L3 |
+| 22 | Adopt    | **`popover=` attribute (D11)**                                                  | P2 | S | Lo | v14.x  | |
+| 23 | Adopt    | **Speculation Rules prerender (D10)**                                           | P2 | S | Lo | v14.x  | |
+| 24 | Adopt    | **CSS `if()` + `@function` (D9)**                                               | P2 | S | Lo | v14.x  | |
+| 25 | Track    | **Cloudflare Snippets / TEE (D6)**                                              | P2 | M | Mid | v14.x  | |
+| 26 | Adopt    | **Module boundary linting (D12)**                                               | P1 | S | Mid | v14.0  | |
+| 27 | Adopt    | **Per-card budget hard-cap ≤ 6 KB gzip (D13)**                                  | P1 | M | Mid | v14.0  | |
+| 28 | Adopt    | **Renovate group rules (D14)**                                                  | P1 | S | Mid | v14.0  | |
+| 29 | Adopt    | **3rd-party rebuilder annual verification (D15)**                               | P1 | M | Mid | v14.2  | L3 |
 | 30 | Track    | **WebNN on-device inference (D2)**                                              | P2 | M | Mid | v15    | V15-OPEN       |
-| 31 | Gate     | **Web Push VAPID for alerts → phone (D7)**                                      | P3 | M | Mid | v14.x  | V14-CONTINUITY |
-| 32 | Adopt    | **IMS / TASE / BoI native sources (D8)**                                        | P0 | M | Hi | v14.0  | V14-CARDS-DEEP |
+| 31 | Gate     | **Web Push VAPID for alerts → phone (D7)**                                      | P3 | M | Mid | v14.x  | |
+| 32 | Adopt    | **IMS / TASE / BoI native sources (D8)**                                        | P0 | M | Hi | v14.0  | DEEP |
 
 ### 5.2 Per-card (from §3, open only)
 
@@ -484,24 +484,24 @@ React rewrite · Shadow DOM · auth (Google/FB/Apple/OIDC/passkey) · user DB ·
 
 Each stream has a hard exit gate. No stream lingers; if exit is blocked, the stream is paused and the blocker becomes its own item.
 
-### 6.1 V14-FOUNDATIONS — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
+### 6.1 — Tooling acceleration & supply-chain tightening (v14.0, Q1 2027)
 
 - [x] D12 module-boundary linting in `tooling/eslint/`.
-- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** Sprint 433; warn lowered 36 → **32 KB** Sprint 433; hard-cap **66 KB** Sprint 443; warn **30 KB** Sprint 443; target warn 28 / hard 60 at v14 GA)_
+- [ ] D13 per-card budget hard-cap ≤ 6 KB; refactor 4 over-budget cards (news, weather, hebrew-cal, calendar). _(progressive ratchet active: 50 → 48 → 46 → 44 → 42 → 40 → 38 → **36 KB warn** through v14.0; hard-cap lowered 80 → 75 → **68 KB** ; warn lowered 36 → **32 KB** ; hard-cap **66 KB** ; warn **30 KB** ; target warn 28 / hard 60 at v14 GA)_
 - [x] D14 Renovate group rules.
 - [x] D11 `popover=` for diag toasts + bookmark menu.
-- [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 Sprint 415; full migration pending Baseline 2026)_
+- [x] D9 CSS `if()` + `@function` migration (tokens). _(partial: `@supports`-gated `if()` + `@function` sketch added in v14.0 ; full migration pending Baseline 2026)_
 - [x] D10 Speculation Rules for help / config panels.
 - [x] D5 Origin-Agent-Cluster header + meta.
-- [x] VR baselines 108 → 132 (DO-SSE alert states + maximise-FLIP + news-starred-drawer). `Sprint 415 + 421`
+- [x] VR baselines 108 → 132 (DO-SSE alert states + maximise-FLIP + news-starred-drawer). `+ 421`
 - [x] D3 Compute Pressure API tile in system-info.
 - [x] D4 Storage Buckets per-card eviction.
-- [x] LHCI ratchet `error 0.97 → 0.98` cached. (Sprint 397, v13.43.0)
-- [ ] Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io). _(v14.0 Deno Deploy static-analysis pass logged; v14.1 Bun Deploy static-analysis pass logged Sprint 436; live Bun Deploy drill deferred to `drill/vendor-2026-09` branch — see docs/adr/vendor-drill-log.md)_
+- [x] LHCI ratchet `error 0.97 → 0.98` cached. (, v13.43.0)
+- [ ] Annual vendor-neutrality build drill (Deno Deploy + Bun Deploy + fly.io). _(v14.0 Deno Deploy static-analysis pass logged; v14.1 Bun Deploy static-analysis pass logged ; live Bun Deploy drill deferred to `drill/vendor-2026-09` branch — see docs/adr/vendor-drill-log.md)_
 
 **Exit**: all D-items D3–D5, D9–D14 shipped; LHCI cached ≥ 0.98; module-boundary lint zero violations; every card module ≤ 6 KB gzip.
 
-### 6.2 V14-SEMANTIC — Replace heuristics with embeddings (v14.0, Q1–Q2 2027)
+### 6.2 — Replace heuristics with embeddings (v14.0, Q1–Q2 2027)
 
 - [x] In-house `signals.ts` (ADR-038).
 - [x] `state.ts` → `signals.ts` migration (100 % of reactive call sites).
@@ -512,9 +512,9 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 
 **Exit**: Vectorize precision@10 ≥ SimHash + 15 %; LHCI perf ≥ 0.98 cached; SimHash deleted from `worker/`.
 
-### 6.3 V14-CARDS-DEEP — Open per-card depth (v14.0, Q1–Q2 2027)
+### 6.3 DEEP — Open per-card depth (v14.0, Q1–Q2 2027)
 
-- [x] **W-IMS · S-TASE · C-BoI** native IL providers (D8). _(shipped v14.0 Sprint 422; boi-adapter.ts + ims-adapter.ts + tase-adapter.ts, all with full test suites)_
+- [x] **W-IMS · S-TASE · C-BoI** native IL providers (D8). _(shipped v14.0 ; boi-adapter.ts + ims-adapter.ts + tase-adapter.ts, all with full test suites)_
 - [x] **W-Nowcast · W-AQI · W-Compass** weather expansion. _(shipped ≤ v13.42.0; pruned in S400)_
 - [ ] **N-V** Vectorize cutover.
 - [ ] **S-DO** DO Hibernatable WebSocket migration. _(A-DO already shipped, pruned in S400)_
@@ -523,18 +523,18 @@ Each stream has a hard exit gate. No stream lingers; if exit is blocked, the str
 
 **Exit**: each open card item shipped or explicitly deferred to v15 with ADR.
 
-### 6.4 V14-AGENTIC — Read-only AI surface (v14.x, Q2 2027)
+### 6.4 — Read-only AI surface (v14.x, Q2 2027)
 
 NEW stream. The dashboard becomes addressable by users' AI assistants without scraping or telemetry.
 
-- [x] **D1 / X11** MCP read-only server — `mcp-bridge.ts` shipped v14.0 Sprint 415; `docs/mcp.md` operator guide shipped v14.0 Sprint 416; companion remains out-of-repo.
-- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; today-pane + ai-synthesis consumers migrated v14.0 S415; motivation + tasks producers shipped Sprint 426 — **all 11 applicable cards are now X12 producers**; system-info + video-news emit no composable signals by design).
+- [x] **D1 / X11** MCP read-only server — `mcp-bridge.ts` shipped v14.0 ; `docs/mcp.md` operator guide shipped v14.0 ; companion remains out-of-repo.
+- [x] **X12** `CardSignalProtocol` formalisation (core API shipped v13.38.0 S365–366; first 2 producers shipped v13.39.0: countdown S376, hebrew-cal S379; today-pane + ai-synthesis consumers migrated v14.0 S415; motivation + tasks producers shipped **all 11 applicable cards are now X12 producers**; system-info + video-news emit no composable signals by design).
 - [x] **X15** semantic clipboard (core + `Y` key shipped v13.38.0 S367–369; first 2 producers shipped v13.39.0: countdown S377, hebrew-cal S379; remaining 5 producers shipped v14.0 S415: motivation, tasks, system-info, video-news, ai-synthesis).
-- [x] **PC-1** end-of-day audio recap — SpeechSynthesis read-aloud button on AI synthesis card. `Sprint 421/422` (coverage fix + 2 additional tests for _setSpeakBtnState; all 28 tests pass; functions 92.08%)
+- [x] **PC-1** end-of-day audio recap — SpeechSynthesis read-aloud button on AI synthesis card. `/422` (coverage fix + 2 additional tests for _setSpeakBtnState; all 28 tests pass; functions 92.08%)
 
 **Exit**: MCP server verified zero remote-origin reachability; CSP unchanged; LHCI no regression; ADR shipped.
 
-### 6.5 V14-CONTINUITY — Cross-device without auth (v14.x, gated 3+ requests)
+### 6.5 — Cross-device without auth (v14.x, gated 3+ requests)
 
 - [x] AES-GCM encrypted config URL export.
 - [x] Import flow + `docs/sync.md`.
@@ -545,7 +545,7 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 
 **Exit**: at least one continuity feature shipped end-to-end with threat-model ADR.
 
-### 6.6 V14-EDGE — Workers platform expansion (v14.x, Q2–Q3 2027)
+### 6.6 — Workers platform expansion (v14.x, Q2–Q3 2027)
 
 - [ ] DO Hibernatable WebSocket — stocks live + alerts SSE.
 - [ ] R2 for asset cache (ADR-050).
@@ -555,7 +555,7 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 
 **Exit**: DO bill drops ≥ 50 % at idle; Worker bundle ≤ 65 KB gzip after Snippets migration.
 
-### 6.7 V14-HARMONISE — Mono-repo reference (v14.1, Q2 2027)
+### 6.7 — Mono-repo reference (v14.1, Q2 2027)
 
 - [x] Composite `tooling/ci/check.yml`.
 - [x] Cross-project tooling registry.
@@ -566,7 +566,7 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 
 **Exit**: all 4 sibling repos consume `tooling/` presets; one quality gate across the org.
 
-### 6.8 V14-SECURITY-L3 — SLSA L3 + supply chain (v14.2, Q3 2027)
+### 6.8 L3 — SLSA L3 + supply chain (v14.2, Q3 2027)
 
 - [x] Hermetic build: `actions/checkout` + `actions/setup-node` SHA-pinned.
 - [x] Hermetic build: npm `--ignore-scripts` gate.
@@ -575,13 +575,13 @@ NEW stream. The dashboard becomes addressable by users' AI assistants without sc
 - [x] npm + GitHub Actions provenance (SLSA L2 `attest-build-provenance`).
 - [x] CSP `require-trusted-types-for 'script'`.
 - [x] OWASP Top 10 rotation automated (`scripts/check-owasp.mjs`).
-- [x] **D15** Annual third-party rebuilder verification (SLSA verifier-action). _(shipped Sprint 424: `.github/workflows/rebuild-verify.yml` — hermetic rebuild + SHA-256 comparison; opens GitHub issue on mismatch; annual cron Jan 1 + post-release trigger)_
+- [x] **D15** Annual third-party rebuilder verification (SLSA verifier-action). _(shipped `.github/workflows/rebuild-verify.yml` — hermetic rebuild + SHA-256 comparison; opens GitHub issue on mismatch; annual cron Jan 1 + post-release trigger)_
 - [ ] OpenTelemetry from Worker (opt-in).
-- [x] OWASP Top 10 audit per major release. _(Sprint 427: pre-v14.0 full audit passed; 2 new rules added to `check-owasp.mjs` — A03 document.write, A05 postMessage(*); 0 findings; security-audit.instructions.md updated. Sprint 444: 3 new rules — A03 createElement-script, A04 \_\_proto\_\_ pollution, A04 defineProperty-prototype; 0 findings.)_
+- [x] OWASP Top 10 audit per major release. _(pre-v14.0 full audit passed; 2 new rules added to `check-owasp.mjs` — A03 document.write, A05 postMessage(*); 0 findings; security-audit.instructions.md updated. 3 new rules — A03 createElement-script, A04 \_\_proto\_\_ pollution, A04 defineProperty-prototype; 0 findings.)_
 
 **Exit**: SLSA L3; OpenTelemetry shipping zero data by default; one third-party rebuilder verification per major release.
 
-### 6.9 V14-RESILIENCE — Hostile-network & DX (v14.0, shipped) — protected
+### 6.9 — Hostile-network & DX (v14.0, shipped) — protected
 
 - [x] `?nosw=1` URL flag.
 - [x] `__fdbUnregisterSW()` DevTools helper.
@@ -687,7 +687,7 @@ Forward-only. Always.
 
 ---
 
-## 11. Sprint 396 — Production-readiness 20-task review (v13.42.0)
+## 11. Production-readiness 20-task review (v13.42.0)
 
 External directive: re-validate the project against a 20-item production-readiness checklist (web-only scope lock, single deployable, no Python, 0 errors / 0 warnings / 0 suppressions, CI artefacts attached on release). The audit confirmed that 19 of 20 items are already in place from prior sprints; one real gate failure surfaced (smart-contrast) and was fixed at root cause.
 

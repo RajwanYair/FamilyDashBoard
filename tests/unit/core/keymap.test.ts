@@ -1,5 +1,5 @@
 /**
- * Sprint 292 / X4 — Tests for src/core/keymap.ts
+ * Tests for src/core/keymap.ts
  *
  * Covers: buildHelpRows(), sortKeyEntries()
  */

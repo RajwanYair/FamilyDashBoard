@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/types/api.ts domain mappers (Sprint 533)
+ * fast-check property tests — src/types/api.ts domain mappers 
  *
  * Properties under test:
  *  DM1. mapToStockDomain: null when result missing

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Main Entry Point
+ * FamilyDashBoard v14 — Main Entry Point
  *
  * Imports all modules, initializes the dashboard.
  */
@@ -254,16 +254,16 @@ export function init(): void {
   initCardDragDrop();
   initResizers();
   initStatusBar();
-  initTodayPane(); // Sprint 190 / X1
+  initTodayPane();
   initConfigPanel();
   initDiagOverlay();
   initScrollShadows();
-  // Sprint 23: auto-mount registry cards not already in index.html (e.g. video-news)
+  // auto-mount registry cards not already in index.html (e.g. video-news)
   mountRegisteredCards();
   // Per-card settings gear buttons (lazy async — fires after card shells are in DOM)
   void initCardSettingsButtons();
 
-  // Sprint 45: Add aria-label to icon-only collapse buttons
+  // Add aria-label to icon-only collapse buttons
   document.querySelectorAll<HTMLButtonElement>(".card-collapse-btn").forEach((btn) => {
     if (!btn.getAttribute("aria-label")) {
       btn.setAttribute("aria-label", "מזער/הרחב כרטיסית");
@@ -311,21 +311,14 @@ export function init(): void {
   registerKey("w", document.documentElement.lang === "en" ? "Toggle °C/°F" : "מעבר °C/°F", () =>
     toggleTempUnit(),
   );
-  // X15 (Sprint 369): semantic clipboard — yank focused card's payload
-  registerKey(
-    "y",
-    document.documentElement.lang === "en" ? "Copy semantic" : "העתק תוכן",
-    () => {
-      void copyFocusedCardPayload().then((cardId) => {
-        if (cardId) {
-          showToast(
-            document.documentElement.lang === "en" ? "Copied" : "הועתק לזיכרון",
-            1500,
-          );
-        }
-      });
-    },
-  );
+  // X15: semantic clipboard — yank focused card's payload
+  registerKey("y", document.documentElement.lang === "en" ? "Copy semantic" : "העתק תוכן", () => {
+    void copyFocusedCardPayload().then((cardId) => {
+      if (cardId) {
+        showToast(document.documentElement.lang === "en" ? "Copied" : "הועתק לזיכרון", 1500);
+      }
+    });
+  });
   registerKey("1", "עיר מזג אוויר 1", () =>
     document.querySelector<HTMLButtonElement>(".wx-city-tab[data-city='1']")?.click(),
   );
@@ -349,7 +342,7 @@ export function init(): void {
     if (dlg.open) {
       dlg.close();
     } else {
-      // Sprint 291 / X4: Populate dynamic shortcuts from keymap registry
+      // Populate dynamic shortcuts from keymap registry
       const dynamicEl = document.getElementById("help-dynamic-keys");
       if (dynamicEl) {
         const lang = document.documentElement.lang === "en" ? "en" : "he";
@@ -386,10 +379,7 @@ export function init(): void {
     if (e.ctrlKey && e.shiftKey && e.key === "S") {
       e.preventDefault();
       downloadSnapshot();
-      showToast(
-        document.documentElement.lang === "en" ? "Snapshot exported" : "תצלום יוצא",
-        2500,
-      );
+      showToast(document.documentElement.lang === "en" ? "Snapshot exported" : "תצלום יוצא", 2500);
       diagLog("[snapshot] Ctrl+Shift+S snapshot downloaded");
     }
   });
@@ -413,7 +403,7 @@ export function init(): void {
   );
 
   // Cards — priority-based init: high-value visible cards first (v7.10)
-  // Sprint 158: wrap each init with timing; error-boundary catches init failures
+  // wrap each init with timing; error-boundary catches init failures
   const timedInit = (id: string, fn: () => void): void => {
     const t0 = performance.now();
     void withErrorBoundary(id, fn)().then(() => {
@@ -458,7 +448,7 @@ export function init(): void {
       diagLog("[init] FDB-007: config imported from URL hash");
     }
   }
-  // ── V13-CONTINUITY: Encrypted config URL import (#ecfg= fragment) ── // owasp-allow:A08 — dynamic import is for config URL fragment, not user-controlled module path
+  // ── Encrypted config URL import (#ecfg= fragment) ── // owasp-allow:A08 — dynamic import is for config URL fragment, not user-controlled module path
   if (_urlHash.startsWith(ECFG_PREFIX)) {
     openEcfgImportDialog(_urlHash);
   }

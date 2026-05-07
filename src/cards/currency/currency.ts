@@ -6,8 +6,7 @@
  * Renders tiles: USD, EUR, GBP, Gold, Silver.
  * Falls back to exchangerate-api.com if primary fails.
  *
- * X12/X15 ADOPTED — v13.40.0 Sprint 389 (see ADR-071).
- */
+ * X12/X15 protocol adopted (see ADR-071). */
 
 import "./currency.css";
 import {
@@ -32,7 +31,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
-// X15 (Sprint 389): cached snapshot of headline rates for the semantic-clipboard producer.
+// X15: cached snapshot of headline rates for the semantic-clipboard producer.
 let _ratesSnapshot: { usdIls: number; eurIls: number } | null = null;
 
 function buildCurrencyPayload(): SemanticPayload | null {
@@ -58,7 +57,7 @@ function buildCurrencyPayload(): SemanticPayload | null {
 let _prevRates: Record<string, number> = {};
 let _lastFetchTime: Date | null = null;
 
-// ── Sprint 24: 7-day rate history / Sprint 198 (C4): extended to 30-day ──────
+// 7-day rate history / extended to 30-day ──────
 
 // LS_CUR_HISTORY imported from constants
 const CUR_HISTORY_MAX_DAYS = 30;
@@ -124,7 +123,7 @@ export function get7DayTrend(
 }
 
 /**
- * Sprint 204 / C3: Compute currency trend for a specific time window.
+ * Compute currency trend for a specific time window.
  * Searches back at most `days` calendar days in `history` for a reference entry.
  * Returns null when no suitable reference entry exists.
  */
@@ -225,7 +224,7 @@ const TILE_EL_MAP: Record<string, { rate: keyof CurEls; chg: keyof CurEls }> = {
   BTC: { rate: "btc", chg: "btcChg" },
 };
 
-// ── Sprint 184 / C1: Mini-calculator state ────────────────────────────────
+// Mini-calculator state ────────────────────────────────
 
 /** Latest fetched rates snapshot (updated by renderCurrency). */
 let _calcRates: Record<string, number> = {};
@@ -292,7 +291,7 @@ export function cacheDom(): void {
   };
 }
 
-// ── Sprint 189 / C2: Multi-pair watch — apply visibility from config ─────────
+// Multi-pair watch — apply visibility from config ─────────
 
 /**
  * Shows or hides `.cur-item` rows based on `currencyHiddenPairs` config.
@@ -449,14 +448,14 @@ async function renderCurrencySparklines(rates: Record<string, number>): Promise<
 
 // ── Render currency tiles ──
 export function renderCurrency(rates: Record<string, number>): void {
-  // Sprint 24: persist today's snapshot before rendering
+  // persist today's snapshot before rendering
   storeCurrencyHistory(rates);
   const history = loadCurrencyHistory();
 
-  // Sprint 184 / C1: keep calc rates up-to-date
+  // keep calc rates up-to-date
   _calcRates = rates;
 
-  // X12 (Sprint 389): publish ILS-quoted headline rates for sibling consumers.
+  // X12: publish ILS-quoted headline rates for sibling consumers.
   const usdRate = rates["USD"];
   const eurRate = rates["EUR"];
   const usdIls = usdRate && usdRate > 0 ? 1 / usdRate : null;
@@ -507,7 +506,7 @@ export function renderCurrency(rates: Record<string, number>): void {
         }
       }
       if (!sessionChangeShown) {
-        // Sprint 204 / C3: show 1d / 7d / 30d trend arrows
+        // show 1d / 7d / 30d trend arrows
         const t1 = getCurrencyTrend(tile.key, history, 1);
         const t7 = getCurrencyTrend(tile.key, history, 7);
         const t30 = getCurrencyTrend(tile.key, history, 30);
@@ -559,7 +558,7 @@ export function renderCurrency(rates: Record<string, number>): void {
   // IDB history + sparklines (async — non-blocking)
   void renderCurrencySparklines(rates);
 
-  // Sprint 189 / C2: apply hidden-pair visibility after each render
+  // apply hidden-pair visibility after each render
   applyPairVisibility();
 
   diagLog(`FDB-032: [currency] Rendered ${Object.keys(rates).length} rates`);
@@ -618,7 +617,7 @@ export async function loadCurrency(): Promise<void> {
 let _curScheduleId: number | null = null;
 
 /**
- * Sprint 199 / S2: Return the most-recently-fetched currency rates (stale ok).
+ * Return the most-recently-fetched currency rates (stale ok).
  * Used by the stocks card to convert USD prices to ILS.
  * Rates are ILS-based (1 ILS expressed in foreign currency); USD rate → 1/rate = ILS per USD.
  */
@@ -638,11 +637,10 @@ function scheduleCurrencyRefresh(): void {
 export function initCurrencyCard(): void {
   cacheDom();
   registerSemanticProducer("currency", buildCurrencyPayload);
-  applyPairVisibility(); // Sprint 189 / C2: hide unconfigured pairs on init
+  applyPairVisibility(); // hide unconfigured pairs on init
   void loadCurrency();
   scheduleCurrencyRefresh();
-  initCalcWidget(); // Sprint 184 / C1
-  // F15: Popover API quick-reload button wiring
+  initCalcWidget(); // // F15: Popover API quick-reload button wiring
   const reloadBtn = document.getElementById("cur-reload-btn");
   const reloadPopover = document.getElementById("cur-reload-popover");
   if (reloadBtn && reloadPopover) {
@@ -663,7 +661,7 @@ export function destroyCurrencyCard(): void {
   }
 }
 
-// ── Sprint 137: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const currencyConfigSchema: CardConfigField[] = [
   {
@@ -678,7 +676,7 @@ export const currencyConfigSchema: CardConfigField[] = [
     group: "תצוגה",
     groupOpenByDefault: true,
   },
-  // Sprint 189 / C2: Multi-pair watch — hide individual pairs
+  // Multi-pair watch — hide individual pairs
   {
     key: "currencyHiddenPairs",
     labelHe: "הסתר זוגות (מופרד בפסיקים, לדוגמה: XAG,BTC)",
@@ -687,7 +685,7 @@ export const currencyConfigSchema: CardConfigField[] = [
     defaultValue: "",
     placeholder: "XAG,BTC",
     group: "תצוגה",
-  },  // ── Sprint 283 / CS-C1: base selector + calc/trend/sparkline ───────────────────────────
+  },  // base selector + calc/trend/sparkline ───────────────────────────
   {
     key: "currencyBase",
     labelHe: "מטבע בסיס",

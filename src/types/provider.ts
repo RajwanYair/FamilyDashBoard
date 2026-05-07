@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Provider Adapter Types (Sprint 88)
+ * FamilyDashBoard v13 — Provider Adapter Types
  *
  * A ProviderAdapter is the contract for every external data source.
  * Cards don't call fetch() directly; they use an adapter that:

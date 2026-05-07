@@ -4,7 +4,7 @@
 | ---------- | -------------------------------- |
 | Date       | 2026-04-28                       |
 | Status     | Accepted (Plan)                  |
-| Sprint     | 133 (V14-RESILIENCE)             |
+| Sprint     | 133              |
 | Supersedes | n/a                              |
 | Related    | ADR-018 (CSP), Roadmap item #25  |
 
@@ -13,7 +13,7 @@
 The production CSP `connect-src` directive currently includes
 `https://*.intel.com` to allow developers behind the Intel corporate proxy to fetch
 through internal API mirrors when the public origins are blocked at the corporate
-egress (see Sprint 105 / v13.13.1 changelog).
+egress (see / v13.13.1 changelog).
 
 `*.intel.com` is broad: it grants subdomain-wildcard access to **any** future host
 under `intel.com`, including marketing, ad-tech, and CDN subdomains over which we
@@ -75,7 +75,7 @@ When the dashboard is no longer being developed primarily on the corporate netwo
 
 ### Neutral
 
-- The corp-proxy dev experience (`docs/local-dev.md` corp-proxy quickstart, sprint 135)
+- The corp-proxy dev experience (`docs/local-dev.md` corp-proxy quickstart, )
   is unaffected — the same hosts work; only the wildcard collapses.
 
 ## Verification

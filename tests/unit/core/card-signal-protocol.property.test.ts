@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/card-signal-protocol.ts (Sprint 493)
+ * fast-check property tests — src/core/card-signal-protocol.ts 
  *
  * Properties under test:
  *  CSP1. setCardSignal → getCardSignal round-trip: value is preserved.

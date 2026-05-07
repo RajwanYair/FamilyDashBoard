@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/base-card.ts (Sprint 551)
+ * fast-check property tests — src/cards/base-card.ts 
  *
  * Properties under test:
  *  BC1. staleChip: <1 min → "עכשיו"

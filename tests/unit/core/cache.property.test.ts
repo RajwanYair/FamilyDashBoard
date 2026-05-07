@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/cache.ts (Sprint 459)
+ * fast-check property tests — src/core/cache.ts 
  *
  * Properties under test:
  *  CS1. cSet + cGet with fresh TTL always returns the stored data (round-trip identity).
@@ -10,14 +10,14 @@
  *  CS6. cDelete removes data from all tiers; both cGet and cGetStale return null.
  *  CS7. cacheStats().hitRate is always in [0, 1] regardless of hit/miss sequence.
  *  CS8. lastHitLayer() is always one of the four known CacheLayer literals.
- *  CS9. cOr: returns cached value when fresh, fallback when miss (Sprint 572)
- *  CS10. cAge: returns null for never-stored key (Sprint 572)
- *  CS11. cClear: empties everything — cGet/cGetStale return null (Sprint 572)
- *  CS12. cSet + cAge: age for just-stored key is 0 or very small (Sprint 572)
- *  CS13. cEvict: never removes entries stored within the same test run (Sprint 592)
- *  CS14. getOldestCacheAgeMinutes: returns 0 when cache is empty (Sprint 592)
- *  CS15. cDelete is idempotent — double-delete never throws (Sprint 592)
- *  CS16. cOr fallback value IS persisted after miss (Sprint 592)
+ *  CS9. cOr: returns cached value when fresh, fallback when miss 
+ *  CS10. cAge: returns null for never-stored key 
+ *  CS11. cClear: empties everything — cGet/cGetStale return null 
+ *  CS12. cSet + cAge: age for just-stored key is 0 or very small 
+ *  CS13. cEvict: never removes entries stored within the same test run 
+ *  CS14. getOldestCacheAgeMinutes: returns 0 when cache is empty 
+ *  CS15. cDelete is idempotent — double-delete never throws 
+ *  CS16. cOr fallback value IS persisted after miss 
  */
 
 import { describe, it, expect, beforeEach } from "vitest";

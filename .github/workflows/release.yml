@@ -56,7 +56,7 @@ jobs:
       - name: Scripts type-check (@ts-check opt-in)
         run: npx tsc --project tsconfig.scripts.json --noEmit
 
-      - name: oxlint (fast Rust pre-pass, Sprint 107)
+      - name: oxlint (fast Rust pre-pass )
         run: npx oxlint --quiet src tests
 
       - name: ESLint (0 warnings allowed)
@@ -83,10 +83,10 @@ jobs:
       - name: SW version check
         run: node scripts/check-sw-version.mjs
 
-      - name: Mermaid diagram validation (Sprint 109)
+      - name: Mermaid diagram validation 
         run: node scripts/check-mermaid.mjs
 
-      - name: Container-query audit (Sprint 111)
+      - name: Container-query audit 
         run: node scripts/check-container-queries.mjs
 
       - name: Worker-client / OpenAPI sync check (F18)
@@ -157,17 +157,17 @@ jobs:
         with:
           subject-path: dist.zip
 
-      # ── Sprint 243 / V14-SECURITY-L3: Sigstore cosign keyless signing ─────
+      # ── Sigstore cosign keyless signing ─────
       # Signs dist.zip and sw.js using GitHub OIDC identity (no long-lived key).
       # Verification: cosign verify-blob --bundle=dist.zip.bundle
       #   --certificate-identity-regexp=".*"
       #   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
       #   dist.zip
       # SHA-pin: verify against sigstore/cosign-installer releases before next tag.
-      - name: Install Cosign (Sprint 243 / V14-SECURITY-L3)
+      - name: Install Cosign 
         uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcbfce4d4e74b90a25 # v3.8.2
 
-      - name: Sign artefacts with Cosign (Sprint 243 / V14-SECURITY-L3)
+      - name: Sign artefacts with Cosign 
         run: |
           cosign sign-blob --bundle=dist.zip.bundle --yes dist.zip
           cosign sign-blob --bundle=sw.js.bundle --yes sw.js
@@ -175,5 +175,5 @@ jobs:
           echo "dist.zip signed: dist.zip.bundle" >> "$GITHUB_STEP_SUMMARY"
           echo "sw.js signed: sw.js.bundle" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Generate rebuilder manifest (Sprint 244 / V14-SECURITY-L3)
+      - name: Generate rebuilder manifest 
         run: node scripts/check-reproducible.mjs

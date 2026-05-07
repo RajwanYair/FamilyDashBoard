@@ -1,6 +1,6 @@
 /**
  * Tests for src/core/perf.ts
- * Sprint 41 — Web Vitals in diagnostics overlay
+ * Web Vitals in diagnostics overlay
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
@@ -120,9 +120,9 @@ describe("initPerfObserver", () => {
   });
 });
 
-// ── Sprint 40 (v7.13): checkPerfBudget ────────────────────────────────────────
+// ── (v7.13): checkPerfBudget ────────────────────────────────────────
 
-describe("checkPerfBudget (Sprint 40)", () => {
+describe("checkPerfBudget ", () => {
   it("returns pending when startup has not been recorded", () => {
     const result = checkPerfBudget(3000);
     expect(result.status).toBe("pending");
@@ -163,7 +163,7 @@ describe("checkPerfBudget (Sprint 40)", () => {
   });
 });
 
-// ── Sprint 124: checkAllVitalBudgets tests ────────────────────────────────────
+// ── checkAllVitalBudgets tests ────────────────────────────────────
 
 describe("checkAllVitalBudgets", () => {
   it("returns pending for all vitals on fresh state", () => {
@@ -204,7 +204,7 @@ describe("checkAllVitalBudgets", () => {
   });
 });
 
-// ── rateVital — startup key (Sprint 120) ─────────────────────────────────────
+// ── rateVital — startup key  ─────────────────────────────────────
 
 describe("rateVital — startup key", () => {
   it("good ≤ 3000ms", () => expect(rateVital("startup", 2000)).toBe("good"));
@@ -213,7 +213,7 @@ describe("rateVital — startup key", () => {
   it("poor > 6000ms", () => expect(rateVital("startup", 7000)).toBe("poor"));
 });
 
-// ── markStartupComplete — idempotency (Sprint 120) ────────────────────────────
+// ── markStartupComplete — idempotency  ────────────────────────────
 
 describe("markStartupComplete — idempotency", () => {
   it("does not overwrite startup if already measured", () => {
@@ -225,7 +225,7 @@ describe("markStartupComplete — idempotency", () => {
   });
 });
 
-// ── recordCardInitTime + getCardTimings (Sprint 120) ─────────────────────────
+// ── recordCardInitTime + getCardTimings  ─────────────────────────
 
 describe("recordCardInitTime + getCardTimings", () => {
   it("records a card timing and retrieves it", () => {
@@ -245,7 +245,7 @@ describe("recordCardInitTime + getCardTimings", () => {
   });
 });
 
-// ── downloadPerfJSON (Sprint 160) ─────────────────────────────────────────────
+// ── downloadPerfJSON  ─────────────────────────────────────────────
 
 describe("downloadPerfJSON", () => {
   afterEach(() => {

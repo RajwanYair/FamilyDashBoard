@@ -1,6 +1,4 @@
 /* Ticker Bar — co-located styles (v7.8) */
-/* Migrated from src/styles/sprints.css */
-
 /* Custom ticker messages */
 .ticker-custom-msg {
   color: var(--warning);

@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/fetch.ts (Sprint 516)
+ * fast-check property tests — src/core/fetch.ts 
  *
  * Properties under test:
  *  FT1. acquireLock: first call returns true, second with same name returns false.

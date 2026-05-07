@@ -1,6 +1,4 @@
 /* Night Dimmer Overlay — co-located styles (v7.8) */
-/* Migrated from src/styles/sprints.css */
-
 /* F54: Night Screen Auto-Dimmer */
 #night-dim {
   position: fixed;
@@ -17,7 +15,7 @@
   background: #6b3a1f;
 }
 
-/* Sprint 157: Smooth filter transition on body when dimmer activates */
+/* Smooth filter transition on body when dimmer activates */
 body {
   transition: filter 2s ease;
 }

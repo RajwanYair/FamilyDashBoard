@@ -3,7 +3,7 @@
  * FamilyDashBoard — Bundle Size CI Check
  *
  * Validates that the GitHub Pages production build stays within budget:
- *   JS gzipped:  ≤ 110 KB  (raised from 105 KB in v14.1.0 — Sprint 415 added
+ *   JS gzipped:  ≤ 110 KB  (raised from 105 KB in v14.1.0 — added
  *                           mcp-bridge chunk + card-infra split, pushing actual
  *                           to 108.7 KB after full rebuild; budget = actual + ~1.3 KB headroom)
  *   CSS gzipped: ≤ 29 KB   (raised from 26 KB in v13.30.0 — card configSchema
@@ -340,26 +340,27 @@ if (baseline && baseline.cardSource && cardSourceRows.length > 0) {
   }
 }
 
-// ── Sprint 336 / D13: per-card source hard-cap ────────────────────────────
+// ── per-card source hard-cap ────────────────────────────
 // Hard-cap any single card's raw source at 80 KB. The aspirational target
 // (≤ 6 KB gzip ≈ ≤ 24 KB raw) is tracked in ROADMAP §1.11 D13 — this is
 // the runaway-growth guardrail, not the destination.
 //
-// Sprint 349 (v13.36.0): ratchet warn-cap 50 → 48 KB. Each release lowers
+// (v13.36.0): ratchet warn-cap 50 → 48 KB. Each release lowers
 // by 2 KB until we reach the v14.0 target of warn 30 / hard 60.
-// Sprint 360 (v13.37.0): ratchet 48 → 46 KB.
-// Sprint 370 (v13.38.0): ratchet 46 → 44 KB.
-// Sprint 380 (v13.39.0): ratchet 44 → 42 KB.
-// Sprint 392 (v13.40.0): ratchet 42 → 40 KB.
-// Sprint 398 (v13.43.0): ratchet 40 → 38 KB.
-// Sprint 425 (v14.0.0): warn 38 → 36 KB; hard-cap 80 → 75 KB (max card: weather 57 KB).
-// Sprint 433 (v14.1.0): warn 36 → 32 KB; hard-cap 75 → 68 KB (max card: weather 65 KB).
-// Sprint 443 (v14.2.0): warn 32 → 30 KB; hard-cap 68 → 66 KB.
-// Sprint 452 (v14.2.0): warn 30 → 28 KB; hard held at 66 (weather 65.1 KB blocks further drop).
-// Sprint 462 (v14.3.0): warn 28 → 26 KB; hard held at 66 (weather 65.1 KB still blocks hard drop).
-// Sprint 475 (v14.4.0): warn 26 → 24 KB; hard held at 66 (weather 65.1 KB still blocks hard drop; system-info 25.4 KB now in advisory zone).
-const PER_CARD_HARD_CAP_KB = 66;
-const PER_CARD_WARN_KB = 24;
+// (v13.37.0): ratchet 48 → 46 KB.
+// (v13.38.0): ratchet 46 → 44 KB.
+// (v13.39.0): ratchet 44 → 42 KB.
+// (v13.40.0): ratchet 42 → 40 KB.
+// (v13.43.0): ratchet 40 → 38 KB.
+// (v14.0.0): warn 38 → 36 KB; hard-cap 80 → 75 KB (max card: weather 57 KB).
+// (v14.1.0): warn 36 → 32 KB; hard-cap 75 → 68 KB (max card: weather 65 KB).
+// (v14.2.0): warn 32 → 30 KB; hard-cap 68 → 66 KB.
+// (v14.2.0): warn 30 → 28 KB; hard held at 66 (weather 65.1 KB blocks further drop).
+// (v14.3.0): warn 28 → 26 KB; hard held at 66 (weather 65.1 KB still blocks hard drop).
+// (v14.4.0): warn 26 → 24 KB; hard held at 66 (weather 65.1 KB still blocks hard drop; system-info 25.4 KB now in advisory zone).
+// (v14.5.0): warn 24 → 22 KB; hard 66 → 64 KB.
+const PER_CARD_HARD_CAP_KB = 64;
+const PER_CARD_WARN_KB = 22;
 let perCardCapOk = true;
 console.log(`📏 Per-card source hard-cap: ${PER_CARD_HARD_CAP_KB} KB (warn ${PER_CARD_WARN_KB} KB)\n`);
 for (const { name, sourceKb } of cardSourceRows) {

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Alerts Provider Adapter (Sprint 92)
+ * FamilyDashBoard v13 — Alerts Provider Adapter
  *
  * Implements ProviderAdapter for the Tzeva Adom alert API.
  */

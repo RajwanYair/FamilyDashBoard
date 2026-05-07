@@ -1,4 +1,4 @@
-# ADR-057: Sprint 335-336 Build Hygiene — Module-Boundary Lint and Per-Card Source Hard-Cap
+# ADR-057: Build Hygiene — Module-Boundary Lint and Per-Card Source Hard-Cap
 
 - **Status**: Accepted
 - **Date**: 2026-05-02 (v13.35.0 patch series)

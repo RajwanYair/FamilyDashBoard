@@ -496,7 +496,7 @@ describe("fetchViaWorker — url > 60 chars truncation (line 99 TRUE branch)", (
   });
 });
 
-// ── Sprint 6 (v7.4): network state tracker ───────────────────────────────────
+// ── (v7.4): network state tracker ───────────────────────────────────
 
 describe("Fetch — network state tracker (v7.4)", () => {
   beforeEach(() => {
@@ -535,7 +535,7 @@ describe("Fetch — network state tracker (v7.4)", () => {
   });
 });
 
-// ── Sprint 6 (v7.4): fetchWithRetry ─────────────────────────────────────────
+// ── (v7.4): fetchWithRetry ─────────────────────────────────────────
 
 describe("Fetch — fetchWithRetry (v7.4)", () => {
   afterEach(() => {
@@ -580,7 +580,7 @@ describe("Fetch — fetchWithRetry (v7.4)", () => {
   });
 });
 
-// -- fetchWithStale (Sprint 5 / v7.5) -----------------------------------------
+// -- fetchWithStale  -----------------------------------------
 
 import { fetchWithStale } from "@/core/fetch";
 import * as cacheModule from "@/core/cache";
@@ -817,7 +817,7 @@ describe("getNetworkQualityTier", () => {
   });
 });
 
-describe("enqueueFetch — priority queue (Sprint 21)", () => {
+describe("enqueueFetch — priority queue ", () => {
   it("executes a single task and resolves", async () => {
     let ran = false;
     await enqueueFetch(async () => {
@@ -901,7 +901,7 @@ describe("enqueueFetch — priority queue (Sprint 21)", () => {
   });
 });
 
-// ── withRetry (Sprint 65) ──────────────────────────────────────────────────
+// ── withRetry  ──────────────────────────────────────────────────
 
 describe("withRetry", () => {
   it("returns result immediately on first success", async () => {
@@ -936,9 +936,9 @@ describe("withRetry", () => {
   });
 });
 
-// ── Sprint 162: sampleNetworkQuality / getNetworkQualityHistory ───────────────
+// ── sampleNetworkQuality / getNetworkQualityHistory ───────────────
 
-describe("sampleNetworkQuality + getNetworkQualityHistory (Sprint 162)", () => {
+describe("sampleNetworkQuality + getNetworkQualityHistory ", () => {
   beforeEach(() => {
     // Reset failure streak so getNetworkQualityTier() returns "ok"
     recordFetchSuccess();

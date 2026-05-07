@@ -1,5 +1,5 @@
 /**
- * Sprint 368 / X15: semantic-clipboard unit tests.
+ * semantic-clipboard unit tests.
  * Spec: docs/adr/ADR-070-x15-semantic-clipboard.md
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -22,7 +22,7 @@ function makePayload(cardId: string, text = "hello"): SemanticPayload {
   };
 }
 
-describe("semantic-clipboard (X15 / Sprint 368)", () => {
+describe("semantic-clipboard (X15 / )", () => {
   beforeEach(() => {
     _resetSemanticProducers();
     vi.restoreAllMocks();

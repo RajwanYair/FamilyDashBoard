@@ -3,9 +3,7 @@
 **Date:** 2026-04-23
 **Status:** Accepted
 **Deciders:** Project maintainer
-**Context:** V12-MODERNISE-8
-
----
+**Context:** ---
 
 ## Context
 
@@ -40,7 +38,7 @@ thin orchestration layer.
 - Use `hono/cloudflare-workers` or plain `Hono` with the `Env` bindings type.
 - Keep all route handler functions in `routes/data.ts` and `routes/feeds.ts`
   unchanged — Hono is purely a routing/middleware shell.
-- Retain the `scheduled` handler from Sprint 6 (ADR-019 pre-warm).
+- Retain the `scheduled` handler from (ADR-019 pre-warm).
 - CORS, rate-limiting, and request-logging middleware are re-wired via
   `app.use('*', ...)` instead of inline pre/post checks.
 

@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-A11Y: Dialog heading hierarchy
+ * Unit tests — Y: Dialog heading hierarchy
  *
  * Checks that:
  *   - Every <dialog> has aria-labelledby pointing to an element with that id
@@ -40,7 +40,7 @@ function allIds(): Set<string> {
 
 // ── Config overlay ────────────────────────────────────────────────────────────
 
-describe("config-overlay ARIA attributes (V13-A11Y)", () => {
+describe("config-overlay ARIA attributes (Y)", () => {
   it('has role="dialog"', () => {
     expect(HTML).toMatch(
       /id="config-overlay"[^>]*role="dialog"|role="dialog"[^>]*id="config-overlay"/,
@@ -68,7 +68,7 @@ describe("config-overlay ARIA attributes (V13-A11Y)", () => {
 
 // ── Dialog elements ───────────────────────────────────────────────────────────
 
-describe("<dialog> elements heading hierarchy (V13-A11Y)", () => {
+describe("<dialog> elements heading hierarchy (Y)", () => {
   it("diag-overlay dialog uses h2 as title (not h3 or h1)", () => {
     // Should NOT have h3 with diag-dialog-title
     expect(HTML).not.toMatch(/<h3[^>]*id="diag-dialog-title"/);
@@ -105,7 +105,7 @@ describe("<dialog> elements heading hierarchy (V13-A11Y)", () => {
 
 // ── aria-labelledby targets ───────────────────────────────────────────────────
 
-describe("aria-labelledby targets exist in DOM (V13-A11Y)", () => {
+describe("aria-labelledby targets exist in DOM (Y)", () => {
   const KNOWN_LABELLEDBY = [
     "tour-dialog-title",
     "help-dialog-title",
@@ -131,7 +131,7 @@ describe("aria-labelledby targets exist in DOM (V13-A11Y)", () => {
 
 // ── Page heading ──────────────────────────────────────────────────────────────
 
-describe("page landmark heading (V13-A11Y)", () => {
+describe("page landmark heading (Y)", () => {
   it("exactly one h1 exists on the page", () => {
     const h1Matches = HTML.match(/<h1[^>]*>/g) ?? [];
     expect(h1Matches).toHaveLength(1);

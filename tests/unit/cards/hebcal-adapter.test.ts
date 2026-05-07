@@ -1,5 +1,5 @@
 /**
- * Tests for Hebcal Provider Adapter (Sprint 90).
+ * Tests for Hebcal Provider Adapter .
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -24,7 +24,7 @@ import { cGet, cGetStale } from "@/core/cache";
 import { fetchJSONWithWorker } from "@/core/fetch";
 import { recordProviderSuccess, recordProviderFailure } from "@/core/provider";
 
-describe("HebcalAdapter (Sprint 90)", () => {
+describe("HebcalAdapter ", () => {
   const adapter = createHebcalAdapter(281184);
 
   beforeEach(() => {
@@ -80,7 +80,7 @@ describe("HebcalAdapter (Sprint 90)", () => {
     expect(recordProviderFailure).toHaveBeenCalledWith("hebcal");
   });
 
-  it("returns ok:false with stale=undefined when no stale on invalid response (Sprint 153)", async () => {
+  it("returns ok:false with stale=undefined when no stale on invalid response ", async () => {
     vi.mocked(fetchJSONWithWorker).mockResolvedValueOnce({ events: [] });
     vi.mocked(cGetStale).mockReturnValueOnce(null);
     const result = await adapter.fetch();
@@ -88,7 +88,7 @@ describe("HebcalAdapter (Sprint 90)", () => {
     if (!result.ok) expect(result.stale).toBeUndefined();
   });
 
-  it("returns error string for non-Error exception (Sprint 153)", async () => {
+  it("returns error string for non-Error exception ", async () => {
     vi.mocked(fetchJSONWithWorker).mockRejectedValueOnce("network refused");
     const result = await adapter.fetch();
     expect(result.ok).toBe(false);

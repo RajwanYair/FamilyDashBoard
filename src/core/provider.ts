@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Provider Health Model (Sprint 45)
+ * FamilyDashBoard v13 — Provider Health Model
  *
  * Lightweight per-provider health tracking: success/failure counters,
  * backoff state, and last-ok timestamp. Not a circuit breaker — just
@@ -106,7 +106,7 @@ export function _resetProviderHealth(): void {
   _latencyHistory.clear();
 }
 
-// ── Sprint 163: API response time histogram per provider ─────────────────
+// API response time histogram per provider ─────────────────
 
 const LATENCY_MAX_SAMPLES = 20;
 const _latencyHistory = new Map<string, number[]>();
@@ -140,7 +140,7 @@ export function getAllProviderLatencies(): ReadonlyMap<string, readonly number[]
   return _latencyHistory;
 }
 
-// ── Sprint 96: Backoff policy ────────────────────────────────────────────
+// Backoff policy ────────────────────────────────────────────
 
 /**
  * Compute the recommended backoff delay in milliseconds for a provider.

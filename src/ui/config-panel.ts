@@ -291,7 +291,7 @@ function populateForm(): void {
   const proxy = g("cfg-custom-proxy");
   if (proxy) proxy.value = c.customProxy;
 
-  // Sprint 58: Network mode
+  // Network mode
   const netMode = g("cfg-network-mode") as HTMLSelectElement | null;
   if (netMode) netMode.value = localStorage.getItem(LS_NETWORK_MODE) ?? "auto";
 
@@ -326,7 +326,7 @@ function populateForm(): void {
   const cd2DoneMsg = g("cfg-cd2-done-msg");
   if (cd2DoneMsg) cd2DoneMsg.value = c.countdownCard2DoneMsg ?? "🎉 מזל טוב!";
 
-  // Sprint 22: 3rd countdown event
+  // 3rd countdown event
   const cd3Title = g("cfg-cd3-title");
   if (cd3Title) cd3Title.value = c.countdownCard3Title ?? "";
   const cd3Date = g("cfg-cd3-date");
@@ -356,7 +356,7 @@ function populateForm(): void {
   const animLevelEl = gSel("cfg-anim-level");
   if (animLevelEl) animLevelEl.value = c.animLevel ?? "normal";
 
-  // Sprint 17: per-card settings (now in Cards tab accordion)
+  // per-card settings (now in Cards tab accordion)
   const wxHourly = g("cfg-weather-hourly") as HTMLSelectElement | null;
   if (wxHourly) wxHourly.value = (c.weatherShowHourly ?? true) ? "on" : "off";
   const wxWind = g("cfg-weather-wind") as HTMLSelectElement | null;
@@ -440,7 +440,7 @@ function populateForm(): void {
       frag.appendChild(row);
     }
     cardsList.appendChild(frag);
-    // Sprint 142: inject per-card configSchema fields
+    // inject per-card configSchema fields
     void injectCardConfigSchemas(cardsList);
   }
 
@@ -620,7 +620,7 @@ function collectForm(): DashboardConfig {
   const proxy = g("cfg-custom-proxy");
   if (proxy) c.customProxy = proxy.value.trim();
 
-  // Sprint 58: Network mode
+  // Network mode
   const netModeEl = g("cfg-network-mode") as HTMLSelectElement | null;
   if (netModeEl) {
     const nm = netModeEl.value;
@@ -662,7 +662,7 @@ function collectForm(): DashboardConfig {
   const cd2DoneMsgEl = g("cfg-cd2-done-msg");
   if (cd2DoneMsgEl) c.countdownCard2DoneMsg = cd2DoneMsgEl.value.trim();
 
-  // Sprint 22: 3rd countdown event
+  // 3rd countdown event
   const cd3TitleEl = g("cfg-cd3-title");
   if (cd3TitleEl) c.countdownCard3Title = cd3TitleEl.value.trim();
   const cd3DateEl = g("cfg-cd3-date");
@@ -712,7 +712,7 @@ function collectForm(): DashboardConfig {
     }
   }
 
-  // Sprint 17: per-card boolean settings (now in Cards tab)
+  // per-card boolean settings (now in Cards tab)
   c.weatherShowHourly = (g("cfg-weather-hourly") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowWind = (g("cfg-weather-wind") as HTMLSelectElement | null)?.value !== "off";
   c.weatherShowSunrise = (g("cfg-weather-sunrise") as HTMLSelectElement | null)?.value !== "off";
@@ -736,7 +736,7 @@ function collectForm(): DashboardConfig {
   return c;
 }
 
-// ── Sprint 142: auto-inject card configSchema fields into Cards tab ────────
+// auto-inject card configSchema fields into Cards tab ────────
 
 async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
   const runId = String(++cardConfigSchemaInjectRun);
@@ -751,7 +751,7 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
       wrapper.dataset["cardId"] = def.id;
       buildConfigAccordion(def.fields, wrapper);
 
-      // Sprint 147: per-card config reset button
+      // per-card config reset button
       const resetBtn = document.createElement("button");
       resetBtn.type = "button";
       resetBtn.className = "cfg-card-reset-btn";
@@ -777,11 +777,11 @@ async function injectCardConfigSchemas(container: HTMLElement): Promise<void> {
   }
 }
 
-// ── Config accordion renderer (Sprint 64) ─────────────────────────────────
+// ── Config accordion renderer ─────────────────────────────────
 
 /**
  * Build a `<fieldset>` or grouped `<details>` accordion fragment from an
- * array of `CardConfigField` definitions (Sprint 64).
+ * array of `CardConfigField` definitions.
  *
  * Fields that share the same `group` string are wrapped in a `<details>`
  * element with a `<summary>` label. Fields without a `group` are rendered
@@ -846,7 +846,7 @@ export function openConfigPanel(): void {
   const doOpen = (): void => {
     ov.classList.add("visible");
   };
-  // Sprint 5 (Roadmap #10): cross-doc View Transitions for dialog open/close
+  // cross-doc View Transitions for dialog open/close
   if ("startViewTransition" in document) {
     document.startViewTransition(doOpen);
   } else {
@@ -900,7 +900,7 @@ export function isConfigPanelOpen(): boolean {
 export function exportSettings(): void {
   const c = loadConfig();
   const json = JSON.stringify(c, null, 2);
-  // Sprint 112: prefer Native File System Access (showSaveFilePicker) when
+  // prefer Native File System Access (showSaveFilePicker) when
   // available; fall back to the legacy anchor-download path inside saveTextFile.
   void saveTextFile(json, {
     suggestedName: "dashboard-config.json",
@@ -918,7 +918,7 @@ export function exportSettings(): void {
 }
 
 export function importSettings(): void {
-  // Sprint 112: prefer Native File System Access (showOpenFilePicker) when
+  // prefer Native File System Access (showOpenFilePicker) when
   // available; fall back to a hidden <input type="file"> via pickTextFile.
   void pickTextFile({
     mimeType: "application/json",
@@ -971,7 +971,7 @@ export function shareSettings(): void {
   diagLog("[config-panel] share link copied");
 }
 
-// ── V13-CONTINUITY: Encrypted config URL (AES-GCM) ────────────────────────────
+// ── Encrypted config URL (AES-GCM) ────────────────────────────
 
 /** Resolve/reject for the active dialog promise. */
 let _ecfgResolve: ((passphrase: string | null) => void) | null = null;
@@ -1028,7 +1028,7 @@ export function cancelEcfgDialog(): void {
 
 /**
  * Encrypt current config and copy URL to clipboard.
- * V13-CONTINUITY export flow.
+ * export flow.
  */
 export function encryptedShareSettings(): void {
   void openEcfgDialog("export").then(async (passphrase) => {
@@ -1088,7 +1088,7 @@ export function switchCfgTab(tab: string): void {
   });
 }
 
-// ── Tab arrow-key navigation (Sprint 45) ──
+// ── Tab arrow-key navigation ──
 function initTabKeyboard(): void {
   const container = document.querySelector<HTMLElement>(".cfg-tabs");
   if (!container) return;
@@ -1125,7 +1125,7 @@ export function initConfigPanel(): void {
   // Gear button opens panel
   document.getElementById("cfg-gear-btn")?.addEventListener("click", toggleConfigPanel);
 
-  // Arrow-key navigation for config tabs (Sprint 45)
+  // Arrow-key navigation for config tabs
   initTabKeyboard();
 
   // Close on overlay background click
@@ -1260,7 +1260,7 @@ export function initConfigPanel(): void {
     .getElementById("cfg-encrypt-share-btn")
     ?.addEventListener("click", encryptedShareSettings);
 
-  // Encrypted config passphrase dialog buttons (V13-CONTINUITY)
+  // Encrypted config passphrase dialog buttons 
   document.getElementById("ecfg-dialog-confirm")?.addEventListener("click", confirmEcfgDialog);
   document.getElementById("ecfg-dialog-cancel")?.addEventListener("click", cancelEcfgDialog);
   document.getElementById("ecfg-passphrase-input")?.addEventListener("keydown", (e) => {
@@ -1322,7 +1322,7 @@ export function initConfigPanel(): void {
     }
   });
 
-  // Sprint 200 / X7: Config search box
+  // Config search box
   const cfgSearchBox = document.getElementById("cfg-search-box") as HTMLInputElement | null;
   if (cfgSearchBox) {
     cfgSearchBox.addEventListener("input", () => {

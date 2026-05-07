@@ -1,5 +1,5 @@
 /**
- * Sprint 168 — configSchema completeness tests for all cards.
+ * configSchema completeness tests for all cards.
  * Validates shape, unique keys, required fields, and type correctness.
  */
 
@@ -58,7 +58,7 @@ function validateSchema(name: string, schema: CardConfigField[]): void {
   });
 }
 
-describe("Card configSchema completeness (Sprint 168)", () => {
+describe("Card configSchema completeness ", () => {
   validateSchema("news", newsConfigSchema);
   validateSchema("stocks", stocksConfigSchema);
   validateSchema("currency", currencyConfigSchema);

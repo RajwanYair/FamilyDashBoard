@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/provider.ts (Sprint 320 / PRP1-PRP6)
+ * fast-check property tests for src/core/provider.ts 
  *
  * Verifies invariants of the provider-health model and backoff policy
  * across arbitrary success/failure sequences.
@@ -17,7 +17,7 @@ import {
   getProviderLatency,
 } from "@/core/provider";
 
-describe("provider — fast-check properties (PRP1-PRP6, Sprint 320)", () => {
+describe("provider — fast-check properties (PRP1-PRP6 )", () => {
   beforeEach(() => {
     _resetProviderHealth();
   });

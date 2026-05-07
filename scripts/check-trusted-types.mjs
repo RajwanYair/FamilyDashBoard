@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Sprint 220 — CSP require-trusted-types-for 'script' enforcement audit.
+ * CSP require-trusted-types-for 'script' enforcement audit.
  *
  * Scans `src/` for dangerous DOM sink assignments that bypass the Trusted Types
  * policy.  Violations are reported to stdout and the script exits 1 if any are

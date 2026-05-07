@@ -240,7 +240,7 @@ describe("Idle — initVisibility", () => {
   });
 });
 
-describe("Idle — pageVisibleSignal (Sprint 113)", () => {
+describe("Idle — pageVisibleSignal ", () => {
   afterEach(() => {
     Object.defineProperty(document, "hidden", {
       value: false,

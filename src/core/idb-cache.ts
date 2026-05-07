@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — IndexedDB Cache Tier (Sprint 43)
+ * FamilyDashBoard v13 — IndexedDB Cache Tier
  *
  * Async third-tier cache for large payloads that overflow localStorage (5 MB limit).
  * In-memory → localStorage → IndexedDB (largest / most persistent).
@@ -260,7 +260,7 @@ export async function idbEvictLRU(maxBytes = IDB_MAX_BYTES): Promise<number> {
 }
 
 /**
- * Migrate localStorage keys to IDB (Sprint 49).
+ * Migrate localStorage keys to IDB.
  *
  * For each key in `keys`:
  *   - reads the raw stringified value from localStorage
@@ -295,7 +295,7 @@ export async function migrateLsToIdb(keys: string[]): Promise<number> {
   return migrated;
 }
 
-// ── Sprint 120: time-based stale IDB eviction ────────────────────────────────
+// time-based stale IDB eviction ────────────────────────────────
 
 /** Default IDB stale threshold — 3 days (matches LS_MAX_AGE). */
 const IDB_STALE_MS = 3 * 24 * 60 * 60 * 1000;

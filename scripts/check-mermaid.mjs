@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * scripts/check-mermaid.mjs — Sprint 109 (V14-FOUNDATIONS)
+ * scripts/check-mermaid.mjs — (V14-FOUNDATIONS)
  *
  * Lightweight static validator for fenced ```mermaid blocks across all
  * Markdown files. Checks:

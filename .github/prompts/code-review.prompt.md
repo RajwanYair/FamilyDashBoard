@@ -1,7 +1,6 @@
 ---
-mode: "agent"
 description: "Perform a thorough code review of the FamilyDashBoard TypeScript source. Check security (XSS, unsanitized innerHTML, eval), UI quality (RTL, responsiveness, TV font sizes), API reliability (caching, proxy fallback, error handling), and performance (DOM updates, lazy loading)."
-tools: ["read_file", "grep_search", "file_search", "semantic_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "memory", "runSubagent"]
+tools: ["read_file", "grep_search", "file_search", "semantic_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "memory", "runSubagent", "view_image"]
 ---
 
 # Code Review — FamilyDashBoard

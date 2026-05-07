@@ -164,11 +164,11 @@ describe("Keyboard — p key dispatches window.print (line 42 handler)", () => {
   });
 });
 
-// ── Sprint 266 / KP1-KP3: fast-check property tests for keyboard invariants ───
+// ── fast-check property tests for keyboard invariants ───
 
 import * as fc from "fast-check";
 
-describe("Keyboard — fast-check properties (KP1-KP3, Sprint 266)", () => {
+describe("Keyboard — fast-check properties (KP1-KP3 )", () => {
   beforeEach(() => {
     vi.resetModules();
   });

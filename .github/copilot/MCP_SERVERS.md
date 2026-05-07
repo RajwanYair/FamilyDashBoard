@@ -6,13 +6,21 @@ This repository ships a committed `.vscode/mcp.json` for shared team servers and
 
 ## Committed Servers (`.vscode/mcp.json`)
 
-| Server       | Type    | Purpose                                                                 |
-| ------------ | ------- | ----------------------------------------------------------------------- |
-| `github`     | `http`  | PRs, issues, code search, workflows, labels, releases via Copilot      |
-| `fetch`      | `stdio` | Test API endpoints (Open-Meteo, Hebcal, Yahoo, CoinGecko) in chat      |
-| `filesystem` | `stdio` | Scoped read/write to workspace — coverage reports, configs, test output |
-| `gitkraken`  | `http`  | Git blame, log, diff, branch ops, PR workflow, cross-repo work          |
-| `playwright` | `stdio` | Browser automation, screenshot capture, visual regression in chat       |
+| Server       | Type    | Package / URL                                       | Purpose                                                                 |
+| ------------ | ------- | --------------------------------------------------- | ----------------------------------------------------------------------- |
+| `github`     | `http`  | `api.githubcopilot.com/mcp` (Copilot-managed)      | PRs, issues, code search, workflows, labels, releases via Copilot      |
+| `fetch`      | `stdio` | `@modelcontextprotocol/server-fetch`                | Test API endpoints (Open-Meteo, Hebcal, Yahoo, CoinGecko) in chat      |
+| `filesystem` | `stdio` | `@modelcontextprotocol/server-filesystem`           | Scoped read/write to workspace — coverage reports, configs, test output |
+| `gitkraken`  | `http`  | `mcp.gitkraken.com/mcp`                             | Git blame, log, diff, branch ops, PR workflow, cross-repo work          |
+| `playwright` | `stdio` | `@microsoft/mcp-server-playwright`                  | Browser automation, screenshot capture, visual regression in chat       |
+
+### Parent-Level Servers (`MyScripts/.vscode/mcp.json`)
+
+| Server       | Type              | Purpose                                                        |
+| ------------ | ----------------- | -------------------------------------------------------------- |
+| `cloudflare` | `streamableHttp`  | Workers, Pages, D1, KV, R2 management (shared across projects)|
+
+All servers above are also configured at the parent level for cross-project use.
 
 ## Placement Policy
 
@@ -33,7 +41,7 @@ This matches the broader tooling policy for `MyScripts/`: common tools belong at
 | Filesystem                     | ✅ Committed  | Workspace-aware browsing; coverage/test output; config reads                                                       |
 | GitKraken / GitLens            | ✅ Committed  | Cross-project worktree, branch, PR review, Launchpad. Useful for `MyScripts/` multi-repo                          |
 | Playwright                     | ✅ Committed  | Browser automation, screenshot capture, VR validation. Complements ms-playwright extension                         |
-| Cloudflare (Wrangler)          | ⏳ Conditional| Only for Worker deployment tasks. Not needed for static-PWA development                                            |
+| Cloudflare (Wrangler)          | ✅ Parent     | Workers, Pages, D1, KV, R2 management. `streamableHttp` transport via `mcp.cloudflare.com/mcp`         |
 | Repo-specific internal servers | ⏳ Conditional| Commit only if the whole team needs the same config                                                                |
 
 ## MCP Capability Model (VS Code May 2026)

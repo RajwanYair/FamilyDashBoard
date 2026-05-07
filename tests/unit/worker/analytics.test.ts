@@ -1,5 +1,5 @@
 /**
- * Tests for worker/src/utils/analytics.ts (V12-EDGE-2b, ADR-029).
+ * Tests for worker/src/utils/analytics.ts (b, ADR-029).
  */
 import { describe, it, expect, vi } from "vitest";
 import { writeAnalyticsHit, normaliseRoute } from "../../../worker/src/utils/analytics";

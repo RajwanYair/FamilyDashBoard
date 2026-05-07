@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/keymap.ts (Sprint 492)
+ * fast-check property tests — src/core/keymap.ts 
  *
  * Properties under test:
  *  KM1. buildHelpRows returns a fragment with exactly N children for N actions.

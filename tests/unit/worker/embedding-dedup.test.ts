@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-AI-2: Embedding-based near-duplicate detection
+ * Unit tests — Embedding-based near-duplicate detection
  *
  * Tests: cosineSimilarity, getEmbedding (mocked AI), isNearDuplicateByEmbedding
  */

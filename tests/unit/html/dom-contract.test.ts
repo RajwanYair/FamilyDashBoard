@@ -270,7 +270,7 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     expect(html).toContain('class="skip-link"');
   });
 
-  it("has SR-only h1 heading inside main for WCAG 2.4.6 compliance (Sprint 30 V12-A11Y)", () => {
+  it("has SR-only h1 heading inside main for WCAG 2.4.6 compliance ( Y)", () => {
     expect(html).toContain('id="page-heading"');
     expect(html).toContain('class="sr-only"');
     // The heading must be inside the main element (page-heading appears after main-content)
@@ -296,7 +296,7 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     expect(nearbyHtml).toContain('aria-live="polite"');
   });
 
-  // Sprint 7: dialog aria-labelledby + cfg tabpanel aria-labelledby
+  // dialog aria-labelledby + cfg tabpanel aria-labelledby
   it("help-overlay dialog uses aria-labelledby (not aria-label)", () => {
     expect(html).toContain('id="help-dialog-title"');
     expect(html).toContain('aria-labelledby="help-dialog-title"');
@@ -304,12 +304,12 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
     expect(html).not.toContain('<dialog id="help-overlay" aria-label=');
   });
 
-  it("diag-overlay dialog has aria-labelledby=diag-dialog-title (V13-A11Y)", () => {
+  it("diag-overlay dialog has aria-labelledby=diag-dialog-title (Y)", () => {
     expect(html).toContain('id="diag-dialog-title"');
     expect(html).toContain('aria-labelledby="diag-dialog-title"');
   });
 
-  it("diag-overlay dialog has aria-modal=true (V13-A11Y)", () => {
+  it("diag-overlay dialog has aria-modal=true (Y)", () => {
     expect(html).toContain('id="diag-overlay"');
     const re = /id="diag-overlay"[^>]*aria-modal="true"|aria-modal="true"[^>]*id="diag-overlay"/;
     expect(re.test(html)).toBe(true);
@@ -343,9 +343,9 @@ describe("DOM Contract — A11y ARIA landmarks", () => {
   });
 });
 
-// ── A11y: Voice-control accessible names (V13-A11Y) ──
+// ── A11y: Voice-control accessible names (Y) ──
 
-describe("DOM Contract — A11y voice-control accessible names (V13-A11Y)", () => {
+describe("DOM Contract — A11y voice-control accessible names (Y)", () => {
   /** Returns true when a button with the given id also carries aria-label on the same tag. */
   function buttonHasAriaLabel(id: string): boolean {
     const re = new RegExp(`id="${id}"[^>]*aria-label=|aria-label=[^>]*id="${id}"`);

@@ -55,7 +55,7 @@ Each card's typed settings interface extends `CardConfig.settings`. The `CardCon
 
 ## Migration
 
-Sprint 143 added a v6 → v7 migration in `loadConfig()`:
+added a v6 → v7 migration in `loadConfig()`:
 
 - `alertsEnabled`, `alertSound`, `realtimeAlerts`, `alertVolume` → `cards.alerts.settings`
 - `calendarDaysAhead` → `cards.calendar.settings`

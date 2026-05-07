@@ -1,5 +1,5 @@
 /**
- * ECB eurofxref-daily.xml adapter — Sprint 162, Roadmap #16.
+ * ECB eurofxref-daily.xml adapter — , Roadmap #16.
  *
  * Parses the ECB's daily reference-rate XML (EUR base) and converts it
  * to an ILS-based rates record matching CurrencySchema.

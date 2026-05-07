@@ -35,59 +35,6 @@
             "fetch_webpage": true
         }
     },
-    "modes": {
-        "ui-mode": {
-            "enabled": true,
-            "aliases": ["design", "css", "layout", "theme"],
-            "priority": "high",
-            "context_files": [
-                "src/styles/tokens.css",
-                "src/styles/themes.css",
-                "src/styles/components.css"
-            ],
-            "description": "UI/UX: CSS custom properties, glassmorphism, RTL layout, 6 themes"
-        },
-        "api-mode": {
-            "enabled": true,
-            "aliases": ["fetch", "data", "weather", "stocks"],
-            "priority": "high",
-            "context_files": ["src/core/fetch.ts", "src/core/cache.ts", "src/core/constants.ts"],
-            "description": "API integration: fetch, caching, proxy fallback, diagnostics"
-        },
-        "fix-mode": {
-            "enabled": true,
-            "aliases": ["debug", "troubleshoot", "error"],
-            "priority": "high",
-            "context_files": ["src/core/diag.ts", "src/core/fetch.ts"],
-            "description": "Debug fetch failures, dead code, JS syntax errors"
-        },
-        "docs-mode": {
-            "enabled": true,
-            "aliases": ["documentation", "readme"],
-            "priority": "medium",
-            "context_files": ["README.md", "CHANGELOG.md"],
-            "description": "Documentation, README, CHANGELOG, SVG assets"
-        },
-        "security-mode": {
-            "enabled": true,
-            "aliases": ["security", "audit", "xss"],
-            "priority": "critical",
-            "context_files": ["src/main.ts", ".github/SECURITY.md"],
-            "description": "Security: XSS prevention, CSP, API input sanitization"
-        },
-        "pre-release-mode": {
-            "enabled": true,
-            "aliases": ["release", "cleanup", "pre-release", "production", "tag"],
-            "priority": "critical",
-            "context_files": [
-                ".github/instructions/pre-release.instructions.md",
-                ".github/skills/release/SKILL.md",
-                "CHANGELOG.md",
-                "package.json"
-            ],
-            "description": "Pre-release cleanup: 0 errors, 0 warnings, dead-code removal, docs dedup, issue closing, git tag"
-        }
-    },
     "extensions": {
         "eslint": {
             "id": "dbaeumer.vscode-eslint",
@@ -158,6 +105,56 @@
             "id": "ecmel.vscode-html-css",
             "copilot_role": "CSS class/ID completion in HTML; reduces need for semantic_search on style references",
             "token_hint": "User gets inline suggestions — Copilot can assume class names are valid if in src/styles/"
+        },
+        "coverage-gutters": {
+            "id": "ryanluker.vscode-coverage-gutters",
+            "copilot_role": "Displays coverage inline from lcov.info after vitest --coverage. Toggle Watch in status bar.",
+            "token_hint": "Direct user to 'Watch' mode after running coverage — no need to re-read lcov.info manually"
+        },
+        "error-lens": {
+            "id": "usernamehw.errorlens",
+            "copilot_role": "Shows all diagnostics inline in the editor — ESLint, TypeScript, Stylelint, webhint, spell-check. User sees errors immediately.",
+            "token_hint": "User already sees inline errors — get_errors confirms what user sees without terminal round-trip"
+        },
+        "console-ninja": {
+            "id": "wallabyjs.console-ninja",
+            "copilot_role": "Inline console/diagLog output in editor during debugging. User sees values without switching to terminal.",
+            "token_hint": "For debugging data flow issues, user can read inline values — Copilot doesn't need to add temporary console.log"
+        },
+        "baseline-lens": {
+            "id": "kwesinavilot.baseline-lens",
+            "copilot_role": "Inline CSS/JS Baseline availability annotations. Shows browser compat status next to CSS properties.",
+            "token_hint": "Supplements webhint — Copilot can assume user is informed about compat status before asking"
+        },
+        "version-lens": {
+            "id": "pflannery.vscode-versionlens",
+            "copilot_role": "Shows latest vs installed package versions inline in package.json. User sees outdated deps at a glance.",
+            "token_hint": "No need to run npm outdated in terminal — user already sees version badges inline"
+        },
+        "bookmarks": {
+            "id": "alefragnani.bookmarks",
+            "copilot_role": "Mark and navigate key code locations. Useful for debugging complex card/adapter chains across files."
+        },
+        "mermaid-chart": {
+            "id": "mermaidchart.vscode-mermaid-chart",
+            "copilot_role": "Mermaid diagram preview in markdown files. Validates architecture diagrams in docs/."
+        },
+        "drawio": {
+            "id": "hediet.vscode-drawio",
+            "copilot_role": "Draw.io diagram editing. SVGs in .github/assets/ can be edited visually."
+        },
+        "caniuse": {
+            "id": "akamud.vscode-caniuse",
+            "copilot_role": "Quick Can I Use lookup for CSS/JS features. Supplements webhint for specific feature queries.",
+            "token_hint": "Use fetch_webpage on caniuse.com only when extension lookup is insufficient"
+        },
+        "svg-preview": {
+            "id": "jock.svg",
+            "copilot_role": "SVG preview and editing. Use view_image on SVG files in .github/assets/ for visual inspection."
+        },
+        "browserslist": {
+            "id": "webben.browserslist",
+            "copilot_role": "Syntax highlighting and validation for .browserslistrc. Ensures browser targets are valid."
         }
     },
     "tokenOptimization": {
@@ -175,7 +172,17 @@
             "memory repo scope for frequently-referenced facts — avoids repeated lookups",
             "Deferred tools stay unloaded until needed — never eagerly load all MCP tools",
             "EditorConfig + Prettier format-on-save eliminate formatting fixups from edits",
-            "PowerShell profile pins 'PowerShell Fast' (-NoLogo) — never suggest bash alternatives"
+            "PowerShell profile pins 'PowerShell Fast' (-NoLogo) — never suggest bash alternatives",
+            "Error Lens shows errors inline — user already sees diagnostics, so confirm rather than re-explain",
+            "Coverage Gutters shows uncovered lines — point user to Watch mode instead of parsing lcov.info",
+            "Console Ninja shows diagLog() inline — no need to add temp logging for debugging",
+            "Version Lens shows outdated deps inline — skip npm outdated terminal calls",
+            "Baseline Lens shows CSS compat inline — supplements webhint without extra tool calls",
+            "Hooks: PreToolUse guards against duplicate files, bad context, and terminal misuse",
+            "Hooks: PostToolUse auto-reminds about RTL/CSS/cache/dialog conventions after edits",
+            "read_file large ranges (50+ lines) over many small reads — fewer round-trips",
+            "Parallel independent reads — read multiple files in same turn when possible",
+            "grep_search with alternation (word1|word2) — single search for multiple patterns"
         ]
     }
 }

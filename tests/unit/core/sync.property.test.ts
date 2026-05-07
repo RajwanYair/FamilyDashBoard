@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/sync.ts backoff logic (Sprint 498)
+ * fast-check property tests — src/core/sync.ts backoff logic 
  *
  * Properties under test:
  *  SY1. recordFailure increases backoff delay (up to 2^5 = 32x).
@@ -7,10 +7,10 @@
  *  SY3. getBackoffDelay is 2^(failure count), capped at 2^5.
  *  SY4. getFailedPanes returns only panes with failures > 0.
  *  SY5. getBackoffDelay is 1 (2^0) for unknown keys.
- *  SY6. getFailedPanes count matches number of distinct failure-recorded keys (Sprint 599)
- *  SY7. clearSyncDots does not affect backoff state (Sprint 599)
- *  SY8. Interleaved fail/success sequences — last action determines state (Sprint 599)
- *  SY9. Backoff is always >= 1 and <= 32 for any failure sequence (Sprint 599)
+ *  SY6. getFailedPanes count matches number of distinct failure-recorded keys 
+ *  SY7. clearSyncDots does not affect backoff state 
+ *  SY8. Interleaved fail/success sequences — last action determines state 
+ *  SY9. Backoff is always >= 1 and <= 32 for any failure sequence 
  */
 
 import { describe, it, expect, beforeEach } from "vitest";

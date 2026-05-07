@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/ticker.ts applyTickerSpeed (Sprint 541)
+ * fast-check property tests — src/ui/ticker.ts applyTickerSpeed 
  *
  * Properties under test:
  *  TK1. applyTickerSpeed clamps input to [1,5]

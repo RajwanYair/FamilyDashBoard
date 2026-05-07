@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/config.ts (Sprint 484)
+ * fast-check property tests — src/core/config.ts 
  *
  * Properties under test:
  *  CFG1. migrateConfig always produces configVersion === CONFIG_VERSION for any input version.

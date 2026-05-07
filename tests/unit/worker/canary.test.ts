@@ -1,5 +1,5 @@
 /**
- * Tests for worker/src/middleware/canary.ts (V12-EDGE-4b, Sprint 32).
+ * Tests for worker/src/middleware/canary.ts (b ).
  */
 import { describe, it, expect, vi } from "vitest";
 import { shouldTagCanary, applyCanaryHeader } from "../../../worker/src/middleware/canary";
@@ -96,7 +96,7 @@ describe("applyCanaryHeader", () => {
   });
 });
 
-// ── /api/canary endpoint (V13-EDGE-5) ────────────────────────────────────────
+// ── /api/canary endpoint  ────────────────────────────────────────
 
 describe("/api/canary endpoint behaviour", () => {
   it("shouldTagCanary returns true when pct=100 (all traffic tagged)", () => {

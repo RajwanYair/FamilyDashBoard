@@ -16,7 +16,7 @@ import type { TodayPaneInputs, TodayPaneItem } from "@/ui/today-pane";
 import type { AlertEvent } from "@/types/api";
 import type { ChoreItem } from "@/cards/tasks/tasks";
 
-// X12 (Sprint 415): today-pane no longer imports from alerts/countdown card
+// X12 : today-pane no longer imports from alerts/countdown card
 // modules directly — it uses getCardSignal(). Mock the protocol so
 // refreshTodayPane tests get predictable (empty) signal state.
 vi.mock("@/core/card-signal-protocol", () => ({
@@ -292,7 +292,7 @@ describe("TodayPane — refreshTodayPane DOM integration", () => {
   });
 });
 
-// ── Sprint 263 / TDP1-TDP5: fast-check property tests for buildTodayItems ────
+// ── fast-check property tests for buildTodayItems ────
 
 import * as fc from "fast-check";
 
@@ -450,9 +450,9 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP1-TDP5)", () =
   });
 });
 
-// ── Sprint 304 / TDP6-TDP8: additional property tests ─────────────────────
+// ── additional property tests ─────────────────────
 
-describe("TodayPane — buildTodayItems fast-check properties (TDP6-TDP8, Sprint 304)", () => {
+describe("TodayPane — buildTodayItems fast-check properties (TDP6-TDP8 )", () => {
   /**
    * TDP6: every item icon is always a non-empty string.
    */
@@ -530,10 +530,10 @@ describe("TodayPane — buildTodayItems fast-check properties (TDP6-TDP8, Sprint
   });
 });
 
-// ── Sprint 415: initTodayPane — covers lines 269-271, 277-278 + the 1 uncovered function ─────
+// ── initTodayPane — covers lines 269-271, 277-278 + the 1 uncovered function ─────
 import { initTodayPane } from "@/ui/today-pane";
 
-describe("TodayPane — initTodayPane (Sprint 415)", () => {
+describe("TodayPane — initTodayPane ", () => {
   beforeEach(() => {
     _resetTodayPaneForTest();
     localStorage.clear();
@@ -572,13 +572,13 @@ describe("TodayPane — initTodayPane (Sprint 415)", () => {
   });
 });
 
-// ── Sprint 415 / X12: collectInputs non-null signal paths ─────────────────
+// ── collectInputs non-null signal paths ─────────────────
 // These tests use getCardSignal mock with real values to cover the non-null
 // branches in the private collectInputs() function (reached via refreshTodayPane).
 
 import { getCardSignal } from "@/core/card-signal-protocol";
 
-describe("TodayPane — refreshTodayPane signal non-null branches (X12, Sprint 415)", () => {
+describe("TodayPane — refreshTodayPane signal non-null branches (X12 )", () => {
   beforeEach(() => {
     _resetTodayPaneForTest();
     localStorage.clear();

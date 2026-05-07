@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/allowlists.ts (Sprint 565)
+ * fast-check property tests — worker/src/utils/allowlists.ts 
  *
  * Properties under test:
  *  AW1. ALLOWED_CALENDAR_ORIGINS: all entries are non-empty strings without protocol

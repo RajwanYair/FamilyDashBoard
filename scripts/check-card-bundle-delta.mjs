@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * FamilyDashBoard — Per-Card Bundle Delta CI Check (Sprint 55)
+ * FamilyDashBoard — Per-Card Bundle Delta CI Check 
  *
  * Reads the last entry in scripts/bundle-trend.json (the baseline) and
  * compares it to the current dist/assets to detect per-card regressions.
@@ -124,17 +124,17 @@ if (failed) {
 
 console.log("\n✅  All card bundle deltas within threshold.\n");
 
-// ── Sprint 211 / X10: Group budget totals ─────────────────────────────────
+// ── Group budget totals ─────────────────────────────────
 /**
  * Group budgets: the combined gzip size of all cards in a group must not
  * exceed the budget (in KB). Fail CI with exit 1 if violated.
  */
 const GROUP_BUDGETS = [
-  { name: "news + video-news",              cards: ["news", "video-news"],                          budgetKb: 30 },
-  { name: "weather + hebrew-cal + countdown", cards: ["weather", "hebrew-cal", "countdown"],        budgetKb: 40 },
-  { name: "stocks + currency",              cards: ["stocks", "currency"],                          budgetKb: 35 },
-  { name: "calendar + alerts",              cards: ["calendar", "alerts"],                          budgetKb: 25 },
-  { name: "tasks + motivation + system-info", cards: ["tasks", "motivation", "system-info"],        budgetKb: 25 },
+  { name: "news + video-news",              cards: ["news", "video-news"],                          budgetKb: 28 },
+  { name: "weather + hebrew-cal + countdown", cards: ["weather", "hebrew-cal", "countdown"],        budgetKb: 38 },
+  { name: "stocks + currency",              cards: ["stocks", "currency"],                          budgetKb: 33 },
+  { name: "calendar + alerts",              cards: ["calendar", "alerts"],                          budgetKb: 23 },
+  { name: "tasks + motivation + system-info", cards: ["tasks", "motivation", "system-info"],        budgetKb: 23 },
 ];
 
 let groupFailed = false;

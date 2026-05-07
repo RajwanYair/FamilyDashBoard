@@ -1,6 +1,6 @@
 /**
  * Tests for src/core/error-tracker.ts
- * Sprint 39 — Runtime error tracking
+ * Runtime error tracking
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -137,7 +137,7 @@ describe("installGlobalErrorHandlers", () => {
     addSpy.mockRestore();
   });
 });
-// ── Sprint 125: errorRate tests ───────────────────────────────────────────────
+// ── errorRate tests ───────────────────────────────────────────────
 
 describe("errorRate", () => {
   it("returns 0 with no errors", () => {
@@ -162,7 +162,7 @@ describe("errorRate", () => {
   });
 });
 
-// ── Sprint 38: sampleErrorTrend / getErrorTrend tests ────────────────────────
+// ── sampleErrorTrend / getErrorTrend tests ────────────────────────
 
 describe("sampleErrorTrend", () => {
   it("starts with an empty trend", () => {

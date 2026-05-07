@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/utils.ts (Sprint 470, 575)
+ * fast-check property tests — src/core/utils.ts ( , 575)
  *
  * Properties under test:
  *  UT1. clamp: result is always in [min, max] for any finite triple.

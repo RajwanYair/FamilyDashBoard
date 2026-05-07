@@ -1,4 +1,4 @@
-# ADR-056: Sprint 327-331 Hardening — Origin-Agent-Cluster, Compute Pressure, Storage Buckets, 2026 Permissions-Policy cohort
+# ADR-056: Hardening — Origin-Agent-Cluster, Compute Pressure, Storage Buckets, 2026 Permissions-Policy cohort
 
 - **Status**: Accepted
 - **Date**: 2026-05-01 (v13.34.0 patch series)
@@ -34,19 +34,19 @@ P1 batch for the v13.34.0 patch.
 
 We will:
 
-1. Set `Origin-Agent-Cluster: ?1` on all routes via `_headers` (Sprint 327).
+1. Set `Origin-Agent-Cluster: ?1` on all routes via `_headers` .
 2. Add a feature-detected `PressureObserver` helper (`initPressureObserver`,
    `getPressureState`, `destroyPressureObserver`) and a `🌡️ עומס` tile in
-   the system-info card (Sprint 329).
+   the system-info card .
 3. Add a feature-detected `getStorageBuckets()` helper and a `🪣 דליים` tile
-   that surfaces the bucket count or `—` when unsupported (Sprint 330).
+   that surfaces the bucket count or `—` when unsupported .
 4. Expand `Permissions-Policy` from 28 → 41 directives covering the 2026
    API cohort. Hard-deny by default; allow `compute-pressure=(self)` and
    `clipboard-write=(self)` only because they are first-party features
-   (Sprint 331).
+   .
 5. Tighten Renovate scheduling (D14): security at-any-time, minor/patch
    monthly, majors manual review, supply-chain digest pinning unchanged
-   (Sprint 328).
+   .
 
 ## Consequences
 

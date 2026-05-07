@@ -200,25 +200,25 @@ jobs:
         run: npx vite build
       - name: Bundle size check
         run: node scripts/check-bundle-size.mjs
-      - name: Per-card bundle delta check (Sprint 55)
+      - name: Per-card bundle delta check
         run: node scripts/check-card-bundle-delta.mjs
       - name: SW version check
         run: node scripts/check-sw-version.mjs
-      - name: Doc/instruction version consistency check (Sprint 171)
+      - name: Doc/instruction version consistency check
         run: node scripts/check-version-consistency.mjs
-      - name: Worker-client / OpenAPI sync check (F18)
+      - name: Worker-client / OpenAPI sync check
         run: node scripts/check-worker-client.mjs
-      - name: ADR index staleness check (V13-OPS)
+      - name: ADR index staleness check
         run: node scripts/check-adr-index.mjs
-      - name: OpenAPI x-kv-ttl annotation check (V13-EDGE)
+      - name: OpenAPI x-kv-ttl annotation check
         run: node scripts/check-openapi-ttl.mjs
-      - name: Release notes CHANGELOG check (V13-OPS)
+      - name: Release notes CHANGELOG check
         run: node scripts/check-release-notes.mjs
-      - name: Reading-level audit (V13-A11Y)
+      - name: Reading-level audit
         run: node scripts/check-reading-level.mjs
-      - name: Mermaid diagram validation (Sprint 109)
+      - name: Mermaid diagram validation
         run: node scripts/check-mermaid.mjs
-      - name: Container-query audit (Sprint 111)
+      - name: Container-query audit
         run: node scripts/check-container-queries.mjs
 
   lighthouse:

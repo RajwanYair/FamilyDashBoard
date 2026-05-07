@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/calendar/calendar.ts (Sprint 526, extended Sprint 564)
+ * fast-check property tests — src/cards/calendar/calendar.ts ( , extended )
  *
  * Properties under test:
  *  CAL1. detectCalCategory: always returns one of known categories

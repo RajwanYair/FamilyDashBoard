@@ -78,7 +78,7 @@ describe("deepFreezeJson", () => {
     expect((frozen as Record<string, unknown>).val).toBe(2);
   });
 
-  // Sprint 441: cover line 53 — array path in deepFreezeAll
+  // cover line 53 — array path in deepFreezeAll
   it("deep-freezes arrays and array elements (line 53 coverage)", () => {
     const arr = [{ x: 1 }, { y: 2 }];
     const frozen = deepFreezeJson(arr);
@@ -133,7 +133,7 @@ describe("dispatchTool", () => {
     }
   });
 
-  // Sprint 441: cover signal-available path for alerts, countdown, synthesis (lines 97, 107, 112)
+  // cover signal-available path for alerts, countdown, synthesis (lines 97, 107, 112)
   it.each([
     ["today.alerts", "alerts", "active"],
     ["today.countdown", "countdown", "items"],
@@ -245,7 +245,7 @@ describe("request roundtrip", () => {
     expect(resp).toBeNull();
   });
 
-  // Sprint 441: cover line 138 — handleMessage early-return when id/tool fields are invalid
+  // cover line 138 — handleMessage early-return when id/tool fields are invalid
   it("ignores request with empty string id (line 138 coverage)", async () => {
     initMcpBridge();
     const ch = new BroadcastChannel("fdb-mcp");

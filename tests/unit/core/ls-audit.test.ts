@@ -1,10 +1,10 @@
 /**
- * Sprint 105 — LS key audit tests
+ * LS key audit tests
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import { auditLocalStorageKeys, removeOrphanedLsKeys } from "@/core/config";
 
-describe("auditLocalStorageKeys (Sprint 105)", () => {
+describe("auditLocalStorageKeys ", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -41,7 +41,7 @@ describe("auditLocalStorageKeys (Sprint 105)", () => {
   });
 });
 
-describe("removeOrphanedLsKeys (Sprint 105)", () => {
+describe("removeOrphanedLsKeys ", () => {
   beforeEach(() => {
     localStorage.clear();
   });

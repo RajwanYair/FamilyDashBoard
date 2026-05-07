@@ -1,5 +1,5 @@
 /**
- * Sprint 237 / V14-SECURITY-L3: Hermetic build — --ignore-scripts gate
+ * Hermetic build — --ignore-scripts gate
  *
  * Scans .github/workflows/*.yml for `npm install` / `npm ci` commands that
  * do NOT include --ignore-scripts, flagging unvetted supply-chain script

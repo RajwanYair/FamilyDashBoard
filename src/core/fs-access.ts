@@ -1,5 +1,5 @@
 /**
- * src/core/fs-access.ts — Sprint 112 (V14-FOUNDATIONS)
+ * src/core/fs-access.ts
  *
  * Thin progressive-enhancement wrapper over the File System Access API
  * (https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API).

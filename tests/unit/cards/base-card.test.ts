@@ -196,8 +196,8 @@ describe("Base Card — scheduleCard", () => {
   });
 });
 
-// ── Sprint 48: staleChip ──────────────────────────────────────────────────────
-describe("staleChip (Sprint 48)", () => {
+// ── staleChip ──────────────────────────────────────────────────────
+describe("staleChip ", () => {
   // U+05E2 U+05DB U+05E9 U+05D9 U+05D5 = עכשיו
   const NOW = "\u05E2\u05DB\u05E9\u05D9\u05D5";
   // U+05DC U+05E4 U+05E0 U+05D9 = לפני
@@ -241,8 +241,8 @@ describe("staleChip (Sprint 48)", () => {
   });
 });
 
-// ── Sprint 51: createSkeleton ─────────────────────────────────────────────
-describe("createSkeleton (Sprint 51)", () => {
+// ── createSkeleton ─────────────────────────────────────────────
+describe("createSkeleton ", () => {
   it("returns a div with class card-skeleton", () => {
     const el = createSkeleton();
     expect(el.tagName).toBe("DIV");
@@ -265,8 +265,8 @@ describe("createSkeleton (Sprint 51)", () => {
   });
 });
 
-// ── Sprint 52: createEmptyState ───────────────────────────────────────────
-describe("createEmptyState (Sprint 52)", () => {
+// ── createEmptyState ───────────────────────────────────────────
+describe("createEmptyState ", () => {
   it("returns a div with class card-empty", () => {
     const el = createEmptyState("No data");
     expect(el.tagName).toBe("DIV");
@@ -288,8 +288,8 @@ describe("createEmptyState (Sprint 52)", () => {
   });
 });
 
-// ── Sprint 53: createErrorState ───────────────────────────────────────────
-describe("createErrorState (Sprint 53)", () => {
+// ── createErrorState ───────────────────────────────────────────
+describe("createErrorState ", () => {
   it("returns a div with class card-error", () => {
     const el = createErrorState("Failed");
     expect(el.tagName).toBe("DIV");
@@ -315,7 +315,7 @@ describe("createErrorState (Sprint 53)", () => {
   });
 });
 
-// ── Sprint 180: createAsyncCardLoader ────────────────────────────────────────
+// ── createAsyncCardLoader ────────────────────────────────────────
 
 describe("createAsyncCardLoader", () => {
   beforeEach(() => {

@@ -1,7 +1,6 @@
 ---
-mode: agent
 description: "Add or update a Cloudflare Worker route in worker/src/. Covers route handler, Zod validation, normalized response, KV caching, and worker tests."
-tools: ["read_file", "grep_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "create_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "fetch_webpage"]
+tools: ["read_file", "grep_search", "file_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "create_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "vscode_askQuestions", "manage_todo_list", "tool_search", "fetch_webpage", "memory", "runSubagent"]
 ---
 
 # Add or Update a Worker Route

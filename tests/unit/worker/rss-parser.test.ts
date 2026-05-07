@@ -151,7 +151,7 @@ describe("parseRss — entity decoding", () => {
   });
 });
 
-describe("parseRss — Atom edge-case branches (Sprint 153)", () => {
+describe("parseRss — Atom edge-case branches ", () => {
   it("uses extractText link fallback when no href attr in Atom entry", () => {
     // Atom entry uses <link>url</link> text content, not <link href="..."/>
     const xml = `<?xml version="1.0"?>

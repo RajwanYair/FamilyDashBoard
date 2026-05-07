@@ -157,7 +157,7 @@ When enabled, it plays a live HLS stream inside a `<video>` element.
 ### CSP extension when video-news is enabled
 
 The current base CSP sets `media-src 'none'`. When the card is enabled and stream
-URLs are confirmed (pending research sprint v11.1-sprint-1), the following extensions
+URLs are confirmed (deferred to v15), the following extensions
 will be required:
 
 | Directive     | Current value                 | Extended value (video-news enabled)                                                   |

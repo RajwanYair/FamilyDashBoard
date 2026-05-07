@@ -1,11 +1,11 @@
 /**
- * src/core/semantic-clipboard.ts — X15 (Sprint 367 / v13.38.0)
+ * src/core/semantic-clipboard.ts
  *
  * Single-keystroke semantic clipboard: copies a context-rich text +
  * JSON-LD payload from the focused card to the system clipboard.
  *
  * Spec: docs/adr/ADR-070-x15-semantic-clipboard.md
- * Permissions-Policy: clipboard-write=(self) per ADR-056 / Sprint 331.
+ * Permissions-Policy: clipboard-write=(self) per ADR-056 / .
  * Zero dependencies.
  */
 

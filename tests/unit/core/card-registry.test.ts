@@ -184,7 +184,7 @@ describe("Card Registry — loadCard (parameterized)", () => {
   });
 });
 
-// ── createShell (Sprint 68, enhanced Sprint 134) ─────────────────────────
+// ── createShell ( , enhanced ) ─────────────────────────
 
 describe("createShell", () => {
   afterEach(() => {
@@ -213,7 +213,7 @@ describe("createShell", () => {
     expect(() => createShell("__no_such_card__")).toThrow(/not registered/);
   });
 
-  it("returns header with title and sync dot (Sprint 134)", () => {
+  it("returns header with title and sync dot ", () => {
     const { header } = createShell("motivation");
     expect(header).toBeDefined();
     expect(header!.className).toBe("card__header");
@@ -225,7 +225,7 @@ describe("createShell", () => {
     expect(syncDot!.id).toBe("sync-motivation");
   });
 
-  it("returns footer element (Sprint 134)", () => {
+  it("returns footer element ", () => {
     const { footer } = createShell("motivation");
     expect(footer).toBeDefined();
     expect(footer!.className).toBe("card__footer");
@@ -238,7 +238,7 @@ describe("createShell", () => {
     expect(root.getAttribute("aria-label")).toContain("Motivation");
   });
 
-  it("header → body → footer order in DOM (Sprint 134)", () => {
+  it("header → body → footer order in DOM ", () => {
     const { root, header, body, footer } = createShell("motivation");
     const children = Array.from(root.children);
     expect(children[0]).toBe(header);
@@ -247,7 +247,7 @@ describe("createShell", () => {
   });
 });
 
-// ── isValidCardSize / assertCardSize (Sprint 69) ───────────────────────────
+// ── isValidCardSize / assertCardSize  ───────────────────────────
 
 describe("isValidCardSize", () => {
   it.each(["sm", "md", "lg", "xl"])("returns true for valid size %s", (s) => {
@@ -412,7 +412,7 @@ describe("mountRegisteredCards", () => {
   });
 });
 
-// ── Sprint 440: init/destroy/render coverage for built-in FdbCardDefinition cards ──
+// ── init/destroy/render coverage for built-in FdbCardDefinition cards ──
 //
 // The init() and destroy() methods on FdbCardDefinition cards are empty no-ops
 // ("Lifecycle owned by the custom element's connect/disconnect hook.").
@@ -442,7 +442,7 @@ const legacyRenderCards = [
   "ai-synthesis",
 ] as const;
 
-describe("Card Registry — Sprint 440 init/destroy/render coverage", () => {
+describe("Card Registry — init/destroy/render coverage", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });

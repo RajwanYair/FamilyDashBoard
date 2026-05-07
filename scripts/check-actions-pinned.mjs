@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Sprint 222 — GitHub Actions SHA-pin enforcement check.
+ * GitHub Actions SHA-pin enforcement check.
  *
  * Scans every `.github/workflows/*.yml` and `.github/workflows/*.yaml` for
  * `uses:` references that are NOT pinned to a full 40-character commit SHA.

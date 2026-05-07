@@ -400,7 +400,7 @@ describe("Alerts — loadAlerts via mocked fetch", () => {
   });
 });
 
-// ── Sprint 5: scheduleAlerts branches, notify path, page-hidden, initAlertsCard ────────
+// ── scheduleAlerts branches, notify path, page-hidden, initAlertsCard ────────
 
 describe("Alerts — scheduleAlerts interval branches", () => {
   const TS = Math.floor(Date.now() / 1000);
@@ -675,9 +675,9 @@ describe("Alerts — loadAlerts success with new alert (full path)", () => {
   });
 });
 
-// ──────── END OF SPRINT 5 TESTS ──────────────────────────────────────────────
+// ──────── END OF TESTS ──────────────────────────────────────────────
 
-// ── Sprint 6: catch block (lines 292-294) + setAlertsEnabled timer cleanup (lines 303-304) ──
+// ── catch block (lines 292-294) + setAlertsEnabled timer cleanup (lines 303-304) ──
 
 describe("Alerts — setAlertsEnabled clears active timer", () => {
   const TS = Math.floor(Date.now() / 1000);
@@ -1305,7 +1305,7 @@ describe("Alerts — notify Notification.permission not granted (no throw)", () 
   });
 });
 
-// ── SSE connection: initAlertsSSE / destroyAlertsSSE (V13-EDGE-1) ─────────────
+// ── SSE connection: initAlertsSSE / destroyAlertsSSE  ─────────────
 
 /** Reusable EventSource mock class for SSE tests */
 class MockEventSource {
@@ -1512,7 +1512,7 @@ describe("Alerts — setAlertVolume / getAlertVolume (F2 v7.2)", () => {
   });
 });
 
-// ── Sprint 19: clearUnreadAlerts + document.title badge ──────────────────────
+// ── clearUnreadAlerts + document.title badge ──────────────────────
 
 describe("Alerts — clearUnreadAlerts resets badge and document.title", () => {
   afterEach(() => {
@@ -1560,9 +1560,9 @@ describe("Alerts — clearUnreadAlerts resets badge and document.title", () => {
   });
 });
 
-// ── Sprint 28: alertThreatIcon + alertAgeLabel ─────────────────────────────
+// ── alertThreatIcon + alertAgeLabel ─────────────────────────────
 
-describe("Alerts — alertThreatIcon (Sprint 28)", () => {
+describe("Alerts — alertThreatIcon ", () => {
   it("returns 🔴 for threat 0", () => {
     expect(alertThreatIcon(0)).toBe("🔴");
   });
@@ -1581,7 +1581,7 @@ describe("Alerts — alertThreatIcon (Sprint 28)", () => {
   });
 });
 
-describe("Alerts — alertAgeLabel (Sprint 28)", () => {
+describe("Alerts — alertAgeLabel ", () => {
   it("returns 'עכשיו' for age < 1 minute", () => {
     expect(alertAgeLabel(0)).toBe("עכשיו");
   });
@@ -1597,7 +1597,7 @@ describe("Alerts — alertAgeLabel (Sprint 28)", () => {
   });
 });
 
-describe("Alerts — buildAlertItem Sprint 28: threat icon + age badge", () => {
+describe("Alerts — buildAlertItem threat icon + age badge", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });
@@ -1625,9 +1625,9 @@ describe("Alerts — buildAlertItem Sprint 28: threat icon + age badge", () => {
   });
 });
 
-// ── Sprint 87: loadAlerts page-hidden, isAlertsEnabled, volume clamp, invalid filter, reduced-motion ──
+// ── loadAlerts page-hidden, isAlertsEnabled, volume clamp, invalid filter, reduced-motion ──
 
-describe("Alerts — Sprint 87 branch coverage", () => {
+describe("Alerts — branch coverage", () => {
   const TS = Math.floor(Date.now() / 1000);
 
   function setupDOM(): void {
@@ -1743,9 +1743,9 @@ describe("Alerts — Sprint 87 branch coverage", () => {
   });
 });
 
-// ── Sprint 185 / A2: alertRingAppend, alertRingGet, renderAlertHistory ───────
+// ── alertRingAppend, alertRingGet, renderAlertHistory ───────
 
-describe("Alerts — alertRingAppend / alertRingGet (Sprint 185 A2)", () => {
+describe("Alerts — alertRingAppend / alertRingGet ( A2)", () => {
   const RING_KEY = "fdb_alert_ring";
   const nowSec = Math.floor(Date.now() / 1000);
 
@@ -1802,7 +1802,7 @@ describe("Alerts — alertRingAppend / alertRingGet (Sprint 185 A2)", () => {
   });
 });
 
-describe("Alerts — renderAlertHistory (Sprint 185 A2)", () => {
+describe("Alerts — renderAlertHistory ( A2)", () => {
   const RING_KEY = "fdb_alert_ring";
   const nowSec = Math.floor(Date.now() / 1000);
 
@@ -1833,9 +1833,9 @@ describe("Alerts — renderAlertHistory (Sprint 185 A2)", () => {
   });
 });
 
-// ── Sprint 186 / A1: showAlertTakeover / hideAlertTakeover ──────────────────
+// ── showAlertTakeover / hideAlertTakeover ──────────────────
 
-describe("Alerts — showAlertTakeover / hideAlertTakeover (Sprint 186 A1)", () => {
+describe("Alerts — showAlertTakeover / hideAlertTakeover ( A1)", () => {
   const nowSec = Math.floor(Date.now() / 1000);
 
   const makeDialogHTML = (): void => {
@@ -1904,7 +1904,7 @@ describe("Alerts — showAlertTakeover / hideAlertTakeover (Sprint 186 A1)", () 
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Sprint 247 — Alerts card fast-check property tests (AP1–AP5)
+// Alerts card fast-check property tests (AP1–AP5)
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── AP1: alertThreatIcon — always returns a non-empty string ─────────────
@@ -2014,8 +2014,8 @@ describe("AP5: alertThreatIcon — output set is exactly 3 distinct values", () 
   });
 });
 
-// ── Sprint 282 / CS-A1: alertZone + history/severity/dim in configSchema ──
-describe("Alerts configSchema — CS-A1 (Sprint 282)", () => {
+// ── alertZone + history/severity/dim in configSchema ──
+describe("Alerts configSchema — CS-A1 ", () => {
   it("configSchema has 8 fields total after CS-A1", () => {
     expect(alertsConfigSchema.length).toBe(8);
   });
@@ -2050,9 +2050,9 @@ describe("Alerts configSchema — CS-A1 (Sprint 282)", () => {
   });
 });
 
-// ── Sprint 434: buildAlertsPayload happy path + history button (X15/A2) ────
+// ── buildAlertsPayload happy path + history button (X15/A2) ────
 
-describe("Alerts — buildAlertsPayload happy path (Sprint 434 / X15)", () => {
+describe("Alerts — buildAlertsPayload happy path ", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     _resetAlertsForTest();
@@ -2102,7 +2102,7 @@ describe("Alerts — buildAlertsPayload happy path (Sprint 434 / X15)", () => {
   });
 });
 
-describe("Alerts — initAlertsCard history button (Sprint 434 / A2 lines 654-658)", () => {
+describe("Alerts — initAlertsCard history button ( / A2 lines 654-658)", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     _resetAlertsForTest();

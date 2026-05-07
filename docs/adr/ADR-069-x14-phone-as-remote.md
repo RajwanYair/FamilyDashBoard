@@ -27,7 +27,7 @@ Constraints (non-negotiable):
 
 ### Gate conditions (all required)
 
-1. **WebRTC mirror lands** — V14-CONTINUITY stream (Tasks T-WebRTC,
+1. **WebRTC mirror lands** — stream (Tasks T-WebRTC,
    ADR-049) ships first. X14 reuses its mesh, signaling, and
    ICE config. Building X14 before the mirror duplicates effort.
 2. **≥ 3 user requests** for phone control — current operators have
@@ -71,7 +71,7 @@ docs/adr/
 2. Phone scans, navigates to URL. Phone opens its own page that
    establishes a WebRTC `RTCPeerConnection` over STUN.
 3. SDP offer/answer exchanged via the dashboard's existing mirror
-   signaling channel (V14-CONTINUITY).
+   signaling channel .
 4. Once the data channel opens, the dashboard's pairing overlay
    closes. The phone shows a tile-grid mirror.
 5. After **5 minutes** the data channel is closed by the dashboard.

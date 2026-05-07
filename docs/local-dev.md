@@ -115,7 +115,7 @@ Expected output: all green, **4925+ tests / 159+ suites / 0 failures**.
 
 ---
 
-## Corp-Proxy Quickstart (Sprint 135 / Roadmap V14-RESILIENCE)
+## Corp-Proxy Quickstart
 
 If you're behind a hostile corporate forward proxy (e.g. Intel, Cisco AnyConnect
 with TLS-MITM) where public origins are blocked or rewritten, follow this exact
@@ -150,7 +150,7 @@ sequence:
    call. Reload after.
 
 4. **Per-card "blocked by network" diagnostic**: when an upstream is firewalled,
-   the affected card surfaces a non-blocking diag toast (Sprint 136 /
+   the affected card surfaces a non-blocking diag toast (/
    `core/diag.ts`) instead of silently spinning forever. Open `?diag=1` to
    inspect the full provider chain.
 

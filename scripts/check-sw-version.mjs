@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * check-sw-version.mjs — Sprint 1, Item 5 (v7.4)
+ * check-sw-version.mjs — , Item 5 (v7.4)
  *
  * Ensures the Service Worker cache name in sw.js matches the version in
  * package.json. Fails with exit code 1 if they diverge, which blocks `npm

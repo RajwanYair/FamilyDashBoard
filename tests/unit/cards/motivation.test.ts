@@ -217,7 +217,7 @@ describe("Motivation — shareMotivation", () => {
     expect(() => shareMotivation()).not.toThrow();
   });
 });
-// ── Sprint 5: fade path, navigator.share, button listeners ──────────────────
+// ── fade path, navigator.share, button listeners ──────────────────
 
 describe("Motivation — renderMotivation fade path (.moti-card)", () => {
   beforeEach(() => {
@@ -412,7 +412,7 @@ describe("Motivation — defensive branches when MOTIVATIONS is empty", () => {
   });
 });
 
-// ── Sprint 23: category system ───────────────────────────────────────────────
+// ── category system ───────────────────────────────────────────────
 
 import {
   getQuotesByCategory,
@@ -421,7 +421,7 @@ import {
   type MotivationCategory,
 } from "@/cards/motivation/motivation";
 
-describe("Motivation — getQuotesByCategory (Sprint 23)", () => {
+describe("Motivation — getQuotesByCategory ", () => {
   it("returns all quotes when category is null", () => {
     const all = getQuotesByCategory(null);
     expect(all.length).toBe(MOTIVATIONS.length);
@@ -476,7 +476,7 @@ describe("Motivation — getQuotesByCategory (Sprint 23)", () => {
   });
 });
 
-describe("Motivation — setMotivationCategory / getMotivationCategory (Sprint 23)", () => {
+describe("Motivation — setMotivationCategory / getMotivationCategory ", () => {
   afterEach(() => {
     setMotivationCategory(null); // reset
     vi.restoreAllMocks();
@@ -540,9 +540,9 @@ describe("Motivation — setMotivationInterval (F7 v7.3)", () => {
   });
 });
 
-// ── Sprint 83: configSchema ─────────────────────────────────────────────
+// ── configSchema ─────────────────────────────────────────────
 
-describe("Motivation — configSchema (Sprint 83)", () => {
+describe("Motivation — configSchema ", () => {
   it("is a non-empty array", () => {
     expect(Array.isArray(motivationConfigSchema)).toBe(true);
     expect(motivationConfigSchema.length).toBeGreaterThan(0);
@@ -647,8 +647,8 @@ describe("Motivation — fetchAiMotivationQuote", () => {
   });
 });
 
-// ── Sprint 70: Non-repeat window ─────────────────────────────────────────────
-describe("Motivation — non-repeat window (Sprint 70)", () => {
+// ── Non-repeat window ─────────────────────────────────────────────
+describe("Motivation — non-repeat window ", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -719,9 +719,9 @@ describe("Motivation — non-repeat window (Sprint 70)", () => {
   });
 });
 
-// ── Sprint 84: getUsedIndices branch coverage ─────────────────────────────
+// ── getUsedIndices branch coverage ─────────────────────────────
 
-describe("Motivation — getUsedIndices branch coverage (Sprint 84)", () => {
+describe("Motivation — getUsedIndices branch coverage ", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -751,9 +751,9 @@ describe("Motivation — getUsedIndices branch coverage (Sprint 84)", () => {
   });
 });
 
-// ── Sprint 84: fetchAiMotivationQuote edge cases ──────────────────────────
+// ── fetchAiMotivationQuote edge cases ──────────────────────────
 
-describe("Motivation — fetchAiMotivationQuote edge cases (Sprint 84)", () => {
+describe("Motivation — fetchAiMotivationQuote edge cases ", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -795,7 +795,7 @@ describe("Motivation — fetchAiMotivationQuote edge cases (Sprint 84)", () => {
   });
 });
 
-// ── M1: Source attribution badge (Sprint 176) ─────────────────────────────────
+// ── M1: Source attribution badge  ─────────────────────────────────
 
 describe("Motivation — M1 source attribution", () => {
   beforeEach(() => {
@@ -855,7 +855,7 @@ describe("Motivation — M1 source attribution", () => {
   });
 });
 
-// ── M2: Theme-by-day rotation (Sprint 176) ────────────────────────────────────
+// ── M2: Theme-by-day rotation  ────────────────────────────────────
 
 describe("Motivation — M2 theme-by-day", () => {
   it("DAY_THEME_MAP has 7 entries (0=Sun … 6=Sat)", () => {
@@ -907,7 +907,7 @@ describe("Motivation — M2 theme-by-day", () => {
   });
 });
 
-// ── Sprint 197 / M3: Motivation favorites ────────────────────────────────
+// ── Motivation favorites ────────────────────────────────
 
 import {
   toggleFavorite,
@@ -917,7 +917,7 @@ import {
 import { _idbClearFallback } from "@/core/idb-store";
 import { getSemanticPayload, _resetSemanticProducers } from "@/core/semantic-clipboard";
 
-describe("Motivation — favorites (Sprint 197 / M3)", () => {
+describe("Motivation — favorites ", () => {
   beforeEach(() => {
     _idbClearFallback();
     _resetMotivationForTest();
@@ -966,8 +966,8 @@ describe("Motivation — favorites (Sprint 197 / M3)", () => {
   });
 });
 
-// ── Sprint 285 / CS-M1: categories/theme-by-day/source/lang ─────────────────────
-describe("Motivation configSchema — CS-M1 (Sprint 285)", () => {
+// ── categories/theme-by-day/source/lang ─────────────────────
+describe("Motivation configSchema — CS-M1 ", () => {
   it("configSchema has 6 fields total after CS-M1", () => {
     expect(motivationConfigSchema.length).toBe(6);
   });
@@ -1002,9 +1002,9 @@ describe("Motivation configSchema — CS-M1 (Sprint 285)", () => {
   });
 });
 
-// ── Sprint 434: buildMotivationPayload + updateHeartBtn + localStorage catch ──
+// ── buildMotivationPayload + updateHeartBtn + localStorage catch ──
 
-describe("Motivation — buildMotivationPayload via semantic clipboard (Sprint 434 / X15)", () => {
+describe("Motivation — buildMotivationPayload via semantic clipboard ", () => {
   beforeEach(() => {
     _resetMotivationForTest();
     _resetSemanticProducers();
@@ -1028,7 +1028,7 @@ describe("Motivation — buildMotivationPayload via semantic clipboard (Sprint 4
   });
 });
 
-describe("Motivation — updateHeartBtn via refreshHeartState (Sprint 434 / M3)", () => {
+describe("Motivation — updateHeartBtn via refreshHeartState ", () => {
   beforeEach(() => {
     _resetMotivationForTest();
     _idbClearFallback();
@@ -1057,7 +1057,7 @@ describe("Motivation — updateHeartBtn via refreshHeartState (Sprint 434 / M3)"
   });
 });
 
-describe("Motivation — markIndexUsed localStorage catch branch (Sprint 434)", () => {
+describe("Motivation — markIndexUsed localStorage catch branch ", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     localStorage.clear();

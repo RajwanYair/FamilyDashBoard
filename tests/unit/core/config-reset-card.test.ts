@@ -1,11 +1,11 @@
 /**
- * Sprint 104 — Per-card config reset tests
+ * Per-card config reset tests
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import { loadConfig, saveConfig, resetCardConfig } from "@/core/config";
 import { DEFAULT_CONFIG } from "@/types/config";
 
-describe("resetCardConfig (Sprint 104)", () => {
+describe("resetCardConfig ", () => {
   beforeEach(() => {
     localStorage.clear();
   });

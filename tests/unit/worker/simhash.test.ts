@@ -154,7 +154,7 @@ describe("isNearDuplicateV2", () => {
   });
 });
 
-// ── SimHash v2 precision@10 gate (V13-POLISH §3.2) ───────────────────────────
+// ── SimHash v2 precision@10 gate (§3.2) ───────────────────────────
 //
 // Verifies SimHash v2 (word-bigram) detects near-duplicate news headlines.
 //
@@ -163,7 +163,7 @@ describe("isNearDuplicateV2", () => {
 // bigrams is strong enough that the hamming distance stays ≤ threshold=10.
 //
 // Gate: v2@10 ≥ 8/10 pairs detected; false-positive rate ≤ 1/10 (default threshold=4).
-describe("SimHash v2 precision@10 gate (V13-POLISH §3.2)", () => {
+describe("SimHash v2 precision@10 gate (§3.2)", () => {
   /**
    * Near-duplicate pairs — only the LAST word differs (1 bigram change).
    * SimHash with 9+ bigrams is robust to a single-bigram change at threshold=10.

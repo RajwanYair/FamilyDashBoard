@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/state.ts (Sprint 479)
+ * fast-check property tests — src/core/state.ts 
  *
  * Properties under test:
  *  ST1. get(key) after set(key, v) returns exactly v (round-trip identity).

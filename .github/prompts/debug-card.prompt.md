@@ -1,7 +1,6 @@
 ---
-mode: "agent"
 description: "Debug a broken card's fetch, cache, render, or sync pipeline. Follow the diagnosis checklist and fix the root cause."
-tools: ["read_file", "grep_search", "semantic_search", "get_errors", "replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "tool_search", "fetch_webpage", "view_image"]
+tools: ["read_file", "grep_search", "file_search", "semantic_search", "get_errors", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "fetch_webpage", "view_image", "memory", "runSubagent"]
 ---
 
 # Debug Card — FamilyDashBoard

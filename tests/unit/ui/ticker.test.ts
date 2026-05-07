@@ -1350,7 +1350,7 @@ describe("Ticker — applyTickerSpeed (v7.1.7)", () => {
   });
 });
 
-// ── Sprint 89: applyTickerSpeed elTicker branch, same-day skip, overlay open/close ──
+// ── applyTickerSpeed elTicker branch, same-day skip, overlay open/close ──
 
 const HALACHA_WITH_FAMILY: typeof SAMPLE_HALACHA = {
   ref: "Shabbat 1:1",
@@ -1371,7 +1371,7 @@ function buildOverlayDOM(): void {
   `;
 }
 
-describe("Ticker — Sprint 89 applyTickerSpeed with live elTicker", () => {
+describe("Ticker — applyTickerSpeed with live elTicker", () => {
   beforeEach(() => {
     buildFullDOM();
     vi.mocked(cGet).mockReturnValue(SAMPLE_HALACHA);
@@ -1428,7 +1428,7 @@ describe("Ticker — Sprint 89 applyTickerSpeed with live elTicker", () => {
   });
 });
 
-describe("Ticker — Sprint 89 overlay open and close", () => {
+describe("Ticker — overlay open and close", () => {
   beforeEach(() => {
     buildOverlayDOM();
     vi.mocked(cGet).mockReturnValue(SAMPLE_HALACHA);

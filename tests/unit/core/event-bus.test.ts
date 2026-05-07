@@ -1,7 +1,7 @@
 /**
  * Tests for src/core/event-bus.ts
  *
- * Sprint 173 (X2 · V14-CROSS): signals-based pub/sub cross-card channels.
+ * (X2 · ): signals-based pub/sub cross-card channels.
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -211,7 +211,7 @@ describe("reactivity", () => {
   });
 });
 
-// ── Sprint 275 / EP1-EP5: fast-check property tests for event-bus ──────────
+// ── fast-check property tests for event-bus ──────────
 
 import * as fc from "fast-check";
 
@@ -224,7 +224,7 @@ const arbitrarySyncState = (): fc.Arbitrary<SyncStateVal> =>
 const arbitraryCardId = (): fc.Arbitrary<string> =>
   fc.string({ minLength: 1, maxLength: 12 }).filter((s) => s.trim().length > 0);
 
-describe("event-bus fast-check properties (EP1-EP5, Sprint 275)", () => {
+describe("event-bus fast-check properties (EP1-EP5 )", () => {
   beforeEach(() => {
     _resetBusForTesting();
   });

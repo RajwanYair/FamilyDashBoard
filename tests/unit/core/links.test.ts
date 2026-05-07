@@ -1,5 +1,5 @@
 /**
- * Tests for src/core/links.ts — Sprint 216 / X3 semantic-link service.
+ * Tests for src/core/links.ts — / X3 semantic-link service.
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -10,7 +10,7 @@ vi.mock("@/core/config", () => ({
 }));
 import { loadConfig } from "@/core/config";
 
-describe("Semantic links — registerLink / getLinks (Sprint 216 / X3)", () => {
+describe("Semantic links — registerLink / getLinks ", () => {
   beforeEach(() => {
     clearLinks();
     vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: true } as never);
@@ -76,11 +76,11 @@ describe("Semantic links — registerLink / getLinks (Sprint 216 / X3)", () => {
   });
 });
 
-// ── Sprint 264 / LP1-LP4: fast-check property tests for links invariants ──────
+// ── fast-check property tests for links invariants ──────
 
 import * as fc from "fast-check";
 
-describe("Semantic links — fast-check properties (LP1-LP4, Sprint 264)", () => {
+describe("Semantic links — fast-check properties (LP1-LP4 )", () => {
   beforeEach(() => {
     clearLinks();
     vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: true } as never);
@@ -176,9 +176,9 @@ describe("Semantic links — fast-check properties (LP1-LP4, Sprint 264)", () =>
   });
 });
 
-// ── Sprint 304 / LP5-LP8: additional fast-check property tests ────────────
+// ── additional fast-check property tests ────────────
 
-describe("Semantic links — fast-check properties (LP5-LP8, Sprint 304)", () => {
+describe("Semantic links — fast-check properties (LP5-LP8 )", () => {
   beforeEach(() => {
     clearLinks();
     vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: true } as never);

@@ -1,7 +1,7 @@
 /**
  * Tests for `_headers` (Cloudflare Pages security baseline).
  *
- * Sprint 327 (D5): Origin-Agent-Cluster: ?1 enables process isolation per
+ * (D5): Origin-Agent-Cluster: ?1 enables process isolation per
  * origin (defends against Spectre-class side-channels). Verified alongside
  * the existing CSP / COOP / COEP / CORP / HSTS / Permissions-Policy chain.
  */
@@ -11,7 +11,7 @@ import { resolve } from "node:path";
 
 const HEADERS = readFileSync(resolve(process.cwd(), "_headers"), "utf-8");
 
-describe("_headers — security baseline (Sprint 327)", () => {
+describe("_headers — security baseline ", () => {
   it("declares Origin-Agent-Cluster: ?1", () => {
     expect(HEADERS).toMatch(/Origin-Agent-Cluster:\s*\?1/);
   });
@@ -28,7 +28,7 @@ describe("_headers — security baseline (Sprint 327)", () => {
     expect(HEADERS).toMatch(/require-trusted-types-for 'script'/);
   });
 
-  it("denies new 2026 sensor / privacy / clipboard APIs by default (Sprint 331)", () => {
+  it("denies new 2026 sensor / privacy / clipboard APIs by default ", () => {
     // Hard-deny: empty allowlist
     for (const directive of [
       "attribution-reporting",

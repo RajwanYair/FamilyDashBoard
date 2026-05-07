@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — Document Picture-in-Picture helper
  *
- * Sprint 137 (Roadmap #22, gated): foundational helper for moving the active
+ * foundational helper for moving the active
  * video-news iframe into a Document Picture-in-Picture window so the user can
  * keep watching the news feed while the dashboard scrolls or while another
  * card maximises.

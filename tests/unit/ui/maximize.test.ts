@@ -354,7 +354,7 @@ describe("Maximize — initCardCollapse", () => {
   });
 });
 
-// ── Sprint 5: startViewTransition path, guard branches ──────────────────────
+// ── startViewTransition path, guard branches ──────────────────────
 
 describe("Maximize — initCardCollapse with startViewTransition", () => {
   let mod: MaxModFull;
@@ -487,7 +487,7 @@ describe("Maximize — getCollapsedCards", () => {
   });
 });
 
-// ── Sprint 6: initCardCollapse uncovered branches ────────────────────────────
+// ── initCardCollapse uncovered branches ────────────────────────────
 
 describe("Maximize — initCardCollapse card-id fallback via child element", () => {
   let mod: MaxModFull;
@@ -789,9 +789,9 @@ describe("Maximize — aria-expanded accessibility (v7.1.7)", () => {
   });
 });
 
-// ── Sprint 19: aria-expanded on collapse buttons ─────────────────────────────
+// ── aria-expanded on collapse buttons ─────────────────────────────
 
-describe("Maximize — initCardCollapse aria-expanded on collapse buttons (Sprint 19)", () => {
+describe("Maximize — initCardCollapse aria-expanded on collapse buttons ", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();
@@ -974,9 +974,9 @@ describe("Maximize — View Transitions path (F12)", () => {
   });
 });
 
-// ── Sprint 88: VT finished.then callbacks, saveCollapsedCards catch, btn=null ──
+// ── VT finished.then callbacks, saveCollapsedCards catch, btn=null ──
 
-describe("Maximize — Sprint 88 branch coverage", () => {
+describe("Maximize — branch coverage", () => {
   function stubViewTransition(): void {
     // Supports both VT L1 callback and L2 options-object call styles.
     Object.defineProperty(document, "startViewTransition", {
@@ -1102,7 +1102,7 @@ describe("Maximize — Sprint 88 branch coverage", () => {
   });
 });
 
-// ── Sprint 143: startVtWithTypes TypeError fallback (lines 41-44) ─────────────
+// ── startVtWithTypes TypeError fallback (lines 41-44) ─────────────
 
 describe("Maximize — startVtWithTypes L1 TypeError fallback (lines 41-44)", () => {
   beforeEach(() => {

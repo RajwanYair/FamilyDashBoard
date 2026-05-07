@@ -1,5 +1,5 @@
 /**
- * Unit tests — ADR index staleness check (V13-OPS)
+ * Unit tests — ADR index staleness check 
  *
  * Tests the pure helper functions from scripts/check-adr-index.mjs:
  *   - parseAdrContent: extract title/date/status from ADR markdown
@@ -89,7 +89,7 @@ function buildAdrIndex(
 
 // ── parseAdrContent ───────────────────────────────────────────────────────────
 
-describe("parseAdrContent — extract ADR metadata (V13-OPS)", () => {
+describe("parseAdrContent — extract ADR metadata ", () => {
   it("parses title from first heading stripping ADR number prefix", () => {
     const text = "# ADR-001: No Shadow DOM\n\n**Date:** 2026-04-17\n**Status:** Accepted\n";
     const result = parseAdrContent(text, "ADR-001-shadow-dom.md");
@@ -151,7 +151,7 @@ describe("parseAdrContent — extract ADR metadata (V13-OPS)", () => {
 
 // ── pad ───────────────────────────────────────────────────────────────────────
 
-describe("pad — column padding utility (V13-OPS)", () => {
+describe("pad — column padding utility ", () => {
   it("pads a short string to the target width", () => {
     expect(pad("abc", 6)).toBe("abc   ");
   });
@@ -171,7 +171,7 @@ describe("pad — column padding utility (V13-OPS)", () => {
 
 // ── buildAdrIndex ─────────────────────────────────────────────────────────────
 
-describe("buildAdrIndex — generate README.md content (V13-OPS)", () => {
+describe("buildAdrIndex — generate README.md content ", () => {
   const ONE_ADR = [
     {
       file: "ADR-001-shadow-dom.md",

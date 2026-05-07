@@ -82,7 +82,7 @@ describe("AlertsOrchestrator — Durable Object stub", () => {
   });
 });
 
-// ── SSE + broadcast (V13-EDGE-1) ─────────────────────────────────────────────
+// ── SSE + broadcast  ─────────────────────────────────────────────
 
 describe("AlertsOrchestrator — SSE subscribe and broadcast", () => {
   it("GET /subscribe returns 200 with text/event-stream content-type", async () => {

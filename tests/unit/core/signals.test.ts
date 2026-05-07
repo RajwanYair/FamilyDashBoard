@@ -1,6 +1,5 @@
 /**
- * tests/unit/core/signals.test.ts — Sprint 101
- *
+ * tests/unit/core/signals.test.ts — *
  * Verifies the zero-dep Signal/Computed/Effect primitive in src/core/signals.ts.
  */
 
@@ -242,9 +241,9 @@ describe("isSignal()", () => {
   });
 });
 
-// ── Sprint 167: peek() on dirty Computed ─────────────────────────────────────
+// ── peek() on dirty Computed ─────────────────────────────────────
 
-describe("computed().peek() on dirty signal (Sprint 167)", () => {
+describe("computed().peek() on dirty signal ", () => {
   it("peek() recomputes when called on a dirty computed (dependency changed, not yet read)", () => {
     const a = signal(1);
     const fn = vi.fn(() => a.value * 3);

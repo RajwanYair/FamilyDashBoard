@@ -166,7 +166,7 @@ export async function handleCurrency(env: Env): Promise<Response> {
   }
 
   // All JSON-based upstreams failed — try ECB direct (eurofxref-daily.xml, EUR-base → ILS cross-rate)
-  // Sprint 162, Roadmap #16: independent of all JSON providers; always fetches from ecb.europa.eu
+  // , Roadmap #16: independent of all JSON providers; always fetches from ecb.europa.eu
   try {
     const ecbRes = await fetch("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
     if (ecbRes.ok) {

@@ -11,7 +11,7 @@
 ## Context
 
 FamilyDashBoard cards are plain `HTMLElement` instances registered in the card
-registry (`registerCard` / `getCard`). Prior to Sprint 253 cards had no
+registry (`registerCard` / `getCard`). Prior to cards had no
 standard way to react to cross-card runtime events:
 
 - **Theme change** — a user cycling themes (key `t`) or the auto-theme rule

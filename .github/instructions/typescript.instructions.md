@@ -81,7 +81,7 @@ description: "Use when: writing or reviewing TypeScript source files in src/. Ru
 - No external JS/CSS libraries — zero runtime dependencies
 - No `devDependencies` in `FamilyDashBoard/package.json` — all go in `MyScripts/package.json`
 
-## Service Worker (sw.ts — Stream SW.4)
+## Service Worker (sw.ts)
 
 - **Canonical source**: `sw.ts` — compiled to `dist/sw.js` via `scripts/build-sw.mjs` during `vite build`
 - **Typed global**: `const sw = self as unknown as ServiceWorkerGlobalScope;` — use `sw.*` everywhere (not `self.*`)
@@ -91,7 +91,17 @@ description: "Use when: writing or reviewing TypeScript source files in src/. Ru
 - **Build script**: `node scripts/build-sw.mjs <version>` — uses TypeScript `transpileModule` from parent `node_modules`
 - Never use `esbuild` directly — it is embedded in Vite and not available as a standalone package in this monorepo
 
-## Worker Zod Schemas (worker/src/utils/schemas.ts — Streams W.5–W.8)
+## Extension Integration
+
+- **ESLint** (`dbaeumer.vscode-eslint`): inline diagnostics surface in `get_errors` — prefer `get_errors` over terminal `npx eslint` for single-file validation.
+- **Error Lens** (`usernamehw.errorlens`): shows errors inline in the editor — ensures issues are visible immediately during editing.
+- **Console Ninja** (`wallabyjs.console-ninja`): inline `console.log` / `diagLog()` output in the editor — use for debugging data flow without switching to terminal.
+- **Path IntelliSense** (`christian-kohler.path-intellisense`): auto-completes `@/` import paths — reduces typos in module references.
+- **Version Lens** (`pflannery.vscode-versionlens`): shows latest package versions in `package.json` — use to check for outdated deps.
+- **Bookmarks** (`alefragnani.bookmarks`): mark key code locations during debugging sessions — use to navigate complex card/adapter chains.
+- **Code Spell Checker** (`streetsidesoftware.code-spell-checker`): surfaces spelling errors in comments and string literals via `get_errors`.
+
+## Worker Zod Schemas (worker/src/utils/schemas.ts)
 
 - All worker route handlers validate upstream responses with `safeParse(Schema, data)` before forwarding
 - Schema naming: `FooBarSchema` — Zod `z.object({...}).passthrough()` for JSON; `z.string().refine(...)` for text

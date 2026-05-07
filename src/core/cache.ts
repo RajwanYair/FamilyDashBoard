@@ -271,7 +271,7 @@ export function cClear(): void {
   void idbClear();
 }
 
-// ── Sprint 119: explicit single-key cache removal ────────────────────────────
+// explicit single-key cache removal ────────────────────────────
 
 /** Remove a single cache key from all layers (memory, localStorage, IDB). */
 export function cDelete(key: string): void {
@@ -308,12 +308,12 @@ export function getOldestCacheAgeMinutes(): number {
   return ageMs < 0 ? 0 : Math.floor(ageMs / MS_PER_MIN);
 }
 
-// ── Sprint 29: cache statistics ───────────────────────────────────────────────
+// cache statistics ───────────────────────────────────────────────
 
 let _cacheHits = 0;
 let _cacheMisses = 0;
 
-/** Sprint 181: Track which layer served the last hit. */
+/** Track which layer served the last hit. */
 export type CacheLayer = "mem" | "ls" | "idb" | "none";
 let _lastHitLayer: CacheLayer = "none";
 
@@ -326,11 +326,11 @@ function _recordCacheMiss(): void {
   _cacheMisses++;
 }
 
-/** Sprint 181: Record which tier served a hit. */
+/** Record which tier served a hit. */
 function _setHitLayer(layer: CacheLayer): void {
   _lastHitLayer = layer;
 }
-/** Sprint 181: Returns the layer that served the most recent hit. */
+/** Returns the layer that served the most recent hit. */
 export function lastHitLayer(): CacheLayer {
   return _lastHitLayer;
 }
@@ -352,7 +352,7 @@ export function resetCacheStats(): void {
   _lastHitLayer = "none";
 }
 
-// ── Sprint 51: IDB migration + IDB eviction ───────────────────────────────────
+// IDB migration + IDB eviction ───────────────────────────────────
 
 /**
  * One-time migration: copy all `dash_v2_*` localStorage entries into IDB.
@@ -413,7 +413,7 @@ export async function cEvictIdb(): Promise<number> {
 }
 
 /**
- * Null-coalescing cache read (Sprint 59).
+ * Null-coalescing cache read.
  *
  * Returns the fresh cache value if available; otherwise calls `fallback()`
  * and stores its result before returning it. Useful for synchronous
@@ -433,7 +433,7 @@ export function cOr<T>(key: string, ttl: number, fallback: () => T): T {
 }
 
 /**
- * IDB cold-start loader (Sprint 47).
+ * IDB cold-start loader.
  *
  * Provides a standard pattern for the card page-load phase:
  *   1. Try IDB/memory async cache first (no network).
@@ -470,7 +470,7 @@ export async function coldStart<T>(
   return null;
 }
 
-// ── Sprint 95: Cache age helper ──────────────────────────────────────────
+// Cache age helper ──────────────────────────────────────────
 
 /**
  * Returns the age in milliseconds of a cached entry, or `null` if not found.
@@ -525,7 +525,7 @@ export function _resetForTest(): void {
   _lastHitLayer = "none";
 }
 
-// ── Sprint 121: Full cache dashboard stats ───────────────────────────────────
+// Full cache dashboard stats ───────────────────────────────────
 
 export interface CacheDashboardStats {
   memEntries: number;
@@ -554,7 +554,7 @@ export function cacheDashboard(): CacheDashboardStats {
   };
 }
 
-// ── Sprint 178: Async cache inventory ─────────────────────────────────────
+// Async cache inventory ─────────────────────────────────────
 
 export interface CacheInventory {
   memEntries: number;

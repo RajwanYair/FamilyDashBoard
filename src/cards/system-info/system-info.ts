@@ -42,7 +42,7 @@ interface NavigatorUABrandVersion {
 interface NavigatorUAData {
   brands: NavigatorUABrandVersion[];
   platform: string;
-  // Sprint 118 (Roadmap #18): high-entropy hints (Chromium-only, async)
+  // high-entropy hints (Chromium-only, async)
   getHighEntropyValues?: (hints: string[]) => Promise<{
     architecture?: string;
     bitness?: string;
@@ -60,7 +60,7 @@ type NavigatorWithExtras = Navigator & {
 
 const PAGE_LOAD_TIME = Date.now();
 
-// ── Sprint 29: Pure helpers for JS heap + GPU ──────────────────────────────
+// Pure helpers for JS heap + GPU ──────────────────────────────
 
 /**
  * Format JS heap usage as "used / limit MB".
@@ -108,7 +108,7 @@ function setText(id: string, text: string): void {
 
 // ── Render ─────────────────────────────────────────────────────────────────
 
-// ── V13-DATA: connection-type numeric encoding for sparkline ─────────────
+// ── connection-type numeric encoding for sparkline ─────────────
 
 /** Encode NetworkInformation.effectiveType as an ordinal for sparkline history.
  *  "slow-2g" → 1, "2g" → 2, "3g" → 3, "4g" → 4, unknown → 0
@@ -151,7 +151,7 @@ export async function renderSystemInfo(): Promise<void> {
     if (conn.rtt !== undefined) parts.push(`RTT ${conn.rtt}ms`);
     setText("sysinfo-net", parts.join(" · ") || "—");
 
-    // V13-DATA: 7-reading downlink sparkline
+    // 7-reading downlink sparkline
     if (conn.downlink !== undefined) {
       void (async () => {
         await historyAppend("sysinfo:downlink", conn.downlink as number);
@@ -165,7 +165,7 @@ export async function renderSystemInfo(): Promise<void> {
       })();
     }
 
-    // V13-DATA: 7-reading connection-type sparkline (encodes 4g→4, 3g→3, …)
+    // 7-reading connection-type sparkline (encodes 4g→4, 3g→3, …)
     if (conn.effectiveType) {
       void (async () => {
         await historyAppend("sysinfo:conntype", encodeConnType(conn.effectiveType as string));
@@ -206,7 +206,7 @@ export async function renderSystemInfo(): Promise<void> {
         )
         .map((b: NavigatorUABrandVersion) => `${b.brand} ${b.version}`)
         .join(", ") || ua.platform;
-    // Roadmap #18: opportunistically enrich with high-entropy hints (Chromium-only).
+    // opportunistically enrich with high-entropy hints (Chromium-only).
     // Failures are non-fatal — UA-CH may be denied by Permissions-Policy or feature-flagged.
     if (typeof ua.getHighEntropyValues === "function") {
       try {
@@ -251,7 +251,7 @@ export async function renderSystemInfo(): Promise<void> {
   const rttConn = (navigator as NavigatorWithExtras).connection;
   if (rttConn?.rtt !== undefined && rttConn.rtt > 0) {
     setText("sysinfo-rtt", `${rttConn.rtt}ms`);
-    // Sprint 399 / SI-RTT: accumulate Connection-API RTT into sparkline ring too.
+    // accumulate Connection-API RTT into sparkline ring too.
     appendRttHistory(rttConn.rtt);
     const rttHistory = getRttHistory();
     const rttSparkEl = document.getElementById("sysinfo-rtt-spark");
@@ -267,7 +267,7 @@ export async function renderSystemInfo(): Promise<void> {
     if (navEntry) {
       const rttMs = Math.round(navEntry.responseEnd - navEntry.fetchStart);
       setText("sysinfo-rtt", rttMs > 0 ? `${rttMs}ms` : "—");
-      // Sprint 212 / SI3: accumulate in ring buffer + render sparkline
+      // accumulate in ring buffer + render sparkline
       appendRttHistory(rttMs);
       const rttHistory = getRttHistory();
       const rttSparkEl = document.getElementById("sysinfo-rtt-spark");
@@ -279,7 +279,7 @@ export async function renderSystemInfo(): Promise<void> {
     }
   }
 
-  // Sprint 29: JS Heap memory (Chrome only — performance.memory)
+  // JS Heap memory (Chrome only — performance.memory)
   const perfMem = (
     performance as Performance & {
       memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number };
@@ -289,7 +289,7 @@ export async function renderSystemInfo(): Promise<void> {
     setText("sysinfo-heap", formatHeapMb(perfMem.usedJSHeapSize, perfMem.jsHeapSizeLimit));
   }
 
-  // Sprint 29: GPU renderer via WebGL debug extension
+  // GPU renderer via WebGL debug extension
   try {
     const canvas = document.createElement("canvas");
     const gl = (canvas.getContext("webgl") ??
@@ -305,7 +305,7 @@ export async function renderSystemInfo(): Promise<void> {
     // WebGL not available — leave "—"
   }
 
-  // Sprint 179 / SI2: Service Worker state
+  // Service Worker state
   const swState = await getSwState();
   const SW_LABELS: Record<string, string> = {
     active: "🟢 פעיל",
@@ -316,7 +316,7 @@ export async function renderSystemInfo(): Promise<void> {
   };
   setText("sysinfo-sw", SW_LABELS[swState] ?? "—");
 
-  // Sprint 329 / D3: Compute Pressure API state
+  // Compute Pressure API state
   const PRESSURE_LABELS: Record<PressureState, string> = {
     nominal: "🟢 רגיל",
     fair: "🟡 מתון",
@@ -326,7 +326,7 @@ export async function renderSystemInfo(): Promise<void> {
   };
   setText("sysinfo-pressure", PRESSURE_LABELS[getPressureState()]);
 
-  // Sprint 330 / D4: Storage Buckets feature-detect
+  // Storage Buckets feature-detect
   const bucketsLabel = await getStorageBuckets();
   setText("sysinfo-buckets", bucketsLabel);
 
@@ -335,7 +335,7 @@ export async function renderSystemInfo(): Promise<void> {
 
 let _sysInfoInterval: number | null = null;
 
-// X15 (Sprint 415): semantic clipboard producer
+// X15: semantic clipboard producer
 function buildSystemInfoPayload(): SemanticPayload {
   const device = categorizeDevice();
   const conn = getConnectionInfo();
@@ -363,7 +363,7 @@ export function initSystemInfoCard(): void {
   if (_sysInfoInterval) clearInterval(_sysInfoInterval);
   // Refresh every 30 seconds
   _sysInfoInterval = window.setInterval(() => void renderSystemInfo(), 30_000);
-  // X15 (Sprint 415): register semantic clipboard producer
+  // X15: register semantic clipboard producer
   registerSemanticProducer("system-info", buildSystemInfoPayload);
 
   // React to online/offline events
@@ -383,7 +383,7 @@ export function destroySystemInfoCard(): void {
   destroyPressureObserver();
 }
 
-// ── Sprint 28: Pure system-info utility functions ─────────────────────────
+// Pure system-info utility functions ─────────────────────────
 
 /**
  * Returns the effective connection type string (e.g. "4g", "3g", "slow-2g")
@@ -438,7 +438,7 @@ export function categorizeDevice(): "tv" | "desktop" | "tablet" | "mobile" {
 }
 
 /**
- * Sprint 205 / SI1: Return a formatted storage usage string using the
+ * Return a formatted storage usage string using the
  * StorageManager API (`navigator.storage.estimate()`).
  * Returns "used / quota MB" (e.g. "12.3 / 512 MB") or "—" when unavailable.
  */
@@ -454,14 +454,14 @@ export async function getStorageQuota(): Promise<string> {
   }
 }
 
-// ── Sprint 330 / D4: Storage Buckets feature-detect ──────────────────────
+// Storage Buckets feature-detect ──────────────────────
 
 interface StorageBucketsManager {
   keys: () => Promise<string[]>;
 }
 
 /**
- * Sprint 330 / D4: Return a Storage Buckets summary string.
+ * Return a Storage Buckets summary string.
  *
  * Surfaces the count of named storage buckets (per-card persistence
  * partitions). Returns "N דליים" when the API is supported, or "—" when
@@ -481,7 +481,7 @@ export async function getStorageBuckets(): Promise<string> {
 }
 
 
-// Sprint 212 / SI3: In-memory RTT ring buffer (10-minute window) ──────────
+// In-memory RTT ring buffer (10-minute window) ──────────
 
 const RTT_RING_SIZE = 10;
 const _rttRing: number[] = [];
@@ -507,7 +507,7 @@ export function _resetRttHistory(): void {
 }
 
 /**
- * Sprint 179 / SI2: Resolve the current Service Worker registration state.
+ * Resolve the current Service Worker registration state.
  * Returns one of: "active" | "installing" | "waiting" | "none" | "unsupported".
  * Safe to call in non-SW environments.
  */
@@ -525,7 +525,7 @@ export async function getSwState(): Promise<"active" | "installing" | "waiting" 
   }
 }
 
-// ── Sprint 329 / D3: Compute Pressure API ─────────────────────────────────
+// Compute Pressure API ─────────────────────────────────
 
 /**
  * Compute Pressure API state — `nominal | fair | serious | critical`.
@@ -579,7 +579,7 @@ export function destroyPressureObserver(): void {
   _pressureState = "unsupported";
 }
 
-// ── Sprint 280 / CS-SI1: configSchema (extracted + expanded) ─────────────
+// configSchema (extracted + expanded) ─────────────
 
 export const systemInfoConfigSchema: CardConfigField[] = [
   {

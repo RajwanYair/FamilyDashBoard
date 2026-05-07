@@ -66,7 +66,7 @@
   color: var(--text-muted);
 }
 
-/* Sprint 11: Maximize — large tasks card layout (added before .tasks-cb) */
+/* Maximize — large tasks card layout (added before .tasks-cb) */
 @container card (min-width: 900px) {
   .tasks-list {
     gap: 8px;
@@ -196,7 +196,7 @@
   cursor: pointer;
 }
 
-/* Sprint 24: Priority badges + due date chips */
+/* Priority badges + due date chips */
 .tasks-priority {
   font-size: 0.7em;
   font-weight: 800;
@@ -216,7 +216,7 @@
   font-weight: 700;
 }
 
-/* Sprint 47: task due today — yellow warning styling */
+/* task due today — yellow warning styling */
 .tasks-due.tasks-due-today {
   color: var(--warning, #fbbf24);
   font-weight: 700;
@@ -227,13 +227,13 @@
   border-inline-start: 3px solid var(--danger, #f87171);
 }
 
-/* Sprint 47: task due today gets a yellow highlight */
+/* task due today gets a yellow highlight */
 .tasks-row.due-today {
   background: color-mix(in srgb, var(--warning, #fbbf24) 8%, transparent);
   border-inline-start: 3px solid var(--warning, #fbbf24);
 }
 
-/* Sprint 177 / T1: task due within this week — subtle green hint */
+/* task due within this week — subtle green hint */
 .tasks-due.tasks-due-week {
   color: var(--positive, #34d399);
   font-weight: 600;
@@ -244,7 +244,7 @@
   border-inline-start: 3px solid var(--positive, #34d399);
 }
 
-/* Sprint 177 / T3: tag chips */
+/* tag chips */
 .tasks-tags {
   display: flex;
   flex-wrap: wrap;

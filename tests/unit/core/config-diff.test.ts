@@ -1,11 +1,11 @@
 /**
- * Sprint 103 — Config diff utility tests
+ * Config diff utility tests
  */
 import { describe, it, expect } from "vitest";
 import { diffConfigs } from "@/core/config";
 import { DEFAULT_CONFIG } from "@/types/config";
 
-describe("diffConfigs (Sprint 103)", () => {
+describe("diffConfigs ", () => {
   it("returns empty array for identical configs", () => {
     const a = { ...DEFAULT_CONFIG };
     const b = { ...DEFAULT_CONFIG };

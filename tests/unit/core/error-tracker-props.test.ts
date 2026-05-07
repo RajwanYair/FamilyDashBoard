@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/error-tracker.ts (Sprint 321 / ETP1-ETP5)
+ * fast-check property tests for src/core/error-tracker.ts 
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import fc from "fast-check";
@@ -14,7 +14,7 @@ import {
   _resetTrend,
 } from "@/core/error-tracker";
 
-describe("error-tracker — fast-check properties (ETP1-ETP5, Sprint 321)", () => {
+describe("error-tracker — fast-check properties (ETP1-ETP5 )", () => {
   beforeEach(() => {
     clearErrors();
     _resetTrend();

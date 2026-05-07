@@ -1,5 +1,5 @@
 /**
- * Tests for V13-DATA: connection-type sparkline in system-info.ts
+ * Tests for connection-type sparkline in system-info.ts
  *
  * Verifies:
  *   - encodeConnType maps effectiveType strings to ordinal numbers
@@ -8,8 +8,7 @@
  *   - sysinfo-conntype-spark element is populated when ≥ 2 readings exist
  *   - No DOM error when sysinfo-conntype-spark element is absent
  *
- * V13-DATA
- */
+ * */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
@@ -66,7 +65,7 @@ function restoreConnection() {
 
 // ── encodeConnType ────────────────────────────────────────────────────────────
 
-describe("encodeConnType (V13-DATA)", () => {
+describe("encodeConnType ", () => {
   let encodeConnType: (ct: string) => number;
 
   beforeEach(async () => {
@@ -100,7 +99,7 @@ describe("encodeConnType (V13-DATA)", () => {
 
 // ── renderSystemInfo: conntype sparkline ──────────────────────────────────────
 
-describe("renderSystemInfo: connection-type sparkline (V13-DATA)", () => {
+describe("renderSystemInfo: connection-type sparkline ", () => {
   beforeEach(() => {
     buildDom();
     mockAppend.mockClear();
@@ -170,7 +169,7 @@ describe("renderSystemInfo: connection-type sparkline (V13-DATA)", () => {
 
 // ── HTML: sysinfo-conntype-spark element exists ───────────────────────────────
 
-describe("index.html: sysinfo-conntype-spark element (V13-DATA)", () => {
+describe("index.html: sysinfo-conntype-spark element ", () => {
   it("index.html contains sysinfo-conntype-spark SVG element", async () => {
     const { readFileSync } = await import("node:fs");
     const { resolve, dirname } = await import("node:path");

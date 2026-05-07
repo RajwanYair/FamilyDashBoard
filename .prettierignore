@@ -27,7 +27,7 @@ blob-report/
 .github/assets/*.svg
 
 # Legacy archive
-BestDashBoard.html
+docs/legacy/BestDashBoard.html
 
 # App shell HTML (hand-crafted dashboard template — Prettier HTML parser chokes on
 # inline templates with custom-element tags; formatting is maintained manually)

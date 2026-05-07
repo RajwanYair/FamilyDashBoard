@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-A11Y: Screen-reader dialog audit
+ * Unit tests — Y: Screen-reader dialog audit
  *
  * Verifies that every interactive overlay / dialog in index.html has the
  * correct ARIA scaffolding for screen-reader navigation:
@@ -12,7 +12,7 @@
  *
  * These run without a real DOM — they scan the raw HTML source text.
  *
- * V13-A11Y
+ * Y
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
@@ -51,7 +51,7 @@ function allIds(): Set<string> {
 
 // ── Skip navigation ───────────────────────────────────────────────────────────
 
-describe("skip-to-main-content link (V13-A11Y)", () => {
+describe("skip-to-main-content link (Y)", () => {
   it("skip-link element exists", () => {
     expect(HTML).toMatch(/class="skip-link"/);
   });
@@ -74,7 +74,7 @@ describe("skip-to-main-content link (V13-A11Y)", () => {
 
 // ── <dialog> elements: ARIA completeness ─────────────────────────────────────
 
-describe("<dialog> ARIA completeness (V13-A11Y)", () => {
+describe("<dialog> ARIA completeness (Y)", () => {
   /** Extract all <dialog ...> opening tag strings. */
   function dialogTags(): string[] {
     const re = /<dialog\s[^>]*>/g;
@@ -105,7 +105,7 @@ describe("<dialog> ARIA completeness (V13-A11Y)", () => {
 
 // ── role="dialog" divs: ARIA completeness ────────────────────────────────────
 
-describe('role="dialog" elements ARIA completeness (V13-A11Y)', () => {
+describe('role="dialog" elements ARIA completeness (Y)', () => {
   function roleDivTags(): string[] {
     const re = /<div[^>]+role="dialog"[^>]*>/g;
     const out: string[] = [];
@@ -135,7 +135,7 @@ describe('role="dialog" elements ARIA completeness (V13-A11Y)', () => {
 
 // ── aria-labelledby target completeness ──────────────────────────────────────
 
-describe("aria-labelledby targets in dialogs are valid (V13-A11Y)", () => {
+describe("aria-labelledby targets in dialogs are valid (Y)", () => {
   const DIALOG_LABELLEDBY = [
     "ecfg-dialog-title",
     "tour-dialog-title",
@@ -153,7 +153,7 @@ describe("aria-labelledby targets in dialogs are valid (V13-A11Y)", () => {
 
 // ── Dialog close buttons ──────────────────────────────────────────────────────
 
-describe("dialogs have accessible close button (V13-A11Y)", () => {
+describe("dialogs have accessible close button (Y)", () => {
   it("ecfg-dialog has a close/cancel button", () => {
     // Matches class or aria-label containing close/cancel/dismiss (Hebrew or English)
     const ecfgSection = HTML.match(/id="ecfg-dialog"[\s\S]*?<\/dialog>/)?.[0] ?? "";

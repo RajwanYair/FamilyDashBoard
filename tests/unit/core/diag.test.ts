@@ -105,8 +105,8 @@ describe("DiagLog", () => {
   });
 });
 
-// ── Sprint 60: classifyProviderError ─────────────────────────────────────
-describe("classifyProviderError (Sprint 60)", () => {
+// ── classifyProviderError ─────────────────────────────────────
+describe("classifyProviderError ", () => {
   beforeEach(() => clearDiag());
 
   it("classifies network errors", () => {
@@ -143,7 +143,7 @@ describe("classifyProviderError (Sprint 60)", () => {
   });
 });
 
-// ── Structured JSON export (V12-OBSERVABILITY) ─────────────────────────────
+// ── Structured JSON export  ─────────────────────────────
 
 describe("buildDiagExport", () => {
   beforeEach(() => {

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Currency Provider Adapter (Sprint 91)
+ * FamilyDashBoard v13 — Currency Provider Adapter
  *
  * Implements ProviderAdapter for exchange-rate APIs.
  *
@@ -41,7 +41,7 @@ export function createCurrencyAdapter(): ProviderAdapter<CurrencyRateResponse> {
         // BoI failed — fall through to existing provider chain.
       }
 
-      // Sprint 132 (Roadmap #16): ECB-direct via Frankfurter as 3rd fallback.
+      // ECB-direct via Frankfurter as 3rd fallback.
       for (const url of [API.CURRENCY_PRIMARY, API.CURRENCY_FALLBACK, API.CURRENCY_FALLBACK_ECB]) {
         try {
           const data = await fetchJSONWithWorker<CurrencyRateResponse>(url);

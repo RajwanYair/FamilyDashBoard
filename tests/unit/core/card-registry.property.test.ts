@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/card-registry.ts (Sprint 534)
+ * fast-check property tests — src/core/card-registry.ts 
  *
  * Properties under test:
  *  CR1. registerCard + getCard round-trip: any registered entry is retrievable by id
@@ -8,10 +8,10 @@
  *  CR4. registerCard last-wins: re-registering same id overwrites
  *  CR5. listCards length equals distinct registered ids count
  *  CR6. loadCard throws for unregistered id
- *  CR7. createShell returns section with data-card-id attribute (Sprint 595)
- *  CR8. createShell throws for unregistered id (Sprint 595)
- *  CR9. listCards always contains any just-registered id (Sprint 595)
- *  CR10. loadCard succeeds for registered card (Sprint 595)
+ *  CR7. createShell returns section with data-card-id attribute 
+ *  CR8. createShell throws for unregistered id 
+ *  CR9. listCards always contains any just-registered id 
+ *  CR10. loadCard succeeds for registered card 
  */
 
 import { describe, it, expect, beforeEach } from "vitest";

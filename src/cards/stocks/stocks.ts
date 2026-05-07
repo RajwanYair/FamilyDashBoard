@@ -5,8 +5,7 @@
  * allorigins 522 timeouts. BTC-USD proxied via worker /api/crypto (CoinGecko).
  * Renders price, % change, mini sparkline chart, 52-week range.
  *
- * X12/X15 ADOPTED — v13.40.0 Sprint 388 (see ADR-071).
- */
+ * X12/X15 protocol adopted (see ADR-071). */
 
 import "./stocks.css";
 import { trustedHTML } from "../../core/trusted-types";
@@ -38,7 +37,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
-// X15 (Sprint 388): cached snapshot of top mover for the semantic-clipboard producer.
+// X15: cached snapshot of top mover for the semantic-clipboard producer.
 let _topMoverSnapshot: { sym: string; pct: number; dir: "up" | "down" } | null = null;
 
 function buildStocksPayload(): SemanticPayload | null {
@@ -68,7 +67,7 @@ export function fmtPrice(price: number, sym: string): string {
 }
 
 /**
- * Sprint 199 / S2: Convert a USD price to ILS using the live currency rate.
+ * Convert a USD price to ILS using the live currency rate.
  * Returns null when rates are unavailable or the USD rate is invalid.
  */
 function convertUsdToIls(usdPrice: number): number | null {
@@ -239,7 +238,7 @@ export function getMinutesToNextTransition(): number {
   return 0; // After 8:00 PM — don't show countdown
 }
 
-// Sprint 208 / S5: Pre/post-market state pure helpers ─────────────────────
+// Pre/post-market state pure helpers ─────────────────────
 
 /** Returns true during the NYSE pre-market session (4:00–9:29 AM ET). */
 export function isPreMarket(): boolean {
@@ -353,7 +352,7 @@ const INDEX_SYMBOLS = ["^GSPC", "^VIX"] as const;
 const TA35_SYMBOL = "^TA35.TA";
 
 /**
- * V13-DATA: Fill and reveal the Popover API stock detail panel.
+ * Fill and reveal the Popover API stock detail panel.
  * Reads from the already-rendered `.stk` row so no extra fetch is needed.
  */
 export function fillStockDetailPopover(symbol: string): void {
@@ -433,7 +432,7 @@ export function renderStocksShell(): void {
     const priceDiv = document.createElement("div");
     priceDiv.className = "stk-price skeleton";
     priceDiv.textContent = "---";
-    // Sprint 199 / S2: ILS sub-price display
+    // ILS sub-price display
     const priceIlsDiv = document.createElement("div");
     priceIlsDiv.className = "stk-price-ils";
     priceIlsDiv.hidden = true;
@@ -454,12 +453,12 @@ export function renderStocksShell(): void {
     histSparkDiv.className = "stk-ph-spark";
     histSparkDiv.setAttribute("aria-hidden", "true");
 
-    // V13-DATA: 7-day volume sparkline slot
+    // 7-day volume sparkline slot
     const volSparkDiv = document.createElement("div");
     volSparkDiv.className = "stk-vol-spark";
     volSparkDiv.setAttribute("aria-hidden", "true");
 
-    // V13-DATA: Popover API — detail trigger button
+    // Popover API — detail trigger button
     const detailBtn = document.createElement("button");
     detailBtn.type = "button";
     detailBtn.className = "stk-detail-btn";
@@ -494,7 +493,7 @@ export function renderStocksShell(): void {
   );
 
   const fragment = document.createDocumentFragment();
-  // Sprint 49: gate sector headers on cfg.stocksGroupBySector
+  // gate sector headers on cfg.stocksGroupBySector
   const cfg = loadConfig();
   if (cfg.stocksGroupBySector) fragment.appendChild(makeSectorHeader("📊 מדדים"));
   INDEX_SYMBOLS.forEach((s) => {
@@ -541,7 +540,7 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
   blk.classList.remove("stk-up", "stk-down");
   if (trend === "positive") blk.classList.add("stk-up");
   else if (trend === "negative") blk.classList.add("stk-down");
-  // Sprint 187 / S3: store pct for daily-mover pills
+  // store pct for daily-mover pills
   (blk as HTMLElement).dataset["pct"] = isFinite(chgPct) ? chgPct.toFixed(4) : "0";
 
   const symEl = blk.querySelector<HTMLElement>(".stk-sym");
@@ -555,7 +554,7 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
     priceEl.textContent = cur != null ? fmtPrice(cur, sym) : "N/A";
     priceEl.classList.remove("skeleton");
 
-    // Sprint 199 / S2: show ILS equivalent price below USD when enabled
+    // show ILS equivalent price below USD when enabled
     const ilsSubEl = blk.querySelector<HTMLElement>(".stk-price-ils");
     if (ilsSubEl) {
       const showIls = loadConfig().stocksShowIls;
@@ -663,11 +662,11 @@ export function renderStock(blk: Element, data: YahooChartResponse, sym: string)
     blk.querySelector(".stk-vals")?.appendChild(afterEl);
   }
 
-  // 7-day IDB history sparkline (V12-DATA-3)
+  // 7-day IDB history sparkline 
   if (cur != null && isFinite(cur)) {
     void updateStockHistory(blk, sym, cur);
   }
-  // V13-DATA: 7-day volume sparkline
+  // 7-day volume sparkline
   const vol = meta.regularMarketVolume;
   if (vol > 0 && isFinite(vol)) {
     void updateStockVolumeHistory(blk, sym, vol);
@@ -694,7 +693,7 @@ async function updateStockHistory(blk: Element, sym: string, price: number): Pro
 }
 
 /**
- * V13-DATA: Persist today's volume to IDB history and re-render the 7-day
+ * Persist today's volume to IDB history and re-render the 7-day
  * volume sparkline in the `.stk-vol-spark` element. Fire-and-forget.
  */
 async function updateStockVolumeHistory(blk: Element, sym: string, vol: number): Promise<void> {
@@ -749,7 +748,7 @@ async function fetchStock(sym: string): Promise<YahooChartResponse> {
     }
   }
 
-  // V13-DATA-1: Worker-first — worker has Finnhub (primary) → Yahoo (secondary) → KV stale
+  // Worker-first — worker has Finnhub (primary) → Yahoo (secondary) → KV stale
   // Fall back to Yahoo direct only when worker is unavailable (file://, offline, etc.)
   if (isWorkerEnabled()) {
     try {
@@ -853,7 +852,7 @@ export async function loadAllStocks(): Promise<void> {
   checkStockAlerts();
   renderPortfolioRow();
 
-  // X12 (Sprint 388): publish top-mover signal after all stocks are rendered.
+  // X12: publish top-mover signal after all stocks are rendered.
   const stkEls = Array.from(document.querySelectorAll<HTMLElement>("#stocks-body .stk"));
   const movers = getTopMovers(stkEls);
   if (movers.length > 0 && movers[0]) {
@@ -872,7 +871,7 @@ export async function loadAllStocks(): Promise<void> {
   }
 }
 
-// ── Sprint 187 / S3: Top daily-mover pills ────────────────────────────────
+// Top daily-mover pills ────────────────────────────────
 
 interface MoverPill {
   sym: string;
@@ -915,7 +914,7 @@ function updateStockSummary(): void {
     return;
   }
 
-  // Sprint 187 / S3: build daily-mover pills
+  // build daily-mover pills
   const movers = getTopMovers(Array.from(stocks));
   const frag = document.createDocumentFragment();
 
@@ -1137,7 +1136,7 @@ export function destroyStocksCard(): void {
   }
 }
 
-// ── Sprint 136: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const stocksConfigSchema: CardConfigField[] = [
   {
@@ -1157,7 +1156,7 @@ export const stocksConfigSchema: CardConfigField[] = [
     defaultValue: true,
     group: "תצוגה",
   },
-  // Sprint 199 / S2: cross-card ILS conversion
+  // cross-card ILS conversion
   {
     key: "stocksShowIls",
     labelHe: "הצג מחיר בשקלים",
@@ -1166,7 +1165,7 @@ export const stocksConfigSchema: CardConfigField[] = [
     defaultValue: false,
     group: "תצוגה",
   },
-  // ── Sprint 288 / CS-S1: daily-mover pills + pre/post-market badge ─────────
+  // daily-mover pills + pre/post-market badge ─────────
   {
     key: "stocksShowMovers",
     labelHe: "הצג מובילי יום (3 עולים / יורדים)",
@@ -1204,7 +1203,7 @@ export const stocksCard: CardDefinition = {
   configSchema: stocksConfigSchema,
 };
 
-// ── Sprint 213 / S4: Watchlist groups (IDB-backed) ────────────────────────
+// Watchlist groups (IDB-backed) ────────────────────────
 
 const IDB_STK_DB = "fdb-stocks";
 const IDB_GROUPS_STORE = "watchlist-groups";

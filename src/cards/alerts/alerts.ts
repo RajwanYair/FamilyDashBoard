@@ -6,8 +6,7 @@
  * On new alert: plays a beep and shows a desktop notification if granted.
  * Renders scrolling list of recent alert events.
  *
- * X12/X15 ADOPTED — v13.40.0 Sprint 387 (see ADR-071).
- */
+ * X12/X15 protocol adopted (see ADR-071). */
 
 import {
   INTERVALS,
@@ -18,7 +17,7 @@ import {
   isWorkerEnabled,
 } from "../../core/constants";
 import "./alerts.css";
-import { cGetStale, cSetAsync } from "../../core/cache";
+import { cGetStale } from "../../core/cache";
 import { setSync, syncBurst, recordSuccess, recordFailure } from "../../core/sync";
 import { isPageVisible } from "../../core/idle";
 import { diagLog } from "../../core/diag";
@@ -31,7 +30,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
-// X15 (Sprint 387): cached snapshot of active alerts for the semantic-clipboard producer.
+// X15: cached snapshot of active alerts for the semantic-clipboard producer.
 let _activeAlertsSnapshot: { count: number; areas: string[]; latestTs: number } | null = null;
 
 function buildAlertsPayload(): SemanticPayload | null {
@@ -203,7 +202,7 @@ async function fetchAlerts(): Promise<AlertEvent[]> {
 // ── Build a single alert DOM element ──
 
 /**
- * Sprint 28: Return a color-coded threat level indicator icon.
+ * Return a color-coded threat level indicator icon.
  * threat=0/1 → 🔴 (rockets), threat=5 → 🟡 (hostile aircraft), unknown → 🟠
  */
 export function alertThreatIcon(threat: number): string {
@@ -213,7 +212,7 @@ export function alertThreatIcon(threat: number): string {
 }
 
 /**
- * Sprint 28: Return a Hebrew relative-age string for an alert timestamp.
+ * Return a Hebrew relative-age string for an alert timestamp.
  * `ageMin` is (now_unix - alert_unix) / 60.
  */
 export function alertAgeLabel(ageMin: number): string {
@@ -271,7 +270,7 @@ export function buildAlertItem(
   thrEl.textContent = `${alertThreatIcon(threat)} ${THREAT_LABELS[threat] ?? "⚠️ התרעה"}`;
   metaEl.appendChild(thrEl);
 
-  // Sprint 28: alert age label
+  // alert age label
   const ageEl = document.createElement("span");
   ageEl.className = "alert-age";
   ageEl.textContent = alertAgeLabel(ageMin);
@@ -306,7 +305,7 @@ export function renderAlerts(data: AlertEvent[], highlightNew: boolean): void {
   const recent = data.slice(0, 25);
   const hasActive = data.some((ev) => ev.alerts?.some((a) => now - a.time < 600));
 
-  // X12 (Sprint 387): publish active-alerts signal for sibling consumers.
+  // X12: publish active-alerts signal for sibling consumers.
   const activeAlerts: { area: string; ts: number }[] = [];
   for (const ev of data) {
     for (const a of ev.alerts ?? []) {
@@ -403,11 +402,9 @@ export async function loadAlerts(): Promise<void> {
       const isNew = _lastAlertId !== null && newTopId !== _lastAlertId;
       _lastAlertId = newTopId;
       if (isNew) notify(validData);
-      if (isNew) showAlertTakeover(validData); // Sprint 186 / A1
-
-      await cSetAsync(key, validData);
+      if (isNew) showAlertTakeover(validData); // await cSetAsync(key, validData);
       renderAlerts(validData, isNew);
-      // Sprint 185 / A2: persist to ring buffer
+      // persist to ring buffer
       alertRingAppend(validData);
       setSync("alerts", "ok");
       syncBurst("alerts");
@@ -456,7 +453,7 @@ export function setAlertsRealtime(on: boolean): void {
   _realtimeMode = on;
 }
 
-// ── SSE connection (V13-EDGE-1, ADR-025) ──
+// ── SSE connection  ──
 
 /**
  * Open a Server-Sent Events connection to the ALERTS_DO for real-time push.
@@ -497,9 +494,9 @@ export function destroyAlertsSSE(): void {
   setAlertsRealtime(false);
 }
 
-// ── Sprint 185 / A2: 24-h alert history ring buffer ──────────────────────
+// 24-h alert history ring buffer ──────────────────────
 
-// ── Sprint 186 / A1: Full-screen alert takeover dialog ───────────────────
+// Full-screen alert takeover dialog ───────────────────
 
 const TAKEOVER_AUTO_CLOSE_MS = 30_000; // auto-dismiss after 30s
 let _takeoverTimer: ReturnType<typeof setTimeout> | null = null;
@@ -647,7 +644,7 @@ export function initAlertsCard(): void {
   registerSemanticProducer("alerts", buildAlertsPayload);
   initAlertsSSE();
   void loadAlerts();
-  // Sprint 185 / A2: wire history toggle button
+  // wire history toggle button
   const histBtn = document.getElementById("alerts-history-btn");
   const histPanel = document.getElementById("alerts-history-panel");
   if (histBtn && histPanel) {
@@ -669,7 +666,7 @@ export function destroyAlertsCard(): void {
   destroyAlertsSSE();
 }
 
-// ── Sprint 138: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const alertsConfigSchema: CardConfigField[] = [
   {
@@ -708,7 +705,7 @@ export const alertsConfigSchema: CardConfigField[] = [
     defaultValue: false,
     group: "כללי",
   },
-  // ── Sprint 282 / CS-A1: zone + history/severity/dim settings ─────────────
+  // zone + history/severity/dim settings ─────────────
   {
     key: "alertZone",
     labelHe: "אזור גיאוגרפי",

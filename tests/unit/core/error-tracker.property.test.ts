@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/error-tracker.ts (Sprint 495)
+ * fast-check property tests — src/core/error-tracker.ts 
  *
  * Properties under test:
  *  ET1. recordError circular buffer never exceeds MAX_ERRORS (20).

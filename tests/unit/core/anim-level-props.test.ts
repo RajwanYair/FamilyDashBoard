@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/anim-level.ts (Sprint 319 / ALP1-ALP4)
+ * fast-check property tests for src/core/anim-level.ts 
  *
  * Verifies `effectiveAnimLevel` and `applyAnimLevel` invariants over the
  * full level domain (none / minimal / normal / full) and arbitrary
@@ -13,7 +13,7 @@ import type { DashboardConfig } from "@/types/config";
 type Level = DashboardConfig["animLevel"];
 const LEVELS: readonly Level[] = ["none", "minimal", "normal", "full"];
 
-describe("anim-level — fast-check properties (ALP1-ALP4, Sprint 319)", () => {
+describe("anim-level — fast-check properties (ALP1-ALP4 )", () => {
   let mmSpy: ReturnType<typeof vi.spyOn> | null = null;
 
   beforeEach(() => {

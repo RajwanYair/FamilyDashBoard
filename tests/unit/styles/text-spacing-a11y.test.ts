@@ -1,5 +1,5 @@
 /**
- * WCAG 1.4.12 Text Spacing — V13-A11Y-1
+ * WCAG 1.4.12 Text Spacing — Y-1
  *
  * Verifies that:
  * 1. tokens.css declares the four required text-spacing custom properties

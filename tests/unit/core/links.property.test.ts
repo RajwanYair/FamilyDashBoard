@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/links.ts (Sprint 471)
+ * fast-check property tests — src/core/links.ts 
  *
  * Properties under test:
  *  LK1. Registration count: after N distinct direction registrations

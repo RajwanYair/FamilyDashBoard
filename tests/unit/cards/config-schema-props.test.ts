@@ -1,5 +1,5 @@
 /**
- * Sprint 293 / CS-FC1–CS-FC8 — configSchema structural property tests
+ * CS-FC8 — configSchema structural property tests
  *
  * Property-based invariant checks over all 12 card configSchema arrays.
  * Uses fast-check to generate arbitrary valid indices and verifies that

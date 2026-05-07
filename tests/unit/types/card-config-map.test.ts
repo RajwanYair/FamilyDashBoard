@@ -1,5 +1,5 @@
 /**
- * Sprint 98 — Per-card config namespace types
+ * Per-card config namespace types
  */
 import { describe, it, expect } from "vitest";
 import type {
@@ -14,7 +14,7 @@ import type {
   MotivationCardConfig,
 } from "@/types/config";
 
-describe("CardConfigMap types (Sprint 98)", () => {
+describe("CardConfigMap types ", () => {
   it("weather config accepts typed settings", () => {
     const cfg: WeatherCardConfig = {
       size: "lg",

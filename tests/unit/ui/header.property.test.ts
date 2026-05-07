@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/header.ts (Sprint 552)
+ * fast-check property tests — src/ui/header.ts 
  *
  * Properties under test:
  *  HD1. numToGematria: invalid input (≤0 or >9999 or non-integer) → String(n)

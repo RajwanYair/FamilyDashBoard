@@ -1,5 +1,5 @@
 /**
- * tests/unit/core/semantic-clipboard-props.test.ts — Sprint 430 (v14.1.0)
+ * tests/unit/core/semantic-clipboard-props.test.ts — (v14.1.0)
  *
  * fast-check property tests for src/core/semantic-clipboard.ts (SCP1-SCP5).
  * Probes algebraic invariants that unit tests cannot exhaustively cover.

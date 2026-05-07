@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-EDGE: check-openapi-ttl.mjs
+ * Unit tests — check-openapi-ttl.mjs
  *
  * Validates the `parseGetRoutes` and `findMissingTtl` pure helpers that
  * enforce the x-kv-ttl annotation requirement on all OpenAPI GET routes.
@@ -212,7 +212,7 @@ import { fileURLToPath } from "node:url";
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, "..", "..", "..");
 
-describe("real worker/openapi.yaml compliance (V13-EDGE)", () => {
+describe("real worker/openapi.yaml compliance ", () => {
   const yaml = readFileSync(resolve(ROOT, "worker", "openapi.yaml"), "utf8");
   const routes = parseGetRoutes(yaml);
 
@@ -251,8 +251,8 @@ describe("real worker/openapi.yaml compliance (V13-EDGE)", () => {
     expect(route?.hasKvTtl).toBe(true);
   });
 
-  // V13-EDGE-7: new routes added for SSE and canary
-  it("/api/alerts/subscribe route exists (V13-EDGE-1 SSE endpoint)", () => {
+  // new routes added for SSE and canary
+  it("/api/alerts/subscribe route exists (SSE endpoint)", () => {
     const route = routes.find((r) => r.path === "/api/alerts/subscribe");
     expect(route).toBeDefined();
   });
@@ -262,7 +262,7 @@ describe("real worker/openapi.yaml compliance (V13-EDGE)", () => {
     expect(route?.hasKvTtl).toBe(true);
   });
 
-  it("/api/canary route exists (V13-EDGE-5 canary status)", () => {
+  it("/api/canary route exists (canary status)", () => {
     const route = routes.find((r) => r.path === "/api/canary");
     expect(route).toBeDefined();
   });
@@ -272,7 +272,7 @@ describe("real worker/openapi.yaml compliance (V13-EDGE)", () => {
     expect(route?.hasKvTtl).toBe(true);
   });
 
-  it("openapi info.version is 13.1.0 (V13-EDGE-7)", () => {
+  it("openapi info.version is 13.1.0 ", () => {
     expect(yaml).toMatch(/version:\s*"13\.1\.0"/);
   });
 

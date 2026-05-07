@@ -1,7 +1,7 @@
 /**
  * FamilyDashBoard — Provider "blocked-by-network" Toast
  *
- * Sprint 136 (Roadmap V14-RESILIENCE): when a provider transitions from
+ * when a provider transitions from
  * "ok"/"degraded" to "down" (3+ consecutive failures with no stale fallback),
  * surface a single, rate-limited toast so the user knows _which_ card is
  * silent because the corp proxy / hostile network blocked it — instead of

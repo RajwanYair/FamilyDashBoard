@@ -4,8 +4,7 @@
  * Aggregates multiple Hebrew RSS feeds, deduplicates, sorts by date,
  * and renders a scrolling news strip with category detection.
  *
- * X12/X15 ADOPTED — v13.40.0 Sprint 390 (see ADR-071).
- */
+ * X12/X15 protocol adopted (see ADR-071). */
 
 import { createAsyncCardLoader, scheduleCard } from "../base-card";
 import "./news.css";
@@ -31,7 +30,7 @@ import { setCardSignal } from "../../core/card-signal-protocol";
 import { registerSemanticProducer } from "../../core/semantic-clipboard";
 import type { SemanticPayload } from "../../types/semantic-clipboard";
 
-// X15 (Sprint 390): cached snapshot of top headline for the semantic-clipboard producer.
+// X15: cached snapshot of top headline for the semantic-clipboard producer.
 let _topHeadlineSnapshot: { title: string; source: string; link: string; pubDate: string } | null =
   null;
 
@@ -193,7 +192,7 @@ export function relativeAge(pubDate: string): string {
 }
 
 /**
- * Sprint 183 / N5: Return an age-freshness bucket string for a pub-date.
+ * Return an age-freshness bucket string for a pub-date.
  * Used as `data-freshness` attribute on the `.news-age` element for CSS tinting.
  * Buckets: "fresh2m" (< 2 min), "fresh1h" (< 1 h), "fresh1d" (< 1 d), "old" (≥ 1 d).
  */
@@ -365,7 +364,7 @@ export function isBookmarkMode(): boolean {
   return _bkmMode;
 }
 
-// ── Sprint 206 / N2: Star / read-later IDB ───────────────────────────────
+// Star / read-later IDB ───────────────────────────────
 
 const IDB_NEWS_DB = "fdb-news";
 const IDB_STARRED_STORE = "starred";
@@ -414,7 +413,7 @@ export async function getStarredArticles(): Promise<StarredArticle[]> {
   return all.sort((a, b) => b.starredAt.localeCompare(a.starredAt));
 }
 
-// ── Sprint 420 / N-Star-UI: Read-later viewer drawer ─────────────────────
+// Read-later viewer drawer ─────────────────────
 
 /** Close the starred-articles dialog. */
 export function closeStarredDrawer(): void {
@@ -536,7 +535,7 @@ export function cacheDom(): void {
   loadMutedSources();
 }
 
-// ── Sprint 196 / N3: Per-source mute windows ──────────────────────────────
+// Per-source mute windows ──────────────────────────────
 
 /** In-memory mute map: sourceKey → expiry timestamp (ms). */
 let _mutedSources: Record<string, number> = {};
@@ -623,7 +622,7 @@ export function renderSourceFilterChips(): void {
     }
     chip.appendChild(document.createTextNode(feed.src));
 
-    // Sprint 196 / N3: Mute button — opens a snooze popover
+    // Mute button — opens a snooze popover
     const muteBtn = document.createElement("button");
     muteBtn.type = "button";
     muteBtn.className = "news-mute-btn";
@@ -762,7 +761,7 @@ export function renderNews(items: NewsItem[]): void {
   _lastItems = items;
   const cfg = loadConfig();
 
-  // X12 (Sprint 390): publish top-headline signal (after mute/search filtering happens later).
+  // X12: publish top-headline signal (after mute/search filtering happens later).
   const top = items[0];
   if (top) {
     setCardSignal("news", "top", { title: top.title, source: top.source, link: top.link });
@@ -783,7 +782,7 @@ export function renderNews(items: NewsItem[]): void {
   // Apply search filter
   const afterSearch = _searchQuery ? filterBySearch(baseItems, _searchQuery) : baseItems;
 
-  // Sprint 196 / N3: Apply source mute filter
+  // Apply source mute filter
   const displayItems = afterSearch.filter((i) => !isMuted(i.source));
 
   // Update search count and clear button visibility
@@ -826,10 +825,10 @@ export function renderNews(items: NewsItem[]): void {
       const sourceEl = document.createElement("span");
       sourceEl.className = "rss-source";
       sourceEl.textContent = item.source;
-      // Sprint 48: gate source display on cfg.newsShowSource
+      // gate source display on cfg.newsShowSource
       if (!cfg.newsShowSource) sourceEl.hidden = true;
 
-      // Sprint 48: breaking news badge
+      // breaking news badge
       if (!isClone && isBreaking(item.title, item.pubDate)) {
         const breakingBadge = document.createElement("span");
         breakingBadge.className = "news-breaking-badge";
@@ -903,7 +902,7 @@ export function renderNews(items: NewsItem[]): void {
         }
       }
 
-      // Reading-time badge (Sprint 27) — primary items with description
+      // Reading-time badge — primary items with description
       if (!isClone && item.description && item.description.length > 10) {
         const mins = readingTimeMinutes(item.description);
         const rtEl = document.createElement("span");
@@ -1076,7 +1075,7 @@ export function destroyNewsCard(): void {
   }
 }
 
-// ── Sprint 135: configSchema ────────────────────────────────────────────────
+// configSchema ────────────────────────────────────────────────
 
 export const newsConfigSchema: CardConfigField[] = [
   {
@@ -1099,7 +1098,7 @@ export const newsConfigSchema: CardConfigField[] = [
     defaultValue: true,
     group: "תצוגה",
   },
-  // ── Sprint 289 / CS-N1: AI summary, dedup sensitivity, min-age, source filter ──
+  // AI summary, dedup sensitivity, min-age, source filter ──
   {
     key: "newsAiSummary",
     labelHe: "סיכום AI לכתבות",
@@ -1174,7 +1173,7 @@ export const newsCard: CardDefinition = {
  *
  * @internal — test use only
  */
-// ── Sprint 267 / N1: Vectorize shadow mode (ADR-046) ─────────────────────────
+// Vectorize shadow mode (ADR-046) ─────────────────────────
 //
 // 30-day shadow mode: both SimHash v2 and Vectorize run in parallel.
 // Vectorize output is logged to diagLog for precision@10 comparison.

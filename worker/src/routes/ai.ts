@@ -165,7 +165,7 @@ export async function handleMotivationHebrew(env: Env): Promise<Response> {
 /**
  * GET /api/ai/synthesis
  *
- * Sprint 202 / X9: Daily AI synthesis — produces a short Hebrew summary of the
+ * Daily AI synthesis — produces a short Hebrew summary of the
  * day's context (date, current season cue). Cached 4 hours in KV.
  * Faith-safe: avoids politically charged or religiously divisive content.
  * Opt-in: client should gate behind `synthesisEnabled` config key.

@@ -61,7 +61,7 @@ export async function loadCard(id: string): Promise<CardDefinition> {
 }
 
 /**
- * Build a bare DOM shell for a card by id (Sprint 68).
+ * Build a bare DOM shell for a card by id.
  *
  * Returns a `<section data-card-id="[id]">` with an inner
  * `<div class="card-body">`.  The registry entry's icon and
@@ -612,7 +612,7 @@ registerCard({
   },
 });
 
-// Sprint 202 / X9: Daily AI Synthesis tile (opt-in, hidden by default)
+// Daily AI Synthesis tile (opt-in, hidden by default)
 registerCard({
   id: "ai-synthesis",
   icon: "🤖",

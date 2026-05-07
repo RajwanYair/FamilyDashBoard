@@ -1,5 +1,5 @@
 /**
- * fast-check property tests for src/core/card-registry.ts (Sprint 318 / CRP1-CRP5)
+ * fast-check property tests for src/core/card-registry.ts 
  *
  * Verifies invariants of registerCard / getCard / listCards over arbitrary
  * id sequences. The registry is a plain Map so these properties exercise:
@@ -43,7 +43,7 @@ function uniquePrefix(): string {
   return `crp-${testIdCounter}-`;
 }
 
-describe("Card registry — fast-check properties (CRP1-CRP5, Sprint 318)", () => {
+describe("Card registry — fast-check properties (CRP1-CRP5 )", () => {
   beforeEach(() => {
     // No-op — each property uses a unique id prefix to avoid collision.
   });

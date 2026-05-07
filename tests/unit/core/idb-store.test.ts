@@ -1,6 +1,5 @@
 /**
- * tests/unit/core/idb-store.test.ts — Sprint 439
- *
+ * tests/unit/core/idb-store.test.ts — *
  * Direct unit tests for the IDB code path in src/core/idb-store.ts.
  * The fast-check property suite (idb-store-props.test.ts) runs only in the
  * in-memory fallback path because happy-dom has no real indexedDB.
@@ -143,7 +142,7 @@ afterEach(() => {
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
-describe("idb-store — IDB-path direct tests (Sprint 439)", () => {
+describe("idb-store — IDB-path direct tests ", () => {
   // IDB-A
   it("IDB-A: idbGet returns null via IDB for a missing key", async () => {
     vi.stubGlobal("indexedDB", buildFakeIDB());

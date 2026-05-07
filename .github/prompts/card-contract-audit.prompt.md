@@ -1,7 +1,6 @@
 ---
-mode: "agent"
 description: "Audit all 12 cards for a specific contract requirement (configSchema, FdbCard, destroy lifecycle, etc.) and produce a gap report with fixes."
-tools: ["grep_search", "read_file", "file_search", "replace_string_in_file", "multi_replace_string_in_file", "semantic_search", "run_in_terminal", "get_terminal_output", "get_errors", "vscode_listCodeUsages", "manage_todo_list", "tool_search"]
+tools: ["grep_search", "read_file", "file_search", "replace_string_in_file", "multi_replace_string_in_file", "semantic_search", "run_in_terminal", "get_terminal_output", "get_errors", "vscode_listCodeUsages", "vscode_renameSymbol", "manage_todo_list", "tool_search", "memory", "runSubagent"]
 ---
 
 # Card Contract Audit — FamilyDashBoard
@@ -27,7 +26,7 @@ Audit all 12 registered cards for a specific interface contract and fix any gaps
 
 ## Supported Contracts
 
-### A) `configSchema` (Stream E.1)
+### A) `configSchema`
 
 Every `CardDefinition` must have `configSchema: CardConfigField[]`.
 Check: `grep -r "configSchema" src/cards/`

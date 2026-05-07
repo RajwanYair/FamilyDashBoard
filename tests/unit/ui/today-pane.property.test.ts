@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/today-pane.ts buildTodayItems (Sprint 542)
+ * fast-check property tests — src/ui/today-pane.ts buildTodayItems 
  *
  * Properties under test:
  *  TP1. Empty inputs → empty result

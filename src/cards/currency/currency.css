@@ -39,7 +39,7 @@
   }
 } /* end @layer components */
 
-/* Sprint 11: Maximize — large currency card layout */
+/* Maximize — large currency card layout */
 @container card (min-width: 900px) {
   .currency-body {
     grid-template-columns: repeat(5, minmax(min-content, 1fr));
@@ -80,7 +80,7 @@
   }
 }
 
-/* Sprint 184 / C1: Mini-calculator */
+/* Mini-calculator */
 @layer components {
   .cur-calc {
     grid-column: 1 / -1;

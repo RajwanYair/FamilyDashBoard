@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker-client envelope invariants (V13-OPS)
+ * fast-check property tests — worker-client envelope invariants 
  *
  * Properties under test:
  *  E1. workerEnvelope always produces HTTP 200 regardless of payload shape.
@@ -343,7 +343,7 @@ describe("workerEnvelope — E16: ttl=0 produces max-age=0 in Cache-Control", ()
   });
 });
 
-// ── E17: Security — X-Frame-Options is always "DENY" (Sprint 76) ─────────────
+// ── E17: Security — X-Frame-Options is always "DENY"  ─────────────
 
 describe("workerEnvelope — E17: X-Frame-Options is always 'DENY'", () => {
   it("X-Frame-Options header is 'DENY' for any input", () => {

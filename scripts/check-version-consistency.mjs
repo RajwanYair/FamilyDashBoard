@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * check-version-consistency.mjs — Sprint 171
- *
+ * check-version-consistency.mjs — *
  * Asserts that every documentation file that embeds the project version
  * matches the canonical `version` from package.json. Prevents the recurring
  * problem of stale version strings drifting in `.github/AGENTS.md`,

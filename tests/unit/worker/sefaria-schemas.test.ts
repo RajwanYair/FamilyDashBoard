@@ -1,5 +1,5 @@
 /**
- * Worker unit tests — Sefaria Valibot strict error-handling (V13-DATA)
+ * Worker unit tests — Sefaria Valibot strict error-handling 
  *
  * Verifies that SefariaCalendarSchema and SefariaTextSchema:
  *   1. Validate all required fields (failing fast on invalid upstream responses).

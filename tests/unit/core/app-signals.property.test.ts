@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/app-signals.ts (Sprint 503)
+ * fast-check property tests — src/core/app-signals.ts 
  *
  * Properties under test:
  *  AS1. syncAppSignal("config.tempUnit", "C"|"F") updates tempUnit signal.
@@ -8,10 +8,10 @@
  *  AS4. syncAppSignal("config.motivationInterval", number) updates motivationInterval.
  *  AS5. syncAppSignal("config.screenMode", valid) updates screenMode.
  *  AS6. syncAppSignal with unknown key is no-op (doesn't throw).
- *  AS7. syncAppSignal("config.alertsEnabled", any) coerces to boolean (Sprint 594)
- *  AS8. syncAppSignal("config.theme", invalid) still updates (no guard) (Sprint 594)
- *  AS9. syncAppSignal("config.screenMode", invalid) is no-op (Sprint 594)
- *  AS10. Multiple syncs in sequence — last value wins for each signal (Sprint 594)
+ *  AS7. syncAppSignal("config.alertsEnabled", any) coerces to boolean 
+ *  AS8. syncAppSignal("config.theme", invalid) still updates (no guard) 
+ *  AS9. syncAppSignal("config.screenMode", invalid) is no-op 
+ *  AS10. Multiple syncs in sequence — last value wins for each signal 
  */
 
 import { describe, it, expect, beforeEach } from "vitest";

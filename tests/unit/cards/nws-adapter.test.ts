@@ -1,5 +1,5 @@
 /**
- * Unit tests — NWS (api.weather.gov) adapter (Sprint 75)
+ * Unit tests — NWS (api.weather.gov) adapter 
  *
  * Covers:
  *  - fToC temperature conversion (via WeatherResponse current.temperature_2m)
@@ -97,7 +97,7 @@ function stubFetch(pointJson: unknown, hourlyJson: unknown, pointOk = true, hour
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe("NWS adapter — Sprint 75", () => {
+describe("NWS adapter — ", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (cGet as MockedFn).mockReturnValue(null);

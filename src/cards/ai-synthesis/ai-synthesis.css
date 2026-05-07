@@ -1,4 +1,4 @@
-/* Sprint 202 / X9: AI Synthesis Card */
+/* AI Synthesis Card */
 
 @layer components {
   #ai-synthesis-card {
@@ -35,7 +35,7 @@
     direction: rtl;
   }
 
-  /* PC-1 (Sprint 421): read-aloud button */
+  /* PC-1: read-aloud button */
   .synth-speak-btn {
     background: none;
     border: none;

@@ -2,7 +2,7 @@
 /**
  * check-csp-wildcards.mjs
  *
- * Sprint 231 / ADR-041 — Audit the `_headers` file for CSP wildcard entries
+ * Audit the `_headers` file for CSP wildcard entries
  * (e.g. `*.example.com`, `https:`, `http:`, `*`) that could be narrowed to
  * specific origins, reducing the XSS / data-exfiltration attack surface.
  *
@@ -160,7 +160,7 @@ function main() {
 
   console.log(`\n${"═".repeat(72)}`);
   console.log("  FamilyDashBoard — CSP Wildcard Audit  (ADR-041)");
-  console.log(`  ${new Date().toISOString().slice(0, 10)}  |  Sprint 231 (v13.25.0)`);
+  console.log(`  ${new Date().toISOString().slice(0, 10)}  | (v13.25.0)`);
   console.log(`${"═".repeat(72)}\n`);
   console.log(`  Audited: ${HEADERS_FILE}`);
   console.log(`  Sections scanned: ${String(sections.length)}`);

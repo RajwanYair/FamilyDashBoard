@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v12 — View Transitions Level 2 (V12-MODERNISE-4)
+ * FamilyDashBoard v12 — View Transitions Level 2 
  *
  * Level 1 (already shipped): applyTheme() in src/ui/theme.ts wraps DOM
  * mutations in document.startViewTransition(). This gives every element a
@@ -16,7 +16,7 @@
  */
 
 @layer animations {
-  /* ── Cross-doc View Transitions (Sprint 110, V14-FOUNDATIONS) ───────────
+  /* ── Cross-doc View Transitions ( , ) ───────────
      Enables navigation transitions between same-origin documents
      (index.html ↔ preview.html). Browsers without `@view-transition`
      ignore the rule; reduced-motion users get the instant fallback at the
@@ -54,7 +54,7 @@
     view-transition-name: vt-status;
   }
 
-  /* Config dialog — Sprint 5 (Roadmap #10): named VT for open/close + theme swap */
+  /* Config dialog — named VT for open/close + theme swap */
   #config-overlay {
     view-transition-name: vt-config-panel;
   }
@@ -125,7 +125,7 @@
     animation-name: vt-drift-fade-in;
   }
 
-  /* Sprint 5 (Roadmap #10): config / diag / help dialogs — soft scale+fade */
+  /* config / diag / help dialogs — soft scale+fade */
   ::view-transition-group(vt-config-panel),
   ::view-transition-group(vt-diag-overlay),
   ::view-transition-group(vt-help-dialog) {
@@ -219,7 +219,7 @@
     }
   }
 
-  /* Sprint 5: dialog open/close — soft scale + fade */
+  /* dialog open/close — soft scale + fade */
   @keyframes vt-dialog-out {
     from {
       opacity: 1;
@@ -252,7 +252,7 @@
     }
   }
 
-  /* ── View Transitions L2: typed transitions (Roadmap #10, Sprint 123) ──── */
+  /* ── View Transitions L2: typed transitions  ──── */
 
   /* Theme change: brief brightness flash + fade — distinguishes it from
      the default navigation cross-fade and the config-panel open animation. */

@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard — Dashboard Snapshot Export (Sprint 201 / X8)
+ * FamilyDashBoard — Dashboard Snapshot Export
  *
  * Captures the current dashboard state (config, localStorage keys, card
  * visibility, theme) and downloads it as a timestamped JSON file.

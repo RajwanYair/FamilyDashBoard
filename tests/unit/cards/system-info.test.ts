@@ -232,7 +232,7 @@ describe("SystemInfo — renderSystemInfo browser/UA", () => {
     expect(typeof text).toBe("string");
   });
 
-  it("enriches platform with UA-CH high-entropy hints when available (Roadmap #18)", async () => {
+  it("enriches platform with UA-CH high-entropy hints when available ", async () => {
     (navigator as Record<string, unknown>).userAgentData = {
       brands: [{ brand: "Google Chrome", version: "126" }],
       platform: "Windows",
@@ -249,7 +249,7 @@ describe("SystemInfo — renderSystemInfo browser/UA", () => {
     expect(text).toContain("x8664");
   });
 
-  it("ignores UA-CH high-entropy hint failures gracefully (Roadmap #18)", async () => {
+  it("ignores UA-CH high-entropy hint failures gracefully ", async () => {
     (navigator as Record<string, unknown>).userAgentData = {
       brands: [{ brand: "Google Chrome", version: "126" }],
       platform: "Linux",
@@ -644,7 +644,7 @@ describe("SystemInfo — RTT tile (F9 v7.3)", () => {
   });
 });
 
-// ── Sprint 28: getConnectionInfo ──────────────────────────────────────────────
+// ── getConnectionInfo ──────────────────────────────────────────────
 
 describe("getConnectionInfo", () => {
   it("returns 'unknown' when connection API is absent", () => {
@@ -653,7 +653,7 @@ describe("getConnectionInfo", () => {
   });
 });
 
-// ── Sprint 28: getViewportSize ────────────────────────────────────────────────
+// ── getViewportSize ────────────────────────────────────────────────
 
 describe("getViewportSize", () => {
   it("returns an object with width, height, dpr", () => {
@@ -665,7 +665,7 @@ describe("getViewportSize", () => {
   });
 });
 
-// ── Sprint 28: formatBytes ────────────────────────────────────────────────────
+// ── formatBytes ────────────────────────────────────────────────────
 
 describe("formatBytes", () => {
   it("formats bytes", () => {
@@ -694,7 +694,7 @@ describe("formatBytes", () => {
   });
 });
 
-// ── Sprint 28: getPageLoadTime ────────────────────────────────────────────────
+// ── getPageLoadTime ────────────────────────────────────────────────
 
 describe("getPageLoadTime", () => {
   it("returns a non-negative number", () => {
@@ -708,7 +708,7 @@ describe("getPageLoadTime", () => {
   });
 });
 
-// ── Sprint 28: categorizeDevice ───────────────────────────────────────────────
+// ── categorizeDevice ───────────────────────────────────────────────
 
 describe("categorizeDevice", () => {
   it("returns one of the four categories", () => {
@@ -723,9 +723,9 @@ describe("categorizeDevice", () => {
   });
 });
 
-// ── Sprint 29: formatHeapMb + gpuShortName ────────────────────────────────
+// ── formatHeapMb + gpuShortName ────────────────────────────────
 
-describe("SystemInfo — formatHeapMb (Sprint 29)", () => {
+describe("SystemInfo — formatHeapMb ", () => {
   it("returns '' for zero inputs", () => {
     expect(formatHeapMb(0, 0)).toBe("");
   });
@@ -744,7 +744,7 @@ describe("SystemInfo — formatHeapMb (Sprint 29)", () => {
   });
 });
 
-describe("SystemInfo — gpuShortName (Sprint 29)", () => {
+describe("SystemInfo — gpuShortName ", () => {
   it("trims at slash", () => {
     expect(gpuShortName("ANGLE (Intel(R) UHD Graphics)")).toBe(
       "ANGLE (Intel(R) UHD Graphics)".split("/")[0]!.split("(")[0]!.trim().slice(0, 30),
@@ -766,9 +766,9 @@ describe("SystemInfo — gpuShortName (Sprint 29)", () => {
   });
 });
 
-// ── Sprint 81: configSchema ─────────────────────────────────────────────
+// ── configSchema ─────────────────────────────────────────────
 
-describe("SystemInfo — configSchema (Sprint 81)", () => {
+describe("SystemInfo — configSchema ", () => {
   it("has a configSchema array", () => {
     expect(systemInfoCard.configSchema).toBeDefined();
     expect(Array.isArray(systemInfoCard.configSchema)).toBe(true);
@@ -846,9 +846,9 @@ describe("SystemInfo — rttTile display toggle (line 187)", () => {
   });
 });
 
-// ── Sprint 79: encodeConnType — all branches ──────────────────────────────
+// ── encodeConnType — all branches ──────────────────────────────
 
-describe("SystemInfo — encodeConnType (Sprint 79)", () => {
+describe("SystemInfo — encodeConnType ", () => {
   it("encodes slow-2g as 1", () => {
     expect(encodeConnType("slow-2g")).toBe(1);
   });
@@ -872,9 +872,9 @@ describe("SystemInfo — encodeConnType (Sprint 79)", () => {
   });
 });
 
-// ── Sprint 79: getConnectionInfo — with stubbed navigator.connection ──────
+// ── getConnectionInfo — with stubbed navigator.connection ──────
 
-describe("SystemInfo — getConnectionInfo stubs (Sprint 79)", () => {
+describe("SystemInfo — getConnectionInfo stubs ", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -901,9 +901,9 @@ describe("SystemInfo — getConnectionInfo stubs (Sprint 79)", () => {
   });
 });
 
-// ── Sprint 179 / SI2: getSwState ──────────────────────────────────────────
+// ── getSwState ──────────────────────────────────────────
 
-describe("System-info — getSwState (Sprint 179)", () => {
+describe("System-info — getSwState ", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -981,8 +981,8 @@ describe("System-info — getSwState (Sprint 179)", () => {
   });
 });
 
-// ── Sprint 205 / SI1: getStorageQuota ──────────────────────────────
-describe("System-info — getStorageQuota (Sprint 205)", () => {
+// ── getStorageQuota ──────────────────────────────
+describe("System-info — getStorageQuota ", () => {
   afterEach(() => { vi.unstubAllGlobals(); });
 
   it("returns formatted string when estimate succeeds", async () => {
@@ -1025,8 +1025,8 @@ describe("System-info — getStorageQuota (Sprint 205)", () => {
   });
 });
 
-// ── Sprint 212 / SI3: RTT ring buffer ──────────────────────────────────
-describe("System-info — RTT ring buffer (Sprint 212)", () => {
+// ── RTT ring buffer ──────────────────────────────────
+describe("System-info — RTT ring buffer ", () => {
   beforeEach(() => { _resetRttHistory(); });
 
   it("getRttHistory returns empty initially", () => {
@@ -1061,7 +1061,7 @@ describe("System-info — RTT ring buffer (Sprint 212)", () => {
   });
 });
 
-// ── Sprint 260: fast-check property tests (SIP1–SIP4) ─────────────────────
+// ── fast-check property tests (SIP1–SIP4) ─────────────────────
 
 import * as fc from "fast-check";
 
@@ -1151,8 +1151,8 @@ describe("SIP4 · appendRttHistory / getRttHistory — property: ring buffer gro
   });
 });
 
-// ── Sprint 280 / CS-SI1: per-tile toggles + refresh interval ─────────────
-describe("SystemInfo configSchema — CS-SI1 (Sprint 280)", () => {
+// ── per-tile toggles + refresh interval ─────────────
+describe("SystemInfo configSchema — CS-SI1 ", () => {
   const TILE_TOGGLE_KEYS = [
     "sysInfoShowRtt",
     "sysInfoShowStorage",

@@ -1,5 +1,5 @@
 /**
- * Tests for worker/src/durable-objects/rate-limiter-do.ts (V13-EDGE-6)
+ * Tests for worker/src/durable-objects/rate-limiter-do.ts 
  *
  * Tests the DO sliding-window rate limiter using a minimal in-memory storage stub.
  */

@@ -5,11 +5,12 @@ import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execSync } from "node:child_process";
 
+const root = import.meta.dirname;
 const tempBase = join(tmpdir(), "fdb-dev");
 
 // Read app version once at config time so all plugins share it.
 const appVersion: string = (
-  JSON.parse(readFileSync(resolve(__dirname, "package.json"), "utf-8")) as {
+  JSON.parse(readFileSync(resolve(root, "package.json"), "utf-8")) as {
     version: string;
   }
 ).version;
@@ -24,7 +25,7 @@ const isLocalBuild = (() => {
 })();
 
 /**
- * Stream SW.4: Compile sw.ts → dist/sw.js via scripts/build-sw.mjs.
+ * Compile sw.ts → dist/sw.js via scripts/build-sw.mjs.
  * TypeScript's transpileModule strips type annotations; the script injects __APP_VERSION__.
  * This avoids a direct dependency on esbuild (not available as a standalone package in Vite 8).
  */
@@ -33,7 +34,7 @@ const injectSwVersion: Plugin = {
   apply: "build",
   closeBundle() {
     execSync(`node scripts/build-sw.mjs ${appVersion}`, {
-      cwd: resolve(__dirname),
+      cwd: root,
       stdio: "inherit",
     });
   },
@@ -50,7 +51,7 @@ const injectSwVersion: Plugin = {
  *     icon, and SW scope resolve correctly from a local directory.
  */
 /**
- * V11-OBS-1: Inject Cloudflare Web Analytics beacon (cookie-less, privacy-preserving).
+ * Inject Cloudflare Web Analytics beacon (cookie-less, privacy-preserving).
  * Only injected when CF_ANALYTICS_TOKEN env var is set.
  * The beacon adds `https://static.cloudflareinsights.com` to script-src CSP.
  * Skipped for local file:// builds where the beacon has no value.
@@ -60,7 +61,7 @@ const injectCfAnalytics: Plugin = {
   transformIndexHtml(html: string): string {
     const token = process.env["CF_ANALYTICS_TOKEN"];
     if (!token || isLocalBuild) return html;
-    const snippet = `  <!-- V11-OBS-1: Cloudflare Web Analytics (cookie-less, privacy-preserving) -->\n  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${token}"}'></script>`;
+    const snippet = `  <!-- Cloudflare Web Analytics (cookie-less, privacy-preserving) -->\n  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${token}"}'></script>`;
     return html.replace("</head>", `${snippet}\n</head>`);
   },
 };
@@ -90,7 +91,7 @@ const removeCrossOrigin: Plugin = {
 };
 
 /**
- * V14-FOUNDATIONS Sprint 97: Subresource Integrity (SRI) auto-injection.
+ * Subresource Integrity (SRI) auto-injection.
  *
  * Adds `integrity="sha384-…"` to every emitted `<script src=…>` and
  * `<link rel="stylesheet" href=…>` referencing a build asset. Skipped for
@@ -145,8 +146,8 @@ const injectSri: Plugin = {
 };
 
 /**
- * V14-RESILIENCE Roadmap #23: Strip CSP meta in dev mode for proxy-blocked
- * developers. CI/production keep the full CSP L3 + Trusted Types policy.
+ * Strip CSP meta in dev mode for proxy-blocked developers.
+ * CI/production keep the full CSP L3 + Trusted Types policy.
  *
  * Activation: `vite` (dev server), `npx vite --mode development`, or any
  * `mode === 'development'`. Has no effect on `vite build` (production CSP
@@ -164,7 +165,7 @@ const stripDevCsp: Plugin = {
   transformIndexHtml(html: string): string {
     return html.replace(
       /<meta[^>]*http-equiv=["']Content-Security-Policy["'][^>]*\/?>/gi,
-      "<!-- CSP stripped in dev mode by stripDevCsp plugin (Roadmap #23) -->",
+      "<!-- CSP stripped in dev mode by stripDevCsp plugin -->",
     );
   },
 };
@@ -175,15 +176,15 @@ export default defineConfig(({ command }) => ({
   cacheDir: join(tempBase, ".vite"),
   plugins: [stripDevCsp, removeCrossOrigin, injectCfAnalytics, injectSwVersion, injectSri],
 
-  // v11.0-PERF-1: Use Lightning CSS for faster, smaller CSS builds.
-  // Targets modern evergreen browsers that support all dashboard CSS features.
+  // Lightning CSS for faster, smaller CSS builds.
+  // Targets aligned with .browserslistrc (Chrome 114+, Firefox 128+, Safari 17.4+).
   css: {
     transformer: "lightningcss" as const,
     lightningcss: {
       targets: {
-        chrome: 110 << 16,
-        firefox: 115 << 16,
-        safari: (16 << 16) | (4 << 8),
+        chrome: 114 << 16,
+        firefox: 128 << 16,
+        safari: (17 << 16) | (4 << 8),
       },
     },
   },
@@ -191,23 +192,20 @@ export default defineConfig(({ command }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    // v13.4: proxy chain is retained in ALL builds (prod + local + dev) as a
-    // safety net for environments where the Cloudflare Worker is unreachable
-    // (corp firewall blocking workers.dev, worker outage, etc.). Runtime
-    // control is via localStorage `dash_network_mode` — see constants.ts.
-    // Set to "false" only when deliberately stripping proxy URLs for size.
+    // Proxy chain retained in all builds as safety net for unreachable Worker.
+    // Runtime control: localStorage `dash_network_mode` — see constants.ts.
     __USE_PROXIES__: JSON.stringify(true),
   },
 
   build: {
-    outDir: resolve(__dirname, "dist"),
+    outDir: resolve(root, "dist"),
     emptyOutDir: true,
-    target: "es2022",
+    target: "es2024",
     sourcemap: true,
     minify: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, "src/index.html"),
+        main: resolve(root, "src/index.html"),
       },
       output: isLocalBuild
         ? {
@@ -251,7 +249,7 @@ export default defineConfig(({ command }) => ({
 
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
+      "@": resolve(root, "src"),
     },
   },
 

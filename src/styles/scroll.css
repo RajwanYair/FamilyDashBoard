@@ -44,7 +44,7 @@
   mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
 }
 
-/* Sprint 117: Scroll-snap for single-column phone mode */
+/* Scroll-snap for single-column phone mode */
 body.mode-phone .grids-area {
   scroll-snap-type: y proximity;
   -webkit-overflow-scrolling: touch;
@@ -55,7 +55,7 @@ body.mode-phone .card {
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 155: Scroll Shadow Indicators
+   Scroll Shadow Indicators
    ═══════════════════════════════════════════════════════ */
 .card__body {
   position: relative;

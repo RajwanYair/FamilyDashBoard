@@ -1,5 +1,5 @@
 /**
- * Sprint 169 — buildConfigAccordion tests
+ * buildConfigAccordion tests
  * Validates grouping, open-by-default, and flat-field rendering.
  */
 
@@ -28,7 +28,7 @@ const flat: CardConfigField[] = [
   { key: "y", labelHe: "Y", labelEn: "Y", type: "number", defaultValue: 3 },
 ];
 
-describe("buildConfigAccordion (Sprint 169)", () => {
+describe("buildConfigAccordion ", () => {
   it("groups fields into <details> elements", () => {
     const container = document.createElement("div");
     buildConfigAccordion(grouped, container);

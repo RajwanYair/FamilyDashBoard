@@ -1,5 +1,5 @@
 /**
- * Tests for D1 p95 latency aggregation — Sprint 23 (ROADMAP B5)
+ * Tests for D1 p95 latency aggregation — (ROADMAP B5)
  *
  * Covers:
  *   - aggregateP95() pure function (all edge cases)

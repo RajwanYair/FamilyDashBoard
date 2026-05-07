@@ -81,7 +81,7 @@ text, "application/ld+json": jsonLd })])`. Falls back to `text/plain`
 only when `ClipboardItem` is unavailable (Safari < 16).
 
 CSP: clipboard-write is already allowed via Permissions-Policy
-`clipboard-write=(self)` (ADR-056 / Sprint 331).
+`clipboard-write=(self)` (ADR-056 / ).
 
 ### Per-card adoption (v14.x rollout)
 

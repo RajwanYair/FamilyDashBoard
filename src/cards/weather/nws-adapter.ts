@@ -6,7 +6,7 @@
  *
  * Reference: https://www.weather.gov/documentation/services-web-api
  *
- * Sprint 68 (v13.6.0): initial stub — fetches NWS point metadata then
+ * initial stub — fetches NWS point metadata then
  * hourly forecast; populates only the fields WeatherResponse requires.
  * Full implementation (7-day daily, UV index) tracked in ROADMAP v14.
  */

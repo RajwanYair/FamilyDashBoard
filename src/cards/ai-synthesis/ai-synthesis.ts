@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard — AI Synthesis Card (Sprint 202 / X9)
+ * FamilyDashBoard — AI Synthesis Card
  *
  * Fetches a Hebrew daily synthesis tile from /api/ai/synthesis.
  * Cached 4 hours. Opt-in via `synthesisEnabled` config key.
@@ -42,7 +42,7 @@ let _elText: HTMLElement | null = null;
 let _elMeta: HTMLElement | null = null;
 let _elSpeakBtn: HTMLButtonElement | null = null;
 let _scheduleId: number | null = null;
-/** X15 (Sprint 415): snapshot for semantic clipboard producer. */
+/** X15: snapshot for semantic clipboard producer. */
 let _synthesisSnapshot: string | null = null;
 
 // ── Data shape from worker ─────────────────────────────────────────────────
@@ -98,7 +98,7 @@ function renderSynthesis(text: string, source: "fresh" | "cached"): void {
   }
 }
 
-// X15 (Sprint 415): semantic clipboard producer
+// X15: semantic clipboard producer
 function buildAiSynthesisPayload(): SemanticPayload | null {
   if (!_synthesisSnapshot) return null;
   return {
@@ -166,7 +166,7 @@ async function loadAiSynthesisData(): Promise<void> {
   }
 }
 
-// ── PC-1 (Sprint 421): Read-aloud via SpeechSynthesis ─────────────────────
+// ── PC-1: Read-aloud via SpeechSynthesis ─────────────────────
 // Uses the Web Speech API (SpeechSynthesisUtterance) — no CSP media-src
 // directive needed. Gate: audio-CSP audit OPEN for SpeechSynthesis.
 
@@ -227,7 +227,7 @@ export function initAiSynthesisCard(): void {
   _scheduleId = window.setInterval(() => {
     void loadAiSynthesisData();
   }, SYNTH_REFRESH_MS);
-  // X15 (Sprint 415): register semantic clipboard producer
+  // X15: register semantic clipboard producer
   registerSemanticProducer("ai-synthesis", buildAiSynthesisPayload);
 }
 

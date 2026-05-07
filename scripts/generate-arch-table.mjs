@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * FamilyDashBoard — Architecture Card Table Generator (Sprint 24 V12-DX-2)
+ * FamilyDashBoard — Architecture Card Table Generator ( V12-DX-2)
  *
  * Scans src/cards/ to discover all card directories and produces a Markdown
  * table suitable for ARCHITECTURE.md.  The table includes:

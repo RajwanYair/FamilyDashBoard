@@ -33,7 +33,7 @@ dimensions), it enables:
 
 **Run a 30-day shadow mode** before retiring SimHash:
 
-### Phase 1 — Shadow mode (30 days, ~Sprint 229–236)
+### Phase 1 — Shadow mode (30 days, ~236)
 
 1. Add a `vectorizeArticle(text: string)` helper in a new file
    `worker/src/utils/vectorize.ts`.
@@ -94,7 +94,7 @@ After 30 days of shadow data:
 ## Implementation Notes
 
 ```typescript
-// worker/src/utils/vectorize.ts (Sprint 229 stub — Shadow mode only)
+// worker/src/utils/vectorize.ts (stub — Shadow mode only)
 export async function vectorizeArticle(
   text: string,
   env: AppEnv,

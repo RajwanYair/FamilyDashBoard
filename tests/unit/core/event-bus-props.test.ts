@@ -1,5 +1,5 @@
 /**
- * Sprint 300 — Property-based tests for src/core/event-bus.ts (EB1–EB6)
+ * Property-based tests for src/core/event-bus.ts (EB1–EB6)
  *
  * Uses fast-check to verify structural invariants for the cross-card signal bus.
  */

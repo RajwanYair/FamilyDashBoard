@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * scripts/check-container-queries.mjs — Sprint 111 (V14-FOUNDATIONS)
+ * scripts/check-container-queries.mjs — (V14-FOUNDATIONS)
  *
  * Per ROADMAP §2.2 + ADR-008: every card stylesheet must use @container
  * queries, never viewport-based @media (min-width|max-width) rules.

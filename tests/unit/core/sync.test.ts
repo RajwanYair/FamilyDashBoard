@@ -149,8 +149,8 @@ describe("Sync Indicators — advanced", () => {
   });
 });
 
-// ── Sprint 45: aria-busy on parent card ──────────────────────────────────────
-describe("Sync — aria-busy on parent card (Sprint 45)", () => {
+// ── aria-busy on parent card ──────────────────────────────────────
+describe("Sync — aria-busy on parent card ", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div class="card">
@@ -379,7 +379,7 @@ describe("syncBurst — with card DOM element present", () => {
   });
 });
 
-// ── Sprint 96: buildMiniText — countdown empty title branch ──────────────────
+// ── buildMiniText — countdown empty title branch ──────────────────
 describe("buildMiniText countdown — empty title branch", () => {
   it("returns empty string for countdown when title element is absent", () => {
     // No #cd-wedding-title → title = "" → !title → return ""

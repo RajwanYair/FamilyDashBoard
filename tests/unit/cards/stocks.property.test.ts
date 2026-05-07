@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/stocks/stocks.ts (Sprint 518, 570)
+ * fast-check property tests — src/cards/stocks/stocks.ts ( , 570)
  *
  * Properties under test:
  *  ST1. fmtPrice: ≥1000 → no decimals, comma-formatted

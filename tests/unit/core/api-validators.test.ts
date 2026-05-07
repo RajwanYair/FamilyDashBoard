@@ -428,7 +428,7 @@ describe("isCalendarEvent", () => {
 
 // ── Domain mappers (Sprints 36-44, v7.13) ────────────────────────────────────
 
-describe("mapToWeatherDomain (Sprint 36)", () => {
+describe("mapToWeatherDomain ", () => {
   it("maps tempC, feelsLikeC, humidity, windKph correctly", () => {
     const wx = makeWeatherResponse();
     const d = mapToWeatherDomain(wx);
@@ -482,7 +482,7 @@ function makeDomainStockResponse(): YahooChartResponse {
   };
 }
 
-describe("mapToStockDomain (Sprint 37)", () => {
+describe("mapToStockDomain ", () => {
   it("maps price, prevClose, change, changePct", () => {
     const d = mapToStockDomain("AAPL", makeDomainStockResponse());
     expect(d).not.toBeNull();
@@ -511,7 +511,7 @@ describe("mapToStockDomain (Sprint 37)", () => {
   });
 });
 
-describe("mapToCurrencyDomain (Sprint 42)", () => {
+describe("mapToCurrencyDomain ", () => {
   function makeCurrencyResponse(): CurrencyResponse {
     return {
       rates: { ILS: 3.7, EUR: 0.92 },
@@ -533,7 +533,7 @@ describe("mapToCurrencyDomain (Sprint 42)", () => {
   });
 });
 
-describe("rssItemToDomain (Sprint 41)", () => {
+describe("rssItemToDomain ", () => {
   function makeNewsItem(): NewsItem {
     return {
       title: "כותרת",
@@ -564,7 +564,7 @@ describe("rssItemToDomain (Sprint 41)", () => {
   });
 });
 
-describe("mapToAlertsDomain (Sprint 43)", () => {
+describe("mapToAlertsDomain ", () => {
   function makeAlertEvent(): AlertEvent {
     return {
       alerts: [
@@ -596,7 +596,7 @@ describe("mapToAlertsDomain (Sprint 43)", () => {
   });
 });
 
-describe("mapToHebcalDomain (Sprint 44)", () => {
+describe("mapToHebcalDomain ", () => {
   it("maps items to titleHe/titleEn", () => {
     const r: HebcalResponse = {
       title: "Hebcal",
@@ -631,7 +631,7 @@ describe("mapToHebcalDomain (Sprint 44)", () => {
   });
 });
 
-describe("mapToCalendarDomainEvent (Sprint 76)", () => {
+describe("mapToCalendarDomainEvent ", () => {
   it("maps all CalendarEvent fields to CalendarDomainEvent", () => {
     const ce: CalendarEvent = {
       summary: "Meeting",

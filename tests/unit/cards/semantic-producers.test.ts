@@ -1,5 +1,5 @@
 /**
- * Sprint 415 — X15 semantic-producer integration tests.
+ * X15 semantic-producer integration tests.
  *
  * Verifies that motivation, tasks, system-info, video-news, and ai-synthesis
  * register their semantic clipboard producers and return well-formed payloads.

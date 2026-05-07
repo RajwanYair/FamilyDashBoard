@@ -295,7 +295,7 @@ dialog.diag-overlay::backdrop {
   background: transparent;
 }
 
-/* Sprint 6 (Roadmap #11): Diagnostic overlay anchored to #status-bar.
+/* Diagnostic overlay anchored to #status-bar.
    When supported, the overlay floats above the status bar and uses
    position-try-fallbacks to flip if there's not enough vertical space.
    Browsers without anchor positioning keep the legacy fixed bottom-right. */
@@ -672,7 +672,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   letter-spacing: -0.5px;
 }
 
-/* V13-DATA: Stock detail popover */
+/* Stock detail popover */
 .stk-detail-btn {
   background: transparent;
   border: none;
@@ -792,7 +792,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   background: transparent;
 }
 
-/* V13-CONTINUITY: Encrypted config passphrase dialog */
+/* Encrypted config passphrase dialog */
 #ecfg-dialog {
   background: var(--card-bg);
   border: 1px solid var(--accent-border);
@@ -1225,7 +1225,7 @@ body.alerts-off .grid-col-right > .card:nth-child(1) {
   padding: 1px 12px;
 }
 
-/* Sprint 6 (Roadmap #11): Anchor positioning expansion.
+/* Anchor positioning expansion.
    #status-bar is the anchor source for the Diagnostic overlay so it visually
    tethers to the bar regardless of viewport size. Falls back to fixed bottom-
    right corner in browsers without anchor positioning support. */
@@ -1341,7 +1341,7 @@ select.cfg-input {
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 108: Card Shell Anatomy
+   Card Shell Anatomy
    Standard BEM-like structure for card internals:
    .card__header  — title row + sync indicator
    .card__body    — scrollable main content area
@@ -1411,7 +1411,7 @@ select.cfg-input {
 }
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 109: Shared Stale Chip
+   Shared Stale Chip
    ═══════════════════════════════════════════════════════ */
 .stale-chip {
   display: inline-flex;
@@ -1448,12 +1448,11 @@ select.cfg-input {
   pointer-events: none;
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sprint 110 → merged into Stream F v7.22 card-error definition
+/* ═══════════════════════════════════════════════════════ → merged into Stream F v7.22 card-error definition
    ═══════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 150: Retry Button Component
+   Retry Button Component
    ═══════════════════════════════════════════════════════ */
 .card-retry-btn {
   display: inline-flex;
@@ -1483,12 +1482,11 @@ select.cfg-input {
   font-size: 1.1em;
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sprint 111 → merged into Stream F v7.22 card-empty definition
+/* ═══════════════════════════════════════════════════════ → merged into Stream F v7.22 card-empty definition
    ═══════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════
-   Sprint 112: Metric Tile
+   Metric Tile
    ═══════════════════════════════════════════════════════ */
 .metric-tile {
   display: flex;
@@ -1929,7 +1927,6 @@ select.cfg-input {
   }
 }
 
-/* === Migrated from sprints.css (cross-cutting globals) === */
 
 /* Keyboard shortcut key chip (used in help overlay) */
 .help-key {
@@ -2102,7 +2099,7 @@ body.slideshow-fade::after {
 }
 .card.collapsed .card-mini-info:not(:empty) { display: inline; }
 
-/* First-run tour dialog (Sprint 8 / v11.0-PWA-1) */
+/* First-run tour dialog (0-PWA-1) */
 #tour-overlay {
   border: none;
   border-radius: 14px;

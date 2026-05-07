@@ -4,7 +4,7 @@
 | ---------- | ---------------------------------------------------------------------------------------- |
 | Date       | 2026-04-30                                                                               |
 | Status     | Accepted                                                                                 |
-| Sprint     | 297 (ADR formalised) / Sprints 277–289 (implementation — V14-CARD-SETTINGS stream)      |
+| Sprint     | 297 (ADR formalised) / Sprints 277–289 (implementation — SETTINGS stream)      |
 | Supersedes | n/a                                                                                      |
 | Related    | ADR-004 (config namespacing), ADR-009 (config schema evolution), ROADMAP §3.13, §6.11   |
 
@@ -17,7 +17,7 @@ typed schema to drive its auto-render logic. 19 settings were "UI-gap"
 items — typed in `DashboardConfig` or a card-level type, but absent from
 any `configSchema` array.
 
-The V14-CARD-SETTINGS stream (Sprints 277–289, 13 configSchema sprints) filled
+The SETTINGS stream (Sprints 277–289, 13 configSchema sprints) filled
 every gap and added planned new settings, producing a fully driven settings UI
 for all 12 cards.
 

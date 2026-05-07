@@ -30,7 +30,7 @@ The remaining D11 candidates fall into two groups:
 | Element | Why not |
 | - | - |
 | `#alerts-takeover` (`<dialog>`) | Civil-defense modal — `<dialog>.showModal()` already provides the right semantics + inert backdrop. `popover` would lose the inert behavior. |
-| `#refresh-toast`, `#offline-banner` | Opacity-driven transient toasts — `popover` adds UA `display:none` that conflicts with the existing show/hide animation (this is the original Sprint 332 finding from ADR-056). |
+| `#refresh-toast`, `#offline-banner` | Opacity-driven transient toasts — `popover` adds UA `display:none` that conflicts with the existing show/hide animation (this is the original finding from ADR-056). |
 | `#diag-overlay`, `#help-overlay`, `#tour-overlay`, `#ecfg-dialog` | Already native `<dialog>` — `popover` would be a downgrade. |
 | `#config-overlay` | `role="dialog" aria-modal="true"` div with screen-reader-tested keyboard handling. Migration risk > savings. |
 
@@ -62,7 +62,7 @@ The remaining D11 candidates fall into two groups:
 ## References
 
 - ROADMAP §1.11 D11
-- ADR-056 (Sprint 332 popover= rejection on toasts)
+- ADR-056 (popover= rejection on toasts)
 - `src/index.html` lines 822-880 (existing popovers)
 - `src/index.html` lines 91-1050 (full overlay inventory)
 - `docs/screen-reader.md` (a11y review checklist for any new modal)

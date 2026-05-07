@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 /**
- * Sprint 243 — Sigstore/cosign signing gate (V14-SECURITY-L3).
+ * Sigstore/cosign signing gate (V14-SECURITY-L3).
  *
  * Verifies that the release workflow contains the required Sigstore cosign
  * artifact-signing steps for dist.zip and sw.js. Any release without these

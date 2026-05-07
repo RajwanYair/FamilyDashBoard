@@ -52,7 +52,7 @@
   min-width: 24px;
 }
 
-/* Sprint 196 / N3: Muted source chip */
+/* Muted source chip */
 .news-src-chip.news-src-muted {
   opacity: 0.45;
   text-decoration: line-through;
@@ -135,7 +135,7 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
-/* Sprint 183 / N5 — freshness-bucket tinting */
+/* freshness-bucket tinting */
 .news-age[data-freshness="fresh2m"] {
   color: var(--positive, #4caf50);
   font-weight: 700;
@@ -343,7 +343,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   display: none;
 }
 
-/* Sprint 48: Breaking news badge */
+/* Breaking news badge */
 .news-breaking-badge {
   font-size: 0.58em;
   font-weight: 800;
@@ -365,7 +365,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   }
 }
 
-/* Sprint 11: Maximize — large news card layout */
+/* Maximize — large news card layout */
 @container card (min-width: 900px) {
   .rss-title {
     font-size: 1.05em !important;
@@ -392,7 +392,7 @@ body.news-bkm-mode .rss-item:not(.bookmarked) {
   }
 }
 
-/* ── Sprint 420 / N-Star-UI: Star button + read-later drawer ─────────────── */
+/* ── Star button + read-later drawer ─────────────── */
 
 .news-star-btn {
   background: transparent;

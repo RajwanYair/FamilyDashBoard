@@ -191,8 +191,8 @@ describe("FdbCard — base class", () => {
     expect(el.lastAttrChange?.name).toBe("data-card-id");
   });
 });
-// ── Sprint 50: CardRuntime hooks ─────────────────────────────────────────────
-describe("FdbCard CardRuntime hooks (Sprint 50)", () => {
+// ── CardRuntime hooks ─────────────────────────────────────────────
+describe("FdbCard CardRuntime hooks ", () => {
   let el: FdbCard;
 
   beforeEach(() => {
@@ -329,8 +329,8 @@ describe("FdbCard config subscriptions", () => {
   });
 });
 
-// ── Sprint 54: renderNodes ────────────────────────────────────────────────
-describe("FdbCard.renderNodes (Sprint 54)", () => {
+// ── renderNodes ────────────────────────────────────────────────
+describe("FdbCard.renderNodes ", () => {
   let card: FdbCard;
   beforeEach(() => {
     card = document.createElement("fdb-test-card") as FdbCard;
@@ -364,8 +364,8 @@ describe("FdbCard.renderNodes (Sprint 54)", () => {
   });
 });
 
-// ── Sprint 55: withLoading ────────────────────────────────────────────────
-describe("FdbCard.withLoading (Sprint 55)", () => {
+// ── withLoading ────────────────────────────────────────────────
+describe("FdbCard.withLoading ", () => {
   let card: FdbCard;
   beforeEach(() => {
     card = document.createElement("fdb-test-card") as FdbCard;
@@ -402,7 +402,7 @@ describe("FdbCard.withLoading (Sprint 55)", () => {
   });
 });
 
-// ── FdbCard.emit (Sprint 67) ───────────────────────────────────────────────
+// ── FdbCard.emit  ───────────────────────────────────────────────
 
 describe("FdbCard.emit", () => {
   let card: TestCard;
@@ -439,7 +439,7 @@ describe("FdbCard.emit", () => {
   });
 });
 
-// ── FdbCard.setTitle (Sprint 72) ───────────────────────────────────────────
+// ── FdbCard.setTitle  ───────────────────────────────────────────
 
 describe("FdbCard.setTitle", () => {
   let card: TestCard;
@@ -466,7 +466,7 @@ describe("FdbCard.setTitle", () => {
   });
 });
 
-// ── FdbCard.setBadge (Sprint 73) ───────────────────────────────────────────
+// ── FdbCard.setBadge  ───────────────────────────────────────────
 
 describe("FdbCard.setBadge", () => {
   let card: TestCard;
@@ -503,7 +503,7 @@ describe("FdbCard.setBadge", () => {
   });
 });
 
-// ── clearContent (Sprint 78) ────────────────────────────────────────────────
+// ── clearContent  ────────────────────────────────────────────────
 
 describe("FdbCard — clearContent", () => {
   let card: TestCard;
@@ -536,7 +536,7 @@ describe("FdbCard — clearContent", () => {
   });
 });
 
-// ── qs (Sprint 79) ─────────────────────────────────────────────────────────
+// ── qs  ─────────────────────────────────────────────────────────
 
 describe("FdbCard — qs", () => {
   let card: TestCard;
@@ -566,7 +566,7 @@ describe("FdbCard — qs", () => {
   });
 });
 
-// ── qs (Sprint 79) ─────────────────────────────────────────────────────────
+// ── qs  ─────────────────────────────────────────────────────────
 
 describe("FdbCard — qs", () => {
   let card: TestCard;
@@ -596,7 +596,7 @@ describe("FdbCard — qs", () => {
   });
 });
 
-// ── createEl (Sprint 80) ───────────────────────────────────────────────────
+// ── createEl  ───────────────────────────────────────────────────
 
 describe("FdbCard — createEl", () => {
   it("creates an element with the specified tag", () => {
@@ -625,9 +625,9 @@ describe("FdbCard — createEl", () => {
   });
 });
 
-// ── onVisible / onHidden (Sprint 84) ───────────────────────────────────────
+// ── onVisible / onHidden  ───────────────────────────────────────
 
-describe("FdbCard — onVisible / onHidden (Sprint 84)", () => {
+describe("FdbCard — onVisible / onHidden ", () => {
   let card: TestCard;
 
   beforeEach(() => {
@@ -668,9 +668,9 @@ describe("FdbCard — onVisible / onHidden (Sprint 84)", () => {
   });
 });
 
-// ── staleChip (Sprint 85) ──────────────────────────────────────────────────
+// ── staleChip  ──────────────────────────────────────────────────
 
-describe("FdbCard — staleChip (Sprint 85)", () => {
+describe("FdbCard — staleChip ", () => {
   let card: TestCard;
 
   beforeEach(() => {
@@ -718,9 +718,9 @@ describe("FdbCard — staleChip (Sprint 85)", () => {
   });
 });
 
-// ── setSyncState (Sprint 86) ────────────────────────────────────────────
+// ── setSyncState  ────────────────────────────────────────────
 
-describe("FdbCard — setSyncState (Sprint 86)", () => {
+describe("FdbCard — setSyncState ", () => {
   let card: TestCard;
 
   beforeEach(() => {
@@ -753,8 +753,8 @@ describe("FdbCard — setSyncState (Sprint 86)", () => {
   });
 });
 
-// ── Sprint 130: renderMetricTile ──────────────────────────────────────────
-describe("FdbCard.renderMetricTile (Sprint 130)", () => {
+// ── renderMetricTile ──────────────────────────────────────────
+describe("FdbCard.renderMetricTile ", () => {
   it("creates a .metric-tile with label and value", () => {
     const tile = FdbCard.renderMetricTile("טמפרטורה", "25", "°C");
     expect(tile.className).toBe("metric-tile");
@@ -777,8 +777,8 @@ describe("FdbCard.renderMetricTile (Sprint 130)", () => {
   });
 });
 
-// ── Sprint 131: renderEmpty ───────────────────────────────────────────────
-describe("FdbCard.renderEmpty (Sprint 131)", () => {
+// ── renderEmpty ───────────────────────────────────────────────
+describe("FdbCard.renderEmpty ", () => {
   it("creates a .card-empty with default icon", () => {
     const el = FdbCard.renderEmpty("אין אירועים");
     expect(el.className).toBe("card-empty");
@@ -792,8 +792,8 @@ describe("FdbCard.renderEmpty (Sprint 131)", () => {
   });
 });
 
-// ── Sprint 132: renderError ───────────────────────────────────────────────
-describe("FdbCard.renderError (Sprint 132)", () => {
+// ── renderError ───────────────────────────────────────────────
+describe("FdbCard.renderError ", () => {
   it("creates a .card-error with role=alert", () => {
     const el = FdbCard.renderError("שגיאת רשת");
     expect(el.className).toBe("card-error");
@@ -808,8 +808,8 @@ describe("FdbCard.renderError (Sprint 132)", () => {
   });
 });
 
-// ── Sprint 133: renderSkeleton ────────────────────────────────────────────
-describe("FdbCard.renderSkeleton (Sprint 133)", () => {
+// ── renderSkeleton ────────────────────────────────────────────
+describe("FdbCard.renderSkeleton ", () => {
   it("creates a .card-skeleton with 3 lines by default", () => {
     const el = FdbCard.renderSkeleton();
     expect(el.className).toBe("card-skeleton");
@@ -823,9 +823,9 @@ describe("FdbCard.renderSkeleton (Sprint 133)", () => {
   });
 });
 
-// ── Sprint 186: buildShell ───────────────────────────────────────────────
+// ── buildShell ───────────────────────────────────────────────
 
-describe("FdbCard.buildShell (Sprint 183)", () => {
+describe("FdbCard.buildShell ", () => {
   it("creates header, body, footer inside the card", () => {
     const card = document.createElement("fdb-test-card") as TestCard;
     card.setAttribute("data-card-id", "test");
@@ -859,7 +859,7 @@ describe("FdbCard.buildShell (Sprint 183)", () => {
   });
 });
 
-// ── Sprint 186: loadData tests ──────────────────────────────────────────
+// ── loadData tests ──────────────────────────────────────────
 
 import * as cacheMod from "@/core/cache";
 import * as idleMod from "@/core/idle";
@@ -881,7 +881,7 @@ if (!customElements.get("fdb-data-test")) {
   customElements.define("fdb-data-test", DataTestCard);
 }
 
-describe("FdbCard.loadData (Sprint 184)", () => {
+describe("FdbCard.loadData ", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
     vi.mocked(idleMod.isPageVisible).mockReturnValue(true);
@@ -941,7 +941,7 @@ describe("FdbCard.loadData (Sprint 184)", () => {
   });
 });
 
-// ── Sprint 253 / X5: onThemeChange + onAlert lifecycle hooks ─────────────
+// ── onThemeChange + onAlert lifecycle hooks ─────────────
 
 import {
   broadcastTheme,
@@ -970,7 +970,7 @@ if (!customElements.get("fdb-lifecycle-hook-test")) {
   customElements.define("fdb-lifecycle-hook-test", LifecycleHookCard);
 }
 
-describe("FdbCard — onThemeChange + onAlert (Sprint 253 / X5)", () => {
+describe("FdbCard — onThemeChange + onAlert ", () => {
   let card: LifecycleHookCard;
 
   beforeEach(() => {

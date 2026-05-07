@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/keyboard.ts (Sprint 559)
+ * fast-check property tests — src/ui/keyboard.ts 
  *
  * Properties under test:
  *  KB1. registerKey: adds an entry to getKeyboardActions()

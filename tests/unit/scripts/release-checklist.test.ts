@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-OPS: release-checklist.mjs
+ * Unit tests — release-checklist.mjs
  *
  * Verifies that readReleaseChecklist returns sensible markdown content
  * from the real prompt file.

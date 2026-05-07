@@ -1,5 +1,5 @@
 /**
- * Sprint 114 — Print stylesheet improvements test
+ * Print stylesheet improvements test
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 
 const css = readFileSync(resolve(__dirname, "../../../src/styles/print.css"), "utf-8");
 
-describe("Print stylesheet (Sprint 114)", () => {
+describe("Print stylesheet ", () => {
   it("contains @media print block", () => {
     expect(css).toContain("@media print");
   });

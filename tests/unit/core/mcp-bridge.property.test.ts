@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/mcp-bridge.ts (Sprint 511)
+ * fast-check property tests — src/core/mcp-bridge.ts 
  *
  * Properties under test:
  *  MB1. deepFreezeJson produces a deep-frozen result (no nested object is mutable).

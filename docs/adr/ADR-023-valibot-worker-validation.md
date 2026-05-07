@@ -3,9 +3,7 @@
 **Date:** 2026-04-23
 **Status:** Accepted
 **Deciders:** Project maintainer
-**Context:** V12-MODERNISE-7
-
----
+**Context:** ---
 
 ## Context
 

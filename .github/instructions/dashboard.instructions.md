@@ -88,7 +88,7 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 | Motivation        | 1.0em         |
 | Currency rate     | 0.88em        |
 
-## JS Constants (v7.0)
+## JS Constants
 
 - `DIAG_BUFFER_SIZE = 80`, `DIAG_DISPLAY_LIMIT = 20`, `WAKE_REFRESH_MS = 30 * 60 * 1000`
 - All in `src/core/constants.ts`
@@ -145,3 +145,12 @@ description: "Use when: editing the dashboard HTML file. Coding standards for HT
 - News feed headlines
 - Stock ticker price rows
 - Calendar event list
+
+## Extension Integration
+
+- **HTML CSS Support** (`ecmel.vscode-html-css`): auto-completes CSS class/ID references in HTML — ensures `class=` and `id=` values match existing CSS selectors.
+- **Auto Rename Tag** (`formulahendry.auto-rename-tag`): renames paired HTML tags — prevents mismatched open/close tags.
+- **webhint** (`webhint.vscode-webhint`): checks HTML for browser compat, accessibility, and performance issues inline via `get_errors`.
+- **Edge DevTools** (`ms-edgetools.vscode-edge-devtools`): element inspector inside VS Code — use for debugging layout issues on the dashboard.
+- **Color Highlight** (`naumovs.color-highlight`): inline color preview — detects hardcoded colors that should use CSS custom properties.
+- **Error Lens** (`usernamehw.errorlens`): shows all HTML/CSS diagnostics inline in the editor.

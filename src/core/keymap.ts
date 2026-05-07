@@ -1,5 +1,5 @@
 /**
- * Sprint 291 / X4 — Centralised keymap utilities
+ * Centralised keymap utilities
  *
  * Provides `buildHelpRows()` to auto-generate the help-overlay shortcut grid
  * from the registered `KeyboardAction[]` exported by `src/ui/keyboard.ts`.
@@ -15,7 +15,7 @@ export interface KeyEntry extends KeyboardAction {
 }
 
 /**
- * Sprint 291 / X4: Build `.help-row` div elements for the help overlay.
+ * Build `.help-row` div elements for the help overlay.
  *
  * @param actions  Array of registered keyboard actions (from `getKeyboardActions()`).
  * @param lang     `"he"` (default) or `"en"` — chooses the label language when
@@ -56,7 +56,7 @@ export function buildHelpRows(
 }
 
 /**
- * Sprint 291 / X4: Returns a sorted copy of `actions` where single-char keys
+ * Returns a sorted copy of `actions` where single-char keys
  * come first (alphabetically), followed by multi-char / symbol keys.
  * Useful for rendering a predictable help table.
  */

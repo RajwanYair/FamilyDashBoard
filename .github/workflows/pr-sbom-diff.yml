@@ -1,4 +1,4 @@
-# SBOM Diff Bot — Sprint 103 (V14-FOUNDATIONS / V14-SECURITY-L3 seed)
+# SBOM Diff Bot
 #
 # Generates a CycloneDX SBOM for the PR head and diffs the component list
 # against the most recent SBOM artefact from `main`. Posts a sticky comment

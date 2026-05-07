@@ -1,5 +1,5 @@
 /**
- * V13-DATA — Alerts 7-day incident count sparkline tests
+ * — Alerts 7-day incident count sparkline tests
  *
  * Verifies that loadAlerts():
  *   1. Calls historyAppend("alerts:count", validData.length) on successful fetch.
@@ -106,7 +106,7 @@ function stubFetch(payload: unknown): void {
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
-describe("Alerts 7-day count sparkline (V13-DATA)", () => {
+describe("Alerts 7-day count sparkline ", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     mockAppend.mockClear();

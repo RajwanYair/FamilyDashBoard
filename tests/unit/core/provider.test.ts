@@ -1,5 +1,5 @@
 /**
- * Tests for provider health model (Sprint 45).
+ * Tests for provider health model .
  * src/core/provider.ts
  */
 
@@ -131,9 +131,9 @@ describe("_resetProviderHealth", () => {
   });
 });
 
-// ── Sprint 96: Backoff policy ──────────────────────────────────────────────
+// ── Backoff policy ──────────────────────────────────────────────
 
-describe("getBackoffMs (Sprint 96)", () => {
+describe("getBackoffMs ", () => {
   it("returns 0 when no failures", () => {
     recordProviderSuccess("bo");
     expect(getBackoffMs("bo")).toBe(0);
@@ -165,7 +165,7 @@ describe("getBackoffMs (Sprint 96)", () => {
   });
 });
 
-describe("shouldBackoff (Sprint 96)", () => {
+describe("shouldBackoff ", () => {
   it("returns false when no failures", () => {
     expect(shouldBackoff("sb", Date.now())).toBe(false);
   });
@@ -183,9 +183,9 @@ describe("shouldBackoff (Sprint 96)", () => {
   });
 });
 
-// ── Sprint 170: Provider latency histogram ─────────────────────────────────
+// ── Provider latency histogram ─────────────────────────────────
 
-describe("recordProviderLatency (Sprint 170)", () => {
+describe("recordProviderLatency ", () => {
   it("records latency samples", () => {
     recordProviderLatency("p1", 120.456);
     recordProviderLatency("p1", 85.2);

@@ -113,7 +113,7 @@
   max-height: 100%;
 }
 
-/* Sprint 116: Maximize backdrop overlay */
+/* Maximize backdrop overlay */
 .maximize-backdrop {
   position: fixed;
   inset: 0;
@@ -127,7 +127,7 @@
   pointer-events: auto;
 }
 
-/* Sprint 116: Minimize transition — reverse ease-out for snap-back feel */
+/* Minimize transition — reverse ease-out for snap-back feel */
 .card.minimizing {
   transition:
     top 0.35s cubic-bezier(0.5, 0, 0.75, 0),

@@ -7,6 +7,9 @@ tools:
   - grep_search
   - semantic_search
   - get_errors
+  - replace_string_in_file
+  - multi_replace_string_in_file
+  - create_file
   - run_in_terminal
   - get_terminal_output
   - file_search
@@ -15,6 +18,7 @@ tools:
   - tool_search
   - vscode_listCodeUsages
   - vscode_renameSymbol
+  - vscode_askQuestions
   - view_image
   - fetch_webpage
   - runSubagent
@@ -63,7 +67,7 @@ Use this agent when:
 2. **Run type check** — `npx tsc --noEmit`. Fix any errors before continuing.
 3. **Run lint** — `npx eslint src tests --max-warnings 0`. Fix all warnings.
 4. **Run tests** — `npx vitest run`. Report any failures and fix them.
-5. **Check coverage** (full review only) — `npx vitest run --coverage`. Flag modules below threshold (93.7 / 85.0 / 94.1 / 95.1).
+5. **Check coverage** (full review only) — `npx vitest run --coverage`. Flag modules below threshold (94.2 / 85.4 / 94.5 / 95.6).
 6. **OWASP check** — `node scripts/check-owasp.mjs`. Exit 0 required.
 7. **Security scan** — grep for `innerHTML` with unsanitized data, `eval`, `new Function`, hardcoded secrets.
 8. **Dead code scan** — grep for exports that have no consumers in `src/` or `tests/`.
@@ -77,7 +81,7 @@ Use this agent when:
 | Type errors   | `npx tsc --noEmit`                                      | 0 errors                                    |
 | Lint errors   | `npx eslint src tests --max-warnings 0`                 | 0 errors · 0 warnings                       |
 | Markdown lint | `npx markdownlint-cli2 "**/*.md" "#**/node_modules/**"` | 0 errors                                    |
-| Test failures | `npx vitest run`                                        | 0 failures (6387 / 214 suites at v14.4.0)   |
+| Test failures | `npx vitest run`                                        | 0 failures (7037 / 275 suites at v14.4.0)   |
 | Coverage      | `npx vitest run --coverage`                             | stmts 94.2 / branches 85.4 / fn 94.5 / ln 95.6 |
 | OWASP check   | `node scripts/check-owasp.mjs`                          | 0 findings                                  |
 | Build         | `npm run build`                                         | 0 errors                                    |

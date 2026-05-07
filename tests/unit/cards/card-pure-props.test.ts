@@ -1,5 +1,5 @@
 /**
- * Sprint 240 — Card pure-function fast-check property tests
+ * Card pure-function fast-check property tests
  *
  * Property-based tests for deterministic pure helpers across card modules.
  * Uses fast-check arbitraries to exercise invariants over large input spaces.

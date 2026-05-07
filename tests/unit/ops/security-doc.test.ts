@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-SEC: docs/security.md SRI + SLSA provenance section
+ * Unit tests — docs/security.md SRI + SLSA provenance section
  *
  * Verifies that:
  *   - docs/security.md contains the SRI policy section (§11)
@@ -10,8 +10,7 @@
  * These are structure/content tests run from the raw source files —
  * no DOM or network needed.
  *
- * V13-SEC / V13-OPS
- */
+ * / */
 
 import { describe, it, expect, beforeAll } from "vitest";
 import { readFileSync } from "node:fs";
@@ -31,7 +30,7 @@ beforeAll(() => {
 
 // ── docs/security.md: SRI section ────────────────────────────────────────────
 
-describe("docs/security.md: SRI policy (V13-SEC)", () => {
+describe("docs/security.md: SRI policy ", () => {
   it("contains SRI Policy section heading", () => {
     expect(secDoc).toMatch(/##\s+\d+\.\s+SRI/i);
   });
@@ -52,7 +51,7 @@ describe("docs/security.md: SRI policy (V13-SEC)", () => {
 
 // ── docs/security.md: SLSA provenance table ──────────────────────────────────
 
-describe("docs/security.md: SLSA provenance controls (V13-SEC)", () => {
+describe("docs/security.md: SLSA provenance controls ", () => {
   it("contains SLSA section", () => {
     expect(secDoc).toMatch(/SLSA/i);
   });
@@ -72,7 +71,7 @@ describe("docs/security.md: SLSA provenance controls (V13-SEC)", () => {
 
 // ── CI workflow: adr-index check ──────────────────────────────────────────────
 
-describe("CI workflow: check:adr in ci.yml (V13-OPS)", () => {
+describe("CI workflow: check:adr in ci.yml ", () => {
   it("ci.yml runs check-adr-index.mjs", () => {
     expect(ciYaml).toMatch(/check-adr-index/);
   });

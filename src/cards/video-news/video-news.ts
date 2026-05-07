@@ -25,7 +25,7 @@ import type { SemanticPayload } from "../../core/semantic-clipboard";
 let _activeChannel: VideoChannelId = "c14";
 let _root: HTMLElement | null = null;
 
-// ── Sprint 183 / V1: Pinned-channel helper ─────────────────────────────────
+// Pinned-channel helper ─────────────────────────────────
 
 /**
  * Return the ordered list of channel IDs to show, respecting the user's
@@ -185,7 +185,7 @@ function buildChannelTile(id: VideoChannelId): HTMLElement {
 
 // ── Public init / destroy ──────────────────────────────────────────────────
 
-// X15 (Sprint 415): semantic clipboard producer
+// X15: semantic clipboard producer
 function buildVideoNewsPayload(): SemanticPayload {
   const desc = getStreamDescriptor(_activeChannel);
   return {
@@ -230,7 +230,7 @@ export function initVideoNews(root: HTMLElement, initialChannel: VideoChannelId 
   root.appendChild(grid);
 
   updateMiniInfo();
-  // X15 (Sprint 415): register semantic clipboard producer
+  // X15: register semantic clipboard producer
   registerSemanticProducer("video-news", buildVideoNewsPayload);
   diagLog(`[video-news] init complete — ${listPinnedChannels().length} channels loaded`);
 }
@@ -249,8 +249,8 @@ export function destroyVideoNews(): void {
 
 // ── Config schema ───────────────────────────────────────────────────────────
 
-/** Sprint 183 / V1 — channel pinning config field.
- *  Sprint 278 / CS-VN1 — added 5 playback-behaviour settings. */
+/** channel pinning config field.
+ *  added 5 playback-behaviour settings. */
 export const videoNewsConfigSchema: CardConfigField[] = [
   {
     key: "cards.video-news.settings.pinnedChannels",
@@ -261,7 +261,7 @@ export const videoNewsConfigSchema: CardConfigField[] = [
     placeholder: "c14,kan11",
     tab: "display",
   },
-  // ── Sprint 278 / CS-VN1: playback settings ──────────────────────────────
+  // playback settings ──────────────────────────────
   {
     key: "cards.video-news.settings.autoplay",
     labelHe: "נגן אוטומטי",
@@ -304,7 +304,7 @@ export const videoNewsConfigSchema: CardConfigField[] = [
   },
 ];
 
-// ── Sprint 215 / V2: Document Picture-in-Picture (gated) ──────────────────
+// Document Picture-in-Picture (gated) ──────────────────
 
 /**
  * Return true when the Document Picture-in-Picture API is available in the

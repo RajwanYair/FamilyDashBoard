@@ -1,6 +1,6 @@
 /**
- * Tests for src/cards/ai-synthesis/ai-synthesis.ts (Sprint 202 / X9)
- * Sprint 225: expanded coverage — loadAiSynthesisData branches, render helpers,
+ * Tests for src/cards/ai-synthesis/ai-synthesis.ts 
+ * expanded coverage — loadAiSynthesisData branches, render helpers,
  *             initAiSynthesisCard, destroyAiSynthesisCard, visibility guard.
  */
 
@@ -11,7 +11,7 @@ import { cClear, cSet } from "@/core/cache";
 let fetchSynthesis: () => Promise<string | null>;
 let _resetAiSynthesisForTest: () => void;
 
-describe("AI Synthesis Card (Sprint 202 / X9)", () => {
+describe("AI Synthesis Card ", () => {
   beforeEach(async () => {
     cClear();
     vi.stubGlobal("__APP_VERSION__", "13.22.0");
@@ -88,12 +88,12 @@ describe("AI Synthesis Card (Sprint 202 / X9)", () => {
   });
 });
 
-// ── Sprint 225: loadAiSynthesisData branches + render helpers ─────────────
+// ── loadAiSynthesisData branches + render helpers ─────────────
 
 // Shared mutable config — mutate per-test before calling initAiSynthesisCard()
 const _s225cfg = { synthesisEnabled: false };
 
-describe("AI Synthesis — loadAiSynthesisData branches (Sprint 225)", () => {
+describe("AI Synthesis — loadAiSynthesisData branches ", () => {
   let synthText: HTMLDivElement;
   let synthMeta: HTMLDivElement;
   let initAiSynthesisCard: () => void;
@@ -209,8 +209,8 @@ describe("AI Synthesis — loadAiSynthesisData branches (Sprint 225)", () => {
     expect(synthMeta.textContent).toBe("");
   });
 
-  // Sprint 235: cover line 101 (renderError stale branch) and line 149 (visibilitychange handler)
-  it("Sprint 235: renders stale synthesis when fetch fails and stale cache exists (line 101)", async () => {
+  // cover line 101 (renderError stale branch) and line 149 (visibilitychange handler)
+  it("renders stale synthesis when fetch fails and stale cache exists (line 101)", async () => {
     _s225cfg.synthesisEnabled = true;
     // Seed cache with real timestamp T, then fake Date.now() to T+5h > 4h TTL
     cSet("ai:synthesis", { synthesis: "תקציר ישן" });
@@ -224,7 +224,7 @@ describe("AI Synthesis — loadAiSynthesisData branches (Sprint 225)", () => {
     expect(synthText.textContent).toBe("תקציר ישן");
   });
 
-  it("Sprint 235: renders error message when fetch fails and no stale data exists (line 103)", async () => {
+  it("renders error message when fetch fails and no stale data exists (line 103)", async () => {
     _s225cfg.synthesisEnabled = true;
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
     initAiSynthesisCard();
@@ -232,7 +232,7 @@ describe("AI Synthesis — loadAiSynthesisData branches (Sprint 225)", () => {
     expect(synthText.textContent).toContain("AI");
   });
 
-  it("Sprint 235: visibilitychange handler updates _pageVisible flag without throwing (line 149)", async () => {
+  it("visibilitychange handler updates _pageVisible flag without throwing (line 149)", async () => {
     _s225cfg.synthesisEnabled = false;
     initAiSynthesisCard();
     await new Promise((r) => setTimeout(r, 0));
@@ -245,9 +245,9 @@ describe("AI Synthesis — loadAiSynthesisData branches (Sprint 225)", () => {
   });
 });
 
-// ── Sprint 273: null DOM element branches (renderSynthesis/renderDisabled/renderError) ─
+// ── null DOM element branches (renderSynthesis/renderDisabled/renderError) ─
 
-describe("AI Synthesis — null DOM branches (Sprint 273)", () => {
+describe("AI Synthesis — null DOM branches ", () => {
   let initAiSynthesisCard: () => void;
   let destroyAiSynthesisCard: () => void;
   let _resetAiSynthesisForTest: () => void;
@@ -295,9 +295,9 @@ describe("AI Synthesis — null DOM branches (Sprint 273)", () => {
   });
 });
 
-// ── Sprint 421 / PC-1: speakSynthesis + stopSpeakSynthesis ─────────────────
+// ── speakSynthesis + stopSpeakSynthesis ─────────────────
 
-describe("AI Synthesis — PC-1 speakSynthesis (Sprint 421)", () => {
+describe("AI Synthesis — PC-1 speakSynthesis ", () => {
   let speakSynthesis: () => void;
   let stopSpeakSynthesis: () => void;
   let initAiSynthesisCard: () => void;

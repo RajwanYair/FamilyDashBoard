@@ -57,9 +57,7 @@ iteration, not in `beforeEach`.** Modules like `card-registry` use a
 module-scoped `Map` that persists across the 20+ iterations a single
 `fc.assert` runs. Calling `uniquePrefix()` (or any reset helper) at the
 top of the `it()` block is wrong — every iteration shares the prefix and
-state accumulates. The fix discovered during Sprint 318:
-
-```ts
+state accumulates. The fix discovered during ```ts
 fc.assert(
   fc.property(genCardId(), (id) => {
     const prefix = uniquePrefix(); // ← inside the property body
@@ -90,7 +88,7 @@ iteration, not in `beforeEach`.
   fast-check's default of 100 runs on a 4-test file finishes in <30 ms,
   so the cost is negligible.
 - New contributors must read both ADR-054 and ADR-055 to learn the full
-  pattern. A consolidation pass may be worthwhile after Sprint 330.
+  pattern. A consolidation pass may be worthwhile after .
 
 ### Neutral
 

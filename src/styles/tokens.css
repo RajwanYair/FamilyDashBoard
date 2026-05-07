@@ -59,7 +59,7 @@
 }
 
 /*
- * Additional @property registrations (V13-DATA) — enables smooth CSS
+ * Additional @property registrations  — enables smooth CSS
  * transitions on theme switches and documents the accepted syntax for
  * static analysis. color-scheme declaration primes the browser for
  * future light-dark() token usage.
@@ -96,7 +96,7 @@
 }
 
 /*
- * Additional @property registrations (Sprint 454) — glow + border accent
+ * Additional @property registrations — glow + border accent
  * tokens used in box-shadow / border-color transitions on hover/focus.
  * Typed registrations allow CSS to animate these across theme switches.
  */
@@ -249,7 +249,7 @@
   }
 
   /*
-   * D9 — CSS @function sketch (ADR-062, v14.0 Sprint 415)
+   * D9 — CSS @function sketch (ADR-062, v14.0 )
    *
    * When CSS Functions L1 reaches Baseline 2026, these @function declarations
    * will replace the six body.theme-* blocks in themes.css.

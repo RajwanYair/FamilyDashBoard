@@ -1,7 +1,7 @@
 /**
  * Tests for src/ui/offline-banner.ts
  *
- * Sprint 174 (X6 · V14-CROSS): reactive offline indicator driven by event-bus.
+ * (X6 · ): reactive offline indicator driven by event-bus.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";

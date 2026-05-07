@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/validation.ts (Sprint 506)
+ * fast-check property tests — worker/src/utils/validation.ts 
  *
  * Properties under test:
  *  VL1. requireParam throws for missing/empty params, returns trimmed value otherwise.

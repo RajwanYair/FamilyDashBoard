@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/night-dimmer.ts (Sprint 540)
+ * fast-check property tests — src/ui/night-dimmer.ts 
  *
  * Properties under test:
  *  ND1. setDimLevel clamps below 0 to 0

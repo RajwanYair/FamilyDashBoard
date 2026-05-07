@@ -1,5 +1,5 @@
 /**
- * src/core/signals.ts — Sprint 100 (V14-SEMANTIC seed)
+ * src/core/signals.ts
  *
  * Zero-dep, ~1 KB gzipped reactive primitive. Mirrors the TC39 Signals
  * proposal (Stage 3) and Lit Signals API surface so that, when either

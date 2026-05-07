@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — worker/src/utils/rss-parser.ts (Sprint 508)
+ * fast-check property tests — worker/src/utils/rss-parser.ts 
  *
  * Properties under test:
  *  RSS1. parseRss returns at most `limit` items.

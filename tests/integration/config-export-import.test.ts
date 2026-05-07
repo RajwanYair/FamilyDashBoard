@@ -1,5 +1,5 @@
 /**
- * Sprint 173 — Integration: config export → import round-trip
+ * Integration: config export → import round-trip
  * Tests shareConfigHash ⇄ loadConfigFromHash and JSON serialization integrity.
  */
 
@@ -12,7 +12,7 @@ import {
   resetConfig,
 } from "@/core/config";
 
-describe("Config export → import round-trip (Sprint 173)", () => {
+describe("Config export → import round-trip ", () => {
   beforeEach(() => {
     localStorage.clear();
   });

@@ -15,7 +15,7 @@ ENVIRONMENT = "production"
 [cache]
 default_ttl = 300  # 5 minutes
 
-# KV namespace for stale-fallback cache (Stream W.2)
+# KV namespace for stale-fallback cache
 # Create via: wrangler kv:namespace create CACHE_KV
 [[kv_namespaces]]
 binding = "CACHE_KV"
@@ -53,7 +53,7 @@ new_classes = ["RateLimiterDO"]
 # Cron triggers: daily pre-warm of hot API paths (V12-OPS-1)
 # 00:00 UTC — warm stocks, currency, hebcal before the working day
 # 12:00 UTC — mid-day warm to refresh stale KV entries
-# 23:00 UTC — pre-warm next Hebrew year holidays on 29 Elul (V12-DATA)
+# 23:00 UTC — pre-warm next Hebrew year holidays on 29 Elul
 #              also prunes browser_reports older than 30 days (V12-OPS, ADR-028)
 # 23:00 UTC Saturday (dow=6) — weekly digest email (ADR-033, V13-S27)
 [triggers]

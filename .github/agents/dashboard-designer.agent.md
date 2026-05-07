@@ -125,7 +125,7 @@ Always add new rules to the correct layer. No duplicate selectors.
 - Card content: tile/grid blocks — never plain vertical lists (except news/stock rows)
 - `data-card-id` must match registry ID exactly (`"hebrew-cal"`, `"calendar"`, etc.)
 
-## Shared Card State Classes (Stream F.1/F.2/F.3)
+## Shared Card State Classes
 
 Use these classes to communicate card state — do not invent per-card equivalents:
 
@@ -140,7 +140,7 @@ Use these classes to communicate card state — do not invent per-card equivalen
 | `.card--error`   | BEM modifier — adds negative border tint                             |
 | `.card--stale`   | BEM modifier — adds warning border tint                              |
 
-## Tile-Grid Utilities (Stream F.3)
+## Tile-Grid Utilities
 
 Card data content must use rectangular tiles, not plain lists:
 

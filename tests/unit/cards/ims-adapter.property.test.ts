@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/weather/ims-adapter.ts (Sprint 556)
+ * fast-check property tests — src/cards/weather/ims-adapter.ts 
  *
  * Properties under test:
  *  IMS1. haversineKm: same point → 0

@@ -5,7 +5,7 @@
 | Status  | Accepted    |
 | Date    | 2025-07-13  |
 | Sprint  | 29          |
-| Roadmap | V12-EDGE-2b |
+| Roadmap | b |
 
 ## Context
 

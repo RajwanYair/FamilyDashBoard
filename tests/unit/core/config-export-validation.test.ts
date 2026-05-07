@@ -1,11 +1,11 @@
 /**
- * Sprint 101 — Config export validation tests
+ * Config export validation tests
  */
 import { describe, it, expect } from "vitest";
 import { buildExportEnvelope, validateExportPayload } from "@/core/config";
 import { DEFAULT_CONFIG } from "@/types/config";
 
-describe("validateExportPayload (Sprint 101)", () => {
+describe("validateExportPayload ", () => {
   it("accepts a valid envelope", () => {
     const env = buildExportEnvelope({ ...DEFAULT_CONFIG });
     const result = validateExportPayload(env);

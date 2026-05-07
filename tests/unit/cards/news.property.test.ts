@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/news/news.ts (Sprint 521, extended Sprint 563)
+ * fast-check property tests — src/cards/news/news.ts ( , extended )
  *
  * Properties under test:
  *  NW1. filterBySearch: empty query → returns all items

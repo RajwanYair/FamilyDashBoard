@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/hebrew-cal/hebrew-cal.ts (Sprint 524, extended Sprint 568)
+ * fast-check property tests — src/cards/hebrew-cal/hebrew-cal.ts ( , extended )
  *
  * Properties under test:
  *  HC1. getPsalmOfDay: result ∈ PSALM_BY_WEEKDAY set

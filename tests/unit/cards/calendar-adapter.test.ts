@@ -1,5 +1,5 @@
 /**
- * Tests — Calendar/ICS Provider Adapter (Sprint 129)
+ * Tests — Calendar/ICS Provider Adapter 
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -21,7 +21,7 @@ DTEND:20260101T110000Z
 END:VEVENT
 END:VCALENDAR`;
 
-describe("Calendar Provider Adapter (Sprint 129)", () => {
+describe("Calendar Provider Adapter ", () => {
   beforeEach(() => {
     localStorage.clear();
     cClear();

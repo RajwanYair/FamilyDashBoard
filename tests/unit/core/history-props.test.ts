@@ -1,5 +1,5 @@
 /**
- * Sprint 307 — Property-based tests for sparklineSvg() in src/core/history.ts (HP1–HP6)
+ * Property-based tests for sparklineSvg() in src/core/history.ts (HP1–HP6)
  *
  * Uses fast-check to verify structural invariants across all possible value arrays.
  * Complements the concrete unit tests in history.test.ts.

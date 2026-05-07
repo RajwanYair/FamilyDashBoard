@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Hebcal Provider Adapter (Sprint 90)
+ * FamilyDashBoard v13 — Hebcal Provider Adapter
  *
  * Implements ProviderAdapter for the Hebcal API (holidays + Shabbat times).
  */

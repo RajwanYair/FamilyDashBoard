@@ -221,7 +221,7 @@ describe("Config — loadConfigFromHash non-object parsed value (line 70)", () =
   });
 });
 
-// ── Sprint 1 (v7.4) + v7.8 config v2: migrateConfig + type guards + configVersion ──
+// ── (v7.4) + v7.8 config v2: migrateConfig + type guards + configVersion ──
 
 describe("Config — migrateConfig (v7.4)", () => {
   it("migrates to configVersion=5 when version is missing (v0→v1→v2→v3→v4→v5)", () => {
@@ -357,9 +357,9 @@ describe("Config — configVersion sanity (v7.4)", () => {
   });
 });
 
-// ── Sprint 33 (v7.8): resetConfig + dispatchConfigChange ─────────────────────
+// ── (v7.8): resetConfig + dispatchConfigChange ─────────────────────
 
-describe("Config — resetConfig (Sprint 33)", () => {
+describe("Config — resetConfig ", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -389,7 +389,7 @@ describe("Config — resetConfig (Sprint 33)", () => {
   });
 });
 
-describe("Config — dispatchConfigChange (Sprint 33)", () => {
+describe("Config — dispatchConfigChange ", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -414,9 +414,9 @@ describe("Config — dispatchConfigChange (Sprint 33)", () => {
   });
 });
 
-// ── Sprint 33 (v7.8): New type guards ─────────────────────────────────────────
+// ── (v7.8): New type guards ─────────────────────────────────────────
 
-describe("Config — isValidAlertVolume (Sprint 33)", () => {
+describe("Config — isValidAlertVolume ", () => {
   it("accepts 0–100", () => {
     expect(isValidAlertVolume(0)).toBe(true);
     expect(isValidAlertVolume(50)).toBe(true);
@@ -432,7 +432,7 @@ describe("Config — isValidAlertVolume (Sprint 33)", () => {
   });
 });
 
-describe("Config — isValidNightDimLevel (Sprint 33)", () => {
+describe("Config — isValidNightDimLevel ", () => {
   it("accepts 0–100", () => {
     expect(isValidNightDimLevel(0)).toBe(true);
     expect(isValidNightDimLevel(55)).toBe(true);
@@ -447,7 +447,7 @@ describe("Config — isValidNightDimLevel (Sprint 33)", () => {
   });
 });
 
-describe("Config — isValidNewsMaxItems (Sprint 33)", () => {
+describe("Config — isValidNewsMaxItems ", () => {
   it("accepts 1–10", () => {
     expect(isValidNewsMaxItems(1)).toBe(true);
     expect(isValidNewsMaxItems(5)).toBe(true);
@@ -462,7 +462,7 @@ describe("Config — isValidNewsMaxItems (Sprint 33)", () => {
   });
 });
 
-describe("Config — isValidTickerSpeed (Sprint 33)", () => {
+describe("Config — isValidTickerSpeed ", () => {
   it("accepts 1–5", () => {
     expect(isValidTickerSpeed(1)).toBe(true);
     expect(isValidTickerSpeed(3)).toBe(true);
@@ -477,7 +477,7 @@ describe("Config — isValidTickerSpeed (Sprint 33)", () => {
   });
 });
 
-describe("Config — isValidHour (Sprint 33)", () => {
+describe("Config — isValidHour ", () => {
   it("accepts 0–23", () => {
     expect(isValidHour(0)).toBe(true);
     expect(isValidHour(12)).toBe(true);
@@ -493,9 +493,9 @@ describe("Config — isValidHour (Sprint 33)", () => {
   });
 });
 
-// ── Sprint 42 (v7.9): Config v3 migration + per-card settings ─────────────────
+// ── (v7.9): Config v3 migration + per-card settings ─────────────────
 
-describe("Config — migrateConfig v2→v3 (Sprint 42)", () => {
+describe("Config — migrateConfig v2→v3 ", () => {
   it("migrates v2 config to v5, adding all per-card fields", () => {
     const result = migrateConfig({ configVersion: 2, theme: "blue" });
     expect(result.configVersion).toBe(CONFIG_VERSION);
@@ -639,9 +639,9 @@ describe("Config — migrateConfig v3→v4 (v7.10)", () => {
   });
 });
 
-// ── Sprint 38 (v7.13): validateImportedConfig ─────────────────────────────────
+// ── (v7.13): validateImportedConfig ─────────────────────────────────
 
-describe("Config — validateImportedConfig (Sprint 38)", () => {
+describe("Config — validateImportedConfig ", () => {
   it("accepts a valid DEFAULT_CONFIG object", () => {
     const result = validateImportedConfig({ ...DEFAULT_CONFIG });
     expect(result.ok).toBe(true);
@@ -716,9 +716,9 @@ describe("Config — validateImportedConfig (Sprint 38)", () => {
   });
 });
 
-// ── Sprint 39 (v7.13): Config export envelope ────────────────────────────────
+// ── (v7.13): Config export envelope ────────────────────────────────
 
-describe("Config — buildExportEnvelope (Sprint 39)", () => {
+describe("Config — buildExportEnvelope ", () => {
   it("wraps config with appVersion, configSchemaVersion, exportedAt", () => {
     const env = buildExportEnvelope(DEFAULT_CONFIG);
     expect(env.config).toEqual(DEFAULT_CONFIG);
@@ -739,7 +739,7 @@ describe("Config — buildExportEnvelope (Sprint 39)", () => {
   });
 });
 
-describe("Config — serializeConfigExport (Sprint 39)", () => {
+describe("Config — serializeConfigExport ", () => {
   it("returns a valid JSON string", () => {
     const json = serializeConfigExport(DEFAULT_CONFIG);
     expect(() => JSON.parse(json)).not.toThrow();
@@ -761,9 +761,9 @@ describe("Config — serializeConfigExport (Sprint 39)", () => {
   });
 });
 
-// ── readFeatureFlag (Sprint 76) ────────────────────────────────────────────
+// ── readFeatureFlag  ────────────────────────────────────────────
 
-describe("Config — readFeatureFlag (Sprint 76)", () => {
+describe("Config — readFeatureFlag ", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -791,9 +791,9 @@ describe("Config — readFeatureFlag (Sprint 76)", () => {
   });
 });
 
-// ── Config v4→v5 migration (Sprint 62) ────────────────────────────────────
+// ── Config v4→v5 migration  ────────────────────────────────────
 
-describe("Config — migrateConfig v4→v5 (Sprint 62)", () => {
+describe("Config — migrateConfig v4→v5 ", () => {
   it("bumps configVersion to 5 when migrating from v4", () => {
     const result = migrateConfig({ configVersion: 4 });
     expect(result.configVersion).toBe(CONFIG_VERSION);
@@ -826,9 +826,9 @@ describe("Config — migrateConfig v4→v5 (Sprint 62)", () => {
   });
 });
 
-// ── Sprint 99: v5→v6 migration ──────────────────────────────────────────
+// ── v5→v6 migration ──────────────────────────────────────────
 
-describe("migrateConfig v5→v6 (Sprint 99)", () => {
+describe("migrateConfig v5→v6 ", () => {
   it("copies tempUnit into cards.weather.settings", () => {
     const result = migrateConfig({ configVersion: 5, tempUnit: "F" } as Parameters<
       typeof migrateConfig
@@ -887,9 +887,9 @@ describe("migrateConfig v5→v6 (Sprint 99)", () => {
   });
 });
 
-// ── Sprint 102: envelope-aware import ────────────────────────────────────────
+// ── envelope-aware import ────────────────────────────────────────
 
-describe("validateImportedConfig envelope unwrap (Sprint 102)", () => {
+describe("validateImportedConfig envelope unwrap ", () => {
   it("unwraps a ConfigExportEnvelope and returns valid config", () => {
     const envelope = {
       appVersion: "7.17.0",
@@ -990,9 +990,9 @@ describe("Config — migrateConfig v10→v11 (countdownCard2 defaults)", () => {
   });
 });
 
-// ── Sprint 85: resetCardConfig ─────────────────────────────────────────────
+// ── resetCardConfig ─────────────────────────────────────────────
 
-describe("Config — resetCardConfig (Sprint 85)", () => {
+describe("Config — resetCardConfig ", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -1014,9 +1014,9 @@ describe("Config — resetCardConfig (Sprint 85)", () => {
   });
 });
 
-// ── Sprint 85: validateExportPayload edge cases ────────────────────────────
+// ── validateExportPayload edge cases ────────────────────────────
 
-describe("Config — validateExportPayload edge cases (Sprint 85)", () => {
+describe("Config — validateExportPayload edge cases ", () => {
   it("fails when envelope is null", () => {
     const result = validateExportPayload(null);
     expect(result.ok).toBe(false);

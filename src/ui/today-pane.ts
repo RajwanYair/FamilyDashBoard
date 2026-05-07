@@ -1,6 +1,6 @@
 /**
- * Sprint 190 / X1: Today Pane
- * X12 (Sprint 415): migrated collectInputs() to consume card signals via
+ * Today Pane
+ * X12: migrated collectInputs() to consume card signals via
  * getCardSignal() instead of direct cross-card imports (ADR-067).
  *
  * A collapsible summary bar between the header and main grid.
@@ -193,7 +193,7 @@ interface TopMoverSignal { sym: string; pct: number; dir: "up" | "down" }
 interface CalEventSignal { title: string; startMs: number; isAllDay: boolean }
 
 /**
- * X12 (Sprint 415): Collect today-pane inputs from card signals (ADR-067).
+ * X12: Collect today-pane inputs from card signals (ADR-067).
  * Uses getCardSignal() instead of direct cross-card imports.
  *
  * Tasks still read from localStorage (no signal producer yet — X15).

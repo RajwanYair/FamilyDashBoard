@@ -1,5 +1,5 @@
 /**
- * Sprint 97 — News RSS Adapter tests
+ * News RSS Adapter tests
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createNewsAdapter } from "@/cards/news/news-adapter";
@@ -31,7 +31,7 @@ vi.mock("@/core/config", () => ({
   getConfig: () => ({}),
 }));
 
-describe("createNewsAdapter (Sprint 97)", () => {
+describe("createNewsAdapter ", () => {
   const adapter = createNewsAdapter();
 
   beforeEach(() => {

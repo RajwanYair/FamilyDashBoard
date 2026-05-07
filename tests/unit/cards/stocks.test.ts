@@ -2047,7 +2047,7 @@ describe("Stocks — updateStockSummary counts stk-down stocks (line 557 else-if
   });
 });
 
-// ── Sprint 25: formatVolume ───────────────────────────────────────────────────
+// ── formatVolume ───────────────────────────────────────────────────
 
 describe("Stocks — formatVolume", () => {
   it.each([
@@ -2061,7 +2061,7 @@ describe("Stocks — formatVolume", () => {
   });
 });
 
-// ── Sprint 25: priceInRange52w ────────────────────────────────────────────────
+// ── priceInRange52w ────────────────────────────────────────────────
 
 describe("Stocks — priceInRange52w", () => {
   it.each([
@@ -2079,7 +2079,7 @@ describe("Stocks — priceInRange52w", () => {
   });
 });
 
-// ── Sprint 25: sectorEmoji ────────────────────────────────────────────────────
+// ── sectorEmoji ────────────────────────────────────────────────────
 
 describe("Stocks — sectorEmoji", () => {
   it.each([
@@ -2093,7 +2093,7 @@ describe("Stocks — sectorEmoji", () => {
   });
 });
 
-// ── Sprint 25: portfolioChange ────────────────────────────────────────────────
+// ── portfolioChange ────────────────────────────────────────────────
 
 describe("Stocks — portfolioChange", () => {
   it("returns null for empty quotes array", () => {
@@ -2123,7 +2123,7 @@ describe("Stocks — portfolioChange", () => {
   });
 });
 
-// ── Sprint 25: marketStatusLabel ─────────────────────────────────────────────
+// ── marketStatusLabel ─────────────────────────────────────────────
 
 describe("Stocks — marketStatusLabel", () => {
   it("returns a non-empty Hebrew string", () => {
@@ -2133,9 +2133,9 @@ describe("Stocks — marketStatusLabel", () => {
   });
 });
 
-// ── Sprint 49: stocksGroupBySector config gate ────────────────────────────
+// ── stocksGroupBySector config gate ────────────────────────────
 
-describe("Stocks — stocksGroupBySector config gate (Sprint 49)", () => {
+describe("Stocks — stocksGroupBySector config gate ", () => {
   function buildContainer(): void {
     document.body.innerHTML = `<div id="stocks-body"></div>`;
   }
@@ -2191,9 +2191,9 @@ describe("Stocks — cSetAsync (Stream D2.3)", () => {
   });
 });
 
-// ── V13-DATA-1: Worker-first stocks fetch ────────────────────────────────────
+// ── Worker-first stocks fetch ────────────────────────────────────
 
-describe("Stocks — V13-DATA-1 worker-first fetch (isWorkerEnabled path)", () => {
+describe("Stocks — worker-first fetch (isWorkerEnabled path)", () => {
   const makeYahooResp = (price: number, prev: number): YahooChartResponse => ({
     chart: {
       result: [
@@ -2372,9 +2372,9 @@ describe("Stocks — CSS Anchor Positioning on detail button click (F11)", () =>
   });
 });
 
-// ── Sprint 93: branch coverage gaps ─────────────────────────────────────────
+// ── branch coverage gaps ─────────────────────────────────────────
 
-describe("Stocks — Sprint 93 checkStockAlerts <= operator", () => {
+describe("Stocks — checkStockAlerts <= operator", () => {
   beforeEach(() => {
     resetStockAlertSession();
     vi.mocked(showToast).mockClear();
@@ -2401,7 +2401,7 @@ describe("Stocks — Sprint 93 checkStockAlerts <= operator", () => {
   });
 });
 
-describe("Stocks — Sprint 93 marketStatusLabel English branch", () => {
+describe("Stocks — marketStatusLabel English branch", () => {
   afterEach(() => {
     document.documentElement.lang = "";
     vi.restoreAllMocks();
@@ -2437,7 +2437,7 @@ describe("Stocks — Sprint 93 marketStatusLabel English branch", () => {
   });
 });
 
-describe("Stocks — Sprint 93 getMarketStatus midnight (nyMins < 240)", () => {
+describe("Stocks — getMarketStatus midnight (nyMins < 240)", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -2456,7 +2456,7 @@ describe("Stocks — Sprint 93 getMarketStatus midnight (nyMins < 240)", () => {
   });
 });
 
-describe("Stocks — Sprint 93 priceInRange52w null inputs", () => {
+describe("Stocks — priceInRange52w null inputs", () => {
   it("returns null when low52 is null (null coalescing check)", () => {
     // TypeScript says number, but JS runtime may have null from API
     expect(priceInRange52w(150, null as unknown as number, 200)).toBeNull();
@@ -2467,9 +2467,9 @@ describe("Stocks — Sprint 93 priceInRange52w null inputs", () => {
   });
 });
 
-// ── Sprint 187 / S3: getTopMovers ────────────────────────────────────────────
+// ── getTopMovers ────────────────────────────────────────────
 
-describe("Stocks — getTopMovers (Sprint 187 S3)", () => {
+describe("Stocks — getTopMovers ( S3)", () => {
   function makeStockEl(sym: string, pct: number): HTMLElement {
     const el = document.createElement("div");
     el.className = "stk " + (pct > 0.1 ? "stk-up" : pct < -0.1 ? "stk-down" : "");
@@ -2536,8 +2536,8 @@ describe("Stocks — getTopMovers (Sprint 187 S3)", () => {
   });
 });
 
-// ── Sprint 208 / S5: isPreMarket, isPostMarket, getMarketStateForDisplay ────
-describe("Stocks — S5 pre/post-market helpers (Sprint 208)", () => {
+// ── isPreMarket, isPostMarket, getMarketStateForDisplay ────
+describe("Stocks — S5 pre/post-market helpers ", () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it("isPreMarket returns true at 7:00 AM ET Monday", () => {
@@ -2571,9 +2571,9 @@ describe("Stocks — S5 pre/post-market helpers (Sprint 208)", () => {
   });
 });
 
-// ── Sprint 213 / S4: Watchlist groups IDB ─────────────────────────────────
+// ── Watchlist groups IDB ─────────────────────────────────
 
-describe("Stocks — Watchlist groups IDB (Sprint 213 / S4)", () => {
+describe("Stocks — Watchlist groups IDB ", () => {
   beforeEach(() => {
     vi.mocked(idbGet).mockResolvedValue(null);
     vi.mocked(idbSet).mockResolvedValue(undefined);
@@ -2667,7 +2667,7 @@ describe("Stocks — Watchlist groups IDB (Sprint 213 / S4)", () => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Sprint 245 — Stocks card fast-check property tests (SP1–SP6)
+// Stocks card fast-check property tests (SP1–SP6)
 // ═══════════════════════════════════════════════════════════════════════════
 
 // ── SP1: formatVolume — non-empty suffix invariant ────────────────────────
@@ -2823,8 +2823,8 @@ describe("SP6: marketStatusLabel() — always returns a non-empty string", () =>
   });
 });
 
-// ── Sprint 288 / CS-S1: daily-mover pills + pre/post-market badge ────────
-describe("Stocks configSchema — CS-S1 (Sprint 288)", () => {
+// ── daily-mover pills + pre/post-market badge ────────
+describe("Stocks configSchema — CS-S1 ", () => {
   it("configSchema has 5 fields total after CS-S1", () => {
     expect(stocksConfigSchema.length).toBe(5);
   });

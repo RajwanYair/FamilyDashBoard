@@ -75,7 +75,7 @@ Direct → allorigins → codetabs → corsproxy.io
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | Provider          | [open.er-api.com](https://www.exchangerate-api.com/) → exchangerate-api.com → ECB ([Frankfurter](https://frankfurter.dev)) → ECB direct       |
 | Worker route      | `GET /api/currency`                                                                                                                           |
-| Upstream URL      | `https://open.er-api.com/v6/latest/ILS` → `https://api.exchangerate-api.com/v4/latest/ILS` → `https://api.frankfurter.dev/v1/latest?base=ILS` → `https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml` (XML, Sprint 162) |
+| Upstream URL      | `https://open.er-api.com/v6/latest/ILS` → `https://api.exchangerate-api.com/v4/latest/ILS` → `https://api.frankfurter.dev/v1/latest?base=ILS` → `https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml` (XML, ) |
 | Valibot schema    | `CurrencySchema` in `worker/src/utils/schemas.ts` (JSON upstreams); `parseEcbXml()` in `worker/src/utils/ecb-adapter.ts` (ECB direct)        |
 | Cache TTL         | 1 hour (`INTERVALS.CURRENCY`)                                                                                                                 |
 | Cache key         | `curr`                                                                                                                                        |
@@ -232,7 +232,7 @@ Exceeding the limit returns HTTP 429.
 
 ---
 
-## KV TTL Annual Audit — 2026-04-29 (Sprint 155 / v13.17.0)
+## KV TTL Annual Audit — 2026-04-29 
 
 All 22 routes in `worker/openapi.yaml` reviewed. Verdict: **no changes required**.
 

@@ -73,7 +73,7 @@ const API_CACHE_ORIGINS: string[] = [
 ];
 
 // Stream SW: per-origin TTL (seconds). Default: 3600 s (1 h).
-// Sprint 156: canonical source (previously mirrored from src/core/sw-constants.ts,
+// canonical source (previously mirrored from src/core/sw-constants.ts,
 // which is removed as it was not imported by any src/ consumer).
 const CACHE_TTL_BY_ORIGIN: Readonly<Record<string, number>> = {
   "api.coingecko.com": 300,

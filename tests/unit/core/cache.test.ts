@@ -145,7 +145,7 @@ describe("Cache — extra coverage", () => {
   });
 });
 
-// ── Sprint 5: localStorage path coverage ─────────────────────────────────────
+// ── localStorage path coverage ─────────────────────────────────────
 
 describe("Cache — cGetStale localStorage path", () => {
   beforeEach(() => {
@@ -346,7 +346,7 @@ describe("Cache — getOldestCacheAgeMinutes (F6 v7.2)", () => {
   });
 });
 
-// ── Sprint 29: cacheStats ─────────────────────────────────────────────────────
+// ── cacheStats ─────────────────────────────────────────────────────
 
 describe("cacheStats", () => {
   beforeEach(() => {
@@ -393,7 +393,7 @@ describe("cacheStats", () => {
   });
 });
 
-// ── Sprint 50+51: hydrateFromIdb + migrateLocalStorageToIdb ─────────────────
+// ── +51: hydrateFromIdb + migrateLocalStorageToIdb ─────────────────
 
 describe("hydrateFromIdb", () => {
   beforeEach(() => {
@@ -575,8 +575,8 @@ describe("cGetStaleAsync — IDB L2 stale tier (v7.10)", () => {
   });
 });
 
-// ── Sprint 47: coldStart ──────────────────────────────────────────────────
-describe("coldStart — IDB cold-start helper (Sprint 47)", () => {
+// ── coldStart ──────────────────────────────────────────────────
+describe("coldStart — IDB cold-start helper ", () => {
   beforeEach(() => {
     cClear();
   });
@@ -614,8 +614,8 @@ describe("coldStart — IDB cold-start helper (Sprint 47)", () => {
   });
 });
 
-// ── Sprint 59: cOr ───────────────────────────────────────────────────────────
-describe("cOr — null-coalescing cache read (Sprint 59)", () => {
+// ── cOr ───────────────────────────────────────────────────────────
+describe("cOr — null-coalescing cache read ", () => {
   beforeEach(() => {
     cClear();
   });
@@ -651,9 +651,9 @@ describe("cOr — null-coalescing cache read (Sprint 59)", () => {
   });
 });
 
-// ── Sprint 95: cAge ──────────────────────────────────────────────────────────
+// ── cAge ──────────────────────────────────────────────────────────
 
-describe("cAge (Sprint 95)", () => {
+describe("cAge ", () => {
   beforeEach(() => {
     cClear();
   });
@@ -687,7 +687,7 @@ describe("cAge (Sprint 95)", () => {
   });
 });
 
-// ── Sprint 119: cDelete tests ─────────────────────────────────────────────────
+// ── cDelete tests ─────────────────────────────────────────────────
 
 describe("Cache — cDelete", () => {
   beforeEach(() => cClear());
@@ -713,7 +713,7 @@ describe("Cache — cDelete", () => {
   });
 });
 
-// ── Sprint 121: cacheDashboard tests ──────────────────────────────────────────
+// ── cacheDashboard tests ──────────────────────────────────────────
 
 describe("Cache — cacheDashboard", () => {
   beforeEach(() => {
@@ -749,7 +749,7 @@ describe("Cache — cacheDashboard", () => {
   });
 });
 
-// ── Sprint 178: cacheInventory ──────────────────────────────────────────────
+// ── cacheInventory ──────────────────────────────────────────────
 
 describe("Cache — cacheInventory", () => {
   beforeEach(() => {
@@ -789,7 +789,7 @@ describe("Cache — cacheInventory", () => {
   });
 });
 
-// ── Sprint 181: lastHitLayer ────────────────────────────────────────────────
+// ── lastHitLayer ────────────────────────────────────────────────
 
 describe("Cache — lastHitLayer", () => {
   beforeEach(() => {
@@ -928,9 +928,9 @@ describe("Cache — _resetForTest", () => {
   });
 });
 
-// ── Sprint 90: hydrateFromIdb IDB-tier branches via vi.spyOn ─────────────────
+// ── hydrateFromIdb IDB-tier branches via vi.spyOn ─────────────────
 
-describe("Cache — Sprint 90 hydrateFromIdb IDB-tier branches", () => {
+describe("Cache — hydrateFromIdb IDB-tier branches", () => {
   beforeEach(() => {
     _resetForTest();
   });
@@ -985,11 +985,11 @@ describe("Cache — Sprint 90 hydrateFromIdb IDB-tier branches", () => {
   });
 });
 
-// ── Sprint 265 / CAP1-CAP5: fast-check property tests for cache invariants ───
+// ── fast-check property tests for cache invariants ───
 
 import * as fc from "fast-check";
 
-describe("Cache — fast-check property invariants (CAP1-CAP5, Sprint 265)", () => {
+describe("Cache — fast-check property invariants (CAP1-CAP5 )", () => {
   beforeEach(() => {
     localStorage.clear();
     cClear();

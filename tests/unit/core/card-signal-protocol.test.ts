@@ -1,5 +1,5 @@
 /**
- * Sprint 366 / X12: card-signal-protocol unit tests.
+ * card-signal-protocol unit tests.
  * Spec: docs/adr/ADR-067-x12-card-signal-protocol.md
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -10,7 +10,7 @@ import {
   _resetCardSignals,
 } from "../../../src/core/card-signal-protocol";
 
-describe("card-signal-protocol (X12 / Sprint 366)", () => {
+describe("card-signal-protocol (X12 / )", () => {
   beforeEach(() => {
     _resetCardSignals();
   });

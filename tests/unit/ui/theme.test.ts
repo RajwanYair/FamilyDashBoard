@@ -208,7 +208,7 @@ describe("Theme — applyTheme edge cases", () => {
   });
 });
 
-// ── Sprint 6: uncovered branches — currentTheme fallback + initTheme no select ──
+// ── uncovered branches — currentTheme fallback + initTheme no select ──
 
 describe("Theme — currentTheme fallback when no theme class", () => {
   it("returns 'black' when body has no theme-* class", () => {
@@ -305,9 +305,9 @@ describe("Theme — OS prefers-color-scheme change listener", () => {
   });
 });
 
-// ── Sprint 85: checkAutoTheme — no-op when already correct theme ──────────
+// ── checkAutoTheme — no-op when already correct theme ──────────
 
-describe("Theme — checkAutoTheme no-op when already correct (Sprint 85)", () => {
+describe("Theme — checkAutoTheme no-op when already correct ", () => {
   beforeEach(() => {
     document.body.className = "";
     vi.useFakeTimers();
@@ -338,9 +338,9 @@ describe("Theme — checkAutoTheme no-op when already correct (Sprint 85)", () =
   });
 });
 
-// ── Sprint 85: applyTheme View Transitions catch handlers ─────────────────
+// ── applyTheme View Transitions catch handlers ─────────────────
 
-describe("Theme — applyTheme startViewTransition rejection (Sprint 85)", () => {
+describe("Theme — applyTheme startViewTransition rejection ", () => {
   afterEach(() => {
     document.body.className = "";
     vi.restoreAllMocks();
@@ -365,9 +365,9 @@ describe("Theme — applyTheme startViewTransition rejection (Sprint 85)", () =>
   });
 });
 
-// ── Sprint 129: applyTheme L2 try/catch branch (Roadmap #10) ──────────────
+// ── applyTheme L2 try/catch branch  ──────────────
 
-describe("Theme — applyTheme L2 fallback to L1 when object form throws (Sprint 129)", () => {
+describe("Theme — applyTheme L2 fallback to L1 when object form throws ", () => {
   afterEach(() => {
     document.body.className = "";
     try { Reflect.deleteProperty(document, "startViewTransition"); } catch { /* ok */ }

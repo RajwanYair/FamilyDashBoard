@@ -1,5 +1,5 @@
 /**
- * Worker unit tests — Workers AI routes (ADR-030, V13-AI-1)
+ * Worker unit tests — Workers AI routes (ADR-030, )
  *
  * Tests that /api/news/summarise and /api/motivation/hebrew:
  *   - Return 503 when AI_ENABLED is absent/false (ai_disabled)
@@ -7,7 +7,7 @@
  *   - Return 200 with AI text when AI binding is present and returns a response
  *   - Serve from KV cache when a cached entry exists
  *   - Return 502 when AI.run() throws
- * Sprint 446: added handleAiSynthesis describe block (lines 174-229 coverage).
+ * added handleAiSynthesis describe block (lines 174-229 coverage).
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -142,7 +142,7 @@ describe("handleNewsSummarise — AI enabled with binding", () => {
     expect(body).toEqual({ ok: false, error: "ai_error" });
   });
 
-  it("returns 502 ai_empty_response when AI returns undefined response (Sprint 153)", async () => {
+  it("returns 502 ai_empty_response when AI returns undefined response ", async () => {
     const emptyAi: AiBinding = { run: vi.fn().mockResolvedValue({}) };
     const res = await handleNewsSummarise(makeEnv({ AI_ENABLED: "true", AI: emptyAi }));
     expect(res.status).toBe(502);
@@ -150,7 +150,7 @@ describe("handleNewsSummarise — AI enabled with binding", () => {
     expect(body).toEqual({ ok: false, error: "ai_empty_response" });
   });
 
-  it("returns 502 ai_empty_response when AI returns a ReadableStream (Sprint 153)", async () => {
+  it("returns 502 ai_empty_response when AI returns a ReadableStream ", async () => {
     const streamAi: AiBinding = {
       run: vi.fn().mockResolvedValue(new ReadableStream()),
     };
@@ -263,7 +263,7 @@ describe("handleMotivationHebrew — AI enabled with binding", () => {
     expect(body).toEqual({ ok: false, error: "ai_error" });
   });
 
-  it("returns 502 ai_empty_response when AI returns undefined response (Sprint 153)", async () => {
+  it("returns 502 ai_empty_response when AI returns undefined response ", async () => {
     const emptyAi: AiBinding = { run: vi.fn().mockResolvedValue({}) };
     const res = await handleMotivationHebrew(makeEnv({ AI_ENABLED: "true", AI: emptyAi }));
     expect(res.status).toBe(502);
@@ -271,7 +271,7 @@ describe("handleMotivationHebrew — AI enabled with binding", () => {
     expect(body).toEqual({ ok: false, error: "ai_empty_response" });
   });
 
-  it("returns 502 ai_empty_response when AI returns a ReadableStream (Sprint 153)", async () => {
+  it("returns 502 ai_empty_response when AI returns a ReadableStream ", async () => {
     const streamAi: AiBinding = {
       run: vi.fn().mockResolvedValue(new ReadableStream()),
     };
@@ -282,7 +282,7 @@ describe("handleMotivationHebrew — AI enabled with binding", () => {
   });
 });
 
-// ── /api/ai/synthesis — Sprint 446 ───────────────────────────────────────────
+// ── /api/ai/synthesis — ───────────────────────────────────────────
 
 describe("handleAiSynthesis — AI disabled (no AI_ENABLED)", () => {
   it("returns 503 with ai_disabled", async () => {

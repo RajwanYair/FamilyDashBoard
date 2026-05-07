@@ -1,5 +1,5 @@
 /**
- * FamilyDashBoard v13 — Service Worker ↔ Client Message Types (Sprint 44)
+ * FamilyDashBoard v13 — Service Worker ↔ Client Message Types
  *
  * Typed union for all messages sent between the page and the SW.
  * Shared constants ensure string literals are never duplicated.

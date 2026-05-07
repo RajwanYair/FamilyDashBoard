@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/ui/screen-mode.ts (Sprint 535)
+ * fast-check property tests — src/ui/screen-mode.ts 
  *
  * Properties under test:
  *  SM1. applyFontScale clamps below 0.7 to 0.7

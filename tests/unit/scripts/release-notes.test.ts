@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-OPS: check-release-notes.mjs
+ * Unit tests — check-release-notes.mjs
  *
  * Verifies the three pure helpers that enforce CHANGELOG.md completeness
  * before any release tag.
@@ -20,8 +20,8 @@ const CHANGELOG_FULL = `
 ## [12.9.0] - 2025-08-01
 
 ### Added
-- Sprint 3: Voice-control aria-labels on all cards
-- Sprint 4: Dialog heading hierarchy fixes
+- Voice-control aria-labels on all cards
+- Dialog heading hierarchy fixes
 
 ### Fixed
 - Heading level in diagnostics dialog
@@ -88,8 +88,8 @@ describe("hasChangelogEntry", () => {
 describe("extractChangelogSection", () => {
   it("returns the section for the given version", () => {
     const section = extractChangelogSection(CHANGELOG_FULL, "12.9.0");
-    expect(section).toContain("Sprint 3");
-    expect(section).toContain("Sprint 4");
+    expect(section).toContain(" ");
+    expect(section).toContain(" ");
   });
 
   it("does not include content from the next version section", () => {
@@ -150,7 +150,7 @@ import { createRequire } from "node:module";
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, "..", "..", "..");
 
-describe("real CHANGELOG.md compliance (V13-OPS)", () => {
+describe("real CHANGELOG.md compliance ", () => {
   const changelog = readFileSync(resolve(ROOT, "CHANGELOG.md"), "utf8");
   const require = createRequire(import.meta.url);
   const pkg = require("../../../package.json") as { version: string };

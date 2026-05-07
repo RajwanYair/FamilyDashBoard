@@ -20,9 +20,11 @@
             "args": [
                 "-y",
                 "@modelcontextprotocol/server-filesystem@latest",
-                "${workspaceFolder}"
+                "${workspaceFolder}",
+                "--exclude",
+                "node_modules,.git,dist,coverage,test-results"
             ],
-            "description": "Workspace-scoped file ops — coverage reports, test outputs, configs, build artifacts."
+            "description": "Workspace-scoped file ops — coverage reports, test outputs, configs, build artifacts. Heavy directories excluded."
         },
         "gitkraken": {
             "type": "http",
@@ -34,9 +36,9 @@
             "command": "npx",
             "args": [
                 "-y",
-                "@anthropic/mcp-playwright@latest"
+                "@microsoft/mcp-server-playwright"
             ],
-            "description": "Browser automation for E2E validation, screenshot capture, and visual regression verification in chat."
+            "description": "Browser automation, visual debugging, screenshot capture, and E2E interaction directly in chat."
         }
     }
 }

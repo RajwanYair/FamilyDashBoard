@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/core/diag.ts (Sprint 489, 574)
+ * fast-check property tests — src/core/diag.ts ( , 574)
  *
  * Properties under test:
  *  DG1. diagLog ring buffer never exceeds DIAG_BUFFER_SIZE (80).

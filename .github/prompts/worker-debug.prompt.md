@@ -1,7 +1,6 @@
 ---
-mode: "agent"
 description: "Debug a broken Cloudflare Worker route: fetch failures, Zod validation errors, KV read/write, envelope shape mismatches."
-tools: ["read_file", "grep_search", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "get_errors", "file_search", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "fetch_webpage"]
+tools: ["read_file", "grep_search", "replace_string_in_file", "multi_replace_string_in_file", "run_in_terminal", "get_terminal_output", "get_errors", "file_search", "vscode_listCodeUsages", "manage_todo_list", "tool_search", "fetch_webpage", "memory", "runSubagent"]
 ---
 
 # Worker Route Debug — FamilyDashBoard
@@ -29,7 +28,7 @@ Expected: **0 errors**
 - Add a `.passthrough()` temporarily, log the raw response, then tighten the schema.
 - Run `npx vitest run tests/unit/worker/` to verify schema tests pass.
 
-## 4. KV Stale Fallback (Stream W.2)
+## 4. KV Stale Fallback
 
 - Is `CACHE_KV` bound in `wrangler.toml`?
 - Is the KV namespace ID correct? (Not a placeholder.)

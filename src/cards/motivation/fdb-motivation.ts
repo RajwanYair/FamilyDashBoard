@@ -1,10 +1,10 @@
 /**
  * FamilyDashBoard v13 — Motivation Card (FdbCard subclass)
  *
- * Sprint 187: First FdbCard-migrated card. Static quotes with fade animation.
+ * First FdbCard-migrated card. Static quotes with fade animation.
  * No network dependency. Uses scheduleRefresh for auto-advance.
  *
- * Sprint 140 (Roadmap #1): migrated motivationInterval config subscription from
+ * migrated motivationInterval config subscription from
  * watchConfig/state.addEventListener → effect() on the `motivationInterval`
  * signal in app-signals.ts.  This completes the ≥ 50 % migration target for
  * ADR-038 (100 % of reactive config call sites are now on signals).
@@ -79,7 +79,7 @@ export class FdbMotivationCard extends FdbCard {
       this.nextQuote();
     }, INTERVALS.MOTIVATION);
 
-    // Subscribe to motivationInterval signal (Roadmap #1 migration: replaces watchConfig).
+    // Subscribe to motivationInterval signal .
     // effect() runs immediately with the current signal value, then on each change.
     if (this._intervalEffect === null) {
       this._intervalEffect = effect(() => {

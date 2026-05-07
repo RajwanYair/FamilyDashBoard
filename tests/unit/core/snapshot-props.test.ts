@@ -1,5 +1,5 @@
 /**
- * Sprint 299 — Property-based tests for src/core/snapshot.ts (SP1–SP5)
+ * Property-based tests for src/core/snapshot.ts (SP1–SP5)
  *
  * Verifies structural invariants of `buildSnapshot()` with generated inputs.
  */

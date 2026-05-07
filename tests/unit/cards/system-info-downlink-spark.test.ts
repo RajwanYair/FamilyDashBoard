@@ -1,5 +1,5 @@
 /**
- * Tests for V13-DATA: 7-reading downlink sparkline in system-info.ts
+ * Tests for 7-reading downlink sparkline in system-info.ts
  *
  * Mocks @/core/history to keep assertions deterministic.
  */
@@ -60,7 +60,7 @@ function clearConnection() {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe("System-info — downlink sparkline (V13-DATA)", () => {
+describe("System-info — downlink sparkline ", () => {
   beforeEach(() => {
     mockAppend.mockClear();
     mockGet.mockClear();

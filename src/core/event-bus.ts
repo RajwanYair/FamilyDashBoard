@@ -1,5 +1,5 @@
 /**
- * src/core/event-bus.ts — Sprint 173 (X2 · V14-CROSS seed)
+ * src/core/event-bus.ts
  *
  * Zero-dep signals-based pub/sub channel for cross-card coordination.
  * Built on top of src/core/signals.ts — no additional runtime dependencies.

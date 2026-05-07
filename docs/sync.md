@@ -1,6 +1,6 @@
 # Encrypted Config Sync — FamilyDashBoard
 
-> **V13-CONTINUITY** — Share your dashboard settings securely across devices using AES-GCM encrypted URL fragments. No server, no account, no plaintext.
+> **** — Share your dashboard settings securely across devices using AES-GCM encrypted URL fragments. No server, no account, no plaintext.
 
 ## Overview
 

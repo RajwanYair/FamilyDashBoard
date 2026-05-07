@@ -1,5 +1,5 @@
 /**
- * Unit tests — V13-A11Y: WCAG 1.4.12 Text Spacing CSS tokens
+ * Unit tests — Y: WCAG 1.4.12 Text Spacing CSS tokens
  *
  * WCAG 2.1 Success Criterion 1.4.12 (Text Spacing) requires that content
  * does not lose functionality when the following are applied:
@@ -15,7 +15,7 @@
  * These tests verify the token values meet the WCAG AA minimums and
  * that the check-reading-level.mjs script enforces the same thresholds.
  *
- * V13-A11Y
+ * Y
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
@@ -36,7 +36,7 @@ beforeAll(() => {
 
 // ── Token presence ────────────────────────────────────────────────────────────
 
-describe("WCAG 1.4.12 text-spacing tokens: presence (V13-A11Y)", () => {
+describe("WCAG 1.4.12 text-spacing tokens: presence (Y)", () => {
   it("tokens.css declares --ts-line-height", () => {
     expect(tokensCss).toMatch(/--ts-line-height\s*:/);
   });
@@ -56,7 +56,7 @@ describe("WCAG 1.4.12 text-spacing tokens: presence (V13-A11Y)", () => {
 
 // ── Token minimum values ──────────────────────────────────────────────────────
 
-describe("WCAG 1.4.12 text-spacing tokens: minimum values (V13-A11Y)", () => {
+describe("WCAG 1.4.12 text-spacing tokens: minimum values (Y)", () => {
   /** Extract the numeric value of a CSS custom property declaration. */
   function extractTokenValue(property: string): number | null {
     // Match --property: <value>; (ignores trailing comments and semicolons)
@@ -92,7 +92,7 @@ describe("WCAG 1.4.12 text-spacing tokens: minimum values (V13-A11Y)", () => {
 
 // ── Unit annotation in source ────────────────────────────────────────────────
 
-describe("WCAG 1.4.12 text-spacing tokens: unit annotations (V13-A11Y)", () => {
+describe("WCAG 1.4.12 text-spacing tokens: unit annotations (Y)", () => {
   it("--ts-letter-spacing uses 'em' unit (font-relative)", () => {
     expect(tokensCss).toMatch(/--ts-letter-spacing\s*:\s*[\d.]+em/);
   });
@@ -114,7 +114,7 @@ describe("WCAG 1.4.12 text-spacing tokens: unit annotations (V13-A11Y)", () => {
 
 // ── check-reading-level.mjs thresholds ───────────────────────────────────────
 
-describe("check-reading-level.mjs: validates WCAG 1.4.12 thresholds (V13-A11Y)", () => {
+describe("check-reading-level.mjs: validates WCAG 1.4.12 thresholds (Y)", () => {
   let scriptSrc = "";
 
   beforeAll(() => {

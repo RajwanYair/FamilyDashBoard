@@ -27,7 +27,7 @@ describe("FdbMotivationCard", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     document.body.innerHTML = "";
-    // Reset the motivationInterval signal directly (source of truth after Sprint 140 migration)
+    // Reset the motivationInterval signal directly (source of truth after migration)
     motivationInterval.value = 0;
     // Also reset via state so bridge stays consistent in tests that use state.set()
     state.set("config.motivationInterval", 0);
@@ -72,7 +72,7 @@ describe("FdbMotivationCard", () => {
     expect(card.querySelector(".moti-text")?.textContent).toBe("Quote B");
   });
 
-  it("reacts to motivationInterval signal written directly (Sprint 140 signals migration)", async () => {
+  it("reacts to motivationInterval signal written directly ( signals migration)", async () => {
     const card = mountCard();
 
     motivationInterval.value = 1;

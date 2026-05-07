@@ -70,11 +70,11 @@ export const API = {
   CURRENCY_BOI: "https://boi.org.il/PublicApi/GetExchangeRates",
   CURRENCY_PRIMARY: "https://open.er-api.com/v6/latest/ILS",
   CURRENCY_FALLBACK: "https://api.exchangerate-api.com/v4/latest/ILS",
-  // Sprint 132 (Roadmap #16): ECB-direct mirror via Frankfurter (no key, daily ECB rates).
+  // ECB-direct mirror via Frankfurter (no key, daily ECB rates).
   // Returns shape compatible with CurrencyRateResponse: { amount, base, date, rates }.
   CURRENCY_FALLBACK_ECB: "https://api.frankfurter.dev/v1/latest?base=ILS",
   YAHOO_CHART: "https://query1.finance.yahoo.com/v8/finance/chart/",
-  // V13-DATA-1: Worker stocks endpoint — Finnhub primary, Yahoo secondary (feeds.ts)
+  // Worker stocks endpoint — Finnhub primary, Yahoo secondary (feeds.ts)
   WORKER_STOCKS: `${WORKER_BASE_URL}/api/stocks`,
   COINGECKO_BTC:
     "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",
@@ -295,7 +295,7 @@ export const LS_STOCK_ALERTS = "dash_v2_stock_alerts";
 export const LS_PORTFOLIO = "dash_v2_portfolio";
 export const LS_NEWS_VISITED = "dash_visited_news";
 export const LS_NEWS_BOOKMARKS = "dash_bookmarks";
-/** Sprint 196 / N3: Per-source mute windows { [sourceKey]: untilTimestamp } */
+/** Per-source mute windows { [sourceKey]: untilTimestamp } */
 export const LS_NEWS_MUTED = "dash_news_muted_sources";
 export const LS_CUR_HISTORY = "dash_v2_cur_history";
 export const LS_THEME = "dash_theme";

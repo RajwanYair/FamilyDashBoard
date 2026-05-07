@@ -36,7 +36,7 @@ export interface WeatherResponse {
   };
 }
 
-// ── Air Quality (Open-Meteo air-quality API) — Sprint 193 / W4 ──
+// ── Air Quality (Open-Meteo air-quality API) — / W4 ──
 export interface AirQualityResponse {
   current: {
     european_aqi: number;
@@ -57,7 +57,7 @@ export function isAirQualityResponse(v: unknown): v is AirQualityResponse {
   );
 }
 
-// ── Nowcast (Open-Meteo minutely_15, Sprint 194 / W3) ──
+// ── Nowcast (Open-Meteo minutely_15 / W3) ──
 export interface NowcastResponse {
   minutely_15: {
     time: string[];
@@ -325,12 +325,12 @@ export function isCalendarEvent(v: unknown): v is CalendarEvent {
   );
 }
 
-// ── Domain types (Sprint 36–44, v7.13) ────────────────────────────────────
+// ── Domain types ( — 44, v7.13) ────────────────────────────────────
 //
 // Normalized internal representations that decouple cards from provider quirks.
 // Cards render domain models; provider-specific parsing lives in mapper functions.
 
-// ── WeatherDomain (Sprint 36) ──
+// ── WeatherDomain ──
 
 /** Normalized weather state — card renders this, not WeatherResponse directly. */
 export interface WeatherDomain {
@@ -417,7 +417,7 @@ export function mapToWeatherDomain(r: WeatherResponse): WeatherDomain {
   };
 }
 
-// ── StocksDomain (Sprint 37) ──
+// ── StocksDomain ──
 
 /** Normalized single-stock state. */
 export interface StockDomain {
@@ -470,7 +470,7 @@ export function mapToStockDomain(symbol: string, r: YahooChartResponse): StockDo
   };
 }
 
-// ── CurrencyDomain (Sprint 42) ──
+// ── CurrencyDomain ──
 
 /** Normalized currency exchange state. */
 export interface CurrencyDomain {
@@ -494,7 +494,7 @@ export function mapToCurrencyDomain(r: CurrencyResponse): CurrencyDomain {
   };
 }
 
-// ── NewsDomain (Sprint 41) ──
+// ── NewsDomain ──
 
 /** Normalized single news article. */
 export interface NewsDomainItem {
@@ -522,7 +522,7 @@ export function rssItemToDomain(item: NewsItem, feedIndex: number): NewsDomainIt
   };
 }
 
-// ── AlertsDomain (Sprint 43) ──
+// ── AlertsDomain ──
 
 /** Normalized single alert zone event. */
 export interface AlertZoneDomain {
@@ -559,7 +559,7 @@ export function mapToAlertsDomain(ev: AlertEvent): AlertsDomain {
   };
 }
 
-// ── HebcalDomain (Sprint 44) ──
+// ── HebcalDomain ──
 
 /** Normalized single Hebcal item. */
 export interface HebcalDomainItem {
@@ -600,7 +600,7 @@ export function mapToHebcalDomain(r: HebcalResponse): HebcalDomain {
   };
 }
 
-// ── CalendarDomain (Sprint 76) ──
+// ── CalendarDomain ──
 
 /** Normalized calendar event for rendering. */
 export interface CalendarDomainEvent {

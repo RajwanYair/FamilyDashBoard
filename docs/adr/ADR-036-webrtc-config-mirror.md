@@ -5,7 +5,7 @@
 | **Date**     | 2026-04-24                                                   |
 | **Status**   | Proposed                                                     |
 | **Deciders** | @RajwanYair                                                  |
-| **Tags**     | config, webrtc, mobile, qr-code, v13-continuity, zero-server |
+| **Tags**     | config, webrtc, mobile, qr-code, , zero-server |
 
 ---
 
@@ -28,7 +28,7 @@ uses the browser's built-in `RTCPeerConnection` API — no additional libraries.
 
 ## Decision
 
-Design a **5-minute WebRTC mirror** feature under the `V13-CONTINUITY` roadmap label.
+Design a **5-minute WebRTC mirror** feature under the `` roadmap label.
 
 ### Architecture
 
