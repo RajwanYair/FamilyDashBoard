@@ -7,6 +7,10 @@
  *  KM3. sortKeyEntries: single-char keys always precede multi-char keys.
  *  KM4. sortKeyEntries: output length matches input length.
  *  KM5. sortKeyEntries is idempotent (sorting twice yields same order).
+ *  KM6. buildHelpRows: single-char keys are uppercased in the .help-key span.
+ *  KM7. sortKeyEntries: within single-char group, keys are alphabetically ordered.
+ *  KM8. buildHelpRows: each row contains exactly 2 <span> children.
+ *  KM9. sortKeyEntries: elements are a permutation of the input (no loss/gain).
  */
 
 import { describe, it, expect } from "vitest";
@@ -111,6 +115,81 @@ describe("keymap — KM5: sortKeyEntries is idempotent", () => {
         expect(twice.map((a) => a.key)).toEqual(once.map((a) => a.key));
       }),
       { numRuns: 30 },
+    );
+  });
+});
+
+// ── KM6: single-char keys uppercased in .help-key ────────────────────────────
+
+describe("keymap — KM6: buildHelpRows uppercases single-char keys", () => {
+  it(".help-key textContent is uppercase for single-char keys", () => {
+    fc.assert(
+      fc.property(singleCharKeyArb, (key) => {
+        const action: KeyboardAction = { key, description: "test", handler: () => {} };
+        const frag = buildHelpRows([action], "he");
+        const keySpan = frag.firstElementChild?.querySelector(".help-key");
+        expect(keySpan?.textContent).toBe(key.toUpperCase());
+      }),
+      { numRuns: 26 },
+    );
+  });
+});
+
+// ── KM7: sortKeyEntries alphabetical within single-char group ────────────────
+
+describe("keymap — KM7: sortKeyEntries alphabetical within single-char group", () => {
+  it("single-char keys appear in localeCompare order", () => {
+    const singleOnlyArb = fc.array(
+      fc.record({
+        key: singleCharKeyArb,
+        description: fc.constant("d"),
+        handler: fc.constant(() => {}),
+      }),
+      { minLength: 2, maxLength: 10 },
+    ) as fc.Arbitrary<KeyboardAction[]>;
+
+    fc.assert(
+      fc.property(singleOnlyArb, (actions) => {
+        const sorted = sortKeyEntries(actions);
+        for (let i = 1; i < sorted.length; i++) {
+          expect(sorted[i - 1].key.localeCompare(sorted[i].key)).toBeLessThanOrEqual(0);
+        }
+      }),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── KM8: buildHelpRows — each row has exactly 2 spans ────────────────────────
+
+describe("keymap — KM8: buildHelpRows each row has 2 <span> children", () => {
+  it("every .help-row has exactly 2 spans (description + key)", () => {
+    fc.assert(
+      fc.property(actionsArb, (actions) => {
+        if (actions.length === 0) return;
+        const frag = buildHelpRows(actions, "en");
+        for (const row of Array.from(frag.children)) {
+          const spans = row.querySelectorAll("span");
+          expect(spans.length).toBe(2);
+        }
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── KM9: sortKeyEntries is a permutation (no data loss) ──────────────────────
+
+describe("keymap — KM9: sortKeyEntries is a permutation of input", () => {
+  it("sorted keys multiset equals original keys multiset", () => {
+    fc.assert(
+      fc.property(actionsArb, (actions) => {
+        const sorted = sortKeyEntries(actions);
+        const originalKeys = actions.map((a) => a.key).sort();
+        const sortedKeys = sorted.map((a) => a.key).sort();
+        expect(sortedKeys).toEqual(originalKeys);
+      }),
+      { numRuns: 40 },
     );
   });
 });
