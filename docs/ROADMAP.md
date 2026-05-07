@@ -1,9 +1,9 @@
 # FamilyDashBoard — Strategic Roadmap (Deep-Rethink v2)
 
-> **Refresh date**: 2026-05-07 · **Shipped baseline**: v14.5.0  · **Active stream**: V15-OPEN.
+> **Refresh date**: 2026-05-13 · **Shipped baseline**: v14.5.0  · **Active stream**: V15-OPEN.
 >
-> **Inventory**: 7037 tests / 275 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.97` · SLSA L2 + Sigstore + rebuilder manifest.
-> **Coverage **: 94.2 / 85.4 / 94.5 / 95.6 (statements / branches / functions / lines).
+> **Inventory**: 7037 tests / 275 suites / 0 failures · 0 lint errors · 0 lint warnings · 0 `eslint-disable` · 0 `@ts-ignore` · 73 ADRs · 0 client deps · 2 worker deps (Hono + Valibot) · 6 themes · 12 cards · 4-tier offline cache · Worker ≤ 75 KB gzip · LHCI perf `error 0.98` · SLSA L2 + Sigstore + rebuilder manifest.
+> **Coverage **: 94.4 / 85.6 / 94.7 / 95.8 (statements / branches / functions / lines).
 >
 > **Purpose**: a forward-looking, first-principles plan. Every paragraph is a decision, gate, or trigger. Historical sprints live in [CHANGELOG.md](../CHANGELOG.md) — this file is **what's next, only**.
 >
@@ -153,10 +153,10 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Prettier              | 3.x                      | **Track Biome 2.x**; switch only on TS+MD+JSON+YAML parity.                       |
 | Stylelint             | 16.x                     | Keep; consider Lightning-CSS-only validation v15.                                 |
 | Playwright            | 1.5x                     | Quarterly baseline regen.                                                         |
-| Stryker (mutation)    | 8.x                      | Threshold ≥ 85 %; 25 files in scope (utils.ts + config-crypto.ts + worker-client.ts added ); extend to remaining core modules. |
+| Stryker (mutation)    | 8.x                      | Threshold ≥ 87 %; 60+ files in scope (expanded v14.5); extend to remaining core modules. |
 | `fast-check`          | 3.x                      | 77 property suites across 21 modules (config-crypto CC1-CC8 , utils UT1-UT8 , links LK1-LK6 ); continue expanding. |
 | `axe-core`            | latest                   | Keep CI gate.                                                                     |
-| Lighthouse CI         | latest                   | Tightened to `error 0.97`; ratchet to `0.98` cached v14.x.                        |
+| Lighthouse CI         | latest                   | At `error 0.98` cached (final target v14.x).                                      |
 | `pnpm` workspace      | npm + parent             | **Reject** — current pattern is sufficient and simpler.                           |
 | Husky / Lefthook      | none (CI is the gate)    | **Reject** — pre-commit hooks slow contributors.                                  |
 
@@ -167,12 +167,12 @@ Cross-cutting rules unchanged: every external response is **Valibot-validated**,
 | Unit             | Vitest 4.1 + happy-dom 20              | Keep. Suite split per file.                                                       |
 | Component        | `@vitest/browser` (Playwright)         | Shipped v13.16.                                                                   |
 | Property-based   | fast-check (77 suites, ADR-054/055)    | 21 modules covered; config-crypto/utils/links property suites shipped v14.4. |
-| Mutation         | Stryker (25 files)                     | Threshold ≥ 85 %; extended to utils/config-crypto/worker-client .       |
+| Mutation         | Stryker (60+ files)                    | Threshold ≥ 87 %; expanded v14.5 to all core/cards/ui modules.          |
 | Visual regression | Playwright (108 baselines)             | Extend to DO-SSE alert states + maximise-FLIP.                                    |
 | End-to-end       | Playwright                             | Keep.                                                                             |
 | Accessibility    | axe-core (CI gate)                     | Keep + manual screen-reader pass per major.                                       |
-| Performance      | Lighthouse CI (`error 0.97`)           | Tighten to `0.98` cached v14.x.                                                   |
-| Coverage         | 94.2/85.4/94.5/95.6                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
+| Performance      | Lighthouse CI (`error 0.98`)           | At final target. Consider 0.99 for v15.                                            |
+| Coverage         | 94.4/85.6/94.7/95.8                    | Ratchet path → 95/90/95/96 by v15. +0.5 % per minor release.                      |
 
 ### 1.8 Observability, security, supply chain
 
@@ -443,7 +443,7 @@ User clicks a tile; system copies a context-rich text + JSON-LD payload (e.g. "3
 | 8  | Enhance  | SLSA L3 hermetic build + Sigstore + 3rd-party rebuilder verify                  | P0 | L | Hi | v14.2  | L3 |
 | 9  | Refactor | Promote `tooling/` presets to BudgetManager / CrossTideWeb / Wedding             | P1 | M | Hi | v14.1  | |
 | 10 | Enhance  | Visual-regression baselines 108 → 130+                                          | P1 | M | Mid | v14.0  | |
-| 11 | Enhance  | LHCI perf `error 0.97` → `0.98` cached                                          | P1 | S | Mid | v14.x  | |
+| 11 | ~~Enhance~~  | ~~LHCI perf `error 0.97` → `0.98` cached~~ **(SHIPPED v13.43.0)**                | P1 | S | Mid | v14.x  | |
 | 12 | Enhance  | WebRTC mirror with QR pairing (gated 3+; ADR-049)                               | P2 | L | Mid | v14.x  | |
 | 13 | Enhance  | OWASP Top 10 audit (rotate per major release)                                   | P0 | M | Hi | v14.0  | L3 |
 | 14 | Refactor | Coverage ratchet 93.0/84.6/92.0/94.5 → 95/90/95/96 (+0.5%/release)              | P1 | M | Mid | v15    | |
