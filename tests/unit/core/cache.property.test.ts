@@ -14,6 +14,10 @@
  *  CS10. cAge: returns null for never-stored key (Sprint 572)
  *  CS11. cClear: empties everything — cGet/cGetStale return null (Sprint 572)
  *  CS12. cSet + cAge: age for just-stored key is 0 or very small (Sprint 572)
+ *  CS13. cEvict: never removes entries stored within the same test run (Sprint 592)
+ *  CS14. getOldestCacheAgeMinutes: returns 0 when cache is empty (Sprint 592)
+ *  CS15. cDelete is idempotent — double-delete never throws (Sprint 592)
+ *  CS16. cOr fallback value IS persisted after miss (Sprint 592)
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -29,6 +33,8 @@ import {
   lastHitLayer,
   cOr,
   cAge,
+  cEvict,
+  getOldestCacheAgeMinutes,
 } from "@/core/cache";
 
 // ── Arbitraries ───────────────────────────────────────────────────────────────
@@ -322,6 +328,91 @@ describe("cache — CS12: cAge for fresh entry", () => {
         expect(age!).toBeLessThanOrEqual(1); // <= 1 minute
       }),
       { numRuns: 30 },
+    );
+  });
+});
+
+// ── CS13: cEvict never removes fresh entries ─────────────────────────────
+
+describe("cache — CS13: cEvict never removes fresh entries", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("entries stored within this run survive cEvict", () => {
+    fc.assert(
+      fc.property(keyArb, jsonDataArb, freshTtlArb, (key, data, ttl) => {
+        cSet(key, data);
+        cEvict();
+        // Fresh entries must still be retrievable
+        expect(cGet(key, ttl)).toEqual(data);
+      }),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── CS14: getOldestCacheAgeMinutes returns 0 on empty cache ──────────────
+
+describe("cache — CS14: getOldestCacheAgeMinutes on empty cache", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("returns 0 when no dash_v2_ entries exist", () => {
+    fc.assert(
+      fc.property(fc.constant(null), () => {
+        cClear();
+        expect(getOldestCacheAgeMinutes()).toBe(0);
+      }),
+      { numRuns: 5 },
+    );
+  });
+});
+
+// ── CS15: cDelete is idempotent ──────────────────────────────────────────
+
+describe("cache — CS15: cDelete is idempotent", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("double-delete never throws and returns consistent null", () => {
+    fc.assert(
+      fc.property(keyArb, jsonDataArb, freshTtlArb, (key, data, ttl) => {
+        cSet(key, data);
+        cDelete(key);
+        cDelete(key); // idempotent — should not throw
+        expect(cGet(key, ttl)).toBeNull();
+        expect(cGetStale(key)).toBeNull();
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── CS16: cOr fallback value is persisted ────────────────────────────────
+
+describe("cache — CS16: cOr fallback is persisted", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("fallback result from cOr is stored and retrievable via cGet", () => {
+    fc.assert(
+      fc.property(keyArb, freshTtlArb, (key, ttl) => {
+        const fallbackVal = "COMPUTED_FALLBACK";
+        const result = cOr(key, ttl, () => fallbackVal);
+        expect(result).toBe(fallbackVal);
+        // cOr persists the fallback
+        expect(cGet(key, ttl)).toBe(fallbackVal);
+        expect(cGetStale(key)).toBe(fallbackVal);
+      }),
+      { numRuns: 50 },
     );
   });
 });
