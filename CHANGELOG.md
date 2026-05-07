@@ -9,6 +9,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · [Semantic Ve
 
 ---
 
+## [14.5.0] — 2026-05-07
+
+> **7037 tests / 275 suites / 0 failures**
+
+### Quality Gates
+
+- **Per-card budget ratchet** (Sprint 477): warn 24→22 KB, hard-cap 66→64 KB, group budgets -2 KB each
+- **Coverage ratchet** (Sprint 478): thresholds 94.2/85.4/94.5/95.6 → 94.4/85.6/94.7/95.8
+- **LHCI SEO + PWA gates** (Sprint 483): SEO ≥ 0.90 error, PWA ≥ 0.50 warn
+- **Pre-release gate enhancement** (Sprint 485): added module-boundaries, bundle-size, OWASP, dead-exports checks
+
+### Security
+
+- **OWASP +6 rules** (Sprint 479): A03 insertBefore DOM injection, A05 credentials include, A07 auth header leak, A08 importScripts dynamic URL, A09 stack trace in response, A01 open redirect
+- **Permissions-Policy audit** (Sprint 482): delegate autoplay/fullscreen/encrypted-media/picture-in-picture to self for video-news iframes
+
+### Architecture
+
+- **Stryker scope +5** (Sprint 480): idb-cache, provider-adapter, fdb-card, vitals-reporter, sw-register
+- **Module boundary D12-cross** (Sprint 481): prohibit cross-card imports, 2 pre-existing violations baselined
+- **Dead-exports expansion** (Sprint 484): extended corpus to scripts/, added --max-allowed threshold gate
+
+---
+
 ## [14.4.0] — 2026-05-06
 
 > **6361 tests / 212 suites / 0 failures** (commit `c6c7989`)

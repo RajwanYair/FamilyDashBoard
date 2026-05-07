@@ -3,7 +3,7 @@ applyTo: "**/*.html"
 description: "Use when: editing the dashboard HTML file. Coding standards for HTML/CSS/JS, API patterns, layout, and DOM caching."
 ---
 
-# Dashboard HTML Instructions — FamilyDashBoard v14.4.0
+# Dashboard HTML Instructions — FamilyDashBoard v14.5.0
 
 > Coding rules are in `copilot-instructions.md`. This file covers layout, patterns, and constants specific to the TypeScript modular dashboard (`src/`).
 
