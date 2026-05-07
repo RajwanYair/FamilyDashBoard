@@ -10,6 +10,10 @@
  *        exactly one combined effect notification (not N).
  *  SIG6. untrack() reads current value without registering a dependency — signal
  *        change after untrack does NOT trigger the enclosing effect.
+ *  SIG7. computed chaining: computed(computed(signal)) is always consistent.
+ *  SIG8. batch() returns the value produced by fn.
+ *  SIG9. effect dispose is idempotent — calling dispose twice doesn't throw.
+ *  SIG10. same-value assignment does NOT fire effect.
  */
 
 import { describe, it, expect } from "vitest";
@@ -225,6 +229,74 @@ describe("signals — isSignal type guard", () => {
         expect(isSignal(null)).toBe(false);
       }),
       { numRuns: 40 },
+    );
+  });
+});
+
+// ── SIG7: computed chaining ──────────────────────────────────────────────────
+
+describe("signals — SIG7: computed(computed(signal)) is consistent", () => {
+  it("nested computed derivations always produce correct derived value", () => {
+    fc.assert(
+      fc.property(intArb, intArb, (a, b) => {
+        const src = signal(a);
+        const mid = computed(() => src.value * 2);
+        const top = computed(() => mid.value + 1);
+        expect(top.value).toBe(a * 2 + 1);
+
+        src.value = b;
+        expect(top.value).toBe(b * 2 + 1);
+      }),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── SIG8: batch() returns fn's return value ──────────────────────────────────
+
+describe("signals — SIG8: batch returns fn value", () => {
+  it("batch(() => X) === X for any scalar", () => {
+    fc.assert(
+      fc.property(scalarArb, (v) => {
+        const result = batch(() => v);
+        expect(result).toBe(v);
+      }),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── SIG9: effect dispose is idempotent ───────────────────────────────────────
+
+describe("signals — SIG9: double dispose is safe", () => {
+  it("calling dispose twice does not throw", () => {
+    fc.assert(
+      fc.property(intArb, (v) => {
+        const src = signal(v);
+        const dispose = effect(() => { void src.value; });
+        dispose();
+        expect(() => dispose()).not.toThrow();
+      }),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── SIG10: same-value set does not fire effect ───────────────────────────────
+
+describe("signals — SIG10: same-value write skips effect", () => {
+  it("assigning identical value does not increment effect count", () => {
+    fc.assert(
+      fc.property(intArb, (v) => {
+        const src = signal(v);
+        let count = 0;
+        const dispose = effect(() => { void src.value; count++; });
+        // count == 1 after construction
+        src.value = v; // same value
+        expect(count).toBe(1);
+        dispose();
+      }),
+      { numRuns: 60 },
     );
   });
 });
