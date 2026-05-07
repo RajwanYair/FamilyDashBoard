@@ -8,6 +8,10 @@
  *  AS4. syncAppSignal("config.motivationInterval", number) updates motivationInterval.
  *  AS5. syncAppSignal("config.screenMode", valid) updates screenMode.
  *  AS6. syncAppSignal with unknown key is no-op (doesn't throw).
+ *  AS7. syncAppSignal("config.alertsEnabled", any) coerces to boolean (Sprint 594)
+ *  AS8. syncAppSignal("config.theme", invalid) still updates (no guard) (Sprint 594)
+ *  AS9. syncAppSignal("config.screenMode", invalid) is no-op (Sprint 594)
+ *  AS10. Multiple syncs in sequence — last value wins for each signal (Sprint 594)
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -128,6 +132,90 @@ describe("app-signals — AS6: unknown key is no-op", () => {
         const prefix = `unknown.${key}`;
         expect(() => syncAppSignal(prefix, "value")).not.toThrow();
       }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── AS7: alertsEnabled coerces to boolean ────────────────────────────────────
+
+describe("app-signals — AS7: alertsEnabled coerces to boolean", () => {
+  it("any value is coerced via Boolean()", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(fc.boolean(), fc.integer(), fc.string(), fc.constant(null), fc.constant(undefined)),
+        (val) => {
+          syncAppSignal("config.alertsEnabled", val);
+          expect(alertsEnabled.value).toBe(Boolean(val));
+        },
+      ),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── AS8: theme invalid still updates (no guard) ──────────────────────────────
+
+describe("app-signals — AS8: theme accepts any value (no strict guard)", () => {
+  it("even invalid theme values are stored (cast to ThemeName)", () => {
+    fc.assert(
+      fc.property(themeArb, (theme) => {
+        syncAppSignal("config.theme", theme);
+        expect(appTheme.value).toBe(theme);
+      }),
+      { numRuns: 10 },
+    );
+  });
+
+  it("null coerces to 'black' default", () => {
+    syncAppSignal("config.theme", null);
+    expect(appTheme.value).toBe("black");
+  });
+});
+
+// ── AS9: screenMode invalid is no-op ─────────────────────────────────────────
+
+describe("app-signals — AS9: screenMode invalid is no-op", () => {
+  it("non-valid mode does not change signal", () => {
+    fc.assert(
+      fc.property(
+        fc.string().filter((s) => s !== "tv" && s !== "tablet" && s !== "phone"),
+        (junk) => {
+          screenMode.value = "tv";
+          syncAppSignal("config.screenMode", junk);
+          expect(screenMode.value).toBe("tv");
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── AS10: multiple syncs — last value wins ───────────────────────────────────
+
+describe("app-signals — AS10: last sync wins per signal", () => {
+  it("after multiple tempUnit syncs, last value is the signal value", () => {
+    fc.assert(
+      fc.property(
+        fc.array(tempUnitArb, { minLength: 1, maxLength: 10 }),
+        (units) => {
+          for (const u of units) syncAppSignal("config.tempUnit", u);
+          expect(tempUnit.value).toBe(units[units.length - 1]);
+        },
+      ),
+      { numRuns: 30 },
+    );
+  });
+
+  it("after multiple motivationInterval syncs, last value is the signal value", () => {
+    fc.assert(
+      fc.property(
+        fc.array(positiveInt, { minLength: 1, maxLength: 10 }),
+        (nums) => {
+          for (const n of nums) syncAppSignal("config.motivationInterval", n);
+          expect(motivationInterval.value).toBe(nums[nums.length - 1]);
+        },
+      ),
       { numRuns: 30 },
     );
   });
