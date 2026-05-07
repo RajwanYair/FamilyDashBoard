@@ -26,6 +26,18 @@ npx vitest run
 
 # Build — must succeed cleanly
 npx vite build
+
+# Module boundaries — 0 new violations (D12 + D12-cross)
+node scripts/check-module-boundaries.mjs
+
+# Bundle budgets — per-card warn/hard-cap + group budgets
+node scripts/check-bundle-size.mjs
+
+# OWASP pattern scan — 0 errors (warnings are informational)
+node scripts/check-owasp.mjs
+
+# Dead exports — must not exceed threshold
+node scripts/check-dead-exports.mjs --max-allowed 5
 ```
 
 **Hard rules:**
