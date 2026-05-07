@@ -825,6 +825,33 @@ const RULES = [
     pattern: /location\.href\s*=\s*(?!['"`])/,
     safeMarkers: ["test", "spec", "// owasp-allow:A08", "sanitizeUrl", "trustedUrl"],
   },
+
+  // Sprint 585 — A01: postMessage with wildcard targetOrigin
+  {
+    category: "A01",
+    label: "postMessage with '*' targetOrigin (data exposure to any origin)",
+    severity: "warn",
+    pattern: /\.postMessage\([^)]+,\s*['"`]\*['"`]\s*\)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A01", "same-origin"],
+  },
+
+  // Sprint 585 — A07: Hardcoded secret/token/key literal in source
+  {
+    category: "A07",
+    label: "Hardcoded secret/token literal in source (use env vars)",
+    severity: "error",
+    pattern: /(?:api[_-]?key|secret|auth[_-]?token)\s*[:=]\s*['"`][A-Za-z0-9_\-]{16,}['"`]/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A07", "mock", "example", "placeholder"],
+  },
+
+  // Sprint 585 — A05: document.domain assignment (relaxes same-origin)
+  {
+    category: "A05",
+    label: "document.domain assignment (relaxes same-origin policy)",
+    severity: "error",
+    pattern: /document\.domain\s*=/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05"],
+  },
 ];
 
 /** Exempt source paths (relative to root, forward slashes). */

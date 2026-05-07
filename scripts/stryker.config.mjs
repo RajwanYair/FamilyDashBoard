@@ -161,6 +161,8 @@ export default {
     "src/cards/currency/currency.ts",
     // Sprint 579: extended property tests (SIG7-10, FT9-12, NE9-12)
     "src/core/signals.ts",
+    // Sprint 585: state store (ST9-12), error-tracker (ET8-11)
+    "src/core/state.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
