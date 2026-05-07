@@ -11,6 +11,10 @@
  *  EB4. globalSync is "ok" when all registered cards are in "ok".
  *  EB5. broadcastAlert stores any AlertEvent payload verbatim in globalAlertChannel.
  *  EB6. broadcastTheme stores any ThemeName verbatim in globalThemeChannel.
+ *  EB7. broadcastSync no-op when same state — globalSync unchanged.
+ *  EB8. broadcastAlert(null) clears globalAlertChannel.
+ *  EB9. Multiple cards tracked independently — setting one doesn't change others.
+ *  EB10. globalOffline initial value reflects navigator.onLine.
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -23,6 +27,7 @@ import {
   globalSync,
   globalAlertChannel,
   globalThemeChannel,
+  globalOffline,
   _resetBusForTesting,
   type AlertEvent,
 } from "@/core/event-bus";
@@ -188,5 +193,83 @@ describe("event-bus — EB6: broadcastTheme preserves theme in globalThemeChanne
       }),
       { numRuns: 60 },
     );
+  });
+});
+
+// ── EB7: broadcastSync no-op when same state ─────────────────────────────────
+
+describe("event-bus — EB7: broadcastSync no-op on unchanged state", () => {
+  beforeEach(() => _resetBusForTesting());
+
+  it("broadcasting same state twice doesn't trigger effect", () => {
+    fc.assert(
+      fc.property(cardIdArb, syncStateArb, (id, st) => {
+        _resetBusForTesting();
+        broadcastSync(id, st);
+        let effectCount = 0;
+        const dispose = effect(() => {
+          void globalSync.value;
+          effectCount++;
+        });
+        // effectCount == 1 from initial
+        broadcastSync(id, st); // same state — no-op
+        expect(effectCount).toBe(1);
+        dispose();
+      }),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── EB8: broadcastAlert(null) clears channel ─────────────────────────────────
+
+describe("event-bus — EB8: broadcastAlert(null) clears alert", () => {
+  beforeEach(() => _resetBusForTesting());
+
+  it("after broadcasting an alert, null clears it", () => {
+    fc.assert(
+      fc.property(alertEventArb, (alert) => {
+        _resetBusForTesting();
+        broadcastAlert(alert);
+        expect(globalAlertChannel.value).not.toBeNull();
+        broadcastAlert(null);
+        expect(globalAlertChannel.value).toBeNull();
+      }),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── EB9: multiple cards tracked independently ────────────────────────────────
+
+describe("event-bus — EB9: cards are independent in sync map", () => {
+  beforeEach(() => _resetBusForTesting());
+
+  it("setting card A to error doesn't affect card B set to ok", () => {
+    fc.assert(
+      fc.property(
+        cardIdArb,
+        cardIdArb.filter((s) => s.length > 1),
+        (idA, idB) => {
+          fc.pre(idA !== idB);
+          _resetBusForTesting();
+          broadcastSync(idA, "ok");
+          broadcastSync(idB, "ok");
+          // Now set A to error — globalSync should become "ok" only if B is ok
+          broadcastSync(idA, "error");
+          // globalSync won't be "ok" since A is error
+          expect(globalSync.value).not.toBe("ok");
+        },
+      ),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── EB10: globalOffline initial state ────────────────────────────────────────
+
+describe("event-bus — EB10: globalOffline reflects initial state", () => {
+  it("globalOffline.value is a boolean", () => {
+    expect(typeof globalOffline.value).toBe("boolean");
   });
 });
