@@ -179,9 +179,9 @@ export default {
   ],
   coverageAnalysis: "perTest",
   thresholds: {
-    high: 85,
-    low: 80,
-    break: 85,
+    high: 87,
+    low: 82,
+    break: 87,
   },
   htmlReporter: {
     // Output to temp area per project patterns (never in project dir for CI)
