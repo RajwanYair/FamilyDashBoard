@@ -968,6 +968,62 @@ const RULES = [
     pattern: /(?:window|document)\.location(?:\.href)?\s*=\s*(?:params|query|input|searchParams|url\b)/i,
     safeMarkers: ["test", "spec", "// owasp-allow:A01", "allowlist", "safeUrl", "validate"],
   },
+
+  // ── v14.7.0 additions (6 rules) ───────────────────────────────────────────
+
+  // A03 — Injection: Range.createRange().insertNode() can inject unsanitized DOM nodes
+  {
+    category: "A03",
+    label: "Range.insertNode() — inserts raw DOM into live document (sanitize first)",
+    severity: "warn",
+    pattern: /\.insertNode\(\s*(?!document\.createTextNode)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A03", "textContent", "sanitize", "trusted"],
+  },
+
+  // A02 — Cryptographic Failures: SubtleCrypto with too-short key length
+  {
+    category: "A02",
+    label: "crypto.subtle.generateKey with short key length (< 256 bits for AES)",
+    severity: "warn",
+    pattern: /generateKey\([^)]*length\s*:\s*(?:64|128)\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A02", "HMAC", "hash"],
+  },
+
+  // A05 — Security Misconfiguration: Permissive-Policy header missing
+  {
+    category: "A05",
+    label: "new Response() without Permissions-Policy header (camera/mic/geolocation)",
+    severity: "warn",
+    pattern: /new\s+Response\([^)]*\{[^}]*status:\s*200/,
+    safeMarkers: ["Permissions-Policy", "permissions-policy", "test", "spec", "CORS_HEADERS", "Content-Type", "json"],
+  },
+
+  // A08 — Software Integrity: eval-like via Reflect.construct with Function
+  {
+    category: "A08",
+    label: "Reflect.construct(Function, ...) — eval equivalent via reflection",
+    severity: "error",
+    pattern: /Reflect\.construct\(\s*Function\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A08"],
+  },
+
+  // A04 — Insecure Design: structuredClone bypass for frozen objects
+  {
+    category: "A04",
+    label: "structuredClone on user input without validation — bypasses Object.freeze()",
+    severity: "warn",
+    pattern: /structuredClone\(\s*(?:req\.body|params|query|input|payload|userData|body)\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A04", "validate", "schema", "parse"],
+  },
+
+  // A09 — Logging: Environment variables logged (may contain secrets)
+  {
+    category: "A09",
+    label: "process.env / import.meta.env logged — may leak secrets",
+    severity: "warn",
+    pattern: /console\.\w+\([^)]*(?:process\.env|import\.meta\.env)\b/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A09", "NODE_ENV", "MODE", "DEV", "PROD"],
+  },
 ];
 
 /** Exempt source paths (relative to root, forward slashes). */
