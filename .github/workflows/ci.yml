@@ -90,6 +90,8 @@ jobs:
         run: npx prettier --check .
       - name: Markdownlint
         run: npx markdownlint-cli2 "**/*.md" "#**/node_modules/**" "#**/coverage/**" "#**/dist/**"
+      - name: Lint instruction files
+        run: node scripts/lint-instructions.mjs
 
   unit-tests:
     name: Vitest (Node 24)
