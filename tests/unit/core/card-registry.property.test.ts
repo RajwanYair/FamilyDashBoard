@@ -8,6 +8,10 @@
  *  CR4. registerCard last-wins: re-registering same id overwrites
  *  CR5. listCards length equals distinct registered ids count
  *  CR6. loadCard throws for unregistered id
+ *  CR7. createShell returns section with data-card-id attribute (Sprint 595)
+ *  CR8. createShell throws for unregistered id (Sprint 595)
+ *  CR9. listCards always contains any just-registered id (Sprint 595)
+ *  CR10. loadCard succeeds for registered card (Sprint 595)
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -16,7 +20,7 @@ import * as fc from "fast-check";
 // We test the registry in isolation by importing from a fresh module each time.
 // Since the registry is module-level state, we use resetModules per test.
 // Instead, import the real module — tests use unique IDs to avoid collisions.
-import { registerCard, getCard, listCards, loadCard } from "@/core/card-registry";
+import { registerCard, getCard, listCards, loadCard, createShell } from "@/core/card-registry";
 
 const makeEntry = (id: string, titleHe: string, titleEn = "EN") => ({
   id,
@@ -110,5 +114,73 @@ describe("card-registry — CR5: listCards length", () => {
 describe("card-registry — CR6: loadCard throws", () => {
   it("throws for unregistered id", async () => {
     await expect(loadCard("cr6-nonexist-xyz")).rejects.toThrow(/not registered/i);
+  });
+});
+
+// ── CR7: createShell returns section with data-card-id ───────────────────────
+
+describe("card-registry — CR7: createShell structural output", () => {
+  it("returns a section element with correct data-card-id", () => {
+    fc.assert(
+      fc.property(
+        fc.stringMatching(/^test-cr7-[a-z]{3,6}$/),
+        (id) => {
+          registerCard(makeEntry(id, "בדיקה"));
+          const shell = createShell(id);
+          expect(shell.root.tagName).toBe("SECTION");
+          expect(shell.root.dataset["cardId"]).toBe(id);
+          expect(shell.body).toBeDefined();
+          expect(shell.header).toBeDefined();
+          expect(shell.footer).toBeDefined();
+        },
+      ),
+      { numRuns: 8 },
+    );
+  });
+});
+
+// ── CR8: createShell throws for unregistered id ──────────────────────────────
+
+describe("card-registry — CR8: createShell throws for missing", () => {
+  it("throws for unregistered id", () => {
+    fc.assert(
+      fc.property(
+        fc.stringMatching(/^noexist-cr8-[a-z0-9]{5,10}$/),
+        (id) => {
+          expect(() => createShell(id)).toThrow(/not registered/i);
+        },
+      ),
+      { numRuns: 5 },
+    );
+  });
+});
+
+// ── CR9: listCards always includes just-registered id ─────────────────────────
+
+describe("card-registry — CR9: listCards includes registered entry", () => {
+  it("newly registered card appears in listCards", () => {
+    fc.assert(
+      fc.property(
+        fc.stringMatching(/^test-cr9-[a-z]{3,8}$/),
+        (id) => {
+          registerCard(makeEntry(id, "בדיקה"));
+          const ids = listCards().map((c) => c.id);
+          expect(ids).toContain(id);
+        },
+      ),
+      { numRuns: 8 },
+    );
+  });
+});
+
+// ── CR10: loadCard succeeds for registered card ──────────────────────────────
+
+describe("card-registry — CR10: loadCard success path", () => {
+  it("resolves with CardDefinition for registered card", async () => {
+    const id = "cr10-success-test";
+    registerCard(makeEntry(id, "הצלחה"));
+    const def = await loadCard(id);
+    expect(def.id).toBe(id);
+    expect(typeof def.render).toBe("function");
   });
 });
