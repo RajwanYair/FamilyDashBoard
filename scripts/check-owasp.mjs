@@ -798,6 +798,33 @@ const RULES = [
     pattern: /throw\s+new\s+Error\([^)]*(?:password|secret|token|apiKey)[^)]*\)/i,
     safeMarkers: ["test", "spec", "// owasp-allow:A09", "sanitize"],
   },
+
+  // Sprint 579 — A03: Prototype pollution via __proto__ assignment
+  {
+    category: "A03",
+    label: "Direct __proto__ property assignment (prototype pollution vector)",
+    severity: "error",
+    pattern: /\.__proto__\s*=/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A03", "Object.create(null)"],
+  },
+
+  // Sprint 579 — A04: SSRF via unvalidated URL template with variable
+  {
+    category: "A04",
+    label: "Dynamic URL construction with interpolated variable (potential SSRF)",
+    severity: "warn",
+    pattern: /new\s+URL\(\s*`[^`]*\$\{(?!(?:BASE_|API_|PROXY_))/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A04", "PROXIES", "allowedHosts"],
+  },
+
+  // Sprint 579 — A08: Unvalidated redirect via location assignment
+  {
+    category: "A08",
+    label: "location.href assigned from variable (open redirect risk)",
+    severity: "warn",
+    pattern: /location\.href\s*=\s*(?!['"`])/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A08", "sanitizeUrl", "trustedUrl"],
+  },
 ];
 
 /** Exempt source paths (relative to root, forward slashes). */

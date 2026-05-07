@@ -159,6 +159,8 @@ export default {
     "worker/src/utils/allowlists.ts",
     // Sprint 573: extended property tests (CUR9-12, ST12-15, MO7-10, CS9-12)
     "src/cards/currency/currency.ts",
+    // Sprint 579: extended property tests (SIG7-10, FT9-12, NE9-12)
+    "src/core/signals.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",
