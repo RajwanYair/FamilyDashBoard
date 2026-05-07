@@ -30,6 +30,8 @@
  * (v14.6.0) — added A01 postMessage wildcard, A07 hardcoded secret, A05 document.domain.
  * (v14.7.0) — added A03 srcdoc template injection, A09 PII in telemetry, A02 weak PBKDF2 iterations.
  * (v14.7.0) — added A04 Object.assign proto pollution, A06 weak hash (MD5/SHA1), A10 fetch without catch.
+ * (v14.5.0) — added A03 insertBefore DOM injection, A05 credentials include, A07 authorization header leak,
+ *             A08 importScripts dynamic URL, A09 stack trace in response, A01 location redirect from input.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -909,6 +911,62 @@ const RULES = [
     severity: "warn",
     pattern: /fetch\([^)]+\)\.then\([^)]+\)(?!\.catch)/,
     safeMarkers: ["test", "spec", "// owasp-allow:A10", "try", "catch", "allSettled"],
+  },
+
+  // ── v14.5.0 additions ─────────────────────────────────────────────────
+
+  // A03: Unsafe use of .insertBefore() with user content (DOM injection vector)
+  {
+    category: "A03",
+    label: "insertBefore() with unsanitized content (DOM injection risk)",
+    severity: "warn",
+    pattern: /\.insertBefore\(\s*(?:document\.createElement|[a-z]+\.cloneNode)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A03", "textContent", "sanitize"],
+  },
+
+  // A05: Fetch/XHR without credentials: 'same-origin' (CSRF-like exposure)
+  {
+    category: "A05",
+    label: "fetch() with credentials: 'include' (cross-origin cookie exposure)",
+    severity: "error",
+    pattern: /credentials\s*:\s*['"]include['"]/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A05"],
+  },
+
+  // A07: Authorization header logged or stored in state
+  {
+    category: "A07",
+    label: "Authorization header value in variable assignment (credential leak risk)",
+    severity: "warn",
+    pattern: /(?:authorization|bearer)\s*[:=]\s*[`'"]/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A07", "type", "interface", "header"],
+  },
+
+  // A08: Service Worker importScripts with variable URL (integrity bypass)
+  {
+    category: "A08",
+    label: "importScripts() with dynamic URL (integrity bypass risk)",
+    severity: "error",
+    pattern: /importScripts\(\s*(?!\s*['"])[^)]+\)/,
+    safeMarkers: ["test", "spec", "// owasp-allow:A08"],
+  },
+
+  // A09: Error message exposing file paths or stack traces to client
+  {
+    category: "A09",
+    label: "Error stack trace or file path in response body (info disclosure)",
+    severity: "warn",
+    pattern: /(?:res|response)\.(?:json|send|write)\([^)]*(?:\.stack|\.message|error\.toString)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A09", "diag", "log", "internal"],
+  },
+
+  // A01: Unvalidated redirect via window.location assignment from user input
+  {
+    category: "A01",
+    label: "window.location from unvalidated input (open redirect)",
+    severity: "warn",
+    pattern: /(?:window|document)\.location(?:\.href)?\s*=\s*(?:params|query|input|searchParams|url\b)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A01", "allowlist", "safeUrl", "validate"],
   },
 ];
 
