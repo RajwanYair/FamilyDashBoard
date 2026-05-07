@@ -141,6 +141,10 @@ jobs:
         run: node scripts/check-actions-pinned.mjs
       - name: npm ignore-scripts gate
         run: node scripts/check-npm-ignore-scripts.mjs
+      - name: Sigstore provenance check
+        run: node scripts/check-sigstore.mjs
+      - name: Reproducible build dry-run
+        run: node scripts/check-reproducible.mjs --dry-run
 
   worker-tests:
     name: Worker Unit Tests
