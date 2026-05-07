@@ -25,6 +25,7 @@
  * Sprint 555 (v14.5.0) — added A02 hardcoded password, A06 dynamic import(), A10 SSRF interpolated fetch.
  * Sprint 561 (v14.5.0) — added A03 document.writeln, A05 insecure WebSocket, A02 private key material.
  * Sprint 567 (v14.5.0) — added A01 form action manipulation, A03 CSS injection via cssText, A08 dynamic importScripts.
+ * Sprint 573 (v14.5.0) — added A02 token in URL fragment, A05 ACAO reflecting origin, A09 sensitive var in Error().
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -769,6 +770,33 @@ const RULES = [
     severity: "error",
     pattern: /importScripts\(\s*(?!['"`])[^)]+\)/,
     safeMarkers: ["test", "spec", "/* trusted */", "WORKER_BASE_URL"],
+  },
+
+  // Sprint 573 — A02: Token/key passed in URL fragment or hash
+  {
+    category: "A02",
+    label: "Credential/token exposed in URL fragment (leaks via Referer)",
+    severity: "warn",
+    pattern: /#.*(?:token|key|secret|password|auth)=/i,
+    safeMarkers: ["test", "spec", "example", "mock", "// owasp-allow:A02"],
+  },
+
+  // Sprint 573 — A05: Access-Control-Allow-Origin reflecting request origin
+  {
+    category: "A05",
+    label: "ACAO header reflecting request origin (open CORS)",
+    severity: "error",
+    pattern: /['"]Access-Control-Allow-Origin['"]\s*[:,]\s*(?:req|request|origin|event)/i,
+    safeMarkers: ["test", "spec", "ALLOWED_ORIGINS", "allowlist", "// owasp-allow:A05"],
+  },
+
+  // Sprint 573 — A09: Sensitive var names in thrown Error messages
+  {
+    category: "A09",
+    label: "Sensitive variable name in Error() message (info leak)",
+    severity: "warn",
+    pattern: /throw\s+new\s+Error\([^)]*(?:password|secret|token|apiKey)[^)]*\)/i,
+    safeMarkers: ["test", "spec", "// owasp-allow:A09", "sanitize"],
   },
 ];
 
