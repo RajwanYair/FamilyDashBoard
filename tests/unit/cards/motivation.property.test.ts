@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/motivation/motivation.ts (Sprint 522)
+ * fast-check property tests — src/cards/motivation/motivation.ts (Sprint 522, 571)
  *
  * Properties under test:
  *  MO1. pickNextQuoteIndex: poolSize=1 always returns 0
@@ -8,6 +8,10 @@
  *  MO4. getThemeForDay: always returns a valid MotivationCategory
  *  MO5. getThemeForDay: maps 0–6 weekday to DAY_THEME_MAP
  *  MO6. getQuotesByCategory: null → all quotes
+ *  MO7. pickNextQuoteIndex: result is always integer
+ *  MO8. getQuotesByCategory: specific category → all quotes have that category
+ *  MO9. pickNextQuoteIndex: full window → still returns valid index
+ *  MO10. DAY_THEME_MAP: length is exactly 7
  */
 
 import { describe, it, expect } from "vitest";
@@ -17,6 +21,7 @@ import {
   getThemeForDay,
   getQuotesByCategory,
   DAY_THEME_MAP,
+  SOURCE_META,
 } from "@/cards/motivation/motivation";
 
 const VALID_CATEGORIES = [
@@ -118,6 +123,72 @@ describe("motivation — MO6: getQuotesByCategory null", () => {
     for (const cat of VALID_CATEGORIES) {
       const filtered = getQuotesByCategory(cat as never);
       expect(filtered.length).toBeLessThanOrEqual(all.length);
+    }
+  });
+});
+
+// ── MO7: pickNextQuoteIndex always returns integer ───────────────────────────
+
+describe("motivation — MO7: pickNextQuoteIndex integer result", () => {
+  it("result is always a non-negative integer", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 100 }),
+        fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 0, maxLength: 10 }),
+        (poolSize, used) => {
+          const result = pickNextQuoteIndex(poolSize, used);
+          expect(Number.isInteger(result)).toBe(true);
+          expect(result).toBeGreaterThanOrEqual(0);
+        },
+      ),
+      { numRuns: 50 },
+    );
+  });
+});
+
+// ── MO8: getQuotesByCategory specific category ──────────────────────────────
+
+describe("motivation — MO8: getQuotesByCategory filtering", () => {
+  it("specific category → all returned quotes match", () => {
+    for (const cat of VALID_CATEGORIES) {
+      const quotes = getQuotesByCategory(cat as never);
+      for (const q of quotes) {
+        expect(q.category).toBe(cat);
+      }
+    }
+  });
+});
+
+// ── MO9: pickNextQuoteIndex full window ──────────────────────────────────────
+
+describe("motivation — MO9: pickNextQuoteIndex full window", () => {
+  it("when all indices used, still returns valid index", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 20 }),
+        (poolSize) => {
+          const allUsed = Array.from({ length: poolSize }, (_, i) => i);
+          const result = pickNextQuoteIndex(poolSize, allUsed);
+          expect(result).toBeGreaterThanOrEqual(0);
+          expect(result).toBeLessThan(poolSize);
+        },
+      ),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── MO10: DAY_THEME_MAP and SOURCE_META structural invariants ────────────────
+
+describe("motivation — MO10: structural invariants", () => {
+  it("DAY_THEME_MAP has exactly 7 entries", () => {
+    expect(DAY_THEME_MAP).toHaveLength(7);
+  });
+
+  it("SOURCE_META has label and cls for each source", () => {
+    for (const meta of Object.values(SOURCE_META)) {
+      expect(meta.label.length).toBeGreaterThan(0);
+      expect(meta.cls.length).toBeGreaterThan(0);
     }
   });
 });
