@@ -10,6 +10,10 @@
  *  NE6. Parse-keyed errors always map to FDB-072 / 502.
  *  NE7. errorResponse always reflects the NormalizedError's status code.
  *  NE8. normalizeWorkerError handles non-Error throwables (strings, numbers, null).
+ *  NE9. Upstream-keyed errors (HTTP/status/upstream in message) → FDB-070 / 502.
+ *  NE10. errorResponse body JSON is valid and contains the code field.
+ *  NE11. normalizeWorkerError message always starts with [routeName].
+ *  NE12. normalizeWorkerError is deterministic — same inputs produce same output.
  */
 
 import { describe, it, expect } from "vitest";
@@ -172,6 +176,75 @@ describe("normalizeWorkerError — NE8: non-Error throwables are handled without
         expect(result.status).toBeGreaterThanOrEqual(500);
       }),
       { numRuns: 80 },
+    );
+  });
+});
+
+// ── NE9: upstream-keyed errors → FDB-070 / 502 ──────────────────────────────
+
+describe("normalizeWorkerError — NE9: upstream errors → FDB-070", () => {
+  const upstreamMsgArb = fc.oneof(
+    fc.constant("HTTP 502 Bad Gateway"),
+    fc.constant("status 503 from upstream"),
+    fc.constant("upstream service unavailable"),
+    fc.integer({ min: 400, max: 599 }).map((c) => `HTTP ${c} error`),
+  );
+
+  it("messages with HTTP/status/upstream keyword map to FDB-070 and 502", () => {
+    fc.assert(
+      fc.property(upstreamMsgArb, routeArb, (msg, route) => {
+        const err = new Error(msg);
+        const result = normalizeWorkerError(err, route);
+        expect(result.code).toBe("FDB-070");
+        expect(result.status).toBe(502);
+      }),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── NE10: errorResponse body is valid JSON containing code ───────────────────
+
+describe("normalizeWorkerError — NE10: errorResponse body JSON contains code", () => {
+  it("response body parses as JSON and includes the code field", async () => {
+    await fc.assert(
+      fc.asyncProperty(errorArb, routeArb, async (err, route) => {
+        const normalized = normalizeWorkerError(err, route);
+        const response = errorResponse(normalized);
+        const body = await response.json() as Record<string, unknown>;
+        expect(body.code).toBe(normalized.code);
+        expect(body.ok).toBe(false);
+      }),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── NE11: message always starts with [routeName] ─────────────────────────────
+
+describe("normalizeWorkerError — NE11: message prefix is [routeName]", () => {
+  it("message starts with bracketed route name for any input", () => {
+    fc.assert(
+      fc.property(errorArb, routeArb, (err, route) => {
+        const result = normalizeWorkerError(err, route);
+        expect(result.message.startsWith(`[${route}]`)).toBe(true);
+      }),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── NE12: deterministic — same inputs → same output ──────────────────────────
+
+describe("normalizeWorkerError — NE12: deterministic", () => {
+  it("calling twice with same error and route yields identical result", () => {
+    fc.assert(
+      fc.property(errorArb, routeArb, (err, route) => {
+        const r1 = normalizeWorkerError(err, route);
+        const r2 = normalizeWorkerError(err, route);
+        expect(r1).toEqual(r2);
+      }),
+      { numRuns: 60 },
     );
   });
 });
