@@ -10,6 +10,10 @@
  *  CS6. cDelete removes data from all tiers; both cGet and cGetStale return null.
  *  CS7. cacheStats().hitRate is always in [0, 1] regardless of hit/miss sequence.
  *  CS8. lastHitLayer() is always one of the four known CacheLayer literals.
+ *  CS9. cOr: returns cached value when fresh, fallback when miss (Sprint 572)
+ *  CS10. cAge: returns null for never-stored key (Sprint 572)
+ *  CS11. cClear: empties everything — cGet/cGetStale return null (Sprint 572)
+ *  CS12. cSet + cAge: age for just-stored key is 0 or very small (Sprint 572)
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -23,6 +27,8 @@ import {
   cacheStats,
   resetCacheStats,
   lastHitLayer,
+  cOr,
+  cAge,
 } from "@/core/cache";
 
 // ── Arbitraries ───────────────────────────────────────────────────────────────
@@ -225,6 +231,97 @@ describe("cache — CS8: lastHitLayer() is always a known CacheLayer", () => {
         expect(VALID_LAYERS.has(lastHitLayer())).toBe(true);
       }),
       { numRuns: 80 },
+    );
+  });
+});
+
+// ── CS9: cOr returns cached value when fresh, fallback when miss ─────────────
+
+describe("cache — CS9: cOr round-trip", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("returns stored value when fresh", () => {
+    fc.assert(
+      fc.property(keyArb, jsonDataArb.filter((d) => d !== null), freshTtlArb, (key, data, ttl) => {
+        cSet(key, data);
+        const result = cOr(key, ttl, () => "FALLBACK");
+        expect(result).toEqual(data);
+      }),
+      { numRuns: 50 },
+    );
+  });
+
+  it("returns fallback when key missing", () => {
+    fc.assert(
+      fc.property(keyArb, freshTtlArb, (key, ttl) => {
+        const result = cOr(key, ttl, () => 42);
+        expect(result).toBe(42);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── CS10: cAge returns null for never-stored key ──────────────────────────
+
+describe("cache — CS10: cAge null for missing key", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("cAge returns null for unknown key", () => {
+    fc.assert(
+      fc.property(keyArb, (key) => {
+        expect(cAge(key)).toBeNull();
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── CS11: cClear empties all ────────────────────────────────────────────
+
+describe("cache — CS11: cClear empties everything", () => {
+  it("after cClear, cGet and cGetStale return null", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.tuple(keyArb, jsonDataArb), { minLength: 1, maxLength: 10 }),
+        (entries) => {
+          for (const [k, d] of entries) cSet(k, d);
+          cClear();
+          resetCacheStats();
+          for (const [k] of entries) {
+            expect(cGet(k, 60_000)).toBeNull();
+            expect(cGetStale(k)).toBeNull();
+          }
+        },
+      ),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── CS12: cAge for just-stored key is small ─────────────────────────────
+
+describe("cache — CS12: cAge for fresh entry", () => {
+  beforeEach(() => {
+    cClear();
+    resetCacheStats();
+  });
+
+  it("age is 0 for just-stored key", () => {
+    fc.assert(
+      fc.property(keyArb, jsonDataArb, (key, data) => {
+        cSet(key, data);
+        const age = cAge(key);
+        expect(age).not.toBeNull();
+        expect(age!).toBeLessThanOrEqual(1); // <= 1 minute
+      }),
+      { numRuns: 30 },
     );
   });
 });
