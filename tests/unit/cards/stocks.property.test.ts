@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/stocks/stocks.ts (Sprint 518)
+ * fast-check property tests — src/cards/stocks/stocks.ts (Sprint 518, 570)
  *
  * Properties under test:
  *  ST1. fmtPrice: ≥1000 → no decimals, comma-formatted
@@ -13,6 +13,10 @@
  *  ST9. portfolioChange: empty → null
  *  ST10. portfolioChange: same prev and cur → 0%
  *  ST11. sectorEmoji: known symbol → specific emoji, unknown → "📈"
+ *  ST12. portfolioChange: all prev=0 → null
+ *  ST13. portfolioChange: positive gain → positive percentage
+ *  ST14. fmtPrice: VIX always 2 decimals
+ *  ST15. priceInRange52w: price at low → 0, at high → 1
  */
 
 import { describe, it, expect } from "vitest";
@@ -196,6 +200,86 @@ describe("stocks — ST11: sectorEmoji", () => {
         },
       ),
       { numRuns: 20 },
+    );
+  });
+});
+
+// ── ST12: portfolioChange all prev=0 → null ─────────────────────────────────
+
+describe("stocks — ST12: portfolioChange zero prev", () => {
+  it("all prev=0 → null", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.double({ min: 1, max: 1000, noNaN: true, noDefaultInfinity: true }), { minLength: 1, maxLength: 5 }),
+        (curs) => {
+          const quotes = curs.map((c) => ({ prev: 0, cur: c }));
+          expect(portfolioChange(quotes)).toBeNull();
+        },
+      ),
+      { numRuns: 20 },
+    );
+  });
+});
+
+// ── ST13: portfolioChange positive gain ──────────────────────────────────────
+
+describe("stocks — ST13: portfolioChange positive gain", () => {
+  it("cur > prev → positive percentage", () => {
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.tuple(
+            fc.double({ min: 1, max: 1000, noNaN: true, noDefaultInfinity: true }),
+            fc.double({ min: 0.01, max: 1, noNaN: true }),
+          ),
+          { minLength: 1, maxLength: 5 },
+        ),
+        (pairs) => {
+          const quotes = pairs.map(([prev, gain]) => ({ prev, cur: prev * (1 + gain) }));
+          const result = portfolioChange(quotes);
+          expect(result).not.toBeNull();
+          expect(result!).toBeGreaterThan(0);
+        },
+      ),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── ST14: fmtPrice VIX always 2 decimals ────────────────────────────────────
+
+describe("stocks — ST14: fmtPrice VIX", () => {
+  it("^VIX always gets 2 decimal places", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 99, noNaN: true, noDefaultInfinity: true }),
+        (price) => {
+          const result = fmtPrice(price, "^VIX");
+          expect(result).toMatch(/\.\d{2}$/);
+        },
+      ),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── ST15: priceInRange52w boundary values ────────────────────────────────────
+
+describe("stocks — ST15: priceInRange52w boundaries", () => {
+  it("price at low → 0, price at high → 1", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 1, max: 500, noNaN: true, noDefaultInfinity: true }),
+        fc.double({ min: 1, max: 500, noNaN: true, noDefaultInfinity: true }),
+        (a, b) => {
+          const low = Math.min(a, b);
+          const high = Math.max(a, b);
+          if (high <= low) return;
+          expect(priceInRange52w(low, low, high)).toBeCloseTo(0);
+          expect(priceInRange52w(high, low, high)).toBeCloseTo(1);
+        },
+      ),
+      { numRuns: 30 },
     );
   });
 });
