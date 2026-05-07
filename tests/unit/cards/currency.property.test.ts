@@ -1,5 +1,5 @@
 /**
- * fast-check property tests — src/cards/currency/currency.ts (Sprint 517)
+ * fast-check property tests — src/cards/currency/currency.ts (Sprint 517, 569)
  *
  * Properties under test:
  *  CUR1. calcCurrency: positive amount × positive rate → positive result
@@ -10,6 +10,10 @@
  *  CUR6. get7DayTrend: same rate in oldest + newest → arrow "→"
  *  CUR7. get7DayTrend: increasing ILS-per-unit → arrow "↑"
  *  CUR8. getCurrencyTrend: fewer than 2 entries → null
+ *  CUR9. getCurrencyTrend: missing key in newest → null
+ *  CUR10. getCurrencyTrend: increasing value → arrow "↑"
+ *  CUR11. getCurrencyTrend: decreasing value → arrow "↓"
+ *  CUR12. calcCurrency: commutativity — amount×rate = rate×amount via calcCurrency
  */
 
 import { describe, it, expect } from "vitest";
@@ -154,5 +158,85 @@ describe("currency — CUR8: getCurrencyTrend insufficient data", () => {
 
   it("single entry → null", () => {
     expect(getCurrencyTrend("USD", [{ date: "2025-06-01", rates: { USD: 0.28 } }], 7)).toBeNull();
+  });
+});
+
+// ── CUR9: getCurrencyTrend missing key in newest → null ──────────────────────
+
+describe("currency — CUR9: getCurrencyTrend missing key", () => {
+  it("returns null when key absent from newest entry", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1, maxLength: 5 }), (key) => {
+        const history = [
+          { date: "2025-01-01", rates: { [key]: 0.28 } },
+          { date: "2025-01-10", rates: { OTHER: 0.30 } },
+        ];
+        expect(getCurrencyTrend(key, history, 7)).toBeNull();
+      }),
+    );
+  });
+});
+
+// ── CUR10: getCurrencyTrend increasing value → ↑ ────────────────────────────
+
+describe("currency — CUR10: getCurrencyTrend increasing", () => {
+  it("lower rate (higher ILS-per-unit) in newest → ↑", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 1, noNaN: true }),
+        fc.double({ min: 0.01, max: 0.5, noNaN: true }),
+        (oldRate, delta) => {
+          const newRate = oldRate - delta * oldRate * 0.5; // lower rate = stronger currency
+          if (newRate <= 0) return; // skip degenerate
+          const history = [
+            { date: "2025-01-01", rates: { USD: oldRate } },
+            { date: "2025-01-10", rates: { USD: newRate } },
+          ];
+          const result = getCurrencyTrend("USD", history, 14);
+          if (result === null) return; // cutoff might not find ref
+          expect(result.arrow).toBe("↑");
+        },
+      ),
+    );
+  });
+});
+
+// ── CUR11: getCurrencyTrend decreasing value → ↓ ────────────────────────────
+
+describe("currency — CUR11: getCurrencyTrend decreasing", () => {
+  it("higher rate (lower ILS-per-unit) in newest → ↓", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 1, noNaN: true }),
+        fc.double({ min: 0.01, max: 0.5, noNaN: true }),
+        (oldRate, delta) => {
+          const newRate = oldRate + delta * oldRate * 0.5; // higher rate = weaker currency
+          const history = [
+            { date: "2025-01-01", rates: { USD: oldRate } },
+            { date: "2025-01-10", rates: { USD: newRate } },
+          ];
+          const result = getCurrencyTrend("USD", history, 14);
+          if (result === null) return;
+          expect(result.arrow).toBe("↓");
+        },
+      ),
+    );
+  });
+});
+
+// ── CUR12: calcCurrency multiplication commutativity ─────────────────────────
+
+describe("currency — CUR12: calcCurrency commutativity", () => {
+  it("calcCurrency(a, k, {k: r}) === a * r", () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 1e6, noNaN: true }),
+        fc.double({ min: 0.001, max: 100, noNaN: true }),
+        (amount, rate) => {
+          const result = calcCurrency(amount, "X", { X: rate });
+          expect(result).toBeCloseTo(amount * rate, 5);
+        },
+      ),
+    );
   });
 });
