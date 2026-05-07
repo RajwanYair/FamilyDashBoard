@@ -8,9 +8,14 @@
  *  CN4. INTERVALS values are all positive integers and multiples of MS_PER_MIN.
  *  CN5. MAX_CONCURRENT is between 2 and 8 inclusive.
  *  CN6. CUR_TILES have positive precision and non-empty label/key/icon.
+ *  CN7. getNetworkMode never returns invalid string for random localStorage (Sprint 593)
+ *  CN8. PROXIES all start with https:// (Sprint 593)
+ *  CN9. STOCK_META name/he/domain fields are non-empty strings (Sprint 593)
+ *  CN10. Time constants are consistent: MS_PER_HOUR = 60*MS_PER_MIN, etc. (Sprint 593)
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import * as fc from "fast-check";
 import {
   getNetworkMode,
   STOCK_SYMBOLS,
@@ -20,8 +25,11 @@ import {
   INTERVALS,
   MAX_CONCURRENT,
   MS_PER_MIN,
+  MS_PER_HOUR,
+  MS_PER_DAY,
   CUR_TILES,
   LS_NETWORK_MODE,
+  PROXIES,
 } from "@/core/constants";
 
 // ── Setup ─────────────────────────────────────────────────────────────────────
@@ -105,6 +113,72 @@ describe("constants — CN6: CUR_TILES have valid structure", () => {
       expect(tile.key.length).toBeGreaterThan(0);
       expect(tile.icon.length).toBeGreaterThan(0);
       expect(tile.precision).toBeGreaterThanOrEqual(0);
+    }
+  });
+});
+
+// ── CN7: getNetworkMode never returns invalid for random inputs ──────────────
+
+describe("constants — CN7: getNetworkMode returns valid for any localStorage", () => {
+  const VALID_MODES = new Set(["auto", "worker-only", "no-worker", "no-proxy"]);
+
+  afterEach(() => {
+    localStorage.removeItem(LS_NETWORK_MODE);
+  });
+
+  it("always returns a valid NetworkMode for arbitrary strings", () => {
+    fc.assert(
+      fc.property(fc.string({ maxLength: 50 }), (junk) => {
+        localStorage.setItem(LS_NETWORK_MODE, junk);
+        const mode = getNetworkMode();
+        expect(VALID_MODES.has(mode)).toBe(true);
+      }),
+      { numRuns: 80 },
+    );
+  });
+});
+
+// ── CN8: PROXIES all start with https:// ─────────────────────────────────────
+
+describe("constants — CN8: PROXIES all use HTTPS", () => {
+  it("every proxy URL starts with https://", () => {
+    for (const proxy of PROXIES) {
+      expect(proxy.startsWith("https://")).toBe(true);
+    }
+  });
+});
+
+// ── CN9: STOCK_META name/he/domain fields are non-empty ──────────────────────
+
+describe("constants — CN9: STOCK_META has non-empty name, he, domain", () => {
+  it("every STOCK_META entry has non-empty name, he, and domain strings", () => {
+    for (const sym of STOCK_SYMBOLS) {
+      const meta = STOCK_META[sym];
+      expect(typeof meta.name).toBe("string");
+      expect(meta.name.length).toBeGreaterThan(0);
+      expect(typeof meta.he).toBe("string");
+      expect(meta.he.length).toBeGreaterThan(0);
+      expect(typeof meta.domain).toBe("string");
+      expect(meta.domain.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+// ── CN10: Time constants are internally consistent ───────────────────────────
+
+describe("constants — CN10: time constants consistent", () => {
+  it("MS_PER_HOUR = 60 * MS_PER_MIN", () => {
+    expect(MS_PER_HOUR).toBe(60 * MS_PER_MIN);
+  });
+
+  it("MS_PER_DAY = 24 * MS_PER_HOUR", () => {
+    expect(MS_PER_DAY).toBe(24 * MS_PER_HOUR);
+  });
+
+  it("all are positive integers", () => {
+    for (const v of [MS_PER_MIN, MS_PER_HOUR, MS_PER_DAY]) {
+      expect(Number.isInteger(v)).toBe(true);
+      expect(v).toBeGreaterThan(0);
     }
   });
 });
