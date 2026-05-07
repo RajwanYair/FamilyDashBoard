@@ -9,6 +9,10 @@
  *  ET5. formatErrorEntry contains the message string.
  *  ET6. sampleErrorTrend trend buffer never exceeds 10 samples.
  *  ET7. errorRate returns 0 when buffer is empty.
+ *  ET8. recordError converts message to string (non-string inputs → coerced).
+ *  ET9. After overflow, oldest entries are evicted (FIFO).
+ *  ET10. formatErrorEntry includes source filename (last segment only).
+ *  ET11. getErrorTrend returns a copy (mutations don't affect internal buffer).
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
@@ -138,5 +142,90 @@ describe("error-tracker — ET7: errorRate returns 0 when buffer empty", () => {
   it("returns 0 with no recorded errors", () => {
     clearErrors();
     expect(errorRate()).toBe(0);
+  });
+});
+
+// ── ET8: recordError coerces message to string ───────────────────────────────
+
+describe("error-tracker — ET8: recordError converts message to string", () => {
+  it("message is always a string regardless of input type", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(
+          fc.string({ minLength: 0, maxLength: 30 }),
+          fc.integer(),
+          fc.boolean(),
+          fc.constant(null),
+          fc.constant(undefined),
+        ),
+        (input) => {
+          clearErrors();
+          recordError(input as unknown as string);
+          const entries = getErrors();
+          expect(entries.length).toBe(1);
+          expect(typeof entries[0].message).toBe("string");
+        },
+      ),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── ET9: FIFO eviction after overflow ────────────────────────────────────────
+
+describe("error-tracker — ET9: oldest entries evicted on overflow", () => {
+  it("after 20+N records, first entry message matches record #N", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 30 }), (extra) => {
+        clearErrors();
+        const total = 20 + extra;
+        for (let i = 0; i < total; i++) recordError(`msg-${i}`);
+        const entries = getErrors();
+        // The oldest surviving is msg-{extra}
+        expect(entries[0].message).toBe(`msg-${extra}`);
+        expect(entries[entries.length - 1].message).toBe(`msg-${total - 1}`);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── ET10: formatErrorEntry includes source basename ──────────────────────────
+
+describe("error-tracker — ET10: formatErrorEntry includes source filename", () => {
+  const dirArb = fc.stringMatching(/^[a-z]{1,10}$/);
+  const fileArb = fc.stringMatching(/^[a-z]{1,8}\.ts$/);
+
+  it("output contains the last path segment of source", () => {
+    fc.assert(
+      fc.property(dirArb, fileArb, (dir, file) => {
+        const source = `${dir}/${file}`;
+        const entry = { ts: Date.now(), message: "err", source };
+        const formatted = formatErrorEntry(entry);
+        expect(formatted).toContain(file);
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ── ET11: getErrorTrend returns a defensive copy ─────────────────────────────
+
+describe("error-tracker — ET11: getErrorTrend returns a copy", () => {
+  it("mutating returned array does not affect internal buffer", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 10 }), (n) => {
+        clearErrors();
+        _resetTrend();
+        recordError("x");
+        for (let i = 0; i < n; i++) sampleErrorTrend();
+        const trend = getErrorTrend() as number[];
+        const originalLen = trend.length;
+        trend.push(999);
+        trend.length = 0;
+        expect(getErrorTrend().length).toBe(originalLen);
+      }),
+      { numRuns: 20 },
+    );
   });
 });
