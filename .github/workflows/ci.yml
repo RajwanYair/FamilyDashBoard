@@ -206,6 +206,8 @@ jobs:
         run: node scripts/check-smart-contrast.mjs
       - name: Dead exports check
         run: node scripts/check-dead-exports.mjs --max-allowed 5
+      - name: Build artifacts untracked check
+        run: node scripts/check-build-artifacts-untracked.mjs
 
   lighthouse:
     name: Lighthouse CI (Accessibility + Performance)
