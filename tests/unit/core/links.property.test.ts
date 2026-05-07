@@ -12,6 +12,10 @@
  *       (reference-equal) via getLinks.
  *  LK6. Feature-gate: when semanticLinksEnabled is false getLinks always
  *       returns [] regardless of how many links are registered.
+ *  LK7. getLinks returns entries whose toCardId matches the registered target.
+ *  LK8. Resolver invocation: calling resolver() returns expected payload.
+ *  LK9. Removal of one direction does not affect other registered directions.
+ *  LK10. getLinks for a fresh cardId always returns [] (no leakage).
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -159,6 +163,101 @@ describe("links — LK6: semanticLinksEnabled=false → getLinks always returns 
         // Re-enable for next test
         vi.mocked(loadConfig).mockReturnValue({ semanticLinksEnabled: true } as never);
       }),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── LK7: toCardId correctness ────────────────────────────────────────────────
+
+describe("links — LK7: getLinks entries have correct toCardId", () => {
+  it("each returned link's toCardId matches the registered target", () => {
+    fc.assert(
+      fc.property(
+        cardIdArb,
+        fc.uniqueArray(cardIdArb, { minLength: 1, maxLength: 5 }),
+        (from, targets) => {
+          clearLinks();
+          const uniqueTargets = [...new Set(targets)].filter((t) => t !== from);
+          if (uniqueTargets.length === 0) return;
+          for (const to of uniqueTargets) {
+            registerLink(from, to, () => to);
+          }
+          const links = getLinks(from);
+          const returnedTos = links.map((l) => l.toCardId).sort();
+          expect(returnedTos).toEqual([...uniqueTargets].sort());
+        },
+      ),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── LK8: Resolver invocation returns expected payload ────────────────────────
+
+describe("links — LK8: resolver() returns registered payload", () => {
+  it("calling resolver produces the expected string", () => {
+    fc.assert(
+      fc.property(
+        distinctPairArb,
+        fc.string({ minLength: 1, maxLength: 20 }),
+        ([from, to], payload) => {
+          clearLinks();
+          registerLink(from, to, () => payload);
+          const links = getLinks(from);
+          expect(links[0]?.resolver()).toBe(payload);
+        },
+      ),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── LK9: clearLinks for re-register one doesn't affect others ────────────────
+
+describe("links — LK9: replacing one direction preserves other directions", () => {
+  it("re-registering A→B with new resolver leaves A→C intact", () => {
+    fc.assert(
+      fc.property(
+        fc.tuple(cardIdArb, cardIdArb, cardIdArb).filter(
+          ([a, b, c]) => a !== b && a !== c && b !== c,
+        ),
+        ([from, to1, to2]) => {
+          clearLinks();
+          const r1 = () => "r1";
+          const r2 = () => "r2";
+          registerLink(from, to1, r1);
+          registerLink(from, to2, r2);
+          // Replace the first resolver
+          const r1New = () => "r1-new";
+          registerLink(from, to1, r1New);
+          const links = getLinks(from);
+          // Both directions still present
+          expect(links.length).toBe(2);
+          const link2 = links.find((l) => l.toCardId === to2);
+          expect(link2?.resolver).toBe(r2);
+        },
+      ),
+      { numRuns: 60 },
+    );
+  });
+});
+
+// ── LK10: fresh cardId returns [] (no leakage) ──────────────────────────────
+
+describe("links — LK10: unregistered cardId returns empty array", () => {
+  it("cardId with no links returns [] even when registry has other entries", () => {
+    fc.assert(
+      fc.property(
+        distinctPairArb,
+        cardIdArb.filter((id) => id.length > 5),
+        ([from, to], fresh) => {
+          clearLinks();
+          registerLink(from, to, () => "x");
+          if (fresh === from) return; // skip collision
+          expect(getLinks(fresh)).toEqual([]);
+        },
+      ),
       { numRuns: 60 },
     );
   });
