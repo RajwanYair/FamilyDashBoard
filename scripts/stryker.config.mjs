@@ -51,6 +51,7 @@
  * Sprint 525: extended scope to motivation.ts, alerts.ts, hebrew-cal.ts (property-tested MO1-MO6, AL1-AL9, HC1-HC10).
  * Sprint 531: extended scope to tasks.ts, calendar.ts, system-info.ts, video-news-adapter.ts (property-tested TK1-TK10, CAL1-CAL10, SI1-SI10, VN1-VN7).
  * Sprint 561: extended scope to ims-adapter.ts, bg-images.ts, early-hints.ts (property-tested IMS1-IMS7, BG1-BG5, CO1-CO7); removed duplicate canary entry.
+ * Sprint 567: extended scope to allowlists.ts (property-tested AW1-AW5).
  */
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -153,6 +154,8 @@ export default {
     "src/cards/weather/ims-adapter.ts",
     "src/ui/bg-images.ts",
     "worker/src/middleware/early-hints.ts",
+    // Sprint 567: property-tested allowlists (AW1-AW5)
+    "worker/src/utils/allowlists.ts",
     // Exclude generated/vendor code
     "!worker/src/**/*.d.ts",
     "!src/**/*.d.ts",

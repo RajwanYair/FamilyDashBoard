@@ -24,6 +24,7 @@
  * Sprint 549 (v14.5.0) — added A03 contentDocument.write, A05 X-Frame-Options missing, A09 stack trace exposed.
  * Sprint 555 (v14.5.0) — added A02 hardcoded password, A06 dynamic import(), A10 SSRF interpolated fetch.
  * Sprint 561 (v14.5.0) — added A03 document.writeln, A05 insecure WebSocket, A02 private key material.
+ * Sprint 567 (v14.5.0) — added A01 form action manipulation, A03 CSS injection via cssText, A08 dynamic importScripts.
  *
  * Scans `src/`, `worker/src/`, and `scripts/` for patterns that correspond to OWASP Top 10 (2021) categories
  * relevant to a client-side TypeScript/JavaScript application:
@@ -741,6 +742,33 @@ const RULES = [
     severity: "error",
     pattern: /-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----/,
     safeMarkers: ["test", "spec", "mock", "example"],
+  },
+
+  // Sprint 567 — A01: Form action manipulation (DOM clobbering vector)
+  {
+    category: "A01",
+    label: "Form action set to dynamic value (potential phishing)",
+    severity: "warn",
+    pattern: /\.action\s*=\s*(?!['"`]\/|['"`]https:\/\/)/,
+    safeMarkers: ["test", "spec", "mock", "trusted"],
+  },
+
+  // Sprint 567 — A03: Unescaped template in style attribute (CSS injection)
+  {
+    category: "A03",
+    label: "Dynamic style attribute assignment (CSS injection risk)",
+    severity: "warn",
+    pattern: /\.style\.cssText\s*=\s*`[^`]*\$\{/,
+    safeMarkers: ["test", "spec", "sanitize", "trusted-types"],
+  },
+
+  // Sprint 567 — A08: Unprotected importScripts in SW with dynamic arg
+  {
+    category: "A08",
+    label: "importScripts() with dynamic argument in service worker",
+    severity: "error",
+    pattern: /importScripts\(\s*(?!['"`])[^)]+\)/,
+    safeMarkers: ["test", "spec", "/* trusted */", "WORKER_BASE_URL"],
   },
 ];
 
