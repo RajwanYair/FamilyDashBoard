@@ -12,6 +12,10 @@
  *  CFG8. diffConfigs: identical configs → empty diff array.
  *  CFG9. diffConfigs: single key change → exactly 1 diff entry.
  *  CFG10. diffConfigs: each diff entry has correct old/new values.
+ *  CFG11. migrateConfig preserves existing valid fields from input.
+ *  CFG12. resetConfig returns exact DEFAULT_CONFIG shape.
+ *  CFG13. validateImportedConfig accepts a valid config envelope.
+ *  CFG14. readFeatureFlag returns default for absent keys.
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -31,6 +35,8 @@ import {
   loadConfigFromHash,
   validateImportedConfig,
   diffConfigs,
+  resetConfig,
+  readFeatureFlag,
 } from "@/core/config";
 import { CONFIG_VERSION, DEFAULT_CONFIG } from "@/types/config";
 
@@ -246,5 +252,86 @@ describe("config — CFG10: diffConfigs values", () => {
     expect(entry).toBeDefined();
     expect(entry!.oldValue).toBe(a.showClockSeconds);
     expect(entry!.newValue).toBe(!a.showClockSeconds);
+  });
+});
+
+// ── CFG11: migrateConfig preserves existing valid fields ─────────────────────
+
+describe("config — CFG11: migrateConfig preserves valid fields", () => {
+  it("familyName survives migration from any version", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: CONFIG_VERSION }),
+        fc.string({ minLength: 1, maxLength: 20 }),
+        (ver, name) => {
+          const result = migrateConfig({ configVersion: ver, familyName: name });
+          expect(result.familyName).toBe(name);
+        },
+      ),
+      { numRuns: 40 },
+    );
+  });
+});
+
+// ── CFG12: resetConfig returns exact DEFAULT_CONFIG ──────────────────────────
+
+describe("config — CFG12: resetConfig returns defaults", () => {
+  it("all keys match DEFAULT_CONFIG after reset", () => {
+    resetConfig();
+    const cfg = loadConfig();
+    for (const key of Object.keys(DEFAULT_CONFIG) as Array<keyof typeof DEFAULT_CONFIG>) {
+      expect(JSON.stringify(cfg[key])).toBe(JSON.stringify(DEFAULT_CONFIG[key]));
+    }
+  });
+});
+
+// ── CFG13: validateImportedConfig accepts valid envelope ─────────────────────
+
+describe("config — CFG13: validateImportedConfig accepts valid configs", () => {
+  it("DEFAULT_CONFIG always validates ok", () => {
+    const result = validateImportedConfig({ ...DEFAULT_CONFIG });
+    expect(result.ok).toBe(true);
+    expect(result.config).not.toBeNull();
+  });
+
+  it("any valid theme+screenMode combination validates ok", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom("black", "blue", "matrix", "amber", "purple", "rose"),
+        fc.constantFrom("tv", "tablet", "phone"),
+        (theme, screenMode) => {
+          const result = validateImportedConfig({
+            ...DEFAULT_CONFIG,
+            theme,
+            screenMode,
+          });
+          expect(result.ok).toBe(true);
+        },
+      ),
+      { numRuns: 18 },
+    );
+  });
+});
+
+// ── CFG14: readFeatureFlag returns default for absent keys ───────────────────
+
+describe("config — CFG14: readFeatureFlag returns defaultValue for absent keys", () => {
+  it("random key names not in featureFlags return the provided default", () => {
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 5, maxLength: 20 }).filter((s) => /^[a-z]+$/.test(s)),
+        fc.boolean(),
+        (key, def) => {
+          // Store a config without this random key in featureFlags
+          localStorage.setItem(
+            "fdb_config",
+            JSON.stringify({ ...DEFAULT_CONFIG, featureFlags: {} }),
+          );
+          const result = readFeatureFlag(key, def);
+          expect(result).toBe(def);
+        },
+      ),
+      { numRuns: 30 },
+    );
   });
 });
